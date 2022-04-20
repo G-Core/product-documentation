@@ -1,8 +1,7 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ScullyRoute, ScullyRoutesService } from '@scullyio/ng-lib';
-import { map, Observable } from 'rxjs';
-
-declare var ng: any;
+import { combineLatest, map, Observable, of, tap } from 'rxjs';
 
 @Component({
   selector: 'app-documentation',
@@ -11,12 +10,31 @@ declare var ng: any;
   styleUrls: ['./documentation.component.scss'],
   encapsulation: ViewEncapsulation.Emulated,
 })
-export class DocumentationComponent {
-  links$: Observable<ScullyRoute[]> = this.scully.available$.pipe(
-    map((links) =>
-      links.filter((link) => link.route.startsWith('/documentation/'))
-    )
-  );
+export class DocumentationComponent implements OnInit {
+  links$: Observable<ScullyRoute[]> = of([]);
+  category: string = '';
 
-  constructor(private scully: ScullyRoutesService) {}
+  constructor(
+    private scully: ScullyRoutesService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    this.links$ = combineLatest([this.route.url, this.scully.available$]).pipe(
+      map(([url, links]) => {
+        this.category = url[0].path;
+        const filteredLinks = links.filter(
+          (link) =>
+            link.route.startsWith('/documentation/') &&
+            link.route.includes(this.category) &&
+            !link.route.endsWith(this.category)
+        );
+        if (filteredLinks[0] && url.length === 1) {
+          this.router.navigateByUrl(filteredLinks[0].route);
+        }
+        return filteredLinks;
+      })
+    );
+  }
 }
