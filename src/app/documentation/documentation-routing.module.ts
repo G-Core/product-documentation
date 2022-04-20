@@ -5,12 +5,33 @@ import { DocumentationComponent } from './documentation.component';
 
 const routes: Routes = [
   {
-    path: ':title',
+    path: 'Cloud',
+    component: DocumentationComponent,
+  },
+  {
+    path: 'CDN',
+    component: DocumentationComponent,
+  },
+  {
+    path: 'Protection',
+    component: DocumentationComponent,
+  },
+  {
+    path: 'Cloud/:title',
+    component: DocumentationComponent,
+  },
+  {
+    path: 'CDN/:title',
+    component: DocumentationComponent,
+  },
+  {
+    path: 'Protection/:title',
     component: DocumentationComponent,
   },
   {
     path: '',
-    component: DocumentationComponent,
+    redirectTo: 'CDN',
+    pathMatch: 'full',
   },
 ];
 

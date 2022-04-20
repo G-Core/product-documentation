@@ -9,10 +9,22 @@ export const config: ScullyConfig = {
   // add spsModulePath when using de Scully Platform Server,
   outDir: './dist/static',
   routes: {
-    '/documentation/:title': {
+    '/documentation/CDN/:title': {
       type: 'contentFolder',
       title: {
-        folder: './documentation',
+        folder: './documentation/CDN',
+      },
+    },
+    '/documentation/Protection/:title': {
+      type: 'contentFolder',
+      title: {
+        folder: './documentation/Protection',
+      },
+    },
+    '/documentation/Cloud/:title': {
+      type: 'contentFolder',
+      title: {
+        folder: './documentation/Cloud',
       },
     },
   },
