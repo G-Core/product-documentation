@@ -3,8 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ScullyRoute, ScullyRoutesService } from '@scullyio/ng-lib';
 import { combineLatest, map, Observable, of, tap } from 'rxjs';
 
-declare var ng: any;
-
 @Component({
   selector: 'app-documentation',
   templateUrl: './documentation.component.html',
