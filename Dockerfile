@@ -21,6 +21,14 @@ RUN npm run scully:prod
 
 FROM nginx:1.21.6-alpine
 
-COPY --from=build /src/dist/static /srv/www
+ARG SERVICE_PORT=8080
+ENV SERVICE_PORT=${SERVICE_PORT}
 
-CMD ["nginx", "-g", "daemon off;"]
+COPY --from=build /src/dist/static /srv/www
+COPY default.conf /etc/nginx/conf.d/
+COPY scripts/start.sh ./
+RUN chmod +x ./start.sh
+
+EXPOSE ${SERVICE_PORT}
+
+CMD ./start.sh
