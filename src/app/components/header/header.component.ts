@@ -6,4 +6,10 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styleUrls: ['./header.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HeaderComponent {}
+export class HeaderComponent {
+  isMenuExpanded: boolean;
+
+  toggleMenu(): void {
+    this.isMenuExpanded = !this.isMenuExpanded;
+  }
+}

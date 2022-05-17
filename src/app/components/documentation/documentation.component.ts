@@ -1,9 +1,8 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ScullyRoutesService } from '@scullyio/ng-lib';
 import { combineLatest, map, Observable, of } from 'rxjs';
-import { categories } from '../../constants/categories-config';
+import { categories, DOCS_GITHUB_REPO } from '../../constants';
 import { MenuItem } from '../../models';
 
 @Component({
@@ -18,24 +17,25 @@ export class DocumentationComponent implements OnInit {
   activeMenuItem: MenuItem;
   showContent: boolean;
   breadCrumbs: MenuItem[] = [];
+  githubUrl: string;
 
   constructor(
     private scully: ScullyRoutesService,
     private route: ActivatedRoute,
-    private router: Router,
-    private http: HttpClient
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.links$ = combineLatest([this.route.url, this.scully.available$]).pipe(
       map(([url, links]) => {
-        const category = url[1].path;
+        const category = url[1]?.path;
+        const document = url[2]?.path;
         this.activeMenuItem = {
           name: categories.find((categoryItem) => categoryItem.url === category)
             ?.name,
           url: category,
         };
-        this.showContent = !!url[2];
+        this.showContent = !!document;
 
         const filterdLinks = links.filter(
           (link) =>
@@ -58,8 +58,9 @@ export class DocumentationComponent implements OnInit {
         ];
 
         if (this.showContent) {
+          this.githubUrl = `${DOCS_GITHUB_REPO}${category}/${document}`;
           breadcrumbs.push({
-            name: filterdLinks.find((link) => link.title === url[2].path)?.[
+            name: filterdLinks.find((link) => link.title === document)?.[
               'documentName'
             ],
             url: '',
