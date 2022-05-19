@@ -22,6 +22,10 @@ export const config: ScullyConfig = {
   projectName: 'product-documentation',
   // add spsModulePath when using de Scully Platform Server,
   outDir: './dist/static',
+  puppeteerLaunchOptions: {
+    executablePath: '/usr/bin/chromium-browser',
+    args: ['--no-sandbox']
+  },
   routes: categories.reduce((routes: RouteConfig, category) => {
     routes[`/documentation/${category}/:title`] = {
       type: 'contentFolder',
