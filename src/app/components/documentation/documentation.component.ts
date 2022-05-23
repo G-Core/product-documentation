@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ScullyRoutesService } from '@scullyio/ng-lib';
-import { combineLatest, map, Observable, of } from 'rxjs';
+import { combineLatest, map, Observable, of, take } from 'rxjs';
 import { categories, DOCS_GITHUB_REPO } from '../../constants';
 import { MenuItem } from '../../models';
+import { GitHubAPIService } from '../../services';
 
 @Component({
   selector: 'gc-documentation',
@@ -18,11 +19,12 @@ export class DocumentationComponent implements OnInit {
   showContent: boolean;
   breadCrumbs: MenuItem[] = [];
   githubUrl: string;
+  lastModifiedLabel: string = '';
 
   constructor(
     private scully: ScullyRoutesService,
     private route: ActivatedRoute,
-    private router: Router
+    private githubApiService: GitHubAPIService
   ) {}
 
   ngOnInit(): void {
@@ -42,10 +44,6 @@ export class DocumentationComponent implements OnInit {
             link.route.includes(category) && !link.route.endsWith(category)
         );
 
-        if (filterdLinks.length && !this.showContent) {
-          this.router.navigateByUrl(filterdLinks[0].route);
-        }
-
         const breadcrumbs = [
           {
             name: 'Home',
@@ -58,7 +56,8 @@ export class DocumentationComponent implements OnInit {
         ];
 
         if (this.showContent) {
-          this.githubUrl = `${DOCS_GITHUB_REPO}${category}/${document}`;
+          this.githubUrl = `${DOCS_GITHUB_REPO}${category}/${document}.md`;
+          this.setLastModifiedDate(`documentation/${category}/${document}`);
           breadcrumbs.push({
             name: filterdLinks.find((link) => link.title === document)?.[
               'documentName'
@@ -75,5 +74,14 @@ export class DocumentationComponent implements OnInit {
         }));
       })
     );
+  }
+
+  private setLastModifiedDate(_filePath: string): void {
+    this.githubApiService
+      .getLastModifiedDateLabel(_filePath)
+      .pipe(take(1))
+      .subscribe((label) => {
+        this.lastModifiedLabel = label;
+      });
   }
 }
