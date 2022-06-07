@@ -1,2 +1,2 @@
-export { MenuItem } from './MenuItem';
+export { MenuItem, MenuTreeItem } from './MenuItem';
 export { Category } from './Category';
