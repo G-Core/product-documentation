@@ -9,5 +9,6 @@ import { MenuItem } from '../../models';
 })
 export class LeftBarMenuComponent {
   @Input() activeMenuItem: MenuItem;
-  @Input() menuItems: MenuItem[];
+  @Input() activeUrl: string;
+  @Input() menuItems: any;
 }

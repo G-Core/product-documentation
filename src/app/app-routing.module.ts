@@ -51,52 +51,124 @@ const routes: Routes = [
   },
   {
     path: `documentation/cdn-dns/:title`,
+    children: [
+      {
+        path: '**',
+        component: DocumentationComponent,
+      },
+    ],
     component: DocumentationComponent,
   },
   {
     path: `documentation/video-streaming/:title`,
+    children: [
+      {
+        path: '**',
+        component: DocumentationComponent,
+      },
+    ],
     component: DocumentationComponent,
   },
   {
     path: `documentation/cloud-computing/:title`,
+    children: [
+      {
+        path: '**',
+        component: DocumentationComponent,
+      },
+    ],
     component: DocumentationComponent,
   },
   {
     path: `documentation/containers/:title`,
+    children: [
+      {
+        path: '**',
+        component: DocumentationComponent,
+      },
+    ],
     component: DocumentationComponent,
   },
   {
     path: `documentation/servers/:title`,
+    children: [
+      {
+        path: '**',
+        component: DocumentationComponent,
+      },
+    ],
     component: DocumentationComponent,
   },
   {
     path: `documentation/security/:title`,
+    children: [
+      {
+        path: '**',
+        component: DocumentationComponent,
+      },
+    ],
     component: DocumentationComponent,
   },
   {
     path: `documentation/cloud-storage/:title`,
+    children: [
+      {
+        path: '**',
+        component: DocumentationComponent,
+      },
+    ],
     component: DocumentationComponent,
   },
   {
     path: `documentation/infrastructure/:title`,
+    children: [
+      {
+        path: '**',
+        component: DocumentationComponent,
+      },
+    ],
     component: DocumentationComponent,
   },
   {
     path: `documentation/hybrid-cloud/:title`,
+    children: [
+      {
+        path: '**',
+        component: DocumentationComponent,
+      },
+    ],
     component: DocumentationComponent,
   },
   {
     path: `documentation/monitoring/:title`,
+    children: [
+      {
+        path: '**',
+        component: DocumentationComponent,
+      },
+    ],
     component: DocumentationComponent,
   },
   {
     path: `documentation/custom-services/:title`,
+    children: [
+      {
+        path: '**',
+        component: DocumentationComponent,
+      },
+    ],
     component: DocumentationComponent,
   },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [
+    RouterModule.forRoot(routes, {
+      useHash: false,
+      anchorScrolling: 'enabled',
+      scrollOffset: [0, 110],
+    }),
+  ],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

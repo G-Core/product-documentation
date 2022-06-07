@@ -11,6 +11,7 @@ import { BreadCrumbsComponent } from './components/bread-crumbs/bread-crumbs.com
 import { HomeComponent } from './components/home/home.component';
 import { HeaderComponent } from './components/header/header.component';
 import { UiKitModule } from './ui-kit/ui-kit.module';
+import { DropdownMenuItemComponent } from './components/left-bar-menu/dropdown-menu-item/dropdown-menu-item.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { UiKitModule } from './ui-kit/ui-kit.module';
     BreadCrumbsComponent,
     HomeComponent,
     HeaderComponent,
+    DropdownMenuItemComponent,
   ],
   imports: [
     BrowserModule,
