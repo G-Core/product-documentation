@@ -2,11 +2,7 @@ FROM node:16.15.0-alpine3.15 as build
 
 RUN apk add --no-cache \
       chromium \
-      nss \
-      freetype \
-      harfbuzz \
-      ca-certificates \
-      ttf-freefont
+      ca-certificates
 
 RUN mkdir /src
 WORKDIR /src
