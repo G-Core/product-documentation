@@ -82,7 +82,7 @@ Link:
 
 Anchor:
 
-[Lorem ipsum dolor sit amet](#h2-smaller-heading), consectetur adipiscing elit. 
+[Lorem ipsum dolor sit amet](#smaller-heading), consectetur adipiscing elit. 
 <!-- Can't check anchor because of preprod-mode. Have to publish the page to know, how it works. -->
 
 Relative link to another aticle in repository: 
