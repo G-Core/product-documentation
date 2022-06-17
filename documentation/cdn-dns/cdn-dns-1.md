@@ -5,86 +5,132 @@ description: description
 published: true
 ---
 
-List of elements:
+Heading H1:
+# Main Heading 
 
-# (H1) Main Heading 
-## (H2) Smaller Heading
-### (H3) Another small Heading
-#### (H4) Another smaller Heading 
-##### (H5) And even that's one 
-###### (H6) The smallest heading 
+Heading H2:
+## Smaller Heading
 
-(Ordinary text) Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+Heading H3:
+### Another small Heading
 
-(Styling text: bold & italic with variations) **Lorem ipsum** *dolor sit amet*, **consectetur _adipiscing_ elit**, ***sed do eiusmod tempor*** incididunt ut labore et dolore magna aliqua. 
+Heading H4:
+#### Another small Heading
 
-(Extra-Styling text: strikethrough, subscript, superscript) ~~Lorem ipsum dolor sit amet~~, <sub>consectetur adipiscing</sub> elit, sed do <sup>eiusmod tempor</sup> incididunt ut labore et dolore magna aliqua.
+Heading H5:
+##### And even that's one 
 
-> (String Quoting) Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+Heading H6:
+###### The smallest heading
 
-(Phrase Quoting) Lorem ipsum dolor `sit amet`, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+Text:
 
-(Code) Lorem ipsum dolor sit amet:
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+
+Bold:
+
+**Lorem ipsum**
+
+Italic:
+
+*dolor sit amet*
+
+Italic inside Bold:
+
+**consectetur _adipiscing_ elit**
+
+Italic and Bold:
+
+***sed do eiusmod tempor***
+
+Strikethrough:
+
+ ~~Lorem ipsum dolor sit amet~~
+
+Subscript, superscript: 
+
+<sub>consectetur adipiscing</sub> <sup>eiusmod tempor</sup> 
+
+String Quote: 
+
+> Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+Phrase Quote:
+
+Lorem ipsum dolor `sit amet`, consectetur adipiscing elit.
+
+Code:
+
+Lorem ipsum dolor sit amet:
 ```
 consectetur adipiscing elit, 
 sed do eiusmod tempor incididunt 
 ut labore et dolore magna aliqua.
 ```
 
-(Example of code with color syntax)
+Example of Code with color syntax:
+
 ```ruby
 require 'redcarpet'
 markdown = Redcarpet.new("Hello World!")
 puts markdown.to_html
 ```
 
-(Link) [Lorem ipsum dolor sit amet](https://www.lipsum.com/), consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+Link:
 
-(Anchor) [Lorem ipsum dolor sit amet](cdn-dns/cdn-dns-1.md#h2-smaller-heading), consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+[Lorem ipsum dolor sit amet](https://www.lipsum.com/), consectetur adipiscing elit. 
+
+Anchor:
+
+[Lorem ipsum dolor sit amet](cdn-dns/cdn-dns-1.md#h2-smaller-heading), consectetur adipiscing elit. 
 <!-- Can't check anchor because of preprod-mode. Have to publish the page to know, how it works. -->
 
-(Relative link to another aticle at repository) [Another atricle in repository](./cdn-dns-2.md) 
+Relative link to another aticle in repository: 
 
-![Image](https://i.ytimg.com/vi/1cDcHq7nQFM/maxresdefault.jpg)
+[Another atricle in repository](./cdn-dns-2.md) 
 
-Also can add picture by HTML
+Image (MarkDown):
+![](https://i.ytimg.com/vi/1cDcHq7nQFM/maxresdefault.jpg)
+
+Image (HTML): 
+*Also can add picture by HTML*
 <picture>
   <img alt="useful seo text" src="https://i.ytimg.com/vi/1cDcHq7nQFM/maxresdefault.jpg">
-  </picture>
+</picture>
   
-  (Unordered list) Lorem ipsum dolor sit amet:
+Unordered list:
   - consectetur adipiscing elit, 
   - sed do eiusmod tempor incididunt 
   - ut labore et dolore magna aliqua.
 
-(Ordered list) Lorem ipsum dolor sit amet:
+Ordered list:
   1. consectetur adipiscing elit, 
   2. sed do eiusmod tempor incididunt 
   3. ut labore et dolore magna aliqua.
 
-(Mixed list)
+Nested list:
+
 1. First list item
    - First nested list item
      - Second nested list item
-
 2. Second list item
    - Second nested list item
    - Third nested list item
      - Fourth nested list 
        - Fifth nested list  
 
-(To do task list) 
+To do task list:
 - [x] First list item
 - [ ] Second list item
 - [ ] Add delight to the experience when all tasks are complete :tada:
 
-(Table)
+Table:
 | First Header  | Second Header |
 | ------------- | ------------- |
 | Content Cell  | Content Cellazazazazazazazaaaaaaaaazaaaaaaaaaaaaaaaaaaaaaaaaa  |
 | Content Cell  | Content Cell  |
 
-
+Tables with wore wide column:
 | Command | Description |
 | --- | --- |
 | *git status* | **List all new or modified files** |
