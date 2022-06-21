@@ -266,3 +266,5 @@ We open a tool for working with an API and do as follows:
 &status__gte=300&status__lt=400&method__in=GET,POST&size__lt=100
 ```
   5. We send the request.
+![image](https://user-images.githubusercontent.com/106074138/174901052-9a084d97-bca6-4765-8cae-495234242bc9.png)
+ 
