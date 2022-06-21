@@ -267,5 +267,5 @@ We open a tool for working with an API and do as follows:
 ```
   5. We send the request.
 
-                         ![image](https://user-images.githubusercontent.com/106074138/174901415-9f73abcb-8083-4162-be54-b7466dd15cd6.png)
+               ![image](https://user-images.githubusercontent.com/106074138/174901415-9f73abcb-8083-4162-be54-b7466dd15cd6.png)
 
