@@ -1,7 +1,6 @@
 ---
 title: cloud-computing-1
-documentName: Cloud Computing 1
-description: description
+displayName: Cloud Computing 1
 published: true
 ---
 

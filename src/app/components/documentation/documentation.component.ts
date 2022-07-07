@@ -1,15 +1,24 @@
+import { ViewportScroller } from '@angular/common';
 import {
+  AfterViewChecked,
+  ChangeDetectorRef,
   Component,
   ElementRef,
+  NgZone,
   OnInit,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ScullyRoute, ScullyRoutesService } from '@scullyio/ng-lib';
-import { combineLatest, map, Observable, of, take } from 'rxjs';
-import { categories, DOCS_GITHUB_REPO } from '../../constants';
-import { MenuItem, MenuTreeItem } from '../../models';
+import { combineLatest, first, map, Observable, of, take } from 'rxjs';
+import {
+  categories,
+  DOCS_GITHUB_REPO,
+  HEADER_HEIGHT,
+  METADATA_FILE_TITLE,
+} from '../../constants';
+import { MenuItem, MenuTreeItem, TableOfContents } from '../../models';
 import { GitHubAPIService } from '../../services';
 
 @Component({
@@ -19,7 +28,7 @@ import { GitHubAPIService } from '../../services';
   styleUrls: ['./documentation.component.scss'],
   encapsulation: ViewEncapsulation.Emulated,
 })
-export class DocumentationComponent implements OnInit {
+export class DocumentationComponent implements OnInit, AfterViewChecked {
   links$: Observable<MenuItem[]> = of([]);
   activeMenuItem: MenuItem;
   activeUrl: string;
@@ -27,7 +36,11 @@ export class DocumentationComponent implements OnInit {
   breadCrumbs: MenuItem[] = [];
   githubUrl: string;
   lastModifiedLabel: string = '';
-  // tableOfContents: any = [];
+  tableOfContents: TableOfContents[] = [];
+  tableOfContentsHeaders: Element[] = [];
+  activeTocItem: string = '';
+  showFullSizeImage: boolean = false;
+  targetImageSrc: string = '';
 
   @ViewChild('scullyContainer') scullyContainer: ElementRef;
 
@@ -35,43 +48,48 @@ export class DocumentationComponent implements OnInit {
     private scully: ScullyRoutesService,
     private router: Router,
     private route: ActivatedRoute,
-    private githubApiService: GitHubAPIService
+    private githubApiService: GitHubAPIService,
+    private viewportScroller: ViewportScroller,
+    private ngZone: NgZone,
+    private changeDetectorRef: ChangeDetectorRef
   ) {}
 
-  // Table of contents feature
-  /* ngAfterViewChecked(): void {
+  ngAfterViewChecked(): void {
+    this.route.fragment.pipe(first()).subscribe((fragment) => {
+      this.viewportScroller.scrollToAnchor(fragment);
+    });
     if (this.scullyContainer.nativeElement) {
-      const tableOfContents: any = [];
       this.scullyContainer.nativeElement
-        .querySelectorAll('h2')
-        ?.forEach((header: HTMLElement) =>
-          tableOfContents.push({
-            id: header.id,
-            name: header.textContent,
-          })
+        .querySelectorAll(':not(.gc-gallery p) > img')
+        .forEach((img: Element) =>
+          img.addEventListener('click', this.expandImage)
         );
-      if (
-        this.tableOfContents.length !== tableOfContents.length ||
-        tableOfContents.some(
-          (contentItem: any) =>
-            !this.tableOfContents.find(
-              (exixtingContentItem: any) =>
-                exixtingContentItem.id === contentItem.id
-            )
-        )
-      ) {
-        this.tableOfContents = tableOfContents;
+
+      if (this.tableOfContents) {
+        this.tableOfContentsHeaders = this.tableOfContents
+          .map((contentItem: any) =>
+            document.querySelector('#' + contentItem.fragment)
+          )
+          .filter((item: Element) => item);
       }
+      this.ngZone.runOutsideAngular(() => {
+        window.document.addEventListener('scroll', this.handlePageScroll, true);
+      });
+
+      this.handlePageScroll();
     }
-  }*/
+  }
 
   ngOnInit(): void {
     this.links$ = combineLatest([this.route.url, this.scully.available$]).pipe(
       map(([url, links]) => {
-        const documentUrlWithCategory = this.router.url.replace(
-          '/documentation/',
-          ''
-        );
+        const anchorIndex = this.router.url.indexOf('#');
+        let pageUrl = this.router.url;
+        if (anchorIndex !== -1) {
+          pageUrl = pageUrl.slice(0, anchorIndex);
+        }
+
+        const documentUrlWithCategory = pageUrl.replace('/documentation/', '');
         const category = url[1].path;
         let documentUrl = documentUrlWithCategory
           .replace(category, '')
@@ -80,18 +98,25 @@ export class DocumentationComponent implements OnInit {
           ? documentUrl.slice(documentUrl.lastIndexOf('/') + 1)
           : '';
 
-        this.activeUrl = this.router.url;
+        this.activeUrl = pageUrl;
         this.activeMenuItem = {
           name: categories.find((categoryItem) => categoryItem.url === category)
             ?.name,
           url: category,
         };
         this.showContent = !!document;
+        this.tableOfContents = [];
 
-        const filterdLinks = links.filter(
-          (link) =>
-            link.route.includes(category) && !link.route.endsWith(category)
-        );
+        const filterdLinks = links.filter(({ route, toc }) => {
+          if (route === pageUrl && toc) {
+            this.tableOfContents = Object.keys(toc).map((key) => ({
+              lvl: this.getContentLevel(key),
+              name: key.replace(/--\d--/g, ''),
+              fragment: toc[key],
+            }));
+          }
+          return route.includes(category) && !route.endsWith(category);
+        });
 
         const breadcrumbs = [
           {
@@ -114,9 +139,8 @@ export class DocumentationComponent implements OnInit {
               breadcrumbs.push({
                 name:
                   index === arr.length - 1
-                    ? filterdLinks.find((link) => link.title === document)?.[
-                        'documentName'
-                      ]
+                    ? filterdLinks.find((link) => link.title === document)
+                        ?.displayName
                     : routeSegment.split('-').join(' '),
                 url: '',
               });
@@ -135,17 +159,27 @@ export class DocumentationComponent implements OnInit {
           if (routeSegments.length === 1) {
             menuTree.set(routeSegments[0], {
               url: link.route,
-              name: link['documentName'],
+              name: link.displayName,
+              order: link.order,
+              title: link.title,
               children: null,
             });
           } else {
             this.buildMenuSubTree(menuTree, routeSegments, link);
           }
         });
+        const menu = this.convertToArray(menuTree);
 
-        return this.convertToArray(menuTree);
+        console.log('menu', menu);
+
+        return menu;
       })
     );
+  }
+
+  closeFullSizeModal() {
+    this.showFullSizeImage = false;
+    this.targetImageSrc = '';
   }
 
   // Recursively build menu tree
@@ -164,9 +198,11 @@ export class DocumentationComponent implements OnInit {
     } else {
       menuItem = {
         url: unhandledRouteSegments.length ? '' : link.route,
+        order: unhandledRouteSegments.length ? 0 : link.order,
+        title: unhandledRouteSegments.length ? '' : link.title,
         name: unhandledRouteSegments.length
           ? routeSegments[0]
-          : link['documentName'],
+          : link.displayName,
         children: new Map(),
       };
       tree.set(routeSegments[0], menuItem);
@@ -177,14 +213,50 @@ export class DocumentationComponent implements OnInit {
     }
   }
 
-  private convertToArray(manuMap: Map<string, MenuTreeItem>): MenuItem[] {
-    return [...manuMap].map(([_key, value]) => {
-      const menuItem: MenuItem = { url: value.url, name: value.name };
-      if (value.children && value.children.size) {
-        menuItem.children = this.convertToArray(value.children);
-      }
-      return menuItem;
-    });
+  private expandImage = (event: Event) => {
+    const targetImage = event.target as HTMLElement;
+    this.showFullSizeImage = true;
+    this.targetImageSrc = targetImage.getAttribute('src');
+  };
+
+  private handlePageScroll = () => {
+    const activeSectionId = this.tableOfContentsHeaders.reduce(
+      (activeItem: string, item) => {
+        if (
+          document.documentElement.scrollTop + HEADER_HEIGHT + 18 >
+          (item as HTMLElement).offsetTop
+        ) {
+          activeItem = item.id;
+        }
+        return activeItem;
+      },
+      this.tableOfContentsHeaders[0]?.id
+    );
+    if (this.activeTocItem !== activeSectionId) {
+      this.activeTocItem = activeSectionId;
+      this.changeDetectorRef.detectChanges();
+    }
+  };
+
+  private convertToArray(menuMap: Map<string, MenuTreeItem>): MenuItem[] {
+    return [...menuMap]
+      .map(([_key, value]) => {
+        const menuItem: MenuItem = {
+          url: value.url,
+          name: value.name,
+          order: value.order,
+          title: value.title,
+        };
+        if (value.children && value.children.size) {
+          menuItem.children = this.convertToArray(value.children);
+        }
+        return menuItem;
+      })
+      .sort((a, b) => {
+        const aOrder = a.order || this.getFolderMetadataOrder(a) || 0;
+        const bOrder = b.order || this.getFolderMetadataOrder(b) || 0;
+        return bOrder - aOrder;
+      });
   }
 
   private setLastModifiedDate(_filePath: string): void {
@@ -194,5 +266,30 @@ export class DocumentationComponent implements OnInit {
       .subscribe((label) => {
         this.lastModifiedLabel = label;
       });
+  }
+
+  private getFolderMetadataOrder(menuItem: MenuItem): number {
+    if (!menuItem || !menuItem.children || !menuItem.children.length) {
+      return null;
+    }
+    const metadataDoc = menuItem.children.find(
+      (item) => item.title === METADATA_FILE_TITLE
+    );
+
+    // Set order to folder menu item
+    if (metadataDoc) {
+      menuItem.order = metadataDoc.order;
+      return metadataDoc.order;
+    }
+
+    return 0;
+  }
+
+  private getContentLevel(name: string): number {
+    const regExp = /--\d--/i;
+    if (regExp.test(name)) {
+      return +name.slice(0, 4).replace(/-/g, '');
+    }
+    return 1;
   }
 }

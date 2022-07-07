@@ -1,7 +1,6 @@
 ---
 title: cloud-storage-1
-documentName: Cloud Storage 1
-description: description
+displayName: Cloud Storage 1
 published: true
 ---
 

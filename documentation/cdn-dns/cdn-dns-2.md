@@ -1,7 +1,6 @@
 ---
 title: cdn-dns-2
-documentName: CDN & DNS 2
-description: description
+displayName: CDN & DNS 2
 published: true
 ---
 

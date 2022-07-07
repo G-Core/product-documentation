@@ -1,7 +1,6 @@
 ---
 title: infrastructure-1
-documentName: Infrastructure 1
-description: description
+displayName: Infrastructure 1
 published: true
 ---
 

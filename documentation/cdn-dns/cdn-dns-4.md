@@ -1,7 +1,7 @@
 ---
 title: cdn-dns-4
-documentName: CDN & DNS 4
-description: description
+displayName: CDN & DNS 4
+order: 2
 published: true
 ---
 
