@@ -1,7 +1,6 @@
 ---
 title: custom-services-1
-documentName: Custom Services 1
-description: description
+displayName: Custom Services 1
 published: true
 ---
 

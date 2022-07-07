@@ -1,7 +1,6 @@
 ---
 title: cdn-dns-5
-documentName: CDN & DNS 5
-description: description
+displayName: CDN & DNS 5
 published: true
 ---
 

@@ -1,7 +1,9 @@
-import { RouteConfig, ScullyConfig } from '@scullyio/scully';
+import { RouteConfig, ScullyConfig, setPluginConfig } from '@scullyio/scully';
 
 /** this loads the default render plugin, remove when switching to something else. */
 import '@scullyio/scully-plugin-puppeteer';
+import { copyToClipboardPlugin } from './scully/plugins/copyToClipboard';
+import 'prismjs/components/prism-ruby.min.js';
 
 const categories = [
   'cdn-dns',
@@ -17,6 +19,9 @@ const categories = [
   'custom-services',
 ];
 
+const defaultPostRenderers = [copyToClipboardPlugin];
+setPluginConfig('md', { enableSyntaxHighlighting: true });
+
 export const config: ScullyConfig = {
   projectRoot: './src',
   projectName: 'product-documentation',
@@ -31,6 +36,7 @@ export const config: ScullyConfig = {
   routes: categories.reduce((routes: RouteConfig, category) => {
     routes[`/documentation/${category}/:title`] = {
       type: 'contentFolder',
+      postRenderers: defaultPostRenderers,
       title: {
         folder: `./documentation/${category}`,
       },

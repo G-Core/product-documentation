@@ -1,7 +1,6 @@
 ---
 title: video-streaming-1
-documentName: Video Streaming 1
-description: description
+displayName: Video Streaming 1
 published: true
 ---
 

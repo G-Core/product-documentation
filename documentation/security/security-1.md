@@ -1,7 +1,6 @@
 ---
 title: security-1
-documentName: Security 1
-description: description
+displayName: Security 1
 published: true
 ---
 

@@ -1,7 +1,6 @@
 ---
 title: hybrid-cloud-1
-documentName: Hybrid Cloud 1
-description: description
+displayName: Hybrid Cloud 1
 published: true
 ---
 

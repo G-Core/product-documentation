@@ -1,7 +1,6 @@
 ---
 title: servers-1
-documentName: Servers 1
-description: description
+displayName: Servers 1
 published: true
 ---
 

@@ -1,7 +1,6 @@
 ---
 title: monitoring-1
-documentName: Monitoring 1
-description: description
+displayName: Monitoring 1
 published: true
 ---
 
