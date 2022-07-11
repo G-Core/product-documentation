@@ -2,6 +2,7 @@
 title: cdn-dns-2
 displayName: CDN & DNS 2
 published: true
+order: 4
 ---
 
 # CDN & DNS Example Document 2 Title

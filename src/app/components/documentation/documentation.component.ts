@@ -168,11 +168,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
             this.buildMenuSubTree(menuTree, routeSegments, link);
           }
         });
-        const menu = this.convertToArray(menuTree);
-
-        console.log('menu', menu);
-
-        return menu;
+        return this.convertToArray(menuTree);
       })
     );
   }
@@ -253,9 +249,9 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
         return menuItem;
       })
       .sort((a, b) => {
-        const aOrder = a.order || this.getFolderMetadataOrder(a) || 0;
-        const bOrder = b.order || this.getFolderMetadataOrder(b) || 0;
-        return bOrder - aOrder;
+        const aOrder = a.order || this.getFolderMetadataOrder(a) || 9999;
+        const bOrder = b.order || this.getFolderMetadataOrder(b) || 9999;
+        return aOrder - bOrder;
       });
   }
 
@@ -270,7 +266,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
 
   private getFolderMetadataOrder(menuItem: MenuItem): number {
     if (!menuItem || !menuItem.children || !menuItem.children.length) {
-      return null;
+      return 9999;
     }
     const metadataDoc = menuItem.children.find(
       (item) => item.title === METADATA_FILE_TITLE
@@ -282,7 +278,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
       return metadataDoc.order;
     }
 
-    return 0;
+    return 9999;
   }
 
   private getContentLevel(name: string): number {
