@@ -1,12 +1,12 @@
 ---
 title: cdn-dns-1
 displayName: CDN & DNS 1
-order: 1
+order: 2
 published: true
 toc:
   --1--Smaller Heading: "smaller-heading"
   --2--What is Log Viewer?: "what-is-log-viewer"
-  View logs: "view-logs-in-your-control-panel"
+  --3--View logs: "view-logs-in-your-control-panel"
 ---
 
 <expandable-element title="Expandable element title">
@@ -22,9 +22,17 @@ sdsdasdas
 
 <columns-layout>
 
+<div>
+
 Lorem ipsum dolor <span style="color: red">sit amet</span>, <span style="font-size: 18px">consectetur adipiscing elit</span>, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
 
 labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+
+</div>
+
+<span>
+iusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+</span>
 
 </columns-layout>
 
@@ -81,7 +89,7 @@ $ip = '1.2.3.4';
 $path = '/live/133529_2/chunklist.m3u8';
 $expires = time() + 10000;
 $link = "$expires$path$ip $secret";
-$md5 = md5($link, true);
+<strong>$md5 = md5($link, true);</strong>
 $md5 = base64_encode($md5);
 $md5 = strtr($md5, '+/', '-_');
 $md5 = str_replace('=', '', $md5);
@@ -115,7 +123,7 @@ Relative link to another aticle in repository:
 [Another atricle in repository](/documentation/cdn-dns/cdn-dns-2)
 
 Image (MarkDown):
-![alt image text](https://i.ytimg.com/vi/1cDcHq7nQFM/maxresdefault.jpg)
+![alt image text](https://support.gcorelabs.com/hc/article_attachments/360018394298/expiration.png)
 
 Gif
 ![gif example](https://www.wired.com/wp-content/uploads/2015/03/855.gif)
