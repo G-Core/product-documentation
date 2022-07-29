@@ -11,7 +11,7 @@ toc:
 
 <expandable-element title="Expandable element title">
 
-![alt image text](https://i.ytimg.com/vi/1cDcHq7nQFM/maxresdefault.jpg)
+![alt image text](http://content-images.s-ed1.cloud.gcore.lu/What-is-a-CDN.webp)
 
 </expandable-element>
 
