@@ -1,6 +1,5 @@
 import { registerPlugin, HandledRoute } from '@scullyio/scully';
 import { JSDOM } from 'jsdom';
-import { __awaiter } from 'tslib';
 
 const validator = async () => [];
 
@@ -11,7 +10,6 @@ const addCopyToClipboardPlugin = async (
   route: HandledRoute
 ): Promise<JSDOM> => {
   try {
-    // const dom = new JSDOM(html);
     const { window } = dom;
     const { document } = window;
 
@@ -87,7 +85,7 @@ const addCopyToClipboardPlugin = async (
     `;
     window.document.body.appendChild(script);
   } catch (e) {
-    console.error(`Error in anchorLink plugin: ${e.message}`);
+    console.error(`Error in addCopyToClipboardPlugin plugin: ${e.message}`);
   }
   return dom;
 };
