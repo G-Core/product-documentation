@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {DataService} from "../../services/data.service";
 
 @Component({
   selector: 'gc-header',
@@ -7,9 +8,10 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
-  isMenuExpanded: boolean;
 
-  toggleMenu(): void {
-    this.isMenuExpanded = !this.isMenuExpanded;
+  constructor(private data: DataService) {}
+
+  toggleMenu(event: any) {
+    this.data.emitChange(event);
   }
 }

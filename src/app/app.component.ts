@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import { ScullyRoute, ScullyRoutesService } from '@scullyio/ng-lib';
 import { Observable } from 'rxjs';
 
@@ -12,4 +12,5 @@ export class AppComponent {
   constructor(private scully: ScullyRoutesService) {}
 
   ngOnInit() {}
+
 }

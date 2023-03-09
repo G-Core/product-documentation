@@ -11,7 +11,7 @@ const categories = [
   'video-streaming',
   'cloud-computing',
   'containers',
-  'servers',
+  'services',
   'security',
   'cloud-storage',
   'infrastructure',

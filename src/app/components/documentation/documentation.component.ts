@@ -20,6 +20,7 @@ import {
 } from '../../constants';
 import { MenuItem, MenuTreeItem, TableOfContents } from '../../models';
 import { GitHubAPIService } from '../../services';
+import {DataService} from "../../services/data.service";
 
 @Component({
   selector: 'gc-documentation',
@@ -41,6 +42,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
   activeTocItem: string = '';
   showFullSizeImage: boolean = false;
   targetImageSrc: string = '';
+  isMenuExpanded: boolean = false;
 
   @ViewChild('scullyContainer') scullyContainer: ElementRef;
 
@@ -51,7 +53,8 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
     private githubApiService: GitHubAPIService,
     private viewportScroller: ViewportScroller,
     private ngZone: NgZone,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private data: DataService
   ) {}
 
   ngAfterViewChecked(): void {
@@ -81,6 +84,11 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
   }
 
   ngOnInit(): void {
+    this.data.changeEmitted$.subscribe(data => {
+      this.isMenuExpanded = !this.isMenuExpanded;
+      this.changeDetectorRef.detectChanges();
+    })
+
     this.links$ = combineLatest([this.route.url, this.scully.available$]).pipe(
       map(([url, links]) => {
         const anchorIndex = this.router.url.indexOf('#');
