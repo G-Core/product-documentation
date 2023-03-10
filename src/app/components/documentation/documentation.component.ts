@@ -20,7 +20,7 @@ import {
 } from '../../constants';
 import { MenuItem, MenuTreeItem, TableOfContents } from '../../models';
 import { GitHubAPIService } from '../../services';
-import {DataService} from "../../services/data.service";
+import { MenuService } from "../../services/menu.service";
 
 @Component({
   selector: 'gc-documentation',
@@ -54,7 +54,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
     private viewportScroller: ViewportScroller,
     private ngZone: NgZone,
     private changeDetectorRef: ChangeDetectorRef,
-    private data: DataService
+    private data: MenuService
   ) {}
 
   ngAfterViewChecked(): void {
@@ -84,7 +84,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
   }
 
   ngOnInit(): void {
-    this.data.changeEmitted$.subscribe(data => {
+    this.data.toggleMenuEmitted$.subscribe(data => {
       this.isMenuExpanded = !this.isMenuExpanded;
       this.changeDetectorRef.detectChanges();
     })

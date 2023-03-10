@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import { MenuItem } from '../../models';
-import {DataService} from "../../services/data.service";
+import { MenuService } from "../../services/menu.service";
 
 @Component({
   selector: 'gc-left-bar-menu',
@@ -14,10 +14,10 @@ export class LeftBarMenuComponent{
   @Input() activeUrl: string;
   @Input() menuItems: any;
 
-  constructor(private data: DataService) {}
+  constructor(private clickDetection: MenuService) {}
 
   toggleMenu(event: any) {
-    this.data.emitChange(event);
+    this.clickDetection.toggleMenu(event);
   }
 
 }

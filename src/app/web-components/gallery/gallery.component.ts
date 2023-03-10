@@ -56,7 +56,6 @@ export class GalleryComponent implements AfterViewInit {
     const targetItem = event.target;
     this.currentIndex = Number(targetItem.dataset.index);
     this.setActiveSlide(this.currentIndex);
-    console.log(targetItem)
   }
 
   goToPrevious(): void {

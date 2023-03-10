@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {DataService} from "../../services/data.service";
+import { MenuService } from "../../services/menu.service";
 
 @Component({
   selector: 'gc-header',
@@ -9,9 +9,9 @@ import {DataService} from "../../services/data.service";
 })
 export class HeaderComponent {
 
-  constructor(private data: DataService) {}
+  constructor(private clickDetection: MenuService) {}
 
   toggleMenu(event: any) {
-    this.data.emitChange(event);
+    this.clickDetection.toggleMenu(event);
   }
 }

@@ -18,7 +18,7 @@ import { ExandableElementComponent } from './web-components/exandable-element/ex
 import { CodeBlockComponent } from './web-components/code-block/code-block.component';
 import { TextColumnsComponent } from './web-components/text-columns/text-columns.component';
 import { GalleryComponent } from './web-components/gallery/gallery.component';
-import {DataService} from "./services/data.service";
+import { MenuService } from "./services/menu.service";
 
 @NgModule({
   declarations: [
@@ -41,7 +41,7 @@ import {DataService} from "./services/data.service";
     BrowserAnimationsModule,
     UiKitModule,
   ],
-  providers: [DataService],
+  providers: [ MenuService ],
   bootstrap: [AppComponent],
 })
 export class AppModule {
