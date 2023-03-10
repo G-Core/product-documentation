@@ -173,6 +173,10 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
     );
   }
 
+  anchorScroll(hash: string) {
+    document.location.hash = hash;
+  }
+
   closeFullSizeModal() {
     this.showFullSizeImage = false;
     this.targetImageSrc = '';
