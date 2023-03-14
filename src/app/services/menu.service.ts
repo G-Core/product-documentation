@@ -1,15 +1,15 @@
-import {Injectable} from "@angular/core";
-import {Subject} from "rxjs";
+import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 
 @Injectable()
 export class MenuService {
-  constructor() { }
+    private emitToggleMenu = new Subject<any>();
 
-  private emitToggleMenu = new Subject<any>();
+    public toggleMenuEmitted$ = this.emitToggleMenu.asObservable();
 
-  toggleMenuEmitted$ = this.emitToggleMenu.asObservable();
+    constructor() {}
 
-  toggleMenu(event: any) {
-    this.emitToggleMenu.next(event);
-  }
+    public toggleMenu(event: Event): void {
+        this.emitToggleMenu.next(event);
+    }
 }

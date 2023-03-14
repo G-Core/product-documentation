@@ -1,6 +1,5 @@
-import { NgModule } from '@angular/core';
+import { NgModule, Injector } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { Injector } from '@angular/core';
 import { createCustomElement } from '@angular/elements';
 import { ScullyLibModule } from '@scullyio/ng-lib';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -18,51 +17,43 @@ import { ExandableElementComponent } from './web-components/exandable-element/ex
 import { CodeBlockComponent } from './web-components/code-block/code-block.component';
 import { TextColumnsComponent } from './web-components/text-columns/text-columns.component';
 import { GalleryComponent } from './web-components/gallery/gallery.component';
-import { MenuService } from "./services/menu.service";
+import { MenuService } from './services/menu.service';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    DocumentationComponent,
-    LeftBarMenuComponent,
-    BreadCrumbsComponent,
-    HomeComponent,
-    HeaderComponent,
-    DropdownMenuItemComponent,
-    ExandableElementComponent,
-    CodeBlockComponent,
-    TextColumnsComponent,
-    GalleryComponent,
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    ScullyLibModule,
-    BrowserAnimationsModule,
-    UiKitModule,
-  ],
-  providers: [ MenuService ],
-  bootstrap: [AppComponent],
+    declarations: [
+        AppComponent,
+        DocumentationComponent,
+        LeftBarMenuComponent,
+        BreadCrumbsComponent,
+        HomeComponent,
+        HeaderComponent,
+        DropdownMenuItemComponent,
+        ExandableElementComponent,
+        CodeBlockComponent,
+        TextColumnsComponent,
+        GalleryComponent,
+    ],
+    imports: [BrowserModule, AppRoutingModule, ScullyLibModule, BrowserAnimationsModule, UiKitModule],
+    providers: [MenuService],
+    bootstrap: [AppComponent],
 })
 export class AppModule {
-  constructor(private injector: Injector) {
-    const expandableElement = createCustomElement(ExandableElementComponent, {
-      injector,
-    });
-    const codeBlock = createCustomElement(CodeBlockComponent, {
-      injector,
-    });
-    const columnsLayout = createCustomElement(TextColumnsComponent, {
-      injector,
-    });
-    const gallery = createCustomElement(GalleryComponent, {
-      injector,
-    });
-    customElements.define('expandable-element', expandableElement);
-    customElements.define('code-block', codeBlock);
-    customElements.define('columns-layout', columnsLayout);
-    customElements.define('media-gallery', gallery);
-  }
-
-  ngDoBootstrap() {}
+    constructor(private injector: Injector) {
+        const expandableElement = createCustomElement(ExandableElementComponent, {
+            injector,
+        });
+        const codeBlock = createCustomElement(CodeBlockComponent, {
+            injector,
+        });
+        const columnsLayout = createCustomElement(TextColumnsComponent, {
+            injector,
+        });
+        const gallery = createCustomElement(GalleryComponent, {
+            injector,
+        });
+        customElements.define('expandable-element', expandableElement);
+        customElements.define('code-block', codeBlock);
+        customElements.define('columns-layout', columnsLayout);
+        customElements.define('media-gallery', gallery);
+    }
 }

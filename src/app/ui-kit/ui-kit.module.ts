@@ -3,9 +3,9 @@ import { RedirectLinkButtonComponent } from './redirect-link-button/redirect-lin
 import { SearchBoxComponent } from './search-box/search-box.component';
 
 @NgModule({
-  declarations: [RedirectLinkButtonComponent, SearchBoxComponent],
-  imports: [],
-  exports: [RedirectLinkButtonComponent, SearchBoxComponent],
-  providers: [],
+    declarations: [RedirectLinkButtonComponent, SearchBoxComponent],
+    imports: [],
+    exports: [RedirectLinkButtonComponent, SearchBoxComponent],
+    providers: [],
 })
 export class UiKitModule {}
