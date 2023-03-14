@@ -1,10 +1,16 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
+  ElementRef,
   Input,
+  NgZone,
   OnChanges,
   OnInit,
+  Renderer2,
   SimpleChanges,
+  ViewChild,
 } from '@angular/core';
 import { MenuItem } from '../../../models';
 
@@ -14,13 +20,23 @@ import { MenuItem } from '../../../models';
   styleUrls: ['./dropdown-menu-item.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DropdownMenuItemComponent implements OnInit, OnChanges {
+export class DropdownMenuItemComponent
+  implements OnInit, OnChanges, AfterViewInit
+{
   @Input() menuItemName: string;
   @Input() menuItems: MenuItem[] = [];
   @Input() activeUrl: string = '';
 
   isExpanded: boolean = false;
   menuItemDisplayName: string = '';
+
+  @ViewChild('menuDropdown') menuDropdown: ElementRef;
+
+  constructor(
+    private ngZone: NgZone,
+    private renderer: Renderer2,
+    private changeDetector: ChangeDetectorRef
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['activeUrl']) {
@@ -36,7 +52,16 @@ export class DropdownMenuItemComponent implements OnInit, OnChanges {
     this.menuItemDisplayName = this.menuItemName.split('-').join(' ');
   }
 
+  ngAfterViewInit(): void {
+    this.ngZone.runOutsideAngular(() => {
+      this.renderer.listen(this.menuDropdown.nativeElement, 'click', () => {
+        this.toggleMenu();
+      });
+    });
+  }
+
   toggleMenu(): void {
     this.isExpanded = !this.isExpanded;
+    this.changeDetector.detectChanges();
   }
 }

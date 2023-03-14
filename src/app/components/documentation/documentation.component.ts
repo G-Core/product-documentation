@@ -6,6 +6,7 @@ import {
   ElementRef,
   NgZone,
   OnInit,
+  Renderer2,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
@@ -20,7 +21,7 @@ import {
 } from '../../constants';
 import { MenuItem, MenuTreeItem, TableOfContents } from '../../models';
 import { GitHubAPIService } from '../../services';
-import { MenuService } from "../../services/menu.service";
+import { MenuService } from '../../services/menu.service';
 
 @Component({
   selector: 'gc-documentation',
@@ -45,6 +46,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
   isMenuExpanded: boolean = false;
 
   @ViewChild('scullyContainer') scullyContainer: ElementRef;
+  @ViewChild('fullSizeImage') fullSizeImage: ElementRef;
 
   constructor(
     private scully: ScullyRoutesService,
@@ -53,6 +55,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
     private githubApiService: GitHubAPIService,
     private viewportScroller: ViewportScroller,
     private ngZone: NgZone,
+    private renderer: Renderer2,
     private changeDetectorRef: ChangeDetectorRef,
     private data: MenuService
   ) {}
@@ -64,9 +67,23 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
     if (this.scullyContainer.nativeElement) {
       this.scullyContainer.nativeElement
         .querySelectorAll(':not(.gc-gallery p) > img')
-        .forEach((img: Element) =>
-          img.addEventListener('click', this.expandImage)
+        .forEach((img: Element) => {
+          this.ngZone.runOutsideAngular(() => {
+            this.renderer.listen(img, 'click', (event) =>
+              this.expandImage(event)
+            );
+          });
+        });
+
+      this.ngZone.runOutsideAngular(() => {
+        window.document.addEventListener('scroll', this.handlePageScroll, true);
+      });
+
+      this.ngZone.runOutsideAngular(() => {
+        this.renderer.listen(this.fullSizeImage.nativeElement, 'click', () =>
+          this.closeFullSizeModal()
         );
+      });
 
       if (this.tableOfContents) {
         this.tableOfContentsHeaders = this.tableOfContents
@@ -75,19 +92,16 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
           )
           .filter((item: Element) => item);
       }
-      this.ngZone.runOutsideAngular(() => {
-        window.document.addEventListener('scroll', this.handlePageScroll, true);
-      });
 
       this.handlePageScroll();
     }
   }
 
   ngOnInit(): void {
-    this.data.toggleMenuEmitted$.subscribe(data => {
+    this.data.toggleMenuEmitted$.subscribe((data) => {
       this.isMenuExpanded = !this.isMenuExpanded;
       this.changeDetectorRef.detectChanges();
-    })
+    });
 
     this.links$ = combineLatest([this.route.url, this.scully.available$]).pipe(
       map(([url, links]) => {
@@ -138,8 +152,10 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
         ];
 
         if (this.showContent) {
-          this.githubUrl = `${DOCS_GITHUB_REPO}${documentUrl}.md`;
-          this.setLastModifiedDate(`documentation/${documentUrl}`);
+          this.githubUrl = `${DOCS_GITHUB_REPO}${documentUrlWithCategory}.md`;
+          this.setLastModifiedDate(
+            `documentation/${documentUrlWithCategory}.md`
+          );
           documentUrl
             .split('/')
             .filter((value) => value)
@@ -186,8 +202,9 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
   }
 
   closeFullSizeModal() {
-    this.showFullSizeImage = false;
+    this.renderer.removeClass(this.fullSizeImage.nativeElement, 'active');
     this.targetImageSrc = '';
+    this.changeDetectorRef.detectChanges();
   }
 
   // Recursively build menu tree
@@ -221,11 +238,12 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  private expandImage = (event: Event) => {
+  private expandImage(event: Event) {
     const targetImage = event.target as HTMLElement;
-    this.showFullSizeImage = true;
+    this.renderer.addClass(this.fullSizeImage.nativeElement, 'active');
     this.targetImageSrc = targetImage.getAttribute('src');
-  };
+    this.changeDetectorRef.detectChanges();
+  }
 
   private handlePageScroll = () => {
     const activeSectionId = this.tableOfContentsHeaders.reduce(
