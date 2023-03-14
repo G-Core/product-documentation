@@ -5,171 +5,171 @@ import { HomeComponent } from './components/home/home.component';
 import { HEADER_HEIGHT } from './constants';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent },
-  {
-    path: `documentation/cdn-dns`,
-    component: DocumentationComponent,
-  },
-  {
-    path: `documentation/video-streaming`,
-    component: DocumentationComponent,
-  },
-  {
-    path: `documentation/cloud-computing`,
-    component: DocumentationComponent,
-  },
-  {
-    path: `documentation/containers`,
-    component: DocumentationComponent,
-  },
-  {
-    path: `documentation/servers`,
-    component: DocumentationComponent,
-  },
-  {
-    path: `documentation/security`,
-    component: DocumentationComponent,
-  },
-  {
-    path: `documentation/cloud-storage`,
-    component: DocumentationComponent,
-  },
-  {
-    path: `documentation/infrastructure`,
-    component: DocumentationComponent,
-  },
-  {
-    path: `documentation/hybrid-cloud`,
-    component: DocumentationComponent,
-  },
-  {
-    path: `documentation/monitoring`,
-    component: DocumentationComponent,
-  },
-  {
-    path: `documentation/custom-services`,
-    component: DocumentationComponent,
-  },
-  {
-    path: `documentation/cdn-dns/:title`,
-    children: [
-      {
-        path: '**',
+    { path: '', component: HomeComponent },
+    {
+        path: `documentation/cdn-dns`,
         component: DocumentationComponent,
-      },
-    ],
-    component: DocumentationComponent,
-  },
-  {
-    path: `documentation/video-streaming/:title`,
-    children: [
-      {
-        path: '**',
+    },
+    {
+        path: `documentation/video-streaming`,
         component: DocumentationComponent,
-      },
-    ],
-    component: DocumentationComponent,
-  },
-  {
-    path: `documentation/cloud-computing/:title`,
-    children: [
-      {
-        path: '**',
+    },
+    {
+        path: `documentation/cloud-computing`,
         component: DocumentationComponent,
-      },
-    ],
-    component: DocumentationComponent,
-  },
-  {
-    path: `documentation/containers/:title`,
-    children: [
-      {
-        path: '**',
+    },
+    {
+        path: `documentation/containers`,
         component: DocumentationComponent,
-      },
-    ],
-    component: DocumentationComponent,
-  },
-  {
-    path: `documentation/servers/:title`,
-    children: [
-      {
-        path: '**',
+    },
+    {
+        path: `documentation/servers`,
         component: DocumentationComponent,
-      },
-    ],
-    component: DocumentationComponent,
-  },
-  {
-    path: `documentation/security/:title`,
-    children: [
-      {
-        path: '**',
+    },
+    {
+        path: `documentation/security`,
         component: DocumentationComponent,
-      },
-    ],
-    component: DocumentationComponent,
-  },
-  {
-    path: `documentation/cloud-storage/:title`,
-    children: [
-      {
-        path: '**',
+    },
+    {
+        path: `documentation/cloud-storage`,
         component: DocumentationComponent,
-      },
-    ],
-    component: DocumentationComponent,
-  },
-  {
-    path: `documentation/infrastructure/:title`,
-    children: [
-      {
-        path: '**',
+    },
+    {
+        path: `documentation/infrastructure`,
         component: DocumentationComponent,
-      },
-    ],
-    component: DocumentationComponent,
-  },
-  {
-    path: `documentation/hybrid-cloud/:title`,
-    children: [
-      {
-        path: '**',
+    },
+    {
+        path: `documentation/hybrid-cloud`,
         component: DocumentationComponent,
-      },
-    ],
-    component: DocumentationComponent,
-  },
-  {
-    path: `documentation/monitoring/:title`,
-    children: [
-      {
-        path: '**',
+    },
+    {
+        path: `documentation/monitoring`,
         component: DocumentationComponent,
-      },
-    ],
-    component: DocumentationComponent,
-  },
-  {
-    path: `documentation/custom-services/:title`,
-    children: [
-      {
-        path: '**',
+    },
+    {
+        path: `documentation/custom-services`,
         component: DocumentationComponent,
-      },
-    ],
-    component: DocumentationComponent,
-  },
+    },
+    {
+        path: `documentation/cdn-dns/:title`,
+        children: [
+            {
+                path: '**',
+                component: DocumentationComponent,
+            },
+        ],
+        component: DocumentationComponent,
+    },
+    {
+        path: `documentation/video-streaming/:title`,
+        children: [
+            {
+                path: '**',
+                component: DocumentationComponent,
+            },
+        ],
+        component: DocumentationComponent,
+    },
+    {
+        path: `documentation/cloud-computing/:title`,
+        children: [
+            {
+                path: '**',
+                component: DocumentationComponent,
+            },
+        ],
+        component: DocumentationComponent,
+    },
+    {
+        path: `documentation/containers/:title`,
+        children: [
+            {
+                path: '**',
+                component: DocumentationComponent,
+            },
+        ],
+        component: DocumentationComponent,
+    },
+    {
+        path: `documentation/servers/:title`,
+        children: [
+            {
+                path: '**',
+                component: DocumentationComponent,
+            },
+        ],
+        component: DocumentationComponent,
+    },
+    {
+        path: `documentation/security/:title`,
+        children: [
+            {
+                path: '**',
+                component: DocumentationComponent,
+            },
+        ],
+        component: DocumentationComponent,
+    },
+    {
+        path: `documentation/cloud-storage/:title`,
+        children: [
+            {
+                path: '**',
+                component: DocumentationComponent,
+            },
+        ],
+        component: DocumentationComponent,
+    },
+    {
+        path: `documentation/infrastructure/:title`,
+        children: [
+            {
+                path: '**',
+                component: DocumentationComponent,
+            },
+        ],
+        component: DocumentationComponent,
+    },
+    {
+        path: `documentation/hybrid-cloud/:title`,
+        children: [
+            {
+                path: '**',
+                component: DocumentationComponent,
+            },
+        ],
+        component: DocumentationComponent,
+    },
+    {
+        path: `documentation/monitoring/:title`,
+        children: [
+            {
+                path: '**',
+                component: DocumentationComponent,
+            },
+        ],
+        component: DocumentationComponent,
+    },
+    {
+        path: `documentation/custom-services/:title`,
+        children: [
+            {
+                path: '**',
+                component: DocumentationComponent,
+            },
+        ],
+        component: DocumentationComponent,
+    },
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forRoot(routes, {
-      useHash: false,
-      anchorScrolling: 'enabled',
-      scrollOffset: [0, HEADER_HEIGHT + 16],
-    }),
-  ],
-  exports: [RouterModule],
+    imports: [
+        RouterModule.forRoot(routes, {
+            useHash: false,
+            anchorScrolling: 'enabled',
+            scrollOffset: [0, HEADER_HEIGHT + 16],
+        }),
+    ],
+    exports: [RouterModule],
 })
 export class AppRoutingModule {}

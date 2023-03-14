@@ -1,5 +1,5 @@
 export interface TableOfContents {
-  name: string;
-  lvl: number;
-  fragment: string;
+    name: string;
+    lvl: number;
+    fragment: string;
 }

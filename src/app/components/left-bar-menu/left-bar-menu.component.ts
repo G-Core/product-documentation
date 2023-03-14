@@ -1,23 +1,21 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { MenuItem } from '../../models';
-import { MenuService } from "../../services/menu.service";
+import { MenuService } from '../../services/menu.service';
 
 @Component({
-  selector: 'gc-left-bar-menu',
-  templateUrl: './left-bar-menu.component.html',
-  styleUrls: ['./left-bar-menu.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'gc-left-bar-menu',
+    templateUrl: './left-bar-menu.component.html',
+    styleUrls: ['./left-bar-menu.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LeftBarMenuComponent{
+export class LeftBarMenuComponent {
+    @Input() public activeMenuItem: MenuItem;
+    @Input() public activeUrl: string;
+    @Input() public menuItems: any;
 
-  @Input() activeMenuItem: MenuItem;
-  @Input() activeUrl: string;
-  @Input() menuItems: any;
+    constructor(private clickDetection: MenuService) {}
 
-  constructor(private clickDetection: MenuService) {}
-
-  toggleMenu(event: any) {
-    this.clickDetection.toggleMenu(event);
-  }
-
+    public toggleMenu(event: Event): void {
+        this.clickDetection.toggleMenu(event);
+    }
 }
