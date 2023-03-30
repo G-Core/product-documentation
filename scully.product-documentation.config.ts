@@ -7,17 +7,15 @@ import { replaceImgSrc } from './scully/plugins/replaceImgSrc';
 import 'prismjs/components/prism-ruby.min.js';
 
 const categories = [
-  'cdn-dns',
-  'video-streaming',
-  'cloud-computing',
-  'containers',
-  'services',
-  'security',
-  'cloud-storage',
-  'infrastructure',
-  'hybrid-cloud',
-  'monitoring',
-  'custom-services',
+  'web-security',
+  'streaming',
+  'server-protection',
+  'storage',
+  'hosting',
+  'dns',
+  'cloud',
+  'cdn',
+  'account-settings',
 ];
 
 const defaultPostRenderers = [copyToClipboardPlugin, replaceImgSrc];

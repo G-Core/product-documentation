@@ -7,51 +7,43 @@ import { HEADER_HEIGHT } from './constants';
 const routes: Routes = [
     { path: '', component: HomeComponent },
     {
-        path: `documentation/cdn-dns`,
+        path: `documentation/web-security`,
         component: DocumentationComponent,
     },
     {
-        path: `documentation/video-streaming`,
+        path: `documentation/streaming`,
         component: DocumentationComponent,
     },
     {
-        path: `documentation/cloud-computing`,
+        path: `documentation/server-protection`,
         component: DocumentationComponent,
     },
     {
-        path: `documentation/containers`,
+        path: `documentation/storage`,
         component: DocumentationComponent,
     },
     {
-        path: `documentation/servers`,
+        path: `documentation/hosting`,
         component: DocumentationComponent,
     },
     {
-        path: `documentation/security`,
+        path: `documentation/dns`,
         component: DocumentationComponent,
     },
     {
-        path: `documentation/cloud-storage`,
+        path: `documentation/cloud`,
         component: DocumentationComponent,
     },
     {
-        path: `documentation/infrastructure`,
+        path: `documentation/cdn`,
         component: DocumentationComponent,
     },
     {
-        path: `documentation/hybrid-cloud`,
+        path: `documentation/account-settings`,
         component: DocumentationComponent,
     },
     {
-        path: `documentation/monitoring`,
-        component: DocumentationComponent,
-    },
-    {
-        path: `documentation/custom-services`,
-        component: DocumentationComponent,
-    },
-    {
-        path: `documentation/cdn-dns/:title`,
+        path: `documentation/web-security/:title`,
         children: [
             {
                 path: '**',
@@ -61,7 +53,7 @@ const routes: Routes = [
         component: DocumentationComponent,
     },
     {
-        path: `documentation/video-streaming/:title`,
+        path: `documentation/streaming/:title`,
         children: [
             {
                 path: '**',
@@ -71,7 +63,7 @@ const routes: Routes = [
         component: DocumentationComponent,
     },
     {
-        path: `documentation/cloud-computing/:title`,
+        path: `documentation/server-protection/:title`,
         children: [
             {
                 path: '**',
@@ -81,7 +73,7 @@ const routes: Routes = [
         component: DocumentationComponent,
     },
     {
-        path: `documentation/containers/:title`,
+        path: `documentation/storage/:title`,
         children: [
             {
                 path: '**',
@@ -91,7 +83,7 @@ const routes: Routes = [
         component: DocumentationComponent,
     },
     {
-        path: `documentation/servers/:title`,
+        path: `documentation/hosting/:title`,
         children: [
             {
                 path: '**',
@@ -101,7 +93,7 @@ const routes: Routes = [
         component: DocumentationComponent,
     },
     {
-        path: `documentation/security/:title`,
+        path: `documentation/dns/:title`,
         children: [
             {
                 path: '**',
@@ -111,7 +103,7 @@ const routes: Routes = [
         component: DocumentationComponent,
     },
     {
-        path: `documentation/cloud-storage/:title`,
+        path: `documentation/cloud/:title`,
         children: [
             {
                 path: '**',
@@ -121,7 +113,7 @@ const routes: Routes = [
         component: DocumentationComponent,
     },
     {
-        path: `documentation/infrastructure/:title`,
+        path: `documentation/cdn/:title`,
         children: [
             {
                 path: '**',
@@ -131,27 +123,7 @@ const routes: Routes = [
         component: DocumentationComponent,
     },
     {
-        path: `documentation/hybrid-cloud/:title`,
-        children: [
-            {
-                path: '**',
-                component: DocumentationComponent,
-            },
-        ],
-        component: DocumentationComponent,
-    },
-    {
-        path: `documentation/monitoring/:title`,
-        children: [
-            {
-                path: '**',
-                component: DocumentationComponent,
-            },
-        ],
-        component: DocumentationComponent,
-    },
-    {
-        path: `documentation/custom-services/:title`,
+        path: `documentation/account-settings/:title`,
         children: [
             {
                 path: '**',
