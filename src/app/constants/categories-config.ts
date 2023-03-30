@@ -2,47 +2,39 @@ import { Category } from '../models';
 
 export const categories: Array<Category> = [
     {
-        name: 'CDN & DNS',
-        url: 'cdn-dns',
+        name: 'Web Security',
+        url: 'web-security',
     },
     {
-        name: 'Video Streaming',
-        url: 'video-streaming',
+        name: 'Streaming',
+        url: 'streaming',
     },
     {
-        name: 'Cloud Computing & Bare Metal',
-        url: 'cloud-computing',
+        name: 'Server protection',
+        url: 'server-protection',
     },
     {
-        name: 'Containers & Middleware',
-        url: 'containers',
+        name: 'Storage',
+        url: 'storage',
     },
     {
-        name: 'Virtual & Dedicated Servers',
-        url: 'servers',
+        name: 'Hosting',
+        url: 'hosting',
     },
     {
-        name: 'Security & DDoS Protection',
-        url: 'security',
+        name: 'DNS',
+        url: 'dns',
     },
     {
-        name: 'Cloud Storage',
-        url: 'cloud-storage',
+        name: 'Cloud',
+        url: 'cloud',
     },
     {
-        name: 'Infrastructure & Networking',
-        url: 'infrastructure',
+        name: 'CDN',
+        url: 'cdn',
     },
     {
-        name: 'Hybrid Cloud',
-        url: 'hybrid-cloud',
-    },
-    {
-        name: 'Monitoring & Logging',
-        url: 'monitoring',
-    },
-    {
-        name: 'Custom Services',
-        url: 'custom-services',
+        name: 'Account settings',
+        url: 'account-settings',
     },
 ];
