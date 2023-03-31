@@ -22,6 +22,7 @@ import { MenuItem } from '../../../models';
 })
 export class DropdownMenuItemComponent implements OnInit, OnChanges, AfterViewInit {
     @Input() public menuItemName: string;
+    @Input() public menuItemTitle: string;
     @Input() public menuItems: Array<MenuItem> = [];
     @Input() public activeUrl: string = '';
 
@@ -38,12 +39,12 @@ export class DropdownMenuItemComponent implements OnInit, OnChanges, AfterViewIn
                 changes.activeUrl.currentValue &&
                 changes.activeUrl.currentValue
                     .split('/')
-                    .includes(changes.menuItemName?.currentValue || this.menuItemName);
+                    .includes(changes.menuItemTitle?.currentValue || this.menuItemTitle);
         }
     }
 
     public ngOnInit(): void {
-        this.menuItemDisplayName = this.menuItemName.split('-').join(' ');
+        this.menuItemDisplayName = this.menuItemName || this.menuItemTitle.split('-').join(' ');
     }
 
     public ngAfterViewInit(): void {

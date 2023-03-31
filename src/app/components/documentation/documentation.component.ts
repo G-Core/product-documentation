@@ -11,7 +11,7 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ScullyRoute, ScullyRoutesService } from '@scullyio/ng-lib';
+import { isScullyRunning, ScullyRoute, ScullyRoutesService } from '@scullyio/ng-lib';
 import { combineLatest, first, map, Observable, of, take } from 'rxjs';
 import { categories, DOCS_GITHUB_REPO, HEADER_HEIGHT, METADATA_FILE_TITLE } from '../../constants';
 import { MenuItem, MenuTreeItem, TableOfContents } from '../../models';
@@ -59,6 +59,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
         this.route.fragment.pipe(first()).subscribe((fragment) => {
             this.viewportScroller.scrollToAnchor(fragment);
         });
+
         if (this.scullyContainer.nativeElement) {
             this.scullyContainer.nativeElement.querySelectorAll(':not(.gc-gallery p) > img').forEach((img: Element) => {
                 this.ngZone.runOutsideAngular(() => {
@@ -85,7 +86,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
     }
 
     public ngOnInit(): void {
-        this.data.toggleMenuEmitted$.subscribe((data) => {
+        this.data.toggleMenuEmitted$.subscribe(() => {
             this.isMenuExpanded = !this.isMenuExpanded;
             this.changeDetectorRef.detectChanges();
         });
@@ -111,16 +112,11 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
                 this.showContent = !!document;
                 this.tableOfContents = [];
 
-                const filterdLinks = links.filter(({ route, toc }) => {
-                    if (route === pageUrl && toc) {
-                        this.tableOfContents = Object.keys(toc).map((key) => ({
-                            lvl: this.getContentLevel(key),
-                            name: key.replace(/--\d--/g, ''),
-                            fragment: toc[key],
-                        }));
-                    }
-                    return route.includes(category) && !route.endsWith(category);
+                const filterdLinks = links.filter(({ route }) => {
+                    return route.replace('/documentation/', '').startsWith(category) && !route.endsWith(category);
                 });
+
+                this.setTableOfContent(filterdLinks);
 
                 const breadcrumbs = [
                     {
@@ -135,7 +131,9 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
 
                 if (this.showContent) {
                     this.githubUrl = `${DOCS_GITHUB_REPO}${documentUrlWithCategory}.md`;
-                    this.setLastModifiedDate(`documentation/${documentUrlWithCategory}.md`);
+                    if (!isScullyRunning()) {
+                        this.setLastModifiedDate(`documentation/${documentUrlWithCategory}.md`);
+                    }
                     documentUrl
                         .split('/')
                         .filter((value) => value)
@@ -144,7 +142,11 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
                                 name:
                                     index === arr.length - 1
                                         ? filterdLinks.find((link) => link.title === document)?.displayName
-                                        : routeSegment.split('-').join(' '),
+                                        : filterdLinks.find(
+                                              (link) =>
+                                                  link.title === METADATA_FILE_TITLE &&
+                                                  link.route.endsWith(`${routeSegment}/metadata`),
+                                          )?.displayName || routeSegment.split('-').join(' '),
                                 url: '',
                             });
                         });
@@ -184,6 +186,17 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
         this.changeDetectorRef.detectChanges();
     }
 
+    private setTableOfContent(links: Array<ScullyRoute>): void {
+        const currentLink = links.find(({ route }) => route === this.activeUrl);
+        if (currentLink && currentLink.toc) {
+            this.tableOfContents = Object.keys(currentLink.toc).map((key) => ({
+                lvl: this.getContentLevel(key),
+                name: key.replace(/--\d--/g, ''),
+                fragment: currentLink.toc[key],
+            }));
+        }
+    }
+
     // Recursively build menu tree
     private buildMenuSubTree(tree: Map<string, MenuTreeItem>, routeSegments: Array<string>, link: ScullyRoute): void {
         const unhandledRouteSegments = routeSegments.slice(1);
@@ -197,7 +210,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
             menuItem = {
                 url: unhandledRouteSegments.length ? '' : link.route,
                 order: unhandledRouteSegments.length ? 0 : link.order,
-                title: unhandledRouteSegments.length ? '' : link.title,
+                title: unhandledRouteSegments.length ? routeSegments[0] : link.title,
                 name: unhandledRouteSegments.length ? routeSegments[0] : link.displayName,
                 children: new Map(),
             };
@@ -240,12 +253,13 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
                 };
                 if (value.children && value.children.size) {
                     menuItem.children = this.convertToArray(value.children);
+                    this.setFolderMetadata(menuItem);
                 }
                 return menuItem;
             })
             .sort((a, b) => {
-                const aOrder = a.order || this.getFolderMetadataOrder(a) || 9999;
-                const bOrder = b.order || this.getFolderMetadataOrder(b) || 9999;
+                const aOrder = a.order || 9999;
+                const bOrder = b.order || 9999;
                 return aOrder - bOrder;
             });
     }
@@ -259,19 +273,13 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
             });
     }
 
-    private getFolderMetadataOrder(menuItem: MenuItem): number {
-        if (!menuItem || !menuItem.children || !menuItem.children.length) {
-            return 9999;
-        }
+    private setFolderMetadata(menuItem: MenuItem): void {
         const metadataDoc = menuItem.children.find((item) => item.title === METADATA_FILE_TITLE);
 
-        // Set order to folder menu item
         if (metadataDoc) {
-            menuItem.order = metadataDoc.order;
-            return metadataDoc.order;
+            menuItem.order = metadataDoc.order || 9999;
+            menuItem.name = metadataDoc.name || menuItem.name;
         }
-
-        return 9999;
     }
 
     private getContentLevel(name: string): number {
