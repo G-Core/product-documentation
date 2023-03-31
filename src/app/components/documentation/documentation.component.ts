@@ -273,16 +273,13 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
             });
     }
 
-    private setFolderMetadata(menuItem: MenuItem): number {
+    private setFolderMetadata(menuItem: MenuItem): void {
         const metadataDoc = menuItem.children.find((item) => item.title === METADATA_FILE_TITLE);
 
         if (metadataDoc) {
             menuItem.order = metadataDoc.order || 9999;
             menuItem.name = metadataDoc.name || menuItem.name;
-            return metadataDoc.order;
         }
-
-        return 9999;
     }
 
     private getContentLevel(name: string): number {
