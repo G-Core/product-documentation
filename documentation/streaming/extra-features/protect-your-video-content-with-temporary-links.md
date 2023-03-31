@@ -10,12 +10,7 @@ toc:
    --2--Use PHP script to generate links: "use-the-php-script-for-the-generation-of-urls"
    --3--PHP script for live streams: "php-script-for-live-streams"
 ---
-  
-:  
-    1.  
-    2. :  
-        •  
-        •
+
 
 What is a Secure token, and how it works
 ----------------------------------------

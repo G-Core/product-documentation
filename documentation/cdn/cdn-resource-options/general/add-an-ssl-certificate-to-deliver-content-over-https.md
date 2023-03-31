@@ -19,19 +19,7 @@ toc:
    --2--Restrictions and features of the option: "restrictions-and-features-of-the-option"
    --1--request a new one: ""
 ---
-  
-1.  
-    •  
-    •  
-    •  
-    •  
-    •  
-    •  
-    •    
-2\.    
-    •  
-    •  
-    •
+
 
 What is an SSL certificate?
 ---------------------------

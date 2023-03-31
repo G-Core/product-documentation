@@ -14,15 +14,7 @@ toc:
    --1--Detach a floating IP from an instance: ""
    --1--Delete a floating IP: ""
 ---
-  
-  
-  
-  
-  
-     • [From the menu](#)  
-     •  
-  
-  
+
 
 What is a floating IP
 ---------------------

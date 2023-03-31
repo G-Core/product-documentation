@@ -13,9 +13,6 @@ toc:
    --2--How content is requested via a secured: "how-content-is-requested-via-a-secured-link"
    --1--Configure: ""
 ---
-  
-  
-          [link](#what-secures-a-link)                  [link](#how-content-is-requested-via-a-secured-link)  
 
 **What** **is Secure Token?** 
 ------------------------------

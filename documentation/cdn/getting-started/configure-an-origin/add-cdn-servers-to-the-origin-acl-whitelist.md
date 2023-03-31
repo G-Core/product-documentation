@@ -1,5 +1,5 @@
 ---
-title: add-cdn-servers-t-the-origin-acl-whitelist
+title: add-cdn-servers-to-the-origin-acl-whitelist
 displayName: Add CDN servers to ACL
 published: true
 order: 10

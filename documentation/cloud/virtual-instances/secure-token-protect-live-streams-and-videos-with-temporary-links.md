@@ -10,11 +10,6 @@ toc:
    --3--PHP script for live streams: "php-script-for-live-streams"
 ---
   
-:  
-    1.  
-    2. :  
-        •  
-        •
 
 What is a Secure token, and how it works
 ----------------------------------------

@@ -9,10 +9,6 @@ toc:
    --1--Delete: "delete-a-user"
    --2--Features: "deletion-features"
 ---
-  
-  
-  
-    •
 
 Add a user
 ----------

@@ -12,13 +12,6 @@ toc:
    --2--Add an SSL certificate: "add-an-ssl-certificate"
    --2--Create a rule: "create-a-rule"
 ---
-   
-   
-       
-        •    
-        •    
-        •  
-        •  
 
 What is Terraform? 
 -------------------

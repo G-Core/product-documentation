@@ -10,10 +10,6 @@ toc:
 ---
 The response time of our support team depends on three parameters:
 
-1.  
-2.  
-3.
-
 Billing plan
 ------------
 

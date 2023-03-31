@@ -1,5 +1,5 @@
 ---
-title: get-an-actual-ip-addresses-of-visitors-from-the x-forward-for-header
+title: get-an-actual-ip-addresses-of-visitors-from-the-x-forward-for-header
 displayName: Set the X-Forward-For header
 published: true
 order: 80
@@ -9,10 +9,6 @@ toc:
    --2--Nginx: "nginx"
    --2--Apache: "apache"
 ---
-  
-:  
-    •  
-    •
 
 Why use the X-Forwarded-For header
 ----------------------------------

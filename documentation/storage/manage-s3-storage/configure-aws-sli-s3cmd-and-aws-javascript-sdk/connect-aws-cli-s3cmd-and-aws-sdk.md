@@ -22,20 +22,6 @@ toc:
 ---
 With [Gcore Object Storage](https://www.gcore.com/storage), you can utilize S3-compatible software, such as AWS CLI and S3cmd.
 
-  
-    •  
-    •  
-  
-    •  
-    •  
-        •  
-        •  
-  
-    •  
-    •  
-        •        •  
-        •  
-        •   
 
 AWS CLI 
 --------

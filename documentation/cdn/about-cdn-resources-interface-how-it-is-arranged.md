@@ -10,12 +10,7 @@ toc:
    --2--Manage options: "manage-options"
    --2--Delete: "delete-a-resource"
 ---
-   
-[Create](#what-is-the-cdn-resources-tab)  
-  
-        •  
-        •  
-        •
+
 
 What is the CDN resources tab?
 ------------------------------

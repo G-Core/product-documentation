@@ -94,15 +94,15 @@ Available methods:
 | getCurrentTime | Number    |  The current time in seconds                                                                                                       |
 | getDuration    | Number    |  The duration time in seconds                                                                                                      |
 | getVolume      | Number    |  Volume. Value from 0 (sound off, mute) to 100 (maximum volume)                                                                    |
-| isDvrEnabled   | Boolean   | \n Shows DVR service status:\n\ntrue - DVR is enabled,\nfalse - DVR is disabled\n\n                                                |
-| isPlaying      | Boolean   | \n Checks if the player is playing:\n\ntrue - the current source is playing,\nfalse - playback is off/stopped/not started\n\n      |
+| isDvrEnabled   | Boolean   |  Shows DVR service status:true - DVR is enabled,false - DVR is disabled                                                |
+| isPlaying      | Boolean   |  Checks if the player is playing:true - the current source is playing,false - playback is off/stopped/not started      |
 | mute           |           |  Turns off the sound                                                                                                               |
 | unmute         |           |  Turns on the sound                                                                                                                |
 | pause          |           |  Pauses playback                                                                                                                   |
 | play           |           |  Starts playback                                                                                                                   |
 | resize         | Object    |  Modifies the canvas of the player                                                                                                 |
-| seek           | Number    | \n Rewinds playback (seconds).\n For example, player.seek (120) rewinds the video and starts at 2 minutes\n                        |
-| seekPercentage | Number    | \n Rewinds playback (percent).\n For example, player.seek (50) rewinds the video and starts playing from the middle of the video\n |
+| seek           | Number    |  Rewinds playback (seconds). For example, player.seek (120) rewinds the video and starts at 2 minutes                        |
+| seekPercentage | Number    |  Rewinds playback (percent). For example, player.seek (50) rewinds the video and starts playing from the middle of the video |
 | setVolume      | Number    |  Sets the volume for the current video                                                                                             |
 | stop           |           |  Stops playback of the current video                                                                                               |
 

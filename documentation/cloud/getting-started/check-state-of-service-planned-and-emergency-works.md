@@ -23,19 +23,6 @@ _**Note!** Information on the status of services in the period up to 15th Februa
 
 **_Status Page_** is a communication tool that displays information about service status, outages, and planned maintenance. 
 
-  
-  
-  
-•  
-•  
-  
-  
-  
-  
-  
-  
-  
-  
 
 ### **Subscription methods** 
 

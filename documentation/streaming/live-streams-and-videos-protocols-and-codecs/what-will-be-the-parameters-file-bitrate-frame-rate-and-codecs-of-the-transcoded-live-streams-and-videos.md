@@ -21,16 +21,16 @@ Transcoding is the video file parameters conversion. 
 
 It includes not only changing the protocol but also splitting a stream into lower qualities with a suitable bitrate.
 
-| \n Video Quality \n | \n Resolution \n | \n Bitrate after transcoding \n |
+| Video Quality  |  Resolution  |  Bitrate after transcoding  |
 |---------------------|------------------|---------------------------------|
-| \nUltra HD, 4K \n   | \n3840 × 2160 \n | \n14 Mbps \n                    |
-| \nQHD \n            | \n2560 × 1440 \n | \n7.2 Mbps \n                   |
-| \nFull HD, 2K \n    | \n1920 × 1080 \n | \n4 Mbps \n                     |
-| \n720p \n           | \n1280 × 720  \n | \n1.8 Mbps \n                   |
-| \n480p \n           | \n854 × 480 \n   | \n0.8 Mbps \n                   |
-| \n360p \n           | \n640 × 360 \n   | \n0.45 Mbps \n                  |
-| \n240p\n            | \n 427 × 240\n   | \n0.2 Mbps\n                    |
-| \n144p \n           | \n 254 × 144\n   | \n0,072 Mbps \n                 |
+| Ultra HD, 4K    | 3840 × 2160  | 14 Mbps                     |
+| QHD             | 2560 × 1440  | 7.2 Mbps                    |
+| Full HD, 2K     | 1920 × 1080  | 4 Mbps                      |
+| 720p            | 1280 × 720   | 1.8 Mbps                    |
+| 480p            | 854 × 480    | 0.8 Mbps                    |
+| 360p            | 640 × 360    | 0.45 Mbps                   |
+| 240p            |  427 × 240   | 0.2 Mbps                    |
+| 144p            |  254 × 144   | 0,072 Mbps                  |
 
 
    

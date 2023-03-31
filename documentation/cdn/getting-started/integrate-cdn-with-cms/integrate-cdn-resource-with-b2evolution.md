@@ -17,11 +17,11 @@ Replace the following variables in the code
 
 Replace _cdnurl_ with your CNAME. For example: ‘http://cdn.site.com/’; 
 
-| \nBefore\n                               | \nAfter replacement\n                    |
+| Before                               | After replacement                    |
 |------------------------------------------|------------------------------------------|
- | \n$rsc_url = $baseurl.$rsc_subdir;\n     | \n$rsc_url = $cdnurl .$rsc_subdir;\n     |
-| \n$skins_url = $baseurl.$skins_subdir;\n | \n$skins_url = $cdnurl .$skins_subdir;\n |
-| \n$media_url = $baseurl.$media_subdir;\n | \n$media_url = $cdnurl .$media_subdir;\n |
+ | $rsc_url = $baseurl.$rsc_subdir;     | $rsc_url = $cdnurl .$rsc_subdir;     |
+| $skins_url = $baseurl.$skins_subdir; | $skins_url = $cdnurl .$skins_subdir; |
+| $media_url = $baseurl.$media_subdir; | $media_url = $cdnurl .$media_subdir; |
 
 
 Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the control panel.
