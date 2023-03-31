@@ -12,13 +12,7 @@ toc:
    --2--Change nameservers: "4-change-nameservers"
    --2--(Optional) Setup additional options: "5--optional--setup-additional-options"
 ---
-  
-:  
-    1.  
-    2.  
-    3.  
-    4.  
-    5.  
+
 
 What is the CDN resource for the entire site used for?
 ------------------------------------------------------

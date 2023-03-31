@@ -12,12 +12,6 @@ toc:
    --1--Configuration guidelines: "configuration-guidelines"
    --1--Configuration steps: "configuration-steps"
 ---
-  
-  
-    •   
-    •   
-  
-  
 
 About the option
 ----------------

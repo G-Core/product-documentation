@@ -18,16 +18,6 @@ toc:
 ---
 Reserved IP is an IP that you reserved for yourself and can be assigned to an [instance](https://gcorelabs.com/support/articles/360019378537/) or [load balancer](https://gcorelabs.com/support/articles/360004523578/) at any time.
 
-  
-  
-  
-  
-  
-     •  
-     •  
-     •  
-  
-  
 
 What it is used for
 -------------------

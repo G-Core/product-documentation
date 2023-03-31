@@ -10,11 +10,6 @@ toc:
    --1--Use a virtual IP to create a fault-tolerant system: "assign-a-virtual-ip-address-to-multiple-instances"
    --1--Assign a virtual IP address as a secondary address: ""
 ---
-  
-[How does it work?](#)  
-  
-  
-  
 
 What is a virtual IP address?
 -----------------------------

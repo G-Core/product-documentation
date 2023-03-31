@@ -22,13 +22,6 @@ The feature is located inside the project in your personal account. We will tell
 
 <img src="https://support.gcore.com/hc/article_attachments/5286498706961/mceclip0.png" alt="mceclip0.png">
 
-    •
-
-    • (, , , )
-
-    •
-
- 
 
 How to create a schedule
 ------------------------

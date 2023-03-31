@@ -14,10 +14,6 @@ toc:
    --2--through cURL: "check-cors-through-curl"
    --2--in a browser: "check-cors-with-devtools-in-a-browser"
 ---
-  
-  
-         •          •        •  
-         •          •
 
 What is CORS, and how does it work?
 -----------------------------------

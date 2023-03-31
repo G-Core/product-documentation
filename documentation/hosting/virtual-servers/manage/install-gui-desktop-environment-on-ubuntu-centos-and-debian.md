@@ -11,13 +11,6 @@ toc:
    --1--Open terminal inside XFCE: "how-to-open-a-terminal-inside-xfce"
    --1--Quit the XFCE desktop environment: "how-to-log-out-of-xfce"
 ---
-   
-:  
-      • [On Ubuntu](#install-xfce-on-ubuntu)  
-      •  
-      •  
-  
-  
 
 What is the desktop environment
 -------------------------------

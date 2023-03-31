@@ -12,12 +12,7 @@ toc:
    --2--delete: "delete-a-lifecycle-policy"
    --1--Manage with the UI (for S3 in Luxembourg): "manage-a-lifecycle-policy-with-the-ui"
 ---
-  
-  
-  
-:  
-    •  
-    •  
+
 
 What is a lifecycle policy?
 ---------------------------

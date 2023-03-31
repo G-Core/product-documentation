@@ -10,11 +10,6 @@ toc:
    --2--Configure for CDN: "onfigure-for-cdn"
    --2--Configure for Storage: "configure-for-storage"
 ---
-  
-  
-        •  
-        •  
-        •  
 
 Manage notifications
 --------------------

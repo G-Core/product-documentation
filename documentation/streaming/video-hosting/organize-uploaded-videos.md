@@ -13,14 +13,7 @@ toc:
    --2--Add to a video: "add-a-tag-to-a-video"
    --2--Filter videos: "filter-videos-by-tags"
 ---
-  
-:  
-         
-         
-         
-:  
-         
-       
+
 
 **How to organize videos**
 --------------------------

@@ -14,12 +14,7 @@ toc:
    --1--How to use AI Infrastructure?: "how-to-use-ai-infrastructure"
    --1--How is AI Infrastructure billed?: "how-is-ai-infrastructure-billed"
 ---
-  
-  
-        •  
-        •  
-        •[  
-](#performance-tests-graphcore-m2000-vs-nvidia-dgx-a100)  
+ 
 
 What is AI Infrastructure?
 --------------------------

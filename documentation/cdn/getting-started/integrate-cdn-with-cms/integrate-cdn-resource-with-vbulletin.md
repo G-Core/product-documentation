@@ -19,18 +19,18 @@ Using your CNAME from the [control panel](https://control.gcdn.co/) (cdn.site.co
 
 
 
-| \nFind in the text\n                                                       | \nReplace with\n                                                                                                   |
+| Find in the text                                                       | Replace with                                                                                                   |
 |----------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|
-| \n  src=”customavatars/\n                                                  | \nsrc=”http://cdn.site.com/customavatars/\n                                                                        |
-| \n  src=”customprofilepics/\n                                              | \n  src=”http://cdn.site.com/customprofilepics/\n                                                                  |
-| \n  src=”images/\n                                                         | \n  src=”http://cdn.site.com/images/\n                                                                             |
-| \n  url(“clientscript\n                                                    | \n  url(“cdn.site.com\n                                                                                            |
-| \n  src=”clientscript/\n                                                   | \n  src=”http://cdn.site.com/\n                                                                                    |
-| \n  src=”{vb:raw vboptions.bburl}/clientscript/\n                          | \n  src=”http://cdn.site.com/\n                                                                                    |
-| \n  href=”clientscript/\n                                                  | \n  href=”http://cdn.site.com/\n                                                                                   |
-| \n  url(./images/\n                                                        | \n  url(http://cdn.site.com/images/\n                                                                              |
-| \n  url(images/\n                                                          | \n  url(http://cdn.site.com/images/\n                                                                              |
-| \n  var IMGDIR_MISC=“images/misc”;var IMGDIR_BUTTON=“images/buttons”;\n \n | \n  var IMGDIR_MISC=“http://cdn.site.com/images/misc”;var IMGDIR_BUTTON=“http://cdn.site.com/images/buttons”;\n \n |
+|   src=”customavatars/                                                  | src=”http://cdn.site.com/customavatars/                                                                        |
+|   src=”customprofilepics/                                              |   src=”http://cdn.site.com/customprofilepics/                                                                  |
+|   src=”images/                                                         |   src=”http://cdn.site.com/images/                                                                             |
+|   url(“clientscript                                                    |   url(“cdn.site.com                                                                                            |
+|   src=”clientscript/                                                   |   src=”http://cdn.site.com/                                                                                    |
+|   src=”{vb:raw vboptions.bburl}/clientscript/                          |   src=”http://cdn.site.com/                                                                                    |
+|   href=”clientscript/                                                  |   href=”http://cdn.site.com/                                                                                   |
+|   url(./images/                                                        |   url(http://cdn.site.com/images/                                                                              |
+|   url(images/                                                          |   url(http://cdn.site.com/images/                                                                              |
+|   var IMGDIR_MISC=“images/misc”;var IMGDIR_BUTTON=“images/buttons”;  |   var IMGDIR_MISC=“http://cdn.site.com/images/misc”;var IMGDIR_BUTTON=“http://cdn.site.com/images/buttons”;  |
 
 4\. If you have more directories for your images repeat the process for each of them.
 

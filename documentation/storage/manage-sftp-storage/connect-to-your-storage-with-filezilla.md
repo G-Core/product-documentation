@@ -9,10 +9,7 @@ toc:
    --2--Connect with a password: "connect-with-a-password"
    --2--Connect with an SSH key: "connect-with-an-ssh-key"
 ---
-  
-  
-    •   
-    •
+
 
 Install FileZilla
 -----------------

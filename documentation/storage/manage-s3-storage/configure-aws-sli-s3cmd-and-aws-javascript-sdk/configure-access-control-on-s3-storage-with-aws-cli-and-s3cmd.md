@@ -14,17 +14,7 @@ toc:
    --2--Allow requests from a particular IP by policy: "allow-requests-from-a-particular-ip-by-policy"
    --2--Allow requests from a particular website by policy: "allow-requests-from-a-particular-website-by-policy"
 ---
-  
-  
-:
 
-    •  
-    •  
-    •  
-    •  
-    •  
-    •  
-    •
 
 What are ACLs?
 --------------

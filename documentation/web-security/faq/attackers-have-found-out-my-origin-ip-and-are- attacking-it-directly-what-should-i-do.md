@@ -1,5 +1,5 @@
 ---
-title: attackers-have-found-out-my-origin-ip-and-are- attacking-it-directly-what-should-i-do
+title: attackers-have-found-out-my-origin-ip-and-are-attacking-it-directly-what-should-i-do
 displayName: Attackers have found out my origin IP and are attacking it directly. What should I do? directly. What should I do?
 published: true
 order: 50

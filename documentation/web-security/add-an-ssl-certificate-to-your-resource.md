@@ -9,9 +9,6 @@ toc:
    --2--Let's Encrypt: "add-let-s-encrypt-certificate"
    --2--Custom: "add-custom-certificate-to-your-resource"
 ---
-        •    
-        •  
-        •
 
 Add SSL сertidicate to your resourse
 ------------------------------------

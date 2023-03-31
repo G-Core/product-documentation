@@ -14,11 +14,6 @@ toc:
 ---
 #### The server stops working if you have not enough money on the account to pay for it. To activate it, recharge the balance.
 
-      •
-
-      •
-
- 
 
 How to know that the server was stopped precisely for non-payment
 -----------------------------------------------------------------

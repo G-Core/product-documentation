@@ -19,14 +19,14 @@ Disable a service
 
 **Please, note!**  After disabling the service or after the end of the trial period (if the service was not activated), all service resources and settings will be deleted after a certain period of time.
 
-| \n  Service\n        | \n  Period \n                                |
+|   Service        |   Period                                 |
 |----------------------|----------------------------------------------|
-| \n  CDN\n            | \n  90 days\n                                |
-| \n  Cloud\n          | \n  14 days\n                                |
-| \n  Storage\n        | \n  90 days\n                                |
-| \n  DNS\n            | \n  90 days\n                                |
-| \n  Streaming\n      | \n  Exception! Resources won't be deleted.\n |
-| \n  Web protection\n | \n  Exception! Resources won't be deleted.\n |
+|   CDN            |   90 days                                |
+|   Cloud          |   14 days                                |
+|   Storage        |   90 days                                |
+|   DNS            |   90 days                                |
+|   Streaming      |   Exception! Resources won't be deleted. |
+|   Web protection |   Exception! Resources won't be deleted. |
 
 
 Resume a service

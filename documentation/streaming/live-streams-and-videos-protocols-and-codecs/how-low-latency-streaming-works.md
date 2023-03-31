@@ -12,13 +12,6 @@ toc:
    --2--Regular HLS: "get-regular-hls-with-cmaf-mode"
    --2--HLSv3: "get-legacy-hlsv3-mode"
 ---
-  
-  
-  
-  
-  
-    •  
-    •
 
 What is streaming latency, and why does it exist?
 -------------------------------------------------

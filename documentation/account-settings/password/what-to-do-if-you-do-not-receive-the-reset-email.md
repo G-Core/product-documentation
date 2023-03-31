@@ -1,5 +1,5 @@
 ---
-title: what-to-do-if-you-do-not-receive-the-reset-email-
+title: what-to-do-if-you-do-not-receive-the-reset-email
 displayName: Troubleshooting
 published: true
 order: 30

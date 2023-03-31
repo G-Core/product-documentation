@@ -13,14 +13,6 @@ toc:
    --2--in a browser: "check-with-devtools-in-a-browser"
    --2--caching headers: "check-caching-http-headers"
 ---
-  
-:  
-    •  
-    •  
-:  
-    •     
-    •  
-    •
 
 What is the CDN caching feature?
 --------------------------------

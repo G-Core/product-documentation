@@ -12,13 +12,6 @@ toc:
    --2--VAT for EU countries: "vat-for-eu-countries"
    --2--VAT for other countries: "vat-for-other-countries"
 ---
-  
-  
-    •  
-    •  
-  
-    •  
-    •
 
 What is VAT?
 ------------
@@ -52,42 +45,42 @@ VAT for individuals
 
 All EU countries and their VAT rate (%) are listed below.
 
-| \n    Сountry      \n | \n     Country code    \n | \n        The VAT rate(%)     \n |
+|     Сountry       |      Country code     |         The VAT rate(%)      |
 |-----------------------|---------------------------|----------------------------------|
-| \nAustria\n           | \nAT\n                    | \n20\n                           |
-| \nBelgium\n           | \nBE\n                    | \n21\n                           |
-| \nBulgaria\n          | \nBG\n                    | \n20\n                           |
-| \nCyprus\n            | \nCY\n                    | \n19\n                           |
-| \nCzech Republic\n    | \nCZ\n                    | \n21\n                           |
-| \nGermany\n           | \nDE\n                    | \n19\n                           |
-| \nCroatia\n           | \nHR\n                    | \n25\n                           |
-| \nDenmark\n           | \nDK\n                    | \n25\n                           |
-| \nEstonia\n           | \nEE\n                    | \n20\n                           |
-| \nSpain\n             | \nES\n                    | \n21\n                           |
-| \nFinland\n           | \nFI\n                    | \n24\n                           |
-| \nFrance\n            | \nFR\n                    | \n20\n                           |
-| \nGreat Britain\n     | \nGB\n                    | \n20\n                           |
-| \nGreece\n            | \nGR\n                    | \n24\n                           |
-| \nHungary\n           | \nHU\n                    | \n27\n                           |
-| \nIrish\n             | \nIE\n                    | \n23\n                           |
-| \nItaly\n             | \nIT\n                    | \n22\n                           |
-| \nLithuania\n         | \nLT\n                    | \n21\n                           |
-| \nLuxembourg\n        | \nLU\n                    | \n16 (temporarily)\n             |
-| \nLatvian\n           | \nLV\n                    | \n21\n                           |
-| \nMalta\n             | \nMT\n                    | \n18\n                           |
-| \nNetherlands\n       | \nNL\n                    | \n21\n                           |
-| \nPoland\n            | \nPL\n                    | \n23\n                           |
-| \nPortugal\n          | \nPT\n                    | \n23\n                           |
-| \nRomania\n           | \nRO\n                    | \n19\n                           |
-| \nSweden\n            | \nSE\n                    | \n25\n                           |
-| \nSlovenia\n          | \nSL\n                    | \n22\n                           |
-| \nSlovakia\n          | \nSK\n                    | \n20\n                           |
+| Austria           | AT                    | 20                           |
+| Belgium           | BE                    | 21                           |
+| Bulgaria          | BG                    | 20                           |
+| Cyprus            | CY                    | 19                           |
+| Czech Republic    | CZ                    | 21                           |
+| Germany           | DE                    | 19                           |
+| Croatia           | HR                    | 25                           |
+| Denmark           | DK                    | 25                           |
+| Estonia           | EE                    | 20                           |
+| Spain             | ES                    | 21                           |
+| Finland           | FI                    | 24                           |
+| France            | FR                    | 20                           |
+| Great Britain     | GB                    | 20                           |
+| Greece            | GR                    | 24                           |
+| Hungary           | HU                    | 27                           |
+| Irish             | IE                    | 23                           |
+| Italy             | IT                    | 22                           |
+| Lithuania         | LT                    | 21                           |
+| Luxembourg        | LU                    | 16 (temporarily)             |
+| Latvian           | LV                    | 21                           |
+| Malta             | MT                    | 18                           |
+| Netherlands       | NL                    | 21                           |
+| Poland            | PL                    | 23                           |
+| Portugal          | PT                    | 23                           |
+| Romania           | RO                    | 19                           |
+| Sweden            | SE                    | 25                           |
+| Slovenia          | SL                    | 22                           |
+| Slovakia          | SK                    | 20                           |
 
 ### VAT for other countries
 
-| \n    Country      \n                          | \n     Country code    \n | \n        The VAT rate(%)     \n |
+|     Country                                |      Country code     |         The VAT rate(%)      |
 |------------------------------------------------|---------------------------|----------------------------------|
-| \nOther countries outside the European Union\n | \n-\n                     | \n0\n                            |
+| Other countries outside the European Union | -                     | 0                            |
 
 
 VAT for organizations (contracting)
@@ -99,41 +92,41 @@ All EU countries and their VAT rate (%) are listed below.
 
 Please, note, the VAT rate for EU countries (excluding Luxembourg) depends on providing us with your organization's VAT number.
 
-| \n    Сountry      \n | \n     Country code    \n | \n        The VAT rate(%)     \n |
+|     Сountry       |      Country code     |         The VAT rate(%)      |
 |-----------------------|---------------------------|----------------------------------|
-| \nAustria\n           | \nAT\n                    | \n20\n                           |
-| \nBelgium\n           | \nBE\n                    | \n21\n                           |
-| \nBulgaria\n          | \nBG\n                    | \n20\n                           |
-| \nCyprus\n            | \nCY\n                    | \n19\n                           |
-| \nCzech Republic\n    | \nCZ\n                    | \n21\n                           |
-| \nGermany\n           | \nDE\n                    | \n19\n                           |
-| \nCroatia\n           | \nHR\n                    | \n25\n                           |
-| \nDenmark\n           | \nDK\n                    | \n25\n                           |
-| \nEstonia\n           | \nEE\n                    | \n20\n                           |
-| \nSpain\n             | \nES\n                    | \n21\n                           |
-| \nFinland\n           | \nFI\n                    | \n24\n                           |
-| \nFrance\n            | \nFR\n                    | \n20\n                           |
-| \nGreat Britain\n     | \nGB\n                    | \n20\n                           |
-| \nGreece\n            | \nGR\n                    | \n24\n                           |
-| \nHungary\n           | \nHU\n                    | \n27\n                           |
-| \nIrish\n             | \nIE\n                    | \n23\n                           |
-| \nItaly\n             | \nIT\n                    | \n22\n                           |
-| \nLithuania\n         | \nLT\n                    | \n21\n                           |
-| \nLuxembourg\n        | \nLU\n                    | \n16 (temporarily)\n             |
-| \nLatvian\n           | \nLV\n                    | \n21\n                           |
-| \nMalta\n             | \nMT\n                    | \n18\n                           |
-| \nNetherlands\n       | \nNL\n                    | \n21\n                           |
-| \nPoland\n            | \nPL\n                    | \n23\n                           |
-| \nPortugal\n          | \nPT\n                    | \n23\n                           |
-| \nRomania\n           | \nRO\n                    | \n19\n                           |
-| \nSweden\n            | \nSE\n                    | \n25\n                           |
-| \nSlovenia\n          | \nSL\n                    | \n22\n                           |
-| \nSlovakia\n          | \nSK\n                    | \n20\n                           |
+| Austria           | AT                    | 20                           |
+| Belgium           | BE                    | 21                           |
+| Bulgaria          | BG                    | 20                           |
+| Cyprus            | CY                    | 19                           |
+| Czech Republic    | CZ                    | 21                           |
+| Germany           | DE                    | 19                           |
+| Croatia           | HR                    | 25                           |
+| Denmark           | DK                    | 25                           |
+| Estonia           | EE                    | 20                           |
+| Spain             | ES                    | 21                           |
+| Finland           | FI                    | 24                           |
+| France            | FR                    | 20                           |
+| Great Britain     | GB                    | 20                           |
+| Greece            | GR                    | 24                           |
+| Hungary           | HU                    | 27                           |
+| Irish             | IE                    | 23                           |
+| Italy             | IT                    | 22                           |
+| Lithuania         | LT                    | 21                           |
+| Luxembourg        | LU                    | 16 (temporarily)             |
+| Latvian           | LV                    | 21                           |
+| Malta             | MT                    | 18                           |
+| Netherlands       | NL                    | 21                           |
+| Poland            | PL                    | 23                           |
+| Portugal          | PT                    | 23                           |
+| Romania           | RO                    | 19                           |
+| Sweden            | SE                    | 25                           |
+| Slovenia          | SL                    | 22                           |
+| Slovakia          | SK                    | 20                           |
 
 
 ### VAT for other countries
 
-| \n    Country      \n                          | \n     Country code    \n | \n        The VAT rate(%)     \n |
+|     Country                                |      Country code     |         The VAT rate(%)      |
 |------------------------------------------------|---------------------------|----------------------------------|
-| \nOther countries outside the European Union\n | \n-\n                     | \n0\n                            |
+| Other countries outside the European Union | -                     | 0                            |
 

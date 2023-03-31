@@ -17,13 +17,7 @@ toc:
    --2--macOS: "macos"
    --2--Windows: "windows"
 ---
-  
-:  
-    •    •    •    •  
-  
-  
-:  
-    •    •
+
 
 If no one can hear or see you in a video call, and the camera or microphone icons are crossed out, and clicking on them does not change anything, please follow the instructions below consistently.
 

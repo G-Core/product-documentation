@@ -14,7 +14,7 @@ toc:
    --1--Delete: "6-delete-volume"
    --1--Revert volume to the latest snapshot: "7-revert-volume-to-the-latest-snapshot"
 ---
-*   [Detach](#1-create-an-image--from-the-bootvolume)
+
 
 Volume section
 --------------
