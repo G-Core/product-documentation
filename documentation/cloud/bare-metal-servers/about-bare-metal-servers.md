@@ -21,6 +21,7 @@ toc:
   
 
 What is a bare metal server?
+#1
 ----------------------------
 
 A bare metal server is a form of cloud service in which the user rents a physical machine from a provider. This machine is dedicated to the user and not shared with any other tenants.
