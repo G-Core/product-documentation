@@ -9,8 +9,7 @@ toc:
 ---
   
 
-Disable a service
------------------
+## Disable a service
 
 1.  Click on the profile icon in the lower-left corner and select **Billing** or just follow the [Services](https://accounts.gcore.com/billing/services) link.
 2.  Find the service you need and click **Disable service**.
