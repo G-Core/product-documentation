@@ -8,11 +8,10 @@ toc:
    --1--Switch between accounts: "switch-to-another-account"
    --1--Log in: "log-in-to-a-desirable-account"
 ---
-  
-  
 
-Create an additional account
-----------------------------
+# Create an additional account and switch between main and additional accounts
+
+## Create an additional account
 
 You can manage multiple accounts from your personal account without re-authorization.
 
@@ -24,18 +23,19 @@ This is convenient if you are a user of several accounts and if you need to swit
 
 3\. Click **Create a new account**.
 
-<img src="https://support.gcore.com/hc/article_attachments/9063250356881/mceclip0.png" alt="mceclip0.png">4\. Enter a company name and click **Create new account** in the opened window.
+<img src="https://assets.gcore.pro/docs/account-settings/additional-account/create-additional-account-10.png" alt="">
 
-<img src="https://support.gcore.com/hc/article_attachments/9063366287633/mceclip1.png" alt="mceclip1.png">
+4\. Enter a company name and click **Create new account** in the opened window.
+
+<img src="https://assets.gcore.pro/docs/account-settings/additional-account/create-account-popup-20.png" alt="">
 
 **Attention!** The company name must be unique. If a company name already exists in the system, the account will not be created.
 
 If the company name is not registered in the system, the account will be created successfully and displayed in the list of all available accounts. The services of a newly created account are inactive by default.
 
-Switch to another account
--------------------------
+## Switch to another account
 
-<img src="https://support.gcore.com/hc/article_attachments/9063627536785/mceclip2.png" alt="mceclip2.png">
+<img src="https://assets.gcore.pro/docs/account-settings/additional-account/switch-account-30.png" alt="">
 
 1\. Click on the profile icon in the lower-right corner of the page.
 
@@ -43,10 +43,9 @@ Switch to another account
 
 3\. Select the desired account and click on it. You will be redirected to the personal account of the selected account.
 
-Log in to a desirable account
------------------------------
+## Log in to a desirable account
 
-1\. Enter your username and password on the [authorization page](https://auth.gcore.com/login/signin).
+1\. Enter your username and password on the <a href="https://auth.gcore.com/login/signin" target="_blank">authorization page</a>.
 
 2\. If you have access to multiple accounts, you will be redirected to a page where you can select the account you need.
 
