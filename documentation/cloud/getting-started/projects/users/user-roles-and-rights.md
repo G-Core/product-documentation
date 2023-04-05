@@ -5,6 +5,7 @@ published: true
 order: 10
 toc:
 ---
+# User roles and rights
 Certain roles are assigned to all users in projects. Rights to manage settings, resources, and other users are set according to assigned roles. 
 
 All available roles, their descriptions, and the rights assigned to them are listed below.    
