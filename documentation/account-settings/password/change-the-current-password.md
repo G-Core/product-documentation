@@ -5,7 +5,10 @@ published: true
 order: 10
 toc:
 ---
-<img src="https://support.gcore.com/hc/article_attachments/9002715346577/mceclip0.png" alt="mceclip0.png">
+
+# Change the current password
+
+<img src="https://assets.gcore.pro/docs/account-settings/password/change-the-current-password/change-password.png" alt="">
 
 1\. Click the profile icon and go to the Profile section.
 
