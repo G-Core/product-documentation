@@ -4,39 +4,46 @@ displayName: Create a project
 published: true
 order: 10
 toc:
-    --1--Manage a project: "manage-a-project"
+    --1--Create: "create-a-project"
+    --1--Manage: "manage-a-project"
 ---
+# Create and manage projects
+
 Projects are goal-specific containers in which you can create instances, volumes, networks, and other Cloud resources.  
 
-<img src="https://support.gcore.com/hc/article_attachments/360008320277/1_____.png" alt="1_____.png">Create a project 
-----------------------------------------------------------------------------------------------------------------------
+![The Project section in the cloud menu](https://assets.gcore.pro/docs/cloud/getting-started/create-a-project/1-projects-in-cloud-menu.png)
+
+## Create a project 
 
 All users have a default project created automatically. This project cannot be deleted. 
 
 1\. Click **Create project** in the **Projects** tab.  
 
-<img src="https://support.gcore.com/hc/article_attachments/360008403518/2_____.png" alt="2_____.png">2\. Fill in the **Name** and **Description** fields.
+![The location of the Create project button](https://assets.gcore.pro/docs/cloud/getting-started/create-a-project/2-create-project-button.png)
 
-*   Use between 3 and 63 characters: Latin letters, numbers, hyphens.
-*   Don't use a hyphen at the end of the field.  
+2\. Fill in the **Name** and **Description** fields.
 
-<img src="https://support.gcore.com/hc/article_attachments/360008320297/3_____.png" alt="3_____.png" width="505" height="288">
+-   Use between 3 and 63 characters: Latin letters, numbers, hyphens.
+-   Don't use a hyphen at the end of the field.  
+
+![The window to name your project](https://assets.gcore.pro/docs/cloud/getting-started/create-a-project/3-name-project.png)
 
 3\. Click **Create project**.  
 
 Your project's size doesn't affect the service price directly. Charges are calculated based on the resources used in the projects.  
 
-Manage a project
-----------------
+## Manage a project
 
-You can Open each project, go to its Settings or Delete it. To do this, click the icon <img src="https://support.gcore.com/hc/article_attachments/360008319897/_________.png" alt="_________.png" width="21" height="17">  next to the project you want to manage.
+You can Open each project, go to its Settings or Delete it. To do this, click the icon next to the project you want to manage.
 
-<img src="https://support.gcore.com/hc/article_attachments/360008320317/4_____.png" alt="4_____.png">By clicking the **Open** button, you get to the resource management panel. 
+![Actions with projects](https://assets.gcore.pro/docs/cloud/getting-started/create-a-project/4-actions-with-projects.png)
 
-In the project [Settings](https://gcore.com/support/), you can edit the project name and description, and configure access rights. 
+By clicking the **Open** button, you get to the resource management panel. 
 
-If you are an Account owner or Administrator (read more about User [Roles](https://gcore.com/support/articles/4405924883729/)), you can delete projects. To do it, select **Delete** in the menu and confirm the deletion. 
+In the **Settings** of your project, you can edit the project name and description, and configure access rights. 
 
-<img src="https://support.gcore.com/hc/article_attachments/360008320337/5_____.png" alt="5_____.png">
+If you are an Account owner or Administrator (read more about [user roles](https://gcore.com/docs/cloud/getting-started/projects/users/user-roles-and-rights)), you can delete projects. To do it, select **Delete** in the menu and confirm the deletion. 
+
+![The confirmation window to delete a project](https://assets.gcore.pro/docs/cloud/getting-started/create-a-project/5-delete-confirmation.png)
 
 Note: The default project cannot be deleted.
