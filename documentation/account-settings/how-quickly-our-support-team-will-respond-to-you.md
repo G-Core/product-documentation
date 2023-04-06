@@ -8,39 +8,44 @@ toc:
    --1--The request priority: "the-request-priority"
    --1--The workload of our support team: "the-workload-of-our-support-team"
 ---
+
+# How quickly our support team will respond to you
+
 The response time of our support team depends on three parameters:
 
-Billing plan
-------------
+1. Billing plan
+2. The request priority
+3. The workload of our support team
 
-Your billing plan determines how and when we can respond to your question. You can check your billing plan on the [Services](https://accounts.gcore.com/billing/services) page by selecting a service.
+## Billing plan
 
-<img src="https://support.gcore.com/hc/article_attachments/13095571844881" alt="mceclip0.png">
+Your billing plan determines how and when we can respond to your question. You can check your billing plan on the <a href="https://accounts.gcore.com/billing/services" target="_blank">Services</a> page by selecting a service.
 
-Check what support is provided by your plan on the [Pricing](https://www.gcore.com/pricing/edge-network) page.
+<img src="https://assets.gcore.pro/docs/account-settings/technical-support/billing-plan-10.png" alt="">
+
+Check what support is provided by your plan on the <a href="https://www.gcore.com/pricing/edge-network" target="_blank">Pricing</a> page.
 
 There are three support modes available:
 
-*   **For free plans**, there is no technical support, meaning our support team cannot assist you. However, you can always find answers to your questions in our [Knowledge Base](https://www.gcore.com/support/). There are hundreds of articles describing how to configure our services and solve issues. 
-*   **For "medium" plans** (e.g., "Start" CDN plan), we provide support during business hours on business days (8/5). 
-*   **For PRO+ plans**, we provide round-the-clock support (24/7).
+- **For free plans**, there is no technical support, meaning our support team cannot assist you. However, you can always find answers to your questions in our <a href="https://gcore.com/docs/" target="_blank">Knowledge Base</a>. There are hundreds of articles describing how to configure our services and solve issues. 
+- **For "medium" plans** (e.g., "Start" CDN plan), we provide support during business hours on business days (8/5). 
+- **For PRO+ plans**, we provide round-the-clock support (24/7).
 
-The request priority
---------------------
+## The request priority
 
-The request priority reflects the impact of service issues on your business. The more critical the problem, the sooner we will start solving it. You set the priority when sending a ticket from your [control panel](https://accounts.gcore.com/reports/dashboard) or in the chat on the website.
+The request priority reflects the impact of service issues on your business. The more critical the problem, the sooner we will start solving it. You set the priority when sending a ticket from your <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">control panel</a> or in the chat on the website.
 
-| \nPriority\n  | \nCriteria\n                                                                                                                                       | \nResponse time\n     |
+| Priority  | Criteria                                                                                                                                       | Response time     |
 |---------------|----------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------|
-| \nVery High\n | \nBusiness-critical functions are unavailable, or degraded and will soon be unavailable\n                                                          | \nWithin 30 minutes\n |
-| \nHigh\n      | \nBusiness-critical functions are partially unavailable or degraded\n                                                                              | \nWithin 1 hour \n    |
-| \nNormal\n    | \nNon-business-critical functions are inoperable or non-standard errors are observed\n                                                             | \nWithin 2 hours\n    |
-| \nLow\n       | \nYou have a general question concerning the infrastructure; you want to request a new function of the Gcore services or discuss an existing one\n | \nWithin 4 hours\n    |
+| Very High | Business-critical functions are unavailable, or degraded and will soon be unavailable                                                          | Within 30 minutes |
+| High      | Business-critical functions are partially unavailable or degraded                                                                              | Within 1 hour    |
+| Normal    | Non-business-critical functions are inoperable or non-standard errors are observed                                                             | Within 2 hours    |
+| Low       | You have a general question concerning the infrastructure; you want to request a new function of the Gcore services or discuss an existing onen | Within 4 hours    |
 
 
-If you use CDN, Streaming platform, Cloud, Web protection, Storage, or DNS, you can set the priority of the request and manage it in the [My tickets](https://accounts.gcore.com/tickets/all) section when creating the ticket.
+If you use CDN, Streaming platform, Cloud, Web protection, Storage, or DNS, you can set the priority of the request and manage it in the <a href="https://accounts.gcore.com/tickets/all" target="_blank">My tickets</a> section when creating the ticket.
 
-<img src="https://support.gcore.com/hc/article_attachments/13131750511761" alt="mceclip0.png" width="550" height="680">
+<img src="https://assets.gcore.pro/docs/account-settings/technical-support/ticket-priority-20.png" alt="" width="600" height="800">
 
 This functionality will soon be available for Hosting clients.
 
@@ -48,8 +53,7 @@ When you send a request by email, it will have "Normal" priority by default. Ple
 
 **Note**: We reserve the right to lower the priority if the issue is not caused by errors in our service, the priority needs to be corrected, or it does not meet our internal criteria.
 
-The workload of our support team
---------------------------------
+## The workload of our support team
 
 The support team's workload can affect the response time. If technical support is overloaded, the response time will be increased.
 
