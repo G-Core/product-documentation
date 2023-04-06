@@ -7,16 +7,17 @@ toc:
    --1--Manage notifications: "manage-notifications"
    --1--Limitation notification: "limitation-notifications"
    --2--How does it work: "how-does-it-work"
-   --2--Configure for CDN: "onfigure-for-cdn"
+   --2--Configure for CDN: "configure-for-cdn"
    --2--Configure for Storage: "configure-for-storage"
 ---
 
-Manage notifications
---------------------
+# Manage service notifications
+
+## Manage notifications
 
 A user who has access to the personal account can configure sending notifications to an email.
 
-<img src="https://support.gcore.com/hc/article_attachments/9047474744465/mceclip0.png" alt="mceclip0.png">
+<img src="https://assets.gcore.pro/docs/account-settings/notifications/set-notifications-10.png" alt="">
 
 1\. Click on the profile icon in the lower-left corner and select **Profile**.
 
@@ -28,8 +29,7 @@ All notifications are divided into groups: general notifications and groups base
 
 You can disable both a single notification and an entire group.
 
-Limitation notifications
-------------------------
+## Limitation notifications
 
 ### How does it work
 
@@ -47,9 +47,9 @@ Each user of the personal account can configure this notification.
 
 To do it, specify the traffic limit in the Traffic consumption level field. Click **Save** to apply the settings.
 
-<img src="https://support.gcore.com/hc/article_attachments/9047537950481/mceclip2.png" alt="mceclip2.png">
+<img src="https://assets.gcore.pro/docs/account-settings/notifications/set-limit-20.png" alt="">
 
-**Note!** Traffic consumption level is _not configured_ individually, it is the same for all users of the account who use this notification.
+**Note**: Traffic consumption level is _not configured_ individually, it is the same for all users of the account who use this notification.
 
 For example, there are three users in the account: User A, User B, and User C. Suppose, User A is the first to turn on this notification and sets the limit to 100 GB. User B and User C will see that the traffic consumption level has already been set by someone and is equal to 100 GB. User B agrees with the current traffic consumption level and doesn't change anything. User B believes that the traffic consumption level equal to 100 GB should be changed and set it in his personal account to 70 GB. As a result of User B's changes, the other two users will also receive notifications when the traffic consumption level reaches 70 GB.
 
@@ -57,11 +57,11 @@ For example, there are three users in the account: User A, User B, and User C. S
 
 You can receive notifications about:
 
-*   objects,
-*   requests,
-*   used space
-*   traffic consumption.
+- objects,
+- requests,
+- used space
+- traffic consumption.
 
 To do it go to the Storage notification section, select Storage and Bucket (optional) and specify the limit. Then click **Save**.
 
-<img src="https://support.gcore.com/hc/article_attachments/9048005333137/mceclip3.png" alt="mceclip3.png">
+<img src="https://assets.gcore.pro/docs/account-settings/notifications/storage-notifications-30.png" alt="">

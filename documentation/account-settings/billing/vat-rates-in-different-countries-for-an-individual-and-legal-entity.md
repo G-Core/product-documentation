@@ -6,29 +6,30 @@ order: 40
 toc:
    --1--What is VAT?: "what-is-vat"
    --1--VAT for individuals: "vat-for-individuals"
-   --2--For EU countries: "vat-for-eu-countries"
-   --2--For other countries: "vat-for-other-countries"
+   --2--For EU countries: "for-eu-countries"
+   --2--For other countries: "for-other-countries"
    --1--VAT for organizations (contracting): "vat-for-organizations-contracting"
    --2--VAT for EU countries: "vat-for-eu-countries"
    --2--VAT for other countries: "vat-for-other-countries"
 ---
 
-What is VAT?
-------------
+# VAT rates in different countries for an individual and legal entity
 
-**The Value Added Tax, or VAT** is a consumption tax assessed on the value added to goods and services.
+## What is VAT?
+
+The Value Added Tax, or VAT is a consumption tax assessed on the value added to goods and services.
 
 The VAT rate is calculated depending on the user type (organization or individual) and the user country.
 
-**For example:**
+For example:
 
 **1\. You are registering as an organization:**
 
 Let's assume that your organization is registered in Germany and you have provided our managers with a VAT number, so the VAT rate, according to the table, will be 0%.
 
-! However, if you did not provide our managers with a VAT number, the VAT rate will be 19%.
+However, if you did not provide our managers with a VAT number, the VAT rate will be 19%.
 
-**Important!** For Luxembourg, the VAT rate was temporarily decreased from 17% to 16%.
+**Important**: For Luxembourg, the VAT rate was temporarily decreased from 17% to 16%.
 
 **2\. You are registering as an individual:**
 
@@ -36,17 +37,15 @@ You yourself or as a representative of your organization has registered through 
 
 According to the table below, the VAT rate will depend on your country, for example, for Germany — 19%, and for China — 0%.
 
-To quickly navigate through the tables with VAT rate data, use the following links:
 
-VAT for individuals
--------------------
+## VAT for individuals
 
-### VAT for EU countries
+### For EU countries
 
 All EU countries and their VAT rate (%) are listed below.
 
-|     Сountry       |      Country code     |         The VAT rate(%)      |
-|-----------------------|---------------------------|----------------------------------|
+|     Сountry       |      Country code     |         The VAT rate (%)     |
+| ----------------- | --------------------- | ---------------------------- |
 | Austria           | AT                    | 20                           |
 | Belgium           | BE                    | 21                           |
 | Bulgaria          | BG                    | 20                           |
@@ -76,24 +75,22 @@ All EU countries and their VAT rate (%) are listed below.
 | Slovenia          | SL                    | 22                           |
 | Slovakia          | SK                    | 20                           |
 
-### VAT for other countries
+### For other countries
 
-|     Country                                |      Country code     |         The VAT rate(%)      |
-|------------------------------------------------|---------------------------|----------------------------------|
+|     Country                                |      Country code     |         The VAT rate (%)     |
+| ------------------------------------------ | --------------------- | ---------------------------- |
 | Other countries outside the European Union | -                     | 0                            |
 
-
-VAT for organizations (contracting)
------------------------------------
+## VAT for organizations (contracting)
 
 ### VAT for EU countries
 
 All EU countries and their VAT rate (%) are listed below.
 
-Please, note, the VAT rate for EU countries (excluding Luxembourg) depends on providing us with your organization's VAT number.
+**Please, note**: The VAT rate for EU countries (excluding Luxembourg) depends on providing us with your organization's VAT number.
 
-|     Сountry       |      Country code     |         The VAT rate(%)      |
-|-----------------------|---------------------------|----------------------------------|
+|     Сountry       |      Country code     |         The VAT rate (%)     |
+|------------------ | --------------------- | ---------------------------- |
 | Austria           | AT                    | 20                           |
 | Belgium           | BE                    | 21                           |
 | Bulgaria          | BG                    | 20                           |
@@ -123,10 +120,9 @@ Please, note, the VAT rate for EU countries (excluding Luxembourg) depends on pr
 | Slovenia          | SL                    | 22                           |
 | Slovakia          | SK                    | 20                           |
 
-
 ### VAT for other countries
 
-|     Country                                |      Country code     |         The VAT rate(%)      |
-|------------------------------------------------|---------------------------|----------------------------------|
+|     Country                                |      Country code     |         The VAT rate (%)     |
+| ------------------------------------------ | --------------------- | ---------------------------- |
 | Other countries outside the European Union | -                     | 0                            |
 

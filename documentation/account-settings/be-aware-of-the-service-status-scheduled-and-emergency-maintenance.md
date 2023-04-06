@@ -7,31 +7,32 @@ toc:
    --1--Subscription methods: "subscription-methods"
    --2--Email: "email"
    --2--Slack: "slack"
-   --1--How to unsubscribe from the old version of Status Page: "how-to-unsubscribe-from-the-old-version-of-status-page"
-   --1--Subscribe via Slack: "subscribe-via-slack"
+   --3--How to unsubscribe from the old version of Status Page: "how-to-unsubscribe-from-the-old-version-of-status-page"
+   --3--Subscribe via Slack: "subscribe-via-slack"
    --2--Webhook: "webhook"
    --1--Subscription management: "subscription-management"
    --2--Email management: "email-management"
    --2--Slack management: "slack-management"
    --2--Webhook management: "webhook-management"
-   --1--How to unsubscribe from the subscription: "how-to-unsubscribe-from-the-updates"
+   --2--How to unsubscribe from the subscription: "how-to-unsubscribe-from-the-updates"
    --1--Components: "components"
    --2--Components statuses: "components-statuses"
-   --1--Notification types: "notification-types"
+   --2--Notification types: "notification-types"
 ---
-_**Note!** Information on the status of services in the period up to 15th February 2021_  _is published on the [https://historystatus.gcore.com/](https://historystatus.gcorelabs.com/)_
 
-**_Status Page_** is a communication tool that displays information about service status, outages, and planned maintenance. 
+# Be aware of the service status, scheduled and emergency maintenance
 
-### **Subscription methods** 
+Status Page is a communication tool that displays information about service status, outages, and planned maintenance. 
 
-To receive notifications about scheduled works and incidents, subscribe to the Status Page: go to [https://statuspage.gcore.com](https://statuspage.gcorelabs.com) and click on the Subscribe to updates button in the upper-right corner. 
+## Subscription methods 
 
-<img src="https://support.gcore.com/hc/article_attachments/4403065385873/subscribe_to.png" alt="subscribe_to.png">
+To receive notifications about scheduled works and incidents, subscribe to the Status Page: go to <a href="https://status.gcore.com/" target="_blank">Status Page of Gcore</a> and click on the **Subscribe to updates** button in the upper-right corner. 
+
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/subscribe-sp-10.png" alt="">
 
 Then select the appropriate subscription method (email, slack, webhook). 
 
-#### **Email** 
+### Email 
 
 1\. Enter your email address in the Email Address field and click Subscribe via email.
 
@@ -39,89 +40,81 @@ Then select the appropriate subscription method (email, slack, webhook). 
 
 3\. Select the components which status information you would like to receive and click the Save button.
 
-<img src="https://support.gcore.com/hc/article_attachments/4403065388305/_________email.png" alt="_________email.png" width="484" height="776">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/email-sp-20.png" alt="">
 
 4\. Confirm your subscription to get notifications about the status of incidents and scheduled works. To do this, click Confirm subscription in the email sent to the specified email address.  
-  
-<img src="https://support.gcore.com/hc/article_attachments/4403065388945/_____________________email_________.png" alt="_____________________email_________.png">
 
-#### **Slack** 
 
-### How to unsubscribe from the old version of Status Page  
+### Slack
 
-To correctly configure notifications from the new Status Page ([https://statuspage.gcore.com/](https://statuspage.gcorelabs.com/)),
+#### How to unsubscribe from the old version of Status Page  
 
- disable the notifications from the old Status Page: 
+To correctly configure notifications from the new <a href="https://status.gcore.com/" target="_blank">Status Page of Gcore</a>, disable the notifications from the old Status Page: 
 
 1\. Open your workspace in Slack. 
 
 2\. On the left side of the workspace, click More, select Apps
 
-<img src="https://support.gcore.com/hc/article_attachments/4403072046993/more___apps.png" alt="more___apps.png">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/slack-30.png" alt="">
 
-3\. Enter Incoming WebHooks in the search bar.  
+3\. Enter **Incoming WebHooks** in the search bar.  
   
-<img src="https://support.gcore.com/hc/article_attachments/4403065452561/incoming.png" alt="incoming.png">
-
 4\. Click the app to open its settings.
 
-<img src="https://support.gcore.com/hc/article_attachments/4403065458833/incoming_web_hooks.png" alt="incoming_web_hooks.png">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/open-old-app-40.png" alt="">
 
 5\. Go to the Configuration section.  
   
-<img src="https://support.gcore.com/hc/article_attachments/4403072061201/configuration.png" alt="configuration.png">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/configuration-50.png" alt="">
 
 6\. Find the channel for which the notifications are configured. 
 
-7\. Click on the pencil sign to go to the integration settings. <img src="https://support.gcore.com/hc/article_attachments/4403072064273/_____.png" alt="_____.png">
+7\. Click on the pencil sign to go to the integration settings.
 
-8\. In the upper-right corner, click Disable to switch off the integration and Remove to delete the integration.  
+8\. In the upper-right corner, click **Disable** to switch off the integration and Remove to delete the integration.  
   
-<img src="https://support.gcore.com/hc/article_attachments/4403065466641/__________________.png" alt="__________________.png">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/remove-integration-60.png" alt="">
 
 9\. Confirm the action.
 
-<img src="https://support.gcore.com/hc/article_attachments/4403065482001/____________________.png" alt="____________________.png">
-
 10\. Use the next paragraph to integrate this channel with the new Status Page. 
 
-### Subscribe via Slack
+#### Subscribe via Slack
 
-<img src="https://support.gcore.com/hc/article_attachments/4403065385617/slack_________.png" alt="slack_________.png">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/slack-70.png" alt="">
 
-1\. Click Subscribe via Slack.
+1\. Click **Subscribe via Slack**.
 
 2\. Enter your Slack workspace URL.
 
 3\. Click Continue.
 
-<img src="https://support.gcore.com/hc/article_attachments/4403071969937/slack__________2.png" alt="slack__________2.png">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/slack-continue-80.png" alt="">
 
 4\. Log in using your email address and password for the selected workspace in Slack.
 
-<img src="https://support.gcore.com/hc/article_attachments/4403071970193/slack__________3.png" alt="slack__________3.png">
 
 5\. Read the channel information that will be provided for Status page. 
 
-**Important!** If you want to use a private channel to send notifications, first add the Status Page app to the channel. To do this, open the channel details and click More -> Add Apps.
+**Important**: If you want to use a private channel to send notifications, first add the Status Page app to the channel. To do this, open the channel details and click More > Add Apps.
 
-<img src="https://support.gcore.com/hc/article_attachments/4403072109969/add_apps.png" alt="add_apps.png" width="456" height="480">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/private-slack-90.png" alt="" width="456" height="480">
 
-6\. Enter Status page and click on the Add button next to the Status page app.  
+6\. Enter **Status page** and click on the **Add** button next to the Status page app.  
   
-<img src="https://support.gcore.com/hc/article_attachments/4403065516817/add_statuspage.png" alt="add_statuspage.png" width="637" height="285">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/add-private-100.png" alt="" width="637" height="285">
 
-7\. On the page of integration, in the section Where should Status page post specify the channel that will be used to publish notifications. Click Allow.                    <img src="https://support.gcore.com/hc/article_attachments/4403071970449/slack__________4.png" alt="slack__________4.png" width="500" height="607">
+7\. On the page of integration, in the section Where should Status page post specify the channel that will be used to publish notifications. Click Allow.                    
+
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/allow-110.png" alt="" width="500" height="607">
 
 Next, you will receive a notification from Slack that notifications have been successfully configured, and you will also be automatically redirected to the subscription management page.
 
 Select the components which status information you would like to receive and click the Save button.  
 
-  <img src="https://support.gcore.com/hc/article_attachments/4403065385361/slack__________5.png" alt="slack__________5.png">
+### Webhook 
 
-#### **Webhook** 
-
-<img src="https://support.gcore.com/hc/article_attachments/4403065386641/webhook__________1.png" alt="webhook__________1.png">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/webhook-120.png" alt="">
 
 1\. In the first field, enter the URL for sending notifications. 
 
@@ -130,24 +123,19 @@ Select the components which status information you would like to receive and cli
 3\. Click Subscribe. 
 
 4\. You will see a message that webhook notifications have been successfully configured.  
-  
-<img src="https://support.gcore.com/hc/article_attachments/4403065386897/webhook__________2.png" alt="webhook__________2.png">
 
 5\. You will also receive a notification email about the configuration to the specified email.  
-  
-<img src="https://support.gcore.com/hc/article_attachments/4403071971089/webhook__________3.png" alt="webhook__________3.png" width="583" height="535">
 
-6\. You can open documentation about how webhooks work by clicking View documentation. 
+6\. You can open documentation about how webhooks work by clicking **View documentation**. 
 
 7\. You can manage the subscription by clicking Manage your subscription. Select the components which status information you would like to receive and click the Save button.  
-  
-<img src="https://support.gcore.com/hc/article_attachments/4403065386129/webhook_manage__________.png" alt="webhook_manage__________.png">
 
-### **Subscription management**  
+
+## Subscription management 
 
 How to change the subscription components 
 
-#### **Emai managementl** 
+### Emai managementl 
 
 You can change the subscription from any notification sent by the system to your email address. 
 
@@ -155,13 +143,11 @@ You can change the subscription from any notification sent by the system to your
 
 2\. At the bottom of the notification, find and click Manage your subscription.
 
-<img src="https://support.gcore.com/hc/article_attachments/4403071969425/emai_manage__________.png" alt="emai_manage__________.png">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/manage-130.png" alt="">
 
-3\. Edit the component subscription and click Save.
+3\. Edit the component subscription and click **Save**.
 
-<img src="https://support.gcore.com/hc/article_attachments/4403065384209/email_manage_2.png" alt="email_manage_2.png">
-
-#### **Slack management**  
+### Slack management  
 
 You can change your subscription from any notification sent by the system to Slack. 
 
@@ -169,13 +155,9 @@ You can change your subscription from any notification sent by the system to Sla
 
 2\. At the bottom of the notification, find and click Manage your subscription.
 
-<img src="https://support.gcore.com/hc/article_attachments/4403065385105/slack_manage_1.png" alt="slack_manage_1.png">
+3\. Edit the component subscription and click **Save**.
 
-3\. Edit the component subscription and click Save.
-
-  <img src="https://support.gcore.com/hc/article_attachments/4403071969681/slack_manage_2.png" alt="slack_manage_2.png">
-
-#### **Webhook management**  
+### Webhook management  
 
 You can change your subscription from any notification sent by the system to the URL specified during configuration. 
 
@@ -183,21 +165,15 @@ You can change your subscription from any notification sent by the system to the
 
 2\. At the bottom of the notification, find and click Manage your subscription.
 
-3\. Edit the component subscription and click Save.
-
-<img src="https://support.gcore.com/hc/article_attachments/4403065386129/webhook_manage__________.png" alt="webhook_manage__________.png">
+3\. Edit the component subscription and click **Save**.
 
 ### How to unsubscribe from the updates 
 
-To unsubscribe from the notifications, open the management subscription page and click Unsubscribe from the updates. 
+1\. To unsubscribe from the notifications, open the management subscription page and click Unsubscribe from the updates. 
 
-<img src="https://support.gcore.com/hc/article_attachments/4403065388049/___________email_1.png" alt="___________email_1.png">
+2\. Confirm the action. 
 
-Confirm the action. 
-
-<img src="https://support.gcore.com/hc/article_attachments/4403065387793/___________2.png" alt="___________2.png">
-
-### **Components** 
+## Components 
 
 Components are grouped by services (the Cloud service is grouped by the option+location). 
 
@@ -205,11 +181,11 @@ Each service (or service+location) can also be divided by a geographical or fu
 
 We use the Updates component (in Releases) to inform you about our releases biweekly. The Website component shows the company website status, and the Knowledge Base informs you about the knowledge base operating. 
 
-#### **Components statuses**  
+### Components statuses  
 
-<img src="https://support.gcore.com/hc/article_attachments/4403065387281/__________.png" alt="__________.png">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/components-140.png" alt="">
 
-**Op****erational**: the component is operating normally. 
+**Operational**: the component is operating normally. 
 
 **Partial Outage:** the component is partially unavailable. 
 
@@ -217,7 +193,7 @@ We use the Updates component (in Releases) to inform you about our releases biwe
 
 **Under Maintenance:** the component is in the process of maintenance.  
 
-### **Notification types** 
+### Notification types
 
 **Incident | Investigating:** a notification about the component partial or complete outage, the incident is under investigation. 
 
@@ -227,7 +203,7 @@ We use the Updates component (in Releases) to inform you about our releases biwe
 
 **Incident | Resolved:** the incident has been completely resolved.  
 
-**Incident | Ret****rospective:** notification of the incident that has already occurred. 
+**Incident | Retrospective:** notification of the incident that has already occurred. 
 
 **Maintenance | Scheduled:** notification of upcoming scheduled works. 
 
