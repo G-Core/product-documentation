@@ -8,7 +8,7 @@ toc:
    --1--Can I cancel my reservation?: "can-i-cancel-my-reservation"
 ---
   
-  
+# About resource reservation
 
 What is Resource reservation?
 -----------------------------
@@ -17,7 +17,7 @@ Resource reservation is a service used to rent resources for a long time at a di
 
 You’ll be able to see your discount before buying on a “Discount” line. For example, in the screenshot below, the discount is 58% and the total price is €117 per month. This means that if you ordered a server for a month without the Resource reservation option, you would pay 58% more, or €278 for the month.
 
-<img src="https://support.gcore.com/hc/article_attachments/11773033807249" alt="mceclip1.png">
+![Plan price](https://s-ed1.cloud.gcore.lu/content-images/docs/cloud/getting-started/reservations/1-plan-price.png)
 
 The service is beneficial if:
 
@@ -31,7 +31,7 @@ Reserve a server
 
 1. Open the **Reservations** tab and click **Create**. When the reservation configurator opens, follow the steps below.
 
-<img src="https://support.gcore.com/hc/article_attachments/11530540448401" alt="image2.jpeg" width="752" height="346">
+![The Reservations section in the menu](https://assets.gcore.pro/docs/cloud/getting-started/reservations/2-create-reservation-button.jpeg)
 
 2. Select a region (the city where the equipment is located). Prices may vary depending on the region. Moreover, the region determines the country whose laws your equipment will be subject to. Different countries have different laws about, for example, what types of content can legally be distributed over a server. Usually, our clients choose a region in their country or a neighboring one.
 
@@ -47,7 +47,7 @@ Reserve a server
 
 8. The reservation plan is shown in the upper-right corner. Double-check the price, location, and region, then click “Create”.
 
-<img src="https://support.gcore.com/hc/article_attachments/11773033807249" alt="mceclip1.png">
+![Plan price](https://assets.gcore.pro/docs/cloud/getting-started/reservations/1-plan-price.png)
 
 9\. Wait while we process the reservation request. Your reservation will go through four status changes:
 
@@ -61,13 +61,11 @@ If something went wrong with your request, you might see one of the following st
 *   FAILED: There was an unexpected technical error; it will be resolved soon. For more details, contact our support team.
 *   REJECTED: The reservation request could not be approved. For more details, contact our support team.
 
-<img src="https://support.gcore.com/hc/article_attachments/11773105509393" alt="mceclip2.png">
+![Reservation status](https://assets.gcore.pro/docs/cloud/getting-started/reservations/3-reservation-status.png)
 
 10. We have reserved equipment for you, but you cannot yet see it in your control panel. To access your servers, you’ll need to activate them. To activate your equipment, go to the Baremetal section and create servers with the reserved characteristics (region, Windows license, server type, quantity). You will not be charged for creating them, since it’s included as part of your reservation plan.
 
 If you create a server later or do not create a server at all, your payment will stay the same because the hardware in the data center is set aside for you. Creating a server will simply make it visible in your control panel.
-
-<img src="https://support.gcore.com/hc/article_attachments/11773132770449" alt="mceclip1.png">
 
 11\. Reserved servers will appear in the list, and you will be able to use them. Your balance will be billed automatically once a month.
 
