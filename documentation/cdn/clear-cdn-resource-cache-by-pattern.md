@@ -12,9 +12,7 @@ toc:
    --1--Configure via API: "configure-purge-via-api"
 ---
 
-# Clear CDN resource cache by URL, pattern or all
-
-Why purge the cache?  
+# Clear CDN resource cache by URL, pattern or all 
 
 ## About Purge 
 
@@ -40,7 +38,7 @@ A new page opens. Do the remaining steps there.
 
 3\. Select the purging type and follow the appropriate instructions below (by URL, all, or by pattern) to manage purge.
 
-4\. Click the Purge button.
+4\. Click the **Purge** button.
 
 ### Purge by URL
 
