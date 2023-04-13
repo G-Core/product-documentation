@@ -29,7 +29,6 @@ For the most common issues, such as video not playing, taking a long time to sta
 *   **Stream URL and code.** Make sure to use the exact URL and embed code that appear in the Streaming settings.
 *   **Streaming settings.** Make sure the stream is enabled. If configured to pull a stream, make sure the source URL is correct.
 *   **Encoder settings.** Make sure you are using the [recommended settings](https://gcore.com/support/articles/360000604025/). If configured to push a stream, make sure the server URL and stream key are accurate.
-*   **CDN settings.** Make sure a CDN resource is [created and integrated](https://gcore.com/support/articles/5499359292561/) to the stream. The resource must be enabled.
 
 Other things to try:
 
@@ -50,9 +49,6 @@ _Possible cause_**:** Device is too old.
 _Suggested solution_**:** Streaming should work on most devices, but some devices may not be compatible. Try using a modern device with enough processing power and memory to successfully stream video.
 
 **Stream returns an HTTP 404 error**
-
-_Possible cause_**:** Missing CNAME record.  
-_Suggested solution_**:** If you are using a custom domain, check that the CNAME record has been properly added to the DNS settings and allow at least 15 minutes for propagation to take place.
 
 _Possible cause_**:** Transcoding is in progress.  
 _Suggested solution_**:** Each video chunk may take several seconds to transcode. Allow 10 to 15 seconds for this to happen. Once the chunks have been transcoded, the stream should be ready to play.

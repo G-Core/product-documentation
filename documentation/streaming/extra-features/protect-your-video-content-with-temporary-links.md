@@ -76,7 +76,7 @@ echo "\\n";
 Where you need to substitute your values after the equals in the following lines:
 
 *   _$secret_ — a signature key specified in step 3 of this guide.
-*   _$vhost_ — a custom domain of your CDN resource used for the streaming,
+*   _$vhost_ — a subdomain that is used for the streaming,
 *   _$video\_id_ —  slug, an individual parameter in VOD's URL. You will find it in the [Video Hosting](https://streaming.gcore.com/video/list) section when you open the video and go to the export tab. For example, in this URL _https://123456.gvideo.io/videos/123456\_**AHgywxonRd8F9ctX**_, AHgywxonRd8F9ctX is a slug.
 *   _$expires_  — URL expiration time (in seconds),
 *   _$link_ — token generation schema,

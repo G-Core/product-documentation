@@ -15,72 +15,121 @@ toc:
    --2--Allow requests from a particular website by policy: "allow-requests-from-a-particular-website-by-policy"
 ---
 
+# Configure access control on S3 storage with AWS CLI and S3cmd
 
-What are ACLs?
---------------
+## What are ACLs?
 
 ACLs, or Access Control Lists, are sets of rules that determine who has access to objects stored in S3 and what actions they are allowed to perform on those objects. Proper configuration of ACLs helps ensure the security of stored data.
 
-**Note**: The storage owner is responsible for configuring ACLs. Use the [AWS CLI](https://docs.aws.amazon.com/cli/latest/reference/s3api/index.html#cli-aws-s3api) or [S3cmd documentation commands](https://s3tools.org/usage) to manage ACLs for objects in Gcore S3 storage.
+**Note**: The storage owner is responsible for configuring ACLs. Use the <a href="https://docs.aws.amazon.com/cli/latest/reference/s3api/index.html#cli-aws-s3api" target="_blank">AWS CLI</a> or <a href="https://s3tools.org/usage" target="_blank">S3cmd documentation commands</a> to manage ACLs for objects in Gcore S3 storage.
 
 ACLs for objects can be configured for a variety of actions, such as:
 
-| Actions                      | Description                                              |
-|------------------------------|----------------------------------------------------------|
-| \n--acl-public\n             | Making an object publicly accessible                     |
-| --acl-private                | Making an object private                                 |
-| \n--acl-grant=full-control\n | Granting full control over the bucket                    |
-| \n--acl-grant=read\n         | Allowing the listing of objects in the bucket            |
-| \n--acl-grant=read_acp\n     | Allowing the reading of ACLs                             |
-| \n--acl-grant=write\n        | Allowing recording, overwriting, and deleting of objects |
-| \n--acl-grant=write_acp\n    | \nAllowing the writing of ACLs\n                         |
-
-
-What are policies?
-------------------
+<table style="width: 482px;">
+<tbody>
+<tr>
+<td style="text-align: center"><b>AWS CLI</b></td>
+<td style="text-align: center"><b>S3cmd</b></td>
+<td style="text-align: center"><b>Description</b></td>
+</tr>
+<tr>
+<td>
+<p>--public-read</p>
+<p>&nbsp;</p>
+</td>
+<td>--acl-public</td>
+<td>Making an object publicly accessible</td>
+</tr>
+<tr style="height: 22px;">
+<td style="width: 82px; height: 22px;">&nbsp;--private</td>
+<td style="width: 154.375px; height: 22px;">--acl-private</td>
+<td style="width: 241.625px; height: 22px;">Making an object private</td>
+</tr>
+<tr style="height: 22px;">
+<td style="width: 82px; height: 22px;">&nbsp;--grant-full-control</td>
+<td style="width: 154.375px; height: 22px;">--acl-grant=full-control</td>
+<td style="width: 241.625px; height: 22px;">Granting full control over the bucket</td>
+</tr>
+<tr style="height: 22px;">
+<td style="width: 82px; height: 22px;">&nbsp;--grant-read</td>
+<td style="width: 154.375px; height: 22px;">--acl-grant=read</td>
+<td style="width: 241.625px; height: 22px;">Allowing the listing of objects in the bucket</td>
+</tr>
+<tr style="height: 22px;">
+<td style="width: 82px; height: 22px;">&nbsp;--grant-read-acp</td>
+<td style="width: 154.375px; height: 22px;">--acl-grant=read_acp</td>
+<td style="width: 241.625px; height: 22px;">Allowing the reading of ACLs</td>
+</tr>
+<tr style="height: 22px;">
+<td style="width: 82px; height: 22px;">&nbsp;--grant-write</td>
+<td style="width: 154.375px; height: 22px;">--acl-grant=write</td>
+<td style="width: 241.625px; height: 22px;">Allowing recording, overwriting, and deleting of objects</td>
+</tr>
+<tr style="height: 32px;">
+<td style="width: 82px; height: 32px;">&nbsp;--grant-write-acp </td>
+<td style="width: 154.375px; height: 32px;">&nbsp;
+<p>--acl-grant=write_acp</p>
+<p>&nbsp;</p>
+</td>
+<td style="width: 241.625px; height: 32px;">
+<p>Allowing the writing of ACLs</p>
+<p>&nbsp;</p>
+</td>
+</tr>
+</tbody>
+</table>
+                     
+## What are policies?
 
 Policies are JSON files that provide a more detailed way to control access to objects and buckets. They allow you to specify which actions a specific user or all users are allowed or denied to perform.
 
 The maximum request size in the policy is 20 KB.
 
-**Note**: The storage owner is responsible for configuring policies. Use the [AWS CLI documentation actions, conditions, and resource types](https://docs.aws.amazon.com/AmazonS3/latest/userguide/list_amazons3.html) to manage policies for objects in Gcore S3 storage.
+**Note**: The storage owner is responsible for configuring policies. Use the <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/list_amazons3.html" target="_blank">AWS CLI documentation actions, conditions, and resource types</a> to manage policies for objects in Gcore S3 storage.
 
-Configure access via ACLs and policies
---------------------------------------
+## Configure access via ACLs and policies
 
 We've provided examples of ACLs and policies for some common tasks in managing S3 storage.
 
 In all the commands and JSON files, you need to replace the following with your values:
 
-*   Replace _sample.jpg_ with your object.
-*   Replace _my\_bucket_ with your bucket.
-*   Replace _https://s-ed1.cloud.gcore.lu_ with your hostname.
+- Replace _sample.jpg_ with your object.
+- Replace _my\_bucket_ with your bucket.
+- Replace _https://s-ed1.cloud.gcore.lu_ with your hostname.
 
 ### Allow an object downloading by ACL
 
-To allow all users to download an object, use the following command with the public ACL action _\--acl public-read_ (AWS CLI) or _\--acl public_ (S3cmd).
+To allow all users to download an object, use the following command with the public ACL action *--acl public-read* (AWS CLI) or *--acl public* (S3cmd).
 
 AWS CLI:
 
-aws s3api put-bucket-acl --bucket my\_bucket --acl public-read --endpoint-url=https://s-ed1.cloud.gcore.lu 
+```
+aws s3api put-bucket-acl --bucket my_bucket --acl public-read --endpoint-url=https://s-ed1.cloud.gcore.lu 
+```
 
 S3cmd:
 
+```
 s3cmd setacl s3://my\_bucket/sample.jpg --acl-public
+```
 
 **Note**: This will make the specified object in the bucket publicly available to everyone.
 
 ### Allow listing of a bucket by ACL
 
-To allow all users to list objects in a bucket, use the following command with the public ACL action _\--grant-read_ (AWS CLI) or_\--acl-grant=read_ (S3cmd).
+To allow all users to list objects in a bucket, use the following command with the public ACL action *--grant-read* (AWS CLI) or *--acl-grant=read* (S3cmd).
 
 AWS CLI:
 
-aws s3api put-bucket-acl --bucket my\_bucket --acl grant-read --endpoint-url=https://s-ed1.cloud.gcore.lu
+```
+aws s3api put-bucket-acl --bucket my_bucket --acl grant-read --endpoint-url=https://s-ed1.cloud.gcore.lu
+```
 
 S3cmd:
 
-s3cmd setacl s3://my\_bucket/sample.jpg \--acl\-grant\=read 
+```
+s3cmd setacl s3://my_bucket/sample.jpg --acl-grant=read 
+```
 
 **Note**: This will allow users to list the objects in the bucket, but they won't have permission to read or write them.
 
@@ -90,26 +139,32 @@ To allow all users to download an object:
 
 1\. Create a JSON file with the following policy:
 
+```
 {  
-"Statement": \[   
+"Statement": [   
  {  
 "Effect": "Allow",  
-"Principal": "\*",  
+"Principal": "*",  
 "Action": "s3:GetObject",  
-"Resource": "arn:aws:s3:::my\_bucket/\*"  
+"Resource": "arn:aws:s3:::my_bucket/*"  
   }  
- \]  
+ ]  
 }
+```
 
 2\. Apply the access policy to the bucket with the following command.
 
 AWS CLI:
 
-aws s3api put-bucket-policy --policy file://policy.json --endpoint-url=https://s-ed1.cloud.gcore.lu --bucket my\_bucket
+```
+aws s3api put-bucket-policy --policy file://policy.json --endpoint-url=https://s-ed1.cloud.gcore.lu --bucket my_bucket
+```
 
 S3cmd:
 
-s3cmd setpolicy policy\_name.json s3://my\_bucket/
+```
+s3cmd setpolicy policy_name.json s3://my_bucket/
+```
 
 As a result, the object in the bucket will be publicly available.
 
@@ -121,34 +176,40 @@ To deny all users access to the "s3:GetObject" operation on a specific directory
 
 1\. Create a JSON file with the following policy:
 
+```
 {  
-"Statement": \[   
+"Statement": [   
  {   
 "Effect": "Allow",  
-"Principal": "\*",  
+"Principal": "*",  
 "Action": "s3:GetObject",  
-"Resource": "arn:aws:s3:::my\_bucket/\*"   
+"Resource": "arn:aws:s3:::my_bucket/*"   
  },  
  {   
 "Effect": "Deny",  
-"Principal": "\*",  
+"Principal": "*",  
 "Action": "s3:GetObject",  
-"Resource": "arn:aws:s3:::my\_bucket/secret/\*"   
+"Resource": "arn:aws:s3:::my_bucket/secret/*"   
   }  
- \]  
+ ]  
 }
+```
 
-**Note**: Replace _arn:aws:s3:::my\_bucket/secret/\*_ with the path to the directory you want to hide and _arn:aws:s3:::my\_bucket/\*_ with the path to the higher-level bucket.
+**Note**: Replace _arn:aws:s3:::my_bucket/secret/*_ with the path to the directory you want to hide and _arn:aws:s3:::my_bucket/*_ with the path to the higher-level bucket.
 
 2\. Apply the policy to the bucket with the following command.
 
 AWS CLI:
 
-aws s3api put-bucket-policy --policy file://policy.json --endpoint-url=https://s-ed1.cloud.gcore.lu --bucket my\_bucket
+```
+aws s3api put-bucket-policy --policy file://policy.json --endpoint-url=https://s-ed1.cloud.gcore.lu --bucket my_bucket
+```
 
 S3cmd:
 
-s3cmd setpolicy policy\_name.json s3://my\_bucket/
+```
+s3cmd setpolicy policy_name.json s3://my_bucket/
+```
 
 ### Allow requests from a particular IP by policy
 
@@ -156,37 +217,43 @@ To allow requests to the storage bucket from a specified IP address:
 
 1\. Create a JSON file with the following policy:
 
+```
 {  
 "Statement":   
- \[  
+ [  
   {  
 "Sid": "IPAllow",  
 "Effect": "Allow",  
-"Principal": "\*",  
-"Action": "s3:\*",  
-"Resource": \[  
+"Principal": "*",  
+"Action": "s3:*",  
+"Resource": [  
 "arn:aws:s3:::",  
-"arn:aws:s3:::/\*"  
-            \],  
+"arn:aws:s3:::/*"  
+            ],  
 "Condition":   
     {  
 "IpAddress": {"aws:SourceIp": "10.0.0.0/24"}  
     }  
   }  
- \]  
+ ]  
 }
+```
 
-**Note**: Replace _10.0.0.0/24_ with your desired IP address.
+**Note**: Replace *10.0.0.0/24* with your desired IP address.
 
 2\. Apply the policy to the bucket with the following command.
 
 AWS CLI:
 
-aws s3api put-bucket-policy --policy file://policy.json --endpoint-url=https://s-ed1.cloud.gcore.lu --bucket my\_bucket
+```
+aws s3api put-bucket-policy --policy file://policy.json --endpoint-url=https://s-ed1.cloud.gcore.lu --bucket my_bucket
+```
 
 S3cmd:
 
-s3cmd setpolicy policy\_name.json s3://my\_bucket/
+```
+s3cmd setpolicy policy_name.json s3://my_bucket/
+```
 
 ### Allow requests from a particular website by policy
 
@@ -194,34 +261,40 @@ To allow referrals to the storage bucket from specified websites:
 
 1\. Create a JSON file with the following policy:
 
+```
 {  
 "Statement":  
- \[  
+ [  
   {  
 "Sid":"Allow get requests originating from www.example.com and example.com.",  
 "Effect":"Allow",  
-"Principal":"\*",  
-"Action":\["s3:GetObject","s3:GetObjectVersion"\],  
-"Resource":"arn:aws:s3:::/\*",  
+"Principal":"*",  
+"Action":["s3:GetObject","s3:GetObjectVersion"],  
+"Resource":"arn:aws:s3:::/*",  
 "Condition":  
      {  
-"StringLike":{"aws:Referer":\["http://www.example.com/\*","http://example.com/\*"\]}  
+"StringLike":{"aws:Referer":["http://www.example.com/*","http://example.com/*"]}  
      }  
    }  
- \]  
+ ]  
 }
+```
 
-**Note**: Replace _http://www.example.com/_ and _http://example.com/_ with your desired websites.
+**Note**: Replace *http://www.example.com/* and *http://example.com/* with your desired websites.
 
 2\. Apply the policy to the bucket with the following command.
 
 AWS CLI:
 
-aws s3api put-bucket-policy --policy file://policy.json --endpoint-url=https://s-ed1.cloud.gcore.lu --bucket my\_bucket
+```
+aws s3api put-bucket-policy --policy file://policy.json --endpoint-url=https://s-ed1.cloud.gcore.lu --bucket my_bucket
+```
 
 S3cmd:
 
-s3cmd setpolicy policy\_name.json s3://my\_bucket/
+```
+s3cmd setpolicy policy_name.json s3://my_bucket/
+```
 
 ### Grant a user access to a bucket by policy 
 
@@ -229,25 +302,31 @@ To grant a user access to a bucket:
 
 1\. Create a JSON file with the following policy:
 
+```
 {    
-"Statement":\[   
+"Statement":[   
   {   
 "Effect":"Allow",   
-"Principal": {"AWS":\["arn:aws:iam:::user/1234-test"\]},   
-"Action":\["s3:GetObject","s3:ListBucket"\],   
-"Resource":\["arn:aws:s3:::my\_bucket/\*", "arn:aws:s3:::my\_bucket"\]   
+"Principal": {"AWS":["arn:aws:iam:::user/1234-test"]},   
+"Action":["s3:GetObject","s3:ListBucket"],   
+"Resource":["arn:aws:s3:::my_bucket/*", "arn:aws:s3:::my_bucket"]   
   }   
- \]   
+ ]   
 } 
+```
 
-**Note**: Replace _1234-test_ with the actual name of your storage in your account, and _arn:aws:s3:::my\_bucket_ with the actual name of your bucket.
+**Note**: Replace *1234-test* with the actual name of your storage in your account, and *arn:aws:s3:::my_bucket* with the actual name of your bucket.
 
 2\. Apply the policy to the bucket with the following command.
 
 AWS CLI:
 
-aws s3api put-bucket-policy --policy file://policy.json --endpoint-url=https://s-ed1.cloud.gcore.lu --bucket my\_bucket
+```
+aws s3api put-bucket-policy --policy file://policy.json --endpoint-url=https://s-ed1.cloud.gcore.lu --bucket my_bucket
+```
 
 S3cmd:
 
-s3cmd setpolicy policy\_name.json s3://my\_bucket/
+```
+s3cmd setpolicy policy_name.json s3://my_bucket/
+```

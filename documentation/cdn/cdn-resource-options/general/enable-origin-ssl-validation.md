@@ -6,11 +6,11 @@ order: 20
 toc:
    --1--What is it for: "what-is-this-option-for"
    --1--How does it work: "how-does-it-work"
+   --1--Enable via API: "enable-ssl-validation-via-api"
 ---
-  
+ 
 
-What is this option for?
-------------------------
+## What is this option for?
 
 Note: This option is only accessible via [API](https://apidocs.gcore.com/iam).  
 
@@ -24,8 +24,8 @@ To increase the connection security level, activate the Origin SSL Validation�
 
 With the active origin validation option, the CDN server will ensure the validity of your origin certificate before completing any connection. This includes ensuring the identity of your server with your signing CA. 
 
-How does it work?
------------------
+## How does it work?
+
 
 1\. You set the part of the public key of the X.509 certificate in the system (using an API request) in the PEM format. The other part of the key you will store on your origin server. The certificates you added will receive a unique ID. We will store all the certificate information on CDN servers. At any moment, you can get a request for the certificate information or change their names.  
 
@@ -42,3 +42,11 @@ How does it work?
 7\. If successful, the origin server gives access to the protected information to the CDN server. 
 
 8\. CDN server sends the content to the user browser.
+
+## Enable SSL validation via API
+
+1\. Upload the certificate using the "<a href="https://apidocs.gcore.com/cdn#tag/CA-certificates/operation/ca_certitifactes-add" target="_blank">Add Trusted CA Certificate</a>" documentation.
+
+2\. Link the certificate to the CDN resource using the *proxy_ssl_ca* and *proxy_ssl_data* keys according to the "<a href="https://apidocs.gcore.com/cdn#tag/Resources/operation/change_cdn_resource" target="_blank">Change CDN Resource</a>" documentation.
+
+3\. Set the *proxy_ssl_enabled* key to the true value for your resource according to the "<a href="https://apidocs.gcore.com/cdn#tag/Resources/operation/change_cdn_resource" target="_blank">Change CDN Resource</a>" documentation.

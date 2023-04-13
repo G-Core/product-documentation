@@ -6,7 +6,6 @@ order: 30
 toc:
    --1--Video and live streaming statistics: "video-and-live-streaming-statistics"
    --1--Billing statistics: "billing-statistics"
-   --1--CDN statistics: "cdn-statistics"
 ---
   
   
@@ -69,8 +68,3 @@ You can sort statistics by several metrics:
 <img src="https://support.gcore.com/hc/article_attachments/10599503863057" alt="mceclip1.png">
 
 VoD plans calculate the total duration of all videos uploaded to the Streaming Platform. Let’s say, for example, that one day, you upload 50 minutes of video. On the next, you upload 100 minutes of video and then delete the first video. You will be billed for 150 minutes of video.
-
-CDN statistics 
----------------
-
-Videos on demand and live streams are distributed via CDN resources. The [Dashboard](https://accounts.gcore.com/reports/dashboard) section displays CDN statistics: traffic, bandwidth, and response codes. For detailed statistics on CDN resources, refer to the instruction: [Reports. Check CDN resource reports](https://gcore.com/support/articles/115004917425/).

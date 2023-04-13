@@ -40,8 +40,6 @@ toc:
 
 On this tab you can download the uploaded video in the required quality by selecting its bitrate and clicking **Download video**.   
 
-<img src="https://support.gcore.com/hc/article_attachments/9774526073873" alt="mceclip5.png">
-
-The video is distributed via a CDN resource. A video URL contains a domain name like "_12345.gvideo.io"_, that was automatically generated and configured for your account. If you want to use your custom domain (not "_12345.gvideo.io"_ ), [change the CDN settings](https://gcore.com/support/articles/5499359292561/).   
+<img src="https://support.gcore.com/hc/article_attachments/9774526073873" alt="mceclip5.png">  
 
 If the video is requested over a direct link or from the website where you have inserted the iFrame code, all views will be counted for the statistics. To see it, go to the video settings (step 5) and click the "Statistics" tab.

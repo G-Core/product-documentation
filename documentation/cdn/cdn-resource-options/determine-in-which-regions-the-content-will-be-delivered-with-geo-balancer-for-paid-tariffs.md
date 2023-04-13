@@ -5,6 +5,9 @@ published: true
 order: 140
 toc:
 ---
+
+# Determine in which regions the content will be delivered with geo balancer for paid tariffs
+
 _The option is not available for the Free tariff_
 
 Geo Balancer option disables content distribution in certain regions. 

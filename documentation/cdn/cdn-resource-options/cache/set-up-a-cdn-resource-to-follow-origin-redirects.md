@@ -53,7 +53,7 @@ To configure origin redirection using the control panel:
 
 <img src="https://support.gcore.com/hc/article_attachments/11761432025745" alt="image5.png" width="669" height="65">
 
-**Important:** Once saved, we recommend [purging the CDN cache](https://www.gcore.com/support/articles/214532065/) to ensure that users receive an updated version of your content.
+**Important:** Once saved, we recommend <a>purging the CDN cache](https://www.gcore.com/support/articles/214532065/) to ensure that users receive an updated version of your content.
 
 ### Via the API
 
