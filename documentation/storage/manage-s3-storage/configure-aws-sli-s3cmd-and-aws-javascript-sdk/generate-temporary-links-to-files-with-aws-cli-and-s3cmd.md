@@ -9,13 +9,12 @@ toc:
    --2--via AWS CLI: "generate-links-in-aws-cli"
    --2--via S3cmd: "generate-links-in-s3cmd"
 ---
-  
-                    
 
-What is a presigned URL?
-------------------------
+# Generate temporary links to files with AWS CLI and S3cmd                   
 
-A presigned URL is a temporary link used to access a private file in the storage. Such links can be generated only by those who have [access keys](https://gcorelabs.com/support/articles/360002072257/#h_01G1110V67GGHCB9Z6BB30HK35) (Access key and Secret key) from the storage. As a rule, this is a storage owner.
+## What is a presigned URL?
+
+A presigned URL is a temporary link used to access a private file in the storage. Such links can be generated only by those who have <a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage#s3" target="_blank">access keys</a> (Access key and Secret key) from the storage. As a rule, this is a storage owner.
 
 This is how you work with the presigned URLs:
 
@@ -25,20 +24,19 @@ This is how you work with the presigned URLs:
 
 3\. The users receive a link as follows:
 
-<img src="https://support.gcore.com/hc/article_attachments/7595319666705/Rectangle_969.png" alt="Rectangle_969.png">
+<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/generate-a-presigned-url/link-explanation-10.png" alt="">
 
 4\. After that, users will be able to view and download the file during the link lifespan that has been set by the owner. 
 
 5\. When the link expires, the access will be revoked. When clicking the link, users will see the "AccessDenied" error.
 
-<img src="https://support.gcore.com/hc/article_attachments/7595341367953/image_1875.png" alt="image_1875.png">
+<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/generate-a-presigned-url/example-temp-link-20.png" alt="">
 
 A presigned URL doesn't require user's authentication. This means that everyone with a valid temporary link can access the file. For example, if you send such a link to a user who then forwards it to another person, that person will also be able to view and download files.
 
-To protect the temporary link, you can restrict access by IP in the Access Policy settings. For the appropriate code, refer to the following article: [Configure ACL and Policy for S3 storage](https://gcorelabs.com/support/articles/4405490613649/#h_01F2NXTZDJ35E4NF8J41E976YS).
+To protect the temporary link, you can restrict access by IP in the Access Policy settings. For the appropriate code, refer to the following article: <a href="https://gcore.com/docs/storage/manage-s3-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/configure-access-control-on-s3-storage-with-aws-cli-and-s3cmd" target="_blank">Configure ACL and Policy for S3 storage</a>.
 
-Generate a presigned URL
-------------------------
+## Generate a presigned URL
 
 We have prepared a guide to generate a presigned URL for two storage management utilities: AWS CLI and S3cmd.
 
@@ -73,7 +71,7 @@ where:
 
 *   _example-bucket_ — the name of the bucket that hosts the file,
 *   _image.jpg_ — the file you want to share,
-*   _1657457538 —_ link expiry time in the Timestamp format, use the [converter](https://www.epochconverter.com/) to convert time formats.
+*   _1657457538 —_ link expiry time in the Timestamp format, use the <a href="https://www.epochconverter.com/" target="_blank">converter</a> to convert time formats.
 
 You can also set the link expiry date by running the Echo command as an alternative to Timestamp. For example, you can set a lifespan of 7 days by entering the following string:
 

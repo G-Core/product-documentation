@@ -11,8 +11,7 @@ toc:
   
   
 
-About the option
-----------------
+## About the option
 
 If you are serving content larger than 10 MB, we recommend using the _Large Files Delivery Optimization_. With this option, the CDN will make range requests to the origin to retrieve 10-MB chunks of the content. These chunks are then collected in the cache, and once the CDN has the necessary portions of the requested content, the response is assembled and returned to the end user.
 

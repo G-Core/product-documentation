@@ -2,7 +2,7 @@
 title: connect-web-security-and-cdn-for-the-same-domain
 displayName: Use Web Security and CDN
 published: true
-order: 120
+order: 15
 toc:
     --1--What's the challenge?: "what-is-the-challenge-in-using-web-security-and-cdn-together"
     --1--How we solved It: "how-we-solved-the-challenge"
