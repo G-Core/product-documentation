@@ -46,14 +46,16 @@ We have prepared a guide to generate a presigned URL for two storage management 
 
 2\. Paste the command below into AWS and replace the values with your own ones:
 
+```
 aws presign s3://example-bucket/image.jpg --expires in 60480 --endpoint-url s-dt2.cloud.gcore.lu
+```
 
 where:
 
-*   _example-bucket_ — the name of the bucket that hosts the file,
-*   _image.jpg_ — the file you want to share,
-*   _60480_ — link lifespan in seconds, the maximum is 7 days,
-*   _s-dt2.cloud.gcore.lu_ — the hostname of your storage that can be found in the "Details" of the storage in your control panel.
+- *example-bucket* — the name of the bucket that hosts the file,
+- *image.jpg* — the file you want to share,
+- *60480* — link lifespan in seconds, the maximum is 7 days,
+- *s-dt2.cloud.gcore.lu* — the hostname of your storage that can be found in the "Details" of the storage in your control panel.
 
 3\. Press "Enter". 
 
@@ -65,23 +67,26 @@ Done. The command will generate a link. Copy it and send it to the user you want
 
 2\. Paste the command below into S3cmd and replace the values with your own ones: 
 
+```
 s3cmd signurl s3://example-bucket/image.jpg 1657457538
+```
 
 where:
 
-*   _example-bucket_ — the name of the bucket that hosts the file,
-*   _image.jpg_ — the file you want to share,
-*   _1657457538 —_ link expiry time in the Timestamp format, use the <a href="https://www.epochconverter.com/" target="_blank">converter</a> to convert time formats.
+- *example-bucket* — the name of the bucket that hosts the file,
+- *image.jpg* — the file you want to share,
+- *1657457538* — link expiry time in the Timestamp format, use the <a href="https://www.epochconverter.com/" target="_blank">converter</a> to convert time formats.
 
 You can also set the link expiry date by running the Echo command as an alternative to Timestamp. For example, you can set a lifespan of 7 days by entering the following string:
 
-s3cmd signurl s3://example-bucket/image.jpg $(echo "\`date +%s\` + 3600 \* 24 \* 7" | bc)
-
+```
+s3cmd signurl s3://example-bucket/image.jpg $(echo "`date +%s` + 3600 * 24 * 7" | bc)
+```
 where:
 
-*   _example-bucket_ — the name of the bucket that hosts the file,
-*   _image.jpg_ — the file you want to share,
-*   _$(echo "\`date +%s\` + 3600 \* 24 \* 7 " | bc)_ — 7-day offset of the link expiry time.
+- *example-bucket* — the name of the bucket that hosts the file,
+- *image.jpg* — the file you want to share,
+- *$(echo "`date +%s` + 3600 * 24 * 7 " | bc)* — 7-day offset of the link expiry time.
 
 3\. Press "Enter".
 

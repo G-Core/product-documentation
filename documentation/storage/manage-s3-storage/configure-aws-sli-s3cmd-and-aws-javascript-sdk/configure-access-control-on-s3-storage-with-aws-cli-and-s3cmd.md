@@ -25,60 +25,15 @@ ACLs, or Access Control Lists, are sets of rules that determine who has access t
 
 ACLs for objects can be configured for a variety of actions, such as:
 
-<table style="width: 482px;">
-<tbody>
-<tr>
-<td style="text-align: center"><b>AWS CLI</b></td>
-<td style="text-align: center"><b>S3cmd</b></td>
-<td style="text-align: center"><b>Description</b></td>
-</tr>
-<tr>
-<td>
-<p>--public-read</p>
-<p>&nbsp;</p>
-</td>
-<td>--acl-public</td>
-<td>Making an object publicly accessible</td>
-</tr>
-<tr style="height: 22px;">
-<td style="width: 82px; height: 22px;">&nbsp;--private</td>
-<td style="width: 154.375px; height: 22px;">--acl-private</td>
-<td style="width: 241.625px; height: 22px;">Making an object private</td>
-</tr>
-<tr style="height: 22px;">
-<td style="width: 82px; height: 22px;">&nbsp;--grant-full-control</td>
-<td style="width: 154.375px; height: 22px;">--acl-grant=full-control</td>
-<td style="width: 241.625px; height: 22px;">Granting full control over the bucket</td>
-</tr>
-<tr style="height: 22px;">
-<td style="width: 82px; height: 22px;">&nbsp;--grant-read</td>
-<td style="width: 154.375px; height: 22px;">--acl-grant=read</td>
-<td style="width: 241.625px; height: 22px;">Allowing the listing of objects in the bucket</td>
-</tr>
-<tr style="height: 22px;">
-<td style="width: 82px; height: 22px;">&nbsp;--grant-read-acp</td>
-<td style="width: 154.375px; height: 22px;">--acl-grant=read_acp</td>
-<td style="width: 241.625px; height: 22px;">Allowing the reading of ACLs</td>
-</tr>
-<tr style="height: 22px;">
-<td style="width: 82px; height: 22px;">&nbsp;--grant-write</td>
-<td style="width: 154.375px; height: 22px;">--acl-grant=write</td>
-<td style="width: 241.625px; height: 22px;">Allowing recording, overwriting, and deleting of objects</td>
-</tr>
-<tr style="height: 32px;">
-<td style="width: 82px; height: 32px;">&nbsp;--grant-write-acp </td>
-<td style="width: 154.375px; height: 32px;">&nbsp;
-<p>--acl-grant=write_acp</p>
-<p>&nbsp;</p>
-</td>
-<td style="width: 241.625px; height: 32px;">
-<p>Allowing the writing of ACLs</p>
-<p>&nbsp;</p>
-</td>
-</tr>
-</tbody>
-</table>
-                     
+| AWS CLI              | S3cmd                    | Description                                               |  
+|----------------------|--------------------------|-----------------------------------------------------------|
+| --public-read        | --acl-public             | Making an object publicly accessible                      |  
+| --private            | --acl-private            | Making an object private                                  | 
+| --grant-full-control | --acl-grant=full-control | Granting full control over the bucket                     |  
+| --grant-read         | --acl-grant=read         | Allowing the listing of objects in the bucket             |   
+| --grant-read-acp     | --acl-grant=read_acp     | Allowing the reading of ACLs                              |   
+| --grant-write        | --acl-grant=write        | Allowing recording, overwriting, and deleting of objects  |  
+   
 ## What are policies?
 
 Policies are JSON files that provide a more detailed way to control access to objects and buckets. They allow you to specify which actions a specific user or all users are allowed or denied to perform.

@@ -10,24 +10,23 @@ toc:
    --2--Connect with an SSH key: "connect-with-an-ssh-key"
 ---
 
+# Connect to your storage with FileZilla
 
-Install FileZilla
------------------
+## Install FileZilla
 
 You can use bash to connect to the SFTP storage. In the example, we use the FTP client FileZilla.
 
-To download and install FileZilla, use [this link](https://filezilla-project.org/).
+To download and install FileZilla, use <a href="https://filezilla-project.org/" target="_blank">this link</a>.
 
-Configure connection
---------------------
+## Configure connection
 
 Start by opening up Site Manager:
 
-<img src="https://support.gcore.com/hc/article_attachments/13822230046353" alt="first.png">
+<img src="https://support.gcore.com/hc/article_attachments/13822230046353" alt="">
 
 In an open window, click on the **New Site** button:
 
-<img src="https://support.gcore.com/hc/article_attachments/13814505201553" alt="1564059900721.png">
+<img src="https://support.gcore.com/hc/article_attachments/13814505201553" alt="">
 
 Give it a name and navigate to the General tab on the right.
 
@@ -35,23 +34,23 @@ Give it a name and navigate to the General tab on the right.
 
 <img src="https://support.gcore.com/hc/article_attachments/13814507121937" alt="1564060020832.png">
 
-Choose SFTP - SSH File Transfer Protocol in the Protocol field drop-down menu.
+Choose SFTP - SSH File Transfer Protocol in the "Protocol" field drop-down menu.
 
-Put the Hostname from the Control Panel in the "Host" field, and specify port 2200.
+Put the **Hostname** from the Control Panel in the "Host" field, and specify port **2200**.
 
 Logon Type should be Ask for password.
 
 The user is your storage name.
 
-Click OK to save the changes and Connect to establish a connection to the storage.
+Click **OK** to save the changes and Connect to establish a connection to the storage.
 
 ### Connect with an SSH key
 
-<img src="https://support.gcore.com/hc/article_attachments/13814523568017" alt="1564060046928.png">
+<img src="https://support.gcore.com/hc/article_attachments/13814523568017" alt="">
 
 Choose SFTP - SSH File Transfer Protocol in the Protocol field drop-down menu.
 
-In the Host field put the Hostname from the Control Panel, specify port 2200.
+In the "Host" field put the Hostname from the Control Panel, specify port 2200.
 
 Logon Type should be Key file.
 
@@ -59,4 +58,4 @@ User is your storage name.
 
 For the Key file specify the path to the private key on your computer.
 
-Click OK to save the changes and Connect to establish a connection to the storage.
+Click **OK** to save the changes and Connect to establish a connection to the storage.
