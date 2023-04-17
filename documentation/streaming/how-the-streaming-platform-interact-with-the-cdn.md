@@ -8,7 +8,6 @@ toc:
    --1--From which subdomain?: "from-which-subdomain-is-your-content-distributed"
    --1--Change the subdomain: "change-the-default-subdomain"
 ---
-   
 # How the Streaming Platform interact with the CDN
  
 ## How does our Streaming Platform distribute video content?

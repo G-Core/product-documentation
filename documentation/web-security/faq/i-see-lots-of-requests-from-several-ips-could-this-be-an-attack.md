@@ -5,4 +5,6 @@ published: true
 order: 30
 toc:
 ---
-Those IP addresses might be ours. All client requests go to our servers first and then get forwarded to your web server. Contact us via chat or email to [support@gcore.com](mailto:support@gcorelabs.com) to clarify the issue.
+# I see lots of requests from several IPs. Could this be an attack?
+
+Those IP addresses might be ours. All client requests go to our servers first and then get forwarded to your web server. Contact us via chat or email to [support@gcore.com](mailto:support@gcore.com) to clarify the issue.

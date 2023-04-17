@@ -13,36 +13,39 @@ toc:
     --1--Reduce server load: "reduce-server-load"
     --1--IPv6: "ipv6"
 ---
-Good website protection requires a layered approach. We described the main settings in the "[Create and configure resource under protection](https://support.gcorelabs.com/hc/en-us/articles/360000578457-DDoS-Protection-Setup)" article. Implement additional protective measures to minimize the website vulnerability.
 
-### Change your IP
+# Configure additional protection settings
 
-An attacker can get your real IP using DNS History and attack it directly. Get a new IP and put it in the Original IP field in the Control panel. Don't mention/publish the IP anywhere else.
+Good website protection requires a layered approach. We described the main settings in the "<a href="https://gcore.com/docs/web-security/create-and-configure-a-protected-resource" target="_blank">Create and configure resource under protection</a>" article. Implement additional protective measures to minimize the website vulnerability.
 
-### Check your DNS records
+## Change your IP
+
+An attacker can get your real IP using DNS History and attack it directly. Get a new IP and put it in the "Original IP" field in the Control panel. Don't mention/publish the IP anywhere else.
+
+## Check your DNS records
 
 If you have subdomains or other records that point to the real IP, change them to another IP.
 
-### Check your HTML code
+## Check your HTML code
 
 Ensure that your HTML code doesn't have references to your real IP.
 
-### Set IP access policy
+## Set IP access policy
 
-Limit access to your server for all but our subnets and some trusted IPs. We mention ways to set the limits in the "[Origin Access Restrictions](https://support.gcorelabs.com/hc/en-us/articles/360000579237-Restricting-Direct-Access-to-Website?flash_digest=51ad6b410b542525b67ede1208d3fb5c764c6433)" article.
+Limit access to your server for all but our subnets and some trusted IPs. We mention ways to set the limits in the "<a href="https://gcore.com/docs/web-security/deny-access-to-everyone-except-trusted-ips-and-gcore-subnets" target="_blank">Deny access to everyone except trusted IPs and Gcore subnets</a>" article.
 
-### Configure your mail service
+## Configure your mail service
 
 Configure a separate email server. If you are running your mail server on the same server as your website, an attacker can find your origin server IP.
 
-### Restore users' IP addresses
+## Restore users' IP addresses
 
-[Configure the X-Forwarded-For HTTP header](https://support.gcorelabs.com/hc/en-us/articles/360000569538-Restoring-Visitor-IPs) to restore real visitors' IP addresses. Otherwise, you will see requests only from our subnets.
+<a href="https://gcore.com/docs/web-security/get-an-actual-ip-addresses-of-visitors-from-the_x-forward-for-header" target="_blank">Configure the X-Forwarded-For HTTP header</a> to restore real visitors' IP addresses. Otherwise, you will see requests only from our subnets.
 
-### Reduce server load
+## Reduce server load
 
-Move the static assets (images, video, css, JavaScript) to a subdomain and use [CDN](https://support.gcorelabs.com/hc/en-us/categories/115000655829-CDN) to deliver them. It reduces server load and bandwidth. 
+Move the static assets (images, video, css, JavaScript) to a subdomain and use <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">CDN</a> to deliver them. It reduces server load and bandwidth. 
 
-### IPv6
+## IPv6
 
-By default, we protect only IPv4 addresses, so if your website is also available via IPv6 we recommend removing the A record for IPv6 address from your DNS settings or adding protection for it. The IPv6 protection can be added by request. For details, reach us via chat or email to [support@gcore.com](mailto:support@gcorelabs.com).
+By default, we protect only IPv4 addresses, so if your website is also available via IPv6 we recommend removing the A record for IPv6 address from your DNS settings or adding protection for it. The IPv6 protection can be added by request. For details, reach us via chat or email to [support@gcore.com](mailto:support@gcore.com).

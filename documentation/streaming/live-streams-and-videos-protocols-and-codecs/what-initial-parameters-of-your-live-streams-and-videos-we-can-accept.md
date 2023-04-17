@@ -7,40 +7,180 @@ toc:
    --1--Supported parameters: "supported-parameters"
    --1--Recommended parameters: "recommended-stream-parameters"
 ---
-  
+# What initial parameters of your live streams and videos we can accept
 
-Supported parameters
---------------------
+## Supported parameters
 
 The streaming platform supports:
 
-*   Receiving live streams from [your server (PULL) or a dedicated publishing point (PUSH)](https://gcore.com/support/articles/5307972492945/) using the RTMP, RTSP, or SRT. The stream is transcoded to get streams of lower quality and sent with [adaptive streaming](https://gcore.com/support/articles/360000604285/) via CDN in  HLS/MPEG-DASH (CMAF Low Latency) formats. 
-*   Uploading videos in almost any format, from standard MP4 to 4k HDR Video, is transcoded to get videos of lower quality and sent with adaptive streaming via CDN in HLS format.
+- Receiving live streams from <a href="https://gcore.com/docs/streaming/live-streaming/create-a-live-stream" target="_blank">your server (PULL) or a dedicated publishing point (PUSH)</a> using the RTMP, RTSP, or SRT. The stream is transcoded to get streams of lower quality and sent with <a href="https://gcore.com/docs/streaming/live-streams-and-videos-protocols-and-codecs/how-we-optimize-live-stream-and-video-performance-by-creating-different-bitrates" target="_blank">adaptive streaming</a> via CDN in  HLS/MPEG-DASH (CMAF Low Latency) formats. 
+- Uploading videos in almost any format, from standard MP4 to 4k HDR Video, is transcoded to get videos of lower quality and sent with adaptive streaming via CDN in HLS format.
 
-**Note!** To get a PUSH point for the SRT protocol, write to us in the chat or at [support@gcore.com](mailto:support@gcorelabs.com). 
+**Note!** To get a PUSH point for the SRT protocol, write to us in the chat or at [support@gcore.com](mailto:support@gcore.com). 
 
-Recommended stream parameters
------------------------------
+## Recommended stream parameters
 
 We recommend the following parameters for streams:
 
-| \nParameters \n                                | \nValue \n                                                                                                                                                                         |
-|------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| \nVideo Bitrate &amp;Resolution \n             | \nQuality \n                                                                                                                                                                       | \n \nResolution \n \n                                            | \nVideo Bitrate Range \n |
-| \n4k \n                                        | \n3840x2160 \n                                                                                                                                                                     | \n20,000–51,000 Kbps (60 fps),  \n13,000–34,000 Kbps (30 fps) \n |
-| \n1440 \n                                      | \n2560x1440  \n                                                                                                                                                                    | \n9,000–18,000 Kbps (60 fps),  \n6,000–13,000 Kbps (30 fps) \n   |
-| \n1080 \n                                      | \n1920x1080   \n                                                                                                                                                                   | \n4,500–9,000 Kbps (60 fps),  \n3,000–6,000 Kbps (30 fps) \n     |
-| \n720 \n                                       | \n1280x720 \n                                                                                                                                                                      | \n2,250–6,000 Kbps (60 fps),  \n1,500–4,000 Kbps (30 fps)  \n    |
-| \n480 \n                                       | \n854x480  \n                                                                                                                                                                      | \n500–2,000 Kbps \n                                              |
-| \nFrame rate \n \n                             | \nUp to 60 fps \n                                                                                                                                                                  |
-| \nAudio codec \n                               | \nAAC, MP3  \n                                                                                                                                                                     |
-| \nVideo codec \n                               | \nH.264, H.265 \n                                                                                                                                                                  |
-| \nContainer (only for video)\n                 | \n3g2, 3gp, asf, avi, dif, dv, flv, f4v, m4v, mov, mp4, mpeg, mpg, mts, m2t, m2ts, qt, wmv, vob, mkv, ogv, webm, vob, ogg, mxf, quicktime, x-ms-wmv, mpeg-tts, vnd.dlna.mpeg-tts\n |
-| \nKeyframe frequency (only for live stream) \n | \n2s (max 4s)  \n                                                                                                                                                                  |
-| \nBitrate encoding \n                          | \nCBR \n                                                                                                                                                                           |
-| \nPixel aspect ratio \n                        | \nSquare \n                                                                                                                                                                        |
-| \nAudio sample rate \n                         | \n44.1 kHz  \n                                                                                                                                                                     |
-| \nAudio bitrate \n                             | \n28-Kbps stereo \n                                                                                                                                                                |
-
+<table border="=" cellpadding="=" data-tablestyle="MsoTableGrid" data-tablelook="1696">
+<tbody>
+<tr>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><strong><span data-contrast="auto">Parameters</span></strong></p>
+</td>
+<td class="wysiwyg-text-align-center" colspan="3" data-celllook="0">
+<p><strong><span data-contrast="auto">Value</span></strong></p>
+</td>
+</tr>
+<tr>
+<td class="wysiwyg-text-align-center" rowspan="6" data-celllook="0">
+<p><span data-contrast="none">Video Bitrate &amp; Resolution</span></p>
+</td>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="none">Quality</span></p>
+</td>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p>&nbsp;</p>
+<p><span data-contrast="none">Resolution</span></p>
+<p>&nbsp;</p>
+</td>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="none">Video Bitrate Range</span></p>
+</td>
+</tr>
+<tr>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="auto">4k</span></p>
+</td>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="none">3840x2160</span></p>
+</td>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="none">20,000&ndash;51,000 Kbps (60 fps),&nbsp;</span></p>
+<p><span data-contrast="none">13,000&ndash;34,000 Kbps (30 fps)</span></p>
+</td>
+</tr>
+<tr>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="auto">1440</span></p>
+</td>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="none">2560x1440</span>&nbsp;</p>
+</td>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="none">9,000&ndash;18,000 Kbps (60 fps),&nbsp;</span></p>
+<p><span data-contrast="none">6,000&ndash;13,000 Kbps (30 fps)</span></p>
+</td>
+</tr>
+<tr>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="auto">1080</span></p>
+</td>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="none">1920x1080&nbsp;</span><span data-contrast="auto">&nbsp;</span></p>
+</td>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="none">4,500&ndash;9,000 Kbps (60 fps),&nbsp;</span></p>
+<p><span data-contrast="none">3,000&ndash;6,000 Kbps (30 fps)</span></p>
+</td>
+</tr>
+<tr>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="auto">720</span></p>
+</td>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="none">1280x720</span></p>
+</td>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="none">2,250&ndash;6,000 Kbps (60 fps),</span></p>
+<p><span data-contrast="none">1,500&ndash;4,000 Kbps (30 fps)</span>&nbsp;</p>
+</td>
+</tr>
+<tr>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="auto">480</span></p>
+</td>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="none">854x480</span>&nbsp;</p>
+</td>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="none">500&ndash;2,000 Kbps</span></p>
+</td>
+</tr>
+<tr>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="none">Frame rate</span></p>
+<p>&nbsp;</p>
+</td>
+<td class="wysiwyg-text-align-center" colspan="3" data-celllook="0">
+<p><span data-contrast="auto">Up to&nbsp;</span><span data-contrast="none">60&nbsp;fps</span></p>
+</td>
+</tr>
+<tr>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="none">Audio codec</span></p>
+</td>
+<td class="wysiwyg-text-align-center" colspan="3" data-celllook="0">
+<p><span data-contrast="none">AAC, MP3</span>&nbsp;</p>
+</td>
+</tr>
+<tr>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="none">Video codec</span></p>
+</td>
+<td class="wysiwyg-text-align-center" colspan="3" data-celllook="0">
+<p><span data-contrast="none">H.264, H.265</span></p>
+</td>
+</tr>
+<tr>
+<td>
+<p class="wysiwyg-text-align-center"><span data-contrast="none">Container<strong>&nbsp;(only for video)</strong></span></p>
+</td>
+<td colspan="3">
+<p class="wysiwyg-text-align-center"><span data-contrast="none">3g2, 3gp,&nbsp;asf,&nbsp;avi,&nbsp;dif, dv,&nbsp;flv, f4v, m4v, mov, mp4, mpeg, mpg,&nbsp;mts, m2t, m2ts, qt,&nbsp;wmv,&nbsp;vob,&nbsp;mkv,&nbsp;ogv,&nbsp;webm,&nbsp;vob,&nbsp;ogg,&nbsp;mxf,&nbsp;quicktime, x-ms-wmv, mpeg-tts, vnd.dlna.mpeg-tts</span></p>
+</td>
+</tr>
+<tr>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="none">Keyframe frequency&nbsp;<strong>(only for live stream)</strong></span></p>
+</td>
+<td class="wysiwyg-text-align-center" colspan="3" data-celllook="0">
+<p><span data-contrast="none">2s (max&nbsp;4s)</span></p>
+</td>
+</tr>
+<tr>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="none">Bitrate encoding</span></p>
+</td>
+<td class="wysiwyg-text-align-center" colspan="3" data-celllook="0">
+<p><span data-contrast="none">CBR</span></p>
+</td>
+</tr>
+<tr>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="none">Pixel aspect ratio</span></p>
+</td>
+<td class="wysiwyg-text-align-center" colspan="3" data-celllook="0">
+<p><span data-contrast="none">Square</span></p>
+</td>
+</tr>
+<tr>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="none">Audio sample rate</span></p>
+</td>
+<td class="wysiwyg-text-align-center" colspan="3" data-celllook="0">
+<p><span data-contrast="none">44.1 kHz</span>&nbsp;</p>
+</td>
+</tr>
+<tr>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="none">Audio bitrate</span></p>
+</td>
+<td class="wysiwyg-text-align-center" colspan="3" data-celllook="0">
+<p><span data-contrast="none">28-Kbps&nbsp;stereo</span></p>
+</td>
+</tr>
+</tbody>
+</table>
 
 If the recommended parameters do not suit your stream, write to us in the chat or via [support@gcore.com](mailto:support@gcore.com), or contact your manager to find the solution.

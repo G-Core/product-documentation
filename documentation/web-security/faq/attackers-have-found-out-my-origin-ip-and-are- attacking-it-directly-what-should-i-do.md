@@ -5,6 +5,8 @@ published: true
 order: 50
 toc:
 ---
-Ask the hosting provider for a new IP address (preferably from a different subnet). Change the origin IP in the [control panel settings](https://support.gcorelabs.com/hc/en-us/articles/360000578457-DDoS-Protection-Setup). 
+# Attackers have found out my origin IP and are attacking it directly. What should I do?
 
-Set up [ACL](https://support.gcorelabs.com/hc/en-us/articles/360000579237-Origin-Access-Restrictions) to allow access only to the trusted IPs and subnets.
+Ask the hosting provider for a new IP address (preferably from a different subnet). Change the origin IP in the <a href="https://gcore.com/docs/web-security/create-and-configure-a-protected-resource" target="_blank">Control panel settings</a>. 
+
+<a href="https://gcore.com/docs/set-the-access-policy-for-a-protected-resource" target="_blank">Set up ACL</a> to allow access only to the trusted IPs and subnets.
