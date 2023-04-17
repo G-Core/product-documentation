@@ -6,12 +6,14 @@ order: 30
 toc:
    --1--How adaptive streaming works: "how-adaptive-streaming-works"
 ---
+
+# How we optimize live stream and video performance by creating different bitrates
+
 Adaptive streaming is a default feature that helps to optimize the stream performance in the end-user's browser.  
 
 To get the full benefits of the feature, send us the highest quality stream or video so we would be able to split it into several ones with different bitrates. 
 
-How adaptive streaming works 
------------------------------
+## How adaptive streaming works 
 
 1\. We create a manifest with embedded streams with different resolutions and bitrates.  
 

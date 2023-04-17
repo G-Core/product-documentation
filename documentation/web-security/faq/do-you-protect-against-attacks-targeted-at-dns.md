@@ -5,4 +5,6 @@ published: true
 order: 90
 toc:
 ---
+# Do you protect against attacks targeted at DNS?
+
 At the moment, we don't provide protection for DNS. We can protect websites and web resources that operate over TCP.

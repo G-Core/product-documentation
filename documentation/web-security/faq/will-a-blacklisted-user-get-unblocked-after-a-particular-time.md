@@ -5,4 +5,6 @@ published: true
 order: 70
 toc:
 ---
+# Will a blacklisted user get unblocked after a particular time?
+
 An IP of the blocked user will eventually be removed from the blacklist. This measure is temporary and its duration depends on the reason for blocking.

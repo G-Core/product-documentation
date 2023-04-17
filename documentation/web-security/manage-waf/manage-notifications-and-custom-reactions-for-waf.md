@@ -13,16 +13,9 @@ toc:
    --2--5. Name and description: "5-enter-the-name-and-description"
    --1--Disable and delete: "disable-or-delete-a-trigger"
 ---
+# Manage notifications and custom reactions for WAF
   
-  
-  
-  
-  
-  
-  
-
-What are triggers?
-------------------
+## What are triggers?
 
 Triggers are tools that allow you to receive notifications and set how WAF should react to some events that it doesn't respond to by default (e.g., behavior attacks).
 
@@ -38,20 +31,19 @@ Let's say, for example, that you want to receive alerts about XSS attacks (if th
 *   Filter. XSS attack type.
 *   Reaction. A message and the e-mail address for integration.
 
-<img src="https://support.gcore.com/hc/article_attachments/10592570751633" alt="" width="601" height="396">
+<img src="https://support.gcore.com/hc/article_attachments/10592570751633" alt="">
 
 This is what a tab looks like with two triggers that add IP addresses that meet the conditions to the denylist:
 
-<img src="https://support.gcore.com/hc/article_attachments/10592555347729" alt="" width="768" height="234">
+<img src="https://support.gcore.com/hc/article_attachments/10592555347729" alt="">
 
-Create a trigger
-----------------
+## Create a trigger
 
 ### 1. Go to Triggers
 
-Go to the [Triggers](https://web-protect.gcore.com/waf/triggers/list) tab and click **Create trigger**.
+Go to the <a href="https://web-protect.gcore.com/waf/triggers/list" target="_blank">Triggers</a> tab and click **Create trigger**.
 
-<img src="https://support.gcore.com/hc/article_attachments/11773688591889" alt="mceclip0.png">
+<img src="https://support.gcore.com/hc/article_attachments/11773688591889" alt="">
 
 A new window opens.
 
@@ -59,7 +51,7 @@ A new window opens.
 
 Click the appropriate condition from the list to the right.
 
-<img src="https://support.gcore.com/hc/article_attachments/10592570864017" alt="" width="772" height="388">
+<img src="https://support.gcore.com/hc/article_attachments/10592570864017" alt="">
 
 There are ten conditions available for triggers:
 
@@ -77,7 +69,7 @@ There are ten conditions available for triggers:
 
 8. **Denylisted IP.** This will allow you to specify blocked IPs to WAF.
 
-9. **Hits from the same IP.** Using a condition, you can specify the threshold from which hits sent from the same IP should be grouped into a single attack in the [Events](https://web-protect.gcore.com/waf/events/incidents) section.
+9. **Hits from the same IP.** Using a condition, you can specify the threshold from which hits sent from the same IP should be grouped into a single attack in the <a href="https://web-protect.gcore.com/waf/events/incidents" target="_blank">Events</a> section.
 
 10.  **User added.** Using a condition, you'll command WAF to send an e-mail notification when the user is added to the WAF account.
 
@@ -85,26 +77,26 @@ There are ten conditions available for triggers:
 
 Filters detail the chosen condition. The set of available filters depends on the selected condition. In the example below, there are available filters for the 'Number of attacks' condition to the right.
 
-<img src="https://support.gcore.com/hc/article_attachments/10592570987281" alt="" width="756" height="375">
+<img src="https://support.gcore.com/hc/article_attachments/10592570987281" alt="">
 
 Click the needed filters from the list to add them to the condition. After that, the filter will display on the left, and you can specify its values.
 
 For example, we added the 'Type' filter and selected 'xss', 'sqli', and 'rce' types to determine only those types of attack we want to be notified about.
 
-<img src="https://support.gcore.com/hc/article_attachments/10592570995985" alt="" width="878" height="437">
+<img src="https://support.gcore.com/hc/article_attachments/10592570995985" alt="">
 
 To add other filters, click the one you need on the right.
 
 We list all available filters below.
 
-*   **URI (only for Brute force, Forced browsing, and BOLA)** is the endpoint to which the requests were sent.
-*   **Type** is the type of attack in the request or the application vulnerability that an attempt to exploit was made on.
-*   **Application** is the application that received the request or in which the request was found.
-*   **IP** is the IP address from which the request was sent.
-*   **Domain** is the domain of the application to which the request was sent or where the incident was found.
-*   **Response status** is the code with which the application responded to the request.
-*   **Target** is part of the application ('Database', 'Server', or 'Client') that was attacked or in which part of the application the vulnerability was found.
-*   **User's role** is the role of the user who was added to the WAF account. Available roles: deploy, analytic, admin, superadmin, auditor, partner\_admin, partner\_auditor, partner\_analytic.
+- **URI (only for Brute force, Forced browsing, and BOLA)** is the endpoint to which the requests were sent.
+- **Type** is the type of attack in the request or the application vulnerability that an attempt to exploit was made on.
+- **Application** is the application that received the request or in which the request was found.
+- **IP** is the IP address from which the request was sent.
+- **Domain** is the domain of the application to which the request was sent or where the incident was found.
+- **Response status** is the code with which the application responded to the request.
+- **Target** is part of the application ('Database', 'Server', or 'Client') that was attacked or in which part of the application the vulnerability was found.
+- **User's role** is the role of the user who was added to the WAF account. Available roles: deploy, analytic, admin, superadmin, auditor, partner_admin, partner_auditor, partner_analytic.
 
 ### 4. Add a reaction
 
@@ -114,31 +106,30 @@ The example below shows two available reactions for the 'Brute force' (requests 
 
 Click **Add a reaction** to add the suitable response and set it up if necessary.
 
-<img src="https://support.gcore.com/hc/article_attachments/10592571105937" alt="" width="936" height="467">
+<img src="https://support.gcore.com/hc/article_attachments/10592571105937" alt="">
 
 We list all available reactions below.
 
-*   **Mark as brute force/forced browsing/BOLA.** WAF shows all attacks with the type brute force, forced browsing, or BOLA in the [Events](https://web-protect.gcore.com/waf/events/incidents) section and doesn't block them.
-*   **Denylist IP address.** WAF blocks the attack by adding the IP address to a denylist.
-*   **Send e-mail.** WAF sends a notification with the appropriate type of conditions to the specified e-mail address. To set this reaction, you should add the e-mail for integration in the [Settings](https://web-protect.gcore.com/waf/settings/integrations) tab ahead of time.
-*   **Group next hits into one attack.** Group hits according to filters configured in the [Events](https://web-protect.gcore.com/waf/events/incidents) section of the WAF in one attack.
+- **Mark as brute force/forced browsing/BOLA.** WAF shows all attacks with the type brute force, forced browsing, or BOLA in the <a href="https://web-protect.gcore.com/waf/events/incidents" target="_blank">Events</a> section and doesn't block them.
+- **Denylist IP address.** WAF blocks the attack by adding the IP address to a denylist.
+- **Send e-mail.** WAF sends a notification with the appropriate type of conditions to the specified e-mail address. To set this reaction, you should add the e-mail for integration in the <a href="https://web-protect.gcore.com/waf/settings/integrations" target="_blank">Settings</a> tab ahead of time.
+- **Group next hits into one attack.** Group hits according to filters configured in the <a href="https://web-protect.gcore.com/waf/events/incidents" target="_blank">Events</a> section of the WAF in one attack.
 
 ### 5. Enter the name and description
 
 Check the trigger components, then enter a name and description if necessary. If no name or description is specified, the trigger will be created with a default name in the format.
 
-New trigger by <username>, <creation\_date>, and an empty description.
+New trigger by ```<username>```, ```<creation_date>```, and an empty description.
 
 Click **Create**.
 
-<img src="https://support.gcore.com/hc/article_attachments/10592571112721" alt="" width="899" height="449">
+<img src="https://support.gcore.com/hc/article_attachments/10592571112721" alt="">
 
-Disable or delete a trigger
----------------------------
+## Disable or delete a trigger
 
-Go to the [Triggers](https://web-protect.gcore.com/waf/triggers/list) tab, click the three dots next to the trigger you want to disable or delete, select the needed option, and confirm the action.
+Go to the <a href="https://web-protect.gcore.com/waf/triggers/list" target="_blank">Triggers</a> tab, click the three dots next to the trigger you want to disable or delete, select the needed option, and confirm the action.
 
-<img src="https://support.gcore.com/hc/article_attachments/10592589376529" alt="" width="869" height="295">
+<img src="https://support.gcore.com/hc/article_attachments/10592589376529" alt="">
 
-*   If you disable a trigger, reactions for the trigger will be stopped until the trigger is enabled again. The disabled triggers are displayed in the list. To re-enable, use the Enable option.
-*   If you delete a trigger, it'll be permanently stopped and removed from the general list forever.
+- If you disable a trigger, reactions for the trigger will be stopped until the trigger is enabled again. The disabled triggers are displayed in the list. To re-enable, use the Enable option.
+- If you delete a trigger, it'll be permanently stopped and removed from the general list forever.

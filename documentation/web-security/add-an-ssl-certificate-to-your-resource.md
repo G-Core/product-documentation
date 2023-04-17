@@ -10,12 +10,13 @@ toc:
    --2--Custom: "add-custom-certificate-to-your-resource"
 ---
 
-Add SSL сertidicate to your resourse
-------------------------------------
+# Add an SSL certificate to your resource
 
-To add an SSL certificate to your domain or subdomains go to the resource Settings and click "Edit" in "SSL Certificate" section.
+## Add SSL сertidicate to your resourse
 
-<img src="https://support.gcore.com/hc/article_attachments/4585574501905/mceclip0.png" alt="mceclip0.png" width="418" height="536">
+To add an SSL certificate to your domain or subdomains go to the resource Settings and click **Edit** in "SSL Certificate" section.
+
+<img src="https://support.gcore.com/hc/article_attachments/4585574501905/mceclip0.png" alt="" >
 
 You can add Let's Encrypt or Custom certificate, or refuse adding a certificate (None).
 
@@ -25,7 +26,7 @@ There is no SSL certificate, the content is delivered via HTTP.
 
 ### Add Let's Encrypt certificate
 
-It is a paid option, to activate it, please, contact the Support Team. 
+It is a paid option, to activate it, please, contact the [support team](mailto:support@gcore.com). 
 
 If you choose this option we will request an SSL certificate for your domain name and will be regularly renewing it automatically. To obtain the certificate we have to show to the certificate authority that our server controls your domain. One of the ways to do that is an A-record. So for us to have a certificate issued for your domain you have to change an A-record in your DNS settings and point your domain name to the protected IP address. Keep in mind that once the A-record has been changed it takes time for the DNS servers to renew their cache (depends on the TTL setting). If some old records are still circulating the certificate authority might not see that your domain name is pointed to our IP and deny the certificate issue. The disadvantage is that for the time spent on issuing the certificate the website would only be available via HTTP.
 
@@ -33,27 +34,31 @@ Once the SSL certificate is issued we will automatically renew it if you keep th
 
 If you decide to stop using Let's Encrypt certificate and switch settings to None, we will stop renewing the certificate but the previously issued one will stay active until its expiration date.
 
-**How to start using Let's Encrypt** **right away.** To avoid a period when your website will only be available via HTTP use these guideline:
+**How to start using Let's Encrypt right away**. To avoid a period when your website will only be available via HTTP use these guideline:
 
-1.  Create a resource in the Control Panel but don't change the A-record. Issue a Let's Encrypt certificate by yourself
-2.  Add this certificate as a Custom one to the Contol Panel
-3.  Change the A-record in your DNS settings
-4.  Wait untill the old DNS records will get removed (keep in mind the TTL value)
-5.  In the SSL settings change the value from Custom to Let's Encrypt and save the new settings.
+1. Create a resource in the Control panel but don't change the A-record. Issue a Let's Encrypt certificate by yourself.
+2. Add this certificate as a Custom one to the Contol panel.
+3. Change the A-record in your DNS settings.
+4. Wait untill the old DNS records will get removed (keep in mind the TTL value).
+5. In the SSL settings change the value from Custom to Let's Encrypt and save the new settings.
 
 Once you change the settings we will issue a new Let's Encrypt certificate for your resource and will regularly renew it.
 
 ### Add Custom certificate to your resource
 
-1.  Open a certificate file in PEM format in the Notepad app. Certificates of such format usually have .pem, .crt, or .cer extensions.  
-2.  Copy and paste the certificate chain in the following order: Personal certificate → Intermediate CA → Root CA.  Data in the Certificate field should be inserted, including the tags - - - - - BEGIN CERTIFICATE - - - - and - - - - - END CERTIFICATE - - - -. 
-3.  Certificate chains must be inserted together.  
+1. Open a certificate file in PEM format in the Notepad app. Certificates of such format usually have .pem, .crt, or .cer extensions.  
+2. Copy and paste the certificate chain in the following order: Personal certificate → Intermediate CA → Root CA.  Data in the Certificate field should be inserted, including the tags *- - - - - BEGIN CERTIFICATE - - - - and - - - - - END CERTIFICATE - - - -*. 
+3. Certificate chains must be inserted together.  
       
-    <img src="https://support.gcore.com/hc/article_attachments/4585581584657/mceclip1.png" alt="mceclip1.png">
-4.  There should be an empty string at the end of the certificate chain. <img src="https://support.gcore.com/hc/article_attachments/4585641946897/mceclip2.png" alt="mceclip2.png"> 
-5.  Open a file with the private key (.key) in the Notepad app. 
-6.  Copy and paste the key, including the tags - - - - - BEGIN PRIVATE KEY - - - - and - - - - - END PRIVATE KEY - - - - -. 
-7.  Click Create SSL certificate. 
-8.  The certificate will appear in the SSL certificates section. If this certificate is added at the moment of resource creation, the certificate will also be bound to the resource.
+<img src="https://support.gcore.com/hc/article_attachments/4585581584657/mceclip1.png" alt="">
 
-Don't forget to update such certificates.
+4. There should be an empty string at the end of the certificate chain. 
+
+<img src="https://support.gcore.com/hc/article_attachments/4585641946897/mceclip2.png" alt=""> 
+
+5. Open a file with the private key (.key) in the Notepad app. 
+6. Copy and paste the key, including the tags *- - - - - BEGIN PRIVATE KEY - - - - and - - - - - END PRIVATE KEY - - - - -*. 
+7. Click **Create SSL certificate**. 
+8. The certificate will appear in the SSL certificates section. If this certificate is added at the moment of resource creation, the certificate will also be bound to the resource.
+
+Don't forget to update certificates of this type.
