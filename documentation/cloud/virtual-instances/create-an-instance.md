@@ -5,13 +5,15 @@ order: 10
 published: true
 toc:
 ---
+# Create an instance
+
 1. Open **Instances** tab and click **Create Instance**.
 
-<img src="https://support.gcore.com/hc/article_attachments/10962065525265" alt="" width="666" height="354">
+![The Create Instance button](https://assets.gcore.pro/docs/cloud/virtual-instances/create/1-create-instance%20button.png)
 
 2. Select the region where you want to deploy the instance.
 
-<img src="https://support.gcore.com/hc/article_attachments/10962046605713" alt="" width="505" height="320">
+![Region selection](https://assets.gcore.pro/docs/cloud/virtual-instances/create/2-region-selection.png)
 
 Regions can be of two types: Core and Edge. A region determines the equipment specifications.
 
@@ -31,7 +33,7 @@ Regions can be of two types: Core and Edge. A region determines the equipment sp
 
 3. Select an **Image**.
 
-<img src="https://support.gcore.com/hc/article_attachments/10962046778257" alt="" width="505" height="426">
+![Image selection](https://assets.gcore.pro/docs/cloud/virtual-instances/create/3-image-selection.png)
 
 *   Choose an OS template, a volume, a snapshot, a custom [image](https://gcore.com/support/articles/360002429818/), or a template from the marketplace.
 *   (for a Linux instance) Remember the login from the **For login to OS** field to connect to your instance on Linux OS via SSH from another Linux device. For details, refer to the article: [How to connect to the virtual machine via SSH](https://gcore.com/support/articles/360012635517/).
@@ -40,7 +42,7 @@ Regions can be of two types: Core and Edge. A region determines the equipment sp
 
 4. For **Type**, choose the configuration.
 
-<img src="https://support.gcore.com/hc/article_attachments/10962046780817" alt="" width="555" height="454">
+![Type selection](https://assets.gcore.pro/docs/cloud/virtual-instances/create/4-type%20selection.png)
 
 Select the CPU generation.
 
@@ -67,7 +69,7 @@ Select the flavor:
 
 5. Configure **Volumes**.
 
-<img src="https://support.gcore.com/hc/article_attachments/10962065812241" alt="" width="554" height="484">
+![Volume selection](https://assets.gcore.pro/docs/cloud/virtual-instances/create/5-volume-selection.png)
 
 Enter a volume name.
 
@@ -86,15 +88,15 @@ Set the volume **Size** in GiB.
 
 If you select a **public** interface, you can turn on the **Use Reserved IP** toggle and assign a [reserved IP address](https://gcore.com/support/articles/4405927368721/) to your instance.
 
-<img src="https://support.gcore.com/hc/article_attachments/10962065819409" alt="" width="555" height="349">
+![Public Network is selected](https://assets.gcore.pro/docs/cloud/virtual-instances/create/6-public-network-selected.png)
 
 If you select a **private** interface, configure a network and a subnetwork according to the steps below. 
 
-<img src="https://support.gcore.com/hc/article_attachments/11780961325457" alt="Screenshot_2022-11-02_at_15.05_1.jpg" width="517" height="471">
+![Private Network is selected](https://assets.gcore.pro/docs/cloud/virtual-instances/create/7-private-network-selected.jpg)
 
 To configure a network, select an existing network from the drop-down list or create a new one by clicking **Add a new network**. If you choose the latter, the new window will open:
 
-<img src="https://support.gcore.com/hc/article_attachments/10962065965201" alt="" width="505" height="349">
+![The window to create a network](https://assets.gcore.pro/docs/cloud/virtual-instances/create/8-create-network-window.png)
 
 1) Enter the network name.
 
@@ -106,7 +108,7 @@ To configure a network, select an existing network from the drop-down list or cr
 
 To create a subnet, select an existing subnet from the drop-down list or create a new one by clicking **Add a new subnetwork**. If you choose the latter, the new window will open:
 
-<img src="https://support.gcore.com/hc/article_attachments/10962047206801" alt="" width="444" height="562">
+![The window to create a subnetwork](https://assets.gcore.pro/docs/cloud/virtual-instances/create/9-create-subnetwork-window.png)
 
 1) Enter the subnet name.
 
@@ -126,7 +128,7 @@ Optionally, you can turn on the **Use Reserved IP** toggle to assign a [reserved
 
 7. For **Firewall settings**, select the default firewall or create a new one by clicking **Add firewall**.
 
-<img src="https://support.gcore.com/hc/article_attachments/10962047195665" alt="" width="663" height="145">
+![The Firewall settings](https://assets.gcore.pro/docs/cloud/virtual-instances/create/10-firewall-settings.png)
 
 If you keep the default firewall, the incoming traffic will be allowed over ICMP, TCP (SSH) and RDP protocols.
 
@@ -134,13 +136,13 @@ If you want to create a new firewall, refer to the article: [Add Firewall and co
 
 8. (for a Linux instance) Configure an **SSH key** for a remote SSH connection.
 
-<img src="https://support.gcore.com/hc/article_attachments/10962047318545" alt="" width="666" height="147">
+![The SSH key field](https://assets.gcore.pro/docs/cloud/virtual-instances/create/11-ssh-key.png)
 
 You can add an existing SSH key or generate a new one. You enter a public key and use a private key for connection. For details, see the article: [Connect to Instance via SSH](https://gcore.com/support/articles/360012635517/).
 
 9. (for a Windows instance) Configure **Access** by setting a password for the Admin user.
 
-<img src="https://support.gcore.com/hc/article_attachments/10962047333009" alt="" width="666" height="172">
+![the field for credentials to access a Windows instance](https://assets.gcore.pro/docs/cloud/virtual-instances/create/12-access-for-windows-instance.png)
 
 Your password must contain between 8 and 16 characters and at least one lowercase letter (a-z), one uppercase letter (A-Z), one number (0-9) and one special character (!#$%&’()\*+,-./:;<=>?@\[\]^\_{|}~).
 
@@ -150,19 +152,22 @@ You can connect to a Windows instance [from Control Panel](https://gcore.com/sup
 
 *   Turn on **User data** to customize your VM during the initial boot by a cloud-init agent.
 
-<img src="https://support.gcore.com/hc/article_attachments/10962047426065" alt="" width="668" height="299">
+![The field to add user data](https://assets.gcore.pro/docs/cloud/virtual-instances/create/13-add-user-data.png)
 
 You can configure your password to connect to your Linux instance [directly from your Control Panel](https://gcore.com/support/articles/360020733518/) or via SSH. To do it, insert the code below to the **User data** field and enter your password:
 
+```
 #cloud-config  
 password: **your password**  
 chpasswd: { expire: False }  
 ssh\_pwauth: True
+```
 
 **Note:** If an instance is only in a private subnet, DHCP must be enabled in the settings of this subnet, so you can log in with a password.
 
 You can configure the password hash—a machine-readable set of symbols. It’ll protect your real password from being compromised. To generate a hash, use the Python script:
 
+```
 #!/usr/bin/env python3  
 \# based on [https://stackoverflow.com/a/17992126/117471](https://stackoverflow.com/a/17992126/117471)\# pip3 install passlib  
 import sys  
@@ -170,14 +175,15 @@ from getpass import getpass
 from passlib.hash import sha512\_crypt  
 passwd = input() if not sys.stdin.isatty() else getpass()  
 print(sha512\_crypt.hash(passwd , rounds = 5000 ))
+```
 
 *   Turn on **Add tags** to add a key-value pair that form the metadata of the virtual machine description.
 
-<img src="https://support.gcore.com/hc/article_attachments/10962047425937" alt="" width="669" height="269">
+![The field to add tags](https://assets.gcore.pro/docs/cloud/virtual-instances/create/14-add-tags.png)
 
 *   Turn on **Add to placement group** to determine how to place multiple instances.
 
-<img src="https://support.gcore.com/hc/article_attachments/10962066510993" alt="" width="665" height="334">
+![The field to add the instance to a placement group](https://assets.gcore.pro/docs/cloud/virtual-instances/create/15-add-placement-group.png)
 
 **Placement Group** is a setting that determines whether virtual machines will be hosted on the same physical server (**affinity** policy) or on different ones (**anti-affinity** policy). For more detail, see the article: [Placement groups. What it is, how to add instance to group](https://gcore.com/support/articles/4408106493841/).
 
@@ -185,7 +191,7 @@ You can add the instance to an existing placement group or create a new one by c
 
 10. Specify the number of machines with the same configuration you need and give them names.
 
-<img src="https://support.gcore.com/hc/article_attachments/10962066511889" alt="" width="666" height="279">
+![The field to set the number of instances](https://assets.gcore.pro/docs/cloud/virtual-instances/create/16-number-of-instances.png)
 
 The maximum number is limited by your quotas.
 
