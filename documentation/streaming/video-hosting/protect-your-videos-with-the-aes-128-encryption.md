@@ -9,21 +9,17 @@ toc:
    --1--Enable: "enable-aes-128"
    --1--Configure: "configure-the-keyserver"
 ---
+# Protect your videos with the AES-128 encryption
   
-  
-  
-
-What is AES-128?
-----------------
+## What is AES-128?
 
 AES-128, or the Advanced Encryption Standard, is a block encryption algorithm. It operates by using substitutions and permutations on data blocks of 16 bytes with a 128-bit key length, making it difficult for anyone to intercept and decode the information. This encryption method is ideal for scenarios where you need to restrict access to content, such as videos with paid subscriptions. 
 
-For maximum security, it is recommended to use AES-128 in conjunction with the [country](https://www.gcore.com/support/articles/115002226129/) or [domain access policy](https://www.gcore.com/support/articles/115002255465/).
+For maximum security, it is recommended to use AES-128 in conjunction with the <a href="https://gcore.com/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#country-access-policy" target="_blank">country</a> or <a href="https://gcore.com/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#referrer-access-policy" target="_blank">domain access policy</a>.
 
-How does AES-128 work with VoDs?
---------------------------------
+## ow does AES-128 work with VoDs?
 
-We deliver VoDs through the [HLS protocol](https://www.gcore.com/support/articles/360000604025/). Each video is divided into playlists made up of fragments, or chunks. Using the AES-128 algorithm, these chunks are transmitted in encrypted form. On your end, you need to deploy a server, referred to as a keyserver, that determines which viewers have access to the video and which do not. Viewers who can watch it must retrieve the decryption key from us.
+We deliver VoDs through the <a href="https://gcore.com/docs/streaming/live-streams-and-videos-protocols-and-codecs/what-initial-parameters-of-your-live-streams-and-videos-we-can-accept" target="_blank">HLS protocol</a>. Each video is divided into playlists made up of fragments, or chunks. Using the AES-128 algorithm, these chunks are transmitted in encrypted form. On your end, you need to deploy a server, referred to as a keyserver, that determines which viewers have access to the video and which do not. Viewers who can watch it must retrieve the decryption key from us.
 
 The process for AES-128 video processing is as follows:
 
@@ -39,34 +35,38 @@ The process for AES-128 video processing is as follows:
 
 **5.** The keyserver sends the key to the viewer, providing access to the video.
 
-Enable AES-128
---------------
+## Enable AES-128
 
-To enable the ability to send video using AES-128 encryption, please contact technical support either by email at [support@gcore.com](mailto:support@gcore.com) or through chat.  In the request specify the URL of the keyserver, for example, _client-keyserver.com._ 
+To enable the ability to send video using AES-128 encryption, please contact technical support either by email at [support@gcore.com](mailto:support@gcore.com) or through chat.  In the request specify the URL of the keyserver, for example, *client-keyserver.com*. 
 
-Once encryption is enabled, an EXT-X-KEY tag will be added to the playlists (_m3u8_), indicating the URL from which the player will retrieve the key to decrypt the content as follows:
+Once encryption is enabled, an EXT-X-KEY tag will be added to the playlists (*m3u8*), indicating the URL from which the player will retrieve the key to decrypt the content as follows:
 
-EXT-X-KEY:METHOD=AES-128,URI="https://client-keyserver.com/videos/clientId\_videoslug/encryption"
+```
+EXT-X-KEY:METHOD=AES-128,URI="https://client-keyserver.com/videos/clientId_videoslug/encryption"
+```
 
-Configure the keyserver
------------------------
+## Configure the keyserver
 
 When AES-128 is enabled for your account, you need to configure the keyserver to send and redirect requests for the decryption key. 
 
 To do so, use API integration. Send an API request to Gcore API as follows:
 
-GET baseUrl/videos/12345\_0zdztmmvdxe8zpo/encryption
+```
+GET baseUrl/videos/12345_0zdztmmvdxe8zpo/encryption
+```
 
 Were
 
-*   _12345_ is the ID of your Gcore account;
-*   _0zdztmmvdxe8zpo_ is the slug that identifies the video.
+- *12345* is the ID of your Gcore account;
+- *0zdztmmvdxe8zpo* is the slug that identifies the video.
 
 This request will allow your keyserver to retrieve the decryption key, which should then pass to the viewer in its original format. An example of a decryption key is: 
 
+```
 W�U����<)B�4�
+```
 
 To pass the key in this format, you can use the following HTTP headers:
 
-*   Content-transfer-encoding: binary
-*   Content-type: application/octet-stream
+- Content-transfer-encoding: binary
+- Content-type: application/octet-stream
