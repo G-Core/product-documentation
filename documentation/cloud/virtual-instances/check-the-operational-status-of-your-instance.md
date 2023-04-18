@@ -5,6 +5,7 @@ order: 20
 published: true
 toc:
 ---
+# Check the operational status of your instance
 You can find the instance statues inside the project, in the "Instances" section, in the "Status" column 
 
 <img src="https://support.gcore.com/hc/article_attachments/360012154777/1.__________.png" alt="1.__________.png">
@@ -19,9 +20,13 @@ For instance, in Cloud we have the following statuses: 
 
 Instance cycles 
 
-1.  After creation, the Instance will have the "Building" status for the first few minutes. At this stage, the machine is allocated computing resources. <img src="https://support.gcore.com/hc/article_attachments/360012245758/2.________.png" alt="2.________.png">
-2.  After that, the server will automatically switch to the "Power on" status. This means that the machine is up and running. <img src="https://support.gcore.com/hc/article_attachments/360012154917/3._________.png" alt="3._________.png">
-3.  When the power is turned off, the instance switches to the "Power Off" status. <img src="https://support.gcore.com/hc/article_attachments/360012245818/4._________.png" alt="4._________.png">
-4.  If you initiate server deletion, all the ongoing operations are aborted and then the VM switches to the "Deleted" status. <img src="https://support.gcore.com/hc/article_attachments/360012246118/5.__________.png" alt="5.__________.png">
+1.  After creation, the Instance will have the "Building" status for the first few minutes. At this stage, the machine is allocated computing resources. 
+<img src="https://support.gcore.com/hc/article_attachments/360012245758/2.________.png" alt="2.________.png">
+2.  After that, the server will automatically switch to the "Power on" status. This means that the machine is up and running. 
+<img src="https://support.gcore.com/hc/article_attachments/360012154917/3._________.png" alt="3._________.png">
+3.  When the power is turned off, the instance switches to the "Power Off" status. 
+<img src="https://support.gcore.com/hc/article_attachments/360012245818/4._________.png" alt="4._________.png">
+4.  If you initiate server deletion, all the ongoing operations are aborted and then the VM switches to the "Deleted" status. 
+<img src="https://support.gcore.com/hc/article_attachments/360012246118/5.__________.png" alt="5.__________.png">
 
 If an error occurs when allocating resources, the VM gets the "Error" status. if you get this status, you may contact technical support _support_@gcore.lu.

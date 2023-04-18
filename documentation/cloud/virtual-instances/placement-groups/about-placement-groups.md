@@ -5,6 +5,7 @@ published: true
 order: 10
 toc:
 ---
+About placement groups
 Placement groups are a setting that determines whether virtual machines will be hosted on the same physical server or on different ones.
 
 **Types of groups.** There are affinity and anti-affinity ones. An affinity group assembles equipment on one hypervisor — the machines included in it will be launched on the same physical server. Anti-affinity works the opposite way: all machines in this group will be launched on different physical servers.

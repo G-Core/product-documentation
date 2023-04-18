@@ -5,6 +5,8 @@ published: true
 order: 10
 toc:
 ---
+# About Gcore Cloud
+
 **_Gcore Cloud_** is a suite of cloud computing services that includes infrastructure as a service (IaaS) and platform as a service (PaaS) environments. 
 
 Computing power, databases, and applications are available to use on an as-needed basis with Gcore Cloud. 

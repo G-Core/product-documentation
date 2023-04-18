@@ -14,31 +14,37 @@ toc:
    --1--Delete: "6-delete-volume"
    --1--Revert volume to the latest snapshot: "7-revert-volume-to-the-latest-snapshot"
 ---
+# Create and configure volumes
 
+## Volume section
 
-Volume section
---------------
+The Volume section displays both disks that were added and those that were not added to instances in the selected location, their name in the system, and the creation date.
 
-The Volume section displays both disks that were added and those that were not added to instances in the selected location, their name in the system, and the creation date.<img src="https://support.gcore.com/hc/article_attachments/360009578578/_________________.png" alt="_________________.png">
+<img src="https://support.gcore.com/hc/article_attachments/360009578578/_________________.png" alt="_________________.png">
 
 If a disk is attached to an instance, in the Instance column will be indicated to which machine this volume is added.
 
-To learn more about an Instance, click on its name.<img src="https://support.gcore.com/hc/article_attachments/360009578618/__________________.png" alt="__________________.png">
+To learn more about an Instance, click on its name.
 
-If a volume is not attached to an instance, in the Instance column the "Attach to instance" will be displayed.<img src="https://support.gcore.com/hc/article_attachments/360009484677/____________________.png" alt="____________________.png">
+<img src="https://support.gcore.com/hc/article_attachments/360009578618/__________________.png" alt="__________________.png">
+
+If a volume is not attached to an instance, in the Instance column the "Attach to instance" will be displayed.
+
+<img src="https://support.gcore.com/hc/article_attachments/360009484677/____________________.png" alt="____________________.png">
 
 To attach a volume to an instance, click "Attach to instance", in the pop-up window select the instance you need and click Attach volume.
 
 <img src="https://support.gcore.com/hc/article_attachments/360009578798/___________________.png" alt="___________________.png">
 
-How to create a volume?
------------------------
+## How to create a volume?
 
-You can create volumes while [creating an instance](https://support.gcore.com/hc/en-us/articles/360004547478) and in the Volume section.
+You can create volumes while creating an instance or in the Volume section.
 
 To create a volume in the Volume section:
 
-1\. Go to the Volume section and click Create volume.  <img src="https://support.gcore.com/hc/article_attachments/360009482777/create_volume_2.png" alt="create_volume_2.png" width="653" height="249">
+1\. Go to the Volume section and click Create volume.  
+
+<img src="https://support.gcore.com/hc/article_attachments/360009482777/create_volume_2.png" alt="create_volume_2.png" width="653" height="249">
 
 A dialog box will be opened.
 
@@ -48,7 +54,9 @@ A dialog box will be opened.
 
 3\. Depending on the data, select the volume type: faster for critical data and slower for archived data.
 
-Four types of volumes are available:<img src="https://support.gcore.com/hc/article_attachments/360011012678/4___________.png" alt="4___________.png" width="480" height="416">
+Four types of volumes are available:
+
+<img src="https://support.gcore.com/hc/article_attachments/360011012678/4___________.png" alt="4___________.png" width="480" height="416">
 
 *   _High IOPS SSD_ — (High IOPS network SSD disk) - The Highest performance network SSD block storage designed for latency-sensitive transactional workloads (60 IOPS per 1 GB; 2.5 MB/s per 1 GB).  The IOPS performance limit is 9000. The bandwidth limit is 500 MB/s.
 *   _Standard_ (Standard network SSD disk) - High-performance network SSD block storage with stable and high random IO performance, and high data reliability (6 IOPS per 1 GB; 0.4 MB/s per 1 GB). The IOPS performance limit is 4500. The bandwidth limit is 300 MB/s.
@@ -73,7 +81,9 @@ If IOPS and throughput values ​​exceed these parameters, the following renew
 
 After the peak values and reducing the load to the base level, credits are restored. The more the load decreased after the peak, the faster the credits will recover. If the base limits are exceeded again, renewed credits will be applied. 
 
-4\. To attach the volume to an instance, select it from the pop-up list.<img src="https://support.gcore.com/hc/article_attachments/360009579358/___________________.png" alt="___________________.png">
+4\. To attach the volume to an instance, select it from the pop-up list.
+
+<img src="https://support.gcore.com/hc/article_attachments/360009579358/___________________.png" alt="___________________.png">
 
 ! If you don't want to attach the volume to an instance, skip this field.
 
@@ -89,8 +99,7 @@ The sequence of the Volume names is determined on the OS side.
 
 When working with Volumes in the OS, it is better to pay attention to the UUID.
 
-Actions with volumes
---------------------
+## Actions with volumes
 
 You can detach the created volume from the instance, change its size, type, make a snapshot, or delete it by clicking on the three-dot icon next to the necessary volume. Moreover, you can create an image from the boot volumes. 
 

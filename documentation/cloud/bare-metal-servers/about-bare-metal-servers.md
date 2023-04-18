@@ -12,24 +12,15 @@ toc:
    --1--Bare metals vs. virtual machines: "bare-metals-vs-virtual-machines"
    --1--Bare metals vs. dedicated servers in Hosting: "bare-metals-vs-dedicated-servers-in-hosting"
 ---
-  
-  
-  
-  
-  
-  
-  
+# About bare metal servers
 
-What is a bare metal server?
-#1
-----------------------------
+## What is a bare metal server?
 
 A bare metal server is a form of cloud service in which the user rents a physical machine from a provider. This machine is dedicated to the user and not shared with any other tenants.
 
-You can rent one or multiple bare metals in one of [15+ locations](https://gcore.com/cloud/bare-metal-servers/). You can find all the locations on [our website](https://gcore.com/cloud/bare-metal-servers/).
+You can rent one or multiple bare metals in one of <a href=“https://gcore.com/cloud/bare-metal-servers/)” target="_blank">15+ locations</a>. You can find all the locations on <a href=“https://gcore.com/cloud/bare-metal-servers/)” target="_blank">our website</a>.
 
-How does bare metal work?
--------------------------
+## How does bare metal work?
 
 When you rent a bare metal server, we allocate the entire physical machine exclusively for you, set up networking configuration (you can configure simple public access or make your own private network landscape with other cloud services), and install the operating system (you can choose existing OS images or use your own ISO file).
 
@@ -38,10 +29,10 @@ You have 100% access to the computing and networking power of the machine becaus
 There are several options to manage a bare metal server:
 
 *   Gcore control panel
-*   API. To learn more, see [our API documentation](https://apidocs.gcore.com/cloud)
-*   Terraform. To learn more, see [our official Terraform provider documentation for bare metal servers](https://registry.terraform.io/providers/G-Core/gcorelabs/latest/docs/resources/gcore_baremetal)
+*   API. To learn more, see <a href=“https://apidocs.gcore.com/cloud” target="_blank">our API documentation</a>
+*   Terraform. To learn more, see <a href=“https://registry.terraform.io/providers/G-Core/gcorelabs/latest/docs/resources/gcore_baremetal” target="_blank">our official Terraform provider documentation for bare metal servers</a>
 
-Bare metal configurations
+## Bare metal configurations
 -------------------------
 
 We offer three types of in-stock configurations:
@@ -56,8 +47,7 @@ You set up your bare metal with the OS of your choice. By default, we offer vari
 
 Our bare metals are deployed with LACP-aggregated network ports by default. This improves server availability and traffic throughput. Moreover, you can assign both public and private interfaces to your machine. It lets you connect your bare metals and virtual machines into single private networks.
 
-Benefits of bare metals
------------------------
+## Benefits of bare metals
 
 Bare metal servers have the following benefits:
 
@@ -65,13 +55,12 @@ Bare metal servers have the following benefits:
 *   **Fault-tolerance.** Minimize your server downtime with power backup and redundant network interfaces. Firstly, if the primary power supply goes down, your server will keep working because the backup supply will start providing power. Secondly, if a network port fails, your server will still be online because the traffic will be automatically routed to the second port.
 *   **Your data security.** Leverage single-tenant access to the hardware to avoid unwelcome intruders. Since we dedicate an entire physical server to you, only you or your authorized users with access rights can connect to it.
 *   **Fast deployment time.** Get your server ready within 10-15 minutes after purchasing it.
-*   **Easy management.** Create, rebuild, and control your bare metals via the [Gcore control panel](https://cloud.gcore.com/), [API](https://apidocs.gcore.com/cloud), or [Terraform provider](https://registry.terraform.io/providers/G-Core/gcorelabs/).
+*   **Easy management.** Create, rebuild, and control your bare metals via the <a href=“https://cloud.gcore.com/” target="_blank">Gcore control panel</a>, <a href=“https://apidocs.gcore.com/cloud” target="_blank">API</a>, or <a href=“https://registry.terraform.io/providers/G-Core/gcorelabs/” target="_blank">Terraform provider</a>.
 *   **Scalability.** Scale your resources up or down on demand. Whenever you need extra resources, you can easily create new virtual machines and bare metals and connect them to existing ones. Once your workload decreases, you can delete the added resources and stop paying for them.
 *   **Hybrid landscape.** Bring virtual machines and bare metals together into single networks.
-*   **Gcore integration.** Integrate bare metals with other Gcore services, such as [CDN](https://gcore.com/cdn/), [Streaming Platform](https://gcore.com/streaming-platform/), or [DDoS Protection](https://gcore.com/ddos-protection/).
+*   **Gcore integration.** Integrate bare metals with other Gcore services, such as <a href=“https://gcore.com/cdn/” target="_blank">CDN</a>, <a href=“https://gcore.com/streaming-platform/” target="_blank">Streaming Platform</a>, or  <a href=“https://gcore.com/ddos-protection/” target="_blank">DDoS Protection</a>.
 
-Use cases
----------
+## Use cases
 
 Considering the benefits of bare metal servers, they can be the best solution for the following tasks:
 
@@ -83,8 +72,7 @@ Considering the benefits of bare metal servers, they can be the best solution fo
 *   **E-Commerce** websites and applications.
 *   Video production/game development **rendering**.
 
-Pricing
--------
+## Pricing
 
 Bare metals are billed per minute. The price depends on the configuration and location.
 
@@ -99,8 +87,7 @@ Please note: a bare metal server is billed even while it's stopped because all r
 
 If you want to test the service, you can activate the Trial Period. It will expire in 14 days, and you'll be switched to the basic PAYG plan.
 
-Bare metals vs. virtual machines
---------------------------------
+## Bare metals vs. virtual machines
 
 When evaluating bare metal servers, users still gravitate toward the comparison to virtual servers. For most companies, the criteria for choice are application-specific or workload-specific. It's common for a company to use a mix of bare metal servers along with virtualized resources across their cloud environment.
 
@@ -112,10 +99,9 @@ But bare metal servers are the right fit for a few primary use cases that take a
 *   Apps with complex security or regulatory requirements: The combination of a global data center footprint with physical resource separation has helped many organizations adopt a cloud while simultaneously meeting complex security and regulatory demands.
 *   Large, steady-state workloads: For applications such as ERP, CRM, or SCM that have a relatively stable set of ongoing resource demands, bare metal servers can also be a good fit.
 
-Bare metals vs. dedicated servers in Hosting
---------------------------------------------
+## Bare metals vs. dedicated servers in Hosting
 
-The table below shows the key differences between our bare metal servers in [Cloud](https://gcore.com/cloud/) and dedicated servers in [Hosting](https://gcore.com/hosting/).
+The table below shows the key differences between our bare metal servers in <a href=“https://gcore.com/cloud/” target="_blank">Cloud</a> and dedicated servers in <a href=“https://gcore.com/hosting/” target="_blank">Hosting</a>.
 
  
 
@@ -127,4 +113,4 @@ The table below shows the key differences between our bare metal servers in [Clo
 | Scalability                           | On-demand within 10–15 minutes for basic configurations                                                                                                                                                                                                | Limited                                                                                              |
 | Interaction with other Cloud services | Yes                                                                                                                                                                                                                                                    | No                                                                                                   |
 | Interaction with other Gcore services | Yes                                                                                                                                                                                                                                                    | No                                                                                                   |
-| Usability                             | \n\nNeed complex infrastructure\nIntensive workloads\nPossible traffic spikes\nNeed networks between virtual and bare metal servers\nNeed interaction with other Cloud services (load balancers, Kubernetes)\nInternal virtualization and containers\n | \n\nSmall- and medium-sized projects\nSimple web applications\nPredictable workloads\nLow budget\n\n |
+| Usability                             | Complex infrastructure, intensive workloads, possible traffic spikes, networks between virtual and bare metal servers, interaction with other Cloud services (load balancers, Kubernetes), internal virtualization and containers | Small- and medium-sized projects, simple web applications, predictable workloads, low budget |

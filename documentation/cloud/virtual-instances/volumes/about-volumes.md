@@ -5,8 +5,10 @@ order: 10
 published: true
 toc:
 ---
-A volume is a file storage which is similar to SSD and HDD hard disks but located in the cloud.
+# About volumes
 
-Gcore Cloud uses a software-defined distributed file system for data storage, which is an easily scalable node cluster. System nodes provide storage and triple data replication, as well as load distribution, which guarantees high availability of volumes.
+A volume is a file storage which is similar to traditional hard disks (SSD and HDD) but is located in the cloud.
 
-Use volumes for information storage and data management when connecting to an instance.
+Gcore Cloud uses a software-defined distributed file system to store data. This system comprises a cluster of easily scalable nodes that provide storage, triple data replication, and load distribution. These features ensure that volumes are highly available.
+
+ When you connect to an instance, you may need to store data or manage information. This is where volumes come in - they provide a convenient way to store and manage data within the instance.
