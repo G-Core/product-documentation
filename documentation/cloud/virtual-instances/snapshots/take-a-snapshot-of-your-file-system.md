@@ -14,9 +14,11 @@ toc:
    --2--Deleting a snapshot: "delete-a-snapshot"
    --2--Reverting a volume to the latest snapshot: "also-you-can-revert-a-volume-to-the-latest-snapshot--open-the--volumes--section--detach-the-volume-from-your-instance-and-select-the-reverting-option-on-the-selector"
 ---
+# Take a snapshot of your file system
+
 **Snapshot** is the state of a system at a particular point in time. The snapshot can be used for backup and further recovery, as well as for deploying new instances from **snapshots of system disks.** 
 
-#### **Difference between system and regular disk snapshots** 
+**Difference between system and regular disk snapshots** 
 
 You can make a snapshot for both system (boot) disks and regular disks. 
 
@@ -24,10 +26,9 @@ You can make a snapshot for both system (boot) disks and regular disks. 
 
 **Regular disk -** contains all other information for use, except the operating system.  
 
-**Creating a snapshot**  
--------------------------
+## **Creating a snapshot** 
 
-#### **From the** **"Snapshots"** **section** 
+### **From the** **"Snapshots"** **section** 
 
 To make a snapshot of the disk, go to the "Snapshots" section inside the project.  
 
@@ -37,7 +38,7 @@ In the “Take snapshot” section, select the disk to create the snapshot. **
 
 <img src="https://support.gcore.com/hc/article_attachments/360012025258/_______________________________.png" alt="_______________________________.png">
 
-#### **From the "Volumes" section** 
+### **From the "Volumes" section** 
 
 Inside the project, in the “Volumes” section, select the disk to create a snapshot -> on the selector on the right from the selected volume -> select the "Take snapshot" option 
 
@@ -47,7 +48,7 @@ In the drop-down window, enter a name for the snapshot and click “Take snapsho
 
 <img src="https://support.gcore.com/hc/article_attachments/360011939377/_______________________.png" alt="_______________________.png">
 
-#### **From Instance** 
+### **From Instance** 
 
 Inside the project, go to the “Instances” section -> select the Instance you want to take a snapshot from -> select the "Overview" option on the selector on the right from the machine. 
 
@@ -65,8 +66,7 @@ In the “Snapshots” section, you can view a list of created snapshots from In
 
 <img src="https://support.gcore.com/hc/article_attachments/360011939437/__________________.png" alt="__________________.png">
 
-**Snapshot management** 
-------------------------
+## **Snapshot management** 
 
 A list of all created snapshots can be found in the "Snapshots" section, inside the project. 
 
@@ -74,15 +74,15 @@ A list of all created snapshots can be found in the "Snapshots" section, inside
 
 You can select the necessary option on the selector on the right from the snapshot: 
 
-*   #### **To create an Instance from a snapshot of the system drive** <img src="https://support.gcore.com/hc/article_attachments/360012025398/_________________________________.png" alt="_________________________________.png">
+### **To create an Instance from a snapshot of the system drive** <img src="https://support.gcore.com/hc/article_attachments/360012025398/_________________________________.png" alt="_________________________________.png">
     
-*   #### **Create a disk from a disk snapshot** <img src="https://support.gcore.com/hc/article_attachments/360011939457/____________________________________________.png" alt="____________________________________________.png">
+### **Create a disk from a disk snapshot** <img src="https://support.gcore.com/hc/article_attachments/360011939457/____________________________________________.png" alt="____________________________________________.png">
     
-*   #### **Delete a snapshot**
+### **Delete a snapshot**
     
-    <img src="https://support.gcore.com/hc/article_attachments/360011939477/_______.png" alt="_______.png">
+<img src="https://support.gcore.com/hc/article_attachments/360011939477/_______.png" alt="_______.png">
 
-#### **Also, you can revert a volume to the latest snapshot**. Open the "Volumes" section, detach the volume from your instance and select the reverting option on the selector.
+**Also, you can revert a volume to the latest snapshot**. Open the "Volumes" section, detach the volume from your instance and select the reverting option on the selector.
 
 Please note: if you have just resized the volume you will not be able to use the function because the last snapshot is designed for the old size. You can only create a new volume from it. For the new size volume, you need to create a new snapshot.
 
