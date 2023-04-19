@@ -10,27 +10,22 @@ toc:
    --2--Assign to an instance and detach from it: "assign-to-an-instance-and-detach-from-it"
    --2--Delete: "delete-a-firewall"
 ---
+# Add and configure a firewall
+
 A firewall is a network security device used to protect servers from network threats. The firewall monitors incoming and outgoing network traffic and decides whether to allow or block specific traffic based on a defined set of security rules. You can set rules for all connections except port 25 for outbound traffic as it is blocked by default.
 
-If you use a load balancer and your instance is in a pool, configure its firewall by opening ports for receiving and transmitting data to the load balancer. For more information, refer to our guide: [Create a load balancer](https://gcore.com/support/articles/360004523578/#h_01FQK5EFA312ZQJWSZA3K4YM7G). 
+If you use a load balancer and your instance is in a pool, configure its firewall by opening ports for receiving and transmitting data to the load balancer. For more information, refer to our guide <a href=“https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer” target="_blank">"Create and configure a load balancer"</a>.
 
-  
-[Manage a firewall](https://support.gcore.com/hc/en-us/articles/360012995117/#h_01EHYCX9Z3G9QK6RKM4AT8AR7T)  
-     
-     
-   
-
-Create a firewall
------------------
+## Create a firewall
 
 If you don’t create your custom firewall, the default firewall will be used.
 
 1\. Open a window to create a firewall. You can do in two ways:
 
 *   In the Cloud menu, go to **Networking** → **Firewalls** → **Create firewall**.  
-    <img src="https://support.gcore.com/hc/article_attachments/13257548714001" alt="Screenshot_2023-02-24_at_16.08_1.png" width="580" height="271">  
-    
 
+ <img src="https://support.gcore.com/hc/article_attachments/13257548714001" alt="Screenshot_2023-02-24_at_16.08_1.png" width="580" height="271">  
+    
 *   When you’re creating a virtual machine, find the **Firewall settings** section, select **Add a Firewall**. 
 
 2\. Give your firewall a name. 
@@ -39,20 +34,22 @@ If you don’t create your custom firewall, the default firewall will be used.
 Click **New rule** and select one of the template rules or choose **Custom** to apply custom settings.
 
 *   Template rules (All TCP/all UDP/SSH/HTTP/HTTPS/MySQL/DNS UPD/DNS TCP/postgreSQL): template rules come with pre-configured protocols and ports for typical connections 
-*   Custom rule: if you select a custom rule, specify the protocol and port manually.  
-    <img src="https://support.gcore.com/hc/article_attachments/13257703188369" alt="Screenshot_2023-02-24_at_16.26_1.png" width="569" height="166">
+*   Custom rule: if you select a custom rule, specify the protocol and port manually. 
+
+<img src="https://support.gcore.com/hc/article_attachments/13257703188369" alt="Screenshot_2023-02-24_at_16.26_1.png" width="569" height="166">
 
 For **Sources**, set a specific IP address range in the CIDR format. Otherwise, the rule will be applied to all IP addresses. 
 
-4\. Set the **Outbound rules** which would define the allowed outgoing traffic. 
+4\. Set the **Outbound rules** which would define the allowed outgoing traffic.
 
 Please note that by default, outbound traffic over port 25 (TCP/UDP) is restricted, while all other outbound ports are open.
 
 Click **New rule** and select one of the template rules or choose **Custom** to apply custom settings.
 
 *   Template rules (All TCP/all UDP/SSH/HTTP/HTTPS/MySQL/DNS UPD/DNS TCP/postgreSQL): template rules come with pre-configured protocols and ports for typical connections 
-*   Custom rule: If you select a custom rule, specify the protocol and port manually.  
-    <img src="https://support.gcore.com/hc/article_attachments/13257703188369" alt="Screenshot_2023-02-24_at_16.26_1.png" width="569" height="166">
+*   Custom rule: If you select a custom rule, specify the protocol and port manually.
+
+<img src="https://support.gcore.com/hc/article_attachments/13257703188369" alt="Screenshot_2023-02-24_at_16.26_1.png" width="569" height="166">
 
 For **Sources**, set a specific IP address range in the CIDR format. Otherwise, the rule will be applied to all IP addresses. 
 
@@ -62,8 +59,7 @@ For **Sources**, set a specific IP address range in the CIDR format. Otherwise, 
 
 7\. Click **Create firewall**.
 
-Use the default firewall
-------------------------
+## Use the default firewall
 
 If you don't specify which firewall to apply to your instance, the default firewall will be applied.
 
@@ -72,8 +68,7 @@ The default firewall allows the following traffic:
 *   Incoming connections over protocols: SSH (port 22), UDP (port 3389), ICMP (all ports), TCP (port 3389).
 *   All outgoing connections.
 
-Manage a firewall
------------------
+## Manage a firewall
 
 ### Add, change and delete rules
 

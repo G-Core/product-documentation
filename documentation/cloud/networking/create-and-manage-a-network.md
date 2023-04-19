@@ -9,9 +9,11 @@ toc:
    --1--Rename network: "rename"
    --1--Delete network: "delete"
 ---
+# Create and manage a network
+
 **A network in the cloud** is a software-defined network in a cloud computing infrastructure. Cloud networks are used to transfer information between cloud resources and for the Internet connection. 
 
-#### **Create a network**
+## Create a network
 
 1.  Inside the project, in the section Networking → Networks → click on **Create network**. 
 
@@ -31,27 +33,22 @@ Baremetal network can also be used for virtual instances, for connectivity be
 
 <img src="https://support.gcore.com/hc/article_attachments/360011776997/_____2_____________________.png" alt="_____2_____________________.png">
 
-**Network management** 
------------------------
+## Network management
 
 The list of networks is located inside the project, in the section Networking →  Networks  
 
 You can manage the created network: 
 
-*   #### **Rename**  
+ **Rename**  
     
-
 To rename a network, click the selector on the right from the selected network and select the Rename option 
 
 <img src="https://support.gcore.com/hc/article_attachments/360011777017/__________________.png" alt="__________________.png">
 
-*   #### **Delete** 
+ **Delete** 
     
-
 To delete a network, click the selector on the right from the selected network and select the Delete option 
 
 <img src="https://support.gcore.com/hc/article_attachments/360011859918/____________.png" alt="____________.png">
 
-*   Open it (**Details** option on the selector) to create a **subnet** 
-
-Within the network, you need to [create a](https://support.gcore.com/hc/en-us/articles/13830723917713) [**subnet**](https://support.gcore.com/hc/en-us/articles/13830723917713) [](https://support.gcore.com/hc/en-us/articles/13830723917713)to define the range of IP addresses in the cloud network.
+Within the network, you can create a <a href=“https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork” target="_blank">subnet</a> to define the range of IP addresses in the cloud network.

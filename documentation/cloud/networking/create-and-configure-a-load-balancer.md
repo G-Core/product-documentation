@@ -9,15 +9,11 @@ toc:
    --1--Balancer statuses: "load-balancer-statuses"
    --1--Performance analysis: "performance-analysis"
 ---
-  
-  
-  
+# Create and configure a load balancer
  
-
 A **load balancer** is a tool used to sort incoming requests across your virtual machines so to improve the fault tolerance of your infrastructure. 
 
-**Create a load balancer** 
----------------------------
+## **Create a load balancer** 
 
 1\. Go to your project - > **Networking** - > **Load Balancers** - > **Create Load Balancer**. 
 
@@ -27,7 +23,7 @@ The new window opens. Do the remaining steps in it. 
 
 2\. Select a region for balancing. Please note that you can balance traffic only within a single data center.
 
-3\. Select a network. If you want to use a private network for load balancing, enable the **Use private network** option. For more information, see the article: [Create a network](https://gcore.com/support/articles/360013801997/).
+3\. Select a network. If you want to use a private network for load balancing, enable the **Use private network** option. For more information, see the article <a href=“https://gcore.com/docs/cloud/networking/create-and-manage-a-network” target="_blank">"Create and manage a network"</a>.
 
 <img src="https://support.gcore.com/hc/article_attachments/360011810277/_____________________.png" alt="_____________________.png">
 
@@ -37,7 +33,7 @@ The new window opens. Do the remaining steps in it. 
 
 In the drop-down window, specify the listener name, protocol (TCP or HTTP), and port in the range from 1 to 65535.  
 
-#### We also support the option to add an X-Forwarded-For header to identify an origin of the IP address of the client connecting to a web server via a load balancer. 
+We also support the option to add an X-Forwarded-For header to identify an origin of the IP address of the client connecting to a web server via a load balancer. 
 
 <img src="https://support.gcore.com/hc/article_attachments/360019959497/mceclip1.png" alt="mceclip1.png" width="401" height="334">
 
@@ -59,7 +55,7 @@ Click **Add pool** to start configuring.
 
 4.3. Select a protocol. The system will offer you an option based on the listener's settings: the HTTP listener can communicate with servers via the HTTP protocol, the TCP listener — via TCP.
 
-4.4. If you need to route the requests for a particular session to the same machine that serviced the first request for that session, select **App Cookie** and fill in the **Cookie** field. [A special m](https://code.google.com/p/nginx-sticky-module/)[odule](https://code.google.com/p/nginx-sticky-module/) creates a cookie — which makes each browser unique — and then uses it to forward requests to the same server.  
+4.4. If you need to route the requests for a particular session to the same machine that serviced the first request for that session, select **App Cookie** and fill in the **Cookie** field. <a href=“https://code.google.com/p/nginx-sticky-module/)” target="_blank">A special module</a> creates a cookie — which makes each browser unique — and then uses it to forward requests to the same server.  
 
 4.5. Add virtual machines that will participate in the traffic distribution for the configured listener. For adding an instance, you must specify its port and weight in the distribution. 
 
@@ -67,7 +63,7 @@ Click **Add pool** to start configuring.
 
 For the HTTP Protocol, select the HTTP method and add the URL path. 
 
- <img src="https://support.gcore.com/hc/article_attachments/360011891418/_____________.png" alt="_____________.png">
+<img src="https://support.gcore.com/hc/article_attachments/360011891418/_____________.png" alt="_____________.png">
 
 Specify the following setting for the protocols: 
 
@@ -94,12 +90,11 @@ Create a custom security group (this is the firewall) and edit it: configure the
 
 <img src="https://support.gcore.com/hc/article_attachments/5287188318993/mceclip0.png" alt="mceclip0.png">
 
-**Manage a load balancer**
---------------------------
+## **Manage a load balancer**
 
 The list of created balancers is located inside the project - > Networking - > Load balancers
 
-#### There you can:
+There you can:
 
 *   Configure a balancer (the “Overview” option) 
 *   Rename a balancer (the “Edit” option) 
@@ -108,8 +103,6 @@ The list of created balancers is located inside the project - > Networking - > L
 To do it, select the necessary action on the selector on the right from the balancer.
 
 <img src="https://support.gcore.com/hc/article_attachments/360011810757/____________________.png" alt="____________________.png">
-
-#### **Configure the created balancer**
 
 Go to your project - > Networking - > Load balancers -> select the Overview option on the selector on the right from the chosen balancer.
 
@@ -123,13 +116,23 @@ You can **edit** and **delete** listeners. Select the appropriate option on the 
 
 In the editor, you can:
 
-*   Change the checking algorithm<img src="https://support.gcore.com/hc/article_attachments/360011813377/_______________.png" alt="_______________.png">
-*   Parameters of connected instances (including verification address, port, and weight)<img src="https://support.gcore.com/hc/article_attachments/360011894618/______________.png" alt="______________.png">
-*   Enable and disable instances from the load balancing pool<img src="https://support.gcore.com/hc/article_attachments/360011894718/__________________________.png" alt="__________________________.png">
-*   Change the parameters in the Health Check section<img src="https://support.gcore.com/hc/article_attachments/360011894798/__________________.png" alt="__________________.png">
+*   Change the checking algorithm
 
-**Load Balancer statuses**
---------------------------
+<img src="https://support.gcore.com/hc/article_attachments/360011813377/_______________.png" alt="_______________.png">
+
+*   Parameters of connected instances (including verification address, port, and weight)
+
+<img src="https://support.gcore.com/hc/article_attachments/360011894618/______________.png" alt="______________.png">
+
+*   Enable and disable instances from the load balancing pool
+
+<img src="https://support.gcore.com/hc/article_attachments/360011894718/__________________________.png" alt="__________________________.png">
+
+*   Change the parameters in the Health Check section
+
+<img src="https://support.gcore.com/hc/article_attachments/360011894798/__________________.png" alt="__________________.png">
+
+## **Load Balancer statuses**
 
 | Status (UI) | Status (API)                                                                                                                              | Value                                                                           |
 |-------------|-------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------|
@@ -139,8 +142,7 @@ In the editor, you can:
 | Error       | The balancer doesn't work.Virtual machines do not pass check requests.All virtual machines in the pool have the \"Error\" status. |
 
 
-Performance analysis
---------------------
+## Performance analysis
 
 We have tested our load balancers to determine the performance of different flavors. The test results show the throughput - the number of requests per second (rps) a load balancer can handle under a number of simultaneous users’ requests for worker nodes that communicate through the load balancer considering that 95 percent of requests are handled within 1 ms. 
 
