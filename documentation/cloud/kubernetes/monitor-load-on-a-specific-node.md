@@ -6,12 +6,11 @@ toc:
    --1--Navigate to monitoring: "navigate-to-monitoring"
    --1--Metrics: "metrics"
 ---
-  
+# Monitor load on a specific node
 
 Each node is a virtual machine. You can monitor its load and performance through 6 metrics.
 
-Navigate to monitoring
-----------------------
+## Navigate to monitoring
 
 1\. In the Cloud menu, go to **Kubernetes**, find the required cluster and click its name.
 
@@ -19,7 +18,7 @@ Navigate to monitoring
 
 2\. Go to the **Pools** section, click the required pool to expand the menu, and the click the required node.
 
-<img src="https://support.gcore.com/hc/article_attachments/13348772802833" alt="Screenshot_2023-02-27_at_15_1.jpg">
+<p style=“text-align: center”><img src=“https://support.gcore.com/hc/article_attachments/13348772802833” alt=“” width=80%></p>
 
 3\. In the new window, switch to the **Monitoring** tab.  
 The buttons to the right above the graphs regulate the presentation of statistics. The left button sets the period to be shown, and the right button sets the frequency at which data will be updated on the screen.
@@ -28,8 +27,7 @@ The buttons to the right above the graphs regulate the presentation of statistic
 
 Note: the Monitoring feature shows the average value per minute for metrics that are measured in seconds (e.g., the number of bytes per second). The system calculates the volume of traffic/operations per minute and then divides it by 60.
 
-Metrics
--------
+## Metrics
 
 You can monitor the state of a virtual machine using 6 metrics:
 

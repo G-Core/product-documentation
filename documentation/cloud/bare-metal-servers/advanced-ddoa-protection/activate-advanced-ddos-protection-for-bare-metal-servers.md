@@ -7,18 +7,15 @@ toc:
    --1--Method 2. By changing the interface configuration: "interface-configuration"
    --1--Method 3. Via the Network tab: "ddos-protection-list"
 ---
-(for a new server)  
-(for an existing server)  
-(for an existing server)
+# Activate Advanced DDoS Protection for bare metal servers
 
-Creating a baremetal server
----------------------------
+## Creating a baremetal server
 
 1. On your Gcore account, click on **Cloud**, then select **Baremetal**.
 
 <img src="https://support.gcore.com/hc/article_attachments/11773280152465" alt="mceclip0.png">
 
-2. Review the settings in the [Create baremetal server](#creating-a-baremetal-server) section, then go to the **Network interface**.
+2. Review the settings in the Create baremetal server section, then go to the **Network interface**.
 
 <img src="https://support.gcore.com/hc/article_attachments/11773282277777" alt="mceclip1.png">
 
@@ -38,8 +35,7 @@ Creating a baremetal server
 
 <img src="https://support.gcore.com/hc/article_attachments/11773276389905" alt="mceclip5.png">
 
-Interface configuration
------------------------
+## Interface configuration
 
 1. From the **Cloud** panel, select **Baremetal**, then click the name of your baremetal server.
 
@@ -61,8 +57,7 @@ Interface configuration
 
 <img src="https://support.gcore.com/hc/article_attachments/11773524742417" alt="mceclip10.png">
 
-DDoS protection list
---------------------
+## DDoS protection list
 
 1. Select **Networking** on the left-hand menu.
 

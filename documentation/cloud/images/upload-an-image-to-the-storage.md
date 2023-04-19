@@ -7,10 +7,9 @@ toc:
    --1--Prepare for uploading: "prepare-images-for-uploading"
    --1--Upload: "how-to-upload-an-image"
 ---
-  
+# Upload an image to the storage
 
-Prepare images for uploading
-----------------------------
+## Prepare images for uploading
 
 1. **OS preparation.** High-performance VirtIO SCSI controllers are used for the virtual volumes in Gcore. Please make sure that virtio-scsi block devices are supported by your operating system and that the VirtIO drivers are set up.
 
@@ -27,8 +26,7 @@ Prepare images for uploading
 *   ari
 *   ami
 
-How to upload an image
-----------------------
+## Upload an image
 
 1. Under the **Cloud** tab, go to **Projects** and select the project name.
 
