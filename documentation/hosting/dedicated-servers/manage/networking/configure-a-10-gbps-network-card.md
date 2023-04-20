@@ -1,7 +1,7 @@
 ---
 title: configure-a-10-gbps-network-card
 displayName: 10 Gbps network card
-order: 30
+order: 31
 published: true
 toc:
    --1--For Ubuntu/Debian: "configure-a-10-gbps-interface-for-ubuntu-debian-servers"

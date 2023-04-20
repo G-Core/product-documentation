@@ -2,6 +2,7 @@
 title: troubleshoot-issues-with-ssh-connection
 displayName: SSH connection
 published: true
+order: 10
 toc:
 ---
 
