@@ -19,7 +19,7 @@ toc:
     
 This article describes operations in the non-advanced mode of the "DNS" product interface. Differences in interfaces modes are described in the article "<a href="https://gcore.com/docs/dns/about-gcore-dns" target="_blank">About Gcore DNS</a>".
 
-<img src="https://support.gcore.com/hc/article_attachments/4432998182673/image_21__1_.png" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/4432998182673/image_21__1_.png" alt="" width="50%">
 
 ## Create a DNS record
 
@@ -27,15 +27,15 @@ This article describes operations in the non-advanced mode of the "DNS" product 
 
 Open the “All zones” tab and select the domain zone you want to add records for. Click it or the **Go to records** button next to it.
 
-<img src="https://support.gcore.com/hc/article_attachments/5003716805265/mceclip0.png" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/5003716805265/mceclip0.png" alt="" width="70%">
 
 Click **Add record**.
 
-<img src="https://support.gcore.com/hc/article_attachments/4432903999889/image_14__2_.png" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/4432903999889/image_14__2_.png" alt="" width="70%">
 
 You will see the interface for adding new DNS record. Perform other steps in it.
 
-<img src="https://support.gcore.com/hc/article_attachments/5006389623569/mceclip1.png" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/5006389623569/mceclip1.png" alt="" width="70%">
 
 ### 2. Select record type
 
@@ -83,17 +83,17 @@ Example: A-record has a TTL of 300. You have changed the value of this record fr
 
 After completing the configuration, click the **Add** button. The DNS record with specified parameters will be created.
 
-<img src="https://support.gcore.com/hc/article_attachments/4432965542673/image_20__1_.png" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/4432965542673/image_20__1_.png" alt="" width="70%">
 
 ## Edit a DNS record
 
 1\. Go to records of the required DNS zone by clicking the zone name or the "Go to records" button. 
 
-<img src="https://support.gcore.com/hc/article_attachments/5003716805265/mceclip0.png" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/5003716805265/mceclip0.png" alt="" width="70%">
 
 2\. Click on the pencil icon next to the desired resource record.
 
-<img src="https://support.gcore.com/hc/article_attachments/4436706707985/image_15.png" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/4436706707985/image_15.png" alt="" width="70%">
 
 3\. Make changes. 
 
@@ -103,10 +103,10 @@ After completing the configuration, click the **Add** button. The DNS record wit
 
 1\. Go to records of the required DNS zone by clicking the zone name or the **Go to records** button. 
 
-<img src="https://support.gcore.com/hc/article_attachments/5003716805265/mceclip0.png" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/5003716805265/mceclip0.png" alt="" width="70%">
 
 2\. Click the wastebasket icon next to the desired resource record.
 
-<img src="https://support.gcore.com/hc/article_attachments/4436736225553/image_17.png" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/4436736225553/image_17.png" alt="" width="70%">
 
 3\. Confirm deletion.

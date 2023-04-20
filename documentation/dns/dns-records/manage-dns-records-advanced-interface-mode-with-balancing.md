@@ -13,7 +13,7 @@ toc:
    --2--(Optional) Additional records of the selected type: "6-optional-add-additional-records-of-the-selected-type"
    --2--(Optional) Balancing: "7-optional-configure-balancing"
    --3--by coordinates (Geo Proximity): "balancing-by-coordinates-geo-proximity"
-   --3--by ASN, country, or continent (Geo DNS): "balancing-by-asn-country--or-continent--geo-dns"
+   --3--by ASN, country, or continent (Geo DNS): "balancing-by-asn-country--or-continent-geo-dns"
    --2--(Optional) A maximum number of responses: "8-optional-specify-the-maximum-number-of-responses"
    --2--Completing the configuration: "9-complete-the-configuration-and-create-resource-records"
    --1--Edit: "edit-a-dns-record"
@@ -98,11 +98,11 @@ To assign coordinates to each record, add the **latlong** (latitude and longitud
 
 For example, a user closer to the coordinate *51.52318152049715/-0.13458412218999416* (the center of London) will receive an A-record with the value "10.0.0.1", while a user nearer to *48.859741241898114/2.3415648470109653* (the center of Paris) will receive an A-record with the value "10.0.0.2".
 
-<img src="https://support.gcore.com/hc/article_attachments/12988137986449" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/12988137986449" alt="" width="70%">
 
 The configuration is complete. As soon as you finish creating records, balancing will work.
 
-#### Balancing by ASN, country, or continent (Geo - 
+#### Balancing by ASN, country, or continent (Geo - DNS) 
 
 You add metadata of different types to each record. When requesting a domain, a user will receive the record, if its metadata matches the users' characteristics.
 
@@ -130,13 +130,13 @@ To start balancing by ASN, country, or continent, select "by non-coordinates met
 2.  Compare the user's country with the countries specified in the metadata. The country is specified only for the lower record (Finland), it does not match the user's country (Denmark), and the lower record is not sent.
 3.  Compare the user's continent to the continents specified in the metadata. The continent is specified only for the upper record (Europe), it matches the user's continent (Europe). The upper record is sent, and the user goes to the server with IP 10.0.0.1.
 
-<img src="https://support.gcore.com/hc/article_attachments/12988738927249" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/12988738927249" alt="" width="70%">
 
 ### 8. (Optional) Specify the maximum number of responses
 
 If you use load balancing, fill in the "Max records per response" field. Here, you can specify the maximum number of records of the same type that can be sent to the user in a single response.
 
-<img src="https://support.gcore.com/hc/article_attachments/12988743231249" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/12988743231249" alt="" width="70%">
 
 **An example balancing by ASN/country/continent**. As a result of balancing, it turned out that four A-records are suitable for the user at once. If you enter the number "2" in the "Max records per response", our DNS server will send only two A-records. These records will be randomly selected from the four ones that match.
 
@@ -146,7 +146,7 @@ If you use load balancing, fill in the "Max records per response" field. Here, y
 
 After completing the configuration, click the **Create** button. DNS records with the specified parameters will be created.
 
-<img src="https://support.gcore.com/hc/article_attachments/12988802225041" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/12988802225041" alt="" width="70%">
 
 ## Edit a DNS record
 

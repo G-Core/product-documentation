@@ -23,7 +23,7 @@ Example: you use our Streaming for an educational site where you hold webinars. 
 
 1\. To enable the feature, send us a request via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of <a href="https://gcore.com/" target="_blank">our website</a>. Please specify your ID in the request, so that we can identify your account. You can find it on the main page of your <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>.
 
-<img src="https://support.gcore.com/hc/article_attachments/9394655645585/Your_ID.png" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/9394655645585/Your_ID.png" alt="" width="70%">
 
 The message template: *"Greetings! Please enable the Restreams feature for an account with ID … (your ID)"*.
 
@@ -39,11 +39,11 @@ For example, we want to broadcast our live stream on YouTube. To do so, we shoul
 
 3\. Go to the <a href="https://streaming.gcore.com/restreams/list" target="_blank">Restreams</a> section and click **Create a restream**.
 
-<img src="https://support.gcore.com/hc/article_attachments/9394645040785/Create_a_restream.png" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/9394645040785/Create_a_restream.png" alt="" width="70%">
 
 The configuration page opens. Complete the remaining steps in it.
 
-<img src="https://support.gcore.com/hc/article_attachments/9665929864593" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/9665929864593" alt="" width="50%">
 
 4\. Turn on the **Active** toggle if you want to broadcast your video content after configuration. If you don’t turn the toggle off, an inactive restream won’t be broadcasted.
 
@@ -75,8 +75,8 @@ where:
 
 Then you should enable the live stream or playlist (depending on your choice), wait several minutes while the settings are applied, and restart the <a href="https://streaming.gcore.com/restreams/list" target="_blank">Restreams</a> page. If everything was set up correctly, you would see the **Live** label.
 
-<img src="https://support.gcore.com/hc/article_attachments/9394773658257/Live.png" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/9394773658257/Live.png" alt="" width="70%">
 
 You can do this if the live stream or playlist is over, but you want to restream it again in a while. If the key and URL were not changed, and the restream still exists in the Control panel, there are no additional settings. If the key or URL were changed, you should add current credentials in the configuration of restream.
 
-<img src="https://support.gcore.com/hc/article_attachments/9394744437777/Settings.png" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/9394744437777/Settings.png" alt="" width="70%">

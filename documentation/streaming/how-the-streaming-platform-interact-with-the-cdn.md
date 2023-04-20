@@ -1,6 +1,6 @@
 ---
 title: how-the-streaming-platform-interact-with-the-cdn
-displayName: Configure CDN
+displayName: Interaction with CDN
 published: true
 order: 40
 toc:

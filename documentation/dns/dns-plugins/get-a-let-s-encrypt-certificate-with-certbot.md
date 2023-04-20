@@ -50,7 +50,7 @@ pip install certbot-dns-gcore
 
 If you see the output *Successfully installed …*, installation is complete.
 
-<img src="https://support.gcore.com/hc/article_attachments/9620506251025" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/9620506251025" alt="" width="70%">
 
 ## Create credentials for the Certbot plugin
 
@@ -100,11 +100,11 @@ where _*.example.com_ is the domain and its subdomains for which you want to iss
 
 Then enter **Y** to agree to the terms. After that, certificate issuance will start.
 
-<img src="https://support.gcore.com/hc/article_attachments/9620506234257" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/9620506234257" alt="" width="70%">
 
 3. If the certificate for your domain is issued, you will see the following notification:
 
-<img src="https://support.gcore.com/hc/article_attachments/9620491170833" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/9620491170833" alt="" width="70%">
 
 If you get the *Some challenges have failed* error, try to increase the propagation time:
 

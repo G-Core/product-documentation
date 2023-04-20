@@ -12,8 +12,8 @@ After <a href="https://gcore.com/docs/account-settings/create-an-account-for-an-
 
 | **Service**                          | **Trial** | **Conditions**                                                                                                                                                                                                                                      |
 |----------------------------------|-------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| CDN (Free plan)                  | -     | \nFree plan has no trial period but has a limit of traffic. When you exploit 70% of free traffic, we'll send you an email and ask you to add a payment method. When you spend 100% of free traffic, we will charge a fee for overcommitment.    |
-| CDN (Start, Pro 5 TB or 10 TB)\n | +     | 14 days or 300 GB, depending on which parameter ends first.                                                                                                                                                                                     |
+| CDN (Free plan)                  | -     | Free plan has no trial period but has a limit of traffic. When you exploit 70% of free traffic, we'll send you an email and ask you to add a payment method. When you spend 100% of free traffic, we will charge a fee for overcommitment.    |
+| CDN (Start, Pro 5 TB or 10 TB) | +     | 14 days or 300 GB, depending on which parameter ends first.                                                                                                                                                                                     |
 | Cloud                            | -     | -                                                                                                                                                                                                                                               |
 | Streaming                        | +     | 14 days and 10 minutes of uploaded video                                                                                                                                                                                                        |
 | Web Protection                   | +     | 7 days                                                                                                                                                                                                                                          |
@@ -23,11 +23,11 @@ After <a href="https://gcore.com/docs/account-settings/create-an-account-for-an-
 
 You can start the trial period of services from your personal account. There are two ways:
 
-- Click the icon of the service in the navigation menu and press the **Start free trial** button.
+1\. Click the icon of the service in the navigation menu and press the **Start free trial** button.
 
 <img src="https://assets.gcore.pro/docs/account-settings/billing/trial/start-from-product-tab-10.png" alt="">
 
-- Click the Profile menu, go to the Billing tab and the <a href="https://accounts.gcore.com/billing/services" target="_blank">Service page</a>. Select the required service and click **Start free trial**.
+2\. Click the Profile menu, go to the Billing tab and the <a href="https://accounts.gcore.com/billing/services" target="_blank">Service page</a>. Select the required service and click **Start free trial**.
 
 <img src="https://assets.gcore.pro/docs/account-settings/billing/trial/start-from-service-page-20.png" alt="">
 

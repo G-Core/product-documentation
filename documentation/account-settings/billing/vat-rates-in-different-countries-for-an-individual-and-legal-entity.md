@@ -44,42 +44,194 @@ According to the table below, the VAT rate will depend on your country, for exam
 
 All EU countries and their VAT rate (%) are listed below.
 
-|     Сountry       |      Country code     |         The VAT rate (%)     |
-| ----------------- | --------------------- | ---------------------------- |
-| Austria           | AT                    | 20                           |
-| Belgium           | BE                    | 21                           |
-| Bulgaria          | BG                    | 20                           |
-| Cyprus            | CY                    | 19                           |
-| Czech Republic    | CZ                    | 21                           |
-| Germany           | DE                    | 19                           |
-| Croatia           | HR                    | 25                           |
-| Denmark           | DK                    | 25                           |
-| Estonia           | EE                    | 20                           |
-| Spain             | ES                    | 21                           |
-| Finland           | FI                    | 24                           |
-| France            | FR                    | 20                           |
-| Great Britain     | GB                    | 20                           |
-| Greece            | GR                    | 24                           |
-| Hungary           | HU                    | 27                           |
-| Irish             | IE                    | 23                           |
-| Italy             | IT                    | 22                           |
-| Lithuania         | LT                    | 21                           |
-| Luxembourg        | LU                    | 16 (temporarily)             |
-| Latvian           | LV                    | 21                           |
-| Malta             | MT                    | 18                           |
-| Netherlands       | NL                    | 21                           |
-| Poland            | PL                    | 23                           |
-| Portugal          | PT                    | 23                           |
-| Romania           | RO                    | 19                           |
-| Sweden            | SE                    | 25                           |
-| Slovenia          | SL                    | 22                           |
-| Slovakia          | SK                    | 20                           |
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-9r46{background-color:#FFF;border-color:inherit;color:#282828;font-weight:bold;text-align:center;vertical-align:top}
+.tg .tg-twlz{background-color:#FFF;border-color:inherit;color:#282828;text-align:center;vertical-align:top}
+</style>
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-9r46">   Сountry     </th>
+    <th class="tg-9r46">     Country code   </th>
+    <th class="tg-9r46">        The VAT rate(%)    </th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-twlz">Austria</td>
+    <td class="tg-twlz">AT</td>
+    <td class="tg-twlz">20</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Belgium</td>
+    <td class="tg-twlz">BE</td>
+    <td class="tg-twlz">21</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Bulgaria</td>
+    <td class="tg-twlz">BG</td>
+    <td class="tg-twlz">20</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Cyprus</td>
+    <td class="tg-twlz">CY</td>
+    <td class="tg-twlz">19</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Czech Republic</td>
+    <td class="tg-twlz">CZ</td>
+    <td class="tg-twlz">21</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Germany</td>
+    <td class="tg-twlz">DE</td>
+    <td class="tg-twlz">19</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Croatia</td>
+    <td class="tg-twlz">HR</td>
+    <td class="tg-twlz">25</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Denmark</td>
+    <td class="tg-twlz">DK</td>
+    <td class="tg-twlz">25</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Estonia</td>
+    <td class="tg-twlz">EE</td>
+    <td class="tg-twlz">20</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Spain</td>
+    <td class="tg-twlz">ES</td>
+    <td class="tg-twlz">21</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Finland</td>
+    <td class="tg-twlz">FI</td>
+    <td class="tg-twlz">24</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">France</td>
+    <td class="tg-twlz">FR</td>
+    <td class="tg-twlz">20</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Great Britain</td>
+    <td class="tg-twlz">GB</td>
+    <td class="tg-twlz">20</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Greece</td>
+    <td class="tg-twlz">GR</td>
+    <td class="tg-twlz">24</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Hungary</td>
+    <td class="tg-twlz">HU</td>
+    <td class="tg-twlz">27</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Irish</td>
+    <td class="tg-twlz">IE</td>
+    <td class="tg-twlz">23</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Italy</td>
+    <td class="tg-twlz">IT</td>
+    <td class="tg-twlz">22</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Lithuania</td>
+    <td class="tg-twlz">LT</td>
+    <td class="tg-twlz">21</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Luxembourg</td>
+    <td class="tg-twlz">LU</td>
+    <td class="tg-twlz">16 (temporarily)</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Latvian</td>
+    <td class="tg-twlz">LV</td>
+    <td class="tg-twlz">21</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Malta</td>
+    <td class="tg-twlz">MT</td>
+    <td class="tg-twlz">18</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Netherlands</td>
+    <td class="tg-twlz">NL</td>
+    <td class="tg-twlz">21</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Poland</td>
+    <td class="tg-twlz">PL</td>
+    <td class="tg-twlz">23</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Portugal</td>
+    <td class="tg-twlz">PT</td>
+    <td class="tg-twlz">23</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Romania</td>
+    <td class="tg-twlz">RO</td>
+    <td class="tg-twlz">19</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Sweden</td>
+    <td class="tg-twlz">SE</td>
+    <td class="tg-twlz">25</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Slovenia</td>
+    <td class="tg-twlz">SL</td>
+    <td class="tg-twlz">22</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Slovakia</td>
+    <td class="tg-twlz">SK</td>
+    <td class="tg-twlz">20</td>
+  </tr>
+</tbody>
+</table>
 
 ### For other countries
 
-|     Country                                |      Country code     |         The VAT rate (%)     |
-| ------------------------------------------ | --------------------- | ---------------------------- |
-| Other countries outside the European Union | -                     | 0                            |
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-9r46{background-color:#FFF;border-color:inherit;color:#282828;font-weight:bold;text-align:center;vertical-align:top}
+.tg .tg-twlz{background-color:#FFF;border-color:inherit;color:#282828;text-align:center;vertical-align:top}
+</style>
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-9r46">  Country     </th>
+    <th class="tg-9r46">     Country code   </th>
+    <th class="tg-9r46">        The VAT rate(%)    </th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-twlz">Other countries outside the European Union</td>
+    <td class="tg-twlz">-</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+</tbody>
+</table>
 
 ## VAT for organizations (contracting)
 
@@ -89,40 +241,220 @@ All EU countries and their VAT rate (%) are listed below.
 
 **Please, note**: The VAT rate for EU countries (excluding Luxembourg) depends on providing us with your organization's VAT number.
 
-|     Сountry       |      Country code     |         The VAT rate (%)     |
-|------------------ | --------------------- | ---------------------------- |
-| Austria           | AT                    | 20                           |
-| Belgium           | BE                    | 21                           |
-| Bulgaria          | BG                    | 20                           |
-| Cyprus            | CY                    | 19                           |
-| Czech Republic    | CZ                    | 21                           |
-| Germany           | DE                    | 19                           |
-| Croatia           | HR                    | 25                           |
-| Denmark           | DK                    | 25                           |
-| Estonia           | EE                    | 20                           |
-| Spain             | ES                    | 21                           |
-| Finland           | FI                    | 24                           |
-| France            | FR                    | 20                           |
-| Great Britain     | GB                    | 20                           |
-| Greece            | GR                    | 24                           |
-| Hungary           | HU                    | 27                           |
-| Irish             | IE                    | 23                           |
-| Italy             | IT                    | 22                           |
-| Lithuania         | LT                    | 21                           |
-| Luxembourg        | LU                    | 16 (temporarily)             |
-| Latvian           | LV                    | 21                           |
-| Malta             | MT                    | 18                           |
-| Netherlands       | NL                    | 21                           |
-| Poland            | PL                    | 23                           |
-| Portugal          | PT                    | 23                           |
-| Romania           | RO                    | 19                           |
-| Sweden            | SE                    | 25                           |
-| Slovenia          | SL                    | 22                           |
-| Slovakia          | SK                    | 20                           |
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-9r46{background-color:#FFF;border-color:inherit;color:#282828;font-weight:bold;text-align:center;vertical-align:top}
+.tg .tg-twlz{background-color:#FFF;border-color:inherit;color:#282828;text-align:center;vertical-align:top}
+</style>
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-9r46">    Сountry     </th>
+    <th class="tg-9r46">     Country code   </th>
+    <th class="tg-9r46"> VAT rate ( % ), if the VAT number is not provided    </th>
+    <th class="tg-9r46">VAT rate ( % ), if the VAT number is provided</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-twlz">Austria</td>
+    <td class="tg-twlz">AT</td>
+    <td class="tg-twlz">20</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Belgium</td>
+    <td class="tg-twlz">BE</td>
+    <td class="tg-twlz">21</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Bulgaria</td>
+    <td class="tg-twlz">BG</td>
+    <td class="tg-twlz">20</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Cyprus</td>
+    <td class="tg-twlz">CY</td>
+    <td class="tg-twlz">19</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Czech Republic</td>
+    <td class="tg-twlz">CZ</td>
+    <td class="tg-twlz">21</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Germany</td>
+    <td class="tg-twlz">DE</td>
+    <td class="tg-twlz">19</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Croatia</td>
+    <td class="tg-twlz">HR</td>
+    <td class="tg-twlz">25</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Denmark</td>
+    <td class="tg-twlz">DK</td>
+    <td class="tg-twlz">25</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Estonia</td>
+    <td class="tg-twlz">EE</td>
+    <td class="tg-twlz">20</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Spain</td>
+    <td class="tg-twlz">ES</td>
+    <td class="tg-twlz">21</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Finland</td>
+    <td class="tg-twlz">FI</td>
+    <td class="tg-twlz">24</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">France</td>
+    <td class="tg-twlz">FR</td>
+    <td class="tg-twlz">20</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Great Britain</td>
+    <td class="tg-twlz">GB</td>
+    <td class="tg-twlz">20</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Greece</td>
+    <td class="tg-twlz">GR</td>
+    <td class="tg-twlz">24</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Hungary</td>
+    <td class="tg-twlz">HU</td>
+    <td class="tg-twlz">27</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Irish</td>
+    <td class="tg-twlz">IE</td>
+    <td class="tg-twlz">23</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Italy</td>
+    <td class="tg-twlz">IT</td>
+    <td class="tg-twlz">22</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Lithuania</td>
+    <td class="tg-twlz">LT</td>
+    <td class="tg-twlz">21</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Luxembourg</td>
+    <td class="tg-twlz">LU</td>
+    <td class="tg-twlz">16 (temporarily)</td>
+    <td class="tg-twlz">16 (temporarily)</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Latvian</td>
+    <td class="tg-twlz">LV</td>
+    <td class="tg-twlz">21</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Malta</td>
+    <td class="tg-twlz">MT</td>
+    <td class="tg-twlz">18</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Netherlands</td>
+    <td class="tg-twlz">NL</td>
+    <td class="tg-twlz">21</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Poland</td>
+    <td class="tg-twlz">PL</td>
+    <td class="tg-twlz">23</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Portugal</td>
+    <td class="tg-twlz">PT</td>
+    <td class="tg-twlz">23</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Romania</td>
+    <td class="tg-twlz">RO</td>
+    <td class="tg-twlz">19</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Sweden</td>
+    <td class="tg-twlz">SE</td>
+    <td class="tg-twlz">25</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Slovenia</td>
+    <td class="tg-twlz">SL</td>
+    <td class="tg-twlz">22</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+  <tr>
+    <td class="tg-twlz">Slovakia</td>
+    <td class="tg-twlz">SK</td>
+    <td class="tg-twlz">20</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+</tbody>
+</table>
 
 ### VAT for other countries
 
-|     Country                                |      Country code     |         The VAT rate (%)     |
-| ------------------------------------------ | --------------------- | ---------------------------- |
-| Other countries outside the European Union | -                     | 0                            |
-
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-9r46{background-color:#FFF;border-color:inherit;color:#282828;font-weight:bold;text-align:center;vertical-align:top}
+.tg .tg-twlz{background-color:#FFF;border-color:inherit;color:#282828;text-align:center;vertical-align:top}
+</style>
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-9r46">  Country     </th>
+    <th class="tg-9r46">     Country code   </th>
+    <th class="tg-9r46">        The VAT rate(%)    </th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-twlz">Other countries outside the European Union</td>
+    <td class="tg-twlz">-</td>
+    <td class="tg-twlz">0</td>
+  </tr>
+</tbody>
+</table>
