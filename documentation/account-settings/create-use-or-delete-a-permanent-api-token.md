@@ -40,7 +40,7 @@ To manage services add your permanent API token after APIKey in the authorizatio
 
 The form for an API token creation will be opened.  
   
-<img src="https://assets.gcore.pro/docs/account-settings/api-tokens/fill-api-token-form-20.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/api-tokens/fill-api-token-form-20.png" alt="" width="70%">
 
 4\. In the Token name field, specify the token name.
 
@@ -63,7 +63,7 @@ A pop-up window with the API token will be opened.
 
 10\. After you have saved the generated token, click **OK, I've copied token**. Information about the token will be displayed in the API tokens section.
 
-<img src="https://assets.gcore.pro/docs/account-settings/api-tokens/creation-notification-30.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/api-tokens/creation-notification-30.png" alt="" width="50%">
 
 ## Delete an API token
 
@@ -96,7 +96,7 @@ API token expiration notifications are displayed in your personal account and ar
 
 You <a href=".documentation/account-settings/manage-service-notifications" target="_blank">can configure</a> notifications in the Notifications section of the Profile tab.  
   
-<img src="https://assets.gcore.pro/docs/account-settings/api-tokens/expiration-notification-60.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/api-tokens/expiration-notification-60.png" alt="" width="70%">
 
 Users are notified by email:
 

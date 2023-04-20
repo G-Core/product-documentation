@@ -5,22 +5,21 @@ published: true
 order: 30
 toc:
     --1--Router creation: "router-creation"
-    --2--1. Manually from the routers section: "1-manually-from-the-routers-section"
-    --2--2. Automatically after creating a network: "2-automatically-after-creating-a-network"
     --1--Managing routers: "managing-routers"
 ---
-#### **Cloud Router** enables you to dynamically exchange routes between networks. 
+# Create and manage a router
+
+**Cloud Router** enables you to dynamically exchange routes between networks. 
 
 The list of routers is located inside the project, section Networking → Routers 
 
 <img src="https://support.gcore.com/hc/article_attachments/360012877898/1._______________.png" alt="1._______________.png">
 
-**Router creation** 
---------------------
+## Router creation
 
 There are two ways to create a router: 
 
-### **1\. Manually from the routers section** 
+**1\. Manually from the routers section** 
 
 Go to the project, section Networking → Routers and click on Create router. 
 
@@ -48,7 +47,7 @@ Specify the destination prefix and the address of the next hop. To add the next 
 
 <img src="https://support.gcore.com/hc/article_attachments/360012805757/6.______________.png" alt="6.______________.png">
 
-### **2\. Automatically after creating a network** 
+**2\. Automatically after creating a network** 
 
 After creating a network, a new router is being automatically created in the cloud to allow further routing of traffic.  
 
@@ -58,8 +57,7 @@ For more information about creating and configuring a network and subnet, see th
 
 For automatically created routers, you can make the same settings as for manually created routers. 
 
-**Managing routers.** 
-----------------------
+## Managing routers
 
 To manage routers, open the list of routers: inside the project, section Networking → Routers 
 

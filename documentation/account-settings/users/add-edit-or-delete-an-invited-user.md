@@ -26,7 +26,7 @@ toc:
 
 The pop-up appears. Do the remaining steps in it. 
 
-<img src="https://assets.gcore.pro/docs/account-settings/users/manage/fill-the-form-20.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/users/manage/fill-the-form-20.png" alt="" width="70%">
 
 4\. Enter the name of the invited user.
 
@@ -90,8 +90,8 @@ Now the user has no access to the current account.
 
 2\. If a permanent API token was issued by a user who is going to be deleted, first delete the required token. Otherwise, an error will appear.
 
-<img src="https://assets.gcore.pro/docs/account-settings/users/manage/token-deletion-error-50.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/users/manage/token-deletion-error-50.png" alt="" width="50%">
 
 3\. After deleting a user, in the API tokens section, his name and email address will be crossed out next to the tokens issued by him, and a hint will be displayed:
 
-<img src="https://assets.gcore.pro/docs/account-settings/users/manage/deletion-massage-60.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/users/manage/deletion-massage-60.png" alt="" width="70%">

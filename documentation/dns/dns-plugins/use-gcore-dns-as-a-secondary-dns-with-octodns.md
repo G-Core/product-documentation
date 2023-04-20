@@ -22,7 +22,7 @@ Synchronize records of Gcore DNS with your DNS
 
 This guide will help you to install OctoDNS  — a tool for managing DNS zones of different providers. Using it, you will make records on our DNS server identical to records on yours. That's how it works:
 
-<img src="https://support.gcore.com/hc/article_attachments/4410773032721/mceclip3.png" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/4410773032721/mceclip3.png" alt="" width="70%">
 
 1\. In your account, create a necessary DNS zone manually. If the zone has been already created, skip this step.  
   
@@ -102,7 +102,7 @@ nano config.yaml
 
 In this configuration file, you need to specify providers and zones that OctoDNS will manage as well as the dependencies between them. The final file will look like this:
 
-<img src="https://support.gcore.com/hc/article_attachments/6366917013521/mceclip1.png" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/6366917013521/mceclip1.png" alt="" width="70%">
 
 We will tell you how to fill in each data section. First, copy the template below and paste it into the configuration file (for the .yaml format, indentations are very important — our template will help you to enter the data exactly so that the program can read it):
 
@@ -133,11 +133,11 @@ zones:
 
 Secondly, you have to fill in providers sections. Templates for them are located in OctoDNS repositories of providers. Let's start filling in the form of the Gcore DNS provider. To open its repository, open the <a href="https://github.com/octodns/octodns#providers" target="_blank">the table of providers</a> and click module name "octodns_gcore".
 
-<img src="https://support.gcore.com/hc/article_attachments/5559641295761/mceclip3.png" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/5559641295761/mceclip3.png" alt="" width="70%">
 
 Find the "Configuration" section. Three things are described there: provider name, provider class name and authentification data. 
 
-<img src="https://support.gcore.com/hc/article_attachments/7716087839633/mceclip0.png" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/7716087839633/mceclip0.png" alt="" width="70%">
 
 Provider name (gcore) and class name (class: octodns_gcore.GCoreProvider) are already in our configuration file template, you don't need to copy-paste them. Now you have to fill in authentification data according to what is writtten in the "Conguration" section. You can choose what authentication data to use: an API key or a login-password pair. We recommend using an API key.
 
@@ -177,7 +177,7 @@ In "config.yaml" file, fill in your provider section as you've just done for Gco
 
 Then fill in the DNS zones data. For each zone, enter its name and a pair of source-target providers. Your provider will act as a source (OctoDNS will take DNS records from its databases), and Gcore DNS provider will act as a target (its records will be edited to be identical to data of your provider). For example, to synchronize DNS records of "myzone.com" and "mymyzone.com" zones, you need to enter the following data:
 
-<img src="https://support.gcore.com/hc/article_attachments/6366859472273/mceclip0.png" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/6366859472273/mceclip0.png" alt="" width="70%">
 
 After adding all zones to the file, save changes and close it.
 
@@ -195,7 +195,7 @@ octodns-sync --config-file=/home/ubuntu/octodns/config/config.yaml
 
 If the configuration file was filled out correctly, you will get output with a similar summary at the end:
 
-<img src="https://support.gcore.com/hc/article_attachments/5559879037841/mceclip6.png" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/5559879037841/mceclip6.png" alt="" width="70%">
 
 These are the changes OctoDNS is going to make to our DNS records. If everything is correct, run the command to make these changes:
 
@@ -205,7 +205,7 @@ octodns-sync --config-file=[your configuration file directory] --doit
 
 You will see similar output:
 
-<img src="https://support.gcore.com/hc/article_attachments/5559888761233/mceclip7.png" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/5559888761233/mceclip7.png" alt="" width="70%">
 
 It means the changes have been made. You can see the updated list of records in <a href="https://dns.gcore.com/zones" target="_blank">your Control panel in the DNS tab</a>.
 
@@ -231,6 +231,6 @@ octodns-sync --config-file=[your config file directory] --doit
 
 You will see similar output:
 
-<img src="https://support.gcore.com/hc/article_attachments/5559941721233/mceclip9.png" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/5559941721233/mceclip9.png" alt="" width="70%">
 
 It means the changes have been made. You can see the updated list of records in <a href="https://dns.gcore.com/zones" target="_blank">your Control panel in the DNS tab</a>.

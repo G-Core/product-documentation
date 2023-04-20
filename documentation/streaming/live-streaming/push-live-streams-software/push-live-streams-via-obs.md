@@ -33,7 +33,7 @@ OBS links your device (a laptop or a PC) and different streaming platforms (Gcor
 
 For example, if you see these values on the Live stream settings page:
 
-<img src="https://support.gcore.com/hc/article_attachments/11774973436177" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/11774973436177" alt="" width="50%">
 
 paste them to the OBS Settings as follows:
 
@@ -48,7 +48,7 @@ paste them to the OBS Settings as follows:
 
 7\. Once the streaming has started, go to the <a href="https://streaming.gcore.com/streaming/list" target="_blank">Streaming list</a>, open the Live Stream settings, and copy the link to embed the broadcast to your website.
 
-<img src="https://support.gcore.com/hc/article_attachments/11775007043985" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/11775007043985" alt="" width="70%">
 
 That’s it. The stream from OBS will be broadcast to your website.
 
@@ -66,7 +66,7 @@ It’s recommended to configure the stream parameters you’ll send to our serve
 - **Audio Bitrate:** 128
 - **Encoder:** Software (x264)
 
-<img src="https://support.gcore.com/hc/article_attachments/10807571524241" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/10807571524241" alt="" width="70%">
 
 3\. Select ‘Advanced’ mode.
 
@@ -79,11 +79,11 @@ It’s recommended to configure the stream parameters you’ll send to our serve
 
 5\. Click **Apply** to save the configuration.
 
-<img src="https://support.gcore.com/hc/article_attachments/10807656645393" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/10807656645393" alt="" width="70%">
 
 ### Audio parameters
 
-<img src="https://support.gcore.com/hc/article_attachments/10807660371473" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/10807660371473" alt="" width="70%">
 
 1\. Open OBS Settings and go to the Audio tab.
 
@@ -103,7 +103,7 @@ It’s recommended to configure the stream parameters you’ll send to our serve
 
 3\. Click **Apply**.
 
-<img src="https://support.gcore.com/hc/article_attachments/10807613445521" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/10807613445521" alt="" width="70%">
 
 **Hints.** If you want to use 1920×1080 resolution, it’s better to set the Video Bitrate parameter at 4000 Kbps (instead of 2000 Kbps) in the [Output](#output-parameters) tab. If you need to increase FPS to 60, set the Video Bitrate to 8000 Kbps.
 

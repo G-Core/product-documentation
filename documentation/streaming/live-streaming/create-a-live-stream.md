@@ -13,11 +13,11 @@ toc:
 
 2\. Enter the name of your live stream in the window that appears and click **Create**.
 
-<img src="https://support.gcore.com/hc/article_attachments/9651635790481" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/9651635790481" alt="" width="50%">
 
 If the button is un-clickable, you have reached your live stream limit. To create a new stream, delete an existing stream from the list.
 
-<img src="https://support.gcore.com/hc/article_attachments/9651664092049" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/9651664092049" alt="" width="70%">
 
 A new page will open. Do the remaining steps connected with Gcore’s interface in it. 
 
@@ -45,13 +45,13 @@ The next step of the guide depends on the stream type you’ve chosen: Pull or P
 
 **(If you selected Pull)** Put a link to a stream from your media server in the URL field.
 
-<img src="https://support.gcore.com/hc/article_attachments/13542997210897" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/13542997210897" alt="" width="50%">
 
 You can specify in the URL field several media servers separated by space. In this case, the first media server will be used as the primary source and the next as backup servers. If the signal from the first source cuts out, we will automatically resume the stream from the second source.
 
 **(If you selected Push)** Select the encoder that you will use for streaming from the drop-down list. Copy the server URL and Stream Key. In the screenshot below, *rtmp://vp-push-ed1.gvideo.co/* is the server URL while *425969?7395…* is the stream key.
 
-<img src="https://support.gcore.com/hc/article_attachments/13543145952785" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/13543145952785" alt="" width="50%">
 
 Insert the copied values in the interface of your encoder according to the appropriate instructions from the "Push live streams software" section.
 
@@ -62,7 +62,7 @@ Insert the copied values in the interface of your encoder according to the appro
 - Copy the iFrame code to embed the live stream within the built-in player.
 - Copy the export link in the needed protocol to paste it into your player. Use the **LL-DASH** link if your live stream will be viewed from any device except iOS. Use **LL HLS** for iOS viewing.
 
-<img src="https://support.gcore.com/hc/article_attachments/13543414027409" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/13543414027409" alt="" width="70%">
 
 Then your viewers see the live stream.
 

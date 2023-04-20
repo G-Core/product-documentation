@@ -4,48 +4,48 @@ displayName: Overview Meet (paid)
 published: true
 order: 10
 toc:
+   --1--Meet abilities: "meet-abilities"
    --1--Meet features: "meet-features"
    --1--How does Meet work?: "how-does-meet-work"
    --1--How to use and integrate Meet: "how-to-use-and-integrate-meet"
    --2--Without integration into a website code: "how-to-use-meet-without-integration-into-the-website-code"
    --2--With integration into a website code: "how-to-use-meet-by-integrating-the-video-call-room-into-the-website-code"
 ---
+# About Meet
+
 Meet is a service for video calls, video conferences, and webinars in real-time for a large number of participants. One of the advantages is the ability to integrate a call room into your website or mobile app. 
 
-Meet abilities   
-=================
+## Meet abilities   
 
-*   Video calls one-on-one or in small groups of 2- 4 people (e-commerce, finance, telemedicine). 
-*   Video conferences in groups of 2–20 people (small and medium businesses). 
-*   Webinars for 1–5 speakers and 2000 viewers (online education). 
-*   Joint viewing of online broadcasts (entertainment). 
+- Video calls one-on-one or in small groups of 2- 4 people (e-commerce, finance, telemedicine). 
+- Video conferences in groups of 2–20 people (small and medium businesses). 
+- Webinars for 1–5 speakers and 2000 viewers (online education). 
+- Joint viewing of online broadcasts (entertainment). 
 
- <img src="https://support.gcore.com/hc/article_attachments/360017042737/call_room.png" alt="call_room.png" width="493" height="253">
+ <p style="text-align: center"><img src="https://support.gcore.com/hc/article_attachments/360017042737/call_room.png" alt="" width="500"></p>
 
-Meet features 
-==============
+## Meet features 
 
-*   No time limit for any kind of video calls.  
-*   No account registration and additional applications or extension installation.   
-*   Communication via text chat and screen sharing for desktops.   
-*   Camera switching for mobile devices.   
-*   Availability of a private room creation with access with a pin code.  
-*   Calls security and privacy: no video record, no data storage, no chat history saving.   
-*   Works on any devices, supporting WebRTC. 
-*   Integration into a website via iframe, branding, and custom settings (write to [sales@gcore.com](mailto:sales@gcorelabs.com) to  contact our manager).  
+- No time limit for any kind of video calls.  
+- No account registration and additional applications or extension installation.   
+- Communication via text chat and screen sharing for desktops.   
+- Camera switching for mobile devices.   
+- Availability of a private room creation with access with a pin code.  
+- Calls security and privacy: no video record, no data storage, no chat history saving.   
+- Works on any devices, supporting WebRTC. 
+- Integration into a website via iframe, branding, and custom settings (write to [sales@gcore.com](mailto:sales@gcore.com) to  contact our manager).  
 
-How does Meet work? 
-====================
+## How does Meet work? 
 
 For Meet video calls, WebRTC technology is used, which provides real-time video and audio delivery.  
 
-**_To deliver video signals from users' cameras,_** the SFU (Selective Forwarding Unit) architecture is used, which allows transmitting the same outgoing signal to the server, where it is distributed among all users: a participant sends an outgoing signal and receives the signals of all other users from a common server. 
+**To deliver video signals from users' cameras,** the SFU (Selective Forwarding Unit) architecture is used, which allows transmitting the same outgoing signal to the server, where it is distributed among all users: a participant sends an outgoing signal and receives the signals of all other users from a common server. 
 
-**Please, note!**  Meet does not use a P2P (peer-to-peer) connection. All communication is broadcast via the server, even if there are 2 people in the room.  
+**Please, note**:  Meet does not use a P2P (peer-to-peer) connection. All communication is broadcast via the server, even if there are 2 people in the room.  
 
-Simulcast Streaming technology is used **_for live broadcasts_**, it helps to deliver video to each user, even with an unstable Internet channel.  Using this technology, several video streams of different quality and resolution are created on the client-side. They are delivered to a server, where based on the Internet channel of each user, it is determined what quality it is possible to deliver. After that, the selected stream is sent to the users according to the capabilities of their bandwidth and device.  
+Simulcast Streaming technology is used for live broadcasts, it helps to deliver video to each user, even with an unstable Internet channel.  Using this technology, several video streams of different quality and resolution are created on the client-side. They are delivered to a server, where based on the Internet channel of each user, it is determined what quality it is possible to deliver. After that, the selected stream is sent to the users according to the capabilities of their bandwidth and device.  
 
-! A list of supported operating systems and browsers can be found [here](https://support.gcore.com/hc/en-us/articles/360015663098). 
+**Note**: A list of supported operating systems and browsers can be found [here](https://support.gcore.com/hc/en-us/articles/360015663098). 
 
 **_Data streams are encrypted using_** the DTLS protocol (Datagram Transport Layer Security), which allows providing a secure connection that prevents interception, listening, and interference, without violating data integrity protection. 
 

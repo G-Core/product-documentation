@@ -32,7 +32,7 @@ More details in the "<a href="#request-content-from-cdn">Request content directl
 
 - Custom domain, e.g., _cdn.example.com_. Read more about the personal domain setup in the "<a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">Create and set a custom domain for the content delivery via CDN</a>" guide.
 
-<img src="https://assets.gcore.pro/docs/storage/use-storage-with-cdn/use-as-origin-20.png" alt="" width="540" height="696">
+<img src="https://assets.gcore.pro/docs/storage/use-storage-with-cdn/use-as-origin-20.png" alt="" width="70%">
 
 ### Use SFTP storage
 
@@ -47,7 +47,7 @@ To specify the Origin Source, use the following schema:
 
 Both name and hostname can be found on the Storage tab > Storages > Details.
 
-<img src="https://assets.gcore.pro/docs/storage/use-storage-with-cdn/use-sftp-as-origin-40.png" alt="">
+<img src="https://assets.gcore.pro/docs/storage/use-storage-with-cdn/use-sftp-as-origin-40.png" alt="" width="70%">
 
 If your storage name is 12345-test and your hostname is *ams.origin.gcdn.co*, you should specify *12345-test.ams.origin.gcdn.co* as the Origin Source. Read more about personal domain setup in the "<a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">Create and set a custom domain for the content delivery via CDN</a>" guide.
 

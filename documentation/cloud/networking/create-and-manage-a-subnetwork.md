@@ -11,12 +11,11 @@ toc:
    --1--Editing a name: "editing-a-name"
    --1--Deleting a subnet: "deleting-a-subnet"
 ---
-**Subnets** 
-------------
+# Create and manage a subnetwork
 
 **A subnetwork** is a range of IP addresses in a cloud network. Addresses from this range will be assigned to machines in the cloud.  
 
-#### **Subnetwork creation**
+## **Subnetwork creation**
 
 There are two ways to create a subnet in the network: 
 
@@ -30,7 +29,7 @@ There are two ways to create a subnet in the network: 
 
 <img src="https://support.gcore.com/hc/article_attachments/13830600498321" alt="_____________________.png">
 
-#### **Setting the IP range** 
+## **Setting the IP range** 
 
 While creating a subnet (with any method), you need to specify the address range in the CIDR format in the drop-down window.
 
@@ -47,7 +46,7 @@ Acceptable CIDR ranges: 
 
 Valid subnet mask range: 16-24. 
 
-#### **Network routing** 
+## Network routing
 
 A routed network is a private network that is already connected to a router with a public interface. All virtual servers in such networks can access the Internet through the router and accept incoming connections. 
 
@@ -57,21 +56,19 @@ If you need to restrict machines from external connections, you need to enable t
 
 <img src="https://support.gcore.com/hc/article_attachments/13830607341457" alt="__________________________.png">
 
-**Managing subnets** 
----------------------
+## Managing subnets
 
 You can see the list of subnets in the created **network** in the section Networking → Networks. 
 
-*   #### **Editing a name** 
+**Editing a name** 
     
-
 To rename a subnet, click the selector on the right from the selected subnet and select **Edit**.
 
 <img src="https://support.gcore.com/hc/article_attachments/13830661431953" alt="____________.png">
 
 In the drop-down window, you can change the name of the created subnet.
 
-*   #### **Deleting a subnet** 
+ **Deleting a subnet** 
     
 
 To delete a subnet, click the selector on the right from the selected subnet and click **Delete**.

@@ -45,7 +45,7 @@ The request priority reflects the impact of service issues on your business. The
 
 If you use CDN, Streaming platform, Cloud, Web protection, Storage, or DNS, you can set the priority of the request and manage it in the <a href="https://accounts.gcore.com/tickets/all" target="_blank">My tickets</a> section when creating the ticket.
 
-<img src="https://assets.gcore.pro/docs/account-settings/technical-support/ticket-priority-20.png" alt="" width="600" height="800">
+<img src="https://assets.gcore.pro/docs/account-settings/technical-support/ticket-priority-20.png" alt="" width="70%">
 
 This functionality will soon be available for Hosting clients.
 

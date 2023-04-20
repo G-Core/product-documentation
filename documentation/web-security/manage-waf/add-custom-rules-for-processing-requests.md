@@ -22,7 +22,7 @@ By default, WAF uses two built-in libraries to analyze requests to protect the a
 
 On the "Rules" tab, you can add custom rules to adjust the default behavior of WAF when processing requests. This is what the tab with created rules looks like:
 
-<img src="https://support.gcore.com/hc/article_attachments/11774209838097" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/11774209838097" alt="" width="70%">
 
 The priority of custom rules is higher than it is for ones from the default libraries. If a request has signs of an attack but you’ve added a custom rule to ignore this attack type, the request will be marked as legitimate and will not be blocked. If a custom rule doesn’t exist, WAF will block this request.
 
@@ -32,11 +32,11 @@ Created rules are automatically grouped into branches based on general condition
 
 In the example below, the rules are grouped into six branches by endpoints. The branch with the common _backend_ endpoint is on the first line. Other branches (2, 3, 4) also have this endpoint in the path (e.g., _**backend**/editor_). But the first branch is higher because it has the most common condition: /*\*.\*.\* (two asterisks mean any number of nested paths). The tab also has one default rule without specified endpoints. To view it, click the **Default rules** button.
 
-<img src="https://support.gcore.com/hc/article_attachments/9910984238225" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/9910984238225" alt="" width="70%">
 
 If you click on a branch, a list of rules attached to it opens. For example, opening the sixth branch includes four distinct rules with specific conditions and one inherited rule from the Default rule. To view it, click the **Distinct and inherited rules** button.
 
-<img src="https://support.gcore.com/hc/article_attachments/9910977514129" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/9910977514129" alt="" width="70%">
 
 ## Why use the feature?
 
@@ -52,17 +52,17 @@ Let us show a few examples of when rules would be useful.
 
 Go to the Rules tab and press the **Add Rule** button.
 
-<img src="https://support.gcore.com/hc/article_attachments/11774233052817" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/11774233052817" alt="" width="70%">
 
 You can add a rule from the section’s main page or open one of the existing branches and create a rule based on it.
 
-<img src="https://support.gcore.com/hc/article_attachments/9910977570449" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/9910977570449" alt="" width="50%">
 
 A shutter will appear on the right side of the screen. Here you should configure conditions in the **If request is** section and add a rule for processing requests in the **Then** section according to the instructions below. Users’ requests will be fulfilled with the specified conditions. If they match, the defined actions will be applied to the requests.
 
 Afterward, press the **Create** button.
 
-<img src="https://support.gcore.com/hc/article_attachments/9910977585937" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/9910977585937" alt="" width="70%">
 
 Note that after the rule’s creation, changes don’t approve immediately. It takes some time to compile the rules and add them to the WAF filtering nodes.
 
@@ -75,7 +75,7 @@ You can configure the set of conditions in two ways:
 
 The second way requires specific knowledge of how to describe the conditions branch via the URI. In this article, we’ll only consider the advanced form method. To configure the set of conditions by advanced form, do the steps below.
 
-<img src="https://support.gcore.com/hc/article_attachments/9910977632785" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/9910977632785" alt="" width="70%">
 
 1\. Select the HTTP method (POST, GET, PUT, PATCH, DELETE) in the drop-down list or leave the field empty if you want to consider all methods.
 
@@ -94,7 +94,7 @@ There are six available parameters:
 - **header** — the request header. If you choose it, the most common values will be displayed in the drop-down list in the field on the right: HOST, USER-AGENT, COOKIE, X-FORWARDED-FOR, AUTHORIZATION, REFERER, CONTENT-TYPE.
 - **path** — the number of the endpoint’s part from 0 on up (index of the element in the array). Note that the last part of the endpoint isn’t included in this field. If there is only one part in the endpoint, leave the field empty. For example, path conditions for the endpoint */backend/statistics/update* would look as follows:
 
-<img src="https://support.gcore.com/hc/article_attachments/9910977627281" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/9910977627281" alt="" width="50%">
 
 - **action_name** — the last part of the endpoint before the point. For example, for the endpoint _backend/index.php, index_ will be an action_name.
 - **action_ext** — the last part of the endpoint after the point, which means the extension of the requested file. For example, for the endpoint _backend/index.php, php_ will be an action_ext.
@@ -116,7 +116,7 @@ Enter the values that should (or should not) take the parameters specified in th
 
 When the conditions are completed, add actions in the *Then* section. These actions will be applied to the requests if they match the conditions.
 
-<img src="https://support.gcore.com/hc/article_attachments/9910984485009" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/9910984485009" alt="" width="70%">
 
 Select the appropriate action from the drop-down list and configure the relevant settings. There are five available actions:
 

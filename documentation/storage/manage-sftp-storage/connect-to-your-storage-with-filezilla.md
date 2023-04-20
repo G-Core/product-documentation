@@ -22,17 +22,17 @@ To download and install FileZilla, use <a href="https://filezilla-project.org/" 
 
 Start by opening up Site Manager:
 
-<img src="https://support.gcore.com/hc/article_attachments/13822230046353" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/13822230046353" alt="" width="70%">
 
 In an open window, click on the **New Site** button:
 
-<img src="https://support.gcore.com/hc/article_attachments/13814505201553" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/13814505201553" alt="" width="50%">
 
 Give it a name and navigate to the General tab on the right.
 
 ### Connect with a password
 
-<img src="https://support.gcore.com/hc/article_attachments/13814507121937" alt="1564060020832.png">
+<img src="https://support.gcore.com/hc/article_attachments/13814507121937" alt="" width="70%">
 
 Choose SFTP - SSH File Transfer Protocol in the "Protocol" field drop-down menu.
 
@@ -46,7 +46,7 @@ Click **OK** to save the changes and Connect to establish a connection to the st
 
 ### Connect with an SSH key
 
-<img src="https://support.gcore.com/hc/article_attachments/13814523568017" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/13814523568017" alt="" width="70%">
 
 Choose SFTP - SSH File Transfer Protocol in the Protocol field drop-down menu.
 

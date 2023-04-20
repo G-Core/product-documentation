@@ -7,10 +7,9 @@ toc:
    --1--What is an allowed address pair?: "what-is-an-allowed-address-pair"
    --1--Configure: "assign-an-allowed-address-pair"
 ---
-  
+# Configure an allowed address pair
 
-What is an allowed address pair?
---------------------------------
+## What is an allowed address pair?
 
 An allowed address pair is a feature that allows you to add an extra IP address to the interface of a virtual machine.
 
@@ -18,35 +17,37 @@ By default, a virtual machine has a MAC-IP binding. It means all the traffic tha
 
 In Gcore, you can add an allowed address pair via an API request.
 
-Assign an allowed address pair
-------------------------------
+## Assign an allowed address pair
 
-1. Generate an authorization token or use a [permanent token](https://gcore.com/support/articles/360018625617/).
+1. Generate an authorization token or use a <a href=“https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token” target="_blank">permanent API token</a>.
 
-2. Make sure you know the project ID, region ID, instance ID, instance port ID, network ID, and MAC address. Otherwise, send API requests to get the [project ID](https://apidocs.gcore.com/cloud), [region ID](https://apidocs.gcore.com/cloud), [instance ID](https://apidocs.gcore.com/cloud), [port ID](https://apidocs.gcore.com/cloud), and [network ID,](https://apidocs.gcore.com/cloud) then find your MAC address from the command line.
+2. Make sure you know the project ID, region ID, instance ID, instance port ID, network ID, and MAC address. Otherwise, send API requests to get the project ID, region ID, instance ID, port ID, network ID, and then find your MAC address from the command line.
 
 3. Send the following API request:
+
 
 **Method:** PUT  
 **Endpoint:** https://api.gcore.com/cloud/v1/ports/{**project\_id}**/**{region\_id}**/**{port\_id}**/allow\_address\_pairs:  
 **Request body:**
 
-{{   
-  "port\_id": "**1f0ca628-a73b-42c0-bdac-7b10d023e097**",   
-  "instance\_id": "**bc688791-f1b0-44eb-97d4-07697294b1e1**",   
-  "network\_id": "**351b0dd7-ca09-431c-be53-935db3785067**",   
+<code-block>
+{   
+  "port\_id": <span style="color: core orange">"1f0ca628-a73b-42c0-bdac-7b10d023e097"</span>,   
+  "instance\_id": <span style="color: core orange">"bc688791-f1b0-44eb-97d4-07697294b1e1"</span>,   
+  "network\_id": <span style="color: core orange">"351b0dd7-ca09-431c-be53-935db3785067"</span>,   
   "allowed\_address\_pairs": \[   
     {   
-      "ip\_address": "**192.168.123.20**",   
-      "mac\_address": "**00:16:3e:f2:87:16**"   
+      "ip\_address": <span style="color: core orange">"192.168.123.20"</span>,   
+      "mac\_address": <span style="color: core orange">"00:16:3e:f2:87:16"</span>  
     },	   
     {   
-      "ip\_address": "**192.168.0.2/32**",   
-      "mac\_address": "**00:16:3e:f2:87:89**"   
+      "ip\_address": <span style="color: core orange">"192.168.0.2/32"</span>,   
+      "mac\_address": <span style="color: core orange">"00:16:3e:f2:87:89"</span>  
     }   
   \]   
 } 
+</code-block> 
 
-Enter your custom values instead of the highlighted ones. For more details, refer to the [Gcore API documentation](https://apidocs.gcore.com/cloud).
+Enter your custom values instead of the highlighted ones. For more details, refer to the <a href=“https://apidocs.gcore.com/cloud” target="_blank">Gcore API documentation</a>.
 
 Now your machine is available through the IP addresses you specified in the request.
