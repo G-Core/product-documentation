@@ -25,7 +25,7 @@ Click **Enable two-factor authentication**.
 
 In the settings window read and follow the instructions.
 
-<img src="https://assets.gcore.pro/docs/account-settings/two-factor-authentication/qr-code-20.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/two-factor-authentication/qr-code-20.png" alt="" width="50%">
 
 1\. Download the free app on your mobile device. We recommend using one of the following:
 
@@ -49,7 +49,7 @@ Now to login to the account go through the following steps:
 
 1\. Enter your username and password on the <a href="https://auth.gcore.com/login/signin" target="_blank">login page</a>. Click **Log In**.
 
-<img src="https://assets.gcore.pro/docs/account-settings/two-factor-authentication/login-popup-30.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/two-factor-authentication/login-popup-30.png" alt="" width="50%">
 
 2\. You will be redirected to the step of entering the generated key. Open the app and enter the code displayed there, or use a backup code. Click **Log In**.
 
@@ -63,7 +63,7 @@ After the initial configuration of the extra layer security, 5 backup verificati
 
 **Important**: A backup code is only can be used once.
 
-<img src="https://assets.gcore.pro/docs/account-settings/two-factor-authentication/backup-codes-40.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/two-factor-authentication/backup-codes-40.png" alt="" width="50%">
 
 In the 2-Step verification section you can also create a new set of verification codes.
 

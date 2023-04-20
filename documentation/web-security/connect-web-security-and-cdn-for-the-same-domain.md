@@ -41,7 +41,7 @@ We changed the bot-identifying process, thereby resolving the connectivity confl
 - The IP address copied at step #2 in the "Origin" field (e.g., *5.188.189.82*).
 - The custom domain based on your application domain in the "Custom domain" field (e.g., *cdn.test-domain.com*).
 
-<img src="https://support.gcore.com/hc/article_attachments/13997787631505" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/13997787631505" alt="" width="70%">
 
 Complete the creation of the CDN resource by making all the necessary settings.
 
@@ -50,7 +50,7 @@ Complete the creation of the CDN resource by making all the necessary settings.
 - The domain of your application in the "Enter site name" step (e.g., *test-domain.com*).
 - The IP address copied at step #2 in the "IPv4 address" field (e.g., *5.188.189.82*).
 
-<img src="https://support.gcore.com/hc/article_attachments/13997781806353" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/13997781806353" alt="" width="70%">
 
 Complete the creation of the CDN resource by making all the necessary settings.
 

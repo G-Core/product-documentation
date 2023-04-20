@@ -41,11 +41,11 @@ The Live Stream Monitoring page consists of the following elements:
 3. **Time.** This allows you to select the 1-hour time range for which you want to monitor the metric. It defaults to the current hour.
 4. **Time series graph.** This displays the data for the selected metric, date, and time range at a 1-minute step.
 
-<img src="https://support.gcore.com/hc/article_attachments/10318226324753" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/10318226324753" alt="" width="70%">
 
 You can hover the cursor over any data point on the chart to see the value of the selected metric (Kbps, fps, or key frame interval) in the tooltip. In this example, we have a point that shows the value of the key frame interval.
 
-<img src="https://support.gcore.com/hc/article_attachments/10318231896465" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/10318231896465" alt="" width="70%">
 
 ## Use stream metrics to troubleshoot
 

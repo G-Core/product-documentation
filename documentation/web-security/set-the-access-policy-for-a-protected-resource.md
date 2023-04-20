@@ -12,7 +12,7 @@ toc:
 
 Go to the Web Protection tab > Settings > the Access Policy tab to restrict or allow access to your resource.
 
-<img src="https://support.gcore.com/hc/article_attachments/360002235637/access_policy_2.png" alt="">
+<img src="https://support.gcore.com/hc/article_attachments/360002235637/access_policy_2.png" alt="" width="70%">
 
 ## Country Access Policy
 
