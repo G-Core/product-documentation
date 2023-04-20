@@ -1,7 +1,7 @@
 ---
 title: configure-an-additional-ip-address
 displayName: Configure
-order: 20
+order: 21
 published: true
 toc:
     --1--For Debian/Ubuntu: "configure-an-additional-ip-address-on-debian-ubuntu"

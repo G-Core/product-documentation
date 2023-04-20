@@ -2,5 +2,5 @@
 title: metadata
 displayName: Connect
 published: true
-order: 30
+order: 31
 ---

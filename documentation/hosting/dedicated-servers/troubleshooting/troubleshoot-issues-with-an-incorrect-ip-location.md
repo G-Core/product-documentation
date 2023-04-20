@@ -2,6 +2,7 @@
 title: troubleshoot-issues-with-an-incorrect-ip-location
 displayName: Incorrect IP location
 published: true
+order: 10
 toc:
 ---
 

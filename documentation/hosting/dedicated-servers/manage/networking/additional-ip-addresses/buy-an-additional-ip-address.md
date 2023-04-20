@@ -2,7 +2,7 @@
 title: buy-an-additional-ip-address
 displayName: Buy
 published: true
-order: 10
+order: 11
 toc:
 ---
 
