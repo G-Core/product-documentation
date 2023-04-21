@@ -42,9 +42,11 @@ You will see the page for configuring and creating a new server
 
 1.  Select the region to create the machine in. Regions, where Baremetal is available for order, are highlighted.
     
-2.  Select the image to install. You can choose a system from the prepared templates or from custom images that you've previously uploaded. You can find more information about uploading the images in the article<a href=“https://gcore.com/docs/cloud/images/upload-an-image-to-the-storage” target="_blank">"Upload an image to the storage"</a> . Please, note! Only prepared images can be used for Bare metal servers (for more information, see the section Bare metal images)
+2.  Select the image to install. You can choose a system from the prepared templates or from custom images that you've previously uploaded. You can find more information about uploading the images in the article<a href=“https://gcore.com/docs/cloud/images/upload-an-image-to-the-storage” target="_blank">"Upload an image to the storage"</a>. Please, note! Only prepared images can be used for Bare metal servers (for more information, see the section Bare metal images)
 
-<img src="https://support.gcore.com/hc/article_attachments/360020173678/mceclip3.png" alt="mceclip3.png"><img src="https://support.gcore.com/hc/article_attachments/360014438398/4._____________.png" alt="4._____________.png">
+<img src="https://support.gcore.com/hc/article_attachments/360020173678/mceclip3.png" alt="mceclip3.png">
+
+<img src="https://support.gcore.com/hc/article_attachments/360014438398/4._____________.png" alt="4._____________.png">
     
 3.  Select the server type. Currently, "High-Frequency" and "Infrastructure" servers are available.
 

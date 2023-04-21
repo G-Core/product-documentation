@@ -165,6 +165,7 @@ The key will be automatically added to your machine.  
 To connect using a password, configure it while creating an instance or Bare Metal server. In Additional options click on "User data". This will open a field, where you can enter the script that will be processed by a cloud-init agent running on your machine. 
 
 <img src="https://support.gcore.com/hc/article_attachments/360008785018/13.png" alt="13.png">  
+
 Paste the code below with the password chosen by you:
 
 ```

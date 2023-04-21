@@ -9,26 +9,21 @@ toc:
    --1--Change settings: ""
    --1--Disable: "disable-autoscaling"
 ---
-  
-  
-  
+# About autoscaling
 
-What is autoscaling?
---------------------
+## What is autoscaling?
 
 Autoscaling is a system that adjusts the number of nodes in a pool based on changes in load. If the existing nodes cannot handle the load, a new one will be deployed. Conversely, if some nodes are idle without any load, they will be removed. 
 
-How does autoscaling work?
---------------------------
+## How does autoscaling work?
 
 You set the minimum and maximum number of nodes, and autoscaling will ensure that the number of nodes remains within these limits. It will not create more nodes than the specified maximum, and it will not remove any nodes if the minimum has been reached. 
 
 *   If a new pod (application container group) needs to run and the existing nodes don’t have enough resources to do it, autoscaling will deploy a new node. The amount of free resources is determined by "resources.requests".
 *   If some nodes are running without any pods for 20 minutes straight, the system will remove them.     
-*   If you manually delete nodes with running pods, reducing the [current number of nodes](https://gcorelabs.com/support/articles/4407814905233/) below the level set by autoscaling, the system will reassess the load on the pool after 20 minutes. If the current nodes are unable to handle the required pods, more nodes will be added. If the nodes are sufficient, no additional nodes will be added.
+*   If you manually delete nodes with running pods, reducing the current number of nodes below the level set by autoscaling, the system will reassess the load on the pool after 20 minutes. If the current nodes are unable to handle the required pods, more nodes will be added. If the nodes are sufficient, no additional nodes will be added.
 
-Change autoscaling settings
----------------------------
+## Change autoscaling settings
 
 1\. In the Cloud menu, go to **Kubernetes**, find the required cluster and click its name.
 
@@ -42,8 +37,7 @@ Change autoscaling settings
 
 New autoscaling settings have been applied.
 
-Disable autoscaling
--------------------
+## Disable autoscaling
 
 When you turn off autoscaling, the number of nodes in the pool will remain constant.
 

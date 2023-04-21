@@ -5,6 +5,8 @@ published: true
 order: 20
 toc:
 ---
+# Change autoscaling limits
+
 1\. In the Cloud menu, go to **Kubernetes**, find the required cluster and click its name.
 
 <img src="https://support.gcore.com/hc/article_attachments/13348527052433" alt="Screenshot_2023-02-27_at_13.37_2.png">

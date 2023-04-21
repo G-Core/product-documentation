@@ -15,13 +15,15 @@ toc:
 
 In the “Placement Groups” section, create a new group. Give it a name and select a policy — affinity or anti-affinity — and click Create Placement Group.
 
-[<img src="https://support.gcore.com/hc/article_attachments/4408114694289/image-6.png" alt="">](https://support.gcorelabs.com/hc/article_attachments/4408114694289/image-6.png)[<img src="https://support.gcore.com/hc/article_attachments/4408114693777/image-7.png" alt="" width="398" height="231">](https://support.gcorelabs.com/hc/article_attachments/4408114693777/image-7.png)
+[<img src="https://support.gcore.com/hc/article_attachments/4408114694289/image-6.png" alt="">](https://support.gcorelabs.com/hc/article_attachments/4408114694289/image-6.png)
+
+[<img src="https://support.gcore.com/hc/article_attachments/4408114693777/image-7.png" alt="" width="398" height="231">](https://support.gcorelabs.com/hc/article_attachments/4408114693777/image-7.png)
 
 ## Create an instance included in a placement group
 
 When creating an instance, in the "Additional options" section, move the "Add to placement group" slider and select a group or create a new one — the machine will be a member of it.
 
-[<img src="https://support.gcore.com/hc/article_attachments/4408106493073/image-8.png" alt="" width="509" height="502">](https://support.gcorelabs.com/hc/article_attachments/4408106493073/image-8.png)
+<img src="https://support.gcorelabs.com/hc/article_attachments/4408106493073/image-8.png" alt="" width=80%>
 
 ## Add a previously created instance to a group
 

@@ -8,8 +8,7 @@ toc:
    --2--Use the controller: "use-the-nginx-controller"
    --1--View an ingress IP address: "view-an-ingress-ip-address"
 ---
-  
-  
+# Install and set up the nginx ingress controller
 
 This article will help you install and start using the nginx ingress controller. To learn about Kubernetes services, ingress, and ingress controllers, refer to the article [“Set up the Gcore ingress controller”](https://gcore.com/support/articles/9570322632593/).
 

@@ -5,6 +5,8 @@ order: 10
 published: true
 toc:
 ---
+# Create a Kubernetes cluster
+
 1. Open the **Kubernetes** tab and click **Create Cluster**.
 
 <img src="https://support.gcore.com/hc/article_attachments/10611849724433" alt="" width="666" height="312">
@@ -15,13 +17,13 @@ toc:
 
 4\. Under **Pools**, configure a pool — a set of cluster nodes with the same specifications. 
 
-<img src="https://support.gcore.com/hc/article_attachments/13351075707153" alt="Screenshot_2023-02-28_at_15.45.09.png">
+<img src="https://support.gcore.com/hc/article_attachments/13351075707153" alt="" width=80%>
 
 Enter the pool name.
 
-For **Minimum number of nodes,** set the limit of nodes to be deployed when [Autoscaling](https://gcore.com/support/articles/4407814896401/) is on and workload decreases**.**
+For **Minimum number of nodes,** set the limit of nodes to be deployed when <a href=“ https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling” target="_blank">autoscaling</a> is on and workload decreases**.**
 
-For **Maximum number of nodes,** set the limit of nodes to be deployed when [Autoscaling](https://gcore.com/support/articles/4407814896401/) is on and workload increases.
+For **Maximum number of nodes,** set the limit of nodes to be deployed when <a href=“ https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling” target="_blank">autoscaling</a> is on and workload increases.
 
 For **Type**, select a configuration of VMs for your pool. Five groups of configurations are available:
 

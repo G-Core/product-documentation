@@ -33,7 +33,7 @@ Regions can be of two types: Core and Edge. A region determines the equipment sp
 
 3. Select an **Image**.
 
-![Image selection](https://assets.gcore.pro/docs/cloud/virtual-instances/create/3-image-selection.png)
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/3-image-selection.png" alt="" width=80%>
 
 *   Choose an OS template, a volume, a snapshot, a custom [image](https://gcore.com/support/articles/360002429818/), or a template from the marketplace.
 *   (for a Linux instance) Remember the login from the **For login to OS** field to connect to your instance on Linux OS via SSH from another Linux device. For details, refer to the article: [How to connect to the virtual machine via SSH](https://gcore.com/support/articles/360012635517/).
@@ -42,34 +42,34 @@ Regions can be of two types: Core and Edge. A region determines the equipment sp
 
 4. For **Type**, choose the configuration.
 
-![Type selection](https://assets.gcore.pro/docs/cloud/virtual-instances/create/4-type%20selection.png)
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/4-type%20selection.png" alt="" width=80%>
 
 Select the CPU generation.
 
 Select the flavor:
 
-*   *   **Shared**—VMs that share a core of a physical machine with other VMs, designed for workloads that do not require high performance.  
+*   **Shared**—VMs that share a core of a physical machine with other VMs, designed for workloads that do not require high performance.  
         Availability: Luxembourg
-    *   **Standard**—VMs best suited for a wide range of workloads that require predictable computing performance.  
+*   **Standard**—VMs best suited for a wide range of workloads that require predictable computing performance.  
         Availability: all regions.
-    *   **vCPU**—CPU Optimized VMs, best suited for CPU-intensive tasks that require predictable computing performance such as batch processing of large data sets and video encoding.  
+*   **vCPU**—CPU Optimized VMs, best suited for CPU-intensive tasks that require predictable computing performance such as batch processing of large data sets and video encoding.  
         Availability: all CORE regions.
-    *   **Memory**—Memory Optimized VMs, suitable for memory-intensive tasks such as databases, SRM/ERP or data warehouses.  
+*   **Memory**—Memory Optimized VMs, suitable for memory-intensive tasks such as databases, SRM/ERP or data warehouses.  
         Availability: all CORE regions.
-    *   **High Frequency**—VMs with the high CPU clock rate (3.7 GHz in the basic configuration). It is perfect for applications requiring single-threaded performance, financial and probabilistic analytics, and automation of computational processes.  
+*   **High Frequency**—VMs with the high CPU clock rate (3.7 GHz in the basic configuration). It is perfect for applications requiring single-threaded performance, financial and probabilistic analytics, and automation of computational processes.  
         Availability: Luxembourg, Manassas, Frankfurt.
-    *   **SGX**—VMs that support Intel SGX (Security Guard Extension) that helps to protect data from disclosure or modification by isolating private parts of code and data (enclaves). This configuration is the best for those who store critical, sensitive data in the cloud.  
+*   **SGX**—VMs that support Intel SGX (Security Guard Extension) that helps to protect data from disclosure or modification by isolating private parts of code and data (enclaves). This configuration is the best for those who store critical, sensitive data in the cloud.  
         Availability: Luxembourg, Manassas, Singapore.
-    *   **GPU**—VMs with a graphics card, suitable for working with graphic information, deep and machine learning applications, and high-performance computing.  
+*   **GPU**—VMs with a graphics card, suitable for working with graphic information, deep and machine learning applications, and high-performance computing.  
         Availability: Luxembourg.
-    *   **GPU-HF**—VMs with the high clock rate of the CPU and with a graphics card, suitable for complex calculations that require graphics accelerator resources, high performance and speed.  
+*   **GPU-HF**—VMs with the high clock rate of the CPU and with a graphics card, suitable for complex calculations that require graphics accelerator resources, high performance and speed.  
         Availability: Luxembourg.
 
 **Note:** The bandwidth limit for the **Shared** flavor is up 100 Mbps, for other configurations it is up 1 Gbps.
 
 5. Configure **Volumes**.
 
-![Volume selection](https://assets.gcore.pro/docs/cloud/virtual-instances/create/5-volume-selection.png)
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/5-volume-selection.png" alt="" width=80%>
 
 Enter a volume name.
 
@@ -88,15 +88,15 @@ Set the volume **Size** in GiB.
 
 If you select a **public** interface, you can turn on the **Use Reserved IP** toggle and assign a [reserved IP address](https://gcore.com/support/articles/4405927368721/) to your instance.
 
-![Public Network is selected](https://assets.gcore.pro/docs/cloud/virtual-instances/create/6-public-network-selected.png)
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/6-public-network-selected.png" alt="" width=80%>
 
 If you select a **private** interface, configure a network and a subnetwork according to the steps below. 
 
-![Private Network is selected](https://assets.gcore.pro/docs/cloud/virtual-instances/create/7-private-network-selected.jpg)
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/7-private-network-selected.jpg" alt="" width=80%>
 
 To configure a network, select an existing network from the drop-down list or create a new one by clicking **Add a new network**. If you choose the latter, the new window will open:
 
-![The window to create a network](https://assets.gcore.pro/docs/cloud/virtual-instances/create/8-create-network-window.png)
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/8-create-network-window.png" alt="" width=80%>
 
 1) Enter the network name.
 
@@ -108,7 +108,7 @@ To configure a network, select an existing network from the drop-down list or cr
 
 To create a subnet, select an existing subnet from the drop-down list or create a new one by clicking **Add a new subnetwork**. If you choose the latter, the new window will open:
 
-![The window to create a subnetwork](https://assets.gcore.pro/docs/cloud/virtual-instances/create/9-create-subnetwork-window.png)
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/9-create-subnetwork-window.png" alt="" width=50%>
 
 1) Enter the subnet name.
 

@@ -5,6 +5,8 @@ order: 30
 published: true
 toc:
 ---
+# Create a new pool in a cluster
+
 1\. In the Cloud menu, go to **Kubernetes**, find the required cluster and click its name.
 
 <img src="https://support.gcore.com/hc/article_attachments/13344056819601" alt="Screenshot_2023-02-27_at_13.37_2.png">
@@ -14,7 +16,7 @@ toc:
 <img src="https://support.gcore.com/hc/article_attachments/13344082420369" alt="Screenshot_2023-02-27_at_18.50_1-2.jpg" width="497" height="308">
 
 3\. The new window will expand.  
-In the **General** section, give the pool a name, specify the maximum and minimum number of nodes. [Autoscaling](https://gcorelabs.com/support/articles/4407814896401/) will regulate the number of nodes within the specified limits by removing unnecessary nodes during low load and deploying new ones during high loads.
+In the **General** section, give the pool a name, specify the maximum and minimum number of nodes. Autoscaling will regulate the number of nodes within the specified limits by removing unnecessary nodes during low load and deploying new ones during high loads.
 
 <img src="https://support.gcore.com/hc/article_attachments/13344100888849" alt="Screenshot_2023-02-28_at_12.41.04.png" width="452" height="280">
 

@@ -29,7 +29,7 @@ toc:
 
 5. Once you select the profile template, type in the SSH keys and add a name under the **Additional options** section.
 
-<img src="https://support.gcore.com/hc/article_attachments/11773321433361" alt="mceclip4.png">
+<img src="https://support.gcore.com/hc/article_attachments/11773321433361" alt="mceclip4.png" alt="" width=80%>
 
 6. If you’re finished, click the **Create Server** button on the right-hand side.
 
@@ -59,19 +59,13 @@ toc:
 
 ## DDoS protection list
 
-1. Select **Networking** on the left-hand menu.
+1. Go to the **Networking** tab on the left-hand menu and click **DDoS Protection** from the dropdown options.
 
-<img src="https://support.gcore.com/hc/article_attachments/11773548591761" alt="mceclip11.png">
-
-2. Click **DDoS Protection** from the dropdown options.
-
-<img src="https://support.gcore.com/hc/article_attachments/11773581148049" alt="mceclip12.png">
-
-3. In the **DDoS Protection** section, select the baremetal server you want to enable advanced DDoS protection for by clicking the kebab menu on the right side.
+2. In the **DDoS Protection** section, select the baremetal server you want to enable advanced DDoS protection for by clicking the kebab menu on the right side.
 
 <img src="https://support.gcore.com/hc/article_attachments/11773583120913" alt="mceclip13.png">
 
-4. The **Edit advanced DDoS protection profile** pop-up will appear. Click the dropdown to choose your preference. Examples for a profile are the following:
+3. The **Edit advanced DDoS protection profile** pop-up will appear. Click the dropdown to choose your preference. Examples for a profile are the following:
 
 *   CMP block
 *   CS:GO
@@ -81,10 +75,10 @@ toc:
 
 <img src="https://support.gcore.com/hc/article_attachments/11773590363153" alt="mceclip14.png">
 
-5. Once you have selected the profile, click submit. Be sure to fill in the required fields based on the selected profile.
+4. Once you have selected the profile, click submit. Be sure to fill in the required fields based on the selected profile.
 
 <img src="https://support.gcore.com/hc/article_attachments/11773623336337" alt="mceclip15.png">
 
-6. Once you’re done, the type of DDoS protection will be changed from basic to advanced, and the name of the profile and other additional parameters will appear.
+5. Once you’re done, the type of DDoS protection will be changed from basic to advanced, and the name of the profile and other additional parameters will appear.
 
 <img src="https://support.gcore.com/hc/article_attachments/11773625038225" alt="mceclip16.png">
