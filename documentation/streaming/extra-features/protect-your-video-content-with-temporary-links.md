@@ -10,12 +10,11 @@ toc:
    --2--Use PHP script to generate links: "use-the-php-script-for-the-generation-of-urls"
    --3--PHP script for live streams: "php-script-for-live-streams"
 ---
+# Protect your content with temporary links
 
+## What is a Secure token, and how it works
 
-What is a Secure token, and how it works
-----------------------------------------
-
-The Secure token is a Gcore CDN feature that helps to protect files from unwanted downloading. You will find more information about the feature in the "[What is Secure Token? How does it work?](https://www.gcore.com/support/articles/214496445/)" article.
+The Secure token is a Gcore CDN feature that helps to protect files from unwanted downloading. You will find more information about the feature in the "<a href="https://gcore.com/docs/cdn/cdn-resource-options/security/use-a-secure-token/about-secure-token" target="_blank">About Secure Token</a>" article.
 
 As far as streaming is concerned, protection using a Secure token is as follows:
 
@@ -25,59 +24,76 @@ As far as streaming is concerned, protection using a Secure token is as follows:
 
 3\. The Secure token will be added to the following URLs:
 
-*   _https://123456.gvideo.io/streams/123456\_WG99BSGMdZIwKy/1552551429/playlist.m3u8_ (live stream);
-*   _https://123456.gvideo.io/videos/123456\_aJ0o71wfUwJvFDklkjlcu/master.m3u8_ (VoD)
+*   ```https://123456.gvideo.io/streams/123456_WG99BSGMdZIwKy/1552551429/playlist.m3u8``` (live stream);
+*   ```https://123456.gvideo.io/videos/123456_aJ0o71wfUwJvFDklkjlcu/master.m3u8``` (VoD)
 
-Configure protection with temporary links
------------------------------------------
+## Configure protection with temporary links
 
 ### Enable the "Secure token" feature  
 
-1\. Go to the [CDN resources](https://cdn.gcore.com/resources/list) section and open the settings of the [CDN resource used for the streaming](https://www.gcore.com/support/articles/5499359292561/).  
+1\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN resources</a> section and open the settings of the [CDN resource used for the streaming](https://www.gcore.com/support/articles/5499359292561/).  
 
-<img src="https://support.gcore.com/hc/article_attachments/13094971331729" alt="mceclip0.png" width="640" height="226">
------------------------------------------------------------------------------------------------------------------------
+<img src="https://support.gcore.com/hc/article_attachments/13094971331729" alt="" width="70%">
 
 2\. Go to the "Access" section, select **Secure token**, and enable the feature.
 
-<img src="https://support.gcore.com/hc/article_attachments/13095035340305" alt="mceclip1.png" width="640" height="269">
+<img src="https://support.gcore.com/hc/article_attachments/13095035340305" alt="" width="70%">
 
 3\. Enter a signature key between 6 and 32 characters and click **Save changes**. 
 
 **Note**: Leave the "Add a client's IP to the token" box unchecked.
 
-<img src="https://support.gcore.com/hc/article_attachments/13095149599633" alt="mceclip2.png" width="639" height="548">
+<img src="https://support.gcore.com/hc/article_attachments/13095149599633" alt="" width="70%">
 
 ### Use the PHP script for the generation of URLs 
 
 Once the feature is enabled, a PHP script can generate temporary links for live streams and videos on demand (VoDs).
 
-#### **PHP script for live streams**
+#### PHP script for live streams
 
-<?php $secret = 'iFCjcO1AhQ'; $vhost = '123456.gvideo.io'; $client\_id = '1'; $stream\_id = '123'; $expires = time() + 10000; $link = "{$client\_id}\_{$stream\_id}\_${secret}\_${expires}\_"; $md5 = md5($link, true); $md5 = base64\_encode($md5); $md5 = strtr($md5, '+/', '-\_'); $md5 = str\_replace('=', '', $md5); $url = "https://{$vhost}/streams/{$client\_id}\_${stream\_id}/${md5}/${expires}/playlist.m3u8"; echo $url; echo "\\n"; 
+<code-block>
+
+\<?php 
+<span style="color:#FF5913">$secret</span> = 'iFCjcOAhQ'; 
+<span style="color:#FF5913">$vhost</span> = '123456.gvideo.io'; 
+<span style="color:#FF5913">$client_id</span> = '1'; 
+<span style="color:#FF5913">$stream_id</span> = '123'; 
+<span style="color:#FF5913">$expires</span> = time() + 10000; 
+<span style="color:#FF5913">$link</span> = "{$client_id}_{$stream_id}_${secret}_${expires}_"; 
+$md5 = md5($link, true); 
+$md5 = base64_encode($md5); 
+$md5 = strtr($md5, '+/', '-_'); 
+$md5 = str_replace('=', '', $md5); 
+<span style="color:#FF5913">$url</span> = "https://{$vhost}/streams/{$client_id}_${stream_id}/${md5}/${expires}/playlist.m3u8"; 
+echo $url; 
+echo "\n";>
+
+</code-block>
 
 ### PHP script for VoD
 
+<code-block>
 <?php  
-$secret = 'iFCjcO1AhQ';  
-$vhost = '123456.gvideo.io';  
-$client\_id = '2';  
-$video\_id = 'aJ0o71wfUwJvFcu';  
-$expires = time() + 10000;  
-$link = "{$client\_id}\_{$video\_id}\_${secret}\_${expires}\_";  
+<span style="color:#FF5913">$secret</span> = 'iFCjcOAhQ';  
+<span style="color:#FF5913">$vhost</span> = '123456.gvideo.io';  
+<span style="color:#FF5913">$client_id</span> = '2';  
+<span style="color:#FF5913">$video_id</span> = 'aJ0o71wfUwJvFcu';  
+<span style="color:#FF5913">$expires</span> = time() + 10000;  
+<span style="color:#FF5913">$link</span> = "{$client_id}_{$video_id}_${secret}_${expires}_";  
 $md5 = md5($link, true);  
-$md5 = base64\_encode($md5);  
-$md5 = strtr($md5, '+/', '-\_');  
-$md5 = str\_replace('=', '', $md5);  
-$url = "https://{$vhost}/videos/{$client\_id}\_${video\_id}/${md5}/${expires}/master.m3u8";  
+$md5 = base64_encode($md5);  
+$md5 = strtr($md5, '+/', '-_');  
+$md5 = str_replace('=', '', $md5);  
+<span style="color:#FF5913">$url</span> = "https://{$vhost}/videos/{$client_id}_${video_id}/${md5}/${expires}/master.m3u8";  
 echo $url;  
-echo "\\n";
+echo "\n";
+</code-block>
 
 Where you need to substitute your values after the equals in the following lines:
 
-*   _$secret_ — a signature key specified in step 3 of this guide.
-*   _$vhost_ — a subdomain that is used for the streaming,
-*   _$video\_id_ —  slug, an individual parameter in VOD's URL. You will find it in the [Video Hosting](https://streaming.gcore.com/video/list) section when you open the video and go to the export tab. For example, in this URL _https://123456.gvideo.io/videos/123456\_**AHgywxonRd8F9ctX**_, AHgywxonRd8F9ctX is a slug.
-*   _$expires_  — URL expiration time (in seconds),
-*   _$link_ — token generation schema,
-*   _$url_ — URL.
+- <span style="color:#FF5913">$secret</span> — a signature key specified in step 3 of this guide.
+- <span style="color:#FF5913">$vhost</span> — a subdomain that is used for the streaming,
+- <span style="color:#FF5913">$video_id</span> —  slug, an individual parameter in VOD's URL. You will find it in the <a href="https://streaming.gcore.com/video/list" target="_blank">Video Hosting</a> section when you open the video and go to the export tab. For example, in this URL ```https://123456.gvideo.io/videos/123456_AHgywxonRd8F9ctX```, AHgywxonRd8F9ctX is a slug.
+- <span style="color:#FF5913">$expires</span>  — URL expiration time (in seconds),
+- <span style="color:#FF5913">$link</span> — token generation schema,
+- <span style="color:#FF5913">$url</span> — URL.

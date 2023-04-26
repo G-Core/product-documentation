@@ -4,44 +4,55 @@ displayName: Player API tutorial
 published: true
 order: 30
 toc:
- --1--Player Initialization via iframe: "payer-initialization-via-iframe"
+ --1--Player Initialization via iFrame: "payer-initialization-via-iframe"
+ --1--Events: "events"
  --1--Calling player methods: "calling-player-methods"
+ --1--API testing tool: "api-testing-tool"
 ---
+# Player API tutorial
+
 The API allows you to manage the player settings using JavaScript and collect data about its use for further analysis. 
 
-Player Initialization via iframe
---------------------------------
+## Player Initialization via iFrame
 
 Copy the iFrame code from the VOD/broadcast settings in your account.
 
-Add the **id='gplayer'** parameter to the iFrame and paste it into the site code.
+Add the ```id='gplayer'``` parameter to the iFrame and paste it into the site code.
 
 Example of the iFrame code from the control panel with the id= 'gplayer' parameter:
 
-<iframe width="640" height= " 360 " src="https://12345.gvideo.io/video/dSmuIp-tNRtwACT" allow= 'autoplay' allowfullscreen frameborder="0" id= 'gplayer'></iframe>
+<code-block>
+<iframe width="640" height="360" src="https://12345.gvideo.io/video/dSmuIp-tNRtwACT" allow= 'autoplay' allowfullscreen frameborder="0" id= 'gplayer'></iframe>
+</code-block>
 
 Parameters:
 
-*   width - the width of the player,
-*   height - the height of the player,
-*   src - content URL (link to VOD or live stream),
-*   allowfullscreen - if the parameter is added to the iframe, a button for switching to full-screen mode is added to the controls of the player,
-*   frameborder - border of the player. The default value is "0" (the border shouldn't be visible),
-*   id - the player ID. Required for further initialization of the player when calling API methods.
+- width - the width of the player,
+- height - the height of the player,
+- src - content URL (link to VOD or live stream),
+- allowfullscreen - if the parameter is added to the iframe, a button for switching to full-screen mode is added to the controls of the player,
+- frameborder - border of the player. The default value is "0" (the border shouldn't be visible),
+- id - the player ID. Required for further initialization of the player when calling API methods.
 
 After the iframe add the following code to initialize the player:
 
+<code-block>
 <script type="text/javascript" charset="utf-8" src="https://vplatform.gcdn.co/\_players/v2.1.18/gplayerAPI.js"></script>  
+</code-block>
+
+<code-block>
 <script>  
   window.onload = function() {  
     let gplayerAPI = new GcorePlayer.gplayerAPI(document.getElementById('gplayer'));   
   }  
 </script>
+</code-block>
 
 The onload event on window is triggered when the entire page, including the iframe, is loaded. Then there is an indication of the player to which the API call will be applied.
 
-_Example of the full player initialization code and iframe for HTML page:_
+Example of the full player initialization code and iframe for HTML page:
 
+<code-block>
 <!DOCTYPE html>  
 <html>  
 <head>  
@@ -58,9 +69,9 @@ _Example of the full player initialization code and iframe for HTML page:_
  </script>  
 </body>  
 </html>
+</code-block>
 
-Events
-------
+## Events
 
 | Event        | Returns                          | Description                                               |
 |--------------|----------------------------------|-----------------------------------------------------------|
@@ -77,15 +88,16 @@ Events
 | stop         |                                  | Fired when player stops                                   |
 
 
-Calling player methods
-----------------------
+## Calling player methods
 
 You can start calling methods once you receive the ready event:
 
+```
 gplayerAPI.on('ready', () => {  
-console.log('\[Event\]', 'ready')  
+console.log('[Event]', 'ready')  
 gplayerAPI.method({name: 'play'})  
 })
+```
 
 Available methods:
 
@@ -109,18 +121,19 @@ Available methods:
 
 Method call pattern:
 
+```
 gplayerAPI.method({name: 'isPlaying', params: {}, callback: (res) => {  
  console.log(res)  
 }})
+```
 
-name - the name of the function,
+- name - the name of the function,
+- params - the parameters of the function,
+- callback - the callback function.
 
-params - the parameters of the function,
+Examples:
 
-callback - the callback function.
-
-_Examples:_
-
+<code-block>
 <script>  
  window.onload = function() {  
  let gplayerAPI = new GcorePlayer.gplayerAPI(document.getElementById('gplayer'));  
@@ -135,54 +148,53 @@ gplayerAPI.on('play', () => {
  gplayerAPI.method({name: 'pause'})  
  flag = false;  
  }  
- console.log('\[Event\]', 'play')  
+ console.log('[Event]', 'play')  
  })  
   
 gplayerAPI.on('pause', () => {  
- console.log('\[Event\]', 'pause')  
+ console.log('[Event]', 'pause')  
  })  
   
 gplayerAPI.on('volumeupdate', () => {  
- console.log('\[Event\]', 'volumeupdate')  
+ console.log('[Event]', 'volumeupdate')  
  })  
   
 gplayerAPI.on('timeupdate', () => {  
- console.log('\[Event\]', 'timeupdate')  
+ console.log('[Event]', 'timeupdate')  
  })  
   
 gplayerAPI.on('stop', () => {  
- console.log('\[Event\]', 'stop')  
+ console.log('[Event]', 'stop')  
  })  
   
 gplayerAPI.on('seek', () => {  
- console.log('\[Event\]', 'seek')  
+ console.log('[Event]', 'seek')  
  })  
   
 gplayerAPI.on('resize', () => {  
- console.log('\[Event\]', 'resize')  
+ console.log('[Event]', 'resize')  
  })  
   
 gplayerAPI.on('fullscreen', () => {  
- console.log('\[Event\]', 'fullscreen')  
+ console.log('[Event]', 'fullscreen')  
  })  
   
 gplayerAPI.on('error', () => {  
- console.log('\[Event\]', 'error')  
+ console.log('[Event]', 'error')  
  })  
   
 gplayerAPI.on('ended', () => {  
- console.log('\[Event\]', 'ended')  
- })  
- }  
- </script>
+ console.log('[Event]', 'ended')  
+ })   
+</script>
+</code-block>
 
-API testing tool
-----------------
+## API testing tool
 
-You can test the player API online [here](http://iframes.gcdn.co/gplayer/iframe-api/iframeAPI.html).
+You can test the player API online <a href="http://iframes.gcdn.co/gplayer/iframe-api/iframeAPI.html" target="_blank">here</a>.
 
-Copy and paste the iframe from your control panel in the upper field, and click on the "Upload your iframe" button. To search for an iFrame in your account, use the guides from the following articles: for [broadcasts](https://gcore.com/support/articles/5307972492945/) (step 7), for [VOD](https://gcore.com/support/articles/5485665300369/) (step 6), and for [playlists](https://gcore.com/support/articles/9648701954065/) (step 7).
+Copy and paste the iframe from your control panel in the upper field, and click on the "Upload your iframe" button. To search for an iFrame in your account, use the guides from the following articles: for <a href="https://gcore.com/docs/streaming/live-streaming/create-a-live-stream" target="_blank">broadcasts</a> (step 7), for <a href="https://gcore.com/docs/streaming/video-hosting/upload-a-video-and-embed-it-to-your-app" target="_blank">VOD</a> (step 6), and for <a href="https://gcore.com/docs/streaming/video-hosting/create-and-configure-playlists" target="_blank">playlists</a> (step 7).
 
-<img src="https://support.gcore.com/hc/article_attachments/360003594137/1567057078730.png" alt="1567057078730.png">
+<img src="https://support.gcore.com/hc/article_attachments/360003594137/1567057078730.png" alt="" width="70%">
 
 Dark gray buttons are for the functions available for calling, white buttons are for the functions that require values setting. Events are logged in the "Status" window.
