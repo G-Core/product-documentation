@@ -2,6 +2,7 @@
 title: troubleshoot-ipmi-errors
 displayName: IPMI
 published: true
+order: 10
 toc:
    --1--The fields "login" and "password" are not filled in automatically: "the-fields-login--and--password--are-not-filled-in-automatically"
    --1--Error "Server disconnected (code 1006)": "error-server-disconnected--code-1006"

@@ -2,6 +2,7 @@
 title: troubleshoot-packet-loss-or-high-ping
 displayName: Packet loss or high ping
 published: true
+order: 10
 toc:
 ---
 

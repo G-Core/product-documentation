@@ -113,7 +113,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
                 this.tableOfContents = [];
 
                 const filterdLinks = links.filter(({ route }) => {
-                    return route.replace('/documentation/', '').startsWith(category) && !route.endsWith(category);
+                    return route.replace('/documentation/', '').startsWith(category) && !route.endsWith(`/${category}`);
                 });
 
                 this.setTableOfContent(filterdLinks);

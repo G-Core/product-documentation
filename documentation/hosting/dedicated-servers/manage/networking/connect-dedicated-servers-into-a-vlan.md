@@ -1,7 +1,7 @@
 ---
 title: connect-dedicated-servers-into-a-vlan
 displayName: VLAN
-order: 20
+order: 21
 published: true
 toc:
 ---

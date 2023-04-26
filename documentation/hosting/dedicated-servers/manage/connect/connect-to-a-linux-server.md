@@ -2,7 +2,7 @@
 title: connect-to-a-linux-server
 displayName: Linux server
 published: true
-order: 20
+order: 21
 toc:
 ---
 
