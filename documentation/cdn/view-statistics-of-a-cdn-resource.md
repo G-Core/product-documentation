@@ -15,7 +15,6 @@ toc:
    --3--OS: "os"
    --2--How statistics are collected: "how-statistics-are-collected"
 ---
-
 # View statistics of a CDN resource
 
 ## Statistics
@@ -41,25 +40,25 @@ On the Statistics tab, you can:
 
 - Select CDN resources to display statistics: one resource, several, or all resources. 
 
-<img src="https://assets.gcore.pro/docs/cdn/reports/2.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/reports/2.png" alt="" width="50%">
 
 - Select the required report.
 
-<img src="https://assets.gcore.pro/docs/cdn/reports/3.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/reports/3.png" alt="" width="50%">
 
 **Note**:  The "Aggregated Data" report displays traffic volume and bandwidth information for the last three months. The "Traffic by Country" report shows the top 5 countries with the highest traffic.
 
 - Set a specific time interval and the report auto-refresh period.
 
-<img src="https://assets.gcore.pro/docs/cdn/reports/4.png" alt=""> 
+<img src="https://assets.gcore.pro/docs/cdn/reports/4.png" alt="" width="70%"> 
 
 The appearance of the graph and metrics depend on the characteristic on which it is based. For example, a graph depicting the usage of the Image optimization feature would look like this:
 
-<img src="https://assets.gcore.pro/docs/cdn/reports/5.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/reports/5.png" alt="" width="70%">
 
 And a graph depicting the Response codes would look as follows:
 
-<img src="https://assets.gcore.pro/docs/cdn/reports/6.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/reports/6.png" alt="" width="70%">
 
 ## Advanced Analytics
 
@@ -85,7 +84,7 @@ For more detailed analysis, use filters. They are applied to all available repor
 
 4\. In the filters by country, directory, browser, device, and operating system, you can specify the parameters displayed on the charts in the reports.
 
-<img src="https://assets.gcore.pro/docs/cdn/reports/7.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/reports/7.png" alt="" width="70%">
 
 The parameters specified in the filters influence the data displayed in all report types.
 
@@ -105,7 +104,7 @@ The table below contains information collected based on the parameters specified
 
 To quickly navigate through countries, use the search.
 
-<img src="https://assets.gcore.pro/docs/cdn/reports/8.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/reports/8.png" alt="" width="70%">
 
 #### Directories
 

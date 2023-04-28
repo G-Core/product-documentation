@@ -5,7 +5,7 @@ published: true
 order: 20
 toc:
 ---
-# Integrate CDN resource with Wordpress (Rocket plugin)
+# Integrate CDN resource with WordPress (Rocket plugin)
 
 Before you take any steps please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
 

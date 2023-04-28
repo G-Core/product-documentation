@@ -31,7 +31,7 @@ In Gcore, two types of SSL certificates are available:
 
 **2. Free Let's Encrypt certificate.** You can issue a free Let's Encrypt certificate for your custom domain. All data will be added automatically. 
 
-## Your own SSL certificate
+## 1\. Your own SSL certificate
 
 There are 2 ways to add a certificate: during [resource creation](#add-an-ssl-certificate-during-resource-creation) and on the [SSL Certificates page](#add-an-ssl-certificate-on-the-ssl-certificates-page) of your account.
 
