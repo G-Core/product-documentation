@@ -5,7 +5,7 @@ published: true
 order: 40
 toc:
 ---
-# Integrate CDN resource with Wordpress (WP SuperCache plugin)
+# Integrate CDN resource with WordPress (WP SuperCache plugin)
 
 Before you take any steps please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
 

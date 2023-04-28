@@ -5,7 +5,7 @@ published: true
 order: 30
 toc:
 ---
-# Integrate CDN resource with Wordpress (W3 Total Cache plugin)
+# Integrate CDN resource with WordPress (W3 Total Cache plugin)
 
 Before you take any steps please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns plugin might not help you.
 
