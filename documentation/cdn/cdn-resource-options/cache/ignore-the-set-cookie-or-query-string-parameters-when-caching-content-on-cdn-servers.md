@@ -6,72 +6,79 @@ order: 40
 toc:
    --1--Ignore Query string: "query-string-setting"
    --1--Ignore Set-Cookie: "set-cookie-setting"
-
 ---
-  
-  
-  
-
-The _Ignore Query String_ option determines how the CDN will cache URLs that have query parameters. Query parameters are optional pairs of key and value separated by an equal sign (=) and joined by an ampersand (&), that appear at the end of a URL following a question mark (?). For example:
-
-http://cdn.example.com/photo.jpeg?id=6&color=blue
+# Ignore the Set Cookie or Query string parameters when caching content on CDN servers
 
 ## Query string setting
 
-This option is disabled by default. To enable it via the control panel:
+The "Ignore Query String" option determines how the CDN will cache URLs that have query parameters. Query parameters are optional pairs of key and value separated by an equal sign (=) and joined by an ampersand (&), that appear at the end of a URL following a question mark (?). For example:
 
-1\. Go to **CDN** and select the CDN resource you want to configure.
+```
+http://cdn.example.com/photo.jpeg?id=6&color=blue
+```
 
-<img src="https://support.gcore.com/hc/article_attachments/12414969223185" alt="CDN_resource.png">
+This option is disabled by default. To enable it via the Control panel:
 
-2\. In the navigation panel, under the **Cache** section, click **Query string**.
+1\. Go to CDN and select the CDN resource you want to configure.
 
-<img src="https://support.gcore.com/hc/article_attachments/12420789740177" alt="Query_String_option.png">
+<img src="https://support.gcore.com/hc/article_attachments/12414969223185" alt="">
+
+2\. In the navigation panel, under the "Cache" section, click **Query string**.
+
+<img src="https://support.gcore.com/hc/article_attachments/12420789740177" alt="" width="70%">
 
 The enabled option has 3 modes:
 
-*   **Ignore All**. Selected by default. Files with different query parameters are cached as objects with the same key, regardless of the parameter value.
+- **Ignore All**. Selected by default. Files with different query parameters are cached as objects with the same key, regardless of the parameter value.
     
-    <img src="https://support.gcore.com/hc/article_attachments/12415341115665" alt="Ignore_All_option.png" width="522" height="176">
+<img src="https://support.gcore.com/hc/article_attachments/12415341115665" alt="" width="50%">
     
-    For example, the following files will be cached as objects with a single cache key because all parameters will be ignored:
+For example, the following files will be cached as objects with a single cache key because all parameters will be ignored:
     
-    _http://cdn.example.com/photo.jpeg?id=6&color=blue_  
-    _http://cdn.example.com/photo.jpeg?id=1&color=blue_
+```
+http://cdn.example.com/photo.jpeg?id=6&color=blue  
+http://cdn.example.com/photo.jpeg?id=1&color=blue
+```
     
+- **Ignore All Except**. Files with the specified query parameters are cached as objects with different keys; files with other parameters are cached as objects with the same key.
 
-*   **Ignore All Except**. Files with the specified query parameters are cached as objects with different keys; files with other parameters are cached as objects with the same key.
+In the **Parameter** field, enter each parameter on a separate line.
     
-    In the **Parameter** field, enter each parameter on a separate line.
+<img src="https://support.gcore.com/hc/article_attachments/12415729590801" alt="" width="50%">
     
-    <img src="https://support.gcore.com/hc/article_attachments/12415729590801" alt="Ignore_All_Except.png" width="523" height="269">
-    
-    For example, you specified _id_ in the Parameter field. The following files will be cached as objects with different keys because the values of the _id_ parameter are different, and the value of the _color_ parameter will be ignored.
-    
-    _http://cdn.example.com/photo.jpeg?id=6&color=blue_  
-    _http://cdn.example.com/photo.jpeg?id=1&color=blue_
-    
-    For example, you specified _color_ in the Parameter field. The following files will be cached as objects with the same keys because the values of the _color_ parameter are the same, and the _id_ parameter will be ignored.
-    
-    _http://cdn.example.com/photo.jpeg?id=6&color=blue_  
-    _http://cdn.example.com/photo.jpeg?id=1&color=blue_
-    
+For example, you specified *id* in the Parameter field. The following files will be cached as objects with different keys because the values of the *id* parameter are different, and the value of the *color* parameter will be ignored.
 
-*   **Ignore only**. Files with the specified query parameters are cached as objects with the same key, files with other parameters are cached as objects with different keys.
+```    
+http://cdn.example.com/photo.jpeg?id=6&color=blue  
+http://cdn.example.com/photo.jpeg?id=1&color=blue
+```
+
+For example, you specified *color* in the Parameter field. The following files will be cached as objects with the same keys because the values of the *color* parameter are the same, and the *id* parameter will be ignored.
     
-    In the **Parameter** field, enter each parameter on a separate line.
+```
+http://cdn.example.com/photo.jpeg?id=6&color=blue  
+http://cdn.example.com/photo.jpeg?id=1&color=blue
+```
     
-    <img src="https://support.gcore.com/hc/article_attachments/12415745809041" alt="Ignore_Only.png" width="524" height="270">
+- **Ignore only**. Files with the specified query parameters are cached as objects with the same key, files with other parameters are cached as objects with different keys.
     
-    For example, you specified _id_ in the Parameter field. The following files will be cached as objects with the same keys because the values of the _id_ parameter will be ignored, and the values of the _color_ parameters are the same.
+In the **Parameter** field, enter each parameter on a separate line.
     
-    _http://cdn.example.com/photo.jpeg?id=6&color=blue_  
-    _http://cdn.example.com/photo.jpeg?id=1&color=blue_
+<img src="https://support.gcore.com/hc/article_attachments/12415745809041" alt="" width="50%">
     
-    For example, you specified _color_ in the Parameter field. The following files will be cached as objects with different keys because the values of the _color_ parameter will be ignored, and the values of the _id_ parameters are different.
+For example, you specified *id* in the Parameter field. The following files will be cached as objects with the same keys because the values of the *id* parameter will be ignored, and the values of the *color* parameters are the same.
     
-    _http://cdn.example.com/photo.jpeg?id=6&color=blue_  
-    _http://cdn.example.com/photo.jpeg?id=1&color=blue_
+```
+http://cdn.example.com/photo.jpeg?id=6&color=blue  
+http://cdn.example.com/photo.jpeg?id=1&color=blue
+```
+    
+For example, you specified *color* in the Parameter field. The following files will be cached as objects with different keys because the values of the *color* parameter will be ignored, and the values of the *id* parameters are different.
+    
+```
+http://cdn.example.com/photo.jpeg?id=6&color=blue  
+http://cdn.example.com/photo.jpeg?id=1&color=blue
+```
 
 ## Set-Cookie setting
 
@@ -79,4 +86,4 @@ A CDN defines a file with the Set-Cookies header as a unique one. As a result, 
 
 Enable Ignore Set-Cookie option and files with cookies will be cached like one object. Go to CDN Resources, choose a CDN Resource and press Settings, open Advanced Settings and check Ignore Set-Cookies.
 
-<img src="https://support.gcore.com/hc/article_attachments/115011406629/Screenshot-2018-1-1_G-Core_Labs___________CDN-___________________8_.png" alt="Screenshot-2018-1-1_G-Core_Labs___________CDN-___________________8_.png">
+<img src="https://support.gcore.com/hc/article_attachments/115011406629/Screenshot-2018-1-1_G-Core_Labs___________CDN-___________________8_.png" alt="">

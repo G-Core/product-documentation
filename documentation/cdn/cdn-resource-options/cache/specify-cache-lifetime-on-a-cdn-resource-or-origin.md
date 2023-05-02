@@ -131,10 +131,10 @@ X-Image-Read: 71
 Expires: Wed, 06 Dec 2017 12:51:43 GMT   
 Access-Control-Allow-Origin: *   
 Last-Modified: Sun, 01 Jan 2017 12:00:00 GMT   
-**Cache-Control: max-age=3153600, public**  
-**Cache: HIT**   
-**X-Cached-Since: 2017-06-09T12:51:43+00:00**   
-**X-ID: m9-up-e245**
+Cache-Control: max-age=3153600, public  
+Cache: HIT   
+X-Cached-Since: 2017-06-09T12:51:43+00:00  
+X-ID: m9-up-e245
 ```
 
 If you suspect any content caching issues, check the settings on the source, read the "<a href="https://gcore.com/docs/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue" target="_blank">Troubleshooting Low Cache Hit Ratio</a>" article, or contact [support@gcore.com](mailto:support@gcore.com).
