@@ -4,39 +4,35 @@ displayName: Geo Balancer (for paid tariffs)
 published: true
 order: 140
 toc:
+--1--Enable or disable the option: "how-to-enable-or-disable-the-option"
 ---
-
 # Determine in which regions the content will be delivered with geo balancer for paid tariffs
 
-_The option is not available for the Free tariff_
+**Note**: The option is not available for the Free tariff.
 
-Geo Balancer option disables content distribution in certain regions. 
-
-It can increase the Cache Hit Ratio if your primary audience is located in one, two, or maybe three regions.
+Geo Balancer option disables content distribution in certain regions. It can increase the Cache Hit Ratio if your primary audience is located in one, two, or maybe three regions.
 
 Regions for managing:
-
-*   North America
-*   Latin America
-*   Asia
-*   Middle East
-*   Australia
-*   Africa
-*   Europe
+- North America
+- Latin America
+- Asia
+- Middle East
+- Australia
+- Africa
+- Europe
 
 Requests from the disabled region are balanced to the default location handler.
 
 Available regions for default location handler:
+- Asia
+- Near East
+- Middle America
+- Europe
 
-*   Asia
-*   Near East
-*   Middle America
-*   Europe
+**Important**: You cannot disable the region that is selected for the handler.
 
-**Important!** You cannot disable the region that is selected for the handler.
-
-How to enable or disable the option
+## How to enable or disable the option
 
 Contact us via chat or email.
 
-**Note!** The option will be set up for all the resources in your account.
+**Note**: The option will be set up for all the resources in your account.
