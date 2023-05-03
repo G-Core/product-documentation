@@ -4,8 +4,8 @@ displayName: Configure browser caching
 published: true
 order: 30
 toc:
---1--Origin controlled: "origin-controlled"
---1--CDN controlled: "cdn-controlled"
+    --1--Origin controlled: "origin-controlled"
+    --1--CDN controlled: "cdn-controlled"
 ---
 # Specify cache lifetime for user browsers
 
