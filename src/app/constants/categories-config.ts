@@ -2,8 +2,28 @@ import { Category } from '../models';
 
 export const categories: Array<Category> = [
     {
-        name: 'Web Security',
-        url: 'web-security',
+        name: 'Account settings',
+        url: 'account-settings',
+    },
+    {
+        name: 'CDN',
+        url: 'cdn',
+    },
+    {
+        name: 'Cloud',
+        url: 'cloud',
+    },
+    {
+        name: 'DNS',
+        url: 'dns',
+    },
+    {
+        name: 'Hosting',
+        url: 'hosting',
+    },
+    {
+        name: 'Storage',
+        url: 'storage',
     },
     {
         name: 'Streaming',
@@ -14,27 +34,11 @@ export const categories: Array<Category> = [
         url: 'server-protection',
     },
     {
-        name: 'Storage',
-        url: 'storage',
+        name: 'Web Security',
+        url: 'web-security',
     },
     {
-        name: 'Hosting',
-        url: 'hosting',
-    },
-    {
-        name: 'DNS',
-        url: 'dns',
-    },
-    {
-        name: 'Cloud',
-        url: 'cloud',
-    },
-    {
-        name: 'CDN',
-        url: 'cdn',
-    },
-    {
-        name: 'Account settings',
-        url: 'account-settings',
+        name: 'Reseller Support',
+        url: 'reseller-support',
     },
 ];

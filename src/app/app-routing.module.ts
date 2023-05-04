@@ -39,6 +39,10 @@ const routes: Routes = [
         component: DocumentationComponent,
     },
     {
+        path: `documentation/reseller-support`,
+        component: DocumentationComponent,
+    },
+    {
         path: `documentation/account-settings`,
         component: DocumentationComponent,
     },
@@ -124,6 +128,16 @@ const routes: Routes = [
     },
     {
         path: `documentation/account-settings/:title`,
+        children: [
+            {
+                path: '**',
+                component: DocumentationComponent,
+            },
+        ],
+        component: DocumentationComponent,
+    },
+    {
+        path: `documentation/reseller-support/:title`,
         children: [
             {
                 path: '**',

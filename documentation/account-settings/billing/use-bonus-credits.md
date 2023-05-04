@@ -29,7 +29,7 @@ You bonus credits displays at the <a href="https://accounts.gcore.com/billing/se
 Bonuses are debited automatically as a part of the payment for services: 
 
 - If you are registered as an individual, the amount debited from the payment resource will be reduced by the number of bonus credits.  
-- If you are registered as a company, in an invoice the number of bonuses will be counted as a discount. 
+- If you are registered as a company, in an invoice the number of bonuses will be counted as a discount.
 
 **Important**: As bonus credits reduce the taxable amount of expenses, the tax is also recalculated downward. 
 
@@ -43,7 +43,7 @@ This section displays information about bonus credits and all operations with 
 
 For a better search of the desired bonus credits, use the search by sum and date.  
 
-<img src="https://assets.gcore.pro/docs/account-settings/billing/bonus-credits/manage-credits-20.png width" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/account-settings/billing/bonus-credits/manage-credits-20.png" alt="" width="70%">
 
 ## Bonus credits statuses  
 
