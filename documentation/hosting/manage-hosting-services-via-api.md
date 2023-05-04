@@ -5,8 +5,10 @@ order: 80
 published: true
 toc:
 ---
+# Manage Hosting services via API
+
 Here are the links to our API documentation. Use them to learn more about the available features and automate the processes.
 
-*   [Billmanager API](https://docs.ispsystem.com/billmanager/developer-section/billmanager-api) - use it to order a new server, to pay for the services and all the actions you can do via Control Panel;
-*   [DCImanager API](https://docs.ispsystem.com/dcimanager/developer-section/dcimanager-api) - use it to manage your dedicated server;
-*   [VMmanager API](https://docs.ispsystem.com/vmmanager-kvm/developer-section/vmmanager-kvm-api) - use it to manage your VPS.
+- <a href="https://docs.ispsystem.com/billmanager/developer-section/billmanager-api" target="_blank">Billmanager API</a> - use it to order a new server, to pay for the services and all the actions you can do via Control Panel;
+- <a href="https://docs.ispsystem.com/dcimanager/developer-section/dcimanager-api" target="_blank">DCImanager API</a> - use it to manage your dedicated server;
+- <a href="https://docs.ispsystem.com/vmmanager-kvm/developer-section/vmmanager-kvm-api" target="_blank">VMmanager API</a> - use it to manage your VPS.
