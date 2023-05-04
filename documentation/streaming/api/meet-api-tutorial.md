@@ -88,57 +88,56 @@ toc:
    --2--JWT Digital Signature Algorithm: "jwt-digital-signature-algorithm"
    --2--RSA Public & Secret Key generation: "rsa-public--secret-key-generation"
 ---
+# Meet API tutorial
+
 It is an easy-to-use video meeting tool.
 
 A video conference room can be inserted in two ways:
 
-1.  **Codeless** — just copy a URL, paste iframe on your page and join a call.
-2.  **API-based** — for fine-tuning and integration with your platforms or enterprise internal systems.
+1. **Codeless** — just copy a URL, paste iframe on your page and join a call.
+2. **API-based** — for fine-tuning and integration with your platforms or enterprise internal systems.
 
 Embed video meetings into an application or website with iframe or Server API/Client API allowing your team to build faster and release more often.
 
-**Get started**
-===============
+## Get started
 
 Create a meeting in a browser:
 
-1\. Open [https://meet.gcore.com/new](https://meet.gcore.com/new)
+1\. Open <a href="https://meet.gcore.com/new" target="_blank">https://meet.gcore.com/new</a>.
 
-2\. Click the "Create conference" button.
+2\. Click the **Create conference** button.
 
 3\. A Room URL will be created automatically.
 
-4\. Click the "Join" button.
+4\. Click the **Join** button.
 
 5\. Send the URL to other attendees to join your video call.
 
-Example: [https://meet.gcore.com/call/?roomId=serv2testroom](https://meet.gcore.com/call/?roomId=serv2testroom)
+Example: ```https://meet.gcore.com/call/?roomId=serv2testroom```
 
-**Embed a video call room in your website or app** via iframe. The iframe’s src attribute is specified as the URL.
+**Embed a video call room in your website or app via iFrame**. The iframe’s src attribute is specified as the URL.
 
-_Example:_
+Example:
 
-_<iframe allow="camera; microphone; fullscreen; display-capture" src="https://meet.gcore.com/call/?roomId=serv2testroom"></iframe>_
+<code-block>
+<iframe allow="camera; microphone; fullscreen; display-capture" src="https://meet.gcore.com/call/?roomId=serv2testroom"></iframe>
+</code-block>
 
-**Customize a video call room** with URL attributes. 
+**Customize a video call room with URL attributes**. 
 
-_Example:_
+Example: ```https://meet.gcore.com/call/?roomId=serv2testroom&displayName=JohnSnow```
 
-_[https://meet.gcore.com/call/?roomId=serv2testroom&displayName=JohnSnow](https://meet.gcore.com/call/?roomId=serv2testroom&displayName=JohnSnow)_
+## Codeless integration
 
-**Codeless integration**
-========================
+### Create Room URL
 
-**Create Room URL**
--------------------
+1\. Generate a video room ID. Use an alphanumeric character set. For example: *bokxlj33*.
 
-1\. Generate a video room ID. Use an alphanumeric character set. For example: bokxlj33.
+2\. Add a server location to the beginning of the set. For example, insert "serv2" for a server in the USA: *serv2bokxlj33*.
 
-2\. Add a server location to the beginning of the set. For example, insert “serv2” for a server in the USA: serv2bokxlj33.
+3\. Specify */call/* as a method for your video call room.
 
-3\. Specify /call/ as a method for your video call room.
-
-4\. Insert the Room ID into the final URL. The result should be as follows: [https://meet.gcore.com/call/?roomId=serv2bokxlj33](https://meet.gcore.com/call/?roomId=serv2bokxlj33)
+4\. Insert the Room ID into the final URL. The result should be as follows: ```https://meet.gcore.com/call/?roomId=serv2bokxlj33```
 
 You can create a URL, save it, send it, or write it in your notes. The URL is reusable. The URL will be accessible all the time – before an event, during an event, and even 1 year later after an event.
 
@@ -146,60 +145,60 @@ The Room is created on a server when the first participant enters it.
 
 The Room is automatically destroyed without saving information when the last participant leaves.
 
-**Embed Room on a Site**
-------------------------
+### Embed Room on a Site
 
 Embedding a meeting into a service or app requires using an iframe with the src attribute specified as the URL. Read the "Allowed domain names" section to learn how to configure your website’s domain so that browsers don’t block the iframe.
 
 Settings of iframe must have the special permissions required for video calling:
 
-**allow="camera;microphone;fullscreen;display-capture;autoplay;screen-wake-lock"** 
+```
+allow="camera;microphone;fullscreen;display-capture;autoplay;screen-wake-lock"
+
+``` 
 
 HTTP Feature-Policy header provides a mechanism to allow: 
 
-*   camera – permission to use a cam inside iframe ([https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy/camera](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy/camera)).  
-*   microphone – permission to use a mic inside iframe ([https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy/microphone](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy/microphone)). 
-*   fullscreen – permission to open iframe’s UI in the fullscreen mode ([https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy/fullscreen](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy/fullscreen)). 
-*   display-capture – permission to use the screen sharing feature inside iframe ([https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy/display-capture](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy/display-capture)). 
-*   autoplay – permission to start the video autoplay inside iframe after page load ([https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy/autoplay](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy/autoplay)). 
-*   screen-wake-lock – permission that allows devices not to dim or turn off the screen during a call ([https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy/screen-wake-lock](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy/screen-wake-lock)). 
+- camera – <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy/camera" target="_blank">permission to use a cam inside iframe</a>.  
+- microphone – <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy/microphone" target="_blank">permission to use a mic inside iframe</a>. 
+- fullscreen – <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy/fullscreen" target="_blank">permission to open iframe’s UI in the fullscreen mode</a>. 
+- display-capture – <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy/display-capture" target="_blank">permission to use the screen sharing feature inside iframe</a>. 
+- autoplay – <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy/autoplay" target="_blank">permission to start the video autoplay inside iframe after page load</a>. 
+- screen-wake-lock – <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy/screen-wake-lock" target="_blank">permission that allows devices not to dim or turn off the screen during a call</a>. 
 
 Example:
 
-_<iframe_    
-_src="_[https://meet.gcore.com/call/?roomId=serv2bokxlj33](https://meet.gcore.com/call/?roomId=serv2bokxlj33)_"_   
-_allow="camera;_ _microphone;_ _fullscreen;_ _display-capture;_ _autoplay__;_ _screen-wake-lock__"_   
-_\></iframe>_ 
+```
+<iframe src="https://meet.gcore.com/call/?roomId=serv2bokxlj33"    
+allow="camera; microphone; fullscreen; display-capture; autoplay; screen-wake-lock"></iframe>
 
-**Mobile app integration**
-==========================
+``` 
 
-**Embedding in Android app**
-----------------------------
+## Mobile app integration
+
+### Embedding in Android app
 
 Embedding in Android can be done in two ways:  
 
-1.  **Android Native SDK** – please look at SDK and open-source demo app [https://github.com/G-Core/android-demo-video-calls](https://github.com/G-Core/android-demo-video-calls).
+1.  **Android Native SDK** – please look at <a href="https://github.com/G-Core/android-demo-video-calls" target="_blank">SDK and open-source demo app</a>.
 2.  **WebView**. 
 
 It’s better to use the native Android SDK. One-to-one calls and/or with many participants for real-time communication within your own app. 
 
 There are two modules: 
 
-1.  SDK — a  native library of video calls to be implemented into apps. The library is responsible for all internal processes: get cam/mic data, make video streams, send, and receive data to/from a video server.
-2.  DEMO —  a native demo application with open-source code. The app shows cases and scenarios of SDK usage in real app. You can compile the code and run it.   
+1. SDK — a  native library of video calls to be implemented into apps. The library is responsible for all internal processes: get cam/mic data, make video streams, send, and receive data to/from a video server.
+2. DEMO —  a native demo application with open-source code. The app shows cases and scenarios of SDK usage in real app. You can compile the code and run it.   
 
-WebView requires the use of the [WebView](https://developer.android.com/reference/android/webkit/WebView) class. To allow a video call room access the camera, you need to do two things: 
+WebView requires the use of the <a href="https://developer.android.com/reference/android/webkit/WebView" target="_blank">WebView</a> class. To allow a video call room access the camera, you need to do two things: 
 
 1.  Override the  WebChromeClient.onPermissionRequest  method to avoid the default implementation. You can just return true. 
-2.  Add the  &nameScreenDisabled=true parameter  to the Room URL and call “Join” Client API method. 
+2.  Add the  ```&nameScreenDisabled=true``` parameter  to the Room URL and call "Join" Client API method. 
 
-**Embedding in iOS app**
-------------------------
+### Embedding in iOS app
 
 Embedding in iOS can be done in two ways:  
 
-1.  **iOS Native SDK** – please look at SDK and open-source demo app [https://github.com/G-Core/ios-demo-video-calls](https://github.com/G-Core/ios-demo-video-calls). 
+1.  **iOS Native SDK** – please look at <a href="https://github.com/G-Core/ios-demo-video-calls" target="_blank">SDK and open-source demo app</a>. 
 2.  **WebView**. 
 
 It’s better to use the native iOS SDK. One-to-one calls and/or with many participants for real-time communication within your own app. 
@@ -209,21 +208,20 @@ There are two modules: 
 1.  SDK —  a native library of video calls to be implemented into apps. The library is responsible for all internal processes: get cam/mic data, make video streams, send, and receive data to/from a video server.  
 2.  DEMO —  a native demo application with open-source code. The app shows cases and scenarios of SDK usage in real app. You can compile the code and run it.   
 
-[WKWebView](https://developer.apple.com/documentation/webkit/wkwebview) supports embedding pages that use WebRTC from iOS 14.5 onwards.  
+<a href="https://developer.apple.com/documentation/webkit/wkwebview" target="_blank">WKWebView</a> supports embedding pages that use WebRTC from iOS 14.5 onwards.  
 
 To support older iOS versions, we recommend using one of the following options: 
 
-*   For iOS 14.3 and 14.4, use [SFSafariViewController](https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller) to open a web page containing an iframe with its src specified as a video call room URL. 
-*   Redirect to mobile Safari for iOS versions lower than 14.3. 
+- For iOS 14.3 and 14.4, use <a href="https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller" target="_blank">SFSafariViewController</a> to open a web page containing an iframe with its src specified as a video call room URL. 
+- Redirect to mobile Safari for iOS versions lower than 14.3. 
 
-To use Video Calls with Cordova (Phonegap) please use the plugin for [SafariViewController](https://github.com/EddyVerbruggen/cordova-plugin-safariviewcontroller%22%20/t%20%22_blank).
+To use Video Calls with Cordova (Phonegap) please use the plugin for <a href="https://github.com/EddyVerbruggen/cordova-plugin-safariviewcontroller%22%20/t%20%22_blank" target="_blank">SafariViewController</a>.
 
-**Embedding in** **React Native** **app** 
-------------------------------------------
+### Embedding in React Native app 
 
 Embedding in React Native iOS/Android can be done via wrapper:  
 
-1.  React Native Wrapper – please look at SDK and open-source demo app [https://github.com/G-Core/reactnative-demo-video-calls](https://github.com/G-Core/reactnative-demo-video-calls)  
+React Native Wrapper – please look at <a href="https://github.com/G-Core/reactnative-demo-video-calls" target="_blank">SDK and open-source demo app</a>.
 
 There are four modules: 
 
@@ -232,161 +230,138 @@ There are four modules: 
 3.  SDK – native library of video calls to be implemented into apps. The library is responsible for all internal processes: get cam/mic data, make video streams, send, and receive data to/from the video server.  
 4.  DEMO – demo app with open-source code. The app shows cases and scenarios of SDK usage in the real app. You can compile the code and run it. 
 
-**Video Call Customization** 
-=============================
+## Video Call Customization 
 
-**Calls or Webinars**
----------------------
+### Calls or Webinars
 
-### **Video call rooms** 
+#### Video call rooms 
 
 A video conferencing room is a room where all invited participants are active and have their cameras and microphones on. One video call room can hold up from 1 to 100 participants or more. 
 
-A method to create video conferencing rooms is **/call/**. 
+A method to create video conferencing rooms is ```/call/```. 
 
-Example: 
+Example: ```https://meet.gcore.com/call/?roomId=```
 
-_[https://meet.gcore.com/call/?roomId=](https://meet.gcore.com/call/?roomId=serv2gau0txks)_ 
-
-### **Webinar rooms** 
+#### Webinar rooms 
 
 A webinar room is a room  where participants are divided into two groups: speakers and viewers. Speakers  are active participants with cameras and microphones. Speakers' video is shown on the screen of the webinar room, participants can watch and hear them. Viewers can only watch the speakers without interaction. They have neither camera, nor microphone on. One webinar room can hold up between 1 and 20 speakers and between 0 and 2000 viewers.  
 
-A method to create video conferencing rooms is **/webinar/**.  
+A method to create video conferencing rooms is ```/webinar/```.  
 
-Moreover, please see [&](#itisparticipant-true-false)_[itisparticipant attribute](#itisparticipant-true-false)._ 
+Moreover, please see <a href="#itisparticipant-true-false" target="_blank">&itisparticipant attribute</a>. 
 
-Example: 
+Example: ```https://meet.gcore.com/webinar/?roomId=```
 
-_[https://meet.gcore.com/webinar/?roomId=](https://meet.gcorelabs.com/webinar/?roomId=)_
-
-**Allowed domain names**
-------------------------
+### Allowed domain names
 
 Video calls are accessible from two types of domains:
 
-1.  companyname.gvideo.co – example of a client's special domain in our "gvideo.co" zone. 
-2.  video.domain.com – example of an external client's domain.
+1.  *companyname.gvideo.co* – example of a client's special domain in our "gvideo.co" zone. 
+2.  *video.domain.com* – example of an external client's domain.
 
-By default, we provide a third-level tech domain in the  _"gvideo.co"_  zone. If you prefer to use your own domain, please contact us.
+By default, we provide a third-level tech domain in the  "gvideo.co"  zone. If you prefer to use your own domain, please contact us.
 
-**Advanced** **URL Attributes for rich customization**
-------------------------------------------------------
+### Advanced URL Attributes for rich customization
 
 Conferencing is customized by optional URL parameters for each iframe instance. It’s possible for each participant in a meeting to have different parameter combinations. 
 
-| \n&amp;accessToken=&lt;token&gt;\n                    | \nSet a one-time access token\n                                                                       | \nJWT, URL\n  |
+| &amp;accessToken=&lt;token&gt;                    | Set a one-time access token                                                                       | JWT, URL  |
 |-------------------------------------------------------|-------------------------------------------------------------------------------------------------------|---------------|
-| \n&amp;accessUrl=&lt;url&gt;\n                        | \nSet your server-based authorization method for access token verification\n                          | \nJWT, URL\n  |
-| \n&amp;apiEvent=&lt;url&gt;\n                         | \nSet webhooks server-based method for receiving server events\n                                      | \nJWT, URL\n  |
-| \n&amp;authEvent=&lt;header&gt;\n                     | \nSet specific webhooks HTTP request header for receiving server events\n                             | \nJWT, URL\n  |
-| \n&amp;authorizationAccess=&lt;header&gt;\n           | \nSet specific HTTP request header for access token verification\n                                    | \nJWT, URL\n  |
-| \n&amp;autoplayWithoutAudioTrack=&lt;true|false&gt;\n | \nSet a flag \"Don’t ask mic permission\" on iOS devices for webinar viewer\n                         | \nURL\n       |
-| \n&amp;canRecord=&lt;true|false&gt;\n                 | \nAllow the recording function for a moderator\n                                                      | \nJWT only\n  |
-| \n&amp;controlsDisabled=&lt;true|false&gt;\n          | \nHide main UI controls and buttons\n                                                                 | \nURL\n       |
-| \n&amp;disableChat=&lt;true|false&gt;\n               | \nDisable text chat\n                                                                                 | \nURL\n       |
-| \n&amp;displayName=&lt;name&gt;\n                     | \nSet display name of participant\n                                                                   | \nJWT, URL\n  |
-| \n&amp;handEnabled=&lt;true|false&gt; \n              | \nActivate the \"Raising Hand\" feature \n                                                            | \nJWT, URL \n |
-| &amp;hideIndicators=&lt;true|false&gt;                | \nHide icons in a participant's tile (mic, cam, name, etc.)\n                                         | \nURL\n       |
-| \n&amp;itisparticipant=&lt;true|false&gt;\n           | \nSet a role of a viewer or a participant in webinars\n                                               | \nJWT, URL\n  |
-| \n&amp;lang=&lt;code&gt;\n                            | \nSet the interface language explicitly\n                                                             | \nURL\n       |
-| \n \n&amp;maxBroadcasters=&lt;num&gt; \n \n           | \nSet the maximum number of participants with camera/audio devices \n                                 | \nJWT,URL \n  |
-| \n \n&amp;maxWatchers=&lt;num&gt;\n \n                | \nSet the maximum number of viewers without camera/audio devices\n                                    | \nJWT, URL\n  |
-| \n&amp;minimizeTiles=&lt;true|false&gt;\n             | \nIncrease the number of participants displayed on a single screen without scrolling to the maximum\n | \nURL\n       |
-| \n&amp;nameScreenDisabled=&lt;true|false&gt;\n        | \nSkip welcome page with a cam/mic selection and a name input\n                                       | \nURL\n       |
-| \n&amp;peerId=&lt;id&gt;\n                            | \nID of a participant from your internal system\n                                                     | \nJWT, URL\n  |
-| \n&amp;roomId=&lt;id&gt; \n                           | \nRoom ID\n                                                                                           | \nURL \n      |
-| \n&amp;role=&lt;role&gt;\n                            | \nSet a privilege role for a participant\n                                                            | \nJWT only\n  |
-| \n&amp;sortPeers=&lt;true|false&gt;\n                 | \nMove participants with cameras up to the visible area\n                                             | \nURL\n       |
-| \n&amp;startWithFS=&lt;true|false&gt;\n               | \nStart meeting in the full screen mode\n                                                             | \nURL\n       |
-| \n&amp;token=&lt;jwt&gt;\n                            | \nSet a JWT token\n                                                                                   | \nJWT, URL\n  |
-| \n&amp;video=&lt;url&gt;\n                            | \nDisplay an external HTML player with external video broadcasting for joint viewing\n                | \nJWT, URL\n  |
-| \n&amp;waitingRoom=&lt;true|false&gt;\n               | \nActivate waiting room\n                                                                             | \nJWT only\n  |
+| &amp;accessUrl=&lt;url&gt;                        | Set your server-based authorization method for access token verification                          | JWT, URL  |
+| &amp;apiEvent=&lt;url&gt;                         | Set webhooks server-based method for receiving server events                                      | JWT, URL  |
+| &amp;authEvent=&lt;header&gt;                     | Set specific webhooks HTTP request header for receiving server events                             | JWT, URL  |
+| &amp;authorizationAccess=&lt;header&gt;           | Set specific HTTP request header for access token verification                                    | JWT, URL  |
+| &amp;autoplayWithoutAudioTrack=&lt;true|false&gt; | Set a flag "Don’t ask mic permission" on iOS devices for webinar viewer                           | URL       |
+| &amp;canRecord=&lt;true|false&gt;                 | Allow the recording function for a moderator                                                       | JWT only |
+| &amp;controlsDisabled=&lt;true|false&gt;          | Hide main UI controls and buttons                                                                 | URL       |
+| &amp;disableChat=&lt;true|false&gt;               | Disable text chat                                                                                 | URL       |
+| &amp;displayName=&lt;name&gt;                     | Set display name of participant                                                                   | JWT, URL  |
+| &amp;handEnabled=&lt;true|false&gt;               | Activate the "Raising Hand" feature                                                               | JWT, URL  |
+| &amp;hideIndicators=&lt;true|false&gt;            | Hide icons in a participant's tile (mic, cam, name, etc.)                                         | URL       |
+| &amp;itisparticipant=&lt;true|false&gt;           | Set a role of a viewer or a participant in webinars                                               | JWT, URL  |
+| &amp;lang=&lt;code&gt;                            | Set the interface language explicitly                                                             | URL       |
+| &amp;maxBroadcasters=&lt;num&gt;                  | Set the maximum number of participants with camera/audio devices                                  | JWT,URL   |
+| &amp;maxWatchers=&lt;num&gt;                      | Set the maximum number of viewers without camera/audio devices                                    | JWT, URL  |
+| &amp;minimizeTiles=&lt;true|false&gt;             | Increase the number of participants displayed on a single screen without scrolling to the maximum | URL       |
+| &amp;nameScreenDisabled=&lt;true|false&gt;        | Skip welcome page with a cam/mic selection and a name input                                       | URL       |
+| &amp;peerId=&lt;id&gt;                            | ID of a participant from your internal system                                                     | JWT, URL  |
+| &amp;roomId=&lt;id&gt;                            | Room ID                                                                                           | URL       |
+| &amp;role=&lt;role&gt;                            | Set a privilege role for a participant                                                            | JWT only  |
+| &amp;sortPeers=&lt;true|false&gt;                 | Move participants with cameras up to the visible area                                             | URL       |
+| &amp;startWithFS=&lt;true|false&gt;               | Start meeting in the full screen mode                                                             | URL       |
+| &amp;token=&lt;jwt&gt;                            | Set a JWT token                                                                                   | JWT, URL  |
+| &amp;video=&lt;url&gt;                            | Display an external HTML player with external video broadcasting for joint viewing                | JWT, URL  |
+| &amp;waitingRoom=&lt;true|false&gt;               | Activate waiting room                                                                             | JWT only  |
 
 Examples:
 
-_1\. [https://meet.gcore.com/call/?roomId=serv2testroom&displayName=JohnSnow](https://meet.gcore.com/call/?roomId=serv2testroom&displayName=JohnSnow)_  
+1\. ```https://meet.gcore.com/call/?roomId=serv2testroom&displayName=JohnSnow```  
   
-_2\. [https://meet.gcore.com/call/?roomId=serv2testroom&displayName=JohnSnow&disableChat=true](https://meet.gcore.com/call/?roomId=serv2testroom&displayName=JohnSnow&disableChat=true)_  
+2\. ```https://meet.gcore.com/call/?roomId=serv2testroom&displayName=JohnSnow&disableChat=true```  
   
-_3\. [https://meet.gcore.com/call/?roomId=serv2testroom&displayName=JohnSnow&disableChat=true&lang=en](https://meet.gcore.com/call/?roomId=serv2testroom&displayName=JohnSnow&disableChat=true&lang=en)_
+3\. ```https://meet.gcore.com/call/?roomId=serv2testroom&displayName=JohnSnow&disableChat=true&lang=en```
 
-**Attribute details**
----------------------
+### Attribute details
 
-### **&accessToken=<token>**
+#### &amp;accessToken=&lt;token&gt;
 
 It is a security access token generated on your side. If this parameter is specified, then, whenever a user enters a room, our server will additionally ask your authorization server whether the user with the peerID and accessToken parameters is allowed to connect. For more details, refer to the server-side authorization method. 
 
-_Type: String. default = not set._
+Type: String. default = not set.
 
-Example_:_
+Example: ```&accessToken=802380f4-dd70-4d60-9738-fb5ae8709ae7```
 
-_&accessToken=802380f4-dd70-4d60-9738-fb5ae8709ae7_
-
-### **&autoplayWithoutAudioTrack=<true|false>**
+#### &amp;autoplayWithoutAudioTrack=&lt;true|false&gt;
 
 It is used only for iOS devices and only for webinars.  
 
-The iOS Safari Browser policy requires microphone permission to use audio with WebRTC. So, the browser requests a passive viewer (with no cam/mic buttons) in a webinar room to allow access to the mic. This parameter ensures the browser will not ask for access to a microphone, but will play audio using the simple “play” method. 
+The iOS Safari Browser policy requires microphone permission to use audio with WebRTC. So, the browser requests a passive viewer (with no cam/mic buttons) in a webinar room to allow access to the mic. This parameter ensures the browser will not ask for access to a microphone, but will play audio using the simple "play" method. 
 
-_Type: Boolean, default = false._
+Type: Boolean, default = false.
 
-Example:
+Example: ```&autoplayWithoutAudioTrack=true```
 
-_&autoplayWithoutAudioTrack=true_
-
-### **&canRecord=<true|false>**
+#### &amp;canRecord=&lt;true|false&gt;
 
 This allows to record and save everything what happens in a room to the Cloud. Not everyone needs a recording for security reasons, legal restrictions, or storage usage. Recording feature can be activated with this attribute. If the feature is on, a moderator can turn on the recording using the UI button.
 
-_Type: Boolean, default = false._
+Type: Boolean, default = false.
 
-Example:
+Example: ```&canRecord=true```
 
-_&canRecord=true_
-
-### **&controlsDisabled=<true|false>**
+#### &amp;controlsDisabled=&lt;true|false&gt;
 
 It is used to hide general controls and buttons from the screen. In this case, you should use ClientAPI methods to manage actions and allow users to turn on/off their cams/mics.
 
-_Type: Boolean, default = false._
+Type: Boolean, default = false.
 
-Example:
+Example: ```&controlsDisabled=true```
 
- _&controlsDisabled=true_
-
-### **&disableChat=<true|false>**
+#### &amp;disableChat=&lt;true|false&gt;
 
 This is designed to disable the chat function. If you add the parameter, the "Chat" button will be un-clickable and chatting will be unavailable for participants. It is useful when you prefer to use our own chat.
 
-_Type=Boolean, default value = false._
+Type=Boolean, default value = false.
 
-Example_:_
+Example: ```&disbleChat=true```
 
-_&__disbleChat=true_
+#### &amp;handEnabled=&lt;true|false&gt; 
 
-### **&handEnabled=<true|false>** 
+This parameter helps to activate the "Raise Hand" feature in a room. Participants will be able to click the "Raise hand" button, and the raised hand icon will appear. The icon is displayed in participant’s tile and in the list of participants in the moderator’s panel.  
 
-This parameter helps to activate the “Raise Hand” feature in a room. Participants will be able to click the “Raise hand” button, and the raised hand icon will appear. The icon is displayed in participant’s tile and in the list of participants in the moderator’s panel.  
+Type=Boolean, default value = false. 
 
-_Type=Boolean, default value = false._ 
+Example: ```&handEnabled=true``` 
 
-Example_:_
-
-_&handEnabled=true_ 
-
-### **&hideIndicators=<true|false>**
+#### &amp;hideIndicators=&lt;true|false&gt;
 
 It is used to make icons inside a tile of a participant invisible. With this parameter, you can hide a participant name and the following icons: cam on/off, mic on/off, absence, raised hand, and pin button.
 
-_Type=Boolean, default value = false._
+Type=Boolean, default value = false.
 
-Example:
+Example: ```&hideIndicators=true```
 
-_&hideIndicators=true_
-
-### **&displayName=<name>**
+#### &amp;displayName=&lt;name&gt;
 
 This allows to display a name of a participant.
 
@@ -394,159 +369,142 @@ A participant’s name may be known before they join the meeting. It is possible
 
 If you specify the name in the attribute, the user will not be able to change it through UI.
 
-_Type: String, default value = not set._
+Type: String, default value = not set.
 
-Example:
+Example: ```&displayName=JohnSnow```
 
-_&displayName=JohnSnow_
-
-### **&itisparticipant=<true|false>**
+#### &amp;itisparticipant=&lt;true|false&gt;
 
 This parameter determines roles in a webinar room where there are participants and viewers. All attendees are viewers only by default.
 
 Participants join a room as regular users and can turn on their camera and microphone. Participants also have a standard rectangle icon of a participant. Viewers can observe what is happening in a room, can see and hear, but they do not have a dedicated participant rectangle icon and cannot turn on their camera or microphone.
 
-**It is used for webinar rooms only.**
+**Note**: It is used for webinar rooms only.
 
-_Type = Boolean, default value = false._
+Type = Boolean, default value = false.
 
-Example:
+Example: ```&itisparticipant=true```
 
-_&itisparticipant=true_
+#### &amp;lang=&lt;code&gt;
 
-### **&lang=<code>**
-
-This helps to set the UI language of a meeting to match your product or service. In general, the UI language depends on language settings of a participant's browser. A user sets the language in their browser settings, and then its value is transmitted by the browser in the “Accept-Language” header of an HTTP request ([https://www.w3.org/International/questions/qa-lang-priorities](https://www.w3.org/International/questions/qa-lang-priorities)).  
+This helps to set the UI language of a meeting to match your product or service. In general, the UI language depends on language settings of a participant's browser. A user sets the language in their browser settings, and then its value is transmitted by the browser in the "Accept-Language" header of an HTTP request <a href="https://www.w3.org/International/questions/qa-lang-priorities" target="_blank">info</a>.  
 
 Select one of these: 
 
-*   English = en
-*   French = fr 
-*   German = de 
-*   Luxembourgian = lb 
-*   Russian = ru
+- English = en
+- French = fr 
+- German = de 
+- Luxembourgian = lb 
 
 Therefore, in most cases, you do not need to specify this parameter explicitly. If the UI of a video room  is translated and available for user’s language, then UI will be automatically switched to it. If a language is unavailable, the default English version will be shown. 
 
 But sometimes you need to explicitly set a language based on your internal/enterprise settings, use this parameter. 
 
-_Type: String, default = not set._
+Type: String, default = not set.
 
-Example:
+Example: ```&lang=en```
 
-_&lang=en_
-
-### **&maxBroadcasters\=<num>** 
+#### &amp;maxBroadcasters=&lt;num&gt; 
 
 This sets the number of concurrent active attendees in a room at one time. This is the maximum value of users/attendees with turned on cams/mics.  
 
-If another user starts to speak (be active, turn on the cam/mic), but the number of active attendees exceeds the specified value, then this user will receive a system error that they cannot turn it on: “_The limit of maximum active attendees is exceeded_”. 
+If another user starts to speak (be active, turn on the cam/mic), but the number of active attendees exceeds the specified value, then this user will receive a system error that they cannot turn it on: "The limit of maximum active attendees is exceeded". 
 
 If no value is specified in the URL, any participant can turn on cam/mic. Please be aware that the number of active users is directly proportional to the load on media servers. With an overwhelming number of active attendees, a server may become overloaded, and newly connected users may see a connection error. 
 
 The maxBroadcasters and maxWatchers parameters should be specified for each participant in the URL. Please refer to &maxWatchers parameter. 
 
-_Type: Numeric, default = 0._ 
+Type: Numeric, default = 0. 
 
-Example_:_
+Example: ```&maxBroadcasters=10```
 
-_&maxBroadcasters=10_ 
+#### &amp;maxWatchers=&lt;num&gt; 
 
-### **&maxWatchers=<num>** 
+This sets the number of concurrent attendees in a room at one time. This is the maximum value of users/viewers that can be in a room and be represented by their own "participant" rectangle. Participants can turn on their cam/mic at any time.   
 
-This sets the number of concurrent attendees in a room at one time. This is the maximum value of users/viewers that can be in a room and be represented by their own “participant” rectangle. Participants can turn on their cam/mic at any time.   
+The maxBroadcasters and maxWatchers parameters should be specified for each participant in the URL. Please refer to *&maxWatchers* parameter. 
 
-The maxBroadcasters and maxWatchers parameters should be specified for each participant in the URL. Please refer to &maxWatchers parameter. 
+Type: Numeric, default = 0. 
 
-_Type: Numeric, default = 0._ 
+Example: ```&maxWatchers=50``` 
 
-Example:
-
-_&maxWatchers=50_ 
-
-### **&minimizeTiles=<true|false>**
+#### &amp;minimizeTiles=&lt;true|false&gt;
 
 This helps to squeeze the participants' tiles so that as many participants as possible can fit into one view without scrolling. This parameter allows increasing the number of simultaneously displayed tiles of participants on a screen to the maximum.
 
-_Type: Boolean, default = false._
+Type: Boolean, default = false.
 
-Example:
+Example: ```&minimizeTiles=true```
 
-_&minimizeTiles=true_
-
-### **&nameScreenDisabled=<true|false>**
+#### &amp;nameScreenDisabled=&lt;true|false&gt;
 
 This helps to skip the welcome page with the name input field and cam/mic selection. You can skip the cam/mic selection elements when you already know the user's devices, or you need to connect the user immediately.
 
 In that case, you should specify a user’s name in the attribute and use ClientAPI for "Join" method. Please refer to the "Join" method.
 
-_Type: Boolean, default = false._
+Type: Boolean, default = false.
 
-Example:
+Example: ```&nameScreenDisabled=true```
 
-_&nameScreenDisabled=true_
-
-### **&peerId=<id>**
+#### &amp;peerId=&lt;id&gt;
 
 This is an identifier of a participant in case you want to set it explicitly. It is used for synchronization with your database or enterprise services.
 
 You can select any value you prefer: number, GUID or even email.
 
-**Please note** that only one session is possible with one unique identifier. If another participant with the same peerID connects, a new session will be created for the recent participant, while the session of the first one will be terminated. This is also the case when a link is opened in a different browser: a new session will be created with the recent browser, while previous connection will be terminated.
-
-_Example:_
-
-*   _User1 opens a link with &peerID=5 and then User2 opens the same link with &peerID=5. The second user will log in, but the server connection with the first user will be closed and the User1 will not be able to participate. Thus, you need to use two different peerID's._
-*   _A User opens a link with &peerID=5 on a desktop computer and then opens the same link on a mobile device. They will log in on the mobile device, but the server connection with the desktop computer will be closed._
-
-The peerID is used for:
-
-*   ClientAPI methods when you want to apply a method for a specific user.
-*   Download statistics on the attendance of a video call room and the duration of the users' presence on a call.
-
-_Type = String, default value = set by the video server with a random GUID value._
+**Please, note:** Only one session is possible with one unique identifier. If another participant with the same peerID connects, a new session will be created for the recent participant, while the session of the first one will be terminated. This is also the case when a link is opened in a different browser: a new session will be created with the recent browser, while previous connection will be terminated.
 
 Example:
 
-_&peerId=802380f4-dd70-4d60-9738-fb5ae8709ae7_
+* User1 opens a link with &peerID=5 and then User2 opens the same link with &peerID=5. The second user will log in, but the server connection with the first user will be closed and the User1 will not be able to participate. Thus, you need to use two different peerID's.
+* A User opens a link with &peerID=5 on a desktop computer and then opens the same link on a mobile device. They will log in on the mobile device, but the server connection with the desktop computer will be closed.
 
-### **&role=<role>**
+The peerID is used for:
+
+* ClientAPI methods when you want to apply a method for a specific user.
+* Download statistics on the attendance of a video call room and the duration of the users' presence on a call.
+
+Type = String, default value = set by the video server with a random GUID value.
+
+Example: ```&peerId=802380f4-dd70-4d60-9738-fb5ae8709ae7```
+
+#### &amp;role=&lt;role&gt;
 
 This parameter sets a privileged role for a participant.
 
 Values:
 
-*   \[not set\] — regular participant.
-*   moderator —  super-user who can manage participants and video call settings.
-*   interpreter —  (beta) special role for interpreters from one language to another. A special audio channel is dedicated for them. Be aware that users of this role cannot turn on their cameras. 
+* [not set] — regular participant.
+* moderator —  super-user who can manage participants and video call settings.
+* interpreter —  (beta) special role for interpreters from one language to another. A special audio channel is dedicated for them. Be aware that users of this role cannot turn on their cameras. 
 
-By default, all attendees are regular participants. They can manage their own cams and mics. But a moderator can manage participants, turn off their cams/mics, allow entering, etc. You can assign the “moderator” role to a host, and all other attendees will be regular participants. For more details, please refer to the Moderator feature.
+By default, all attendees are regular participants. They can manage their own cams and mics. But a moderator can manage participants, turn off their cams/mics, allow entering, etc. You can assign the "moderator" role to a host, and all other attendees will be regular participants. For more details, please refer to the Moderator feature.
 
-_Type: String, default = not set._
+Type: String, default = not set.
 
-Example:
+Example: ```&role=moderator```
 
-_&role=moderator_
-
-### **roomId=<id>** 
+#### roomId=&lt;id&gt;
 
 A room ID is set by you according to your rules. You don't need to call any special methods that might restrict you in naming rooms. 
 
-An identifier consists of two parts: «server ID» + «room ID». A server ID is a “servN”. Please see the List of servers. A room ID is any alphanumeric character set. If a server is not specified, you will be connected to a default one. If a server is specified explicitly, you will be connected to it.
+An identifier consists of two parts: «server ID» + «room ID». A server ID is a "servN". Please see the List of servers. A room ID is any alphanumeric character set. If a server is not specified, you will be connected to a default one. If a server is specified explicitly, you will be connected to it.
 
-Please note that &roomId determines the room number, but the prefixes /call/ or /webinar/ are interface modifiers. Thus, the methods “/call/?roomId\=testroom” and “/webinar/?roomId\=testroom” lead to the same room with a different interface. 
+Please note that &roomId determines the room number, but the prefixes */call/* or */webinar/* are interface modifiers. Thus, the methods */call/?roomId=testroom* and */webinar/?roomId=testroom* lead to the same room with a different interface. 
 
-_Type: String. Default = required field_ _to be specified explicitly._ 
+Type: String. Default = required field to be specified explicitly.
 
-Example_:_ 
+Example:
 
-_&roomId=1111   
+```
+&roomId=1111   
 &roomId=bokxlj33   
 &roomId=serv21111   
 &roomId=serv2bokxlj33   
-&roomId=serv2f53c1aa5-1492-4964-b4fe-f83b5b545e8d_ 
+&roomId=serv2f53c1aa5-1492-4964-b4fe-f83b5b545e8d
+``` 
 
-### **&sortPeers=<true|false>**
+#### &amp;sortPeers=&lt;true|false&gt;
 
 It is used to arrange tiles of participants so that those who have cameras on will be displayed on the top.  
 
@@ -554,119 +512,104 @@ By default, the participants' tiles are ordered based on the time they connected
 
 Using this parameter allows you to show active participants with video. However, enabling this option increases load on participants' CPUs. 
 
-_Type=Boolean, default value = false._
+Type=Boolean, default value = false.
 
-Example_:_
+Example: ```&sortPeers=true```
 
-_&__sortPeers=true_
-
-### **&startWithFS=<true|false>**
+#### &amp;startWithFS=&lt;true|false&gt;
 
 It helps to start a meeting room in the Full Screen mode. Please see the "Full Screen mode" in our Knowledge Base.
 
-_Type: Boolean, default = false._
+Type: Boolean, default = false.
 
-_Example:_
+Example: ```&startWithFS=true```
 
-_&startWithFS=true_
+#### &amp;token=&lt;jwt&gt;
 
-### **&token=<jwt>**
-
-The JSON Web Tokens is an open, standard method for representing claims securely between two parties: [https://jwt.io/](https://jwt.io/)
+The JSON Web Tokens is an open, standard method for representing claims securely between two parties: <a href="https://jwt.io/" target="_blank">https://jwt.io/</a>
 
 The JWT allows you:
 
-*   To specify attributes inside a token, rather than URL attributes.
-*   Sign a token with a secret key and be sure that all parameters in it are specified by you, and cannot be changed by someone else.
+* To specify attributes inside a token, rather than URL attributes.
+* Sign a token with a secret key and be sure that all parameters in it are specified by you, and cannot be changed by someone else.
 
 Please see "Security" for details.
 
-_Type=String, default value = not set._
+Type=String, default value = not set.
 
-Example_:_
+Example: 
 
-_&token=__eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoibW9kZXJhdG9yIiwic3RhcnRUaW1lIjoiMjAyMS0wNi0yMVQwMDowMDowMC4wWiJ9.Atj-TPL\_GSLyuI565pI6X\_6GFjopXf62C6y4OgeeEk9KEb\_1cosDmo2sytpBv44PRuMRwgDg8AcqlMMgA0kcdJrBZ7AAywjb6RZVXlian6-6XQ0zx7OhYyDo2-mVxCO9dgYroXfz2Fw8lyNuqFl0AKEfFMPKaYf46u5kjwWmSyhh7bLbL969Eu3zW\_Mk3sYLpW\_xULyndhkXrLqOVspK08Mla-AbxGJ94pZXJCKHK5UslhrGJ6RProN5nL4NaXOCKRX0ffKnklxiyn9MgKf0cc6Za0GCpjg-d3y6-UOVd0AXW8TWR-RllTgXaTUMMSLyWzHPsv-e2O-GsA0WJnBJEg_
+```
+&token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoibW9kZXJhdG9yIiwic3RhcnRUaW1lIjoiMjAyMS0wNi0yMVQwMDowMDowMC4wWiJ9.Atj-TPL_GSLyuI565pI6X6GFjopXf62C6y4OgeeEk9KEb1cosDmo2sytpBv44PRuMRwgDg8AcqlMMgA0kcdJrBZ7AAywjb6RZVXlian6-6XQ0zx7OhYyDo2-mVxCO9dgYroXfz2Fw8lyNuqFl0AKEfFMPKaYf46u5kjwWmSyhh7bLbL969Eu3zWMk3sYLpWxULyndhkXrLqOVspK08Mla-AbxGJ94pZXJCKHK5UslhrGJ6RProN5nL4NaXOCKRX0ffKnklxiyn9MgKf0cc6Za0GCpjg-d3y6-UOVd0AXW8TWR-RllTgXaTUMMSLyWzHPsv-e2O-GsA0WJnBJEg
+```
 
-### **&tokenLifetime=<milliseconds>**
+#### &amp;tokenLifetime=&lt;milliseconds&gt;
 
 The parameter limits the lifetime of a token. The lifetime is counted in milliseconds from the first connection. After the specified period has expired, a participant cannot reconnect to the room with the token.
 
-_Type=Number, default value = not set._
+Type=Number, default value = not set.
 
-Example:
+Example: ```&tokenLifetime=60000```
 
-_&token__Lifetime__\=__60000_
+#### &amp;video=&lt;url&gt;
 
-### **&video=<url>**
+This is a super feature for joint viewing of online broadcasts directly in a video call room. No, you do not need to "share screen" with others and lose both video and audio quality and overload one of the participant's PC. You just need to insert a code of the YouTube player, our player, or any other HTML player, and it will appear for all participants in the room. Besides, the player saves all its standard functions: adaptive bitrate, counting unique viewers, displaying ads, Google Analytics counter, etc. Please refer to .
 
-This is a super feature for joint viewing of online broadcasts directly in a video call room. No, you do not need to “share screen” with others and lose both video and audio quality and overload one of the participant's PC. You just need to insert a code of the YouTube player, our player, or any other HTML player, and it will appear for all participants in the room. Besides, the player saves all its standard functions: adaptive bitrate, counting unique viewers, displaying ads, Google Analytics counter, etc. Please refer to .
+Type=String, default value = not set.
 
-_Type=String, default value = not set._
+Example: ```https://meet.gcore.com/call/?roomId=serv2testroom&displayName=John%20Snow&video=https%3A%2F%2Fwww.youtube.com%2Fembed%2FXBPjVzSoepo```
 
-Example_:_
-
- [https://meet.gcore.com/call/?roomId=serv2testroom&displayName=John%20Snow&video=https%3A%2F%2Fwww.youtube.com%2Fembed%2FXBPjVzSoepo](https://meet.gcore.com/call/?roomId=serv2testroom&displayName=John%20Snow&video=https%3A%2F%2Fwww.youtube.com%2Fembed%2FXBPjVzSoepo)
-
-### **&waitingRoom=<true|false>**
+#### &amp;waitingRoom=&lt;true|false&gt;
 
 The waiting room function allows a moderator to manually determine which user is allowed to enter a video call room and who is not.
 
-After enabling the feature, each participant will see the "_Please wait for confirmation_" message.
+After enabling the feature, each participant will see the "Please wait for confirmation" message.
 
-_Type: Boolean, default = false._
+Type: Boolean, default = false.
 
-Example:
+Example: ```&waitingRoom=true```
 
-_&waitingRoom=true_
-
-**Debug and Dev URL attributes only**
--------------------------------------
+### Debug and Dev URL attributes only
 
 A set of debug attributes can be used by developers to create and test a video call room.
 
 These parameters are used for debugging only.
 
-### **&accessUrl=<url>**
+#### &amp;accessUrl=&lt;url&gt;
 
-A URL of REST method to check accessToken. Please see “Authentication of participants” for details. 
+A URL of REST method to check accessToken. Please see "Authentication of participants" for details. 
 
-Make sure you use **https://** instead of **http://.** 
+Make sure you use ```https://``` instead of ```http://```. 
 
 Please do not use this attribute publicly. For public use, a URL must be registered on our server or in your account. 
 
-_Type=String, default value = not set._
+Type=String, default value = not set.
 
-Example:
+Example: ```&accessUrl= https://your.domain.com/api/gcore/auth```
 
-_&accessUrl= https://your.domain.com/api/gcore/auth_
+#### &amp;apiEvent=&lt;url&gt;
 
-### **&apiEvent=<url>**
+A URL to get webhooks/events from a video calls server. Please see "Webhooks" for details.
 
-A URL to get webhooks/events from a video calls server. Please see “Webhooks” for details.
-
-Make sure you use **https://** instead of **http://**.
+Make sure you use ```https://``` instead of ```http://```.
 
 Please do not use this attribute publicly. For public use, URL must be registered on our server or in your account.
 
-_Type=String, default value = not set._
+Type=String, default value = not set.
 
-Example:
+Example: ```&apiEvent=https://your.domain.com/api/gcore/webhook```
 
-_&apiEvent=https://your.domain.com/api/gcore/webhook_
-
-### **&authEvent=<header>**
+#### &amp;authEvent=&lt;header&gt;
 
 This is for extra header request parameters and credentials for server-side webhooks/events. Use it for enabling Basic or Bearer authentication, etc.
 
 Please do not use this attribute publicly. For public use, a URL must be registered on our server or in your account.
 
-_Type=String, default value = not set._
+Type=String, default value = not set.
 
-Example:
+Example: ```&authorizationAccess=Basic%20Z2NvcmVfbWVldDo4dFpvOTZLSkhWRXFBanFBQlpZQg%3D%3D```
 
-_&authorizationAccess=Basic%20Z2NvcmVfbWVldDo4dFpvOTZLSkhWRXFBanFBQlpZQg%3D%3D_
-
-### **&authorizationAccess=<header>**
+#### &amp;authorizationAccess=&lt;header&gt;
 
 This is for extra header request parameters and credentials for server-side check of authorization.
 
@@ -674,14 +617,11 @@ Use it for enabling Basic or Bearer authentication, etc.
 
 Please do not use this attribute publicly. For public use, URL must be registered on our server or in your account.
 
-_Type=String, default value = not set._
+Type=String, default value = not set.
 
-Example:
+Example: ```&authorizationAccess=Basic%20Z2NvcmVfbWVldDo4dFpvOTZLSkhWRXFBanFBQlpZQg%3D%3D```
 
-_&authorizationAccess=Basic%20Z2NvcmVfbWVldDo4dFpvOTZLSkhWRXFBanFBQlpZQg%3D%3D_
-
-**Moderator** 
---------------
+### Moderator 
 
 By default, all attendees are regular participants. They can manage their own cams and mics. But a moderator can manage participants, turn off their cams/mics, allow entering etc. 
 
@@ -689,28 +629,26 @@ A moderator can do the following:  
 
 1\. Operate the "Waiting room" function:  
 
-*   Activate and deactivate a waiting room.
-    
-*   Confirm and reject a participant's entry
-    
+- Activate and deactivate a waiting room.
+- Confirm and reject a participant's entry    
 
 2\. Operate cameras and microphones of participants: 
 
-*   Allow or disallow cameras and microphones.
-*   Ask participants to turn on cameras and microphones.
+- Allow or disallow cameras and microphones.
+- Ask participants to turn on cameras and microphones.
 
 3\. Operate the sharing screen feature:
 
-*   Allow or disallow the screen sharing.
-*   Ask to turn on the screen sharing.
+- Allow or disallow the screen sharing.
+- Ask to turn on the screen sharing.
 
 4\. Operate raised hands: 
 
-*   Remove a participant's hand.
+- Remove a participant's hand.
 
 5\. Operate the list of participants: 
 
-*   Kick the user out of the room. 
+- Kick the user out of the room. 
 
 To use the moderator role, you need to follow these steps: 
 
@@ -723,29 +661,32 @@ Example:
 
 Link for a regular user:
 
-_https://meet.gcore.com/call/?roomId=serv0\_test1_
+```
+https://meet.gcore.com/call/?roomId=serv0_test1
+```
 
 Link for a moderator:
 
-_https://meet.gcore.com/call/?roomId=serv0\_test1&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoibW9kZXJhdG9yIiwid2FpdGluZ1Jvb20iOnRydWUsImhhbmRFbmFibGVkIjp0cnVlfQ.DO\_JHMDfK2mi5rycIepLVxDVs0qcQAXAhHvI7hcOIjw_
+```
+https://meet.gcore.com/call/?roomId=serv0_test1&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoibW9kZXJhdG9yIiwid2FpdGluZ1Jvb20iOnRydWUsImhhbmRFbmFibGVkIjp0cnVlfQ.DO_JHMDfK2mi5rycIepLVxDVs0qcQAXAhHvI7hcOIjw
+```
 
 Where JWT is:
 
-*   HEADER: (ALGORITHM & TOKEN TYPE)
-*   { "alg": "HS256", "typ": "JWT" }
-*   PAYLOAD: (DATA)
-*   { "role": "moderator", "waitingRoom": true, "handEnabled": true, "roomId": "serv0\_test1" }
+- HEADER: (ALGORITHM & TOKEN TYPE)
+- { "alg": "HS256", "typ": "JWT" }
+- PAYLOAD: (DATA)
+- { "role": "moderator", "waitingRoom": true, "handEnabled": true, "roomId": "serv0_test1" }
 
-**Recording**
--------------
+### Recording
 
-### **What** **can be recorded** 
+#### What can be recorded 
 
 Recording is a video recording of the entire interface of a meeting room, as it is seen by regular viewers. A video includes:  
 
-*   attendees,  
-*   screen sharing, 
-*   original audio of speakers.  
+- attendees,  
+- screen sharing, 
+- original audio of speakers.  
 
 Recording is a complex process that is carried out by our professional Streaming Platform. The video is recorded on a cloud server and is also stored in the Cloud of the Streaming Platform.   
 
@@ -755,66 +696,71 @@ Recording can be started by moderator only. 
 
 To record, you need to follow these steps: 
 
-1.  Generate a JWT token with additional attribute role=moderator inside it. 
-2.  Add attribute _canRecord=__true_ into the JWT. 
-3.  Open a room with the link.  
-4.  Open the “Moderator” panel inside a room.  
-5.  Press the “Record” button.  
-6.  Press the “Stop” button. 
+1\.  Generate a JWT token with additional attribute role=moderator inside it. 
+2\.  Add attribute ```canRecord=_true``` into the JWT. 
+3\.  Open a room with the link.  
+4\.  Open the "Moderator" panel inside a room.  
+5\.  Press the "Record" button.  
+6\.  Press the "Stop" button. 
 
 A JWT example: 
 
 PAYLOAD: (DATA) 
 
-{ "role": "moderator", "canRecord": true, "roomId": "serv0\_test1" } 
+```
+{ "role": "moderator", "canRecord": true, "roomId": "serv0_test1" } 
+```
 
-### **Auto-recording** 
+#### Auto-recording 
 
 By default, a moderator can manually record meetings.  
 
-If you want to record all meeting rooms automatically, you can enable the “Auto Recording” feature for your account.  
+If you want to record all meeting rooms automatically, you can enable the "Auto Recording" feature for your account.  
 
-*   Recording starts automatically for every new room in ±60 seconds after the first user logs in. 
-*   Recording goes on for as long as there is at least one user in the room. 
-*   Recording stops automatically after ±60 seconds after last user logs out. Thus, if by chance all users leave the room and return without a timeout, then the recording will continue. 
+- Recording starts automatically for every new room in ±60 seconds after the first user logs in. 
+- Recording goes on for as long as there is at least one user in the room. 
+- Recording stops automatically after ±60 seconds after last user logs out. Thus, if by chance all users leave the room and return without a timeout, then the recording will continue. 
 
 Please note that, if one of the users forgets to close a browser tab, they still will be present in the room. And if they are present in the room, recording will continue. 
 
 Ask your manager or support team to enable the Auto recording feature. 
 
-### **Where to find record****ed videos** 
+#### Where to find recorded videos
 
 Recording of room is made by our Streaming Platform. Video files are stored in the media storage. 
 
 Steps to find a video: 
 
-1.  Open your personal dashboard via link: [https://streaming.gcore.com/](https://streaming.gcore.com/).  
-2.  Select the “Video hosting” tab. 
-3.  Select videos with the “Recording” title with the exact roomId and the exact time.  
+1.  Open your personal dashboard via link: ```https://streaming.gcore.com/```.  
+2.  Select the "Video hosting" tab. 
+3.  Select videos with the "Recording" title with the exact roomId and the exact time.  
 4.  Open the video.  
-5.  Copy the video player code, link of the player, or download the video on the "export” tab. 
+5.  Copy the video player code, link of the player, or download the video on the "export" tab. 
 
-Also, you can use Special API of the Streaming Platform. Please see the “**Getting Recorded Video**” section. 
+Also, you can use Special API of the Streaming Platform. Please see the "Getting Recorded Video" section. 
 
-### **How to set up our recording feature** 
+#### How to set up our recording feature 
 
 As you know, recording of a room is made by our Streaming Platform, and video files are stored in the media storage. 
 
 Steps: 
 
-1.  Generate a permanent token in your personal account via the link: [https://accounts.gcore.com/profile/api-tokens/](https://accounts.gcore.com/profile/api-tokens/) 
-2.  Use parameters: 
-    1.  Name = “Video conference recording” or any title you prefer 
-    2.  Role = Administrator 
-    3.  Expiration = Never expire 
-3.  Copy the token from the result page 
-4.  Send us the copied token 
-5.  Add the &canRecord advanced attribute to the URL for a moderator, or ask us to set the Auto Recording feature.
+1. Generate a permanent token in your personal account via the <a href="https://accounts.gcore.com/profile/api-tokens/" target="_blank">link</a>.  
+2. Use parameters: 
+  - Name = "Video conference recording" or any title you prefer; 
+  - Role = Administrator; 
+  - Expiration = Never expire. 
+3. Copy the token from the result page 
+4. Send us the copied token 
+5. Add the ```&canRecord``` advanced attribute to the URL for a moderator, or ask us to set the Auto Recording feature.
 
-Example of a permanent token: _1__0__3__0__$0b219f0239c7a418c499a9b0f4d93f__0__b0817__00000__c346ad254694b15d09981d7cf6b24e41a243df6e9e23d5483820d98921d64c__0__cb06e9981c842ab31fd0e4db_ 
+Example of a permanent token: 
 
-**Language Interpretation (beta)**
-----------------------------------
+```
+1030$0b219f0239c7a418c499a9b0f4d93f0b081700000c346ad254694b15d09981d7cf6b24e41a243df6e9e23d5483820d98921d64c0cb06e9981c842ab31fd0e4db 
+```
+
+### Language Interpretation (beta)
 
 In normal use, each user hears the original audio of a speaker. The interpretation feature allows users to hear the interpreter’s speech, that they can understand, in simultaneous translation mode. 
 
@@ -826,16 +772,16 @@ In case of meetings with interpretation, only the original audio of a meeting or
 
 The languages below are available by default. If you need more, just please let us know: 
 
-*   Chinese, zh 
-*   Dutch, nl 
-*   English, en 
-*   French, fr 
-*   German, de 
-*   Luxembourgian, lb 
-*   Portuguese, pt
-*   Spanish, es 
-*   Swedish, sv 
-*   Ukrainian, uk  
+- Chinese, zh 
+- Dutch, nl 
+- English, en 
+- French, fr 
+- German, de 
+- Luxembourgian, lb 
+- Portuguese, pt
+- Spanish, es 
+- Swedish, sv 
+- Ukrainian, uk  
 
 There can be more than one interpreter for one language. If several interpreters use the same link, all of them can speak in the corresponding channel. They can speak both simultaneously or/and consecutively. For consecutive interpretation, they just need to mute the microphones. 
 
@@ -845,195 +791,428 @@ If an interpreter disconnects from a room for whatever reason, regular users ca
 
 A JWT example is: 
 
-PAYLOAD: (DATA) 
+- PAYLOAD: (DATA) 
+- ```{ "role": "interpreter", "featureInterpreters": true, "intLang": "de", "roomId": "serv0_test1" }``` 
 
-{ "role": "interpreter", "featureInterpreters": true, "intLang": “de”, "roomId": "serv0\_test1" } 
+<img src="https://support.gcore.com/hc/article_attachments/11649788899601" alt="">
 
-<img src="https://support.gcore.com/hc/article_attachments/11649788899601" alt="Screenshot_2022-05-19_at_18.13.18.png">
+## Client API
 
-**Client API**
-==============
+### Iframe Integration
 
-**Iframe Integration**
-----------------------
+#### Example of iFrame integration
 
-### **Example of iframe integration**
+```
+<iframe allow="camera; microphone; display-capture" style="height: 100%; width: 100%;" src="https://meet.gcore.com/webinar/?roomId=qwesfder4w4&displayName=Tom&accessToken=sda3-q23aed-aerae&peerId=123123-321as-waaew-ads&apiEvent=https://example.com/api/meet&accessUrl=https://example.com/api/accessCheck/&itisparticipant=true&nameScreenDisabled=true&startWithFS=true&controlsDisabled=true"></iframe>
+```
 
-_<iframe allow="camera; microphone; display-capture" style="height: 100%; width: 100%;" src="_[https://meet.gcore.com/webinar/?roomId=qwesfder4w4&displayName=Tom&accessToken=sda3-q23aed-aerae&peerId=123123-321as-waaew-ads&apiEvent=https://example.com/api/meet&accessUrl=https://example.com/api/accessCheck/&itisparticipant=true&nameScreenDisabled=true&startWithFS=true&controlsDisabled=true](https://meet.gcore.com/webinar/?roomId=1ec1f5d8-0887-4fbb-a3dc-1b9f94bc04dc&displayName=Tom&accessToken=sda3-q23aed-aerae&peerId=123123-321as-waaew-ads&apiEvent=https://example.com/api/meet&accessUrl=https://example.com/api/accessCheck/&itisparticipant=true&nameScreenDisabled=true&startWithFS=true&controlsDisabled=true)_"></iframe>_
+Please see Embed a <a href="#embed-room-on-a-site">Room on Site</a> and <a href="#attribute-details">Attributes details</a>.
 
-Please see Embed [a Room on Site](#embed-room-on-a-site) and [Attributes details.](#attribute-details)
-
-### **Interaction with iFrame**
+#### Interaction with iFrame
 
 There is a special library for interacting with iframe, which should be loaded separately.
 
+<code-block>
 <script type="text/javascript" charset="utf-8" src="https://<yourdomain.gvideo.co>/meetBridgeApi.js"></script> 
+</code-block>
 
 Example:
 
+<code-block>
 <script type="text/javascript" charset="utf-8" src="https://meet.gcore.com/meetBridgeApi.js"></script> 
+</code-block>
 
 JavaScript's method for initialization:
 
+```
 meetIframeBridge = new MeetIframeBridge.default({ element: $iframe.get(0), roomId: "serv1m6oci9e8" });
+```
 
 Where:
 
-*   _element_ is a DOM object of iFrame.
-*   _roomId_ is an ID of the room.
+- `element` is a DOM object of iFrame.
+- `roomId`is an ID of the room.
 
-**Note.** Before initializing a class, you need to wait for an iframe element to be loaded.
+**Note**: Before initializing a class, you need to wait for an iframe element to be loaded.
 
-### **Public methods of Meet’s iframe**
+#### Public methods of Meet’s iframe
 
 Client API methods allow you to control a video room, perform actions with hidden main controls, react to what is happening in a room.
 
 Example of method:
 
-**Initializing:**
+**Initializing**:
 
-_var meetIframeBridge;_  
-_$('#meetframe').on("load", function() {_  
-            _meetIframeBridge = new MeetIframeBridge.default({ element: $("#meetframe")\[0\], roomId: "serv1m6oci9e8" });_       
-_});_
+```
+var meetIframeBridge;  
+$('#meetframe').on("load", function() { 
+            meetIframeBridge = new MeetIframeBridge.default({ element: $("#meetframe")[0], roomId: "serv1m6oci9e8" });       
+});
+```
 
-**Joining:**
+**Joining**:
 
-_meetIframeBridge.method({ name: "join", data: {constraints: {video: false, audio: false }}, callback: (e) => { alert(1); return true; } });_
+```
+meetIframeBridge.method({ name: "join", data: {constraints: {video: false, audio: false }}, callback: (e) => { alert(1); return true; } });
+```
 
-**Volume adjusting:**
+**Volume adjusting**:
 
-_meetIframeBridge.method({ name: "setVolume", data: 100, callback: (e) => { alert(1); return true; } });_
+```
+meetIframeBridge.method({ name: "setVolume", data: 100, callback: (e) => { alert(1); return true; } });
+```
 
-**Name changing:**
+**Name changing**:
 
-_meetIframeBridge.method({ name: "changeDisplayName", data: "Tom", callback: (e) => { // return value } });_
+```
+meetIframeBridge.method({ name: "changeDisplayName", data: "Tom", callback: (e) => { // return value } });
+```
 
-**Getting screenshot of a user’s video:**
+**Getting screenshot of a user’s video**:
 
-_meetIframeBridge.method({ name: "getScreenshotByPeerId", data: "id", callback: (e) => { // “e” parameter will have screenshotted data } });_
+```
+meetIframeBridge.method({ name: "getScreenshotByPeerId", data: "id", callback: (e) => { // "e" parameter will have screenshotted data } });
+```
 
-| \nMethod name \n             | \nParameters\n                                                                                                                                                                                                                                                                                                                              | \nDescription\n                                                                                                 |
-|------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
-| \njoin\n                     | \n\"constraints\" = object\n \nSetup new devices:\ndata: {constraints: { video: { deviceId: 'id', label: 'label', groupId: 'groupId', kind: 'video'}, audio: { deviceId: 'deviceId', label: 'label', groupId: 'groupId', kind: 'audio'}}}\n \nIf you want to use devices by default:\ndata: {constraints: {video: true, audio: true }}\n \n | \nThe Join method receives a stream from these devices (usually used with the nameScreenDisabled parameter)\n   |
-| \nenableMic\n                |                                                                                                                                                                                                                                                                                                                                             | \nUnmute a microphone\n                                                                                         |
-| \ndisableMic\n               |                                                                                                                                                                                                                                                                                                                                             | \nMute a microphone\n                                                                                           |
-| \nenableWebcam\n             |                                                                                                                                                                                                                                                                                                                                             | \nTurn on a camera\n                                                                                            |
-| \ndisableWebcam\n            |                                                                                                                                                                                                                                                                                                                                             | \nTurn off a camera\n                                                                                           |
-| \nenableShare\n              |                                                                                                                                                                                                                                                                                                                                             | \nEnable the screen sharing\n                                                                                   |
-| \ndisableShare\n             |                                                                                                                                                                                                                                                                                                                                             | \nDisable the screen sharing\n                                                                                  |
-| \nchangeDisplayName\n        | \n\"name\"\ndata: string\n                                                                                                                                                                                                                                                                                                                  | \nChange a name\n                                                                                               |
-| \nsetVolume\n                | \n\"volume\"\ndata: number\n                                                                                                                                                                                                                                                                                                                | \nSet a volume level (0 - 100)\n                                                                                |
-| \ngetScreenshotByPeerId\n    | \n\"peerId\"\ndata: string\n                                                                                                                                                                                                                                                                                                                | \nGet a screenshot of a user with an id equal to peerId, the screenshot is given in base64\n                    |
-| \nsetControlsVisible\n       | \n\"visible\"\ndata: bool\n                                                                                                                                                                                                                                                                                                                 | \nShow and hide controls\n                                                                                      |
-| \nisCameraEnabled\n          |                                                                                                                                                                                                                                                                                                                                             | \nThe user's camera is enabled\n                                                                                |
-| \nisMicroEnabled\n           |                                                                                                                                                                                                                                                                                                                                             | \nThe user's microphone is enabled\n                                                                            |
-| \nisShareEnabled\n           |                                                                                                                                                                                                                                                                                                                                             | \nThe user's sharing is enabled\n                                                                               |
-| \nchangeDevice\n             | \n“constraints” = object\ndata: {constraints: { audio: { deviceId: 'deviceId', label: 'label', groupId: 'groupId', kind: 'audio'}}}\n \nor\n \ndata: {constraints: { video: { deviceId: 'id', label: 'label', groupId: 'groupId', kind: 'video'}}}\n                                                                                        | \nChange a device on the fly. Specify 1 (one) device per method call.\n                                         |
-| \nplayAudio\n                |                                                                                                                                                                                                                                                                                                                                             | \nStart audio that failed to play (usually used together with autoplayWithoutAudioTrack)\n                      |
-| \nmuteAudio\n                |                                                                                                                                                                                                                                                                                                                                             | \nMute incoming audio\n                                                                                         |
-| \nunmuteAudio\n              |                                                                                                                                                                                                                                                                                                                                             | \nUnmute incoming audio\n                                                                                       |
-| \nsetBitrate\n               | \n\"bitrateValue\"\ndata: number\n                                                                                                                                                                                                                                                                                                          | \nSet the maximum video bitrate in a room\n                                                                     |
-| \nisFullscreenEnabled\n      |                                                                                                                                                                                                                                                                                                                                             | \nThe fullscreen is enabled\n                                                                                   |
-| \nenableFullscreen\n         |                                                                                                                                                                                                                                                                                                                                             | \nEnable the fullscreen\n                                                                                       |
-| \ndisableFullscreen\n        |                                                                                                                                                                                                                                                                                                                                             | \nDisable the fullscreen\n                                                                                      |
-| \nenablePin\n                | \n\"peerId\"\ndata: string\n                                                                                                                                                                                                                                                                                                                | \nEnable the PIN for a specified user\n                                                                         |
-| \ndisablePin\n               |                                                                                                                                                                                                                                                                                                                                             | \nDisable the PIN \n                                                                                            |
-| \nsetLocale\n                | \n\"locale\"\ndata: string\n                                                                                                                                                                                                                                                                                                                | \nDynamic language changes, available languages: en, ru\n                                                       |
-| \ndisabledTrackByModerator\n | \n\"peerId\", \"kind = (audio || video)\"\ndata: {userPeerId: 'peerId', kind: 'audio'}\n                                                                                                                                                                                                                                                    | \nTurn off video or audio from another user in a moderator mode. Only a moderator can disable video and audio\n |
-| \ndisableAllMics\n           | \n \n                                                                                                                                                                                                                                                                                                                                       | \nMute mics of all participants. It can be used only by a moderator\n                                           |
-| \ndisableAllCameras\n        | \n \n                                                                                                                                                                                                                                                                                                                                       | \nTurn off cams of all participants. It can be used only by a moderator\n                                       |
-| \nsetHideIndicators\n        | \n\"hide\"\ndata: bool\n                                                                                                                                                                                                                                                                                                                    | \nShow and hide indicators of other users (icons for microphones, cameras, username, pin button)\n              |
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-fr2s">Method name</th>
+    <th class="tg-fr2s">Parameters</th>
+    <th class="tg-fr2s">Description</th>
+    <th class="tg-9r46"></th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-fr2s">join</td>
+    <td class="tg-1onv">"constraints" = object<br> <br>Setup new devices:<br>data: {constraints: { video: { deviceId: 'id', label: 'label', groupId: 'groupId', kind: 'video'}, audio: { deviceId: 'deviceId', label: 'label', groupId: 'groupId', kind: 'audio'}}}<br> <br>If you want to use devices by default:<br>data: {constraints: {video: true, audio: true }}<br> </td>
+    <td class="tg-1onv">The Join method receives a stream from these devices (usually used with the <a href="#nameScreenDisabled=true|false">nameScreenDisabled</span></a> parameter)</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">enableMic</td>
+    <td class="tg-6tt1"> </td>
+    <td class="tg-1onv">Unmute a microphone</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">disableMic</td>
+    <td class="tg-6tt1"> </td>
+    <td class="tg-1onv">Mute a microphone</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">enableWebcam</td>
+    <td class="tg-6tt1"> </td>
+    <td class="tg-1onv">Turn on a camera</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">disableWebcam</td>
+    <td class="tg-6tt1"> </td>
+    <td class="tg-1onv">Turn off a camera</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">enableShare</td>
+    <td class="tg-6tt1"> </td>
+    <td class="tg-1onv">Enable the screen sharing</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">disableShare</td>
+    <td class="tg-6tt1"> </td>
+    <td class="tg-1onv">Disable the screen sharing</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">changeDisplayName</td>
+    <td class="tg-1onv">"name"<br>data: string</td>
+    <td class="tg-1onv">Change a name</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">setVolume</td>
+    <td class="tg-1onv">"volume"<br>data: number</td>
+    <td class="tg-1onv">Set a volume level (0 - 100)</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">getScreenshotByPeerId</td>
+    <td class="tg-1onv">"peerId"<br>data: string</td>
+    <td class="tg-1onv">Get a screenshot of a user with an id equal to peerId, the screenshot is given in base64</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">setControlsVisible</td>
+    <td class="tg-1onv">"visible"<br>data: bool</td>
+    <td class="tg-1onv">Show and hide controls</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">isCameraEnabled</td>
+    <td class="tg-6tt1"> </td>
+    <td class="tg-1onv">The user's camera is enabled</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">isMicroEnabled</td>
+    <td class="tg-6tt1"> </td>
+    <td class="tg-1onv">The user's microphone is enabled</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">isShareEnabled</td>
+    <td class="tg-6tt1"> </td>
+    <td class="tg-1onv">The user's sharing is enabled</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">changeDevice</td>
+    <td class="tg-1onv">"constraints" = object<br>data: {constraints: { audio: { deviceId: 'deviceId', label: 'label', groupId: 'groupId', kind: 'audio'}}}<br> <br>or<br> <br>data: {constraints: { video: { deviceId: 'id', label: 'label', groupId: 'groupId', kind: 'video'}}}</td>
+    <td class="tg-1onv">Change a device on the fly. Specify 1 (one) device per method call.</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">playAudio</td>
+    <td class="tg-6tt1"> </td>
+    <td class="tg-1onv">Start audio that failed to play (usually used together with autoplayWithoutAudioTrack)</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">muteAudio</td>
+    <td class="tg-6tt1"> </td>
+    <td class="tg-1onv">Mute incoming audio</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">unmuteAudio</td>
+    <td class="tg-6tt1"> </td>
+    <td class="tg-1onv">Unmute incoming audio</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">setBitrate</td>
+    <td class="tg-1onv">"bitrateValue"<br>data: number</td>
+    <td class="tg-1onv">Set the maximum video bitrate in a room</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">isFullscreenEnabled</td>
+    <td class="tg-6tt1"> </td>
+    <td class="tg-1onv">The fullscreen is enabled</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">enableFullscreen</td>
+    <td class="tg-6tt1"> </td>
+    <td class="tg-1onv">Enable the fullscreen</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">disableFullscreen</td>
+    <td class="tg-6tt1"> </td>
+    <td class="tg-1onv">Disable the fullscreen</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">enablePin</td>
+    <td class="tg-1onv">"peerId"<br>data: string</td>
+    <td class="tg-1onv">Enable the PIN for a specified user</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">disablePin</td>
+    <td class="tg-6tt1"> </td>
+    <td class="tg-1onv">Disable the PIN </td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">setLocale</td>
+    <td class="tg-1onv">"locale"<br>data: string</td>
+    <td class="tg-1onv">Dynamic language changes, available languages: en, ru</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">disabledTrackByModerator</td>
+    <td class="tg-1onv">"peerId", "kind = (audio || video)"<br>data: {userPeerId: 'peerId', kind: 'audio'}</td>
+    <td class="tg-1onv">Turn off video or audio from another user in a moderator mode. Only a moderator can disable video and audio</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">disableAllMics</td>
+    <td class="tg-1onv"> </td>
+    <td class="tg-1onv">Mute mics of all participants. It can be used only by a moderator</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">disableAllCameras</td>
+    <td class="tg-1onv"> </td>
+    <td class="tg-1onv">Turn off cams of all participants. It can be used only by a moderator</td>
+    <td class="tg-twlz"></td>
+  </tr>
+  <tr>
+    <td class="tg-7zkw">setHideIndicators</td>
+    <td class="tg-7zkw">"hide"<br>data: bool</td>
+    <td class="tg-7zkw">Show and hide indicators of other users (icons for microphones, cameras, username, pin button)</td>
+    <td class="tg-0lax"></td>
+  </tr>
+</tbody>
+</table>
 
 
-### **Events from an iframe**
+
+#### Events from an iframe
 
 Events on the client side allow you to react quickly to actions in a video room.
 
-**Example of event subscription****:**
+Example of event subscription:
 
-_meetIframeBridge.on('switchOnCamera', (e) => { your code here });_
+```
+meetIframeBridge.on('switchOnCamera', (e) => { your code here });
+```
 
-| \nEvent name\n          | \nData\n                  | \nDescription\n                                                                                     |
+
+
+
+| Event name          | Data                 | Description                                                                                     |
 |-------------------------|---------------------------|-----------------------------------------------------------------------------------------------------|
-| \njoin\n                | \npeerId, displayName\n   | \nA user is added to the room.\n                                                                    |
-|    ready\n              | \n \n                     | \n Iframe is fully loaded and ready to go.\n                                                        |
-| \n readyToJoin\n        | \n \n                     | \n The Room is ready to \"join”.\n                                                                  |
-| \nswitchOnCamera\n      | \npeerId, displayName\n   | \nCamera is on\n                                                                                    |
-| \nswitchOffCamera\n     | \npeerId, displayName\n   | \nCamera is off\n                                                                                   |
-| \nerrorGetCamera\n      | \npeerId, displayName\n   | \nCamera connection error\n                                                                         |
-| \nswitchOnMic\n         | \npeerId, displayName\n   | \nMicrophone is on\n                                                                                |
-| \nswitchOffMic\n        | \npeerId, displayName\n   | \nMicrophone off\n                                                                                  |
-| \nerrorGetMic\n         | \npeerId, displayName\n   | \nMicrophone connection error\n                                                                     |
-| \nswitchOnShare\n       | \npeerId, displayName\n   | \nScreen sharing enabled\n                                                                          |
-| \nswitchOffShare\n      | \npeerId, displayName\n   | \nScreen sharing is off\n                                                                           |
-| \nerrorGetShare\n       | \npeerId, displayName\n   | \nScreen sharing error\n                                                                            |
-| \nnewPeer\n             | \npeerId, displayName\n   | \nNew user connected\n                                                                              |
-| \npeerClosed\n          | \npeerId, displayName\n   | \nThe user left the room\n                                                                          |
-| \nconnectionFailed\n    |                           | \nConnection to the server failed\n                                                                 |
-| \ndisconnected\n        |                           | \nConnection to the server was closed (example: the server is unavailable)\n                        |
-| \nconnectionClosed\n    |                           | \nThe user has closed the connection to the server\n                                                |
-| \nconnectionError\n     | \npeerId, error message\n | \nAn error message appeared on a client's side or on a server's side\n                              |
-| \nplayingAudioPrevent\n |                           | \nAudio doesn't play unless clicking (used together with the autoplayWithoutAudioTrack parameter)\n |
-| \nswitchOnPin\n         | \npeerId\n                | \nThe PIN function is on\n                                                                          |
-| \nswitchOffPin\n        |                           | \nThe PIN function is off\n                                                                         |
-| \nerrorGetPin\n         | \npeerId\n                | \nThe PIN feature error\n                                                                           |
+| join                | peerId, displayName   | A user is added to the room.                                                                    |
+|    ready              |                      | Iframe is fully loaded and ready to go.                                                        |
+| readyToJoin        |                     | The Room is ready to "join".                                                                  |
+| switchOnCamera      | peerId, displayName   | Camera is on                                                                                   |
+| switchOffCamera     | peerId, displayName   | Camera is off                                                                                   |
+| nerrorGetCamera      | peerId, displayName   | Camera connection error                                                                         |
+| switchOnMic         | peerId, displayName   | Microphone is on                                                                                |
+| switchOffMic        | peerId, displayName   | Microphone off                                                                                  |
+| errorGetMic         | peerId, displayName   | Microphone connection error                                                                     |
+| switchOnShare       | peerId, displayName   | Screen sharing enabled                                                                          |
+| switchOffShare      | peerId, displayName   | Screen sharing is off                                                                           |
+| errorGetShare       | peerId, displayName   | Screen sharing error                                                                            |
+| newPeer             | peerId, displayName   | New user connected                                                                              |
+| peerClosed          | peerId, displayName   | The user left the room                                                                          |
+| connectionFailed    |                           | Connection to the server failed                                                                 |
+| disconnected        |                           | Connection to the server was closed (example: the server is unavailable)                        |
+| connectionClosed    |                           | The user has closed the connection to the server                                                |
+| connectionError     | peerId, error message | An error message appeared on a client's side or on a server's side                              |
+| playingAudioPrevent |                           | Audio doesn't play unless clicking (used together with the autoplayWithoutAudioTrack parameter) |
+| switchOnPin         | peerId                | The PIN function is on                                                                          |
+| switchOffPin        |                           | The PIN function is off                                                                         |
+| errorGetPin         | peerId                | The PIN feature error                                                                           |
 
 
-**Server API**
-==============
+## Server API
 
-**Server Endpoints**
---------------------
+### Server Endpoints
 
-### **Video Conferencing Endpoints**
+#### Video Conferencing Endpoints
 
 Please see REST API specification. Below is a brief list of endpoints.
 
 To access Server API methods, you need to be authenticated. Please see "Server API Authentication" below.
 
-| \nMethod name\n                               | \nParameters\n                                                               | \nDescription\n                                                                                                                                                      |
-|-----------------------------------------------|------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| \n/rooms/:roomId/closePeer\n                  | \npeerId, \nbody:{peerId: id}\n                                              | \nRemove a user from a room, POST\n                                                                                                                                  |
-| \n/rooms/:roomId/closeRoom\n                  |                                                                              | \n Delete a room, GET\n                                                                                                                                              |
-| \n/rooms/:roomId/durationOfBroadcast\n        |                                                                              | \nView how long the room existed, GET\n                                                                                                                              |
-| /rooms/:roomId/exists                         |                                                                              | \nCheck if the specified room exists, GET\n                                                                                                                          |
-| \n/rooms/:roomId/existingPeer\n(depricated)\n | \npeerId,\nbody:{peerId: id}\n                                               | \nCheck does the user exist in the room, POST\n \nPlease, use new method instead – /rooms/:roomId/existingPeer/:peerId\n                                             |
-| \n/rooms/:roomId/existingPeer/:peerId\n       |                                                                              | \nCheck does the user exist in the room, GET\n                                                                                                                       |
-| \n/rooms/:roomId/numberPeers\n                |                                                                              | \nView the number of participants in the room, GET\n                                                                                                                 |
-| \nchat/clear-rooms\n                          | body: { hostname: string, rooms: [{roomId: id, type: \"call\"|\"webinar\"}]} | \nClear chat history in specific rooms, POST\n \nWhere:\n\n“hostname” – domain name\n“type“ – type of room, unnecessary attribute, where “call” is default value\n\n |
-| \n/rooms/:roomId/recording/start\n            |                                                                              | \nStart recording for a specific room, POST\n                                                                                                                        |
-| \n/rooms/:roomId/recording/stop\n             |                                                                              | \nStop recording for a specific room, POST\n                                                                                                                         |
-| \n/rooms/:roomId/recording\n                  |                                                                              | \nCheck video recording status, GET\n                                                                                                                                |
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-fr2s">Method name</th>
+    <th class="tg-fr2s">Parameters</th>
+    <th class="tg-fr2s">Description</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-fr2s">/rooms/:roomId/closePeer</td>
+    <td class="tg-1onv">peerId, <br>body:{peerId: id}</td>
+    <td class="tg-1onv">Remove a user from a room, POST</td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">/rooms/:roomId/closeRoom</td>
+    <td class="tg-6tt1"> </td>
+    <td class="tg-1onv"> Delete a room, GET</td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">/rooms/:roomId/durationOfBroadcast</td>
+    <td class="tg-6tt1"> </td>
+    <td class="tg-1onv">View how long the room existed, GET</td>
+  </tr>
+  <tr>
+    <td class="tg-6tt1">/rooms/:roomId/exists</td>
+    <td class="tg-6tt1"> </td>
+    <td class="tg-1onv">Check if the specified room exists, GET</td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">/rooms/:roomId/existingPeer<br>(depricated)</td>
+    <td class="tg-1onv">peerId,<br>body:{peerId: id}</td>
+    <td class="tg-1onv">Check does the user exist in the room, POST<br> <br>Please, use new method instead – /rooms/:roomId/existingPeer/:peerId</td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">/rooms/:roomId/existingPeer/:peerId</td>
+    <td class="tg-6tt1"> </td>
+    <td class="tg-1onv">Check does the user exist in the room, GET</td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">/rooms/:roomId/numberPeers</td>
+    <td class="tg-6tt1"> </td>
+    <td class="tg-1onv">View the number of participants in the room, GET</td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">chat/clear-rooms</td>
+    <td class="tg-6tt1">body: { hostname: string, rooms: [{roomId: id, type: "call"|"webinar"}]}</td>
+    <td class="tg-1onv">Clear chat history in specific rooms, POST<br> <br>Where:<br>"hostname" – domain name<br>"type" – type of room, unnecessary attribute, where "call" is default value</td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">/rooms/:roomId/recording/start</td>
+    <td class="tg-6tt1"> </td>
+    <td class="tg-1onv">Start recording for a specific room, POST</td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">/rooms/:roomId/recording/stop</td>
+    <td class="tg-6tt1"> </td>
+    <td class="tg-1onv">Stop recording for a specific room, POST</td>
+  </tr>
+  <tr>
+    <td class="tg-1onv">/rooms/:roomId/recording</td>
+    <td class="tg-6tt1"> </td>
+    <td class="tg-1onv">Check video recording status, GET</td>
+  </tr>
+</tbody>
+</table>
 
 
-Example#1:
+Example #1:
 
+```
 curl -L -X GET 'https://webrtc3.gvideo.co/rooms/serv1l8bsg8zw/durationOfBroadcast' -H 'Authorization: Bearer eyJ0eXAiOiJKV'
+```
 
-Example#2:
+Example #2:
 
+```
 curl -X POST 'https://webrtc3.gvideo.co/rooms/serv0dxrpxoqr/recording/start' -H 'Authorization: Bearer eyJ0eXAiOiJKV'
+```
 
-Example#3:
+Example #3:
 
 Request:   
-  
-curl -L -X POST 'https://webrtc3.gvideo.co/chat/clear-rooms' \\  
-\-H 'Authorization: Bearer eyJ0eXAiOiJKV' \\  
-\-H 'Content-Type: application/json' \\  
-\--data-raw '{  
+
+```
+curl -L -X POST 'https://webrtc3.gvideo.co/chat/clear-rooms' \  
+-H 'Authorization: Bearer eyJ0eXAiOiJKV' \  
+-H 'Content-Type: application/json' \  
+--data-raw '{  
    "hostname": "102748.gvideo.co",  
-   "rooms": \[  
+   "rooms": [  
     {  
       "roomId": "serv0d17nfe1s"  
     }  
-  \]  
+  ]  
 }'
+```
 
-Response: 200 OK {"deleted":\["serv0d17nfe1s"\]} 
+Response: ```200 OK {"deleted":["serv0d17nfe1s"]}``` 
 
-### **Common Response Codes**
+#### Common Response Codes
 
 There is a list of common response codes of REST API methods:
 
@@ -1047,304 +1226,329 @@ There is a list of common response codes of REST API methods:
 | 500  | Internal Server Error | Server connection error                   |
 
 
-### **List of servers**
+#### List of servers
 
 We have a lot of servers worldwide. Some of them are for public usage.
 
 A server can be derived from a room ID. For example: &roomId = serv1qweqwe.
 
-| \nServer\n | \nCountry\n    | \nServer URL\n                      | \nDescription\n                                                    |
+| Server | Country    | Server URL                      | Description                                                    |
 |------------|----------------|-------------------------------------|--------------------------------------------------------------------|
-| \nserv0\n  | \nLuxembourg\n | \nhttps://webrtc3.gvideo.co:443\n   | \nDEFAULT server, unless states otherwise (like &amp;roomId=BMW)\n |
-| \nserv1\n  | \nAustralia\n  | \nhttps://webrtc4.gvideo.co:443\n   | \n \n                                                              |
-| \nserv2\n  | \nUSA\n        | \nhttps://webrtc5.gvideo.co:443\n   | \n \n                                                              |
-| \nserv3\n  | \nSingapore\n  | \n https://webrtc6.gvideo.co:443 \n | \n \n                                                              |
+| serv0  | Luxembourg | https://webrtc3.gvideo.co:443   | DEFAULT server, unless states otherwise (like &amp;roomId=BMW) |
+| serv1  | Australia  | https://webrtc4.gvideo.co:443   |                                                                |
+| serv2  | USA        | https://webrtc5.gvideo.co:443   |                                                                |
+| serv3  | Singapore  | https://webrtc6.gvideo.co:443 |                                                              |
 
 
 **Note**: There is an offset in a server’s URL. This is a temporary but necessary solution that will be changed soon. We will inform you additionally.
 
 For debug purposes, you can call a server endpoint directly. But for public use, we apply strong restrictions and increase the level of security. Please tell us if you want to allow server-calls for specific servers and security parameters. In this case, all other calls will be rejected.
 
-### **Example of  video server performance check** 
+#### Example of  video server performance check 
 
 A call method such as:
 
-_https://webrtc3.gvideo.co/rooms/serv0l8bsg8zw1/durationOfBroadcast_
+```
+https://webrtc3.gvideo.co/rooms/serv0l8bsg8zw1/durationOfBroadcast
+```
 
 For a non-existent room, the answer will be 400 error. If it is a 500 error or a timeout error, the server is unavailable.
 
-**Webhooks**
-------------
+### Webhooks
 
 Webhooks are user-defined callbacks triggered by meeting events. Webhooks are pushed to the URL specified in the apiEvent attribute:
 
-| \nEvent name\n | \nParameters\n                  | \nDescription\n        |
-|----------------|---------------------------------|------------------------|
-| \njoinPeer\n   | \nroomId, peerId, displayName\n | \nNew user connected\n |
-| \nclosePeer\n  | \nroomId, peerId, displayName\n | \nUser disconnected\n  |
+| Event name | Parameters                  | Description        |
+|------------|-----------------------------|--------------------|
+| joinPeer   | roomId, peerId, displayName | New user connected |
+| closePeer  | roomId, peerId, displayName | User disconnected  |
 
 
-### **Webhook joinPeer**
+#### Webhook joinPeer
 
 This is a method of notifying that a participant has joined a room. This method is used for extra authentication on your side.
 
-_POST /joinPeer_
+```
+POST /joinPeer
+```
 
 Attributes:
 
-*   roomId
-*   peerId
-*   displayName
+- roomId
+- peerId
+- displayName
 
 Example: 
 
-_{"event":"connected","roomId":"44fde071","peerId":"de9b6927","displayName":"user16"_
+```
+{"event":"connected","roomId":"44fde071","peerId":"de9b6927","displayName":"user16"}
+```
 
 Example:
 
-_https://meet.gcore.com/call/?roomId=44fde071&displayName=user16&accessToken=caa630bb&peerId=de9b6927&apiEvent=https://dev.com/api/events&accessUrl=https://dev.com/api/accesscheck_ 
+```
+https://meet.gcore.com/call/?roomId=44fde071&displayName=user16&accessToken=caa630bb&peerId=de9b6927&apiEvent=https://dev.com/api/events&accessUrl=https://dev.com/api/accesscheck
+```
 
-### **Webhook closePeer**
+#### Webhook closePeer
 
 This is a method of notifying that the connection between a server and a participant’s browser has been closed. In most cases, this means that the participant has left the room intentionally or due to a connection issue.
 
-_POST /closePeer_ 
+```
+POST /closePeer
+```
 
 Attributes:
 
-*   roomId
-*   peerId
-*   displayName
+- roomId
+- peerId
+- displayName
 
 Example:
 
-_{"event":"disconnected","roomId":"44fde071","peerId":"de9b6927","displayName":"user16"}_
+```
+{"event":"disconnected","roomId":"44fde071","peerId":"de9b6927","displayName":"user16"}
+```
 
-**Special API of Streaming Platform**
--------------------------------------
+### Special API of Streaming Platform
 
 Video conferencing tool manages data in real time. Thus, Server API and Client API of video conferencing are designed to control the behavior of users and video rooms in real time.
 
 Statistics on usage and video recordings are stored in the Streaming Platform. Thus, please use
 
-Video Platform’s REST API for those methods: [https://apidocs.gcore.com/streaming](https://apidocs.gcore.com/streaming).
+Video Platform’s REST API for those methods: <a href="https://apidocs.gcore.com/streaming" target="_blank">https://apidocs.gcore.com/streaming</a>.
 
 To access Video Platform API, you need to be authenticated. Please see "Authentication of Participants and Access Limitation" above.
 
-### **Statistics**
+#### Statistics
 
 Video conferencing tool sends statistics data every 30 seconds to the Video Platform servers. This means that the usage statistics can always be multiply by 30 seconds. 
 
-**1) General data about a room:**
+1. General data about a room:
 
 This is a summary about a room.
 
-_GET /streaming/statistics/peers/summary_
+```
+GET /streaming/statistics/peers/summary
+```
 
 Attributes:
 
-*   room\_id
-*   from – start period of selecting data
-*   to – finish period of selecting data
+- room_id
+- from – start period of selecting data
+- to – finish period of selecting data
 
 Output codes: 
 
-*   200 – OK, json object with the data. 
-*   400 – Bad Request, in case of incorrect input attribute values. 
-*   403 – Unauthorized access.   
-*   404 – Not found, in case there is no data for a room or room is not found in statistics. 
-*   500 – Internal error. 
+- 200 – OK, json object with the data. 
+- 400 – Bad Request, in case of incorrect input attribute values. 
+- 403 – Unauthorized access.   
+- 404 – Not found, in case there is no data for a room or room is not found in statistics. 
+- 500 – Internal error. 
 
 Output values:
 
-*   participants – total sum of unique participants in a room.
-*   start\_time – UNIX time in seconds when the first participant entered, ex = 1624276920.
-*   end\_time – UNIX time in seconds when the last participant left, ex = 1624358940
-*   duration – number of seconds when the room was «active», calculated as difference from the end \_time parameter value and the start\_time parameter value. Ex = 90660
+- participants – total sum of unique participants in a room.
+- start_time – UNIX time in seconds when the first participant entered, ex = 1624276920.
+- end_time – UNIX time in seconds when the last participant left, ex = 1624358940
+- duration – number of seconds when the room was «active», calculated as difference from the end_time parameter value and the start_time parameter value. Ex = 90660
 
-**Note**. The result is aggregated data for all sessions of the specified room between «from» period until «to» period. Thus, if you use the same room ID each day, then use separate periods.
+**Note**: The result is aggregated data for all sessions of the specified room between «from» period until «to» period. Thus, if you use the same room ID each day, then use separate periods.
 
 Example:
 
-_[https://meet.gcore.com/call/?roomId=serv2test1](https://meet.gcore.com/call/?roomId=serv1test1)_ used for 60 minutes each day on Monday Jun 21 and on Tuesday Jun 22.
+```https://meet.gcore.com/call/?roomId=serv2test1``` used for 60 minutes each day on Monday Jun 21 and on Tuesday Jun 22.
 
-*   /summary?from=2021-06-21T00:00:00.0Z&to=2021-06-21T23:59:59.99Z&room\_id=serv1test1 – will return 60 minutes (60 mins on Jun 21).
-*   /summary?from=2021-06-21T00:00:00.0Z&to=2021-06-22T23:59:59.99Z&room\_id=serv1test1 – will return 120 minutes (60 mins on Jun 21 + 60 mins on Jun 22).
+- /summary?from=2021-06-21T00:00:00.0Z&to=2021-06-21T23:59:59.99Z&room_id=serv1test1 – will return 60 minutes (60 mins on Jun 21).
+- /summary?from=2021-06-21T00:00:00.0Z&to=2021-06-22T23:59:59.99Z&room_id=serv1test1 – will return 120 minutes (60 mins on Jun 21 + 60 mins on Jun 22).
 
 Example of usage:
 
-_https://api.gcore.com/streaming/statistics/peers/summary/?from=2021-06-21T00:00:00.0Z&to=2021-06-22T23:59:59.99Z&room\_id=serv2test2a_ 
+```
+https://api.gcore.com/streaming/statistics/peers/summary/?from=2021-06-21T00:00:00.0Z&to=2021-06-22T23:59:59.99Z&room_id=serv2test2a
+```
 
 Example of return data:
 
-_{_   
-    _"data": {_   
-        _"participants": 3,_   
-        _"start\_time": 1624268280,_   
-        _"end\_time": 1624358940,_   
-        _"duration": 90660_   
-    _},_   
-    _"errors": \[\]_   
-_}_ 
+```
+{   
+    "data": {   
+        "participants": 3,   
+        "start_time": 1624268280,   
+        "end_time": 1624358940,   
+        "duration": 90660   
+    },   
+    "errors": []  
+}
+```
 
-**2) Detailed data per participant:**
+2. Detailed data per participant:
 
 This is data for each participant’s sessions in a room.
 
 If an event lasted 60 minutes, and the user attended it for the first 5 minutes, then left the room, and joined again for the last 5 minutes, the statistics will reflect two sessions, each lasted for five minutes: 5 min + 5 min = 10 minutes (that is, = 600 seconds, instead of 3600 seconds of the total duration).
 
-_GET /streaming/statistics/peers/_
+```
+GET /streaming/statistics/peers/
+```
 
 Attributes:
 
-*   room\_id
-*   from
-*   to
+- room_id
+- from
+- to
 
 Output codes:
 
-*   200 – OK, json object with the data.
-*   400 – Bad Request, in case of incorrect input attribute values.
-*   403 – Unauthorized access.
-*   404 – Not found, in case there is no data for room or room is not found in statistics.
-*   500 – Internal error.
+- 200 – OK, json object with the data.
+- 400 – Bad Request, in case of incorrect input attribute values.
+- 403 – Unauthorized access.
+- 404 – Not found, in case there is no data for room or room is not found in statistics.
+- 500 – Internal error.
 
 Output values:
 
-*   array of participant sessions
-*   person\_id – peerId data (your value, if it was specified in URL attributes, or unique GUID made automatically if it was omitted)
-*   join\_time – UNIX time in seconds of the participant's join time, ex = 1624268280
-*   leave\_time – UNIX time in seconds of the participant's leave time, ex = 1624269300
-*   duration – number of seconds of the session, ex = 1260
+- array of participant sessions
+- person_id – peerId data (your value, if it was specified in URL attributes, or unique GUID made automatically if it was omitted)
+- join_time – UNIX time in seconds of the participant's join time, ex = 1624268280
+- leave_time – UNIX time in seconds of the participant's leave time, ex = 1624269300
+- duration – number of seconds of the session, ex = 1260
 
 Example of usage:
 
-_[https://api.gcore.com/streaming/statistics/peers/summary?from=2021-06-21T00:00:00.0Z&to=2021-06-22T23:59:59.99Z&room\_id=serv2test2a](https://gcore.com/)_
+```
+https://api.gcore.com/streaming/statistics/peers/summary?from=2021-06-21T00:00:00.0Z&to=2021-06-22T23:59:59.99Z&room_id=serv2test2a
+```
 
 Example of return data:
 
-_{_   
-    _"data": \[_   
-        _{_   
-            _"person\_id": "peer2",_   
-            _"join\_time": 1624268640,_   
-            _"leave\_time": 1624269300,_   
-            _"duration": 660_   
-        _},_   
-        _{_   
-            _"person\_id": "peer1",_   
-            _"join\_time": 1624270800,_   
-            _"leave\_time": 1624274520,_   
-            _"duration": 3720_   
-        _},_   
-        _{_   
-            _"person\_id": "peer1",_   
-            _"join\_time": 1624270380,_   
-            _"leave\_time": 1624270740,_   
-            _"duration": 360_   
-        _}_   
-    _\],_   
-    _"errors": \[\]_   
-_}_ 
+```
+{   
+    "data": [   
+        {   
+            "person_id": "peer2",   
+            "join_time": 1624268640,   
+            "leave_time": 1624269300,   
+            "duration": 660   
+        },   
+        {   
+            "person_id": "peer1",   
+            "join_time": 1624270800,   
+            "leave_time": 1624274520,   
+            "duration": 3720   
+        },   
+        {   
+            "person_id": "peer1",   
+            "join_time": 1624270380,   
+            "leave_time": 1624270740,   
+            "duration": 360   
+        }   
+    ],   
+    "errors": []   
+} 
+```
 
-### **Getting Recorded Video** 
+#### Getting Recorded Video 
 
 Recordings of room meetings are stored in the media storage of the Streaming Platform.
 
 You need to search the video and then get by id.
 
-**1) Search a video**
+1. Search a video
 
-_GET /streaming/videos/search_
+```
+GET /streaming/videos/search
+```
 
-Attributes:
+**Attributes**: q – Search query. The search performed among all video names. Specify roomId as a search query.
 
-*   q – Search query. The search performed among all video names. Specify roomId as a search query.
-
-Output values:
-
-*   Array of available videos for specified ID.
+**Output values**: Array of available videos for specified ID.
 
 If a session lasted more than 4 hours, the recording will be divided into several videos for 4 hours each. In this case, you need to get all videos separately.
 
-Please see more details in [documentation](https://apidocs.gcore.com/streaming#operation/get_api_videos_id). 
+Please see more details in <a href="https://apidocs.gcore.com/streaming#operation/get_api_videos_id" target="_blank">documentation</a>. 
 
-**2) Get video metadata** 
+2. Get video metadata 
 
-_GET https://api.gcore.com/streaming/videos/{video\_id}_
+```
+GET https://api.gcore.com/streaming/videos/{video_id}
+```
 
-Please see more details in [documentation](https://apidocs.gcore.com/streaming#operation/get_api_videos_id).  
+Please see more details in <a href="https://apidocs.gcore.com/streaming#operation/get_api_videos_id" target="_blank">documentation</a>.  
 
-Output values: 
-
-*   Metadata of the video. Use fields “hls\_url” for .m3u8 stream in external players or "origin\_host"+"origin\_resource" for getting an original MP4 file.  
+**Output values**: Metadata of the video. Use fields "hls_url" for .m3u8 stream in external players or "origin_host"+"origin_resource" for getting an original MP4 file.  
 
 Example of output data:  
 
-_{_   
-  _"hls\_url": "https://id10835.gcore.com/videos/10835\_UaX2pjxen2guUw3/master.m3u8",_   
-  _"origin\_host": "s-ed1.cloud.gcore.lu",_   
-  _"origin\_resource": "9208-mediaplatform10835/videos/UaX2pjxen2guUw3.mp4",_   
-_}_ 
+```
+{   
+  "hls_url": "https://id10835.gcore.com/videos/10835_UaX2pjxen2guUw3/master.m3u8",   
+  "origin_host": "s-ed1.cloud.gcore.lu",   
+  "origin_resource": "9208-mediaplatform10835/videos/UaX2pjxen2guUw3.mp4",   
+}
 
-Please see more details in [documentation](https://apidocs.gcore.com/streaming#operation/get_api_videos_search%C2%A0).  
+``` 
+
+Please see more details in <a href="https://apidocs.gcore.com/streaming#operation/get_api_videos_id" target="_blank">documentation</a>.  
 
 Example of usage: 
 
-Step 1: [https://api.gcore.com/streaming/videos/search?q=serv1test2a](https://api.gcore.com/streaming/videos/search?q=serv1test2a) 
+Step 1: <a href="https://api.gcore.com/streaming/videos/search?q=serv1test2a" target="_blank">https://api.gcore.com/streaming/videos/search?q=serv1test2a</a> 
 
-Step 2: [https://api.gcore.com/streaming/videos/117800](https://api.gcore.com/streaming/videos/117800)  
+Step 2: <a href="https://api.gcore.com/streaming/videos/117800" target="_blank">https://api.gcore.com/streaming/videos/117800</a>
 
-### **Rate Limits**
+#### Rate Limits
 
 There is a general limit of four requests per second. If you exceed the rate limit, you will receive a message.
 
-**Security**
-============
+## Security
 
 Calling API should be done through an endpoint on your server. This will help to avoid exposing secret keys to users and to keep them safe.
 
-**Validating Client API Requests**
-----------------------------------
+### Validating Client API Requests
 
-### **What is a JWT** 
+#### What is a JWT 
 
 To access Client API, we use  JSON Web Tokens (JWT), which is an open, industry standard  RFC 7519  method for representing claims securely between two parties.
 
-For more information what JWT is and how to use it please visit [https://jwt.io/introduction](https://jwt.io/introduction)
+For more information what JWT is and how to use it please visit <a href="https://jwt.io/introduction" target="_blank">https://jwt.io/introduction
 
 JWT allows you to accurately determine the validity of the video room settings and unambiguously determine the belonging of the token to your account. 
 
-To use the JWT, you need a Public & Secret Key. A new key is generated by you. Send us your public part of the key via support or personal manager. Please see “RSA Public & Secret Key generation” section below for details.
+To use the JWT, you need a Public & Secret Key. A new key is generated by you. Send us your public part of the key via support or personal manager. Please see "RSA Public & Secret Key generation" section below for details.
 
-### **Limitations when using JWT**
+#### Limitations when using JWT
 
-You can activate the option to use the JWT in your account. If you activate it, you will have to send a JWT &token=xxx in every request. Without a token, the "_Access denied_" message will appear.
+You can activate the option to use the JWT in your account. If you activate it, you will have to send a JWT &token=xxx in every request. Without a token, the "Access denied" message will appear.
 
 If you activate the JWT option, you will not be able to use the &accessToken=xxx attribute.
 
-### **JWT Header**
+#### JWT Header
 
 The header typically consists of two parts: the type of the token and the signing algorithm being used.
 
 Signing algorithms are:
 
-*   RS256 – asymmetric key,
-*   HS256 – symmetric key.
+- RS256 – asymmetric key,
+- HS256 – symmetric key.
 
-_HEADER:ALGORITHM & TOKEN TYPE_   
-_{_  
-_"typ": "JWT",_  
-_"alg": "RS256"_  
-_}_
+```
+HEADER:ALGORITHM & TOKEN TYPE   
+{  
+"typ": "JWT",  
+"alg": "RS256"  
+}
+```
 
-_HEADER:ALGORITHM & TOKEN TYPE_   
-_{_  
-_"typ": "JWT",_  
-_"alg": "HS256"_  
-_}_
+```
+HEADER:ALGORITHM & TOKEN TYPE   
+{  
+"typ": "JWT",  
+"alg": "HS256"  
+}
+```
 
-### **JWT Body**
+#### JWT Body
 
 The body of a JWT contains important data that should be signed and verified. The data in a JWT has a higher priority over the values of the same parameters specified in the URL attributes. This means that if an attribute value is specified both in a JWT and in the URL attribute set, the value from the JWT will be used.
 
@@ -1352,58 +1556,66 @@ Please refer to the table of attributes above to see the parameters that can be 
 
 Priority of data from a JWT and URL:
 
-*   Parameters with the "JWT" label can be specified inside a token or as an attribute in the URL. If an attribute value is specified in a token, the value in the URL is ignored. If an attribute is not specified in a token, the attribute value will be taken from the URL.
-*   Parameters with the "URL" label can only be specified as an attribute in the URL.
+- Parameters with the "JWT" label can be specified inside a token or as an attribute in the URL. If an attribute value is specified in a token, the value in the URL is ignored. If an attribute is not specified in a token, the attribute value will be taken from the URL.
+- Parameters with the "URL" label can only be specified as an attribute in the URL.
 
 The list of extra attributes for a JWT: 
 
-*   startTime – planned start time of an event in a video room. Please see "Webhook joinPeer method". Date/time is in UTC time zone only, represented as number (milliseconds since Unix epoch), formatted as ISO 8601.
-*   iat – (optional) Issued At. The "iat" claim identifies the time at which the JWT was issued. This claim can be used to determine the age of a JWT. Date/time is in UTC time zone only, representedas number (milliseconds since Unix epoch), formatted as ISO 8601.
+- startTime – planned start time of an event in a video room. Please see "Webhook joinPeer method". Date/time is in UTC time zone only, represented as number (milliseconds since Unix epoch), formatted as ISO 8601.
+- iat – (optional) Issued At. The "iat" claim identifies the time at which the JWT was issued. This claim can be used to determine the age of a JWT. Date/time is in UTC time zone only, representedas number (milliseconds since Unix epoch), formatted as ISO 8601.
 
 The list of attributes is expanding, tell us what attributes (from general list of URL attributes) you need inside a token.
 
-_PAYLOAD:DATA_  
-_{_  
-_"roomId": "abcd1234",_  
-_"role": "moderator",_  
-_"startTime": "2022-06-21T00:00:00.0Z",  
-__"_iat_"_: 1516239022  
-_}_
+```
+PAYLOAD:DATA  
+{  
+"roomId": "abcd1234",  
+"role": "moderator",  
+"startTime": "2022-06-21T00:00:00.0Z",  
+"iat": 1516239022  
+}
+
+```
 
 Example:
 
-_https://meet.gcore.com/call/?roomId=YOUR\_ROOM\_ID&token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoibW9kZXJhdG9yIiwic3RhcnRUaW1lIjoiMjAyMS0wNi0yMVQwMDowMDowMC4wWiJ9.Atj-TPL\_GSLyuI565pI6X\_6GFjopXf62C6y4OgeeEk9KEb\_1cosDmo2sytpBv44PRuMRwgDg8AcqlMMgA0kcdJrBZ7AAywjb6RZVXlian6-6XQ0zx7OhYyDo2-mVxCO9dgYroXfz2Fw8lyNuqFl0AKEfFMPKaYf46u5kjwWmSyhh7bLbL969Eu3zW\_Mk3sYLpW\_xULyndhkXrLqOVspK08Mla-AbxGJ94pZXJCKHK5UslhrGJ6RProN5nL4NaXOCKRX0ffKnklxiyn9MgKf0cc6Za0GCpjg-d3y6-UOVd0AXW8TWR-RllTgXaTUMMSLyWzHPsv-e2O-GsA0WJnBJEg_
+```
+https://meet.gcore.com/call/?roomId=YOUR_ROOM_ID&token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoibW9kZXJhdG9yIiwic3RhcnRUaW1lIjoiMjAyMS0wNi0yMVQwMDowMDowMC4wWiJ9.Atj-TPL_GSLyuI565pI6X_6GFjopXf62C6y4OgeeEk9KEb_1cosDmo2sytpBv44PRuMRwgDg8AcqlMMgA0kcdJrBZ7AAywjb6RZVXlian6-6XQ0zx7OhYyDo2-mVxCO9dgYroXfz2Fw8lyNuqFl0AKEfFMPKaYf46u5kjwWmSyhh7bLbL969Eu3zW_Mk3sYLpW_xULyndhkXrLqOVspK08Mla-AbxGJ94pZXJCKHK5UslhrGJ6RProN5nL4NaXOCKRX0ffKnklxiyn9MgKf0cc6Za0GCpjg-d3y6-UOVd0AXW8TWR-RllTgXaTUMMSLyWzHPsv-e2O-GsA0WJnBJEg
 
-### **JWT Signature**
+```
+
+#### JWT Signature
 
 Use your key to sign the token with the algorithm specified in the header.
 
 The signature is used to verify the data wasn't changed along the way, and, in the case of tokens signed with a private key, it can also verify that the sender of the JWT is who it says it is.
 
-We highly recommend using RS256 asymmetric type of algorithm. See section “RSA Public & Secret Key generation” to generate public/private keys.
+We highly recommend using RS256 asymmetric type of algorithm. See section "RSA Public & Secret Key generation" to generate public/private keys.
 
-**Validating Server API Requests**
-----------------------------------
+### Validating Server API Requests
 
-### **Validation with Authorization Header**
+#### Validation with Authorization Header
 
 To access Server API and Streaming Platform API, we use an API token in the Authorization header. The API token is a unique key that all users and applications should add to requests to interact with our services.
 
-Please authenticate via [https://apidocs.gcore.com/streaming#section/Authentication](https://apidocs.gcore.com/streaming#section/Authentication).
+Please authenticate via <a href="https://apidocs.gcore.com/streaming#section/Authentication" target="_blank">API</a>.
 
 Choose one of the methods described below: Bearer authentication or Permanent API tokens.
 
-### **Bearer Authentication**
+#### Bearer Authentication
 
-The token will be provided upon  [Login](https://apidocs.gcorelabs.com/account#tag/Account/paths/~1auth~1jwt~1login/post)  request with login and password from your personal account. 
+The token will be provided upon <a href="https://apidocs.gcorelabs.com/account#tag/Account/paths/~1auth~1jwt~1login/post" target="_blank">Login</a> request with login and password from your personal account. 
 
 In the response, you will get two tokens: access and refresh. 
 
 To manage Server API services, add your access token after Bearer in the authorization header like this:  
 
-_Authorization: Bearer eyJ0eXAiOiJKV_ 
+```
+Authorization: Bearer eyJ0eXAiOiJKV 
 
-Use the  [Refresh](https://apidocs.gcorelabs.com/account#tag/Account/paths/~1auth~1jwt~1refresh/post)  request to refresh your access token. 
+```
+
+Use the  <a href="https://apidocs.gcorelabs.com/account#tag/Account/paths/~1auth~1jwt~1refresh/post" target="_blank">Refresh</a> request to refresh your access token. 
 
 Steps as an example: 
 
@@ -1414,34 +1626,40 @@ Steps as an example: 
 5.  If the token is correct, everything is fine. 
 6.  If not, then a 401 error will be returned. 
 
-Example: curl -L -X GET 'https://webrtc3.gvideo.co/rooms/serv1l8bsg8zw/durationOfBroadcast' -H 'Authorization: Bearer eyJ0eXAiOiJKV'
+Example: 
 
-**Authentication of Participants and Access Limitation**
---------------------------------------------------------
+```
+curl -L -X GET 'https://webrtc3.gvideo.co/rooms/serv1l8bsg8zw/durationOfBroadcast' -H 'Authorization: Bearer eyJ0eXAiOiJKV'
+```
+
+### Authentication of Participants and Access Limitation
 
 We allow integration with your user control systems. It could be an external CMS, LMS or any security server. You can verify every user who enters a room.
 
 Our server calls the method specified in &accessUrl attribute. Your server should return code as below. Based on the code, the system allows access to the room or doesn't.
 
-If the access to the specified method is protected via Basic authorization, you need to register a required header in the attribute &authorizationAccess=<header>.
+If the access to the specified method is protected via Basic authorization, you need to register a required header in the attribute ```&authorizationAccess=<header>```.
 
 These debugging attributes can be used in the URL. But for public use, you need to inform us to register methods on the server.
 
 Example:
 
-_https://meet.gcore.com/call/?roomId=44fde071&displayName=user16&accessToken=caa630bb&peerId=de9b6927&apiEvent=https://dev.com/api/events&accessUrl=https://dev.com/api/accesscheck_
+```
+https://meet.gcore.com/call/?roomId=44fde071&displayName=user16&accessToken=caa630bb&peerId=de9b6927&apiEvent=https://dev.com/api/events&accessUrl=https://dev.com/api/accesscheck
+
+```
 
 POST
 
 Input values:
 
-*   accessToken – unique security identifier from &accessToken attribute
-*   roomId – ID of the room from &roomId attribute
-*   peerId – ID of the participant from &peerId attribute
+- accessToken – unique security identifier from ```&accessToken``` attribute
+- roomId – ID of the room from &roomId attribute
+- peerId – ID of the participant from &peerId attribute
 
 Example:
 
-_{"accessToken":"caa630bb","roomId":"44fde071","peerId":"de9b6927"}_ 
+```{"accessToken":"caa630bb","roomId":"44fde071","peerId":"de9b6927"}```
 
 Output codes we require from you:
 
@@ -1452,41 +1670,38 @@ Output codes we require from you:
 | 401  | Unauthorized          | A participant is not allowed to join the room, access declined.                                                                                                                                                                                                     |
 | 403  | Forbidden             | Invalid token.                                                                                                                                                                                                                                                      |
 | 404  | Not found             | Invalid room ID.                                                                                                                                                                                                                                                    |
-| 409  | Conflict              | Another connection with an existing peerId was found. In this case, a new connection is established. The previous connection is terminated, and its users get the message: \"Someone joined into the room with your ID\".                                           |
-| 423  | Locked                | Access is closed temporarily or permanently for locked rooms after you close it or limit the maximum number of participants. It is to display a human readable message about the reason and contact info for a moderator, instead of the \"Access denied\" message. |
-| 425  | Too Early             | Access is closed temporarily for those events that have not yet started. We display a human readable message \"The event has not started yet. Start % d%.\" Start time is taken from a JWT.                                                                         |
+| 409  | Conflict              | Another connection with an existing peerId was found. In this case, a new connection is established. The previous connection is terminated, and its users get the message: "Someone joined into the room with your ID".                                           |
+| 423  | Locked                | Access is closed temporarily or permanently for locked rooms after you close it or limit the maximum number of participants. It is to display a human readable message about the reason and contact info for a moderator, instead of the "Access denied" message. |
+| 425  | Too Early             | Access is closed temporarily for those events that have not yet started. We display a human readable message "The event has not started yet. Start % d%." Start time is taken from a JWT.                                                                         |
 | 500  | Internal Server Error | Server connection error.                                                                                                                                                                                                                                            |
 
 
 More examples:
 
-*   How to prevent unregistered users from joining – send 401 Locked for requests with empty peerId.
-*   How to close a room after the event is over – send 423 Locked for all requests after the event is over.
-*   How to limit the maximum number of participants – send 423 Locked for all requests after the maximum is reached, resend 200 OK for a room with decreasing number of participants when someone leaves.
+- How to prevent unregistered users from joining – send 401 Locked for requests with empty peerId.
+- How to close a room after the event is over – send 423 Locked for all requests after the event is over.
+- How to limit the maximum number of participants – send 423 Locked for all requests after the maximum is reached, resend 200 OK for a room with decreasing number of participants when someone leaves.
 
-**Troubleshooting**
-===================
+## Troubleshooting
 
-**JWT Digital Signature Algorithm**
------------------------------------
+### JWT Digital Signature Algorithm
 
-We use RS256 or HS256 algorithm for signing and generating hash. RS256 refers to the SHA256 hash function. RFC states [https://tools.ietf.org/html/rfc7518#page-8](https://tools.ietf.org/html/rfc7518#page-8) 
+We use RS256 or HS256 algorithm for signing and generating hash. RS256 refers to the SHA256 hash function (<a href="https://tools.ietf.org/html/rfc7518#page-8" target="_blank">RFC</a> states). 
 
-| \"alg\" Param Value | Digital Signature Algorithm     |
+| "alg" Param Value   | Digital Signature Algorithm     |
 |---------------------|---------------------------------|
 | RS256               | RSASSA-PKCS1-v1_5 using SHA-256 |
 |  HS256              |  HMAC using SHA-256             |
 
-
-Please use [https://jwt.io/](https://jwt.io/) to verify your JWT tokens.
+Please use <a href="https://jwt.io/" target="_blank">https://jwt.io/</a> to verify your JWT tokens.
 
 **RS256**
 
-RS256 refers to the SHA256 hash function. RFC states [https://tools.ietf.org/html/rfc7518#page-8](https://tools.ietf.org/html/rfc7518#page-8) 
+RS256 refers to the SHA256 hash function. (<a href="https://tools.ietf.org/html/rfc7518#page-8" target="_blank">RFC</a> states).
 
 RSA key of size 2048 bits or larger must be used with this algorithm.
 
-The RSASSA-PKCS1-v1\_5 SHA-256 digital signature is generated as follows: generate a digital signature of the JWS Signing Input using RSASSA-PKCS1-v1\_5-SIGN and the SHA-256 hash function with the desired private key. This is the JWS Signature value.
+The RSASSA-PKCS1-v1_5 SHA-256 digital signature is generated as follows: generate a digital signature of the JWS Signing Input using RSASSA-PKCS1-v1_5-SIGN and the SHA-256 hash function with the desired private key. This is the JWS Signature value.
 
 Please see "RSA Public & Secret Key generation" section below for details.
 
@@ -1494,19 +1709,22 @@ Please see "RSA Public & Secret Key generation" section below for details.
 
 A key of the same size as the hash output (for instance, 256 bits for "HS256") or larger MUST be used with this algorithm. 
 
-**RSA Public & Secret Key generation**
---------------------------------------
+### RSA Public & Secret Key generation
 
 Keys can be generated by any RSA keygen tool. If you don’t know what to do, we recommend using the OpenSSL tool.
 
-To perform the following actions for Windows or Linux, check and/or install [OpenSSL](http://en.wikipedia.org/wiki/OpenSSL) on your system.
+To perform the following actions for Windows or Linux, check and/or install <a href="http://en.wikipedia.org/wiki/OpenSSL" target="_blank">OpenSSL</a> on your system.
 
 Commands to generate secret key and export public key:
 
-_openssl genrsa -out key\_name.key 2048_
+```
+openssl genrsa -out key_name.key 2048
+```
 
-_openssl rsa -in key\_name.key -pubout -outform PEM -out key\_name.key.pub_
+```
+openssl rsa -in key_name.key -pubout -outform PEM -out key_name.key.pub
+```
 
-File key\_name.key.pub will contain public part of the key. File key\_name.key will contain the private part of the key.
+File key_name.key.pub will contain public part of the key. File key_name.key will contain the private part of the key.
 
-**Note**. The number "2048" in the above command indicates the size of the private key. You can choose one between 2048 and 4096 (these numbers represent bits). The larger sizes offer greater security, but this is offset by a penalty in CPU performance. We recommend the best practice size of 2048. It seems like 2048 bits is enough for the foreseeable future (2030 horizon).
+**Note**: The number "2048" in the above command indicates the size of the private key. You can choose one between 2048 and 4096 (these numbers represent bits). The larger sizes offer greater security, but this is offset by a penalty in CPU performance. We recommend the best practice size of 2048. It seems like 2048 bits is enough for the foreseeable future (2030 horizon).

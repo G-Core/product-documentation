@@ -133,6 +133,15 @@ We recommend the following parameters for streams:
 </td>
 </tr>
 <tr>
+<td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="none">Max original file size <strong>(only for video)</strong></span></p>
+<p>&nbsp;</p>
+</td>
+<td class="wysiwyg-text-align-center" colspan="3" data-celllook="0">
+<p>30 GB</p>
+</td>
+</tr>
+<tr>
 <td>
 <p class="wysiwyg-text-align-center"><span data-contrast="none">Container<strong>&nbsp;(only for video)</strong></span></p>
 </td>
