@@ -5,64 +5,60 @@ order: 20
 published: true
 toc:
 ---
-1\. Open the Logging tab and click "Set up Logging".
+# Configure Logging and view your logs
 
-<img style="margin: 0px 0 0px 0px;" src="https://support.gcore.com/hc/article_attachments/6183008574737/image_1532.png" alt="image_1532.png">
+1\. Open the Logging tab and click **Set up Logging**.
 
-The Logging page will open, do Steps 2, 3, 4 and 7 in it. The screenshot below highlights the sections and buttons that you need to interact with at these steps.
+<img src="https://support.gcore.com/hc/article_attachments/6183008574737/image_1532.png" alt="" width="70%">
 
-<img src="https://support.gcore.com/hc/article_attachments/6183246831633/image_1545.png" alt="image_1545.png">
+2\. Select the region (under the project name) - the location of the data center for deploying log storage.
 
-2\. Select the region — this is the city of the data center where we will deploy the storage for logs.
+Note that logging may not be available in certain regions. Usually, our customers choose a region closer to their equipment to ensure logs are quickly sent to storage.
 
-Note that logging may be unavailable in some regions. Usually, our customers choose a region closer to their equipment so that logs can be sent to the storage as quickly as possible.
+3\. In the "Topics" section, click Create topic, give it a name and click **Save**.
 
-3\. Click **Create topic** in the upper-right corner, give your topic a name and confirm.  
+<img src="https://support.gcore.com/hc/article_attachments/14420358788881" width="70%">
 
-A topic is a logical storage unit where logs are collected. You can think of it as a folder on your PC. Logs will be collected into a topic in the same way that you add files to a folder.
+4\. Click **Generate credentials** in the upper-right corner. Save them immediately because you won’t be able to see them again after closing the window.
 
-4\. Click **Generate credentials** in the upper-right corner. 
+These credentials are used to connect your equipment to the topic for log export.
 
-You will receive a login and password for the storage. You will use these to connect your equipment to the topic for log export. Be sure to save the credentials to your PC immediately because you won’t be able to see them again after closing the window. 
+If you forget your credentials, click **Generate credentials** again for a new pair. Don’t forget to update your login credentials (i.e., your username and password) in the settings of the installed log shippers.
 
-If you forget your username and password, click **Generate credentials** again, and a new pair will be generated. The previous credentials will become invalid. 
+If you use Logging in multiple regions (which you specify at Step 2), a new storage will be created in each region, and you will need to generate unique credentials for each one.
 
-If you use Logging in multiple regions (which you specify at Step 2), a new storage will be created in each of them, and you will need to generate other credentials to connect to each of them. Your login will the same for all storages, but the passwords will be different. For example, if you use Logging in six regions, you will have one login and six passwords.
+5\. Install and configure a log shipping tool like <a href="https://docs.fluentbit.io/manual/installation/getting-started-with-fluent-bit" target="_blank">install Fluent Bit</a> or <a href="https://www.elastic.co/beats/filebeat" target="_blank">Filebeat</a> on the equipment from which you want to collect logs. You can use our guides <a href="https://gcore.com/docs/cloud/laas/install-a-log-shipper/install-and-configure-fluent-bit" target="_blank">Configure Fluent Bit</a>, <a href="https://gcore.com/docs/cloud/laas/install-a-log-shipper/install-and-configure-filebeat" target="_blank">Configure Filebeat</a>.  
 
-5\. Install a log shipping tool on the equipment from which you want to collect logs.
+In the log shipper settings, specify which logs to collect and configure log export to our Kafka servers. Provide the topic name, Kafka Endpoint, and credentials generated at Step 4. Please note that the maximum size of a log message is 1 MB in text/JSON format, and the number of fields is limited to 225.
 
-For example, you can [install Fluent Bit](https://docs.fluentbit.io/manual/installation/getting-started-with-fluent-bit) or [Filebeat](https://www.elastic.co/beats/filebeat).  
+Once the log shipper is set up, your device logs are sent to your Kafka topic. From there, the Kafka servers will automatically transfer them to our OpenSearch servers.
 
-6\. In the log shipper settings, specify which logs you need to collect, and configure the log export to our Kafka servers: specify the topic name, Kafka Endpoint, as well as the credentials generated at Step 4.  
+6\. Go to the OpenSearch Dashboards by using the URL specified on the Logging page. 
 
-Please note that the maximum size of a log message is 1 MB in text/JSON format, and the number of fields is limited to 225.
+<img src="https://support.gcore.com/hc/article_attachments/14420497971473" width="70%">
 
-If you use Fluent Bit or Filebeat, you can configure it with our instructions: [Configure Fluent Bit](https://support.gcore.com/hc/en-us/articles/6173162093201), [Configure Filebeat](https://support.gcore.com/hc/en-us/articles/6171869217937).  
+To log in, use the credentials generated at Step 4.
 
-After setting up a log shipper, the logs of your device will be sent to your Kafka topic. Kafka servers will then automatically transfer them to our OpenSearch servers.   
+7\. From the home page, click to Manage → Index Patterns.
 
-Please note that the total amount of data that can be sent to the logging system should not exceed 900 Gb per day and the incoming traffic to Kafka servers should not exceed 10 Mb/sec.
-
-7\. Go to the OpenSearch Dashboards URL specified on the Logging page.  
+<img src="https://support.gcore.com/hc/article_attachments/14420742939281" width="70%">
 
 8\. Click **Create an index pattern** at the bottom of the screen. 
+ 
+<img src="https://support.gcore.com/hc/article_attachments/6183292147473/image_1469.png" alt="" width="70%">  
 
 On the OpenSearch server, your logs are linked to your personal index, which has the same name as your topic. At this step, you create an index pattern, which acts as a filter to help OpenSearch Dashboards to display logs with the required index.
 
-<img src="https://support.gcore.com/hc/article_attachments/6183292147473/image_1469.png" alt="image_1469.png">  
+9\. In the **index-pattern** field, enter the namespace, name of the topic you created at Step 3 with an asterisk. For example, if your namespace is *namespace1*, and you have created a topic named *e_xampletopic*, enter _namespace1.exampletopic*_ in the field. Finally, click **Next step** to proceed.
 
-9\. In the **index-pattern** field, enter the namespace, name of the topic you created at Step 3 with an asterisk. For example, if your namespace is _namespace1,_ and you have created a topic named e_xampletopic_, enter _namespace1.exampletopic\*_ in the field. Then click **Next step**.
+<img src="https://support.gcore.com/hc/article_attachments/14420777278097" alt="" width="70%">
 
-<img src="https://support.gcore.com/hc/article_attachments/6183355949713/image_1472.png" alt="image_1472.png">
+10\. Select the date and time format from the dropdown list, and click Create index pattern to make your logs accessible in OpenSearch Dashboards. The pattern is saved, so you don't have to set it up again next time you log in.
 
-10\. In the dropdown list, select the format used to indicate date and time in your logs, and then click **Create index pattern**.  
+<img src="https://support.gcore.com/hc/article_attachments/6183350616209/image_1475.png" alt="" width="70%">
 
-An index pattern will be created, and your logs will be available in OpenSearch Dashboards. The index pattern will be saved, and the next time you log into OpenSearch Dashboards, you will not need to configure them again.
+11\. Setup is complete. To view your logs, go to the main menu and select **Discover**.
 
-<img src="https://support.gcore.com/hc/article_attachments/6183350616209/image_1475.png" alt="image_1475.png">
+<img src="https://support.gcore.com/hc/article_attachments/6183388613265/image_1478.png" alt="" width="70%">
 
-11\. The setup is finished. In the main menu, select **Discover** to see your logs.
-
-Please note that logs will be stored in OpenSearch for 45 days. After 45 days, logs will be automatically deleted.
-
-<img src="https://support.gcore.com/hc/article_attachments/6183388613265/image_1478.png" alt="image_1478.png">
+The retention period for the logs is 45 days, after that, they will be automatically deleted.

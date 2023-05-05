@@ -10,5 +10,39 @@
 
     <body>
         <app-root></app-root>
+        <script src="assets/clipboard.min.js"></script>
+        <script>
+            const clipLink = new ClipboardJS('.gc-title-anchor-link', {
+                target: function (trigger) {
+                    if (!trigger.dataset.clipboardText.startsWith(window.location.origin)) {
+                        trigger.dataset.clipboardText = window.location.origin + trigger.dataset.clipboardText;
+                    }
+                    return trigger;
+                },
+            });
+            clipLink.on('success', function (event) {
+                event.trigger.classList.add('gc-anchor-link-copied');
+                event.clearSelection();
+                setTimeout(function () {
+                    event.trigger.classList.remove('gc-anchor-link-copied');
+                }, 2000);
+            });
+
+            const clip = new ClipboardJS('pre .gc-copy-to-clipboard', {
+                target: function (trigger) {
+                    return trigger.nextElementSibling;
+                },
+            });
+            clip.on('success', function (event) {
+                let tooltip = event.trigger.querySelector('.tooltip');
+                tooltip.textContent = 'Copied';
+                event.trigger.classList.add('active');
+                event.clearSelection();
+                setTimeout(function () {
+                    event.trigger.classList.remove('active');
+                    tooltip.textContent = 'Copy';
+                }, 2000);
+            });
+        </script>
     </body>
 </html>
