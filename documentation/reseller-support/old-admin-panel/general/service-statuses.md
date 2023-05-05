@@ -2,6 +2,7 @@
 title: service-statuses
 displayName: Service statuses
 published: true
+order: 20
 toc:
 ---
 

@@ -2,6 +2,7 @@
 title: sellers-account-creation-and-management
 displayName: Sellers account creation and management
 published: true
+order: 60
 toc:
     --1--Creating Seller accounts: "creating-seller-accounts"
     --1--Deleting Seller accounts: "deleting-seller-accounts"
