@@ -7,21 +7,21 @@ toc:
     --1--DV certificates: "dv-certificates"
     --1--OV certificates: "ov-certificates"
 ---
-DV certificates
----------------
+# Activate an SSL certificate
+
+## DV certificates
 
 To activate SSL certificates of this level, you need to go by the link, which is sent in a letter to the specified e-mail after ordering a certificate. This is one of the addresses:
 
-*   [admin@example.com](mailto:admin@example.com)
-*   administrator@ [example.com](http://example.com/)
-*   hostmaster@ [example.com](http://example.com/)
-*   postmaster@ [example.com](http://example.com/)
-*   webmaster@ [example.com](http://example.com/)
+- ```admin@example.com```
+- ```administrator@example.com```
+- ```hostmaster@example.com```
+- ```postmaster@example.com```
+- ```webmaster@example.com```
 
 Usually, a letter with the URL to confirm the issue of the certificate comes within 24 hours.
 
-OV certificates
----------------
+## OV certificates
 
 If you ordered a certificate of OV level, a provider should check an information about your company. As a rule, these details are taken from open sources.
 

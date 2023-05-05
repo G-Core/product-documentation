@@ -3,48 +3,63 @@ title: activate-link-aggregation
 displayName: Activate Link Aggregation
 published: true
 toc:
- --1--After LACP is ready from our side you need to configure it on the server: "after-lacp-is-ready-from-our-side-you-need-to-configure-it-on-the-server"
+ --1--Setup example for Ubuntu 14.04: "setup-example-for-ubuntu-14-04"
+ --1--Configure LACP on the server: "configure-lasp-on-the-server"
 ---
+# Activate Link Aggregation
+
 Bonding is the technology of aggregating several parallel channels in Ethernet network. The feature helps to balance server loading and increase fault tolerance. 
 
-We set up channel aggregation using the standard LACP protocol. It is paid feature, take a look at prices [at the LACP tab](https://gcorelabs.com/hosting/miscellaneous/).
+We set up channel aggregation using the standard LACP protocol. It is paid feature, take a look at prices <a href="https://gcore.com/hosting/miscellaneous/" target="_blank">at the LACP tab</a>.
 
 To get bonding order the service Port Channel from the Control Panel, prepare your server and then contact us via ticket to set it up. 
 
 <img class="WACImage SCXW53247752" src="https://support.gcore.com/hc/article_attachments/360000261545/blobid1.png">
 
-Server Setup
+## Server Setup
 
-Setup example for Ubuntu 14.04
+## Setup example for Ubuntu 14.04
 
 Install ifenslave package **before contacting us**:
 
-\# apt-get install ifenslave​
+```
+# apt-get install ifenslave​
+```
 
-Add "bonding" to /etc/modules file.
+Add "bonding" to **/etc/modules** file.
 
 Run modprobe load bonding immediately:
 
-\# modprobe bonding
+```
+# modprobe bonding
+```
 
- Make sure it's loaded, you should see something like "bonding 147456 0":
+Make sure it's loaded, you should see something like "bonding 147456 0":
 
-\# lsmod | grep bonding  
+```
+# lsmod | grep bonding  
 bonding 147456 0
+```
 
-After LACP is ready from our side you need to configure it on the server:
--------------------------------------------------------------------------
+## Configure LACP on the server
+
+After LACP is ready from our side you need to configure it on the server.
 
 Stop network services:
 
-\# stop networking
+```
+# stop networking
+```
 
 Edit network interfaces settings:
 
-\# vim /etc/network/interfaces
+```
+# vim /etc/network/interfaces
+```
 
-using the following example(replace em1 and em2 to your network interface names):
+using the following example (replace em1 and em2 to your network interface names):
 
+```
 auto em1  
 iface em1 inet manual  
 bond-master bond0  
@@ -64,19 +79,25 @@ bond-mode 4
 bond-miimon 100  
 bond-lacp-rate 1  
 bond-slaves em1 em2
+```
 
 Changes will apply after you do the following:
 
-\# start networking
+```
+# start networking
+```
 
 If there is no network connection in the bonding, reboot your server. 
 
 You can check the bond0 status:
 
-\# cat /proc/net/bonding/bond0
+```
+# cat /proc/net/bonding/bond0
+```
 
 Output example:
 
+```
 Ethernet Channel Bonding Driver: v3.1.1 (September 26, 2006)
 
 Bonding Mode: IEEE 802.3ad Dynamic link aggregation
@@ -106,6 +127,6 @@ MII Status: up
 Link Failure Count: 0
 Permanent HW addr: 00:00:85:60:9d:49
 Aggregator ID: 1​
+```
 
-### Please refer to official Ubuntu manual: [https://help.ubuntu.com/community/UbuntuBonding](https://help.ubuntu.com/community/UbuntuBonding)  
-(search for "LACP")
+Please refer to <a href="https://help.ubuntu.com/community/UbuntuBonding" target="_blank">official Ubuntu manual</a> (search for "LACP").
