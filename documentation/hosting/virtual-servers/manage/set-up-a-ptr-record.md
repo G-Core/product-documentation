@@ -4,9 +4,9 @@ displayName: PTR record
 published: true
 order: 50
 toc:
-    --1--What is PTR record used for: ''
+--1--What is PTR record used for: "what-is-ptr-record-used-for"
+--1--How to set it up: "how-to-set-it-up"
 ---
-
 # Set up a PTR record
 
 A PTR record maps an IP address to a domain name as opposed to an A record which points a domain name to an IP address.
