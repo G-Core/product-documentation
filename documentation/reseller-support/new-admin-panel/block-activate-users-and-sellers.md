@@ -1,14 +1,15 @@
 ---
-title: new-admin-panel-interface
-displayName: New admin panel interface
+title: block-activate-users-and-sellers
+displayName: Block/Activate
 published: true
+order: 20
 toc:
     --1--What is the "Block" feature?: "what-is-the-block-feature"
     --1--Block/Activate a user or seller: "block-activate-a-user-or-seller"
     --1--Check if a user or seller is blocked or active: "check-if-a-user-or-seller-is-blocked-or-active"
 ---
 
-# New admin panel interface
+# Block/Activate users and sellers
 
 What is the "Block" feature?
 --------------------------------

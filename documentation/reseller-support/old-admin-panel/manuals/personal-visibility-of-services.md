@@ -2,6 +2,7 @@
 title: personal-visibility-of-services
 displayName: Personal visibility of services
 published: true
+order: 30
 toc:
 ---
 

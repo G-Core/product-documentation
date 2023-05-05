@@ -2,6 +2,7 @@
 title: monthly-reports
 displayName: Monthly reports
 published: true
+order: 90
 toc:
     --1--Generating report: "generating-report"
     --2--CDN: "cdn"

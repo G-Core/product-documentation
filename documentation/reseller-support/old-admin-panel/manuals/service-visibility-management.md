@@ -2,6 +2,7 @@
 title: service-visibility-management
 displayName: Service visibility management
 published: true
+order: 10
 toc:
 ---
 

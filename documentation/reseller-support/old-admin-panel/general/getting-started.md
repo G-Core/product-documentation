@@ -2,6 +2,7 @@
 title: getting-started
 displayName: Getting started
 published: true
+order: 10
 toc:
     --1--What's next?: "whats-next"
     --2--Inviting Sellers: "inviting-sellers"

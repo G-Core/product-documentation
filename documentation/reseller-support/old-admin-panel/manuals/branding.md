@@ -2,6 +2,7 @@
 title: branding
 displayName: Branding
 published: true
+order: 40
 toc:
    --1--Base control panel domain: "base-control-panel-domain"
    --1--Colors and logo: "colors-and-logo"
