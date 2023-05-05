@@ -4,9 +4,8 @@ displayName: PTR record
 published: true
 order: 50
 toc:
---1--What is PTR record used for: ""
---1--
---1--
+--1--What is PTR record used for: "what-is-ptr-record-used-for"
+--1--How to set it up: "how-to-set-it-up"
 ---
 # Set up a PTR record
 
