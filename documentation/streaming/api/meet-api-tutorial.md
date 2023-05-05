@@ -19,34 +19,34 @@ toc:
    --2--Allowed domain names: "allowed-domain-names"
    --2--Advanced: "advanced-url-attributes-for-rich-customization"
    --2--Attribute details: "attribute-details"
-   --3--&accessToken=<token>: "accesstoken-token"
-   --3--&autoplayWithoutAudioTrack=<true|false>: "autoplaywithoutaudiotrack-true-false"
-   --3--&canRecord=<true|false>: "canrecord-true-false"
-   --3--&controlsDisabled=<true|false>: "controlsdisabled-true-false"
-   --3--&disableChat=<true|false>: "disablechat-true-false"
-   --3--&handEnabled=<true|false>: "handenabled-true-false"
-   --3--&hideIndicators=<true|false>: "hideindicators-true-false"
-   --3--&displayName=<name>: "displayname-name"
-   --3--&itisparticipant=<true|false>: "itisparticipant-true-false"
-   --3--&lang=<code>: "lang-code"
-   --3--&maxBroadcasters=<num>: "maxbroadcasters-num"
-   --3--&maxWatchers=<num>: "maxwatchers-num"
-   --3--&minimizeTiles=<true|false>: "minimizetiles-true-false"
-   --3--&nameScreenDisabled=<true|false>: "namescreendisabled-true-false"
-   --3--&peerId=<id>: "peerid-id"
-   --3--&role=<role>: "role-role"
-   --3--&roomId=<id>: "roomid-id"
-   --3--&sortPeers=<true|false>: "sortpeers-true-false"
-   --3--&startWithFS=<true|false>: "startwithfs-true-false"
-   --3--&token=<jwt>: "token-jwt"
-   --3--&tokenLifetime=<milliseconds>: "tokenlifetime-milliseconds"
-   --3--&video=<url>: "video-url"
-   --3--&waitingRoom=<true|false>: "waitingroom-true-false"
+   --3--&accessToken=<token>: "accesstokentoken"
+   --3--&autoplayWithoutAudioTrack=<true|false>: "autoplaywithoutaudiotracktruefalse"
+   --3--&canRecord=<true|false>: "canrecordtruefalse"
+   --3--&controlsDisabled=<true|false>: "controlsdisabledtruefalse"
+   --3--&disableChat=<true|false>: "disablechattruefalse"
+   --3--&handEnabled=<true|false>: "handenabledtruefalse"
+   --3--&hideIndicators=<true|false>: "hideindicatorstruefalse"
+   --3--&displayName=<name>: "displaynamename"
+   --3--&itisparticipant=<true|false>: "itisparticipanttruefalse"
+   --3--&lang=<code>: "langcode"
+   --3--&maxBroadcasters=<num>: "maxbroadcastersnum"
+   --3--&maxWatchers=<num>: "maxwatchersnum"
+   --3--&minimizeTiles=<true|false>: "minimizetilestruefalse"
+   --3--&nameScreenDisabled=<true|false>: "namescreendisabledtruefalse"
+   --3--&peerId=<id>: "peeridid"
+   --3--&role=<role>: "rolerole"
+   --3--&roomId=<id>: "roomidid"
+   --3--&sortPeers=<true|false>: "sortpeerstruefalse"
+   --3--&startWithFS=<true|false>: "startwithfstruefalse"
+   --3--&token=<jwt>: "tokenjwt"
+   --3--&tokenLifetime=<milliseconds>: "tokenlifetimemilliseconds"
+   --3--&video=<url>: "videourl"
+   --3--&waitingRoom=<true|false>: "waitingroomtruefalse"
    --2--Debug and Dev URL attributes only: "debug-and-dev-url-attributes-only"
-   --3--&accessUrl=<url>: "accessurl-url"
-   --3--&apiEvent=<url>: "apievent-url"
-   --3--&authEvent=<header>: "authevent-header"
-   --3--&authorizationAccess=<header>: "authorizationaccess-header"
+   --3--&accessUrl=<url>: "accessurlurl"
+   --3--&apiEvent=<url>: "apieventurl"
+   --3--&authEvent=<header>: "autheventheader"
+   --3--&authorizationAccess=<header>: "authorizationaccessheader"
    --2--Moderator: "moderator"
    --2--Recording: "recording"
    --3--What can be recorded: "what-can-be-recorded"
@@ -151,10 +151,7 @@ Embedding a meeting into a service or app requires using an iframe with the sr
 
 Settings of iframe must have the special permissions required for video calling:
 
-```
 allow="camera;microphone;fullscreen;display-capture;autoplay;screen-wake-lock"
-
-``` 
 
 HTTP Feature-Policy header provides a mechanism to allow: 
 
@@ -171,7 +168,7 @@ Example:
 <iframe src="https://meet.gcore.com/call/?roomId=serv2bokxlj33"    
 allow="camera; microphone; fullscreen; display-capture; autoplay; screen-wake-lock"></iframe>
 
-``` 
+```
 
 ## Mobile app integration
 
@@ -293,13 +290,16 @@ Conferencing is customized by optional URL parameters for each iframe instance.
 | &amp;video=&lt;url&gt;                            | Display an external HTML player with external video broadcasting for joint viewing                | JWT, URL  |
 | &amp;waitingRoom=&lt;true|false&gt;               | Activate waiting room                                                                             | JWT only  |
 
+```
 Examples:
 
-1\. ```https://meet.gcore.com/call/?roomId=serv2testroom&displayName=JohnSnow```  
+1. https://meet.gcore.com/call/?roomId=serv2testroom&displayName=JohnSnow
   
-2\. ```https://meet.gcore.com/call/?roomId=serv2testroom&displayName=JohnSnow&disableChat=true```  
+2. https://meet.gcore.com/call/?roomId=serv2testroom&displayName=JohnSnow&disableChat=true
   
-3\. ```https://meet.gcore.com/call/?roomId=serv2testroom&displayName=JohnSnow&disableChat=true&lang=en```
+3. https://meet.gcore.com/call/?roomId=serv2testroom&displayName=JohnSnow&disableChat=true&lang=en
+
+```  
 
 ### Attribute details
 
@@ -887,7 +887,7 @@ meetIframeBridge.method({ name: "getScreenshotByPeerId", data: "id", callback: (
   <tr>
     <td class="tg-fr2s">join</td>
     <td class="tg-1onv">"constraints" = object<br> <br>Setup new devices:<br>data: {constraints: { video: { deviceId: 'id', label: 'label', groupId: 'groupId', kind: 'video'}, audio: { deviceId: 'deviceId', label: 'label', groupId: 'groupId', kind: 'audio'}}}<br> <br>If you want to use devices by default:<br>data: {constraints: {video: true, audio: true }}<br> </td>
-    <td class="tg-1onv">The Join method receives a stream from these devices (usually used with the <a href="#nameScreenDisabled=true|false">nameScreenDisabled</span></a> parameter)</td>
+    <td class="tg-1onv">The Join method receives a stream from these devices (usually used with the <a href="#nameScreenDisabled=true|false">nameScreenDisabled</a> parameter)</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
@@ -1487,7 +1487,7 @@ Example of output data:  
   "origin_resource": "9208-mediaplatform10835/videos/UaX2pjxen2guUw3.mp4",   
 }
 
-``` 
+```
 
 Please see more details in <a href="https://apidocs.gcore.com/streaming#operation/get_api_videos_id" target="_blank">documentation</a>.  
 
@@ -1511,7 +1511,7 @@ Calling API should be done through an endpoint on your server. This will help to
 
 To access Client API, we use  JSON Web Tokens (JWT), which is an open, industry standard  RFC 7519  method for representing claims securely between two parties.
 
-For more information what JWT is and how to use it please visit <a href="https://jwt.io/introduction" target="_blank">https://jwt.io/introduction
+For more information what JWT is and how to use it please visit <a href="https://jwt.io/introduction" target="_blank">https://jwt.io/introduction</a>
 
 JWT allows you to accurately determine the validity of the video room settings and unambiguously determine the belonging of the token to your account. 
 

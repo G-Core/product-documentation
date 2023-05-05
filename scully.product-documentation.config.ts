@@ -16,6 +16,7 @@ const categories = [
   'cloud',
   'cdn',
   'account-settings',
+  'reseller-support',
 ];
 
 const defaultPostRenderers = [copyToClipboardPlugin, replaceImgSrc];

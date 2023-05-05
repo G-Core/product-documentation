@@ -32,17 +32,17 @@ In Gcore, you can add an allowed address pair via an API request.
 
 <code-block>
 {   
-  "port\_id": <span style="color: core orange">"1f0ca628-a73b-42c0-bdac-7b10d023e097"</span>,   
-  "instance\_id": <span style="color: core orange">"bc688791-f1b0-44eb-97d4-07697294b1e1"</span>,   
-  "network\_id": <span style="color: core orange">"351b0dd7-ca09-431c-be53-935db3785067"</span>,   
+  "port\_id": <span style="color: orange">"1f0ca628-a73b-42c0-bdac-7b10d023e097"</span>,   
+  "instance\_id": <span style="color: orange">"bc688791-f1b0-44eb-97d4-07697294b1e1"</span>,   
+  "network\_id": <span style="color: orange">"351b0dd7-ca09-431c-be53-935db3785067"</span>,   
   "allowed\_address\_pairs": \[   
     {   
-      "ip\_address": <span style="color: core orange">"192.168.123.20"</span>,   
-      "mac\_address": <span style="color: core orange">"00:16:3e:f2:87:16"</span>  
+      "ip\_address": <span style="color: orange">"192.168.123.20"</span>,   
+      "mac\_address": <span style="color: orange">"00:16:3e:f2:87:16"</span>  
     },	   
     {   
-      "ip\_address": <span style="color: core orange">"192.168.0.2/32"</span>,   
-      "mac\_address": <span style="color: core orange">"00:16:3e:f2:87:89"</span>  
+      "ip\_address": <span style="color: orange">"192.168.0.2/32"</span>,   
+      "mac\_address": <span style="color: orange">"00:16:3e:f2:87:89"</span>  
     }   
   \]   
 } 
