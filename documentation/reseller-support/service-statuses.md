@@ -1,7 +1,7 @@
 ---
 title: service-statuses
 displayName: Service statuses
-published: false
+published: true
 toc:
 ---
 

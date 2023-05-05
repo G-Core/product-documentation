@@ -1,7 +1,7 @@
 ---
 title: cdn-service-management
 displayName: CDN service management
-published: false
+published: true
 toc:
    --1--Open CDN settings: "open-cdn-settings"
    --1--Settings sections: "settings-sections"

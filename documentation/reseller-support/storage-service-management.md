@@ -1,7 +1,7 @@
 ---
 title: storage-service-management
 displayName: Storage service management
-published: false
+published: true
 toc:
     --1--Activate Service: "activate-service"
     --1--Trial Settings: "trial-settings"

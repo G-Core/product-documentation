@@ -1,7 +1,7 @@
 ---
 title: branding
 displayName: Branding
-published: false
+published: true
 toc:
    --1--Base control panel domain: "base-control-panel-domain"
    --1--Colors and logo: "colors-and-logo"

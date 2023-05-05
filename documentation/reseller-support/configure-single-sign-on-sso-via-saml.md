@@ -1,7 +1,7 @@
 ---
 title: configure-single-sign-on-sso-via-saml
 displayName: Configure Single Sign-On (SSO) via SAML
-published: false
+published: true
 toc:
    --1--Configuring SSO in the Admin Panel: "configuring-sso-in-the-admin-panel"
    --1--Data for the identity provider: "data-for-the-identity-provider"

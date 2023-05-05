@@ -1,7 +1,7 @@
 ---
 title: service-visibility-management
 displayName: Service visibility management
-published: false
+published: true
 toc:
 ---
 

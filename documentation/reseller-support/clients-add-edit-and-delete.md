@@ -1,7 +1,7 @@
 ---
 title: clients-add-edit-and-delete
 displayName: Clients add, edit and delete
-published: false
+published: true
 toc:
    --1--Create an account: "create-an-account"
    --1--Edit an account: "edit-an-account"

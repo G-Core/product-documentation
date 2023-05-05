@@ -1,7 +1,7 @@
 ---
 title: personal-visibility-of-services
 displayName: Personal visibility of services
-published: false
+published: true
 toc:
 ---
 

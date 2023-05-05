@@ -1,7 +1,7 @@
 ---
 title: block-activate-users-and-sellers
 displayName: Block/Activate users and sellers
-published: false
+published: true
 toc:
    --1--What is it?: "what-is-the-block--feature"
    --1--Block/Activate: "block-activate-a-user-or-seller"

@@ -1,7 +1,7 @@
 ---
 title: how-to-set-up-control-panel-services-urls
 displayName: How to set up control panel services URLs
-published: false
+published: true
 toc:
 ---
 

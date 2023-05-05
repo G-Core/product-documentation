@@ -50,8 +50,8 @@ All EU countries and their VAT rate (%) are listed below.
   overflow:hidden;padding:10px 5px;word-break:normal;}
 .tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
   font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg .tg-9r46{background-color:#FFF;border-color:inherit;color:#282828;font-weight:bold;text-align:center;vertical-align:top}
-.tg .tg-twlz{background-color:#FFF;border-color:inherit;color:#282828;text-align:center;vertical-align:top}
+.tg .tg-9r46{background-color:#FFF;border-color:inherit;color:#282828;font-weight:bold;text-align:center;vertical-align:top; border: 1px solid #d7dbdf;}
+.tg .tg-twlz{background-color:#FFF;border-color:inherit;color:#282828;text-align:center;vertical-align:top; border: 1px solid #d7dbdf;}
 </style>
 <table class="tg">
 <thead>
@@ -213,8 +213,8 @@ All EU countries and their VAT rate (%) are listed below.
   overflow:hidden;padding:10px 5px;word-break:normal;}
 .tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
   font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg .tg-9r46{background-color:#FFF;border-color:inherit;color:#282828;font-weight:bold;text-align:center;vertical-align:top}
-.tg .tg-twlz{background-color:#FFF;border-color:inherit;color:#282828;text-align:center;vertical-align:top}
+.tg .tg-9r46{background-color:#FFF;border-color:inherit;color:#282828;font-weight:bold;text-align:center;vertical-align:top; border: 1px solid #d7dbdf;}
+.tg .tg-twlz{background-color:#FFF;border-color:inherit;color:#282828;text-align:center;vertical-align:top; border: 1px solid #d7dbdf;}
 </style>
 <table class="tg">
 <thead>
@@ -247,8 +247,8 @@ All EU countries and their VAT rate (%) are listed below.
   overflow:hidden;padding:10px 5px;word-break:normal;}
 .tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
   font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg .tg-9r46{background-color:#FFF;border-color:inherit;color:#282828;font-weight:bold;text-align:center;vertical-align:top}
-.tg .tg-twlz{background-color:#FFF;border-color:inherit;color:#282828;text-align:center;vertical-align:top}
+.tg .tg-9r46{background-color:#FFF;border-color:inherit;color:#282828;font-weight:bold;text-align:center;vertical-align:top;  border: 1px solid #d7dbdf;}
+.tg .tg-twlz{background-color:#FFF;border-color:inherit;color:#282828;text-align:center;vertical-align:top;  border: 1px solid #d7dbdf;}
 </style>
 <table class="tg">
 <thead>
@@ -439,8 +439,8 @@ All EU countries and their VAT rate (%) are listed below.
   overflow:hidden;padding:10px 5px;word-break:normal;}
 .tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
   font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg .tg-9r46{background-color:#FFF;border-color:inherit;color:#282828;font-weight:bold;text-align:center;vertical-align:top}
-.tg .tg-twlz{background-color:#FFF;border-color:inherit;color:#282828;text-align:center;vertical-align:top}
+.tg .tg-9r46{background-color:#FFF;border-color:inherit;color:#282828;font-weight:bold;text-align:center;vertical-align:top;  border: 1px solid #d7dbdf;}
+.tg .tg-twlz{background-color:#FFF;border-color:inherit;color:#282828;text-align:center;vertical-align:top;  border: 1px solid #d7dbdf;}
 </style>
 <table class="tg">
 <thead>

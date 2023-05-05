@@ -1,7 +1,7 @@
 ---
 title: global-visibility-of-services
 displayName: Global visibility of services
-published: false
+published: true
 toc:
 ---
 

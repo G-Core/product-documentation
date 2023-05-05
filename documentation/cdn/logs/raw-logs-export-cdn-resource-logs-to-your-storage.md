@@ -4,22 +4,22 @@ displayName: Raw Logs (paid)
 published: true
 order: 10
 toc:
-   --1--What is a Raw Logs feature?: "what-is-a-raw-logs-feature"
-   --1--Export to an S3 storage: "export-logs-to-an-s3-storage"
-   --2--Amazon storage: "amazon-storage"
-   --2--Non-Amazon storage: "non-amazon-storage"
-   --1--Export to an FTP/SFTP storage: "export-logs-to-an-ftp-sftp-storage"
-   --1--Export time intervals: "export-time-intervals"
-   --1--Log path example: "log-path-example"
-   --1--Log format: "log-format"
-   --1--Log example: "log-example"
-   --1--Log fields: "log-fields"
+--1--What is a Raw Logs feature?: "what-is-a-raw-logs-feature"
+--1--Export to an S3 storage: "export-logs-to-an-s3-storage"
+--2--Amazon storage: "amazon-storage"
+--2--Non-Amazon storage: "non-amazon-storage"
+--1--Export to an FTP/SFTP storage: "export-logs-to-an-ftp-sftp-storage"
+--1--Export time intervals: "export-time-intervals"
+--1--Log path example: "log-path-example"
+--1--Log format: "log-format"
+--1--Log example: "log-example"
+--1--Log fields: "log-fields"
 ---
 # Raw Logs: export CDN resource logs to your storage
 
 ## What is a Raw Logs feature?
 
-Raw Logs is an option that enables an automatic export of CDN resource logs to your storage. Logs contain information about user requests sent to cache servers and pre-cache servers (if <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">origin shielding</a> is enabled). 
+Raw Logs is an option that enables an automatic export of CDN resource logs to your storage. Logs contain information about user requests sent to cache servers and pre-cache servers (if <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">origin shielding</a> is enabled).
 
 **Note**: The feature is paid. To activate, contact us via [support@gcore.com](mailto:support@gcore.com). After activation, enable "Raw Logs" in your control panel and configure export to S3, FTP, or SFTP storage.
 
@@ -32,7 +32,7 @@ Raw Logs is an option that enables an automatic export of CDN resource logs to y
 
 1\. Leave the box "Do not send empty logs" checked if you don't want to receive empty logs. If you want to receive empty logs, uncheck it.
 
-2\. If you use our <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">origin shielding</a> option, you can see a checkbox "Add logs from origin shielding". Check the box if you want to receive logs from both edge servers and pre-cache shielding servers. 
+2\. If you use our <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">origin shielding</a> option, you can see a checkbox "Add logs from origin shielding". Check the box if you want to receive logs from both edge servers and pre-cache shielding servers.
 
 3\. For storage type, select "Amazon".
 
@@ -42,12 +42,12 @@ Raw Logs is an option that enables an automatic export of CDN resource logs to y
 
 6\. Specify your AWS region — the location of a server where your storage is hosted. This is optional: for most storages, the region is determined automatically. You can leave the field empty. But we recommend filling it out to ensure that your logs are exported successfully.
 
-7\. Choose how to organize storage: put logs of all CDN resources into one bucket or use separate buckets for each CDN resource. 
+7\. Choose how to organize storage: put logs of all CDN resources into one bucket or use separate buckets for each CDN resource.
 
-8\. Specify bucket(s) for log export. Make sure you indicate an existing bucket. Otherwise, your logs cannot be exported. Specify a folder name if you want to export logs to a specific folder within a bucket.  
+8\. Specify bucket(s) for log export. Make sure you indicate an existing bucket. Otherwise, your logs cannot be exported. Specify a folder name if you want to export logs to a specific folder within a bucket.
 
-9\. Click **Save changes**.  
-  
+9\. Click **Save changes**.
+
 <img src="https://support.gcore.com/hc/article_attachments/12745153936913" alt="" width="70%">
 
 ### Non-Amazon storage
@@ -64,18 +64,18 @@ Raw Logs is an option that enables an automatic export of CDN resource logs to y
 
 6\. Specify your secret access key. If you use <a href="https://gcore.com/storage" target="_blank">Gcore S3 storage</a>, you can find its secret access key in your personal account in the "<a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage#s3" target="_blank">Secret key</a>" field.
 
-7\. Specify a bucket hostname — a bucket ID that is used by your S3 storage system in the ```{bucket_name}.{hostname}``` format. It is required to ensure that logs are exported to a correct bucket within a storage. This field is optional: for some storages, a bucket hostname is determined automatically. If you use Gcore or Yandex.Cloud storage, a bucket hostname is required. A bucket hostname of the Gcore storage looks as follows: ```{bucket name}.{hostname from step 3}```. For example: ```examplename.s-ed1.cloud.gcore.lu```. A bucket hostname of Yandex.Cloud storage looks as follows: ```{bucket name}.{Yandex.Cloud hostname}```. For example: ```examplename.storage.yandexcloud.net```.
+7\. Specify a bucket hostname — a bucket ID that is used by your S3 storage system in the ```{bucket_name}.{hostname}``` format. It is required to ensure that logs are exported to a correct bucket within a storage. This field is optional: for some storages, a bucket hostname is determined automatically. If you use Gcore or Yandex.Cloud storage, a bucket hostname is required. A bucket hostname of the Gcore storage looks as follows: ```{bucket name}.{hostname from step 3}```. For example: ```examplename.s-ed1.cloud.gcore.lu```. A bucket hostname of Yandex.Cloud storage looks as follows: ```{bucket name}.{Yandex.Cloud hostname}```. For example: ```examplename.storage.yandexcloud.net```.
 
-8\. Specify a region — location ID of a server where your storage is hosted. This is optional: for some storages, the region is determined automatically. You can leave the field empty. If you use <a href="https://gcore.com/storage" target="_blank">Gcore S3 storage</a>, a location ID is required. You can find it in the "Details" of the storage. Your location ID is a part of your hostname to the first dot.  
-  
+8\. Specify a region — location ID of a server where your storage is hosted. This is optional: for some storages, the region is determined automatically. You can leave the field empty. If you use <a href="https://gcore.com/storage" target="_blank">Gcore S3 storage</a>, a location ID is required. You can find it in the "Details" of the storage. Your location ID is a part of your hostname to the first dot.
+
 <img src="https://support.gcore.com/hc/article_attachments/5620116388497/image_1377.png" alt="" width="50%">  
-  
+
 9\. Choose how to organize storage: put logs of all CDN resources into one bucket or to use separate buckets for each CDN resource.
 
 10\. Specify bucket(s) for log export. Make sure you indicate an existing bucket. Otherwise, your logs cannot be exported. If you want to export logs to a specific folder within a bucket, specify a folder name.
 
-11\. Click **Save changes**.  
-  
+11\. Click **Save changes**.
+
 <img src="https://support.gcore.com/hc/article_attachments/12745252125201" alt="" width="70%">
 
 ## Export logs to an FTP/SFTP storage
@@ -88,18 +88,18 @@ Raw Logs is an option that enables an automatic export of CDN resource logs to y
 
 4\. Specify a storage username. If you use <a href="https://gcore.com/storage" target="_blank">Gcore SFTP storage</a>, you can find its username in the "Details" of your storage in the "<a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage#sftp" target="_blank">Storage/User name</a>" field.
 
-5\. Enter your storage password. 
+5\. Enter your storage password.
 
-6\. Specify a folder for export. If you use <a href="https://gcore.com/storage" target="_blank">Gcore SFTP storage</a>, specify the root (home) folder where other folders originate from. You can find its name in the "Details" of your SFTP storage at the end of the "Upload path" field.  
-  
+6\. Specify a folder for export. If you use <a href="https://gcore.com/storage" target="_blank">Gcore SFTP storage</a>, specify the root (home) folder where other folders originate from. You can find its name in the "Details" of your SFTP storage at the end of the "Upload path" field.
+
 <img src="https://support.gcore.com/hc/article_attachments/5620132659217/image_1379.png" alt="" width="50%">
 
-If you use an SFTP storage from another provider, clarify whether a root folder that includes other folders is created by default. If not, leave the field empty. If yes, specify a folder name. 
+If you use an SFTP storage from another provider, clarify whether a root folder that includes other folders is created by default. If not, leave the field empty. If yes, specify a folder name.
 
-7\. Choose how to organize storage: put logs of all CDN resources into one folder or to use separate folders for each CDN resource. Then specify a folder name. If you specify a non-existent folder, logs will be exported to a root folder. 
+7\. Choose how to organize storage: put logs of all CDN resources into one folder or to use separate folders for each CDN resource. Then specify a folder name. If you specify a non-existent folder, logs will be exported to a root folder.
 
-8\. Click **Save changes**.  
-  
+8\. Click **Save changes**.
+
 
 <img src="https://support.gcore.com/hc/article_attachments/12745350391697" alt="" width="70%">
 
@@ -160,7 +160,7 @@ AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 YaBrowser/16.10.0.23
 Log fields
 ----------
 
-Not all fields are important. Some of them relate to our internal CDN system and are not meaningful for you. In the table below, we have highlighted such system fields in italics. Other fields can be helpful for traffic analysis or statistics. 
+Not all fields are important. Some of them relate to our internal CDN system and are not meaningful for you. In the table below, we have highlighted such system fields in italics. Other fields can be helpful for traffic analysis or statistics.
 
 <table class="tg">
 <thead>
@@ -183,12 +183,12 @@ Not all fields are important. Some of them relate to our internal CDN system and
   </tr>
   <tr>
     <td class="tg-1onv">[$time_local]</td>
-    <td class="tg-1onv">[26/Apr/2019:09:47:40 +0000]</td>
+    <td class="tg-1onv">[26/Apr/2019<br>:09:47:40 +0000]</td>
     <td class="tg-7zkw">Local time in Common Log Format</td>
   </tr>
   <tr>
     <td class="tg-7zkw">$request</td>
-    <td class="tg-7zkw">GET /ContentCommon/images/image.png HTTP/1.1</td>
+    <td class="tg-7zkw">GET /ContentCommon/<br>images/image.png<br>HTTP/1.1</td>
     <td class="tg-7zkw">HTTP method, requested file path, HTTP version</td>
   </tr>
   <tr>
@@ -203,12 +203,12 @@ Not all fields are important. Some of them relate to our internal CDN system and
   </tr>
   <tr>
     <td class="tg-7zkw">$http_referer</td>
-    <td class="tg-7zkw">https://example.com/videos/10</td>
+    <td class="tg-7zkw">https://example.com<br>/videos/10</td>
     <td class="tg-7zkw">Referrer - a URL requested by a user</td>
   </tr>
   <tr>
     <td class="tg-7zkw">$http_user_agent</td>
-    <td class="tg-7zkw">Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_1) <br>AppleWebKit/537.36 (KHTML, like Gecko) <br>Chrome/53.0.2785.116 <br>YaBrowser/16.10.0.2309 <br>Safari/537.36</td>
+    <td class="tg-7zkw">Mozilla/5.0<br>(Macintosh; Intel<br>Mac OS X 10_12_1)<br>AppleWebKit/537.36<br>(KHTML, like Gecko)<br>Chrome/53.0.2785.116<br>YaBrowser/16.10.0.2309<br>Safari/537.36</td>
     <td class="tg-7zkw">User agent that was used to send a request (browser or other application)</td>
   </tr>
   <tr>
@@ -353,7 +353,7 @@ Not all fields are important. Some of them relate to our internal CDN system and
   </tr>
   <tr>
     <td class="tg-4oen">$request_id<br>(internal system variable)</td>
-    <td class="tg-4oen">c1c0f12ab35b7cccccd5dc0a454879c5</td>
+    <td class="tg-4oen">c1c0f12ab35b7<br>cccccd5dc0a<br>454879c5</td>
     <td class="tg-4oen">Unique request identifier generated from 16 random bytes, in hexadecimal form</td>
   </tr>
   <tr>
@@ -368,12 +368,12 @@ Not all fields are important. Some of them relate to our internal CDN system and
   </tr>
   <tr>
     <td class="tg-4oen">$ssl_cipher<br>(internal system variable)</td>
-    <td class="tg-4oen">ECDHE-RSA-AES256-GCM-SHA384</td>
+    <td class="tg-4oen">ECDHE-RSA-AES256<br>-GCM-SHA384</td>
     <td class="tg-4oen">Cipher name used for an established SSL connection</td>
   </tr>
   <tr>
     <td class="tg-4oen">$ssl_session_id<br>(internal system variable)</td>
-    <td class="tg-4oen">28a4184139cb43cdc79006cf2d1a4ac93bdc****</td>
+    <td class="tg-4oen">28a4184139cb43<br>cdc79006cf2d1<br>a4ac93bdc****</td>
     <td class="tg-4oen">Session ID of an established SSL connection</td>
   </tr>
   <tr>

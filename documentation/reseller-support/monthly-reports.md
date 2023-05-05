@@ -1,7 +1,7 @@
 ---
 title: monthly-reports
 displayName: Monthly reports
-published: false
+published: true
 toc:
     --1--Generating report: "generating-report"
     --2--CDN: "cdn"

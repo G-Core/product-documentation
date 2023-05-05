@@ -1,7 +1,7 @@
 ---
 title: new-admin-panel-interface
 displayName: New admin panel interface
-published: false
+published: true
 toc:
     --1--What is the "Block" feature?: "what-is-the-block-feature"
     --1--Block/Activate a user or seller: "block-activate-a-user-or-seller"

@@ -1,7 +1,7 @@
 ---
 title: api
 displayName: API
-published: false
+published: true
 toc:
 ---
 

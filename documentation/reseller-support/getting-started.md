@@ -1,7 +1,7 @@
 ---
 title: getting-started
 displayName: Getting started
-published: false
+published: true
 toc:
     --1--What's next?: "whats-next"
     --2--Inviting Sellers: "inviting-sellers"
