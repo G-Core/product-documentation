@@ -37,4 +37,8 @@ export const categories: Array<Category> = [
         name: 'Web Security',
         url: 'web-security',
     },
+    {
+        name: 'Reseller Support',
+        url: 'reseller-support',
+    },
 ];
