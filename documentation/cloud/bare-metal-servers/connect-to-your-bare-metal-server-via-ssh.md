@@ -2,6 +2,7 @@
 title: connect-to-your-bare-metal-server-via-ssh
 displayName: Connect to your bare metal server via SSH
 published: true
+order: 30
 toc:
    --1--Connecting using a pair of SSH keys. Preparation: "connecting-using-a-pair-of-ssh-keys-preparation"
    --2--SSH keys generation (Windows 7/8): "generate-ssh-keys-windows-7-8"
@@ -95,9 +96,12 @@ To create an SSH key from your personal account, follow the steps below. 
 
 2\. Click Autogenerate SSH key. 
 
-<img src="https://support.gcore.com/hc/article_attachments/360011030697/autogenetae.png" alt="autogenetae.png">3\. Enter the key name and click Create SSH key. 
+<img src="https://support.gcore.com/hc/article_attachments/360011030697/autogenetae.png" alt="autogenetae.png">
+
+3\. Enter the key name and click Create SSH key. 
 
 <img src="https://support.gcore.com/hc/article_attachments/360011096738/________________________.png" alt="________________________.png">  
+
 **Important!** Only Latin characters, underscores, spaces, and dots can be used. The length must be between 3 and 63 characters.  
 
 4\. The key will be generated and displayed in the list of ssh keys, its public part will already be stored in the system, and the private key will be downloaded to your local storage.  
@@ -165,6 +169,7 @@ The key will be automatically added to your machine.  
 To connect using a password, configure it while creating an instance or Bare Metal server. In Additional options click on "User data". This will open a field, where you can enter the script that will be processed by a cloud-init agent running on your machine. 
 
 <img src="https://support.gcore.com/hc/article_attachments/360008785018/13.png" alt="13.png">  
+
 Paste the code below with the password chosen by you:
 
 ```

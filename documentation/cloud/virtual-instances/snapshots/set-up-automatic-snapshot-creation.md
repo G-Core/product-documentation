@@ -31,7 +31,7 @@ You can access this feature by logging into your personal account and navigating
 
 Open “Snapshot Schedules” and click “Create Snapshot Schedule” in the upper right corner. The system will ask you to enter a name. Name the schedule so that it will be easier to distinguish it from others later — for example, you can use a volume name: "Snapshot of \[your volume name\]".
 
-[<img src="https://support.gcore.com/hc/article_attachments/5286531058321/mceclip0.png" alt="mceclip0.png"><img src="https://support.gcore.com/hc/article_attachments/5286548993297/mceclip1.png" alt="mceclip1.png">](https://support.gcorelabs.com/hc/article_attachments/360019886678/mceclip1.png)
+<img src="https://support.gcore.com/hc/article_attachments/5286531058321/mceclip0.png" alt="mceclip0.png">
 
 Click on the created schedule to configure it.
 
@@ -65,7 +65,7 @@ Example. You have configured a schedule that creates a snapshot every day and it
 
 3. Select the schedule type — "Custom" or "Period"
 
-[_<img src="https://support.gcore.com/hc/article_attachments/360019795037/mceclip23.png" alt="mceclip23.png" width="320" height="321">_](https://support.gcorelabs.com/hc/article_attachments/360019795037/mceclip23.png)
+[_<img src="https://support.gcore.com/hc/article_attachments/360019795037/mceclip23.png" alt="mceclip23.png" width="320" height="321">_]
 
 _With the “Custom” schedule,_ you can specify months, days of week, hours and minutes for creation of snapshots. For example, if you select the months January and May, the day Monday and the time 16:00, the system will create about 8 snapshots per year — at 16:00 every Monday in January and May.
 

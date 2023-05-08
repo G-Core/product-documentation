@@ -94,9 +94,12 @@ To create an ssh key from your personal account, follow the steps below. 
 
 2\. Click "Autogenerate SSH key". 
 
-<img src="https://support.gcore.com/hc/article_attachments/360011030697/autogenetae.png" alt="autogenetae.png">3\. Enter the key name and click Create SSH key. 
+<img src="https://support.gcore.com/hc/article_attachments/360011030697/autogenetae.png" alt="autogenetae.png">
+
+3\. Enter the key name and click Create SSH key. 
 
 <img src="https://support.gcore.com/hc/article_attachments/360011096738/________________________.png" alt="________________________.png">  
+
 **Important!** Only Latin characters, underscores, spaces, and dots can be used. The length must be between 3 and 63 characters.  
 
 4\. The key will be generated and displayed in the list of ssh keys, its public part will already be stored in the system, and the private key will be downloaded to your local storage.  
@@ -222,7 +225,6 @@ To connect, use <a href=“https://www.putty.org/” target="_blank">the PuTTY 
 **Important!** If your private key is saved in .pem format, convert it to .ppk format using the article 
 <a href=“https://gcore.com/docs/cloud/ssh-keys/convert-an-ssh-key-from-pem-to-ppk” target="_blank">Convert an SSH key from PEM to PPK</a>.
 
-
 8\. Click Open. The console will open. 
 
  <img src="https://support.gcore.com/hc/article_attachments/360011099078/login_as.png" alt="login_as.png" width="545" height="345">
@@ -230,6 +232,7 @@ To connect, use <a href=“https://www.putty.org/” target="_blank">the PuTTY 
 9\. In the "login" field, enter the user name that was given when creating the instance. You can find it in the instance's tab, you will see is an inscription of the “\[login\]@\[IP of the instance\]” type. Most often, the login coincides with the name of the OS. For example, for the instance below it is "Ubuntu".
 
 <img src="https://support.gcorelabs.com/hc/article_attachments/360020483437/image7.png">  
+
 10\. (Step for connecting using a pair of SSH keys only) enter the password you configured while creating an instance.
  
 11\. Press Enter.  

@@ -2,6 +2,7 @@
 title: create-a-bare-metal-server
 displayName: Create a bare metal server
 published: true
+order: 20
 toc:
 ---
 # Create a bare metal server
