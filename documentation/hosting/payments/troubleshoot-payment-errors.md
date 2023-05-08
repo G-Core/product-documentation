@@ -11,14 +11,9 @@ toc:
    --2--Ayden processing error (for bank cards, AMEX, WeChat and AliPay): "ayden-processing-errors-for-bank-cards--amex--wechat-and-alipay"
    --1--Payment via bank transfer: "payment-via-bank-transfer"
 ---
-  
-  
-  
-  
-  
+# Troubleshoot payment errors
 
-Payment via PayPal, a bank card, AMEX, WeChat, AliPay
------------------------------------------------------
+## Payment via PayPal, a bank card, AMEX, WeChat, AliPay
 
 ### Insufficient funds
 
@@ -35,19 +30,20 @@ Please contact the support team of your payment service provider or try another 
 When selecting the currency of payment, please ensure that your chosen payment provider supports that particular currency. To check your provider, open **Dashboard** and go to the **Information** section**.**
 
 *   For payments in EUR, the provider is G-core.
-*   For payments in USD, the provider is G-Core Labs usd.<img src="https://support.gcore.com/hc/article_attachments/13219595520273" alt="Screenshot_2023-02-23_at_11.11_1.jpg" width="375" height="302">
+*   For payments in USD, the provider is G-Core Labs usd.
+
+<img src="https://support.gcore.com/hc/article_attachments/13219595520273" alt="">
 
 ### Ayden processing errors (for bank cards, AMEX, WeChat and AliPay)
 
-In some cases, issues may occur on the Ayden processing side. If you encounter such an error, please [contact our technical support](https://support.gcore.com/hc/en-us/articles/115003753885).
+In some cases, issues may occur on the Ayden processing side. If you encounter such an error, please <a href="https://gcore.com/docs/hosting/contact-our-technical-support" target="_blank">write to technical support</a>.
 
 To investigate, please send us a screenshot of the transaction containing the following information: payment date, transaction ID, payment amount, pfx.
 
-Payment via bank transfer
--------------------------
+## Payment via bank transfer
 
 Payments made via bank transfer are typically processed within one week.
 
-If a payment remains in the "New" status for longer than 1 week, there may be processing issues. To resolve the issue as soon as possible, please [contact our technical support](https://support.gcore.com/hc/en-us/articles/115003753885).
+If a payment remains in the "New" status for longer than 1 week, there may be processing issues. To resolve the issue as soon as possible, please <a href="https://gcore.com/docs/hosting/contact-our-technical-support" target="_blank">write to technical support</a>.
 
 Please provide a screenshot or any transaction confirmation with payment details.

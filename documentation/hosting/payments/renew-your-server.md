@@ -10,8 +10,8 @@ toc:
     --1--Renew the server: "renew-the-server"
     --1--Insufficient funds on your balance: "insufficient-funds-on-your-balance"
 ---
-Expenses
---------
+
+## Expenses
 
 ### How to check expenses
 
@@ -21,7 +21,7 @@ At the beginning of a new payment period, we automatically withdraw a required p
 
 The payment period is related to the date of the server's purchase. If a server is purchased on the 13th, a new payment period will start on the 13th and end on the 12th of each month.
 
-Three days before the end of the current payment period we send a reminder to your email. If you do not receive them, [check your notifications settings in the Control Panel](https://support.gcorelabs.com/hc/en-us/articles/115003752905-Control-panel-settings).
+Three days before the end of the current payment period we send a reminder to your email. If you do not receive them, <a href="https://gcore.com/docs/hosting/account-managemnt/set-up-notifications" target="_blank">check your notifications settings in the Control Panel</a>.
 
 ### Traffic expenses
 

@@ -7,18 +7,18 @@ toc:
    --1--A volume of incoming and outcoming traffic: "a-volume-of-incoming-and-outcoming-traffic"
    --1--Total traffic volume: "total-traffic-volume"
 ---
-A volume of incoming and outcoming traffic
-------------------------------------------
+# Check statistics of your dedicated server
 
-In the DCI Manager panel, go to the Statistics section and click on the Traffic tab.
+## A volume of incoming and outcoming traffic
 
-Select a period for which you want to retrieve statistics and click OK.
+In the DCI Manager panel, go to the "Statistics" section and click on the "Traffic" tab.
 
-<img class="confluence-embedded-image confluence-external-resource" src="http://i.imgur.com/8sG0uop.png" width="724" height="159" data-image-src="http://i.imgur.com/8sG0uop.png">
+Select a period for which you want to retrieve statistics and click **OK**.
 
-Total traffic volume
---------------------
+<img class="confluence-embedded-image confluence-external-resource" src="http://i.imgur.com/8sG0uop.png" width="70%" data-image-src="http://i.imgur.com/8sG0uop.png">
 
-On the Common Traffic section you can see a total traffic volume.
+## Total traffic volume
 
-<img class="confluence-embedded-image confluence-external-resource" src="http://i.imgur.com/Uj01YMw.png" width="760" height="228" data-image-src="http://i.imgur.com/Uj01YMw.png">
+On the "Common Traffic" section you can see a total traffic volume.
+
+<img class="confluence-embedded-image confluence-external-resource" src="http://i.imgur.com/Uj01YMw.png" width="70%" data-image-src="http://i.imgur.com/Uj01YMw.png">
