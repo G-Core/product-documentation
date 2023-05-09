@@ -6,26 +6,27 @@ toc:
    --1--Basics: "basics-you-need-to-know"
    --1--Add users with limited rights: "add-users-with-limited-rights"
 ---
-  
+# Add users with limited rights to a Kubernetes cluster
 
-To get started, make sure you have kubectl installed on your computer. If you haven’t installed it yet, refer to our article: [Kubectl. How to connect to Kubernetes cluster](https://gcore.com/support/articles/4417449596305/).
+To get started, make sure you have kubectl installed on your computer. If you haven’t installed it yet, refer to our article: <a href=“https://gcore.com/docs/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster” target="_blank">Instal kubectl and connect to a Kubernetes cluster</a>.
 
-Basics you need to know
------------------------
+## Basics you need to know
 
-**What are service accounts?** Service accounts are used to allow pods to read and use Kubernetes API objects as well as to create a kubeconfig file, which grants access to the Kubernetes objects limited to the namespace for any user or service. For more information,refer to the Kubernetes documentation: [Managing Service Accounts](https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/).
+**What are service accounts?** Service accounts are used to allow pods to read and use Kubernetes API objects as well as to create a kubeconfig file, which grants access to the Kubernetes objects limited to the namespace for any user or service. For more information,refer to the Kubernetes documentation: <a href=“https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/” target="_blank">Managing Service Accounts</a>.
 
-**What is a namespace?** In Kubernetes, a namespace is a method of organizing and isolating groups of resources within a single cluster. This helps various teams, projects, or customers to share a Kubernetes cluster. For more information, refer to the Kubernetes documentation: [Namespaces](https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/).
+**What is a namespace?** In Kubernetes, a namespace is a method of organizing and isolating groups of resources within a single cluster. This helps various teams, projects, or customers to share a Kubernetes cluster. For more information, refer to the Kubernetes documentation: <a href=“https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/” target="_blank">Namespaces</a>.
 
-Add users with limited rights
------------------------------
+## Add users with limited rights
 
 1. Create a namespace using kubectl. Enter the following command:
 
+```
 kubectl create ns test-namespace
+```
 
 2\. Create a service account. You can use the code below:
 
+```
 cat <<EOF | kubectl apply -f -
 **apiVersion:** v1  
 **kind:** ServiceAccount  
@@ -46,16 +47,21 @@ cat <<EOF | kubectl apply -f -
 	**name:** edit   
 	**apiGroup:** rbac.authorization.k8s.io  
 EOF
+```
 
-Replace "_test-namespace"_ with your namespace name, "_test-serviceaccount"_ with your service account name, _"__test-serviceaccount-rolebinding"_ with your role binding name. 
+Replace "test-namespace" with your namespace name, "test-serviceaccount" with your service account name, "test-serviceaccount-rolebinding" with your role binding name. 
 
 3\. Obtain a token from the account. Find the secret named _test-serviceaccount-token_\-{% random characters here %} (of type kubernetes.io/service-account-token). 
 
+```
 kubectl -n test-namespace get secret
+```
 
 Retrieve the token from the secret and encode it in this method.
 
+```
 kubectl -n test-namespace get secret test-serviceaccount-token-{% some random characters here%} -o jsonpath="{.data.token}" | base64 -d
+```
 
 4. Prepare your Kubernetes config file for the service account. To do this, edit the file’s content according to the screenshots below.
 

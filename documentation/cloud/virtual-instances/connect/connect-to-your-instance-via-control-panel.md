@@ -11,9 +11,11 @@ toc:
 
 To connect to an instance via the Console in your Control Panel, click on the desired instance, and in the next window — on "Access to Console".
 
+<media-gallery>
 <img src="https://support.gcore.com/hc/article_attachments/5286387063825/mceclip0.png" alt="mceclip0.png">
 
 <img src="https://support.gcore.com/hc/article_attachments/360020585258/image4.png" alt="image4.png">
+</media-gallery>
 
 To connect, the system will ask you to enter your username and password. The location of them depends on the instance’s OS.
 

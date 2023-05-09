@@ -2,6 +2,7 @@
 title: about-bare-metal-servers
 displayName: About bare metal servers
 published: true
+order: 10
 toc:
    --1--What is a bare metal server?: "what-is-a-bare-metal-server"
    --1--How does the service work?: "how-does-bare-metal-work"
@@ -33,7 +34,6 @@ There are several options to manage a bare metal server:
 *   Terraform. To learn more, see <a href=“https://registry.terraform.io/providers/G-Core/gcorelabs/latest/docs/resources/gcore_baremetal” target="_blank">our official Terraform provider documentation for bare metal servers</a>
 
 ## Bare metal configurations
--------------------------
 
 We offer three types of in-stock configurations:
 
