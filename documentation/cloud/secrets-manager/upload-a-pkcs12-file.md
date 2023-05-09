@@ -125,15 +125,19 @@ A new code64 file with the contents of the base64 encoded PKCS12 file will be cr
 ## How to Create a Load Balancer with an HTTPS Listener
 
 1\. Add the base64 encoded content of the PKCS12 file as a Secret (in examples above it is the content of “code64”).  
-      
+
+<media-gallery>
 <img src="https://support.gcore.com/hc/article_attachments/5296924850705/mceclip0.png" alt="" width="70%">
 
 <img src="https://support.gcorelabs.com/hc/article_attachments/4403965784337/image4.png" alt="" width="70%">
-      
+</media-gallery>
+
 2\. When creating or editing a Load Balancer, click “Add Listener”. In the opened window, enter the name of a new listener, select the “Terminated HTTPS” protocol and specify the desired secret below.  
 
+<media-gallery>
 <img src="https://support.gcore.com/hc/article_attachments/4403965810577/image2.png" alt="" width="70%">
 
 <img src="https://support.gcore.com/hc/article_attachments/4403965811089/image1.png" alt="" width="70%">
-    
+</media-gallery>
+   
 The listener will be created.

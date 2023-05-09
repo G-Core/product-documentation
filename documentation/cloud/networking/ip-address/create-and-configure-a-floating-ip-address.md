@@ -52,7 +52,7 @@ A floating IP is assigned by a specific data center, and its address is linked t
 
 1\. Select the Region where your machine is located to assign a floating IP and navigate to the **Networking** section.
 
-<img src="https://support.gcore.com/hc/article_attachments/12391851006353" alt="floating-ip-04.png" width=80%>
+<img src="https://support.gcore.com/hc/article_attachments/12391851006353" alt="floating-ip-04.png" width=50%>
 
 2\. Open the Floating IPs section. You can create a floating IP without assigning it to a machine by clicking **Create a new Floating IP.**
 

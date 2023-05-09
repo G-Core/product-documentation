@@ -20,9 +20,7 @@ toc:
 
 Reserved IP is an IP that you reserved for yourself and can be assigned to an <a href=“https://gcore.com/docs/cloud/virtual-instances/create-an-instance” target="_blank">instance</a> or <a href=“https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer” target="_blank">a load balancer</a> at any time.
 
-
 ## What it is used for
-
 
 Since you know the IP of the future equipment, you can pre-configure your services for it — for example, create a DNS record for this IP or configure the server to connect to it.
 
@@ -50,21 +48,25 @@ Click the "Reserve new IP" button
 
 Select the IP type — public (for external network) or private (for internal network). A public one can be created immediately. For private, select the network and subnet in which the address will be created. Please note: reserved private IP can only be used in the specified subnet. If you wish, you can order a specific address by entering it in the "IP address" section (it must belong to the subnet). Then click "Create".
 
+<media-gallery>
 <img src="https://support.gcore.com/hc/article_attachments/4405927362449/image-20.png" alt="" width="367" height="164">
 
 <img src="https://support.gcore.com/hc/article_attachments/4405927363089/image-21.png" alt="" width="359" height="334">
+</media-gallery>
 
-## How to assign a reserved IP to an instance and how to detach it from the machine
+## Assign a reserved IP to an instance and detach it from the machine
 
 ### Assign during instance creation
 
 When creating an instance, in the "Network settings" section click the arrow next to the network you want to assign an IP to. Then move the "Use reserved IP" slider and select the desired IP from the list. Save the settings and this address will be assigned to the instance.
 
+<media-gallery>
 <img src="https://support.gcore.com/hc/article_attachments/4405927362577/image-22.png" alt="" width="417" height="152">
    
 <img src="https://support.gcore.com/hc/article_attachments/4405927362961/image-23.png" alt="" width="411" height="156">
    
 <img src="https://support.gcore.com/hc/article_attachments/4405927363729/image-24.png" alt="" width="415" height="263">
+</media-gallery>
 
 ### Assign after instance creation
 
@@ -76,11 +78,13 @@ If the machine has already been added to the subnet you want to assign an IP to,
 
 Add a new interface (public or private) and move the "Use reserved IP" slider. Then select the desired IP and click "Save Changes". The IP will be assigned to the instance.
 
+<media-gallery>
 <img src="https://support.gcore.com/hc/article_attachments/4405927364241/image-26.png" alt="">
 
 <img src="https://support.gcore.com/hc/article_attachments/4405921022481/image-27.png" alt="">
    
 <img src="https://support.gcore.com/hc/article_attachments/4405927368081/image-28.png" alt="">
+</media-gallery>
 
 ### Detach from the instance
 
@@ -92,9 +96,11 @@ Detach the subnet the reserved IP is assigned to. This address will be detached 
 
 You can assign the reserved IP only during the balancer creation. In the "Network" section, select the network (public or private) to which you want to bind the address, move the "Use reserved IP" slider, and select the required IP. It will be assigned to the balancer.
 
+<media-gallery>
 <img src="https://support.gcore.com/hc/article_attachments/4405921022993/image-30.png" alt="" width="441" height="102">
    
 <img src="https://support.gcore.com/hc/article_attachments/4405927367697/image-31.png" alt="" width="438" height="216">
+</media-gallery>
 
 ## Find out the server the specific reserved IP is assigned to
 

@@ -33,7 +33,7 @@ Regions can be of two types: Core and Edge. A region determines the equipment sp
 
 3. Select an **Image**.
 
-<img src="ttps://assets.gcore.pro/docs/cloud/virtual-instances/create/3-image-selection.png" alt="" width=80%>
+<img src="ttps://assets.gcore.pro/docs/cloud/virtual-instances/create/3-image-selection.png" alt="" width=70%>
 
 *   Choose an OS template, a volume, a snapshot, a custom <a href=“https://gcore.com/docs/cloud/images/upload-an-image-to-the-storage” target="_blank">image</a>, or a template from the marketplace.
 *   (for a Linux instance) Remember the login from the **For login to OS** field to connect to your instance on Linux OS via SSH from another Linux device. For details, refer to the article: <a href=“https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-SSH” target="_blank">Connect to your instance via SSH</a>.
@@ -42,7 +42,7 @@ Regions can be of two types: Core and Edge. A region determines the equipment sp
 
 4. For **Type**, choose the configuration.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/4-type%20selection.png" alt="" width=80%>
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/4-type%20selection.png" alt="" width=70%>
 
 Select the CPU generation.
 
@@ -69,7 +69,7 @@ Select the flavor:
 
 5. Configure **Volumes**.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/5-volume-selection.png" alt="" width=80%>
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/5-volume-selection.png" alt="" width=70%>
 
 Enter a volume name.
 
@@ -88,15 +88,15 @@ Set the volume **Size** in GiB.
 
 If you select a **public** interface, you can turn on the **Use Reserved IP** toggle and assign a <a href=“https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address” target="_blank">reserved IP address</a> to your instance.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/6-public-network-selected.png" alt="" width=80%>
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/6-public-network-selected.png" alt="" width=70%>
 
 If you select a **private** interface, configure a network and a subnetwork according to the steps below. 
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/7-private-network-selected.jpg" alt="" width=80%>
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/7-private-network-selected.jpg" alt="" width=70%>
 
 To configure a network, select an existing network from the drop-down list or create a new one by clicking **Add a new network**. If you choose the latter, the new window will open:
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/8-create-network-window.png" alt="" width=80%>
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/8-create-network-window.png" alt="" width=70%>
 
 1) Enter the network name.
 
@@ -108,7 +108,7 @@ To configure a network, select an existing network from the drop-down list or cr
 
 To create a subnet, select an existing subnet from the drop-down list or create a new one by clicking **Add a new subnetwork**. If you choose the latter, the new window will open:
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/9-create-subnetwork-window.png" alt="" width=80%>
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/9-create-subnetwork-window.png" alt="" width=50%>
 
 1) Enter the subnet name.
 

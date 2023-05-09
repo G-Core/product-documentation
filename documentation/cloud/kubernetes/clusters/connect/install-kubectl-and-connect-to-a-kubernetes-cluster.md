@@ -33,8 +33,12 @@ Alternatively, there is a tool with a graphical user interface called “Lens”
     <img src="https://support.gcore.com/hc/article_attachments/4417450475153/image_28.png" alt="image_28.png"> 
 
     Then go to Windows Settings → System → About → Advanced System Settings (or right-click This PC, then Properties → Advanced System Settings). In the next dialog, select **Environment Variables** and double-click the **Path** system variable. Paste the path to **kubectl.exe** in the bottom most empty field, and save the changes.  
-      
-    <img src="https://support.gcore.com/hc/article_attachments/4417437045265/image_61.png" alt="image_61.png" width="341" height="356"><img src="https://support.gcore.com/hc/article_attachments/4417450477841/image_62.png" alt="image_62.png" width="418" height="363">
+
+    <media-gallery>
+    <img src="https://support.gcore.com/hc/article_attachments/4417437045265/image_61.png" alt="image_61.png" width="341" height="356">
+    
+    <img src="https://support.gcore.com/hc/article_attachments/4417450477841/image_62.png" alt="image_62.png" width="418" height="363">
+    </media-gallery>
 
 3.  In **C:\\Users\\\[username\]** create the **.kube** directory (to store the cluster configuration file).  
 
@@ -59,6 +63,7 @@ Alternatively, there is a tool with a graphical user interface called “Lens”
 ## Install kubectl on Ubuntu, Linux and connect to a cluster
 
 1.  Download the latest version of the kubectl binary file with the CURL request. 
+
     ```
     curl -LO https://storage.googleapis.com/kubernetes-release/release/\`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt\`/bin/linux/amd64/kubectl 
     ```
