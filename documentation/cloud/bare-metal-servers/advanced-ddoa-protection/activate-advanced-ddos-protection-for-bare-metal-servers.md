@@ -29,7 +29,7 @@ toc:
 
 5. Once you select the profile template, type in the SSH keys and add a name under the **Additional options** section.
 
-<img src="https://support.gcore.com/hc/article_attachments/11773321433361" alt="mceclip4.png">
+<img src="https://support.gcore.com/hc/article_attachments/11773321433361" alt="" width=80%>
 
 6. If you’re finished, click the **Create Server** button on the right-hand side.
 
@@ -61,11 +61,11 @@ toc:
 
 1. Select **Networking** on the left-hand menu.
 
-<img src="https://support.gcore.com/hc/article_attachments/11773548591761" alt="mceclip11.png">
+<img src="https://support.gcore.com/hc/article_attachments/11773548591761" alt="" width=80%>
 
 2. Click **DDoS Protection** from the dropdown options.
 
-<img src="https://support.gcore.com/hc/article_attachments/11773581148049" alt="mceclip12.png">
+<img src="https://support.gcore.com/hc/article_attachments/11773581148049" alt="" width=80%>
 
 3. In the **DDoS Protection** section, select the baremetal server you want to enable advanced DDoS protection for by clicking the kebab menu on the right side.
 

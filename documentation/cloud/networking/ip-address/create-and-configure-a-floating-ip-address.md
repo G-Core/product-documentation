@@ -44,7 +44,7 @@ When you reserve a floating IP and assign it to your instance, the router direct
 
 3\. Ensure the **Enable router gateway** slider is enabled, making the subnet routable, and allowing servers within the subnet to access the Internet and receive incoming connections.
 
-<img src="https://support.gcore.com/hc/article_attachments/12391738930705" alt="floating-ip-03.png">
+<img src="https://support.gcore.com/hc/article_attachments/12391738930705" alt="floating-ip-03.png" width=80%>
 
 ## Reserve a floating IP from the menu
 
@@ -52,7 +52,7 @@ A floating IP is assigned by a specific data center, and its address is linked t
 
 1\. Select the Region where your machine is located to assign a floating IP and navigate to the **Networking** section.
 
-<img src="https://support.gcore.com/hc/article_attachments/12391851006353" alt="floating-ip-04.png">
+<img src="https://support.gcore.com/hc/article_attachments/12391851006353" alt="floating-ip-04.png" width=80%>
 
 2\. Open the Floating IPs section. You can create a floating IP without assigning it to a machine by clicking **Create a new Floating IP.**
 
@@ -67,7 +67,7 @@ A floating IP is assigned by a specific data center, and its address is linked t
 
 When creating an instance, in the "Network settings" section, select the "**Private**" network type. Specify the network and subnet of the interface you want to assign the floating IP. Enable the “**Use floating IP**” slider, click “**Create a new floating IP**”, and save the settings using the “**Add Interface**” button.
 
-<img src="https://support.gcore.com/hc/article_attachments/12392462274833" alt="floating-ip-07.png">
+<img src="https://support.gcore.com/hc/article_attachments/12392462274833" alt="floating-ip-07.png" width=80%>
 
 The instance will be created with a private interface and a new floating IP assigned to it.
 

@@ -15,7 +15,7 @@ toc:
 
 In the “Placement Groups” section, create a new group. Give it a name and select a policy — affinity or anti-affinity — and click Create Placement Group.
 
-[<img src="https://support.gcore.com/hc/article_attachments/4408114694289/image-6.png" alt="">](https://support.gcorelabs.com/hc/article_attachments/4408114694289/image-6.png)[<img src="https://support.gcore.com/hc/article_attachments/4408114693777/image-7.png" alt="" width="398" height="231">](https://support.gcorelabs.com/hc/article_attachments/4408114693777/image-7.png)
+[<img src="https://support.gcore.com/hc/article_attachments/4408114694289/image-6.png" alt="">](https://support.gcorelabs.com/hc/article_attachments/4408114694289/image-6.png)
 
 ## Create an instance included in a placement group
 
