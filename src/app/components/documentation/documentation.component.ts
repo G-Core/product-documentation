@@ -166,7 +166,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
 
                     if (routeSegments.length === 1) {
                         menuTree.set(routeSegments[0], {
-                            url: link.route,
+                            url: link.redirect || link.route,
                             name: link.displayName,
                             order: link.order,
                             title: link.title,
@@ -213,7 +213,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
             }
         } else {
             menuItem = {
-                url: unhandledRouteSegments.length ? '' : link.route,
+                url: unhandledRouteSegments.length ? '' : link.redirect || link.route,
                 order: unhandledRouteSegments.length ? 0 : link.order,
                 title: unhandledRouteSegments.length ? routeSegments[0] : link.title,
                 name: unhandledRouteSegments.length ? routeSegments[0] : link.displayName,
