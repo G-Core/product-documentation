@@ -25,11 +25,11 @@ You will see the login to the right of the “Access to Console” button. There
 
 <img src="https://support.gcore.com/hc/article_attachments/360020483437/image7.png" alt="image7.png">
 
-You entered the password during the  <a href=“https://gcore.com/docs/cloud/virtual-instances/create-an-instance” target="_blank">creation of the instance when you filled in the user data in the "Additional options" field</a>. Please note: if the instance is only in a private subnet, DHCP must be enabled in the settings of this subnet so you can log in with a password.
+You entered the password during the <a href=“https://gcore.com/docs/cloud/virtual-instances/create-an-instance” target="_blank">creation of the instance</a> when you filled in the user data in the "Additional options" field. Please note: if the instance is only in a private subnet, DHCP must be enabled in the settings of this subnet so you can log in with a password.
 
 <img src="https://support.gcore.com/hc/article_attachments/360020585238/image3.png" alt="image3.png">
 
-If you forgot your password, you can find it inside the system by <a href=“https://gcore.com/docs/cloud/virtual-instances/connect/connect to your instance via SSH” target="_blank">connecting to the instance via SSH</a>. Enter the `sudo cat /var/lib/cloud/instance/user-data.txt` command and you will see the password in the line “password: \[your password\]”.
+If you forgot your password, you can find it inside the system by <a href=“https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-SSH” target="_blank">connecting to the instance via SSH</a>. Enter the `sudo cat /var/lib/cloud/instance/user-data.txt` command and you will see the password in the line “password: \[your password\]”.
 
 <img src="https://support.gcore.com/hc/article_attachments/360020585318/image6.png" alt="image6.png">
 

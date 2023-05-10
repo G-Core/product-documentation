@@ -41,7 +41,11 @@ Click on the created schedule to configure it.
 
 Click "Add Volume" at the bottom of the page. Select one or several volumes for which snapshots will be created; you can choose both boot and regular volumes.
 
-[<img src="https://support.gcore.com/hc/article_attachments/360019793517/mceclip11.png" alt="mceclip11.png" width="322" height="389">](https://support.gcorelabs.com/hc/article_attachments/360019793517/mceclip11.png)    [<img src="https://support.gcore.com/hc/article_attachments/360019893418/mceclip41.png" alt="mceclip41.png" width="361" height="389">](https://support.gcorelabs.com/hc/article_attachments/360019893418/mceclip41.png)
+<media-gallery>
+[<img src="https://support.gcore.com/hc/article_attachments/360019793517/mceclip11.png" alt="mceclip11.png" width="322" height="389">](https://support.gcorelabs.com/hc/article_attachments/360019793517/mceclip11.png)   
+
+[<img src="https://support.gcore.com/hc/article_attachments/360019893418/mceclip41.png" alt="mceclip41.png" width="361" height="389">](https://support.gcorelabs.com/hc/article_attachments/360019893418/mceclip41.png)
+</media-gallery>
 
 Confirm your choice by clicking "Save" in the pop-up window.
 
@@ -51,7 +55,11 @@ Confirm your choice by clicking "Save" in the pop-up window.
 
 1. Click "Add Schedule" and enter a name for future snapshots
 
-   [<img src="https://support.gcore.com/hc/article_attachments/360019893558/mceclip43.png" alt="mceclip43.png" width="311" height="378">](https://support.gcorelabs.com/hc/article_attachments/360019893558/mceclip43.png)   [<img src="https://support.gcore.com/hc/article_attachments/360019794117/mceclip18.png" alt="mceclip18.png" width="343" height="377">](https://support.gcorelabs.com/hc/article_attachments/360019794117/mceclip18.png)
+<media-gallery>
+[<img src="https://support.gcore.com/hc/article_attachments/360019893558/mceclip43.png" alt="mceclip43.png" width="311" height="378">](https://support.gcorelabs.com/hc/article_attachments/360019893558/mceclip43.png)  
+
+[<img src="https://support.gcore.com/hc/article_attachments/360019794117/mceclip18.png" alt="mceclip18.png" width="343" height="377">](https://support.gcorelabs.com/hc/article_attachments/360019794117/mceclip18.png)
+</media-gallery>
 
 In the "Name template" field, enter a name for future snapshots. All Snapshots created within this schedule will receive it. You can use the dynamic variable "{volume\_id}" in the template — it will be replaced with your volume's name automatically. For example, if the volume is named "Disk\_1" and the Name template is "Snapshot of {volume\_id}", then the system will create the snapshot “Snapshot of Disk\_1”.
 
@@ -103,12 +111,19 @@ Once created, each schedule is enabled by default and starts running. It gets th
 
 To disable a schedule, open it and drag the slider at the top of the screen to the right. Then click "Save" You can later enable the schedule again using this slider.
 
-  [<img src="https://support.gcore.com/hc/article_attachments/360019796257/mceclip39.png" alt="mceclip39.png" width="311" height="386">](https://support.gcorelabs.com/hc/article_attachments/360019796257/mceclip39.png)  [<img src="https://support.gcore.com/hc/article_attachments/360019909878/mceclip0.png" alt="mceclip0.png" width="318" height="386">](https://support.gcorelabs.com/hc/article_attachments/360019909878/mceclip0.png)
+<media-gallery>
+[<img src="https://support.gcore.com/hc/article_attachments/360019796257/mceclip39.png" alt="mceclip39.png" width="311" height="386">](https://support.gcorelabs.com/hc/article_attachments/360019796257/mceclip39.png)  
+
+[<img src="https://support.gcore.com/hc/article_attachments/360019909878/mceclip0.png" alt="mceclip0.png" width="318" height="386">](https://support.gcorelabs.com/hc/article_attachments/360019909878/mceclip0.png)
+</media-gallery>
 
 You cannot disable and edit a separate schedule of the “Custom” or “Period” type, but you can delete it. To do this, open the schedule and click "Delete".
 
+<media-gallery>
 [<img src="https://support.gcore.com/hc/article_attachments/360019893738/mceclip44.png" alt="mceclip44.png" width="332" height="136">](https://support.gcorelabs.com/hc/article_attachments/360019893738/mceclip44.png)  
+
 [<img src="https://support.gcore.com/hc/article_attachments/360019797677/mceclip45.png" alt="mceclip45.png" width="333" height="460">](https://support.gcorelabs.com/hc/article_attachments/360019797677/mceclip45.png)
+</media-gallery>
 
 ## How to delete a schedule
 

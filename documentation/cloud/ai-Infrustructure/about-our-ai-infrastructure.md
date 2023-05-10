@@ -62,6 +62,7 @@ We provide two types of Graphcore servers: M2000 and Bow-2000. M2000 is a second
 
 Here are results of <a href="https://www.graphcore.ai/posts/graphcore-sets-new-ai-performance-standards-with-mk2-ipu-systems" target="_blank">processing of two popular computer vision models on M2000 and NVIDIA DGX A100</a> (another popular solution for machine learning).
 
+<media-gallery>
 <img src="https://www.graphcore.ai/hs-fs/hubfs/ResNet%2050%20Training_December%202020.jpg?width=590&amp;name=ResNet%2050%20Training_December%202020.jpg">
 
 <img src="https://www.graphcore.ai/hs-fs/hubfs/ResNet%2050%20Inference_December%202020.jpg?width=591&amp;name=ResNet%2050%20Inference_December%202020.jpg">
@@ -69,6 +70,7 @@ Here are results of <a href="https://www.graphcore.ai/posts/graphcore-sets-new-a
 <img src="https://www.graphcore.ai/hs-fs/hubfs/ResNeXt%20Training_December%202020.jpg?width=593&amp;name=ResNeXt%20Training_December%202020.jpg">
 
 <img src="https://www.graphcore.ai/hs-fs/hubfs/ResNeXt%20Inference_December%202020.jpg?width=591&amp;name=ResNeXt%20Inference_December%202020.jpg">
+</media-gallery>
 
 You can find results of a higher number of comparative tests (12 in total) in the article <a href="https://www.graphcore.ai/posts/graphcore-sets-new-ai-performance-standards-with-mk2-ipu-systems" target="_blank">Graphcore Sets New Ai Performance Standards With MK2 IPU System</a>. 
 

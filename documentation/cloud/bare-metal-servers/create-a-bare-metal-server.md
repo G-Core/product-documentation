@@ -25,7 +25,7 @@ In this case, all physical server resources are allocated to a single user and c
 
 Due to the features of the Bare metal infrastructure, creating a compatible custom image requires a special program to build the image for a physical server and code from a dedicated repository.
 
-We have prepared very detailed instructions with all the necessary files available via the link [https://github.com/G-Core/baremetal-dib-elements](https://github.com/G-Core/baremetal-dib-elements)
+We have prepared very detailed instructions with all the necessary files available via the  <a href=“https://github.com/G-Core/baremetal-dib-elements” target="_blank">link</a>.
 
 ## **Create a bare metal server in the Cloud**
 
@@ -43,10 +43,14 @@ You will see the page for configuring and creating a new server
 
 1.  Select the region to create the machine in. Regions, where Baremetal is available for order, are highlighted.
     
-2.  Select the image to install. You can choose a system from the prepared templates or from custom images that you've previously uploaded. You can find more information about uploading the images in the article<a href=“https://gcore.com/docs/cloud/images/upload-an-image-to-the-storage” target="_blank">"Upload an image to the storage"</a> . Please, note! Only prepared images can be used for Bare metal servers (for more information, see the section Bare metal images)
+2.  Select the image to install. You can choose a system from the prepared templates or from custom images that you've previously uploaded. You can find more information about uploading the images in the article <a href=“https://gcore.com/docs/cloud/images/upload-an-image-to-the-storage” target="_blank">"Upload an image to the storage"</a>. Please note! Only prepared images can be used for Bare metal servers (for more information, see the section Bare metal images)
 
-<img src="https://support.gcore.com/hc/article_attachments/360020173678/mceclip3.png" alt="mceclip3.png"><img src="https://support.gcore.com/hc/article_attachments/360014438398/4._____________.png" alt="4._____________.png">
-    
+<media-gallery>
+<img src="https://support.gcore.com/hc/article_attachments/360020173678/mceclip3.png" alt="mceclip3.png">
+
+<img src="https://support.gcore.com/hc/article_attachments/360014438398/4._____________.png" alt="4._____________.png">
+</media-gallery>
+
 3.  Select the server type. Currently, "High-Frequency" and "Infrastructure" servers are available.
 
 <img src="https://support.gcore.com/hc/article_attachments/360014352117/5.____________.png" alt="5.____________.png">

@@ -231,8 +231,6 @@ To connect, use <a href=“https://www.putty.org/” target="_blank">the PuTTY 
 
 9\. In the "login" field, enter the user name that was given when creating the instance. You can find it in the instance's tab, you will see is an inscription of the “\[login\]@\[IP of the instance\]” type. Most often, the login coincides with the name of the OS. For example, for the instance below it is "Ubuntu".
 
-<img src="https://support.gcorelabs.com/hc/article_attachments/360020483437/image7.png">  
-
 10\. (Step for connecting using a pair of SSH keys only) enter the password you configured while creating an instance.
  
 11\. Press Enter.  

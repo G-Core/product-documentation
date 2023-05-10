@@ -11,9 +11,11 @@ Monitoring is a tab where you can monitor the load and performance of an instanc
 
 To open the tab, select the required instance and click "Monitoring".
 
+<media-gallery>
 <img src="https://support.gcore.com/hc/article_attachments/5286494205969/mceclip1.png" alt="mceclip1.png">
 
 <img src="https://support.gcore.com/hc/article_attachments/5286469031825/mceclip0.png" alt="mceclip0.png">
+</media-gallery>
 
 Buttons above the graphs control the display of statistics: the left one sets up what period to show, the right one — how often the data will be updated on the screen.
 
