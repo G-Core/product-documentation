@@ -77,7 +77,12 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
 
             if (this.tableOfContents) {
                 this.tableOfContentsHeaders = this.tableOfContents
-                    .map(({ fragment }) => document.querySelector(`#${fragment}`))
+                    .map(({ fragment }) => {
+                        if (fragment) {
+                            return document.querySelector(`#${fragment}`);
+                        }
+                        return null;
+                    })
                     .filter((item: Element) => item);
             }
 
