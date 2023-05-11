@@ -165,7 +165,7 @@ Where:
       "slug": "<span style="color:#FF5913">ZeC44gtQQ4E97N9S</span>",   
       "name": "Stream Record: <span style="color:#FF5913">test</span>, 2022-05-27 09:08:40 +0000",   
       "duration": <span style="color:#FF5913">19580</span>,   
-      "status": "viewable",   
+      "status": "pending",   
       "converted_videos": [   
         {   
           "name": "<span style="color:#FF5913">vod720n</span>",   
@@ -446,7 +446,7 @@ Where:
       "slug": "<span style="color:#FF5913">Lfsq14hKvLkNsExx</span>",   
       "name": "<span style="color:#FF5913">SampleVideo</span>",   
       "duration": <span style="color:#FF5913">170859</span>,   
-      "status": "<span style="color:#FF5913">pending</span>",   
+      "status": "<span style="color:#FF5913">viewable</span>",   
       "converted_videos": [   
         {   
           "name": "<span style="color:#FF5913">vod720n</span>",   
@@ -476,7 +476,7 @@ Where:
 - <span style="color:#FF5913">Lfsq14hKvLkNsExx</span> is the video ID presented as a random set of characters, which prevents a video URL from stealing if the webhook is intercepted,
 - <span style="color:#FF5913">SampleVideo</span> is the video name,
 - <span style="color:#FF5913">170859</span> is the duration of the video in seconds,
-- <span style="color:#FF5913">processing, complete, pending</span> are the different statuses of the video processing.
+- <span style="color:#FF5913">processing, complete, viewable</span> are the different statuses of the video processing.
 - <span style="color:#FF5913">vod720n, vod480n, vod360n, vod240n</span> are the different qualities of the video.  
 
 
@@ -491,7 +491,7 @@ Where:
       "slug": "<span style="color:#FF5913">Lfsq14hKvLkNsExx</span>",   
       "name": "<span style="color:#FF5913">SampleVideo</span>",   
       "duration": <span style="color:#FF5913">170859</span>,   
-      "status": "<span style="color:#FF5913">pending</span>",   
+      "status": "<span style="color:#FF5913">ready</span>",   
       "converted_videos": [   
         {   
           "name": "<span style="color:#FF5913">vod720n</span>",   
@@ -521,5 +521,5 @@ Where:
 - <span style="color:#FF5913">Lfsq14hKvLkNsExx</span> is the video ID presented as a random set of characters, which prevents a video URL from stealing if the webhook is intercepted,
 - <span style="color:#FF5913">SampleVideo</span> is the video name,
 - <span style="color:#FF5913">170859</span> is the duration of the video in seconds,
-- <span style="color:#FF5913">complete</span> is the status which means that the video was processed.
+- <span style="color:#FF5913">complete, ready</span> is the status which means that the video was processed.
 - <span style="color:#FF5913">vod720n, vod480n, vod360n, vod240n</span> are the different qualities of the video. 

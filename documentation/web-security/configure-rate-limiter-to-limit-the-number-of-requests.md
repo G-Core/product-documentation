@@ -1,6 +1,6 @@
 ---
 title: configure-rate-limiter-to-limit-the-number-of-requests
-displayName: Rate Limiter (for PRO and Enterprise plans)
+displayName: Rate Limiter
 published: true
 order: 51
 toc:
