@@ -5,16 +5,9 @@ order: 20
 published: true
 toc:
    --1--Create a schedule: "create-a-schedule"
-   --2--Create a schedule and give it a name: "create-a-schedule-and-give-it-a-name"
-   --2--Select volumes: "select-volumes"
-   --2--Add and configure a snapshot schedule for volumes: "add-and-configure-a-snapshot-schedule"
-   --3--name template: "1-click--add-schedule--and-enter-a-name-for-future-snapshots"
-   --3--max resource count: "2-set-the-maximum-resource-quantity"
-   --3--schedule       type: "3-select-the-schedule-type----custom--or--period"
-   --3--retention time: "4-set-the-snapshots-retention-time"
-   --2--Add multiple snapshot schedules if needed: "add-multiple-snapshot-schedules-if-needed"
-   --1--How to disable and enable a schedule: "how-to-disable-and-enable-a-schedule"
-   --1--How to delete a schedule: "how-to-delete-a-schedule"
+   --1--Add multiple snapshot schedules: "add-multiple-snapshot-schedules"
+   --1--Disable and enable: "disable-and-enable-a-schedule"
+   --1--Delete a schedule: "delete-a-schedule"
 ---
 # Set up automatic snapshot creation
 
@@ -27,8 +20,6 @@ You can access this feature by logging into your personal account and navigating
 
 ## Create a schedule
 
-### Create a schedule and give it a name
-
 Open “Snapshot Schedules” and click “Create Snapshot Schedule” in the upper right corner. The system will ask you to enter a name. Name the schedule so that it will be easier to distinguish it from others later — for example, you can use a volume name: "Snapshot of \[your volume name\]".
 
 <img src="https://support.gcore.com/hc/article_attachments/5286531058321/mceclip0.png" alt="mceclip0.png">
@@ -36,8 +27,6 @@ Open “Snapshot Schedules” and click “Create Snapshot Schedule” in the up
 Click on the created schedule to configure it.
 
 <img src="https://support.gcore.com/hc/article_attachments/5286592054929/mceclip2.png" alt="mceclip2.png">
-
-### Select volumes
 
 Click "Add Volume" at the bottom of the page. Select one or several volumes for which snapshots will be created; you can choose both boot and regular volumes.
 
@@ -97,13 +86,13 @@ Please note: even if the retention time has not expired, the system may delete a
 
 When all the settings are configured, click "Save" —  the schedule will start and the system will start taking snapshots.
 
-Add multiple snapshot schedules if needed
+## Add multiple snapshot schedules
 
 You can create multiple schedules for the selected volumes — for example, if you want to receive a snapshot every Monday at 15:22 and every Saturday at 19:00, add a separate Custom schedule for each of them.
 
 [<img src="https://support.gcore.com/hc/article_attachments/360019892058/mceclip30.png" alt="mceclip30.png" width="415" height="169">](https://support.gcorelabs.com/hc/article_attachments/360019892058/mceclip30.png)
 
-## How to disable and enable a schedule
+## Disable and enable a schedule
 
 Once created, each schedule is enabled by default and starts running. It gets the status "Active".
 
@@ -125,7 +114,7 @@ You cannot disable and edit a separate schedule of the “Custom” or “Period
 [<img src="https://support.gcore.com/hc/article_attachments/360019797677/mceclip45.png" alt="mceclip45.png" width="333" height="460">](https://support.gcorelabs.com/hc/article_attachments/360019797677/mceclip45.png)
 </media-gallery>
 
-## How to delete a schedule
+## Delete a schedule
 
 You can delete the entire schedule in the “Snapshot Schedules” section. To do this, click on the ellipsis near the required schedule and select "Delete" in the drop-down menu.
 

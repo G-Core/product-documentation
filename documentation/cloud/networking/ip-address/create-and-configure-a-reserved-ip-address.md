@@ -4,17 +4,12 @@ displayName: Reserved IP address
 order: 20
 published: true
 toc:
-   --1--What it is used for: ""
-   --1--How it works: ""
-   --1--How it is charged: ""
-   --1--How to reserve an IP: ""
-   --1--How to assign a reserved IP to an instance and how to detach it from the machine: ""
-   --1--Assign during instance creation: ""
-   --1--Assign after instance creation: ""
-   --1--Detach from the instance: ""
-   --1--How to assign a reserved IP to a load balancer and how to detach it: ""
-   --1--How to find out the equipment the specific reserved IP is assigned to: ""
-   --1--How to delete a reserved IP: ""
+   --1--What it is used for: "what-it-is-used-for"
+   --1--How it works: "how-it-works"
+   --1--How it is charged: "how-it-is-charged"
+   --1--Reserve an IP: "How-to-reserve-an-IP-address"
+   --1--Assign a reserved IP: "Assign-a-reserved-IP-to-an-instance-and-detach-it-from-the-machine"
+   --1--How to delete a reserved IP: "Delete-a-reserved-IP-address"
 ---
 # Create and configure a reserved IP address
 

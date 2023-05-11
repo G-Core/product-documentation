@@ -4,19 +4,10 @@ displayName: Create and configure
 order: 20
 published: true
 toc:
-   --1--Volume section: "volume-section"
-   --1--How to create a volume?: "how-to-create-a-volume"
-   --1--Actions with volumes: "actions-with-volumes"
-   --1--Create an image from the bootvolume: "1-create-an-image--from-the-bootvolume"
-   --1--Resize: "3-resize-volume"
-   --1--Retype: "4-retype-volume"
-   --1--Take snapshot: "5-take-a-snapshot"
-   --1--Delete: "6-delete-volume"
-   --1--Revert volume to the latest snapshot: "7-revert-volume-to-the-latest-snapshot"
+   --1--Create: "create-a-volume"
+   --1--Manage: "manage-your-volume"
 ---
 # Create and configure volumes
-
-## Volume section
 
 The Volume section displays both disks that were added and those that were not added to instances in the selected location, their name in the system, and the creation date.
 
@@ -36,7 +27,7 @@ To attach a volume to an instance, click "Attach to instance", in the pop-up win
 
 <img src="https://support.gcore.com/hc/article_attachments/360009578798/___________________.png" alt="___________________.png">
 
-## How to create a volume?
+## Create a volume
 
 You can create volumes while creating an instance or in the Volume section.
 
@@ -99,7 +90,7 @@ The sequence of the Volume names is determined on the OS side.
 
 When working with Volumes in the OS, it is better to pay attention to the UUID.
 
-## Actions with volumes
+## Manage your volume
 
 You can detach the created volume from the instance, change its size, type, make a snapshot, or delete it by clicking on the three-dot icon next to the necessary volume. Moreover, you can create an image from the boot volumes. 
 
@@ -107,27 +98,27 @@ You can detach the created volume from the instance, change its size, type, make
 
 Select the necessary action in the menu.
 
-1\. Create an image (from the bootvolume)<img src="https://support.gcore.com/hc/article_attachments/360012500778/______________________EN.png" alt="______________________EN.png">
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+1\. Create an image (from the bootvolume)
+
+<img src="https://support.gcore.com/hc/article_attachments/360012500778/______________________EN.png" alt="______________________EN.png">
 
 Enter a name for the image and click on the "Create image" button. Within several minutes, the image will be created and available in the ["Images"](https://support.gcorelabs.com/hc/en-us/articles/360002429818-Images) section.
 
-2\. To detach a volume from an instance:<img src="https://support.gcore.com/hc/article_attachments/360009483457/detach2.png" alt="detach2.png" width="523" height="390">
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+2\. To detach a volume from an instance:
+
+<img src="https://support.gcore.com/hc/article_attachments/360009483457/detach2.png" alt="detach2.png" width="523" height="390">
 
 Select the instance from which you want to detach the selected volume. Click OK to detach the volume.
 
 **Attention!** Detaching a volume will not cancel your payment for it. You can attach a volume to any instance at any time.
 
 3\. Resize volume:
-------------------
 
 <img src="https://support.gcore.com/hc/article_attachments/360009483477/resize2.png" alt="resize2.png">
 
 The opened window shows the current volume size. Use keyboard input or arrows to set the new volume size. Click Resize volume to save your settings.
 
 4\. Retype volume:
-------------------
 
 <img src="https://support.gcore.com/hc/article_attachments/360009483517/retype2.png" alt="retype2.png">
 
@@ -138,14 +129,12 @@ Detach a volume from an instance.  Select the necessary volume type. Click Rety
 Moreover, you can migrate data between disks within an OS using "rsync" or "cp" utilities.
 
 5\. Take a snapshot:
---------------------
 
 <img src="https://support.gcore.com/hc/article_attachments/360009579518/snap2.png" alt="snap2.png">
 
 To take a snapshot, enter its Name and click Take snapshot.
 
-6\. Delete volume:
-------------------
+6\. Delete a volume:
 
 <img src="https://support.gcore.com/hc/article_attachments/360009483557/delete2.png" alt="delete2.png">
 
@@ -155,8 +144,7 @@ To delete a volume that is attached to an instance, firstly click Detach in the 
 
 **Important!** The instance boot volume can only be deleted together with the instance in the instance management section.
 
-7\. Revert volume to the latest snapshot
-----------------------------------------
+7\. Revert a volume to the latest snapshot
 
 <img src="https://support.gcore.com/hc/article_attachments/4402881064337/mceclip3.png" alt="mceclip3.png" width="541" height="204">
 

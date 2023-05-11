@@ -5,7 +5,7 @@ order: 10
 published: true
 toc:
    --1--What is Logging?: "what-is-logging"
-   --1--How does it work?: ""
+   --1--How does it work?: "how-does-logging-work"
    --1--How it may be useful: "how-logging-can-be-useful"
    --1--Use cases: "use-cases"
    --1--How we store logs: "how-we-store-logs"

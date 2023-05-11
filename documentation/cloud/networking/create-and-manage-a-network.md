@@ -6,8 +6,6 @@ order: 10
 toc:
    --1--Network creation: "create-a-network"
    --1--Network management: "network-management"
-   --1--Rename network: "rename"
-   --1--Delete network: "delete"
 ---
 # Create and manage a network
 

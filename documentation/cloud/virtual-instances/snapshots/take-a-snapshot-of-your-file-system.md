@@ -4,15 +4,8 @@ displayName: Take a snapshot of your file system
 order: 10
 published: true
 toc:
-   --1--Creating a snapshot: "creating-a-snapshot"
-   --2--From the "Snapshots" section: "from-the-snapshots--section"
-   --2--From the "Volumes" section: "from-the-volumes--section"
-   --2--From the Instance: "from-instance"
-   --1--Snapshot management: "snapshot-management"
-   --2--Creating an Instance from a snapshot of the system drive: "to-create-an-instance-from-a-snapshot-of-the-system-drive"
-   --2--Creating a disk from a disk snapshot: "create-a-disk-from-a-disk-snapshot"
-   --2--Deleting a snapshot: "delete-a-snapshot"
-   --2--Reverting a volume to the latest snapshot: "also-you-can-revert-a-volume-to-the-latest-snapshot--open-the--volumes--section--detach-the-volume-from-your-instance-and-select-the-reverting-option-on-the-selector"
+   --1--Create: "create-a-snapshot"
+   --1--Manage: "manage-your-snapshots"
 ---
 # Take a snapshot of your file system
 
@@ -26,9 +19,11 @@ You can make a snapshot for both system (boot) disks and regular disks. 
 
 **Regular disk -** contains all other information for use, except the operating system.  
 
-## **Creating a snapshot** 
+## Create a snapshot
 
-### **From the** **"Snapshots"** **section** 
+There three ways to create a snapshot: from the **Snapshot** menu, from the **Volumes** menu, and from the **Instances** menu.
+
+1.  Create a snapshot from the **Snapshots** menu.
 
 To make a snapshot of the disk, go to the "Snapshots" section inside the project.  
 
@@ -38,7 +33,7 @@ In the “Take snapshot” section, select the disk to create the snapshot. **
 
 <img src="https://support.gcore.com/hc/article_attachments/360012025258/_______________________________.png" alt="_______________________________.png">
 
-### **From the "Volumes" section** 
+2. Create a snapshot from the **Volumes** menu.
 
 Inside the project, in the “Volumes” section, select the disk to create a snapshot -> on the selector on the right from the selected volume -> select the "Take snapshot" option 
 
@@ -48,7 +43,7 @@ In the drop-down window, enter a name for the snapshot and click “Take snapsho
 
 <img src="https://support.gcore.com/hc/article_attachments/360011939377/_______________________.png" alt="_______________________.png">
 
-### **From Instance** 
+3. Create a snapshot from the **Instances** menu
 
 Inside the project, go to the “Instances” section -> select the Instance you want to take a snapshot from -> select the "Overview" option on the selector on the right from the machine. 
 
@@ -66,7 +61,7 @@ In the “Snapshots” section, you can view a list of created snapshots from In
 
 <img src="https://support.gcore.com/hc/article_attachments/360011939437/__________________.png" alt="__________________.png">
 
-## **Snapshot management** 
+## Manage your snapshots
 
 A list of all created snapshots can be found in the "Snapshots" section, inside the project. 
 
@@ -74,11 +69,15 @@ A list of all created snapshots can be found in the "Snapshots" section, inside
 
 You can select the necessary option on the selector on the right from the snapshot: 
 
-### **To create an Instance from a snapshot of the system drive** <img src="https://support.gcore.com/hc/article_attachments/360012025398/_________________________________.png" alt="_________________________________.png">
+### Create an instance from a snapshot of the system drive
+
+<img src="https://support.gcore.com/hc/article_attachments/360012025398/_________________________________.png" alt="_________________________________.png">
     
-### **Create a disk from a disk snapshot** <img src="https://support.gcore.com/hc/article_attachments/360011939457/____________________________________________.png" alt="____________________________________________.png">
+### Create a disk from a disk snapshot 
+
+<img src="https://support.gcore.com/hc/article_attachments/360011939457/____________________________________________.png" alt="____________________________________________.png">
     
-### **Delete a snapshot**
+### Delete a snapshot
     
 <img src="https://support.gcore.com/hc/article_attachments/360011939477/_______.png" alt="_______.png">
 

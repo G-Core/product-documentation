@@ -4,8 +4,8 @@ displayName: Connect via Control Panel
 published: true
 order: 10
 toc:
-   --2--Connect to Linux instance: "connect-to-linux-instance"
-   --2--Connect to Windows instance: "connect-to-windows-instance"
+   --2--Linux instance: "connect-to-a-linux-instance"
+   --2--indows instance: "connect-to-a-windows-instance"
 ---
 # Connect to your instance via Control Panel
 

@@ -6,7 +6,7 @@ published: true
 toc:
    --1--Connecting using a pair of SSH keys. Preparation: "connecting-using-a-pair-of-ssh-keys-preparation"
    --2--SSH keys generation (Windows 7/8): "ssh-keys-generation-windows-7-8"
-   --2--SSH keys generation (Windows 10, Linux OS, macOS): ""
+   --2--SSH keys generation (Windows 10, Linux OS, macOS): "SSH-keys-generation-Windows-10-Linux-OS-macOS"
    --2--SSH keys generation in the personal account: "add-ssh-keys-to-your-gcore-cloud-personal-account"
    --2--How to delete an SSH key: "delete-ssh-keys-in-your-gcore-cloud-personal-account"
    --2--How to generate SSH keys when creating an instance: "how-to-generate-and-add-ssh-keys-when-creating-an-instance"

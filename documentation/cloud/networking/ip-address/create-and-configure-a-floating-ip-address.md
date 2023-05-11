@@ -5,14 +5,13 @@ published: true
 order: 10
 toc:
    --1--What is a floating IP: "what-is-a-floating-ip"
-   --1--What is it used for: ""
-   --1--How it works: ""
-   --1--Check if your subnet is routable: ""
-   --1--Reserve a floating IP: ""
-   --1--When creating an instance: ""
-   --1--Assign a floating IP to an instance: ""
-   --1--Detach a floating IP from an instance: ""
-   --1--Delete a floating IP: ""
+   --1--What is it used for: "What-is-it-used-for"
+   --1--How it works: "how-does-it-work"
+   --1--Check if your subnet is routable: "check-if-your-subnet-is-routable"
+   --1--Reserve a floating IP: "Reserve-a-floating-IP-from-the-menu"
+   --1--Assign a floating IP to an instance: "Assign-a-floating-IP-to-an-instance"
+   --1--Detach a floating IP from an instance: "Detach-a-floating-IP-from-an-instance"
+   --1--Delete a floating IP: "Delete-a-floating-IP"
 ---
 # Create and configure a floating IP address
 
@@ -63,7 +62,6 @@ A floating IP is assigned by a specific data center, and its address is linked t
 <img src="https://support.gcore.com/hc/article_attachments/12392182782993" alt="floating-ip-06.png">
 
 ## Reserve a floating IP when creating an instance
-
 
 When creating an instance, in the "Network settings" section, select the "**Private**" network type. Specify the network and subnet of the interface you want to assign the floating IP. Enable the “**Use floating IP**” slider, click “**Create a new floating IP**”, and save the settings using the “**Add Interface**” button.
 

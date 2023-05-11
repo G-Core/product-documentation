@@ -10,7 +10,7 @@ toc:
 ---
 # Troubleshoot issues with an SSH connection
 
-## **Incorrect firewall rules. Errors: Connection timed out**
+## Incorrect firewall rules. Errors: Connection timed out
 
 In most cases, the error is caused by the incorrect configuration of the firewall rules.
 
@@ -20,19 +20,19 @@ Also, for SSH connection, you should set up a rule to allow incoming SSH connect
 
 In the default group, which is configured by default for all users, the above settings are initially set. You can choose this firewall group while creating a virtual machine if you have difficulties with the configuration of a custom one.
 
-## **Incorrectly added SSH key. Errors: Connection refused.**
+## Incorrectly added SSH key. Errors: Connection refused
 
 While generating a key with the PuttyGen utility, you should keep in mind that PuTTY and OpenSSH use different formats of public SSH keys. If the public key has a format like BEGIN SSH2 PUBLIC KEY, it will not work. The key should start with \\"ssh-rsa AAAA...\\".
 
 When creating a key from the PuttyGen utility, you can just use The OpenSSH format key that appears in the interface after generation. You should copy it from the field \\"Public key for pasting into OpenSSH authorized\_keys file\\"
 
-## **No floating (public) IP address. Connection refused error**
+## No floating (public) IP address. Connection refused error
 
 If you used a previously created subnet while creating the machine, the system allows you to create a server without a floating IP.
 
 The SSH connection would not be possible in this case, because an internal IP address is not announced on the Internet. You should add <a href=“https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address” target="_blank">a floating IP address</a> to the newly created machine for the connection from external networks.
 
-## **The failure to connect to the remote server with Windows OS on it. Connection error.**
+## The failure to connect to the remote server with Windows OS on it. Connection error
 
 The Connection error occurs when you are trying to connect to the remote machine with Windows OS on it.
 

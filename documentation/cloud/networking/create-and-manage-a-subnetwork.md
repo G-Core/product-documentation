@@ -5,17 +5,13 @@ published: true
 order: 20
 toc:
    --1--Subnetwork creation: "subnetwork-creation"
-   --1--Network routing: "network-routing"
-   --1--Setting the IP range: "setting-the-ip-range"
    --1--Subnetwork management: "managing-subnets"
-   --1--Editing a name: "editing-a-name"
-   --1--Deleting a subnet: "deleting-a-subnet"
 ---
 # Create and manage a subnetwork
 
 **A subnetwork** is a range of IP addresses in a cloud network. Addresses from this range will be assigned to machines in the cloud.  
 
-## **Subnetwork creation**
+## ubnetwork creation
 
 There are two ways to create a subnet in the network: 
 
@@ -31,8 +27,6 @@ There are two ways to create a subnet in the network: 
 
 <img src="https://support.gcore.com/hc/article_attachments/13830600498321" alt="_____________________.png">
 
-## **Setting the IP range** 
-
 While creating a subnet (with any method), you need to specify the address range in the CIDR format in the drop-down window.
 
 <img src="https://support.gcore.com/hc/article_attachments/13830635124369" alt="_________________.png">
@@ -44,8 +38,6 @@ Acceptable CIDR ranges: 
 *   172.16.0.0 - 172.31.255.255 
 *   192.168.0.0 - 192.168.255.255 
 Valid subnet mask range: 16-24. 
-
-## Network routing
 
 A routed network is a private network that is already connected to a router with a public interface. All virtual servers in such networks can access the Internet through the router and accept incoming connections. 
 
