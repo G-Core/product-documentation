@@ -7,7 +7,7 @@ toc:
 ---
 # Create an instance
 
-1. Open **Instances** tab and click **Create Instance**.
+1. Open **Servers** tab and click **Create Instance**.
 
 ![The Create Instance button](https://assets.gcore.pro/docs/cloud/virtual-instances/create/1-create-instance%20button.png)
 
