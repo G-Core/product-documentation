@@ -5,7 +5,7 @@ published: true
 order: 10
 toc:
    --1--Prepare for uploading: "prepare-images-for-uploading"
-   --1--Upload: "how-to-upload-an-image"
+   --1--Upload: "upload-an-image"
 ---
 # Upload an image to the storage
 

@@ -5,14 +5,13 @@ published: true
 order: 10
 toc:
    --1--What is a floating IP: "what-is-a-floating-ip"
-   --1--What is it used for: ""
-   --1--How it works: ""
-   --1--Check if your subnet is routable: ""
-   --1--Reserve a floating IP: ""
-   --1--When creating an instance: ""
-   --1--Assign a floating IP to an instance: ""
-   --1--Detach a floating IP from an instance: ""
-   --1--Delete a floating IP: ""
+   --1--What is it used for: "what-is-it-used-for"
+   --1--How it works: "how-does-it-work"
+   --1--Check if your subnet is routable: "check-if-your-subnet-is-routable"
+   --1--Reserve: "reserve-a-floating-ip-from-the-menu"
+   --1--Assign: "assign-a-floating-IP-to-an-instance"
+   --1--Detach: "detach-a-floating-IP-from-an-instance"
+   --1--Delete: "delete-a-floating-IP"
 ---
 # Create and configure a floating IP address
 
