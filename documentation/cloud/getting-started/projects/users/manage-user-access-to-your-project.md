@@ -4,9 +4,9 @@ displayName: Manage access
 published: true
 order: 30
 toc:
-   --2--Edit user's role: ""
-   --2--Deny access to a project: ""
-   --2--Restore access to a project for a user: ""
+   --2--Edit user's role: "Edit-user-s-role"
+   --2--Deny access: "Deny-access-to-a-project"
+   --2--Restore access: "Restore-access-to-a-project-for-a-user"
 
 ---
 # Manage user access to your project 

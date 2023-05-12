@@ -4,17 +4,14 @@ displayName: Reserved IP address
 order: 20
 published: true
 toc:
-   --1--What it is used for: ""
-   --1--How it works: ""
-   --1--How it is charged: ""
-   --1--How to reserve an IP: ""
-   --1--How to assign a reserved IP to an instance and how to detach it from the machine: ""
-   --1--Assign during instance creation: ""
-   --1--Assign after instance creation: ""
-   --1--Detach from the instance: ""
-   --1--How to assign a reserved IP to a load balancer and how to detach it: ""
-   --1--How to find out the equipment the specific reserved IP is assigned to: ""
-   --1--How to delete a reserved IP: ""
+   --1--What it is used for: "what-it-is-used-for"
+   --1--How it works: "how-it-works"
+   --1--Billing: "how-it-is-charged"
+   --1--Reserve: "reserve-an-ip-address"
+   --1--Assign to an instance: "assign-a-reserved-ip-to-an-instance-and-detach-it-from-the-machine"
+   --1--Assign to a load balancer: "assign-a-reserved-ip-to-a-load-balancer-and-detach-it"
+   --1--Determine which server the reserved IP is assigned to: "determine-which-server-the-specific-reserved-ip-is-assigned-to"
+   --1--Delete: "delete-a-reserved-ip-address"
 ---
 # Create and configure a reserved IP address
 
@@ -36,7 +33,7 @@ The IP price per month is displayed in the order window. You pay only for the ti
 
 <img src="https://support.gcore.com/hc/article_attachments/4405921021457/image-17.png" alt="" width="380" height="168">
 
-## How to reserve an IP address
+## Reserve an IP address
 
 Open the tab "Reserved IPs" in the "Networking" section.
 
@@ -92,7 +89,7 @@ Detach the subnet the reserved IP is assigned to. This address will be detached 
 
 <img src="https://support.gcore.com/hc/article_attachments/4405921023249/image-29.png" alt="">
 
-## How to assign a reserved IP to a load balancer and how to detach it
+## Assign a reserved IP to a load balancer and how to detach it
 
 You can assign the reserved IP only during the balancer creation. In the "Network" section, select the network (public or private) to which you want to bind the address, move the "Use reserved IP" slider, and select the required IP. It will be assigned to the balancer.
 
@@ -102,7 +99,7 @@ You can assign the reserved IP only during the balancer creation. In the "Networ
 <img src="https://support.gcore.com/hc/article_attachments/4405927367697/image-31.png" alt="" width="438" height="216">
 </media-gallery>
 
-## Find out the server the specific reserved IP is assigned to
+## Determine which server the specific reserved IP is assigned to
 
 Open the "Networking" → "Reserved IPs" section. In the "Status" column, you will see what equipment the IP is assigned to. Click the orange text "Instance" or "Load Balancer" to go to the menu of this equipment.
 

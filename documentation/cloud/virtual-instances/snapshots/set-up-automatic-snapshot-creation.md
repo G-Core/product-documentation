@@ -7,14 +7,10 @@ toc:
    --1--Create a schedule: "create-a-schedule"
    --2--Create a schedule and give it a name: "create-a-schedule-and-give-it-a-name"
    --2--Select volumes: "select-volumes"
-   --2--Add and configure a snapshot schedule for volumes: "add-and-configure-a-snapshot-schedule"
-   --3--name template: "1-click--add-schedule--and-enter-a-name-for-future-snapshots"
-   --3--max resource count: "2-set-the-maximum-resource-quantity"
-   --3--schedule       type: "3-select-the-schedule-type----custom--or--period"
-   --3--retention time: "4-set-the-snapshots-retention-time"
+   --2--Add and configure a snapshot schedule: "add-and-configure-a-snapshot-schedule"
    --2--Add multiple snapshot schedules if needed: "add-multiple-snapshot-schedules-if-needed"
-   --1--How to disable and enable a schedule: "how-to-disable-and-enable-a-schedule"
-   --1--How to delete a schedule: "how-to-delete-a-schedule"
+   --1--Disable and enable a schedule: "disable-and-enable-a-schedule"
+   --1--Delete a schedule: "delete-a-schedule"
 ---
 # Set up automatic snapshot creation
 
@@ -103,7 +99,7 @@ You can create multiple schedules for the selected volumes — for example, if y
 
 [<img src="https://support.gcore.com/hc/article_attachments/360019892058/mceclip30.png" alt="mceclip30.png" width="415" height="169">](https://support.gcorelabs.com/hc/article_attachments/360019892058/mceclip30.png)
 
-## How to disable and enable a schedule
+## Disable and enable a schedule
 
 Once created, each schedule is enabled by default and starts running. It gets the status "Active".
 
@@ -125,7 +121,7 @@ You cannot disable and edit a separate schedule of the “Custom” or “Period
 [<img src="https://support.gcore.com/hc/article_attachments/360019797677/mceclip45.png" alt="mceclip45.png" width="333" height="460">](https://support.gcorelabs.com/hc/article_attachments/360019797677/mceclip45.png)
 </media-gallery>
 
-## How to delete a schedule
+## Delete a schedule
 
 You can delete the entire schedule in the “Snapshot Schedules” section. To do this, click on the ellipsis near the required schedule and select "Delete" in the drop-down menu.
 
