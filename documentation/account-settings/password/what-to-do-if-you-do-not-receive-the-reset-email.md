@@ -5,7 +5,6 @@ published: true
 order: 30
 toc:
 ---
-
 # What to do if you do not receive the reset email?
 
 If you initiated a password reset but have not received an email within 15 minutes, check your spam folder. The message is titled as “Password Recovery” and sent from [support@gcore.com](mailto:support@gcore.com).

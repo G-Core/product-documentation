@@ -4,12 +4,10 @@ displayName: Create protected resource
 published: true
 order: 30
 toc:
-
---1--Control panel settings: "control-panel-settings"
---1--Origin settings: "origin-settings"
---1--Additional measures: "additional-protective-measures"
+   --1--Control panel settings: "control-panel-settings"
+   --1--Origin settings: "origin-settings"
+   --1--Additional measures: "additional-protective-measures"
 ---
-
 # Create and configure a protected resource
 
 To protect your website, change your IP address to ours (you can get it once you set up a resource in the Control Panel).

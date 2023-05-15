@@ -10,7 +10,6 @@ toc:
    --2--Edit: "edit-a-dns-zone"
    --2--Delete: "delete-a-dns-zone"
 ---
-
 # Manage a DNS zone
 
 ## What is a DNS zone

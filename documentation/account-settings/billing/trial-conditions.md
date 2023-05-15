@@ -5,7 +5,6 @@ published: true
 order: 10
 toc:
 ---
-
 # Trial conditions
 
 After <a href="https://gcore.com/docs/account-settings/create-an-account-for-an-individual-or-legal-entity" target="_blank">registration</a> a free trial period starts by default. The trial is the period when you can test the service for free, regardless of the chosen tariff.

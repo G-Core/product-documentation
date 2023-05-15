@@ -7,7 +7,6 @@ toc:
    --1--Tariff plan: "tariff-plan-for-streaming"
    --1--Billing rules: "billing-rules"
 ---
-
 # How the Streaming service and additional features are billed
 
 ## Tariff plan for Streaming

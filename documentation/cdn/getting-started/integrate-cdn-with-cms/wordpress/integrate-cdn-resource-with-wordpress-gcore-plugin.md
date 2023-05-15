@@ -4,13 +4,13 @@ displayName: Gcore plugin
 published: true
 order: 10
 toc:
-    --1--Install the plugin: "install-the-plugin"
-    --1--Working with the plugin: "working-with-the-plugin"
-    --2--Integration with CDN: "integration-with-cdn"
-    --2--File types: "file-types"
-    --2--Folders: "folders"
-    --2--Exceptions: "exceptions"
-    --2--Plugin workflow: "plugin-workflow"
+   --1--Install the plugin: "install-the-plugin"
+   --1--Working with the plugin: "working-with-the-plugin"
+   --2--Integration with CDN: "integration-with-cdn"
+   --2--File types: "file-types"
+   --2--Folders: "folders"
+   --2--Exceptions: "exceptions"
+   --2--Plugin workflow: "plugin-workflow"
 ---
 # Integrate CDN resource with WordPress (Gcore plugin)
 
