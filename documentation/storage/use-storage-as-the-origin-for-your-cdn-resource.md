@@ -11,7 +11,6 @@ toc:
    --2--S3 storage is the origin: "s3-storage-is-the-origin"
    --2--SFTP storage is the origin: "sftp-storage-is-the-origin"
 ---
-
 # Use storage as the origin for your CDN resource
 
 ## Use as an origin

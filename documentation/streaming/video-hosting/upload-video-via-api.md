@@ -4,8 +4,8 @@ displayName: Upload video to VOD storage
 published: true
 order: 60
 toc:
-    --1--Pull: "pull"
-    --1--Push: "push"
+   --1--Pull: "pull"
+   --1--Push: "push"
 ---
 # Upload Video via API
 

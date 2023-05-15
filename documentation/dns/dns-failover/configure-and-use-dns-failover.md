@@ -5,7 +5,6 @@ published: true
 order: 20
 toc:
 ---
-
 # Configure and use DNS Failover
 
 1\. To enable the DNS Failover feature, send us a request by email at [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of <a href="https://gcore.com/" target="_blank">our website</a>. Please specify your ID in the request, so we can identify your account. You can find it on the main page of your <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>.

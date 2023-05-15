@@ -9,7 +9,6 @@ toc:
    --2--via AWS CLI: "generate-links-in-aws-cli"
    --2--via S3cmd: "generate-links-in-s3cmd"
 ---
-
 # Generate temporary links to files with AWS CLI and S3cmd                   
 
 ## What is a presigned URL?

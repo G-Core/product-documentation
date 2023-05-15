@@ -9,7 +9,6 @@ toc:
    --2--Nginx: "nginx"
    --2--Apache: "apache"
 ---
-
 # Get actual IP addresses of visitors from the X-Forward-For header
 
 ## Why use the X-Forwarded-For header

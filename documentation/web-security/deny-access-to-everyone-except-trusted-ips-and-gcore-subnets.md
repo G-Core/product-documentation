@@ -4,12 +4,11 @@ displayName: Deny access
 published: true
 order: 70
 toc:
---1--Network Firewall: "network-firewall"
---1--Web server: "web-server"
---2--Apache: "apache"
---2--Nginx: "nginx"
+   --1--Network Firewall: "network-firewall"
+   --1--Web server: "web-server"
+   --2--Apache: "apache"
+   --2--Nginx: "nginx"
 ---
-
 # Deny access to everyone except trusted IPs and Gcore subnets
 
 To minimize your website vulnerability, deny access to it for all but Gcore's subnets and your trusted IP addresses.  

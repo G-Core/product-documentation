@@ -5,7 +5,6 @@ published: true
 order: 10
 toc:
 ---
-
 # How do I change an A record?
 
 To change the A-record

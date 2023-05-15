@@ -5,7 +5,6 @@ published: true
 order: 80
 toc:
 ---
-
 # Check storages usage reports
 
 For storage billing we use the following metrics:

@@ -9,7 +9,6 @@ toc:
    --2--SFTP storage: "sftp"
    --1--Storage status indicator: "storage-status-indicator"
 ---
-
 # Create an S3 or SFTP storage
 
 ## Create a storage

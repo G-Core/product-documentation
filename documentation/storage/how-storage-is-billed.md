@@ -8,7 +8,6 @@ toc:
    --1--Change your plan: "change-your-plan"
    --1--S3 Storage limits: "s3-storage-limits"
 ---
-
 # How Storage is billed  
 
 ## Plans and billing rules 

@@ -4,16 +4,16 @@ displayName: Raw Logs (paid)
 published: true
 order: 10
 toc:
---1--What is a Raw Logs feature?: "what-is-a-raw-logs-feature"
---1--Export to an S3 storage: "export-logs-to-an-s3-storage"
---2--Amazon storage: "amazon-storage"
---2--Non-Amazon storage: "non-amazon-storage"
---1--Export to an FTP/SFTP storage: "export-logs-to-an-ftp-sftp-storage"
---1--Export time intervals: "export-time-intervals"
---1--Log path example: "log-path-example"
---1--Log format: "log-format"
---1--Log example: "log-example"
---1--Log fields: "log-fields"
+   --1--What is a Raw Logs feature?: "what-is-a-raw-logs-feature"
+   --1--Export to an S3 storage: "export-logs-to-an-s3-storage"
+   --2--Amazon storage: "amazon-storage"
+   --2--Non-Amazon storage: "non-amazon-storage"
+   --1--Export to an FTP/SFTP storage: "export-logs-to-an-ftp-sftp-storage"
+   --1--Export time intervals: "export-time-intervals"
+   --1--Log path example: "log-path-example"
+   --1--Log format: "log-format"
+   --1--Log example: "log-example"
+   --1--Log fields: "log-fields"
 ---
 # Raw Logs: export CDN resource logs to your storage
 

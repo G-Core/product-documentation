@@ -4,8 +4,8 @@ displayName: Attaching or issuing an SSL certificate
 published: true
 order: 40
 toc:
-    --1--Can't attach a personal certificate to a resource: "cant-attach-a-personal-certificate-to-a-resource"
-    --1--Can't get Let's Encrypt certificate: "cant-get-lets-encrypt-certificate"
+   --1--Can't attach a personal certificate to a resource: "cant-attach-a-personal-certificate-to-a-resource"
+   --1--Can't get Let's Encrypt certificate: "cant-get-lets-encrypt-certificate"
 ---
 # An SSL certificate isn't working: how to solve to issue
 

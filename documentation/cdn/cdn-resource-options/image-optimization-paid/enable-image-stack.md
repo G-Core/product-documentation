@@ -4,7 +4,6 @@ displayName: Enable Image stack
 published: true
 order: 20
 toc:
-
 ---
 # Enable Image stack
 

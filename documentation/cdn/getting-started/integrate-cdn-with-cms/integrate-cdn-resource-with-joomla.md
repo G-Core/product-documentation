@@ -4,9 +4,9 @@ displayName: Joomla
 published: true
 order: 120
 toc:
---1--Check the Joomla Version: "check-the-joomla-version"
---1--Install the plugin: "install-the-plugin"
---1--Set up the extension: "set-up-the-extension"
+   --1--Check the Joomla Version: "check-the-joomla-version"
+   --1--Install the plugin: "install-the-plugin"
+   --1--Set up the extension: "set-up-the-extension"
 ---
 # Integrate CDN resource with Joomla
 
