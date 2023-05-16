@@ -3,8 +3,9 @@ title: cdn
 displayName: CDN
 published: true
 ---
+# CDN
 
-Welcome to the [Gcore CDN](https://gcore.com/cdn) documentation page! Here we explain how to use, configure, and troubleshoot Gcore’s CDN.
+Welcome to the <a href="https://gcore.com/cdn" target="_blank">Gcore CDN</a> documentation page! Here we explain how to use, configure, and troubleshoot Gcore’s CDN.
 
 CDN is a distributed content delivery network that allows your website to load faster in users' browsers, regardless of how far they are from the source server.
 

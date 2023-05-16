@@ -3,8 +3,9 @@ title: streaming
 displayName: Streaming
 published: true
 ---
+# Streaming
 
-Welcome to the [Gcore Streaming](https://gcore.com/streaming-platform) documentation page! Here we explain how to use, configure, and troubleshoot Gcore’s Streaming.
+Welcome to the <a href="https://gcore.com/streaming-platform" target="_blank">Gcore Streaming</a> documentation page! Here we explain how to use, configure, and troubleshoot Gcore’s Streaming.
 
 Streaming is a service that transcodes media content, such as videos, live streams, and group video calls, into appropriate formats for fast and reliable delivery to millions of viewers worldwide.
 

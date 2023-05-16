@@ -3,8 +3,9 @@ title: web-security
 displayName: Web security
 published: true
 ---
+# Web security
 
-Welcome to the [Gcore Web Security](https://gcore.com/web-security) documentation page! Here we explain how to use, configure, and troubleshoot Gcore’s security features.
+Welcome to the <a href="https://gcore.com/web-security" target="_blank">Gcore Web Security</a> documentation page! Here we explain how to use, configure, and troubleshoot Gcore’s security features.
 
 Web security protects your web applications against DDoS attacks, hacking threats, and malicious bot activities.
 

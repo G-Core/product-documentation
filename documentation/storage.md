@@ -3,8 +3,9 @@ title: storage
 displayName: Storage
 published: true
 ---
+# Storage
 
-Welcome to the [Gcore Storage](https://gcore.com/storage) documentation page! Here we explain how to use, configure, and troubleshoot Gcore’s Storage.
+Welcome to the <a href="https://gcore.com/storage" target="_blank">Gcore Storage</a> documentation page! Here we explain how to use, configure, and troubleshoot Gcore’s Storage.
 
 Storage is an S3 or SFTP service that lets you store various types of data (media files, logs, backups, etc.) on Gcore's digital data storage hardware.
 
