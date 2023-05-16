@@ -3,8 +3,9 @@ title: cloud
 displayName: Cloud
 published: true
 ---
+# Cloud
 
-Welcome to the [Gcore Cloud](https://gcore.com/cloud) documentation page! Here we explain how to create, configure, and troubleshoot different cloud products and services.
+Welcome to the <a href="https://gcore.com/cloud" target="_blank">Gcore Cloud</a> documentation page! Here we explain how to create, configure, and troubleshoot different cloud products and services.
 
 Cloud is a cloud computing platform that provides users with access to a wide range of computing services over the internet. With Cloud, you can run quickly, save costs, and scale up and down with ease.
 
