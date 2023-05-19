@@ -2,6 +2,7 @@ import { NgModule, Injector } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { createCustomElement } from '@angular/elements';
 import { ScullyLibModule } from '@scullyio/ng-lib';
+import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -17,6 +18,7 @@ import { ExandableElementComponent } from './web-components/exandable-element/ex
 import { CodeBlockComponent } from './web-components/code-block/code-block.component';
 import { TextColumnsComponent } from './web-components/text-columns/text-columns.component';
 import { GalleryComponent } from './web-components/gallery/gallery.component';
+import { SearchComponent } from './components/search/search.component';
 import { MenuService } from './services/menu.service';
 
 @NgModule({
@@ -32,8 +34,16 @@ import { MenuService } from './services/menu.service';
         CodeBlockComponent,
         TextColumnsComponent,
         GalleryComponent,
+        SearchComponent,
     ],
-    imports: [BrowserModule, AppRoutingModule, ScullyLibModule, BrowserAnimationsModule, UiKitModule],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        ScullyLibModule,
+        BrowserAnimationsModule,
+        UiKitModule,
+        ReactiveFormsModule,
+    ],
     providers: [MenuService],
     bootstrap: [AppComponent],
 })

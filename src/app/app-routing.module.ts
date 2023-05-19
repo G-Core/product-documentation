@@ -2,10 +2,15 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { DocumentationComponent } from './components/documentation/documentation.component';
 import { HomeComponent } from './components/home/home.component';
+import { SearchComponent } from './components/search/search.component';
 import { HEADER_HEIGHT } from './constants';
 
 const routes: Routes = [
     { path: '', component: HomeComponent },
+    {
+        path: `search`,
+        component: SearchComponent,
+    },
     {
         path: `documentation/web-security`,
         component: DocumentationComponent,

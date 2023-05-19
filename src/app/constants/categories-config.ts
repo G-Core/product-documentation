@@ -1,5 +1,6 @@
 import { Category } from '../models';
 
+// Adding or updating categories requires the same changes to categoriesMap in scully/plugins/algolia
 export const categories: Array<Category> = [
     {
         name: 'Account settings',

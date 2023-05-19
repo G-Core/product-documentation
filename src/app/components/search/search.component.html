@@ -1,0 +1,35 @@
+<form class="form" *ngIf="filterForm" [formGroup]="filterForm">
+    <label *ngFor="let control of $any(filterForm.get('product'))['controls']; let i = index"
+        >{{ categories[i].name }} <input type="checkbox" [formControl]="control"
+    /></label>
+</form>
+<div class="gc-content-wrapper">
+    <div class="gc-search-result" *ngIf="searchResult$ | async as searchResult; else noResult">
+        <ng-container *ngIf="searchResult?.hits?.length; else noResult">
+            <h2 class="gc-page-title">Search results</h2>
+            <div class="gc-search-result-item" *ngFor="let hit of searchResult.hits">
+                <a class="gc-result-title" [routerLink]="hit.url">{{ hit.mainTitle || hit.menuTitle }}</a>
+                <p class="gc-breadcrumbs">
+                    <a [routerLink]="'/'">Product documentation</a>
+                    <ng-container *ngIf="hit.product">
+                        <span> &rarr; </span
+                        ><a [routerLink]="'/documentation/' + categoriesMap[hit.product]">{{ hit.product }}</a>
+                    </ng-container>
+                    <ng-container *ngIf="hit.menuTitle">
+                        <span> &rarr; </span><a [routerLink]="hit.url">{{ hit.menuTitle }}</a>
+                    </ng-container>
+                </p>
+            </div>
+        </ng-container>
+        <div class="gc-pagination" *ngIf="searchResult.nbPages > 1">
+            <button *ngFor="let page of getPagesArray(searchResult.nbPages); let i = index" (click)="changePage(i)">
+                {{ i + 1 }}
+            </button>
+        </div>
+    </div>
+
+    <ng-template #noResult>
+        <h2 class="gc-page-title">No results found</h2>
+        <p>It seems we can't find any results based on your search.</p>
+    </ng-template>
+</div>
