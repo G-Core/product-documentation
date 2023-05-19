@@ -17,6 +17,7 @@ import { categories, DOCS_GITHUB_REPO, HEADER_HEIGHT, METADATA_FILE_TITLE } from
 import { MenuItem, MenuTreeItem, TableOfContents } from '../../models';
 import { GitHubAPIService } from '../../services';
 import { MenuService } from '../../services/menu.service';
+import { callToActionMap } from '../../constants/call-to-action';
 
 @Component({
     selector: 'gc-documentation',
@@ -39,6 +40,8 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
     public showFullSizeImage: boolean = false;
     public targetImageSrc: string = '';
     public isMenuExpanded: boolean = false;
+    public category: string;
+    public callToActionMap = callToActionMap;
 
     @ViewChild('scullyContainer') public scullyContainer: ElementRef;
     @ViewChild('fullSizeImage') public fullSizeImage: ElementRef;
@@ -106,6 +109,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
 
                 const documentUrlWithCategory = pageUrl.replace('/documentation/', '');
                 const category = url[1].path;
+                this.category = category;
                 const documentUrl = documentUrlWithCategory.replace(category, '').slice(1);
                 const document = documentUrl.length ? documentUrl.slice(documentUrl.lastIndexOf('/') + 1) : '';
 
