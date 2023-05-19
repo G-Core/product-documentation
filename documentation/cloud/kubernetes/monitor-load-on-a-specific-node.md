@@ -2,13 +2,14 @@
 title: monitor-load-on-a-specific-node
 displayName: Monitor load on a specific node
 published: true
+order: 30
 toc:
    --1--Navigate to monitoring: "navigate-to-monitoring"
    --1--Metrics: "metrics"
 ---
 # Monitor load on a specific node
 
-Each node is a virtual machine. You can monitor its load and performance through 6 metrics.
+You can monitor load and performance of your nodes through 4 metrics.
 
 ## Navigate to monitoring
 
@@ -29,12 +30,10 @@ The buttons to the right above the graphs regulate the presentation of statistic
 
 ## Metrics
 
-You can monitor the state of a virtual machine using 6 metrics:
+You can monitor the state of a virtual machine using 4 metrics:
 
 1. The **CPU Utilization** metric measures the load on the machine's CPU as a percentage. For example, if all cores are at 90% usage, the value displayed will be 90%.
 2. The **RAM Utilization** refers to the amount of RAM being utilized by the instance to perform tasks. It is measured as a percentage, with 100% indicating full utilization of RAM.
 The RAM Utilization value inside the system might appear to be lower than what is shown in Monitoring, which is normal. Monitoring takes into account cache RAM as a part of its statistics. Cache RAM is unused RAM that the machine borrows and uses to improve application performance. If an application needs more RAM, the system immediately retrieves it from cache.
-3. The **Network BPS ingress** is the speed of incoming traffic, measured in bytes per second.
-4. The **Network BPS egress** is the speed of outgoing traffic, measured in bytes per second.
-5. The **Network PPS ingress** is the speed of incoming traffic, measured in packets per second.
-6. The **Network PPS egress** is the speed of outgoing traffic measured in packets per second.
+3. The **Network Traffic** is the speed of traffic, measured in Mbit per second.
+4. The **Network Packets** is the speed of traffic, measured in packet per second.

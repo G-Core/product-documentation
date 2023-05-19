@@ -37,9 +37,9 @@ There are several options to manage a bare metal server:
 
 We offer three types of in-stock configurations:
 
-*   Basic\_single are core servers typically with 2236/2336 or similar CPUs. Suitable for lightweight applications or micro-containers.
-*   High-frequency are single-core servers that are preferable with 2288G/2388 CPUs. High-frequency single-socket servers are suitable for hosting applications whose processor frequency is demanding.
-*   Infrastructure line is multi-core, multi-socket configurations for hosting applications that are demanding in the number of cores and are optimized for multithreading.
+*  **Basic single**. These servers are core servers typically equipped with 2236/2336 or similar CPUs, suitable for lightweight applications or micro-containers.
+*  **High-frequency**. These servers are single-socket servers equipped with 2288G/2388 CPUs, suitable for hosting applications that require high processor frequency.
+*  **Infrastructure**. These servers are multi-core, multi-socket configurations designed for hosting applications that demand a high number of cores and are optimized for multithreading.
 
 If you want a custom configuration, contact our [Sales team](mailto:sales@gcore.com). They will help you find the best solution for your needs.
 
