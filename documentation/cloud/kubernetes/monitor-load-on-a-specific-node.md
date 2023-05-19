@@ -2,6 +2,7 @@
 title: monitor-load-on-a-specific-node
 displayName: Monitor load on a specific node
 published: true
+order: 30
 toc:
    --1--Navigate to monitoring: "navigate-to-monitoring"
    --1--Metrics: "metrics"
