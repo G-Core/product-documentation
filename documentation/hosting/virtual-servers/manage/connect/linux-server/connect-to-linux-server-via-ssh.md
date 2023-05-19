@@ -29,7 +29,7 @@ For example, if the instructions say "user: root" and "server IP address: 185.14
 
 3\. The connection will prompt you for a password. Enter the password from the instructions. For example, if the instructions say "password: YHr4mhn7hFJeN", enter YHr4mhn7hFJeN.
 
-**Please note**: The password cannot be copied and pasted; it must be entered manually. The letters you enter will not be displayed on the screen to protect your password. Type the symbols and press Enter.
+**Please note**: In some SSH clients, the password cannot be copied and pasted; it must be entered manually. The letters you enter will not be displayed on the screen to protect your password. Type the symbols and press Enter.
 
 <img src="https://support.gcore.com/hc/article_attachments/4408223674257/mceclip0.png" alt="">
 
