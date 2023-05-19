@@ -39,6 +39,9 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
     public showFullSizeImage: boolean = false;
     public targetImageSrc: string = '';
     public isMenuExpanded: boolean = false;
+    public isActiveLike: boolean = false;
+    public isActiveDislike: boolean = false;
+    public activeTab: string;
 
     @ViewChild('scullyContainer') public scullyContainer: ElementRef;
     @ViewChild('fullSizeImage') public fullSizeImage: ElementRef;
@@ -85,8 +88,6 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
                     })
                     .filter((item: Element) => item);
             }
-
-            this.handlePageScroll();
         }
     }
 
@@ -183,12 +184,25 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
 
     public anchorScroll(hash: string): void {
         document.location.hash = hash;
+        this.activeTocItem = hash;
+        this.activeTab = hash;
+        this.changeDetectorRef.detectChanges();
     }
 
     public closeFullSizeModal(): void {
         this.renderer.removeClass(this.fullSizeImage.nativeElement, 'active');
         this.targetImageSrc = '';
         this.changeDetectorRef.detectChanges();
+    }
+
+    public onButtonLikeClick(): void {
+        this.isActiveLike = !this.isActiveLike;
+        this.isActiveDislike = this.isActiveLike ? false : this.isActiveDislike;
+    }
+
+    public onButtonDislikeClick(): void {
+        this.isActiveDislike = !this.isActiveDislike;
+        this.isActiveLike = this.isActiveDislike ? false : this.isActiveLike;
     }
 
     private setTableOfContent(links: Array<ScullyRoute>): void {
@@ -235,6 +249,16 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
     }
 
     private handlePageScroll = (): void => {
+        const scrollHeight = document.documentElement.scrollHeight;
+        const clientHeight = document.documentElement.clientHeight;
+        const height = scrollHeight - clientHeight;
+        const scrollTop = document.documentElement.scrollTop + HEADER_HEIGHT + 18;
+
+        if (height <= scrollTop) {
+            this.activeTocItem = this.activeTab;
+            return;
+        }
+
         const activeSectionId = this.tableOfContentsHeaders.reduce((activeItem: string, item) => {
             if (document.documentElement.scrollTop + HEADER_HEIGHT + 18 > (item as HTMLElement).offsetTop) {
                 activeItem = item.id;
