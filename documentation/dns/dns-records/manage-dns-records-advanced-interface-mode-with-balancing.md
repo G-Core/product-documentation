@@ -13,7 +13,7 @@ toc:
    --2--(Optional) Additional records of the selected type: "6-optional-add-additional-records-of-the-selected-type"
    --2--(Optional) Balancing: "7-optional-configure-balancing"
    --3--by coordinates (Geo Proximity): "balancing-by-coordinates-geo-proximity"
-   --3--by ASN, country, or continent (Geo DNS): "balancing-by-asn-country--or-continent-geo-dns"
+   --3--by ASN, country, or continent (Geo DNS): "balancing-by-asn-country-or-continent-geo-dns"
    --2--(Optional) A maximum number of responses: "8-optional-specify-the-maximum-number-of-responses"
    --2--Completing the configuration: "9-complete-the-configuration-and-create-resource-records"
    --1--Edit: "edit-a-dns-record"

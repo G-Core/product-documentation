@@ -12,7 +12,7 @@ toc:
    --2--Safari: "for-safari"
    --1--Clear cache and cookies: "clear-cache-and-cookies"
    --1--Check the installed browser extensions: "check-the-installed-browser-extensions"
-   --1--Inspect the firewall settings: ""
+   --1--Inspect the firewall settings: "шnspect-the-firewall-settings"
    --1--Check the camera and microphone in your OS: "check-the-camera-and-microphone-settings-in-your-os"
    --2--macOS: "macos"
    --2--Windows: "windows"

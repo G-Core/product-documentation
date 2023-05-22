@@ -58,9 +58,9 @@ An addressing scheme where you specify the bucket at the beginning ```<bucket-na
 
 Use the following schema to request uploaded files:
 
-```http(s)://<Custom domain>/<folder\*>/<file>```
+```http(s)://<Custom domain>/<folder*>/<file>```
 
-\*If the folder was created in the bucket. If files were added to the root of the bucket - specify file names.  
+*If the folder was created in the bucket. If files were added to the root of the bucket - specify file names.  
 
 For example, you've: 
 

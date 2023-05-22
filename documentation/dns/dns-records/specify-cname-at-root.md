@@ -5,7 +5,7 @@ published: true
 order: 30
 toc:
    --1--What is CNAME: "what-is-a-cname-record"
-   --1--What is the challenge with it: "what-is-the-challenge-with-cname- records"
+   --1--What is the challenge with it: "what-is-the-challenge-with-cname-records"
    --1--How CNAME Flattening works: "how-does-cname-flattening-work"
    --1--Configuration: "configuration-of-cname-flattening"
 ---

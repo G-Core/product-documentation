@@ -4,9 +4,9 @@ displayName: Low cache hit ratio
 published: true
 order: 20
 toc:
-   --1--CDN Caching option: "cdn-cachin-option"
+   --1--CDN Caching option: "cdn-caching-option"
    --1--Query-String and Set-Cookies options: "query-string-and-set-cookies-options"
-   --1--LargeFilesDeliveryOptimization: "large-files-delivery-optimization"
+   --1--Large Files Delivery Optimization: "large-files-delivery-optimization"
 ---
 # Cache percentage is low: how to solve the issue
 

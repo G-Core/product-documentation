@@ -6,7 +6,7 @@ order: 50
 toc:
    --1--What is a Secure token, and how it works: "what-is-a-secure-token-and-how-it-works"
    --1--Configure: "configure-protection-with-temporary-links"
-   --2--Enable a feature: "enable-the-secure-token--feature"
+   --2--Enable a feature: "enable-the-secure-token-feature"
    --2--Use PHP script to generate links: "use-the-php-script-for-the-generation-of-urls"
    --3--PHP script for live streams: "php-script-for-live-streams"
 ---

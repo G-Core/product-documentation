@@ -4,8 +4,8 @@ displayName: Content unavailability
 published: true
 order: 10
 toc:
-   --1--Define where the issue is the origin or the content delivery network (CDN) resource: "define-where-the-issue-is-the-website-or-the-cdn-resource"
-   --1--Check the CDN’s settings: "check-the-cdn-s-settings"
+   --1--Define where the issue is: "define-where-the-issue-is-the-website-or-the-cdn-resource"
+   --1--Check the CDN’s settings: "check-the-cdns-settings"
    --2--1. Personal domain (CNAME): "1-check-the-configuration-of-the-personal-domain"
    --2--2. Host header: "2-check-the-host-header-option"
    --2--3. Origin pull protocol: "3-check-the-origin-pull-protocol-option"
