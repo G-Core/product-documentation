@@ -9,10 +9,10 @@ toc:
    --2--Safari: "safari"
    --2--Firefox: "firefox"
    --2--Opera: "opera"
-   --2--Yandex.Browser: "yandex-browser"
+   --2--Yandex.Browser: "yandexbrowser"
    --1--How to manage the camera and microphone in Meet?: "how-to-manage-the-camera-and-microphone-in-meet"
-   --2--When creating a call: "1-when-creating-a-call"
-   --2--In the video call room: "2-in-the-video-call-room"
+   --2--When creating a call: "when-creating-a-call"
+   --2--In the video call room: "in-the-video-call-room"
 ---
 # Set up and manage your camera and microphone
 

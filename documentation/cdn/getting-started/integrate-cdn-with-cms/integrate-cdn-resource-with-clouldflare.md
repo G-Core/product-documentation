@@ -4,7 +4,7 @@ displayName: ClouldFlare
 published: true
 order: 30
 toc:
-   --1-CNAME record setup: "cname-record-setup"
+   --1--CNAME record setup: "cname-record-setup"
    --1--Origin Pull Protocol setup: "origin-pull-protocol-setup"
 ---
 # Integrate CDN resource with ClouldFlare

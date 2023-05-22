@@ -1,5 +1,5 @@
 ---
-title: create-and-configure-playlists
+title: create-and-configure-playlists-for-videos
 displayName: Playlists
 published: true
 order: 30
@@ -8,7 +8,7 @@ toc:
    --1--Enable: "enable-the-playlists-feature"
    --1--Create and configure: "create-and-configure-playlists"
 ---
-# Create and configure playlists
+# Create and configure playlists for videos
   
 ## What is the Playlists feature?
 

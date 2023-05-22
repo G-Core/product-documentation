@@ -10,7 +10,7 @@ toc:
    --2--Enter a site name: "2-enter-a-site-name"
    --2--Review your DNS records: "3-review-your-dns-records"
    --2--Change nameservers: "4-change-nameservers"
-   --2--(Optional) Setup additional options: "5--optional--setup-additional-options"
+   --2--(Optional) Setup additional options: "5-optional-setup-additional-options"
 ---
 # Create a CDN resource for the entire site
 
@@ -28,7 +28,7 @@ You don't need to change the site's code to create and integrate a CDN resource 
 
 To create a CDN resource for the entire site:
 
-### 1\. Choose the acceleration type
+### 1. Choose the acceleration type
 
 Go to the <a href="https://cdn.gcore.com/" target="_blank">CDN resources</a> tab and click **Create CDN resource**.
 
@@ -38,7 +38,7 @@ The new page will open. Select "Accelerate and protect entire site" and click **
 
 <img src="https://support.gcore.com/hc/article_attachments/13050295683601" alt="" width="50%">
 
-### 2\. Enter a site name
+### 2. Enter a site name
 
 **Note**: This step requires the creation of a DNS zone (similar to the site name) in the <a href="https://www.gcore.com/dns" target="_blank">Gcore DNS service</a>. In our example, a DNS zone will be *testdomain.com*. If you haven’t used the DNS service before, the Free plan will activate automatically at this step. If you have already used the DNS service, the specified DNS zone will also be created automatically, and you can view it in the <a href="https://dns.gcore.com" target="_blank">Control panel</a>.
 
@@ -60,7 +60,7 @@ You can also optionally enter the description of this CDN resource. The maximum 
 
 2. If you specify a site whose domain matches an existing DNS zone in your account, this DNS zone will be used for settings. The zone is not duplicated.
 
-### 3\. Review your DNS records
+### 3. Review your DNS records
 
 Our system looks for DNS records associated with your site domain at this step.
 
@@ -72,7 +72,7 @@ Our system looks for DNS records associated with your site domain at this step.
 
 <img src="https://support.gcore.com/hc/article_attachments/13050648890385" alt="" width="70%">
 
-### 4\. Change nameservers
+### 4. Change nameservers
 
 If all the steps are completed successfully, a CDN resource and DNS zone will be automatically created for the site you specified in step 2.
 
@@ -89,7 +89,7 @@ ns2.gcdn.services
 
 Remember that the name server change can take up to 24 hours.
 
-### 5\. (Optional) Setup additional options
+### 5. (Optional) Setup additional options
 
 Optionally, you can activate additional features for your CDN resource. You can skip this step and return to additional settings later. Click **Confirm** to complete the creation and setup of your CDN resource.
 

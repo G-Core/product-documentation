@@ -6,7 +6,7 @@ order: 20
 toc:
    --1--Call rooms with 1-4 attendees: "call-rooms-with-1-4-attendees"
    --1--Call rooms with 5-15 attendees: "call-rooms-with-5-15-attendees"
-   --2--Operating system and Browser compatibility: "operating-system-and-browser-compatibility"
+   --1--Operating system and Browser compatibility: "operating-system-and-browser-compatibility"
 ---
 # View technical requirements for users
 
@@ -114,4 +114,4 @@ toc:
 
 ## Operating system and Browser compatibility
 
-<img src="https://support.gcore.com/hc/article_attachments/360014351577/____________________________.png" alt="A file source: https://bloggeek.me/webrtc-browser-support/" width="70%">
+<img src="https://support.gcore.com/hc/article_attachments/360014351577/____________________________.png" alt="" width="70%">

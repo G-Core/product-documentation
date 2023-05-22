@@ -5,7 +5,7 @@ published: true
 order: 20
 toc:
    --1--Add: "add-a-user"
-   --1--Edit: "change-user-s-account-information"
+   --1--Edit: "change-users-account-information"
    --1--Delete: "delete-a-user"
    --2--Features: "deletion-features"
 ---

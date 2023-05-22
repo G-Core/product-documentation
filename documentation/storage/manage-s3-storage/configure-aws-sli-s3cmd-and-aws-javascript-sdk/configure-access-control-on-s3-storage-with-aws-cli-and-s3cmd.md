@@ -10,9 +10,10 @@ toc:
    --2--Allow an object downloading by ACL: "allow-an-object-downloading-by-acl"
    --2--Allow a bucket listing by ACL: "allow-listing-of-a-bucket-by-acl"
    --2--Allow an object downloading by policy: "allow-an-object-downloading-by-policy"
-   --2--Deny access to a bucket (hide a directory) by policy: "deny-access-to-a-bucket-hide-a-directory--by-policy"
+   --2--Deny access to a bucket (hide a directory) by policy: "deny-access-to-a-bucket-hide-a-directory-by-policy"
    --2--Allow requests from a particular IP by policy: "allow-requests-from-a-particular-ip-by-policy"
    --2--Allow requests from a particular website by policy: "allow-requests-from-a-particular-website-by-policy"
+   --2--Grant a user access to a bucket by policy: "grant-a-user-access-to-a-bucket-by-policy"
 ---
 # Configure access control on S3 storage with AWS CLI and S3cmd
 

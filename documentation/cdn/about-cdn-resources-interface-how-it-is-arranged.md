@@ -5,7 +5,7 @@ published: true
 order: 40
 toc:
    --1--What is it: "what-is-the-cdn-resources-tab"
-   --2--Create: "create-a-cdn-resource"
+   --1--Create: "create-a-cdn-resource"
    --1--Manage: "manage-cdn-resources"
    --2--Filter and search: "filter-and-search"
    --2--Manage options: "manage-options"

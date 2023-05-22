@@ -4,14 +4,14 @@ displayName: Player API tutorial
 published: true
 order: 30
 toc:
-   --1--Player Initialization via iFrame: "payer-initialization-via-iframe"
+   --1--Player Initialization via iFrame: "player-initialization-via-iframe"
    --1--Events: "events"
    --1--Calling player methods: "calling-player-methods"
    --1--API testing tool: "api-testing-tool"
 ---
 # Player API tutorial
 
-The API allows you to manage the player settings using JavaScript and collect data about its use for further analysis. 
+The API allows you to manage the player settings using JavaScript and collect data about its use for further analysis.
 
 ## Player Initialization via iFrame
 

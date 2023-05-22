@@ -5,7 +5,7 @@ published: true
 order: 60
 toc:
    --1--Check the content availability on the Origin source: "check-the-content-availability-on-the-origin-source"
-   --1--Check your CDN resource's settings: "check-your-cdn-resource-s-settings"
+   --1--Check your CDN resource's settings: "check-your-cdn-resources-settings"
 ---
 # 4xx error: how to solve CDN issues with the limited access and content non-existence
 

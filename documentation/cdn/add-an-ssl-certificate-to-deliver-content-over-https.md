@@ -13,11 +13,10 @@ toc:
    --2--Renew: "renew-an-ssl-certificate"
    --2--Expiration notifications: "ssl-certificates-expiration-notifications"
    --2--Delete: "delete-an-ssl-certificate"
-   --1--2. Let's Encrypt certificate: "2-let-s-encrypt-certificate"
-   --2--Activate: "activate-a-let-s-encrypt-certificate"
-   --2--Revoke: "revoke-a-let-s-encrypt-certificate"
+   --1--2. Let's Encrypt certificate: "2-lets-encrypt-certificate"
+   --2--Activate: "activate-a-lets-encrypt-certificate"
+   --2--Revoke: "revoke-a-lets-encrypt-certificate"
    --2--Restrictions and features of the option: "restrictions-and-features-of-the-option"
-   --1--request a new one: ""
 ---
 # Add an SSL certificate to deliver content over HTTPS
 

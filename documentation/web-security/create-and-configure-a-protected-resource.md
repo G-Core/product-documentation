@@ -12,7 +12,7 @@ toc:
 
 To protect your website, change your IP address to ours (you can get it once you set up a resource in the Control Panel).
 
-## Сontrol panel settings
+## Control panel settings
 
 Go to the Web Protection tab and click on the **Create DDoS resource** button.
 
