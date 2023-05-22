@@ -76,8 +76,6 @@ Use the iframe code to integrate the video call room into the website code manua
 
 4\. Paste the URL into the iframe to insert it into the website code: 
 
-<code-block>
-
+```
 <iframe allow = "fullscreen display-capture camera microphone" src = "https://meet.gcore.com/call/?roomId=<span style="color:#FF5913"> serv2bokxlj33</span>" width = "700" height = "800"></iframe>
-
-</code-block>
+```
