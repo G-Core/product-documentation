@@ -22,7 +22,7 @@ export const config: ScullyConfig = {
               },
     routes: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        '/documentation/:title': {
+        '/:title': {
             type: 'contentFolder',
             postRenderers: defaultPostRenderers,
             title: {

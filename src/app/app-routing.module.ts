@@ -7,7 +7,7 @@ import { HEADER_HEIGHT } from './constants';
 const routes: Routes = [
     { path: '', component: HomeComponent },
     {
-        path: `documentation/:title`,
+        path: `:title`,
         children: [
             {
                 path: '**',
