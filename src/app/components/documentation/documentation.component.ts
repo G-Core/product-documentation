@@ -108,8 +108,8 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
                     pageUrl = pageUrl.slice(0, anchorIndex);
                 }
 
-                const documentUrlWithCategory = pageUrl.replace('/documentation/', '');
-                const category = url[1].path;
+                const documentUrlWithCategory = pageUrl.replace('/', '');
+                const category = url[0].path;
                 this.category = category;
                 const documentUrl = documentUrlWithCategory.replace(category, '').slice(1);
                 const document = documentUrl.length ? documentUrl.slice(documentUrl.lastIndexOf('/') + 1) : '';
@@ -123,7 +123,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
                 this.tableOfContents = [];
 
                 const filterdLinks = links.filter(({ route }) => {
-                    return route.replace('/documentation/', '').startsWith(category) && !route.endsWith(`/${category}`);
+                    return route.replace('/', '').startsWith(category) && !route.endsWith(`/${category}`);
                 });
 
                 this.setTableOfContent(filterdLinks);
@@ -135,7 +135,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
                     },
                     {
                         name: this.activeMenuItem.name,
-                        url: `/documentation/${category}`,
+                        url: `/${category}`,
                     },
                 ];
 
@@ -167,7 +167,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
                 const menuTree = new Map<string, MenuTreeItem>();
 
                 filterdLinks.forEach((link) => {
-                    const routeSegments = link.route.replace(`/documentation/${category}/`, '').split('/');
+                    const routeSegments = link.route.replace(`/${category}/`, '').split('/');
 
                     if (routeSegments.length === 1) {
                         menuTree.set(routeSegments[0], {
