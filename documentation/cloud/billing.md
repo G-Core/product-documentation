@@ -20,6 +20,6 @@ The attached disks are charged separately regardless of whether the instance is 
 
 When creating an instance, you can assign a public IP address to it. A public IP address is charged separately.
 
-The traffic is free and unlimited. The bandwidth is up to 1 Gbps.
+The bandwidth is up to 1 Gbps.
 
 If you create an image or a snapshot, you pay for its storage separately depending on its size.
