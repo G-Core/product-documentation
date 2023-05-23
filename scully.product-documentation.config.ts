@@ -12,7 +12,7 @@ setPluginConfig('md', { enableSyntaxHighlighting: true });
 export const config: ScullyConfig = {
     projectRoot: './src',
     projectName: 'product-documentation',
-    outDir: './dist/static/docs',
+    outDir: './dist/static',
     puppeteerLaunchOptions:
         process.env.BUILD_ENV === 'develop'
             ? undefined
