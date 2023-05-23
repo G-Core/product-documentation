@@ -99,31 +99,31 @@ To configure a network, select an existing network from the drop-down list or cr
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/8-create-network-window.png" alt="" width=70%>
 
-    1) Enter the network name.
+ * Enter the network name.
 
-    2) (optional) Turn on the <b>Baremetal network</b> toggle to connect bare metal servers to the network
+ * (optional) Turn on the <b>Baremetal network</b> toggle to connect bare metal servers to the network
 
-    3) (optional) Turn on the <b>Add tags</b> toggle to add metadata to the network.
+ * (optional) Turn on the <b>Add tags</b> toggle to add metadata to the network.
 
-    4) Click <b>Create network</b>.
+ * Click <b>Create network</b>.
 
 To create a subnet, select an existing subnet from the drop-down list or create a new one by clicking **Add a new subnetwork**. If you choose the latter, the new window will open:
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/9-create-subnetwork-window.png" alt="" width=50%>
 
-    1) Enter the subnet name.
+ * Enter the subnet name.
 
-    2) Set CIDR between ranges: 10.0.0.0 - 10.255.255.255, 172.16.0.0—172.31.255.255, 192.168.0.0—192.168.255.255. Set the mask between 16 and 24.
+ * Set CIDR between ranges: 10.0.0.0 - 10.255.255.255, 172.16.0.0—172.31.255.255, 192.168.0.0—192.168.255.255. Set the mask between 16 and 24.
 
-    3) (optional) Turn on the <b>Enable DHCP</b> toggle to automatically assign IP addresses to machines in the subnet.
+ * (optional) Turn on the <b>Enable DHCP</b> toggle to automatically assign IP addresses to machines in the subnet.
 
-    4) (optional) Turn on the <b>Non-routable subnetwork</b> toggle to block access to the subnet from external networks and other subnets. If you keep the network routable, you can specify the **Gateway IP** address. Otherwise, a random IP address will be assigned.
+ * (optional) Turn on the <b>Non-routable subnetwork</b> toggle to block access to the subnet from external networks and other subnets. If you keep the network routable, you can specify the **Gateway IP** address. Otherwise, a random IP address will be assigned.
 
-    5) (optional) Enter <b>Custom DNS servers</b> to add specific DNS servers**.**
+ * (optional) Enter <b>Custom DNS servers</b> to add specific DNS servers**.**
 
-    6) (optional) Turn on <b>Add tags</b> to add metadata to the subnetwork.
+ * optional) Turn on <b>Add tags</b> to add metadata to the subnetwork.
 
-    7) Click <b>Create subnetwork</b>.
+ * Click <b>Create subnetwork</b>.
 
 Optionally, you can turn on the **Use Reserved IP** toggle to assign a <a href=“https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address” target="_blank">reserved IP address</a> to your instance and/or turn on the **Use Floating IP** toggle to assign a <a href=“https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address” target="_blank">floating IP address</a> to your instance.
 
