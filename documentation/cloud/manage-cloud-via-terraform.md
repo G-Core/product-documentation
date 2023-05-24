@@ -193,7 +193,6 @@ resource "gcore_floatingip" "<span style="color:#FF5913">fip</span>" {
 resource "gcore_instance" "<span style="color:#FF5913">v</span>" {
   name       = "<span style="color:#FF5913">hello</span>"
   flavor_id  = "<span style="color:#FF5913">g1-standard-1-2</span>"
-
   volume {
     source     = "existing-volume"
     volume_id  = <span style="color:#FF5913">gcore_volume.first_volume.id</span>
