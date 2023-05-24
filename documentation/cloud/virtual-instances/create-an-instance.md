@@ -76,10 +76,15 @@ Enter a volume name, choose its type and set its size in GiB
 
 <expandable-element title="Available volume types">
 
-*   **High IOPS SSD**—high IOPS network SSD disk—highest performance network SSD block storage designed for latency-sensitive transactional workloads (60 IOPS per 1 GB).
-*   **Standard**—standard network SSD disk—high-performance network SSD block storage with stable and high random I/O performance, and high data reliability (6 IOPS per 1 GB).
-*   **Cold**—network HDD disk—lowest cost HDD block storage for less frequently accessed workloads (unavailable in Manassas).
-*   **Ultra**—Network Block Storage—suitable for non-critical data and less frequently accessed workloads.
+* **High IOPS SSD**. This is a high-performance SSD block storage designed for latency-sensitive transactional workloads (60 IOPS per 1 GiB; 2.5 MB/s per 1 GiB). The IOPS performance limit is 9,000. The bandwidth limit is 500 MB/s.
+
+* **Standard**. This is a network SSD disk, which provides stable and high random I/O performance, as well as high data reliability (6 IOPS per 1 GiB; 0.4 MB/s per 1 GiB). The IOPS performance limit is 4,500. The bandwidth limit is 300 MB/s.
+
+* **Cold**. This is a network HDD disk, suitable for less frequently accessed workloads. The maximum number of IOPS is 1,000. The bandwidth limit is 100 MB/s. Please note that this option is unavailable in Manassas.
+
+* **Ultra**. This is the network block storage option, recommended for non-critical data and workloads that are accessed less frequently. The maximum number of IOPS is 1,000. The bandwidth limit is 100 MB/s.
+
+* **SSD Low-Latency**. This is an SSD block storage, designed for applications that require low-latency storage and real-time data processing. It can achieve IOPS performance of up to 5000, with an average latency of 300 µs.
 
 </expandable-element>
 

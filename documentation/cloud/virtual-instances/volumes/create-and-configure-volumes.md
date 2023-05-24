@@ -50,12 +50,17 @@ A dialog box will be opened.
 
 <img src="https://support.gcore.com/hc/article_attachments/360011012678/4___________.png" alt="4___________.png" width="480" height="416">
 
-Four volume types are available: 
+Five volume types are available: 
 
-*   **High IOPS SSD**. The highest-performance network SSD block storage designed for latency-sensitive transactional workloads (60 IOPS per 1 GB; 2.5 MB/s per 1 GB).  The IOPS performance limit is 9,000, and the bandwidth limit is 500 MB/s.
-*   **Standard**. The high-performance network SSD block storage offers stable and high random IO performance, along with high data reliability (6 IOPS per 1 GB; 0.4 MB/s per 1 GB). The IOPS performance limit is 4,500, and the bandwidth limit is 300 MB/s.
-*   **Cold** The lowest-cost HDD block storage designed for less frequently accessed workloads (maximum 500 IOPS and 100 MB/s). The IOPS performance limit is 1,000, and the bandwidth limit is 100 MB/s. Please note that for Cold volumes, we cannot guarantee these values permanently.
-*   **Ultra**. The network block storage suitable for non-critical data and less frequently accessed workloads. The IOPS performance limit is 1,000, and the bandwidth limit is 100 MB/s.
+* **High IOPS SSD**. This is a high-performance SSD block storage designed for latency-sensitive transactional workloads (60 IOPS per 1 GiB; 2.5 MB/s per 1 GiB). The IOPS performance limit is 9,000. The bandwidth limit is 500 MB/s.
+
+* **Standard**. This is a network SSD disk, which provides stable and high random I/O performance, as well as high data reliability (6 IOPS per 1 GiB; 0.4 MB/s per 1 GiB). The IOPS performance limit is 4,500. The bandwidth limit is 300 MB/s.
+
+* **Cold**. This is a network HDD disk, suitable for less frequently accessed workloads. The maximum number of IOPS is 1,000. The bandwidth limit is 100 MB/s. Please note that this option is unavailable in Manassas.
+
+* **Ultra**. This is the network block storage option, recommended for non-critical data and workloads that are accessed less frequently. The maximum number of IOPS is 1,000. The bandwidth limit is 100 MB/s.
+
+* **SSD Low-Latency**. This is an SSD block storage, designed for applications that require low-latency storage and real-time data processing. It can achieve IOPS performance of up to 5000, with an average latency of 300 µs.
 
 For the **High IOPS SSD** and **Standard** volume types, the following functions are supported:
 
