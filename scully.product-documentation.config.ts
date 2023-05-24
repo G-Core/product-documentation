@@ -1,4 +1,4 @@
-import { RouteConfig, ScullyConfig, setPluginConfig } from '@scullyio/scully';
+import { ScullyConfig, setPluginConfig } from '@scullyio/scully';
 
 /** this loads the default render plugin, remove when switching to something else. */
 import '@scullyio/scully-plugin-puppeteer';
