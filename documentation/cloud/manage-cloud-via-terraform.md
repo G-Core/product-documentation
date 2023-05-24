@@ -48,12 +48,12 @@ terraform {
   required_providers {
     gcore = {
       source = "G-Core/gcore"
-      version = "<span style="color:#FF5913">0.3.55</span>"
+      version = "<span style="color:#FF5913">0.3.55</span>"
    }
   }
 }
 provider gcore {
-  permanent_api_token = "<span style="color:#FF5913">123$61b8e1e7a68c</span>"
+  permanent_api_token = "<span style="color:#FF5913">123$61b8e1e7a68c</span>"
 }
 </code-block>
 
@@ -104,16 +104,14 @@ You can also use our step-by-step guides below.
 
 <code-block>
 provider gcore {
-  permanent_api_token = "<span style="color:#FF5913">251$d3361.............1b35f26d8"
+  permanent_api_token = "<span style="color:#FF5913">251$d3361.............1b35f26d8</span>"
 }
-
-resource "gcore_baremetal" "<span style="color:#FF5913">bm</span>" {
-  name       = "<span style="color:#FF5913">baremetal_example</span>"
-  flavor_id  = "<span style="color:#FF5913">bm1-infrastructure-small</span>"
-
+resource "gcore_baremetal" "<span style="color:#FF5913">bm</span>" {
+  name       = "<span style="color:#FF5913">baremetal_example</span>"
+  flavor_id  = "<span style="color:#FF5913">bm1-infrastructure-small</span>"
   interface {
-      type = "<span style="color:#FF5913">external</span>"
-              <span style="color:#FF5913">is_parent = "true"</span>
+      type = "<span style="color:#FF5913">external</span>"
+              <span style="color:#FF5913">is_parent = "true"</span>
   }
 }
 </code-block>
@@ -174,43 +172,38 @@ Terraform will ask you to confirm the action. Enter "yes".
 
 <code-block>
 provider gcore {
-  permanent_api_token = "<span style="color:#FF5913">251$d3361.............1b35f26d8</span>"
+  permanent_api_token = "<span style="color:#FF5913">251$d3361.............1b35f26d8</span>"
 }  
-resource "gcore_reservedfixedip" "<span style="color:#FF5913">fixed_ip</span>" {
+resource "gcore_reservedfixedip" "<span style="color:#FF5913">fixed_ip</span>" {
   type             = "ip_address"
-  network_id       = "<span style="color:#FF5913">faf6507b-1ff1-4ebf-b540-befd5c09fe06</span>"
-  fixed_ip_address = "<span style="color:#FF5913">192.168.13.6</span>"
-  is_vip           = <span style="color:#FF5913">false</span>
+  network_id       = "<span style="color:#FF5913">faf6507b-1ff1-4ebf-b540-befd5c09fe06</span>"
+  fixed_ip_address = "<span style="color:#FF5913">192.168.13.6</span>"
+  is_vip           = <span style="color:#FF5913">false</span>
 }
-
 resource "gcore_volume" "first_volume" {
-  name       = "<span style="color:#FF5913">boot volume</span>"
-  type_name  = "<span style="color:#FF5913">ssd_hiiops</span>"
-  size       = <span style="color:#FF5913">10</span>
-  image_id   = "<span style="color:#FF5913">6dc4e061-6fab-41f3-91a3-0ba848fb32d9</span>"
+  name       = "<span style="color:#FF5913">boot volume</span>"
+  type_name  = "<span style="color:#FF5913">ssd_hiiops</span>"
+  size       = <span style="color:#FF5913">10</span>
+  image_id   = "<span style="color:#FF5913">6dc4e061-6fab-41f3-91a3-0ba848fb32d9</span>"
 }
-
-resource "gcore_floatingip" "<span style="color:#FF5913">fip</span>" {
-  fixed_ip_address = <span style="color:#FF5913">gcore_reservedfixedip.fixed_ip.fixed_ip_address</span>
-  port_id          = <span style="color:#FF5913">gcore_reservedfixedip.fixed_ip.port_id</span>
+resource "gcore_floatingip" "<span style="color:#FF5913">fip</span>" {
+  fixed_ip_address = <span style="color:#FF5913">gcore_reservedfixedip.fixed_ip.fixed_ip_address</span>
+  port_id          = <span style="color:#FF5913">gcore_reservedfixedip.fixed_ip.port_id</span>
 }
-
-resource "gcore_instance" "<span style="color:#FF5913">v</span>" {
-  name       = "<span style="color:#FF5913">hello</span>"
-  flavor_id  = "<span style="color:#FF5913">g1-standard-1-2</span>"
-
+resource "gcore_instance" "<span style="color:#FF5913">v</span>" {
+  name       = "<span style="color:#FF5913">hello</span>"
+  flavor_id  = "<span style="color:#FF5913">g1-standard-1-2</span>"
   volume {
     source     = "existing-volume"
-    volume_id  = <span style="color:#FF5913">gcore_volume.first_volume.id</span>
-    boot_index = <span style="color:#FF5913">0</span>
+    volume_id  = <span style="color:#FF5913">gcore_volume.first_volume.id</span>
+    boot_index = <span style="color:#FF5913">0</span>
   }
-
   interface {
-    type            = "<span style="color:#FF5913">reserved_fixed_ip</span>"
-    port_id         = <span style="color:#FF5913">gcore_reservedfixedip.fixed_ip.port_id</span>
-    fip_source      = "<span style="color:#FF5913">existing</span>"
-    existing_fip_id = <span style="color:#FF5913">gcore_floatingip.fip.id</span>
-    security_groups = <span style="color:#FF5913">["ada84751-fcca-4491-9249-2dfceb321616"]</span>
+    type            = "<span style="color:#FF5913">reserved_fixed_ip</span>"
+    port_id         = <span style="color:#FF5913">gcore_reservedfixedip.fixed_ip.port_id</span>
+    fip_source      = "<span style="color:#FF5913">existing</span>"
+    existing_fip_id = <span style="color:#FF5913">gcore_floatingip.fip.id</span>
+    security_groups = <span style="color:#FF5913">["ada84751-fcca-4491-9249-2dfceb321616"]</span>
   }
 }
 </code-block>
@@ -280,20 +273,19 @@ Terraform will ask you to confirm the action. Enter "yes".
 
 <code-block>
 provider gcore {
-  permanent_api_token = "<span style="color:#FF5913">251$d3361.............1b35f26d8</span>"
+  permanent_api_token = "<span style="color:#FF5913">251$d3361.............1b35f26d8</span>"
 }
-
 resource "gcore_k8s" "v" {
-  name          = "<span style="color:#FF5913">kluster_example</span>"
-  fixed_network = "<span style="color:#FF5913">6bf878c1-1ce4-47c3-a39b-6b5f1d79bf25</span>"
-  fixed_subnet  = "<span style="color:#FF5913">dc3a3ea9-86ae-47ad-a8e8-79df0ce04839</span>"
+  name          = "<span style="color:#FF5913">kluster_example</span>"
+  fixed_network = "<span style="color:#FF5913">6bf878c1-1ce4-47c3-a39b-6b5f1d79bf25</span>"
+  fixed_subnet  = "<span style="color:#FF5913">dc3a3ea9-86ae-47ad-a8e8-79df0ce04839</span>"
   pool {
-    name               = "<span style="color:#FF5913">pool_example</span>"
-    flavor_id          = "<span style="color:#FF5913">g1-standard-1-2</span>"
-    min_node_count     = <span style="color:#FF5913">1</span>
-    max_node_count     = <span style="color:#FF5913">2</span>
-    node_count         = <span style="color:#FF5913">1</span>
-    docker_volume_size = <span style="color:#FF5913">2</span>
+    name               = "<span style="color:#FF5913">pool_example</span>"
+    flavor_id          = "<span style="color:#FF5913">g1-standard-1-2</span>"
+    min_node_count     = <span style="color:#FF5913">1</span>
+    max_node_count     = <span style="color:#FF5913">2</span>
+    node_count         = <span style="color:#FF5913">1</span>
+    docker_volume_size = <span style="color:#FF5913">2</span>
   }
 }
 </code-block>
@@ -352,17 +344,16 @@ Terraform will ask you to confirm the action. Enter “yes”.
 
 <code-block>
 provider gcore {
-  permanent_api_token = "<span style="color:#FF5913">251$d3361.............1b35f26d8</span>"
+  permanent_api_token = "<span style="color:#FF5913">251$d3361.............1b35f26d8</span>"
 }
-
 resource "gcore_k8s_pool" "v" {
-  cluster_id         = "<span style="color:#FF5913">6bf878c1-1ce4-47c3-a39b-6b5f1d79bf25</span>"
-  name               = "<span style="color:#FF5913">pool_example</span>"
-  flavor_id          = "<span style="color:#FF5913">g1-standard-1-2</span>"
-  min_node_count     = <span style="color:#FF5913">1</span>
-  max_node_count     = <span style="color:#FF5913">2</span>
-  node_count         = <span style="color:#FF5913">1</span>
-  docker_volume_size = <span style="color:#FF5913">2</span>
+  cluster_id         = "<span style="color:#FF5913">6bf878c1-1ce4-47c3-a39b-6b5f1d79bf25</span>"
+  name               = "<span style="color:#FF5913">pool_example</span>"
+  flavor_id          = "<span style="color:#FF5913">g1-standard-1-2</span>"
+  min_node_count     = <span style="color:#FF5913">1</span>
+  max_node_count     = <span style="color:#FF5913">2</span>
+  node_count         = <span style="color:#FF5913">1</span>
+  docker_volume_size = <span style="color:#FF5913">2</span>
 }
 </code-block>
 
@@ -416,46 +407,42 @@ This section explains how to create a load balancer with a pool, listener, and m
 
 <code-block>
 provider gcore {
-  permanent_api_token = "<span style="color:#FF5913">251$d3361.............1b35f26d8</span>"
+  permanent_api_token = "<span style="color:#FF5913">251$d3361.............1b35f26d8</span>"
 }
-
-resource "gcore_loadbalancerv2" "<span style="color:#FF5913">lb</span>" {
-  <span style="color:#FF5913">project_id = 1</span>
-  <span style="color:#FF5913">region_id  = 1</span>
-  name       = "<span style="color:#FF5913">lb_example</span>"
-  flavor     = "<span style="color:#FF5913">lb1-1-2</span>"
+resource "gcore_loadbalancerv2" "<span style="color:#FF5913">lb</span>" {
+  <span style="color:#FF5913">project_id = 1</span>
+  <span style="color:#FF5913">region_id  = 1</span>
+  name       = "<span style="color:#FF5913">lb_example</span>"
+  flavor     = "<span style="color:#FF5913">lb1-1-2</span>"
 }
-
-resource "gcore_lblistener" "<span style="color:#FF5913">listener</span>" {
-  name            = "<span style="color:#FF5913">listener_example</span>"
-  protocol        = "<span style="color:#FF5913">TCP</span>"
-  protocol_port   = <span style="color:#FF5913">36621</span>
-  loadbalancer_id = <span style="color:#FF5913">gcore_loadbalancerv2.lb.id</span>
+resource "gcore_lblistener" "<span style="color:#FF5913">listener</span>" {
+  name            = "<span style="color:#FF5913">listener_example</span>"
+  protocol        = "<span style="color:#FF5913">TCP</span>"
+  protocol_port   = <span style="color:#FF5913">36621</span>
+  loadbalancer_id = <span style="color:#FF5913">gcore_loadbalancerv2.lb.id</span>
 }
-
-resource "gcore_lbpool" "<span style="color:#FF5913">pl</span>" {
-  name            = "<span style="color:#FF5913">test_pool</span>"
-  protocol        = "<span style="color:#FF5913">HTTP</span>"
-  lb_algorithm    = "<span style="color:#FF5913">LEAST_CONNECTIONS</span>"
-  loadbalancer_id = <span style="color:#FF5913">gcore_loadbalancer.lb.id</span>
-  listener_id     = <span style="color:#FF5913">gcore_loadbalancer.lb.listener.0.id</span>
-  <span style="color:#FF5913">health_monitor {
+resource "gcore_lbpool" "<span style="color:#FF5913">pl</span>" {
+  name            = "<span style="color:#FF5913">test_pool</span>"
+  protocol        = "<span style="color:#FF5913">HTTP</span>"
+  lb_algorithm    = "<span style="color:#FF5913">LEAST_CONNECTIONS</span>"
+  loadbalancer_id = <span style="color:#FF5913">gcore_loadbalancer.lb.id</span>
+  listener_id     = <span style="color:#FF5913">gcore_loadbalancer.lb.listener.0.id</span>
+  <span style="color:#FF5913">health_monitor {
     type        = "PING"
     delay       = 60
     max_retries = 5
     timeout     = 10
   }</span>
-  <span style="color:#FF5913">session_persistence {
+  <span style="color:#FF5913">session_persistence {
     type        = "APP_COOKIE"
     cookie_name = "test_new_cookie"
   }</span>
 }
-
 resource "gcore_lbmember" "lbm" {
-  pool_id       = <span style="color:#FF5913">gcore_lbpool.pl.id</span>
-  address       = "<span style="color:#FF5913">10.10.2.15</span>"
-  protocol_port = <span style="color:#FF5913">8081</span>
-  weight        = <span style="color:#FF5913">5</span>
+  pool_id       = <span style="color:#FF5913">gcore_lbpool.pl.id</span>
+  address       = "<span style="color:#FF5913">10.10.2.15</span>"
+  protocol_port = <span style="color:#FF5913">8081</span>
+  weight        = <span style="color:#FF5913">5</span>
 }
 </code-block>
 
@@ -561,13 +548,12 @@ Terraform will ask you to confirm the action. Enter “yes”.
 
 <code-block>
 provider gcore {
-  permanent_api_token = "<span style="color:#FF5913">251$d3361.............1b35f26d8</span>"
+  permanent_api_token = "<span style="color:#FF5913">251$d3361.............1b35f26d8</span>"
 }
-
-resource "gcore_network" "<span style="color:#FF5913">network</span>" {
-  name       = "<span style="color:#FF5913">network_example</span>"
-  <span style="color:#FF5913">mtu        = 1450</span>
-  <span style="color:#FF5913">type       = "vlan"</span>
+resource "gcore_network" "<span style="color:#FF5913">network</span>" {
+  name       = "<span style="color:#FF5913">network_example</span>"
+  <span style="color:#FF5913">mtu        = 1450</span>
+  <span style="color:#FF5913">type       = "vlan"</span>
 }
 </code-block>
 
@@ -586,10 +572,10 @@ resource "gcore_network" "<span style="color:#FF5913">network</span>" {
 4. If you don’t need a subnetwork, skip to Step 6. To create a subnetwork, add the code below and customize the highlighted values:
 
 <code-block>
-resource "gcore_subnet" "<span style="color:#FF5913">subnet</span>" {
-  name            = "<span style="color:#FF5913">subnet_example</span>"
-  cidr            = "<span style="color:#FF5913">192.168.10.0/24</span>"
-  network_id      = <span style="color:#FF5913">gcore_network.network.id</span>
+resource "gcore_subnet" "<span style="color:#FF5913">subnet</span>" {
+  name            = "<span style="color:#FF5913">subnet_example</span>"
+  cidr            = "<span style="color:#FF5913">192.168.10.0/24</span>"
+  network_id      = <span style="color:#FF5913">gcore_network.network.id</span>
 }
 </code-block>
 
@@ -647,14 +633,13 @@ Terraform will ask you to confirm the action. Enter “yes”.
 
 <code-block>
 provider gcore {
-  permanent_api_token = "<span style="color:#FF5913">251$d3361.............1b35f26d8</span>"
+  permanent_api_token = "<span style="color:#FF5913">251$d3361.............1b35f26d8</span>"
 }
-
-resource "gcore_servergroup" "<span style="color:#FF5913">default</span>" {
-  name       = "<span style="color:#FF5913">server_group_example</span>"
-  policy     = "<span style="color:#FF5913">affinity</span>"
-  region_id  = <span style="color:#FF5913">1</span>
-  project_id = <span style="color:#FF5913">1</span>
+resource "gcore_servergroup" "<span style="color:#FF5913">default</span>" {
+  name       = "<span style="color:#FF5913">server_group_example</span>"
+  policy     = "<span style="color:#FF5913">affinity</span>"
+  region_id  = <span style="color:#FF5913">1</span>
+  project_id = <span style="color:#FF5913">1</span>
 }
 </code-block>
 
@@ -694,14 +679,13 @@ Terraform will ask you to confirm the action. Enter “yes”.
 
 <code-block>
 provider gcore {
-  permanent_api_token = "<span style="color:#FF5913">251$d3361.............1b35f26d8</span>"
+  permanent_api_token = "<span style="color:#FF5913">251$d3361.............1b35f26d8</span>"
 }
-
-resource "gcore_snapshot" "<span style="color:#FF5913">snapshot</span>" {
-  project_id  = <span style="color:#FF5913">1</span>
-  region_id   = <span style="color:#FF5913">1</span>
-  name        = "<span style="color:#FF5913">snapshot_example</span>"
-  volume_id   = "<span style="color:#FF5913">28e9edcb-1593-41fe-971b-da729c6ec301</span>"
+resource "gcore_snapshot" "<span style="color:#FF5913">snapshot</span>" {
+  project_id  = <span style="color:#FF5913">1</span>
+  region_id   = <span style="color:#FF5913">1</span>
+  name        = "<span style="color:#FF5913">snapshot_example</span>"
+  volume_id   = "<span style="color:#FF5913">28e9edcb-1593-41fe-971b-da729c6ec301</span>"
 }
 </code-block>
 
@@ -743,13 +727,12 @@ Terraform will ask you to confirm the action. Enter “yes”.
 
 <code-block>
 provider gcore {
-  permanent_api_token = "<span style="color:#FF5913">251$d3361.............1b35f26d8</span>"
+  permanent_api_token = "<span style="color:#FF5913">251$d3361.............1b35f26d8</span>"
 }
-
-resource "gcore_volume" "<span style="color:#FF5913">volume</span>" {
-  name       = "<span style="color:#FF5913">volume_example</span>"
-  type_name  = "<span style="color:#FF5913">standard</span>"
-  size       = <span style="color:#FF5913">1</span>
+resource "gcore_volume" "<span style="color:#FF5913">volume</span>" {
+  name       = "<span style="color:#FF5913">volume_example</span>"
+  type_name  = "<span style="color:#FF5913">standard</span>"
+  size       = <span style="color:#FF5913">1</span>
 }
 </code-block>
 
@@ -793,14 +776,13 @@ Terraform will ask you to confirm the action. Enter “yes”.
 
 <code-block>
 provider gcore {
-  permanent_api_token = "<span style="color:#FF5913">251$d3361.............1b35f26d8</span>"
+  permanent_api_token = "<span style="color:#FF5913">251$d3361.............1b35f26d8</span>"
 }
-
-resource "gcore_reservedfixedip" "<span style="color:#FF5913">fixed_ip</span>" {
-  project_id = <span style="color:#FF5913">1</span>
-  region_id  = <span style="color:#FF5913">1</span>
-  type       = "<span style="color:#FF5913">external</span>"
-  is_vip     = <span style="color:#FF5913">false</span>
+resource "gcore_reservedfixedip" "<span style="color:#FF5913">fixed_ip</span>" {
+  project_id       = <span style="color:#FF5913">1</span>
+  region_id  = <span style="color:#FF5913">1</span>
+  type       = "<span style="color:#FF5913">external</span>"
+  is_vip       = <span style="color:#FF5913">false</span>
 }
 </code-block>
 
