@@ -789,7 +789,7 @@ resource "gcore_reservedfixedip" "<span style="color:#FF5913">fixed_ip</span>" {
 
 * Specify the “type": “subnet”, “any_subnet”, “external”, or “ip_address”.
 
-* Specify if you want to use the reserved IP address as a virtual IP (VIP) address (“is_vip = true”) or not (“is_vip = false”). For more details, refer to this article: <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address" target="_blank">Create and configure a virtual IP (VIP) address</a>.
+* Specify if you want to use the reserved IP address as a virtual IP (VIP) address (“is_vip = true”) or not (“is_vip = false”). For more details, refer to this article: <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address" target="_blank">Create and configure a virtual IP address</a>.
 
 * (optional) Add “allowe_access_pairs” to assign one VIP to multiple machines. Specify the “ip_address” and “mac_address”.
 

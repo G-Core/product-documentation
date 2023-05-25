@@ -133,4 +133,4 @@ To delete a volume that is attached to an instance, click **Detach** and then **
 
 Detach the volume from your instance and revert to the latest snapshot.
 
-**Note:**  After resizing a volume, reversion is unavailable because the latest snapshot is taken for the old size. You can only create a new volume from it. For the new size, create a new snapshot.
+**Note:**  After resizing a volume, reversion is unavailable because the latest snapshot is taken for the old size. You can only create a new volume. For the new size, create a new snapshot.

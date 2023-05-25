@@ -12,6 +12,7 @@ All our clients have the same billing plan — PAYG (pay-as-you-go). You pay onl
 - **Expenses are charged in portions of €50/$60** (currency depends on account settings). This is the credit limit — the amount within which you can use Cloud without charges. As soon as expenses reach €50/$60, the system will charge this amount from your balance or from the added payment resource (if the balance has insufficient funds). After that, the credit limit will be renewed. If the payment fails, the service will stop working until you top up your balance.
 - **On the 2nd day of a new month, debts for the previous one are charged**. For example, if last month's unpaid expenses are €43, this money will be written off on the 2nd day of the next month and the credit limit will be renewed.
 
+
 The cost is calculated for the time of using the instance, from the moment it is started until it is completely stopped. The instance starts automatically once it is created.
 
 The cost of an instance depends on the allocated computing resources, operating system, and usage time.
