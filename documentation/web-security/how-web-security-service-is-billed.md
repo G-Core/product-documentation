@@ -13,7 +13,7 @@ toc:
 
 Prices and plans are described on the <a href="https://gcore.com/pricing/security/" target="_blank">website</a>.
 
-The plan subscription fee and the traffic overcommitment fee are charged on the 3rd day of each month. If the payment fails, the service will be stopped.
+The plan subscription fee and the traffic overcommitment fee are charged on the 2nd day of each month. If the payment fails, the service will be stopped.
 
 Additional features are charged at the beginning of the month.
 
