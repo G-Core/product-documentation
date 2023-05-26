@@ -19,7 +19,7 @@ You can acquaint prices for streaming resources on the <a href="https://gcore.co
 
 ## Billing rules
 
-The resources fees are charged on the 3rd day of each month. If the payment fails, the service will be stopped.
+The resources fees are charged on the 2nd day of each month. If the payment fails, the service will be stopped.
 
 Additional features (Real-time communication for webinars, Restreaming, Computer Vision) are charged at the beginning of the month.
 
