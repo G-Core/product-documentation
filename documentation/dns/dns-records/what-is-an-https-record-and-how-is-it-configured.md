@@ -4,10 +4,10 @@ displayName: Configure HTTPS record
 published: true
 order: 40
 toc:
-   --1--What is the HTTPS record?: "what-is-the-https-record"
-   --1--What problem does it solve?: "what-problem-does-it-solve"
-   --1--How does it work?: "how-does-it-work"
-   --1--Configure HTTPS in the control panel: "configure-https-in-the-control-panel"
+   --1--What is the HTTPS record?: "what-is-an-https-record"
+   --1--What problem does it solve?: "what-problem-does-the-https-record-solve"
+   --1--How does it work?: "how-do-https-records-work"
+   --1--Configure HTTPS in the control panel: "how-to-configure-the-https-record-in-the-control-panel"
 ---
 # What Is an HTTPS Record and How Is It Configured?
 
