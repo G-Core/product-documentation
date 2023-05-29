@@ -42,6 +42,8 @@ async function moveContent(routes: Array<HandledRoute>): Promise<void> {
         }
     });
 
+    fs.copySync(path.join(outDir, 'index.html'), path.join(root, 'index.html'), { overwrite: true });
+
     log(green('MoveContentFiles finished successfully'));
 }
 
