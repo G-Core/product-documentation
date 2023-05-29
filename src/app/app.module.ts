@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { createCustomElement } from '@angular/elements';
 import { ScullyLibModule } from '@scullyio/ng-lib';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { APP_BASE_HREF } from '@angular/common';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -34,7 +35,7 @@ import { MenuService } from './services/menu.service';
         GalleryComponent,
     ],
     imports: [BrowserModule, AppRoutingModule, ScullyLibModule, BrowserAnimationsModule, UiKitModule],
-    providers: [MenuService],
+    providers: [MenuService, { provide: APP_BASE_HREF, useValue: '/docs/' }],
     bootstrap: [AppComponent],
 })
 export class AppModule {
