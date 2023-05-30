@@ -29,7 +29,7 @@ You entered the password during the <a href=“https://gcore.com/docs/cloud/virt
 
 <img src="https://support.gcore.com/hc/article_attachments/360020585238/image3.png" alt="image3.png">
 
-If you forgot your password, you can find it inside the system by <a href=“https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-SSH” target="_blank">connecting to the instance via SSH</a>. Enter the `sudo cat /var/lib/cloud/instance/user-data.txt` command and you will see the password in the line “password: \[your password\]”.
+If you forgot your password, you can find it inside the system by <a href=“https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh” target="_blank">connecting to the instance via SSH</a>. Enter the `sudo cat /var/lib/cloud/instance/user-data.txt` command and you will see the password in the line “password: \[your password\]”.
 
 <img src="https://support.gcore.com/hc/article_attachments/360020585318/image6.png" alt="image6.png">
 

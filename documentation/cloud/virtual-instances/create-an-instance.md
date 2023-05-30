@@ -36,7 +36,7 @@ Regions can be of two types: Core and Edge. A region determines the equipment sp
 <img src="ttps://assets.gcore.pro/docs/cloud/virtual-instances/create/3-image-selection.png" alt="" width=70%>
 
 *   Choose an OS template, a volume, a snapshot, a custom <a href=“https://gcore.com/docs/cloud/images/upload-an-image-to-the-storage” target="_blank">image</a>, or a template from the marketplace.
-*   (for a Linux instance) Remember the login from the **For login to OS** field to connect to your instance on Linux OS via SSH from another Linux device. For details, refer to the article: <a href=“https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-SSH” target="_blank">Connect to your instance via SSH</a>.
+*   (for a Linux instance) Remember the login from the **For login to OS** field to connect to your instance on Linux OS via SSH from another Linux device. For details, refer to the article: <a href=“https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh” target="_blank">Connect to your instance via SSH</a>.
 
 **Important!** If you want to connect to a Linux instance from a Windows device, use a special application such as <a href=“https://www.putty.org/” target="_blank">PuTTY</a>.
 
@@ -144,7 +144,7 @@ If you want to create a new firewall, refer to the article: <a href=“https://g
 
 ![The SSH key field](https://assets.gcore.pro/docs/cloud/virtual-instances/create/11-ssh-key.png)
 
-You can add an existing SSH key or generate a new one. You enter a public key and use a private key for connection. For details, see the article: <a href=“https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-SSH” target="_blank">Connect to your instance via SSH</a>.
+You can add an existing SSH key or generate a new one. You enter a public key and use a private key for connection. For details, see the article: <a href=“https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh” target="_blank">Connect to your instance via SSH</a>.
 
 9. (for a Windows instance) Configure **Access** by setting a password for the Admin user.
 
