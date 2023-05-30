@@ -31,8 +31,8 @@ Where *my_bucket* is the name of the bucket, *file.jpg* is the name of the file,
 
 - To add a rule for public reading via s3cmd: 
 
-```
+<code-block>
 s3cmd setacl --acl-public s3://my_bucket/file.jpg
-``` 
+</code-block>
 
 Where *my_bucket* is the name of the bucket and *file.jpg* is the name of the file.
