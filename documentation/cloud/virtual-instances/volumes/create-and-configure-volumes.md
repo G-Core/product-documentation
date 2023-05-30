@@ -4,111 +4,94 @@ displayName: Create and configure
 order: 20
 published: true
 toc:
-   --1--Volume section: "volume-section"
-   --1--How to create a volume?: "how-to-create-a-volume"
-   --1--Manage volumes: "manage-volumes"
+   --1--Volumes section: "volumes-section"
+   --1--Create: "create-a-volume"
+   --1--Manage: "manage-your-volumes"
 ---
 # Create and configure volumes
 
-## Volume section
+## Volumes section
 
-The Volume section displays both disks that were added and those that were not added to instances in the selected location, their name in the system, and the creation date.
+The **Volumes** section displays both disks that were added and those that were not added to instances in the selected location, their system name, and creation date.
 
 <img src="https://support.gcore.com/hc/article_attachments/360009578578/_________________.png" alt="_________________.png">
 
-If a disk is attached to an instance, in the Instance column will be indicated to which machine this volume is added.
-
-To learn more about an Instance, click on its name.
+If a disk is attached to an instance, you will see the instance in the **Instance** column. Click on its name for more info.
 
 <img src="https://support.gcore.com/hc/article_attachments/360009578618/__________________.png" alt="__________________.png">
 
-If a volume is not attached to an instance, in the Instance column the "Attach to instance" will be displayed.
+If a volume is not attached to an instance, you will see "Attach to instance" in the **Instance** column.
 
 <img src="https://support.gcore.com/hc/article_attachments/360009484677/____________________.png" alt="____________________.png">
 
-To attach a volume to an instance, click "Attach to instance", in the pop-up window select the instance you need and click Attach volume.
+Click **Attach to instance** to attach a volume to an instance. In the pop-up window, select the instance and click **Attach volume**.
 
 <img src="https://support.gcore.com/hc/article_attachments/360009578798/___________________.png" alt="___________________.png">
 
-## How to create a volume?
+## Create a volume
 
-You can create volumes while creating an instance or in the Volume section.
+You can create volumes while creating an instance or in the **Volumes** section.
 
-To create a volume in the Volume section:
+To create a volume in the **Volumes** section:
 
-1\. Go to the Volume section and click Create volume.  
+1\. Go to the **Volumes** section and click **Create volume**.  
 
 <img src="https://support.gcore.com/hc/article_attachments/360009482777/create_volume_2.png" alt="create_volume_2.png" width="653" height="249">
 
-A dialog box will be opened.
+2\. In the next dialog box, set the volume size in GB and select its type: faster for critical data and slower for archived data.
 
 <img src="https://support.gcore.com/hc/article_attachments/360009578958/_____________2_____.png" alt="_____________2_____.png" width="502" height="438">
 
-2\. Specify the required volume size in GB.
+Five types of volumes are available:
 
-3\. Depending on the data, select the volume type: faster for critical data and slower for archived data.
+* **High IOPS SSD**. High-performance SSD for latency-sensitive transactional workloads (60 IOPS per 1 GiB; 2.5 MB/s per 1 GiB). Limit: 9,000 IOPS, 500 MB/s bandwidth.
 
-<img src="https://support.gcore.com/hc/article_attachments/360011012678/4___________.png" alt="4___________.png" width="480" height="416">
+* **Standard**. Network SSD with stable and high random I/O performance, as well as high data reliability (6 IOPS per 1 GiB; 0.4 MB/s per 1 GiB). Limit: 4,500 IOPS, 300 MB/s bandwidth.
 
-Five volume types are available: 
+* **Cold**. Network HDD for less frequently accessed workloads. Limit: 1,000 IOPS, 100 MB/s bandwidth. Unavailable in Manassas.
 
-* **High IOPS SSD**. This is a high-performance SSD block storage designed for latency-sensitive transactional workloads (60 IOPS per 1 GiB; 2.5 MB/s per 1 GiB). The IOPS performance limit is 9,000. The bandwidth limit is 500 MB/s.
+* **Ultra**. Network block storage for non-critical data and workloads that are accessed less frequently. Limit: 1,000 IOPS, 100 MB/s bandwidth.
 
-* **Standard**. This is a network SSD disk, which provides stable and high random I/O performance, as well as high data reliability (6 IOPS per 1 GiB; 0.4 MB/s per 1 GiB). The IOPS performance limit is 4,500. The bandwidth limit is 300 MB/s.
+* **SSD Low-Latency**. SSD block storage for low-latency storage and real-time data processing. The maximum performance is 5000 IOPS, average latency of 300 µs.
+For **High IOPS SSD** and **Standard** volumes:
 
-* **Cold**. This is a network HDD disk, suitable for less frequently accessed workloads. The maximum number of IOPS is 1,000. The bandwidth limit is 100 MB/s. Please note that this option is unavailable in Manassas.
+- Volume IO Burst and Volume Throughput Burst are supported.
 
-* **Ultra**. This is the network block storage option, recommended for non-critical data and workloads that are accessed less frequently. The maximum number of IOPS is 1,000. The bandwidth limit is 100 MB/s.
+- IO credits and throughput credits are provided to exceed base limits and ensures optimal performance at peak IOPS and throughput.
 
-* **SSD Low-Latency**. This is an SSD block storage, designed for applications that require low-latency storage and real-time data processing. It can achieve IOPS performance of up to 5000, with an average latency of 300 µs.
+- Credits increase IOPS and volume throughput by 10x times for 10 minutes.
 
-For the **High IOPS SSD** and **Standard** volume types, the following functions are supported:
+For example, your instance has a 3 GB High IOPS SSD volume with base limits of 180 IOPS and 7.5 MB (60 IOPS x 3 GB and 2.5 MB/s x 3 GB). If the IOPS and throughput values ​​exceed these limits, renewable resources are added: (60 IOPS x 3 GB + 2.5 MB/s x 3 GB = 180 IOPS + 7.5 MB) x 10 = 1800 IOPS + 75 MB/s.
 
-\- Volume IO Burst
+Credits are restored after peak usage and load reduction. If the base limits are exceeded again, renewed credits will be applied. 
 
-\- Volume Throughput Burst
-
-The options provide IO credits and throughput credits. Credits apply when the volume type base limits are exceeded, it ensures optimal volume performance at peak IOPS and throughput.
-
-Credits increase IOPS and volume throughput in 10 times and allow volumes to continuously run at this speed (x10) for 10 minutes. For example, a 3 GB High IOPS SSD volume is attached to your instance.
-
-The base limits of such the volume are: 60 IOPS x 3 GB + 2.5 MB/s x 3 GB = 180 IOPS +7.5 MB.
-
-If IOPS and throughput values ​​exceed these parameters, the following renewable resources will be added: (60 IOPS x 3 GB + 2.5 MB/s x 3 GB = 180 IOPS + 7.5 MB) x 10 = 1800 IOPS + 75 MB/s.
-
-After the peak values and reducing the load to the base level, credits are restored. The more the load decreased after the peak, the faster the credits will recover. If the base limits are exceeded again, renewed credits will be applied. 
-
-4\. To attach the volume to an instance, select it from the pop-up list.
+3\. (If you don't want to attach the volume to an instance, skip this step). Select the instance from the list.
 
 <img src="https://support.gcore.com/hc/article_attachments/360009579358/___________________.png" alt="___________________.png">
 
-! If you don't want to attach the volume to an instance, skip this field.
+4\. Enter the volume name and click **Save**.
 
-5\. Enter the name and click Save.
-
-You will see the created volume in the Volume section.
+The created volume will appear in the **Volumes** section.
 
 The volume can be created only in the location indicated in the upper-right corner.
 
-**Please, note!** From our side, the volumes are issued in order, but we can't guarantee consistency in the names of volumes in the OS (sda, sdb, sdc ...) while adding Volumes, via UI/API
+**Note:** Volume names may not be consistent in OS (e.g., sda, sdb, sdc...) when adding via UI/API. UUID is recommended for OS operations.! If you don't want to attach the volume to an instance, skip this field.
 
-The sequence of the Volume names is determined on the OS side.
+## Manage your volumes
 
-When working with Volumes in the OS, it is better to pay attention to the UUID.
-
-## Manage volumes
-
-You can detach the created volume from the instance, change its size, type, make a snapshot, or delete it by clicking on the three-dot icon next to the necessary volume. Moreover, you can create an image from the boot volumes. 
+By simply clicking on the three-dot icon next to the desired volume, you can detach it from the instance, change its size or type, take a snapshot, or delete it. Additionally, it's possible to create an image from the boot volumes, expanding the flexibility and control over your storage resources.
 
 <img src="https://support.gcore.com/hc/article_attachments/4402889079441/mceclip2.png" alt="mceclip2.png">
 
-Select the necessary action in the menu.
+1\. Create an image (from the bootvolume).
 
-1\. Create an image (from the bootvolume)<img src="https://support.gcore.com/hc/article_attachments/360012500778/______________________EN.png" alt="______________________EN.png">
+<img src="https://support.gcore.com/hc/article_attachments/360012500778/______________________EN.png" alt="______________________EN.png">
 
-Enter a name for the image and click on the "Create image" button. Within several minutes, the image will be created and available in the ["Images"](https://support.gcorelabs.com/hc/en-us/articles/360002429818-Images) section.
+Enter a name for the image and click on **Create image**. Within several minutes, the image will be created and available in the **Images** section.
 
-2\. To detach a volume from an instance:<img src="https://support.gcore.com/hc/article_attachments/360009483457/detach2.png" alt="detach2.png" width="523" height="390">
+2\. Detach a volume from an instance.
+
+<img src="https://support.gcore.com/hc/article_attachments/360009483457/detach2.png" alt="detach2.png" width="523" height="390">
 
 Select the instance from which you want to detach the selected volume. Click OK to detach the volume.
 
@@ -124,17 +107,15 @@ The opened window shows the current volume size. Use keyboard input or arrows to
 
 <img src="https://support.gcore.com/hc/article_attachments/360009483517/retype2.png" alt="retype2.png">
 
-Detach a volume from an instance.  Select the necessary volume type. Click Retype to save the settings.
+Detach a volume from an instance.  Select the necessary volume type. Click Retype to save the settings.
 
-**Important!** Volume conversion is only possible for _High IOPS_ and _Standard_. Conversion to and from the _Cold_ type is not possible.
+**Note:** Conversion is only possible for High IOPS and Standard. 
 
 Moreover, you can migrate data between disks within an OS using "rsync" or "cp" utilities.
 
-5\. Take a snapshot:
+5\. To take a snapshot, enter its name and click **Take snapshot**.
 
 <img src="https://support.gcore.com/hc/article_attachments/360009579518/snap2.png" alt="snap2.png">
-
-To take a snapshot, enter its Name and click Take snapshot.
 
 6\. Delete volume:
 
@@ -142,14 +123,14 @@ To take a snapshot, enter its Name and click Take snapshot.
 
 You can only delete a volume that is not attached to an instance. 
 
-To delete a volume that is attached to an instance, firstly click Detach in the menu. Then delete the volume, by clicking on the Delete in the menu.
+To delete a volume that is attached to an instance, click **Detach** and then **Delete**.
 
-**Important!** The instance boot volume can only be deleted together with the instance in the instance management section.
+**Note:** The instance boot volume can only be deleted together with the instance in the instance management section.
 
 7\. Revert volume to the latest snapshot
 
 <img src="https://support.gcore.com/hc/article_attachments/4402881064337/mceclip3.png" alt="mceclip3.png" width="541" height="204">
 
-Detach the volume from your instance and then revert it to the latest snapshot by clicking on the desired option on the selector.
+Detach the volume from your instance and revert to the latest snapshot.
 
-Please note: if you have just resized the volume you will not be able to use the function because the last snapshot is designed for the old size. You can only create a new volume from it. For the new size volume, you need to create a new snapshot.
+**Note:**  After resizing a volume, reversion is unavailable because the latest snapshot is taken for the old size. You can only create a new volume. For the new size, create a new snapshot.
