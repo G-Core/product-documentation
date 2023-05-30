@@ -2,13 +2,14 @@
 title: what-is-an-https-record-and-how-is-it-configured
 displayName: Configure HTTPS record
 published: true
-order: 40
+order: 41
 toc:
-   --1--What is the HTTPS record?: "what-is-an-https-record"
-   --1--What problem does it solve?: "what-problem-does-the-https-record-solve"
-   --1--How does it work?: "how-do-https-records-work"
-   --1--Configure HTTPS in the control panel: "how-to-configure-the-https-record-in-the-control-panel"
+    --1--What is the HTTPS record?: 'what-is-an-https-record'
+    --1--What problem does it solve?: 'what-problem-does-the-https-record-solve'
+    --1--How does it work?: 'how-do-https-records-work'
+    --1--Configure HTTPS in the control panel: 'how-to-configure-the-https-record-in-the-control-panel'
 ---
+
 # What Is an HTTPS Record and How Is It Configured?
 
 ## What Is an HTTPS Record?
@@ -33,7 +34,7 @@ These three steps can add significant latency due to the multiple round trips re
 
 ## How Do HTTPS Records Work?
 
-An HTTPS record can be set up for the domain *example.com* as shown below:
+An HTTPS record can be set up for the domain _example.com_ as shown below:
 
 ```
 example.com.     	1800	IN	HTTPS	1 . alpn=h3,h3-29,h2 ipv4hint=1.2.3.4,9.8.7.6 ipv6hint=2001:db8:3333:4444:5555:6666:7777:8888,2001:db8:3333:4444:CCCC:DDDD:EEEE:FFFF
@@ -42,15 +43,15 @@ example.com.     	1800	IN	HTTPS	1 . alpn=h3,h3-29,h2 ipv4hint=1.2.3.4,9.8.7.6 ip
 
 Here's what each element represents:
 
-- "example.com" is the domain name.
-- "1800" is the Time To Live (TTL).
-- "IN" represents the class.
-- "HTTPS" signifies the record type.
-- "1" is the priority, i.e., the number in the queue.
-- "." stands for the host if it is the same as the domain name.
-- "alpn=h3,h3-29,h2" specifies the application protocol versions.
-- "ipv4hint=1.2.3.4,9.8.7.6" specifies IPv4 addresses (this is optional.)
-- "ipv6hint=2001:db8:3333:4444:5555:6666:7777:8888,2001:db8:3333:4444:CCCC:DDDD:EEEE:FFFF" specifies IPv6 addresses (this is also optional.)
+-   "example.com" is the domain name.
+-   "1800" is the Time To Live (TTL).
+-   "IN" represents the class.
+-   "HTTPS" signifies the record type.
+-   "1" is the priority, i.e., the number in the queue.
+-   "." stands for the host if it is the same as the domain name.
+-   "alpn=h3,h3-29,h2" specifies the application protocol versions.
+-   "ipv4hint=1.2.3.4,9.8.7.6" specifies IPv4 addresses (this is optional.)
+-   "ipv6hint=2001:db8:3333:4444:5555:6666:7777:8888,2001:db8:3333:4444:CCCC:DDDD:EEEE:FFFF" specifies IPv6 addresses (this is also optional.)
 
 When a browser requests the HTTPS record from the DNS server, it receives all necessary information in the response that is required to establish a secure connection to *https://www.example.com*. This includes:
 
@@ -111,4 +112,5 @@ kdig https example.com @ns1.gcorelabs.net
 ;; ANSWER SECTION:
 example.com.   	 1800    IN    HTTPS    1 . alpn=h3,h2,http/1.1 ipv4hint=1.2.3.4,9.8.7.6 ipv6hint=2001:db8:3333:4444:5555:6666:7777:8888,2001:db8:3333:4444:cccc:dddd:eeee:ffff
 ```
+
 That’s it! You’ve configured your HTTPS record.
