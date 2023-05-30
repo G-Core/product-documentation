@@ -48,7 +48,7 @@ Don’t forget to <a href="https://gcore.com/docs/cdn/clear-cdn-resource-cache-b
 
 In most cases, end users will get 4xx or 5xx errors if the Change Host header option is disabled. To avoid this, you should enable the option and set the appropriate value.
 
-If you are <a href="https://gcore.com/docs/streaming/configure-the-cdn-for-live-streaming-and-video-hosting" target="_blank">using a default CDN resource (*.gvideo.io) for streaming</a>, the Host header will take the value of the CNAME of the CDN resource. This is the value that the option will take as soon as it is disabled.
+If you are <a href="https://gcore.com/docs/streaming/how-the-streaming-platform-interact-with-the-cdn" target="_blank">using a default CDN resource (*.gvideo.io) for streaming</a>, the Host header will take the value of the CNAME of the CDN resource. This is the value that the option will take as soon as it is disabled.
 
 <img src="https://support.gcore.com/hc/article_attachments/11774870575761" alt="" width="70%">
 

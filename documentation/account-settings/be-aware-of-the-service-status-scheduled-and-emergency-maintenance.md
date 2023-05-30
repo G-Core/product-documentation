@@ -132,7 +132,7 @@ Select the components which status information you would like to receive and cli
 
 ## Subscription management 
 
-### Emai managementl 
+### Email management 
 
 You can change the subscription from any notification sent by the system to your email address. 
 
