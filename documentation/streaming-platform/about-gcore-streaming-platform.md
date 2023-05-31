@@ -1,5 +1,5 @@
 ---
-title: about-gcore-streaming
+title: about-gcore-streaming-platform
 displayName: Overview
 published: true
 order: 10

@@ -29,6 +29,6 @@ From the left-side menu, you can access in-depth documentation about Streaming:
 
 -   **Troubleshooting** – solve streaming issues
 
--   **API** – manage API integration with Streaming
+-   **API** – manage API integration with Streaming Platform
 
 If you have any questions or if there is a streaming-related topic that you think we’re missing, please leave a comment and our content team will address it.
