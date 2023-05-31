@@ -28,13 +28,13 @@ export const callToActionMap: { [key: string]: CallToActionBoxContent } = {
         buttonLabel: 'Go to the product page',
         url: 'https://gcore.com/hosting',
     },
-    streaming: {
+    'streaming-platform': {
         title: 'Not a Gcore user yet?',
         description: 'Explore the Streaming Platform by Gcore',
         buttonLabel: 'Go to the product page',
         url: 'https://gcore.com/streaming-platform',
     },
-    'server-protection': {
+    'ddos-protection': {
         title: 'Not a Gcore user yet?',
         description: 'Explore our DDoS protection for servers',
         buttonLabel: 'Go to the product page',
