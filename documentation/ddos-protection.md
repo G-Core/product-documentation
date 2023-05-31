@@ -1,9 +1,9 @@
 ---
-title: server-protection
-displayName: Server protection
+title: ddos-protection
+displayName: DDoS protection
 published: true
 ---
-# Server protection
+# DDoS protection
 
 Welcome to the <a href="https://gcore.com/ddos-protection/servers" target="_blank">Gcore Server Protection</a> documentation page!
 

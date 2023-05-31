@@ -1,13 +1,15 @@
 ---
 title: troubleshoot-issues-with-ssh-connection
+order: 10
 displayName: SSH connection
 published: true
 toc:
-   --1--Incorrect firewall rules. Errors. Connection timed out: "incorrect-firewall-rules-errors-connection-timed-out"
+    --1--Incorrect firewall rules. Errors. Connection timed out: "incorrect-firewall-rules-errors-connection-timed-out"
     --1--Incorrectly added SSH key. Errors. Connection refused. Connection timed out: "incorrectly-added-ssh-key-errors-connection-refused"
     --1--No floating (public) IP address. Connection refused error: "no-floating-public-ip-address-connection-refused-error"
     --1--The failure to connect to the remote server with Windows OS on it. Connection error.: "the-failure-to-connect-to-the-remote-server-with-windows-os-on-it-connection-error"
 ---
+
 # Troubleshoot issues with an SSH connection
 
 ## Incorrect firewall rules. Errors: Connection timed out

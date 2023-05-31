@@ -14,7 +14,7 @@ export const categories: Array<Category> = [
         url: 'cloud',
     },
     {
-        name: 'DNS',
+        name: 'DNS Hosting',
         url: 'dns',
     },
     {
@@ -26,12 +26,12 @@ export const categories: Array<Category> = [
         url: 'storage',
     },
     {
-        name: 'Streaming',
-        url: 'streaming',
+        name: 'Streaming platform',
+        url: 'streaming-platform',
     },
     {
-        name: 'Server protection',
-        url: 'server-protection',
+        name: 'DDoS protection',
+        url: 'ddos-protection',
     },
     {
         name: 'Web security',

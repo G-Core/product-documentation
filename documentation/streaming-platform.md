@@ -1,6 +1,6 @@
 ---
-title: streaming
-displayName: Streaming
+title: streaming-platform
+displayName: Streaming platform
 published: true
 ---
 # Streaming
