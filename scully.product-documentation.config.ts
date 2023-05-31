@@ -18,11 +18,9 @@ setPluginConfig(moveContentFiles, {
         'dns',
         'hosting',
         'storage',
-        'streaming',
-        'server-protection',
-        'Web security',
+        'streaming-platform',
+        'ddos-protection',
         'web-security',
-        'Reseller Support',
         'reseller-support',
     ],
 });

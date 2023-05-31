@@ -1,5 +1,5 @@
 ---
-title: get-webhooks-from-the-streaming-platform
+title: get-webhooks-from-the-streaming-service
 displayName: Webhooks
 published: true
 order: 40
@@ -9,7 +9,7 @@ toc:
    --1--Configure the webhook integration: "configure-the-webhook-integration"
    --1--Examples of available webhooks: "webhook-examples-of-all-streaming-platform-events"
 ---
-# Get webhooks from the Streaming Platform
+# Get webhooks from the Streaming service  
   
 ## What is a webhook?
 

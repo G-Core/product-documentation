@@ -1,17 +1,17 @@
 ---
-title: how-the-streaming-platform-and-additional-features-are-billed
+title: how-the-streaming-service-and-additional-features-are-billed
 displayName: Billing
 published: true
 order: 20
 toc:
-   --1--Tariff plan: "tariff-plan-for-streaming-platform"
+   --1--Tariff plan: "tariff-plan-for-streaming"
    --1--Billing rules: "billing-rules"
 ---
-# How the Streaming Platform and additional features are billed
+# How the Streaming service and additional features are billed
 
-## Tariff plan for Streaming Platform
+## Tariff plan for Streaming
 
-There is only one tariff plan for Streaming Platform. It has no limits and consists of the used streaming resources (e.g., minutes of uploaded videos) and CDN tariff. 
+There is only one tariff plan for Streaming. It has no limits and consists of the used streaming resources (e.g., minutes of uploaded videos) and CDN tariff. 
 
 You can acquaint prices for streaming resources on the <a href="https://gcore.com/pricing/streaming-platform" target="_blank">Gcore website</a>.
 
