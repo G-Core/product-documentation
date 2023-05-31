@@ -1,5 +1,5 @@
 ---
-title: streaming-api-tutorial
+title: streaming-platform-api-tutorial
 displayName: Streaming API tutorial
 published: true
 order: 10
@@ -35,13 +35,13 @@ toc:
    --2--Stream deletion: "stream-deletion"
    --1--Other API methods: "other-api-methods"
 ---
-# Streaming API tutorial
+# Streaming Platform API tutorial
 
 You can integrate your product to use the Streaming Platform for unlimited video streaming and hosting services. In this guide, we’ll take you through the API and webhook operations involved in integrating with the Streaming Platform.
 
 ## How integration works
 
-Typically, your app presents users with an interface through which they can create and manage a stream. Each user action represents a request to an endpoint in the streaming API and a webhook. The following diagram shows the typical high-level sequence of the operations grouped into stages:
+Typically, your app presents users with an interface through which they can create and manage a stream. Each user action represents a request to an endpoint in the Streaming Platform API and a webhook. The following diagram shows the typical high-level sequence of the operations grouped into stages:
 
 <img src="https://support.gcore.com/hc/article_attachments/12876274382481" alt="">
 
@@ -50,7 +50,7 @@ You’ll need to have:
 - Your own video streaming interface created
 - A Gcore account with an active <a href="https://gcore.com/docs/account-settings/create-an-account-for-an-individual-or-legal-entity" target="_blank">Streaming</a> subscription
 - An <a href="https://apidocs.gcore.com/streaming" target="_blank">authentication</a> set up using the user credentials
-- A <a href="https://gcore.com/docs/streaming/extra-features/get-webhooks-from-the-streaming-service" target="_blank">webhook</a> set up
+- A <a href="https://gcore.com/docs/streaming-platform/extra-features/get-webhooks-from-the-streaming-service" target="_blank">webhook</a> set up
 
 ## Basic operations
 
@@ -406,6 +406,7 @@ Sample webhook payload:
 Use the <a href="https://apidocs.gcore.com/streaming" target="_blank">delete_broadcasts_id</a> method to delete the broadcast.
 
 If the returned HTTP status code is 204, the request is successful.
+
 #### Step 17. Send a webhook when the recorded video is partially processed
 
 This indicates that one quality version of the video currently being processed is ready for the viewers to watch.
@@ -591,4 +592,4 @@ If the returned HTTP status code is 204, the request is successful.
 
 ## Other API methods
 
-Check out our Streaming API <a href="https://apidocs.gcore.com/streaming" target="_blank">documentation</a> for more methods that might come in handy for other use cases.
+Check out our Streaming Platform API <a href="https://apidocs.gcore.com/streaming" target="_blank">documentation</a> for more methods that might come in handy for other use cases.

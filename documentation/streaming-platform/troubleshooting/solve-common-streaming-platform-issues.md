@@ -1,5 +1,5 @@
 ---
-title: solve-common-streaming-issues
+title: solve-common-streaming-platform-issues
 displayName: Streaming issues
 published: true
 order: 10
@@ -11,7 +11,7 @@ toc:
    --2--Player: "player"
    --1--Open a support ticket: "open-a-support-ticket"
 ---
-# Solve common Streaming issues
+# Solve common Streaming Platform issues
   
 We are covering some issues you may encounter when working with both Live and VOD streams, as well as steps you can take to troubleshoot them.
 
@@ -23,7 +23,7 @@ For the most common issues, such as video not playing, taking a long time to sta
 - **Source video**. Ensure that the source content is uploaded for streaming. If the same issue occurs in the source, re-upload the video or restart the stream.
 - **Stream URL and code**. Make sure to use the exact URL and embed code that appear in the Streaming settings.
 - **Streaming settings**. Make sure the stream is enabled. If configured to pull a stream, make sure the source URL is correct.
-- **Encoder settings**. Make sure you are using the <a href="https://gcore.com/docs/streaming/live-streams-and-videos-protocols-and-codecs/what-initial-parameters-of-your-live-streams-and-videos-we-can-accept" target="_blank">recommended settings</a>. If configured to push a stream, make sure the server URL and stream key are accurate.
+- **Encoder settings**. Make sure you are using the <a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/what-initial-parameters-of-your-live-streams-and-videos-we-can-accept" target="_blank">recommended settings</a>. If configured to push a stream, make sure the server URL and stream key are accurate.
 
 Other things to try:
 
@@ -93,7 +93,7 @@ To avoid this situation:
 
 - Upload during late night or early morning hours when there is less load on the queue.
 - Upload a small batch of videos (e.g., 10 at a time).
-- <a href="https://gcore.com/docs/streaming/video-hosting/upload-video-via-api" target="_blank">Upload via API</a>.
+- <a href="https://gcore.com/docs/streaming-platform/video-hosting/upload-video-via-api" target="_blank">Upload via API</a>.
 
 **Upload is stuck in the Processed state for a long time**
 
