@@ -30,7 +30,7 @@ We will notify you when the feature is enabled. After that, you will be able to 
 
 ## Use the DVR feature
 
-1\. Create a new live stream according to the <a href="https://gcore.com/docs/streaming/live-streaming/create-a-live-stream" target="_blank">Create a live stream</a> guide or open an existing live stream.
+1\. Create a new live stream according to the <a href="https://gcore.com/docs/streaming-platform/live-streaming/create-a-live-stream" target="_blank">Create a live stream</a> guide or open an existing live stream.
 
 Complete the remaining steps on the Live stream settings page.
 

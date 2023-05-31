@@ -21,7 +21,7 @@ This option is useful when you need to stream the event simultaneously from seve
 
 ## Configure Multicamera
 
-Create at least two live streams before you configure the Multicamera. To do this, you can use our guide: <a href="https://gcore.com/docs/streaming/live-streaming/create-a-live-stream" target="_blank">Create a live stream</a>. 
+Create at least two live streams before you configure the Multicamera. To do this, you can use our guide: <a href="https://gcore.com/docs/streaming-platform/live-streaming/create-a-live-stream" target="_blank">Create a live stream</a>. 
 
 1\. Click **Create a multicamera**, enter the name (it will be displayed only in your control panel and will be invisible to viewers), and select the live streams you want to combine. Click **Create**.
 
@@ -42,7 +42,7 @@ A new window will open. Do the remaining steps in it.
     
 You can change the status as you stream. For example, in case of a technical problem, set the "Paused" status to suspend your stream. When you fix the issue, change the status to "Live", and the broadcast will be continued. 
 
-3\. If you enable the <a href="https://gcore.com/docs/streaming/extra-features/customize-appearance-of-the-built-in-player" target="_blank">Players</a> feature, you can select here a custom player. 
+3\. If you enable the <a href="https://gcore.com/docs/streaming-platform/extra-features/customize-appearance-of-the-built-in-player" target="_blank">Players</a> feature, you can select here a custom player. 
 
 4\. Set the order of the live streams. When a viewer opens the player, they will first see the first live stream from the list, and then will be able to skip to others by clicking the buttons. At this step, you can delete and add live streams. 
 

@@ -31,8 +31,8 @@ toc:
 
 - Change its name (it will be displayed in the control panel).
 - Enter a description (it will be displayed in the control panel).
-- Select custom player, if you enabled the <a href="https://gcore.com/docs/streaming/extra-features/customize-appearance-of-the-built-in-player" target="_blank">Players</a> feature.
-- Select <a href="https://gcore.com/docs/streaming/video-hosting/organize-uploaded-videos#how-to-use-tags" target="_blank">tags</a> for a video. 
+- Select custom player, if you enabled the <a href="https://gcore.com/docs/streaming-platform/extra-features/customize-appearance-of-the-built-in-player" target="_blank">Players</a> feature.
+- Select <a href="https://gcore.com/docs/streaming-platform/video-hosting/organize-uploaded-videos#how-to-use-tags" target="_blank">tags</a> for a video. 
 - Add subtitles and a subtitle language.
 - Select a screensaver from screenshots or upload a screensaver from your computer.
 

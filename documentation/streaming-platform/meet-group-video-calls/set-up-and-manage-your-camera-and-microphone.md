@@ -28,7 +28,7 @@ If you don't want other participants to see or hear you, you can manage the came
 
 After you first visit the Meet conference or webinar creating page, a dialog box will appear asking you to allow using the camera, click the Allow / Allowed button:
 
-**Please, note!** If you accidentally clicked Don't Allow, the camera and microphone will be disabled. To enable the camera and microphone, follow the instructions in the <a href="https://gcore.com/docs/streaming/troubleshooting/meet-issues/fix-the-camera-or-microphone-if-they-do-not-work" target="_blank">article</a>.
+**Please, note!** If you accidentally clicked Don't Allow, the camera and microphone will be disabled. To enable the camera and microphone, follow the instructions in the <a href="https://gcore.com/docs/streaming-platform/troubleshooting/meet-issues/fix-the-camera-or-microphone-if-they-do-not-work" target="_blank">article</a>.
 
 ### Google Chrome
 

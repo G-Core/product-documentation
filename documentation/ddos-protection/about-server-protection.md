@@ -1,5 +1,5 @@
 ---
-title: about-server-protection
+title: about-ddos-protection
 displayName: Overview
 published: true
 order: 10
@@ -8,15 +8,15 @@ toc:
    --1--Advanced protection modes: "advanced-protection-modes"
    --1--Pricing: "pricing"
 ---
-# About Server Protection
+# About DDoS Protection
 
 ## How it works
 
-Server Protection is a service that protects your servers and instances from DDoS attacks.
+DDoS Protection is a service that protects your servers and instances from DDoS attacks.
 
-Server Protection (free) is provided for all our equipment by default. In case of an attack, our system blocks the server's IP. So, an attacker cannot continue the attack. The server is not affected, but it becomes unavailable for several hours.
+DDoS Protection (free) is provided for all our equipment by default. In case of an attack, our system blocks the server's IP. So, an attacker cannot continue the attack. The server is not affected, but it becomes unavailable for several hours.
 
-You can order advanced (paid) Server Protection. During an attack, it redirects traffic to the threat mitigation system (TMS), that helps to filter traffic and detect threats. This system recognizes an attack, removes attack traffic, and enables only legitimate traffic that won't impact the server's operation. You can configure the ACL (access control list) for TMS by yourself. The main advantage is that a server's IP is not blocked during an attack, and the server remains available.
+You can order advanced (paid) DDoS Protection. During an attack, it redirects traffic to the threat mitigation system (TMS), that helps to filter traffic and detect threats. This system recognizes an attack, removes attack traffic, and enables only legitimate traffic that won't impact the server's operation. You can configure the ACL (access control list) for TMS by yourself. The main advantage is that a server's IP is not blocked during an attack, and the server remains available.
 
 Advanced protection can operate in one of two modes: always-on or on-demand.
 
@@ -38,11 +38,11 @@ With always-on mode, your traffic passes through the TMS all the time, even when
 
 ## Pricing
 
- The price of a Server Protection depends on three things:
+ The price of DDoS Protection depends on three things:
 
 - OSI layers to be protected. Two options are available: L3-L4 and L3-L7. The first option is cheaper.
 - Bandwidth used by the TMS to send traffic to a server**.** Several options are available: 1 Mbit/s, 10 Mbit/s, 100 Mbit/s, 200 Mbit/s, 500 Mbit/s, 1 Gbit/s, 2 Gbit/s,10 Gbit/s. The lower the bandwidth, the cheaper the price. 
-- Server location. Prices vary from location to location. Please send a request, and we will advise you the price for Server Protection in a particular data center. 
+- Server location. Prices vary from location to location. Please send a request, and we will advise you the price for DDoS Protection in a particular data center. 
 
 The price does not depend on a mode you choose. But note that always-on mode is available at L3-L7 layers, and on-demand mode is available only at L3-L4.
 

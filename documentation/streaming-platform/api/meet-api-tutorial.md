@@ -1604,7 +1604,7 @@ Choose one of the methods described below: Bearer authentication or Permanent 
 
 #### Bearer Authentication
 
-The token will be provided upon <a href="https://apidocs.gcorelabs.com/account#tag/Account/paths/~1auth~1jwt~1login/post" target="_blank">Login</a> request with login and password from your personal account. 
+The token will be provided upon <a href="https://apidocs.gcore.com/account#tag/Account/paths/~1auth~1jwt~1login/post" target="_blank">Login</a> request with login and password from your personal account. 
 
 In the response, you will get two tokens: access and refresh. 
 
@@ -1615,7 +1615,7 @@ Authorization: Bearer eyJ0eXAiOiJKV 
 
 ```
 
-Use the  <a href="https://apidocs.gcorelabs.com/account#tag/Account/paths/~1auth~1jwt~1refresh/post" target="_blank">Refresh</a> request to refresh your access token. 
+Use the  <a href="https://apidocs.gcore.com/account#tag/Account/paths/~1auth~1jwt~1refresh/post" target="_blank">Refresh</a> request to refresh your access token. 
 
 Steps as an example: 
 
