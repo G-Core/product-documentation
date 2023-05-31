@@ -11,9 +11,9 @@ toc:
 
 ## Supported parameters
 
-The streaming platform supports:
+The Streaming Platform supports:
 
-- Receiving live streams from <a href="https://gcore.com/docs/streaming/live-streaming/create-a-live-stream" target="_blank">your server (PULL) or a dedicated publishing point (PUSH)</a> using the RTMP, RTSP, or SRT. The stream is transcoded to get streams of lower quality and sent with <a href="https://gcore.com/docs/streaming/live-streams-and-videos-protocols-and-codecs/how-we-optimize-live-stream-and-video-performance-by-creating-different-bitrates" target="_blank">adaptive streaming</a> via CDN in  HLS/MPEG-DASH (CMAF Low Latency) formats. 
+- Receiving live streams from <a href="https://gcore.com/docs/streaming-platform/live-streaming/create-a-live-stream" target="_blank">your server (PULL) or a dedicated publishing point (PUSH)</a> using the RTMP, RTSP, or SRT. The stream is transcoded to get streams of lower quality and sent with <a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-we-optimize-live-stream-and-video-performance-by-creating-different-bitrates" target="_blank">adaptive streaming</a> via CDN in  HLS/MPEG-DASH (CMAF Low Latency) formats. 
 - Uploading videos in almost any format, from standard MP4 to 4k HDR Video, is transcoded to get videos of lower quality and sent with adaptive streaming via CDN in HLS format.
 
 **Note!** To get a PUSH point for the SRT protocol, write to us in the chat or at [support@gcore.com](mailto:support@gcore.com). 

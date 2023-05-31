@@ -45,7 +45,7 @@ For Meet video calls, WebRTC technology is used, which provides real-time video 
 
 Simulcast Streaming technology is used for live broadcasts, it helps to deliver video to each user, even with an unstable Internet channel.  Using this technology, several video streams of different quality and resolution are created on the client-side. They are delivered to a server, where based on the Internet channel of each user, it is determined what quality it is possible to deliver. After that, the selected stream is sent to the users according to the capabilities of their bandwidth and device.  
 
-**Note**: A list of supported operating systems and browsers can be found <a href="https://gcore.com/docs/streaming/meet-group-video-calls/view-technical-requirements-for-users" target="_blank">here</a>. 
+**Note**: A list of supported operating systems and browsers can be found <a href="https://gcore.com/docs/streaming-platform/meet-group-video-calls/view-technical-requirements-for-users" target="_blank">here</a>. 
 
 **Data streams are encrypted using** the DTLS protocol (Datagram Transport Layer Security), which allows providing a secure connection that prevents interception, listening, and interference, without violating data integrity protection. 
 

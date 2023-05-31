@@ -26,7 +26,7 @@ Each step affects latency, so the total timespan can increase to 30–40 seconds
 
 ## How does Gcore provide low latency?
 
-The Gcore Streaming Platform receives live streams in RTMP or SRT protocols; transcodes to ABR (<a href="https://gcore.com/docs/streaming/live-streams-and-videos-protocols-and-codecs/how-we-optimize-live-stream-and-video-performance-by-creating-different-bitrates" target="_blank">adaptive bitrate</a>) via CDN in LL-HLS and LL-DASH protocols.
+The Gcore Streaming Platform receives live streams in RTMP or SRT protocols; transcodes to ABR (<a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-we-optimize-live-stream-and-video-performance-by-creating-different-bitrates" target="_blank">adaptive bitrate</a>) via CDN in LL-HLS and LL-DASH protocols.
 
 - LL-HLS (Low Latency HTTP Live Streaming) is an adaptive protocol developed by Apple for live streaming via the Internet. This protocol is based on HTTP, which allows it to be cached on CDN servers and distributed via CDN as static content. 
 - LL-DASH (Low Latency Dynamic Adaptive Streaming over HTTP) is a data streaming technology that optimizes media content delivery via the HTTP protocol.
@@ -53,7 +53,7 @@ Compared to the standard approach, a 7-second segment will be divided into 2–3
 
 ## Use Low Latency streaming
 
-We support <a href="https://www.gcore.com/news/low-latency-hls/" target="_blank">Low Latency streaming</a> by default. It means your live streams are automatically transcoded to LL-HLSv6 or LL-DASH protocol when you <a href="https://gcore.com/docs/streaming/live-streaming/create-a-live-stream" target="_blank">create and configure a live stream</a>. Links for embedding the live stream to your own player contain the */cmaf/* part and look as follows:
+We support <a href="https://www.gcore.com/news/low-latency-hls/" target="_blank">Low Latency streaming</a> by default. It means your live streams are automatically transcoded to LL-HLSv6 or LL-DASH protocol when you <a href="https://gcore.com/docs/streaming-platform/live-streaming/create-a-live-stream" target="_blank">create and configure a live stream</a>. Links for embedding the live stream to your own player contain the */cmaf/* part and look as follows:
 
 - ```https://12345.gvideo.io/cmaf/12345_111/index.mpd``` (LL-DASH, which is supported by any device but does not work with iOS). 
 - ```https://12345.gvideo.io/cmaf/12345_111/master.m3u8``` (LL HLSv6, which is supported by iOS (Safari browser) but doesn’t work with non-Apple devices).

@@ -11,7 +11,7 @@ Download «Adobe Flash Media Live Encoder», install it, and launch it.
 
 <img src="https://support.gcore.com/hc/article_attachments/360000493958/mceclip0.png" alt="">
 
-You can find RTMP URL and a stream key in your control panel according to the <a href="https://gcore.com/docs/streaming/live-streaming/create-a-live-stream" target="_blank">Create a live stream</a> guide. Choose the stream, click edit, and look at the Push URL.
+You can find RTMP URL and a stream key in your control panel according to the <a href="https://gcore.com/docs/streaming-platform/live-streaming/create-a-live-stream" target="_blank">Create a live stream</a> guide. Choose the stream, click edit, and look at the Push URL.
 
 Then in Adobe Flash Media Live Encoder, fill the «FMS URL» field with this part of the PUSH URL: 
 

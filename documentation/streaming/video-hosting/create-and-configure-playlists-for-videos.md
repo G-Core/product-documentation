@@ -52,6 +52,6 @@ A new page will open. Complete the remaining steps in it.
 
 That’s it. Viewers can now watch videos from your playlist.
 
-You can <a href="https://gcore.com/docs/streaming/extra-features/view-statistics-of-live-streams-videos-and-billing" target="_blank">view statistics</a> for your playlist. To do this, open the settings of the playlist needed in the control panel and go to the **Statistics** tab.
+You can <a href="https://gcore.com/docs/streaming-platform/extra-features/view-statistics-of-live-streams-videos-and-billing" target="_blank">view statistics</a> for your playlist. To do this, open the settings of the playlist needed in the control panel and go to the **Statistics** tab.
 
 <img src="https://support.gcore.com/hc/article_attachments/9672700287121" alt="" width="70%">
