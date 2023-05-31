@@ -25,7 +25,7 @@ The message template: *"Greetings! Please enable the Live imitation feature for 
 
 We will notify you when the feature is activated. After that, you will be able to use it for your account.
 
-2\. Upload videos that you want to broadcast in live mode as a live stream according to 1–4 steps in the <a href="https://gcore.com/docs/streaming/video-hosting/upload-a-video-and-embed-it-to-your-app" target="_blank">Upload a video and embed it to your app</a> guide.
+2\. Upload videos that you want to broadcast in live mode as a live stream according to 1–4 steps in the <a href="https://gcore.com/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app" target="_blank">Upload a video and embed it to your app</a> guide.
 
 3\. Go to the Live imitation section and click **Create a Live imitation**. Then enter its name and click **Create** in the pop-up.
 

@@ -19,7 +19,7 @@ For maximum security, it is recommended to use AES-128 in conjunction with the <
 
 ## How does AES-128 work with VoDs?
 
-We deliver VoDs through the <a href="https://gcore.com/docs/streaming/live-streams-and-videos-protocols-and-codecs/what-initial-parameters-of-your-live-streams-and-videos-we-can-accept" target="_blank">HLS protocol</a>. Each video is divided into playlists made up of fragments, or chunks. Using the AES-128 algorithm, these chunks are transmitted in encrypted form. On your end, you need to deploy a server, referred to as a keyserver, that determines which viewers have access to the video and which do not. Viewers who can watch it must retrieve the decryption key from us.
+We deliver VoDs through the <a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/what-initial-parameters-of-your-live-streams-and-videos-we-can-accept" target="_blank">HLS protocol</a>. Each video is divided into playlists made up of fragments, or chunks. Using the AES-128 algorithm, these chunks are transmitted in encrypted form. On your end, you need to deploy a server, referred to as a keyserver, that determines which viewers have access to the video and which do not. Viewers who can watch it must retrieve the decryption key from us.
 
 The process for AES-128 video processing is as follows:
 

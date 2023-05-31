@@ -17,7 +17,7 @@ toc:
 
 Open Broadcaster Software (OBS) is a free and open-source encoder for video recording, screencasting, and live streaming. It’s suitable for video game streaming, blogging, educational content, and more.
 
-OBS links your device (a laptop or a PC) and different streaming platforms (Gcore Streaming, YouTube, Twitch, etc.). It takes an image captured by a camera, converts it into a video stream, and then sends it to the streaming platform.
+OBS links your device (a laptop or a PC) and different streaming platforms (Gcore Streaming Platform, YouTube, Twitch, etc.). It takes an image captured by a camera, converts it into a video stream, and then sends it to the streaming platform.
 
 ## Configure the OBS encoder for Gcore Streaming
 

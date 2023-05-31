@@ -31,7 +31,7 @@ As far as streaming is concerned, protection using a Secure token is as follows:
 
 ### Enable the "Secure token" feature  
 
-1\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN resources</a> section and open the settings of the [CDN resource used for the streaming](https://www.gcore.com/support/articles/5499359292561/).  
+1\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN resources</a> section and open the settings of the <a href="https://gcore.com/docs/streaming-platform/how-the-streaming-platform-interact-with-the-cdn" target="_blank">CDN resource used for the streaming</a>.  
 
 <img src="https://support.gcore.com/hc/article_attachments/13094971331729" alt="" width="70%">
 
