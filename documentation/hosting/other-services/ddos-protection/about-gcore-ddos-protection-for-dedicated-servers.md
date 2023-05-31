@@ -11,11 +11,11 @@ toc:
 # About GCore DDoS Protection for dedicated servers
 
 ## How it works
-Server Protection is a service that protects dedicated servers from DDoS attacks.
+DDoS Protection is a service that protects dedicated servers from DDoS attacks.
 
-Basic (free) Server Protection is set up on all of our equipment by default. When a server is attacked, the system blocks its IP, so the attacker cannot continue the attack. The server does not suffer, but it becomes unavailable for several hours.
+Basic (free) Protection is set up on all of our equipment by default. When a server is attacked, the system blocks its IP, so the attacker cannot continue the attack. The server does not suffer, but it becomes unavailable for several hours.
 
-You can order advanced (paid) Server Protection. It redirects traffic to TMS (threat mitigation system — a system for cleaning traffic and detecting threats) during an attack. This device detects an attack, cleans up the traffic, and sends to the server only data that will not harm it. You can set the ACL (access control list) for TMS. The main advantage is that IP is not blocked during an attack, and the server remains available.
+You can order advanced (paid) Protection. It redirects traffic to TMS (threat mitigation system — a system for cleaning traffic and detecting threats) during an attack. This device detects an attack, cleans up the traffic, and sends to the server only data that will not harm it. You can set the ACL (access control list) for TMS. The main advantage is that IP is not blocked during an attack, and the server remains available.
 
 Advanced protection can operate in one of two modes: always-on or on-demand.
 
@@ -37,11 +37,11 @@ With always-on, your traffic passes through the TMS all the time, even when ther
 
 ## Billing
 
- The price of a Server Protection service depends on three things:
+ The price of DDoS Protection service depends on three things:
 
 - OSI layers to be protected. Two ranges are available: L3-L4 and L3-L 7, the first option is cheaper.   
 - The bandwidth that will be used by TMS to send traffic to the server**.** Several options are available: 1 Mbps, 10 Mbps, 100 Mbps, 200 Mbps, 500 Mbps, 1 Gbps, 2 Gbps, 10 Gbps. The lower the bandwidth is, the cheaper the tariff is.
-- The region where the server is located. Prices vary from location to location, please send a request for service, and we will tell you the price of Server Protection in a particular data center.
+- The region where the server is located. Prices vary from location to location, please send a request for service, and we will tell you the price of DDoS Protection in a particular data center.
 
 The price does not depend on the choice of on-demand or always-on protection mode but remember: always-on is available at L3-L7 protection layers, and on-demand is available only at L3-L4.
 

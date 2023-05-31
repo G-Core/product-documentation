@@ -42,4 +42,4 @@ Advanced protection is a paid service. The cost is determined by your location a
 Activation
 ----------
 
-For more information on how to activate Advanced DDoS Protection, please check <a href=“https://gcore.com/docs/cloud/bare-metal-servers/advanced-ddoa-protection/activate-advanced-ddos-protection-for-bare-metal-servers” target="_blank">the article</a>.
+For more information on how to activate Advanced DDoS Protection, please check <a href=“https://gcore.com/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers” target="_blank">the article</a>.
