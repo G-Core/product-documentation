@@ -116,7 +116,7 @@ Set a name for the metric and in brackets {{}} set the parameters specified in t
 
 For example, for the settings above, you can set the following format: Traffic quantity — {{resource}}.
 
-<img src="https://support.gcore.com/hc/article_attachments/4407335414929/_______________.jpg" alt="" width="70%">
+<img src="https://support.gcore.com/hc/article_attachments/15717167195025" alt="" width="70%">
 
 Open the dashboard settings by clicking on the gear icon in the upper-right corner.
 
