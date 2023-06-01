@@ -69,7 +69,8 @@ Fill in the "Content" field. Enter a value appropriate for your record type.
 | NS          | The name of the zone you want to delegate your domain to. Example: *ns1.smth.com*                                      | 
 | CNAME       | The domain or domain zone name that your domain should refer to. Example: *uuuuu8.cdn.co*                             |   
 | MX          | The name of the mail server that receives mail for your domain. Example: *ASPMX.L.GOOGLE.COM* If you are using multiple mail servers, fill in the “Priority” field for each server. The lower the value in this field, the higher the priority.                                       |   
-| SRV         | The canonical name of the machine providing the service.  Example: *sip.example.com*                                  |   
+| SRV         | The canonical name of the machine providing the service.  Example: *sip.example.com*                                  | 
+| HTTPS       | HTTPS is a resource record that provides information and parameters for how to access a web service available via HTTTS. <br>Example: *example.com. 1800 IN HTTPS 1 . alpn=h3,h3-29,h2 ipv4hint=1.2.3.4,9.8.7.6<br> ipv6hint=2001:db8:3333:4444:5555:6666:7777:8888,<br>2001:db8:3333:4444:CCCC:DDDD:EEEE:FFFF*                                                                         |  
 | TXT         | Text information the record should contain. Example: *logmein-verification-code=976afe6f-8039-40e4-95a5-261b462*      | 
 | CAA         | Defines the certificate authorities who are allowed to issue an SSL/TLS-certificate for the domain name. The recording consists of three parts which are separated by a space. CAA [flags] [tag] "[value]" The "value" must be enclosed in double-quotes (""). Example: _0 issue "comodo.com"_ |  
 
