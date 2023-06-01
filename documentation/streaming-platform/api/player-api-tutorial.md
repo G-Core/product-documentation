@@ -21,9 +21,9 @@ Add the ```id='gplayer'``` parameter to the iFrame and paste it into the site co
 
 Example of the iFrame code from the control panel with the id= 'gplayer' parameter:
 
-<pre>
+```
 <iframe width="640" height="360" src="https://12345.gvideo.io/video/dSmuIp-tNRtwACT" allow= 'autoplay' allowfullscreen frameborder="0" id= 'gplayer'></iframe>
-</pre>
+```
 
 Parameters:
 
@@ -36,23 +36,23 @@ Parameters:
 
 After the iframe add the following code to initialize the player:
 
-<code-block>
+```
 <script type="text/javascript" charset="utf-8" src="https://vplatform.gcdn.co/\_players/v2.1.18/gplayerAPI.js"></script>  
-</code-block>
+```
 
-<code-block>
+```
 <script>  
   window.onload = function() {  
     let gplayerAPI = new GcorePlayer.gplayerAPI(document.getElementById('gplayer'));   
   }  
 </script>
-</code-block>
+```
 
 The onload event on window is triggered when the entire page, including the iframe, is loaded. Then there is an indication of the player to which the API call will be applied.
 
 Example of the full player initialization code and iframe for HTML page:
 
-<code-block>
+```
 <!DOCTYPE html>  
 <html>  
 <head>  
@@ -69,7 +69,7 @@ Example of the full player initialization code and iframe for HTML page:
  </script>  
 </body>  
 </html>
-</code-block>
+```
 
 ## Events
 
@@ -133,7 +133,7 @@ gplayerAPI.method({name: 'isPlaying', params: {}, callback: (res) => {
 
 Examples:
 
-<code-block>
+```
 <script>  
  window.onload = function() {  
  let gplayerAPI = new GcorePlayer.gplayerAPI(document.getElementById('gplayer'));  
@@ -187,7 +187,7 @@ gplayerAPI.on('ended', () => {
  console.log('[Event]', 'ended')  
  })   
 </script>
-</code-block>
+```
 
 ## API testing tool
 
