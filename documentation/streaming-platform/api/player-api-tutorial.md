@@ -21,9 +21,9 @@ Add the ```id='gplayer'``` parameter to the iFrame and paste it into the site co
 
 Example of the iFrame code from the control panel with the id= 'gplayer' parameter:
 
-<code-block>
+<pre>
 <iframe width="640" height="360" src="https://12345.gvideo.io/video/dSmuIp-tNRtwACT" allow= 'autoplay' allowfullscreen frameborder="0" id= 'gplayer'></iframe>
-</code-block>
+</pre>
 
 Parameters:
 
