@@ -16,7 +16,7 @@ Every Gсore client has to specify their tax location in the billing profile. Th
 
 ## Why is it important to specify the correct tax location?
 
-Correct tax location specified in your billing profile ensures that you are charged the accurate amount of taxes, or you are not charged any taxes at all based on the tax laws and regulations of your country. To learn more about tax rates in different countries, refer to: <a href=".documentation/account-settings/billing/vat-rates-in-different-countries-for-an-individual-and-legal-entity#for-eu-countries" target="_blank">VAT rate in different countries for individuals and legal entities</a>.  
+Correct tax location specified in your billing profile ensures that you are charged the accurate amount of taxes, or you are not charged any taxes at all based on the tax laws and regulations of your country. To learn more about tax rates in different countries, refer to: <a href="https://gcore.com/docs/account-settings/billing/vat-rates-in-different-countries-for-an-individual-and-legal-entity#for-eu-countries" target="_blank">VAT rate in different countries for individuals and legal entities</a>.  
 
 ## How is my tax location determined?
 
