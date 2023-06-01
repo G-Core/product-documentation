@@ -37,7 +37,7 @@ const addCopyToClipboardPlugin = async (dom: JSDOM, route: HandledRoute): Promis
             header.classList.add('gc-title-with-anchor');
             const anchor = window.document.createElement('button');
             anchor.classList.add('gc-title-anchor-link');
-            anchor.dataset.clipboardText = `${route.route}#${header.id}`;
+            anchor.dataset.clipboardText = `/docs${route.route}#${header.id}`;
             anchor.setAttribute('title', 'Copy link');
             header.appendChild(anchor);
         });
