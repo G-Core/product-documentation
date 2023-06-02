@@ -4,10 +4,10 @@ displayName: HTTP/2
 published: true
 order: 20
 toc:
---1--Server Configuration: "server-configuration"
---2--Nginx: "for-nginx"
---2--Apache: "for-apache"
---1--Benefits: "benefits-of-http-2-for-cdn"
+   --1--Server Configuration: "server-configuration"
+   --2--Nginx: "for-nginx"
+   --2--Apache: "for-apache"
+   --1--Benefits: "benefits-of-http2-for-cdn"
 ---
 # Сonfigure HTTP/2 on the origin
 

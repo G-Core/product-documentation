@@ -28,9 +28,9 @@ And by consumption period.
 Information is displayed in graphs separated by: 
 
 *   Total balance used, 
-*   Resource usage time in hours,
+*   Resource usage in hours,
 *   In Gigabyte-minutes by resources, 
-*   The total number of outbound gigabytes and hours of using different flavors. 
+*   The total number of outbound GBs and hours of using different flavors. 
 
 To switch between charts, click the tab name above the chart. 
 

@@ -19,9 +19,9 @@ It is important to note that **Gcore does NOT tolerate** the use of its services
 
 To reduce the chances of getting blacklisted, please follow these recommendations while using Gcore services for email purposes that are not associated with spam or any other related activity:
 
-1\.  Ensure that your emails include an unsubscribe link.
-2\.  Make sure all recipients are authorized to receive emails from you.
-3\.  Check that all DNS records are configured correctly.
+1. Ensure that your emails include an unsubscribe link.
+2. Make sure all recipients are authorized to receive emails from you.
+3. Check that all DNS records are configured correctly.
 
 ## Check if your IP is blacklisted
 

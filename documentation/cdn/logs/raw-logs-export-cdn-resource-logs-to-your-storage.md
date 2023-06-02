@@ -4,16 +4,18 @@ displayName: Raw Logs (paid)
 published: true
 order: 10
 toc:
---1--What is a Raw Logs feature?: "what-is-a-raw-logs-feature"
---1--Export to an S3 storage: "export-logs-to-an-s3-storage"
---2--Amazon storage: "amazon-storage"
---2--Non-Amazon storage: "non-amazon-storage"
---1--Export to an FTP/SFTP storage: "export-logs-to-an-ftp-sftp-storage"
---1--Export time intervals: "export-time-intervals"
---1--Log path example: "log-path-example"
---1--Log format: "log-format"
---1--Log example: "log-example"
---1--Log fields: "log-fields"
+   --1--What is a Raw Logs feature?: "what-is-a-raw-logs-feature"
+   --1--What is "Add logs from origin shielding"?: "what-is-the-add-logs-from-origin-shielding-option"
+   --1--How is traffic calculated?: "how-is-traffic-calculated-in-log-reports" 
+   --1--Export to an S3 storage: "export-logs-to-an-s3-storage"
+   --2--Amazon storage: "amazon-storage"
+   --2--Non-Amazon storage: "non-amazon-storage"
+   --1--Export to an FTP/SFTP storage: "export-logs-to-an-ftp-sftp-storage"
+   --1--Export time intervals: "export-time-intervals"
+   --1--Log path example: "log-path-example"
+   --1--Log format: "log-format"
+   --1--Log example: "log-example"
+   --1--Log fields: "log-fields"
 ---
 # Raw Logs: export CDN resource logs to your storage
 
@@ -25,8 +27,51 @@ Raw Logs is an option that enables an automatic export of CDN resource logs to y
 
 <img src="https://support.gcore.com/hc/article_attachments/13202181890193" alt="">
 
+## What is the "Add logs from origin shielding" option? 
+
+If you are using the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin Shielding</a> feature, we recommend that you enable the "Add logs from rigin shielding" option. This means that the report will include not only requests to cache services, but also those to the pre-cache server. As a result, you will receive more detailed information on resource usage.
+
+**Note**: If your account does not have "Origin Shielding" switched on, this option will not be available when setting up Raw logs.  
+
+To enable "Add logs from origin shielding", tick the appropriate box when setting up Raw Logs (step #2 in the [guide below](#export-logs-to-an-s3-storage)).
+
+<img src="https://support.gcore.com/hc/article_attachments/15499340205969" alt="" width="50%">
+
+## How is traffic calculated in log reports?
+
+Logs can generate various types of analytics, such as traffic delivered. To understand what the totals mean, we recommend that you familiarize yourself with the formulas for calculating the logs.
+
+The formula for calculating traffic depends on whether you use the "Add logs from origin shielding" option.
+
+1. If this option is disabled, the formula will look like this:
+
+```
+total_bytes = upstream_bytes + sent_bytes 
+```
+
+Where:
+- ```upstream_bytes``` are equal to the ```$upstream_response_length``` log field and refer to the response length from an origin in bytes
+- ```sent_bytes``` are equal to the ```$bytes_sent``` log field and refer to the number of bytes sent to a user from the edge (cache) servers
+
+For example, if ```$upstream_response_length``` is 10485760 (bytes) and ```$bytes_sent``` is 1514848 (bytes), the final value in the Raw logs report will be 12,000,608 (bytes).
+
+2. If the "Add logs from origin shielding" option is enabled, the formula will look like this:
+
+```
+total_bytes = upstream_bytes + sent_bytes + shield_bytes
+```
+Where:
+
+- ```upstream_bytes``` are equal to the ```$upstream_response_length``` log field and refer to the response length from an origin in bytes
+- ```sent_bytes``` are equal to the ```$bytes_sent``` log field and refer to the number of bytes sent to a user from the edge (cache) servers
+- ```shield_bytes``` are equal to the ```$bytes_sent``` log field and refer to the number of bytes sent to a user from the pre-cache server
+
+**Note**: The final value of log data may differ slightly from the billing statistics, as there may be cases where not all logs are received, such as:
+
+- You are using the "Origin Shielding" feature but did not check the "Add logs from origin shielding" box
+- You have a rate limit set on your storage side, and when CDN started generating logs, some logs were not downloaded because of the rate limitation
+
 ## Export logs to an S3 storage
-----------------------------
 
 ### Amazon storage
 

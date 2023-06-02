@@ -4,7 +4,7 @@ displayName: Add CDN servers to ACL
 published: true
 order: 10
 toc:
-   --1--Whitelist CDN by HTTP headers: "whitelist-via-http-headerswhitelist-via-ip-addresses"
+   --1--Whitelist CDN by HTTP headers: "whitelist-via-http-headers"
    --1--Whitelist CDN by IP addresses: "whitelist-via-ip-addresses"
 ---
 # Add CDN servers to the origin ACL whitelist

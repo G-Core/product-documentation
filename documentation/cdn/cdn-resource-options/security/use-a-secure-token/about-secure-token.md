@@ -11,7 +11,7 @@ toc:
    --2--What secures a link: "what-secures-a-link"
    --2--How a secured URL looks: "how-a-secured-url-looks"
    --2--How content is requested via a secured link: "how-content-is-requested-via-a-secured-link"
-   --1--Configure: "configure-secure-token "
+   --1--Configure: "configure-secure-token"
 ---
 # About Secure Token
 

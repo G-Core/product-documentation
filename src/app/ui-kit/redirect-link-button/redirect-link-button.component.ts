@@ -9,5 +9,6 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 export class RedirectLinkButtonComponent {
     @Input() public href: string;
     @Input() public label: string;
-    @Input() public variant: string;
+    @Input() public hideIcon: boolean;
+    @Input() public variant: 'white' | 'brand';
 }

@@ -4,11 +4,11 @@ displayName: Fetch
 published: true
 order: 20
 toc:
-    --1--Fetch compressed: "fetch-compressed"
-    --1--Option features: "option-features"
-    --1--Content compression without settings on CDN: "content-compression-without-settings-on-cdn"
-    --2--Origin supports compression: "origin-supports-compression"
-    --2--Origin doesn't support compression: "origin-doesnt-support-compression"
+   --1--Fetch compressed: "fetch-compressed"
+   --1--Option features: "option-features"
+   --1--Content compression without settings on CDN: "content-compression-without-settings-on-cdn"
+   --2--Origin supports compression: "origin-supports-compression"
+   --2--Origin doesn't support compression: "origin-doesnt-support-compression"
 ---
 # Configure Fetch compression
 

@@ -4,8 +4,8 @@ displayName: 3xx codes
 published: true
 order: 50
 toc:
---1--Origin Pull Protocol: "origin-pull-protocol"
---1--Change Host Header: "change-host-header"
+   --1--Origin Pull Protocol: "origin-pull-protocol"
+   --1--Change Host Header: "change-host-header"
 ---
 # 3xx erorr: how to solve CDN issues with redirect
 

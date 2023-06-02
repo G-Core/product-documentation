@@ -7,7 +7,6 @@ toc:
    --1--S3: "request-content-directly-from-the-s3-storage"
    --1--SFTP: "request-content-directly-from-the-sftp-storage"
 ---
-
 # Request content directly from the storage
 
 ## Request content directly from the S3 storage

@@ -5,7 +5,6 @@ published: true
 order: 10
 toc:
 ---
-
 # Change the current password
 
 <img src="https://assets.gcore.pro/docs/account-settings/password/change-the-current-password/change-password.png" alt="">

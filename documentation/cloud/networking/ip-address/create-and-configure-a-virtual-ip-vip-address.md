@@ -105,7 +105,7 @@ For example, to add the virtual IP address _192.168.1.200_ with a subnet mask of
 
 Note: **the command assigns the VIP to your machine until it restarts**. After rebooting, run the command to assign the VIP again. To permanently assign a VIP to an instance, refer to the official documentation of your OS to add the IP address to the system network settings.
 
-The VIP has been configured. To verify it, <a href=“https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-SSH” target="_blank">connect to your instance via SSH</a> using your VIP. If the connection fails, there may be an error in the IP assignment command or the IP address may not have been added inside your system. Repeat the Steps again.
+The VIP has been configured. To verify it, <a href=“https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh” target="_blank">connect to your instance via SSH</a> using your VIP. If the connection fails, there may be an error in the IP assignment command or the IP address may not have been added inside your system. Repeat the Steps again.
 
 ### Configure a virtual IP address for Windows instances
 
@@ -140,4 +140,4 @@ Go back to the **Control Panel**, make sure the values are correct and click **A
 
 8\. Click **OK**.
 
-The VIP has been configured. To verify it, <a href=“https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-SSH” target="_blank">connect to your instance via SSH</a> using your VIP.If the connection fails, there may be an error in the IP assignment command or the IP address may not have been added inside your system. Repeat the Steps.
+The VIP has been configured. To verify it, <a href=“https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh” target="_blank">connect to your instance via SSH</a> using your VIP.If the connection fails, there may be an error in the IP assignment command or the IP address may not have been added inside your system. Repeat the Steps.

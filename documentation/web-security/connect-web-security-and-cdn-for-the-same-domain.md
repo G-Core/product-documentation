@@ -4,11 +4,10 @@ displayName: Use Web Security and CDN
 published: true
 order: 31
 toc:
-    --1--What's the challenge?: "what-is-the-challenge-in-using-web-security-and-cdn-together"
-    --1--How we solved It: "how-we-solved-the-challenge"
-    --1--Configure: "configure-web-secure-and-cdn-for-your-application"
+   --1--What's the challenge?: "what-is-the-challenge-in-using-web-security-and-cdn-together"
+   --1--How we solved It: "how-we-solved-the-challenge"
+   --1--Configure: "configure-web-secure-and-cdn-for-your-application"
 ---
-
 # Connect Web Security and CDN for the same domain
 
 ## What is the challenge in using Web Security and CDN together?

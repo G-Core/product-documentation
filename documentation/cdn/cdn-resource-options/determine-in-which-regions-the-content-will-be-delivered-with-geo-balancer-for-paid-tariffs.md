@@ -4,7 +4,7 @@ displayName: Geo Balancer (for paid tariffs)
 published: true
 order: 140
 toc:
---1--Enable or disable the option: "how-to-enable-or-disable-the-option"
+   --1--Enable or disable the option: "how-to-enable-or-disable-the-option"
 ---
 # Determine in which regions the content will be delivered with geo balancer for paid tariffs
 

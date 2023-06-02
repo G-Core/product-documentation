@@ -17,6 +17,7 @@ import { categories, DOCS_GITHUB_REPO, HEADER_HEIGHT, METADATA_FILE_TITLE } from
 import { MenuItem, MenuTreeItem, TableOfContents } from '../../models';
 import { GitHubAPIService } from '../../services';
 import { MenuService } from '../../services/menu.service';
+import { callToActionMap } from '../../constants/call-to-action';
 
 @Component({
     selector: 'gc-documentation',
@@ -39,6 +40,11 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
     public showFullSizeImage: boolean = false;
     public targetImageSrc: string = '';
     public isMenuExpanded: boolean = false;
+    public category: string;
+    public callToActionMap = callToActionMap;
+    public isActiveLike: boolean = false;
+    public isActiveDislike: boolean = false;
+    public activeTab: string;
 
     @ViewChild('scullyContainer') public scullyContainer: ElementRef;
     @ViewChild('fullSizeImage') public fullSizeImage: ElementRef;
@@ -85,8 +91,6 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
                     })
                     .filter((item: Element) => item);
             }
-
-            this.handlePageScroll();
         }
     }
 
@@ -104,8 +108,9 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
                     pageUrl = pageUrl.slice(0, anchorIndex);
                 }
 
-                const documentUrlWithCategory = pageUrl.replace('/documentation/', '');
-                const category = url[1].path;
+                const documentUrlWithCategory = pageUrl.replace('/', '');
+                const category = url[0].path;
+                this.category = category;
                 const documentUrl = documentUrlWithCategory.replace(category, '').slice(1);
                 const document = documentUrl.length ? documentUrl.slice(documentUrl.lastIndexOf('/') + 1) : '';
 
@@ -118,7 +123,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
                 this.tableOfContents = [];
 
                 const filterdLinks = links.filter(({ route }) => {
-                    return route.replace('/documentation/', '').startsWith(category) && !route.endsWith(`/${category}`);
+                    return route.replace('/', '').startsWith(category) && !route.endsWith(`/${category}`);
                 });
 
                 this.setTableOfContent(filterdLinks);
@@ -130,7 +135,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
                     },
                     {
                         name: this.activeMenuItem.name,
-                        url: `/documentation/${category}`,
+                        url: `/${category}`,
                     },
                 ];
 
@@ -162,7 +167,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
                 const menuTree = new Map<string, MenuTreeItem>();
 
                 filterdLinks.forEach((link) => {
-                    const routeSegments = link.route.replace(`/documentation/${category}/`, '').split('/');
+                    const routeSegments = link.route.replace(`/${category}/`, '').split('/');
 
                     if (routeSegments.length === 1) {
                         menuTree.set(routeSegments[0], {
@@ -183,12 +188,25 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
 
     public anchorScroll(hash: string): void {
         document.location.hash = hash;
+        this.activeTocItem = hash;
+        this.activeTab = hash;
+        this.changeDetectorRef.detectChanges();
     }
 
     public closeFullSizeModal(): void {
         this.renderer.removeClass(this.fullSizeImage.nativeElement, 'active');
         this.targetImageSrc = '';
         this.changeDetectorRef.detectChanges();
+    }
+
+    public onButtonLikeClick(): void {
+        this.isActiveLike = !this.isActiveLike;
+        this.isActiveDislike = this.isActiveLike ? false : this.isActiveDislike;
+    }
+
+    public onButtonDislikeClick(): void {
+        this.isActiveDislike = !this.isActiveDislike;
+        this.isActiveLike = this.isActiveDislike ? false : this.isActiveLike;
     }
 
     private setTableOfContent(links: Array<ScullyRoute>): void {
@@ -235,6 +253,16 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
     }
 
     private handlePageScroll = (): void => {
+        const scrollHeight = document.documentElement.scrollHeight;
+        const clientHeight = document.documentElement.clientHeight;
+        const height = scrollHeight - clientHeight;
+        const scrollTop = document.documentElement.scrollTop + HEADER_HEIGHT + 18;
+
+        if (height <= scrollTop) {
+            this.activeTocItem = this.activeTab;
+            return;
+        }
+
         const activeSectionId = this.tableOfContentsHeaders.reduce((activeItem: string, item) => {
             if (document.documentElement.scrollTop + HEADER_HEIGHT + 18 > (item as HTMLElement).offsetTop) {
                 activeItem = item.id;

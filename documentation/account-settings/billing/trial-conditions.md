@@ -5,7 +5,6 @@ published: true
 order: 10
 toc:
 ---
-
 # Trial conditions
 
 After <a href="https://gcore.com/docs/account-settings/create-an-account-for-an-individual-or-legal-entity" target="_blank">registration</a> a free trial period starts by default. The trial is the period when you can test the service for free, regardless of the chosen tariff.
@@ -15,7 +14,7 @@ After <a href="https://gcore.com/docs/account-settings/create-an-account-for-an-
 | CDN (Free plan)                  | -     | Free plan has no trial period but has a limit of traffic. When you exploit 70% of free traffic, we'll send you an email and ask you to add a payment method. When you spend 100% of free traffic, we will charge a fee for overcommitment.    |
 | CDN (Start, Pro 5 TB or 10 TB) | +     | 14 days or 300 GB, depending on which parameter ends first.                                                                                                                                                                                     |
 | Cloud                            | -     | -                                                                                                                                                                                                                                               |
-| Streaming                        | +     | 14 days and 10 minutes of uploaded video                                                                                                                                                                                                        |
+| Streaming Platfrom               | +     | 14 days and 10 minutes of uploaded video                                                                                                                                                                                                        |
 | Web Protection                   | +     | 7 days                                                                                                                                                                                                                                          |
 | Storage                          | -     | -                                                                                                                                                                                                                                               |
 | DNS (Free plan)                  | -     | Free plan has no trial period and limitations                                                                                                                                                                                                   |

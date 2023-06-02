@@ -12,3 +12,15 @@ A volume is a file storage which is similar to traditional hard disks (SSD and H
 Gcore Cloud uses a software-defined distributed file system to store data. This system comprises a cluster of easily scalable nodes that provide storage, triple data replication, and load distribution. These features ensure that volumes are highly available.
 
  When you connect to an instance, you may need to store data or manage information. This is where volumes come in - they provide a convenient way to store and manage data within the instance.
+
+ ## Available volume types 
+ 
+ * **High IOPS SSD**. This is a high-performance SSD block storage designed for latency-sensitive transactional workloads (60 IOPS per 1 GiB; 2.5 MB/s per 1 GiB). The IOPS performance limit is 9,000. The bandwidth limit is 500 MB/s.
+
+* **Standard**. This is a network SSD disk, which provides stable and high random I/O performance, as well as high data reliability (6 IOPS per 1 GiB; 0.4 MB/s per 1 GiB). The IOPS performance limit is 4,500. The bandwidth limit is 300 MB/s.
+
+* **Cold**. This is a network HDD disk, suitable for less frequently accessed workloads. The maximum number of IOPS is 1,000. The bandwidth limit is 100 MB/s. Please note that this option is unavailable in Manassas.
+
+* **Ultra**. This is the network block storage option, recommended for non-critical data and workloads that are accessed less frequently. The maximum number of IOPS is 1,000. The bandwidth limit is 100 MB/s.
+
+* **SSD Low-Latency**. This is an SSD block storage, designed for applications that require low-latency storage and real-time data processing. It can achieve IOPS performance of up to 5000, with an average latency of 300 µs.

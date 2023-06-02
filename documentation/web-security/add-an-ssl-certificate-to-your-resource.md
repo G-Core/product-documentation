@@ -4,15 +4,14 @@ displayName: Add an SSL certificate
 published: true
 order: 50
 toc:
-   --1--Add SSL certificate: "add-ssl-ertidicate-to-your-resourse"
+   --1--Add SSL certificate: "add-ssl-certificate-to-your-resource"
    --2--None: "none-choose-protection-with-no-certificate"
-   --2--Let's Encrypt: "add-let-s-encrypt-certificate"
+   --2--Let's Encrypt: "add-lets-encrypt-certificate"
    --2--Custom: "add-custom-certificate-to-your-resource"
 ---
-
 # Add an SSL certificate to your resource
 
-## Add SSL сertidicate to your resourse
+## Add SSL сertificate to your resource
 
 To add an SSL certificate to your domain or subdomains go to the resource Settings and click **Edit** in "SSL Certificate" section.
 

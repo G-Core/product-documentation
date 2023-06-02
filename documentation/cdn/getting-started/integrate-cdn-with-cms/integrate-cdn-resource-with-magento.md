@@ -7,7 +7,9 @@ toc:
 ---
 # Integrate CDN resource with Magento
 
-Before you take any steps please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
+Before you take any steps, please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
+ 
+For additional information about the Magento platform, please refer to the <a href=“https://business.adobe.com/products/magento/magento-commerce.html” target="_blank">Magento official website</a>.
 
 Login to your Magento Admin Panel. Click the System tab at the top navigation bar and choose Configuration as shown in the picture below.
 
@@ -19,7 +21,7 @@ Choose Merge JavaScript Files and Merge CSS Filesoptions. Note that this may aff
 
 Then go to the General section and select the Web. Here you will find two sections: Unsecure and Secure.
 
-If your website is operating without SSL certificate (HTTP) you should select the Unsecure section. If your website is operating with SSL certificate (HTTPS) you should select the Secure section.  
+If your website is operating without SSL certificate (HTTP), you should select the Unsecure section. If your website is operating with SSL certificate (HTTPS), you should select the Secure section.  
 
 <img src="https://support.gcore.com/hc/article_attachments/115001968669/magento3.png" alt="" width="70%"> 
 
@@ -38,4 +40,4 @@ Save changes.
 
 Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the control panel.
 
-To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.
+To do that, press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.

@@ -8,7 +8,7 @@ toc:
    --1--Create a trigger: "create-a-trigger"
    --2--1. Triggers: "1-go-to-triggers"
    --2--2. Сondition: "2-choose-a-condition"
-   --2--3. Filters: "3-add-a-filter--optional"
+   --2--3. Filters: "3-add-a-filter-optional"
    --2--4. Reactions: "4-add-a-reaction"
    --2--5. Name and description: "5-enter-the-name-and-description"
    --1--Disable and delete: "disable-or-delete-a-trigger"

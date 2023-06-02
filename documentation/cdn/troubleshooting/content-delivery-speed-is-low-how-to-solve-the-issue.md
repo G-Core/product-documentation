@@ -5,8 +5,8 @@ published: true
 order: 30
 toc:
    --1--Check the delivery speed from a CDN-resource and an origin server.: "check-the-delivery-speed-from-a-cdn-resource-and-an-origin-server"
-   --1--Check CDN-resource's settings.: "cdn-resource-s-settings-checking"
-   --1--Diagnostic information for technical support.: "diagnostic-information-for-technical-support"
+   --1--Check CDN-resource's settings: "cdn-resources-settings-checking"
+   --1--Diagnostic information for technical support: "diagnostic-information-for-technical-support"
 ---
 # Content delivery speed is low: how to solve the issue
 
@@ -23,8 +23,8 @@ Revise your origin to find errors or misconfigurations that may affect
 ```
 wget -S testsupport.gcdn.co/files/test.jpg  
 --2019-12-10 13:29:17-- http://testsupport.gcdn.co/files/test.jpg  
-Resolving testsupport.gcdn.co (testsupport.gcdn.co)... 92.223.97.97  
-Connecting to testsupport.gcdn.co (http://testsupport.gcdn.co/)|92.223.97.97|:80... connected.  
+Resolving testsupport.gcdn.co... 92.223.97.97  
+Connecting to testsupport.gcdn.co|92.223.97.97|:80... connected.  
 HTTP request sent, awaiting response...  
 HTTP/1.1 200 OK  
 Server: nginx  

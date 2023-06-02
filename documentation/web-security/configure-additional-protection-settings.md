@@ -4,16 +4,15 @@ displayName: Configure protection settings
 published: true
 order: 40
 toc:
-    --1--Change your IP: "change-your-ip"
-    --1--Check your DNS records: "check-your-dns-records"
-    --1--Check your HTML code: "check-your-html-code"
-    --1--Set IP access policy: "set-ip-access-policy"
-    --1--Configure your mail service: "configure-your-mail-service"
-    --1--Restore users' IP addresses: "restore-users-ip-addresses"
-    --1--Reduce server load: "reduce-server-load"
-    --1--IPv6: "ipv6"
+   --1--Change your IP: "change-your-ip"
+   --1--Check your DNS records: "check-your-dns-records"
+   --1--Check your HTML code: "check-your-html-code"
+   --1--Set IP access policy: "set-ip-access-policy"
+   --1--Configure your mail service: "configure-your-mail-service"
+   --1--Restore users' IP addresses: "restore-users-ip-addresses"
+   --1--Reduce server load: "reduce-server-load"
+   --1--IPv6: "ipv6"
 ---
-
 # Configure additional protection settings
 
 Good website protection requires a layered approach. We described the main settings in the "<a href="https://gcore.com/docs/web-security/create-and-configure-a-protected-resource" target="_blank">Create and configure resource under protection</a>" article. Implement additional protective measures to minimize the website vulnerability.

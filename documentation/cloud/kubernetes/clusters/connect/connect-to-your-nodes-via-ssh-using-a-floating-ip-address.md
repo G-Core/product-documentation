@@ -7,7 +7,8 @@ toc:
    --1--Connect to a node: "connect-to-your-node-via-ssh"
 ---
 # Connect to your nodes via SSH
-Cluster nodes are virtual machines, so you can connect to your node via <a href=“https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address” target="_blank">a floating IP address</a> address.
+
+You can connect to your nodes via <a href=“https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address” target="_blank">a floating IP address</a> address.
 
 ## Assign a floating IP address
 

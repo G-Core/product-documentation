@@ -11,7 +11,6 @@ toc:
    --2--S3 storage is the origin: "s3-storage-is-the-origin"
    --2--SFTP storage is the origin: "sftp-storage-is-the-origin"
 ---
-
 # Use storage as the origin for your CDN resource
 
 ## Use as an origin
@@ -59,9 +58,9 @@ An addressing scheme where you specify the bucket at the beginning ```<bucket-na
 
 Use the following schema to request uploaded files:
 
-```http(s)://<Custom domain>/<folder\*>/<file>```
+```http(s)://<Custom domain>/<folder*>/<file>```
 
-\*If the folder was created in the bucket. If files were added to the root of the bucket - specify file names.  
+*If the folder was created in the bucket. If files were added to the root of the bucket - specify file names.  
 
 For example, you've: 
 
