@@ -2,5 +2,5 @@
 title: metadata
 displayName: Set up your eSIM
 published: true
-order: 20
+order: 25
 ---
