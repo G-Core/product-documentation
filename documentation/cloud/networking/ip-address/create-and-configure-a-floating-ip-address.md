@@ -19,7 +19,7 @@ toc:
 
 A Floating IP is a type of public, static IP address that can be assigned to instances within a private subnet. This means that the instances do not have a public network interface. By using a Floating IP, these instances are able to receive incoming connections from the Internet
 
-**Please note**: The private subnet of the instance must be <a href=“https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork#network-routing” target="_blank">routable</a> . Routing can be enabled in the subnet settings.
+**Please note**: The private subnet of the instance must be <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork#network-routing" target="_blank">routable</a> . Routing can be enabled in the subnet settings.
 
 ## What is it used for?
 
@@ -64,7 +64,7 @@ A floating IP is assigned by a specific data center, and its address is linked t
 ## Reserve a floating IP when creating an instance
 
 
-When creating an instance, in the "Network settings" section, select the "**Private**" network type. Specify the network and subnet of the interface you want to assign the floating IP. Enable the “**Use floating IP**” slider, click “**Create a new floating IP**”, and save the settings using the “**Add Interface**” button.
+When creating an instance, in the "Network settings" section, select the "**Private**" network type. Specify the network and subnet of the interface you want to assign the floating IP. Enable the "**Use floating IP**" slider, click "**Create a new floating IP**", and save the settings using the "**Add Interface**" button.
 
 <img src="https://support.gcore.com/hc/article_attachments/12392462274833" alt="floating-ip-07.png" width=80%>
 

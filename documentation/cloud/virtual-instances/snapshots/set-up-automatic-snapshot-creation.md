@@ -24,7 +24,7 @@ You can access this feature by logging into your personal account and navigating
 
 ### Create a schedule and give it a name
 
-Open “Snapshot Schedules” and click “Create Snapshot Schedule” in the upper right corner. The system will ask you to enter a name. Name the schedule so that it will be easier to distinguish it from others later — for example, you can use a volume name: "Snapshot of \[your volume name\]".
+Open "Snapshot Schedules" and click "Create Snapshot Schedule" in the upper right corner. The system will ask you to enter a name. Name the schedule so that it will be easier to distinguish it from others later — for example, you can use a volume name: "Snapshot of \[your volume name\]".
 
 <img src="https://support.gcore.com/hc/article_attachments/5286531058321/mceclip0.png" alt="">
 
@@ -60,13 +60,13 @@ Confirm your choice by clicking "Save" in the pop-up window.
 
 </media-gallery>
 
-In the "Name template" field, enter a name for future snapshots. All Snapshots created within this schedule will receive it. You can use the dynamic variable "{volume\_id}" in the template — it will be replaced with your volume's name automatically. For example, if the volume is named "Disk\_1" and the Name template is "Snapshot of {volume\_id}", then the system will create the snapshot “Snapshot of Disk\_1”.
+In the "Name template" field, enter a name for future snapshots. All Snapshots created within this schedule will receive it. You can use the dynamic variable "{volume\_id}" in the template — it will be replaced with your volume's name automatically. For example, if the volume is named "Disk\_1" and the Name template is "Snapshot of {volume\_id}", then the system will create the snapshot "Snapshot of Disk\_1".
 
 2. Set the maximum resource quantity
 
 <img src="https://support.gcore.com/hc/article_attachments/360019890258/mceclip20.png" alt="mceclip20.png" width="322" height="356">
 
-“Max resource count” limits the number of snapshots within the schedule. If the limit is reached, the system will delete the old one to free up space before creating a new Snapshot.
+"Max resource count" limits the number of snapshots within the schedule. If the limit is reached, the system will delete the old one to free up space before creating a new Snapshot.
 
 Example. You have configured a schedule that creates a snapshot every day and its maximum number of resources is 5. You launched it on Monday. By the end of Friday, the system has already made 5 snapshots. It will free up space on Saturday by deleting the oldest snapshot (Monday’s) and create a new one. The same will be done on Sunday and all subsequent days. Snapshots created within another schedule or manually will not be affected by the system.
 
@@ -74,7 +74,7 @@ Example. You have configured a schedule that creates a snapshot every day and it
 
 <img src="https://support.gcore.com/hc/article_attachments/360019795037/mceclip23.png" alt="mceclip23.png" width="320" height="321">
 
-With the “Custom” schedule, you can specify months, days of week, hours and minutes for creation of snapshots. For example, if you select the months January and May, the day Monday and the time 16:00, the system will create about 8 snapshots per year — at 16:00 every Monday in January and May.
+With the "Custom" schedule, you can specify months, days of week, hours and minutes for creation of snapshots. For example, if you select the months January and May, the day Monday and the time 16:00, the system will create about 8 snapshots per year — at 16:00 every Monday in January and May.
 
 When choosing your time zone, notice that Etc/GMT and GMT are not the same things. Etc/GMT values ​​are opposite to GMT — for example, London time can be specified as Etc/GMT-1 or GMT+1.
 
@@ -118,7 +118,7 @@ To disable a schedule, open it and drag the slider at the top of the screen to t
 
 </media-gallery>
 
-You cannot disable and edit a separate schedule of the “Custom” or “Period” type, but you can delete it. To do this, open the schedule and click "Delete".
+You cannot disable and edit a separate schedule of the "Custom" or "Period" type, but you can delete it. To do this, open the schedule and click "Delete".
 
 <media-gallery>
 
@@ -130,6 +130,6 @@ You cannot disable and edit a separate schedule of the “Custom” or “Period
 
 ## Delete a schedule
 
-You can delete the entire schedule in the “Snapshot Schedules” section. To do this, click on the ellipsis near the required schedule and select "Delete" in the drop-down menu.
+You can delete the entire schedule in the "Snapshot Schedules" section. To do this, click on the ellipsis near the required schedule and select "Delete" in the drop-down menu.
 
 <img src="https://support.gcore.com/hc/article_attachments/5286607320977/mceclip3.png" alt="mceclip3.png">

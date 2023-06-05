@@ -6,7 +6,7 @@ published: true
 ---
 # Troubleshooting 
 
-If you have issues with getting connected from China, please refer to our <a href=“https://gcore.com/docs/cloud/5g-esim/set-up-your-esim/getting-online-in-china” target="_blank">Getting online in China</a> article. 
+If you have issues with getting connected from China, please refer to our <a href="https://gcore.com/docs/cloud/5g-esim/set-up-your-esim/getting-online-in-china" target="_blank">Getting online in China</a> article. 
 
 ## My device is not connecting to the cellular network
 

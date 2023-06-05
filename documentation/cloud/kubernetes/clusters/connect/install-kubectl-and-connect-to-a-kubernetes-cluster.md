@@ -14,9 +14,9 @@ toc:
 
 Kubectl is a command-line tool which allows you to control Kubernetes clusters. With kubectl, you can create and configure resources, manage pods and perform other operations. 
 
-The utility runs as follows: you enter a command, kubeclt accesses the cluster and sends an API request to it. The cluster executes the command and makes changes. For the latest list of kubectl operations, see the <a href=“https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands” target="_blank">kubectl official documentation</a>.
+The utility runs as follows: you enter a command, kubeclt accesses the cluster and sends an API request to it. The cluster executes the command and makes changes. For the latest list of kubectl operations, see the <a href="https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands" target="_blank">kubectl official documentation</a>.
 
-Alternatively, there is a tool with a graphical user interface called “Lens”. It lets you manage the cluster not from the command line, but from the application window. You can download it on <a href=“https://k8slens.dev/” target="_blank">k8slens.dev</a>. The guide below applies only to kubectl.
+Alternatively, there is a tool with a graphical user interface called "Lens". It lets you manage the cluster not from the command line, but from the application window. You can download it on <a href="https://k8slens.dev/" target="_blank">k8slens.dev</a>. The guide below applies only to kubectl.
 
 ## Install kubectl on Windows and connect to a cluster
 
@@ -26,7 +26,7 @@ Alternatively, there is a tool with a graphical user interface called “Lens”
     curl -LO [https://storage.googleapis.com/kubernetes-release/release/v1.23.0/bin/windows/amd64/kubectl.exe](https://storage.googleapis.com/kubernetes-release/release/v1.23.0/bin/windows/amd64/kubectl.exe)
     ```
 
-    Instead of a CURL request, you can use a link to download the installation file. Find the link and CURL request for the latest Kubernetes version in <a href=“https://kubernetes.io/docs/tasks/tools/install-kubectl-windows/#install-kubectl-binary-with-curl-on-windows” target="_blank">Kubernetes official documentation</a>.  
+    Instead of a CURL request, you can use a link to download the installation file. Find the link and CURL request for the latest Kubernetes version in <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl-windows/#install-kubectl-binary-with-curl-on-windows" target="_blank">Kubernetes official documentation</a>.  
     
 2.  Add the directory containing the **kubectl.exe** file to the **PATH** variable (so the system can access this file when executing kubectl commands). To do this, first copy the path from the command line (this is the directory where kubectl.exe has been downloaded):  
       
@@ -48,7 +48,7 @@ Alternatively, there is a tool with a graphical user interface called “Lens”
 
     <img src="https://support.gcore.com/hc/article_attachments/13323281147921" alt="Screenshot_2023-02-27_at_18.50_1.jpg">
 
-5.  Rename the configuration file to “**config”** (without an extension) and add it to the **.kube** folder. Kubectl can now access it and manage your cluster.  
+5.  Rename the configuration file to "**config"** (without an extension) and add it to the **.kube** folder. Kubectl can now access it and manage your cluster.  
       
     <img src="https://support.gcore.com/hc/article_attachments/4417443086609/image_45.png" alt="image_45.png" width="548" height="107">  
     

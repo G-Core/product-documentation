@@ -21,7 +21,7 @@ You can connect to an instance using a pair of SSH keys or a password. We'll tel
 
 The SSH protocol (also referred to as Secure Shell) is a method for secure remote login from one server to another. To connect via SSH, make sure that all the necessary rules for incoming traffic are in the firewall settings set.
 
-Please note: you cannot connect to Windows instances via SSH. But you can connect to them via RDP protocol or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from the console in Control Panel</a>. Linux machines can be accessed via SSH or <a href=“https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel” target="_blank">from your Control Panel</a>.
+Please note: you cannot connect to Windows instances via SSH. But you can connect to them via RDP protocol or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from the console in Control Panel</a>. Linux machines can be accessed via SSH or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from your Control Panel</a>.
 
 ## Connecting using a pair of SSH keys. Preparation
 
@@ -31,9 +31,9 @@ To connect to an instance, create a public key that will be stored on your insta
 
 ! SSH key generation using the command line interface (cmd) is not available for Windows 7/8 operating systems.  
 
-1\. To generate key pairs, use <a href=“https://www.putty.org/” target="_blank">PuTTY and PuTTYgen</a>.  
+1\. To generate key pairs, use <a href="https://www.putty.org/" target="_blank">PuTTY and PuTTYgen</a>.  
 
-2\. Download and install <a href=“https://www.putty.org/” target="_blank">the PuTTY package</a>.  
+2\. Download and install <a href="https://www.putty.org/" target="_blank">the PuTTY package</a>.  
 
 3\. Launch the PuTTYgen app. 
 
@@ -177,7 +177,7 @@ chpasswd: { expire: False }
 ssh\_pwauth: True
 ```
 
-Using the specified password you will be able to connect to the instance via SSH or <a href=“https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel” target="_blank">from your Control Panel</a>.
+Using the specified password you will be able to connect to the instance via SSH or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from your Control Panel</a>.
 
 It is not necessary to specify the password explicitly, you can enter its hash (the same password, only in a converted form; the system will be able to read it, but for a person, it looks like a random set of symbols). Then, even if someone gets into the system, he or she won’t know the password — only the hash will be stored inside. And the system will open its doors only to the user who knows the password. To generate a hash, you can use the Python script:
 
@@ -198,15 +198,15 @@ print(sha512\_crypt.hash(passwd , rounds = 5000 ))
 
 Connecting to an instance over ssh using the command line (cmd) is not available on Windows 7/8 operating systems.  
 
-To connect, use <a href=“https://www.putty.org/” target="_blank">the PuTTY app</a>. 
+To connect, use <a href="https://www.putty.org/" target="_blank">the PuTTY app</a>. 
 
-1\. Download and run <a href=“https://www.putty.org/” target="_blank">the PuTTY app</a>.  
+1\. Download and run <a href="https://www.putty.org/" target="_blank">the PuTTY app</a>.  
 
 2\. Go to the Session section, in the Host Name (or IP address) field enter the instance's IP address. You can find the IP address in the IP address column on the Instances page.  
 
 <img src="https://support.gcore.com/hc/article_attachments/360011031597/____________________________.png" alt="____________________________.png" width="537" height="415">
 
-**Important!** If you create an instance with only a private address, add a floating IP. To do this, in the Instances section click on the name of the VM. In the window that opens, click Add an IP. For more information about creating floating IP addresses, see the article <a href=“https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address” target="_blank">Create and configure a floating IP address</a>.   
+**Important!** If you create an instance with only a private address, add a floating IP. To do this, in the Instances section click on the name of the VM. In the window that opens, click Add an IP. For more information about creating floating IP addresses, see the article <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address" target="_blank">Create and configure a floating IP address</a>.   
 
 <img src="https://support.gcore.com/hc/article_attachments/360011032017/add_ip_float.png" alt="add_ip_float.png">
 
@@ -223,13 +223,13 @@ To connect, use <a href=“https://www.putty.org/” target="_blank">the PuTTY 
 7\. (Step for connecting using a pair of SSH keys only) select the file with the private key for the instance in .ppk format.  
 
 **Important!** If your private key is saved in .pem format, convert it to .ppk format using the article 
-<a href=“https://gcore.com/docs/cloud/ssh-keys/convert-an-ssh-key-from-pem-to-ppk” target="_blank">Convert an SSH key from PEM to PPK</a>.
+<a href="https://gcore.com/docs/cloud/ssh-keys/convert-an-ssh-key-from-pem-to-ppk" target="_blank">Convert an SSH key from PEM to PPK</a>.
 
 8\. Click Open. The console will open. 
 
  <img src="https://support.gcore.com/hc/article_attachments/360011099078/login_as.png" alt="login_as.png" width="545" height="345">
 
-9\. In the "login" field, enter the user name that was given when creating the instance. You can find it in the instance's tab, you will see is an inscription of the “\[login\]@\[IP of the instance\]” type. Most often, the login coincides with the name of the OS. For example, for the instance below it is "Ubuntu".
+9\. In the "login" field, enter the user name that was given when creating the instance. You can find it in the instance's tab, you will see is an inscription of the "\[login\]@\[IP of the instance\]" type. Most often, the login coincides with the name of the OS. For example, for the instance below it is "Ubuntu".
 
 10\. (Step for connecting using a pair of SSH keys only) enter the password you configured while creating an instance.
  

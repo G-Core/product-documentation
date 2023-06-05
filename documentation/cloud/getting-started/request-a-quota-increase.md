@@ -32,7 +32,7 @@ All quotes are grouped by categories.
 
 ![Clicking the Request limit increase button](https://assets.gcore.pro/docs/cloud/getting-started/qoutas/5-button.png)
 
-6\. Specify the new limits in the "You should set the final value here" section. For example, if you can create only 10 instances within the current quotas, and you want to create 13, specify the number 13 in the line “Instances Dedicated Count”.
+6\. Specify the new limits in the "You should set the final value here" section. For example, if you can create only 10 instances within the current quotas, and you want to create 13, specify the number 13 in the line "Instances Dedicated Count".
 
 Below, leave a comment for our technical support — write what you are requesting resources for.
 

@@ -254,7 +254,7 @@ Everything is ready, use your server with XFCE on it. If you restart the server
 ## How to open a terminal inside XFCE
 
 
-Click on “Applications” in the upper-left corner and select “Terminal Emulator”. The terminal will open.
+Click on "Applications" in the upper-left corner and select "Terminal Emulator". The terminal will open.
 
 <img src="https://support.gcore.com/hc/article_attachments/4404471052561/image7.png" alt="" width="70%">
 
@@ -266,7 +266,7 @@ Press Ctrl + Alt + F1 — you will be returned to the terminal without a graphic
 
 ### For all other servers
 
-Click on the “Applications” button in the upper-left corner of the screen. Select "Log Out" in the drop-down menu.
+Click on the "Applications" button in the upper-left corner of the screen. Select "Log Out" in the drop-down menu.
 
 <img src="https://support.gcore.com/hc/article_attachments/4404471060369/image19.png" alt="" width="70%">
 

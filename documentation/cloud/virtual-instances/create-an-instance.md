@@ -35,10 +35,10 @@ Regions can be of two types: Core and Edge. A region determines the equipment sp
 
 <img src="ttps://assets.gcore.pro/docs/cloud/virtual-instances/create/3-image-selection.png" alt="" width=70%>
 
-*   Choose an OS template, a volume, a snapshot, a custom <a href=“https://gcore.com/docs/cloud/images/upload-an-image-to-the-storage” target="_blank">image</a>, or a template from the marketplace.
-*   (for a Linux instance) Remember the login from the **For login to OS** field to connect to your instance on Linux OS via SSH from another Linux device. For details, refer to the article: <a href=“https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh” target="_blank">Connect to your instance via SSH</a>.
+*   Choose an OS template, a volume, a snapshot, a custom <a href="https://gcore.com/docs/cloud/images/upload-an-image-to-the-storage" target="_blank">image</a>, or a template from the marketplace.
+*   (for a Linux instance) Remember the login from the **For login to OS** field to connect to your instance on Linux OS via SSH from another Linux device. For details, refer to the article: <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">Connect to your instance via SSH</a>.
 
-**Important!** If you want to connect to a Linux instance from a Windows device, use a special application such as <a href=“https://www.putty.org/” target="_blank">PuTTY</a>.
+**Important!** If you want to connect to a Linux instance from a Windows device, use a special application such as <a href="https://www.putty.org/" target="_blank">PuTTY</a>.
 
 4. For **Type**, choose the configuration.
 
@@ -92,7 +92,7 @@ Enter a volume name, choose its type and set its size in GiB
 
 6. Add one or multiple interfaces in Network settings.
 
-If you select a **public** interface, you can turn on the **Use Reserved IP** toggle and assign a <a href=“https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address” target="_blank">reserved IP address</a> to your instance.
+If you select a **public** interface, you can turn on the **Use Reserved IP** toggle and assign a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address" target="_blank">reserved IP address</a> to your instance.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/6-public-network-selected.png" alt="" width=70%>
 
@@ -130,7 +130,7 @@ To create a subnet, select an existing subnet from the drop-down list or create 
 
  * Click <b>Create subnetwork</b>.
 
-Optionally, you can turn on the **Use Reserved IP** toggle to assign a <a href=“https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address” target="_blank">reserved IP address</a> to your instance and/or turn on the **Use Floating IP** toggle to assign a <a href=“https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address” target="_blank">floating IP address</a> to your instance.
+Optionally, you can turn on the **Use Reserved IP** toggle to assign a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address" target="_blank">reserved IP address</a> to your instance and/or turn on the **Use Floating IP** toggle to assign a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address" target="_blank">floating IP address</a> to your instance.
 
 7. For **Firewall settings**, select the default firewall or create a new one by clicking **Add firewall**.
 
@@ -138,13 +138,13 @@ Optionally, you can turn on the **Use Reserved IP** toggle to assign a <a href=�
 
 If you keep the default firewall, the incoming traffic will be allowed over ICMP, TCP (SSH) and RDP protocols.
 
-If you want to create a new firewall, refer to the article: <a href=“https://gcore.com/docs/cloud/networking/add-and-configure-a-firewall” target="_blank">Add and configure a firewall</a>.
+If you want to create a new firewall, refer to the article: <a href="https://gcore.com/docs/cloud/networking/add-and-configure-a-firewall" target="_blank">Add and configure a firewall</a>.
 
 8. (for a Linux instance) Configure an **SSH key** for a remote SSH connection.
 
 ![The SSH key field](https://assets.gcore.pro/docs/cloud/virtual-instances/create/11-ssh-key.png)
 
-You can add an existing SSH key or generate a new one. You enter a public key and use a private key for connection. For details, see the article: <a href=“https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh” target="_blank">Connect to your instance via SSH</a>.
+You can add an existing SSH key or generate a new one. You enter a public key and use a private key for connection. For details, see the article: <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">Connect to your instance via SSH</a>.
 
 9. (for a Windows instance) Configure **Access** by setting a password for the Admin user.
 
@@ -152,7 +152,7 @@ You can add an existing SSH key or generate a new one. You enter a public key an
 
 Your password must contain between 8 and 16 characters and at least one lowercase letter (a-z), one uppercase letter (A-Z), one number (0-9) and one special character (!#$%&’()\*+,-./:;<=>?@\[\]^\_{|}~).
 
-You can connect to a Windows instance <a href=“https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel” target="_blank">from your Control Panel</a> or from your computer over RDP protocol.
+You can connect to a Windows instance <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from your Control Panel</a> or from your computer over RDP protocol.
 
 10. (optional) Configure **Additional options**.
 
@@ -160,7 +160,7 @@ You can connect to a Windows instance <a href=“https://gcore.com/docs/cloud/vi
 
 ![The field to add user data](https://assets.gcore.pro/docs/cloud/virtual-instances/create/13-add-user-data.png)
 
-You can configure your password to connect to your Linux instance <a href=“https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel” target="_blank">from your Control Panel</a> or via SSH. To do it, insert the code below to the **User data** field and enter your password:
+You can configure your password to connect to your Linux instance <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from your Control Panel</a> or via SSH. To do it, insert the code below to the **User data** field and enter your password:
 
 ```
 #cloud-config  
@@ -191,8 +191,8 @@ print(sha512\_crypt.hash(passwd , rounds = 5000 ))
 
 ![The field to add the instance to a placement group](https://assets.gcore.pro/docs/cloud/virtual-instances/create/15-add-placement-group.png)
 
-**Placement Group** is a setting that determines whether virtual machines will be hosted on the same physical server (**affinity** policy) or on different ones (**anti-affinity** policy). For more detail, see the article: <a href=“https://gcore.com/docs/cloud/virtual-instances/placement-groups/about-placement-groups
-” target="_blank">About placement groups</a>.
+**Placement Group** is a setting that determines whether virtual machines will be hosted on the same physical server (**affinity** policy) or on different ones (**anti-affinity** policy). For more detail, see the article: <a href="https://gcore.com/docs/cloud/virtual-instances/placement-groups/about-placement-groups
+" target="_blank">About placement groups</a>.
 
 You can add the instance to an existing placement group or create a new one by clicking **Add placement group**.
 

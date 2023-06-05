@@ -8,13 +8,13 @@ toc:
 ---
 # Add users with limited rights to a Kubernetes cluster
 
-To get started, make sure you have kubectl installed on your computer. If you haven’t installed it yet, refer to our article: <a href=“https://gcore.com/docs/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster” target="_blank">Instal kubectl and connect to a Kubernetes cluster</a>.
+To get started, make sure you have kubectl installed on your computer. If you haven’t installed it yet, refer to our article: <a href="https://gcore.com/docs/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster" target="_blank">Instal kubectl and connect to a Kubernetes cluster</a>.
 
 ## Basics you need to know
 
-**What are service accounts?** Service accounts are used to allow pods to read and use Kubernetes API objects as well as to create a kubeconfig file, which grants access to the Kubernetes objects limited to the namespace for any user or service. For more information,refer to the Kubernetes documentation: <a href=“https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/” target="_blank">Managing Service Accounts</a>.
+**What are service accounts?** Service accounts are used to allow pods to read and use Kubernetes API objects as well as to create a kubeconfig file, which grants access to the Kubernetes objects limited to the namespace for any user or service. For more information,refer to the Kubernetes documentation: <a href="https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/" target="_blank">Managing Service Accounts</a>.
 
-**What is a namespace?** In Kubernetes, a namespace is a method of organizing and isolating groups of resources within a single cluster. This helps various teams, projects, or customers to share a Kubernetes cluster. For more information, refer to the Kubernetes documentation: <a href=“https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/” target="_blank">Namespaces</a>.
+**What is a namespace?** In Kubernetes, a namespace is a method of organizing and isolating groups of resources within a single cluster. This helps various teams, projects, or customers to share a Kubernetes cluster. For more information, refer to the Kubernetes documentation: <a href="https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/" target="_blank">Namespaces</a>.
 
 ## Add users with limited rights
 

@@ -155,7 +155,7 @@ Enter your custom values instead:
 
 - <span style="color:#FF5913">mypod</span>—the pod name  
 - <span style="color:#FF5913">myfrontend</span>—the container name  
-- <span style="color:#FF5913">“/var/www/html”</span>—the destination inside the pod where to mount the storage class  
+- <span style="color:#FF5913">"/var/www/html"</span>—the destination inside the pod where to mount the storage class  
 - <span style="color:#FF5913">mypd</span>—the storage class name  
 - <span style="color:#FF5913">block-pvc</span>—the created PVC name
 
