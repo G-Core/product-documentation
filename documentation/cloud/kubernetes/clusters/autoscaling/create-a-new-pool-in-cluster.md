@@ -18,7 +18,7 @@ published: true
 
 <img src="https://support.gcore.com/hc/article_attachments/15416891909265">
 
-Enter the **pool name**, set the **minimum nodes** and **maximum nodes** for <a href=“https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling” target="_blank">autoscaling</a>. Autoscaling will regulate the number of nodes within the specified limits by removing unnecessary nodes during low load and deploying new ones during high loads.
+Enter the **pool name**, set the **minimum nodes** and **maximum nodes** for <a href="https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling" target="_blank">autoscaling</a>. Autoscaling will regulate the number of nodes within the specified limits by removing unnecessary nodes during low load and deploying new ones during high loads.
 
 For **Type**, select the type of a worker node: a virtual instance or a bare metal server. 
 

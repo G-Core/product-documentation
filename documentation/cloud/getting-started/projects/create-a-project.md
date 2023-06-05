@@ -40,6 +40,6 @@ By clicking the **Open** button, you get to the resource management panel. 
 
 In the **Settings** of your project, you can edit the project name and description, and configure access rights. 
 
-If you are an Account owner or Administrator, you can delete projects. To lear more about user roles, refer to the article <a href=“https://gcore.com/docs/cloud/getting-started/projects/users/user-roles-and-rights” target="_blank">"User roles and rights"</a>.
+If you are an Account owner or Administrator, you can delete projects. To lear more about user roles, refer to the article <a href="https://gcore.com/docs/cloud/getting-started/projects/users/user-roles-and-rights" target="_blank">"User roles and rights"</a>.
 
 Note: The default project cannot be deleted.

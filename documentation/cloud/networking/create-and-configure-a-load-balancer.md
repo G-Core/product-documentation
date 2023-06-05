@@ -23,7 +23,7 @@ The new window opens. Do the remaining steps in it. 
 
 2\. Select a region for balancing. Please note that you can balance traffic only within a single data center.
 
-3\. Select a network. If you want to use a private network for load balancing, enable the **Use private network** option. For more information, see the article <a href=“https://gcore.com/docs/cloud/networking/create-and-manage-a-network” target="_blank">"Create and manage a network"</a>.
+3\. Select a network. If you want to use a private network for load balancing, enable the **Use private network** option. For more information, see the article <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-network" target="_blank">"Create and manage a network"</a>.
 
 <img src="https://support.gcore.com/hc/article_attachments/360011810277/_____________________.png" alt="_____________________.png">
 
@@ -55,7 +55,7 @@ Click **Add pool** to start configuring.
 
 4.3. Select a protocol. The system will offer you an option based on the listener's settings: the HTTP listener can communicate with servers via the HTTP protocol, the TCP listener — via TCP.
 
-4.4. If you need to route the requests for a particular session to the same machine that serviced the first request for that session, select **App Cookie** and fill in the **Cookie** field. <a href=“https://code.google.com/p/nginx-sticky-module/)” target="_blank">A special module</a> creates a cookie — which makes each browser unique — and then uses it to forward requests to the same server.  
+4.4. If you need to route the requests for a particular session to the same machine that serviced the first request for that session, select **App Cookie** and fill in the **Cookie** field. <a href="https://code.google.com/p/nginx-sticky-module/)" target="_blank">A special module</a> creates a cookie — which makes each browser unique — and then uses it to forward requests to the same server.  
 
 4.5. Add virtual machines that will participate in the traffic distribution for the configured listener. For adding an instance, you must specify its port and weight in the distribution. 
 
@@ -96,8 +96,8 @@ The list of created balancers is located inside the project - > Networking - > L
 
 There you can:
 
-*   Configure a balancer (the “Overview” option) 
-*   Rename a balancer (the “Edit” option) 
+*   Configure a balancer (the "Overview" option) 
+*   Rename a balancer (the "Edit" option) 
 *   Delete a balancer
 
 To do it, select the necessary action on the selector on the right from the balancer.

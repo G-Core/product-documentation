@@ -51,4 +51,4 @@ To delete a network, click the selector on the right from the selected network a
 
 <img src="https://support.gcore.com/hc/article_attachments/360011859918/____________.png" alt="____________.png">
 
-Within the network, you can create a <a href=“https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork” target="_blank">subnet</a> to define the range of IP addresses in the cloud network.
+Within the network, you can create a <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork" target="_blank">subnet</a> to define the range of IP addresses in the cloud network.

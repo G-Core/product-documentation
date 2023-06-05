@@ -34,35 +34,35 @@ To make a snapshot of the disk, go to the "Snapshots" section inside the project
 
 <img src="https://support.gcore.com/hc/article_attachments/360012025238/_______________.png" alt="_______________.png">
 
-In the “Take snapshot” section, select the disk to create the snapshot. **System disks** will have the "\_bootvolume" Postfix -> Enter a name for the snapshot in the “Name” field and click "Create snapshot". 
+In the "Take snapshot" section, select the disk to create the snapshot. **System disks** will have the "\_bootvolume" Postfix -> Enter a name for the snapshot in the "Name" field and click "Create snapshot". 
 
 <img src="https://support.gcore.com/hc/article_attachments/360012025258/_______________________________.png" alt="_______________________________.png">
 
 ### **From the "Volumes" section** 
 
-Inside the project, in the “Volumes” section, select the disk to create a snapshot -> on the selector on the right from the selected volume -> select the "Take snapshot" option 
+Inside the project, in the "Volumes" section, select the disk to create a snapshot -> on the selector on the right from the selected volume -> select the "Take snapshot" option 
 
 <img src="https://support.gcore.com/hc/article_attachments/360011939337/______________________.png" alt="______________________.png">
 
-In the drop-down window, enter a name for the snapshot and click “Take snapshot”. 
+In the drop-down window, enter a name for the snapshot and click "Take snapshot". 
 
 <img src="https://support.gcore.com/hc/article_attachments/360011939377/_______________________.png" alt="_______________________.png">
 
 ### **From Instance** 
 
-Inside the project, go to the “Instances” section -> select the Instance you want to take a snapshot from -> select the "Overview" option on the selector on the right from the machine. 
+Inside the project, go to the "Instances" section -> select the Instance you want to take a snapshot from -> select the "Overview" option on the selector on the right from the machine. 
 
 <img src="https://support.gcore.com/hc/article_attachments/360011939397/__________.png" alt="__________.png">
 
-Go to the “Volumes” section -> select the disk to create a snapshot -> select the “Take snapshot” option on the selector on the right from the disk 
+Go to the "Volumes" section -> select the disk to create a snapshot -> select the "Take snapshot" option on the selector on the right from the disk 
 
 <img src="https://support.gcore.com/hc/article_attachments/360012025338/_______________________________.png" alt="_______________________________.png">
 
-In the window that opens, enter a name for the snapshot and click “Take snapshot” 
+In the window that opens, enter a name for the snapshot and click "Take snapshot" 
 
 <img src="https://support.gcore.com/hc/article_attachments/360012025358/__________________.png" alt="__________________.png"> 
 
-In the “Snapshots” section, you can view a list of created snapshots from Instance disks 
+In the "Snapshots" section, you can view a list of created snapshots from Instance disks 
 
 <img src="https://support.gcore.com/hc/article_attachments/360011939437/__________________.png" alt="__________________.png">
 

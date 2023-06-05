@@ -8,7 +8,7 @@ toc:
 ---
 # Connect to your nodes via SSH
 
-You can connect to your nodes via <a href=“https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address” target="_blank">a floating IP address</a> address.
+You can connect to your nodes via <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address" target="_blank">a floating IP address</a> address.
 
 ## Assign a floating IP address
 

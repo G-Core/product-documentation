@@ -9,7 +9,7 @@ toc:
 
 Kubernetes is a container management system that can be deployed and used on our servers. Features of our Kubernetes:
 
-*   Cluster nodes are our <a href=“https://gcorelabs.com/cloud/compute-resources/” target="_blank">virtual machines</a>.
+*   Cluster nodes are our <a href="https://gcorelabs.com/cloud/compute-resources/" target="_blank">virtual machines</a>.
 
 *   Kubernetes-supported versions are 1.24, 1.25, and 1.26. If a new version is released, you can upgrade to it without losing data by clicking just one button in your personal account.   
   
@@ -22,8 +22,8 @@ Kubernetes is a container management system that can be deployed and used on our
 
 *   Auto-healing is available — a function that automatically recovers failed nodes. It checks the status of the cluster nodes; if a non-working one is found, it initiates a replacement. 
 
-*   PersistentVolumeClaim works with our <a href=“https://gcore.com/docs/cloud/virtual-instances/volumes/create-and-configure-volumes” target="_blank">volumes</a>  —- all data is stored on them. 
+*   PersistentVolumeClaim works with our <a href="https://gcore.com/docs/cloud/virtual-instances/volumes/create-and-configure-volumes" target="_blank">volumes</a>  —- all data is stored on them. 
     
-*   Ingress works via our <a href=“https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer” target="_blank">load balancers</a>.  
+*   Ingress works via our <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer" target="_blank">load balancers</a>.  
     
 *   The implementation is based on Cluster API with high availability and service SLA.

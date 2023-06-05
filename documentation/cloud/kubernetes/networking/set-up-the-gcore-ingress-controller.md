@@ -25,7 +25,7 @@ A service in Kubernetes is an abstraction used to expose an application running 
 
 ### What is ingress?
 
-Ingress is a Kubernetes object represented as a set of rules used to route external traffic (ingress) across services inside a cluster. For example, you can map the “/login” route to a specific service in your cluster. So, when a user requests “yourwebsite.com/login”, the traffic will be redirected to the service that is responsible for user logins.
+Ingress is a Kubernetes object represented as a set of rules used to route external traffic (ingress) across services inside a cluster. For example, you can map the "/login" route to a specific service in your cluster. So, when a user requests "yourwebsite.com/login", the traffic will be redirected to the service that is responsible for user logins.
 
 To route external traffic to your application, you need three components:
 

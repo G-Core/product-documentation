@@ -32,7 +32,7 @@ When creating a key from the PuttyGen utility, you can just use The OpenSSH form
 
 If you used a previously created subnet while creating the machine, the system allows you to create a server without a floating IP.
 
-The SSH connection would not be possible in this case, because an internal IP address is not announced on the Internet. You should add <a href=“https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address” target="_blank">a floating IP address</a> to the newly created machine for the connection from external networks.
+The SSH connection would not be possible in this case, because an internal IP address is not announced on the Internet. You should add <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address" target="_blank">a floating IP address</a> to the newly created machine for the connection from external networks.
 
 ## The failure to connect to the remote server with Windows OS on it. Connection error
 

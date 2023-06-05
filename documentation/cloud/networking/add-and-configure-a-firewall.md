@@ -14,7 +14,7 @@ toc:
 
 A firewall is a network security device used to protect servers from network threats. The firewall monitors incoming and outgoing network traffic and decides whether to allow or block specific traffic based on a defined set of security rules. You can set rules for all connections except port 25 for outbound traffic as it is blocked by default.
 
-If you use a load balancer and your instance is in a pool, configure its firewall by opening ports for receiving and transmitting data to the load balancer. For more information, refer to our guide <a href=“https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer” target="_blank">"Create and configure a load balancer"</a>.
+If you use a load balancer and your instance is in a pool, configure its firewall by opening ports for receiving and transmitting data to the load balancer. For more information, refer to our guide <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer" target="_blank">"Create and configure a load balancer"</a>.
 
 ## Create a firewall
 
