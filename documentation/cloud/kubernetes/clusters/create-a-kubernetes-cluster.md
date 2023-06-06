@@ -19,7 +19,7 @@ toc:
 
 <img src="https://support.gcore.com/hc/article_attachments/15409511448209" alt="" width=80%>
 
-Enter the **pool name**, set the **minimum nodes** and **maximum nodes** for <a href=“https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling” target="_blank">autoscaling</a>.
+Enter the **pool name**, set the **minimum nodes** and **maximum nodes** for <a href="https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling" target="_blank">autoscaling</a>.
 
 For **Type**, select the type of a worker node: a virtual instance or a bare metal server. 
 

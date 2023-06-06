@@ -15,13 +15,13 @@ toc:
 ---
 # Create and configure a reserved IP address
 
-Reserved IP is an IP that you reserved for yourself and can be assigned to an <a href=“https://gcore.com/docs/cloud/virtual-instances/create-an-instance” target="_blank">instance</a> or <a href=“https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer” target="_blank">a load balancer</a> at any time.
+Reserved IP is an IP that you reserved for yourself and can be assigned to an <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance" target="_blank">instance</a> or <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer" target="_blank">a load balancer</a> at any time.
 
 ## What it is used for
 
 Since you know the IP of the future equipment, you can pre-configure your services for it — for example, create a DNS record for this IP or configure the server to connect to it.
 
-Also, a reserved IP can be used as a <a href=“https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address” target="_blank">virtual IP address</a> .
+Also, a reserved IP can be used as a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address" target="_blank">virtual IP address</a> .
 
 ## How it works
 

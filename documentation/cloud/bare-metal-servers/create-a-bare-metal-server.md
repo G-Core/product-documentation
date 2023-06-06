@@ -25,15 +25,15 @@ In this case, all physical server resources are allocated to a single user and c
 
 Due to the features of the Bare metal infrastructure, creating a compatible custom image requires a special program to build the image for a physical server and code from a dedicated repository.
 
-We have prepared very detailed instructions with all the necessary files available via the  <a href=“https://github.com/G-Core/baremetal-dib-elements” target="_blank">link</a>.
+We have prepared very detailed instructions with all the necessary files available via the  <a href="https://github.com/G-Core/baremetal-dib-elements" target="_blank">link</a>.
 
 ## **Create a bare metal server in the Cloud**
 
 Physical machines are created inside the project. You can use the default project or create a new one (for more information, see the article "How to create and delete a project").
 
-**Note**! By default, physical servers are not available for ordering. To create a physical server, you need to request a <a href=“https://gcore.com/docs/cloud/getting-started/request-a-quota-increase” target="_blank">quota increase</a>.
+**Note**! By default, physical servers are not available for ordering. To create a physical server, you need to request a <a href="https://gcore.com/docs/cloud/getting-started/request-a-quota-increase" target="_blank">quota increase</a>.
 
-Quotas of physical machines are carried out according to the server types - “Basic”, “High-frequency”, “Infrastructure”. For more information on managing quotas, see the article <a href=“https://gcore.com/docs/cloud/getting-started/request-a-quota-increase” target="_blank">"Reqest a quota increase</a>..
+Quotas of physical machines are carried out according to the server types - "Basic", "High-frequency", "Infrastructure". For more information on managing quotas, see the article <a href="https://gcore.com/docs/cloud/getting-started/request-a-quota-increase" target="_blank">"Reqest a quota increase</a>..
 
 Go inside the project, section "Baremetal" → "Create Baremetal Server".
 
@@ -43,7 +43,7 @@ You will see the page for configuring and creating a new server
 
 1.  Select the region to create the machine in. Regions, where Baremetal is available for order, are highlighted.
     
-2.  Select the image to install. You can choose a system from the prepared templates or from custom images that you've previously uploaded. You can find more information about uploading the images in the article <a href=“https://gcore.com/docs/cloud/images/upload-an-image-to-the-storage” target="_blank">"Upload an image to the storage"</a>. Please note! Only prepared images can be used for Bare metal servers (for more information, see the section Bare metal images)
+2.  Select the image to install. You can choose a system from the prepared templates or from custom images that you've previously uploaded. You can find more information about uploading the images in the article <a href="https://gcore.com/docs/cloud/images/upload-an-image-to-the-storage" target="_blank">"Upload an image to the storage"</a>. Please note! Only prepared images can be used for Bare metal servers (for more information, see the section Bare metal images)
 
 <media-gallery>
 <img src="https://support.gcore.com/hc/article_attachments/360020173678/mceclip3.png" alt="mceclip3.png">
@@ -59,11 +59,11 @@ You will see the page for configuring and creating a new server
 
 <img src="https://support.gcore.com/hc/article_attachments/360014352257/6.__________.png" alt="6.__________.png">
 
-If you have created <a href=“https://gcore.com/docs/cloud/networking/create-and-manage-a-network” target="_blank">networks</a> before, select the created network from the drop-down list. To create a new network, click on the Add a new network button, and enter the network name. **Note!** While creating a network you need to select the "Baremetal Network" (VLAN) option. 
+If you have created <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-network" target="_blank">networks</a> before, select the created network from the drop-down list. To create a new network, click on the Add a new network button, and enter the network name. **Note!** While creating a network you need to select the "Baremetal Network" (VLAN) option. 
     
 <img src="https://support.gcore.com/hc/article_attachments/360014438738/7.__________.png" alt="7.__________.png">                            
 
-After creating a network, you should configure a subnet (address range for machines in the cloud). If you have early created <a href=“https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork” target="_blank">subnets</a>, select the created subnet from the drop-down list.
+After creating a network, you should configure a subnet (address range for machines in the cloud). If you have early created <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork" target="_blank">subnets</a>, select the created subnet from the drop-down list.
     
 To create a new subnet, click on the Add a new subnetwork button, enter the subnet name, and set the CIDR range for the subnet (the valid range for the subnet mask is: 16-24): 
     
@@ -77,11 +77,11 @@ Only private IPv4 addresses can be used in subnets.
     
 **Please, note!** After creating a Baremetal server, you will not be able to attach an external network to it. You can not attach more than 6 networks to the server. 
     
-5. Add an SSH key or generate a new one for a remote connection to a server. For more information about adding a key, see the article <a href=“https://gcore.com/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh” target="_blank">"Connect to your bare metal server via SSH"</a>. You can connect via SSH to all machines except Windows servers.
+5. Add an SSH key or generate a new one for a remote connection to a server. For more information about adding a key, see the article <a href="https://gcore.com/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh" target="_blank">"Connect to your bare metal server via SSH"</a>. You can connect via SSH to all machines except Windows servers.
     
 <img src="https://support.gcore.com/hc/article_attachments/360014352577/9._SSH.png" alt="9._SSH.png"> 
 
-If you select Windows Server OS, you should set a password for the Admin user. It can contain Latin letters (a-zA-Z), numbers (0-9) and special characters (!#$%&'()\*+,-./:;<=>?@\[\]^\_{|}~). Valid length is from 8 to 16 characters. You can connect to the Windows server <a href=“https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel” target="_blank">from your Control Panel</a> or from your computer using the RDP protocol.
+If you select Windows Server OS, you should set a password for the Admin user. It can contain Latin letters (a-zA-Z), numbers (0-9) and special characters (!#$%&'()\*+,-./:;<=>?@\[\]^\_{|}~). Valid length is from 8 to 16 characters. You can connect to the Windows server <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from your Control Panel</a> or from your computer using the RDP protocol.
     
 <img style="font-size: 15px;" src="https://support.gcore.com/hc/article_attachments/360014438858/10._Admin.png" alt="10._Admin.png">
 
@@ -89,7 +89,7 @@ If you select Windows Server OS, you should set a password for the Admin user. I
 
  <img src="https://support.gcore.com/hc/article_attachments/360014352657/11._User_data.png" alt="11._User_data.png">
 
-For example, you may insert a script that will allow connecting to a Linux server directly <a href=“https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel” target="_blank">from your Control Panel</a> or <a href=“https://gcore.com/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh” target="_blank">via SSH</a> (this script is not needed to connect to a Windows server). Enter this code with the password chosen by you into the User data field:
+For example, you may insert a script that will allow connecting to a Linux server directly <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from your Control Panel</a> or <a href="https://gcore.com/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh" target="_blank">via SSH</a> (this script is not needed to connect to a Windows server). Enter this code with the password chosen by you into the User data field:
 
 ```    
 #cloud-config  
@@ -117,7 +117,7 @@ print(sha512\_crypt.hash(passwd , rounds = 5000 ))
 
 <img src="https://support.gcore.com/hc/article_attachments/360014438918/12._Tags.png" alt="12._Tags.png">
     
-8. If you want to create multiple Baremetal machines with the same configuration, specify the number you want (the maximum is limited by your <a href=“https://gcore.com/docs/cloud/getting-started/request-a-quota-increase” target="_blank">quotas</a>) and add names (only Latin characters, underscores, spaces, and dots are allowed). To complete the configuration, click on "Create server" button, and then the server will be deployed in the cloud.
+8. If you want to create multiple Baremetal machines with the same configuration, specify the number you want (the maximum is limited by your <a href="https://gcore.com/docs/cloud/getting-started/request-a-quota-increase" target="_blank">quotas</a>) and add names (only Latin characters, underscores, spaces, and dots are allowed). To complete the configuration, click on "Create server" button, and then the server will be deployed in the cloud.
 
 <img src="https://support.gcore.com/hc/article_attachments/360014438958/13._Create.png" alt="13._Create.png">
     

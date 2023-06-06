@@ -13,11 +13,11 @@ We offer virtual servers with different specifications in different data centers
 
 You can see the list of plans in the shop window of your personal account or on the website in the Virtual Servers section.
 
-<a href=“https://hosting.gcorelabs.com/billmgr” target="_blank">On the shop window</a>, choose the location of a data center and the system will display a list of available servers there. The description contains server specifications.
+<a href="https://hosting.gcorelabs.com/billmgr" target="_blank">On the shop window</a>, choose the location of a data center and the system will display a list of available servers there. The description contains server specifications.
 
 <img src="https://support.gcore.com/hc/article_attachments/13261707578641" alt="mceclip0.png">
 
-<a href=“https://gcorelabs.com/hosting/vds/” target="_blank">On our website</a>, we have a full list of plans and a filter by technical specifications. You can specify the required data center, number of CPU cores, amount of RAM, amount of disk space, operating system, and price. The system will show the available plans after you specify your requirements.
+<a href="https://gcorelabs.com/hosting/vds/" target="_blank">On our website</a>, we have a full list of plans and a filter by technical specifications. You can specify the required data center, number of CPU cores, amount of RAM, amount of disk space, operating system, and price. The system will show the available plans after you specify your requirements.
 
 [<img src="https://support.gcore.com/hc/article_attachments/360020748477/mceclip6.png" alt="mceclip6.png">](https://support.gcorelabs.com/hc/article_attachments/360020748477/mceclip6.png)
 
@@ -33,7 +33,7 @@ Please note Windows Server OS is available for any plan except KVM-SSD-1, KVM-SS
 
 **KVM-HIGHCPU-SSD and KVM-HIGHCPU-SAS** plan are suitable for CPU-intensive tasks. The KVM-HIGHCPU-SSD category uses SSD drives, and the KVM-HIGHCPU-SAS category uses a combined type of drive (HDD SAS disks and SSD disks).
 
-**Regardless of the plan, each server** has one IPv4 and one IPv6 address. If you want more than one IP, you can additionally buy up to nine IPv4 and nine IPv6 addresses at any plan. You can buy only one additional IPv4 and IPv6 address on it. Also, you can replace OS on any server <a href=“https://gcore.com/docs/hosting/virtual-servers/manage/operating-system/install-a-linux-os-from-a-template” target="_blank">with one of our template OS</a> or <a href=“https://gcore.com/docs/hosting/virtual-servers/manage/operating-system/install-a-linux-os-from-your-iso-image” target="_blank">with one your ISO images</a> .
+**Regardless of the plan, each server** has one IPv4 and one IPv6 address. If you want more than one IP, you can additionally buy up to nine IPv4 and nine IPv6 addresses at any plan. You can buy only one additional IPv4 and IPv6 address on it. Also, you can replace OS on any server <a href="https://gcore.com/docs/hosting/virtual-servers/manage/operating-system/install-a-linux-os-from-a-template" target="_blank">with one of our template OS</a> or <a href="https://gcore.com/docs/hosting/virtual-servers/manage/operating-system/install-a-linux-os-from-your-iso-image" target="_blank">with one your ISO images</a> .
 
 ## Choose a plan for your needs
 
@@ -45,4 +45,4 @@ Choose a category and plan based on your tasks and the resources they consume.
 
 **If the performance of a virtual server is not enough for your tasks,** you can order a dedicated server.
 
-If you are not sure how many resources your tasks will consume and what plan is needed, you can order any appropriate plan and check if the server is suitable for your tasks. We can  <a href=“https://gcore.com/docs/hosting/virtual-servers/upgrade-your-virtual-server” target="_blank">upgrade your plan</a> if the server you have chosen doesn't have enough performance. If you want to order the upgrade, write to technical support and specify the desired configuration.
+If you are not sure how many resources your tasks will consume and what plan is needed, you can order any appropriate plan and check if the server is suitable for your tasks. We can  <a href="https://gcore.com/docs/hosting/virtual-servers/upgrade-your-virtual-server" target="_blank">upgrade your plan</a> if the server you have chosen doesn't have enough performance. If you want to order the upgrade, write to technical support and specify the desired configuration.

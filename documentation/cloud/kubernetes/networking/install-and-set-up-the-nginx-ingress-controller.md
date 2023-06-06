@@ -76,11 +76,11 @@ Enter your custom values instead:
 
 - <span style="color:#FF5913">hello-world</span> is the name of the Ingress object  
 - <span style="color:#FF5913">/about</span> is the URL path  
-- <span style="color:#FF5913">hello-world-about</span> is the name of the service that will manage “/about” requests  
-- <span style="color:#FF5913">80</span> is the port of the service that will manage “/login” requests  
+- <span style="color:#FF5913">hello-world-about</span> is the name of the service that will manage "/about" requests  
+- <span style="color:#FF5913">80</span> is the port of the service that will manage "/login" requests  
 - <span style="color:#FF5913">/login</span> is the URL path  
-- <span style="color:#FF5913">hello-world-login</span> is the name of the service that will manage “/login” requests  
-- <span style="color:#FF5913">80</span> is the port of the service that will manage “/login” requests
+- <span style="color:#FF5913">hello-world-login</span> is the name of the service that will manage "/login" requests  
+- <span style="color:#FF5913">80</span> is the port of the service that will manage "/login" requests
 
 Make sure to add ```ingressClassName: nginx``` to the spec attributes.
 

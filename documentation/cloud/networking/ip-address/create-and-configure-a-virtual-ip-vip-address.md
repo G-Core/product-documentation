@@ -56,7 +56,7 @@ You have reserved a virtual IP address. You can now assign it multiple machines 
 
 <img src="https://support.gcore.com/hc/article_attachments/12897006107153" alt="Screenshot_2023-02-08_at_17.11.42.png">
 
-3\. Install and configure Keepalived on your instances using <a href=“https://keepalived.readthedocs.io/en/latest/installing_keepalived.html” target="_blank">the official Keepalived documentation</a>.
+3\. Install and configure Keepalived on your instances using <a href="https://keepalived.readthedocs.io/en/latest/installing_keepalived.html" target="_blank">the official Keepalived documentation</a>.
 
 4\. Change the Keepalived configuration file to set the "MASTER" machine and "BACKUP" machines. Additionally, set the priority to determine the order in which the VIP will be transferred between devices. If the master server fails, the IP address will be transferred to the backup machine with the highest priority. If the second machine fails, the VIP will be transferred to the backup machine with the second-highest priority.
 
@@ -105,7 +105,7 @@ For example, to add the virtual IP address _192.168.1.200_ with a subnet mask of
 
 Note: **the command assigns the VIP to your machine until it restarts**. After rebooting, run the command to assign the VIP again. To permanently assign a VIP to an instance, refer to the official documentation of your OS to add the IP address to the system network settings.
 
-The VIP has been configured. To verify it, <a href=“https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh” target="_blank">connect to your instance via SSH</a> using your VIP. If the connection fails, there may be an error in the IP assignment command or the IP address may not have been added inside your system. Repeat the Steps again.
+The VIP has been configured. To verify it, <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">connect to your instance via SSH</a> using your VIP. If the connection fails, there may be an error in the IP assignment command or the IP address may not have been added inside your system. Repeat the Steps again.
 
 ### Configure a virtual IP address for Windows instances
 
@@ -140,4 +140,4 @@ Go back to the **Control Panel**, make sure the values are correct and click **A
 
 8\. Click **OK**.
 
-The VIP has been configured. To verify it, <a href=“https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh” target="_blank">connect to your instance via SSH</a> using your VIP.If the connection fails, there may be an error in the IP assignment command or the IP address may not have been added inside your system. Repeat the Steps.
+The VIP has been configured. To verify it, <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">connect to your instance via SSH</a> using your VIP.If the connection fails, there may be an error in the IP assignment command or the IP address may not have been added inside your system. Repeat the Steps.

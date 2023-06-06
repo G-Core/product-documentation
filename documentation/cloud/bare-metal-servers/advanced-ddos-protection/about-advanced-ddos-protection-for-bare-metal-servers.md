@@ -19,7 +19,7 @@ However, you can also purchase Advanced DDoS protection. This option redirects t
 
 ## Advanced protection advantages
 
-Here at Gcore, we provide basic protection to all customers, and it is enabled by default. If you want to activate advanced protection, please visit this article. For advanced protection, the option would be in “always on” mode. With “always on”, your traffic goes through the TMS all the time, even when there is no attack. This protection immediately responds to an attack and ensures that only good traffic is sent to your server. There are some advantages of getting advanced protection, like:
+Here at Gcore, we provide basic protection to all customers, and it is enabled by default. If you want to activate advanced protection, please visit this article. For advanced protection, the option would be in "always on" mode. With "always on", your traffic goes through the TMS all the time, even when there is no attack. This protection immediately responds to an attack and ensures that only good traffic is sent to your server. There are some advantages of getting advanced protection, like:
 
 *   Improved defense against volumetric (L3), protocol (L4), and application (L7) attacks help to reduce or eliminate the disruptive effects of DDoS attacks without interrupting uptime.
 *   In the event of an attack, a higher blocking threshold or no blocking at all (depending on the billing plan).
@@ -37,9 +37,9 @@ Here at Gcore, we provide basic protection to all customers, and it is enabled b
 
 ## Pricing
 
-Advanced protection is a paid service. The cost is determined by your location and the amount of incoming traffic that needs to be filtered. For approximate prices, refer to the <a href=“https://gcore.com/ddos-protection/” target="_blank">DDoS Protection webpage</a>. For an accurate price, you can also contact technical support via chat or [email support@gcore.com](mailto:support@gcore.com).
+Advanced protection is a paid service. The cost is determined by your location and the amount of incoming traffic that needs to be filtered. For approximate prices, refer to the <a href="https://gcore.com/ddos-protection/" target="_blank">DDoS Protection webpage</a>. For an accurate price, you can also contact technical support via chat or [email support@gcore.com](mailto:support@gcore.com).
 
 Activation
 ----------
 
-For more information on how to activate Advanced DDoS Protection, please check <a href=“https://gcore.com/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers” target="_blank">the article</a>.
+For more information on how to activate Advanced DDoS Protection, please check <a href="https://gcore.com/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers" target="_blank">the article</a>.

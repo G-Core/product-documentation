@@ -19,7 +19,7 @@ You can monitor load and performance of your nodes through 4 metrics.
 
 2\. Go to the **Pools** section, click the required pool to expand the menu, and the click the required node.
 
-<img src=“https://support.gcore.com/hc/article_attachments/13348772802833” alt="" width="70%">
+<img src="https://support.gcore.com/hc/article_attachments/13348772802833" alt="" width="70%">
 
 3\. In the new window, switch to the **Monitoring** tab.  
 The buttons to the right above the graphs regulate the presentation of statistics. The left button sets the period to be shown, and the right button sets the frequency at which data will be updated on the screen.

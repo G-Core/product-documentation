@@ -46,7 +46,7 @@ In the "Type" section, select the type of DNS record. Our service supports the f
 1. **А record**, which defines the IP address the domain corresponds to. A record is for IPv4 addresses of the form 128.128.128.128.
 2. **AAAA record**, which defines the IP address the domain corresponds to. AAAA record is for IPv6 addresses of the form 7625: 0d18: 1fa3: 07d7: 1f44: 8a2e: 07a0: 678h.
 3.  **NS** — defines addresses of DNS servers serving the domain.
-4.  **CNAME record**, which maps resource records of one domain to resource records of another. If you specify a CNAME record for site.com with the value “anothersite.com”, then when you open site.com it will have the same DNS records as anothersite.com has (for example, it will requests the same IP if A/AAAA records for anothersite.com exists).
+4.  **CNAME record**, which maps resource records of one domain to resource records of another. If you specify a CNAME record for site.com with the value “anothersite.com", then when you open site.com it will have the same DNS records as anothersite.com has (for example, it will requests the same IP if A/AAAA records for anothersite.com exists).
 5.  **MX record**, which defines the server that receives mail for the domain.
 6.  **TXT record**, which defines auxiliary information about the domain. For example, you can specify Sender Policy Framework (SPF) rules that determine mail servers allowed to receive mail.
 7.  **SRV record**, which defines the server that operates certain services for the domain.
@@ -70,7 +70,7 @@ Fill in the "Content" field with an appropriate value for the record type.
 | AAAA        | The IP address (IPv6) of the server of the web page that will open by your domain name. Example: *7625:0d18:1fa3:07d7:1f44:8a2e:07a0:678h*                                                                                             | 
 | NS          | The name of the zone you want to delegate your domain to. Example: *ns1.example.com*                                      | 
 | CNAME       | The domain or domain zone name that your domain should refer to. Example: *cdn.testdomain.com*                             |   
-| MX          | The name of the mail server that receives mail for your domain. Example: *ASPMX.L.GOOGLE.COM* If you are using multiple mail servers, fill in the “Priority” field for each server. The lower the value in this field, the higher the priority.                                       |   
+| MX          | The name of the mail server that receives mail for your domain. Example: *ASPMX.L.GOOGLE.COM* If you are using multiple mail servers, fill in the “Priority" field for each server. The lower the value in this field, the higher the priority.                                       |   
 | SRV         | The canonical name of the machine providing the service.  Example: *sip.example.com*                                  |   
 | HTTPS       | HTTPS is a resource record that provides information and parameters for how to access a web service available via HTTTS. <br>Example: *example.com. 1800 IN HTTPS 1 . alpn=h3,h3-29,h2 ipv4hint=1.2.3.4,9.8.7.6<br> ipv6hint=2001:db8:3333:4444:5555:6666:7777:8888,<br>2001:db8:3333:4444:CCCC:DDDD:EEEE:FFFF*                                                                         |
 | TXT         | Text information the record should contain. Example: *logmein-verification-code=976afe6f-8039-40e4-95a5-261b462*      | 

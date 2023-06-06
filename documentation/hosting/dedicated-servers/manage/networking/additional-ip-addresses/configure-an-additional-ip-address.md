@@ -42,7 +42,7 @@ iface eth0:N inet6 static
 ```
 3\. Save the file.
 
-4\. Reboot the server or run the “**service network restart**” command.
+4\. Reboot the server or run the "**service network restart**" command.
 
 ## Configure an additional IP address on CentOS
 
@@ -75,7 +75,7 @@ Replace ```2х01:Х:X:X::X/64``` with the IP address you want to add.
 
 3\. Save the file.
 
-4\. Reboot the server or run the “**service network restart**” command.
+4\. Reboot the server or run the "**service network restart**" command.
 
 ## Configure an additional IP address on Windows Server 2012
 

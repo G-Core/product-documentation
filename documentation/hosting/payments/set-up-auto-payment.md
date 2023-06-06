@@ -35,7 +35,7 @@ A recommended amount of funds in the "Maximum payment amount" field is set�
 
 **Note**: If you click on the infinity icon or do not specify the sum, the amount of automatic payments will be unlimited.
 
-After selecting the amount of the auto payment, click the “Confirm” button. 
+After selecting the amount of the auto payment, click the "Confirm" button. 
 
 4\. Confirm your bank card.  
 

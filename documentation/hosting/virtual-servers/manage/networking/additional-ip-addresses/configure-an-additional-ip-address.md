@@ -39,7 +39,7 @@ iface eth0:N inet6 static
 
 3\. Save the file.
 
-4\. Reboot the server or run the “**service network restart**” command.
+4\. Reboot the server or run the "**service network restart**" command.
 
 ## Configure an additional IP address on CentOS
 

@@ -15,7 +15,7 @@ What is Resource reservation?
 
 Resource reservation is a service used to rent resources for a long time at a discount. [Cloud](https://gcore.com/cloud/) resources are usually rented for a short time and paid by the minute or hour. Resource reservation works like a wholesale purchase: you rent a server for one or three years at once at a reduced price.
 
-You’ll be able to see your discount before buying on a “Discount” line. For example, in the screenshot below, the discount is 58% and the total price is €117 per month. This means that if you ordered a server for a month without the Resource reservation option, you would pay 58% more, or €278 for the month.
+You’ll be able to see your discount before buying on a "Discount" line. For example, in the screenshot below, the discount is 58% and the total price is €117 per month. This means that if you ordered a server for a month without the Resource reservation option, you would pay 58% more, or €278 for the month.
 
 ![Plan price](https://s-ed1.cloud.gcore.lu/content-images/docs/cloud/getting-started/reservations/1-plan-price.png)
 
@@ -45,7 +45,7 @@ Reserve a server
 
 7. Give your reservation a name. The name will be shown in the list of reservations.
 
-8. The reservation plan is shown in the upper-right corner. Double-check the price, location, and region, then click “Create”.
+8. The reservation plan is shown in the upper-right corner. Double-check the price, location, and region, then click "Create".
 
 ![Plan price](https://assets.gcore.pro/docs/cloud/getting-started/reservations/1-plan-price.png)
 

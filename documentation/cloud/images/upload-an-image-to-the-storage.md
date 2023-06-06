@@ -65,6 +65,6 @@ The operating system is installed on the image. You have the option to choose Li
 
 **Virtual Chipset type.** You have the option to choose between q35 and i440 virtual chipsets. The setting depends on the version of the operating system, the required functionality, and the supported virtual devices.
 
-**Add tags.** Users can set custom tags according to the “Key” and “Value” principles to identify the images in the list correctly.
+**Add tags.** Users can set custom tags according to the "Key" and "Value" principles to identify the images in the list correctly.
 
 6. Click the **Next** button. Your image will be uploaded.

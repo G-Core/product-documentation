@@ -19,7 +19,7 @@ In Gcore, you can add an allowed address pair via an API request.
 
 ## Assign an allowed address pair
 
-1. Generate an authorization token or use a <a href=“https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token” target="_blank">permanent API token</a>.
+1. Generate an authorization token or use a <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">permanent API token</a>.
 
 2. Make sure you know the project ID, region ID, instance ID, instance port ID, network ID, and MAC address. Otherwise, send API requests to get the project ID, region ID, instance ID, port ID, network ID, and then find your MAC address from the command line.
 
@@ -48,6 +48,6 @@ In Gcore, you can add an allowed address pair via an API request.
 } 
 </code-block> 
 
-Enter your custom values instead of the highlighted ones. For more details, refer to the <a href=“https://apidocs.gcore.com/cloud” target="_blank">Gcore API documentation</a>.
+Enter your custom values instead of the highlighted ones. For more details, refer to the <a href="https://apidocs.gcore.com/cloud" target="_blank">Gcore API documentation</a>.
 
 Now your machine is available through the IP addresses you specified in the request.

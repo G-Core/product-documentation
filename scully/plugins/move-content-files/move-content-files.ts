@@ -2,6 +2,8 @@ import * as path from 'path';
 import fs from 'fs-extra';
 import { registerPlugin, HandledRoute, scullyConfig, log, green } from '@scullyio/scully';
 
+/* Plugin to move all articles and assets inside docs folder */
+
 type MoveContentFilesPluginOptions = {
     root: string;
     categories: Array<string>;
@@ -41,6 +43,9 @@ async function moveContent(routes: Array<HandledRoute>): Promise<void> {
     });
 
     fs.copySync(path.join(outDir, 'index.html'), path.join(root, 'index.html'), { overwrite: true });
+    fs.copySync(path.join(outDir, 'assets/scully-routes.json'), path.join(root, 'assets/scully-routes.json'), {
+        overwrite: true,
+    });
 
     log(green('MoveContentFiles finished successfully'));
 }

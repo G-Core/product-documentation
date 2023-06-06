@@ -20,7 +20,7 @@ The server stops working if you have not enough money on the account to pay for 
 
 ## How to know that the server was stopped precisely for non-payment
 
-This will be indicated by two signs: the server status is "suspended" and the “minimum amount for service activation” is larger than the amount of money on the balance. To make the server work again, pay for it.
+This will be indicated by two signs: the server status is "suspended" and the "minimum amount for service activation" is larger than the amount of money on the balance. To make the server work again, pay for it.
 
 <img src="https://support.gcore.com/hc/article_attachments/4402277944465/image7.png" alt="" width="70%">
 <img src="https://support.gcore.com/hc/article_attachments/4402277943313/image4.png" alt="" width="50%">
@@ -53,7 +53,7 @@ _Suitable for what servers:_ dedicated server with auto-renewal.
 
 _How it works_: the money will be credited to the account and go to pay for your unpaid services, including the suspended server. It will be activated immediately. 
 
-_What to do_: in your personal account, click ”Add funds”. The system will show <a href="https://gcore.com/docs/hosting/payments/pay-for-gcore-services-payment-methods" target="_blank">payment methods</a> available to you. Transfer the money and continue using the service.
+_What to do_: in your personal account, click "Add funds". The system will show <a href="https://gcore.com/docs/hosting/payments/pay-for-gcore-services-payment-methods" target="_blank">payment methods</a> available to you. Transfer the money and continue using the service.
 
 <img src="https://support.gcore.com/hc/article_attachments/4402277942673/image1.png" alt="" width="50%">
 
@@ -87,7 +87,7 @@ If you have recharged your account balance or paid for a specific server by dire
 
 <img src="https://support.gcore.com/hc/article_attachments/4402282801809/image2.png" alt="" width="70%">
 
-If money has been automatically written off from the card during auto payment, follow the payment status in the “Expenses” section. The system creates a new line there for each attempt to write off funds. As soon as the money is written off, the "Not paid" column will have the value zero, and the "Payments" column will have the number of the created payment, during which the money came to the balance (information about it can be viewed in the "Payments" section). If the money was written off and did not come to the balance within 15 minutes <a href="https://gcore.com/docs/hosting/contact-our-technical-support" target="_blank">write to technical support</a> and we will help.
+If money has been automatically written off from the card during auto payment, follow the payment status in the "Expenses" section. The system creates a new line there for each attempt to write off funds. As soon as the money is written off, the "Not paid" column will have the value zero, and the "Payments" column will have the number of the created payment, during which the money came to the balance (information about it can be viewed in the "Payments" section). If the money was written off and did not come to the balance within 15 minutes <a href="https://gcore.com/docs/hosting/contact-our-technical-support" target="_blank">write to technical support</a> and we will help.
 
 <img src="https://support.gcore.com/hc/article_attachments/4402277943953/image5.png" alt="" width="70%">
 

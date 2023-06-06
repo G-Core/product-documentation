@@ -49,7 +49,7 @@ At this step, you can specify additional order parameters:
 
 ## Payment
 
-Click **Add to cart** and you will be redirected to the cart. Click “Pay” to pay for the order. The system will offer you available payment methods. Choose a convenient one and complete the payment. The purchased server will appear in the list of your servers in the "Products/Services" section.
+Click **Add to cart** and you will be redirected to the cart. Click "Pay" to pay for the order. The system will offer you available payment methods. Choose a convenient one and complete the payment. The purchased server will appear in the list of your servers in the "Products/Services" section.
 
 Please note! After payment, the server can be in activation mode from 15 minutes to 3 hours. If the server is not activated after 3 hours <a href="https://gcore.com/docs/hosting/contact-our-technical-support" target="_blank">write about it to technical support</a> and we will solve the problem.
 

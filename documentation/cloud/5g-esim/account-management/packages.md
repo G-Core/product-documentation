@@ -11,7 +11,7 @@ A package is a bundle of services that you may activate for your eSIM profile. P
 
 Every package offers three main features:
 
-1\. Adjusting the <a href=“https://gcore.com/docs/cloud/5g-esim/account-management/quality-of-service” target="_blank">Quality of Service</a>.
+1\. Adjusting the <a href="https://gcore.com/docs/cloud/5g-esim/account-management/quality-of-service" target="_blank">Quality of Service</a>.
 
 2\. Specifying countries and regions where the package will be available.
 
