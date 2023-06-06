@@ -4,7 +4,7 @@ displayName: Camera and microphone
 published: true
 order: 10
 toc:
-   --1--Ensure that Meet supports your browser: "ensure-that-meet-supports-your-browser"
+   --1--Ensure that Real-Time Video supports your browser: "ensure-that-real-time-video-supports-your-browser"
    --1--Check permissions and settings in the browser: "check-your-browser-permissions-and-settings"
    --2--Google Chrome: "for-chrome"
    --2--Firefox: "for-firefox"
@@ -21,7 +21,7 @@ toc:
 
 If no one can hear or see you in a video call, and the camera or microphone icons are crossed out, and clicking on them does not change anything, please follow the instructions below consistently.
 
-## Ensure that Meet supports your browser
+## Ensure that Real-Time Video supports your browser
 
 Our video call service supports the following browser versions:
 
@@ -82,7 +82,7 @@ To check the camera and microphone settings in Opera:
 
 ### For Safari
 
-To set browser permissions, reload the page with Meet opened and click **Allow** in the pop-up.
+To set browser permissions, reload the page with Real-Time Video opened and click **Allow** in the pop-up.
 
 <img src="https://support.gcore.com/hc/article_attachments/13081307372817" alt="">
 
@@ -90,15 +90,15 @@ To check the camera and microphone settings in Safari, open the application sett
 
 ## Clear cache and cookies
 
-If you're experiencing difficulties with video and audio delivery, it could be due to an outdated cookie file that's allowing other applications to use the camera and microphone instead of Meet.
+If you're experiencing difficulties with video and audio delivery, it could be due to an outdated cookie file that's allowing other applications to use the camera and microphone instead of Real-Time Video.
 
 We recommend clearing the cache and cookies for the entire browser and restarting your computer using the appropriate instructions for your browser: <a href="https://support.google.com/accounts/answer/32050?co=GENIE.Platform=Desktop&hl=en" target="_blank">Chrome</a>, <a href="https://support.microsoft.com/en-us/microsoft-edge/delete-cookies-in-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09#:~:text=Select%20Settings%20%3E%20Privacy%2C%20search%2C,and%20then%20select%20Clear%20now." target="_blank">Edge</a>, <a href="https://support.mozilla.org/en-US/kb/clear-cookies-and-site-data-firefox" target="_blank">Firefox</a>, <a href="https://www.opera.com/ru/use-cases/clean-browser-and-remove-trackers#:~:text=and%20site%20data-,Press%20Ctrl%2BShift%2BDel%20to%20open%20your%20Clear%20browsing%20data,Security%20and%20click%20Site%20settings." target="_blank">Opera</a>, <a href="https://support.apple.com/en-am/guide/safari/sfri11471/mac" target="_blank">Safari (Mac)</a>, or <a href="https://support.apple.com/en-us/HT201265" target="_blank">Safari (iOS)</a>.
 
 ## Check the installed browser extensions
 
-Third-party extensions installed in your browser could also be causing problems with the camera and microphone on some websites. To ensure that extensions aren't blocking Meet's access to the camera and microphone, open ```meet.gcore.com``` in incognito or private browser mode. This will allow you to run the website without any extensions impacting it. If the website works correctly in this mode, issues with the camera or microphone were likely caused by one of the installed extensions.
+Third-party extensions installed in your browser could also be causing problems with the camera and microphone on some websites. To ensure that extensions aren't blocking Real-Time Video's access to the camera and microphone, open ```meet.gcore.com``` in incognito or private browser mode. This will allow you to run the website without any extensions impacting it. If the website works correctly in this mode, issues with the camera or microphone were likely caused by one of the installed extensions.
 
-Please note that there is no quick way to determine which extension is causing the issue. To solve the problem, it is recommended that you disable each installed extension one by one to determine which one is causing the trouble. Once you've identified the problematic extension, you can disable it each time you use Meet.
+Please note that there is no quick way to determine which extension is causing the issue. To solve the problem, it is recommended that you disable each installed extension one by one to determine which one is causing the trouble. Once you've identified the problematic extension, you can disable it each time you use Real-Time Video.
 
 ## Inspect the firewall settings
 

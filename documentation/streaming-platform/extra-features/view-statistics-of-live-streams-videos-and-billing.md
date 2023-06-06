@@ -57,7 +57,7 @@ You can sort statistics by several metrics:
 | Transcoding       | The time used to process streams/videos and prepare an adaptive bitrate                                                     | Free                                   |
 | VOD uploaded mins | The duration of the uploaded videos                                                                                         | Paid This metric is calculated for VoD |
 | Computer vision   | The duration of videos and streams for which Computer Vision works (our service for recognizing objects from video content) | Paid                                   |
-| Meet              | Call duration per person in Meet (our service for video calls, video conferences, and webinars in real-time)                | Paid                                   |
+| Real-Time Video              | Call duration per person in Real-Time Video (our service for video calls, video conferences, and webinars in real-time)                | Paid                                   |
 
 
 *All metrics are calculated in minutes.

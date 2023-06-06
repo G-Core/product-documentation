@@ -1,5 +1,5 @@
 ---
-title: solve-possible-meet-errors
+title: solve-possible-real-time-video-errors
 displayName: Error message
 published: true
 order: 20
@@ -10,9 +10,9 @@ toc:
    --1--Additional options (camera change / quality change / name change / screen sharing): "additional-options"
    --1--Connection to the call: "connection-to-the-call"
 ---
-# Solve possible Meet errors
+# Solve possible Real-Time Video errors
 
-This article contains a list of errors that may occur while using Meet. 
+This article contains a list of errors that may occur while using Real-Time Video. 
 
 If the recommendations below do not help, please contact your administrator or [technical support](mailto:support@gcore.com). 
 
@@ -175,7 +175,7 @@ If the recommendations below do not help, please contact your administ
 			<td>
          <p>Unable to turn on the camera or microphone.</p>
          <p>1. Please make sure the site is allowed to use the camera and microphone.</p>
-         <p>2. If there is no permission to use the camera and microphone, <a href="https://gcore.com/docs/streaming-platform/troubleshooting/meet-issues/fix-the-camera-or-microphone-if-they-do-not-work" target="_blank">follow the instructions</a>.</p>
+         <p>2. If there is no permission to use the camera and microphone, <a href="https://gcore.com/docs/streaming-platform/troubleshooting/real-time-video-issues/fix-the-camera-or-microphone-if-they-do-not-work" target="_blank">follow the instructions</a>.</p>
          </td>
 		</tr>
 		<tr>
@@ -223,7 +223,7 @@ If the recommendations below do not help, please contact your administ
 			<td>
          <p>Apple allows video calling on iOS only in the Safari browser.</p>
          <p>1. Please open the link in iOS Safari browser.</p>
-         <p> 2. Check <a href="https://gcore.com/docs/streaming-platform/meet-group-video-calls/view-technical-requirements-for-users" target="_blank">if your browser is compatible with Meet</a>.</p>
+         <p> 2. Check <a href="https://gcore.com/docs/streaming-platform/meet-group-video-calls/view-technical-requirements-for-users" target="_blank">if your browser is compatible with Real-Time Video</a>.</p>
          </td>
 		</tr>
 		<tr>

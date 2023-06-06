@@ -25,7 +25,7 @@ From the left-side menu, you can access in-depth documentation about Streaming:
 
 -   **Extra features** – additional features for live streaming and video hosting, configuration
 
--   **Meet (group video calls)** – webinar and conference product, microphone and camera configuration
+-   **Real-Time Video** – webinar and conference product, microphone and camera configuration
 
 -   **Troubleshooting** – solve streaming issues
 

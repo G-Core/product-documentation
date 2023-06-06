@@ -18,7 +18,7 @@ This format of the online meeting assumes the participation of speakers and view
 
 It is important that the viewers can see the speaker, but a speaker cannot see them.
 
-With Meet, you can conduct webinars for 1-5 speakers and 2000 viewers.
+With Real-Time Video, you can conduct webinars for 1-5 speakers and 2000 viewers.
 
 ## How to create an online room for a webinar
 
@@ -46,7 +46,7 @@ In this case, when viewers click the link, they will be asked to enter the passw
 
 4\. Allow access to the camera and microphone, enter the name that will see all the viewers and other speakers.
 
-**Note**: If you accidentally blocked access to the camera and microphone, follow the <a href="https://gcore.com/docs/streaming-platform/troubleshooting/meet-issues/fix-the-camera-or-microphone-if-they-do-not-work" target="_blank">instructions</a>.
+**Note**: If you accidentally blocked access to the camera and microphone, follow the <a href="https://gcore.com/docs/streaming-platform/troubleshooting/real-time-video-issues/fix-the-camera-or-microphone-if-they-do-not-work" target="_blank">instructions</a>.
 
 <img src="https://support.gcore.com/hc/article_attachments/360015484237/room_settings.PNG" alt="" width="70%">
 
