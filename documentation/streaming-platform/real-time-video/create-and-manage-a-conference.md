@@ -16,7 +16,7 @@ A conference is a real-time online meeting for several participants.
 
 This format of an online meeting involves the simultaneous transmission of video and audio for two or more participants, as well as screen sharing and the ability to communicate via a text chat.
 
-With Meet, it is possible to hold online conferences for 2–20 participants.
+With Real-Time Video, it is possible to hold online conferences for 2–20 participants.
 
 ## How to create an online room for a conference
 
@@ -44,7 +44,7 @@ In this case, when participants click the link, they will be asked to enter the 
 
 5\. Allow access to the camera and microphone, enter the name that will see all the participants.
 
-**Note**: If you accidentally blocked access to the camera and microphone, follow the <a href="https://gcore.com/docs/streaming-platform/troubleshooting/meet-issues/fix-the-camera-or-microphone-if-they-do-not-work" target="_blank">instructions</a>.
+**Note**: If you accidentally blocked access to the camera and microphone, follow the <a href="https://gcore.com/docs/streaming-platform/troubleshooting/real-time-video-issues/fix-the-camera-or-microphone-if-they-do-not-work" target="_blank">instructions</a>.
 
 <img src="https://support.gcore.com/hc/article_attachments/360015557018/room_settings.PNG" alt="">
 

@@ -21,6 +21,6 @@ You can acquaint prices for streaming resources on the <a href="https://gcore.co
 
 The resources fees are charged on the 2nd day of each month. If the payment fails, the service will be stopped.
 
-Additional features (Real-time communication for webinars, Restreaming, Computer Vision) are charged at the beginning of the month.
+Additional features (Real-Time Video, Restreaming, Computer Vision) are charged at the beginning of the month.
 
 Please get in touch with us via chat or email ([support@gcore.com](mailto:support@gcore.com)) if you have any questions.

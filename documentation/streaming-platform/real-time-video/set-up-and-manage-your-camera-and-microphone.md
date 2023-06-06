@@ -4,13 +4,13 @@ displayName: Camera and microphone
 published: true
 order: 30
 toc:
-   --1--How to allow camera and microphone usage when you first launch Meet?: "how-to-allow-camera-and-microphone-usage-when-you-first-launch-meet"
+   --1--How to allow camera and microphone usage when you first launch Real-Time Video?: "how-to-allow-camera-and-microphone-usage-when-you-first-launch-real-time-video"
    --2--Google Chrome: "google-chrome"
    --2--Safari: "safari"
    --2--Firefox: "firefox"
    --2--Opera: "opera"
    --2--Yandex.Browser: "yandexbrowser"
-   --1--How to manage the camera and microphone in Meet?: "how-to-manage-the-camera-and-microphone-in-meet"
+   --1--How to manage the camera and microphone in Real-Time Video?: "how-to-manage-the-camera-and-microphone-in-real-time-video"
    --2--When creating a call: "when-creating-a-call"
    --2--In the video call room: "in-the-video-call-room"
 ---
@@ -18,17 +18,17 @@ toc:
 
 Video calls work directly in a browser,  third-party extensions and apps installation isn't required.
 
-When you first launch the Meet, a browser requests access to the camera and microphone. The use of video and audio on our site is allowed or prohibited based on your response.
+When you first launch the Real-Time Video, a browser requests access to the camera and microphone. The use of video and audio on our site is allowed or prohibited based on your response.
 
-**Please, note**: For correct work of Meet, allow the browser to use the camera and microphone on our site.
+**Please, note**: For correct work of Real-Time Video, allow the browser to use the camera and microphone on our site.
 
 If you don't want other participants to see or hear you, you can manage the camera and microphone both before and during the call, see more below.
 
-## How to allow camera and microphone usage when you first launch Meet?
+## How to allow camera and microphone usage when you first launch Real-Time Video?
 
-After you first visit the Meet conference or webinar creating page, a dialog box will appear asking you to allow using the camera, click the Allow / Allowed button:
+After you first visit the Real-Time Video conference or webinar creating page, a dialog box will appear asking you to allow using the camera, click the Allow / Allowed button:
 
-**Please, note!** If you accidentally clicked Don't Allow, the camera and microphone will be disabled. To enable the camera and microphone, follow the instructions in the <a href="https://gcore.com/docs/streaming-platform/troubleshooting/meet-issues/fix-the-camera-or-microphone-if-they-do-not-work" target="_blank">article</a>.
+**Please, note!** If you accidentally clicked Don't Allow, the camera and microphone will be disabled. To enable the camera and microphone, follow the instructions in the <a href="https://gcore.com/docs/streaming-platform/troubleshooting/real-time-video-issues/fix-the-camera-or-microphone-if-they-do-not-work" target="_blank">article</a>.
 
 ### Google Chrome
 
@@ -50,7 +50,7 @@ After you first visit the Meet conference or webinar creating page, a dialog box
 
 <img src="https://support.gcore.com/hc/article_attachments/360013113037/Yandex_______________.png" alt="">
 
-## How to manage the camera and microphone in Meet?
+## How to manage the camera and microphone in Real-Time Video?
 
 You can manage the camera and microphone using the buttons with camera and microphone signs.
 
@@ -80,7 +80,7 @@ If the camera and microphone buttons are green, they are turned on. Other call p
 
 <img src="https://support.gcore.com/hc/article_attachments/360013113517/________________________________.png" alt="" width="70%">
 
-In the mobile version of Meet, you can change the camera during a call. The camera change button is located to the right of the camera button.
+In the mobile version of Real-Time Video, you can change the camera during a call. The camera change button is located to the right of the camera button.
 
 If the camera change button is green, the main camera is on.
 
