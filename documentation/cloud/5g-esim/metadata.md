@@ -2,5 +2,5 @@
 title: metadata
 displayName: 5G eSIM
 published: true
-order: 5
+order: 15
 ---
