@@ -1,8 +1,14 @@
-<form class="form" *ngIf="filterForm" [formGroup]="filterForm">
-    <label *ngFor="let control of $any(filterForm.get('product'))['controls']; let i = index"
-        >{{ categories[i].name }} <input type="checkbox" [formControl]="control"
-    /></label>
-</form>
+<div class="gc-filters-section">
+    <h2 class="gc-filter-title">Source</h2>
+    <form class="form" *ngIf="filterForm" [formGroup]="filterForm">
+        <label
+            class="gc-filter-checkbox"
+            *ngFor="let control of $any(filterForm.get('product'))['controls']; let i = index"
+            ><input type="checkbox" [formControl]="control" /> <span>{{ categories[i].name }}</span></label
+        >
+    </form>
+    <button class="gc-select-all" (click)="selectAll()">Select All</button>
+</div>
 <div class="gc-content-wrapper">
     <div class="gc-search-result" *ngIf="searchResult$ | async as searchResult; else noResult">
         <ng-container *ngIf="searchResult?.hits?.length; else noResult">
@@ -12,20 +18,26 @@
                 <p class="gc-breadcrumbs">
                     <a [routerLink]="'/'">Product documentation</a>
                     <ng-container *ngIf="hit.product">
-                        <span> &rarr; </span
-                        ><a [routerLink]="'/documentation/' + categoriesMap[hit.product]">{{ hit.product }}</a>
+                        <span> &rarr; </span><a [routerLink]="'/' + hit.product">{{ categoriesMap[hit.product] }}</a>
                     </ng-container>
                     <ng-container *ngIf="hit.menuTitle">
                         <span> &rarr; </span><a [routerLink]="hit.url">{{ hit.menuTitle }}</a>
                     </ng-container>
                 </p>
+                <div
+                    class="gc-content-matching"
+                    [innerHTML]="getMatchingText(hit._highlightResult.content.value)"
+                ></div>
             </div>
         </ng-container>
-        <div class="gc-pagination" *ngIf="searchResult.nbPages > 1">
-            <button *ngFor="let page of getPagesArray(searchResult.nbPages); let i = index" (click)="changePage(i)">
-                {{ i + 1 }}
-            </button>
-        </div>
+
+        <ul class="gc-pagination" *ngIf="searchResult.nbPages > 1">
+            <li *ngFor="let page of getPagesArray(searchResult.nbPages); let i = index" class="gc-pagination-num-step">
+                <button (click)="changePage(i)" [class.gc-current-page]="searchResult.page === i">
+                    {{ i + 1 }}
+                </button>
+            </li>
+        </ul>
     </div>
 
     <ng-template #noResult>

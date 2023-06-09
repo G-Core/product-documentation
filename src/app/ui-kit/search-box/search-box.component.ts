@@ -1,4 +1,4 @@
-import { Component, forwardRef } from '@angular/core';
+import { Component, EventEmitter, Output, forwardRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
@@ -17,6 +17,7 @@ export class SearchBoxComponent implements ControlValueAccessor {
     public onChange: Function;
     public onTouched: Function;
     public searchKey: string;
+    @Output() public search: EventEmitter<string> = new EventEmitter();
 
     constructor() {}
 
@@ -34,5 +35,11 @@ export class SearchBoxComponent implements ControlValueAccessor {
 
     public writeValue(searchKey: string): void {
         this.searchKey = searchKey;
+    }
+
+    public onSearch(): void {
+        if (this.searchKey) {
+            this.search.emit(this.searchKey);
+        }
     }
 }

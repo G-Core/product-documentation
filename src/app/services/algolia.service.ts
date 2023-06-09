@@ -21,6 +21,6 @@ export class AlgoliaService {
     }
 
     public search(key: string, options?: SearchOptions): Observable<SearchResponse<ProductDocumentationIndex>> {
-        return from(this.algoliaIndex.search<ProductDocumentationIndex>(key, options));
+        return from(this.algoliaIndex.search<ProductDocumentationIndex>(key, { hitsPerPage: 10, ...options }));
     }
 }

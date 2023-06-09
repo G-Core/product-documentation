@@ -42,6 +42,10 @@ async function moveContent(routes: Array<HandledRoute>): Promise<void> {
         }
     });
 
+    if (fs.existsSync(path.join(outDir, 'search'))) {
+        fs.moveSync(path.join(outDir, 'search'), path.join(root, 'search'), { overwrite: true });
+    }
+
     fs.copySync(path.join(outDir, 'index.html'), path.join(root, 'index.html'), { overwrite: true });
     fs.copySync(path.join(outDir, 'assets/scully-routes.json'), path.join(root, 'assets/scully-routes.json'), {
         overwrite: true,

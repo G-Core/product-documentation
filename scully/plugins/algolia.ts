@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import crypto from 'crypto';
-import { readFileSync } from 'fs';
 import { registerPlugin, log, green, red, logError } from '@scullyio/scully';
 import algoliasearch, { SearchClient } from 'algoliasearch';
 import { JSDOM } from 'jsdom';
@@ -15,24 +14,19 @@ interface Payload {
     objectID: number;
 }
 
-const SETTINGS = undefined;
-
 const INDEX_NAME = 'gcore_site';
+const SCULLY_CODE = "try {window['scullyContent']";
 
 export const updateAlgolia = 'updateAlgolia';
 
-const categoriesMap = {
-    'account-settings': 'Account settings',
-    cdn: 'CDN',
-    cloud: 'Cloud',
-    dns: 'DNS',
-    hosting: 'Hosting',
-    storage: 'Storage',
-    streaming: 'Streaming',
-    'server-protection': 'Server protection',
-    'web-security': 'Web security',
-    'reseller-support': 'Reseller Support',
-};
+function getPageContent(document: any): string {
+    const text = document.querySelector('.scully-container').textContent;
+    const scullyCodeIndex = text.indexOf(SCULLY_CODE);
+    if (scullyCodeIndex !== -1) {
+        return text.slice(0, scullyCodeIndex).trim();
+    }
+    return text.trim();
+}
 
 function initAlgoliaClient(): SearchClient {
     let isError = false;
@@ -54,35 +48,36 @@ function initAlgoliaClient(): SearchClient {
     return algoliasearch(appId, apiKey);
 }
 
-function buildPayload(options, mainTitle: string): Payload {
-    const { data, route, templateFile } = options;
-    const content = readFileSync(templateFile, 'utf8')
-        .replace(/---[\S\s]*---/, '')
-        .trim();
+function buildPayload(options, mainTitle: string, content: string): Payload {
+    const { data, route } = options;
     const hash = crypto.createHash('sha256');
-    const url = route.replace('/documentation/', '');
-    const category = url.substr(0, url.indexOf('/'));
-    hash.update(data.title, 'utf8');
+    const url = route.replace('/', '');
+    const category = url.indexOf('/') !== -1 ? url.substr(0, url.indexOf('/')) : url;
+    hash.update(route, 'utf8');
 
     return {
         title: data.title,
         menuTitle: data.displayName,
-        mainTitle,
+        mainTitle: mainTitle || data.displayName,
         content,
         url: route,
-        product: categoriesMap[category],
+        product: category,
         objectID: parseInt(hash.digest('hex').slice(0, 15), 16),
     };
 }
 
 const updateAlgoliaIndex = async (dom, options): Promise<JSDOM> => {
+    if (process.env.BUILD_ENV === 'develop' || options.route.startsWith('/reseller-support')) {
+        return dom;
+    }
     try {
         if (options.data.title !== 'metadata') {
             const { window } = dom;
             const { document } = window;
             const mainTitle = document.querySelector('h1')?.innerHTML || '';
+            const content = getPageContent(document);
             const client = initAlgoliaClient();
-            const payload = buildPayload(options, mainTitle);
+            const payload = buildPayload(options, mainTitle, content);
 
             const indexToUse = client.initIndex(INDEX_NAME);
 
@@ -91,10 +86,6 @@ const updateAlgoliaIndex = async (dom, options): Promise<JSDOM> => {
             const { taskID } = await indexToUse.saveObject(payload);
             await indexToUse.waitTask(taskID);
 
-            if (SETTINGS) {
-                const { taskID } = await indexToUse.setSettings(SETTINGS);
-                await indexToUse.waitTask(taskID);
-            }
             log(green(`Updated index for [${payload.title}]`));
         }
     } catch (e) {
