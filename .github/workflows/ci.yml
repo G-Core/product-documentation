@@ -10,7 +10,7 @@ env:
 
 jobs:
   build-and-push:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted-ubuntu-22-04-regular-x64
     steps:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -22,6 +22,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Import Secrets
+        uses: hashicorp/vault-action@v2.4.0
+        id: secrets
+        with:
+            url: https://puppet-vault.gc.onl
+            token: ${{ secrets.VAULT_TOKEN }}
+            secrets: |
+                secret/project_website/product_documentation_prod algolia_pd_index | ALGOLIA_PD_INDEX
+          
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v4
@@ -36,6 +45,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            "ALGOLIA_PD_INDEX=${{ secrets.ALGOLIA_PD_INDEX }}"
           
           
           
