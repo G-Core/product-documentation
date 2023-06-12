@@ -9,7 +9,6 @@ const validator = async () => [];
 export const replaceImgSrc = 'replaceImgSrc';
 
 const replaceSrc = async (dom: JSDOM): Promise<JSDOM> => {
-    console.log('Algolia: ', process.env.ALGOLIA_PD_INDEX);
     try {
         const { window } = dom;
         const { document } = window;
