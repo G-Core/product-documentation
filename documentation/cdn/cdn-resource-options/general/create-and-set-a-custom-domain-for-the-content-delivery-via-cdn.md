@@ -75,7 +75,7 @@ To check the front end of your integrated website, right-click on any static fil
 
 ## Specify additional domain
 
-1\. Go to the <a href="https://www.cdn.gcore.com/resources/list" target="_blank">CDN resource list</a> and click on the custom domain of the resource you want to configure.
+1\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN resource list</a> and click on the custom domain of the resource you want to configure.
 
 <img src="https://support.gcore.com/hc/article_attachments/12866059375761" alt="" width="70%">
 
