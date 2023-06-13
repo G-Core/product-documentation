@@ -166,7 +166,7 @@ You can configure your password to connect to your Linux instance <a href="https
 #cloud-config  
 password: **your password**  
 chpasswd: { expire: False }  
-ssh\_pwauth: True
+ssh_pwauth: True
 ```
 
 **Note:** If an instance is only in a private subnet, DHCP must be enabled in the settings of this subnet, so you can log in with a password.
