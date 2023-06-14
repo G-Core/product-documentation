@@ -9,7 +9,7 @@ toc:
 --1--Key features: "key-features-of-vmmanager-6"
 --1--Navigation: "navigation-in-the-vmmanager-6"
 ---
-# Main features and functions of VMmanager 6
+# Features and functions of VMmanager 6
 
 ## What is VMmanager 6?
 
