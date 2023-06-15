@@ -71,7 +71,7 @@ With always-on mode, your traffic passes through the TMS all the time, even when
 
 - **OSI layers**. Two options are available: L3-L4 and L3-L7. The first option is cheaper.
 - **TMS bandwidth**. The pricing varies based on the bandwidth used by the TMS to send traffic to your server. Several options are available: 1 Mbit/s, 10 Mbit/s, 100 Mbit/s, 200 Mbit/s, 500 Mbit/s, 1 Gbit/s, 2 Gbit/s,10 Gbit/s. The lower the bandwidth, the lower the price. 
-- **Server location**. Prices vary from location to location. Please send a request, and we will advise you the price for DDoS Protection in a particular data center. 
+- **Server location**. Prices vary from location to location. Please send a request, and we will advise you the price for DDoS Protection in a particular data center.
 
 The price does not depend on a mode you choose. But note that always-on mode is available at L3-L7 layers, and on-demand mode is available only at L3-L4.
 

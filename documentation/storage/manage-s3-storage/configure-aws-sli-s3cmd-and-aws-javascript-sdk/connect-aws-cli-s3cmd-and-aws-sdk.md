@@ -88,7 +88,7 @@ S3cmd is a free command line tool for uploading, retrieving, and managing data i
 1\. Enter the following command to launch the configuration wizard:
 
 ```
-$ s3cmd --configure
+s3cmd --configure
 ```
 
 2\. You need to specify the following information:
