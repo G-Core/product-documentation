@@ -21,13 +21,13 @@ Let’s compare the default and custom player. To show you the customization opt
 - Add the button to select the playback speed.
 - Enable the "mute" option by default.
 
-<img src="https://support.gcore.com/hc/article_attachments/9480237913361/mceclip0.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/customize-appearance-of-the-built-in-player/mceclip0.png" alt="" width="70%">
 
 ## How to enable the feature
 
 Send us the request to activate the option via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of <a href="https://gcore.com/" target="_blank">our website</a>. Please specify your ID in the request, so we can identify your account. You can find it on the main page of your <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>. 
 
-<img src="https://support.gcore.com/hc/article_attachments/7061753502993/image_1694.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/customize-appearance-of-the-built-in-player/image_1694.png" alt="" width="70%">
 
 The message template: *"Good afternoon! Please enable the Player feature for an account with ID … (your ID)"*.
 
@@ -37,15 +37,15 @@ We will notify you when we enable the Player feature. After that, you will be ab
 
 1\. Go to the Players tab and press the **Create a player** button.
 
-<img src="https://support.gcore.com/hc/article_attachments/9480299755281/mceclip1.png" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/customize-appearance-of-the-built-in-player/mceclip1.png" alt="">
 
 2\. Enter the name of your player (it will be displayed on the control panel) and press the **Create** button.
 
-<img src="https://support.gcore.com/hc/article_attachments/9480335993873/mceclip2.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/customize-appearance-of-the-built-in-player/mceclip2.png" alt="" width="50%">
 
 The configuration page opens. Complete the remaining steps in it.
 
-<img src="https://support.gcore.com/hc/article_attachments/9480338135057/mceclip3.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/customize-appearance-of-the-built-in-player/mceclip3.png" alt="" width="70%">
 
 3\.  Set the custom player as the default one for VOD or/and Live stream if you want to use this player for all videos/streams. You can also choose a custom player for a specific video or stream.
 

@@ -30,23 +30,23 @@ toc:
 
 1. Under the **Cloud** tab, go to **Projects** and select the project name.
 
-<img src="https://support.gcore.com/hc/article_attachments/12397877016977" alt="" width="665" height="299">
+<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/12397877016977.png" alt="" width="665" height="299">
 
 2. Select the region where you need this image.
 
-<img src="https://support.gcore.com/hc/article_attachments/12397876992273" alt="" width="666" height="304">
+<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/12397876992273.png" alt="" width="666" height="304">
 
 3. Once you have selected the region, click on **Images**, and then proceed to **Import via URL**.
 
-<img src="https://support.gcore.com/hc/article_attachments/12397871888145" alt="" width="666" height="305">
+<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/12397871888145.png" alt="" width="666" height="305">
 
 4. Enter the image name and make sure to specify the URL where the image will be downloaded from.
 
-<img src="https://support.gcore.com/hc/article_attachments/12397872071313" alt="" width="300" height="225">
+<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/12397872071313.png" alt="" width="300" height="225">
 
 5. Toggle on **Show advanced options** to edit additional information such as Quick instance start, permission to use SSH key, firmware types, and operating system.
 
-<img src="https://support.gcore.com/hc/article_attachments/12397872160785" alt="" width="300" height="436">
+<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/12397872160785.png" alt="" width="300" height="436">
 
 **Quick instance start.** If the **Quick instance start** option is enabled, you can deploy instances using your image faster, but you will not be able to delete the image while these instances are running.
 

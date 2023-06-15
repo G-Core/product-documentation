@@ -9,11 +9,11 @@ toc:
 
 1\. Open the "AI Infrastructure" tab and click **Create Cluster**.
 
-<img src="https://support.gcore.com/hc/article_attachments/8291403995537/Screenshot_2022-08-10_at_18.11_1-2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cloud/ai-Infrustructure/create-an-ai-cluster/Screenshot_2022-08-10_at_18.11_1-2.png" alt="" width="70%">
 
 You'll be taken to the page for AI cluster creation. Do Steps 2, 3 and 4 in it. The screenshot below highlights the fields that you need to interact with at these steps.
 
-<img src="https://support.gcore.com/hc/article_attachments/8289056527377/gc_1-2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cloud/ai-Infrustructure/create-an-ai-cluster/gc_1-2.png" alt="" width="70%">
 
 2\. Select the region — this is a city of the data center. For example, if you choose Amsterdam-2, your cluster will be deployed on servers located in Amsterdam.
 
@@ -34,7 +34,7 @@ Please note: Ubuntu 18.04 is available only for Amsterdam-2.
 
 Do Steps 5, 6, 7, 8, 9, and 10. The screenshot below highlights the fields that you need to interact with at these steps.
 
-<img src="https://support.gcore.com/hc/article_attachments/8289059521681/gcccc_1-4.png" alt="">
+<img src="https://assets.gcore.pro/docs/cloud/ai-Infrustructure/create-an-ai-cluster/gcccc_1-4.png" alt="">
 
 5\. Click the expand arrow to set up a network interface.  
   
@@ -52,7 +52,7 @@ If you want to use the service with Gcore servers only, assign a private network
   
 11\. Name your cluster and click **Create Cluster**.
 
-<img src="https://support.gcore.com/hc/article_attachments/8290606416785/Screenshot_2022-08-10_at_17.59_1-3.png" alt="">
+<img src="https://assets.gcore.pro/docs/cloud/ai-Infrustructure/create-an-ai-cluster/Screenshot_2022-08-10_at_17.59_1-3.png" alt="">
 
 Congrats! The cluster is created! Use the IP address of your AI Cluster and the SSH key from Step 10 and connect to your Poplar server.
 
@@ -60,4 +60,4 @@ User login: ```ubuntu```
 
 Connection port: ```22```
 
-<img src="https://support.gcore.com/hc/article_attachments/8290293798417/Screenshot_2022-08-10_at_16.00_1-5.png" alt="">
+<img src="https://assets.gcore.pro/docs/cloud/ai-Infrustructure/create-an-ai-cluster/Screenshot_2022-08-10_at_16.00_1-5.png" alt="">

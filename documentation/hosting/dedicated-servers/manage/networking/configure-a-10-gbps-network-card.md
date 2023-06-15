@@ -27,7 +27,7 @@ apt-get install ethtool net-tools nano
 
 You will get the similar output where ‘```eth0```’ is the required interface.
 
-<img src="https://support.gcore.com/hc/article_attachments/12987773655057" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/configure-a-10-gbps-network-card/12987773655057.png" alt="" width="70%">
 
 If you are using an older version of Linux, and the ‘**ip’** command is not found, you can try using the ‘```ifconfig```’ command instead. 
 
@@ -39,7 +39,7 @@ ethtool eth0
 
 You will get the similar output:
 
-<img src="https://support.gcore.com/hc/article_attachments/12987901207825" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/configure-a-10-gbps-network-card/12987901207825.png" alt="" width="60%">
 
 The "Supported link modes" field will list ‘```1000baseT/Full```’, which means the interface supports a maximum speed of 1 Gbps.  
 
@@ -53,7 +53,7 @@ ip link show
 
 The output will include the name of each interface and its state (up or down).
 
-<img src="https://support.gcore.com/hc/article_attachments/12988067861649" alt="" width="70%">  
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/configure-a-10-gbps-network-card/12988067861649.png" alt="" width="70%">  
 If you are using an older version of Linux,and the ‘**ip link show’** command is not found, you can try using the ‘```ifconfig```’ command instead.
 
 5\. Activate inactive interfaces: 
@@ -80,7 +80,7 @@ ethtool eth2
 
 You will get the similar output:
 
-<img src="https://support.gcore.com/hc/article_attachments/12988155718033" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/configure-a-10-gbps-network-card/12988155718033.png" alt="" width="60%">
 
 Make sure that **"Link detected**" is "**yes**" and "**Speed**" is "**10000Mb/s**" (10 Gbps).
 
@@ -112,7 +112,7 @@ yum install ethtool net-tools nano
 
 You will get the similar output where **eno1** is the required interface.
 
-<img src="https://support.gcore.com/hc/article_attachments/12988893619089" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/configure-a-10-gbps-network-card/12988893619089.png" alt="" width="70%">
 
 If you are using an older version of Linux, and the ‘**ip’** command is not found, you can try using the ‘```ifconfig```’ command instead.
 
@@ -124,7 +124,7 @@ ethtool eno1
 
 You will get the similar output:
 
-<img src="https://support.gcore.com/hc/article_attachments/12988723926417" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/configure-a-10-gbps-network-card/12988723926417.png" alt="">
 
 The **Supported link modes** field will list ‘```1000baseT/Full```’, which means the interface supports a maximum speed of 1 Gbps.  
 
@@ -138,7 +138,7 @@ ip link show
 
 The output will include the name of each interface and its state (up or down).
 
-<img src="https://support.gcore.com/hc/article_attachments/12989145294481" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/configure-a-10-gbps-network-card/12989145294481.png" alt="" width="70%">
 
 If you are using an older version of Linux, and the ‘**ip link show’** command is not found, you can try using the ‘```ifconfig```’ command instead.
 
@@ -164,7 +164,7 @@ ethtool eno2
 
 You will get the output:
 
-<img src="https://support.gcore.com/hc/article_attachments/12989201201041" alt="">  
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/configure-a-10-gbps-network-card/12989201201041.png" alt="">  
 
 Make sure that **"Link detected**" is "**yes**" and "**Speed**" is "**10000Mb/s**" (10 Gbps).
 

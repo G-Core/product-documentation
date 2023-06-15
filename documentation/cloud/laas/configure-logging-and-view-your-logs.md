@@ -10,7 +10,7 @@ toc:
 1. Open the Logging tab and click **Set up Logging**.
 
 <p>
-<img src="https://support.gcore.com/hc/article_attachments/6183008574737/image_1532.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cloud/laas/configure-logging-and-view-your-logs/image_1532.png" alt="" width="70%">
 </p>
 
 2. Select the region (under the project name) - the location of the data center for deploying log storage.
@@ -19,8 +19,7 @@ Note: Logging may be unavailable in some regions. Our customers usualy choose a 
 
 3. In the "Topics" section, click **Create topic**, name it and save. We will pre-create an index pattern for your topic in OpenSearch Dashboards with “@timestamp” as the default time field.
 
-<p>
-<img src="https://support.gcore.com/hc/article_attachments/14420358788881" width="70%">
+<p><img src="https://assets.gcore.pro/docs/cloud/laas/configure-logging-and-view-your-logs/14420358788881.png" width="70%">
 </p>
 
 4. Click **Generate credentials** in the upper-right corner to get a login and a password for the storage. Save them immediately because you won’t be able to see them again after closing the window.
@@ -40,8 +39,7 @@ Once the log shipper is set up, your device logs are sent to your Kafka topic. F
 
 6. Go to the OpenSearch Dashboards by using the URL specified on the Logging page.
 
-<p>
-<img src="https://support.gcore.com/hc/article_attachments/14420497971473" width="70%">
+<p><img src="https://assets.gcore.pro/docs/cloud/laas/configure-logging-and-view-your-logs/14420497971473.png" width="70%">
 </p>
 
 For log in, use the credentials generated at Step 4.
@@ -50,34 +48,30 @@ For log in, use the credentials generated at Step 4.
 
 If you have selected another time field, delete the pre-created index pattern first and then create a new one. To do it, click **Manage** on the home page → **Index Patterns**.
 
-<p>
-<img src="https://support.gcore.com/hc/article_attachments/14420742939281" width="70%">
+<p><img src="https://assets.gcore.pro/docs/cloud/laas/configure-logging-and-view-your-logs/14420742939281.png" width="70%">
 </p>
 
 8. Click **Create an index pattern** at the bottom of the screen. 
 
 <p>
-<img src="https://support.gcore.com/hc/article_attachments/6183292147473/image_1469.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cloud/laas/configure-logging-and-view-your-logs/image_1469.png" alt="" width="70%"> 
 </p>
 
 On the OpenSearch server, your logs are linked to your personal index, which has the same name as your topic. By creating an index pattern, you set up a filter that helps OpenSearch Dashboards display the logs with the required index.
 
 9.  In the **index-pattern** field, enter your username, which can be found in the credentials that were generated at Step 4. Then, add a dot (.) and the name of the topic you created at Step 3, followed by an asterisk (*). For example, if your namespace is '5361abe12401476388fab78460deed9a' and you have created a topic named 'exampletopic', enter '5361abe12401476388fab78460deed9a.exampletopic*' in the field. Finally, click **Next step** to proceed.
 
-<p>
-<img src="https://support.gcore.com/hc/article_attachments/14420777278097" alt="" width="70%">
+<p><img src="https://assets.gcore.pro/docs/cloud/laas/configure-logging-and-view-your-logs/14420777278097.png" alt="" width="70%">
 </p>
 
-10. Select the date and time format from the dropdown list, and click **Create index pattern** to make your logs accessible in OpenSearch Dashboards. The pattern is saved, so you don't have to set it up again next time you log in. 
+10. Select the date and time format from the dropdown list, and click **Create index pattern** to make your logs accessible in OpenSearch Dashboards. The pattern is saved, so you don't have to set it up again next time you log in.
 
-<p>
-<img src="https://support.gcore.com/hc/article_attachments/6183350616209/image_1475.png" alt="" width="70%">
+<p><img src="https://assets.gcore.pro/docs/cloud/laas/configure-logging-and-view-your-logs/image_1475.png" alt="" width="70%">
 </p>
 
 11. Setup is complete. To view your logs, go to the main menu and select **Discover**.
 
-<p>
-<img src="https://support.gcore.com/hc/article_attachments/6183388613265/image_1478.png" alt="" width="70%">
+<p><img src="https://assets.gcore.pro/docs/cloud/laas/configure-logging-and-view-your-logs/image_1478.png" alt="" width="70%">
 </p>
 
 The retention period for the logs is 45 days, after that, they will be automatically deleted.

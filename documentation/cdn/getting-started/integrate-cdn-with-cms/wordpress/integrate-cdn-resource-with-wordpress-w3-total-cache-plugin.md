@@ -11,41 +11,41 @@ Before you take any steps please back up your files and database. The plugin wor
 
 Login to your Wordpress blog at *yoursite.com/wp-admin* and click **Enter**.  
 
-<img src="https://support.gcore.com/hc/ru/article_attachments/115000110485/01.PNG" alt="" width="50%">  
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-w3-total-cache-plugin/01.PNG" alt="" width="50%">  
   
 Add new plugin in the "Plugins" section.  
 
-<img src="https://support.gcore.com/hc/ru/article_attachments/115000105429/02.PNG" alt="" width="50%">  
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-w3-total-cache-plugin/02.PNG" alt="" width="50%">  
   
 Find the W3 Total Cache plugin using the search field of the Plugins section.  
-<img src="https://support.gcore.com/hc/ru/article_attachments/115000105449/03.PNG" alt="">  
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-w3-total-cache-plugin/03.PNG" alt="">  
   
 Install the W3 Total Cache plugin.  
-<img src="https://support.gcore.com/hc/ru/article_attachments/115000110525/04.PNG" alt="" width="50%">  
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-w3-total-cache-plugin/04.PNG" alt="" width="50%">  
   
 Enable the installed plugin by clicking Activate Plugin. 
 
-<img src="https://support.gcore.com/hc/ru/article_attachments/115000108509/05.PNG" alt="" width="50%">  
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-w3-total-cache-plugin/05.PNG" alt="" width="50%">  
   
 In the Performance section choose "General Settings".
 
-<img src="https://support.gcore.com/hc/ru/article_attachments/115000108589/06.PNG" alt="" width="70%">  
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-w3-total-cache-plugin/06.PNG" alt="" width="70%">  
   
 In the "General Settings" section scroll down to the CDN section. Tick "Enable" field. In CDN Type choose Generic Mirror. Then click **Save all** settings.  
 
-<img src="https://support.gcore.com/hc/ru/article_attachments/115000113565/07.PNG" alt="" width="70%">  
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-w3-total-cache-plugin/07.PNG" alt="" width="70%">  
   
 After having settings accepted, a warning of incorrect CDN settings will appear at the top of the General Settings section. Click Specify It Here in this warning message.
 
-<img src="https://support.gcore.com/hc/ru/article_attachments/115000109445/10.PNG" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-w3-total-cache-plugin/10.PNG" alt="" width="70%">
 
 Or go to the CDN section of the Performance menu. 
 
-<img src="https://support.gcore.com/hc/ru/article_attachments/115000113585/08.PNG" alt="" width="70%">  
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-w3-total-cache-plugin/08.PNG" alt="" width="70%">  
   
 Enter your CNAME (you can find it in your Gcore <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>) in Replace Site's Hostname With. Then click **Save All Settings**. Ensure that <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">CNAME record has been configured</a> in a proper way before using it for integration.
 
-<img src="https://support.gcore.com/hc/ru/article_attachments/115000113625/09.PNG" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-w3-total-cache-plugin/09.PNG" alt="" width="70%">
 
 Integration has been completed! We highly recommend you to check the HTML code of your webpage to ensure that URLs have been rewritten properly from your original ones to CNAME from the control panel.
 

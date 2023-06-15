@@ -11,9 +11,9 @@ If you can't send email through SMTP ports 25, 465 and 587, most likely your vi
 Go to "Support tickets" in your control panel and check if there are any messages about blocking.
 
 <media-gallery>
-<img src="https://support.gcore.com/hc/article_attachments/10138328512401" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/troubleshooting/troubleshoot-blocked-smtp-ports/10138328512401.png" alt="">
 
-<img src="https://support.gcore.com/hc/article_attachments/10138347613713" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/troubleshooting/troubleshoot-blocked-smtp-ports/10138347613713.png" alt="">
 </media-gallery>
 
 According to paragraph 2 (d) of the <a href="https://gcore.com/legal/" target="_blank">Acceptable Use Policy</a>, servers cannot be used to send unsolicited emails, chain letters, mailbombs, or spam. You are only allowed to send emails to users of the services located on the Gcore servers rented by you. If you haven't violated our Acceptable Use Policy, <a href="https://gcore.com/docs/hosting/contact-our-technical-support" target="_blank">contact our technical support</a> we will unblock you. 

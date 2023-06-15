@@ -9,11 +9,11 @@ toc:
 
 1. Open **Instances** tab and click **Create Instance**.
 
-![The Create Instance button](https://assets.gcore.pro/docs/cloud/virtual-instances/create/1-create-instance%20button.png)
+![The Create Instance button](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/1-create-instancebutton.png)
 
 2. Select the region where you want to deploy the instance.
 
-![Region selection](https://assets.gcore.pro/docs/cloud/virtual-instances/create/2-region-selection.png)
+![Region selection](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/2-region-selection.png)
 
 Regions can be of two types: Core and Edge. A region determines the equipment specifications.
 
@@ -33,7 +33,7 @@ Regions can be of two types: Core and Edge. A region determines the equipment sp
 
 3. Select an **Image**.
 
-<img src="ttps://assets.gcore.pro/docs/cloud/virtual-instances/create/3-image-selection.png" alt="" width=70%>
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/3-image-selection.png" alt="" width=70%>
 
 *   Choose an OS template, a volume, a snapshot, a custom <a href="https://gcore.com/docs/cloud/images/upload-an-image-to-the-storage" target="_blank">image</a>, or a template from the marketplace.
 *   (for a Linux instance) Remember the login from the **For login to OS** field to connect to your instance on Linux OS via SSH from another Linux device. For details, refer to the article: <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">Connect to your instance via SSH</a>.
@@ -134,7 +134,7 @@ Optionally, you can turn on the **Use Reserved IP** toggle to assign a <a href="
 
 7. For **Firewall settings**, select the default firewall or create a new one by clicking **Add firewall**.
 
-![The Firewall settings](https://assets.gcore.pro/docs/cloud/virtual-instances/create/10-firewall-settings.png)
+![The Firewall settings](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/10-firewall-settings.png)
 
 If you keep the default firewall, the incoming traffic will be allowed over ICMP, TCP (SSH) and RDP protocols.
 
@@ -142,13 +142,13 @@ If you want to create a new firewall, refer to the article: <a href="https://gco
 
 8. (for a Linux instance) Configure an **SSH key** for a remote SSH connection.
 
-![The SSH key field](https://assets.gcore.pro/docs/cloud/virtual-instances/create/11-ssh-key.png)
+![The SSH key field](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/11-ssh-key.png)
 
 You can add an existing SSH key or generate a new one. You enter a public key and use a private key for connection. For details, see the article: <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">Connect to your instance via SSH</a>.
 
 9. (for a Windows instance) Configure **Access** by setting a password for the Admin user.
 
-![the field for credentials to access a Windows instance](https://assets.gcore.pro/docs/cloud/virtual-instances/create/12-access-for-windows-instance.png)
+![the field for credentials to access a Windows instance](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/12-access-for-windows-instance.png)
 
 Your password must contain between 8 and 16 characters and at least one lowercase letter (a-z), one uppercase letter (A-Z), one number (0-9) and one special character (!#$%&’()\*+,-./:;<=>?@\[\]^\_{|}~).
 
@@ -158,7 +158,7 @@ You can connect to a Windows instance <a href="https://gcore.com/docs/cloud/virt
 
 *   Turn on **User data** to customize your VM during the initial boot by a cloud-init agent.
 
-![The field to add user data](https://assets.gcore.pro/docs/cloud/virtual-instances/create/13-add-user-data.png)
+![The field to add user data](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/13-add-user-data.png)
 
 You can configure your password to connect to your Linux instance <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from your Control Panel</a> or via SSH. To do it, insert the code below to the **User data** field and enter your password:
 
@@ -185,11 +185,11 @@ print(sha512\_crypt.hash(passwd , rounds = 5000 ))
 
 *   Turn on **Add tags** to add a key-value pair that form the metadata of the virtual machine description.
 
-![The field to add tags](https://assets.gcore.pro/docs/cloud/virtual-instances/create/14-add-tags.png)
+![The field to add tags](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/14-add-tags.png)
 
 *   Turn on **Add to placement group** to determine how to place multiple instances.
 
-![The field to add the instance to a placement group](https://assets.gcore.pro/docs/cloud/virtual-instances/create/15-add-placement-group.png)
+![The field to add the instance to a placement group](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/15-add-placement-group.png)
 
 **Placement Group** is a setting that determines whether virtual machines will be hosted on the same physical server (**affinity** policy) or on different ones (**anti-affinity** policy). For more detail, see the article: <a href="https://gcore.com/docs/cloud/virtual-instances/placement-groups/about-placement-groups
 " target="_blank">About placement groups</a>.
@@ -198,7 +198,7 @@ You can add the instance to an existing placement group or create a new one by c
 
 11. Specify the number of machines with the same configuration you need and give them names.
 
-![The field to set the number of instances](https://assets.gcore.pro/docs/cloud/virtual-instances/create/16-number-of-instances.png)
+![The field to set the number of instances](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/16-number-of-instances.png)
 
 The maximum number is limited by your quotas.
 

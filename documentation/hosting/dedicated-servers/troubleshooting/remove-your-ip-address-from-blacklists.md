@@ -33,14 +33,14 @@ Your mail server IP will be checked against more than 100 blacklists.
 
 2\. If your IP address is blacklisted, you will receive the following message and a list of blacklists.
 
-<img src="https://support.gcore.com/hc/article_attachments/360017630197/aaaaa.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/remove-your-ip-address-from-blacklists/aaaaa.png" alt="" width="70%">
 
 3\. Click the **Details** button for information about the blacklist, the reason for blocking, and possible ways to get delisted.
 
-<img src="https://support.gcore.com/hc/article_attachments/360017679318/bbbbb.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/remove-your-ip-address-from-blacklists/bbbbb.png" alt="" width="70%">
 
 4\. Contact the blacklist and provide details about possible reasons for the blocking, as well as the start date of using Gcore services.
 
-<img src="https://support.gcore.com/hc/article_attachments/360017679238/reason_for_listing.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/remove-your-ip-address-from-blacklists/reason_for_listing.png" alt="" width="70%">
 
 5\. Wait for a response.

@@ -27,11 +27,11 @@ You set the minimum and maximum number of nodes, and autoscaling will ensure tha
 
 1\. In the Cloud menu, go to **Kubernetes**, find the required cluster and click its name.
 
-<img src="https://support.gcore.com/hc/article_attachments/13323994996881" alt="Screenshot_2023-02-27_at_13.37_2.png">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling/13323994996881.png" alt="Screenshot_2023-02-27_at_13.37_2.png">
 
 2\. Go to the **Pools** section, click ⋯ next to the pool and select **Change autoscaling limits**.
 
-<img src="https://support.gcore.com/hc/article_attachments/13328028097425" alt="Screenshot_2023-02-27_at_20.42_1.jpg">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling/13328028097425.png" alt="Screenshot_2023-02-27_at_20.42_1.jpg">
 
 3\. In the new window, specify the maximum and minimum number of nodes and click **Save**.
 
@@ -43,11 +43,11 @@ When you turn off autoscaling, the number of nodes in the pool will remain const
 
 1\. In the Cloud menu, go to **Kubernetes**, find the required cluster and click its name.
 
-<img src="https://support.gcore.com/hc/article_attachments/13325419009809" alt="Screenshot_2023-02-27_at_13.37_2.png">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling/13325419009809.png" alt="Screenshot_2023-02-27_at_13.37_2.png">
 
 2\. Go to the **Pools** section, click ⋯ next to the pool and select **Change autoscaling limits**.
 
-<img src="https://support.gcore.com/hc/article_attachments/13328028097425" alt="Screenshot_2023-02-27_at_20.42_1.jpg">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling/13328028097425.png" alt="Screenshot_2023-02-27_at_20.42_1.jpg">
 
 3\. In the new window, enter the same number of nodes for minimum and maximum and click **Save**.
 

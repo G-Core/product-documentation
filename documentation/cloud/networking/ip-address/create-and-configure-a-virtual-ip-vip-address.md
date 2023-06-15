@@ -32,16 +32,16 @@ The monthly price is displayed in the order window.
 
 1\. In the Cloud menu, go to **Networking** → **Reserved IPs** and click **Reserve new IP**.
 
-<img src="https://support.gcore.com/hc/article_attachments/12896827624209" alt="Screenshot_2023-02-07_at_14.59_1.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12896827624209.png" alt="Screenshot_2023-02-07_at_14.59_1.png">
 
 2\. In the new window, select the type of an IP address depending on the required network interface: public or private.  
 If you select **Private**, specify the network and subnetwork. If you want to reserve a specific IP address, turn on the **Set IP address** toggle and choose an IP address from the valid CIDR. Otherwise, you will be assigned a random IP address.
 
-<img src="https://support.gcore.com/hc/article_attachments/12896898220817" alt="Screenshot_2023-02-07_at_15.28.15.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12896898220817.png" alt="Screenshot_2023-02-07_at_15.28.15.png">
 
 3\. Go back to the list of reserved IP addresses, find the required IP address, click ⋯ next to it and select **VIP settings**.
 
-<img src="https://support.gcore.com/hc/article_attachments/12896925225233" alt="Screenshot_2023-02-07_at_15.53_1.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12896925225233.png" alt="Screenshot_2023-02-07_at_15.53_1.png">
 
 4\. In the pop-up window, turn on the **Is VIP** toggle and click **Save**.  
 You have reserved a virtual IP address. You can now assign it multiple machines to create a fault-tolerant system or to add as a secondary address for your network interface.
@@ -50,11 +50,11 @@ You have reserved a virtual IP address. You can now assign it multiple machines 
 
 1\. In the Cloud menu, go to **Networking** → **Reserved IPs**, find the required virtual IP address, click **VIP** in the **Status** column.
 
-<img src="https://support.gcore.com/hc/article_attachments/12946840118161" alt="Screenshot_2023-02-13_at_11.27_1.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12946840118161.png" alt="Screenshot_2023-02-13_at_11.27_1.png">
 
 2\. In the pop-up window, add the required virtual machines, specify their ports and click **Save**.
 
-<img src="https://support.gcore.com/hc/article_attachments/12897006107153" alt="Screenshot_2023-02-08_at_17.11.42.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12897006107153.png" alt="Screenshot_2023-02-08_at_17.11.42.png">
 
 3\. Install and configure Keepalived on your instances using <a href="https://keepalived.readthedocs.io/en/latest/installing_keepalived.html" target="_blank">the official Keepalived documentation</a>.
 
@@ -68,11 +68,11 @@ You have configured the VIP for your machines, the fault-tolerant system will st
 
 1\. In the Cloud menu, go to **Networking** → **Reserved IPs**, find the required virtual IP address, click **VIP** in the **Status** column.
 
-<img src="https://support.gcore.com/hc/article_attachments/12946840118161" alt="Screenshot_2023-02-13_at_11.27_1.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12946840118161.png" alt="Screenshot_2023-02-13_at_11.27_1.png">
 
 2\. In the pop-up window, add the required virtual machine, specify its port and click **Save**.
 
-<img src="https://support.gcore.com/hc/article_attachments/12897006107153" alt="Screenshot_2023-02-08_at_17.11.42.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12897006107153.png" alt="Screenshot_2023-02-08_at_17.11.42.png">
 
 Now you have to configure the VIP in the instance settings. Below are two guides for Windows and non-Windows instances.
 
@@ -97,11 +97,11 @@ ip addr
 
 The interface name will appear on the left below the loopback interface.
 
-<img src="https://support.gcore.com/hc/article_attachments/12946900210833" alt="Screenshot_2023-02-08_at_13.30_1.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12946900210833.png" alt="Screenshot_2023-02-08_at_13.30_1.png">
 
 For example, to add the virtual IP address _192.168.1.200_ with a subnet mask of _24_ to the _eth0_ interface, you would use the following command:
 
-<img src="https://support.gcore.com/hc/article_attachments/12946938150161" alt="Screenshot_2023-02-08_at_14.04.13.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12946938150161.png" alt="Screenshot_2023-02-08_at_14.04.13.png">
 
 Note: **the command assigns the VIP to your machine until it restarts**. After rebooting, run the command to assign the VIP again. To permanently assign a VIP to an instance, refer to the official documentation of your OS to add the IP address to the system network settings.
 
@@ -114,7 +114,7 @@ The VIP has been configured. To verify it, <a href="https://gcore.com/docs/cloud
 3\. Right-click the active network connection that you want to add the virtual IP address to and select **Properties**.  
 4\. Select **Internet Protocol Version 4 (TCP/IPv4)** and click **Properties**.
 
-<img src="https://support.gcore.com/hc/article_attachments/12946990237457" alt="18.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12946990237457.png" alt="18.png">
 
 5\. Click **Use the following IP address** option and enter the virtual IP address, subnet mask, and default gateway in the appropriate fields. To find these parameters, run the following command:
 
@@ -124,19 +124,19 @@ ipconfig
 
 You will see the output:
 
-<img src="https://support.gcore.com/hc/article_attachments/12947005842961" alt="16.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12947005842961.png" alt="16.png">
 
 Go back to the **Control Panel**, make sure the values are correct and click **Advanced ....**
 
-<img src="https://support.gcore.com/hc/article_attachments/12947053843345" alt="19.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12947053843345.png" alt="19.png">
 
 6\. In the **IP Settings** tab, find the **IP addresses** section and click **Add ....**
 
-<img src="https://support.gcore.com/hc/article_attachments/4405920843281/20.png" alt="20.png" width="344" height="420">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/20.png" alt="20.png" width="344" height="420">
 
 7\. In the next window, enter your VIP and the subnet mask from the command line. Then click **Add**.
 
-<img src="https://support.gcore.com/hc/article_attachments/4405920845585/21.png" alt="21.png" width="344" height="419">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/21.png" alt="21.png" width="344" height="419">
 
 8\. Click **OK**.
 

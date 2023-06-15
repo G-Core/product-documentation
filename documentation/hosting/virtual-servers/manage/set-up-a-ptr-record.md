@@ -19,12 +19,12 @@ Usually, PTR records are used for outbound email servers since incoming mail ser
 
 Choose a server in the Control Panel and click on **IP addresses**.
 
-<img src="https://support.gcore.com/hc/article_attachments/360019238257/mceclip1.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/set-up-a-ptr-record/mceclip1.png" alt="" width="70%">
 
 Choose the IP address for which you want to set or change a PTR record and click on **Edit**.
 
-<img src="https://support.gcore.com/hc/article_attachments/360000109437/joxi_screenshot_1529505519458__1_.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/set-up-a-ptr-record/joxi_screenshot_1529505519458__1_.png" alt="" width="70%">
 
 In a new window, put a domain name into Domain field. The PTR record will be created automatically.
 
-<img src="https://support.gcore.com/hc/article_attachments/360000108618/joxi_screenshot_1529506438819.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/set-up-a-ptr-record/joxi_screenshot_1529506438819.png" alt="" width="50%">

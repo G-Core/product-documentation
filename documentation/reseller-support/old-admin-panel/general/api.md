@@ -18,4 +18,4 @@ It can be found:
 
 *   from the Admin control panel 
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/360017481257/________________.png" alt="________________.png">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/general/api/________________.png" alt="________________.png">

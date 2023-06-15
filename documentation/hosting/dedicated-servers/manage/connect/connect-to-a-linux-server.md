@@ -23,7 +23,7 @@ To connect, you need the following data:
 
 To find this information go to Products/Services - select the appropriate server - Instructions.
 
-<img src="https://support.gcore.com/hc/article_attachments/115010305285/joxi_screenshot_1509912408746.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/connect/connect-to-a-linux-server/joxi_screenshot_1509912408746.png" alt="">
 
 ## By DCI manager or VM Manager panel
 

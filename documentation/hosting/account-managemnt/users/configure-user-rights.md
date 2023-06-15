@@ -12,7 +12,7 @@ In the Control Panel, you can set the user rights, allowing or denying them acce
 
 To switch to the access rights editing mode, go to Client - Users. Select the user and click Perm. 
 
-<img src="https://support.gcore.com/hc/article_attachments/115010913789/joxi_screenshot_1512670555749.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/hosting/account-managemnt/users/configure-user-rights/joxi_screenshot_1512670555749.png" alt="" width="50%">
 
 Rights are grouped by sections. In each section, you can give a user permission to edit forms and view data.
 
@@ -20,7 +20,7 @@ Double-click the attribute to configure the further rights.
 
 To activate access to a subsection of the Control Panel, select the line with the desired attribute and click **Enable** in the top menu.
 
-<img src="https://support.gcore.com/hc/article_attachments/115010913829/joxi_screenshot_1512670678222.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/account-managemnt/users/configure-user-rights/joxi_screenshot_1512670678222.png" alt="" width="70%">
 
 To remove the access permission select the string and click **Disable** in the top menu.
 
@@ -28,11 +28,11 @@ To remove the access permission select the string and click **Disable** in the t
 
 To give the user full rights, choose the user you need in the "Users" section, then click **Edit**.
 
-<img src="https://support.gcore.com/hc/article_attachments/115010905369/mceclip0.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/hosting/account-managemnt/users/configure-user-rights/mceclip0.png" alt="" width="50%">
 
 Tick the "Full access" permissions and press **Ok**.
 
-<img src="https://support.gcore.com/hc/article_attachments/115010855405/joxi_screenshot_1512670286182.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/account-managemnt/users/configure-user-rights/joxi_screenshot_1512670286182.png" alt="" width="70%">
 
 Note, that if the user has Full access permissions you will not be able to restrict his rights in Perm. section.
 
@@ -40,6 +40,6 @@ Note, that if the user has Full access permissions you will not be able to restr
 
 You can restrict the access to the Control Panel for a certain user. Choose the user and then click **Disable**. 
 
-<img src="https://support.gcore.com/hc/article_attachments/115010855425/joxi_screenshot_1512670363224.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/hosting/account-managemnt/users/configure-user-rights/joxi_screenshot_1512670363224.png" alt="" width="50%">
 
 If the blocked user tries to login to the Control Panel, they will get "Invalid username or password" error.

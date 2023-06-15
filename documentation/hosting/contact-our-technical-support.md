@@ -21,4 +21,4 @@ Submit a ticket to technical support directly from the Control Panel. Proceed t
 
 Go to Dashboard - Submit a ticket to submit the ticket the second way.
 
-<img class="confluence-embedded-image confluence-external-resource" src="http://i.imgur.com/uVEscGw.png" data-image-src="http://i.imgur.com/uVEscGw.png" alt="" width="50%">
+<img class="confluence-embedded-image confluence-external-resource" src="https://assets.gcore.pro/docs/hosting/contact-our-technical-support/uVEscGw.png" data-image-src="https://assets.gcore.pro/docs/hosting/contact-our-technical-support/uVEscGw.png" alt="" width="50%">

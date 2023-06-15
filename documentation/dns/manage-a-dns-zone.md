@@ -28,33 +28,33 @@ When the DNS zone creation is completed, you can set the DNS records of your dom
 
 1\. Go to the <a href="https://dns.gcore.com/" target="_blank">DNS</a> section and click the **Add zone** button. 
 
-<img src="https://support.gcore.com/hc/article_attachments/13137090774673" alt="">
+<img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/13137090774673.png" alt="">
 
 2\. Enter a domain name for the DNS zone and click **Confirm**.
 
-<img src="https://support.gcore.com/hc/article_attachments/13137238972689" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/13137238972689.png" alt="" width="70%">
 
 3\. Review existing DNS records, and edit, delete, or add new records if necessary. Click **Confirm**. 
 
-<img src="https://support.gcore.com/hc/article_attachments/13137695150865" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/13137695150865.png" alt="" width="70%">
 
 4\. Go to your domain registrar account, replace the current nameservers with the Gcore Name Servers (*ns1.gcorelabs.net* and *ns2.gcdn.services*), and click **Confirm**.
 
-<img src="https://support.gcore.com/hc/article_attachments/13138477756689" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/13138477756689.png" alt="" width="70%">
 
 The created DNS zone will be displayed in the <a href="https://dns.gcore.com/zones" target="_blank">All zones</a> section. 
 
-<img src="https://support.gcore.com/hc/article_attachments/13138576729105" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/13138576729105.png" alt="" width="70%">
 
 ### Edit a DNS zone
 
 1\. In the <a href="https://dns.gcore.com/zones" target="_blank">All zones</a> section, click the three dots icon next to the desired DNS zone and select **Settings**.
 
-<img style="font-size: large;" src="https://support.gcore.com/hc/article_attachments/13138699078673" alt="" width="70%">
+<img style="font-size: large;" src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/13138699078673.png" alt="" width="70%">
 
 The pop-up opens. Configure it according to the guide below and click **Save changes**. Configurations will be applied to the <a href="https://en.wikipedia.org/wiki/SOA_record#:~:text=A%20start%20of%20authority%20record,is%20specified%20in%20RFC%201035" target="_blank">SOA record</a> of this zone. 
 
-<img src="https://support.gcore.com/hc/article_attachments/13138956496401" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/13138956496401.png" alt="" width="50%">
 
 - **Domain name**. This parameter cannot be edited. Create a new zone with the required domain name following the [instructions above](#create-a-dns-zone).
 - **Negative TTL**. This parameter is the time, in seconds, for which a negative response is cached. For example, a recursive DNS server requests an A-record for your domain, but that record does not exist on the authoritative NS servers. Even if you add the A record after, the DNS servers will still return a negative answer for the time specified in the "Negative TTL" field. 
@@ -65,6 +65,6 @@ The pop-up opens. Configure it according to the guide below and click **Save cha
 
 1\. In the <a href="https://dns.gcore.com/zones" target="_blank">All zones</a> section, click the three dots icon next to the desired DNS zone and select **Delete zone**.
 
-<img src="https://support.gcore.com/hc/article_attachments/13141470744849" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/13141470744849.png" alt="" width="70%">
 
 2\. Confirm the deletion in the pop-up window.

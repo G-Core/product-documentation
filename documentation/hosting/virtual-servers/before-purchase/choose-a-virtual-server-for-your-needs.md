@@ -15,17 +15,17 @@ You can see the list of plans in the shop window of your personal account or on 
 
 <a href="https://hosting.gcorelabs.com/billmgr" target="_blank">On the shop window</a>, choose the location of a data center and the system will display a list of available servers there. The description contains server specifications.
 
-<img src="https://support.gcore.com/hc/article_attachments/13261707578641" alt="mceclip0.png">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/before-purchase/choose-a-virtual-server-for-your-needs/13261707578641.png" alt="mceclip0.png">
 
 <a href="https://gcorelabs.com/hosting/vds/" target="_blank">On our website</a>, we have a full list of plans and a filter by technical specifications. You can specify the required data center, number of CPU cores, amount of RAM, amount of disk space, operating system, and price. The system will show the available plans after you specify your requirements.
 
-[<img src="https://support.gcore.com/hc/article_attachments/360020748477/mceclip6.png" alt="mceclip6.png">](https://support.gcorelabs.com/hc/article_attachments/360020748477/mceclip6.png)
+[<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/before-purchase/choose-a-virtual-server-for-your-needs/mceclip6.png" alt="mceclip6.png">](https://assets.gcore.pro/docs/hosting/virtual-servers/before-purchase/choose-a-virtual-server-for-your-needs/mceclip6.png)
 
 Currently, we have four plan categories: KVM-SSD, KVM-SAS, KVM-HIGHCPU-SSD, and KVM-HIGHCPU-SAS. A category is indicated in the name of a plan.
 
-<img src="https://support.gcore.com/hc/article_attachments/13261722905233" alt="mceclip1.png">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/before-purchase/choose-a-virtual-server-for-your-needs/13261722905233.png" alt="mceclip1.png">
 
-[<img src="https://support.gcore.com/hc/article_attachments/360020837118/mceclip8.png" alt="mceclip8.png">](https://support.gcorelabs.com/hc/article_attachments/360020837118/mceclip8.png)
+[<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/before-purchase/choose-a-virtual-server-for-your-needs/mceclip8.png" alt="mceclip8.png">](https://assets.gcore.pro/docs/hosting/virtual-servers/before-purchase/choose-a-virtual-server-for-your-needs/mceclip8.png)
 
 **KVM-SSD** **and KVM-SAS** plans are suitable for a wide range of tasks. On such servers, you can deploy VPN, Apache, NGINX, or a game server. The difference between them is in the type of disk: KVM-SSD has SSD disks, and KVM-SAS has HDD SAS disks along with SSD disks (SSD is used for caching) the size of the drive in this category is usually larger.
 
