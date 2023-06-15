@@ -174,7 +174,7 @@ Paste the code below with the password chosen by you:
 #cloud-config  
 password: **your password**  
 chpasswd: { expire: False }  
-ssh\_pwauth: True
+ssh_pwauth: True
 ```
 
 Using the specified password you will be able to connect to the instance via SSH or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from your Control Panel</a>.
