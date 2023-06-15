@@ -9,7 +9,7 @@ toc:
 --1--Key features: "key-features-of-vmmanager-6"
 --1--Navigation: "navigation-in-the-vmmanager-6"
 ---
-# Main features and functions of VMmanager 6
+# Features and functions of VMmanager 6
 
 ## What is VMmanager 6?
 
@@ -29,7 +29,7 @@ Here are some key actions you can perform via VMmanager6:
 
 **Note**: In VMmanager 6, you can reinstall your OS using scripts.
 
-- Start/stop the recovery mode. To read more about the recovery mode, rrefer to the "<a href="https://gcore.com/docs/hosting/virtual-servers/manage/main-features-and-functions-of-vmmanager-6#key-features-of-vmmanager-6" target="_blank">Key features</a>" section below.
+- Start/stop the recovery mode. To read more about the recovery mode, refer to the "<a href="https://gcore.com/docs/hosting/virtual-servers/manage/main-features-and-functions-of-vmmanager-6#key-features-of-vmmanager-6">Key features</a>" section below.
 
 - Mount an ISO image.
 
@@ -43,7 +43,7 @@ Here are some key actions you can perform via VMmanager6:
 
 **Note**: In VMmanager 6, VNC is only available to use via VMmanager.
 
-- Run a script. For more information about scripts, refer to the "<a href="https://gcore.com/docs/hosting/virtual-servers/manage/main-features-and-functions-of-vmmanager-6#key-features-of-vmmanager-6" target="_blank">Key features</a>" section below. 
+- Run a script. For more information about scripts, refer to the "<a href="https://gcore.com/docs/hosting/virtual-servers/manage/main-features-and-functions-of-vmmanager-6#key-features-of-vmmanager-6">Key features</a>" section below. 
 
 - See the statistics of your server.
 

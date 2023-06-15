@@ -19,7 +19,7 @@ DDoS Protection is provided for <a href="https://gcore.com/cloud/compute-resourc
 - OSI levels to be protected (L3-L4 or L3-L7), 
 - protection mode (on-demand or always-on), 
 - bandwidth, 
-- IP whitelist and IP blacklist (optionally, you can specify it later). 
+- IP whitelist and IP blacklist (optionally, you can specify it later).
 
 **To order protection for a third-party server**, fill out the application at the bottom of the <a href="https://gcore.com/ddos-protection" target="_blank">DDoS Protection</a> section of our website. In the application, specify the following:
 
@@ -34,7 +34,7 @@ DDoS Protection is provided for <a href="https://gcore.com/cloud/compute-resourc
 *   OSI levels to be protected (L3-L4 or L3-L7), 
 *   protection mode (on-demand or always-on), 
 *   bandwidth, 
-*   IP whitelist and IP blacklist (optionally, you can specify it later). 
+*   IP whitelist and IP blacklist (optionally, you can specify it later).
 
 **To rent a new instance or a baremetal server with DDoS Protection**, send a request to technical support via chat in the bottom-right corner of the screen. In your request, specify that you need DDoS protected equipment.
 
