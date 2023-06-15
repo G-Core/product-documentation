@@ -11,11 +11,11 @@ toc:
 ---
 # Manage user access to your project 
 
-If you want to add a new user to your project, follow this article: <a href="https://gcore.com/docs/add-a-new-user-to-your-project" target="_blank">Add a new user to your project</a>
+If you want to add a new user to your project, follow this article: <a href="https://gcore.com/docs/cloud/getting-started/projects/users/add-a-new-user-to-your-project" target="_blank">Add a new user to your project</a>
 
 ## Edit user's role
 
-To learn more about user roles and rights, refer to the article: <a href="https://gcore.com/docs/user-roles-and-rights" target="_blank">User roles and rights</a>
+To learn more about user roles and rights, refer to the article: <a href="https://gcore.com/docs/cloud/getting-started/projects/users/user-roles-and-rights" target="_blank">User roles and rights</a>
 
 If you have enough rights, you can regulate user rights. Click Edit to go to the user settings. 
 
