@@ -23,7 +23,7 @@ For example, you have enabled <a href="https://gcore.com/docs/cdn/cdn-resource-o
 
 There is one limitation for the Rules feature: You can add only five custom rules for a CDN resource. You can see how many rules you’ve created in the Rules section.
 
-<img src="https://support.gcore.com/hc/article_attachments/11774615568017" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/11774615568017.png" alt="" width="70%">
 
 ## Add rules in the control panel
 
@@ -31,11 +31,11 @@ There is one limitation for the Rules feature: You can add only five custom rule
 
 1\. Open the Resource settings and go to the Rules tab. Click the **Create rule** button and select **Create blank rule** from the drop-down list.
 
-<img src="https://support.gcore.com/hc/article_attachments/11774713174673" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/11774713174673.png" alt="" width="70%">
 
 A new page will open. Follow the remaining steps on that page.
 
-<img src="https://support.gcore.com/hc/article_attachments/10612312879889" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/10612312879889.png" alt="" width="60%">
 
 2\. Enter the rule name.
 
@@ -47,7 +47,7 @@ A new page will open. Follow the remaining steps on that page.
 
 5\. Click the **Add option** button to configure options if necessary. This will bring up the list of options. Click on the options needed (they will be added on the rule creation page), and then click **Close**.
 
-<img src="https://support.gcore.com/hc/article_attachments/10612312882577" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/10612312882577.png" alt="" width="60%">
 
 There are three variants for how the options in the Rules sections interact with the options in the Resource Settings:
 
@@ -72,13 +72,13 @@ To create a rule from a template:
 
 1\. Open the settings of the required CDN resource. In the Rules tab, click **Create rule** and select a template from the list.
 
-<img src="https://support.gcore.com/hc/article_attachments/11774651473681" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/11774651473681.png" alt="" width="70%">
 
 2\. You will see the form for creating a new rule with pre-filled settings from the template. Check if all the settings suit you; edit the rule if necessary following to the [Create a rule manually](#create-a-rule-manually) section of this article.
 
 3\. Click **Create rule**.
 
-<img src="https://support.gcore.com/hc/article_attachments/11774588523793" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/11774588523793.png" alt="" width="50%">
 
 ## Examples of rules
 
@@ -89,7 +89,7 @@ To prohibit image caching in CDN:
 - Enter **^/.(jpg|css|js)$** to the Rule pattern field.
 - Add the CDN caching option with the "CDN Controlled" and "Do not cache" values.
 
-<img src="https://support.gcore.com/hc/article_attachments/10612313082513" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/10612313082513.png" alt="" width="60%">
 
 ### Set Access-Control-Allow-Origin for .ttf files
 
@@ -99,7 +99,7 @@ To set up the Access-Control-Allow-Origin HTTP header only for files with the .t
 - Add the CORS header support option.
 - Configure which domains to add the header for. You can find more information about configuring in the "<a href="https://gcore.com/docs/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response" target="_blank">Enable CORS header support</a>" guide.
 
-<img src="https://support.gcore.com/hc/article_attachments/10612313089169" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/10612313089169.png" alt="" width="70%">
 
 ## Disable or enable a rule
 
@@ -109,12 +109,12 @@ To disable or enable a rule:
 
 1\. Go to the **Rules** section and open the page for the desired rule.
 
-<img src="https://support.gcore.com/hc/article_attachments/11774706636945" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/11774706636945.png" alt="" width="70%">
 
 2\. Click **Disable rule** (or **Enable rule**), then click **Save changes**.
 
-<img src="https://support.gcore.com/hc/article_attachments/10612313157393" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/10612313157393.png" alt="" width="50%">
 
 Disabled rules will have a Suspended status and enabled rules will have an Active status.
 
-<img src="https://support.gcore.com/hc/article_attachments/10612307136657" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/10612307136657.png" alt="" width="70%">

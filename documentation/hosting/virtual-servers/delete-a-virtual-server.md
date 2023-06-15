@@ -15,9 +15,9 @@ You can delete a server in the <a href="https://hosting.gcore.com/billmgr" targe
 
 <media-gallery>
 
-<img src="https://support.gcore.com/hc/article_attachments/360020098498/mceclip0.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/delete-a-virtual-server/mceclip0.png" alt="" width="70%">
 
-<img src="https://support.gcore.com/hc/article_attachments/360019995857/mceclip1.png" alt="mceclip1.png" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/delete-a-virtual-server/mceclip1.png" alt="mceclip1.png" width="70%">
 
 </media-gallery>
 
@@ -25,7 +25,7 @@ Open the tab with your servers. Click on the one you need and click on the Delet
 
 **Note**: after deletion, there is no way to restore the server!
 
-<img src="https://support.gcore.com/hc/article_attachments/360020099298/mceclip5.png" alt="mceclip5.png" width="50%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/delete-a-dedicated-server/mceclip5.png" alt="mceclip5.png" width="50%">
 
 After clicking on "Ok" your server will be automatically deleted.
 
@@ -35,6 +35,6 @@ Most likely, you are trying to delete a virtual server that you bought less than
 
 You can get the details of the error by hovering over exclamation mark icon.
 
-<img src="https://support.gcore.com/hc/article_attachments/360019996957/mceclip11.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/delete-a-virtual-server/mceclip11.png" alt="" width="50%">
 
 If the error occurred not because you are trying to delete the server before the minimum period for ordering the service passed, please <a href="https://gcore.com/docs/hosting/contact-our-technical-support" target="_blank">write to our support department</a> — we will solve the issue.

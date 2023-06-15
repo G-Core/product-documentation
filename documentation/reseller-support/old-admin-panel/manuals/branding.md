@@ -32,7 +32,7 @@ Branding is a tool for service positioning that allows you to use your trademark
 
 To set up branding, go to the "Branding" section in the admin control panel.
 
-[<img src="https://reseller.support.gcore.com/hc/article_attachments/4409934290449/1.png" alt="1.png" width="218" height="286">](https://reseller.gcorelabs.com/hc/article_attachments/4409934290449/1.png)
+[<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/branding/1.png" alt="1.png" width="218" height="286">](https://reseller.gcorelabs.com/hc/article_attachments/4409934290449/1.png)
 
 Base control panel domain
 -------------------------
@@ -41,7 +41,7 @@ Enter the top level domain into the "Base control panel domain" field. It will b
 
 For example, if you specify "mycompany.com" , your services will be available at "auth.mycompany.com", "cdn.mycompany.com", "accounts.mycompany.com".
 
-[<img src="https://reseller.support.gcore.com/hc/article_attachments/4409934290705/2.jpg" alt="2.jpg">](https://reseller.gcorelabs.com/hc/article_attachments/4409934290705/2.jpg)
+[<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/branding/2.jpg" alt="2.jpg">](https://reseller.gcorelabs.com/hc/article_attachments/4409934290705/2.jpg)
 
 **Important!** To avoid issues with the control panel, we don't recommend making changes in the field.
 
@@ -55,7 +55,7 @@ Colors and logo
 This option configures the logo on the user sign-in page: [https://auth .gcorelabs.com/login/signin](https://auth.gcorelabs.com/login/signin).[  
 ](https://auth.gcorelabs.com/login/signin)
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/4984713390865/mceclip0.png" alt="mceclip0.png">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/branding/mceclip0.png" alt="mceclip0.png">
 
 If it is disabled, the sign-in page inherits the logo from the "Header logo" setting.
 
@@ -65,7 +65,7 @@ If it is disabled, the sign-in page inherits the logo from the "Header logo" set
 
 The setting configures the logo in the service column.
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/4984744199825/mceclip1.png" alt="mceclip1.png">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/branding/mceclip1.png" alt="mceclip1.png">
 
 **Please note that** your image must be: smaller than 4 MB, SVG (recommended)/PNG/JPG file. We will save the size of your image if it doesn't exceed 300 x 90 pixels.
 
@@ -81,7 +81,7 @@ The setting configures the color of icons and service names.
 
 This configures the favicon.
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/4984973986193/mceclip2.png" alt="mceclip2.png">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/branding/mceclip2.png" alt="mceclip2.png">
 
 **Please note** that your image must be: ICO file, 16 x 16 pixels.
 
@@ -89,7 +89,7 @@ This configures the favicon.
 
 This configures the color of hovered menu items and links in the control panel and on the sign-in page.
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/4985023486353/mceclip3.png" alt="mceclip3.png">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/branding/mceclip3.png" alt="mceclip3.png">
 
 Customer Support Tools
 ----------------------
@@ -102,7 +102,7 @@ If the chat option is activated, it is shown as a pop-up widget in the client co
 
 By default, when the "Branding" settings are not activated, the client control panel shows links, email address and phone number of the G-Core Labs technical support.
 
-### <img src="https://reseller.support.gcore.com/hc/article_attachments/4985275009297/mceclip5.png" alt="mceclip5.png">
+### <img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/branding/mceclip5.png" alt="mceclip5.png">
 
 ### Support phone number
 
@@ -116,11 +116,11 @@ If the setting is not activated, the client control panel shows the phone number
 
 The setting allows displaying the email address of technical support. If it is activated but left unspecified, your clients will see an empty field. If it is not activated, the client control panel will show the email address of the G-Core Labs technical support.
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/4985337481489/mceclip6.png" alt="mceclip6.png">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/branding/mceclip6.png" alt="mceclip6.png">
 
 ### Email for deletion requests
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/8659196194577/mceclip0.png" alt="mceclip0.png">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/branding/mceclip0.png" alt="mceclip0.png">
 
 Here you can enter an email address to receive notifications about status updates of deletion requests. We will automatically send you emails about three events: a client sends the request, the request is canceled, the account is deleted. 
 
@@ -128,7 +128,7 @@ To receive emails, turn on the "Email for deletion request" toggle and enter you
 
 ### Link to User Agreement
 
-[<img src="https://reseller.support.gcore.com/hc/article_attachments/4409934294289/11.jpg" alt="11.jpg">](https://reseller.gcorelabs.com/hc/article_attachments/4409934294289/11.jpg)
+[<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/branding/11.jpg" alt="11.jpg">](https://reseller.gcorelabs.com/hc/article_attachments/4409934294289/11.jpg)
 
 The setting allows displaying the link to legal documents.
 
@@ -139,7 +139,7 @@ It has two parameters:
 
 ### Link to company website
 
-[<img src="https://reseller.support.gcore.com/hc/article_attachments/4409926071313/12.jpg" alt="12.jpg">](https://reseller.gcorelabs.com/hc/article_attachments/4409926071313/12.jpg)
+[<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/branding/12.jpg" alt="12.jpg">](https://reseller.gcorelabs.com/hc/article_attachments/4409926071313/12.jpg)
 
 The "Link to website" setting allows displaying the link to your website.
 
@@ -152,7 +152,7 @@ It has two parameters:
 
 The setting allows displaying links to API documentation.
 
-[<img src="https://reseller.support.gcore.com/hc/article_attachments/4409934294673/13.jpg" alt="13.jpg">](https://reseller.gcorelabs.com/hc/article_attachments/4409934294673/13.jpg)
+[<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/branding/13.jpg" alt="13.jpg">](https://reseller.gcorelabs.com/hc/article_attachments/4409934294673/13.jpg)
 
 It has two parameters:
 
@@ -161,7 +161,7 @@ It has two parameters:
 
 ### Show Status Page
 
-[<img src="https://reseller.support.gcore.com/hc/article_attachments/4409934295057/14.jpg" alt="14.jpg">](https://reseller.gcorelabs.com/hc/article_attachments/4409934295057/14.jpg)
+[<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/branding/14.jpg" alt="14.jpg">](https://reseller.gcorelabs.com/hc/article_attachments/4409934295057/14.jpg)
 
 The setting allows displaying a link to your Status Page.
 
@@ -176,13 +176,13 @@ This setting allows your clients to send requests directly to the G-Core Labs te
 
 Activate the setting so that your clients can contact technical support via the ticket system in their control panel.
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/4985441822993/mceclip7.png" alt="mceclip7.png">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/branding/mceclip7.png" alt="mceclip7.png">
 
 ### Show online chat
 
 The setting allows your clients to contact the G-Core Labs technical support via a chat in their control panel. If the chat option is activated, it is shown as a pop-up widget in the client control panel.
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/4985648444817/mceclip8.png" alt="mceclip8.png">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/branding/mceclip8.png" alt="mceclip8.png">
 
 ### Show Create new account
 
@@ -190,7 +190,7 @@ The setting allows your clients to create additional accounts.
 
 If it is activated, your clients can create additional accounts from their control panels.
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/4985738776465/mceclip9.png" alt="mceclip9.png">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/branding/mceclip9.png" alt="mceclip9.png">
 
 SMTP Provider Settings 
 -----------------------
@@ -208,15 +208,15 @@ If you want to send automatic emails from another email address, specify your SM
 
 1\. Open "Branding settings" and make sure the "Base control panel domain" field is filled in. If not, emails will not be sent.  
   
-<img src="https://reseller.support.gcore.com/hc/article_attachments/6543542362769/image_1553.png" alt="image_1553.png">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/branding/image_1553.png" alt="image_1553.png">
 
 2\. Go to the "SMTP Provider Settings" section and enable the "Email for service emails" option.  
   
-<img src="https://reseller.support.gcore.com/hc/article_attachments/6543529458705/image_1550.png" alt="image_1550.png">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/branding/image_1550.png" alt="image_1550.png">
 
 You will see the page with SMTP settings that need to be configured.
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/6543532022289/image_1556.png" alt="image_1556.png">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/branding/image_1556.png" alt="image_1556.png">
 
 3\. Enter the email address that you want to use to send automatic emails to your clients. It will be displayed in the "From" field in emails.   
 

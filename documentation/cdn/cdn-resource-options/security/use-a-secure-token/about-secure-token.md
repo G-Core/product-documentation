@@ -49,7 +49,7 @@ Secure tokens are created and added to links by your site. To configure the site
 
 Here is how a link with a secure token looks:  
   
-<img src="https://support.gcore.com/hc/article_attachments/6421483623441/Frame_2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/use-a-secure-token/about-secure-token/Frame_2.png" alt="" width="70%">
 
 ### How content is requested via a secured link 
 
@@ -67,7 +67,7 @@ Here is how a link with a secure token looks:
 
 7\. If a link is not yet expired, the request comes from a whitelisted IP address, and a file's path is correct, the <a href="https://gcore.com/cdn" target="_blank">CDN</a> sends the content. If something doesn’t match, the CDN returns an error.
 
-<img src="https://support.gcore.com/hc/article_attachments/6906716249617/mceclip0.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/use-a-secure-token/about-secure-token/mceclip0.png" alt="" width="70%">
 
 ## Configure Secure Token 
 

@@ -19,7 +19,7 @@ Our "Response headers (add)" option allows you to set custom HTTP headers that C
 
 Do the remaining steps below on the tab that opens.
 
-<img src="https://support.gcore.com/hc/article_attachments/6624940881809/image_1659-2.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/add-or-hide-response-headers/image_1659-2.png" alt="">
 
 2\. In the "HTTP headers" section, select "Response headers (add)".
 
@@ -43,7 +43,7 @@ If you need to add more than one header value, you can do it in two ways. It det
 
 - If you need to send header values in different strings, enter value of the first header in the "Value" field and press "Enter", then enter a value of the second header and press "Enter", and so on.  
 
-<img src="https://support.gcore.com/hc/article_attachments/6624965133201/image_1660.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/add-or-hide-response-headers/image_1660.png" alt="">
     
 In this case, the response header will be transmitted as follows:
     
@@ -55,7 +55,7 @@ Example: three 
 
 - If you need to send header values in one string, fill in the "Value" field with header values separated by commas. 
 
-<img src="https://support.gcore.com/hc/article_attachments/6625008550161/image_1661.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/add-or-hide-response-headers/image_1661.png" alt="">
     
 In this case, the response header will be transmitted as follows:
     
@@ -63,7 +63,7 @@ In this case, the response header will be transmitted as follows:
     
 You can also combine both ways: enter the values separated by commas and add other values to them separately.
     
-<img src="https://support.gcore.com/hc/article_attachments/6626021807889/image_1662.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/add-or-hide-response-headers/image_1662.png" alt="">
 
 In this case, the response header will be transmitted as follows:
 
@@ -118,17 +118,17 @@ To adjust the headers that are being passed:
 
 2\. Switch on the **Hide response headers option** in the "HTTP headers" section.
 
-<img src="https://support.gcore.com/hc/article_attachments/11595287930257" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/add-or-hide-response-headers/11595287930257.png" alt="" width="70%">
 
 3\. Set up the option. You can configure it in two modes:
 
 - **Hide all except**. Set the headers that will be kept in the response, and all other headers will be hidden. After enabling, the most popular headers will appear in the field. You can remove some of them from the response or add custom headers to the response. To remove, press the × icon. To add, click on the **HTTP headers** row and choose from the list or enter your own. The new header can contain letters (a-z), numbers (0-9), dashes (-), and underscores (_).
 
-<img src="https://support.gcore.com/hc/article_attachments/11595282619665" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/add-or-hide-response-headers/11595282619665.png" alt="" width="50%">
 
 - **Hide only**. Set the headers that will be hidden from the response, and all other headers will be kept. Click on the **HTTP headers** row and choose from the list or enter custom headers.
 
-<img src="https://support.gcore.com/hc/article_attachments/11595288042385" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/add-or-hide-response-headers/11595288042385.png" alt="" width="50%">
 
 **Note**: There are some mandatory headers: *connection, content-length, content-type, server, and date*. These cannot be hidden from responses.
 

@@ -22,7 +22,7 @@ The Image Stack option includes the following features:
 - <a href="https://gcore.com/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/reduce-image-size" target="_blank">Resize</a> allows you to reduce the height, width, and scale of your original image.
 - <a href="https://gcore.com/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images" target="_blank">Crop</a> allows you to cut off the excessive image area beyond the established parameters.
 
-<img src="https://support.gcore.com/hc/article_attachments/11085759102353" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11085759102353.png" alt="" width="70%">
 
 How Image Stack can change your image:
 
@@ -30,19 +30,19 @@ How Image Stack can change your image:
 
 | Original image                                                                                 | Compression                                  | Quality  |
 |------------------------------------------------------------------------------------------------|----------------------------------------|---|
-| <img src="https://support.gcore.com/hc/article_attachments/11758218361745" alt="original.jpg"> | <img src="https://support.gcore.com/hc/article_attachments/11758218290321" alt="compression.jpg"> | <img src="https://support.gcore.com/hc/article_attachments/11758218279441" alt="quality.jpg"> |
+| <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11758218361745.png" alt="original.jpg"> | <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11758218290321.png" alt="compression.jpg"> | <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11758218279441.png" alt="quality.jpg"> |
 | Format: jpg<br/>Quality: 100%<br/>Size: 3.55 MB<br/>W×H: 553×743 px                            | Format: avif<br/>Quality: 95%<br/>Size: 476 KB | Quality: 10%<br/>Format: avif<br/>Size: 8 KB  |
 
 | Resize          | Crop                                   |  
 |-----------------|----------------------------------------|
-| <img src="https://support.gcore.com/hc/article_attachments/11758218201233" alt="resize.jpg" width="172" height="258">    |  <img src="https://support.gcore.com/hc/article_attachments/11758218206481" alt="crop.jpg" width="183" height="229">                                      |   |
+| <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11758218201233.png" alt="resize.jpg" width="172" height="258">    |  <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11758218206481.png" alt="crop.jpg" width="183" height="229">                                      |   |
  | W×H: 333×500 px | W×H: 400×500 px<br>Segment from the center |
 
 ## How Image Stack works
 
 If you use Image Stack requests for images that will be proxied through our Processing Server, it takes an original image from your Origin Server and converts the image to WebP or applies others features. After that, a new version of the image will be saved in the Caching Server and sent to end users.
 
-<img src="https://support.gcore.com/hc/article_attachments/11756318311697" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11756318311697.png" alt="" width="70%">
 
 After converting, an image does not change its URL or extension. Only the following processing details will be added to image HTTP headers:
 
@@ -73,7 +73,7 @@ If an image cannot be processed, an end user will receive the original image dow
 
 Use the "Img-Skip-Reason" HTTP header to find out why the image was not converted:
 
-<img src="https://support.gcore.com/hc/article_attachments/11085759743505" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11085759743505.png" alt="" width="50%">
 
 ## The Rewrite option does not work when Image Stack is enabled
 

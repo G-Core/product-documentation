@@ -16,7 +16,7 @@ toc:
 
 Do the first three steps in your control panel in the "Secure token" tab. 
 
-<img src="https://support.gcore.com/hc/article_attachments/6420558625553/mceclip4.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/mceclip4.png" alt="" width="70%">
 
 1\. Enable the "Secure token" option in the resource settings. 
 
@@ -26,7 +26,7 @@ Do the first three steps in your control panel in the "Secure token" tab. 
 
 4\. Do this step on your origin server. Insert a script on your website which generates secure links. The generated links should look like as below:
 
-<img src="https://support.gcore.com/hc/article_attachments/6420152091281/mceclip3.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/mceclip3.png" alt="" width="70%">
 
 Where:
 
@@ -161,7 +161,7 @@ In these scripts:
 
 The scripts above can only generate a secure token. You need to create a separate script that will add a secure token and expiry time to links. The script is supposed to create a link as shown below:
 
-<img src="https://support.gcore.com/hc/article_attachments/6420152091281/mceclip3.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/mceclip3.png" alt="" width="70%">
 
 Where:
 

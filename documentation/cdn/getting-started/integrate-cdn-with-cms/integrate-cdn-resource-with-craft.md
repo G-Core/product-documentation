@@ -11,29 +11,29 @@ Before you take any steps please back up your files and database. The plugin wor
 
 Login to your Craft admin panel.
 
-<img src="https://support.gcore.com/hc/ru/article_attachments/115000083605/1.JPG" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-craft/1.JPG" alt="" width="50%">
 
 Go to "Assets" by clicking on the arrow next to the gear in the top right corner of the control panel.
 
-<img src="https://support.gcore.com/hc/ru/article_attachments/115000083625/22.JPG" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-craft/22.JPG" alt="" width="70%">
 
 Click **+New Source** to create a new folder for your static files.
 
-<img src="https://support.gcore.com/hc/ru/article_attachments/115000083645/3.JPG" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-craft/3.JPG" alt="" width="70%">
 
 In the URL field type in the CNAME that you specified in the Gcore <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>. Ensure that your <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">CNAME record has been configured</a> in a proper way before using it for integration (e.g., ```http://cdn.site.com/path/to/your/assets```).
 
-<img src="https://support.gcore.com/hc/ru/article_attachments/115000083805/4.JPG" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-craft/4.JPG" alt="" width="70%">
 
 Go to the "Assets" tab, find previously created asset source and download your files.  
 
-<img src="https://support.gcore.com/hc/ru/article_attachments/115000081769/5.JPG" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-craft/5.JPG" alt="" width="70%">
 
 Now you can use your asset at the website.
 
 If you have already had created assets, edit them replacing URL with CNAME that you specified in the Gcore <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>.  
 
-<img src="https://support.gcore.com/hc/ru/article_attachments/115000081889/6.JPG" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-craft/6.JPG" alt="" width="70%">
 
 Save changes.
 

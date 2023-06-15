@@ -15,10 +15,10 @@ In the DCI Manager panel, go to the "Statistics" section and click on the "Traff
 
 Select a period for which you want to retrieve statistics and click **OK**.
 
-<img class="confluence-embedded-image confluence-external-resource" src="http://i.imgur.com/8sG0uop.png" width="70%" data-image-src="http://i.imgur.com/8sG0uop.png">
+<img class="confluence-embedded-image confluence-external-resource" src="https://assets.gcore.pro/docs/hosting/dedicated-servers/check-statistics-of-your-dedicated-server/8sG0uop.png" width="70%" data-image-src="https://assets.gcore.pro/docs/hosting/dedicated-servers/check-statistics-of-your-dedicated-server/8sG0uop.png">
 
 ## Total traffic volume
 
 On the "Common Traffic" section you can see a total traffic volume.
 
-<img class="confluence-embedded-image confluence-external-resource" src="http://i.imgur.com/Uj01YMw.png" width="70%" data-image-src="http://i.imgur.com/Uj01YMw.png">
+<img class="confluence-embedded-image confluence-external-resource" src="https://assets.gcore.pro/docs/hosting/dedicated-servers/check-statistics-of-your-dedicated-server/Uj01YMw.png" width="70%" data-image-src="https://assets.gcore.pro/docs/hosting/dedicated-servers/check-statistics-of-your-dedicated-server/Uj01YMw.png">

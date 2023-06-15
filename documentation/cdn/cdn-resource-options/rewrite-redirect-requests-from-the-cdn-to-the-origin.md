@@ -13,7 +13,7 @@ To enable Rewrite click **Add Option** in "Content" section and choose Enable Re
 
 After the option activation, some default values are shown in Rewrite body field. Clear the field and enter two space-separated directives: a path the Rewrite option is applied to and a path to be used instead. Use regular expressions. 
 
-<img src="https://support.gcore.com/hc/article_attachments/115011465265/Screenshot-2018-1-7_G-Core_Labs___________CDN-___________________1_.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rewrite-redirect-requests-from-the-cdn-to-the-origin/Screenshot-2018-1-7_G-Core_Labs___________CDN-___________________1_.png" alt="" width="50%">
 
 For example, you need to apply Rewrite to all the resource and make CDN-servers get the content from the certain directory on your origin. Let's say that origin is example.com and directory is /media/, to set up Rewrite fill the "Rewrite" field with the following:
 

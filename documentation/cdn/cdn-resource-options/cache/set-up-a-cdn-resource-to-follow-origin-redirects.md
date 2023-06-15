@@ -27,15 +27,15 @@ To configure origin redirection using the control panel:
 
 1\. Go to **CDN** and select the CDN resource you want to configure.
 
-<img src="https://support.gcore.com/hc/article_attachments/11761445358353" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/set-up-a-cdn-resource-to-follow-origin-redirects/11761445358353.png" alt="">
 
 2\. In the navigation panel, under the **Cache** section, select **Redirection from origin**.
 
-<img src="https://support.gcore.com/hc/article_attachments/11761431909649" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/set-up-a-cdn-resource-to-follow-origin-redirects/11761431909649.png" alt="">
 
 3\. Toggle **Follow redirect from origin** on.
 
-<img src="https://support.gcore.com/hc/article_attachments/11761431981585" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/set-up-a-cdn-resource-to-follow-origin-redirects/11761431981585.png" alt="">
 
 4\. Select one or more status codes in the **Redirect status codes** select box. The options are:
 
@@ -45,11 +45,11 @@ To configure origin redirection using the control panel:
 - 307—to follow redirect for status code HTTP 307
 - 308—to follow redirect for status code HTTP 308
 
-<img src="https://support.gcore.com/hc/article_attachments/11761445403921" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/set-up-a-cdn-resource-to-follow-origin-redirects/11761445403921.png" alt="">
 
 5\. Click **Save changes**. Allow at least 15 minutes for the changes to take effect.
 
-<img src="https://support.gcore.com/hc/article_attachments/11761432025745" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/set-up-a-cdn-resource-to-follow-origin-redirects/11761432025745.png" alt="" width="50%">
 
 **Note**: Once saved, we recommend <a href="https://gcore.com/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all" target="_blank">purging the CDN cache</a> to ensure that users receive an updated version of your content.
 
@@ -99,4 +99,4 @@ The ```follow_origin_redirect``` object passes the following information:
 
 This example shows a <a href="https://apidocs.gcore.com/cdn#tag/Resources/operation/change_cdn_resource" target="_blank">CDN update request</a> that activates the Redirection from Origin and instructs the CDN to follow redirects for status codes *301*, *302*, and *303*.
 
-<img src="https://support.gcore.com/hc/article_attachments/11761432040465" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/set-up-a-cdn-resource-to-follow-origin-redirects/11761432040465.png" alt="" width="70%">

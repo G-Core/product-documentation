@@ -19,11 +19,11 @@ The Change Host header option controls the Host header. It is automatically enab
 
 For example, let’s create a CDN resource and specify _yourdomain.com_ in the Origin section as follows:
 
-<img src="https://support.gcore.com/hc/article_attachments/11698761812241" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header/11698761812241.png" alt="" width="70%">
 
 This value will appear at the "Change Host header" option as follows:
 
-<img src="https://support.gcore.com/hc/article_attachments/11698730009873" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header/11698730009873.png" alt="" width="50%">
 
 ## How to manage the Host header
 
@@ -31,7 +31,7 @@ If you change the origin source after resource creation, the Host header value w
 
 1\. Open the Resource settings in the control panel.
 
-<img src="https://support.gcore.com/hc/article_attachments/11774871054737" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header/11774871054737.png" alt="" width="70%">
 
 2\. Go to the HTTP headers section and select the Host header option.
 
@@ -50,7 +50,7 @@ In most cases, end users will get 4xx or 5xx errors if the Change Host header op
 
 If you are <a href="https://gcore.com/docs/streaming-platform/how-the-streaming-platform-interact-with-the-cdn" target="_blank">using a default CDN resource (*.gvideo.io) for streaming</a>, the Host header will take the value of the CNAME of the CDN resource. This is the value that the option will take as soon as it is disabled.
 
-<img src="https://support.gcore.com/hc/article_attachments/11774870575761" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header/11774870575761.png" alt="" width="70%">
 
 ## How to check the Host header
 

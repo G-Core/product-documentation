@@ -13,63 +13,63 @@ toc:
 
 1. On your Gcore account, click on **Cloud**, then select **Baremetal**.
 
-<img src="https://support.gcore.com/hc/article_attachments/11773280152465" alt="mceclip0.png">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers/11773280152465.png" alt="mceclip0.png">
 
 2. Review the settings in the Create baremetal server section, then go to the **Network interface**.
 
-<img src="https://support.gcore.com/hc/article_attachments/11773282277777" alt="mceclip1.png">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers/11773282277777.png" alt="mceclip1.png">
 
 3. **Enable Advanced DDoS protection** by clicking on the network interface. Please keep in mind that protection can only be enabled on external interfaces or subinterfaces with public IP addresses. The protection does not cover internal interfaces.
 
-<img src="https://support.gcore.com/hc/article_attachments/11773270922513" alt="mceclip2.png">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers/11773270922513.png" alt="mceclip2.png">
 
 4. Click the **Select profile template** dropdown. Be sure to fill in additional parameters of the protection template selected.
 
-<img src="https://support.gcore.com/hc/article_attachments/11773319536529" alt="mceclip3.png">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers/11773319536529.png" alt="mceclip3.png">
 
 5. Once you select the profile template, type in the SSH keys and add a name under the **Additional options** section.
 
-<img src="https://support.gcore.com/hc/article_attachments/11773321433361" alt="" width=80%>
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers/11773321433361.png" alt="" width=80%>
 
 6. If you’re finished, click the **Create Server** button on the right-hand side.
 
-<img src="https://support.gcore.com/hc/article_attachments/11773276389905" alt="mceclip5.png">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers/11773276389905.png" alt="mceclip5.png">
 
 ## Interface configuration
 
 1. From the **Cloud** panel, select **Baremetal**, then click the name of your baremetal server.
 
-<img src="https://support.gcore.com/hc/article_attachments/11773445344913" alt="mceclip6.png">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers/11773445344913.png" alt="mceclip6.png">
 
 2. Click on the **Networking** tab.
 
-<img src="https://support.gcore.com/hc/article_attachments/11773450082065" alt="mceclip7.png" width="503" height="413">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers/11773450082065.png" alt="mceclip7.png" width="503" height="413">
 
 3\. Click on the interfaces. Click on the kebab menu on the far right-hand side, then choose to enable advanced DDoS protection.
 
-<img src="https://support.gcore.com/hc/article_attachments/11773488996113" alt="mceclip8.png">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers/11773488996113.png" alt="mceclip8.png">
 
 4. The **Edit advanced DDoS protection profile** pop-up will appear. Click the dropdown to choose your preference, then hit submit.
 
-<img src="https://support.gcore.com/hc/article_attachments/11773522634769" alt="mceclip9.png">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers/11773522634769.png" alt="mceclip9.png">
 
 5. To check, click **DDoS Protection** under the Cloud panel on the left-hand side. The type of security should show as **Advanced**.
 
-<img src="https://support.gcore.com/hc/article_attachments/11773524742417" alt="mceclip10.png">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers/11773524742417.png" alt="mceclip10.png">
 
 ## DDoS protection list
 
 1. Select **Networking** on the left-hand menu.
 
-<img src="https://support.gcore.com/hc/article_attachments/11773548591761" alt="" width=80%>
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers/11773548591761.png" alt="" width=80%>
 
 2. Click **DDoS Protection** from the dropdown options.
 
-<img src="https://support.gcore.com/hc/article_attachments/11773581148049" alt="" width=80%>
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers/11773581148049.png" alt="" width=80%>
 
 3. In the **DDoS Protection** section, select the baremetal server you want to enable advanced DDoS protection for by clicking the kebab menu on the right side.
 
-<img src="https://support.gcore.com/hc/article_attachments/11773583120913" alt="mceclip13.png">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers/11773583120913.png" alt="mceclip13.png">
 
 4. The **Edit advanced DDoS protection profile** pop-up will appear. Click the dropdown to choose your preference. Examples for a profile are the following:
 
@@ -79,12 +79,12 @@ toc:
 *   Basic L3/L4
 *   TCP protection
 
-<img src="https://support.gcore.com/hc/article_attachments/11773590363153" alt="mceclip14.png">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers/11773590363153.png" alt="mceclip14.png">
 
 5. Once you have selected the profile, click submit. Be sure to fill in the required fields based on the selected profile.
 
-<img src="https://support.gcore.com/hc/article_attachments/11773623336337" alt="mceclip15.png">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers/11773623336337.png" alt="mceclip15.png">
 
 6. Once you’re done, the type of DDoS protection will be changed from basic to advanced, and the name of the profile and other additional parameters will appear.
 
-<img src="https://support.gcore.com/hc/article_attachments/11773625038225" alt="mceclip16.png">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers/11773625038225.png" alt="mceclip16.png">

@@ -9,7 +9,7 @@ toc:
 
 1\. To enable the DNS Failover feature, send us a request by email at [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of <a href="https://gcore.com/" target="_blank">our website</a>. Please specify your ID in the request, so we can identify your account. You can find it on the main page of your <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>.
 
-<img src="https://support.gcore.com/hc/article_attachments/9619861814417" alt="">
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/9619861814417.png" alt="">
 
 The message template: *"Good afternoon! Please enable the DNS Failover imitation feature for the account with ID … (your ID)"*.
 
@@ -19,11 +19,11 @@ We will notify you when the feature is activated. After that, you will be able t
 
 3\. Go to the DNS zone of the site or application that you want to use with DNS Failover.
 
-<img src="https://support.gcore.com/hc/article_attachments/9619861818513" alt="">
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/9619861818513.png" alt="">
 
 The **DNS records** section will open. Do the next steps in it.
 
-<img src="https://support.gcore.com/hc/article_attachments/9619861864721" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/9619861864721.png" alt="" width="70%">
 
 4\. Enable the **Advanced interface mode.** In the non-advanced mode, the DNS Failover feature will not appear.
 
@@ -31,7 +31,7 @@ The **DNS records** section will open. Do the next steps in it.
 
 The **Records list/Edit record set** page will open. Complete the remaining steps in it.
 
-<img src="https://support.gcore.com/hc/article_attachments/9619897145361" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/9619897145361.png" alt="" width="70%">
 
 6\. Enable the **Failover checks (beta)** service.
 
@@ -70,6 +70,6 @@ Configuration is complete! Now DNS Failover monitors the availability of your si
 
 Also, you can check for recent monitoring events in Failover logs.
 
-<img src="https://support.gcore.com/hc/article_attachments/9619897190417" alt="" width="70%"> 
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/9619897190417.png" alt="" width="70%"> 
 
 Please note that this is a beta version, and the feature may be unstable. Write to us via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of <a href="https://gcore.com/" target="_blank">our website</a>. Describe options you would like to see in the final version of the product.

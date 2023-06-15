@@ -15,11 +15,11 @@ Before you take any steps please back up your files and database. The plugin wor
 
 3\. Choose Add New Replacement Variable.
 
-<img src="https://support.gcore.com/hc/article_attachments/360010892858/vbulletin.png" alt="" >
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-vbulletin/vbulletin.png" alt="" >
 
 Using your CNAME from the Gcore <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a> (```cdn.site.com```). Create a new replacement variable for each item in the following table. Ensure that your <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">CNAME record has been configured</a> in a proper way before using it for integration.
 
-<img src="https://support.gcore.com/hc/article_attachments/360010892898/bulletin_______.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-vbulletin/bulletin_______.png" alt="" width="70%">
 
 
 

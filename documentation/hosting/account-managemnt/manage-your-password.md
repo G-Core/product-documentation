@@ -15,7 +15,7 @@ Authorize in the Control Panel using login and password which you have chosen du
 
 Go to "Client" - "Profile".
 
-<img class="confluence-embedded-image confluence-external-resource" src="http://i.imgur.com/MmuwNQz.png" data-image-src="http://i.imgur.com/MmuwNQz.png">
+<img class="confluence-embedded-image confluence-external-resource" src="https://assets.gcore.pro/docs/hosting/account-managemnt/manage-your-password/MmuwNQz.png" data-image-src="https://assets.gcore.pro/docs/hosting/account-managemnt/manage-your-password/MmuwNQz.png">
 
 Type your new password in the appropriate field. The password must contain 8 or more characters, including at least one uppercase letter and a number.
 

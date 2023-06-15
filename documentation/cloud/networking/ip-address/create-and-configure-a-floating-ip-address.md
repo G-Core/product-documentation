@@ -35,15 +35,15 @@ When you reserve a floating IP and assign it to your instance, the router direct
 
 1\. Open the **Networking** section, select the required network, and navigate to your equipment's subnet settings. 
 
-<img src="https://support.gcore.com/hc/article_attachments/12391415662737" alt="floating-ip-01.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12391415662737.png" alt="floating-ip-01.png">
 
 2\. Click the three dots menu, then select **Edit**.
 
-<img src="https://support.gcore.com/hc/article_attachments/12391621674513" alt="floating-ip-02.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12391621674513.png" alt="floating-ip-02.png">
 
 3\. Ensure the **Enable router gateway** slider is enabled, making the subnet routable, and allowing servers within the subnet to access the Internet and receive incoming connections.
 
-<img src="https://support.gcore.com/hc/article_attachments/12391738930705" alt="floating-ip-03.png" width=80%>
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12391738930705.png" alt="floating-ip-03.png" width=80%>
 
 ## Reserve a floating IP from the menu
 
@@ -51,22 +51,22 @@ A floating IP is assigned by a specific data center, and its address is linked t
 
 1\. Select the Region where your machine is located to assign a floating IP and navigate to the **Networking** section.
 
-<img src="https://support.gcore.com/hc/article_attachments/12391851006353" alt="floating-ip-04.png" width=50%>
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12391851006353.png" alt="floating-ip-04.png" width=50%>
 
 2\. Open the Floating IPs section. You can create a floating IP without assigning it to a machine by clicking **Create a new Floating IP.**
 
-<img src="https://support.gcore.com/hc/article_attachments/12392006241425" alt="floating-ip-05.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12392006241425.png" alt="floating-ip-05.png">
 
 3\. Additionally, you can create a floating IP and immediately assign it to a specific instance. To do this, enable the "Assign to existed instance" slider, select the machine and interface, and click **Create a new floating IP.**
 
-<img src="https://support.gcore.com/hc/article_attachments/12392182782993" alt="floating-ip-06.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12392182782993.png" alt="floating-ip-06.png">
 
 ## Reserve a floating IP when creating an instance
 
 
 When creating an instance, in the "Network settings" section, select the "**Private**" network type. Specify the network and subnet of the interface you want to assign the floating IP. Enable the "**Use floating IP**" slider, click "**Create a new floating IP**", and save the settings using the "**Add Interface**" button.
 
-<img src="https://support.gcore.com/hc/article_attachments/12392462274833" alt="floating-ip-07.png" width=80%>
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12392462274833.png" alt="floating-ip-07.png" width=80%>
 
 The instance will be created with a private interface and a new floating IP assigned to it.
 
@@ -74,24 +74,24 @@ The instance will be created with a private interface and a new floating IP assi
 
 Next to the free IP, click "Assign to instance" or select this option from the selector on the right.  
   
-<img src="https://support.gcore.com/hc/article_attachments/12392603351313" alt="floating-ip-08.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12392603351313.png" alt="floating-ip-08.png">
 
 Select the instance in the pop-up window, and the floating IP's network interface will be assigned. Click **Assign floating IP**.
 
-<img src="https://support.gcore.com/hc/article_attachments/12392628635793" alt="floating-ip-09.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12392628635793.png" alt="floating-ip-09.png">
 
 ## Detach a floating IP from an instance
 
 You can detach a floating IP address in the "Floating IPs" section or in the instance menu. In the "Floating IP" section, click the selector next to the address and select **Detach from Instance**, and the IP will no longer be assigned to the machine.
 
-<img src="https://support.gcore.com/hc/article_attachments/12392631295505" alt="floating-ip-10.png">  
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12392631295505.png" alt="floating-ip-10.png">  
 
 In the instance menu, open the "Networking" tab and select the private interface. Open the selector and click "**Detach Floating IP**". The IP will no longer be assigned to this machine.
 
-<img src="https://support.gcore.com/hc/article_attachments/12392664056465" alt="floating-ip-11.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12392664056465.png" alt="floating-ip-11.png">
 
 ## Delete a floating IP
 
 In the "Floating IPs" section, click the selector next to the desired address and select **Delete**. The IP will be removed, and you don't have to pay anymore.
 
-<img src="https://support.gcore.com/hc/article_attachments/12392700821393" alt="floating-ip-12.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12392700821393.png" alt="floating-ip-12.png">
