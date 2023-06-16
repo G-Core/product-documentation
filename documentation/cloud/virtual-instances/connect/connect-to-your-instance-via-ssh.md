@@ -72,7 +72,7 @@ Important! During the key generation, move the cursor in the Key field until th
 
 4\. Enter the key name in the Enter file in which the key should be saved field. 
 
-**Attention!** If you do not specify a directory (for example, .ssh/), the keys are saved in~. /<key name> (for Linux/macOS) or in C:\\Users\\<user\_name>\\<key name> (for Windows 10). 
+**Attention!** If you do not specify a directory (for example, .ssh/), the keys are saved in~. /<key name> (for Linux/macOS) or in C:\\Users\\<user_name>\\<key name> (for Windows 10). 
 
 5\. Press Enter. 
 
@@ -84,7 +84,7 @@ Important! During the key generation, move the cursor in the Key field until th
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh/____________.png" alt="____________.png">
 
-9\. The public part of the key will be saved in the <key\_name>.pub file. Use it to add it to an instance. You can open the ssh key file in text format for copying in the Notepad app. 
+9\. The public part of the key will be saved in the <key_name>.pub file. Use it to add it to an instance. You can open the ssh key file in text format for copying in the Notepad app. 
 
  **Generate SSH keys in the personal account** 
 
@@ -187,9 +187,9 @@ It is not necessary to specify the password explicitly, you can enter its hash (
 \# pip3 install passlib  
 import sys  
 from getpass import getpass  
-from passlib.hash import sha512\_crypt  
+from passlib.hash import sha512_crypt  
 passwd = input() if not sys.stdin.isatty() else getpass()  
-print(sha512\_crypt.hash(passwd , rounds = 5000 ))
+print(sha512_crypt.hash(passwd , rounds = 5000 ))
 ```
 
 ## Connecting via SSH
@@ -268,7 +268,7 @@ If you want to connect using a password, enter the command:
 
 If you want to connect using a pair of SHH keys, enter the command:
 
-`ssh username@192.168.1.92 -i "C:\\Users\\username\\.ssh\\id\_rsa`
+`ssh username@192.168.1.92 -i "C:\\Users\\username\\.ssh\\id_rsa`
 
 Replace "username" with your username, which can be found on the the right-hand side of the "Access to Console" button. Additionally, replace "192.168.1.92 with the IP address of your instance, and replace "C:\\Users\\username\\.ssh\\id_rsa" with the path to your private key file in PEM format on your computer.                                                     
 Important! If you created an instance with only a private interface, create a floating IP address and use it when connecting to the instance over ssh.

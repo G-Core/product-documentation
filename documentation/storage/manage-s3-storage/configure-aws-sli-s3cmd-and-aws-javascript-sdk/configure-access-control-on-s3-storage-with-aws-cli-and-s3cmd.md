@@ -49,7 +49,7 @@ We've provided examples of ACLs and policies for some common tasks in managing S
 In all the commands and JSON files, you need to replace the following with your values:
 
 - Replace _sample.jpg_ with your object.
-- Replace _my\_bucket_ with your bucket.
+- Replace _my_bucket_ with your bucket.
 - Replace _https://s-ed1.cloud.gcore.lu_ with your hostname.
 
 ### Allow an object downloading by ACL
@@ -65,7 +65,7 @@ aws s3api put-bucket-acl --bucket my_bucket --acl public-read --endpoint-url=htt
 S3cmd:
 
 ```
-s3cmd setacl s3://my\_bucket/sample.jpg --acl-public
+s3cmd setacl s3://my_bucket/sample.jpg --acl-public
 ```
 
 **Note**: This will make the specified object in the bucket publicly available to everyone.

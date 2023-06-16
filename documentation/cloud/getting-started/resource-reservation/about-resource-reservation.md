@@ -52,7 +52,7 @@ Reserve a server
 9\. Wait while we process the reservation request. Your reservation will go through four status changes:
 
 *   CREATED: The request has been created, and we are preparing the equipment.
-*   IN\_PROGRESS: Your server is already reserved, but not yet ready to use. Our billing department is preparing your individual rate plan and preparing to receive payment for the first month of the reservation.
+*   IN_PROGRESS: Your server is already reserved, but not yet ready to use. Our billing department is preparing your individual rate plan and preparing to receive payment for the first month of the reservation.
 *   ACTIVE: The requested servers are allocated to you. Once you create your desired bare metal server, it will be counted for the reservation.
 *   EXPIRED: The reservation period has ended.
 
@@ -72,4 +72,4 @@ If you create a server later or do not create a server at all, your payment will
 Can I cancel my reservation?
 ----------------------------
 
-You can only cancel reservations with the CREATED status. Reservations with IN\_PROGRESS, ACTIVE, or EXPIRED statuses cannot be canceled.
+You can only cancel reservations with the CREATED status. Reservations with IN_PROGRESS, ACTIVE, or EXPIRED statuses cannot be canceled.

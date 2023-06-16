@@ -150,7 +150,7 @@ You can add an existing SSH key or generate a new one. You enter a public key an
 
 ![the field for credentials to access a Windows instance](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/12-access-for-windows-instance.png)
 
-Your password must contain between 8 and 16 characters and at least one lowercase letter (a-z), one uppercase letter (A-Z), one number (0-9) and one special character (!#$%&’()\*+,-./:;<=>?@\[\]^\_{|}~).
+Your password must contain between 8 and 16 characters and at least one lowercase letter (a-z), one uppercase letter (A-Z), one number (0-9) and one special character (!#$%&’()\*+,-./:;<=>?@\[\]^_{|}~).
 
 You can connect to a Windows instance <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from your Control Panel</a> or from your computer over RDP protocol.
 
@@ -178,9 +178,9 @@ You can configure the password hash—a machine-readable set of symbols. It’ll
 \# based on [https://stackoverflow.com/a/17992126/117471](https://stackoverflow.com/a/17992126/117471)\# pip3 install passlib  
 import sys  
 from getpass import getpass  
-from passlib.hash import sha512\_crypt  
+from passlib.hash import sha512_crypt  
 passwd = input() if not sys.stdin.isatty() else getpass()  
-print(sha512\_crypt.hash(passwd , rounds = 5000 ))
+print(sha512_crypt.hash(passwd , rounds = 5000 ))
 ```
 
 *   Turn on **Add tags** to add a key-value pair that form the metadata of the virtual machine description.

@@ -34,7 +34,7 @@ To make a snapshot of the disk, go to the "Snapshots" section inside the project
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/_______________.png" alt="_______________.png">
 
-In the "Take snapshot" section, select the disk to create the snapshot. **System disks** will have the "\_bootvolume" Postfix -> Enter a name for the snapshot in the "Name" field and click "Create snapshot". 
+In the "Take snapshot" section, select the disk to create the snapshot. **System disks** will have the "_bootvolume" Postfix -> Enter a name for the snapshot in the "Name" field and click "Create snapshot". 
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/_______________________________.png" alt="_______________________________.png">
 

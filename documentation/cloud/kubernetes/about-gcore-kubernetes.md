@@ -11,7 +11,7 @@ Kubernetes is a container management system that can be deployed and used on our
 
 *   Cluster nodes are our <a href="https://gcorelabs.com/cloud/compute-resources/" target="_blank">virtual machines</a>.
 
-*   Kubernetes-supported versions are 1.24, 1.25, and 1.26. If a new version is released, you can upgrade to it without losing data by clicking just one button in your personal account.   
+*   Kubernetes-supported versions are 1.24, 1.25, 1.26, and 1.27. If a new version is released, you can upgrade to it without losing data by clicking just one button in your personal account.   
   
 *   Support for bare-metal nodes, which helps improve performance and reduces latency even further.  
     

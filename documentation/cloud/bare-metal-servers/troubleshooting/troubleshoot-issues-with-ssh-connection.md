@@ -26,7 +26,7 @@ In the default group, which is configured by default for all users, the above se
 
 While generating a key with the PuttyGen utility, you should keep in mind that PuTTY and OpenSSH use different formats of public SSH keys. If the public key has a format like BEGIN SSH2 PUBLIC KEY, it will not work. The key should start with \\"ssh-rsa AAAA...\\".
 
-When creating a key from the PuttyGen utility, you can just use The OpenSSH format key that appears in the interface after generation. You should copy it from the field \\"Public key for pasting into OpenSSH authorized\_keys file\\"
+When creating a key from the PuttyGen utility, you can just use The OpenSSH format key that appears in the interface after generation. You should copy it from the field \\"Public key for pasting into OpenSSH authorized_keys file\\"
 
 ## No floating (public) IP address. Connection refused error
 

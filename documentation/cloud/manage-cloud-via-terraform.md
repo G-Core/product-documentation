@@ -315,7 +315,7 @@ resource "gcore_k8s" "v" {
   - Specify the “max_node_count” for autoscaling.
   - Specify the “node_count”. This is the initial number of nodes to be deployed.
   - (optional) Specify the “docker_volume_size” in GB.
-  - (optional) Select “docker_volume_type”: “standard”, “ssd\_hiiops”, “cold”, or “ultra”.
+  - (optional) Select “docker_volume_type”: “standard”, “ssd_hiiops”, “cold”, or “ultra”.
 
 4\. Save changes in the file.
 

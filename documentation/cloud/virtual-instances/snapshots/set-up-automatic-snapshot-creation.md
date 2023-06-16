@@ -60,7 +60,7 @@ Confirm your choice by clicking "Save" in the pop-up window.
 
 </media-gallery>
 
-In the "Name template" field, enter a name for future snapshots. All Snapshots created within this schedule will receive it. You can use the dynamic variable "{volume\_id}" in the template — it will be replaced with your volume's name automatically. For example, if the volume is named "Disk\_1" and the Name template is "Snapshot of {volume\_id}", then the system will create the snapshot "Snapshot of Disk\_1".
+In the "Name template" field, enter a name for future snapshots. All Snapshots created within this schedule will receive it. You can use the dynamic variable "{volume_id}" in the template — it will be replaced with your volume's name automatically. For example, if the volume is named "Disk_1" and the Name template is "Snapshot of {volume_id}", then the system will create the snapshot "Snapshot of Disk_1".
 
 2. Set the maximum resource quantity
 
