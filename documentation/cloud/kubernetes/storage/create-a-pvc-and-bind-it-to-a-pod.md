@@ -19,7 +19,7 @@ A PV represents a piece of available storage. To use a PV, a user needs to creat
 
 ## Create a PVC
 
-There are four storage classes based on the disk type: standard, ultra, cold, and ssd\_hiiops. The standard disk-type storage class exists by default, so you simply need to create a default PVC. For any other disk type, you first have to create a storage class with the required disk type and then create a PVC.
+There are four storage classes based on the disk type: standard, ultra, cold, and ssd_hiiops. The standard disk-type storage class exists by default, so you simply need to create a default PVC. For any other disk type, you first have to create a storage class with the required disk type and then create a PVC.
 
 ### Create a PVC to connect to a standard disk-type storage class
 

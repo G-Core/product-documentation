@@ -26,7 +26,7 @@ telnet 92.000.000.00 22
 Trying 92.000.000.00...  
 Connected to 92.000.000.00  
 Escape character is '^]'.  
-<span style="color:#FF5913">**SSH-2.0-OpenSSH\_7.2 FreeBSD-20161230</span>
+<span style="color:#FF5913">**SSH-2.0-OpenSSH_7.2 FreeBSD-20161230</span>
 Connection closed by foreign host.
 </code-block>
 

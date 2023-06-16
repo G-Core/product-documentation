@@ -81,7 +81,7 @@ Only private IPv4 addresses can be used in subnets.
     
 <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/create-a-bare-metal-server/9._SSH.png" alt="9._SSH.png"> 
 
-If you select Windows Server OS, you should set a password for the Admin user. It can contain Latin letters (a-zA-Z), numbers (0-9) and special characters (!#$%&'()\*+,-./:;<=>?@\[\]^\_{|}~). Valid length is from 8 to 16 characters. You can connect to the Windows server <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from your Control Panel</a> or from your computer using the RDP protocol.
+If you select Windows Server OS, you should set a password for the Admin user. It can contain Latin letters (a-zA-Z), numbers (0-9) and special characters (!#$%&'()*+,-./:;<=>?@[]^_{|}~). Valid length is from 8 to 16 characters. You can connect to the Windows server <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from your Control Panel</a> or from your computer using the RDP protocol.
     
 <img style="font-size: 15px;" src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/create-a-bare-metal-server/10._Admin.png" alt="10._Admin.png">
 
@@ -95,7 +95,7 @@ For example, you may insert a script that will allow connecting to a Linux serve
 #cloud-config  
 password: **your password**  
 chpasswd: { expire: False }  
-ssh\_pwauth: True
+ssh_pwauth: True
 ```
 
 Using the specified password you will be able to connect to the server. It is not necessary to specify the password explicitly, you can enter its hash (the same password, only in a converted form; the system will be able to read it, but for a person, it looks like a random set of symbols). Then, even if someone gets into the system, he or she won’t know the password — only the hash will be stored inside. And the system will open its doors only to the user who knows the password.
@@ -108,9 +108,9 @@ To generate a hash, you can use the Python script:
 \# pip3 install passlib  
 import sys  
 from getpass import getpass  
-from passlib.hash import sha512\_crypt  
+from passlib.hash import sha512_crypt  
 passwd = input() if not sys.stdin.isatty() else getpass()  
-print(sha512\_crypt.hash(passwd , rounds = 5000 ))
+print(sha512_crypt.hash(passwd , rounds = 5000 ))
 ```
 
 7. Tags are key-value pairs that form the metadata of the machine description. Also, you can tag your server. To to do it, activate the Tags option, and set the necessary ones. Tags are key-value pairs that form the metadata of the Baremetal machine description.
