@@ -18,9 +18,8 @@ You can view the current CDN pricing on <a href="https://gcore.com/pricing/" tar
 
 Each plan description shows prices for traffic within a month limit and for overage. There is also a request limit. When the number of requests exceeds your plan's limit, you are charged additionally.
 
-<img title="" src="https://assets.gcore.pro/docs/cdn/how-the-cdn-service-and-its-additional-options-are-billed/image-5.png" alt="" width="70%">
-
-
+<p><img title="" src="https://support.gcore.com/hc/article_attachments/4409801162513/image-5.png" alt="" width="70%">
+</p>
 
 
 |             | Monthly traffic limit                                                                                                                                                                                           | Traffic overage                                                                                                                                                                                                                                                                                                                                                                                                               | Request overage                                                                                                                            |
@@ -68,7 +67,8 @@ Log in to your account, click the profile icon and go to "Billing". Find the fo
 - Expenses — all transactions that have been made to pay for all products and services,
 - Payments —all transactions you have made to recharge your account.
 
-<img src="https://assets.gcore.pro/docs/cdn/how-the-cdn-service-and-its-additional-options-are-billed/mceclip0.png" alt="">
+<p><img src="https://support.gcore.com/hc/article_attachments/5092187195793/mceclip0.png" alt=""></p>
+
 
 ## Change your billing plan
 
