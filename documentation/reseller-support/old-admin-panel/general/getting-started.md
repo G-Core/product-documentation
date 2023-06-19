@@ -80,7 +80,7 @@ Articles on service management:
 Useful links
 ------------
 
-If you would like to get notifications about planned maintenance activities and incidents, subscribe to our [Status Page](https://status.gcorelabs.com/#cdn). You can read more about the service and its subscription methods in [this](https://reseller.support.gcore.com/hc/en-us/articles/360002467098-Status-Page) article.
+If you would like to get notifications about planned maintenance activities and incidents, subscribe to our [Status Page](https://status.gcorelabs.com/#cdn). You can read more about the service and its subscription methods in <a href="https://gcore.com/docs/account-settings/be-aware-of-the-service-status-scheduled-and-emergency-maintenance" target="_blank">this</a> article.
 
 [Reseller API documentation.](https://reseller.gcorelabs.com/hc/en-us/articles/115005838145)
 

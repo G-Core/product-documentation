@@ -52,7 +52,7 @@ If you have recharged your account balance or paid for a specific server by dire
 
 <img src="https://assets.gcore.pro/docs/hosting/virtual-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment-/image3.png" alt="" width="70%">
 
-If money has been automatically written off from the card during auto payment, follow the payment status in the "Expenses" section. The system creates a new line there for each attempt to write off funds. As soon as the money is written off, the "Not paid" column will have the value zero, and the "Payments" column will have the number of the created payment, during which the money came to the balance (information about it can be viewed in the "Payments" section). If the money was written off and did not come to the balance within 15 minutes [write to technical support](https://reseller.support.gcore.com/hc/en-us/articles/115003753885) and we will help.
+If money has been automatically written off from the card during auto payment, follow the payment status in the "Expenses" section. The system creates a new line there for each attempt to write off funds. As soon as the money is written off, the "Not paid" column will have the value zero, and the "Payments" column will have the number of the created payment, during which the money came to the balance (information about it can be viewed in the "Payments" section). If the money was written off and did not come to the balance within 15 minutes <a href="https://gcore.com/docs/hosting/contact-our-technical-support" target="_blank">write to technical support</a> and we will help.
 
 <img src="https://assets.gcore.pro/docs/hosting/virtual-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment-/image4.png" alt="" width="70%">
 

@@ -19,7 +19,7 @@ Different hosting providers offer different firewalls (often for additional cost
   
 ## Web server
 
-Don't use this method if you have set the <a href="https://gcore.com/docs/web-security/get-an-actual-ip-addresses-of-visitors-from-the_x-forward-for-header" target="_blank">X-Forwarded-For header</a>: the requests will be blocked.
+Don't use this method if you have set the <a href="https://gcore.com/docs/web-security/get-an-actual-ip-addresses-of-visitors-from-the-x-forward-for-header" target="_blank">X-Forwarded-For header</a>: the requests will be blocked.
 
 ### Apache
 

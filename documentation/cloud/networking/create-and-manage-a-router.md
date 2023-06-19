@@ -27,7 +27,7 @@ Go to the project, section Networking → Routers and click on Create router. 
 
 In the appeared window configure a new router: 
 
-1.1. Select the network and subnet to configure routing. If necessary, you can add multiple subnets by clicking on Add subnet. For more information about creating and configuring a network and subnet, see the article [Networking](https://reseller.support.gcore.com/hc/ru/articles/360013801997). 
+1.1. Select the network and subnet to configure routing. If necessary, you can add multiple subnets by clicking on Add subnet. For more information about creating and configuring a network and subnet, see the article <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-network" target="_blank">Networking</a>. 
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/3._________.png" alt="3._________.png">
 
