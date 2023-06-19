@@ -31,7 +31,7 @@ Give it a name and navigate to the General tab on the right.
 
 ### Connect with a password
 
-<img src="https://support.gcore.com/hc/article_attachments/13814507121937" alt="" width="70%">
+<img src="https://support.gcore.com/hc/article_attachments/13814507121937" alt="" width="50%">
 
 Choose SFTP - SSH File Transfer Protocol in the "Protocol" field drop-down menu.
 
@@ -45,7 +45,7 @@ Click **OK** to save the changes and Connect to establish a connection to the st
 
 ### Connect with an SSH key
 
-<img src="https://support.gcore.com/hc/article_attachments/13814523568017" alt="" width="70%">
+<img src="https://support.gcore.com/hc/article_attachments/13814523568017" alt="" width="50%">
 
 Choose SFTP - SSH File Transfer Protocol in the Protocol field drop-down menu.
 

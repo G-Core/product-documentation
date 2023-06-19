@@ -212,7 +212,7 @@ The certificate issuance may take up to 30 minutes. During this time, please do 
   - **A rule with /\***. This rule will catch any strings and override the hidden rule that is necessary to obtain a certificate.
   - **A rule with ((?!(jpeg|gif|png|pdf|jpg|css|js|woff|woff2|ttf)).)\*$**. This rule will catch all non-static files.
     
-You can check your resource rules using the service <a href="https://regex101.com/r/6BCT9Z/1" target="_blank">regex1. If you find a rule that blocks Let's Encrypt certificate issuance, delete the rule or change its pattern. The next time Let's Encrypt sends a request, the certificate issuance should be successful.
+You can check your resource rules using the service <a href="https://regex101.com/r/6BCT9Z/1" target="_blank">regex</a>. If you find a rule that blocks Let's Encrypt certificate issuance, delete the rule or change its pattern. The next time Let's Encrypt sends a request, the certificate issuance should be successful.
     
 If an error occurs during certificate issuance, the Enable HTTPS toggle will be disabled and a notification will be sent to your email.
     
