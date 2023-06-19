@@ -1,21 +1,24 @@
-﻿---
+---
 title: customize-initial-setup-for-your-instance
-displayName: Customize initial setup
+displayName: 'Customize initial setup'
 published: false
 order: 15
 toc:
-   --1--Why automate the initial setup?: "why-automate-the-initial-setup"
-   --1--What is cloud-init?: "what-is-cloud-init"
-   --1--Available options:
-   --2--Set a password: "set-a-password-for-a-instance"
-   --2--Create a user: "create-a-user"
-   --2--Configure groups: "configure-user-groups"
-   --2--Add an SSH key: "add-an-ssh-key"
-   --2--Install packages: "add-repositories-and-install-packages"
-   --2--Write files: "write-files"
-   --2--Configure network interfaces: "configure-network-interfaces"
-   --2--Add repositories: "add-repositories-and-install-packages"
+    '--1--Why automate the initial setup?': why-automate-the-initial-setup
+    '--1--What is cloud-init?': what-is-cloud-init
+    '--1--Available options': null
+    '--2--Set a password': set-a-password-for-a-instance
+    '--2--Create a user': create-a-user
+    '--2--Configure groups': configure-user-groups
+    '--2--Add an SSH key': add-an-ssh-key
+    '--2--Install packages': add-repositories-and-install-packages
+    '--2--Write files': write-files
+    '--2--Configure network interfaces': configure-network-interfaces
+    '--2--Add repositories': add-repositories-and-install-packages
+slugs:
+    - ___UNPUBLISHED___lj2l332f_ZQGjJ5ZHNArbZ2S2oWiGlqchvmTsHdh2
 ---
+
 # Customize the Initial Setup for Your Instance
 
 ## Why automate the initial setup?
