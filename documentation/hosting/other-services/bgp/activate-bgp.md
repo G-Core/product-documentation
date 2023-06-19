@@ -12,4 +12,4 @@ BGP is available only on dedicated servers. The service is paid and is not avail
 
 To get BGP, order the service from the Control Panel and contact via ticket us to set it up. 
 
-<img class="WACImage SCXW250742413" src="https://support.gcore.com/hc/article_attachments/360000261425/blobid0.png">
+<img class="WACImage SCXW250742413" src="https://assets.gcore.pro/docs/hosting/other-services/bgp/activate-bgp/blobid0.png">

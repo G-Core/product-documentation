@@ -21,7 +21,7 @@ Record is a paid feature that allows you to record your live streams and store t
 
 Please, send us the request to activate the option via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of our website. Specify your ID in the request so that we can identify your account. You can find it on the main page of your Control panel.
 
-<img src="https://support.gcore.com/hc/article_attachments/9612975911185" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/record-your-live-streams-and-save-them-as-videos/9612975911185.png" alt="" width="70%">
 
 The message template: *"Good afternoon! Please enable the Record feature for an account with ID … (your ID)"*.
 
@@ -39,11 +39,11 @@ To record a live stream manually:
 
 3\. Press the **Start record** button.
 
-<img src="https://support.gcore.com/hc/article_attachments/9612975915665" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/record-your-live-streams-and-save-them-as-videos/9612975915665.png" alt="" width="70%">
 
 After 5–10 seconds, the recording will start. You will see the timer and the **Stop record** button.
 
-<img src="https://support.gcore.com/hc/article_attachments/9612975948817" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/record-your-live-streams-and-save-them-as-videos/9612975948817.png" alt="" width="50%">
 
 In cases of accidentally interrupting the live stream (bad internet connection, broken cable, etc.), recording will be continued when the live stream resumes. The recording will be saved as one video if the interruption is less than one minute. The recording will be divided into several videos if the interruptions are more than one minute.
 
@@ -69,8 +69,8 @@ After you record a stream, the recording is saved in the Streaming’s storage. 
 
 1. Open the **Videos** tab.
 
-<img src="https://support.gcore.com/hc/article_attachments/9612975963921" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/record-your-live-streams-and-save-them-as-videos/9612975963921.png" alt="" width="70%">
 
 2. Go to the recording settings to the **Export** tab. Here you can copy the iFrame code to embed the recording on your website and download the recording of the quality you want.
 
-<img src="https://support.gcore.com/hc/article_attachments/9612950210193" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/record-your-live-streams-and-save-them-as-videos/9612950210193.png" alt="" width="70%">

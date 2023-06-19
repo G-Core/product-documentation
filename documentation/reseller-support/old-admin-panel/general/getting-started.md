@@ -57,19 +57,19 @@ Service management
 
 All our services are available for reselling: CDN, DDoS Protection, Media Platform, Cloud, and Storage. When signing the contract, you discuss with your manager what services you want to resell. By default, the selected services will be displayed in the client's control panel. You can adjust the visibility of products to all customers in the "Services" section of the admin panel:
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/360005468117/1577166700748.png" alt="1577166700748.png">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/general/getting-started/1577166700748.png" alt="1577166700748.png">
 
 You can also override the General settings from the "Services" section in the client settings. To go to Settings, click on the wrench icon next to the desired client. If you click on the arrow icon you'll log in the client control panel under client's admin user
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/360005261678/blobid0__4_.png" alt="blobid0__4_.png">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/general/getting-started/blobid0__4_.png" alt="blobid0__4_.png">
 
 On the "Settings" -> "Services" tab, select the services that you want to display in the client's control panel.
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/360005554498/1577167545948.png" alt="1577167545948.png">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/general/getting-started/1577167545948.png" alt="1577167545948.png">
 
 Please note that displaying a service in the control panel does not allow the client to manage it by default. If the service is displayed but not configured (see the service management articles below), the customer will see the service activation request window:
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/360005468697/1577167734747.png" alt="1577167734747.png">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/general/getting-started/1577167734747.png" alt="1577167734747.png">
 
 When submitting an activation request, G-Core Labs technical support or you —depending on the setting of the "Support email" field in the "[Branding](https://reseller.gcorelabs.com/hc/ru/articles/115005733445)" section — will receive an email about the client's wish to access the service.
 
@@ -80,10 +80,10 @@ Articles on service management:
 Useful links
 ------------
 
-If you would like to get notifications about planned maintenance activities and incidents, subscribe to our [Status Page](https://status.gcorelabs.com/#cdn). You can read more about the service and its subscription methods in [this](https://support.gcorelabs.com/hc/en-us/articles/360002467098-Status-Page) article.
+If you would like to get notifications about planned maintenance activities and incidents, subscribe to our [Status Page](https://status.gcorelabs.com/#cdn). You can read more about the service and its subscription methods in [this](https://reseller.support.gcore.com/hc/en-us/articles/360002467098-Status-Page) article.
 
 [Reseller API documentation.](https://reseller.gcorelabs.com/hc/en-us/articles/115005838145)
 
 [Services API documentation](https://docs.gcorelabs.com/cdn/).
 
-This knowledge base describes how to manage services as an administrator from the admin control panel and doesn't include articles on how to set up services as a client. For the latter, read the articles here: [https://support.gcorelabs.com/hc/en-us](https://support.gcorelabs.com/hc/en-us). If you have questions, please, send them to [support@gcorelabs.com](mailto:support@gcorelabs.com).
+This knowledge base describes how to manage services as an administrator from the admin control panel and doesn't include articles on how to set up services as a client. For the latter, read the articles here: [https://reseller.support.gcore.com/hc/en-us](https://reseller.support.gcore.com/hc/en-us). If you have questions, please, send them to [support@gcorelabs.com](mailto:support@gcorelabs.com).

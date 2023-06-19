@@ -22,7 +22,7 @@ If your live streams are usually longer, you can increase the DVR playback time 
 
 To enable the feature, send us a request via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of our website. Please specify your ID in the request, so we can identify your account. You can find it on the main page of your control panel.
 
-<img src="https://support.gcore.com/hc/article_attachments/9654962196625" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/pause-and-rewind-the-live-streams/9654962196625.png" alt="" width="70%">
 
 The message template: *"Greetings! Please enable the DVD feature for the account with ID … (your ID)"*. Specify if you want to increase the playback time to 4 hours.
 
@@ -34,7 +34,7 @@ We will notify you when the feature is enabled. After that, you will be able to 
 
 Complete the remaining steps on the Live stream settings page.
 
-<img src="https://support.gcore.com/hc/article_attachments/9654917509521" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/pause-and-rewind-the-live-streams/9654917509521.png" alt="">
 
 2. Turn on the **DVR** toggle to activate the feature. After you start the broadcast with the DVR feature enabled, it takes about 10 minutes for the content to accumulate in the cache for rewinding. For the first 10 minutes, there won’t be the ability to pause or rewind the broadcast.
 
@@ -42,6 +42,6 @@ Complete the remaining steps on the Live stream settings page.
 
 4. Save changes, so that the scroll bar appears in the player for viewers and they can navigate your broadcast.
 
-<img src="https://support.gcore.com/hc/article_attachments/9654917633553" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/pause-and-rewind-the-live-streams/9654917633553.png" alt="" width="70%">
 
 For Android smartphones, double-tapping the player screen in our player rewinds or skips forward by 10–15 seconds, depending on whether you press on the left or right, respectively.

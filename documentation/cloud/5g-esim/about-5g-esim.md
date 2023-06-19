@@ -19,7 +19,7 @@ The Gcore 5G eSIM solution is a technology that combines the power of 5G network
 
 The user activates their eSIM card and then connects to their mobile 5G network. Once the 5G connection is established, the user can access and manage resources in their dedicated region within the Gcore Cloud platform. This could involve real-time data processing, analytics, running AI models, or using other Cloud services. The combination of 5G eSIM technology and Cloud connectivity ensures a seamless experience and brings a wealth of benefits.
 
-<img src="https://assets.gcore.pro//docs/cloud/5g-esim/how-it-works-1.png" alt="how 5G works with the Gcore Cloud Platform"> 
+<img src="https://assets.gcore.pro/docs/cloud/5g-esim/about-5g-esim/how-it-works-1.png" alt="how 5G works with the Gcore Cloud Platform"> 
 
 ## Advantages of 5G
 

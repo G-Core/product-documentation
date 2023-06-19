@@ -24,15 +24,15 @@ DNS Failover is needed to make your site or application available for all users 
 
 It’s especially important for business areas where the loss of availability means the loss of customers. Let’s use an example to explain. Imagine that you own an online store that works in Europe and the United States. Your site is on two servers: a European one and an American one. You use geo balancing to route people from all over the world to the closest server so that the site loads faster. Customers from Paris, France, and Barcelona, Spain, are balanced to the European server, while users from Vancouver, Canada, and Chicago, United States, are balanced to the American one.
 
-<img src="https://support.gcore.com/hc/article_attachments/9684855295377" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/about-dns-failover/9684855295377.png" alt="" width="70%">
 
 One day, the European server crashes, and users who were being balanced to the European server get an error instead of your site. While the server is being fixed, customers go to a competitor’s site to make purchases faster.
 
-<img src="https://support.gcore.com/hc/article_attachments/9684878611345" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/about-dns-failover/9684878611345.png" alt="" width="70%">
 
 Then you enable DNS Failover. This feature constantly monitors your servers’ availability. The next time the European server crashes, DNS Failover will tell the DNS server not to add the unavailable European server IP in DNS responses. All requests from your customers will be directed to the American server, so your web application will still be working. Customers will be able to make purchases with no problems.
 
-<img src="https://support.gcore.com/hc/article_attachments/9684855397905" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/about-dns-failover/9684855397905.png" alt="" width="70%">
 
 When your European server recovers, DNS Failover will detect that and return its IP in the DNS responses.
 
@@ -50,31 +50,31 @@ For example, you can set the configuration for DNS Failover requests as follows:
 
 2\. Requests are sent from all our locations where there are DNS servers. If your web servers send responses to DNS Failover within the set timeout (e.g., 10 seconds) in 85% of locations, the feature will mark them as available.
 
-<img src="https://support.gcore.com/hc/article_attachments/9684855402769" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/about-dns-failover/9684855402769.png" alt="" width="70%">
 
 If a web server doesn’t send a response to DNS Failover within the set timeout in 20% of locations, the feature will mark them as unavailable.
 
-<img src="https://support.gcore.com/hc/article_attachments/9684855522193" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/about-dns-failover/9684855522193.png" alt="" width="70%">
 
 3\. If a web server is unavailable, DNS Failover will notify the DNS server: *"Stop responding with the … IP (address of the unavailable server)"*.
 
-<img src="https://support.gcore.com/hc/article_attachments/9684878905617" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/about-dns-failover/9684878905617.png" alt="" width="70%">
 
 **Note:** If all web servers don’t respond, all of their A records will be added to the DNS response regarding other filters like geo or *first_n*.
 
 4\. The DNS server excludes the A record of the unavailable server from responses. All requests that were destined for this server are directed to other available servers.
 
-<img src="https://support.gcore.com/hc/article_attachments/9684879021841" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/about-dns-failover/9684879021841.png" alt="" width="70%">
 
 The balancing mechanism determines which server responds to requests destined for the unavailable server. By default, DNS Failover uses round-robin, but you can configure your own mechanism, such as geo balancing. The configuration for this mechanism is described in the article "<a href="https://gcore.com/docs/dns/dns-failover/configure-and-use-dns-failover" target="_blank">DNS Failover. Configure and use</a>".
 
 5\. DNS Failover keeps sending requests to web servers. When the web server becomes available and responds, the feature will send the appropriate update to the DNS server.
 
-<img src="https://support.gcore.com/hc/article_attachments/9684879045649" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/about-dns-failover/9684879045649.png" alt="" width="70%">
 
 After that, the web server will go back online for end-users again.
 
-<img src="https://support.gcore.com/hc/article_attachments/9684879172113" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/about-dns-failover/9684879172113.png" alt="" width="70%">
 
 ## Configure DNS Failover
 

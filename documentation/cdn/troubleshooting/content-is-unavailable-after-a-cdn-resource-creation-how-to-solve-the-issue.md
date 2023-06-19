@@ -45,31 +45,31 @@ If the CNAME record of the personal domain isn’t configured or configured with
 
 1\. Go to the Resource settings and look at the Setup guide. If there is the _x steps left_ label, click on it. If there is no label, go to the [next section](#2-check-the-host-header-option).
 
-<img src="https://support.gcore.com/hc/article_attachments/9581756189713/image1.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image1.png" alt="" width="70%">
 
 2\. Click the **Check DNS setup status** button.
 
-<img src="https://support.gcore.com/hc/article_attachments/9581707286289/image2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image2.png" alt="" width="70%">
 
 If the CNAME record doesn’t set up, this notification will appear:
 
-<img src="https://support.gcore.com/hc/article_attachments/9581756237585/image3.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image3.png" alt="" width="50%">
 
 If there is a notification, go to step 3. If there isn’t, go to the [next troubleshooting section](#2-check-the-host-header-option).
 
 3\. Open <a href="https://toolbox.googleapps.com/apps/dig/" target="_blank">Google Admin Toolbox</a>, select the CNAME tab, and enter the CNAME of your CDN resource from the notification (in the screenshot above, it is *cdn.example.com*). Press **Enter**.
 
-<img src="https://support.gcore.com/hc/article_attachments/9581756246801/image4.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image4.png" alt="" width="70%">
 
 If the TARGET section with the value from the Setup guide appears at the bottom of the page
 
-<img src="https://support.gcore.com/hc/article_attachments/9581756282769/image5.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image5.png" alt="" width="70%">
 
 it means that you have already configured the CNAME record with the correct value, but the DNS records didn’t update. Repeat step 2 again in 15 minutes. It must show that the record is configured.
 
 If you see the “Record not found!” label
 
-<img src="https://support.gcore.com/hc/article_attachments/9581756291857/image6.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image6.png" alt="" width="70%">
 
 add the CNAME record according to the "<a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">CNAME record configuration in DNS settings</a>" guide.
 
@@ -83,7 +83,7 @@ If the <a href="https://gcore.com/docs/cdn/cdn-resource-options/http-headers/con
 
 1\. Go to the Resource settings and find the Host header option.
 
-<img src="https://support.gcore.com/hc/article_attachments/9581707399697/image7.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image7.png" alt="" width="70%">
 
 2\. Copy the value of the Host header.
 
@@ -111,13 +111,13 @@ If you have chosen the inappropriate <a href="https://gcore.com/docs/cdn/cdn-res
 
 1\. Find out which protocol your website uses. You can see the type of protocol at the left of the domain name in the browser address bar. If there is a padlock icon:
 
-<img src="https://support.gcore.com/hc/article_attachments/9581756338961/image8.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image8.png" alt="" width="50%">
 
 it means that your website works via HTTPS protocol. If you copy the domain name, it will be copied as follows: ```https://example.com```.
 
 If you see the Not secure label:
 
-<img src="https://support.gcore.com/hc/article_attachments/9581756365201/image9.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image9.png" alt="" width="50%">
 
 it means that your website works via HTTP. If you copy the domain, it will be copied as follows: ```http://example.com```.
 
@@ -125,7 +125,7 @@ It is also possible that the content on the origin is available both via HTTP an
 
 2\. Go to the Resource settings and find the Origin pull protocol option. You will see what protocol is selected.
 
-<img src="https://support.gcore.com/hc/article_attachments/9581707441041/image10.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image10.png" alt="" width="70%">
 
 3\. Compare the protocol from step 1 with the value in step 2. If they are the same (e.g., the website works via HTTP and in the Origin pull protocol option HTTP is set), the issue isn’t related to the protocol. Go to the [next troubleshooting section](#4-check-the-ssl-option).
 
@@ -137,11 +137,11 @@ If they are different, go to the next step.
 
 If you enabled the SSL option, but the SSL certificate for your personal domain (e.g., _cdn.example.com_) isn’t added or is added with an error, the content won’t be available via the CDN, or you will see a notification that the connection isn’t secure in the browser.
 
-<img src="https://support.gcore.com/hc/article_attachments/9581707474065/image11.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image11.png" alt="" width="50%">
 
 To check the SSL configuration and set it up correctly, go to the Resource settings and find the SSL option. Make sure that the **Enable HTTPS** option is enabled.
 
-<img src="https://support.gcore.com/hc/article_attachments/9581756421393/image12.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image12.png" alt="" width="70%">
 
 There are two types of SSL configuration: **Get free Let’s Encrypt certificate** and **Add or select your own SSL certificate**. In both cases, wait about 15–30 minutes after you issue/add the certificate for the updates to register.
 
@@ -153,7 +153,7 @@ The troubleshooting scenario depends on the chosen SSL certificate type.
 
 2\. Go to the Resource settings and find the Rules section. If there are no rules, go to the next step.
 
-<img src="https://support.gcore.com/hc/article_attachments/9581756437009/image13.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image13.png" alt="" width="70%">
 
 3\. Make sure that there are no rules denying requests to the personal domain (CNAME) of your CDN resource. Let’s Encrypt sends requests to your personal domain to issue a certificate. If requests are denied, the issue will fail. To determine whether the rule prevents requests, open every rule and look at the **Rule pattern** field. If you see the value
 
@@ -197,7 +197,7 @@ it means that the certificate is self-signed. Self-signed certificates are not s
 - What domain the certificate is valid for
 - Expiration date
 
-<img src="https://support.gcore.com/hc/article_attachments/9581707528977/image14.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image14.png" alt="">
 
 If you see that the certificate is issued for the personal domain of your resource (if you see _*.example.com_, it means that you are using a wildcard certificate that provides all your subdomains, including *cdn.example.com*), and the certificate is not expired. Go to the next step.
 
@@ -205,15 +205,15 @@ If not, you need to renew the certificate (if the problem is caused by expiratio
 
 3\. Go to the <a href="https://www.ssllabs.com/ssltest/" target="_blank">SSLlabs</a> website, enter the personal domain name in the Hostname field and press the **Submit** button as follows:
 
-<img src="https://support.gcore.com/hc/article_attachments/9581756461073/image15.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image15.png" alt="" width="70%">
 
 The check will take a few minutes. If you see no chain issues or the rating A+, the error isn’t related to SSL. Go to the [next section](#5-check-the-cache-options).
 
-<img src="https://support.gcore.com/hc/article_attachments/9581707559825/image16.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image16.png" alt="" width="70%">
 
 If you see class B or chain issues as follows
 
-<img src="https://support.gcore.com/hc/article_attachments/9581707577105/image17.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image17.png" alt="" width="70%">
 
 the chain of the SSL certificate is incomplete or added in the wrong way. Go to the <a href="https://cdn.gcore.com/ssl/list" target="_blank">SSL certificates</a> section on the control panel. Delete the wrong certificate and add it again according to the "<a href="https://gcore.com/docs/cdn/cdn-resource-options/general/add-an-ssl-certificate-to-deliver-content-over-https" target="_blank">How to add a personal SSL certificate in the SSL certificates section</a>" guide. 
 
@@ -225,11 +225,11 @@ To check cache options and set them up correctly:
 
 1\. Go to the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Dashboard</a> section and click **Total traffic**.
 
-<img src="https://support.gcore.com/hc/article_attachments/9581707593105/image18.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image18.png" alt="" width="50%">
 
 2\. Set the **Cache hit ratio** filter, the CDN resource, and the appropriate date. If you see less than 60% of Cache Hit Ratio traffic, it means that a small amount of content is delivered from the cache.
 
-<img src="https://support.gcore.com/hc/article_attachments/9581756539665/image19.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image19.png" alt="" width="70%">
 
 In this case, ensure that you ran the CDN resource more than two days ago. This time is needed to ‘warm up’ the cache. If not, wait two days. Also, you need to have many requests from end-users to cache the requested content. If you have a small number of requests, the cache will be purged in 36 hours, regardless of the settings. Try to increase the amount of traffic. If the problem isn’t solved, go to the next step.
 
@@ -246,11 +246,11 @@ If you see the values, go to the next step. If not, go to step 5.
 
 4\. Go to the Resource settings and find the CDN caching option. Change the settings according to the "<a href="https://gcore.com/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-for-user-browsers" target="_blank">Configure and check CDN caching settings</a>" guide.
 
-<img src="https://support.gcore.com/hc/article_attachments/9581707647377/image20.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image20.png" alt="" width="70%">
 
 5\. Check the Set-Cookie and Query string options. If they are turned off, enable them. When you enable these options, CDN will cache a file with different cookies or query strings as a unique one.
 
-<img src="https://support.gcore.com/hc/article_attachments/9581756582033/image21.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image21.png" alt="" width="70%">
 
 ### 6. Check the Purge option
 

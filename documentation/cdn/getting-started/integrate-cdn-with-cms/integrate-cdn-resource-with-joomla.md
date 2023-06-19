@@ -39,7 +39,7 @@ Click the "Extensions" tab on the top navigation bar and go to Plugins.
 
 Find the CDN plugin for Joomla! It will be displayed as System - CDN for Joomla!, click it to edit settings.
 
-<img src="https://support.gcore.com/hc/ru/article_attachments/115000107985/joomla-1-edit.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-joomla/joomla-1-edit.png" alt="" width="70%">
 
 In the CDN section of the settings page type the CNAME that you specified in the Gcore <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>.
 
@@ -47,7 +47,7 @@ Ensure that your <a href="https://gcore.com/docs/cdn/cdn-resource-options/genera
 
 Click **Save** to save settings.
 
-<img src="https://support.gcore.com/hc/ru/article_attachments/115000107985/joomla-1-edit.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-joomla/joomla-1-edit.png" alt="" width="70%">
 
 Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the control panel.
 

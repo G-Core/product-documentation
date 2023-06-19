@@ -23,13 +23,13 @@ When specifying a custom domain, you can use any domain or subdomain for which y
 
 1\. When <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">creating a CDN resource</a>, enter your desired domain or subdomain name in the "Custom domain" section (Step #3). You can also specify multiple domains by clicking the "+" icon.  
 
-<img src="https://support.gcore.com/hc/article_attachments/12865716431377" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12865716431377.png" alt="" width="50%">
 
 2\. Continue with the creation of the CDN resource.
 
 3\. Copy the value _cl-\*\*\*\*.gcdn.co_ (which is unique for every account and the same for all custom domains of your account) from the "Set up your DNS" page. You can click **Confirm** at this step or later.
 
-<img src="https://support.gcore.com/hc/article_attachments/12865779424017" alt=""  width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/12865779424017.png" alt=""  width="50%">
 
 4\. Go to your DNS provider’s website. 
 
@@ -47,7 +47,7 @@ You can use the ```dig``` command in the terminal or an <a href="https://toolbox
 
 6\. Complete the CDN resource creation. You will see the following pop-up when all configurations are completed:
 
-<img src="https://support.gcore.com/hc/article_attachments/12865856535057" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/12865856535057.png" alt="" width="50%">
 
 ## Check the DNS setup status
 
@@ -57,19 +57,19 @@ The "Setup Guide" will help verify that the configuration was completed successf
 
 2\. Click on "Setup guide".
 
-<img src="https://support.gcore.com/hc/article_attachments/12865899219729" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/12865899219729.png" alt="" width="70%">
 
 3\. A drawer will open, displaying each step of the configuration process. A check mark indicates that the step was successful. If there is no check mark, click on the step and follow the instructions to complete the configuration. When the setup is finished, click **Check DNS Setup Status**.
 
-<img src="https://support.gcore.com/hc/article_attachments/12865917904145" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/12865917904145.png" alt="" width="70%">
 
 - If you see the message "DNS record hasn’t been set up", something has gone wrong. Please check the DNS hosting settings.
 
-<img src="https://support.gcore.com/hc/article_attachments/12865924935057" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/12865924935057.png" alt="" width="50%">
 
 - If you see the message "DNS record has been successfully set up", the configuration has been completed correctly.
 
-<img src="https://support.gcore.com/hc/article_attachments/12865958946065" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/12865958946065.png" alt="" width="50%">
 
 To check the front end of your integrated website, right-click on any static files and choose "Inspect". This will show you the content delivery URL where your file is served.
 
@@ -77,11 +77,11 @@ To check the front end of your integrated website, right-click on any static fil
 
 1\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN resource list</a> and click on the custom domain of the resource you want to configure.
 
-<img src="https://support.gcore.com/hc/article_attachments/12866059375761" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/12866059375761.png" alt="" width="70%">
 
 2\. In the "Custom domain" section, click the plus sign (+) next to the "Domain" field and enter your desired domain name. You can add several domains.
 
-<img src="https://support.gcore.com/hc/article_attachments/12866081938961" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/12866081938961.png" alt="" width="70%">
 
 3\. Click **Save changes** at the bottom of the page.
 

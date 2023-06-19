@@ -17,17 +17,17 @@ To order a server, do three things: select a tariff, configure order parameters 
 
 Choose a tariff. You can see the list of tariffs on the shop window of the Control Panel or the website.
 
-<a href="https://hosting.gcore.com/billmgr)" target="_blank">On the shop window</a>, you choose a location, and the system displays a list of available servers. The description contains the technical characteristics of the server.
+<a href="https://hosting.gcore.com/billmgr" target="_blank">On the shop window</a>, you choose a location, and the system displays a list of available servers. The description contains the technical characteristics of the server.
 
-<img src="https://support.gcore.com/hc/article_attachments/360020051097/image2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/order-a-dedicated-server/image2.png" alt="" width="70%">
 
 <a href="https://gcore.com/hosting/" target="_blank">On the website</a>, you can find the complete list of tariffs with a filter by technical characteristics.
 
 <media-gallery>
 
-<img src="https://support.gcore.com/hc/article_attachments/360020155818/image4.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/order-a-dedicated-server/image4.png" alt="">
 
-<img src="https://support.gcore.com/hc/article_attachments/360020155778/image1.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/order-a-dedicated-server/image1.png" alt="">
 </media-gallery>
 
 Select the data center and the tariff you are interested in. Click "Order" (when ordering through the shop window) or "Buy" (when ordering through the website). If you need a dedicated server, but none of the tariffs fit, <a href="https://gcore.com/docs/hosting/contact-our-technical-support" target="_blank">write to technical support</a>: tell us how many servers you would like to purchase and which configuration you need, and we will try to help you.
@@ -38,7 +38,7 @@ To order several servers in different data centers, you must create a separate o
 
 You will be redirected to the service order page.
 
-<img src="https://support.gcore.com/hc/article_attachments/360020155798/image3.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/order-a-dedicated-server/image3.png" alt="">
 
 At this step, you can specify additional order parameters:
 

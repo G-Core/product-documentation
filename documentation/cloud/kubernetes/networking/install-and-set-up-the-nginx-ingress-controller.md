@@ -108,6 +108,6 @@ kubectl get ingress <ingress name>
 
 You’ll get the output:
 
-<img src="https://support.gcore.com/hc/article_attachments/9570885113745/Output.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/networking/install-and-set-up-the-nginx-ingress-controller/Output.png" alt="" width="70%">
 
 The IP address is written in the ADDRESS column.

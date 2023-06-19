@@ -11,15 +11,15 @@ Every server has one free IPv4, but you can order up to 14 IPv4 and 14 IPv6 addi
 
 Go to "Dedicated Servers" in the Control Panel.
 
-<img src="https://support.gcore.com/hc/article_attachments/115008553929/chrome_2017-09-06_16-38-27.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/additional-ip-addresses/buy-an-additional-ip-address/chrome_2017-09-06_16-38-27.png" alt="">
 
 Choose server for which one you'd like to order additional IPs, click IP Addresses.
 
-<img src="https://support.gcore.com/hc/article_attachments/115008507065/chrome_2017-09-06_16-36-35.png" alt="" >
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/additional-ip-addresses/buy-an-additional-ip-address/chrome_2017-09-06_16-36-35.png" alt="" >
 
 On the opened tab click **Order**.
 
-<img src="https://support.gcore.com/hc/article_attachments/115008554029/chrome_2017-09-06_16-37-04.png" alt="" >
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/additional-ip-addresses/buy-an-additional-ip-address/chrome_2017-09-06_16-37-04.png" alt="" >
 
 Enter a number of IPs and pay for your order.
 

@@ -16,7 +16,7 @@ To protect your website, change your IP address to ours (you can get it once you
 
 Go to the Web Protection tab and click on the **Create DDoS resource** button.
 
-<img src="https://support.gcore.com/hc/article_attachments/8945657763089/mceclip0.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/web-security/create-and-configure-a-protected-resource/mceclip0.png" alt="" width="70%">
 
 Type your website URL without *http(s)://* in the "Your Domain" field.
 
@@ -32,7 +32,7 @@ Click on *Save changes*. Activation will take a couple of minutes.
 
 To add an SSL certificate to your domain or subdomains go to the resource Settings -> SSL -> Edit
 
-<img src="https://support.gcore.com/hc/article_attachments/8945718376849/mceclip1.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/web-security/create-and-configure-a-protected-resource/mceclip1.png" alt="" width="70%">
 
 There are three options:
 

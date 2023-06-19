@@ -15,7 +15,7 @@ toc:
 
 To add an SSL certificate to your domain or subdomains go to the resource Settings and click **Edit** in "SSL Certificate" section.
 
-<img src="https://support.gcore.com/hc/article_attachments/4585574501905/mceclip0.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/web-security/add-an-ssl-certificate-to-your-resource/mceclip0.png" alt="" width="70%">
 
 You can add Let's Encrypt or Custom certificate, or refuse adding a certificate (None).
 
@@ -49,11 +49,11 @@ Once you change the settings we will issue a new Let's Encrypt certificate for y
 2. Copy and paste the certificate chain in the following order: Personal certificate → Intermediate CA → Root CA.  Data in the Certificate field should be inserted, including the tags *- - - - - BEGIN CERTIFICATE - - - - and - - - - - END CERTIFICATE - - - -*. 
 3. Certificate chains must be inserted together.  
       
-<img src="https://support.gcore.com/hc/article_attachments/4585581584657/mceclip1.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/web-security/add-an-ssl-certificate-to-your-resource/mceclip1.png" alt="" width="70%">
 
 4. There should be an empty string at the end of the certificate chain. 
 
-<img src="https://support.gcore.com/hc/article_attachments/4585641946897/mceclip2.png" alt="" width="70%"> 
+<img src="https://assets.gcore.pro/docs/web-security/add-an-ssl-certificate-to-your-resource/mceclip2.png" alt="" width="70%"> 
 
 5. Open a file with the private key (.key) in the Notepad app. 
 6. Copy and paste the key, including the tags *- - - - - BEGIN PRIVATE KEY - - - - and - - - - - END PRIVATE KEY - - - - -*. 

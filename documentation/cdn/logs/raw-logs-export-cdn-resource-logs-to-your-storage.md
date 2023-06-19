@@ -25,7 +25,7 @@ Raw Logs is an option that enables an automatic export of CDN resource logs to y
 
 **Note**: The feature is paid. To activate, contact us via [support@gcore.com](mailto:support@gcore.com). After activation, enable "Raw Logs" in your control panel and configure export to S3, FTP, or SFTP storage.
 
-<img src="https://support.gcore.com/hc/article_attachments/13202181890193" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/13202181890193.png" alt="">
 
 ## What is the "Add logs from origin shielding" option? 
 
@@ -35,7 +35,7 @@ If you are using the <a href="https://gcore.com/docs/cdn/cdn-resource-options/ge
 
 To enable "Add logs from origin shielding", tick the appropriate box when setting up Raw Logs (step #2 in the [guide below](#export-logs-to-an-s3-storage)).
 
-<img src="https://support.gcore.com/hc/article_attachments/15499340205969" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/15499340205969.png" alt="" width="50%">
 
 ## How is traffic calculated in log reports?
 
@@ -93,7 +93,7 @@ Where:
 
 9\. Click **Save changes**.
 
-<img src="https://support.gcore.com/hc/article_attachments/12745153936913" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/12745153936913.png" alt="" width="70%">
 
 ### Non-Amazon storage
 
@@ -113,7 +113,7 @@ Where:
 
 8\. Specify a region — location ID of a server where your storage is hosted. This is optional: for some storages, the region is determined automatically. You can leave the field empty. If you use <a href="https://gcore.com/storage" target="_blank">Gcore S3 storage</a>, a location ID is required. You can find it in the "Details" of the storage. Your location ID is a part of your hostname to the first dot.
 
-<img src="https://support.gcore.com/hc/article_attachments/5620116388497/image_1377.png" alt="" width="50%">  
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/image_1377.png" alt="" width="50%">  
 
 9\. Choose how to organize storage: put logs of all CDN resources into one bucket or to use separate buckets for each CDN resource.
 
@@ -121,7 +121,7 @@ Where:
 
 11\. Click **Save changes**.
 
-<img src="https://support.gcore.com/hc/article_attachments/12745252125201" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/12745252125201.png" alt="" width="70%">
 
 ## Export logs to an FTP/SFTP storage
 
@@ -137,7 +137,7 @@ Where:
 
 6\. Specify a folder for export. If you use <a href="https://gcore.com/storage" target="_blank">Gcore SFTP storage</a>, specify the root (home) folder where other folders originate from. You can find its name in the "Details" of your SFTP storage at the end of the "Upload path" field.
 
-<img src="https://support.gcore.com/hc/article_attachments/5620132659217/image_1379.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/image_1379.png" alt="" width="50%">
 
 If you use an SFTP storage from another provider, clarify whether a root folder that includes other folders is created by default. If not, leave the field empty. If yes, specify a folder name.
 
@@ -146,7 +146,7 @@ If you use an SFTP storage from another provider, clarify whether a root folder 
 8\. Click **Save changes**.
 
 
-<img src="https://support.gcore.com/hc/article_attachments/12745350391697" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/12745350391697.png" alt="" width="70%">
 
 ## Export time intervals
 
@@ -163,6 +163,7 @@ You can see the status of the Raw Logs option in your control panel:
 - "Pause" is a status showing that the option is paused
 
 <p><img src="https://support.gcore.com/hc/article_attachments/5620114453777/image_1381.png" alt="" width="50%"></p>
+
 
 ## Log path example
 

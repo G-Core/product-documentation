@@ -25,7 +25,7 @@ toc:
 
 This article explains how to create DNS records in the advanced mode of <a href="https://gcore.com/dns" target="_blank">Gcore DNS Hosting</a>. Interface mode differences are described in the "<a href="https://gcore.com/docs/dns/about-gcore-dns" target="_blank">About Gcore DNS</a>" article.
 
-<img src="https://support.gcore.com/hc/article_attachments/12986908920977" alt="">  
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/12986908920977.png" alt="">  
 
 ## Create a DNS record
 
@@ -33,11 +33,11 @@ This article explains how to create DNS records in the advanced mode of <a href=
 
 Open the <a href="https://dns.gcore.com/zones" target="_blank">All zones</a> tab and select the domain zone you want to add records for. Click the domain zone or click **Go to records** in the menu that appears when you click on three dots opposite the domain zone. Alternatively, click on the domain name in the "Quick zone selection" list on the left.
 
-<img src="https://support.gcore.com/hc/article_attachments/12987072566929" alt="">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/12987072566929.png" alt="">
 
 The DNS record management page will open. Click **Add record set** there and proceed with other steps.
 
-<img src="https://support.gcore.com/hc/article_attachments/12987146006929" alt="">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/12987146006929.png" alt="">
 
 ### 2. Select the record type
 
@@ -99,7 +99,7 @@ To assign coordinates to each record, add the **latlong** (latitude and longitud
 
 For example, a user closer to the coordinate *51.52318152049715/-0.13458412218999416* (the center of London) will receive an A-record with the value "10.0.0.1", while a user nearer to *48.859741241898114/2.3415648470109653* (the center of Paris) will receive an A-record with the value "10.0.0.2".
 
-<img src="https://support.gcore.com/hc/article_attachments/12988137986449" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/12988137986449.png" alt="" width="70%">
 
 The configuration is complete. As soon as you finish creating records, balancing will work.
 
@@ -131,13 +131,13 @@ To start balancing by ASN, country, or continent, select "by non-coordinates met
 2.  Compare the user's country with the countries specified in the metadata. The country is specified only for the lower record (Finland), it does not match the user's country (Denmark), and the lower record is not sent.
 3.  Compare the user's continent to the continents specified in the metadata. The continent is specified only for the upper record (Europe), it matches the user's continent (Europe). The upper record is sent, and the user goes to the server with IP 10.0.0.1.
 
-<img src="https://support.gcore.com/hc/article_attachments/12988738927249" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/12988738927249.png" alt="" width="70%">
 
 ### 8. (Optional) Specify the maximum number of responses
 
 If you use load balancing, fill in the "Max records per response" field. Here, you can specify the maximum number of records of the same type that can be sent to the user in a single response.
 
-<img src="https://support.gcore.com/hc/article_attachments/12988743231249" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/12988743231249.png" alt="" width="70%">
 
 **An example balancing by ASN/country/continent**. As a result of balancing, it turned out that four A-records are suitable for the user at once. If you enter the number "2" in the "Max records per response", our DNS server will send only two A-records. These records will be randomly selected from the four ones that match.
 
@@ -147,7 +147,7 @@ If you use load balancing, fill in the "Max records per response" field. Here, y
 
 After completing the configuration, click the **Create** button. DNS records with the specified parameters will be created.
 
-<img src="https://support.gcore.com/hc/article_attachments/12988802225041" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/12988802225041.png" alt="" width="70%">
 
 ## Edit a DNS record
 
@@ -155,7 +155,7 @@ After completing the configuration, click the **Create** button. DNS records wit
 
 2\. Click **Edit** in the menu that appears when you click on the three dots next to the desired resource record or on its name.
 
-<img src="https://support.gcore.com/hc/article_attachments/12989011552529" alt="">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/12989011552529.png" alt="">
 
 3\. Make the necessary changes.
 
@@ -167,6 +167,6 @@ After completing the configuration, click the **Create** button. DNS records wit
 
 2\. Click **Delete** in the menu that appears when you click on the three dots next to the desired resource record.
 
-<img src="https://support.gcore.com/hc/article_attachments/12989062101393" alt="">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/12989062101393.png" alt="">
 
 3\. Confirm the deletion.

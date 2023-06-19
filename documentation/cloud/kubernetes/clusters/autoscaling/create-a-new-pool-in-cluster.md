@@ -8,15 +8,15 @@ published: true
 
 1\. In the Cloud menu, go to **Kubernetes**, find the required cluster and click its name.
 
-<img src="https://support.gcore.com/hc/article_attachments/13344056819601" alt="Screenshot_2023-02-27_at_13.37_2.png">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/13344056819601.png" alt="Screenshot_2023-02-27_at_13.37_2.png">
 
 2\. Go to the **Pools** section and click **Add pool**.
 
-<img src="https://support.gcore.com/hc/article_attachments/13344082420369" alt="Screenshot_2023-02-27_at_18.50_1-2.jpg" width="497" height="308">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/13344082420369.png" alt="Screenshot_2023-02-27_at_18.50_1-2.jpg" width="497" height="308">
 
 3\. The new window will expand. 
 
-<img src="https://support.gcore.com/hc/article_attachments/15416891909265">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/15416891909265.png">
 
 Enter the **pool name**, set the **minimum nodes** and **maximum nodes** for <a href="https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling" target="_blank">autoscaling</a>. Autoscaling will regulate the number of nodes within the specified limits by removing unnecessary nodes during low load and deploying new ones during high loads.
 

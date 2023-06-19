@@ -28,8 +28,8 @@ Example. an origin server hosts a 750×1150 px image, but with Crop, you set 50
 <table>
    <thead>
       <tr>
-         <th><img src="https://support.gcore.com/hc/article_attachments/11029483026961" alt="" width="264" height="395"></th>
-         <th><img src="https://support.gcore.com/hc/article_attachments/11029483001489" alt="" width="286" height="229"></th>
+         <th><img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images/11029483026961.png" alt="" width="264" height="395"></th>
+         <th><img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images/11029483001489.png" alt="" width="286" height="229"></th>
       </tr>
       <tr>
          <td>Original image</td>
@@ -81,7 +81,7 @@ where:
 
 **Example**. An origin server hosts a 400×300 image. Its aspect ratio is 4:3. To illustrate this, we’ve place a grid on the picture.
 
-<img src="https://support.gcore.com/hc/article_attachments/11029474366609" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images/11029474366609.png" alt="" width="50%">
 
 You set a new aspect ratio (4:5) by adding the query parameter to the image URL:
 
@@ -91,11 +91,11 @@ img.jpg?crop=4:5
 
 The tool selects a section with this aspect ratio at the center of the original image.
 
-<img src="https://support.gcore.com/hc/article_attachments/11029474389521" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images/11029474389521.png" alt="" width="50%">
 
 Then it cuts off the unwanted parts. Your users will see the image as follows:
 
-<img src="https://support.gcore.com/hc/article_attachments/11029483306129" alt="" width="184">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images/11029483306129.png" alt="" width="184">
 
 How the tool defines what to crop:
 
@@ -122,11 +122,11 @@ where:
 img.jpg?crop=200,100
 ```
 
-<img src="https://support.gcore.com/hc/article_attachments/11029483307409" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images/11029483307409.png" alt="" width="60%">
 
 The tool crops a 200×100 area from the center. This is the section that users will receive when downloading the webpage.
 
-<img src="https://support.gcore.com/hc/article_attachments/11029483406225" alt="" width="200" height="100">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images/11029483406225.png" alt="" width="200" height="100">
 
 ### Crop a section of an original image from a specific location
 
@@ -147,7 +147,7 @@ where:
 
 **Example**. An origin server hosts a 400×300 image; you want to cut out only a 200×100 section with the dog’s muzzle.
 
-<img src="https://support.gcore.com/hc/article_attachments/11029474628113" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images/11029474628113.png" alt="" width="60%">
 
 To crop an image, you add the query parameter to the URL:
 
@@ -159,15 +159,15 @@ Before being delivered to an end user, the image goes through the following conv
 
 1\. As you set in the query parameter, the target area is 200×100 (*crop=200,100*), so the tool selects this area in the picture.
 
-<img src="https://support.gcore.com/hc/article_attachments/11029474783121" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images/11029474783121.png" alt="" width="60%">
 
 2\. You also indicate the coordinates of the starting point for cropping: 107 px from the left side and 30 pixels from the top (*x107,y30*). The tool drags the target area so that its upper-left corner is at this point.
 
-<img src="https://support.gcore.com/hc/article_attachments/11029474833169" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images/11029474833169.png" alt="" width="60%">
 
 3\. The tool cuts out the section. The cropped image looks as follows:
 
-<img src="https://support.gcore.com/hc/article_attachments/11029474904721" alt="" width="200" height="100">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images/11029474904721.png" alt="" width="200" height="100">
 
 #### Specify a location using two coordinates measured as a percentage of the original image
 
@@ -184,7 +184,7 @@ where:
 
 **Example**. An origin server hosts a 400×300 image; you want to cut out only a 200×100 section with the dog’s muzzle.
 
-<img src="https://support.gcore.com/hc/article_attachments/11029483676177" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images/11029483676177.png" alt="" width="60%">
 
 To crop an image, you add the query parameter to the URL:
 
@@ -196,15 +196,15 @@ Before being delivered to an end user, the image goes through the following conv
 
 1\. As you set in the query parameter, the target area is 200×100 (*?crop=**200,100**,x25p,y10p*), so the tool selects this area in the picture.
 
-<img src="https://support.gcore.com/hc/article_attachments/11029475042705" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images/11029475042705.png" alt="" width="60%">
 
 2\. You also indicate the starting point for cropping (_?crop=200,100,**x25p,y10p**_): offset 25% of the original width from the left side and 10% of the original height from the top (*x25p,y10p*). The tool drags the target area so that its upper-left corner is at this point.
 
-<img src="https://support.gcore.com/hc/article_attachments/11029475091729" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images/11029475091729.png" alt="" width="60%">
 
 3. Then it cuts out the section. The cropped image looks as follows:
 
-<img src="https://support.gcore.com/hc/article_attachments/11029474904721" alt="" width="200" height="100">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images/11029474904721.png" alt="" width="200" height="100">
 
 #### Specify a location using the ratio of unwanted areas
 
@@ -221,7 +221,7 @@ where:
 
 **Example**. An origin server hosts a 400×300 image; you want to cut out only a 100×100 section with the dog’s paws.
 
-<img src="https://support.gcore.com/hc/article_attachments/11029483884945" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images/11029483884945.png" alt="" width="60%">
 
 To crop the image, you add the query parameter to the URL:
 
@@ -233,19 +233,19 @@ Before being delivered to an end user, the image goes through the following conv
 
 1\. You specify the target area: 100×100 (*crop=**100,100**,offset-x50,offset-y81*). The tool selects the target area in the picture.
 
-<img src="https://support.gcore.com/hc/article_attachments/11029475244561" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images/11029475244561.png" alt="" width="60%">
 
 2\. The tool drags the target area to the right until 50% of the unwanted width remains on the left _(crop=100,100,**offset-x50**,offset-y81)_. Accordingly, 50% of the unwanted area remains on the right.
 
-<img src="https://support.gcore.com/hc/article_attachments/11029484044049" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images/11029484044049.png" alt="" width="60%">
 
 3\. It moves the target area down until 81% of the unwanted height remains on the top _(crop=100,100,offset-x50,**offset-y81**)_. Accordingly, 19% of the unwanted height remains at the bottom.
 
-<img src="https://support.gcore.com/hc/article_attachments/11029475395345" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images/11029475395345.png" alt="" width="60%">
 
 4\. The tool cut outs the target area. The cropped image looks as follows:
 
-<img src="https://support.gcore.com/hc/article_attachments/11029475474321" alt="" width="100" height="100">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images/11029475474321.png" alt="" width="100" height="100">
 
 #### Specify a location using one offset measured in pixels and one coordinate measured as a percentage of the original image
 
@@ -263,8 +263,8 @@ The tool will crop an image as described above.
 
 You can use the HTTP header value of the image to check if the changes have been applied. The X-Img-Operations header reflects all the conversions performed. If the value includes “crop”, the image has been cropped.
 
-<img src="https://support.gcore.com/hc/article_attachments/11029475507985" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images/11029475507985.png" alt="" width="60%">
 
 If the header contains no “crop” value and the CDN returns the original uncropped image, check the _img-skip-reason_ header. This explains why the conversion has failed.
 
-<img src="https://support.gcore.com/hc/article_attachments/11029475548049" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images/11029475548049.png" alt="" width="60%">

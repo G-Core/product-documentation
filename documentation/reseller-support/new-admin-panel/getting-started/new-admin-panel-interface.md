@@ -25,33 +25,33 @@ In this guide, we describe the structure and features of the new admin panel. So
 
 The new admin panel has the following sections: 
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/14809075905041" alt="">
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel/getting-started/new-admin-panel-interface/14809075905041.png" alt="">
 
 **0\.** The button which collapses the left-hand menu. All screenshots of the interface below are shown with the menu collapsed. 
 
 **1\. Accounts**: This section displays a list of clients. Here you can manage the accounts of existing clients, including logging into their Control Panel on their behalf, editing their data, deleting their accounts, or adding new clients. 
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/14809782875793" alt="">
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel/getting-started/new-admin-panel-interface/14809782875793.png" alt="">
 
 **2\. Users**: This section contains two subsections, "Sellers" and "All users", where you can search for and manage users in these categories' accounts. 
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/14809962693905" alt="">
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel/getting-started/new-admin-panel-interface/14809962693905.png" alt="">
 
 **3\. CDN**: This section displays a list of all CDN resources created by your clients. Here you can search for a specific resource by ID or CNAME.
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/14809963782417" alt="">
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel/getting-started/new-admin-panel-interface/14809963782417.png" alt="">
 
 **4\. Security**: This section contains the "Authorization" subsection. Here you can configure SSO. You can also enable the "Activity Logs" feature by contacting the [support team](maito:support@gcore.com) or your personal manager. 
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/14809940995985" alt="">
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel/getting-started/new-admin-panel-interface/14809940995985.png" alt="">
 
 **5\. Vendor settings**: This section contains several subsections, including "Branding Settings", "SMTP Provider", "DNSaaS Settings", and "Services". Here you can manage the appearance of the Control Panel, set up custom email addresses for service notification emails to your clients, change the default NS servers, and configure service visibility.
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/14809944257041" alt="">
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel/getting-started/new-admin-panel-interface/14809944257041.png" alt="">
 
 **6\. Reports**: This section presents monthly reports, allowing you to generate monthly reports to analyze your clients' traffic consumption. Additionally, you can enable "Invoice Reports" by contacting the [support team](maito:support@gcore.com) or your personal manager. 
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/14809980677521" alt="">
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel/getting-started/new-admin-panel-interface/14809980677521.png" alt="">
 
 **7\. Old panel**: Here you can switch to the previous version of the admin panel. 
 
@@ -67,7 +67,7 @@ We have described all-important new features. If there is a feature you are inte
 
 We have added quick filters by ID, email, name, company name, and client status to make searching more flexible.
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/14810066380689" alt="">
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel/getting-started/new-admin-panel-interface/14810066380689.png" alt="">
 
 ### Search presets 
 
@@ -77,19 +77,19 @@ To create a preset:
 
 1\. Open the "Accounts" section and click **Add filter**.
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/14810068011921" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel/getting-started/new-admin-panel-interface/14810068011921.png" alt="" width="70%">
 
 2\. Choose the necessary filters from the list, add the conditions, and click **Apply** filter. We suggest different filters in addition to the quick filters listed on the page. Applied filters will be added to the page. For example, we added filters by only real accounts (not tested) and CDN status "New":
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/14810069334545" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel/getting-started/new-admin-panel-interface/14810069334545.png" alt="" width="70%">
 
 3\. When all necessary filters have been added, click **My presets** and **Set current set as a preset**.  
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/14810044983569" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel/getting-started/new-admin-panel-interface/14810044983569.png" alt="" width="70%">
 
 4\. Type a name and click **Create**. 
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/14810121905681" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel/getting-started/new-admin-panel-interface/14810121905681.png" alt="" width="50%">
 
 After that, the created preset will be displayed in the list of presets.
 
@@ -97,7 +97,7 @@ After that, the created preset will be displayed in the list of presets.
 
 By default, the new admin panel will open after <a href="https://auth.gcore.top/login/admin/signin" target="_blank">authorization</a>. We will continue to support the previous interface version for several months. Click the "Old panel" tab on the left menu to switch it on. 
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/14810123075985" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel/getting-started/new-admin-panel-interface/14810123075985.png" alt="" width="50%">
 
 **Note**: After a few months, support for the old admin panel will be suspended. We recommend using the new admin panel to become familiar with it as soon as possible. 
 

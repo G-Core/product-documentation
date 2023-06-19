@@ -87,16 +87,16 @@ To configure Gzip and Brotli options via the control panel:
 
 1\. Go to CDN and select the CDN resource you want to configure.
 
-<img src="https://support.gcore.com/hc/article_attachments/12422800579217" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/12422800579217.png" alt="">
 
 2\. In the navigation panel, under the "Content" section, click **Gzip compression** or **Brotli compression**.
 
-<img src="https://support.gcore.com/hc/article_attachments/12423128187537" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/12423128187537.png" alt="">
 
 3\. Turn on the toggle for **Enable Gzip compression** to enable the option.
 
-<img src="https://support.gcore.com/hc/article_attachments/12423333741969" alt="Enable_Gzip.png" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/12423333741969.png" alt="Enable_Gzip.png" width="50%">
 
 4\. Turn on the toggle for **Enable Brotli compression** to enable the option. Select the MIME types you want to compress in the "Content types" area.
 
-<img src="https://support.gcore.com/hc/article_attachments/12423398729873" alt="Enable_Brotli.png" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/12423398729873.png" alt="Enable_Brotli.png" width="50%">

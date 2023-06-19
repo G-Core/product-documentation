@@ -17,21 +17,21 @@ toc:
 
 1.  Inside the project, in the section Networking → Networks → click on **Create network**. 
 
-<img src="https://support.gcore.com/hc/article_attachments/360011859838/_____________.png" alt="_____________.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-network/_____________.png" alt="_____________.png">
 
 In the drop-down window, enter the network name and click on Create network. If you want to create a network for Baremetal servers, activate the Baremetal Network (VLAN) selector. 
 
-<img src="https://support.gcore.com/hc/article_attachments/360011859818/__________________.png" alt="__________________.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-network/__________________.png" alt="__________________.png">
 
 2\. In the Instance creation menu, select the Private interface type in the network settings section, and select the Add network option 
 
- <img src="https://support.gcore.com/hc/article_attachments/360011776957/__________________.png" alt="__________________.png">
+ <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-network/__________________.png" alt="__________________.png">
 
 In the drop-down window, enter a name for the network and click Create network. If you want to create a network for Baremetal servers, activate the Baremetal Network selector. 
 
 Baremetal network can also be used for virtual instances, for connectivity between Baremetal and virtual machines. 
 
-<img src="https://support.gcore.com/hc/article_attachments/360011776997/_____2_____________________.png" alt="_____2_____________________.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-network/_____2_____________________.png" alt="_____2_____________________.png">
 
 ## Network management
 
@@ -43,12 +43,12 @@ You can manage the created network: 
     
 To rename a network, click the selector on the right from the selected network and select the Rename option 
 
-<img src="https://support.gcore.com/hc/article_attachments/360011777017/__________________.png" alt="__________________.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-network/__________________.png" alt="__________________.png">
 
  **Delete** 
     
 To delete a network, click the selector on the right from the selected network and select the Delete option 
 
-<img src="https://support.gcore.com/hc/article_attachments/360011859918/____________.png" alt="____________.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-network/____________.png" alt="____________.png">
 
 Within the network, you can create a <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork" target="_blank">subnet</a> to define the range of IP addresses in the cloud network.

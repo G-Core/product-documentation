@@ -107,7 +107,7 @@ Where:
 4\. Start the AWS CLI from the directory with the *lifecycle.json* file and run the following command:
 
 ```
-$aws s3api put-bucket-lifecycle --bucket my_bucket --lifecycle-configuration file://lifecycle.json --endpoint-url=https://s-ed1.cloud.gcore.lu 
+aws s3api put-bucket-lifecycle --bucket my_bucket --lifecycle-configuration file://lifecycle.json --endpoint-url=https://s-ed1.cloud.gcore.lu 
 ```
 
 Replace:
@@ -118,7 +118,7 @@ Replace:
 5\. Check if the policy was uploaded correctly with the following command:
 
 ```
-$aws s3api get-bucket-lifecycle-configuration --bucket my_bucket --endpoint-url=https://s-ed1.cloud.gcore.lu 
+aws s3api get-bucket-lifecycle-configuration --bucket my_bucket --endpoint-url=https://s-ed1.cloud.gcore.lu 
 ```
 
 Replace:

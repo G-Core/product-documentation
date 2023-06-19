@@ -22,7 +22,7 @@ Real-Time Video is a service for video calls, video conferences, and webinars in
 - Webinars for 1–5 speakers and 2000 viewers (online education). 
 - Joint viewing of online broadcasts (entertainment). 
 
-<img src="https://support.gcore.com/hc/article_attachments/360017042737/call_room.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/call_room.png" alt="" width="70%">
 
 ## Real-Time Video features 
 
@@ -60,7 +60,7 @@ Real-Time Video can be used as a browser-based solution for video calls, or as a
 - Create a video call room on the <a href="https://meet.gcore.com/new" target="_blank">Real-Time Video</a> page.  
 - Invite participants by copying and sharing the link or using the **Share to social network** buttons.   
       
-<img src="https://support.gcore.com/hc/article_attachments/360017043677/invite.png" alt="invite.png" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/invite.png" alt="invite.png" width="70%">
 
 ## How to use Real-Time Video by integrating the video call room into the website code 
 

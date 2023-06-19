@@ -36,7 +36,7 @@ AWS CLI, or the AWS Command Line Interface, is the software for managing AWS ser
 2\. To verify that the installation was successful, run the *aws --version* command in the terminal.
 
 ```
-$ aws --version
+aws --version
 ``` 
 
 The installation was successful if you see the version and your operating system in the output. For example:
@@ -55,17 +55,17 @@ If the terminal cannot find the "aws" command, there may have been an issue duri
 
 - **Access Key**: Enter the access key you received after creating the storage in your account.
 - **Secret Key**: Enter the secret key you received after creating the storage in your account.
-- **Default region name**: Enter your <a href="https://gcore.com/docs/storage/manage-s3-buckets/s3-service-urls-and-default-region-names" target="_blank">storage region</a>, for example, *s-ed1*.
+- **Default region name**: Enter your <a href="https://gcore.com/docs/storage/manage-s3-storage/s3-service-urls-and-default-region-names" target="_blank">storage region</a>, for example, *s-ed1*.
 
 **Note**: Do not change the other parameters.
 
 3\. To verify the configuration was successful, run the following command:
 
 ```
-$ aws s3 ls --endpoint-url=https://s-ed1.cloud.gcore.lu
+aws s3 ls --endpoint-url=https://s-ed1.cloud.gcore.lu
 ```
 
-Replace *https://s-ed1.cloud.gcore.lu* with your storage endpoint, which can be found in the "<a href="https://gcore.com/docs/storage/manage-s3-buckets/s3-service-urls-and-default-region-names" target="_blank">S3 service URLs and default region names</a>" guide.
+Replace *https://s-ed1.cloud.gcore.lu* with your storage endpoint, which can be found in the "<a href="https://gcore.com/docs/storage/manage-s3-storage/s3-service-urls-and-default-region-names" target="_blank">S3 service URLs and default region names</a>" guide.
 
 Since there are no buckets in the storage, the command will not list anything. However, if there are no errors, you have configured the credentials correctly.
 
@@ -88,14 +88,14 @@ S3cmd is a free command line tool for uploading, retrieving, and managing data i
 1\. Enter the following command to launch the configuration wizard:
 
 ```
-$ s3cmd --configure
+s3cmd --configure
 ```
 
 2\. You need to specify the following information:
 
 - **Access Key**: Enter the access key you received after creating the storage in your account.
 - **Secret Key**: Enter the secret key you received after creating the storage in your account.
-- **S3 Endpoint**: Enter your <a href="https://gcore.com/docs/storage/manage-s3-buckets/s3-service-urls-and-default-region-names" target="_blank">storage URL</a>, for example, *s-ed1.cloud.gcore.lu*.
+- **S3 Endpoint**: Enter your <a href="https://gcore.com/docs/storage/manage-s3-storage/s3-service-urls-and-default-region-names" target="_blank">storage URL</a>, for example, *s-ed1.cloud.gcore.lu*.
 - **DNS-style bucket+hostname**: Enter your storage URL, for example, *s-ed1.cloud.gcore.lu*. Optionally specify the port template for accessing a bucket in the format: *s-ed1.cloud.gcore.lu:80*.
 
 **Note**: Do not change the other parameters.
@@ -130,7 +130,7 @@ Where:
 
 - _12*****6DEF_ is the access key you received after creating the storage in your account.
 - _EXAMPLE*****_ is the secret key you received after creating the storage in your account.
-- *s-ed1.cloud.gcore.lu* is the <a href="https://gcore.com/docs/storage/manage-s3-buckets/s3-service-urls-and-default-region-names" target="_blank">storage URL</a>.
+- *s-ed1.cloud.gcore.lu* is the <a href="https://gcore.com/docs/storage/manage-s3-storage/s3-service-urls-and-default-region-names" target="_blank">storage URL</a>.
 
 ## AWS SDK
 

@@ -30,27 +30,27 @@ Alternatively, there is a tool with a graphical user interface called "Lens". It
     
 2.  Add the directory containing the **kubectl.exe** file to the **PATH** variable (so the system can access this file when executing kubectl commands). To do this, first copy the path from the command line (this is the directory where kubectl.exe has been downloaded):  
       
-    <img src="https://support.gcore.com/hc/article_attachments/4417450475153/image_28.png" alt="image_28.png"> 
+    <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster/image_28.png" alt="image_28.png"> 
 
     Then go to Windows Settings → System → About → Advanced System Settings (or right-click This PC, then Properties → Advanced System Settings). In the next dialog, select **Environment Variables** and double-click the **Path** system variable. Paste the path to **kubectl.exe** in the bottom most empty field, and save the changes.  
 
     <media-gallery>
-    <img src="https://support.gcore.com/hc/article_attachments/4417437045265/image_61.png" alt="image_61.png" width="341" height="356">
+    <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster/image_61.png" alt="image_61.png" width="341" height="356">
     
-    <img src="https://support.gcore.com/hc/article_attachments/4417450477841/image_62.png" alt="image_62.png" width="418" height="363">
+    <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster/image_62.png" alt="image_62.png" width="418" height="363">
     </media-gallery>
 
 3.  In **C:\\Users\\\[username\]** create the **.kube** directory (to store the cluster configuration file).  
 
-    <img src="https://support.gcore.com/hc/article_attachments/4417450476561/image_46.png" alt="image_46.png" width="556" height="143">
+    <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster/image_46.png" alt="image_46.png" width="556" height="143">
 
 4.  Download the configuration file.  
 
-    <img src="https://support.gcore.com/hc/article_attachments/13323281147921" alt="Screenshot_2023-02-27_at_18.50_1.jpg">
+    <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster/13323281147921.png" alt="Screenshot_2023-02-27_at_18.50_1.jpg">
 
 5.  Rename the configuration file to "**config"** (without an extension) and add it to the **.kube** folder. Kubectl can now access it and manage your cluster.  
       
-    <img src="https://support.gcore.com/hc/article_attachments/4417443086609/image_45.png" alt="image_45.png" width="548" height="107">  
+    <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster/image_45.png" alt="image_45.png" width="548" height="107">  
     
 6.  Verify the kubectl configuration. Type the command in the command line:
     
@@ -88,11 +88,11 @@ Alternatively, there is a tool with a graphical user interface called "Lens". It
 
 5.  Download the configuration file.  
       
-    <img src="https://support.gcore.com/hc/article_attachments/13323281147921" alt="Screenshot_2023-02-27_at_18.50_1.jpg">  
+    <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster/13323281147921.png" alt="Screenshot_2023-02-27_at_18.50_1.jpg">  
     
 6.  Rename the configuration file to "**config**" (without an extension) and add it to the **.kube** folder. Kubectl can now access it and manage your cluster.  
       
-    <img src="https://support.gcore.com/hc/article_attachments/4417437043473/image_47.png" alt="image_47.png" width="555" height="342">
+    <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster/image_47.png" alt="image_47.png" width="555" height="342">
 
 7.  Verify kubectl configuration with the command below: 
     
@@ -142,7 +142,7 @@ Alternatively, there is a tool with a graphical user interface called "Lens". It
 
 5.  Download the configuration file.  
       
-    <img src="https://support.gcore.com/hc/article_attachments/13323281147921" alt="Screenshot_2023-02-27_at_18.50_1.jpg">
+    <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster/13323281147921.png" alt="Screenshot_2023-02-27_at_18.50_1.jpg">
 
 6.  Rename the configuration file to "**config**" (file should not have an extension) and add it to the **.kube** folder. Kubectl can now access it and manage your cluster.
 

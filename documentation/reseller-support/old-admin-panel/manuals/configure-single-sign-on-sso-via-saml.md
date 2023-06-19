@@ -25,7 +25,7 @@ To implement the technology, our systems use the SAML 2.0 XML protocol which is 
 Configuring SSO in the Admin Panel
 ----------------------------------
 
-[<img title="" src="https://reseller.support.gcore.com/hc/article_attachments/4410538997393/image-0.png" alt="">](https://reseller.gcorelabs.com/hc/article_attachments/4410538997393/image-0.png)To allow your users to log in using SSO, in the admin panel:
+[<img title="" src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/configure-single-sign-on-sso-via-saml/image-0.png" alt="">](https://reseller.gcorelabs.com/hc/article_attachments/4410538997393/image-0.png)To allow your users to log in using SSO, in the admin panel:
 
 1\. Go to the "Authorization" tab.
 
@@ -57,31 +57,31 @@ Authorization via SSO in the client's personal account
 
 1\. Click "Sign in with SAML SSO".
 
-[<img title="" src="https://reseller.support.gcore.com/hc/article_attachments/4410538999825/image-7.png" alt="" width="298" height="309">](https://reseller.gcorelabs.com/hc/article_attachments/4410538999825/image-7.png)
+[<img title="" src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/configure-single-sign-on-sso-via-saml/image-7.png" alt="" width="298" height="309">](https://reseller.gcorelabs.com/hc/article_attachments/4410538999825/image-7.png)
 
 2\. This step will appear if you have not activated the "Force redirect to the Identity provider" option. If you have done, it will not appear.
 
 Enter the corporate domain for which SSO authorization is connected and click "Sign in with SAML SSO".
 
-[<img title="" src="https://reseller.support.gcore.com/hc/article_attachments/4410532177937/image-8.png" alt="" width="307" height="245">](https://reseller.gcorelabs.com/hc/article_attachments/4410532177937/image-8.png)
+[<img title="" src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/configure-single-sign-on-sso-via-saml/image-8.png" alt="" width="307" height="245">](https://reseller.gcorelabs.com/hc/article_attachments/4410532177937/image-8.png)
 
 3\. Enter your username and password and log in.
 
-[<img title="" src="https://reseller.support.gcore.com/hc/article_attachments/4410539000081/image-9.png" alt="" width="334" height="145">](https://reseller.gcorelabs.com/hc/article_attachments/4410539000081/image-9.png)
+[<img title="" src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/configure-single-sign-on-sso-via-saml/image-9.png" alt="" width="334" height="145">](https://reseller.gcorelabs.com/hc/article_attachments/4410539000081/image-9.png)
 
 Authorization via SSO in the administrator's personal account
 -------------------------------------------------------------
 
 1\. Click "Sign in with SAML SSO".
 
-[<img title="" src="https://reseller.support.gcore.com/hc/article_attachments/4410532177681/image-4.png" alt="" width="311" height="301">](https://reseller.gcorelabs.com/hc/article_attachments/4410532177681/image-4.png)
+[<img title="" src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/configure-single-sign-on-sso-via-saml/image-4.png" alt="" width="311" height="301">](https://reseller.gcorelabs.com/hc/article_attachments/4410532177681/image-4.png)
 
 2\. This step will appear if you have not activated the "Force redirect to the Identity provider" option. If you have done, it will not appear.
 
 Enter the corporate domain for which SSO authorization is connected and click "Sign in".
 
-[<img title="" src="https://reseller.support.gcore.com/hc/article_attachments/4410538999569/image-5.png" alt="" width="316" height="221">](https://reseller.gcorelabs.com/hc/article_attachments/4410538999569/image-5.png)
+[<img title="" src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/configure-single-sign-on-sso-via-saml/image-5.png" alt="" width="316" height="221">](https://reseller.gcorelabs.com/hc/article_attachments/4410538999569/image-5.png)
 
 3\. Enter your username and password and log in.
 
-[<img title="" src="https://reseller.support.gcore.com/hc/article_attachments/4410539000081/image-9.png" alt="" width="344" height="149">](https://reseller.gcorelabs.com/hc/article_attachments/4410539000081/image-9.png)
+[<img title="" src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/configure-single-sign-on-sso-via-saml/image-9.png" alt="" width="344" height="149">](https://reseller.gcorelabs.com/hc/article_attachments/4410539000081/image-9.png)

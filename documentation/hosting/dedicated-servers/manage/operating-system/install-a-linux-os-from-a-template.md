@@ -29,16 +29,16 @@ All OS from the list above you can install for free, also you can choose Windows
 
 Choose the server in the Control Panel and click to Panel to go to DCI manager.
 
-<img src="https://support.gcore.com/hc/article_attachments/360000827277/mceclip0.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/operating-system/install-a-linux-os-from-a-template/mceclip0.png" alt="" width="70%">
 
 Click "Servers" in the Main menu on the left. Then choose the server you need and click "Operations".
 
-<img src="https://support.gcore.com/hc/article_attachments/360000816018/mceclip1.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/operating-system/install-a-linux-os-from-a-template/mceclip1.png" alt="" width="70%">
 
 Choose Operation type - **Install OS from template**. Then choose OS and click OK.
 
-<img src="https://support.gcore.com/hc/article_attachments/360000816038/mceclip2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/operating-system/install-a-linux-os-from-a-template/mceclip2.png" alt="" width="70%">
 
 If you tick Inform upon completion you'll get a notification in browser about finished reinstallation.
 
-<img src="https://support.gcore.com/hc/article_attachments/360000827317/mceclip0.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/operating-system/install-a-linux-os-from-a-template/mceclip0.png" alt="">

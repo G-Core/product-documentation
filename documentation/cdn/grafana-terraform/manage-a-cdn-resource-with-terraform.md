@@ -64,7 +64,7 @@ terraform init
 
 This command will install Terraform and download a set of modules to work with our CDN. The following response will appear:
 
-<img src="https://support.gcore.com/hc/article_attachments/7049757339537/image_1734.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1734.png" alt="" width="70%">
 
 This response means Terraform was successfully downloaded and installed, you can start working with it. 
 
@@ -237,7 +237,7 @@ secondary_hostnames = ["<span style="color:#FF5913">cdn.two.com</span>","<span s
 
 4\. At Step 2 and 3, you entered the code that has created an origin group and a CDN resource. Below is an example of how your code may look in your configuration file:
 
-<img src="https://support.gcore.com/hc/article_attachments/7046920387345/image_1706.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1706.png" alt="" width="70%">
 
 Make sure all data is correct and save the changes.  
 
@@ -249,15 +249,15 @@ Congratulations! The origin group and CDN resource have been created! Then the C
 
 1\. Log in to your Gcore account, go to the "CDN" tab and click the custom domain of the resource created in Terraform.
 
-<img src="https://support.gcore.com/hc/article_attachments/7047885775889/image_1629.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1629.png" alt="">
 
 2\. On the page that opens, click "Setup guide". 
 
-<img src="https://support.gcore.com/hc/article_attachments/7047928183313/image_1631.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1631.png" alt="" width="70%">
 
 3\. Copy the domain name such as _\*.gcdn.co._ from the sliding panel.
 
-<img src="https://support.gcore.com/hc/article_attachments/7047935415441/image_1633.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1633.png" alt="" width="50%">
 
 4\. Go to the settings of your DNS provider and create a CNAME record for the custom domain. For the value of the CNAME record, paste the value copied at the previous step.  
 
@@ -331,7 +331,7 @@ edge_cache_settings {   
 ```
 6\. The configuration file now contains the code that creates a CDN resource with your option values. An example of the file:
 
-<img src="https://support.gcore.com/hc/article_attachments/7048212376721/image_1707-2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1707-2.png" alt="" width="70%">
 
 Save the changes in the configuration file.  
 
@@ -377,7 +377,7 @@ Here is an example of adding a certificate. Let's suppose your values are as fol
 
 To add such a certificate, you have inserted the necessary strings into the configuration file. The file is supposed to look as follows:
 
-<img src="https://support.gcore.com/hc/article_attachments/7048391625745/image_1709-2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1709-2.png" alt="" width="70%">
 
 5\. Save the changes in the configuration file. 
 
@@ -433,7 +433,7 @@ Here is an example of a configuration file. Let's say you want to add a rule wit
 
 The final code in the configuration file will look as follows:
 
-<img src="https://support.gcore.com/hc/article_attachments/7049290958865/image_1712-2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1712-2.png" alt="" width="70%">
 
 6\. Save the changes in the configuration file. 
 
