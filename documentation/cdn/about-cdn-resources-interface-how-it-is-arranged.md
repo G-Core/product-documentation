@@ -67,7 +67,7 @@ A list of possible options opens:
 
 - "Settings" opens the resource settings. You can also go to the resource settings by clicking on the CNAME of the resource.
 - "Prefetch" opens the <a href="https://gcore.com/docs/cdn/load-the-content-to-cdn-before-users-request-it" target="_blank">Prefetch</a> section to upload the content to CDN before users request it.
-- "Purge" opens the <a href="https://gcore.com/docs/cdn/purge/clear-cdn-resource-cache-by-pattern" target="_blank">Purge</a> section to purge the resource cache.
+- "Purge" opens the <a href="https://gcore.com/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all" target="_blank">Purge</a> section to purge the resource cache.
 - "Statistics" opens the <a href="https://gcore.com/docs/cdn/view-statistics-of-a-cdn-resource" target="_blank">reports</a> of a resource.
 - "Turn on LIVE STREAMING preset" adds a set of settings <a href="https://gcore.com/docs/cdn/cdn-resource-options/configure-live-streams-and-video-delivery-via-cdn-only-for-paid-tariffs" target="_blank">to configure HLS file caching through RAM instead of through hard drives</a>.
 - "Delete resource" deletes a resource. 

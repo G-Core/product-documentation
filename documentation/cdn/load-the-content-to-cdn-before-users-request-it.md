@@ -24,6 +24,8 @@ Use Prefetch to upload the content to CDN cache before users request it. 
 **Important!** 
 
  - Prefetch is recommended only for files that **more than 200 MB and less than 5 GB.**
- - If you need to update files stored in the CDN, first <a href="https://gcore.com/docs/cdn/purge/clear-cdn-resource-cache-by-url-pattern-or-all" target="_blank">purge</a> these files and then prefetch.
+ - If you need to update files stored in the CDN, first <a href="https://gcore.com/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all" target="_blank">purge</a> these files and then prefetch.
  - One request for prefetch may content only up to 100 paths to files.
  - There is only 1 request per minute available.
+
+ 
