@@ -41,16 +41,7 @@ The DNS record management page will open. Click **Add record set** there and pro
 
 ### 2. Select the record type
 
-In the "Type" section, select the type of DNS record. Our service supports the following types:
-
-1. **А record**, which defines the IP address the domain corresponds to. A record is for IPv4 addresses of the form 128.128.128.128.
-2. **AAAA record**, which defines the IP address the domain corresponds to. AAAA record is for IPv6 addresses of the form 7625: 0d18: 1fa3: 07d7: 1f44: 8a2e: 07a0: 678h.
-3.  **NS** — defines addresses of DNS servers serving the domain.
-4.  **CNAME record**, which maps resource records of one domain to resource records of another. If you specify a CNAME record for site.com with the value “anothersite.com", then when you open site.com it will have the same DNS records as anothersite.com has (for example, it will requests the same IP if A/AAAA records for anothersite.com exists).
-5.  **MX record**, which defines the server that receives mail for the domain.
-6.  **TXT record**, which defines auxiliary information about the domain. For example, you can specify Sender Policy Framework (SPF) rules that determine mail servers allowed to receive mail.
-7.  **SRV record**, which defines the server that operates certain services for the domain.
-8.  **CAA record** which defines the certificate authorities who are allowed to issue an SSL/TLS-certificate for the domain name.
+In the "Type" section, select the type of DNS record you want to create: A, AAAA, NS, CNAME, MX, SRV, HTTPS, TXT, or CAA.
 
 ### 3. Specify the subdomain the record belongs to
 
