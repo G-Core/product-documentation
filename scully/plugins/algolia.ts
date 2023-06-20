@@ -34,6 +34,7 @@ function initAlgoliaClient(): SearchClient {
     const apiKey = process.env.ALGOLIA_WRITE_KEY;
 
     console.log('APP ID:', appId);
+    console.log('APP INDEX_NAME:', INDEX_NAME);
 
     if (!appId) {
         logError(red(`ALGOLIA_APP_ID not found in environment variables!`));
