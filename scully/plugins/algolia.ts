@@ -14,7 +14,7 @@ interface Payload {
     objectID: number;
 }
 
-const INDEX_NAME = 'gcore_site';
+const INDEX_NAME = process.env.ALGOLIA_INDEX;
 const SCULLY_CODE = "try {window['scullyContent']";
 
 export const updateAlgolia = 'updateAlgolia';
@@ -30,8 +30,8 @@ function getPageContent(document: any): string {
 
 function initAlgoliaClient(): SearchClient {
     let isError = false;
-    const appId = '1U59KUGBCD';
-    const apiKey = '7db677961be07c3907096c7eafd0efaa';
+    const appId = process.env.ALGOLIA_APP_ID;
+    const apiKey = process.env.ALGOLIA_WRITE_KEY;
 
     if (!appId) {
         logError(red(`ALGOLIA_APP_ID not found in environment variables!`));

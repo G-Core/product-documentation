@@ -15,8 +15,8 @@ export class AlgoliaService {
 
     constructor() {
         if (!isScullyRunning()) {
-            this.algoliaInstance = algoliasearch('1U59KUGBCD', '9edc35d8b4fe6e761d4ac4fe71070ce3');
-            this.algoliaIndex = this.algoliaInstance.initIndex('gcore_site');
+            this.algoliaInstance = algoliasearch('0GWOH3DBQG', '0f8c47609b46da62bf3852876be561af');
+            this.algoliaIndex = this.algoliaInstance.initIndex('product_documentation_preprod');
         }
     }
 
