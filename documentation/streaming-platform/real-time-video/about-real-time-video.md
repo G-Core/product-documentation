@@ -4,78 +4,77 @@ displayName: Overview Real-Time Video (paid)
 published: true
 order: 10
 toc:
-   --1--Real-Time Video abilities: "real-time-video-abilities"
-   --1--Real-Time Video features: "real-time-video-features"
-   --1--How does Real-Time Video work?: "how-does-real-time-video-work"
-   --1--How to use and integrate Real-Time Video: "how-to-use-and-integrate-real-time-video"
-   --2--Without integration into a website code: "how-to-use-real-time-video-without-integration-into-the-website-code"
-   --2--With integration into a website code: "how-to-use-real-time-video-by-integrating-the-video-call-room-into-the-website-code"
+   --1--What it is: "what-is-real-time-video"
+   --1--Where you can use it: "use-cases-for-real-time-video-module"
+   --1--What features it has: "what-features-does-real-time-video-have"
+   --1--How it works: "how-does-real-time-video-work"
+   --1--How to use it: "how-to-use-the-real-time-video-module"
 ---
 # About Real-Time Video
 
-Real-Time Video is a service for video calls, video conferences, and webinars in real-time for a large number of participants. One of the advantages is the ability to integrate a call room into your website or mobile app. 
+## What is Real-Time Video?
 
-## Real-Time Video abilities   
+Real-Time Video is a paid module of the Streaming Platform. It has an API, SDK, and free sample apps for iOS and Android. It also allows easy setup via iFrame on websites. With this module, you can integrate video calls into your apps quickly without needing to perform any complex programming. It's perfect for customers who want a simple, ready-to-use solution.
 
-- Video calls one-on-one or in small groups of 2- 4 people (e-commerce, finance, telemedicine). 
-- Video conferences in groups of 2–20 people (small and medium businesses). 
-- Webinars for 1–5 speakers and 2000 viewers (online education). 
-- Joint viewing of online broadcasts (entertainment). 
+This is how Real-Time Video works with different platforms:
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/call_room.png" alt="" width="70%">
+- <a href="https://meet.gcore.com" target="_blank">Web apps</a>
+- <a href="https://github.com/G-Core/reactnative-demo-video-calls" target="_blank">ReactNative</a>
+- <a href="https://github.com/G-Core/android-demo-video-calls" target="_blank">Android</a>
+- <a href="https://github.com/G-Core/ios-demo-video-calls" target="_blank">iOS</a>
 
-## Real-Time Video features 
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/mobile-video-calls-module-10.gif" alt="">
 
-- No time limit for any kind of video calls.  
-- No account registration and additional applications or extension installation.  
-- Communication via text chat and screen sharing for desktops.   
-- Camera switching for mobile devices.   
-- Availability of a private room creation with access with a pin code.  
-- Calls security and privacy: no video record, no data storage, no chat history saving.   
-- Works on any devices, supporting WebRTC. 
-- Integration into a website via iframe, branding, and custom settings (write to [sales@gcore.com](mailto:sales@gcore.com) to  contact our manager).  
+## Use cases for Real-Time Video module
 
-## How does Real-Time Video work? 
+Our video call feature can be used for diverse purposes and group sizes:
 
-For Real-Time Video calls, WebRTC technology is used, which provides real-time video and audio delivery.  
+- One-to-one video calls or small groups of 2–4 people, like dating, online shopping, finance, and online medicine.
+- Video meetings with 2–300+ people, ideal for small and medium businesses, online education, and online events.
+- Webinars with 1–25 speakers and 10M+ viewers, like major online events.
 
-**To deliver video signals from users' cameras**, the SFU (Selective Forwarding Unit) architecture is used, which allows transmitting the same outgoing signal to the server, where it is distributed among all users: a participant sends an outgoing signal and receives the signals of all other users from a common server. 
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/one-to-one-call-20.gif" alt="">
 
-**Please, note**:  Real-Time Video does not use a P2P (peer-to-peer) connection. All communication is broadcast via the server, even if there are 2 people in the room.  
+## What features does Real-Time Video have?
 
-Simulcast Streaming technology is used for live broadcasts, it helps to deliver video to each user, even with an unstable Internet channel.  Using this technology, several video streams of different quality and resolution are created on the client-side. They are delivered to a server, where based on the Internet channel of each user, it is determined what quality it is possible to deliver. After that, the selected stream is sent to the users according to the capabilities of their bandwidth and device.  
+Here are the Real-Time Video features:
 
-**Note**: A list of supported operating systems and browsers can be found <a href="https://gcore.com/docs/streaming-platform/real-time-video/view-technical-requirements-for-users" target="_blank">here</a>. 
+- No time limits on calls
+- Your logo and branding
+- An easy addition to web and mobile apps via API and SDK
+- One-to-one video calls
+- Up to 300+ people in a call
+- Interpretation for 15+ languages
+- Chat, including chat history
+- Call recording
+- Moderation
+- Waiting room
+- RTMP and HLS streaming to external streaming services like Youtube and - Twitch
+- Broadcast to 10M+ viewers via cheap CDN traffic
+- Screen sharing and presentation
+- Works on any device and modern browsers, supporting WebRTC protocol
 
-**Data streams are encrypted using** the DTLS protocol (Datagram Transport Layer Security), which allows providing a secure connection that prevents interception, listening, and interference, without violating data integrity protection. 
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/web-video-calls-module-30.gif" alt="">
 
-**Standard encryption is used** to encrypt media streams. It is possible to strengthen the protection with SRTP (Secure Real-time Transport Protocol) encryption. 
+## How does Real-Time Video work?
 
-## How to use and integrate Real-Time Video
+Real-Time Video uses WebRTC technology for video calls. This technology allows real-time video and audio. Video signals are sent from users’ cameras using SFU (Selective Forwarding Unit). This technology lets a user send their video to a server, and then the server sends this video to all other users.
 
-Real-Time Video can be used as a browser-based solution for video calls, or as a video call room integrated into your website. 
+**Note**: Real-Time Video does not connect users directly. All communication is sent via the server, even if there are only two people in the room.
 
-## How to use Real-Time Video without integration into the website code 
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/web-calls-protocols-40.jpg" alt="">
+<figcaption>This article uses an image taken from the website bloggeek.me</figcaption>
 
-- Create a video call room on the <a href="https://meet.gcore.com/new" target="_blank">Real-Time Video</a> page.  
-- Invite participants by copying and sharing the link or using the **Share to social network** buttons.   
-      
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/invite.png" alt="invite.png" width="70%">
+Simulcast streaming technology is used for live broadcasts. This technology helps to deliver video to each user, even if their internet is not stable. With this technology, several video streams of different quality are made on the user’s device. These streams are sent to a server. The server chooses what quality to send to each user, depending on their internet connection and device type.
 
-## How to use Real-Time Video by integrating the video call room into the website code 
+**Note**: You can find a list of supported operating systems and browsers here. 
 
-Use the iframe code to integrate the video call room into the website code manually or via CRM.  
+All data streams are made safe using the DTLS (Datagram Transport Layer Security) protocol. This prevents anyone from spying on the data or interfering with it. Media streams are encrypted using standard encryption. You can also use SRTP (Secure Real-Time Transport Protocol) for extra security.
 
-1\. Generate the video call room ID. It can be any alphanumeric character set. For example, *bokxlj33*.
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/video-calls-gcore-process-50.png" alt="">
 
-2\. Before the alphanumeric character set, add the server location code. For test purposes use the Luxembourg server with the "*serv2*" location code. As a result, the video call room ID will be *serv2bokxlj33*.
+## How to use the Real-Time Video module
 
-**Important**: To get a location code for public usage of a call room, write to [support@gcore.com](mailto:support@gcore.com).
+You can try out the video call module quickly and easily. To do this, go to the <a href="https://meet.gcore.com/new" target="_blank">Real-Time Video demo page</a> and follow the instructions there. 
 
-3\. The iframe URL to insert into the website is consists of the ```https://meet.gcore.com/call/?roomId=``` and the video call room ID you created, for example, ```https://meet.gcore.com/call/?roomId=serv2bokxlj33```.
-
-4\. Paste the URL into the iframe to insert it into the website code: 
-
-```
-<iframe allow = "fullscreen display-capture camera microphone" src = "https://meet.gcore.com/call/?roomId=<span style="color:#FF5913"> serv2bokxlj33</span>" width = "700" height = "800"></iframe>
-```
+If you want to use our solution for video calls, please read the <a href="https://gcore.com/docs/streaming-platform/api/real-time-video-api-tutorial" target="_blank">Real-Time Video API tutorial</a> guide.

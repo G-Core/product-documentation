@@ -27,6 +27,7 @@ Streaming via our Streaming Platform has advantages and additional features, suc
 *   <a href="https://gcore.com/docs/streaming-platform/extra-features/customize-appearance-of-the-built-in-player" target="_blank">Own player and statistics</a> allow you to collect statistics on views, geography, and popularity of individual broadcasts.
 *   <a href="https://gcore.com/docs/streaming-platform/extra-features/add-monetization-to-your-live-streams-and-videos" target="_blank">Ads</a> allow you to integrate advertisements into a video or broadcast using five types of playback (pre-roll, mid-roll, etc)
 
+
 The formats and specifications supported by the Streaming Platform are described in the <a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/what-initial-parameters-of-your-live-streams-and-videos-we-can-accept" target="_blank">article</a>.
 
 When you stream via the Streaming platform, there are two ways to send us the stream: PUSH and PULL.
