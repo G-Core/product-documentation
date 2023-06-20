@@ -15,12 +15,12 @@ There is only one tariff plan for the Streaming Platform. It has no limits and c
 
 You can acquaint prices for streaming resources on the <a href="https://gcore.com/pricing/streaming-platform" target="_blank">Gcore website</a>.
 
-<img src="https://support.gcore.com/hc/article_attachments/10512203476241" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/how-the-streaming-platform-and-additional-features-are-billed/10512203476241.png" alt="">
 
 ## Billing rules
 
 The resources fees are charged on the 2nd day of each month. If the payment fails, the service will be stopped.
 
-Additional features (Real-time communication for webinars, Restreaming, Computer Vision) are charged at the beginning of the month.
+Additional features (Real-Time Video, Restreaming, Computer Vision) are charged at the beginning of the month.
 
 Please get in touch with us via chat or email ([support@gcore.com](mailto:support@gcore.com)) if you have any questions.

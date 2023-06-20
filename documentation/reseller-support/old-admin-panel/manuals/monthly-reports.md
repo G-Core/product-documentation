@@ -20,11 +20,11 @@ Generating report
 
 Go to the Reports section in the Administrator panel and click on the Create new report button in the upper-right corner.
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/360002431177/reports.png" alt="reports.png">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/monthly-reports/reports.png" alt="reports.png">
 
 Choose the report parameters in the pop-up window.
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/360016699638/create_report.png" alt="create_report.png" width="429" height="524">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/monthly-reports/create_report.png" alt="create_report.png" width="429" height="524">
 
 In the Product field choose a product: CDN, Storage or Media Platform.
 
@@ -75,7 +75,7 @@ The report represents data for a specified month, it uses commas to separate val
 
 There is a report example below grouped by client and region parameters.
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/360004399717/1571903258576.png" alt="1571903258576.png">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/monthly-reports/1571903258576.png" alt="1571903258576.png">
 
 Report's first line has the reseller's ID and company name (marked as1).
 
@@ -105,4 +105,4 @@ Deleting report
 
 To delete a report, go to the "Reports" section, click on the arrow near the "Download" button and choose "Delete".
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/360004483458/1571907287407.png" alt="1571907287407.png">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/monthly-reports/1571907287407.png" alt="1571907287407.png">

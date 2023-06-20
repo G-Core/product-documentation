@@ -1,6 +1,6 @@
 ---
-title: meet-api-tutorial
-displayName: Meet API tutorial
+title: real-time-video-api-tutorial
+displayName: Real-Time Video API tutorial
 published: true
 order: 20
 toc:
@@ -58,7 +58,7 @@ toc:
    --2--Iframe integration: "iframe-integration"
    --3--Example of iframe Integration: "example-of-iframe-integration"
    --3--Interaction with iframe: "interaction-with-iframe"
-   --3--Public methods of Meet’s iFrame: "public-methods-of-meet-s-iframe"
+   --3--Public methods of Real-Time Video iframe: "public-methods-of-real-time-video-iframe"
    --3--Events from an iframe: "events-from-an-iframe"
    --1--Server API: "server-api"
    --2--Server endpoints: "server-endpoints"
@@ -88,7 +88,7 @@ toc:
    --2--JWT Digital Signature Algorithm: "jwt-digital-signature-algorithm"
    --2--RSA Public & Secret Key generation: "rsa-public--secret-key-generation"
 ---
-# Meet API tutorial
+# Real-Time Video API tutorial
 
 It is an easy-to-use video meeting tool.
 
@@ -794,7 +794,7 @@ A JWT example is: 
 - PAYLOAD: (DATA) 
 - ```{ "role": "interpreter", "featureInterpreters": true, "intLang": "de", "roomId": "serv0_test1" }``` 
 
-<img src="https://support.gcore.com/hc/article_attachments/11649788899601" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/api/real-time-video-api-tutorial/11649788899601.png" alt="">
 
 ## Client API
 
@@ -835,7 +835,7 @@ Where:
 
 **Note**: Before initializing a class, you need to wait for an iframe element to be loaded.
 
-#### Public methods of Meet’s iframe
+#### Public methods of Real-Time Video iframe
 
 Client API methods allow you to control a video room, perform actions with hidden main controls, react to what is happening in a room.
 

@@ -44,11 +44,11 @@ To connect to an instance or Bare Metal server, create a public key that will be
 
 6\. Click Generate.  
 
-<img src="https://support.gcore.com/hc/article_attachments/360011018357/putty_gen.png" alt="putty_gen.png" width="390" height="381">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/putty_gen.png" alt="putty_gen.png" width="390" height="381">
 
 Important! During the key generation, move the cursor in the Key field until the key appears in the field. 
 
-<img src="https://support.gcore.com/hc/article_attachments/360011018457/___________.png" alt="___________.png" width="429" height="422">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/___________.png" alt="___________.png" width="429" height="422">
 
 7\. In the Key passphrase field, enter a password.  
 
@@ -62,7 +62,7 @@ Important! During the key generation, move the cursor in the Key field until th
 
 11\. You can always open and copy the saved key with the Notepad app.  
 
- <img src="https://support.gcore.com/hc/article_attachments/360011027977/notepad.png" alt="notepad.png" width="457" height="255">
+ <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/notepad.png" alt="notepad.png" width="457" height="255">
 
 ### **Generate SSH keys (Windows 10, Linux OS, macOS)** 
 
@@ -74,9 +74,9 @@ Important! During the key generation, move the cursor in the Key field until th
 
 4\. Enter the key name in the Enter file in which the key should be saved field. 
 
-**Attention!** If you do not specify a directory (for example, .ssh/), the keys are saved in~. /<key name> (for Linux/macOS) or in C:\\Users\\<user\_name>\\<key name> (for Windows 10). 
+**Attention!** If you do not specify a directory (for example, .ssh/), the keys are saved in~. /<key name> (for Linux/macOS) or in C:\\Users\\<user_name>\\<key name> (for Windows 10). 
 
-5\. Press Enter. 
+5\. Press Enter.
 
 6\. Then enter the password for the key or leave the field empty and press Enter if you want to create a key without a password.  
 
@@ -84,9 +84,9 @@ Important! During the key generation, move the cursor in the Key field until th
 
 8\. The key was created in the default directory or in the one you specified.  
 
-<img src="https://support.gcore.com/hc/article_attachments/13378185655953" alt="_____________1.png">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/13378185655953.png" alt="_____________1.png">
 
-9\. The public part of the key will be saved in the <key\_name>.pub file. Use it to add it to your machine. You can open the ssh key file in text format for copying in the Notepad app. 
+9\. The public part of the key will be saved in the <key_name>.pub file. Use it to add it to your machine. You can open the ssh key file in text format for copying in the Notepad app. 
 
 ### **Generate SSH keys in the personal account** 
 
@@ -96,11 +96,11 @@ To create an SSH key from your personal account, follow the steps below. 
 
 2\. Click Autogenerate SSH key. 
 
-<img src="https://support.gcore.com/hc/article_attachments/360011030697/autogenetae.png" alt="autogenetae.png">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/autogenetae.png" alt="autogenetae.png">
 
 3\. Enter the key name and click Create SSH key. 
 
-<img src="https://support.gcore.com/hc/article_attachments/360011096738/________________________.png" alt="________________________.png">  
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/________________________.png" alt="________________________.png">  
 
 **Important!** Only Latin characters, underscores, spaces, and dots can be used. The length must be between 3 and 63 characters.  
 
@@ -116,13 +116,13 @@ To add an already created SSH key to your personal account: 
 
 2\. Click Add SSH key. 
 
-<img src="https://support.gcore.com/hc/article_attachments/360011030997/add_a_ssh.png" alt="add_a_ssh.png">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/add_a_ssh.png" alt="add_a_ssh.png">
 
 3\. In the SSH key Content field, insert the public part of the SSH key. 
 
 4\. Enter the key name in the Name field. 
 
-<img src="https://support.gcore.com/hc/article_attachments/360011106038/add_an_ssh_2.png" alt="add_an_ssh_2.png" width="453" height="327">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/add_an_ssh_2.png" alt="add_an_ssh_2.png" width="453" height="327">
 
 5\. Click Add SSH key. 
 
@@ -136,7 +136,7 @@ To add an already created SSH key to your personal account: 
 
 3\. Select Delete. 
 
-<img src="https://support.gcore.com/hc/article_attachments/360011106078/ssh_delete.png" alt="ssh_delete.png">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/ssh_delete.png" alt="ssh_delete.png">
 
 ### **How to generate and add SSH keys when creating an Instance or Bare Metal server** 
 
@@ -144,23 +144,23 @@ In your personal account, you can create and add an SSH key when creating an ins
 
 When creating a machine, in the SSH key section, you will be asked to _add a key that is already stored in your personal account_ by selecting it from the drop-down list, _add an already generated key stored in your local storage_, or _generate a new key_ here. 
 
- <img src="https://support.gcore.com/hc/article_attachments/360011106138/_________________________________.png" alt="_________________________________.png">
+ <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/_________________________________.png" alt="_________________________________.png">
 
 1\. When you click Add SHH key, a dialog box opens. Add the public part of the SSH key, enter the key name to identify it in our system, and save it. 
 
-<img src="https://support.gcore.com/hc/article_attachments/360011031417/______________.png" alt="______________.png" width="408" height="295">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/______________.png" alt="______________.png" width="408" height="295">
 
 Next, select a key from the drop-down list to add it to your machine.  
 
  2. When you click Autogenerate SSH key, a dialog box opens. Enter the key Name to identify it in the system. 
 
-<img src="https://support.gcore.com/hc/article_attachments/360011106378/autogenerate_2.png" alt="autogenerate_2.png">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/autogenerate_2.png" alt="autogenerate_2.png">
 
 The key will be automatically added to your machine.  
 
  After adding or generating a new SSH key, the keys will appear in the SSH Keys section. 
 
-<img src="https://support.gcore.com/hc/article_attachments/5287479947537/mceclip0.png" alt="mceclip0.png">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/mceclip0.png" alt="mceclip0.png">
 
 ## Connecting using a password. Preparation
 
@@ -168,7 +168,7 @@ The key will be automatically added to your machine.  
 
 To connect using a password, configure it while creating an instance or Bare Metal server. In Additional options click on "User data". This will open a field, where you can enter the script that will be processed by a cloud-init agent running on your machine. 
 
-<img src="https://support.gcore.com/hc/article_attachments/360008785018/13.png" alt="13.png">  
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/13.png" alt="13.png">  
 
 Paste the code below with the password chosen by you:
 
@@ -176,7 +176,7 @@ Paste the code below with the password chosen by you:
 #cloud-config  
 password: **your password**  
 chpasswd: { expire: False }  
-ssh\_pwauth: True
+ssh_pwauth: True
 ```
 
 Using the specified password, you will be able to connect to the instance or Bare Metal server via SSH or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from your Control Panel</a>.
@@ -190,9 +190,9 @@ It is not necessary to specify the password explicitly, you can enter its hash (
 \# pip3 install passlib  
 import sys  
 from getpass import getpass  
-from passlib.hash import sha512\_crypt  
+from passlib.hash import sha512_crypt  
 passwd = input() if not sys.stdin.isatty() else getpass()  
-print(sha512\_crypt.hash(passwd , rounds = 5000 ))
+print(sha512_crypt.hash(passwd , rounds = 5000 ))
 ```
 
 ## Connecting via SSH
@@ -207,11 +207,11 @@ To connect, use <a href="https://www.putty.org/" target="_blank">the PuTTY app<
 
 2\. Go to the Session section, in the Host Name (or IP address) field enter the machine's IP address. 
 
-<img src="https://support.gcore.com/hc/article_attachments/360011031597/____________________________.png" alt="____________________________.png" width="537" height="415">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/____________________________.png" alt="____________________________.png" width="537" height="415">
 
 **Important!** If you create a machine with only a private address, add a floating IP.
 
-<img src="https://support.gcore.com/hc/article_attachments/360011032017/add_ip_float.png" alt="add_ip_float.png">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/add_ip_float.png" alt="add_ip_float.png">
 
 3\. In the Port field, set 22 port which is the standard port for SSH connection.  
 
@@ -221,7 +221,7 @@ To connect, use <a href="https://www.putty.org/" target="_blank">the PuTTY app<
 
 6\. (Step for connecting using a pair of SSH keys only) click Browse. 
 
- <img src="https://support.gcore.com/hc/article_attachments/360011025197/browse.png" alt="browse.png">
+ <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/browse.png" alt="browse.png">
 
 7\. (Step for connecting using a pair of SSH keys only) select the file with the private key for your machine in .ppk format.  
 
@@ -230,7 +230,7 @@ To connect, use <a href="https://www.putty.org/" target="_blank">the PuTTY app<
 
 8\. Click Open. The console will open. 
 
- <img src="https://support.gcore.com/hc/article_attachments/360011099078/login_as.png" alt="login_as.png" width="545" height="345">
+ <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/login_as.png" alt="login_as.png" width="545" height="345">
 
 9\. In the "login" field, enter the user name that was given when creating the instance or Bare Metal server. You can find it in the instance's tab, you will see is an inscription of the "\[login\]@\[IP of your machine\]" type. Most often, the login coincides with the name of the OS. For example, for the machine below it is "Ubuntu".
 
@@ -249,15 +249,15 @@ Follow the steps below to activate it. 
 
 1\. Open Settings. 
 
-<img src="https://support.gcore.com/hc/article_attachments/360011032077/SETTINGS.png" alt="SETTINGS.png" width="519" height="366">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/SETTINGS.png" alt="SETTINGS.png" width="519" height="366">
 
 2\. Go to the Apps section and click Optional features. 
 
-<img src="https://support.gcore.com/hc/article_attachments/360011107278/OPTIONAL_FEATURES.png" alt="OPTIONAL_FEATURES.png" width="543" height="260">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/OPTIONAL_FEATURES.png" alt="OPTIONAL_FEATURES.png" width="543" height="260">
 
 3\. Find OpenSSH Client and click to expand the detailed description.  
 
-<img src="https://support.gcore.com/hc/article_attachments/360011032137/instal_open_sssh.png" alt="instal_open_sssh.png">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/instal_open_sssh.png" alt="instal_open_sssh.png">
 
 4\. Click Install. 
 
@@ -271,14 +271,14 @@ If you want to connect using a password, enter the command:
 
 If you want to connect using a pair of SHH keys, enter the command:
 
-`ssh username@192.168.1.92 -i "C:\\Users\\username\\.ssh\\id\_rsa`
+`ssh username@192.168.1.92 -i "C:\\Users\\username\\.ssh\\id_rsa`
 
 Replace "username" with your username, which can be found on the the right-hand side of the "Access to Console" button. Additionally, replace "192.168.1.92 with the IP address of your instance, and replace "C:\\Users\\username\\.ssh\\id_rsa" with the path to your private key file in PEM format on your computer.                                                    
 Important! If you created an instance with only a private interface, create a floating IP address and use it when connecting to the instance over ssh.
 
 7\. The utility will warn you that you're trying to connect to an unknown device and ask if you want to continue. Type "yes" and press Enter. 
 
-<img src="https://support.gcore.com/hc/article_attachments/360011099638/yes.png" alt="yes.png">
+<img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/yes.png" alt="yes.png">
 
 8\. (Step for connecting using a password only) enter the password you configured while creating an instance or Bare Metal server.
 

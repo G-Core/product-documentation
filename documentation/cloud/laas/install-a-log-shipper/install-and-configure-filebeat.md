@@ -37,7 +37,7 @@ filebeat.inputs: 
    - <span style="color:#FF5913">path to one or several log files</span>    
 output.kafka:   
   hosts: ["<span style="color:#FF5913">Kafka Endpoint shown on the Logging page</span>"]   
-  topic: '<span style="color:#FF5913">name of your topic shown on the Logging page</span>'  
+  topic: '<span style="color:#FF5913">username.name_of_your_topic</span>'  
   sasl.mechanism: SCRAM-SHA-512   
   username: <span style="color:#FF5913">your username generated on the Logging page</span>   
   password: <span style="color:#FF5913">your password generated on the Logging page</span>   

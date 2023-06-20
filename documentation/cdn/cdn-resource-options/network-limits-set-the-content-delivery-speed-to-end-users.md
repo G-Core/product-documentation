@@ -21,15 +21,15 @@ To configure the speed limit via the Control panel:
 
 1\. Go to CDN and select the CDN resource you want to configure.
 
-<img src="https://support.gcore.com/hc/article_attachments/12392392470929" alt="CDN_resource.png">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/network-limits-set-the-content-delivery-speed-to-end-users/12392392470929.png" alt="CDN_resource.png">
 
 2\. In the navigation panel, under the "Network limits" section, click **Download speed limit**.
 
-<img src="https://support.gcore.com/hc/article_attachments/12420512653457" alt="Download_Speed_Limit_option.png" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/network-limits-set-the-content-delivery-speed-to-end-users/12420512653457.png" alt="Download_Speed_Limit_option.png" width="70%">
 
 This option has 2 modes: *Static* and *Dynamic*.
 
-<img src="https://support.gcore.com/hc/article_attachments/12392873863953" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/network-limits-set-the-content-delivery-speed-to-end-users/12392873863953.png" alt="" width="50%">
 
 ## Static
 
@@ -39,19 +39,19 @@ This mode sets a limit on all content that is transmitted through the CDN. When 
 
 This setting defines the maximum download speed per connection in Kilobytes per second (KB/s). This parameter only accepts values equal to or higher than 1 KB/s.
 
-<img src="https://support.gcore.com/hc/article_attachments/12393083235729" alt="Connection_speed.png" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/network-limits-set-the-content-delivery-speed-to-end-users/12393083235729.png" alt="Connection_speed.png" width="50%">
 
 ### Limit After
 
 This setting defines the amount of data that can be downloaded without limit before the Connection Speed parameter takes effect. If set to 0, the download speed will be limited immediately from the first byte.
 
-<img src="https://support.gcore.com/hc/article_attachments/12393083820561" alt="Limit_After.png" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/network-limits-set-the-content-delivery-speed-to-end-users/12393083820561.png" alt="Limit_After.png" width="50%">
 
 ## Dynamic
 
 This mode sets different limits for different users or for different types of content. The speed is adjusted based on requests with the "speed" and "buffer" arguments.
 
-<img src="https://support.gcore.com/hc/article_attachments/12393281637393" alt="Dynamic.png" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/network-limits-set-the-content-delivery-speed-to-end-users/12393281637393.png" alt="Dynamic.png" width="50%">
 
 The *speed* sets the maximum download speed, while the *buffer* sets how much data will be transferred without the speed limit. The buffer argument is optional.
 

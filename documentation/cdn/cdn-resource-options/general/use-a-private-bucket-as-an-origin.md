@@ -30,7 +30,7 @@ You can find the Access Key ID and Secret access key according to the "<a href="
 
 You can find the Hostname and Region in the "Details" section under the <a href="https://storage.gcore.com/storage/list" target="_blank">Storages</a> tab.
 
-<img src="https://support.gcore.com/hc/article_attachments/15353064572561" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15353064572561.png" alt="">
 
 **Note**: We don’t store the Access Key ID and Secret access key for S3 storage. It is your responsibility to save them after creating the storage.  If you forget them, click **Generate new keys** under the "Details" section. 
 
@@ -49,13 +49,13 @@ To configure a private origin:
 
 1\. Go to the <a href="https://cdn.gcore.com/resources/create/wizard" target="_blank">CDN resource creation page</a>, select "Accelerate and protect only static assets", and click **Confirm**.
 
-<img src="https://support.gcore.com/hc/article_attachments/5892806391441/image_1460.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/image_1460.png" alt="" width="50%">
 
 A new page will open. Complete the remaining steps of the manual in the "Origin" section on this page.
 
 In the example below, we use the private bucket ```test-private``` in S3 Gcore storage with the Hostname ```s-ed1.cloud.gcore.lu``` and configure an origin group as follows:
 
-<img src="https://support.gcore.com/hc/article_attachments/15353220184977" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15353220184977.png" alt="" width="70%">
 
 2\. Select the **Specify content origin** option.
 
@@ -81,7 +81,7 @@ More information about where to find the keys can be found in the "[Authenticati
 
 Click **Save changes**.
 
-<img src="https://support.gcore.com/hc/article_attachments/15355039530769" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15355039530769.png" alt="">
 
 ### Configure a private origin via the API 
 
@@ -120,7 +120,7 @@ application/json</b></td>
 </tr>
 <tr>
 <td>Request parameter</td>
-<td>For more information, see Gcore’s <a href="https://apidocs.gcore.com/cdn?_gl=1*1vtlv8c*_ga*ODE2MjQ4NzgwLjE2NjY2MDkxMzk.*_ga_Y79HRL8RPR*MTY4NDI0MDAyMC43MjYuMS4xNjg0MjQzNDMyLjYwLjAuMA..#tag/Origins/operation/create_origin_group" target="_blank">API documentation</td>
+<td>For more information, see Gcore’s <a href="https://apidocs.gcore.com/cdn?_gl=1*1vtlv8c*_ga*ODE2MjQ4NzgwLjE2NjY2MDkxMzk.*_ga_Y79HRL8RPR*MTY4NDI0MDAyMC43MjYuMS4xNjg0MjQzNDMyLjYwLjAuMA..#tag/Origins/operation/create_origin_group" target="_blank">API documentation</a></td>
 </tr>
 <tr>
 <td>Response</td>
@@ -142,7 +142,7 @@ a. Set the request method to **POST**.
 
 b. Enter the API URL in the request URL field.
 
-<img src="https://support.gcore.com/hc/article_attachments/15353579849745" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15353579849745.png" alt="" width="70%">
 
 2\. Go to the **Auth** tab.
 
@@ -150,7 +150,7 @@ a. Select **Bearer Token** from the "Type dropdown".
 
 b. Copy the generated access token and paste it into the "Token" field.
 
-<img src="https://support.gcore.com/hc/article_attachments/15353599876753" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15353599876753.png" alt="" width="70%">
 
 3\. Go to the **Body** tab.
 
@@ -162,4 +162,4 @@ c. Enter the payload in the text area. Replace the sample values indicated by ``
 
 4\. Click **Send**.
 
-<img src="https://support.gcore.com/hc/article_attachments/15353638607505" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15353638607505.png" alt="" width="70%">

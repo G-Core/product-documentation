@@ -15,7 +15,7 @@ toc:
 
 After you choose a plan (on the website or the shop window), an order page will open.
 
-[<img src="https://support.gcore.com/hc/article_attachments/360020837318/mceclip9.png" alt="mceclip9.png">](https://support.gcorelabs.com/hc/article_attachments/360020837318/mceclip9.png)
+[<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/order-a-virtual-server/mceclip9.png" alt="mceclip9.png">](https://assets.gcore.pro/docs/hosting/virtual-servers/order-a-virtual-server/mceclip9.png)
 
 The order window contains information about the price of additional IP addresses, OS, and total cost of the order with all options. Additional IP addresses can be purchased at this step by simply moving the slider to the right.
 

@@ -29,7 +29,7 @@ Block/Activate a user or seller
 
 The new page will open, and you can do the remaining steps there.
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/13503542071057">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/block-activate-users-and-sellers/13503542071057.png">
 
 2\. Find the user/seller you need using the filters.
 
@@ -50,7 +50,7 @@ Check if a user or seller is blocked or active
 
 3\. Check the value of the user/seller in the "Blocked" column.
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/13503685564305">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/manuals/block-activate-users-and-sellers/13503685564305.png">
 
 *   If the status is "true, " the user is blocked and cannot access the account and services.
 *   If the status is "false", the user is active and has access to the account and services.

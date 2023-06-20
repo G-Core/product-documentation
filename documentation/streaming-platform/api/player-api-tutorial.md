@@ -193,8 +193,11 @@ gplayerAPI.on('ended', () => {
 
 You can test the player API online <a href="http://iframes.gcdn.co/gplayer/iframe-api/iframeAPI.html" target="_blank">here</a>.
 
-Copy and paste the iframe from your control panel in the upper field, and click on the "Upload your iframe" button. To search for an iFrame in your account, use the guides from the following articles: for <a href="https://gcore.com/docs/streaming-platform/live-streaming/create-a-live-stream" target="_blank">broadcasts</a> (step 7), for <a href="https://gcore.com/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app" target="_blank">VOD</a> (step 6), and for <a href="https://gcore.com/docs/streaming-platform/video-hosting/create-and-configure-playlists" target="_blank">playlists</a> (step 7).
+Copy and paste the iframe from your control panel in the upper field, and click on the "Upload your iframe" button. To search for an iFrame in your account, use the guides from the following articles: for <a href="https://gcore.com/docs/streaming-platform/live-streaming/create-a-live-stream" target="_blank">broadcasts</a> (step 7), for <a href="https://gcore.com/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app" target="_blank">VOD</a> (step 6), and for <a href="https://gcore.com/docs/streaming-platform/video-hosting/create-and-configure-playlists-for-videos" target="_blank">playlists</a> (step 7).
 
-<img src="https://support.gcore.com/hc/article_attachments/360003594137/1567057078730.png" alt="" width="70%">
+
+ 
+
+<img src="https://assets.gcore.pro/docs/streaming-platform/api/player-api-tutorial/1567057078730.png" alt="" width="70%">
 
 Dark gray buttons are for the functions available for calling, white buttons are for the functions that require values setting. Events are logged in the "Status" window.

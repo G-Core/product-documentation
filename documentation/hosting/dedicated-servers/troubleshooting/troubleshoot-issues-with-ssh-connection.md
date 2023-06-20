@@ -12,12 +12,12 @@ SSH connection uses 22 port, so, first of all, check the server availability via
 For example:  
 
 <code-block>
-telnet <span style="color:#FF5913">92.000.000.00 22</span> 
+telnet <span style="color:#FF5913">92.000.000.00 22</span> 
 </code-block>
 
 Where: 
-- <span style="color:#FF5913">92.000.000.00</span> – server's IP, 
-- <span style="color:#FF5913">22</span> – port.
+- <span style="color:#FF5913">92.000.000.00</span> – server's IP, 
+- <span style="color:#FF5913">22</span> – port.
 
 If you see this kind of result server is able to connect via SSH.
 
@@ -26,27 +26,27 @@ telnet 92.000.000.00 22
 Trying 92.000.000.00...  
 Connected to 92.000.000.00  
 Escape character is '^]'.  
-<span style="color:#FF5913">**SSH-2.0-OpenSSH\_7.2 FreeBSD-20161230</span>
+<span style="color:#FF5913">**SSH-2.0-OpenSSH_7.2 FreeBSD-20161230</span>
 Connection closed by foreign host.
 </code-block>
 
 Putty interface:
 
-<img src="https://support.gcore.com/hc/article_attachments/360010081637/mceclip0.png" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-issues-with-ssh-connection/mceclip0.png" alt="" width="60%">
 
 Specify the IP address in the field, be sure to have 22 port typed, then press Open. Enter the credentials from the Instruction (example follows next). A little note, User goes for Login.
 
-<img src="https://support.gcore.com/hc/article_attachments/360010185998/mceclip1.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-issues-with-ssh-connection/mceclip1.png" alt="" width="70%">
 
 If 22 port is opened and you are still having issues with connection, check login and password.
 
 Find login and password in the Control Panel. Choose the server and then click Instructions button.
 
-<img src="https://support.gcore.com/hc/article_attachments/360010185998/mceclip1.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-issues-with-ssh-connection/mceclip1.png" alt="" width="70%">
 
 You need User and Password fields located after Server IP address.
 
-<img src="https://support.gcore.com/hc/article_attachments/360000736678/mceclip1.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-issues-with-ssh-connection/mceclip1.png" alt="">
 
 **Note**: If you change the password in OS by yourself it won't change in the Instruction.
 

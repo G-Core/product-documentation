@@ -25,7 +25,8 @@ Streaming via our Streaming Platform has advantages and additional features, suc
 *   <a href="https://gcore.com/docs/streaming-platform/live-streaming/pause-and-rewind-the-live-streams" target="_blank">DVR</a> allows you to rewind the stream, stop it and return to viewing it later.
 *   <a href="https://gcore.com/docs/streaming-platform/live-streaming/create-and-configure-a-restream-to-social-media" target="_blank">Restreaming</a> allows you to send a broadcast to several media services simultaneously, such as Facebook and YouTube.
 *   <a href="https://gcore.com/docs/streaming-platform/extra-features/customize-appearance-of-the-built-in-player" target="_blank">Own player and statistics</a> allow you to collect statistics on views, geography, and popularity of individual broadcasts.
-*   <a href="https://gcore.com/docs/streaming-ptatform/extra-features/add-monetization-to-your-live-streams-and-videos" target="_blank">Ads</a> allow you to integrate advertisements into a video or broadcast using five types of playback (pre-roll, mid-roll, etc.)
+*   <a href="https://gcore.com/docs/streaming-platform/extra-features/add-monetization-to-your-live-streams-and-videos" target="_blank">Ads</a> allow you to integrate advertisements into a video or broadcast using five types of playback (pre-roll, mid-roll, etc)
+
 
 The formats and specifications supported by the Streaming Platform are described in the <a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/what-initial-parameters-of-your-live-streams-and-videos-we-can-accept" target="_blank">article</a>.
 

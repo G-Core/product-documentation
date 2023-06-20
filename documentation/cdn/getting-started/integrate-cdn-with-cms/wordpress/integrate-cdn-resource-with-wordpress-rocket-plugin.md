@@ -21,7 +21,7 @@ Go to CDN and type in the CNAME from the Gcore <a href="https://accounts.gcore.
 
 Update the Replace Site’s Hostname field. 
 
-<img src="https://support.gcore.com/hc/ru/article_attachments/115000109125/WPRocket.png" alt="" width="70%"> 
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-rocket-plugin/WPRocket.png" alt="" width="70%"> 
 
 
 Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the control panel.

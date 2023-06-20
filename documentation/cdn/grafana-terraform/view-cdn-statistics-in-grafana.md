@@ -47,7 +47,7 @@ Video instructions of the steps:
 
 **Note**: The numbers (1.0.8) in the file name indicate the plugin version and may differ depending on updates.
 
-<img src="https://support.gcore.com/hc/article_attachments/4407335142673/_____________.png" alt="" >
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/view-cdn-statistics-in-grafana/_____________.png" alt="" >
 
 Unzip the archive to the Grafana plugin folder. By default, this is the *Grafana\grafana\data\plugins* installation folder.
 
@@ -55,33 +55,33 @@ Unzip the archive to the Grafana plugin folder. By default, this is the *Grafana
 
 Click the gear icon in the menu to open the "Configuration" section, select "Data Sources".
 
-<img src="https://support.gcore.com/hc/article_attachments/4407335183377/data_source.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/view-cdn-statistics-in-grafana/data_source.png" alt="">
 
 Click **Add data source** to add a new resource for getting data.
 
-<img src="https://support.gcore.com/hc/article_attachments/4407335221649/_________Data_Source.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/view-cdn-statistics-in-grafana/_________Data_Source.png" alt="" width="50%">
 
 Find the cdn-stats plugin from Gcore and click "Select".
 
-<img src="https://support.gcore.com/hc/article_attachments/4407335231249/cdn-stats.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/view-cdn-statistics-in-grafana/cdn-stats.png" alt="" width="70%">
 
 The plugin settings will be opened. Add a permanent API token to the "Auth" section.
 
 You can get a token in your personal account. To do this, go to Profile > API tokens > Create. 
 
-<img src="https://support.gcore.com/hc/article_attachments/5084801251089/mceclip0.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/view-cdn-statistics-in-grafana/mceclip0.png" alt="">
 
 Insert the received API token in the API token field in the format: **APIKey** {the received API token}.
 
 For example: ```APIKey 7711$eyJ0eXAiOiJKV```
 
-<img src="https://support.gcore.com/hc/article_attachments/4407343367825/api_token_1.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/view-cdn-statistics-in-grafana/api_token_1.png" alt="" width="70%">
 
 Click **Save & Test**.
 
 If everything is correct, you will see the following messages: "Datasource updated" and "You successfully authenticated as {Name}".
 
-<img src="https://support.gcore.com/hc/article_attachments/4407343414417/save_test.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/view-cdn-statistics-in-grafana/save_test.png" alt="" width="70%">
 
 ## The Download and install the plugin step video instructions
 
@@ -92,23 +92,23 @@ If everything is correct, you will see the following messages: "Datasource updat
 
 Click on the **+** in the menu to open the "Create" section, select "Dashboard" to add a new dashboard.
 
-<img src="https://support.gcore.com/hc/article_attachments/4407343451665/dashboard.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/view-cdn-statistics-in-grafana/dashboard.png" alt="" width="50%">
 
 In the next window, click "Add an empty panel" to create a new panel.
 
- <img src="https://support.gcore.com/hc/article_attachments/4407335370897/add_panel.png" alt="" width="50%">
+ <img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/view-cdn-statistics-in-grafana/add_panel.png" alt="" width="50%">
 
 Make sure that "cdn-stats" is set as the data source in the Query section.
 
-<img src="https://support.gcore.com/hc/article_attachments/4407335400849/query.png" alt="query.png" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/view-cdn-statistics-in-grafana/query.png" alt="query.png" width="50%">
 
 Select the necessary metric, granularity, and grouping (you can select several).
 
- <img src="https://support.gcore.com/hc/article_attachments/4407343476625/query_props_1.png" alt="" width="50%">
+ <img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/view-cdn-statistics-in-grafana/query_props_1.png" alt="" width="50%">
 
 The "Legend" field displays the values of the Group by field and the name of the metric by default:
 
-<img src="https://support.gcore.com/hc/article_attachments/4407335444113/grafa.jpg" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/view-cdn-statistics-in-grafana/grafa.jpg" alt="" width="50%">
 
 You can customize the output of legend data.
 
@@ -116,15 +116,15 @@ Set a name for the metric and in brackets {{}} set the parameters specified in t
 
 For example, for the settings above, you can set the following format: Traffic quantity — {{resource}}.
 
-<img src="https://support.gcore.com/hc/article_attachments/15717167195025" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/view-cdn-statistics-in-grafana/15717167195025.png" alt="" width="70%">
 
 Open the dashboard settings by clicking on the gear icon in the upper-right corner.
 
-<img src="https://support.gcore.com/hc/article_attachments/4407335500945/panel_settings.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/view-cdn-statistics-in-grafana/panel_settings.png" alt="" width="50%">
 
 Go to the "Variables" section and click "Add variable". You can use it to filter the data on the chart.
 
-<img src="https://support.gcore.com/hc/article_attachments/4407343597073/add_variable.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/view-cdn-statistics-in-grafana/add_variable.png" alt="" width="70%">
 
 For example, to be able to filter resources, you need to make the following settings and click "Update":
 
@@ -135,25 +135,25 @@ For example, to be able to filter resources, you need to make the following sett
     - In the **_Multi-value_** you can set the ability to select multiple elements.
     - In the **_Include All option_** you can set the ability to select all elements by marking the All value.
 
-<img src="https://support.gcore.com/hc/article_attachments/4407335683601/variables_edit.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/view-cdn-statistics-in-grafana/variables_edit.png" alt="" width="70%">
 
 Go back to the dashboard by clicking the arrow icon in the upper-left corner of the screen.
 
-<img src="https://support.gcore.com/hc/article_attachments/4407343815441/go_back.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/view-cdn-statistics-in-grafana/go_back.png" alt="">
 
 Connect the variable with the Dashboard. To do this, specify its name in the "Resources" field of the "Filters (comma separated)" section.
 
 **Important!** Enter "$" before the variable name.
 
-<img src="https://support.gcore.com/hc/article_attachments/4407343830545/filters.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/view-cdn-statistics-in-grafana/filters.png" alt="" width="50%">
 
 Now you can choose resource data to be displayed on the chart.
 
-<img src="https://support.gcore.com/hc/article_attachments/4407335732625/pane_____.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/view-cdn-statistics-in-grafana/pane_____.png" alt="" width="50%">
 
 Save the Dashboard. To do this, click "Save" in the upper-right corner of the panel.  
   
-<img src="https://support.gcore.com/hc/article_attachments/4407335808017/save.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/view-cdn-statistics-in-grafana/save.png" alt="" width="50%">
 
 ## Configure the Dashboard step video instructions
 

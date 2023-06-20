@@ -24,7 +24,7 @@ Where ```folder``` is the name of the folder that you’ve created in 
 
 Example: 
 
-<img src="https://support.gcore.com/hc/article_attachments/360011410098/______.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/set-robots-txt-to-avoid-adding-to-index-by-web-crawlers/______.png" alt="" width="70%">
 
 ## How it is going to work? 
 

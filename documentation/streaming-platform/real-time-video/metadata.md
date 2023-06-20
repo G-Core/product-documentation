@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: Meet (group video calls)
+displayName: Real-Time Video
 published: true
 order: 80
 ---

@@ -15,7 +15,7 @@ For storage billing we use the following metrics:
 
 The data for all metrics is available in the Statistics section. It can be requested for a day, two days, week, month, year, or you can choose a custom time period in the calendar on the right. The data can also be sorted by storage types (s3 or sftp), locations, and names.
 
-<img src="https://support.gcore.com/hc/article_attachments/360003274157/Screenshot_70.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/storage/check-storages-usage-reports/Screenshot_70.png" alt="" width="70%">
 
 Statistics appear in the Control panel within a couple of hours after storage creation. For the s3 storages in the Global 2 location, it always comes a day later. 
 

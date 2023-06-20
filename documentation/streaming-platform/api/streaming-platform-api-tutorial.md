@@ -43,14 +43,14 @@ You can integrate your product to use the Streaming Platform for unlimited video
 
 Typically, your app presents users with an interface through which they can create and manage a stream. Each user action represents a request to an endpoint in the Streaming Platform API and a webhook. The following diagram shows the typical high-level sequence of the operations grouped into stages:
 
-<img src="https://support.gcore.com/hc/article_attachments/12876274382481" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/api/streaming-platform-api-tutorial/12876274382481.png" alt="">
 
 You’ll need to have:
 
 - Your own video streaming interface created
 - A Gcore account with an active <a href="https://gcore.com/docs/account-settings/create-an-account-for-an-individual-or-legal-entity" target="_blank">Streaming</a> subscription
 - An <a href="https://apidocs.gcore.com/streaming" target="_blank">authentication</a> set up using the user credentials
-- A <a href="https://gcore.com/docs/streaming-platform/extra-features/get-webhooks-from-the-streaming-service" target="_blank">webhook</a> set up
+- A <a href="https://gcore.com/docs/streaming-platform/extra-features/get-webhooks-from-the-streaming-platform" target="_blank">webhook</a> set up
 
 ## Basic operations
 

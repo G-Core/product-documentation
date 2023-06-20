@@ -35,12 +35,12 @@ To configure Large Files Delivery Optimization option via the Control panel:
 
 1\. Go to CDN and select the CDN resource you want to configure.
 
-<img src="https://support.gcore.com/hc/article_attachments/12478782810513" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/optimize-large-file-delivery/12478782810513.png" alt="">
 
 2\. In the navigation panel, under the **Content** section, click **Large files delivery optimization**.
 
-<img src="https://support.gcore.com/hc/article_attachments/12479228932497" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/optimize-large-file-delivery/12479228932497.png" alt="" width="70%">
 
 3\. Turn on the toggle for **Enable Large files delivery optimization** to enable the option.
 
-<img src="https://support.gcore.com/hc/article_attachments/12479601956241" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/optimize-large-file-delivery/12479601956241.png" alt="" width="50%">

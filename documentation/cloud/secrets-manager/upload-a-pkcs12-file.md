@@ -14,7 +14,7 @@ toc:
 
 Secrets Manager is a tab where you can upload PKCS12 files (called secrets in the system) to. They are needed to create Load Balancers with HTTPS listeners.
 
-<img src="https://support.gcore.com/hc/article_attachments/5296924850705/mceclip0.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/mceclip0.png" alt="" width="70%">
 
 ## What PKCS12 file is 
 
@@ -55,7 +55,7 @@ Now you have all the files needed. There are several ways to merge them into PKC
 _For a .crt, .cer or .der file_
 
 <code-block>
-openssl x509 - inform der - in <span style="color:#FF5913">[name of your file, including extension]</span> - out <span style="color:#FF5913">[name for the future generated PEM file]</span>.pem
+openssl x509 - inform der - in <span style="color:#FF5913">[name of your file, including extension]</span> - out <span style="color:#FF5913">[name for the future generated PEM file]</span>.pem
 </code-block>
 
 If your file is named "example.der" and you want to name the new PEM file "PEMcertificate", then the command would be: openssl x509 -inform der -in example.der -out PEMcertificate.pem
@@ -63,7 +63,7 @@ If your file is named "example.der" and you want to name the new PEM file "PEMce
 _For a .p7b or .p7c file_
 
 <code-block>
-openssl pkcs7 -print_certs -in <span style="color:#FF5913">[name of your file, including extension]</span> -out <span style="color:#FF5913">[name for the future generated PEM file]</span>.cer
+openssl pkcs7 -print_certs -in <span style="color:#FF5913">[name of your file, including extension]</span> -out <span style="color:#FF5913">[name for the future generated PEM file]</span>.cer
 </code-block>
 
 If your file is named "example.pb7" and you want to name the new PEM file "PEMcertificate", then the command would be: 
@@ -77,7 +77,7 @@ openssl pkcs7 -print_certs -in example.pb7 -out PEMcertificate.cer
 5\. To merge files into PKCS12, open OpenSSL and enter the command:
 
 <code-block>
-openssl pkcs12 -export -inkey <span style="color:#FF5913">[name of the file with the private key, including the extension]</span> -in <span style="color:#FF5913">[name of the file with the certificate, including the extension]</span> -certfile <span style="color:#FF5913">[name of the file with the certificate chain, including the extension]</span> -passout pass: -out <span style="color:#FF5913">[name for the future created file]</span>.p12
+openssl pkcs12 -export -inkey <span style="color:#FF5913">[name of the file with the private key, including the extension]</span> -in <span style="color:#FF5913">[name of the file with the certificate, including the extension]</span> -certfile <span style="color:#FF5913">[name of the file with the certificate chain, including the extension]</span> -passout pass: -out <span style="color:#FF5913">[name for the future created file]</span>.p12
 </code-block>
 
 If your files are server.crt (main certificate), server.key (private key) and ca-chain.crt (certificate chain), and you want to name the new PKCS 12 file "server", then the command would be: 
@@ -95,7 +95,7 @@ Encode the contents of PKCS12 file to base64. This can be done by entering the c
 _For Windows OS_
 
 <code-block>
-certutil.exe -encode <span style="color:#FF5913">[full path to PKCS12 file]</span> <span style="color:#FF5913">[new file name]</span>.b64
+certutil.exe -encode <span style="color:#FF5913">[full path to PKCS12 file]</span> <span style="color:#FF5913">[new file name]</span>.b64
 </code-block>
 
 If the path to your file is "C:\Users\Myname\server.p12" and you want to name the new file "code64", then the command will be: certutil.exe -encode C:\Users\Myname\server.p12 code64.b64
@@ -105,7 +105,7 @@ A new base64 encoded file will be created. Open it in a text editor and delete t
 _For Mac OS_
 
 <code-block>
-openssl base64 -in <span style="color:#FF5913">[full path to PKCS12 file]</span> -out <span style="color:#FF5913">[new file name]</span>.txt
+openssl base64 -in <span style="color:#FF5913">[full path to PKCS12 file]</span> -out <span style="color:#FF5913">[new file name]</span>.txt
 </code-block>
 
 If the path to your file is "Users/admin/Downloads/server.p12" and you want to name the new file "code64", then the command will be: openssl base64 -in Users/admin/Downloads/server.p12 -out code64.txt
@@ -115,7 +115,7 @@ A new .txt file will be created with the base64 encoded contents of the PKCS12 f
 _For Linux (must be executed in the directory of PKCS12 file)_
 
 <code-block>
-base64 <span style="color:#FF5913">[PKCS12 file name]</span> > <span style="color:#FF5913">[new file name]</span>
+base64 <span style="color:#FF5913">[PKCS12 file name]</span> > <span style="color:#FF5913">[new file name]</span>
 </code-block>
 
 If your file is named "server.p12" and you want to name the new file "code64" then the command will be: base64 server.p12 > code64
@@ -127,17 +127,17 @@ A new code64 file with the contents of the base64 encoded PKCS12 file will be cr
 1\. Add the base64 encoded content of the PKCS12 file as a Secret (in examples above it is the content of "code64").  
 
 <media-gallery>
-<img src="https://support.gcore.com/hc/article_attachments/5296924850705/mceclip0.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/mceclip0.png" alt="" width="70%">
 
-<img src="https://support.gcorelabs.com/hc/article_attachments/4403965784337/image4.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/image4.png" alt="" width="70%">
 </media-gallery>
 
 2\. When creating or editing a Load Balancer, click "Add Listener". In the opened window, enter the name of a new listener, select the "Terminated HTTPS" protocol and specify the desired secret below.  
 
 <media-gallery>
-<img src="https://support.gcore.com/hc/article_attachments/4403965810577/image2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/image2.png" alt="" width="70%">
 
-<img src="https://support.gcore.com/hc/article_attachments/4403965811089/image1.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/image1.png" alt="" width="70%">
 </media-gallery>
    
 The listener will be created.

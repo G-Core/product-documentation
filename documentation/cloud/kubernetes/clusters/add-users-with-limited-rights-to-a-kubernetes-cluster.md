@@ -67,20 +67,20 @@ kubectl -n test-namespace get secret test-serviceaccount-token-{% some random ch
 
 Before:
 
-<img src="https://support.gcore.com/hc/article_attachments/11762472647057" alt="image1.jpg">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/add-users-with-limited-rights-to-a-kubernetes-cluster/image1.jpg" alt="image1.jpg">
 
 After:
 
-<img src="https://support.gcore.com/hc/article_attachments/11762472647441" alt="image2.jpg">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/add-users-with-limited-rights-to-a-kubernetes-cluster/11762472647441.png" alt="image2.jpg">
 
 5. Check the created service account and Kubernetes configuration file.
 
 Use your created kubeconfig file to connect to the Kubernetes cluster.
 
-<img src="https://support.gcore.com/hc/article_attachments/11762462520977" alt="image3.png">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/add-users-with-limited-rights-to-a-kubernetes-cluster/11762462520977.png" alt="image3.png">
 
 Repeat the procedure on namespaces assigned to the service account and others. The result should be fail (F) or success (S).
 
-<img src="https://support.gcore.com/hc/article_attachments/11762462523537" alt="image4.png">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/add-users-with-limited-rights-to-a-kubernetes-cluster/11762462523537.png" alt="image4.png">
 
 If successful, the service account and kubeconfig can now be considered as properly created.

@@ -19,15 +19,15 @@ We always send notifications about traffic overcommitment. Having received it, c
 
 1\. Open the "Billing" section in the personal account and click on the "Auto payment" tab.
 
-<img src="https://support.gcore.com/hc/article_attachments/360007074438/________-____________eng.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/payments/set-up-auto-payment/________-____________eng.png" alt="" width="70%">
 
 2\. Read the information about the option, then click "Configure". 
 
-<img src="https://support.gcore.com/hc/article_attachments/360006988417/configure_eng_2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/payments/set-up-auto-payment/configure_eng_2.png" alt="" width="70%">
 
 3\. Set a maximum payment amount that will be debited from your bank card in case if on the account balance are not enough funds for services’ renewal. 
 
-<img src="https://support.gcore.com/hc/article_attachments/360006988457/confirm_eng_3.png"  alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/payments/set-up-auto-payment/confirm_eng_3.png"  alt="" width="70%">
 
 ! The system attempts to debit a bank card once a day. If payment is failed, you will be sent a notification. 
 
@@ -39,7 +39,7 @@ After selecting the amount of the auto payment, click the "Confirm" button. 
 
 4\. Confirm your bank card.  
 
-<img src="https://support.gcore.com/hc/article_attachments/360006988437/confirm_en_4.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/payments/set-up-auto-payment/confirm_en_4.png" alt="" width="70%">
 
 ## Work features of auto payment
 

@@ -23,7 +23,7 @@ Open CDN Settings
 
 To open the CDN settings of the particular client, go to the "Clients" section in the admin panel and click the wrench icon on the right in the row of the client for whom you want to set up the CDN.
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/12763930468497" alt="mceclip0.png">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/general/cdn-service-management/12763930468497.png" alt="mceclip0.png">
 
 A new page will open. Go to the "CDN" tab.
 
@@ -36,13 +36,13 @@ There are three sections in the CDN:
 *   **Features** — additional options activation.
 *   **Traffic** — settings for traffic geo balancing.
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/12763980917905" alt="mceclip1.png">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/general/cdn-service-management/12763980917905.png" alt="mceclip1.png">
 
 ### General CDN settings
 
 #### **Activate Service**
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/12763992814993" alt="mceclip2.png">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/general/cdn-service-management/12763992814993.png" alt="mceclip2.png">
 
 If the "Activate Service" checkbox is enabled, a client can use the service: to create CDN resources and manage them. You can deactivate the service by unchecking the checkbox. In this case, the client will see a service activation request form on the CDN tab instead of the CDN resources list.
 
@@ -50,7 +50,7 @@ If the "Activate Service" checkbox is enabled, a client can use the service: to 
 
 #### **Trial Settings**
 
-**<img src="https://reseller.support.gcore.com/hc/article_attachments/12764114983953" alt="mceclip3.png">**
+**<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/general/cdn-service-management/12764114983953.png" alt="mceclip3.png">**
 
 This tab is used to change trial settings. By default, the trial lasts 14 days, but it may end sooner if the client exceeds the traffic limit of 300 GB. You can change the trial settings (traffic volume and days limit) at any time.
 
@@ -68,7 +68,7 @@ When the trial ends, the client's resources will be stopped, and the CDN service
 
 #### **Paid features**
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/12764215632273" alt="mceclip4.png">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/general/cdn-service-management/12764215632273.png" alt="mceclip4.png">
 
 You can activate additional paid services for the client, including an [Advanced directory, user agents, geo statistics](https://www.gcore.com/support/articles/115004917425/), [Raw logs](https://www.gcore.com/support/articles/115000511685/), [Origin shielding](https://www.gcore.com/support/articles/214080309/) (to set the locations, contact technical support or your manager), and [Streaming](https://www.gcore.com/support/articles/115002080125/).
 
@@ -78,7 +78,7 @@ Certain features, such as Resources with Shared Cache Zone, Wildcard Purge, and 
 
 #### **Free features**
 
-**<img src="https://reseller.support.gcore.com/hc/article_attachments/12764221754513" alt="mceclip5.png">**
+**<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/general/cdn-service-management/12764221754513.png" alt="mceclip5.png">**
 
 Enabling the "gcdn.co zone (CNAME)" option allows clients to create subdomains for CDN delivery in our zone and use our shared SSL certificate. This is a non-public feature, so please contact the support team ([support@gcore.com](support@gcore.com)) to discuss its availability.
 
@@ -86,7 +86,7 @@ The "Show Origin, Shield, and CDN Traffic Separately" option affects the traffic
 
 ### Traffic
 
-<img src="https://reseller.support.gcore.com/hc/article_attachments/12764368565777" alt="mceclip6.png">
+<img src="https://assets.gcore.pro/docs/reseller-support/old-admin-panel/general/cdn-service-management/12764368565777.png" alt="mceclip6.png">
 
 CDN servers are grouped into several regions in [Balancer:](https://www.gcore.com/support/articles/360000194885/) North America, Asia, the Middle East, Europe, Australia, the World (with the World anycast address behind this region), the CIS, Latin America, and Africa.
 
