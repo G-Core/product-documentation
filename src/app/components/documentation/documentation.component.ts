@@ -18,6 +18,7 @@ import { MenuItem, MenuTreeItem, TableOfContents } from '../../models';
 import { GitHubAPIService } from '../../services';
 import { MenuService } from '../../services/menu.service';
 import { callToActionMap } from '../../constants/call-to-action';
+import { environment } from '../../../environments/environment';
 
 @Component({
     selector: 'gc-documentation',
@@ -45,6 +46,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
     public isActiveLike: boolean = false;
     public isActiveDislike: boolean = false;
     public activeTab: string;
+    public baseHref: string = environment.baseHref;
 
     @ViewChild('scullyContainer') public scullyContainer: ElementRef;
     @ViewChild('fullSizeImage') public fullSizeImage: ElementRef;
