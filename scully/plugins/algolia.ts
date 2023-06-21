@@ -14,7 +14,7 @@ interface Payload {
     objectID: number;
 }
 
-const INDEX_NAME = process.env.ALGOLIA_INDEX;
+const INDEX_NAME = process.env.ALGOLIA_PD_INDEX;
 const SCULLY_CODE = "try {window['scullyContent']";
 
 export const updateAlgolia = 'updateAlgolia';
