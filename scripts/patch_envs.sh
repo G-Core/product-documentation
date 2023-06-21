@@ -6,4 +6,4 @@ patch_envs() {
   echo "$tmp" > $file
 }
 
-patch_envs dist/product-documentation/docs/config.js
+patch_envs dist/static/docs/config.js
