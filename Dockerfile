@@ -19,7 +19,7 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     ALGOLIA_PD_INDEX=${ALGOLIA_PD_INDEX} \
     ALGOLIA_SEARCH_KEY=0f8c47609b46da62bf3852876be561af \
     ALGOLIA_WRITE_KEY=${ALGOLIA_WRITE_KEY}
-RUN npm run scully:prod && scripts/patch_envs.sh
+RUN npm run scully:prod && chmod +x scripts/patch_envs.sh
 
 FROM nginx:1.21.6-alpine
 
