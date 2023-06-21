@@ -37,8 +37,15 @@ export class SearchBoxComponent implements ControlValueAccessor {
         this.searchKey = searchKey;
     }
 
-    public onSearch(): void {
+    public trim(): void {
         if (this.searchKey) {
+            this.searchKey = this.searchKey.trim();
+        }
+    }
+
+    public onSearch(): void {
+        if (this.searchKey && this.searchKey.trim()) {
+            this.searchKey = this.searchKey.trim();
             this.search.emit(this.searchKey);
         }
     }
