@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { SearchResponse } from '@algolia/client-search';
@@ -7,13 +7,14 @@ import { BehaviorSubject, Observable, merge, of, switchMap, tap } from 'rxjs';
 import { AlgoliaService } from '../../services/algolia.service';
 import { categories } from '../../constants';
 import { ProductDocumentationIndex } from '../../models/ProductDocumentationIndex';
+import { MenuService } from '../../services/menu.service';
 
 @Component({
     selector: 'gc-search',
     templateUrl: './search.component.html',
     styleUrls: ['./search.component.scss'],
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent implements OnInit, OnDestroy {
     private page$: BehaviorSubject<number> = new BehaviorSubject(0);
     private matchingTextLength = 100;
 
@@ -31,7 +32,12 @@ export class SearchComponent implements OnInit {
     public streamingFilter: boolean = true;
     public webSecurityFilter: boolean = true;
 
-    constructor(private algolia: AlgoliaService, private route: ActivatedRoute, private fb: FormBuilder) {}
+    constructor(
+        private algolia: AlgoliaService,
+        private route: ActivatedRoute,
+        private fb: FormBuilder,
+        private menuService: MenuService,
+    ) {}
 
     public ngOnInit(): void {
         this.filterForm = this.fb.group({
@@ -59,6 +65,10 @@ export class SearchComponent implements OnInit {
                 this.key ? this.algolia.search(this.key, { page: this.page, filters: this.filter }) : of(null),
             ),
         );
+    }
+
+    public ngOnDestroy(): void {
+        this.menuService.leaveSearchPage();
     }
 
     public getPagesArray(length: number): Array<void> {
