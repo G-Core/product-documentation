@@ -5,6 +5,7 @@ import { isScullyRunning } from '@scullyio/ng-lib';
 import { from } from 'rxjs/internal/observable/from';
 import { Observable } from 'rxjs';
 import { ProductDocumentationIndex } from '../models/ProductDocumentationIndex';
+import config from '../../config';
 
 @Injectable({
     providedIn: 'root',
@@ -15,8 +16,8 @@ export class AlgoliaService {
 
     constructor() {
         if (!isScullyRunning()) {
-            this.algoliaInstance = algoliasearch('0GWOH3DBQG', '0f8c47609b46da62bf3852876be561af');
-            this.algoliaIndex = this.algoliaInstance.initIndex('product_documentation_preprod');
+            this.algoliaInstance = algoliasearch(config.algolia_app_id, config.algolia_search_key);
+            this.algoliaIndex = this.algoliaInstance.initIndex(config.aloglia_pd_index);
         }
     }
 

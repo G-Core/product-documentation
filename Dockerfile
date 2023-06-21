@@ -11,14 +11,15 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . ./
-ARG ALGOLIA_INDEX \
+ARG ALGOLIA_PD_INDEX \
     ALGOLIA_WRITE_KEY
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
     ALGOLIA_APP_ID=0GWOH3DBQG \
-    ALGOLIA_INDEX=${ALGOLIA_INDEX} \
+    ALGOLIA_PD_INDEX=${ALGOLIA_PD_INDEX} \
+    ALGOLIA_SEARCH_KEY=0f8c47609b46da62bf3852876be561af \
     ALGOLIA_WRITE_KEY=${ALGOLIA_WRITE_KEY}
-RUN npm run scully:prod
+RUN npm run scully:prod && scripts/patch_envs.sh
 
 FROM nginx:1.21.6-alpine
 
