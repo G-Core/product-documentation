@@ -33,9 +33,6 @@ function initAlgoliaClient(): SearchClient {
     const appId = process.env.ALGOLIA_APP_ID;
     const apiKey = process.env.ALGOLIA_WRITE_KEY;
 
-    console.log('APP ID:', appId);
-    console.log('APP INDEX_NAME:', INDEX_NAME);
-
     if (!appId) {
         logError(red(`ALGOLIA_APP_ID not found in environment variables!`));
         isError = true;
@@ -83,8 +80,6 @@ const updateAlgoliaIndex = async (dom, options): Promise<JSDOM> => {
             const payload = buildPayload(options, mainTitle, content);
 
             const indexToUse = client.initIndex(INDEX_NAME);
-
-            log(`Using [${indexToUse.indexName}]`);
 
             const { taskID } = await indexToUse.saveObject(payload);
             await indexToUse.waitTask(taskID);
