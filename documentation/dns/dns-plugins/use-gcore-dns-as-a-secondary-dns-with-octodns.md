@@ -86,7 +86,7 @@ If you see the error:
 octodns-sync: command not found
 ```
 
-Most likely you are not in virtualenv. Do steps № 4-6 again.
+Most likely you are not in virtualenv. Do steps no. 4-6 again.
 
 9\. Go to the "config" directory you have already created.
 
@@ -110,21 +110,21 @@ We will tell you how to fill in each data section. First, copy the template belo
 providers:  
     [your provider name]:  
         [your provider class]  
-        [authentication data, line №1]  
-        [authentication data, line №2] 
-        [authentication data, line №...] 
+        [authentication data, line no. 1]  
+        [authentication data, line no. 2] 
+        [authentication data, line no. ...] 
     gcore:  
         class: octodns_gcore.GCoreProvider  
-        [authentication data, line №1]  
-        [authentication data, line №2]  
-        [authentication data, line №...]  
+        [authentication data, line no. 1]  
+        [authentication data, line no. ]  
+        [authentication data, line no. ...]  
 zones:  
-  [your DNS zone №1].:  
+  [your DNS zone no. 1].:  
     sources:  
       - [your provider name]  
     targets:  
       - gcore  
-  [your DNS zone №2].:  
+  [your DNS zone no. 2].:  
     sources:  
       - [your provider name]  
     targets:  

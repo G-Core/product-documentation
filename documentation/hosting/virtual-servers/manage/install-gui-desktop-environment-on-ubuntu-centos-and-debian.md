@@ -90,13 +90,13 @@ Confirm the operation with: ```y```
 
 5\. The desktop environment will be ready to run.
 
-If you installed "lightdm" at step №4 the graphical interface will start after the server reboots. Reboot it using the command:
+If you installed "lightdm" at step no. 4 the graphical interface will start after the server reboots. Reboot it using the command:
 
 ```
 shutdown -r now
 ```
 
-If at step №4 you installed xinit, start the graphical interface using the command:
+If at step no. 4 you installed xinit, start the graphical interface using the command:
 
 ```
 startx  
@@ -175,7 +175,7 @@ The desktop environment is installed and ready to run. Start it with the command
 startx
 ```
 
-**Note**: If the system gives an error, most likely, you made a mistake when entering the command in step №5. Repeat step №5 and then start XFCE with the "startx" command.
+**Note**: If the system gives an error, most likely, you made a mistake when entering the command in step no. 5. Repeat step no. 5 and then start XFCE with the "startx" command.
 
 At the first start, the system will ask you to choose whether you want to use the default configuration or create an empty panel. If you are working with XFCE for the first time, select the first option — then the taskbar, clock, pre-configured Start menu, and other important things for work will appear on the desktop. In an empty panel, you will have to configure everything yourself.
 
