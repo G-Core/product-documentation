@@ -67,6 +67,7 @@ function buildPayload(options, mainTitle: string, content: string): Payload {
 }
 
 const updateAlgoliaIndex = async (dom, options): Promise<JSDOM> => {
+    console.log('BRANCH', process.env.BRANCH);
     if (process.env.BUILD_ENV === 'develop' || options.route.startsWith('/reseller-support')) {
         return dom;
     }
