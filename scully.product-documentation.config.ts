@@ -5,9 +5,23 @@ import '@scullyio/scully-plugin-puppeteer';
 import { copyToClipboardPlugin } from './scully/plugins/copyToClipboard';
 import { replaceImgSrc } from './scully/plugins/replaceImgSrc';
 import 'prismjs/components/prism-ruby.min.js';
+import { updateAlgolia } from './scully/plugins/algolia';
+
+const categories = [
+    'web-security',
+    'streaming',
+    'server-protection',
+    'storage',
+    'hosting',
+    'dns',
+    'cloud',
+    'cdn',
+    'account-settings',
+    'reseller-support',
+];
 import { moveContentFiles } from './scully/plugins/move-content-files/move-content-files';
 
-const defaultPostRenderers = [copyToClipboardPlugin, replaceImgSrc];
+const defaultPostRenderers = [updateAlgolia, copyToClipboardPlugin, replaceImgSrc];
 setPluginConfig('md', { enableSyntaxHighlighting: true });
 setPluginConfig(moveContentFiles, {
     root: 'docs',
