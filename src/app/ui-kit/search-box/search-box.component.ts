@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, forwardRef } from '@angular/core';
+import { Component, EventEmitter, Input, Output, forwardRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
@@ -14,6 +14,8 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
     ],
 })
 export class SearchBoxComponent implements ControlValueAccessor {
+    @Input() public variant: 'default' | 'contrast' = 'default';
+
     public onChange: Function;
     public onTouched: Function;
     public searchKey: string;
