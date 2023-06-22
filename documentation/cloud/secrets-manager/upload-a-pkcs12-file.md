@@ -40,8 +40,8 @@ CA does not always send a client a chain of certificates along with the main cer
 2. Create the file in any text editor.
 3. Inside the created file, place the contents of the certificates in the following order: root certificate, then intermediate certificates in order, the certificate for the domain in the end. Like this:  
   - Content of the root certificate (for example, CARoot.crt)  
-  - Content of the intermediate certificate №1 (for example, Intermediate1.crt)  
-  - Content of the intermediate certificate №2 (for example, Intermediate2.crt)  
+  - Content of the intermediate certificate no. 1 (for example, Intermediate1.crt)  
+  - Content of the intermediate certificate no. 2 (for example, Intermediate2.crt)  
   - Content of the certificate for the domain (for example, domain.crt)
 
 ### 2\. Merge certificate files into PKCS12
