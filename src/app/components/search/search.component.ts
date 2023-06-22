@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { SearchResponse } from '@algolia/client-search';
 
@@ -35,6 +35,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     constructor(
         private algolia: AlgoliaService,
         private route: ActivatedRoute,
+        private router: Router,
         private fb: FormBuilder,
         private menuService: MenuService,
     ) {}
@@ -55,7 +56,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         );
         const routeParam$ = this.route.queryParams.pipe(
             tap(({ key }) => {
-                this.key = decodeURI(key);
+                this.key = key ? decodeURI(key) : key;
                 this.page = 0;
             }),
         );
@@ -83,6 +84,12 @@ export class SearchComponent implements OnInit, OnDestroy {
     public selectAll(): void {
         const formArray = this.filterForm.get('product') as FormArray;
         formArray.patchValue(formArray.controls.map(() => true));
+    }
+
+    public search(key: string): void {
+        this.router.navigate(['/search'], {
+            queryParams: { key: encodeURI(key.trim()) },
+        });
     }
 
     public getMatchingText(content: string): string {
