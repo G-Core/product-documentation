@@ -162,8 +162,7 @@ You can see the status of the Raw Logs option in your control panel:
 - "Failed" is a status indicating that an error occurred while connecting to a storage or that the service failed to export logs within 24 hours
 - "Pause" is a status showing that the option is paused
 
-<p><img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/image_1381.png" alt="" width="50%"></p>
-
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/image_1381.png" alt="" width="50%">
 
 ## Log path example
 
