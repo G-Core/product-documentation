@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { SearchResponse } from '@algolia/client-search';
@@ -31,6 +31,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     public filterForm: FormGroup;
     public streamingFilter: boolean = true;
     public webSecurityFilter: boolean = true;
+    public isMenuExpanded: boolean = false;
 
     constructor(
         private algolia: AlgoliaService,
@@ -38,9 +39,14 @@ export class SearchComponent implements OnInit, OnDestroy {
         private router: Router,
         private fb: FormBuilder,
         private menuService: MenuService,
+        private changeDetectorRef: ChangeDetectorRef,
     ) {}
 
     public ngOnInit(): void {
+        this.menuService.toggleMenuEmitted$.subscribe(() => {
+            this.isMenuExpanded = !this.isMenuExpanded;
+            this.changeDetectorRef.detectChanges();
+        });
         this.filterForm = this.fb.group({
             product: this.fb.array(this.categories.map(() => this.fb.control(true))),
         });
