@@ -45,7 +45,7 @@ setPluginConfig(SitemapPlugin, {
     urlPrefix: 'https://gcore.com/docs',
     sitemapFilename: 'sitemap.xml',
     ignoredRoutes: [],
-    ignoredRoutesPattern: [/\/metadata$/],
+    ignoredRoutesPattern: [/\/metadata$/, /___UNPUBLISHED___/],
     merge: false,
     trailingSlash: false,
     changeFreq: 'monthly',
