@@ -1,8 +1,8 @@
 ---
 title: customize-initial-setup-for-your-instance
-displayName: 'Customize initial setup'
-published: true
+displayName: Customize initial setup
 order: 15
+published: true
 toc:
     --1--Why Automate the Initial Setup?: "why-automate-the-initial-setup"
     --2--From the UI Panel: "from-the-ui-panel"
@@ -17,7 +17,6 @@ toc:
     --1--Write files: "write-files"
     --1--Configure Network Interfaces: "configure-network-interfaces"
     --1--Want to Learn More?: "want-to-learn-more-about-virtual-instances"
-
 ---
 
 # Customize the Initial Setup for Your Instance
