@@ -6,7 +6,7 @@ published: true
 toc:
     --1--Why Automate the Initial Setup?: "why-automate-the-initial-setup"
     --2--From the UI Panel: "from-the-ui-panel"
-    --2--From Gcore’s API: "from-gcore-s-api"
+    --2--From Gcore’s API: "from-gcores-api"
     --2--From Terraform: "from-terraform"
     --1--What is Cloud-init?: what-is-cloud-init
     --1--Set a Password: "set-a-password-for-an-instance"
@@ -14,7 +14,7 @@ toc:
     --1--Configure Groups: "configure-user-groups"
     --1--Add an SSH Key: "add-an-ssh-key"
     --1--Add Repositories and Install Packages: "add-repositories-and-install-packages"
-    --1--Write files: "write-files"
+    --1--Write Files: "write-files"
     --1--Configure Network Interfaces: "configure-network-interfaces"
     --1--Want to Learn More?: "want-to-learn-more-about-virtual-instances"
 ---
@@ -304,7 +304,7 @@ With packages that are available in the default instance repository like *nmap* 
 
 After installing, restart the instance so that these packages are added to the system path. Including the *power_state* block at the end of the User Data field is helpful because it allows you to use these tools as soon as the instance is ready.
 
-## Write files
+## Write Files
 
 Sometimes it may be helpful to have existing files for usage after the virtual instance is ready. For example, you could have a YAML file that contains example scripts for working with Docker. Using the *write_files* feature as below, you can create a file named *useful-docker-script.yaml* in the */root* directory.
 
