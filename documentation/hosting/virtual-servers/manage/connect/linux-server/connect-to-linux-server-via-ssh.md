@@ -11,11 +11,11 @@ Via SSH, you can remotely connect to CentOS, Debian, Ubuntu and FreeBSD servers.
 
 1\. Open the list of your servers and click on the one you need. Click the **Instructions** button.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/linux-server/connect-to-linux-server-via-ssh/13264688301585.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/linux-server/connect-to-linux-server-via-ssh/13264688301585.png" alt="" width="80%">
 
 A tab with instructions will open. You will need a username, a server IP address, and a password.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/linux-server/connect-to-linux-server-via-ssh/12329792750609.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/linux-server/connect-to-linux-server-via-ssh/12329792750609.png" alt="" width="80%">
 
 2\. Open a terminal (for Linux) or a command line (for Windows) on your computer. Enter the command: 
 
