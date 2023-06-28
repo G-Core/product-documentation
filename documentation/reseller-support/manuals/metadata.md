@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: General
+displayName: Manuals
 published: true
-order: 10
+order: 70
 ---
