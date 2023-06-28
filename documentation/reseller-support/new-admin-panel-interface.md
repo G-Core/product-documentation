@@ -41,7 +41,7 @@ The new admin panel has the following sections:
 
 <img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/cdn-40.png" alt="">
 
-**4\. Security**: This section contains the "Authorization" subsection. Here you can configure SSO. You can also enable the "Activity Logs" feature by contacting the [support team](maito:support@gcore.com) or your personal manager. 
+**4\. Security**: This section contains the "Authorization" subsection. Here you can configure SSO. You can also enable the "Activity Logs" feature by contacting the [support team](mailto:support@gcore.com) or your personal manager. 
 
 <img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/security-50.png" alt="">
 
@@ -49,7 +49,7 @@ The new admin panel has the following sections:
 
 <img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/vendor-settings-60.png" alt="">
 
-**6\. Reports**: This section presents monthly reports, allowing you to generate monthly reports to analyze your clients' traffic consumption. Additionally, you can enable "Invoice Reports" by contacting the [support team](maito:support@gcore.com) or your personal manager. 
+**6\. Reports**: This section presents monthly reports, allowing you to generate monthly reports to analyze your clients' traffic consumption. Additionally, you can enable "Invoice Reports" by contacting the [support team](mailto:support@gcore.com) or your personal manager. 
 
 <img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/reports-70.png" alt="">
 
@@ -61,7 +61,7 @@ The new admin panel has the following sections:
 
 ## New features of the new admin panel  
 
-We have described all-important new features. If there is a feature you are interested in that is not mentioned, please send a request to the [support team](maito:support@gcore.com). 
+We have described all-important new features. If there is a feature you are interested in that is not mentioned, please send a request to the [support team](mailto:support@gcore.com). 
 
 ### Quick filters
 

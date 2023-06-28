@@ -30,8 +30,8 @@ To allow your users to log in using SSO, in the admin panel:
 <table>
 <thead>
 <tr>
-<td>Field</td>
-<td>Description</td>
+<td><b>Field</b></td>
+<td><b>Description</b></td>
 </tr>
 </thead>
 <tbody>

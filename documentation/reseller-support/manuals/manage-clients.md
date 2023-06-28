@@ -34,7 +34,7 @@ In the field on the right, toggle on the services that you want to make availabl
 
 You can reconfigure customized service visibility in the client settings after creating an account.
 
-Enabling a service in the "Services" section **creates a tab of a given service** in the client settings and the client control panel, **but does not activate the service**. To activate a service, go to a client settings, check "Activate Service" and set the service status. To learn how to set up a service, refer to our guide on <a href="gcore.com/docs/reseller-support/cdn-service-management" target="_blank">CDN configuration</a>.
+Enabling a service in the "Services" section **creates a tab of a given service** in the client settings and the client control panel, **but does not activate the service**. To activate a service, go to a client settings, check "Activate Service" and set the service status. To learn how to set up a service, refer to our guide on <a href="https://gcore.com/docs/reseller-support/cdn-service-management" target="_blank">CDN configuration</a>.
 
 <img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/cdn-settings-30.png" alt="">
 
@@ -44,12 +44,12 @@ After creating a client account, you can set up their services, edit personal da
 
 For set-up guides, refer to the following product docs:
 
-- <a href="gcore.com/docs/reseller-support/new-admin-panel-interface" target="_blank">New admin panel interface</a>
-- <a href="gcore.com/docs/reseller-support/getting-started" target="_blank">Getting started</a>
-- <a href="gcore.com/docs/reseller-support/cdn-service-management" target="_blank">CDN service management</a>
-- <a href="gcore.com/docs/reseller-support/storage-service-management" target="_blank">Storage service management</a>
-- <a href="gcore.com/docs/reseller-support/service-status" target="_blank">Service statuses</a>
-- <a href="gcore.com/docs/reseller-support/api" target="_blank">API</a>
+- <a href="https://gcore.com/docs/reseller-support/new-admin-panel-interface" target="_blank">New admin panel interface</a>
+- <a href="https://gcore.com/docs/reseller-support/getting-started" target="_blank">Getting started</a>
+- <a href="https://gcore.com/docs/reseller-support/cdn-service-management" target="_blank">CDN service management</a>
+- <a href="https://gcore.com/docs/reseller-support/storage-service-management" target="_blank">Storage service management</a>
+- <a href="https://gcore.com/docs/reseller-support/service-status" target="_blank">Service statuses</a>
+- <a href="https://gcore.com/docs/reseller-support/api" target="_blank">API</a>
 
 To edit the personal data and manage user rights, click on the ID of the desired client, or click on the "Edit" button in the "Actions" сolumn. If you click on the "Log in" button you'll log in the client control panel under client's admin user. 
 

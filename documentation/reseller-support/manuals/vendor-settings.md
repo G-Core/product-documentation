@@ -256,6 +256,6 @@ In the settings of <a href="https://gcore.com/docs/reseller-support/manuals/conf
 
 <img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/services-200.png" alt="" width="70%">
 
-In the settings of <a href="" target="_blank">personal visibility</a> you can enable or disable the visibility of services for a particular client. The visibility statuses of personally configured products will not be available for changes from the global visibility settings. 
+In the settings of <a href="https://gcore.com/docs/reseller-support/manuals/configure-personal-visibility" target="_blank">personal visibility</a> you can enable or disable the visibility of services for a particular client. The visibility statuses of personally configured products will not be available for changes from the global visibility settings. 
 
 <img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/services-210.png" alt="" width="70%">
