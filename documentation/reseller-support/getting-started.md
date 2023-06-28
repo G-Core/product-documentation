@@ -13,7 +13,7 @@ toc:
 ---
 # Getting started
 
-Once we create a reseller account you'll get an email with the registration confirmation link. Follow the link to set a password. The link will be active for 24 hours. Write to [support@gcore.com](support@gcore.com) if the link expires or you experience other issues. 
+Once we create a reseller account you'll get an email with the registration confirmation link. Follow the link to set a password. The link will be active for 24 hours. Write to [support@gcore.com](mailto:support@gcore.com) if the link expires or you experience other issues. 
 
 Admin control panel enterance URL is ```https://admin.gcore.top/```.
 
@@ -69,12 +69,12 @@ On the "Services" tab, choose services that you want to display in the client's 
 
 <img src="https://assets.gcore.pro/docs/reseller-support/getting-started/welcome-page-40.png" alt="">
 
-When submitting an activation request, Gсore technical support or you — depending on the setting of the "Support email" field in the "<a href="" target="_blank">Vendor settings</a>" section — will receive an email about the client's wish to access the service.
+When submitting an activation request, Gсore technical support or you — depending on the setting of the "Support email" field in the "<a href="https://gcore.com/docs/reseller-support/manuals/vendor-settings" target="_blank">Vendor settings</a>" section — will receive an email about the client's wish to access the service.
 
 Articles on service management:
 
-- <a href="gcore.com/docs/reseller-support/cdn-service-management" target="_blank">CDN service management</a>
-- <a href="gcore.com/docs/reseller-support/storage-service-management" target="_blank">Storage service management</a>
+- <a href="https://gcore.com/docs/reseller-support/cdn-service-management" target="_blank">CDN service management</a>
+- <a href="https://gcore.com/docs/reseller-support/storage-service-management" target="_blank">Storage service management</a>
 
 ## Useful links
 
