@@ -119,9 +119,9 @@ Example: ```https://meet.gcore.com/call/?roomId=serv2testroom```
 
 Example:
 
-<code-block>
+```
 <iframe allow="camera; microphone; fullscreen; display-capture" src="https://meet.gcore.com/call/?roomId=serv2testroom"></iframe>
-</code-block>
+```
 
 **Customize a video call room with URL attributes**. 
 
@@ -242,7 +242,6 @@ Example: ```https://meet.gcore.com/call/?roomId=```
 #### Webinar rooms 
 
 A webinar room is a room  where participants are divided into two groups: speakers and viewers. Speakers  are active participants with cameras and microphones. Speakers' video is shown on the screen of the webinar room, participants can watch and hear them. Viewers can only watch the speakers without interaction. They have neither camera, nor microphone on. One webinar room can hold up between 1 and 20 speakers and between 0 and 2000 viewers.  
-
 A method to create video conferencing rooms is ```/webinar/```.  
 
 Moreover, please see <a href="#itisparticipant-true-false" target="_blank">&itisparticipant attribute</a>. 
@@ -812,15 +811,15 @@ Please see Embed a <a href="#embed-room-on-a-site">Room on Site</a> and <a href
 
 There is a special library for interacting with iframe, which should be loaded separately.
 
-<code-block>
+```
 <script type="text/javascript" charset="utf-8" src="https://<yourdomain.gvideo.co>/meetBridgeApi.js"></script> 
-</code-block>
+```
 
 Example:
 
-<code-block>
+```
 <script type="text/javascript" charset="utf-8" src="https://meet.gcore.com/meetBridgeApi.js"></script> 
-</code-block>
+```
 
 JavaScript's method for initialization:
 
