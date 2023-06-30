@@ -2,7 +2,7 @@
 title: manage-dns-records-non-advanced-interface-mode
 displayName: Manage DNS records (non-advanced)
 published: true
-order: 30
+order: 20
 toc:
    --1--Create: "create-a-dns-record"
    --2--Records settings: "1-go-to-records-settings"

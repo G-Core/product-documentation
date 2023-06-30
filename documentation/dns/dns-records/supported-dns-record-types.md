@@ -2,7 +2,7 @@
 title: supported-dns-record-types
 displayName: DNS record types
 published: true
-order: 10
+order: 5
 toc:
    --1--A record: "a-record"
    --1--AAAA record: "aaaa-record"

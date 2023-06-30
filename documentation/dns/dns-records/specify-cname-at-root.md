@@ -2,7 +2,7 @@
 title: specify-cname-at-root
 displayName: Set up CNAME flattening
 published: true
-order: 40
+order: 30
 toc:
    --1--What is CNAME: "what-is-a-cname-record"
    --1--What is the challenge with it: "what-is-the-challenge-with-cname-records"

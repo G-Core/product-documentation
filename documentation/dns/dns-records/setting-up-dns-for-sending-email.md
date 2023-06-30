@@ -2,7 +2,7 @@
 title: setting-up-dns-for-sending-email
 displayName: Set up DNS for sending email
 published: true
-order: 70
+order: 60
 toc:
     --1--Step 1: Set up an A record: "step-1-set-up-an-a-record"
     --1--Step 2: Set up an MX record: "step-2-set-up-an-mx-record"
