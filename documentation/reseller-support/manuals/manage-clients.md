@@ -48,7 +48,7 @@ For set-up guides, refer to the following product docs:
 - <a href="https://gcore.com/docs/reseller-support/getting-started" target="_blank">Getting started</a>
 - <a href="https://gcore.com/docs/reseller-support/cdn-service-management" target="_blank">CDN service management</a>
 - <a href="https://gcore.com/docs/reseller-support/storage-service-management" target="_blank">Storage service management</a>
-- <a href="https://gcore.com/docs/reseller-support/service-status" target="_blank">Service statuses</a>
+- <a href="https://gcore.com/docs/reseller-support/service-statuses" target="_blank">Service statuses</a>
 - <a href="https://gcore.com/docs/reseller-support/api" target="_blank">API</a>
 
 To edit the personal data and manage user rights, click on the ID of the desired client, or click on the "Edit" button in the "Actions" сolumn. If you click on the "Log in" button you'll log in the client control panel under client's admin user. 
