@@ -4,13 +4,13 @@ displayName: PTR record and reverse DNS zone
 published: true
 order: 60
 toc:
-    --2--What is a PTR record for?: "what-is-a-ptr-record-for"
-    --2--What is a reverse DNS lookup zone?: "what-is-a-reverse-dns-lookup-zone"
+    --1--What is a PTR record for?: "what-is-a-ptr-record-for"
+    --1--What is a reverse DNS lookup zone?: "what-is-a-reverse-dns-lookup-zone"
     --1--Configure reverse DNS zone and PTR record: "configure-reverse-dns-zone-and-ptr-record"
 ---
 # Setting up a PTR record and reverse DNS zone
 
-### What is a PTR record for?
+## What is a PTR record for?
 
 A PoinTeR or PTR record is an A record in reverse: it associates server IP with a  domain name. A PTR could be used:
 
@@ -19,7 +19,7 @@ A PoinTeR or PTR record is an A record in reverse: it associates server IP with 
 
 **Note**: A PTR record can be added only in the reverse DNS zone (RDNS) and not in a regular <a href="https://gcore.com/learning/what-is-dns-zone/" target="_blank">domain zone</a>. Therefore, in the Gcore UI, there is no PTR record in the list of <a href="https://gcore.com/docs/dns/dns-records/supported-dns-record-types" target="_blank">resource records</a> that can be added for a forward domain zone.
 
-### What is a reverse DNS lookup zone?
+## What is a reverse DNS lookup zone?
 
 A reverse DNS lookup is a special zone that is intended to define the hostname by its IPv4 or IPv6 address using a PTR record.
 
