@@ -2,7 +2,7 @@
 title: what-is-an-https-record-and-how-is-it-configured
 displayName: Configure HTTPS record
 published: true
-order: 41
+order: 50
 toc:
     --1--What is the HTTPS record?: 'what-is-an-https-record'
     --1--What problem does it solve?: 'what-problem-does-the-https-record-solve'

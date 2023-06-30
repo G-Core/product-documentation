@@ -2,7 +2,7 @@
 title: manage-dns-records-advanced-interface-mode-with-balancing
 displayName: Manage DNS records (advanced mode)
 published: true
-order: 10
+order: 20
 toc:
    --1--Create: "create-a-dns-record"
    --2--Records settings: "1-go-to-records-settings"
