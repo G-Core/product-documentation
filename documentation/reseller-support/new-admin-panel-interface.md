@@ -19,7 +19,7 @@ The new admin panel is an improved dashboard for managing clients and sellers, v
 
 Compared to the previous version of the admin panel, the new one retains all essential functions while adding new features, such as quick filters and presets for better searching and filtering. The new admin panel also has a more user-friendly interface.
 
-In this guide, we describe the structure and features of the new admin panel. Soon, we will fully update the <a href="gcore.com/docs/reseller-support" target="_blank">Knowledge Base</a> and provide guides for the up-to-date interface. 
+In this guide, we describe the structure and features of the new admin panel.
 
 ## Structure of the new admin panel
 
