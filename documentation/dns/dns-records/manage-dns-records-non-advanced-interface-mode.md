@@ -39,7 +39,7 @@ You will see the interface for adding new DNS record. Perform other steps in it.
 
 ### 2. Select record type
 
-In the "Type" section, select the type of DNS record you want to create: A, AAAA, NS, CNAME, MX, SRV, HTTPS, TXT, or CAA.
+In the "Type" section, select the type of DNS record you want to create: A, AAAA, NS, CNAME, MX, SRV, HTTPS, TXT, or CAA. Learn more about them in the article <a href="https://gcore.com/docs/dns/dns-records/supported-dns-record-types" target="_blank">Supported DNS record types</a>.
 
 ### 3. Specify subdomain record belongs to
 
