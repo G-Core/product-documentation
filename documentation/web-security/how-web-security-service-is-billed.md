@@ -27,4 +27,4 @@ The new plan will be applied on the 1st day of the next month.
 
 <img src="https://assets.gcore.pro/docs/web-security/how-web-security-service-is-billed/mceclip0.png" alt="">
 
-If you have any questions, please contact us via chat or email ([support@gcore.com](mailto:support@gcorelabs.com)).
+If you have any questions, please contact us via chat or email ([support@gcore.com](mailto:support@gcoreы.com)).

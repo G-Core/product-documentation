@@ -30,7 +30,7 @@ Please contact the support team of your payment service provider or try another 
 When selecting the currency of payment, please ensure that your chosen payment provider supports that particular currency. To check your provider, open **Dashboard** and go to the **Information** section**.**
 
 *   For payments in EUR, the provider is G-core.
-*   For payments in USD, the provider is G-Core Labs usd.
+*   For payments in USD, the provider is G-Core usd.
 
 <img src="https://assets.gcore.pro/docs/hosting/payments/troubleshoot-payment-errors/13219595520273.png" alt="">
 
