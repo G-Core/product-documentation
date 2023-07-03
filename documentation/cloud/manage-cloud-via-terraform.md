@@ -38,7 +38,7 @@ To work with Terraform, you create a configuration file where you specify the ch
 
 5\. Create a configuration file in the Terraform folder and name it **main.tf**.
 
-6\. Find out the latest version of the Terraform provider on <a href="https://registry.terraform.io/providers/G-Core/gcorelabs/latest" target="_blank">the page</a> and generate a permanent API token using <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">the guide</a>, if you don’t have one yet.
+6\. Find out the latest version of the Terraform provider on <a href="https://registry.terraform.io/providers/G-Core/gcore/latest" target="_blank">the page</a> and generate a permanent API token using <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">the guide</a>, if you don’t have one yet.
 
 7\. Add the following code to main.tf:
 
