@@ -209,7 +209,7 @@ resource "gcore_instance" "<span style="color:#FF5913">v</span>" {
 }
 </code-block>
 
-3\. Configure resources required for the instance: [a reserved IP address](#reserve-an-ip-address), [network](#create-a-network-and-subnetwork), [subnetwork](#create-a-network-and-subnetwork), [volume](#create-a-volume).
+3\. Configure resources required for the instance: [a reserved IP address](https://gcore.com/docs/cloud/manage-cloud-via-terraform#reserve-an-ip-address), [network](https://gcore.com/docs/cloud/manage-cloud-via-terraform#create-a-network-and-subnetwork), [subnetwork](https://gcore.com/docs/cloud/manage-cloud-via-terraform#create-a-network-and-subnetwork), [volume](https://gcore.com/docs/cloud/manage-cloud-via-terraform#create-a-volume).
 
 4\. Configure the instance.
 

@@ -17,7 +17,7 @@ A custom domain is a domain name used for content delivery through a CDN. For ex
 
 When specifying a custom domain, you can use any domain or subdomain for which you can edit the DNS records (typically, our clients use a third-level subdomain based on the website domain). 
 
-**Note:** The main custom domain must be specified when creating the CDN resource and cannot be changed afterward. If you want to use a different domain, you’ll need to add multiple domains. Learn how to do this in the [Specify additional domain](#specify-additional-domain) module.
+**Note:** The main custom domain must be specified when creating the CDN resource and cannot be changed afterward. If you want to use a different domain, you’ll need to add multiple domains. Learn how to do this in the [Specify additional domain](https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn#specify-additional-domain) module.
 
 ## Set a custom domain
 
@@ -85,6 +85,6 @@ To check the front end of your integrated website, right-click on any static fil
 
 3\. Click **Save changes** at the bottom of the page.
 
-**Note**: You need to add a CNAME record to your DNS following the [instructions above](#set-a-custom-domain) for each additional domain.
+**Note**: You need to add a CNAME record to your DNS following the [instructions above](https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn#set-a-custom-domain) for each additional domain.
 
 Once the additional domains are set up, you can configure your website to deliver different types of static files from separate domains.

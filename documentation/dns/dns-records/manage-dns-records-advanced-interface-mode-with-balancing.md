@@ -74,11 +74,11 @@ TTL (time to live) is the interval in seconds that servers on the internet use t
 
 ### 6. (Optional) Add additional records of the selected type
 
-You can add multiple records of the same type to your domain. Click **Add record** to add another record.  A new line will appear, there you can enter the content of the second record and the associated metadata (read about metadata in [step 7](#7-optional-configure-balancing)). Any record can be deleted by clicking the "—" button next to it.
+You can add multiple records of the same type to your domain. Click **Add record** to add another record.  A new line will appear, there you can enter the content of the second record and the associated metadata (read about metadata in [step 7](https://gcore.com/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing#7-optional-configure-balancing)). Any record can be deleted by clicking the "—" button next to it.
 
 ### 7. (Optional) Configure balancing
 
-Our DNS server can give different DNS records to different users, for example, sending users from Asia to an Asian server and European users to a European one. This is called balancing. To enable balancing, move the slider in the "Records selection using metadata" section. If balancing is not needed, leave the slider disabled and go to [step 8](#8-optional-specify-the-maximum-number-of-responses).
+Our DNS server can give different DNS records to different users, for example, sending users from Asia to an Asian server and European users to a European one. This is called balancing. To enable balancing, move the slider in the "Records selection using metadata" section. If balancing is not needed, leave the slider disabled and go to [step 8](https://gcore.com/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing#8-optional-specify-the-maximum-number-of-responses).
 
 Balancing is based on the metadata you add to each record. You can add seven types of data: coordinates, ASN, continent, country, fallback, or notes. The system will check if a user corresponds to the specified parameters: if they do, the system will give the record; if not, it will not. For example, you can add metadata of the "continent" type with the value "Africa" to a record, which will only be given to users from Africa.
 
@@ -142,7 +142,7 @@ After completing the configuration, click the **Create** button. DNS records wit
 
 ## Edit a DNS record
 
-1\. Open the record settings as described in [step 1](#1-go-to-records-settings) of the instructions above.
+1\. Open the record settings as described in [step 1](https://gcore.com/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing#1-go-to-records-settings) of the instructions above.
 
 2\. Click **Edit** in the menu that appears when you click on the three dots next to the desired resource record or on its name.
 
@@ -154,7 +154,7 @@ After completing the configuration, click the **Create** button. DNS records wit
 
 ## Delete a DNS record 
 
-1\. Open the record settings as described in [step 1](#1-go-to-records-settings) of the instructions above.
+1\. Open the record settings as described in [step 1](https://gcore.com/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing#1-go-to-records-settings) of the instructions above.
 
 2\. Click **Delete** in the menu that appears when you click on the three dots next to the desired resource record.
 

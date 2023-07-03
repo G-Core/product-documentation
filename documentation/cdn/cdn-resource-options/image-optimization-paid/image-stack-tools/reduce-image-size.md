@@ -22,7 +22,7 @@ toc:
 | Original image | Resized image |
 
 
-**How it works**. To set a new height and width for an image, you add the necessary query string to the image URL on your website source. These query strings are described in the [Use Resize](#use-resize) section. When a user requests a website page, the CDN will deliver it with reduced images.
+**How it works**. To set a new height and width for an image, you add the necessary query string to the image URL on your website source. These query strings are described in the [Use Resize](https://gcore.com/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/reduce-image-size#use-resize) section. When a user requests a website page, the CDN will deliver it with reduced images.
 
 ## Enable Resize
 
