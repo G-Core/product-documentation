@@ -37,7 +37,7 @@ The credit limit may differ from the one that is given in this article. You can 
 
 <img src="https://assets.gcore.pro/docs/cdn/how-the-cdn-service-and-its-additional-options-are-billed/image-7.png" alt="" width="70%">
 
-Additional options are listed on <a href="https://gcore.com/pricing/" target="_blank">the CDN pricing page</a>. To activate it, contact our technical support via chat or email [support@gcore.com](support@gcore.com). Each option has a fixed price and is billed together with the plan fee on the 2nd day of every month. For example, if you activate a plan for €100/month and the "Extended statistics" option for €200. On the 2nd day of a following month, the system will charge you €300.
+Additional options are listed on <a href="https://gcore.com/pricing/" target="_blank">the CDN pricing page</a>. To activate it, contact our technical support via chat or email [support@gcore.com](mailto:support@gcore.com). Each option has a fixed price and is billed together with the plan fee on the 2nd day of every month. For example, if you activate a plan for €100/month and the "Extended statistics" option for €200. On the 2nd day of a following month, the system will charge you €300.
 
 Please note that when you activate the "<a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin Shielding</a>" option, the traffic will be calculated differently. Usually, a traffic plan counts two types of traffic:
 
@@ -74,4 +74,4 @@ Click the profile icon in the bottom-left corner of the page, select "Billing", 
 
 A new plan will be activated only on the 1st day of a following month.
 
-If you have any questions, please contact us via chat or email support@gcore.com. If you are interested in the "Enterprise" plan, please write to our managers [sales@gcore.lu](sales@gcore.lu).
+If you have any questions, please contact us via chat or email [support@gcore.com](mailto:support@gcore.lu). If you are interested in the "Enterprise" plan, please write to our managers [sales@gcore.lu](mailto:sales@gcore.lu).

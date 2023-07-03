@@ -27,7 +27,7 @@ In Gcore, you can add an allowed address pair via an API request.
 
 
 **Method:** PUT  
-**Endpoint:** https://api.gcore.com/cloud/v1/ports/{**project_id}**/**{region_id}**/**{port_id}**/allow_address_pairs:  
+**Endpoint:** ```https://api.gcore.com/cloud/v1/ports/{**project_id}**/**{region_id}**/**{port_id}**/allow_address_pairs:```  
 **Request body:**
 
 <code-block>

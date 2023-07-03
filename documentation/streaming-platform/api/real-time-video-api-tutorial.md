@@ -212,7 +212,7 @@ To support older iOS versions, we recommend using one of the following options:�
 - For iOS 14.3 and 14.4, use <a href="https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller" target="_blank">SFSafariViewController</a> to open a web page containing an iframe with its src specified as a video call room URL. 
 - Redirect to mobile Safari for iOS versions lower than 14.3. 
 
-To use Video Calls with Cordova (Phonegap) please use the plugin for <a href="https://github.com/EddyVerbruggen/cordova-plugin-safariviewcontroller%22%20/t%20%22_blank" target="_blank">SafariViewController</a>.
+To use Video Calls with Cordova (Phonegap) please use the plugin for <a href="https://github.com/topics/safari-view-controller" target="_blank">SafariViewController</a>.
 
 ### Embedding in React Native app 
 
@@ -1492,9 +1492,9 @@ Please see more details in <a href="https://apidocs.gcore.com/streaming#operatio
 
 Example of usage: 
 
-Step 1: <a href="https://api.gcore.com/streaming/videos/search?q=serv1test2a" target="_blank">https://api.gcore.com/streaming/videos/search?q=serv1test2a</a> 
+Step 1: ```https://api.gcore.com/streaming/videos/search?q=serv1test2a```
 
-Step 2: <a href="https://api.gcore.com/streaming/videos/117800" target="_blank">https://api.gcore.com/streaming/videos/117800</a>
+Step 2: ```https://api.gcore.com/streaming/videos/117800```
 
 #### Rate Limits
 

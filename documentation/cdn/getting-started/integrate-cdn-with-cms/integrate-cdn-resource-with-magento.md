@@ -9,7 +9,7 @@ toc:
 
 Before you take any steps, please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
  
-For additional information about the Magento platform, please refer to the <a href=“https://business.adobe.com/products/magento/magento-commerce.html” target="_blank">Magento official website</a>.
+For additional information about the Magento platform, please refer to the <a href="https://business.adobe.com/products/magento/magento-commerce.html" target="_blank">Magento official website</a>.
 
 Login to your Magento Admin Panel. Click the System tab at the top navigation bar and choose Configuration as shown in the picture below.
 
