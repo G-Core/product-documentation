@@ -223,7 +223,7 @@ cd ~/octodns
 
 2\. Activate the python virtual environment.
 
-3. You have already configured necessary zones as part of the instruction "[Synchronize records in DNS Gcore with your DNS](#synchronize-records-of-gcore-dns-with-your-dns)" above. To synchronize DNS records, run the command:
+3. You have already configured necessary zones as part of the instruction "[Synchronize records in DNS Gcore with your DNS](https://gcore.com/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns#synchronize-records-of-gcore-dns-with-your-dns)" above. To synchronize DNS records, run the command:
 
 ```
 octodns-sync --config-file=[your config file directory] --doit

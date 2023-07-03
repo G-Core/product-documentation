@@ -86,4 +86,4 @@ To do this, go to the <a href="https://cdn.gcore.com/resources/list" target="_bl
 
 ### 6. Share your stream or videos
 
-Publish the updated [stream URL](#4-integrate-the-stream-with-cdn) on your website. If you expect more than 100 viewers simultaneously, we recommend you activate the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin shielding</a> option to reduce the load on your origin.
+Publish the updated [stream URL](https://gcore.com/docs/cdn/cdn-resource-options/configure-live-streams-and-video-delivery-via-cdn-only-for-paid-tariffs#4-integrate-the-stream-with-cdn) on your website. If you expect more than 100 viewers simultaneously, we recommend you activate the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin shielding</a> option to reduce the load on your origin.

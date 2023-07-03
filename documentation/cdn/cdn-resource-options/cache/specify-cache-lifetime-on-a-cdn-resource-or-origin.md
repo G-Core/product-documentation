@@ -116,7 +116,7 @@ For instance, if we set a cache expiry of 4 days and add two rules in the "Advan
 
 where <span style="color:#FF5913">http://cdn.testdomain.com/css/style.css</span> is a link to your file delivered via CDN.
 
-You will receive the output. Pay attention to the highlighted headers in bold. They are described in the "[Check caching headers](#check-caching-http-headers)" section.
+You will receive the output. Pay attention to the highlighted headers in bold. They are described in the "[Check caching headers](https://gcore.com/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin#check-caching-http-headers)" section.
 
 ```
 HTTP/1.1 200 OK   

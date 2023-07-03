@@ -33,7 +33,7 @@ If you are using the <a href="https://gcore.com/docs/cdn/cdn-resource-options/ge
 
 **Note**: If your account does not have "Origin Shielding" switched on, this option will not be available when setting up Raw logs.  
 
-To enable "Add logs from origin shielding", tick the appropriate box when setting up Raw Logs (step #2 in the [guide below](#export-logs-to-an-s3-storage)).
+To enable "Add logs from origin shielding", tick the appropriate box when setting up Raw Logs (step #2 in the [guide below](https://gcore.com/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage#export-logs-to-an-s3-storage)).
 
 <img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/15499340205969.png" alt="" width="50%">
 

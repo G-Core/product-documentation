@@ -105,6 +105,6 @@ It’s recommended to configure the stream parameters you’ll send to our serve
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-obs/10807613445521.png" alt="" width="80%">
 
-**Hints.** If you want to use 1920×1080 resolution, it’s better to set the Video Bitrate parameter at 4000 Kbps (instead of 2000 Kbps) in the [Output](#output-parameters) tab. If you need to increase FPS to 60, set the Video Bitrate to 8000 Kbps.
+**Hints.** If you want to use 1920×1080 resolution, it’s better to set the Video Bitrate parameter at 4000 Kbps (instead of 2000 Kbps) in the [Output](https://gcore.com/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-obs#output-parameters) tab. If you need to increase FPS to 60, set the Video Bitrate to 8000 Kbps.
 
 For Base (Canvas) Resolution, 1920×1080 stream will be transcoded in 3 qualities: 720p, 480p, and 240p.

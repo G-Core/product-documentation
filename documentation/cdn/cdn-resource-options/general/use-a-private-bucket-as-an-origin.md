@@ -68,7 +68,7 @@ In the example below, we use the private bucket ```test-private``` in S3 Gcore s
   - **For Amazon storage**: Access Key ID, Secret access key, and AWS region
   - **For Other**: Hostname, Access Key ID, Secret access key, and Region
 
-More information about where to find the keys can be found in the "[Authentication data](#authentication-data)" section.
+More information about where to find the keys can be found in the "[Authentication data](https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn#set-a-custom-domain)" section.
 
 6\. Enter the **Bucket name**.
 

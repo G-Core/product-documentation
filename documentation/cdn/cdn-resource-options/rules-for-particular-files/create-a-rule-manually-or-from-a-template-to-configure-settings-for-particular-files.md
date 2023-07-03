@@ -74,7 +74,7 @@ To create a rule from a template:
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/11774651473681.png" alt="" width="80%">
 
-2\. You will see the form for creating a new rule with pre-filled settings from the template. Check if all the settings suit you; edit the rule if necessary following to the [Create a rule manually](#create-a-rule-manually) section of this article.
+2\. You will see the form for creating a new rule with pre-filled settings from the template. Check if all the settings suit you; edit the rule if necessary following to the [Create a rule manually](https://gcore.com/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files#create-a-rule-manually) section of this article.
 
 3\. Click **Create rule**.
 

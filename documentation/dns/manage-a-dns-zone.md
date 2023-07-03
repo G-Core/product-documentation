@@ -56,7 +56,7 @@ The pop-up opens. Configure it according to the guide below and click **Save cha
 
 <img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/13138956496401.png" alt="" width="50%">
 
-- **Domain name**. This parameter cannot be edited. Create a new zone with the required domain name following the [instructions above](#create-a-dns-zone).
+- **Domain name**. This parameter cannot be edited. Create a new zone with the required domain name following the [instructions above](https://gcore.com/docs/dns/manage-a-dns-zone#create-a-dns-zone).
 - **Negative TTL**. This parameter is the time, in seconds, for which a negative response is cached. For example, a recursive DNS server requests an A-record for your domain, but that record does not exist on the authoritative NS servers. Even if you add the A record after, the DNS servers will still return a negative answer for the time specified in the "Negative TTL" field. 
 - **Primary DNS (available only for Enterprise tariff)**. In this parameter, you can specify the primary NS server that contains the information about all domain records.
 - **Contact (available starting from the Pro tariff).** In this parameter, you can specify the administrator's email address responsible for managing the DNS zone. 

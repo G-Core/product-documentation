@@ -49,7 +49,7 @@ test.jpg 100%[=================================================>\] 290 --.-KB/s 
 
 2\. Compare the delivery speed from CDN and the origin server. 
 
-3\. If the analysis confirmed issues with content delivery speed from CDN, [revise CDN-resource's settings](#cdn-resource-s-settings-checking).
+3\. If the analysis confirmed issues with content delivery speed from CDN, [revise CDN-resource's settings](https://gcore.com/docs/cdn/troubleshooting/content-delivery-speed-is-low-how-to-solve-the-issue#cdn-resources-settings-checking).
 
 ## CDN-resource's settings checking 
 
