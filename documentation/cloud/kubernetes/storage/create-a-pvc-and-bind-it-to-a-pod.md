@@ -55,7 +55,7 @@ You will get the output:
 persistentvolumeclaim/<the name of the created PVC> created
 ```
 
-It means you have created a PVC with a standard disk-type storage class. To connect the PVC to your pods, refer to the [Bind a PVC to a pod](#bind-your-pvc-to-a-pod) section.
+It means you have created a PVC with a standard disk-type storage class. To connect the PVC to your pods, refer to the [Bind a PVC to a pod](https://gcore.com/docs/cloud/kubernetes/storage/create-a-pvc-and-bind-it-to-a-pod#bind-your-pvc-to-a-pod) section.
 
 ### Create a PVC to connect to ultra/cold/ssd_hiiops disk-type storage
 
