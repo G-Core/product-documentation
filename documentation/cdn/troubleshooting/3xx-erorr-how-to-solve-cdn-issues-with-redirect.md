@@ -28,4 +28,4 @@ For example, if requests to _domain.com_ are redirected to _www.domain.
 
 Go to the <a href="https://gcore.com/docs/cdn/view-statistics-of-a-cdn-resource" target="_blank">Reports</a> tab to track the amount of 3xx codes.
 
-To receive more details about user’s requests to CDN-resources you may use the Raw logs. This is the paid feature. The Raw log receiving setup flow and the description of logs’ fields are specified here. If you want to activate this feature, contact your account manager or send a request to the [technical support](support@gcore.com).
+To receive more details about user’s requests to CDN-resources you may use the Raw logs. This is the paid feature. The Raw log receiving setup flow and the description of logs’ fields are specified here. If you want to activate this feature, contact your account manager or send a request to the [technical support](mailto:support@gcore.com).
