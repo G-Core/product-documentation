@@ -10,8 +10,6 @@ toc:
 ---
 # Install and set up the Nginx ingress controller
 
-This article will help you install and start using the nginx ingress controller. To learn about Kubernetes services, ingress, and ingress controllers, refer to the article "<a href="https://gcore.com/docs/cloud/kubernetes/networking/set-up-the-gcore-ingress-controller" target="_blank">Set up the Gcore ingress controller</a>".
-
 Once you install the nginx ingress controller, our system automatically creates a <a href="https://gcore.com/cloud/load-balancers/" target="_blank">load balancer</a>. The traffic will go to that load balancer, which will then forward it to the nginx controller. After that, the nginx controller will distribute traffic across services within your cluster according to the rules specified in the ingress manifests.
 
 ## Install the nginx ingress controller

@@ -4,40 +4,12 @@ displayName: Gcore ingress controller
 order: 20
 published: true
 toc:
-   --1--What is an ingress controller: "what-is-an-ingress-controller"
-   --2--What is a service?: "what-is-a-service"
-   --2--What is ingress?: "what-is-ingress"
-   --2--What is an ingress controller?: "what-is-an-ingress-controller"
    --1--Features of the Gcore ingress controller: "features-of-the-gcore-ingress-controller"
    --1--Create a service: "create-a-service"
    --1--Use the Gcore ingress controller: "use-the-gcore-ingress-controller"
    --1--View an ingress IP address: "view-an-ingress-ip-address"
 ---
 # Set up the Gcore ingress controller
-  
-## What is an ingress controller?
-
-To understand what an ingress controller is, you need to understand the following two entities: service and ingress. We’ll explain in sequence what service, ingress, and ingress controller are.
-
-### What is a service?
-
-A service in Kubernetes is an abstraction used to expose an application running on a set of pods. A service provides access to those pods through a single IP address. Pods can die, be recreated, and change their internal IP addresses, but they can still be accessed through the same service IP address. A service distributes the incoming traffic to all pods within it.
-
-### What is ingress?
-
-Ingress is a Kubernetes object represented as a set of rules used to route external traffic (ingress) across services inside a cluster. For example, you can map the "/login" route to a specific service in your cluster. So, when a user requests "yourwebsite.com/login", the traffic will be redirected to the service that is responsible for user logins.
-
-To route external traffic to your application, you need three components:
-
-1. Pods with containers that run your application.
-2. A service that routes traffic to pods.
-3. Ingress that routes traffic from external networks to service(s).
-
-To fulfill ingress, you need an ingress controller.
-
-### What is an ingress controller?
-
-An ingress controller is a Kubernetes tool that reads ingress objects and creates a map of services in a cluster. This article will tell you how to use the Gcore ingress controller. If you prefer to use the Nginx ingress controller, refer to the article "<a href="https://gcore.com/docs/cloud/kubernetes/networking/install-and-set-up-the-nginx-ingress-controller" target="_blank">Install and set up the Nginx ingress controller</a>".
 
 ## Features of the Gcore ingress controller
 
