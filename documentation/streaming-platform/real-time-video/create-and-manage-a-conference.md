@@ -24,7 +24,7 @@ To create an online room for a conference:
 
 1\. Click **Create Room for Free** on the <a href="https://meet.gcore.com" target="_blank">website</a>.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/create-and-manage-a-conference/crewate_a_room.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/create-and-manage-a-conference/crewate_a_room.png" alt="" width="80%">
 
 2\. Select **Create Conference**.
 
@@ -50,7 +50,7 @@ In this case, when participants click the link, they will be asked to enter the 
 
 6\. Select the camera and microphone.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/create-and-manage-a-conference/selec_a_mic.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/create-and-manage-a-conference/selec_a_mic.png" alt="" width="80%">
 
 7\. Click **Join**.
 
@@ -60,7 +60,7 @@ In this case, when participants click the link, they will be asked to enter the 
 
 To invite participants to the conference, click Invite and choose the best way for you: share it on one of the popular social networks or copy the link.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/create-and-manage-a-conference/invite_conference.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/create-and-manage-a-conference/invite_conference.png" alt="" width="80%">
 
 After participants click the link, they should allow access to the camera and microphone, enter a name and select the camera and microphone.
 
@@ -74,7 +74,7 @@ To write a message in the chat:
 
 1\. In the conference room, click the chat icon at the bottom of the screen.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/create-and-manage-a-conference/chat.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/create-and-manage-a-conference/chat.png" alt="" width="80%">
 
 2\. Write a message in the field shown in the screenshot and click on the button with the arrow sign to send the message.
 
@@ -84,10 +84,10 @@ During the conference, participants can show their screen.
 
 To do this, click the button with the monitor sign at the bottom of the screen:
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/create-and-manage-a-conference/screen_sharing_1.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/create-and-manage-a-conference/screen_sharing_1.png" alt="" width="80%">
 
 Select which part of the screen you want to show to the audience: the entire screen, the application window, or the browser tab.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/create-and-manage-a-conference/screen_sharing_2.PNG" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/create-and-manage-a-conference/screen_sharing_2.PNG" alt="" width="80%">
 
 Click **Share**.

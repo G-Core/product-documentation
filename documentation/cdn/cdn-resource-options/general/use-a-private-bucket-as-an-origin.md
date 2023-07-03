@@ -55,7 +55,7 @@ A new page will open. Complete the remaining steps of the manual in the "Origin"
 
 In the example below, we use the private bucket ```test-private``` in S3 Gcore storage with the Hostname ```s-ed1.cloud.gcore.lu``` and configure an origin group as follows:
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15353220184977.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15353220184977.png" alt="" width="80%">
 
 2\. Select the **Specify content origin** option.
 
@@ -142,7 +142,7 @@ a. Set the request method to **POST**.
 
 b. Enter the API URL in the request URL field.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15353579849745.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15353579849745.png" alt="" width="80%">
 
 2\. Go to the **Auth** tab.
 
@@ -150,7 +150,7 @@ a. Select **Bearer Token** from the "Type dropdown".
 
 b. Copy the generated access token and paste it into the "Token" field.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15353599876753.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15353599876753.png" alt="" width="80%">
 
 3\. Go to the **Body** tab.
 
@@ -162,4 +162,4 @@ c. Enter the payload in the text area. Replace the sample values indicated by ``
 
 4\. Click **Send**.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15353638607505.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15353638607505.png" alt="" width="80%">

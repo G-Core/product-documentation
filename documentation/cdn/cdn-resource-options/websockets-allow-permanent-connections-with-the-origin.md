@@ -22,7 +22,7 @@ WebSocket is suitable for services that require constant data exchange, such as 
 
 2\. WebSocket establishes one connection and keeps it open permanently. HTTP establishes a new connection every time the client makes a request and breaks it after the server responds.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/4.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/4.png" alt="" width="80%">
 
 ## Manage the WebSockets feature
 
@@ -36,7 +36,7 @@ To manage the WebSocket feature:
 
 The new page opens. Do the remaining steps on it.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/13167716346385.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/13167716346385.png" alt="" width="80%">
 
 2\. Open the "Content" section and click **Websockets**.
 

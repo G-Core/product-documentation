@@ -22,7 +22,7 @@ The server stops working if you have not enough money on the account to pay for 
 
 This will be indicated by two signs: the server status is "suspended" and the "minimum amount for service activation" is larger than the amount of money on the balance. To make the server work again, pay for it.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment/image7.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment/image7.png" alt="" width="80%">
 <img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment/image4.png" alt="" width="50%">
 
 ## How to renew the server
@@ -67,11 +67,11 @@ _How it works_: you transfer money, and it will be used to pay for a specific se
 
 _What to do_: click the line with the stopped server and click "Renew". The system will offer <a href="https://gcore.com/docs/hosting/payments/pay-for-gcore-services-payment-methods" target="_blank">payment methods</a> available to you. Transfer money and as soon as they are credited to the account the server will be paid and activated.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment/mceclip3.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment/mceclip3.png" alt="" width="80%">
 
 **Please note**: If you reach the last payment step and change your mind the system will not turn on the server but will create a payment in the "new" status. The server renewal will be linked to this particular payment — even if you recharge the balance in another way, the server will not start. To make the server work, you need to complete the payment: select it, click "Pay" and transfer the money.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment/image3.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment/image3.png" alt="" width="80%">
 
 ### Put money on the added card
 
@@ -85,11 +85,11 @@ _What to do_: put money on the card and the next withdrawal try will send it to 
 
 If you have recharged your account balance or paid for a specific server by direct transfer, follow the transaction in the "Payments" section. When you reached the step of transferring money the system created a payment. The unpaid payment has the "new" status. As soon as you send money and it will appear on the balance the status will change to "paid".
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment/image2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment/image2.png" alt="" width="80%">
 
 If money has been automatically written off from the card during auto payment, follow the payment status in the "Expenses" section. The system creates a new line there for each attempt to write off funds. As soon as the money is written off, the "Not paid" column will have the value zero, and the "Payments" column will have the number of the created payment, during which the money came to the balance (information about it can be viewed in the "Payments" section). If the money was written off and did not come to the balance within 15 minutes <a href="https://gcore.com/docs/hosting/contact-our-technical-support" target="_blank">write to technical support</a> and we will help.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment/image5.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment/image5.png" alt="" width="80%">
 
 ## How soon the money will be credited to the balance
 

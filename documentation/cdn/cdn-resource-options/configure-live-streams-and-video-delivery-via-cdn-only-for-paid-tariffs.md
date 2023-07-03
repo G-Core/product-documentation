@@ -32,7 +32,7 @@ If your stream is in another format (RTMP, SRT, MP4), use the <a href="https://g
 
 Send us a request to activate the streaming workflow for the CDN at [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of our website. Please specify your ID in the request, so we can identify your account. You can find it on the main page of your control panel.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/configure-live-streams-and-video-delivery-via-cdn-only-for-paid-tariffs/12947023694225.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/configure-live-streams-and-video-delivery-via-cdn-only-for-paid-tariffs/12947023694225.png" alt="" width="80%">
 
 In the request, provide the following information:
 
@@ -64,7 +64,7 @@ Firstly, the browser requests a playlist (.m3u8) and then playback segments (.ts
 
 You can set cache settings either on your origin (in the Cache-Control HTTP header) or in the control panel.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/configure-live-streams-and-video-delivery-via-cdn-only-for-paid-tariffs/11775065795729.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/configure-live-streams-and-video-delivery-via-cdn-only-for-paid-tariffs/11775065795729.png" alt="" width="80%">
 
 1.  Go to the Resource settings and then the "Rules" section.
 2.  Click **Create rule**.

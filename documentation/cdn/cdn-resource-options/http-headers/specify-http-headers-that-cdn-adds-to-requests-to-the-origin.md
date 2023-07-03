@@ -17,7 +17,7 @@ To configure request headers via the control panel:
 
 2\. In the navigation panel, under the "HTTP headers" section, click **Request headers**.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin/12420674380177.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin/12420674380177.png" alt="" width="80%">
 
 3\. Navigate to the "Request headers" section and enable the **Add request headers** toggle option.
 

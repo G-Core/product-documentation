@@ -11,7 +11,7 @@ toc:
 
 Go to the Web Protection tab > Settings > the Access policy tab to restrict or allow access to your resource.
 
-<img src="https://assets.gcore.pro/docs/web-security/set-the-access-policy-for-a-protected-resource/access_policy_2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/web-security/set-the-access-policy-for-a-protected-resource/access_policy_2.png" alt="" width="80%">
 
 ## Country access policy
 

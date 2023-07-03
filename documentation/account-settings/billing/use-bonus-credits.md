@@ -43,7 +43,7 @@ This section displays information about bonus credits and all operations with 
 
 For a better search of the desired bonus credits, use the search by sum and date.  
 
-<img src="https://assets.gcore.pro/docs/account-settings/billing/bonus-credits/manage-credits-20.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/account-settings/billing/bonus-credits/manage-credits-20.png" alt="" width="80%">
 
 ## Bonus credits statuses  
 

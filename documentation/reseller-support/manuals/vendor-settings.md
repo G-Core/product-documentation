@@ -43,7 +43,7 @@ Enter the top level domain into the "Base control panel domain" field. It will b
 
 For example, if you specify "mycompany.com", your services will be available at "auth.mycompany.com", "cdn.mycompany.com", "accounts.mycompany.com".
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/base-control-panel-domain-20.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/base-control-panel-domain-20.png" alt="" width="80%">
 
 **Important!** To avoid issues with the control panel, we don't recommend making changes in the field.
 
@@ -121,7 +121,7 @@ Here you can enter an email address to receive notifications about status update
 
 To receive emails, turn on the "Email for deletion request" toggle and enter your email address into the field. If you want the emails to be sent to multiple email addresses, add them with the "+" button. Don't forget to save the changes at the bottom of the page. 
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/email-for-deletion-requests-80.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/email-for-deletion-requests-80.png" alt="" width="80%">
 
 ### Link to User Agreement
 
@@ -132,7 +132,7 @@ It has two parameters:
 - Gcore link — if you want to use the link to Gcore legal documents.
 - Custom link — if you want to specify a link to your legal documents.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/user-agreement-90.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/user-agreement-90.png" alt="" width="80%">
 
 ### Link to company website
 
@@ -143,7 +143,7 @@ It has two parameters:
 - Gcore link — if you want to use the link to Gcore website.
 - Custom link — if you want to specify a link to your website.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/company-website-100.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/company-website-100.png" alt="" width="80%">
 
 ### Show API documentation
 
@@ -154,7 +154,7 @@ It has two parameters:
 - Gcores link — if you want to use the link to the GcoreAPI documentation.
 - Custom link — if you want to specify a link to your API documentation.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/api-documentation-110.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/api-documentation-110.png" alt="" width="80%">
 
 ### Show Knowledge Base
 
@@ -165,7 +165,7 @@ It has two parameters:
 - Gcore link — if you want to use the link to the Gcore Knowledge Base.
 - Custom link — if you want to specify a link to your Knowledge Basee.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/knowledge-base-120.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/knowledge-base-120.png" alt="" width="80%">
 
 ### Show Status Page
 
@@ -176,7 +176,7 @@ It has two parameters:
 - Gcore link — if you want to use the link to the Gcore Status Page.
 - Custom link — if you want to specify a link to your Status Page.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/status-page-130.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/status-page-130.png" alt="" width="80%">
 
 ### Show tickets
 
@@ -239,7 +239,7 @@ To make sure that everything is configured properly, send yourself a test email 
 
 ## DNSaaS settings
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/dnsaas-settings-190.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/dnsaas-settings-190.png" alt="" width="80%">
 
 If the DNS service is available for your clients, you can set the values of your primary nameserver, secondary nameserver, and email address that will be used to generate SOA records.
 This information will be displayed in the client's control panel when they add a domain name for the DNS zone.
@@ -254,8 +254,8 @@ There are two levels of visibility: global (or default) and personal.
 
 In the settings of <a href="https://gcore.com/docs/reseller-support/manuals/configure-global-visibility" target="_blank">global visibility</a> is set the visibility of services for all your clients.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/services-200.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/services-200.png" alt="" width="80%">
 
 In the settings of <a href="https://gcore.com/docs/reseller-support/manuals/configure-personal-visibility" target="_blank">personal visibility</a> you can enable or disable the visibility of services for a particular client. The visibility statuses of personally configured products will not be available for changes from the global visibility settings. 
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/services-210.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/services-210.png" alt="" width="80%">

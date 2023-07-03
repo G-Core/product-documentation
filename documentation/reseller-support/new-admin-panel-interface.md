@@ -67,7 +67,7 @@ We have described all-important new features. If there is a feature you are inte
 
 We have added quick filters by ID, email, name, company name, and client status to make searching more flexible.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/quick-filters-80.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/quick-filters-80.png" alt="" width="80%">
 
 ### Search presets 
 
@@ -77,15 +77,15 @@ To create a preset:
 
 1\. Open the "Accounts" section and click **Add filter**.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/search-presets-90.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/search-presets-90.png" alt="" width="80%">
 
 2\. Choose the necessary filters from the list, add the conditions, and click **Apply** filter. We suggest different filters in addition to the quick filters listed on the page. Applied filters will be added to the page. For example, we added filters by only real accounts (not tested) and CDN status "New":
 
-<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/search-presets-100.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/search-presets-100.png" alt="" width="80%">
 
 3\. When all necessary filters have been added, click **My presets** and **Set current set as a preset**.  
 
-<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/search-presets-110.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/search-presets-110.png" alt="" width="80%">
 
 4\. Type a name and click **Create**. 
 

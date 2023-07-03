@@ -25,7 +25,7 @@ This option is disabled by default. To enable it via the Control panel:
 
 2\. In the navigation panel, under the "Cache" section, click **Query string**.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/12420789740177.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/12420789740177.png" alt="" width="80%">
 
 The enabled option has 3 modes:
 

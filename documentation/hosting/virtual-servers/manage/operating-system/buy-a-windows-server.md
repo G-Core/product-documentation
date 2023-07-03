@@ -17,15 +17,15 @@ toc:
 
 2\. Click **Order a service** on the "Dashboard".
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/buy-a-windows-server/order_a_service.png" alt="order_a_service.png" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/buy-a-windows-server/order_a_service.png" alt="order_a_service.png" width="80%">
 
 3\. Choose **VPS**. 
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/buy-a-windows-server/order_a_vps.png" alt="order_a_vps.png" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/buy-a-windows-server/order_a_vps.png" alt="order_a_vps.png" width="80%">
 
 4\. Then select a server data center.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/buy-a-windows-server/13261603594513.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/buy-a-windows-server/13261603594513.png" alt="" width="80%">
 
 5\. Choose your payment period: you can pay a month, three months, six months, or a year up front. 
 
@@ -35,7 +35,7 @@ toc:
 
 7\. Select the server configuration. In the "Operating system" field, choose **Windows Server**.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/buy-a-windows-server/windows_os_eng.png" alt="windows_os_eng.png" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/buy-a-windows-server/windows_os_eng.png" alt="windows_os_eng.png" width="80%">
 
 ## Features of a Windows server
 ----------------------------

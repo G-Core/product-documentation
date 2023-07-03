@@ -15,7 +15,7 @@ Origin shielding is a Gcore CDN paid option that helps protect your origin serve
 
 The shield server works like a usual CDN server but is located between your origin server and the entire content delivery network. It receives requests, caches content, transmits files from the cache, and requests the source only if it doesn’t have the needed file in the cache. When a burst in traffic occurs, the shield server receives all the requests from CDN servers, thus protecting your server from being overloaded.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding/Shield_server.jpeg" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding/Shield_server.jpeg" alt="" width="80%">
 
 ## Enable Origin shielding
 

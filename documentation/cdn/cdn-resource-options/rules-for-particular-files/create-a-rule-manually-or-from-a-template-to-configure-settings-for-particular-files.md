@@ -23,7 +23,7 @@ For example, you have enabled <a href="https://gcore.com/docs/cdn/cdn-resource-o
 
 There is one limitation for the Rules feature: You can add only five custom rules for a CDN resource. You can see how many rules you’ve created in the Rules section.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/11774615568017.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/11774615568017.png" alt="" width="80%">
 
 ## Add rules in the control panel
 
@@ -31,7 +31,7 @@ There is one limitation for the Rules feature: You can add only five custom rule
 
 1\. Open the Resource settings and go to the Rules tab. Click the **Create rule** button and select **Create blank rule** from the drop-down list.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/11774713174673.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/11774713174673.png" alt="" width="80%">
 
 A new page will open. Follow the remaining steps on that page.
 
@@ -72,7 +72,7 @@ To create a rule from a template:
 
 1\. Open the settings of the required CDN resource. In the Rules tab, click **Create rule** and select a template from the list.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/11774651473681.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/11774651473681.png" alt="" width="80%">
 
 2\. You will see the form for creating a new rule with pre-filled settings from the template. Check if all the settings suit you; edit the rule if necessary following to the [Create a rule manually](#create-a-rule-manually) section of this article.
 
@@ -99,7 +99,7 @@ To set up the Access-Control-Allow-Origin HTTP header only for files with the .t
 - Add the CORS header support option.
 - Configure which domains to add the header for. You can find more information about configuring in the "<a href="https://gcore.com/docs/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response" target="_blank">Enable CORS header support</a>" guide.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/10612313089169.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/10612313089169.png" alt="" width="80%">
 
 ## Disable or enable a rule
 
@@ -109,7 +109,7 @@ To disable or enable a rule:
 
 1\. Go to the **Rules** section and open the page for the desired rule.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/11774706636945.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/11774706636945.png" alt="" width="80%">
 
 2\. Click **Disable rule** (or **Enable rule**), then click **Save changes**.
 
@@ -117,4 +117,4 @@ To disable or enable a rule:
 
 Disabled rules will have a Suspended status and enabled rules will have an Active status.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/10612307136657.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/10612307136657.png" alt="" width="80%">

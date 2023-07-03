@@ -22,7 +22,7 @@ The Image Stack option includes the following features:
 - <a href="https://gcore.com/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/reduce-image-size" target="_blank">Resize</a> allows you to reduce the height, width, and scale of your original image.
 - <a href="https://gcore.com/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images" target="_blank">Crop</a> allows you to cut off the excessive image area beyond the established parameters.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11085759102353.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11085759102353.png" alt="" width="80%">
 
 How Image Stack can change your image:
 
@@ -42,7 +42,7 @@ How Image Stack can change your image:
 
 If you use Image Stack requests for images that will be proxied through our Processing Server, it takes an original image from your Origin Server and converts the image to WebP or applies others features. After that, a new version of the image will be saved in the Caching Server and sent to end users.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11756318311697.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack/11756318311697.png" alt="" width="80%">
 
 After converting, an image does not change its URL or extension. Only the following processing details will be added to image HTTP headers:
 

@@ -48,7 +48,7 @@ paste them to the OBS Settings as follows:
 
 7\. Once the streaming has started, go to the <a href="https://streaming.gcore.com/streaming/list" target="_blank">Streaming list</a>, open the Live Stream settings, and copy the link to embed the broadcast to your website.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-obs/11775007043985.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-obs/11775007043985.png" alt="" width="80%">
 
 That’s it. The stream from OBS will be broadcast to your website.
 
@@ -66,7 +66,7 @@ It’s recommended to configure the stream parameters you’ll send to our serve
 - **Audio Bitrate:** 128
 - **Encoder:** Software (x264)
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-obs/10807571524241.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-obs/10807571524241.png" alt="" width="80%">
 
 3\. Select ‘Advanced’ mode.
 
@@ -79,11 +79,11 @@ It’s recommended to configure the stream parameters you’ll send to our serve
 
 5\. Click **Apply** to save the configuration.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-obs/10807656645393.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-obs/10807656645393.png" alt="" width="80%">
 
 ### Audio parameters
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-obs/10807660371473.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-obs/10807660371473.png" alt="" width="80%">
 
 1\. Open OBS Settings and go to the Audio tab.
 
@@ -103,7 +103,7 @@ It’s recommended to configure the stream parameters you’ll send to our serve
 
 3\. Click **Apply**.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-obs/10807613445521.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-obs/10807613445521.png" alt="" width="80%">
 
 **Hints.** If you want to use 1920×1080 resolution, it’s better to set the Video Bitrate parameter at 4000 Kbps (instead of 2000 Kbps) in the [Output](#output-parameters) tab. If you need to increase FPS to 60, set the Video Bitrate to 8000 Kbps.
 

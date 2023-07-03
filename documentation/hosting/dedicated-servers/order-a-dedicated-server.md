@@ -19,7 +19,7 @@ Choose a tariff. You can see the list of tariffs on the shop window of the Contr
 
 <a href="https://hosting.gcore.com/billmgr" target="_blank">On the shop window</a>, you choose a location, and the system displays a list of available servers. The description contains the technical characteristics of the server.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/order-a-dedicated-server/image2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/order-a-dedicated-server/image2.png" alt="" width="80%">
 
 <a href="https://gcore.com/hosting/" target="_blank">On the website</a>, you can find the complete list of tariffs with a filter by technical characteristics.
 

@@ -64,7 +64,7 @@ terraform init
 
 This command will install Terraform and download a set of modules to work with our CDN. The following response will appear:
 
-<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1734.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1734.png" alt="" width="80%">
 
 This response means Terraform was successfully downloaded and installed, you can start working with it. 
 
@@ -237,7 +237,7 @@ secondary_hostnames = ["<span style="color:#FF5913">cdn.two.com</span>","<span s
 
 4\. At Step 2 and 3, you entered the code that has created an origin group and a CDN resource. Below is an example of how your code may look in your configuration file:
 
-<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1706.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1706.png" alt="" width="80%">
 
 Make sure all data is correct and save the changes.  
 
@@ -253,7 +253,7 @@ Congratulations! The origin group and CDN resource have been created! Then the C
 
 2\. On the page that opens, click "Setup guide". 
 
-<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1631.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1631.png" alt="" width="80%">
 
 3\. Copy the domain name such as _\*.gcdn.co._ from the sliding panel.
 
@@ -331,7 +331,7 @@ edge_cache_settings {   
 ```
 6\. The configuration file now contains the code that creates a CDN resource with your option values. An example of the file:
 
-<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1707-2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1707-2.png" alt="" width="80%">
 
 Save the changes in the configuration file.  
 
@@ -377,7 +377,7 @@ Here is an example of adding a certificate. Let's suppose your values are as fol
 
 To add such a certificate, you have inserted the necessary strings into the configuration file. The file is supposed to look as follows:
 
-<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1709-2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1709-2.png" alt="" width="80%">
 
 5\. Save the changes in the configuration file. 
 
@@ -433,7 +433,7 @@ Here is an example of a configuration file. Let's say you want to add a rule wit
 
 The final code in the configuration file will look as follows:
 
-<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1712-2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1712-2.png" alt="" width="80%">
 
 6\. Save the changes in the configuration file. 
 

@@ -24,7 +24,7 @@ If you already set up CDN delivery for all possible static content, 
 
 ## CDN Caching option
 
-<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue/_______________________.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue/_______________________.png" alt="" width="80%">
 
 Check if this option is added and activated. If you use this option with Origin controlled parameter make sure that origin settings are suitable for caching.
 
@@ -34,7 +34,7 @@ CDN caches according to Cache-Control headers from your origin. 
 
 ## Query-String and Set-Cookies options
 
-<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue/___________________________.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue/___________________________.png" alt="" width="80%">
 
 CDN caches content with different query-strings and Set-Cookie headers separately by default If you have such content on your website or application, we recommend you to use Ignore Query-String and Ignore Set-Cookies options for the CDN-resource. It will help to decrease the number of requests from CDN to the origin server and increase the Cache hit ratio. 
 

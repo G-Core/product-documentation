@@ -30,7 +30,7 @@ To open the general CDN settings of the particular client, go to the client sett
 
 ### Activate Service
 
-<img src="https://assets.gcore.pro/docs/reseller-support/cdn-service-management/activate-cdn-20.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/cdn-service-management/activate-cdn-20.png" alt="" width="80%">
 
 If the "Activate Service" checkbox is enabled, a client can use the service: to create CDN resources and manage them. You can deactivate the service by unchecking the checkbox. In this case, the client will see a service activation request form on the CDN tab instead of the CDN resources list.
 
@@ -70,7 +70,7 @@ You can also go to the client settings through the CDN application
 
 ### Paid features
 
-<img src="https://assets.gcore.pro/docs/reseller-support/cdn-service-management/paid-features-50-v2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/cdn-service-management/paid-features-50-v2.png" alt="" width="80%">
 
 You can activate additional paid services for the client, including an <a href="https://gcore.com/docs/cdn/view-statistics-of-a-cdn-resource" target="_blank">Advanced directory, user agents, geo statistics</a>, <a href="https://gcore.com/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage" target="_blank">Raw logs</a>, <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin shielding</a> (to set the locations, contact technical support or your manager), and <a href="https://gcore.com/docs/cdn/cdn-resource-options/configure-live-streams-and-video-delivery-via-cdn-only-for-paid-tariffs" target="_blank">Streaming</a>.
 
@@ -80,7 +80,7 @@ Certain features, such as Resources with Shared Cache Zone, Wildcard Purge, and 
 
 ### Free features
 
-<img src="https://assets.gcore.pro/docs/reseller-support/cdn-service-management/free-features-60-v2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/cdn-service-management/free-features-60-v2.png" alt="" width="80%">
 
 Enabling the "gcdn.co zone (CNAME)" option allows clients to create subdomains for CDN delivery in our zone and use our shared SSL certificate. This is a non-public feature, so please contact the [support team](mailto:support@gcore.com) to discuss its availability.
 
@@ -88,7 +88,7 @@ The "Show Origin, Shield, and CDN Traffic Separately" option affects the traffic
 
 ## Traffic
 
-<img src="https://assets.gcore.pro/docs/reseller-support/cdn-service-management/balancer-70-v2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/cdn-service-management/balancer-70-v2.png" alt="" width="80%">
 
 CDN servers are grouped into several regions in <a href="https://gcore.com/docs/cdn/cdn-resource-options/determine-in-which-regions-the-content-will-be-delivered-with-geo-balancer-for-paid-tariffs" target="_blank">Geo Balancer</a>: North America, Asia, the Middle East, Europe, Australia, the World (with the World anycast address behind this region), the CIS, Latin America, and Africa.
 

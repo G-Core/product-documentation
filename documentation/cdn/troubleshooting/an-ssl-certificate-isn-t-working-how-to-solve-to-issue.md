@@ -25,6 +25,6 @@ You can check whether the rule blocks the certificate issuance path using <a hre
 
 **Check whether you have added a CNAME record with our domain**. Your domain's DNS records must have a CNAME record with your personal zone as the value. The certificate cannot be issued without it. You will find the value for the record in the second step of the setup guide for the resource:
 
-<img title="" src="https://assets.gcore.pro/docs/cdn/troubleshooting/an-ssl-certificate-isn-t-working-how-to-solve-to-issue/image-4.png" alt="" width="70%">
+<img title="" src="https://assets.gcore.pro/docs/cdn/troubleshooting/an-ssl-certificate-isn-t-working-how-to-solve-to-issue/image-4.png" alt="" width="80%">
 
 If these tips don’t help, write to technical support via the chat in the corner of the screen — we will help you.

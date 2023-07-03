@@ -21,7 +21,7 @@ To download and install FileZilla, use <a href="https://filezilla-project.org/" 
 
 Start by opening up Site Manager:
 
-<img src="https://assets.gcore.pro/docs/storage/manage-sftp-storage/connect-to-your-storage-with-filezilla/13822230046353.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/storage/manage-sftp-storage/connect-to-your-storage-with-filezilla/13822230046353.png" alt="" width="80%">
 
 In an open window, click on the **New Site** button:
 

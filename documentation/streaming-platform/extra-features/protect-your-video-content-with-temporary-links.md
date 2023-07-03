@@ -33,17 +33,17 @@ As far as streaming is concerned, protection using a Secure token is as follows:
 
 1\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN resources</a> section and open the settings of the <a href="https://gcore.com/docs/streaming-platform/how-the-streaming-platform-interact-with-the-cdn" target="_blank">CDN resource used for the streaming</a>.  
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/protect-your-video-content-with-temporary-links/13094971331729.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/protect-your-video-content-with-temporary-links/13094971331729.png" alt="" width="80%">
 
 2\. Go to the "Access" section, select **Secure token**, and enable the feature.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/protect-your-video-content-with-temporary-links/13095035340305.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/protect-your-video-content-with-temporary-links/13095035340305.png" alt="" width="80%">
 
 3\. Enter a signature key between 6 and 32 characters and click **Save changes**. 
 
 **Note**: Leave the "Add a client's IP to the token" box unchecked.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/protect-your-video-content-with-temporary-links/13095149599633.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/protect-your-video-content-with-temporary-links/13095149599633.png" alt="" width="80%">
 
 ### Use the PHP script for the generation of URLs 
 

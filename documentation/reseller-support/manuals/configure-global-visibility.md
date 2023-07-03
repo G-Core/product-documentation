@@ -9,7 +9,7 @@ toc:
 
 You can configure global visibility in the "Vendor settings" section, "Services" tab of the Admin Panel.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-global-visibility/services-admin-panel-10.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-global-visibility/services-admin-panel-10.png" alt="" width="80%">
 
 **As the result of switching the global service visibility from OFF to ON** a service is activated for all clients, except clients with individual settings for this service.  
 
@@ -23,6 +23,6 @@ You can configure global visibility in the "Vendor settings" section, "Services"
 
 2\. It is allowed to disable a service if a service is in "Trial" or "Active" statuses.  Switch its status to "Trialend" or "Paused" before disabling the service and then try again.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-global-visibility/disable-service-trialend-20.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-global-visibility/disable-service-trialend-20.png" alt="" width="80%">
 
 For a newly created client are available all the services set in the global visibility settings.

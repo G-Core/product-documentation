@@ -32,7 +32,7 @@ If the "Activate Service" checkbox is enabled, a client can use the service. You
 
 When the service is disabled, the client sees the request form.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/storage-service-management/storage-management-30.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/storage-service-management/storage-management-30.png" alt="" width="80%">
 
 ## Trial Settings 
 
@@ -47,7 +47,7 @@ You can change the trial period setting:
 
 On the Dashboard page, clients see how many Storage trial days are left.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/storage-service-management/storage-management-50.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/storage-service-management/storage-management-50.png" alt="" width="80%">
 
 ## Transition to Deleted status 
 
@@ -55,4 +55,4 @@ After the specified number of days, the Storage service status switches from "Tr
 
 All the client's resources and files in Storage will be deleted. To change the number of days for a specific client, email us to [support@gcore.com](mailto:support@gcore.com).
 
-<img src="https://assets.gcore.pro/docs/reseller-support/storage-service-management/storage-management-60.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/storage-service-management/storage-management-60.png" alt="" width="80%">

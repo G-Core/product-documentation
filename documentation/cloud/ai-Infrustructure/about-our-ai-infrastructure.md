@@ -28,7 +28,7 @@ This infrastructure consists of three entities:
 
 For datasets storage, you can use Poplar server disk space, external S3 storage, or <a href="https://gcore.com/storage/" target="_blank">our S3 storage</a>.
 
-<img src="https://assets.gcore.pro/docs/cloud/ai-Infrustructure/about-our-ai-infrastructure/image__10_.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cloud/ai-Infrustructure/about-our-ai-infrastructure/image__10_.png" alt="" width="80%">
 
 ## Server specifications and performance
 

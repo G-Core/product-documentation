@@ -93,7 +93,7 @@ Where:
 
 9\. Click **Save changes**.
 
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/12745153936913.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/12745153936913.png" alt="" width="80%">
 
 ### Non-Amazon storage
 
@@ -121,7 +121,7 @@ Where:
 
 11\. Click **Save changes**.
 
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/12745252125201.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/12745252125201.png" alt="" width="80%">
 
 ## Export logs to an FTP/SFTP storage
 
@@ -146,7 +146,7 @@ If you use an SFTP storage from another provider, clarify whether a root folder 
 8\. Click **Save changes**.
 
 
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/12745350391697.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/12745350391697.png" alt="" width="80%">
 
 ## Export time intervals
 

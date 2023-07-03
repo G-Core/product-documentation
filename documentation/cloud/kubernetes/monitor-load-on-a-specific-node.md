@@ -15,11 +15,11 @@ You can monitor load and performance of your nodes through 4 metrics.
 
 1\. In the Cloud menu, go to **Kubernetes**, find the required cluster and click its name.
 
-<img src="https://assets.gcore.pro/docs/cloud/kubernetes/monitor-load-on-a-specific-node/13348768823569.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/monitor-load-on-a-specific-node/13348768823569.png" alt="" width="80%">
 
 2\. Go to the **Pools** section, click the required pool to expand the menu, and the click the required node.
 
-<img src="https://assets.gcore.pro/docs/cloud/kubernetes/monitor-load-on-a-specific-node/13348772802833.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/monitor-load-on-a-specific-node/13348772802833.png" alt="" width="80%">
 
 3\. In the new window, switch to the **Monitoring** tab.  
 The buttons to the right above the graphs regulate the presentation of statistics. The left button sets the period to be shown, and the right button sets the frequency at which data will be updated on the screen.

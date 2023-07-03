@@ -40,7 +40,7 @@ We changed the bot-identifying process, thereby resolving the connectivity confl
 - The IP address copied at step #2 in the "Origin" field (e.g., *5.188.189.82*).
 - The custom domain based on your application domain in the "Custom domain" field (e.g., *cdn.test-domain.com*).
 
-<img src="https://assets.gcore.pro/docs/web-security/connect-web-security-and-cdn-for-the-same-domain/13997787631505.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/web-security/connect-web-security-and-cdn-for-the-same-domain/13997787631505.png" alt="" width="80%">
 
 Complete the creation of the CDN resource by making all the necessary settings.
 
@@ -49,7 +49,7 @@ Complete the creation of the CDN resource by making all the necessary settings.
 - The domain of your application in the "Enter site name" step (e.g., *test-domain.com*).
 - The IP address copied at step #2 in the "IPv4 address" field (e.g., *5.188.189.82*).
 
-<img src="https://assets.gcore.pro/docs/web-security/connect-web-security-and-cdn-for-the-same-domain/13997781806353.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/web-security/connect-web-security-and-cdn-for-the-same-domain/13997781806353.png" alt="" width="80%">
 
 Complete the creation of the CDN resource by making all the necessary settings.
 

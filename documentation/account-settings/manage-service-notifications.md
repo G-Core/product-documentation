@@ -47,7 +47,7 @@ Each user of the personal account can configure this notification.
 
 To do it, specify the traffic limit in the Traffic consumption level field. Click **Save** to apply the settings.
 
-<img src="https://assets.gcore.pro/docs/account-settings/notifications/set-limit-20.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/account-settings/notifications/set-limit-20.png" alt="" width="80%">
 
 **Note**: Traffic consumption level is _not configured_ individually, it is the same for all users of the account who use this notification.
 
@@ -64,4 +64,4 @@ You can receive notifications about:
 
 To do it go to the Storage notification section, select Storage and Bucket (optional) and specify the limit. Then click **Save**.
 
-<img src="https://assets.gcore.pro/docs/account-settings/notifications/storage-notifications-30.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/account-settings/notifications/storage-notifications-30.png" alt="" width="80%">
