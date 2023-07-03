@@ -39,7 +39,7 @@ To configure Large Files Delivery Optimization option via the Control panel:
 
 2\. In the navigation panel, under the **Content** section, click **Large files delivery optimization**.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/optimize-large-file-delivery/12479228932497.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/optimize-large-file-delivery/12479228932497.png" alt="" width="80%">
 
 3\. Turn on the toggle for **Enable Large files delivery optimization** to enable the option.
 

@@ -13,17 +13,17 @@ Login to your IPS Community Admin area.
 
 Click **System/System Settings** as in the picture below  
   
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-ips/ips-settings.jpeg" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-ips/ips-settings.jpeg" alt="" width="80%">
 
 Click **General Configuration** as in the picture below.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-ips/ips-general-configuration.jpeg" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-ips/ips-general-configuration.jpeg" alt="" width="80%">
 
 Scroll down to CDN Settings.
 
 Type in your CNAME that you specified in the Gcore <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>. Ensure that your <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">CNAME record has been configured</a> in a proper way before using it for integration.  
   
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-ips/ips-cdn-settingsv1.jpeg" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-ips/ips-cdn-settingsv1.jpeg" alt="" width="80%">
 
 Click the **Update Settings** button at the bottom of the page.
 

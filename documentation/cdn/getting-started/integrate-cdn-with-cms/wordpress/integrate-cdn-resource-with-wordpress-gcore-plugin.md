@@ -35,7 +35,7 @@ To integrate your site with the Gcore CDN, go to the plugin settings: find it i
 
 Activate the Enable CDN checkbox, fill in the Personal domain field, and click Save.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-gcore-plugin/___________________.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-gcore-plugin/___________________.png" alt="" width="80%">
 
 ### File types
 
@@ -45,13 +45,13 @@ There are available two configuration modes: basic and advanced.
 
 1\. In basic mode, you can select file extensions offered on the page.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-gcore-plugin/________________________.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-gcore-plugin/________________________.png" alt="" width="80%">
 
 2\. Use advanced mode if you need to add specific file extensions.
 
 To do this, activate the Advanced settings:
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-gcore-plugin/_________________________________.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-gcore-plugin/_________________________________.png" alt="" width="80%">
 
 Add the extensions one by one. They will be displayed in the "File types" section.
 
@@ -63,13 +63,13 @@ Two configuration modes are available: basic and advanced.
 
 1\. In basic mode, you can select folders offered on the page.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-gcore-plugin/__________________.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-gcore-plugin/__________________.png" alt="" width="80%">
 
 2\. Use advanced mode if you need to add specific folders paths.
 
 To do this, activate the advanced settings:
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-gcore-plugin/_____________________.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-gcore-plugin/_____________________.png" alt="" width="80%">
 
 Add the paths one by one. The added folders will be displayed in the section.
 

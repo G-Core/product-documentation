@@ -15,9 +15,9 @@ You can delete a server in the <a href="https://hosting.gcore.com/billmgr" targe
 
 <media-gallery>
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/delete-a-virtual-server/mceclip0.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/delete-a-virtual-server/mceclip0.png" alt="" width="80%">
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/delete-a-virtual-server/mceclip1.png" alt="mceclip1.png" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/delete-a-virtual-server/mceclip1.png" alt="mceclip1.png" width="80%">
 
 </media-gallery>
 

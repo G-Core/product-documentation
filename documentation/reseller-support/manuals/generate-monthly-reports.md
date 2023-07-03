@@ -77,7 +77,7 @@ The report represents data for a specified month, it uses commas to separate val
 
 There is a report example below grouped by client and region parameters.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/generate-monthly-reports/example-of-report-30.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/generate-monthly-reports/example-of-report-30.png" alt="" width="80%">
 
 Report's first line has the reseller's ID and company name (marked as1).
 
@@ -111,4 +111,4 @@ You can look up the full description of the report parameters in the API documen
 
 To delete a report, go to the "Reports" section, on the three dots in the "Actions" column, and choose "Delete".
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/generate-monthly-reports/delete-report-40.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/generate-monthly-reports/delete-report-40.png" alt="" width="80%">

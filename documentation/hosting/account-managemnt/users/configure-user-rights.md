@@ -20,7 +20,7 @@ Double-click the attribute to configure the further rights.
 
 To activate access to a subsection of the Control Panel, select the line with the desired attribute and click **Enable** in the top menu.
 
-<img src="https://assets.gcore.pro/docs/hosting/account-managemnt/users/configure-user-rights/joxi_screenshot_1512670678222.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/account-managemnt/users/configure-user-rights/joxi_screenshot_1512670678222.png" alt="" width="80%">
 
 To remove the access permission select the string and click **Disable** in the top menu.
 
@@ -32,7 +32,7 @@ To give the user full rights, choose the user you need in the "Users" section, t
 
 Tick the "Full access" permissions and press **Ok**.
 
-<img src="https://assets.gcore.pro/docs/hosting/account-managemnt/users/configure-user-rights/joxi_screenshot_1512670286182.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/account-managemnt/users/configure-user-rights/joxi_screenshot_1512670286182.png" alt="" width="80%">
 
 Note, that if the user has Full access permissions you will not be able to restrict his rights in Perm. section.
 

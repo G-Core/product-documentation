@@ -12,7 +12,7 @@ toc:
   
 You can pay for Gcore services in USD and euro. The currency depends on your provider. If your provider is Gcore, you’ll pay in euro. If your provider is G-Core USD, you’ll pay in USD. To view your provider, go to **Dashboard** > **Information** > **Provider**.
 
-<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300168817425.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300168817425.png" alt="" width="80%">
 
 We support payments via PayPal, bank transfer, bank card (Visa, MasterCard, American Express, and Union Pay), and Alipay.
 
@@ -22,18 +22,18 @@ We support payments via PayPal, bank transfer, bank card (Visa, MasterCard, Amer
 
 1\. Open the Dashboard and click **Add funds**.
 
-<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300173782545.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300173782545.png" alt="" width="80%">
 
 2\. For **Step 1**:
 
 *   Enter the amount of money you want to pay and select the currency.
 *   Find **PayPal** and click **Pay**.
 
-<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300244689553.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300244689553.png" alt="" width="80%">
 
 3\. For **Step 2**, select a payer and click **Next**.
 
-<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300246436113.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300246436113.png" alt="" width="80%">
 
 4\. For **Step 3**:
 
@@ -42,11 +42,11 @@ We support payments via PayPal, bank transfer, bank card (Visa, MasterCard, Amer
 *   Select the country of your company.
 *   Click **Next**.
 
-<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300248349585.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300248349585.png" alt="" width="80%">
 
 5\. For **Step 4**, confirm the payment amount, including the PayPal commission, and click **Pay**.
 
-<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300268728081.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300268728081.png" alt="" width="80%">
 
 6\. Log in to your PayPal account, or select **Pay by Debit or Credit Card** to pay as a PayPal guest, and complete your payment.
 
@@ -60,18 +60,18 @@ The money will be added to your balance within 72 hours. If this does not happe
 
 1\. Go to the Dashboard and click **Add funds**.
 
-<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300271196689.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300271196689.png" alt="" width="80%">
 
 2\. For **Step 1**:
 
 *   Enter the amount of money you want to pay and select the currency.
 *   Find **Bank Transfer** and click **Pay**.
 
-<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300272323345.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300272323345.png" alt="" width="80%">
 
 3\. For **Step 2**, select a payer and click **Next**.
 
-<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300273264017.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300273264017.png" alt="" width="80%">
 
 4\. For **Step 3**:
 
@@ -80,11 +80,11 @@ The money will be added to your balance within 72 hours. If this does not happe
 *   Select the country of your company.
 *   Click **Next**.
 
-<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300290426769.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300290426769.png" alt="" width="80%">
 
 5\. For **Step 4**, confirm the payment amount and click **Ok**.
 
-<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300326243729.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300326243729.png" alt="" width="80%">
 
 The system will generate an invoice in a new tab. Right click to save or print it.
 
@@ -92,7 +92,7 @@ The system will generate an invoice in a new tab. Right click to save or print i
 
 You can always download the invoice from the control panel: go to **Billing** > **Payments** and click the required payment.
 
-<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300344561169.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300344561169.png" alt="" width="80%">
 
 Contact the accounting department of your company or your bank to complete the payment.
 
@@ -106,18 +106,18 @@ The money will be added to your balance within 5 business days. If this does not
 
 1\. Go to the Dashboard and click **Add funds**.
 
-<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300330049553.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300330049553.png" alt="" width="80%">
 
 2\. For **Step 1**:
 
 *   Enter the amount of money you want to pay and select the currency.
 *   Find **Bank cards, AMEX, and Alipay** and click **Pay**.
 
-<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300330972177.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300330972177.png" alt="" width="80%">
 
 3\. For **Step 2**, select a payer and click **Next**.
 
-<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300332243985.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300332243985.png" alt="" width="80%">
 
 4\. For **Step 3**:
 
@@ -126,11 +126,11 @@ The money will be added to your balance within 5 business days. If this does not
 *   Select the country of your company.
 *   Click **Next**.
 
-<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300333228817.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300333228817.png" alt="" width="80%">
 
 5\. For **Step 4**, confirm the payment amount and click **Pay**.
 
-<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300367684753.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/payments/pay-for-gcore-services-payment-methods/12300367684753.png" alt="" width="80%">
 
 6\. In the next window, select the payment method and enter the required information. If you want to pay with a bank card, click the bank card icon. If you want to pay via Alipay, click the Alipay icon.
 

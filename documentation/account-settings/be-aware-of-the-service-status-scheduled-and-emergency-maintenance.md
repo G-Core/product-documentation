@@ -28,7 +28,7 @@ Status Page is a communication tool that displays information about service sta
 
 To receive notifications about scheduled works and incidents, subscribe to the Status Page: go to <a href="https://status.gcore.com/" target="_blank">Status Page of Gcore</a> and click on the **Subscribe to updates** button in the upper-right corner. 
 
-<img src="https://assets.gcore.pro/docs/account-settings/status-page/subscribe-sp-10.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/subscribe-sp-10.png" alt="" width="80%">
 
 Then select the appropriate subscription method (email, slack, webhook). 
 
@@ -65,7 +65,7 @@ To correctly configure notifications from the new <a href="https://status
 
 5\. Go to the Configuration section.  
   
-<img src="https://assets.gcore.pro/docs/account-settings/status-page/configuration-50.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/configuration-50.png" alt="" width="80%">
 
 6\. Find the channel for which the notifications are configured. 
 
@@ -73,7 +73,7 @@ To correctly configure notifications from the new <a href="https://status
 
 8\. In the upper-right corner, click **Disable** to switch off the integration and Remove to delete the integration.  
   
-<img src="https://assets.gcore.pro/docs/account-settings/status-page/remove-integration-60.png" alt=""  width="70%">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/remove-integration-60.png" alt=""  width="80%">
 
 9\. Confirm the action.
 
@@ -89,7 +89,7 @@ To correctly configure notifications from the new <a href="https://status
 
 3\. Click Continue.
 
-<img src="https://assets.gcore.pro/docs/account-settings/status-page/slack-continue-80.png" alt=""  width="70%">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/slack-continue-80.png" alt=""  width="80%">
 
 4\. Log in using your email address and password for the selected workspace in Slack.
 
@@ -106,7 +106,7 @@ To correctly configure notifications from the new <a href="https://status
 
 7\. On the page of integration, in the section Where should Status page post specify the channel that will be used to publish notifications. Click Allow.                    
 
-<img src="https://assets.gcore.pro/docs/account-settings/status-page/allow-110.png" alt=""  width="70%">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/allow-110.png" alt=""  width="80%">
 
 Next, you will receive a notification from Slack that notifications have been successfully configured, and you will also be automatically redirected to the subscription management page.
 
@@ -114,7 +114,7 @@ Select the components which status information you would like to receive and cli
 
 ### Webhook 
 
-<img src="https://assets.gcore.pro/docs/account-settings/status-page/webhook-120.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/webhook-120.png" alt="" width="80%">
 
 1\. In the first field, enter the URL for sending notifications. 
 
@@ -140,7 +140,7 @@ You can change the subscription from any notification sent by the system to your
 
 2\. At the bottom of the notification, find and click Manage your subscription.
 
-<img src="https://assets.gcore.pro/docs/account-settings/status-page/manage-130.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/manage-130.png" alt="" width="80%">
 
 3\. Edit the component subscription and click **Save**.
 

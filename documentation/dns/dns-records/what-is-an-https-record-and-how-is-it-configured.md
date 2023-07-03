@@ -66,11 +66,11 @@ Combining all relevant parameters into a single lookup response reduces the numb
 
 2\. Click **Add record**.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/what-is-an-https-record-and-how-is-it-configured/15663201710737.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/what-is-an-https-record-and-how-is-it-configured/15663201710737.png" alt="" width="80%">
 
 The remaining attribute configurations are displayed in the screenshot below:
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/what-is-an-https-record-and-how-is-it-configured/15663195985553.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/what-is-an-https-record-and-how-is-it-configured/15663195985553.png" alt="" width="80%">
 
 3\. **Type**. Select “HTTPS”.
 
@@ -96,7 +96,7 @@ The remaining attribute configurations are displayed in the screenshot below:
 
 After configuration, the record should look something like this:
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/what-is-an-https-record-and-how-is-it-configured/15663198075793.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/what-is-an-https-record-and-how-is-it-configured/15663198075793.png" alt="" width="80%">
 
 You can verify the responses with kdig (a version of “dig” from Knot DNS). If you're using “dig,” please ensure you have the latest version, as older versions do not support HTTPS record types.
 

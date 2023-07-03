@@ -32,7 +32,7 @@ Replace:
 - ```Х.Х.Х.Х``` with the IP address you want to add, 
 - ```255.255.255.255``` with the net mask. You can find it in your Control Panel. Go to the **Dedicated servers** tab, choose the server you need, and click the IP addresses button.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/additional-ip-addresses/configure-an-additional-ip-address/13640001933073.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/additional-ip-addresses/configure-an-additional-ip-address/13640001933073.png" alt="" width="80%">
 
 If you need to add an IPv6 address, add the following:
 
@@ -63,7 +63,7 @@ Replace:
 - ```Х.Х.Х.Х``` with the IP address you want to add, 
 - ```255.255.255.255``` with the netmask. You can find it in your Control Panel. Go to the **Dedicated servers** tab, choose the server you need, and click the IP addresses button.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/additional-ip-addresses/configure-an-additional-ip-address/13640001933073.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/additional-ip-addresses/configure-an-additional-ip-address/13640001933073.png" alt="" width="80%">
 
 If you need to add an IPv6 address, add the following:
 

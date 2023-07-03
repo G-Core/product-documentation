@@ -26,7 +26,7 @@ Rate Limiter is an additional feature of Bot Protection that allows you to confi
 
 2\. Open the **Bot** tab and follow the remaining steps.
 
-<img src="https://assets.gcore.pro/docs/web-security/configure-rate-limiter-to-limit-the-number-of-requests/14901941266321.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/web-security/configure-rate-limiter-to-limit-the-number-of-requests/14901941266321.png" alt="" width="80%">
 
 3\. Make sure that the Bot Protection is set to **Low** or **High** mode. If set to **Off** mode, the Rate Limiter feature will be inactive, and configurations will be unavailable.
 

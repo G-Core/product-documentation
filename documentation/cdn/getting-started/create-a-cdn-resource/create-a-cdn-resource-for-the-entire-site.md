@@ -66,11 +66,11 @@ Our system looks for DNS records associated with your site domain at this step.
 
 - If DNS records exist, they will be displayed automatically. You can edit or delete them or add a new record if necessary. Alternatively, you can skip this step. Click **Confirm** when the configuration is complete.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/13050615347601.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/13050615347601.png" alt="" width="80%">
 
 - If no DNS records are found, a warning indicates that at least an A record should be added. Specify the subdomain or empty the "Name" field and the IP address. Then click **Add** and **Confirm**.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/13050648890385.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/13050648890385.png" alt="" width="80%">
 
 ### 4. Change nameservers
 
@@ -83,7 +83,7 @@ ns1.gcorelabs.net
 ns2.gcdn.services
 ```
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/13050764764177.png" alt="mceclip5.png" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/13050764764177.png" alt="mceclip5.png" width="80%">
 
 **Note**: The Name Servers can change. The current values will be specified on the wizard page.
 
@@ -93,7 +93,7 @@ Remember that the name server change can take up to 24 hours.
 
 Optionally, you can activate additional features for your CDN resource. You can skip this step and return to additional settings later. Click **Confirm** to complete the creation and setup of your CDN resource.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/13050821357329.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/13050821357329.png" alt="" width="80%">
 
 After completing the creation and setup of your CDN resource, you will be automatically directed to the page of CDN resource settings. The resource settings header will show the name of the associated DNS zone. A warning will be displayed if the zone is not delegated to Gcore. This warning may persist for up to 24 hours until the NS servers are changed.
 

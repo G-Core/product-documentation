@@ -9,11 +9,11 @@ toc:
 
 1\. Open the "AI Infrastructure" tab and click **Create Cluster**.
 
-<img src="https://assets.gcore.pro/docs/cloud/ai-Infrustructure/create-an-ai-cluster/Screenshot_2022-08-10_at_18.11_1-2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cloud/ai-Infrustructure/create-an-ai-cluster/Screenshot_2022-08-10_at_18.11_1-2.png" alt="" width="80%">
 
 You'll be taken to the page for AI cluster creation. Do Steps 2, 3 and 4 in it. The screenshot below highlights the fields that you need to interact with at these steps.
 
-<img src="https://assets.gcore.pro/docs/cloud/ai-Infrustructure/create-an-ai-cluster/gc_1-2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cloud/ai-Infrustructure/create-an-ai-cluster/gc_1-2.png" alt="" width="80%">
 
 2\. Select the region — this is a city of the data center. For example, if you choose Amsterdam-2, your cluster will be deployed on servers located in Amsterdam.
 

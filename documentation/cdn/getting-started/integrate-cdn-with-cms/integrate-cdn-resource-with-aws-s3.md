@@ -19,7 +19,7 @@ Upload content to your S3 bucket.
 
 <media-gallery>
 <img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/upload-content-s33.png" alt="" width="50%">
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/upload-content-s3-2-1024x546.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/upload-content-s3-2-1024x546.png" alt="" width="80%">
 <img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/upload-complete.png" alt="" width="50%">
 </media-gallery>
 
@@ -54,7 +54,7 @@ Add the bucket policy in the Permissions drop-down menu.
 
 Check accessibility of the file at the URL link in the browser. For example, the link for the file from this guide is bucket.s3-website.eu-central-1.amazonaws.com/logo.png
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/s3-endpoint-url.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/s3-endpoint-url.png" alt="" width="80%">
 
 Log in your Gcore <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a> and <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">create a CDN resource</a>. Use S3 Endpoint as an origin source. For example, bucket.s3-website.eu-central-1.amazonaws.com
 

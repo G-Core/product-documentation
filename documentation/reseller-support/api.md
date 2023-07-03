@@ -11,6 +11,6 @@ For managing Reseller's settings via API use the documentation.
 
 It can be found by <a href="https://apidocs.gcore.com/iam_resellers" target="_blank">link</a> from the Admin control panel.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/api/api-resellers-10.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/api/api-resellers-10.png" alt="" width="80%">
 
 **Important!** The API documentation cannot be reached by https://apidocs.gcore.com/ link.

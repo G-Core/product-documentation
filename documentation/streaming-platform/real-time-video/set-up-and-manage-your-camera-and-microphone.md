@@ -60,17 +60,17 @@ If the camera and microphone buttons are orange, they are turned off. Other call
 
 If the camera and microphone buttons are green, they are turned on. Other call participants can see and hear you.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/_____________________________.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/_____________________________.png" alt="" width="80%">
 
 When the camera and microphone are turned on, it is possible to select the required video and sound sources.
 
 To select a video source, click on the arrow to expand the list of available cameras:
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/____________________.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/____________________.png" alt="" width="80%">
 
 To select a sound source, click on the arrow to expand the list of available microphones:
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/_______________________.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/_______________________.png" alt="" width="80%">
 
 ### In the video call room
 
@@ -78,7 +78,7 @@ If the camera and microphone buttons are blue, they are turned off. Other call p
 
 If the camera and microphone buttons are green, they are turned on. Other call participants can see and hear you.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/________________________________.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/________________________________.png" alt="" width="80%">
 
 In the mobile version of Real-Time Video, you can change the camera during a call. The camera change button is located to the right of the camera button.
 

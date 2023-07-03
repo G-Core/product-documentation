@@ -23,7 +23,7 @@ We will notify you when the feature is activated. After that, you will be able t
 
 The **DNS records** section will open. Do the next steps in it.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/9619861864721.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/9619861864721.png" alt="" width="80%">
 
 4\. Enable the **Advanced interface mode.** In the non-advanced mode, the DNS Failover feature will not appear.
 
@@ -31,7 +31,7 @@ The **DNS records** section will open. Do the next steps in it.
 
 The **Records list/Edit record set** page will open. Complete the remaining steps in it.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/9619897145361.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/9619897145361.png" alt="" width="80%">
 
 6\. Enable the **Failover checks (beta)** service.
 
@@ -70,6 +70,6 @@ Configuration is complete! Now DNS Failover monitors the availability of your si
 
 Also, you can check for recent monitoring events in Failover logs.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/9619897190417.png" alt="" width="70%"> 
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/9619897190417.png" alt="" width="80%"> 
 
 Please note that this is a beta version, and the feature may be unstable. Write to us via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of <a href="https://gcore.com/" target="_blank">our website</a>. Describe options you would like to see in the final version of the product.

@@ -54,13 +54,13 @@ To add and bind a personal certificate during <a href="https://gcore.com/docs/cd
 
 For help inserting the certificate and key contents, read [How to insert an SSL certificate and a key correctly](#how-to-insert-an-ssl-certificate-and-a-key-correctly).
 
-<img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12453011844113.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12453011844113.png" alt="" width="80%">
 
 5\. Click **Add SSL certificate**.
 
 The certificate will be bound to the resource and added to the list of certificates in the SSL Certificates page.
 
-<img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12454318012305.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12454318012305.png" alt="" width="80%">
 
 ### Add an SSL certificate on the SSL certificates page
 
@@ -68,19 +68,19 @@ To add a personal certificate without binding to a resource:
 
 1\. Click **SSL certificates** in the side panel of the CDN service and click **Add SSL certificate**.
 
-<img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12453744428945.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12453744428945.png" alt="" width="80%">
 
 2\. In the form that appears, enter a certificate name, the SSL certificate in PEM format, and the private key.
 
 For help inserting the certificate and key contents, read [How to insert an SSL certificate and a key correctly](#how-to-insert-an-ssl-certificate-and-a-key-correctly).
 
-<img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12453950369937.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12453950369937.png" alt="" width="80%">
 
 3\. Click **Create SSL Certificate**.
 
 The certificate will be displayed in the list of certificates in the SSL Certificates page. The SSL Certificates page contains a table that lists your personal certificates and associated information such as the ID, name, CDN resources connected to the certificate, and expiration date.
 
-<img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12454558136465.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12454558136465.png" alt="" width="80%">
 
 ### How to insert an SSL certificate and a key correctly
 
@@ -116,7 +116,7 @@ A certificate added to the SSL Certificates page can be attached to a CDN resour
 
 2\. In the navigation panel, under the **General** section, click **SSL**.
 
-<img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12472264886801.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12472264886801.png" alt="" width="80%">
 
 3\. In the **SSL** section, turn on the toggle for **Enable HTTPS**, and select **Add or select your own SSL certificate**.
 
@@ -182,7 +182,7 @@ In the certificates table, warning signs will also appear next to the certificat
 
 To delete a certificate, click the three dots icon next to the certificate, then click **Delete**.
 
-<img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12472136184849.png" alt="" width="70%"> 
+<img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12472136184849.png" alt="" width="80%"> 
 
 **Note**: It is not possible to delete certificates that are in use by CDN resources. If you want to delete the certificate, you must first [replace it with another certificate](#renew-an-ssl-certificate) in the CDN Resource Settings.
 
@@ -244,10 +244,10 @@ To revoke a certificate, go to the Resource Settings and click **Revoke Let's En
 - If a Let's Encrypt certificate is issued, the certificate selector will not be displayed in the resource settings. Personal certificates will become available for selection after [revoking](#revoke-a-let-s-encrypt-certificate) Let's Encrypt.
 - A Let's Encrypt certificate will not be displayed on the SSL Certificates page.  
     
-<img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12476717472145.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12476717472145.png" alt="" width="80%">
     
 - A certificate is **only** visible in the settings of the resource for which it is issued.
 - Issuing and revoking a Let's Encrypt certificate does not require saving the Resource Settings.
 - If you are using DNS Cloudflare, be sure not to set the **CNAME Flattering** option to Flatten all CNAMEs. This will cause Cloudflare to return an A-record instead of a CNAME, which will prevent the issuance of a Let's Encrypt certificate. To successfully issue a Let's Encrypt certificate, set the CNAME Flattering option to **Flatten CNAME at root.**  
     
-<img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12503873872017.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12503873872017.png" alt="" width="80%">

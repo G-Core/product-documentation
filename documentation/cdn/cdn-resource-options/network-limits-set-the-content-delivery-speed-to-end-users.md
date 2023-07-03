@@ -25,7 +25,7 @@ To configure the speed limit via the Control panel:
 
 2\. In the navigation panel, under the "Network limits" section, click **Download speed limit**.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/network-limits-set-the-content-delivery-speed-to-end-users/12420512653457.png" alt="Download_Speed_Limit_option.png" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/network-limits-set-the-content-delivery-speed-to-end-users/12420512653457.png" alt="Download_Speed_Limit_option.png" width="80%">
 
 This option has 2 modes: *Static* and *Dynamic*.
 

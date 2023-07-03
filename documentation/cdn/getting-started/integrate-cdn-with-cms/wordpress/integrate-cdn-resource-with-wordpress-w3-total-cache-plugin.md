@@ -29,23 +29,23 @@ Enable the installed plugin by clicking Activate Plugin.
   
 In the Performance section choose "General Settings".
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-w3-total-cache-plugin/06.PNG" alt="" width="70%">  
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-w3-total-cache-plugin/06.PNG" alt="" width="80%">  
   
 In the "General Settings" section scroll down to the CDN section. Tick "Enable" field. In CDN Type choose Generic Mirror. Then click **Save all** settings.  
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-w3-total-cache-plugin/07.PNG" alt="" width="70%">  
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-w3-total-cache-plugin/07.PNG" alt="" width="80%">  
   
 After having settings accepted, a warning of incorrect CDN settings will appear at the top of the General Settings section. Click Specify It Here in this warning message.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-w3-total-cache-plugin/10.PNG" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-w3-total-cache-plugin/10.PNG" alt="" width="80%">
 
 Or go to the CDN section of the Performance menu. 
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-w3-total-cache-plugin/08.PNG" alt="" width="70%">  
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-w3-total-cache-plugin/08.PNG" alt="" width="80%">  
   
 Enter your CNAME (you can find it in your Gcore <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>) in Replace Site's Hostname With. Then click **Save All Settings**. Ensure that <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">CNAME record has been configured</a> in a proper way before using it for integration.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-w3-total-cache-plugin/09.PNG" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-w3-total-cache-plugin/09.PNG" alt="" width="80%">
 
 Integration has been completed! We highly recommend you to check the HTML code of your webpage to ensure that URLs have been rewritten properly from your original ones to CNAME from the control panel.
 

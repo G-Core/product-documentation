@@ -38,7 +38,7 @@ Let’s examine the difference between the two ways. For example, you have 100 v
 
 3\. The created folder will open. Press the **Add** button and select **Upload video** to upload a video or videos from your PC or the originating site to this folder.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/Upload_video.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/Upload_video.png" alt="" width="80%">
 
 ### Move videos to a folder
 
@@ -48,7 +48,7 @@ Let’s examine the difference between the two ways. For example, you have 100 v
 
 3\. Select the target folder and confirm the actions.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/Move.gif" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/Move.gif" alt="" width="80%">
 
 ### Delete a folder
 
@@ -56,7 +56,7 @@ Let’s examine the difference between the two ways. For example, you have 100 v
 
 To delete a folder with content, click the ```···``` icon opposite the relevant folder, select **Remove directory**, and confirm the actions.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/Remove_directory.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/Remove_directory.png" alt="" width="80%">
 
 ## How to use tags
 
@@ -70,10 +70,10 @@ You can add as many tags as you want.
 
 3\. Save the changes.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/9799464687505.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/9799464687505.png" alt="" width="80%">
 
 ### Filter videos by tags
 
 You will see the list of created tags on the left in the <a href="https://streaming.gcore.com/video/list" target="_blank">Video</a> tab. To filter videos by tag, click on the tag’s name.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/9799475309329.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/9799475309329.png" alt="" width="80%">

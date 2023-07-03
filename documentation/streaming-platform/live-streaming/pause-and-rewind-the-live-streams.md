@@ -22,7 +22,7 @@ If your live streams are usually longer, you can increase the DVR playback time 
 
 To enable the feature, send us a request via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of our website. Please specify your ID in the request, so we can identify your account. You can find it on the main page of your control panel.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/pause-and-rewind-the-live-streams/9654962196625.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/pause-and-rewind-the-live-streams/9654962196625.png" alt="" width="80%">
 
 The message template: *"Greetings! Please enable the DVD feature for the account with ID … (your ID)"*. Specify if you want to increase the playback time to 4 hours.
 
@@ -42,6 +42,6 @@ Complete the remaining steps on the Live stream settings page.
 
 4. Save changes, so that the scroll bar appears in the player for viewers and they can navigate your broadcast.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/pause-and-rewind-the-live-streams/9654917633553.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/pause-and-rewind-the-live-streams/9654917633553.png" alt="" width="80%">
 
 For Android smartphones, double-tapping the player screen in our player rewinds or skips forward by 10–15 seconds, depending on whether you press on the left or right, respectively.

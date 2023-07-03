@@ -19,6 +19,6 @@ To find this information, follow these steps:
 2. Click the server you want to connect to.
 3. Click the **Instructions** menu in the upper menu bar to find the IP address, username, and password.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/connect-to-a-windows-server/13140930607121.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/connect-to-a-windows-server/13140930607121.png" alt="" width="80%">
 
 Alternatively, you can also find this information in the email you received after purchasing the server.

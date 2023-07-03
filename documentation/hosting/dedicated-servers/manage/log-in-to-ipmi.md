@@ -19,10 +19,10 @@ Go to the Dedicated server section, choose an active server and click the **T
 
 In DCI manager, choose the server you need and click on the monitor button to go to IPMI.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/log-in-to-ipmi/mceclip0.png" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/log-in-to-ipmi/mceclip0.png" width="80%">
 
 Click on the "Local username field" and then on the "Log" button in the left corner. Do the same actions for the "Password" field. 
 
 After the Local username and Password fields will be filled, click on the **Login** button.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/log-in-to-ipmi/3.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/log-in-to-ipmi/3.png" alt="" width="80%">

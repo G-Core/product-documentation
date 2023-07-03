@@ -9,11 +9,11 @@ toc:
 
 Go to the VM Manager Control panel. Or, in the main control panel, under "Virtual servers", select your server and click "To panel".
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/install-a-linux-os-from-a-template/qwe.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/install-a-linux-os-from-a-template/qwe.png" alt="" width="80%">
 
 Then go to Virtual Machines and choose a server and press the Reinstall button.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/install-a-linux-os-from-a-template/qwa.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/install-a-linux-os-from-a-template/qwa.png" alt="" width="80%">
 
 You can choose one of the following operating systems from the list of our templates:
 
