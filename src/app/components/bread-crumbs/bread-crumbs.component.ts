@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { Router } from '@angular/router';
 import { MenuItem } from '../../models';
 
 @Component({
@@ -9,4 +10,6 @@ import { MenuItem } from '../../models';
 })
 export class BreadCrumbsComponent {
     @Input() public items: Array<MenuItem>;
+
+    constructor(private router: Router) {}
 }
