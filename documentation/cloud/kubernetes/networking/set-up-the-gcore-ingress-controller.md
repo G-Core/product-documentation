@@ -2,7 +2,7 @@
 title: set-up-the-gcore-ingress-controller
 displayName: Gcore ingress controller
 order: 20
-published: true
+published: false
 toc:
    --1--Features of the Gcore ingress controller: "features-of-the-gcore-ingress-controller"
    --1--Create a service: "create-a-service"
