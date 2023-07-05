@@ -96,6 +96,27 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
         }
     }
 
+    public getAnchor(anchorIndex: number, pageUrl: string): string {
+        return anchorIndex !== -1 ? (pageUrl = pageUrl.slice(0, anchorIndex)) : pageUrl;
+    }
+
+    public setBreadCrumbs(pageUrl: string, category: string): Array<MenuItem> {
+        const breadcrumbs = [
+            {
+                name: this.activeMenuItem.name,
+                url: `/${category}`,
+            },
+        ];
+
+        if (!pageUrl.includes('/reseller-support')) {
+            breadcrumbs.unshift({
+                name: 'Home',
+                url: '/',
+            });
+        }
+        return breadcrumbs;
+    }
+
     public ngOnInit(): void {
         this.data.toggleMenuEmitted$.subscribe(() => {
             this.isMenuExpanded = !this.isMenuExpanded;
@@ -106,9 +127,8 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
             map(([url, links]) => {
                 const anchorIndex = this.router.url.indexOf('#');
                 let pageUrl = this.router.url;
-                if (anchorIndex !== -1) {
-                    pageUrl = pageUrl.slice(0, anchorIndex);
-                }
+
+                pageUrl = this.getAnchor(anchorIndex, pageUrl);
 
                 const documentUrlWithCategory = pageUrl.replace('/', '');
                 const category = url[0].path;
@@ -130,16 +150,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
 
                 this.setTableOfContent(filterdLinks);
 
-                const breadcrumbs = [
-                    {
-                        name: 'Home',
-                        url: '/',
-                    },
-                    {
-                        name: this.activeMenuItem.name,
-                        url: `/${category}`,
-                    },
-                ];
+                const breadcrumbs = this.setBreadCrumbs(pageUrl, category);
 
                 if (this.showContent) {
                     this.githubUrl = `${DOCS_GITHUB_REPO}${documentUrlWithCategory}.md`;
