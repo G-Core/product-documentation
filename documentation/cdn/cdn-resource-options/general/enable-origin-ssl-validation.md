@@ -12,7 +12,7 @@ toc:
  
 ## What is this option for?
 
-Note: This option is only accessible via <a href="https://apidocs.gcore.com/iam" target="_blank">API</a>.  
+Note: This option is only accessible via <a href="https://api.gcore.com/docs/iam" target="_blank">API</a>.  
 
 In the Origin Pull Protocol option, you are to set the protocol which CDN servers will use to pull content from an origin server: HTTP, HTTPS or HTTP and HTTPS. It allows you to control whether the connection between the CDN and the origin server is encrypted or not. 
 
@@ -45,8 +45,8 @@ With the active origin validation option, the CDN server will ensure the validit
 
 ## Enable SSL validation via API
 
-1\. Upload the certificate using the "<a href="https://apidocs.gcore.com/cdn#tag/CA-certificates/operation/ca_certitifactes-add" target="_blank">Add Trusted CA Certificate</a>" documentation.
+1\. Upload the certificate using the "<a href="https://api.gcore.com/docs/cdn#tag/CA-certificates/operation/ca_certitifactes-add" target="_blank">Add Trusted CA Certificate</a>" documentation.
 
-2\. Link the certificate to the CDN resource using the *proxy_ssl_ca* and *proxy_ssl_data* keys according to the "<a href="https://apidocs.gcore.com/cdn#tag/Resources/operation/change_cdn_resource" target="_blank">Change CDN Resource</a>" documentation.
+2\. Link the certificate to the CDN resource using the *proxy_ssl_ca* and *proxy_ssl_data* keys according to the "<a href="https://api.gcore.com/docs/cdn#tag/Resources/operation/change_cdn_resource" target="_blank">Change CDN Resource</a>" documentation.
 
-3\. Set the *proxy_ssl_enabled* key to the true value for your resource according to the "<a href="https://apidocs.gcore.com/cdn#tag/Resources/operation/change_cdn_resource" target="_blank">Change CDN Resource</a>" documentation.
+3\. Set the *proxy_ssl_enabled* key to the true value for your resource according to the "<a href="https://api.gcore.com/docs/cdn#tag/Resources/operation/change_cdn_resource" target="_blank">Change CDN Resource</a>" documentation.

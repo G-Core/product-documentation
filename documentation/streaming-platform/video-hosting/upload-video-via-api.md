@@ -19,9 +19,9 @@ Specify *origin_url* in "Create video" request. The video will be downloaded to 
 
 Requires three steps:
 
-1\. Send <a href="https://apidocs.gcore.com/streaming#operation/post_api_videos" target="_blank">Create video</a> request, don't specify origin\_url parameter.
+1\. Send <a href="https://api.gcore.com/docs/streaming#operation/post_api_videos" target="_blank">Create video</a> request, don't specify origin\_url parameter.
 
-2\. Send <a href="https://apidocs.gcore.com/streaming#operation/get_api_videos_id_upload" target="_blank">Get URL and token to upload video</a> request. To send it, use the video ID parameter from the previous request.
+2\. Send <a href="https://api.gcore.com/docs/streaming#operation/get_api_videos_id_upload" target="_blank">Get URL and token to upload video</a> request. To send it, use the video ID parameter from the previous request.
 
 **Note**: Token is valid for 5 minutes. This is enough because token is involved only in request "Submit video for download". As soon as the video is sent, the token is no longer needed, and processing occurs without it.
 
@@ -34,4 +34,4 @@ Keep in mind that the following metadata must be specified for the uploading pro
 - video ID (video_id),
 - token.
 
-Use your script and the data from the <a href="https://apidocs.gcore.com/streaming#tag/Videos/operation/get_api_videos_id_upload" target="_blank">Get URL and token to upload video</a> request to upload your videos to our server.
+Use your script and the data from the <a href="https://api.gcore.com/docs/streaming#tag/Videos/operation/get_api_videos_id_upload" target="_blank">Get URL and token to upload video</a> request to upload your videos to our server.

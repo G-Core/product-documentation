@@ -48,6 +48,6 @@ In Gcore, you can add an allowed address pair via an API request.
 } 
 </code-block> 
 
-Enter your custom values instead of the highlighted ones. For more details, refer to the <a href="https://apidocs.gcore.com/cloud" target="_blank">Gcore API documentation</a>.
+Enter your custom values instead of the highlighted ones. For more details, refer to the <a href="https://api.gcore.com/docs/cloud" target="_blank">Gcore API documentation</a>.
 
 Now your machine is available through the IP addresses you specified in the request.

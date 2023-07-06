@@ -1315,7 +1315,7 @@ Video conferencing tool manages data in real time. Thus, Server API and Client A
 
 Statistics on usage and video recordings are stored in the Streaming Platform. Thus, please use
 
-Video Platform’s REST API for those methods: <a href="https://apidocs.gcore.com/streaming" target="_blank">https://apidocs.gcore.com/streaming</a>.
+Video Platform’s REST API for those methods: <a href="https://api.gcore.com/docs/streaming" target="_blank">https://api.gcore.com/docs/streaming</a>.
 
 To access Video Platform API, you need to be authenticated. Please see "Authentication of Participants and Access Limitation" above.
 
@@ -1465,7 +1465,7 @@ GET /streaming/videos/search
 
 If a session lasted more than 4 hours, the recording will be divided into several videos for 4 hours each. In this case, you need to get all videos separately.
 
-Please see more details in <a href="https://apidocs.gcore.com/streaming#operation/get_api_videos_id" target="_blank">documentation</a>. 
+Please see more details in <a href="https://api.gcore.com/docs/streaming#operation/get_api_videos_id" target="_blank">documentation</a>. 
 
 2. Get video metadata 
 
@@ -1473,7 +1473,7 @@ Please see more details in <a href="https://apidocs.gcore.com/streaming#operatio
 GET https://api.gcore.com/streaming/videos/{video_id}
 ```
 
-Please see more details in <a href="https://apidocs.gcore.com/streaming#operation/get_api_videos_id" target="_blank">documentation</a>.  
+Please see more details in <a href="https://api.gcore.com/docs/streaming#operation/get_api_videos_id" target="_blank">documentation</a>.  
 
 **Output values**: Metadata of the video. Use fields "hls_url" for .m3u8 stream in external players or "origin_host"+"origin_resource" for getting an original MP4 file.  
 
@@ -1488,7 +1488,7 @@ Example of output data:  
 
 ```
 
-Please see more details in <a href="https://apidocs.gcore.com/streaming#operation/get_api_videos_id" target="_blank">documentation</a>.  
+Please see more details in <a href="https://api.gcore.com/docs/streaming#operation/get_api_videos_id" target="_blank">documentation</a>.  
 
 Example of usage: 
 
@@ -1597,13 +1597,13 @@ We highly recommend using RS256 asymmetric type of algorithm. See section "RSA P
 
 To access Server API and Streaming Platform API, we use an API token in the Authorization header. The API token is a unique key that all users and applications should add to requests to interact with our services.
 
-Please authenticate via <a href="https://apidocs.gcore.com/streaming#section/Authentication" target="_blank">API</a>.
+Please authenticate via <a href="https://api.gcore.com/docs/streaming#section/Authentication" target="_blank">API</a>.
 
 Choose one of the methods described below: Bearer authentication or Permanent API tokens.
 
 #### Bearer Authentication
 
-The token will be provided upon <a href="https://apidocs.gcore.com/account#tag/Account/paths/~1auth~1jwt~1login/post" target="_blank">Login</a> request with login and password from your personal account. 
+The token will be provided upon <a href="https://api.gcore.com/docs/account#tag/Account/paths/~1auth~1jwt~1login/post" target="_blank">Login</a> request with login and password from your personal account. 
 
 In the response, you will get two tokens: access and refresh. 
 
@@ -1614,11 +1614,11 @@ Authorization: Bearer eyJ0eXAiOiJKV 
 
 ```
 
-Use the  <a href="https://apidocs.gcore.com/account#tag/Account/paths/~1auth~1jwt~1refresh/post" target="_blank">Refresh</a> request to refresh your access token. 
+Use the  <a href="https://api.gcore.com/docs/account#tag/Account/paths/~1auth~1jwt~1refresh/post" target="_blank">Refresh</a> request to refresh your access token. 
 
 Steps as an example: 
 
-1.  You authorize in your backend using your username and password: https://apidocs.gcore.com/account#tag/Account/paths/~1auth~1jwt~1login/post 
+1.  You authorize in your backend using your username and password: https://api.gcore.com/docs/account#tag/Account/paths/~1auth~1jwt~1login/post 
 2.  You get two token values: "access" and "refresh".  
 3.  The "access" token is a token that is active for several hours (24 hours, but we recommend updating every 4 hours). 
 4.  You pass the auth headers into each endpoint: 'Authorization': Bearer ${token} '. 

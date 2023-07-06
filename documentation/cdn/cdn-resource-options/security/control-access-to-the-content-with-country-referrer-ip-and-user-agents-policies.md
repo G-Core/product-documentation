@@ -49,7 +49,7 @@ Specify the domains which you would like to allow access to.
 
 When a user requests data from other domains, they will get the denial of access.
 
-You can specify domains only one by one via control panel. To add the list of the domains use <a href="https://apidocs.gcore.com/cdn" target="_blank">API</a>.
+You can specify domains only one by one via control panel. To add the list of the domains use <a href="https://api.gcore.com/docs/cdn" target="_blank">API</a>.
 
 ## Country access policy
 
@@ -57,7 +57,7 @@ You can limit access to your content for listed countries. To enable the option 
 
 By default, there are no restrictions by country to your CDN Resource. You can set up allow or block policy.  
 
-**Note**: You can specify countries only one by one via control panel. To add the list of the countries, use <a href="https://apidocs.gcore.com/cdn" target="_blank">API</a>.  
+**Note**: You can specify countries only one by one via control panel. To add the list of the countries, use <a href="https://api.gcore.com/docs/cdn" target="_blank">API</a>.  
   
 ### Allow country access policy
 
@@ -81,7 +81,7 @@ By default, there are no restrictions by IP to your CDN Resource. You can set u
 
 The option supports IPv4 and IPv6 addresses.
 
-You can specify IPs only one by one via Control Panel. To add the list of the IPs use <a href="https://apidocs.gcore.com/cdn" target="_blank">API</a>.
+You can specify IPs only one by one via Control Panel. To add the list of the IPs use <a href="https://api.gcore.com/docs/cdn" target="_blank">API</a>.
 
 ### Allow IP policy
 
@@ -199,6 +199,6 @@ Possible values:
 
 #### Example
 
-This example shows a <a href="https://apidocs.gcore.com/cdn" target="_blank">CDN update</a> request that activates the User Agents Policy and blocks the requests without a User agent header.
+This example shows a <a href="https://api.gcore.com/docs/cdn" target="_blank">CDN update</a> request that activates the User Agents Policy and blocks the requests without a User agent header.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/11759524427921.png" alt="" width="80%">

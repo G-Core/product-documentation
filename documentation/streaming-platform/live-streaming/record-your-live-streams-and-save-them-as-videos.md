@@ -55,7 +55,7 @@ After stopping and processing, the recording will be saved in the Streaming Stor
 
 ### How to record your live stream via API
 
-When <a href="https://apidocs.gcore.com/streaming" target="_blank">creating or editing</a> the stream via API, to enable auto recording, change the parameter in the API request in the following way:
+When <a href="https://api.gcore.com/docs/streaming" target="_blank">creating or editing</a> the stream via API, to enable auto recording, change the parameter in the API request in the following way:
 
 ```
 auto_record: true

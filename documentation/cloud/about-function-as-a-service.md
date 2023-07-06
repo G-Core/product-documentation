@@ -50,7 +50,7 @@ FaaS is the best solution to:
 
 Our FaaS supports several runtime environments. You can find available runtimes and locations on <a href="https://gcore.com/cloud/faas/" target="_blank">our website</a> and the Gcore <a href="https://cloud.gcore.com/cloud/" target="_blank">Control panel</a>.
 
-You can manage your functions via the Gcore <a href="https://cloud.gcore.com/cloud/" target="_blank">Control panel</a> and <a href="https://apidocs.gcore.com/cloud" target="_blank">REST API</a>.
+You can manage your functions via the Gcore <a href="https://cloud.gcore.com/cloud/" target="_blank">Control panel</a> and <a href="https://api.gcore.com/docs/cloud" target="_blank">REST API</a>.
 
 You can set the pod lifetime, the limit of additional pods, and environmental variables.
 

@@ -59,7 +59,7 @@ It means you have created a PVC with a standard disk-type storage class. To conn
 
 ### Create a PVC to connect to ultra/cold/ssd_hiiops disk-type storage
 
-You can check the available disk types in different regions in the <a href="https://cloud.gcore.com/cloud/projects/list" target="_blank">Gcore Control panel</a> or via <a href="https://apidocs.gcore.com/cloud" target="_blank">an API request</a>.
+You can check the available disk types in different regions in the <a href="https://cloud.gcore.com/cloud/projects/list" target="_blank">Gcore Control panel</a> or via <a href="https://api.gcore.com/docs/cloud" target="_blank">an API request</a>.
 
 1\. Create a YAML file to configure a storage class with the required disk type:
 

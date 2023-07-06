@@ -236,7 +236,7 @@ To revoke a certificate, go to the Resource Settings and click **Revoke Let's En
 
 <img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12476569572241.png" alt="" width="50%">
 
-**Note**: You can also use an <a href="https://apidocs.gcore.com/cdn#tag/SSL-Certificates" target="_blank">API request</a> to replace the Let's Encrypt certificate with your own certificate without having to revoke it.
+**Note**: You can also use an <a href="https://api.gcore.com/docs/cdn#tag/SSL-Certificates" target="_blank">API request</a> to replace the Let's Encrypt certificate with your own certificate without having to revoke it.
 
 ### Restrictions and features of the option
 

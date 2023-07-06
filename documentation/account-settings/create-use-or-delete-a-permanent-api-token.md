@@ -18,11 +18,11 @@ toc:
 
 An API token is a unique identifier of an application requesting access to your account via the API.
 
-Our API documentation describes how to get a <a href="https://apidocs.gcore.com/account#section/Authentication" target="_blank">standard authorization token</a> with a validity period of 1 hour, to update it, use the <a href="https://apidocs.gcore.com/account#tag/Account/paths/~1auth~1jwt~1refresh/post" target="_blank">Refresh token</a> request with a validity period of 24 hours. Such validity periods can be helpful for one-time requests.
+Our API documentation describes how to get a <a href="https://api.gcore.com/docs/account#section/Authentication" target="_blank">standard authorization token</a> with a validity period of 1 hour, to update it, use the <a href="https://api.gcore.com/docs/account#tag/Account/paths/~1auth~1jwt~1refresh/post" target="_blank">Refresh token</a> request with a validity period of 24 hours. Such validity periods can be helpful for one-time requests.
 
 To set up an automated process for working with our CDN service (for example, automatic cache clearing), use a permanent API token, which you can create in your personal account.
 
-Please refer to the specific product  <a href="https://apidocs.gcore.com/iam" target="_blank">API documentation</a> to check if it supports permanent API tokens.
+Please refer to the specific product  <a href="https://api.gcore.com/docs/iam" target="_blank">API documentation</a> to check if it supports permanent API tokens.
 
 To manage services add your permanent API token after APIKey in the authorization header: _'Authorization: APIKey 7711$eyJ0eXAiOiJKV'_
 

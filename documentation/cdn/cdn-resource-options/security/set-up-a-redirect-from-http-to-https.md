@@ -9,7 +9,7 @@ toc:
 
 **Note**: only one redirect option can be enabled on a CDN Resource. 
 
-You can redirect HTTP traffic to HTTPS via API (more info in the <a href="https://apidocs.gcore.com/cdn#tag/SSL-Certificates" target="_blank">API documentation</a>) or in the control panel. 
+You can redirect HTTP traffic to HTTPS via API (more info in the <a href="https://api.gcore.com/docs/cdn#tag/SSL-Certificates" target="_blank">API documentation</a>) or in the control panel. 
 
 To enable the redirect option in the control panel, go to the CDN Resources settings: 
 

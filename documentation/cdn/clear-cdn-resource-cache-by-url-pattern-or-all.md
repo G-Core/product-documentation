@@ -23,7 +23,7 @@ We provide three options for cache clearing:
 2. **Purge all** to remove all data from the cache.  
 3. **Purge by pattern** to remove content selectively by specifying path patterns with the operator that can replace any number of symbols.  
 
-There are two ways to clear the cache: via API (use the <a href="https://apidocs.gcore.com/cdn#tag/Tools/paths/~1cdn~1resources~1%7Bid%7D~1purge/post" target="_blank">API documentation</a> to get more information about the request) and in the Control Panel.
+There are two ways to clear the cache: via API (use the <a href="https://api.gcore.com/docs/cdn#tag/Tools/paths/~1cdn~1resources~1%7Bid%7D~1purge/post" target="_blank">API documentation</a> to get more information about the request) and in the Control Panel.
 
 ## Configure the Purge option
 
@@ -96,7 +96,7 @@ Several types of patterns are available:
 
 ## Configure Purge via API
 
-We will explain in detail how to do "Purge by URL" via API calls. Examples of other Purge types (all and by pattern) can be found in the <a href="https://apidocs.gcore.com/cdn#tag/Tools/paths/~1cdn~1resources~1%7Bid%7D~1purge/post" target="_blank">API documentation</a>. 
+We will explain in detail how to do "Purge by URL" via API calls. Examples of other Purge types (all and by pattern) can be found in the <a href="https://api.gcore.com/docs/cdn#tag/Tools/paths/~1cdn~1resources~1%7Bid%7D~1purge/post" target="_blank">API documentation</a>. 
 
 <table>
 <tbody>
@@ -156,7 +156,7 @@ We will explain in detail how to do "Purge by URL" via API calls. Examples of ot
 </table>
 
 
-To access the API and make authenticated requests, <a href="https://apidocs.gcore.com/account" target="_blank">generate an access token</a>. You can use a REST tool like cURL or Postman to send the requests. For this guide, we used Postman.
+To access the API and make authenticated requests, <a href="https://api.gcore.com/docs/account" target="_blank">generate an access token</a>. You can use a REST tool like cURL or Postman to send the requests. For this guide, we used Postman.
 
 To send a purge by URL request:
 

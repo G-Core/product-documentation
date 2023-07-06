@@ -46,7 +46,7 @@ terraform {
 }   
 provider gcore {   
 permanent_api_token = "<span style="color:#FF5913">251$d33611b35f26d8</span>"
-gcore_cdn_api = "https://apidocs.gcore.com/cdn"  
+gcore_cdn_api = "https://api.gcore.com/docs/cdn"  
 } 
 </code-block>
 
