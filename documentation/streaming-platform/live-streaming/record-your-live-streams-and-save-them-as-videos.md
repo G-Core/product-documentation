@@ -4,15 +4,16 @@ displayName: Record
 published: true
 order: 50
 toc:
-   --1--What is the Record feature: "what-is-the-record-feature"
-   --1--Enable the feature: "enable-the-record-feature"
-   --1--Record a live stream: "how-to-record-a-live-stream"
-   --2--Via Сontrol panel: "how-to-record-your-live-stream-via-the-control-panel"
-   --2--Via API: "how-to-record-your-live-stream-via-api"
-   --1--Where records are kept: "where-the-records-are-kept"
+    --1--What is the Record feature: 'what-is-the-record-feature'
+    --1--Enable the feature: 'enable-the-record-feature'
+    --1--Record a live stream: 'how-to-record-a-live-stream'
+    --2--Via Сontrol panel: 'how-to-record-your-live-stream-via-the-control-panel'
+    --2--Via API: 'how-to-record-your-live-stream-via-api'
+    --1--Where records are kept: 'where-the-records-are-kept'
 ---
+
 # Record your live streams and save them as videos
-  
+
 ## What is the Record feature
 
 Record is a paid feature that allows you to record your live streams and store them in the Streaming storage. You can automatically record entire streams or manually record only desired fragments.
@@ -23,7 +24,7 @@ Please, send us the request to activate the option via [support@gcore.com](mailt
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/record-your-live-streams-and-save-them-as-videos/9612975911185.png" alt="" width="80%">
 
-The message template: *"Good afternoon! Please enable the Record feature for an account with ID … (your ID)"*.
+The message template: _"Good afternoon! Please enable the Record feature for an account with ID … (your ID)"_.
 
 We will notify you when we activate the Record feature. After that, you will be able to work with recordings.
 
@@ -55,7 +56,7 @@ After stopping and processing, the recording will be saved in the Streaming Stor
 
 ### How to record your live stream via API
 
-When <a href="https://apidocs.gcore.com/streaming" target="_blank">creating or editing</a> the stream via API, to enable auto recording, change the parameter in the API request in the following way:
+When <a href="https://api.gcore.com/docs/streaming" target="_blank">creating or editing</a> the stream via API, to enable auto recording, change the parameter in the API request in the following way:
 
 ```
 auto_record: true

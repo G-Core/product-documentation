@@ -5,13 +5,14 @@ published: true
 order: 20
 toc:
 ---
+
 # Set up a redirect from HTTP to HTTPS
 
-**Note**: only one redirect option can be enabled on a CDN Resource. 
+**Note**: only one redirect option can be enabled on a CDN Resource.
 
-You can redirect HTTP traffic to HTTPS via API (more info in the <a href="https://apidocs.gcore.com/cdn#tag/SSL-Certificates" target="_blank">API documentation</a>) or in the control panel. 
+You can redirect HTTP traffic to HTTPS via API (more info in the <a href="https://api.gcore.com/docs/cdn#tag/SSL-Certificates" target="_blank">API documentation</a>) or in the control panel.
 
-To enable the redirect option in the control panel, go to the CDN Resources settings: 
+To enable the redirect option in the control panel, go to the CDN Resources settings:
 
 1\. Get a free Let’s Encrypt certificate or add your SSL certificate in the General -> SSL section and save changes. More info in the guide "<a href="https://gcore.com/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https" target="_blank">Add an SSL certificate to deliver content over HTTPS</a>".
 
@@ -21,4 +22,4 @@ To enable the redirect option in the control panel, go to the CDN Resources set
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/set-up-a-redirect-from-http-to-https/mceclip1.png" alt="" width="80%">
 
-The error "*You cannot enable redirect HTTP to HTTPS when HTTPS is disabled. Please enable HTTPS and add SSL certificate first*" means that you didn't add a certificate or that the issuing of a Let’s Encrypt certificate for your account wasn’t completed. As usual it takes about 15 minutes.
+The error "_You cannot enable redirect HTTP to HTTPS when HTTPS is disabled. Please enable HTTPS and add SSL certificate first_" means that you didn't add a certificate or that the issuing of a Let’s Encrypt certificate for your account wasn’t completed. As usual it takes about 15 minutes.

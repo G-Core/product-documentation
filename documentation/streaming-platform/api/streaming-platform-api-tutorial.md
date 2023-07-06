@@ -4,37 +4,38 @@ displayName: Streaming API tutorial
 published: true
 order: 10
 toc:
-   --1--How integration works: "how-integration-works"
-   --1--Basic operations: "basic-operations"
-   --2--Stage 1. Setup: "stage-1-setup"
-   --3--Step 1. Create a stream: "step-1-create-a-stream"
-   --3--Step 2. Create a broadcast: "step-2-create-a-broadcast"
-   --3--Step 3. Enable the stream: "step-3-enable-the-stream"
-   --3--Step 4. Send a webhook when the stream has started: "step-4-send-a-webhook-when-the-stream-has-started"
-   --2--Stage 2. Test: "stage-2-test"
-   --3--Step 5. Change broadcast status to Live: "step-5-change-the-broadcast-status-to-live"
-   --3--Step 6. Send a webhook when the broadcast has transitioned to Live status: "step-6-send-a-webhook-when-the-broadcast-has-transitioned-to-live-status"
-   --2--Stage 3. Live: "stage-3-live"
-   --3--Step 7. Start recording: "step-7-start-recording"
-   --3--Step 8. Send a webhook when stream recording has started: "step-8-send-a-webhook-when-stream-recording-has-started"
-   --2--Stage 4. Stop: "stage-4-stop"
-   --3--Step 9. Stop recording: "step-9-stop-recording"
-   --3--Step 10. Send a webhook when stream recording has stopped: "step-10-send-a-webhook-when-stream-recording-has-stopped"
-   --3--Step 11. Send a webhook when the recorded video is being processed: "step-11-send-a-webhook-when-the-recorded-video-is-being-processed"
-   --3--Step 12. Change broadcast status to Finished: "step-12-change-broadcast-status-to-finished"
-   --3--Step 13. Send a webhook when the broadcast has transitioned to Finished status: "step-13-send-a-webhook-when-the-broadcast-has-transitioned-to-finished-status"
-   --3--Step 14. Disable the stream: "step-14-disable-the-stream"
-   --3--Step 15. Send a webhook when the stream has ended: "step-15-send-a-webhook-when-the-stream-has-ended"
-   --3--Step 16. Delete the broadcast: "step-16-delete-the-broadcast"
-   --3--Step 17. Send a webhook when the recorded video is partially processed: "step-17-send-a-webhook-when-the-recorded-video-is-partially-processed"
-   --3--Step 18. Send a webhook when the recorded video is completely processed: "step-18-send-a-webhook-when-the-recorded-video-is-completely-processed"
-   --3--Step 19. Get video information: "step-19-get-video-information"
-   --1--Special cases: "special-cases"
-   --2--Reuse of a stream: "reuse-of-a-stream"
-   --2--Interruption during streaming: "interruption-during-streaming"
-   --2--Stream deletion: "stream-deletion"
-   --1--Other API methods: "other-api-methods"
+    --1--How integration works: 'how-integration-works'
+    --1--Basic operations: 'basic-operations'
+    --2--Stage 1. Setup: 'stage-1-setup'
+    --3--Step 1. Create a stream: 'step-1-create-a-stream'
+    --3--Step 2. Create a broadcast: 'step-2-create-a-broadcast'
+    --3--Step 3. Enable the stream: 'step-3-enable-the-stream'
+    --3--Step 4. Send a webhook when the stream has started: 'step-4-send-a-webhook-when-the-stream-has-started'
+    --2--Stage 2. Test: 'stage-2-test'
+    --3--Step 5. Change broadcast status to Live: 'step-5-change-the-broadcast-status-to-live'
+    --3--Step 6. Send a webhook when the broadcast has transitioned to Live status: 'step-6-send-a-webhook-when-the-broadcast-has-transitioned-to-live-status'
+    --2--Stage 3. Live: 'stage-3-live'
+    --3--Step 7. Start recording: 'step-7-start-recording'
+    --3--Step 8. Send a webhook when stream recording has started: 'step-8-send-a-webhook-when-stream-recording-has-started'
+    --2--Stage 4. Stop: 'stage-4-stop'
+    --3--Step 9. Stop recording: 'step-9-stop-recording'
+    --3--Step 10. Send a webhook when stream recording has stopped: 'step-10-send-a-webhook-when-stream-recording-has-stopped'
+    --3--Step 11. Send a webhook when the recorded video is being processed: 'step-11-send-a-webhook-when-the-recorded-video-is-being-processed'
+    --3--Step 12. Change broadcast status to Finished: 'step-12-change-broadcast-status-to-finished'
+    --3--Step 13. Send a webhook when the broadcast has transitioned to Finished status: 'step-13-send-a-webhook-when-the-broadcast-has-transitioned-to-finished-status'
+    --3--Step 14. Disable the stream: 'step-14-disable-the-stream'
+    --3--Step 15. Send a webhook when the stream has ended: 'step-15-send-a-webhook-when-the-stream-has-ended'
+    --3--Step 16. Delete the broadcast: 'step-16-delete-the-broadcast'
+    --3--Step 17. Send a webhook when the recorded video is partially processed: 'step-17-send-a-webhook-when-the-recorded-video-is-partially-processed'
+    --3--Step 18. Send a webhook when the recorded video is completely processed: 'step-18-send-a-webhook-when-the-recorded-video-is-completely-processed'
+    --3--Step 19. Get video information: 'step-19-get-video-information'
+    --1--Special cases: 'special-cases'
+    --2--Reuse of a stream: 'reuse-of-a-stream'
+    --2--Interruption during streaming: 'interruption-during-streaming'
+    --2--Stream deletion: 'stream-deletion'
+    --1--Other API methods: 'other-api-methods'
 ---
+
 # Streaming Platform API tutorial
 
 You can integrate your product to use the Streaming Platform for unlimited video streaming and hosting services. In this guide, we’ll take you through the API and webhook operations involved in integrating with the Streaming Platform.
@@ -47,10 +48,10 @@ Typically, your app presents users with an interface through which they can crea
 
 You’ll need to have:
 
-- Your own video streaming interface created
-- A Gcore account with an active <a href="https://gcore.com/docs/account-settings/create-an-account-for-an-individual-or-legal-entity" target="_blank">Streaming</a> subscription
-- An <a href="https://apidocs.gcore.com/streaming" target="_blank">authentication</a> set up using the user credentials
-- A <a href="https://gcore.com/docs/streaming-platform/extra-features/get-webhooks-from-the-streaming-platform" target="_blank">webhook</a> set up
+-   Your own video streaming interface created
+-   A Gcore account with an active <a href="https://gcore.com/docs/account-settings/create-an-account-for-an-individual-or-legal-entity" target="_blank">Streaming</a> subscription
+-   An <a href="https://api.gcore.com/docs/streaming" target="_blank">authentication</a> set up using the user credentials
+-   A <a href="https://gcore.com/docs/streaming-platform/extra-features/get-webhooks-from-the-streaming-platform" target="_blank">webhook</a> set up
 
 ## Basic operations
 
@@ -58,12 +59,12 @@ You’ll need to have:
 
 #### Step 1. Create a stream
 
-Use the <a href="https://apidocs.gcore.com/streaming" target="_blank">post_streams_id</a> method to create a stream object in the Streaming Platform.
+Use the <a href="https://api.gcore.com/docs/streaming" target="_blank">post_streams_id</a> method to create a stream object in the Streaming Platform.
 
 Sample request payload:
 
-- To prevent errors due to the quota for concurrent active sessions, set the **active** property to **false**.
-- Choose the right transcoding region based on the user’s location.
+-   To prevent errors due to the quota for concurrent active sessions, set the **active** property to **false**.
+-   Choose the right transcoding region based on the user’s location.
 
 ```
 {
@@ -84,8 +85,8 @@ Sample request payload:
 
 Sample response payload:
 
-- If successful, the method returns information about the stream that you created.
-- Save the returned **id** and other necessary data to use later.
+-   If successful, the method returns information about the stream that you created.
+-   Save the returned **id** and other necessary data to use later.
 
 ```
 {
@@ -97,12 +98,12 @@ Sample response payload:
 
 #### Step 2. Create a broadcast
 
-Use the <a href="https://apidocs.gcore.com/streaming" target="_blank">post_broadcasts</a> method to create a broadcast object.
+Use the <a href="https://api.gcore.com/docs/streaming" target="_blank">post_broadcasts</a> method to create a broadcast object.
 
 Sample request payload:
 
-- Set **stream_ids** property to the returned id from Step 1 to bind the broadcast and stream together.
-- Set **status** property to **pending**.
+-   Set **stream_ids** property to the returned id from Step 1 to bind the broadcast and stream together.
+-   Set **status** property to **pending**.
 
 ```
 {
@@ -119,10 +120,11 @@ Sample request payload:
     }
 }
 ```
+
 Sample response payload:
 
-- If successful, the method returns information about the broadcast that you created.
-- Save the returned **id** and other necessary data to use later.
+-   If successful, the method returns information about the broadcast that you created.
+-   Save the returned **id** and other necessary data to use later.
 
 ```
 {
@@ -135,7 +137,7 @@ Sample response payload:
 
 #### Step 3. Enable the stream
 
-Having received a successful response from your app, the user can now publish the stream. Use the <a href="https://apidocs.gcore.com/streaming" target="_blank">patch_streams_id</a> method to activate the stream.
+Having received a successful response from your app, the user can now publish the stream. Use the <a href="https://api.gcore.com/docs/streaming" target="_blank">patch_streams_id</a> method to activate the stream.
 
 Sample request payload:
 
@@ -182,7 +184,7 @@ The user tests the broadcast at this stage.
 
 #### Step 5. Change the broadcast status to Live
 
-Use the <a href="https://apidocs.gcore.com/streaming" target="_blank">patch_broadcasts_id</a> method to update the broadcast status to *Live*.
+Use the <a href="https://api.gcore.com/docs/streaming" target="_blank">patch_broadcasts_id</a> method to update the broadcast status to _Live_.
 
 Sample request payload:
 
@@ -224,11 +226,11 @@ Sample webhook payload:
 
 ### Stage 3. Live
 
-The user starts streaming at this stage. The broadcast is visible to the audience. 
+The user starts streaming at this stage. The broadcast is visible to the audience.
 
 #### Step 7. Start recording
 
-Use the <a href="https://apidocs.gcore.com/streaming" target="_blank">put_streams_id_start_recording</a> method to begin recording.
+Use the <a href="https://api.gcore.com/docs/streaming" target="_blank">put_streams_id_start_recording</a> method to begin recording.
 
 If the returned HTTP status code is 204, the request is successful.
 
@@ -257,7 +259,7 @@ The user stops streaming at this stage.
 
 #### Step 9. Stop recording
 
-Use the <a href="https://apidocs.gcore.com/streaming" target="_blank">put_streams_id_stop_recording</a> method to stop recording
+Use the <a href="https://api.gcore.com/docs/streaming" target="_blank">put_streams_id_stop_recording</a> method to stop recording
 
 The response to this request contains information about the recorded video.
 
@@ -272,6 +274,7 @@ Sample response payload:
     ...
 }
 ```
+
 #### Step 10. Send a webhook when stream recording has stopped
 
 The Streaming Platform sends a webhook that contains **"recording": false** to your subscribed endpoint.
@@ -290,6 +293,7 @@ Sample webhook payload:
   }
 }
 ```
+
 #### Step 11. Send a webhook when the recorded video is being processed
 
 The Streaming Platform sends a webhook that contains **"status": "pending"** to your subscribed endpoint.
@@ -311,9 +315,10 @@ Sample webhook payload:
   }
 }
 ```
+
 #### Step 12. Change broadcast status to Finished
 
-Use the <a href="https://apidocs.gcore.com/streaming" target="_blank">patch_broadcasts_id</a> method to update the broadcast status to Finished.
+Use the <a href="https://api.gcore.com/docs/streaming" target="_blank">patch_broadcasts_id</a> method to update the broadcast status to Finished.
 
 Sample request payload:
 
@@ -334,6 +339,7 @@ Sample response payload:
    ...
 }
 ```
+
 #### Step 13. Send a webhook when the broadcast has transitioned to Finished status
 
 The Streaming Platform sends a webhook that contains **"status": "finished"** to your subscribed endpoint.
@@ -351,9 +357,10 @@ Sample webhook payload:
   }
 }
 ```
+
 #### Step 14. Disable the stream
 
-Use the <a href="https://apidocs.gcore.com/streaming" target="_blank">patch_streams_id</a> method to deactivate the stream.
+Use the <a href="https://api.gcore.com/docs/streaming" target="_blank">patch_streams_id</a> method to deactivate the stream.
 
 Sample request payload:
 
@@ -383,6 +390,7 @@ Sample response payload:
    ...
 }
 ```
+
 #### Step 15. Send a webhook when the stream has ended
 
 The Streaming Platform sends a webhook that contains **"live": false** to your subscribed endpoint.
@@ -401,9 +409,10 @@ Sample webhook payload:
   }
 }
 ```
+
 #### Step 16. Delete the broadcast
 
-Use the <a href="https://apidocs.gcore.com/streaming" target="_blank">delete_broadcasts_id</a> method to delete the broadcast.
+Use the <a href="https://api.gcore.com/docs/streaming" target="_blank">delete_broadcasts_id</a> method to delete the broadcast.
 
 If the returned HTTP status code is 204, the request is successful.
 
@@ -447,6 +456,7 @@ Sample webhook payload:
   }
 }
 ```
+
 #### Step 18. Send a webhook when the recorded video is completely processed
 
 This indicates that all quality versions of the video are ready for viewers to watch.
@@ -487,9 +497,10 @@ Sample webhook payload:
   }
 }
 ```
+
 ### Step 19. Get video information
 
-Use the <a href="https://apidocs.gcore.com/streaming" target="_blank">get_api_videos_id</a> method to retrieve detailed information about the video.
+Use the <a href="https://api.gcore.com/docs/streaming" target="_blank">get_api_videos_id</a> method to retrieve detailed information about the video.
 
 Sample response payload:
 
@@ -511,7 +522,7 @@ Sample response payload:
 
 ### Reuse of a stream
 
-The user can reuse the same stream for each broadcast. In this case, you don’t need to create a new one. Just update the stream using the <a href="https://apidocs.gcore.com/streaming" target="_blank">patch_streams_id</a> method with the appropriate transcoding region.
+The user can reuse the same stream for each broadcast. In this case, you don’t need to create a new one. Just update the stream using the <a href="https://api.gcore.com/docs/streaming" target="_blank">patch_streams_id</a> method with the appropriate transcoding region.
 
 Sample request payload:
 
@@ -522,6 +533,7 @@ Sample request payload:
    }
 }
 ```
+
 Sample response payload:
 
 ```
@@ -541,7 +553,7 @@ Sample response payload:
 
 ### Interruption during streaming
 
-- The Streaming Platform sends a webhook when the stream is briefly interrupted.
+-   The Streaming Platform sends a webhook when the stream is briefly interrupted.
 
 Sample webhook payload:
 
@@ -558,7 +570,7 @@ Sample webhook payload:
 }
 ```
 
-- You can also check for the stream status using the <a href="https://apidocs.gcore.com/streaming" target="_blank">get_streams_id</a> method. If the response contains **"active": false** and the stream wasn’t manually interrupted, then you can call the <a href="https://apidocs.gcore.com/streaming" target="_blank">patch_broadcasts_id</a> method to transition the broadcast to "Paused" status.
+-   You can also check for the stream status using the <a href="https://api.gcore.com/docs/streaming" target="_blank">get_streams_id</a> method. If the response contains **"active": false** and the stream wasn’t manually interrupted, then you can call the <a href="https://api.gcore.com/docs/streaming" target="_blank">patch_broadcasts_id</a> method to transition the broadcast to "Paused" status.
 
 Sample request payload:
 
@@ -580,16 +592,16 @@ Sample response payload:
 }
 ```
 
--  You can also <a href="https://apidocs.gcore.com/streaming" target="_blank">stop the recording</a> when the user has an interruption (even for a couple of minutes) during streaming. Your app can prompt the user to start the stream again. The stream recording will be broken into two files: data recorded up to the interruption and data recorded when the user renews streaming.
+-   You can also <a href="https://api.gcore.com/docs/streaming" target="_blank">stop the recording</a> when the user has an interruption (even for a couple of minutes) during streaming. Your app can prompt the user to start the stream again. The stream recording will be broken into two files: data recorded up to the interruption and data recorded when the user renews streaming.
 
 The Streaming Platform can’t currently reconnect without interrupting the recording if the stream gets temporary disruption. But we plan to implement this in the future.
 
 ### Stream deletion
 
-You can delete streams that have been inactive for some time and are associated with a deleted user account. To do this, use the <a href="https://apidocs.gcore.com/streaming" target="_blank">delete_api_videos_id</a> method.
+You can delete streams that have been inactive for some time and are associated with a deleted user account. To do this, use the <a href="https://api.gcore.com/docs/streaming" target="_blank">delete_api_videos_id</a> method.
 
 If the returned HTTP status code is 204, the request is successful.
 
 ## Other API methods
 
-Check out our Streaming Platform API <a href="https://apidocs.gcore.com/streaming" target="_blank">documentation</a> for more methods that might come in handy for other use cases.
+Check out our Streaming Platform API <a href="https://api.gcore.com/docs/streaming" target="_blank">documentation</a> for more methods that might come in handy for other use cases.

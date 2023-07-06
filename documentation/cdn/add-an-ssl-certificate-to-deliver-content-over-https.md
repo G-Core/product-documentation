@@ -4,20 +4,21 @@ displayName: SSL certificates
 published: true
 order: 70
 toc:
-   --1--What is an SSL certificate?: "what-is-an-ssl-certificate"
-   --1--1. Your own SSL certificate: "1-your-own-ssl-certificate"
-   --2--Add during resource creation: "add-an-ssl-certificate-during-resource-creation"
-   --2--Add on the SSL certificates page: "add-an-ssl-certificate-on-the-ssl-certificates-page"
-   --2--How to insert data correctly: "how-to-insert-an-ssl-certificate-and-a-key-correctly"
-   --2--Attach to a CDN resource: "attach-an-ssl-certificate-to-a-resource"
-   --2--Renew: "renew-an-ssl-certificate"
-   --2--Expiration notifications: "ssl-certificates-expiration-notifications"
-   --2--Delete: "delete-an-ssl-certificate"
-   --1--2. Let's Encrypt certificate: "2-lets-encrypt-certificate"
-   --2--Activate: "activate-a-lets-encrypt-certificate"
-   --2--Revoke: "revoke-a-lets-encrypt-certificate"
-   --2--Restrictions and features of the option: "restrictions-and-features-of-the-option"
+    --1--What is an SSL certificate?: 'what-is-an-ssl-certificate'
+    --1--1. Your own SSL certificate: '1-your-own-ssl-certificate'
+    --2--Add during resource creation: 'add-an-ssl-certificate-during-resource-creation'
+    --2--Add on the SSL certificates page: 'add-an-ssl-certificate-on-the-ssl-certificates-page'
+    --2--How to insert data correctly: 'how-to-insert-an-ssl-certificate-and-a-key-correctly'
+    --2--Attach to a CDN resource: 'attach-an-ssl-certificate-to-a-resource'
+    --2--Renew: 'renew-an-ssl-certificate'
+    --2--Expiration notifications: 'ssl-certificates-expiration-notifications'
+    --2--Delete: 'delete-an-ssl-certificate'
+    --1--2. Let's Encrypt certificate: '2-lets-encrypt-certificate'
+    --2--Activate: 'activate-a-lets-encrypt-certificate'
+    --2--Revoke: 'revoke-a-lets-encrypt-certificate'
+    --2--Restrictions and features of the option: 'restrictions-and-features-of-the-option'
 ---
+
 # Add an SSL certificate to deliver content over HTTPS
 
 ## What is an SSL certificate?
@@ -26,9 +27,9 @@ An SSL certificate is a unique digital signature for your website that provides 
 
 In Gcore, two types of SSL certificates are available:
 
-**1. Your own SSL certificate.** You can re-issue a certificate for your domain from a third-party company and add its data to the control panel. 
+**1. Your own SSL certificate.** You can re-issue a certificate for your domain from a third-party company and add its data to the control panel.
 
-**2. Free Let's Encrypt certificate.** You can issue a free Let's Encrypt certificate for your custom domain. All data will be added automatically. 
+**2. Free Let's Encrypt certificate.** You can issue a free Let's Encrypt certificate for your custom domain. All data will be added automatically.
 
 ## 1\. Your own SSL certificate
 
@@ -88,7 +89,7 @@ The certificate will be displayed in the list of certificates in the SSL Certifi
 
 2\. Copy and paste the certificate chain in this order: Personal certificate, Intermediate CA, Root CA.
 
-3\. All the contents of the certificate must be inserted into the **Certificate** field, including the tags ```-----BEGIN CERTIFICATE-----``` and ```-----END CERTIFICATE-----```.
+3\. All the contents of the certificate must be inserted into the **Certificate** field, including the tags `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----`.
 
 4\. The certificate chain must be inserted together, similar to the following:
 
@@ -100,7 +101,7 @@ The certificate will be displayed in the list of certificates in the SSL Certifi
 
 6\. Open the private key file (.key) using a text editor.
 
-7\. Copy and paste all of its contents into the **Private key** field, including the tags ```-----BEGIN RSA PRIVATE KEY-----``` and ```-----END RSA PRIVATE KEY-----```.
+7\. Copy and paste all of its contents into the **Private key** field, including the tags `-----BEGIN RSA PRIVATE KEY-----` and `-----END RSA PRIVATE KEY-----`.
 
 8\. Click **Create SSL certificate**.
 
@@ -156,9 +157,9 @@ When your added certificates are about to expire, a notification is displayed in
 
 Users are notified by email:
 
-- 14 days before the certificate expires
-- 7 days before the certificate expires
-- On the day of the certificate's expiration
+-   14 days before the certificate expires
+-   7 days before the certificate expires
+-   On the day of the certificate's expiration
 
 When you log in to your account, you will see a reminder about the expiration of the certificate.
 
@@ -168,12 +169,14 @@ The **SSL certificates** in the side panel will also be marked with an exclamati
 
 In the certificates table, warning signs will also appear next to the certificates that need attention.
 
-* If the certificate has already expired:  
-      
+-   If the certificate has already expired:  
+
+
 <img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12474790392849.png" alt="" width="50%">
 
-* If the certificate is due to expire in 14 days or less:  
-      
+-   If the certificate is due to expire in 14 days or less:  
+
+
 <img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12474878887441.png" alt="" width="50%">
 
 **Note**: Certificates issued by Let's Encrypt are automatically renewed, so there are no expiration notifications for such certificates.
@@ -182,7 +185,7 @@ In the certificates table, warning signs will also appear next to the certificat
 
 To delete a certificate, click the three dots icon next to the certificate, then click **Delete**.
 
-<img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12472136184849.png" alt="" width="80%"> 
+<img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12472136184849.png" alt="" width="80%">
 
 **Note**: It is not possible to delete certificates that are in use by CDN resources. If you want to delete the certificate, you must first [replace it with another certificate](https://gcore.com/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https#renew-an-ssl-certificate) in the CDN Resource Settings.
 
@@ -200,27 +203,27 @@ If you do not have your own SSL certificate, you can activate the free Let's Enc
 
 The certificate issuance may take up to 30 minutes. During this time, please do not:
 
-- disable the HTTPS option,
-- select another certificate,
-- interrupt the issuance of the current certificate.
+-   disable the HTTPS option,
+-   select another certificate,
+-   interrupt the issuance of the current certificate.
 
 **Important:**
 
-* The time it takes to issue a certificate varies depending on when the CDN resource was created. If you are requesting a certificate for a recently created resource, it may take up to 30 minutes as the configuration has not yet been fully propagated to all CDN servers. However, if the resource's configuration has already been fully propagated, issuing a Let's Encrypt certificate will only take a few minutes.
+-   The time it takes to issue a certificate varies depending on when the CDN resource was created. If you are requesting a certificate for a recently created resource, it may take up to 30 minutes as the configuration has not yet been fully propagated to all CDN servers. However, if the resource's configuration has already been fully propagated, issuing a Let's Encrypt certificate will only take a few minutes.
 
-* Let's Encrypt requires placing a temporary file at the URL ```http://<CNAME>/.well-known/acme-challenge/<TOKEN>``` and making HTTP requests to this file. Before adding a Let's Encrypt certificate, make sure that your CDN resource does not have any rules that block these requests. Examples of such rules include:
-  - **A rule with /\***. This rule will catch any strings and override the hidden rule that is necessary to obtain a certificate.
-  - **A rule with ((?!(jpeg|gif|png|pdf|jpg|css|js|woff|woff2|ttf)).)\*$**. This rule will catch all non-static files.
-    
+-   Let's Encrypt requires placing a temporary file at the URL `http://<CNAME>/.well-known/acme-challenge/<TOKEN>` and making HTTP requests to this file. Before adding a Let's Encrypt certificate, make sure that your CDN resource does not have any rules that block these requests. Examples of such rules include:
+    -   **A rule with /\***. This rule will catch any strings and override the hidden rule that is necessary to obtain a certificate.
+    -   **A rule with ((?!(jpeg|gif|png|pdf|jpg|css|js|woff|woff2|ttf)).)\*$**. This rule will catch all non-static files.
+
 You can check your resource rules using the service <a href="https://regex101.com/r/6BCT9Z/1" target="_blank">regex</a>. If you find a rule that blocks Let's Encrypt certificate issuance, delete the rule or change its pattern. The next time Let's Encrypt sends a request, the certificate issuance should be successful.
-    
+
 If an error occurs during certificate issuance, the Enable HTTPS toggle will be disabled and a notification will be sent to your email.
-    
 
-- You can only issue a Let's Encrypt certificate for an existing resource. If the CNAME of the resource in the DNS settings is not pointing to the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">value specified in the setup guide</a>, or the source is not available, the certificate will not be issued.
+-   You can only issue a Let's Encrypt certificate for an existing resource. If the CNAME of the resource in the DNS settings is not pointing to the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">value specified in the setup guide</a>, or the source is not available, the certificate will not be issued.
 
-- Only one Let's Encrypt certificate can be issued per resource. If you need to add or remove an additional personal domain for a resource, we will reissue the certificate after making the changes. You will receive a warning that the current certificate will only be valid for 30 minutes and will be automatically replaced.  
-    
+-   Only one Let's Encrypt certificate can be issued per resource. If you need to add or remove an additional personal domain for a resource, we will reissue the certificate after making the changes. You will receive a warning that the current certificate will only be valid for 30 minutes and will be automatically replaced.  
+
+
 <img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12476294660369.png" alt="" width="50%">
     
 While the resource is active, the certificate is renewed automatically. An attempt to reissue the certificate will be made 30 days before the expiration of the current certificate. There is only one attempt to reissue the certificate. If the certificate is not reissued, a notification will be sent to your email.
@@ -228,7 +231,7 @@ While the resource is active, the certificate is renewed automatically. An attem
 In the event of an unsuccessful attempt to reissue a certificate, the current certificate will remain active for another 30 days. After the certificate's end date, the content will become unavailable via HTTPS.
     
 To avoid interruption of content delivery, please reissue the certificate yourself. To do this, [revoke](https://gcore.com/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https#revoke-a-lets-encrypt-certificate) the Let's Encrypt certificate in your account and then .
-    
+
 
 ### Revoke a Let's Encrypt certificate
 
@@ -236,14 +239,15 @@ To revoke a certificate, go to the Resource Settings and click **Revoke Let's En
 
 <img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12476569572241.png" alt="" width="50%">
 
-**Note**: You can also use an <a href="https://apidocs.gcore.com/cdn#tag/SSL-Certificates" target="_blank">API request</a> to replace the Let's Encrypt certificate with your own certificate without having to revoke it.
+**Note**: You can also use an <a href="https://api.gcore.com/docs/cdn#tag/SSL-Certificates" target="_blank">API request</a> to replace the Let's Encrypt certificate with your own certificate without having to revoke it.
 
 ### Restrictions and features of the option
 
-- A wildcard domain cannot be issued a certificate.
-- If a Let's Encrypt certificate is issued, the certificate selector will not be displayed in the resource settings. Personal certificates will become available for selection after [revoking](https://gcore.com/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https#revoke-a-lets-encrypt-certificate) Let's Encrypt.
-- A Let's Encrypt certificate will not be displayed on the SSL Certificates page.  
-    
+-   A wildcard domain cannot be issued a certificate.
+-   If a Let's Encrypt certificate is issued, the certificate selector will not be displayed in the resource settings. Personal certificates will become available for selection after [revoking](https://gcore.com/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https#revoke-a-lets-encrypt-certificate) Let's Encrypt.
+-   A Let's Encrypt certificate will not be displayed on the SSL Certificates page.  
+
+
 <img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12476717472145.png" alt="" width="80%">
     
 - A certificate is **only** visible in the settings of the resource for which it is issued.

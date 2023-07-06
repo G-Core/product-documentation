@@ -4,15 +4,16 @@ displayName: Set a redirect from an origin
 published: true
 order: 20
 toc:
-   --1--About Redirection from Origin: "about-redirection-from-origin"
-   --1--Configuration: "configuration"
-   --2--via the Control panel: "via-the-control-panel"
-   --2--via the API: "via-the-api"
-   --3--Request properties: "request-properties"
-   --3--Example: "example"
+    --1--About Redirection from Origin: 'about-redirection-from-origin'
+    --1--Configuration: 'configuration'
+    --2--via the Control panel: 'via-the-control-panel'
+    --2--via the API: 'via-the-api'
+    --3--Request properties: 'request-properties'
+    --3--Example: 'example'
 ---
+
 # Set up a CDN resource to follow origin redirects
-  
+
 ## About Redirection from Origin
 
 The Redirection from Origin option controls whether the CDN follows redirects returned by the origin. By default, this option is disabled, which means that when the origin returns an HTTP 3xx status code, the CDN simply caches and serves this response to the user. If you enable this option, the CDN automatically retrieves the target content from the new location, which is then cached and returned to the user.
@@ -39,11 +40,11 @@ To configure origin redirection using the control panel:
 
 4\. Select one or more status codes in the **Redirect status codes** select box. The options are:
 
-- 301—to follow redirect for status code HTTP 301
-- 302—selected by default; follows redirect for status code HTTP 302
-- 303—to follow redirect for status code HTTP 303
-- 307—to follow redirect for status code HTTP 307
-- 308—to follow redirect for status code HTTP 308
+-   301—to follow redirect for status code HTTP 301
+-   302—selected by default; follows redirect for status code HTTP 302
+-   303—to follow redirect for status code HTTP 303
+-   307—to follow redirect for status code HTTP 307
+-   308—to follow redirect for status code HTTP 308
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/set-up-a-cdn-resource-to-follow-origin-redirects/11761445403921.png" alt="">
 
@@ -55,23 +56,23 @@ To configure origin redirection using the control panel:
 
 ### Via the API
 
-To configure origin redirection using the API, the request must include the ```follow_origin_redirect``` object. The following is a sample code for the object:
+To configure origin redirection using the API, the request must include the `follow_origin_redirect` object. The following is a sample code for the object:
 
 ```
-"options": {  
-    "follow_origin_redirect": {  
-       "enabled": true,  
-       "codes": [  
-          302,  
-          308  
-        ]  
-     }  
+"options": {
+    "follow_origin_redirect": {
+       "enabled": true,
+       "codes": [
+          302,
+          308
+        ]
+     }
   }
 ```
 
 #### Request properties
 
-The ```follow_origin_redirect``` object passes the following information:
+The `follow_origin_redirect` object passes the following information:
 
 <table>
 	<tbody>
@@ -97,6 +98,6 @@ The ```follow_origin_redirect``` object passes the following information:
 
 #### Example
 
-This example shows a <a href="https://apidocs.gcore.com/cdn#tag/Resources/operation/change_cdn_resource" target="_blank">CDN update request</a> that activates the Redirection from Origin and instructs the CDN to follow redirects for status codes *301*, *302*, and *303*.
+This example shows a <a href="https://api.gcore.com/docs/cdn#tag/Resources/operation/change_cdn_resource" target="_blank">CDN update request</a> that activates the Redirection from Origin and instructs the CDN to follow redirects for status codes _301_, _302_, and _303_.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/set-up-a-cdn-resource-to-follow-origin-redirects/11761432040465.png" alt="" width="80%">

@@ -4,14 +4,15 @@ displayName: Function as a Service
 published: true
 order: 110
 toc:
-   --1--What is FaaS?: "what-is-faas"
-   --1--How it works: "how-it-works"
-   --1--Use cases: "use-cases"
-   --1--Features: "features-of-gcore-faas"
-   --1--Billing: "billing"
+    --1--What is FaaS?: 'what-is-faas'
+    --1--How it works: 'how-it-works'
+    --1--Use cases: 'use-cases'
+    --1--Features: 'features-of-gcore-faas'
+    --1--Billing: 'billing'
 ---
+
 # About Function as a Service
-  
+
 ## What is FaaS?
 
 FaaS (Function-as-a-Service) is a cloud service that lets users run code without dealing with the underlying infrastructure. A FaaS provider saves the code to their cloud resources and runs it when requested.
@@ -40,17 +41,17 @@ If the minimum number of pods is more than 0, the auto-scaler takes control. It 
 
 FaaS is the best solution to:
 
-- **Save costs on deploying a simple application.** If your web app has a few visitors a day, and your server stands idle from time to time, you can switch to FaaS. You’ll pay only when your application is requested.
-- **Expand the functionality of your application.** You can organize your application as a set of independently deployable services—microservices—integrated via HTTP API or Webhooks and run by FaaS.
-- **Change individual components of your application.** Functions allow the code of independent app components to be changed on the fly without stopping the app.
-- **Reduce time-to-market.** FaaS allows you to focus only on your application code without spending time on infrastructure management, so you can release your product as quickly as possible.
-- **Adjust resources to traffic surges on the fly.** If you have frequent traffic surges, functions will help to automatically allocate the required number of computing resources.
+-   **Save costs on deploying a simple application.** If your web app has a few visitors a day, and your server stands idle from time to time, you can switch to FaaS. You’ll pay only when your application is requested.
+-   **Expand the functionality of your application.** You can organize your application as a set of independently deployable services—microservices—integrated via HTTP API or Webhooks and run by FaaS.
+-   **Change individual components of your application.** Functions allow the code of independent app components to be changed on the fly without stopping the app.
+-   **Reduce time-to-market.** FaaS allows you to focus only on your application code without spending time on infrastructure management, so you can release your product as quickly as possible.
+-   **Adjust resources to traffic surges on the fly.** If you have frequent traffic surges, functions will help to automatically allocate the required number of computing resources.
 
 ## Features of Gcore FaaS
 
 Our FaaS supports several runtime environments. You can find available runtimes and locations on <a href="https://gcore.com/cloud/faas/" target="_blank">our website</a> and the Gcore <a href="https://cloud.gcore.com/cloud/" target="_blank">Control panel</a>.
 
-You can manage your functions via the Gcore <a href="https://cloud.gcore.com/cloud/" target="_blank">Control panel</a> and <a href="https://apidocs.gcore.com/cloud" target="_blank">REST API</a>.
+You can manage your functions via the Gcore <a href="https://cloud.gcore.com/cloud/" target="_blank">Control panel</a> and <a href="https://api.gcore.com/docs/cloud" target="_blank">REST API</a>.
 
 You can set the pod lifetime, the limit of additional pods, and environmental variables.
 

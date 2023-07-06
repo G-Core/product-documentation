@@ -4,14 +4,15 @@ displayName: Private origin
 published: true
 order: 11
 toc:
-   --1--Overview: "overview"
-   --1--Authentication data: "authentication-data"
-   --2--Amazon: "amazon-aws-storage"
-   --2--Gcore: "gcore-s3-storage"
-   --1--Configure: "configure-a-private-bucket-as-an-origin"
-   --2--in the control panel: "configure-a-private-origin-in-the-control-panel"
-   --2--via the API: "configure-a-private-origin-via-the-api"
+    --1--Overview: 'overview'
+    --1--Authentication data: 'authentication-data'
+    --2--Amazon: 'amazon-aws-storage'
+    --2--Gcore: 'gcore-s3-storage'
+    --1--Configure: 'configure-a-private-bucket-as-an-origin'
+    --2--in the control panel: 'configure-a-private-origin-in-the-control-panel'
+    --2--via the API: 'configure-a-private-origin-via-the-api'
 ---
+
 # Use a private bucket as an origin
 
 ## Overview
@@ -24,7 +25,7 @@ You can access the necessary authentication data in the personal S3 storage acco
 
 ### Amazon AWS storage
 
-You can find the Access Key ID and Secret access key according to the "<a href="https://docs.aws.amazon.com/powershell/latest/userguide/pstools-appendix-sign-up.html" target="_blank">AWS Account and Access Keys</a>" guide. 
+You can find the Access Key ID and Secret access key according to the "<a href="https://docs.aws.amazon.com/powershell/latest/userguide/pstools-appendix-sign-up.html" target="_blank">AWS Account and Access Keys</a>" guide.
 
 ### Gcore S3 storage
 
@@ -32,7 +33,7 @@ You can find the Hostname and Region in the "Details" section under the <a href=
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15353064572561.png" alt="">
 
-**Note**: We don’t store the Access Key ID and Secret access key for S3 storage. It is your responsibility to save them after creating the storage.  If you forget them, click **Generate new keys** under the "Details" section. 
+**Note**: We don’t store the Access Key ID and Secret access key for S3 storage. It is your responsibility to save them after creating the storage. If you forget them, click **Generate new keys** under the "Details" section.
 
 ## Configure a private bucket as an origin
 
@@ -43,9 +44,9 @@ There are two options for configuring a private bucket as an origin:
 1. Create an origin group during the CDN resource creation process;
 2. Add a group in the "Origins groups" tab and specify this group in the CDN resource setting.
 
-The instructions below are relevant to the first option. The process for the second option is slightly different. 
+The instructions below are relevant to the first option. The process for the second option is slightly different.
 
-To configure a private origin: 
+To configure a private origin:
 
 1\. Go to the <a href="https://cdn.gcore.com/resources/create/wizard" target="_blank">CDN resource creation page</a>, select "Accelerate and protect only static assets", and click **Confirm**.
 
@@ -53,7 +54,7 @@ To configure a private origin:
 
 A new page will open. Complete the remaining steps of the manual in the "Origin" section on this page.
 
-In the example below, we use the private bucket ```test-private``` in S3 Gcore storage with the Hostname ```s-ed1.cloud.gcore.lu``` and configure an origin group as follows:
+In the example below, we use the private bucket `test-private` in S3 Gcore storage with the Hostname `s-ed1.cloud.gcore.lu` and configure an origin group as follows:
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15353220184977.png" alt="" width="80%">
 
@@ -65,8 +66,8 @@ In the example below, we use the private bucket ```test-private``` in S3 Gcore s
 
 5\. Specify the needed authentication data. It depends on the type of storage selected in the previous step.
 
-  - **For Amazon storage**: Access Key ID, Secret access key, and AWS region
-  - **For Other**: Hostname, Access Key ID, Secret access key, and Region
+-   **For Amazon storage**: Access Key ID, Secret access key, and AWS region
+-   **For Other**: Hostname, Access Key ID, Secret access key, and Region
 
 More information about where to find the keys can be found in the "[Authentication data](https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn#set-a-custom-domain)" section.
 
@@ -74,19 +75,18 @@ More information about where to find the keys can be found in the "[Authenticati
 
 7\. Continue the CDN resource creation according to the "<a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">Create CDN resource for only static files</a>" guide (steps #3–6).
 
-**Note**: If you selected Amazon S3 storage in step #4, the configuration is now complete. If you selected Other and specified the Hostname after the CDN resource creation, go to the resource settings and open the Host header option in the "HTTP headers" section. Specify the URL of your storage Hostname (the URL depends on your S3 provider) in the following format: 
+**Note**: If you selected Amazon S3 storage in step #4, the configuration is now complete. If you selected Other and specified the Hostname after the CDN resource creation, go to the resource settings and open the Host header option in the "HTTP headers" section. Specify the URL of your storage Hostname (the URL depends on your S3 provider) in the following format:
 
-- For Gcore S3 storage: ```s-ed1.cloud.gcore.lu```
-- For most other storages: ```s3.{region-code}.{storage hostname}```
+-   For Gcore S3 storage: `s-ed1.cloud.gcore.lu`
+-   For most other storages: `s3.{region-code}.{storage hostname}`
 
 Click **Save changes**.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15355039530769.png" alt="">
 
-### Configure a private origin via the API 
+### Configure a private origin via the API
 
-Next, we will explain in detail how to specify Private origin via API calls. 
-
+Next, we will explain in detail how to specify Private origin via API calls.
 
 <table>
 <tr>
@@ -120,7 +120,7 @@ application/json</b></td>
 </tr>
 <tr>
 <td>Request parameter</td>
-<td>For more information, see Gcore’s <a href="https://apidocs.gcore.com/cdn?_gl=1*1vtlv8c*_ga*ODE2MjQ4NzgwLjE2NjY2MDkxMzk.*_ga_Y79HRL8RPR*MTY4NDI0MDAyMC43MjYuMS4xNjg0MjQzNDMyLjYwLjAuMA..#tag/Origins/operation/create_origin_group" target="_blank">API documentation</a></td>
+<td>For more information, see Gcore’s <a href="https://api.gcore.com/docs/cdn?_gl=1*1vtlv8c*_ga*ODE2MjQ4NzgwLjE2NjY2MDkxMzk.*_ga_Y79HRL8RPR*MTY4NDI0MDAyMC43MjYuMS4xNjg0MjQzNDMyLjYwLjAuMA..#tag/Origins/operation/create_origin_group" target="_blank">API documentation</a></td>
 </tr>
 <tr>
 <td>Response</td>
@@ -158,7 +158,7 @@ a. Select **raw** as the data type.
 
 b. Select **JSON** from the format dropdown.
 
-c. Enter the payload in the text area. Replace the sample values indicated by ```{{ }}``` with your actual values.
+c. Enter the payload in the text area. Replace the sample values indicated by `{{ }}` with your actual values.
 
 4\. Click **Send**.
 

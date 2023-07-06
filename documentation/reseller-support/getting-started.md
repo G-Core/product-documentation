@@ -4,18 +4,19 @@ displayName: Getting started
 published: true
 order: 20
 toc:
-    --1--What's next?: "whats-next"
-    --1--Inviting Sellers: "inviting-sellers"
-    --1-Setting up client control panel: "setting-up-client-control-panel"
-    --1--Creating client accounts: "creating-client-accounts"
-    --1--Service management: "service-management"
-    --1--Useful links: "useful-links"
+    --1--What's next?: 'whats-next'
+    --1--Inviting Sellers: 'inviting-sellers'
+    --1-Setting up client control panel: 'setting-up-client-control-panel'
+    --1--Creating client accounts: 'creating-client-accounts'
+    --1--Service management: 'service-management'
+    --1--Useful links: 'useful-links'
 ---
+
 # Getting started
 
-Once we create a reseller account you'll get an email with the registration confirmation link. Follow the link to set a password. The link will be active for 24 hours. Write to [support@gcore.com](mailto:support@gcore.com) if the link expires or you experience other issues. 
+Once we create a reseller account you'll get an email with the registration confirmation link. Follow the link to set a password. The link will be active for 24 hours. Write to [support@gcore.com](mailto:support@gcore.com) if the link expires or you experience other issues.
 
-Admin control panel enterance URL is ```https://admin.gcore.top/```.
+Admin control panel enterance URL is `https://admin.gcore.top/`.
 
 ## What's next?
 
@@ -33,13 +34,13 @@ In the client control panel, clients can set up their services, check statistics
 
 If you are using your own control panel and just need our API documentation to integrate your service with ours, here are the links:
 
-- <a href="https://gcore.com/docs/reseller-support/api" target="_blank">Reseller API documentation</a>
-- <a href="https://apidocs.gcore.com/docs/iam" target="_blank">Services API documentation</a>
+-   <a href="https://gcore.com/docs/reseller-support/api" target="_blank">Reseller API documentation</a>
+-   <a href="https://api.gcore.com/docs/docs/iam" target="_blank">Services API documentation</a>
 
 If you and your clients are going to use the client control panel and you would like to change its look, read the following articles:
 
-- <a href="https://gcore.com/docs/reseller-support/manuals/set-up-control-panel-services-urls" target="_blank">How to set up control panel services URLs</a>
-- <a href="https://gcore.com/docs/reseller-support/manuals/vendor-settings" target="_blank">Vendor settings</a>
+-   <a href="https://gcore.com/docs/reseller-support/manuals/set-up-control-panel-services-urls" target="_blank">How to set up control panel services URLs</a>
+-   <a href="https://gcore.com/docs/reseller-support/manuals/vendor-settings" target="_blank">Vendor settings</a>
 
 ## Creating client accounts
 
@@ -59,9 +60,9 @@ You can also override the General settings from the "Services" section in the cl
 
 On the "Services" tab, choose services that you want to display in the client's control panel.
 
-- You can not disable the service whose switch is marked in light gray color because the service is "Active" or "Trial" status.  Click the "Show more" button to change the status to "Trialend" or "Paused" before disabling the service.
-- If you enable a service, it will be displayed in the client's control panel.
-- If you disable a service, it will not be displayed in the client's control panel.
+-   You can not disable the service whose switch is marked in light gray color because the service is "Active" or "Trial" status. Click the "Show more" button to change the status to "Trialend" or "Paused" before disabling the service.
+-   If you enable a service, it will be displayed in the client's control panel.
+-   If you disable a service, it will not be displayed in the client's control panel.
 
 <img src="https://assets.gcore.pro/docs/reseller-support/getting-started/client-services-30.jpg" alt="">
 
@@ -73,14 +74,14 @@ When submitting an activation request, Gсore technical support or you — depen
 
 Articles on service management:
 
-- <a href="https://gcore.com/docs/reseller-support/cdn-service-management" target="_blank">CDN service management</a>
-- <a href="https://gcore.com/docs/reseller-support/storage-service-management" target="_blank">Storage service management</a>
+-   <a href="https://gcore.com/docs/reseller-support/cdn-service-management" target="_blank">CDN service management</a>
+-   <a href="https://gcore.com/docs/reseller-support/storage-service-management" target="_blank">Storage service management</a>
 
 ## Useful links
 
 If you would like to get notifications about planned maintenance activities and incidents, subscribe to our <a href="https://status.gcore.com/" target="_blank">Status Page</a>. You can read more about the service and its subscription methods in <a href="https://gcore.com/docs/account-settings/be-aware-of-the-service-status-scheduled-and-emergency-maintenance" target="_blank">this article</a>.
 
-- <a href="https://gcore.com/docs/reseller-support/api" target="_blank">Reseller API documentation</a>
-- <a href="https://apidocs.gcore.com/docs/iam" target="_blank">Services API documentation</a>
+-   <a href="https://gcore.com/docs/reseller-support/api" target="_blank">Reseller API documentation</a>
+-   <a href="https://api.gcore.com/docs/docs/iam" target="_blank">Services API documentation</a>
 
 This knowledge base describes how to manage services as an administrator from the admin control panel and doesn't include articles on how to set up services as a client. For the latter, read the articles here: https://gcore.com/docs/. If you have questions, please, send them to [support@gcore.com](mailto:support@gcore.com).

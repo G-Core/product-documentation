@@ -3,14 +3,15 @@ title: create-a-pvc-and-bind-it-to-a-pod
 displayName: Create a PVC and bind it to a pod
 published: true
 toc:
-   --1--What are PV and PVC?: "what-are-pv-and-pvc"
-   --1--Create a PVC: "create-a-pvc"
-   --2--To connect to ‘standard’ disk-type storage: "create-a-pvc-to-connect-to-a-standard-disk-type-storage-class"
-   --2--To connect to ‘ultra’, ‘cold’, or ‘ssd_hiiops’ disk-type storage: "create-a-pvc-to-connect-to-ultra-cold-ssd-hiiops-disk-type-storage"
-   --1--Bind a PVC to a pod: "bind-your-pvc-to-a-pod"
+    --1--What are PV and PVC?: 'what-are-pv-and-pvc'
+    --1--Create a PVC: 'create-a-pvc'
+    --2--To connect to ‘standard’ disk-type storage: 'create-a-pvc-to-connect-to-a-standard-disk-type-storage-class'
+    --2--To connect to ‘ultra’, ‘cold’, or ‘ssd_hiiops’ disk-type storage: 'create-a-pvc-to-connect-to-ultra-cold-ssd-hiiops-disk-type-storage'
+    --1--Bind a PVC to a pod: 'bind-your-pvc-to-a-pod'
 ---
+
 # Create a PVC and bind to a pod
-  
+
 ## What are PV and PVC?
 
 A PV (Persistent Volume) in Kubernetes is a resource used to store data. It is attached to pods but have a separate lifecycle, specified by its Reclaim Policy. This policy determines if a PV will continue to exist or will be deleted when a pod attached to it gets destroyed.
@@ -40,8 +41,8 @@ spec:
 
 Enter your custom values instead:
 
-- <span style="color:#FF5913">block-pvc</span>—the PVC name  
-- <span style="color:#FF5913">1Gi</span>—the required storage size
+-   <span style="color:#FF5913">block-pvc</span>—the PVC name
+-   <span style="color:#FF5913">1Gi</span>—the required storage size
 
 2\. Run the kubectl command from the file directory:
 
@@ -59,7 +60,7 @@ It means you have created a PVC with a standard disk-type storage class. To conn
 
 ### Create a PVC to connect to ultra/cold/ssd_hiiops disk-type storage
 
-You can check the available disk types in different regions in the <a href="https://cloud.gcore.com/cloud/projects/list" target="_blank">Gcore Control panel</a> or via <a href="https://apidocs.gcore.com/cloud" target="_blank">an API request</a>.
+You can check the available disk types in different regions in the <a href="https://cloud.gcore.com/cloud/projects/list" target="_blank">Gcore Control panel</a> or via <a href="https://api.gcore.com/docs/cloud" target="_blank">an API request</a>.
 
 1\. Create a YAML file to configure a storage class with the required disk type:
 
@@ -78,8 +79,8 @@ allowVolumeExpansion: true
 
 Enter your custom values instead:
 
-- <span style="color:#FF5913">csi-sc-cinderplugin-hiiops</span>—the storage class name  
-- <span style="color:#FF5913">ssd_hiiops</span>—the required disk type
+-   <span style="color:#FF5913">csi-sc-cinderplugin-hiiops</span>—the storage class name
+-   <span style="color:#FF5913">ssd_hiiops</span>—the required disk type
 
 2\. Run the kubectl command from the file directory:
 
@@ -111,9 +112,9 @@ spec:
 
 Enter your custom values instead:
 
-- <span style="color:#FF5913">block-pvc</span>—your PVC name  
-- <span style="color:#FF5913">csi-sc-cinderplugin-hiiops</span>—the name of the created storage class  
-- <span style="color:#FF5913">1Gi</span>— the required storage size
+-   <span style="color:#FF5913">block-pvc</span>—your PVC name
+-   <span style="color:#FF5913">csi-sc-cinderplugin-hiiops</span>—the name of the created storage class
+-   <span style="color:#FF5913">1Gi</span>— the required storage size
 
 4\. Run the kubectl command from the file directory:
 
@@ -153,11 +154,11 @@ spec:
 
 Enter your custom values instead:
 
-- <span style="color:#FF5913">mypod</span>—the pod name  
-- <span style="color:#FF5913">myfrontend</span>—the container name  
-- <span style="color:#FF5913">"/var/www/html"</span>—the destination inside the pod where to mount the storage class  
-- <span style="color:#FF5913">mypd</span>—the storage class name  
-- <span style="color:#FF5913">block-pvc</span>—the created PVC name
+-   <span style="color:#FF5913">mypod</span>—the pod name
+-   <span style="color:#FF5913">myfrontend</span>—the container name
+-   <span style="color:#FF5913">"/var/www/html"</span>—the destination inside the pod where to mount the storage class
+-   <span style="color:#FF5913">mypd</span>—the storage class name
+-   <span style="color:#FF5913">block-pvc</span>—the created PVC name
 
 2\. Run the kubectl command from the file directory:
 

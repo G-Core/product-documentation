@@ -4,14 +4,15 @@ displayName: Low Latency streaming
 published: true
 order: 40
 toc:
-   --1--What is latency, and why it exists: "what-is-streaming-latency-and-why-does-it-exist"
-   --1--How Gcore provides Low Latency: "how-does-gcore-provide-low-latency"
-   --1--How LL-HLS and LL-DASH work: "how-do-ll-hls-and-ll-dash-work-in-comparison-to-the-standard-approach"
-   --1--Use Low Latency streaming: "use-low-latency-streaming"
-   --1--Switch to legacy HLS modes: "switch-to-legacy-hls-modes"
-   --2--Regular HLS: "get-regular-hls-with-cmaf-mode"
-   --2--HLSv3: "get-legacy-hlsv3-mode"
+    --1--What is latency, and why it exists: 'what-is-streaming-latency-and-why-does-it-exist'
+    --1--How Gcore provides Low Latency: 'how-does-gcore-provide-low-latency'
+    --1--How LL-HLS and LL-DASH work: 'how-do-ll-hls-and-ll-dash-work-in-comparison-to-the-standard-approach'
+    --1--Use Low Latency streaming: 'use-low-latency-streaming'
+    --1--Switch to legacy HLS modes: 'switch-to-legacy-hls-modes'
+    --2--Regular HLS: 'get-regular-hls-with-cmaf-mode'
+    --2--HLSv3: 'get-legacy-hlsv3-mode'
 ---
+
 # How Low Latency streaming works
 
 ## What is streaming latency, and why does it exist?
@@ -28,8 +29,8 @@ Each step affects latency, so the total timespan can increase to 30–40 seconds
 
 The Gcore Streaming Platform receives live streams in RTMP or SRT protocols; transcodes to ABR (<a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-we-optimize-live-stream-and-video-performance-by-creating-different-bitrates" target="_blank">adaptive bitrate</a>) via CDN in LL-HLS and LL-DASH protocols.
 
-- LL-HLS (Low Latency HTTP Live Streaming) is an adaptive protocol developed by Apple for live streaming via the Internet. This protocol is based on HTTP, which allows it to be cached on CDN servers and distributed via CDN as static content. 
-- LL-DASH (Low Latency Dynamic Adaptive Streaming over HTTP) is a data streaming technology that optimizes media content delivery via the HTTP protocol.
+-   LL-HLS (Low Latency HTTP Live Streaming) is an adaptive protocol developed by Apple for live streaming via the Internet. This protocol is based on HTTP, which allows it to be cached on CDN servers and distributed via CDN as static content.
+-   LL-DASH (Low Latency Dynamic Adaptive Streaming over HTTP) is a data streaming technology that optimizes media content delivery via the HTTP protocol.
 
 Also, Gcore uses CMAF (Common Media Application Format) as a base for LL-HLS/DASH. CMAF allows dividing segments into chunks (video fragments) for faster delivery over HTTP networks.
 
@@ -53,29 +54,30 @@ Compared to the standard approach, a 7-second segment will be divided into 2–3
 
 ## Use Low Latency streaming
 
-We support <a href="https://www.gcore.com/news/low-latency-hls/" target="_blank">Low Latency streaming</a> by default. It means your live streams are automatically transcoded to LL-HLSv6 or LL-DASH protocol when you <a href="https://gcore.com/docs/streaming-platform/live-streaming/create-a-live-stream" target="_blank">create and configure a live stream</a>. Links for embedding the live stream to your own player contain the */cmaf/* part and look as follows:
+We support <a href="https://www.gcore.com/news/low-latency-hls/" target="_blank">Low Latency streaming</a> by default. It means your live streams are automatically transcoded to LL-HLSv6 or LL-DASH protocol when you <a href="https://gcore.com/docs/streaming-platform/live-streaming/create-a-live-stream" target="_blank">create and configure a live stream</a>. Links for embedding the live stream to your own player contain the _/cmaf/_ part and look as follows:
 
-- ```https://12345.gvideo.io/cmaf/12345_111/index.mpd``` (LL-DASH, which is supported by any device but does not work with iOS). 
-- ```https://12345.gvideo.io/cmaf/12345_111/master.m3u8``` (LL HLSv6, which is supported by iOS (Safari browser) but doesn’t work with non-Apple devices).
+-   `https://12345.gvideo.io/cmaf/12345_111/index.mpd` (LL-DASH, which is supported by any device but does not work with iOS).
+-   `https://12345.gvideo.io/cmaf/12345_111/master.m3u8` (LL HLSv6, which is supported by iOS (Safari browser) but doesn’t work with non-Apple devices).
 
-where *12345* is the unique ID of your account and *111* is the unique live stream ID.
+where _12345_ is the unique ID of your account and _111_ is the unique live stream ID.
 
 ## Switch to legacy HLS modes
 
-We also support legacy modes for full backward HLS compatibility across all devices and infrastructures. 
+We also support legacy modes for full backward HLS compatibility across all devices and infrastructures.
 
-### Get Regular HLS with CMAF mode  
+### Get Regular HLS with CMAF mode
 
-Add at the end of the link for embedding the query string as follows:  
+Add at the end of the link for embedding the query string as follows:
 
 ```
 https://12345.gvideo.io/cmaf/12345_111/master.m3u8?HLS_version=cmaf
 ```
-To return to using LL HLS, delete the query parameter in bold or replace it with the parameter: *?HLS_version=ll* (these actions are identical).
 
-### Get legacy HLSv3 mode  
+To return to using LL HLS, delete the query parameter in bold or replace it with the parameter: _?HLS_version=ll_ (these actions are identical).
 
-Contact the [support team](mailto:support@gcore.com) and ask to enable legacy HLSv3 mode for your account or add  *low_latency_enabled=false* parameter to the body of <a href="https://apidocs.gcore.com/streaming#tag/Streams/operation/patch_streams_id" target="_blank">the API request</a>.
+### Get legacy HLSv3 mode
+
+Contact the [support team](mailto:support@gcore.com) and ask to enable legacy HLSv3 mode for your account or add  _low_latency_enabled=false_ parameter to the body of <a href="https://api.gcore.com/docs/streaming#tag/Streams/operation/patch_streams_id" target="_blank">the API request</a>.
 
 The changeover to the legacy format will be displayed in the URL:
 

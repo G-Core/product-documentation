@@ -4,14 +4,14 @@ displayName: Manage buckets
 published: true
 order: 10
 toc:
-   --1--Create buckets: "create-buckets"
-   --1--Add Lifecycle policy (S3 Luxembourg): "add-lifecycle-policy-available-for-s3-in-luxembourg-only"
-   --1--Configure HTTP access: "configure-http-access"
-   --1--Use File manager: "use-file-manager"
-   --2--Override CORS: "override-cors-for-a-bucket"
-   --2--Add a folder: "add-a-folder-to-a-bucket"
-   --2--Manage files: "manage-files"
-   --1--Delete buckets: "delete-buckets"
+    --1--Create buckets: 'create-buckets'
+    --1--Add Lifecycle policy (S3 Luxembourg): 'add-lifecycle-policy-available-for-s3-in-luxembourg-only'
+    --1--Configure HTTP access: 'configure-http-access'
+    --1--Use File manager: 'use-file-manager'
+    --2--Override CORS: 'override-cors-for-a-bucket'
+    --2--Add a folder: 'add-a-folder-to-a-bucket'
+    --2--Manage files: 'manage-files'
+    --1--Delete buckets: 'delete-buckets'
 ---
 
 # Manage buckets via the Control panel
@@ -30,7 +30,7 @@ toc:
 
 3. Enter the name of the bucket and click **Create**.
 
-**Note**: The name must be unique. Our system checks the names of buckets of all users. If the name matches the name of the bucket of another user, you will see the error: ```create bucket: bucket already exist: bad params```.
+**Note**: The name must be unique. Our system checks the names of buckets of all users. If the name matches the name of the bucket of another user, you will see the error: `create bucket: bucket already exist: bad params`.
 
 <img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/confirm-creation-30.png" alt="" width="50%">
 
@@ -38,7 +38,7 @@ The bucket’s creation is complete.
 
 ## Add Lifecycle policy (available for S3 in Luxembourg only)
 
-You can configure the lifecycle policy for a bucket via the *aws cli* client according to the "<a href="https://gcore.com/docs/storage/manage-s3-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/remove-objects-from-a-bucket-automatically-with-aws-cli" target="_blank">Remove objects from a bucket automatically with AWS CLI</a>" guide. If you use S3 storage in Luxembourg, it is possible to assign Lifecycle policy for buckets in the Control panel:
+You can configure the lifecycle policy for a bucket via the _aws cli_ client according to the "<a href="https://gcore.com/docs/storage/manage-s3-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/remove-objects-from-a-bucket-automatically-with-aws-cli" target="_blank">Remove objects from a bucket automatically with AWS CLI</a>" guide. If you use S3 storage in Luxembourg, it is possible to assign Lifecycle policy for buckets in the Control panel:
 
 1. Open the bucket page, click the **···** icon and select **Lifecycle Management**.
 
@@ -70,15 +70,15 @@ File manager makes it possible to create folders and upload and delete files. Yo
 
 ### Override CORS for a bucket
 
-To use File manager, you must first configure the CORS. The CORS technology makes it possible to handle requests from our domain *storage.gcorelabs.com*.
+To use File manager, you must first configure the CORS. The CORS technology makes it possible to handle requests from our domain _storage.gcorelabs.com_.
 
 **Note**: CORS should be configured for each bucket separately.
 
 You can configure CORS in three ways:
 
-- Via s3cmd according to the "<a href="https://gcore.com/docs/storage/manage-s3-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/remove-objects-from-a-bucket-automatically-with-aws-cli#manage-a-lifecycle-policy-with-aws-cli" target="_blank">Set CORS policy on a bucket via s3cmd</a>" guide.
-- Via API according to the <a href="https://apidocs.gcore.com/storage" target="_blank">API docs</a>—this way makes it possible to override CORS not only for *storage.gcorelabs.com* and other domains.
-- In the Control panel.
+-   Via s3cmd according to the "<a href="https://gcore.com/docs/storage/manage-s3-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/remove-objects-from-a-bucket-automatically-with-aws-cli#manage-a-lifecycle-policy-with-aws-cli" target="_blank">Set CORS policy on a bucket via s3cmd</a>" guide.
+-   Via API according to the <a href="https://api.gcore.com/docs/storage" target="_blank">API docs</a>—this way makes it possible to override CORS not only for _storage.gcorelabs.com_ and other domains.
+-   In the Control panel.
 
 To configure CORS in the control panel:
 
@@ -118,18 +118,18 @@ To get links, check the boxes on the left of files and click **Copy S3 URL** or 
 
 <img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/copy-url-130.png" alt="" width="80%">
 
-For example, for the file *sample.txt*, the links look as follows:
+For example, for the file _sample.txt_, the links look as follows:
 
-- s3://s-ed1.cloud.gcore.lu/example/folder1/sample.txt
-- https://s-ed1.cloud.gcore.lu/example/folder1/sample.txt
+-   s3://s-ed1.cloud.gcore.lu/example/folder1/sample.txt
+-   https://s-ed1.cloud.gcore.lu/example/folder1/sample.txt
 
 where
 
-- *s* or *https* is a protocol (format)
-- *s-ed1.cloud.gcore.lu* is a hostname
-- *example* is a bucket
-- *folder1* is a folder
-- *sample.txt* is a file name.
+-   _s_ or _https_ is a protocol (format)
+-   _s-ed1.cloud.gcore.lu_ is a hostname
+-   _example_ is a bucket
+-   _folder1_ is a folder
+-   _sample.txt_ is a file name.
 
 You can also delete files. To do this, click **Delete** opposite those files that you want to remove from the folder or bucket.
 
