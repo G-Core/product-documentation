@@ -77,7 +77,7 @@ To use File manager, you must first configure the CORS. The CORS technology make
 You can configure CORS in three ways:
 
 - Via s3cmd according to the "<a href="https://gcore.com/docs/storage/manage-s3-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/remove-objects-from-a-bucket-automatically-with-aws-cli#manage-a-lifecycle-policy-with-aws-cli" target="_blank">Set CORS policy on a bucket via s3cmd</a>" guide.
-- Via API according to the <a href="https://apidocs.gcore.com/storage" target="_blank">API docs</a>—this way makes it possible to override CORS not only for *storage.gcorelabs.com* and other domains.
+- Via API according to the <a href="https://api.gcore.com/docs/storage" target="_blank">API docs</a>—this way makes it possible to override CORS not only for *storage.gcorelabs.com* and other domains.
 - In the Control panel.
 
 To configure CORS in the control panel:

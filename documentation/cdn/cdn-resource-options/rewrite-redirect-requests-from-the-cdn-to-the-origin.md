@@ -27,4 +27,4 @@ where:
 - <span style="color:#FF5913">/media/</span> is the directory, where CDN servers will go for the content;
 - <span style="color:#FF5913">$1</span> is the number of the group of variables. If you have more than one group, the next numbers will be $2, $3 and so on.
 
-Break flag is applied to the option by default. It is not shown in the field. You may apply to the option any other ngnix flags via <a href="https://apidocs.gcore.com/cdn#tag/Resources" target="_blank">API documentation</a>.
+Break flag is applied to the option by default. It is not shown in the field. You may apply to the option any other ngnix flags via <a href="https://api.gcore.com/docs/cdn#tag/Resources" target="_blank">API documentation</a>.

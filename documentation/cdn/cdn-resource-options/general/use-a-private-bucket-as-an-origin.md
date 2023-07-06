@@ -120,7 +120,7 @@ application/json</b></td>
 </tr>
 <tr>
 <td>Request parameter</td>
-<td>For more information, see Gcore’s <a href="https://apidocs.gcore.com/cdn?_gl=1*1vtlv8c*_ga*ODE2MjQ4NzgwLjE2NjY2MDkxMzk.*_ga_Y79HRL8RPR*MTY4NDI0MDAyMC43MjYuMS4xNjg0MjQzNDMyLjYwLjAuMA..#tag/Origins/operation/create_origin_group" target="_blank">API documentation</a></td>
+<td>For more information, see Gcore’s <a href="https://api.gcore.com/docs/cdn?_gl=1*1vtlv8c*_ga*ODE2MjQ4NzgwLjE2NjY2MDkxMzk.*_ga_Y79HRL8RPR*MTY4NDI0MDAyMC43MjYuMS4xNjg0MjQzNDMyLjYwLjAuMA..#tag/Origins/operation/create_origin_group" target="_blank">API documentation</a></td>
 </tr>
 <tr>
 <td>Response</td>

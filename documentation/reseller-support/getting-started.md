@@ -34,7 +34,7 @@ In the client control panel, clients can set up their services, check statistics
 If you are using your own control panel and just need our API documentation to integrate your service with ours, here are the links:
 
 - <a href="https://gcore.com/docs/reseller-support/api" target="_blank">Reseller API documentation</a>
-- <a href="https://apidocs.gcore.com/docs/iam" target="_blank">Services API documentation</a>
+- <a href="https://api.gcore.com/docs/iam" target="_blank">Services API documentation</a>
 
 If you and your clients are going to use the client control panel and you would like to change its look, read the following articles:
 
@@ -81,6 +81,6 @@ Articles on service management:
 If you would like to get notifications about planned maintenance activities and incidents, subscribe to our <a href="https://status.gcore.com/" target="_blank">Status Page</a>. You can read more about the service and its subscription methods in <a href="https://gcore.com/docs/account-settings/be-aware-of-the-service-status-scheduled-and-emergency-maintenance" target="_blank">this article</a>.
 
 - <a href="https://gcore.com/docs/reseller-support/api" target="_blank">Reseller API documentation</a>
-- <a href="https://apidocs.gcore.com/docs/iam" target="_blank">Services API documentation</a>
+- <a href="https://api.gcore.com/docs/iam" target="_blank">Services API documentation</a>
 
 This knowledge base describes how to manage services as an administrator from the admin control panel and doesn't include articles on how to set up services as a client. For the latter, read the articles here: https://gcore.com/docs/. If you have questions, please, send them to [support@gcore.com](mailto:support@gcore.com).

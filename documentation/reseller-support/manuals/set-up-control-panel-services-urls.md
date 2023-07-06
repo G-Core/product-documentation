@@ -17,7 +17,7 @@ The client control panel is a combination of different services. Here are the se
 - storage.gcore.com — Storage service,
 - control.gcore.com — Web Protection service,
 - dns.gcore.com — DNS service,
-- apidocs.gcore.com - API Documentation,
+- api.gcore.com/docs - API Documentation,
 - api.gcore.com - API domain.
 
 We are using Single Sign-On authentication between the services, so once users log in to the control panel (authorization service), they can access other services automatically.

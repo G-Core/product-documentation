@@ -75,7 +75,7 @@ To return to using LL HLS, delete the query parameter in bold or replace it with
 
 ### Get legacy HLSv3 mode  
 
-Contact the [support team](mailto:support@gcore.com) and ask to enable legacy HLSv3 mode for your account or add  *low_latency_enabled=false* parameter to the body of <a href="https://apidocs.gcore.com/streaming#tag/Streams/operation/patch_streams_id" target="_blank">the API request</a>.
+Contact the [support team](mailto:support@gcore.com) and ask to enable legacy HLSv3 mode for your account or add  *low_latency_enabled=false* parameter to the body of <a href="https://api.gcore.com/docs/streaming#tag/Streams/operation/patch_streams_id" target="_blank">the API request</a>.
 
 The changeover to the legacy format will be displayed in the URL:
 

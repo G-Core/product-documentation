@@ -97,6 +97,6 @@ The ```follow_origin_redirect``` object passes the following information:
 
 #### Example
 
-This example shows a <a href="https://apidocs.gcore.com/cdn#tag/Resources/operation/change_cdn_resource" target="_blank">CDN update request</a> that activates the Redirection from Origin and instructs the CDN to follow redirects for status codes *301*, *302*, and *303*.
+This example shows a <a href="https://api.gcore.com/docs/cdn#tag/Resources/operation/change_cdn_resource" target="_blank">CDN update request</a> that activates the Redirection from Origin and instructs the CDN to follow redirects for status codes *301*, *302*, and *303*.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/set-up-a-cdn-resource-to-follow-origin-redirects/11761432040465.png" alt="" width="80%">

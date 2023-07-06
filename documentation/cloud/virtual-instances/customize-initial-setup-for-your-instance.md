@@ -42,7 +42,7 @@ By default, the **User Data** field is disabled for new instances. Enable it by 
 
 ### From Gcore’s API
 
-To add the User Data field when creating a new instance via <a href="https://apidocs.gcore.com/cloud#tag/Instances/operation/InstanceCreateSetV2.post" target="_blank">Gcore API</a>, provide your User Data content in `base64` format via `user_data` in the payload request.
+To add the User Data field when creating a new instance via <a href="https://api.gcore.com/docs/cloud#tag/Instances/operation/InstanceCreateSetV2.post" target="_blank">Gcore API</a>, provide your User Data content in `base64` format via `user_data` in the payload request.
 
 Let’s say you want to add the User Data field as below:
 

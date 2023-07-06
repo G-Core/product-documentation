@@ -67,11 +67,11 @@ The file will be downloaded to your browser download location.
 
 ## Manage Log Viewer via the API
 
-You can also view and download logs via the API using requests from our <a href="https://apidocs.gcorelabs.com/cdn#tag/CDN-Logs" target="_blank">API documentation</a>. Below we explain how to create a request.
+You can also view and download logs via the API using requests from our <a href="https://api.gcore.com/docs/cdn#tag/CDN-Logs" target="_blank">API documentation</a>. Below we explain how to create a request.
 
 1\. In a tool for working with an API, add an authorization header.  Choose one of the two headers below, copy it, replace the expression in brackets with your data and remove the brackets.
 
-- Authorization: Bearer **(your <a href="https://apidocs.gcore.com/iam#tag/Account/paths/~1auth~1jwt~1login/post" target="_blank">standard authorization token</a> that is valid for 1 hour; its lifetime can be extended up to 24 hours)**
+- Authorization: Bearer **(your <a href="https://api.gcore.com/docs/iam#tag/Account/paths/~1auth~1jwt~1login/post" target="_blank">standard authorization token</a> that is valid for 1 hour; its lifetime can be extended up to 24 hours)**
 - Authorization: APIKey **(your** <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">permanent authorization token</a> **generated in your personal account; it never expires)** 
 
 2\. Set the "GET" request type and specify a path for the required action: 
