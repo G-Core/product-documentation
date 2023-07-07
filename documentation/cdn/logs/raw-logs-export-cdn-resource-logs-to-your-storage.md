@@ -109,7 +109,7 @@ Where:
 
 6\. Specify your secret access key. If you use <a href="https://gcore.com/storage" target="_blank">Gcore S3 storage</a>, you can find its secret access key in your personal account in the "<a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage#s3" target="_blank">Secret key</a>" field.
 
-7\. Specify a bucket hostname — a bucket ID that is used by your S3 storage system in the ```{bucket_name}.{hostname}``` format. It is required to ensure that logs are exported to a correct bucket within a storage. A bucket hostname of the Gcore storage looks as follows: ```{bucket name}.{hostname from step 3}```. For example: ```examplename.s-ed1.cloud.gcore.lu```. A bucket hostname of Yandex.Cloud storage looks as follows: ```{bucket name}.{Yandex.Cloud hostname}```. For example: ```examplename.storage.yandexcloud.net```.
+7\. Specify a bucket hostname — a bucket ID that is used by your S3 storage system in the ```{bucket_name}.{hostname}``` format. It is required to ensure that logs are exported to a correct bucket within a storage. A bucket hostname of the Gcore storage looks as follows: ```{bucket name}.{hostname from step 3}```. For example: ```examplename.s-ed1.cloud.gcore.lu```. 
 
 8\. Specify a region — location ID of a server where your storage is hosted. This is optional: for some storages, the region is determined automatically. You can leave the field empty. If you use <a href="https://gcore.com/storage" target="_blank">Gcore S3 storage</a>, a location ID is required. You can find it in the "Details" of the storage. Your location ID is a part of your hostname to the first dot.
 
