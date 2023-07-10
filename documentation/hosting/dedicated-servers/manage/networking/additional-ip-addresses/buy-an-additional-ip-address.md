@@ -7,7 +7,11 @@ toc:
 ---
 # Buy an additional IP address
 
-Every server has one free IPv4, but you can order up to 14 IPv4 and 14 IPv6 additional addresses for dedicated servers and up to 9 IPv4 and 9 IPv6 addresses for virtual servers (there is one exception: only three additional IP of each type can be ordered for KVM-SSD-1) at extra charge.
+Every dedicated server includes:
+- one free IPv4 address, and 
+- one free IPv6 address. 
+
+Additionally, you can buy up to 14 IPv4 addresses and 14 IPv6 addresses.
 
 Go to "Dedicated Servers" in the Control Panel.
 
