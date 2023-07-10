@@ -39,7 +39,7 @@ In this article, we will look at the first option: protected temporary links and
 Protected temporary links are generated using the <a href="https://gcore.com/docs/cdn/cdn-resource-options/security/use-a-secure-token/about-secure-token" target="_blank">Secure Token</a> feature, which allows configuring access with tokenized URLs. When using this option, you add a special character set to every URL. Check out the examples below with the special characters highlighted in bold. At Gcore, we call these special characters *Secure Tokens*.
 
 - Public: https://demo-public.gvideo.io/videos/2675_3dk4NsRt6vWsffEr/master.m3u8 
-- Protected: https://demo-protected.gvideo.io/videos/2675_3dk4NsRt6vWsffEr/**4KF8O8YERpLuwIIO_p3RFQ/1861919999**/master.m3u8 
+- Protected: https://demo-protected.gvideo.io/videos/2675_3dk4NsRt6vWsffEr/4KF8O8YERpLuwIIO_p3RFQ/1861919999/master.m3u8 
 
 Unlike content with a public URL, which is available to any user, content with a protected temporary link verifies that the user has a special *hash key* that matches the generated token.
 
