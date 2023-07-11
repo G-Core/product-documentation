@@ -4,10 +4,10 @@ displayName: Activity logs
 published: true
 order: 100
 toc:
-   --1--What are Activity logs for?: "what-is-an-activity-logs-section-for"
-   --1--View logs: "view-users-changes-in-the-activity-logs-section"
+   --1--Activity logs: "what-is-an-activity-logs-section-for"
+   --1--View: "view-users-changes-in-the-activity-logs-section"
    --1--Use filters: "use-filters"
-   --2--How to look for changes in a particular client: "how-to-look-for-changes-in-a-particular-client"
+   --1--Client changes: "how-to-look-for-changes-in-a-particular-client"
 ---
 
 # View the history of users’ requests and actions via Activity logs
@@ -58,7 +58,7 @@ To filter logs by a specific parameter:
 
 That’s it. As a result, you will see only entities for the specified period (in this case, from June 27, 2023, to July 04, 2023.)
 
-### How to look for changes in a particular client
+## How to look for changes in a particular client
 
 Clients’ accounts can be changed not only by clients themselves, but also by sellers. For example, a seller can change the service to "Trial" status. In this case, if you try to find the changes in the "Client" column by specifying the client ID, there will be no entity, because it was not the client who made the change. 
 

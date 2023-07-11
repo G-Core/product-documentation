@@ -4,14 +4,14 @@ displayName: Protected temporary link
 published: true
 order: 50
 toc:
-   --1--Why protect video content?: "why-protect-video-content"
-   --1--How does Gcore protect video content?: "how-does-gcore-protec-video-content"
-   --1--What are protected temporary links?: "what-are-protected-temporary-links"
-   --1--CDN resources and scope of restrictions: "cdn-resources-and-scope-of-restrictions"
-   --1--How to enable the Secure Token feature?: "how-to-enable-the-secure-token-feature"
-   --1--Format of protected temporary links: "format-of-protected-temporary-links"
-   --1--A note on the expiration time: "a-note-on-the-expiration-time"
-   --1--How to create protected links with the secure token: "how-to-create-protected-links-with-the-secure-token"
+   --1--Why protect?: "why-protect-video-content"
+   --1--How Gcore protects: "how-does-gcore-protec-video-content"
+   --1--Temporary links: "what-are-protected-temporary-links"
+   --1--Restrictions: "cdn-resources-and-scope-of-restrictions"
+   --1--Enable Secure Token: "how-to-enable-the-secure-token-feature"
+   --1--Format: "format-of-protected-temporary-links"
+   --1--Expiration time: "a-note-on-the-expiration-time"
+   --1--Create protected links: "how-to-create-protected-links-with-the-secure-token"
    --2--Python: "python"
    --2--Go: "go"
 ---
