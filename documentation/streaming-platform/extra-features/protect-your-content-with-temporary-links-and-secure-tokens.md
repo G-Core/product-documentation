@@ -4,8 +4,8 @@ displayName: Protected temporary link
 published: true
 order: 50
 toc:
-   --2--Why protect video content?: "why-protect-video-content"
-   --2--How does Gcore protect video content?: "how-does-gcore-protec-video-content"
+   --1--Why protect video content?: "why-protect-video-content"
+   --1--How does Gcore protect video content?: "how-does-gcore-protec-video-content"
    --1--What are protected temporary links?: "what-are-protected-temporary-links"
    --1--CDN resources and scope of restrictions: "cdn-resources-and-scope-of-restrictions"
    --1--How to enable the Secure Token feature?: "how-to-enable-the-secure-token-feature"
@@ -17,11 +17,11 @@ toc:
 ---
 # Protect your content with temporary links and secure tokens
 
-### Why protect video content?
+## Why protect video content?
 
 By default, videos are available by their links with no restrictions and can be placed on any website or in any mobile application. But in some cases, platform owners or rights holders need to ensure that video content does *not* offer public access, such as when a video is only for paid access, private access, access by country, temporary access, or access on a specific site.
 
-### How does Gcore protect video content?
+## How does Gcore protect video content?
 
 Gcore has several methods of protecting video content:
 

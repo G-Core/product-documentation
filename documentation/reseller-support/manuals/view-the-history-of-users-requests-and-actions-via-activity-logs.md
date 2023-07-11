@@ -4,7 +4,7 @@ displayName: Activity logs
 published: true
 order: 100
 toc:
-   --2--What are Activity logs for?: "what-is-an-activity-logs-section-for"
+   --1--What are Activity logs for?: "what-is-an-activity-logs-section-for"
    --1--View logs: "view-users-changes-in-the-activity-logs-section"
    --1--Use filters: "use-filters"
    --2--How to look for changes in a particular client: "how-to-look-for-changes-in-a-particular-client"
@@ -12,7 +12,7 @@ toc:
 
 # View the history of users’ requests and actions via Activity logs
 
-### What is an Activity logs section for?
+## What is an Activity logs section for?
 
 The Activity logs section displays changes that users have made. Users are all the <a href="https://gcore.com/docs/reseller-support/manuals/manage-clients" target="_blank">clients</a> and <a href="https://gcore.com/docs/reseller-support/manuals/manage-sellers" target="_blank">sellers</a> that you have added. Changes they can make include requests sent via the <a href="https://apidocs.gcore.com/docs" target="_blank">API</a> and actions in the <a href="https://auth.gcore.com/login/signin?lang=en" target="_blank">control panel</a>. 
 
