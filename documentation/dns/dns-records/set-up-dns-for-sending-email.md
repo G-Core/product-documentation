@@ -43,7 +43,7 @@ Add an MX record according to our guide on how to <a href="https://gcore.com/doc
 
 ## Step 3. Set up a PTR record
 
-A PTR record, or reverse DNS record, links an IP address to a domain name. This is helpful for verifying the authenticity of your server. You can learn more about how it works and how to configure it in our guide about <a href="https://gcore.com/docs/dns/dns-records/setting-up-a-ptr-record-and-reverse-dns-zone" target="_blank">a PTR record and reverse DNS zone</a>.
+A PTR record, or reverse DNS record, links an IP address to a domain name. This is helpful for verifying the authenticity of your server. You can learn more about how it works and how to configure it in our guide about <a href="https://gcore.com/docs/dns/dns-records/set-up-a-ptr-record-and-reverse-dns-zone" target="_blank">a PTR record and reverse DNS zone</a>.
 
 PTR records are typically set up by your service provider, so you'll need to get in touch with them to set up a reverse DNS zone (RDNS). Afterward, you can add a PTR record in the Gcore control panel according to our guide on how to <a href="https://gcore.com/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode" target="_blank">manage DNS records using non-advanced interface mode</a>.
 
