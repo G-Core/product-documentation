@@ -5,70 +5,50 @@ order: 10
 published: true
 toc:
    --1--What is Logging?: "what-is-logging"
-   --1--How does it work?: ""
-   --1--How it may be useful: "how-logging-can-be-useful"
+   --1--Advantages: "advantages"
    --1--Use cases: "use-cases"
-   --1--How we store logs: "how-we-store-logs"
-   --1--Logging restrictions: "logging-restrictions"
-   --1--Compatibility of our LaaS and log shippers: "compatibility-of-our-laas-and-log-shippers"
+   --1--Log storage: "log-storage"
+   --1--Restrictions: "restrictions"
 ---
 # About Logging as a service
 
 ## What is Logging?  
 
-Logging (also known as LaaS, logging as a service) is a service used to collect and store logs from virtual machines and baremetal servers. It doesn't matter whether you use a Gcore server or your own: Logging will collate logs from any devices. You can work with logs via OpenSearch Dashboards.
+Logging, also known as LaaS (logging-as-a-service,) is a service that collects and stores logs from both virtual machines and bare metal servers. Whether you are using Gcore’s infrastructure or your own server, logging can collect logs from any system. You can work with Logging via OpenSearch Dashboards.
 
-## How does Logging work? 
+## How Logging works
 
-1. We allocate storage space for your logs.  
-2. You install a log shipper on your servers — the tool collects logs and forwards them to our storage. For example, you can install <a href="https://docs.fluentbit.io/manual/installation/getting-started-with-fluent-bit" target="_blank">Fluent Bit</a> or <a href="https://www.elastic.co/beats/filebeat" target="_blank">Filebeat</a> log shipper.
-3. You configure the log shipper by specifying which services' logs need to be exported to the storage. If you haven’t worked with a log shipper before, you can use our guides: <a href="https://gcore.com/docs/cloud/laas/install-a-log-shipper/install-and-configure-fluent-bit" target="_blank">Configure Fluent Bit</a>, <a href="https://gcore.com/docs/cloud/laas/install-a-log-shipper/install-and-configure-filebeat" target="_blank">Configure Filebeat</a>. 
-4. Logs from your machine are automatically exported to the storage.  
-5. You work with the logs of your resources via OpenSearch Dashboards that we provide. 
+1. Install and configure any log shipper that supports Kafka. You can use <a href="https://docs.fluentbit.io/manual/installation/getting-started-with-fluent-bit" target="_blank">Fluent Bit</a>, <a href="https://www.elastic.co/beats/filebeat" target="_blank">Filebeat</a>, or any other log source that can export logs to Kafka, such as a Python application with configured Kafka logger output.
+2. Access the logs via OpenSearch Dashboards.
 
-## How Logging can be useful 
+## Advantages
 
-Logging collects logs from different services into one dashboard. To find the cause of an error or to collect data for analytics, you do not have to manually open logs of each service or machine — all data is available in OpenSearch Dashboards. You can apply filters to see the required logs.  
+Logging compiles logs from different services into one system. To find the cause of an error or to collect data for analytics, you do not have to manually open logs of each service or machine; all data is readily available in OpenSearch Dashboards. You can customize the view or use filters for your needs. 
 
-Logs are still available even if their source is destroyed — for example, a server is broken, or a Kubernetes pod is deleted. By opening the Logging tab, you can see what happened to a machine before the breakdown or to an object before the deletion.  
+Logs are still available even if their source is destroyed—for example, a server is down or a Kubernetes pod is deleted. By opening the Logging tab, you can see what happened to a machine before its failure or to an object before its deletion.  
 
 ## Use cases  
 
-With Logging, you can see how the system has changed. Below are four cases when the service may be useful.  
+The use cases of Logging include:  
 
-**Quicker detection and resolution of errors in a cluster**. You enter an error message into the OpenSearch Dashboards search bar, identify when and which server experienced an issue, and fix it.  
+1. **Error detection and troubleshooting**. Enter an error message into the OpenSearch Dashboards search bar, identify when and which server experienced an issue, and be empowered to fix it.  
 
-**Investigation of security incidents**. For example, if data on your server was stolen last month, you can find logs from that time period, see which account signed in to the storage, and detect the culprit.  
+2. **Investigation of security incidents**. If data on your server was stolen last month, you can find logs from that time period, see which account signed in to the storage, and detect the culprit.  
 
-**Server connectivity check**. You open logs of two servers for the same time interval and see whether all the data has reached an end-user.  
+3. **Server connectivity check**. Open logs of two servers for the same time interval and see whether all data has reached an end user.  
 
-**Data speed measurement**. You open logs and compare the time when one server sent the data with the time when another one received it.  
+4. **Data speed measurement**. Open logs and compare the time when one server sent the data with the time when another one received it.  
 
-## How we store logs  
+## Log storage 
 
-Logs from your machines are exported to Kafka servers, which then send them to OpenSearch servers for permanent storage. You read the logs from the OpenSearch servers via OpenSearch Dashboards.
+Logs from your machines are exported to Kafka servers, which then send them to OpenSearch servers for permanent storage. You can access and read the logs from the OpenSearch servers through OpenSearch Dashboards.
 
-We use Kafka servers as a buffer for better reliability. Even if an OpenSearch server fails to receive logs, they will be saved in Kafka and sent to OpenSearch as soon as possible. We have built such a system to ensure the safety of your data. 
+We use Kafka servers as a buffer for better reliability. Even if an OpenSearch server fails to receive logs, they will be saved in Kafka and sent to OpenSearch as soon as possible. This system also ensures the security of your data. 
 
-## Logging restrictions
+## Restrictions
 
-Please note that Logging has several restrictions that ensure that the logging system runs effectively.  
+Please note that Logging has several restrictions that ensure that the Logging system runs effectively.  
 
-1. Incoming traffic to Kafka: <10 Mb/sec
-2. Overall incoming traffic: ~900Gb/day
-3. Retention period in OpenSearch: 45 days
-4. Maximum fields in a JSON log: 225 fields 
-5. Maximum message size: 1 MB
-6. Message format: text/JSON
-
-## Compatibility of our LaaS and log shippers
-
-The table below shows what log shippers are compatible with different operating systems in our Cloud. 
-
-|   OS\Log shipper | Fluent Bit | Filebeat | Promtail | Logstash | Syslog |
-|------------------|------------|----------|----------|----------|--------|
-| Ubuntu 20.04     |  -         |  +       |  -       |  +       |  -     |
-| Ubuntu 22.04     |  -         |  +       |  -       |  +       |  -     |
-| CentOS 7         |  +         |  +       |  -       |  +       |  -     |
-| CentOS 8 Stream  |  -         |  +       |  -       |  +       |  -     |
-| CentOS 9 Stream  | -          | +        | -        | +        | -      |
+1. Message format: text/JSON
+2. Maximum fields in a JSON log: 225 fields 
+3. Maximum message size: 1 MB
