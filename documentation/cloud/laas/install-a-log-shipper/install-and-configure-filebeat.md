@@ -42,23 +42,23 @@ output.kafka: 
 </code-block>
 
 Customize the highlighted values:
-- <span style="color:#FF5913">/var/log/*.log</span> - the path to the log file(s)
-- <span style="color:#FF5913">laas-example.gcore.com:443</span> - the Kafka Endpoint shown on the Logging page
-- <span style="color:#FF5913">yourlogin.yourtopic</span> — your username generated on the Logging page.your topic name shown on the Logging page 
-- <span style="color:#FF5913">yourlogin</span> — your username generated on the Logging page
-- <span style="color:#FF5913">yourpassword</span> — your password
+- <span style="color:#FF5913">/var/log/*.log</span>: File(s) path
+- <span style="color:#FF5913">laas-example.gcore.com:443</span>: Kafka Endpoint on the Logging page
+- <span style="color:#FF5913">yourlogin.yourtopic</span>: Your username on the Logging page and your topic name separated with a dot (.) 
+- <span style="color:#FF5913">yourlogin</span>: Your username on the Logging page
+- <span style="color:#FF5913">yourpassword</span>: Your password
 
 You can also collect logs from other sources such as TCP, UDP, or syslog. For more details, refer to the <a href="https://www.elastic.co/guide/en/beats/filebeat/current/configuration-filebeat-options.html" target="_blank">"Configure inputs" section of the Filebeat documentation</a>: Click the log source you need, and configure the “inputs” section following the provided guide.
 
 <expandable-element title="Descriptions of the OUTPUT strings">
 
-- output.kafka — type of servers for log export: Kafka servers. 
-- hosts — address of server(s) where logs will be exported to.  
-- topic — name of topic(s) where logs will be exported to.  
-- sasl.mechanism — authentication mechanism that helps to verify a username and password entered to sign in to your logs storage.  
-- sasl.username — your username that helps to verify that it is you who is trying to send data.  
-- password — your password that helps to verify that it is you who is trying to send data.  
-- ssl.enabled: true — an indication that a security protocol is enabled to encrypt your data and protect it from theft.
+- output.kafka: Servers for log export (Kafka servers). 
+- hosts: Address of server(s) where logs will be exported to.  
+- topic: Topic(s) where logs will be exported to.  
+- sasl.mechanism: Authentication mechanism that helps to verify a username and password entered to sign into your logs storage.  
+- sasl.username: Username that helps to verify the sender.  
+- password: Password that helps to verify the sender.  
+- ssl.enabled: Security protocol used to encrypt your data and protect it from theft (true).
 
 </expandable-element> 
 

@@ -24,13 +24,11 @@ Fluent Bit’s <a href="https://docs.fluentbit.io/manual/installation/getting-st
 
 The Fluent Bit configuration file consists of two sections: `INPUT` and `OUTPUT`. `INPUT` determines the source of the logs you need to collect, and `OUTPUT` indicates the destination where they will be sent. Here’s how to set up the configuration file correctly:
 
-Here’s how to write out the file correctly.
-
 1. Open the `fluent-bit.conf` file and add the following data:
 
 <code-block>
 [INPUT]  
-    Name        tail   
+    Name        <span style="color:#FF5913">tail</span>
     Path        <span style="color:#FF5913">/var/log/syslog</span>
 [OUTPUT]   
     name        kafka    
@@ -44,11 +42,12 @@ Here’s how to write out the file correctly.
 
 Customize the highlighted values:
 
-- <span style="color:#FF5913">/var/log/syslog</span> - the source file path 
-- <span style="color:#FF5913">laas-example.gcore.com:443</span> — the Kafka Endpoint shown on the Logging page
-- <span style="color:#FF5913">yourlogin.yourtopic</span> — your username generated on the Logging page.your topic name shown on the Logging page 
-- <span style="color:#FF5913">yourlogin</span> — your username generated on the Logging page
-- <span style="color:#FF5913">yourpassword</span> — your password
+- <span style="color:#FF5913">tail</span>: Data source
+- <span style="color:#FF5913">/var/log/syslog</span>: File path 
+- <span style="color:#FF5913">laas-example.gcore.com:443</span>: Kafka Endpoint on the Logging page
+- <span style="color:#FF5913">yourlogin.yourtopic</span>: Your username on the Logging page and your topic name separated with a dot (.)
+- <span style="color:#FF5913">yourlogin</span>: Your username on the Logging page
+- <span style="color:#FF5913">yourpassword</span>: Your password
 
 For more information on how to add INPUT for different log sources, go to the <a href="https://docs.fluentbit.io/manual/pipeline/inputs" target="_blank">"Input" section of the Fluent Bit documentation</a> and click the log source you need. 
 
@@ -56,20 +55,20 @@ For example, if you want to gather logs from a specific file, open the <a href="
 
 <expandable-element title="Descriptions of the OUTPUT strings">
 
-- [OUTPUT] — type of process: export.  
-- name — servers where logs will be delivered: Kafka servers.  
-- brokers — address of server(s) where logs will be exported to.  
-- topics — name of topic(s) where logs will be exported to.  
-- rdkafka.security.protocol — type of security protocol that encrypts data to protect it from theft.  
-- rdkafka.sasl.mechanism — authentication mechanism that helps to verify a login and password entered to sign in to your logs storage.  
-- rdkafka.sasl.username — your username that helps to verify that it is you who is trying to send data.  
-- rdkafka.sasl.password — your password that helps to verify that it is you who is trying to send data.
+- [OUTPUT]: Type of process(export).  
+- name: Servers where logs will be delivered (Kafka servers).  
+- brokers: Server(s) where logs will be exported to.  
+- topics: Topic(s) where logs will be exported to.  
+- rdkafka.security.protocol: Security protocol that encrypts data to protect it from theft.  
+- rdkafka.sasl.mechanism: Authentication mechanism that helps to verify a login and a password entered to sign into your logs storage.  
+- rdkafka.sasl.username: The username that helps to verify the sender.  
+- rdkafka.sasl.password: The password that helps to verify the sender.
 
 </expandable-element>
 
 2. Save the changes in the `fluent-bit.conf` file.
 
-3. Restart Fluent Bit, and it will begin sending logs to your Gcore Logging storage.  
+3. Restart Fluent Bit, and it will begin sending logs to your Gcore Logging storage.
 
 ## No timestamps  
 
