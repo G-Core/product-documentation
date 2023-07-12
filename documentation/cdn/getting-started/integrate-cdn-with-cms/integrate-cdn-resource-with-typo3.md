@@ -17,13 +17,13 @@ Login to the Typo3 backend.
 
 Navigate to Extension Manager and install the extension smile\_cdn.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-typo3/typo3-get-extension-smile_cdn-1024x612.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-typo3/typo3-get-extension-smile_cdn-1024x612.png" alt="" width="80%">
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-typo3/typo3-cdn-install-smile-cdn-1024x186.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-typo3/typo3-cdn-install-smile-cdn-1024x186.png" alt="" width="80%">
 
 Configure the smile_cdn extension by defining the CNAME (without ```http://```) that you specified in the Gcore <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a> and the desired filters to offload your assets. Ensure that your <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">CNAME record has been configured</a> in a proper way before using it for integration.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-typo3/typo3-cdn-configure-smile-cdn-1024x858.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-typo3/typo3-cdn-configure-smile-cdn-1024x858.png" alt="" width="80%">
 
 Click Flush the Frontend Caches in the Typo3 backend.
 

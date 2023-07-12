@@ -17,7 +17,7 @@ toc:
 
 If the button is un-clickable, you have reached your live stream limit. To create a new stream, delete an existing stream from the list.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/9651664092049.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/9651664092049.png" alt="" width="80%">
 
 A new page will open. Do the remaining steps connected with Gcore’s interface in it. 
 
@@ -62,7 +62,7 @@ Insert the copied values in the interface of your encoder according to the appro
 - Copy the iFrame code to embed the live stream within the built-in player.
 - Copy the export link in the needed protocol to paste it into your player. Use the **LL-DASH** link if your live stream will be viewed from any device except iOS. Use **LL HLS** for iOS viewing.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/13543414027409.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/13543414027409.png" alt="" width="80%">
 
 Then your viewers see the live stream.
 

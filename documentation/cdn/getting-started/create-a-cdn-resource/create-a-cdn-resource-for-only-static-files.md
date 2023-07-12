@@ -27,13 +27,13 @@ You can create up to 30 CDN resources in one account. 
 
 **SSL**. If you want to make your static files accessible over HTTPS, toggle on the "Enable HTTPS" feature. Choose one of two options: "Get free Let's Encrypt certificate" or "Add or select your own SSL certificate". When choosing the first one, an SSL certificate will be issued automatically for a domain of your CDN resource (*cdn.yourdomain.com*) after Step 4 of this instruction. If you select the second option, you can add your own certificate using the instruction <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/add-an-ssl-certificate-to-deliver-content-over-https" target="_blank">Add an SSL certificate to transfer content over HTTPS</a>.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/image_1461.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/image_1461.png" alt="" width="80%">
 
 4\. Add a CNAME record for the domain that you specified in Step 3 as *cdn.yourdomain.com*. You need to do it in your DNS provider's personal account. For a CNAME value, enter a subdomain shown in our personal account as _*.gcdn.co_. For example, in the screenshot below it is written as *cl-2db15545.gcdn.co*, so, for the *cdn.yourdomain.com* subdomain, you need to create a CNAME record with the value *cl-2db15545.gcdn.co*. 
 
 If you specified additional domain names in Step 3, create CNAME records for them with the same value as well.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/image_1462.png" alt="" width="70%">  
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/image_1462.png" alt="" width="80%">  
 
 5\. In the path of static files, replace the source domain with a custom domain of the CDN resource. For example, if a file path used to be *yourdomain.com/images/image.jpg*, change it to *cdn.yourdomain.com/images/image.jpg*. As a result, users will receive static files from the CDN cache, and only the requests to the files that haven't yet been cashed will be forwarded to your origin server.
 
@@ -46,17 +46,17 @@ If you specified additional domain names in Step 3, create CNAME records for the
 
 Click "Confirm" to complete the creation and set-up of your CDN resource.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/mceclip0.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/mceclip0.png" alt="" width="80%">
 
 The resource will be created automatically. You will see a page with its advanced settings. If there is no text box ```... steps lef``` in the upper-right corner, everything is ok and the resource is working. 
 
 If you see the ```... steps left``` text box, it means that something went wrong while creating or integrating the CDN resource. 
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/image_1465.png" alt="" width="70%"> 
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/image_1465.png" alt="" width="80%"> 
 
 To find out exactly where an error occurred, click the "Setup guide" button at the top. You will see a sliding panel indicating the status of each step of CDN resource creation.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/image_1466.png" alt="" width="70%"> 
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/image_1466.png" alt="" width="80%"> 
 
 If a step is configured correctly, it will be shown in the UI.
 

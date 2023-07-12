@@ -42,7 +42,7 @@ You can see statistics on all videos/live streams total or only on a single one.
 
 If you want to see statistics on a specific video or live stream, navigate to it and open the "Statistics" tab.  
   
-<img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/view-statistics-of-live-streams-videos-and-billing/____________2_.gif" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/view-statistics-of-live-streams-videos-and-billing/____________2_.gif" alt="" width="80%">
 
 ## Billing statistics  
 
@@ -62,6 +62,6 @@ You can sort statistics by several metrics:
 
 *All metrics are calculated in minutes.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/view-statistics-of-live-streams-videos-and-billing/10599503863057.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/view-statistics-of-live-streams-videos-and-billing/10599503863057.png" alt="" width="80%">
 
 VoD plans calculate the total duration of all videos uploaded to the Streaming Platform. Let’s say, for example, that one day, you upload 50 minutes of video. On the next, you upload 100 minutes of video and then delete the first video. You will be billed for 150 minutes of video.

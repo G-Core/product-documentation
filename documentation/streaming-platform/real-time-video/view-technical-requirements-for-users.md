@@ -114,4 +114,4 @@ toc:
 
 ## Operating system and Browser compatibility
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/view-technical-requirements-for-users/____________________________.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/view-technical-requirements-for-users/____________________________.png" alt="" width="80%">

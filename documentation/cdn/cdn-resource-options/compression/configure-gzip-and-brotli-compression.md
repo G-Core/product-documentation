@@ -22,7 +22,7 @@ Our CDN supports Gzip and Brotli edge compression, so even if your origin server
 
 ### Gzip
 
-The Gzip method reduces file size by 70% and up to 90%. The following MIME types can be compressed using Gzip:
+The Gzip method reduces file size by 80% and up to 90%. The following MIME types can be compressed using Gzip:
 
 - application/javascript
 - application/json

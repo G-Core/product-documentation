@@ -9,4 +9,4 @@ toc:
 
 Ask the hosting provider for a new IP address (preferably from a different subnet). Change the origin IP in the <a href="https://gcore.com/docs/web-security/create-and-configure-a-protected-resource" target="_blank">Control panel settings</a>. 
 
-<a href="https://gcore.com/docs/set-the-access-policy-for-a-protected-resource" target="_blank">Set up ACL</a> to allow access only to the trusted IPs and subnets.
+<a href="https://gcore.com/docs/web-security/set-the-access-policy-for-a-protected-resource" target="_blank">Set up ACL</a> to allow access only to the trusted IPs and subnets.

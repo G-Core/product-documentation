@@ -40,7 +40,7 @@ Example. an origin server hosts a 750×1150 px image, but with Crop, you set 50
    </tbody>
 </table>
 
-**How it works.** To use Crop, you need to add the [necessary query strings](#crop-parameters) to image URLs on your website source. Then, when a user requests a webpage, the CDN returns it with cropped images.
+**How it works.** To use Crop, you need to add the [necessary query strings](https://gcore.com/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images#crop-parameters) to image URLs on your website source. Then, when a user requests a webpage, the CDN returns it with cropped images.
 
 ## Enable the Crop feature
 
@@ -58,7 +58,7 @@ Crop is included in the paid Image Stack option. This option helps optimize imag
 <span style="color:#FF5913">image.jpg</span>?parameter=values
 </code-block>
 
-where <span style="color:#FF5913">image.jpg</span> is the image URL on the website. Learn more about all available parameters in the [Crop parameters](#crop-parameters) section.
+where <span style="color:#FF5913">image.jpg</span> is the image URL on the website. Learn more about all available parameters in the [Crop parameters](https://gcore.com/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/crop-images#crop-parameters) section.
 
 4\. Save the changes in the website source code.
 

@@ -118,7 +118,7 @@ To adjust the headers that are being passed:
 
 2\. Switch on the **Hide response headers option** in the "HTTP headers" section.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/add-or-hide-response-headers/11595287930257.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/add-or-hide-response-headers/11595287930257.png" alt="" width="80%">
 
 3\. Set up the option. You can configure it in two modes:
 

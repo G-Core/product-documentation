@@ -53,7 +53,7 @@ For custom search use:
 - Search bar. Enter the main or additional CNAME of the needful resource or its ID.
 - Status section. Select the needful status or the "Select all" option.  
 
-<img src="https://assets.gcore.pro/docs/cdn/about-cdn-resources-interface-how-it-is-arranged/10274072513937.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/about-cdn-resources-interface-how-it-is-arranged/10274072513937.png" alt="" width="80%">
 
 ### Manage options
 
@@ -63,7 +63,7 @@ To do this, click on the three dots sign next to the required resource.
 
 A list of possible options opens:
 
-<img src="https://assets.gcore.pro/docs/cdn/about-cdn-resources-interface-how-it-is-arranged/10274251831185.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/about-cdn-resources-interface-how-it-is-arranged/10274251831185.png" alt="" width="80%">
 
 - "Settings" opens the resource settings. You can also go to the resource settings by clicking on the CNAME of the resource.
 - "Prefetch" opens the <a href="https://gcore.com/docs/cdn/load-the-content-to-cdn-before-users-request-it" target="_blank">Prefetch</a> section to upload the content to CDN before users request it.
@@ -80,6 +80,6 @@ To delete a resource, click on the three dots sign on the left, select **Delete 
 
 **Note**: The resources used for the Streaming service cannot be deleted.
 
-By default, deleted resources are not displayed in the list of resources. Use [the filter](#filter-and-search) to display them. Deleted resources are shown in the list of all CDN resources for three months. Statistics for deleted resources are also available in the <a href="https://gcore.com/docs/cdn/view-statistics-of-a-cdn-resource" target="_blank">Reports</a> section during this time.
+By default, deleted resources are not displayed in the list of resources. Use [the filter](https://gcore.com/docs/cdn/about-cdn-resources-interface-how-it-is-arranged#filter-and-search) to display them. Deleted resources are shown in the list of all CDN resources for three months. Statistics for deleted resources are also available in the <a href="https://gcore.com/docs/cdn/view-statistics-of-a-cdn-resource" target="_blank">Reports</a> section during this time.
 
 After resource deletion, the CNAME of this resource is no more connected with a resource. So you can use it for the new CDN resource.

@@ -21,9 +21,9 @@ toc:
 The desktop environment is a graphical interface that looks like a desktop. After installing it, you will see the system in its usual appearance: with folders, shortcuts, and a menu. This will not delete the terminal — you can still open it and enter commands.
 
 <media-gallery>
- <img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image2.png" alt="" width="70%">
+ <img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image2.png" alt="" width="80%">
  
- <img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image25.png" alt="" width="70%">
+ <img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image25.png" alt="" width="80%">
 </media-gallery>
 
 In this article, we will show you how to install the XFCE desktop environment — it is easy to use, does not require many resources, and can be installed on even the weakest server. If you wish, you can install any other desktop environment according to the instructions from the Internet.
@@ -35,17 +35,17 @@ In this article, we will show you how to install the XFCE desktop environment �
 1\. Connect to the server through your Control Panel or via SSH. To connect through the Control Panel, go to the server control panel and click the monitor icon.
 
 <media-gallery>
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/12899747666833.png" alt="" width="70%"> 
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/12899747666833.png" alt="" width="80%"> 
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/12899761970449.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/12899761970449.png" alt="" width="80%">
 </media-gallery>
 
 You can find the login and password for connection in your Control Panel in the "Instructions" section.
 
 <media-gallery>
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/12900025590289.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/12900025590289.png" alt="" width="80%">
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/12900217123473.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/12900217123473.png" alt="" width="80%">
 </media-gallery>
 
 2\. Update the package list with the command:
@@ -72,7 +72,7 @@ Confirm the operation with: ```y```
 
 In some versions of the OS, the system will offer a choice of "gdm3" and "lightdm" tools. Select "lightdm" and press Enter. The system will install it.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/4411242128145.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/4411242128145.png" alt="" width="80%">
 
 In other OS versions, you need to install the tool yourself. Install the tool "xinit" using the command:
 
@@ -90,13 +90,13 @@ Confirm the operation with: ```y```
 
 5\. The desktop environment will be ready to run.
 
-If you installed "lightdm" at step №4 the graphical interface will start after the server reboots. Reboot it using the command:
+If you installed "lightdm" at step no. 4 the graphical interface will start after the server reboots. Reboot it using the command:
 
 ```
 shutdown -r now
 ```
 
-If at step №4 you installed xinit, start the graphical interface using the command:
+If at step no. 4 you installed xinit, start the graphical interface using the command:
 
 ```
 startx  
@@ -106,15 +106,15 @@ startx
 
 In some cases, at the first start, the system gives a choice of whether to use the default configuration or create an empty panel. If you are working with XFCE for the first time, select the first option — then the taskbar, clock, pre-configured Start menu, and other important things for work will appear on the desktop. In an empty panel, you will have to configure everything yourself.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image11.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image11.png" alt="" width="80%">
 
 That's how the desktop with default configuration looks (little details may vary):
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image2.png" alt="" width="80%">
 
 If only folders and widgets are visible on the desktop and there is no panel with the "Applications" button, it’s okay — the panel is simply hidden at the top. Move the slider up to see it.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image33.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image33.png" alt="" width="80%">
 
 Everything is ready, use your server with XFCE on it. If you restart the server, it will open the terminal again. You can start the desktop environment using the "startx" command.
 
@@ -175,19 +175,19 @@ The desktop environment is installed and ready to run. Start it with the command
 startx
 ```
 
-**Note**: If the system gives an error, most likely, you made a mistake when entering the command in step №5. Repeat step №5 and then start XFCE with the "startx" command.
+**Note**: If the system gives an error, most likely, you made a mistake when entering the command in step no. 5. Repeat step no. 5 and then start XFCE with the "startx" command.
 
 At the first start, the system will ask you to choose whether you want to use the default configuration or create an empty panel. If you are working with XFCE for the first time, select the first option — then the taskbar, clock, pre-configured Start menu, and other important things for work will appear on the desktop. In an empty panel, you will have to configure everything yourself.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image28.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image28.png" alt="" width="80%">
 
 That's how the desktop with default configuration looks:
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image22.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image22.png" alt="" width="80%">
 
 If only folders and widgets are visible on the desktop and there is no panel with the "Applications" button, it’s okay — the panel is simply hidden at the top. Move the slider up to see it.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image34.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image34.png" alt="" width="80%">
 
 Everything is ready to go. Use your server with XFCE on it.
 
@@ -243,11 +243,11 @@ startx
 
 At the first start, the system will ask you to choose whether you want to use the default configuration or create an empty panel. If you are working with XFCE for the first time, select the first option — then the taskbar, clock, pre-configured Start menu, and other important things for work will appear on the desktop. In an empty panel, you will have to configure everything yourself.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image30.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image30.png" alt="" width="80%">
 
 That's how the desktop with default configuration looks:
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image21.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image21.png" alt="" width="80%">
 
 Everything is ready, use your server with XFCE on it. If you restart the server, it will open the terminal again. You can start the desktop environment using the "startx" command.
 
@@ -256,7 +256,7 @@ Everything is ready, use your server with XFCE on it. If you restart the server
 
 Click on "Applications" in the upper-left corner and select "Terminal Emulator". The terminal will open.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image7.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image7.png" alt="" width="80%">
 
 ## How to log out of XFCE
 
@@ -268,10 +268,10 @@ Press Ctrl + Alt + F1 — you will be returned to the terminal without a graphic
 
 Click on the "Applications" button in the upper-left corner of the screen. Select "Log Out" in the drop-down menu.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image19.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image19.png" alt="" width="80%">
 
 Select "Log Out" in the pop-up window.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image29.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image29.png" alt="" width="80%">
 
 You will be returned to the terminal. You can start XFCE again with the "startx" command.

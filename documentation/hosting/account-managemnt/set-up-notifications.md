@@ -17,4 +17,4 @@ Note, that this user should have an access to the User Settings section: <a href
 
 At the end of the page, you'll find Subscribe to Notification section and will be able to choose the notifications you need.
 
-<img src="https://assets.gcore.pro/docs/hosting/account-managemnt/set-up-notifications/mceclip1.png" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/account-managemnt/set-up-notifications/mceclip1.png" width="80%">

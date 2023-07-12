@@ -18,7 +18,7 @@ toc:
 
 ## What is AI Infrastructure?
 
-AI Infrastructure is a cluster of <a href="https://www.graphcore.ai/" target="_blank">Graphcore</a> servers which are designed for ML tasks. These servers have [high specifications](#server-specifications-and-performance) and are configured for processing a great amount of data in a short time (you can find the results of performance tests in the [Performance tests](#performance-tests-graphcore-m2000-vs-nvidia-dgx-a100) section).
+AI Infrastructure is a cluster of <a href="https://www.graphcore.ai/" target="_blank">Graphcore</a> servers which are designed for ML tasks. These servers have [high specifications](https://gcore.com/docs/cloud/ai-Infrustructure/about-our-ai-infrastructure#server-specifications-and-performance) and are configured for processing a great amount of data in a short time (you can find the results of performance tests in the [Performance tests](https://gcore.com/docs/cloud/ai-Infrustructure/about-our-ai-infrastructure#performance-tests-graphcore-m2000-vs-nvidia-dgx-a100) section).
 
 This infrastructure consists of three entities:
 
@@ -28,7 +28,7 @@ This infrastructure consists of three entities:
 
 For datasets storage, you can use Poplar server disk space, external S3 storage, or <a href="https://gcore.com/storage/" target="_blank">our S3 storage</a>.
 
-<img src="https://assets.gcore.pro/docs/cloud/ai-Infrustructure/about-our-ai-infrastructure/image__10_.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cloud/ai-Infrustructure/about-our-ai-infrastructure/image__10_.png" alt="" width="80%">
 
 ## Server specifications and performance
 

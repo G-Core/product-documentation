@@ -49,11 +49,11 @@ For the Mode choose Origin Pull and enter CNAME specified in the Gcore <a href=
 
 Ensure that your <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">CNAME record has been configured</a> in a proper way before using it for integration.  
   
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-drupal/10.PNG" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-drupal/10.PNG" alt="" width="80%">
 
 Scroll down and choose Far Future expiration, then click Save Configuration.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-drupal/11.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-drupal/11.png" alt="" width="80%">
 
 These steps are needed if you are going to deliver your CDN content via HTTPS. Choose the Other tab on the right of the CDN Module configuration screen.  
 

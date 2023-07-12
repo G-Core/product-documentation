@@ -42,7 +42,7 @@ There are two ways to use the compression feature: in the Control panel and by q
 
 1\. Go to the "Rules" section in the settings of that CDN resource you want to compress and open the **Image optimization** rule.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/configure-image-compression-to-webp-and-avif/11774756992785.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/configure-image-compression-to-webp-and-avif/11774756992785.png" alt="" width="80%">
 
 2\. Click **Enable WebP compression** and/or **Enable AVIF compression**. If you enable both options, the format will be chosen depending on which format (WebP or AVIF) the end-user’s browser supports. If the browser supports both, the image will be converted to the AVIF format.
 

@@ -53,7 +53,7 @@ After creating a network, a new router is being automatically created in the clo
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/7.____________.png" alt="7.____________.png">
 
-For more information about creating and configuring a network and subnet, see the article [Networking](https://support.gcore.com/hc/en-us/articles/360013801997). 
+For more information about creating and configuring a network and subnet, see the article <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-network" target="_blank">Networking</a>.
 
 For automatically created routers, you can make the same settings as for manually created routers. 
 

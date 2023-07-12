@@ -63,4 +63,4 @@ Important! Make sure that the exact time and time zone are set correctly on your
 
 ## REcover access
 
-If for some reason after enabling two-factor authentication, you cannot enter the verification code from the app during authorization, please contact our technical support  ([support@gcore.com](mailto:support@gcorelabs.com)) and provide your first and last name and phone number that you pointed during registration.
+If for some reason after enabling two-factor authentication, you cannot enter the verification code from the app during authorization, please contact our technical support  ([support@gcore.com](mailto:support@gcore.com)) and provide your first and last name and phone number that you pointed during registration.

@@ -21,7 +21,7 @@ In the resource settings you will see the time when it will be stopped:
 
 A red sign will be displayed in CDN Resources section next to the resources that are going to be stopped:
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/suspend-a-cdn-resource-automatically-or-manually/_______________________.png" alt=""  width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/suspend-a-cdn-resource-automatically-or-manually/_______________________.png" alt=""  width="80%">
 
 2\. After the resource suspension, all users with the administrator and engineer roles will receive an email with a list of stopped resources.
 

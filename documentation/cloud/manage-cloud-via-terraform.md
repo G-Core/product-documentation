@@ -38,7 +38,7 @@ To work with Terraform, you create a configuration file where you specify the ch
 
 5\. Create a configuration file in the Terraform folder and name it **main.tf**.
 
-6\. Find out the latest version of the Terraform provider on <a href="https://registry.terraform.io/providers/G-Core/gcorelabs/latest" target="_blank">the page</a> and generate a permanent API token using <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">the guide</a>, if you don’t have one yet.
+6\. Find out the latest version of the Terraform provider on <a href="https://registry.terraform.io/providers/G-Core/gcore/latest" target="_blank">the page</a> and generate a permanent API token using <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">the guide</a>, if you don’t have one yet.
 
 7\. Add the following code to main.tf:
 
@@ -70,7 +70,7 @@ terraform init
 
 You’ll get the output:
 
-<img src="https://assets.gcore.pro/docs/cloud/manage-cloud-via-terraform/12966689446417.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cloud/manage-cloud-via-terraform/12966689446417.png" alt="" width="80%">
 
 This means Terraform has been successfully downloaded and installed, and you can start working with it.
 
@@ -209,7 +209,7 @@ resource "gcore_instance" "<span style="color:#FF5913">v</span>" {
 }
 </code-block>
 
-3\. Configure resources required for the instance: [a reserved IP address](#reserve-an-ip-address), [network](#create-a-network-and-subnetwork), [subnetwork](#create-a-network-and-subnetwork), [volume](#create-a-volume).
+3\. Configure resources required for the instance: [a reserved IP address](https://gcore.com/docs/cloud/manage-cloud-via-terraform#reserve-an-ip-address), [network](https://gcore.com/docs/cloud/manage-cloud-via-terraform#create-a-network-and-subnetwork), [subnetwork](https://gcore.com/docs/cloud/manage-cloud-via-terraform#create-a-network-and-subnetwork), [volume](https://gcore.com/docs/cloud/manage-cloud-via-terraform#create-a-volume).
 
 4\. Configure the instance.
 

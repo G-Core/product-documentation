@@ -14,7 +14,7 @@ toc:
 
 Secrets Manager is a tab where you can upload PKCS12 files (called secrets in the system) to. They are needed to create Load Balancers with HTTPS listeners.
 
-<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/mceclip0.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/mceclip0.png" alt="" width="80%">
 
 ## What PKCS12 file is 
 
@@ -40,8 +40,8 @@ CA does not always send a client a chain of certificates along with the main cer
 2. Create the file in any text editor.
 3. Inside the created file, place the contents of the certificates in the following order: root certificate, then intermediate certificates in order, the certificate for the domain in the end. Like this:  
   - Content of the root certificate (for example, CARoot.crt)  
-  - Content of the intermediate certificate №1 (for example, Intermediate1.crt)  
-  - Content of the intermediate certificate №2 (for example, Intermediate2.crt)  
+  - Content of the intermediate certificate no. 1 (for example, Intermediate1.crt)  
+  - Content of the intermediate certificate no. 2 (for example, Intermediate2.crt)  
   - Content of the certificate for the domain (for example, domain.crt)
 
 ### 2\. Merge certificate files into PKCS12
@@ -127,17 +127,17 @@ A new code64 file with the contents of the base64 encoded PKCS12 file will be cr
 1\. Add the base64 encoded content of the PKCS12 file as a Secret (in examples above it is the content of "code64").  
 
 <media-gallery>
-<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/mceclip0.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/mceclip0.png" alt="" width="80%">
 
-<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/image4.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/image4.png" alt="" width="80%">
 </media-gallery>
 
 2\. When creating or editing a Load Balancer, click "Add Listener". In the opened window, enter the name of a new listener, select the "Terminated HTTPS" protocol and specify the desired secret below.  
 
 <media-gallery>
-<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/image2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/image2.png" alt="" width="80%">
 
-<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/image1.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/image1.png" alt="" width="80%">
 </media-gallery>
    
 The listener will be created.

@@ -49,7 +49,7 @@ You’ll need to have:
 
 - Your own video streaming interface created
 - A Gcore account with an active <a href="https://gcore.com/docs/account-settings/create-an-account-for-an-individual-or-legal-entity" target="_blank">Streaming</a> subscription
-- An <a href="https://apidocs.gcore.com/streaming" target="_blank">authentication</a> set up using the user credentials
+- An <a href="https://api.gcore.com/docs/streaming" target="_blank">authentication</a> set up using the user credentials
 - A <a href="https://gcore.com/docs/streaming-platform/extra-features/get-webhooks-from-the-streaming-platform" target="_blank">webhook</a> set up
 
 ## Basic operations
@@ -58,7 +58,7 @@ You’ll need to have:
 
 #### Step 1. Create a stream
 
-Use the <a href="https://apidocs.gcore.com/streaming" target="_blank">post_streams_id</a> method to create a stream object in the Streaming Platform.
+Use the <a href="https://api.gcore.com/docs/streaming" target="_blank">post_streams_id</a> method to create a stream object in the Streaming Platform.
 
 Sample request payload:
 
@@ -97,7 +97,7 @@ Sample response payload:
 
 #### Step 2. Create a broadcast
 
-Use the <a href="https://apidocs.gcore.com/streaming" target="_blank">post_broadcasts</a> method to create a broadcast object.
+Use the <a href="https://api.gcore.com/docs/streaming" target="_blank">post_broadcasts</a> method to create a broadcast object.
 
 Sample request payload:
 
@@ -135,7 +135,7 @@ Sample response payload:
 
 #### Step 3. Enable the stream
 
-Having received a successful response from your app, the user can now publish the stream. Use the <a href="https://apidocs.gcore.com/streaming" target="_blank">patch_streams_id</a> method to activate the stream.
+Having received a successful response from your app, the user can now publish the stream. Use the <a href="https://api.gcore.com/docs/streaming" target="_blank">patch_streams_id</a> method to activate the stream.
 
 Sample request payload:
 
@@ -182,7 +182,7 @@ The user tests the broadcast at this stage.
 
 #### Step 5. Change the broadcast status to Live
 
-Use the <a href="https://apidocs.gcore.com/streaming" target="_blank">patch_broadcasts_id</a> method to update the broadcast status to *Live*.
+Use the <a href="https://api.gcore.com/docs/streaming" target="_blank">patch_broadcasts_id</a> method to update the broadcast status to *Live*.
 
 Sample request payload:
 
@@ -228,7 +228,7 @@ The user starts streaming at this stage. The broadcast is visible to the audienc
 
 #### Step 7. Start recording
 
-Use the <a href="https://apidocs.gcore.com/streaming" target="_blank">put_streams_id_start_recording</a> method to begin recording.
+Use the <a href="https://api.gcore.com/docs/streaming" target="_blank">put_streams_id_start_recording</a> method to begin recording.
 
 If the returned HTTP status code is 204, the request is successful.
 
@@ -257,7 +257,7 @@ The user stops streaming at this stage.
 
 #### Step 9. Stop recording
 
-Use the <a href="https://apidocs.gcore.com/streaming" target="_blank">put_streams_id_stop_recording</a> method to stop recording
+Use the <a href="https://api.gcore.com/docs/streaming" target="_blank">put_streams_id_stop_recording</a> method to stop recording
 
 The response to this request contains information about the recorded video.
 
@@ -313,7 +313,7 @@ Sample webhook payload:
 ```
 #### Step 12. Change broadcast status to Finished
 
-Use the <a href="https://apidocs.gcore.com/streaming" target="_blank">patch_broadcasts_id</a> method to update the broadcast status to Finished.
+Use the <a href="https://api.gcore.com/docs/streaming" target="_blank">patch_broadcasts_id</a> method to update the broadcast status to Finished.
 
 Sample request payload:
 
@@ -353,7 +353,7 @@ Sample webhook payload:
 ```
 #### Step 14. Disable the stream
 
-Use the <a href="https://apidocs.gcore.com/streaming" target="_blank">patch_streams_id</a> method to deactivate the stream.
+Use the <a href="https://api.gcore.com/docs/streaming" target="_blank">patch_streams_id</a> method to deactivate the stream.
 
 Sample request payload:
 
@@ -403,7 +403,7 @@ Sample webhook payload:
 ```
 #### Step 16. Delete the broadcast
 
-Use the <a href="https://apidocs.gcore.com/streaming" target="_blank">delete_broadcasts_id</a> method to delete the broadcast.
+Use the <a href="https://api.gcore.com/docs/streaming" target="_blank">delete_broadcasts_id</a> method to delete the broadcast.
 
 If the returned HTTP status code is 204, the request is successful.
 
@@ -489,7 +489,7 @@ Sample webhook payload:
 ```
 ### Step 19. Get video information
 
-Use the <a href="https://apidocs.gcore.com/streaming" target="_blank">get_api_videos_id</a> method to retrieve detailed information about the video.
+Use the <a href="https://api.gcore.com/docs/streaming" target="_blank">get_api_videos_id</a> method to retrieve detailed information about the video.
 
 Sample response payload:
 
@@ -511,7 +511,7 @@ Sample response payload:
 
 ### Reuse of a stream
 
-The user can reuse the same stream for each broadcast. In this case, you don’t need to create a new one. Just update the stream using the <a href="https://apidocs.gcore.com/streaming" target="_blank">patch_streams_id</a> method with the appropriate transcoding region.
+The user can reuse the same stream for each broadcast. In this case, you don’t need to create a new one. Just update the stream using the <a href="https://api.gcore.com/docs/streaming" target="_blank">patch_streams_id</a> method with the appropriate transcoding region.
 
 Sample request payload:
 
@@ -558,7 +558,7 @@ Sample webhook payload:
 }
 ```
 
-- You can also check for the stream status using the <a href="https://apidocs.gcore.com/streaming" target="_blank">get_streams_id</a> method. If the response contains **"active": false** and the stream wasn’t manually interrupted, then you can call the <a href="https://apidocs.gcore.com/streaming" target="_blank">patch_broadcasts_id</a> method to transition the broadcast to "Paused" status.
+- You can also check for the stream status using the <a href="https://api.gcore.com/docs/streaming" target="_blank">get_streams_id</a> method. If the response contains **"active": false** and the stream wasn’t manually interrupted, then you can call the <a href="https://api.gcore.com/docs/streaming" target="_blank">patch_broadcasts_id</a> method to transition the broadcast to "Paused" status.
 
 Sample request payload:
 
@@ -580,16 +580,16 @@ Sample response payload:
 }
 ```
 
--  You can also <a href="https://apidocs.gcore.com/streaming" target="_blank">stop the recording</a> when the user has an interruption (even for a couple of minutes) during streaming. Your app can prompt the user to start the stream again. The stream recording will be broken into two files: data recorded up to the interruption and data recorded when the user renews streaming.
+-  You can also <a href="https://api.gcore.com/docs/streaming" target="_blank">stop the recording</a> when the user has an interruption (even for a couple of minutes) during streaming. Your app can prompt the user to start the stream again. The stream recording will be broken into two files: data recorded up to the interruption and data recorded when the user renews streaming.
 
 The Streaming Platform can’t currently reconnect without interrupting the recording if the stream gets temporary disruption. But we plan to implement this in the future.
 
 ### Stream deletion
 
-You can delete streams that have been inactive for some time and are associated with a deleted user account. To do this, use the <a href="https://apidocs.gcore.com/streaming" target="_blank">delete_api_videos_id</a> method.
+You can delete streams that have been inactive for some time and are associated with a deleted user account. To do this, use the <a href="https://api.gcore.com/docs/streaming" target="_blank">delete_api_videos_id</a> method.
 
 If the returned HTTP status code is 204, the request is successful.
 
 ## Other API methods
 
-Check out our Streaming Platform API <a href="https://apidocs.gcore.com/streaming" target="_blank">documentation</a> for more methods that might come in handy for other use cases.
+Check out our Streaming Platform API <a href="https://api.gcore.com/docs/streaming" target="_blank">documentation</a> for more methods that might come in handy for other use cases.

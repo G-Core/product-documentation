@@ -18,7 +18,7 @@ our website</a> and click the **Get started for free** button.
 
 2. The Gcore platform option will pop up. Select **Go to Gcore Platform**.
 
-<img src="https://assets.gcore.pro/docs/account-settings/account/select-gcore-platform-20.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/account-settings/account/select-gcore-platform-20.png" alt="" width="80%">
 
 3. Next, create an account using Google, GitHub, or your email account.
 

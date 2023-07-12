@@ -198,6 +198,6 @@ Copy and paste the iframe from your control panel in the upper field, and click 
 
  
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/api/player-api-tutorial/1567057078730.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/api/player-api-tutorial/1567057078730.png" alt="" width="80%">
 
 Dark gray buttons are for the functions available for calling, white buttons are for the functions that require values setting. Events are logged in the "Status" window.

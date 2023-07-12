@@ -16,7 +16,7 @@ toc:
 
 Do the first three steps in your control panel in the "Secure token" tab. 
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/mceclip4.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/mceclip4.png" alt="" width="80%">
 
 1\. Enable the "Secure token" option in the resource settings. 
 
@@ -26,7 +26,7 @@ Do the first three steps in your control panel in the "Secure token" tab. 
 
 4\. Do this step on your origin server. Insert a script on your website which generates secure links. The generated links should look like as below:
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/mceclip3.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/mceclip3.png" alt="" width="80%">
 
 Where:
 
@@ -34,7 +34,7 @@ Where:
 - ```DMF1ucDxtHCxwYQ``` is the output of the "MD5(String)" hash function, where *String* is the parameter obtained by merging elements: ```<link expiry time><file path><whitelisted IP address><key from Step 2>```,
 - ```2147483647``` is the time in the UNIX timestamp format until which the link is considered valid. 
 
-We have prepared script templates for PHP, Python, and OpenSSL — just copy one of them from the "[Scripts for link generation](#scripts-for-link-generation)" section below. The script will start creating secure links to the content. 
+We have prepared script templates for PHP, Python, and OpenSSL — just copy one of them from the "[Scripts for link generation](https://gcore.com/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token#scripts-for-link-generation)" section below. The script will start creating secure links to the content. 
 
 5\. Do this step on your origin server. Arrange the content on your website to allow access to the protected files only over a secured link — that is, rule out the delivery of the required content over a link without a secure token. 
 
@@ -157,11 +157,11 @@ In these scripts:
 
 - *2147483647/images/1.jpg* is the path to the file, 
 - *1.2.3.4* is the IP address that is allowed to access the content, 
-- *secret_key* is a secret key you specified at Step 2 of the [Configure Secure Token](#configure-secure-token) instruction.
+- *secret_key* is a secret key you specified at Step 2 of the [Configure Secure Token](https://gcore.com/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token#configure-secure-token) instruction.
 
 The scripts above can only generate a secure token. You need to create a separate script that will add a secure token and expiry time to links. The script is supposed to create a link as shown below:
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/mceclip3.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/mceclip3.png" alt="" width="80%">
 
 Where:
 

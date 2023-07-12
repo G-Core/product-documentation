@@ -15,11 +15,11 @@ Go to Advanced Parameters/Performance.
 
 Configure CCC (Combine, Compress and Cache) settings as in the picture below.  
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-prestashop/prestashop.jpeg" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-prestashop/prestashop.jpeg" alt="" width="80%">
 
 Type in the CNAME in the Madia Server#1 field that you specified in the Gcore <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>. Ensure that your <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">CNAME record has been configured</a> in a proper way before using it for integration.  
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-prestashop/prestashop2v1.jpeg" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-prestashop/prestashop2v1.jpeg" alt="" width="80%">
 
 Click **Save** at the top of the page.
 

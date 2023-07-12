@@ -14,4 +14,4 @@ Set Name and E-mail and password of the new user. The credentials can be used to
 
 To see your user list go to "Client" - "Users". 
 
-<img class="confluence-embedded-image confluence-external-resource" src="https://assets.gcore.pro/docs/hosting/account-managemnt/users/add-a-new-user-to-your-account/hH4JCnB.png" data-image-src="https://assets.gcore.pro/docs/hosting/account-managemnt/users/add-a-new-user-to-your-account/hH4JCnB.png" alt="" width="70%">
+<img class="confluence-embedded-image confluence-external-resource" src="https://assets.gcore.pro/docs/hosting/account-managemnt/users/add-a-new-user-to-your-account/hH4JCnB.png" data-image-src="https://assets.gcore.pro/docs/hosting/account-managemnt/users/add-a-new-user-to-your-account/hH4JCnB.png" alt="" width="80%">

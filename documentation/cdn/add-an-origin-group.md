@@ -18,13 +18,13 @@ toc:
 A new origins group will appear. It won’t automatically bind to the CDN resource. To bind a new group, refresh the browser page, click the ᐯ symbol and select the created group from the drop-down list. Next, click **Save changes**.
 
 <media-gallery>
-<img src="https://assets.gcore.pro/docs/cdn/add-an-origin-group/10960872583313.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/add-an-origin-group/10960872583313.png" alt="" width="80%">
 <img src="https://assets.gcore.pro/docs/cdn/add-an-origin-group/10960907587345.png" alt="" width="50%">
 </media-gallery>
 
 **Option 2.** Open the **Origins groups** section and click **Add origins group**. The created origins group will appear in the general list of origins groups. It won’t automatically bind to the CDN resource. Please do it manually.
 
-<img src="https://assets.gcore.pro/docs/cdn/add-an-origin-group/10960872715793.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/add-an-origin-group/10960872715793.png" alt="" width="80%">
 
 A pop-up window for group configuration and adding will appear, regardless of which option you choose. Follow the rest of the steps in it.
 
@@ -46,7 +46,7 @@ When you have more than one origin in a group, you can adjust the balance betwee
 - Select active and backup origins
 - Decide whether to enable the Use next upstream option
 
-<img src="https://assets.gcore.pro/docs/cdn/add-an-origin-group/10960907857937.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/add-an-origin-group/10960907857937.png" alt="" width="80%">
 
 **Enable/disable origin.** By default, the slider next to each origin is in the **On** position. ‘On’ means that the CDN can pull content from this origin: It has been added to the balance.
 

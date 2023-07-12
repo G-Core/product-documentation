@@ -31,11 +31,11 @@ You can customize a log report:
 - To filter logs, click "Add filter" and set the required parameter: time, user's IP address, HTTP method, status code, data center, or cache status.
 - To see logs for another time interval, click the timestamp field and specify your values. You can choose any interval of up to 6 hours for any of the last 3 days.
 
-<img src="https://assets.gcore.pro/docs/cdn/logs/log-viewer-view-and-download-cdn-resource-logs/image_1332.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/logs/log-viewer-view-and-download-cdn-resource-logs/image_1332.png" alt="" width="80%">
 
 To see more details about a log, hover the mouse over the "i" icon on the right. You will see twelve request parameters.  
   
-<img src="https://assets.gcore.pro/docs/cdn/logs/log-viewer-view-and-download-cdn-resource-logs/image_1333-2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/logs/log-viewer-view-and-download-cdn-resource-logs/image_1333-2.png" alt="" width="80%">
 
 - **Client IP** — an IP address of the client who sent the request.
 - **Timestamp** — UTC time of the request.
@@ -63,15 +63,15 @@ Logs are exported based on the filters that you have applied. To download logs t
 
 The file will be downloaded to your browser download location.
 
-<img src="https://assets.gcore.pro/docs/cdn/logs/log-viewer-view-and-download-cdn-resource-logs/image_1334.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/logs/log-viewer-view-and-download-cdn-resource-logs/image_1334.png" alt="" width="80%">
 
 ## Manage Log Viewer via the API
 
-You can also view and download logs via the API using requests from our <a href="https://apidocs.gcorelabs.com/cdn#tag/CDN-Logs" target="_blank">API documentation</a>. Below we explain how to create a request.
+You can also view and download logs via the API using requests from our <a href="https://api.gcore.com/docs/cdn#tag/CDN-Logs" target="_blank">API documentation</a>. Below we explain how to create a request.
 
 1\. In a tool for working with an API, add an authorization header.  Choose one of the two headers below, copy it, replace the expression in brackets with your data and remove the brackets.
 
-- Authorization: Bearer **(your <a href="https://apidocs.gcore.com/iam#tag/Account/paths/~1auth~1jwt~1login/post" target="_blank">standard authorization token</a> that is valid for 1 hour; its lifetime can be extended up to 24 hours)**
+- Authorization: Bearer **(your <a href="https://api.gcore.com/docs/iam#tag/Account/paths/~1auth~1jwt~1login/post" target="_blank">standard authorization token</a> that is valid for 1 hour; its lifetime can be extended up to 24 hours)**
 - Authorization: APIKey **(your** <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">permanent authorization token</a> **generated in your personal account; it never expires)** 
 
 2\. Set the "GET" request type and specify a path for the required action: 

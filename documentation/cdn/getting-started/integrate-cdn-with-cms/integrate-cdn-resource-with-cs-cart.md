@@ -20,7 +20,7 @@ Click on **+**.
 
 Choose the way to install the file. Click **Upload & Install**. 
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-cs-cart/3eng.PNG" alt="" width="70%">  
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-cs-cart/3eng.PNG" alt="" width="80%">  
 
 Having installed Universal CDN Add-on, go to its settings.  
 
@@ -30,7 +30,7 @@ In the CDN URL field insert CNAME that you specified in the Gcore <a href="htt
 
 Ensure that your <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">CNAME record has been configured</a> in a proper way before using it for integration.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-cs-cart/1.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-cs-cart/1.png" alt="" width="80%">
 
 Apply settings and enable the plugin.
 

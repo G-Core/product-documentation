@@ -27,7 +27,7 @@ apt-get install ethtool net-tools nano
 
 You will get the similar output where ‘```eth0```’ is the required interface.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/configure-a-10-gbps-network-card/12987773655057.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/configure-a-10-gbps-network-card/12987773655057.png" alt="" width="80%">
 
 If you are using an older version of Linux, and the ‘**ip’** command is not found, you can try using the ‘```ifconfig```’ command instead. 
 
@@ -53,7 +53,7 @@ ip link show
 
 The output will include the name of each interface and its state (up or down).
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/configure-a-10-gbps-network-card/12988067861649.png" alt="" width="70%">  
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/configure-a-10-gbps-network-card/12988067861649.png" alt="" width="80%">  
 If you are using an older version of Linux,and the ‘**ip link show’** command is not found, you can try using the ‘```ifconfig```’ command instead.
 
 5\. Activate inactive interfaces: 
@@ -112,7 +112,7 @@ yum install ethtool net-tools nano
 
 You will get the similar output where **eno1** is the required interface.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/configure-a-10-gbps-network-card/12988893619089.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/configure-a-10-gbps-network-card/12988893619089.png" alt="" width="80%">
 
 If you are using an older version of Linux, and the ‘**ip’** command is not found, you can try using the ‘```ifconfig```’ command instead.
 
@@ -138,7 +138,7 @@ ip link show
 
 The output will include the name of each interface and its state (up or down).
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/configure-a-10-gbps-network-card/12989145294481.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/configure-a-10-gbps-network-card/12989145294481.png" alt="" width="80%">
 
 If you are using an older version of Linux, and the ‘**ip link show’** command is not found, you can try using the ‘```ifconfig```’ command instead.
 

@@ -36,7 +36,7 @@ How it works: the money will be credited to the account and go to pay for your u
 
 What to do: in your personal account, click "Add funds". The system will show the <a href="https://gcore.com/docs/hosting/payments/pay-for-gcore-services-payment-methods" target="_blank">payment methods</a> available to you. Transfer the money and continue using the service.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment-/image5.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment-/image5.png" alt="" width="80%">
 
 If the money was charged and did not appear on the balance in 15 minutes (for a transfer through a payment system) or 5 business days (for a bank transfer) <a href="https://gcore.com/docs/hosting/contact-our-technical-support" target="_blank">write to technical support</a> and we will help.
 
@@ -50,11 +50,11 @@ What to do: put money on the card and the next withdrawal try will send it to th
 
 If you have recharged your account balance or paid for a specific server by direct transfer, follow the transaction in the "Payments" section. When you reached the step of transferring money the system created a payment. The unpaid payment has the "new" status. As soon as you send money and it will appear on the balance the status will change to "paid".
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment-/image3.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment-/image3.png" alt="" width="80%">
 
 If money has been automatically written off from the card during auto payment, follow the payment status in the "Expenses" section. The system creates a new line there for each attempt to write off funds. As soon as the money is written off, the "Not paid" column will have the value zero, and the "Payments" column will have the number of the created payment, during which the money came to the balance (information about it can be viewed in the "Payments" section). If the money was written off and did not come to the balance within 15 minutes <a href="https://gcore.com/docs/hosting/contact-our-technical-support" target="_blank">write to technical support</a> and we will help.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment-/image4.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/troubleshooting/troubleshoot-a-server-that-was-suspended-for-non-payment-/image4fixed.png" alt="" width="80%">
 
 ## How soon the money will be credited to the balance
 

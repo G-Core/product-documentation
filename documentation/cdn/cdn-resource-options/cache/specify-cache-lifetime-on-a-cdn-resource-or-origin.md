@@ -61,7 +61,7 @@ server {
 
 The new page opens. Do the remaining steps on it.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/13249168410769.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/13249168410769.png" alt="" width="80%">
 
 3\. Go to the "Cache" section and click **CDN caching**.
 
@@ -79,7 +79,7 @@ The new page opens. Do the remaining steps on it.
 
 The new page opens. Do the remaining steps on it.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/13249271726353.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/13249271726353.png" alt="" width="80%">
 
 2\. Go to the "Cache" section and click **CDN caching**.
 
@@ -116,7 +116,7 @@ For instance, if we set a cache expiry of 4 days and add two rules in the "Advan
 
 where <span style="color:#FF5913">http://cdn.testdomain.com/css/style.css</span> is a link to your file delivered via CDN.
 
-You will receive the output. Pay attention to the highlighted headers in bold. They are described in the "[Check caching headers](#check-caching-http-headers)" section.
+You will receive the output. Pay attention to the highlighted headers in bold. They are described in the "[Check caching headers](https://gcore.com/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin#check-caching-http-headers)" section.
 
 ```
 HTTP/1.1 200 OK   
@@ -157,7 +157,7 @@ If you suspect any content caching issues, check the settings on the source, rea
 
 8\. On the "Headers" tab on the right, you will see the configured headers. Analyze them using the description of the important headings below.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/13249609604753.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/13249609604753.png" alt="" width="80%">
 
 ### Check caching HTTP headers
 

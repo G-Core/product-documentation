@@ -6,6 +6,7 @@ import { copyToClipboardPlugin } from './scully/plugins/copyToClipboard';
 import { replaceImgSrc } from './scully/plugins/replaceImgSrc';
 import 'prismjs/components/prism-ruby.min.js';
 import { updateAlgolia } from './scully/plugins/algolia';
+import { getSitemapPlugin } from './scully/plugins/sitemap';
 
 const categories = [
     'web-security',
@@ -20,6 +21,8 @@ const categories = [
     'reseller-support',
 ];
 import { moveContentFiles } from './scully/plugins/move-content-files/move-content-files';
+
+const SitemapPlugin = getSitemapPlugin();
 
 const defaultPostRenderers = [updateAlgolia, copyToClipboardPlugin, replaceImgSrc];
 setPluginConfig('md', { enableSyntaxHighlighting: true });
@@ -37,6 +40,16 @@ setPluginConfig(moveContentFiles, {
         'web-security',
         'reseller-support',
     ],
+});
+setPluginConfig(SitemapPlugin, {
+    urlPrefix: 'https://gcore.com/docs',
+    sitemapFilename: 'sitemap.xml',
+    ignoredRoutes: [],
+    ignoredRoutesPattern: [/\/metadata$/, /___UNPUBLISHED___/],
+    merge: false,
+    trailingSlash: false,
+    changeFreq: 'monthly',
+    priority: ['1.0', '0.9', '0.8', '0.7', '0.6', '0.5', '0.4', '0.3', '0.2', '0.1', '0.0'],
 });
 
 export const config: ScullyConfig = {

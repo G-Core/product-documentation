@@ -29,7 +29,7 @@ By default, there are no restrictions by referer to your CDN Resource. You can s
 
 ### Allow referrer policy
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/13340190513425.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/13340190513425.png" alt="" width="80%">
 
 Specify domains to which you would like to block access.
 
@@ -40,7 +40,7 @@ When users request data from specified domains, they will get the denial of acc
 
 ### Block referrer policy
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/13340191722129.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/13340191722129.png" alt="" width="80%">
 
 Specify the domains which you would like to allow access to.
 
@@ -49,7 +49,7 @@ Specify the domains which you would like to allow access to.
 
 When a user requests data from other domains, they will get the denial of access.
 
-You can specify domains only one by one via control panel. To add the list of the domains use <a href="https://apidocs.gcore.com/cdn" target="_blank">API</a>.
+You can specify domains only one by one via control panel. To add the list of the domains use <a href="https://api.gcore.com/docs/cdn" target="_blank">API</a>.
 
 ## Country access policy
 
@@ -57,19 +57,19 @@ You can limit access to your content for listed countries. To enable the option 
 
 By default, there are no restrictions by country to your CDN Resource. You can set up allow or block policy.  
 
-**Note**: You can specify countries only one by one via control panel. To add the list of the countries, use <a href="https://apidocs.gcore.com/cdn" target="_blank">API</a>.  
+**Note**: You can specify countries only one by one via control panel. To add the list of the countries, use <a href="https://api.gcore.com/docs/cdn" target="_blank">API</a>.  
   
 ### Allow country access policy
 
 Access to the Resource is allowed for all the countries except for the specified in the field.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/Screenshot-2018-1-3_G-Core_Labs_Resources_Settings_1_.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/Screenshot-2018-1-3_G-Core_Labs_Resources_Settings_1_.png" alt="" width="80%">
 
 ### Block country access policy
 
 Access to the Resource is denied for all the countries except for the specified in the field.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/Screenshot-2018-1-3_G-Core_Labs_Resources_Settings_2_.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/Screenshot-2018-1-3_G-Core_Labs_Resources_Settings_2_.png" alt="" width="80%">
 
 ## IP access policy
 
@@ -81,19 +81,19 @@ By default, there are no restrictions by IP to your CDN Resource. You can set u
 
 The option supports IPv4 and IPv6 addresses.
 
-You can specify IPs only one by one via Control Panel. To add the list of the IPs use <a href="https://apidocs.gcore.com/cdn" target="_blank">API</a>.
+You can specify IPs only one by one via Control Panel. To add the list of the IPs use <a href="https://api.gcore.com/docs/cdn" target="_blank">API</a>.
 
 ### Allow IP policy
 
 Access to the resource is allowed for all the IPs except for the specified in the field.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/____________eng.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/____________eng.png" alt="" width="80%">
 
 ### Block IP policy
 
 Access to the resource is denied for all the IPs except for the specified in the field.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/____________eng.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/____________eng.png" alt="" width="80%">
 
 ## User agent access policy
 
@@ -126,11 +126,11 @@ To set the user agents using the control panel:
 
 - **Empty value.** This appears as an option in the select box. Select this value to allow or block incoming requests that do not have a User-Agent header.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/11759524278033.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/11759524278033.png" alt="" width="80%">
 
 - **User agent string.** Enter one or more unique user agents. The maximum length of each string is 255 characters. If you need to increase this limit, you can contact our [support team](mailto:support@gcore.com).
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/11759524358289.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/11759524358289.png" alt="" width="80%">
 
 **Note**: **User-Agent** text box cannot be left blank.
 
@@ -199,6 +199,6 @@ Possible values:
 
 #### Example
 
-This example shows a <a href="https://apidocs.gcore.com/cdn" target="_blank">CDN update</a> request that activates the User Agents Policy and blocks the requests without a User agent header.
+This example shows a <a href="https://api.gcore.com/docs/cdn" target="_blank">CDN update</a> request that activates the User Agents Policy and blocks the requests without a User agent header.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/11759524427921.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/11759524427921.png" alt="" width="80%">

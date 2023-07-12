@@ -119,9 +119,9 @@ Example: ```https://meet.gcore.com/call/?roomId=serv2testroom```
 
 Example:
 
-<code-block>
+```
 <iframe allow="camera; microphone; fullscreen; display-capture" src="https://meet.gcore.com/call/?roomId=serv2testroom"></iframe>
-</code-block>
+```
 
 **Customize a video call room with URL attributes**. 
 
@@ -212,7 +212,7 @@ To support older iOS versions, we recommend using one of the following options:�
 - For iOS 14.3 and 14.4, use <a href="https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller" target="_blank">SFSafariViewController</a> to open a web page containing an iframe with its src specified as a video call room URL. 
 - Redirect to mobile Safari for iOS versions lower than 14.3. 
 
-To use Video Calls with Cordova (Phonegap) please use the plugin for <a href="https://github.com/EddyVerbruggen/cordova-plugin-safariviewcontroller%22%20/t%20%22_blank" target="_blank">SafariViewController</a>.
+To use Video Calls with Cordova (Phonegap) please use the plugin for <a href="https://github.com/topics/safari-view-controller" target="_blank">SafariViewController</a>.
 
 ### Embedding in React Native app 
 
@@ -242,7 +242,6 @@ Example: ```https://meet.gcore.com/call/?roomId=```
 #### Webinar rooms 
 
 A webinar room is a room  where participants are divided into two groups: speakers and viewers. Speakers  are active participants with cameras and microphones. Speakers' video is shown on the screen of the webinar room, participants can watch and hear them. Viewers can only watch the speakers without interaction. They have neither camera, nor microphone on. One webinar room can hold up between 1 and 20 speakers and between 0 and 2000 viewers.  
-
 A method to create video conferencing rooms is ```/webinar/```.  
 
 Moreover, please see <a href="#itisparticipant-true-false" target="_blank">&itisparticipant attribute</a>. 
@@ -812,15 +811,15 @@ Please see Embed a <a href="#embed-room-on-a-site">Room on Site</a> and <a href
 
 There is a special library for interacting with iframe, which should be loaded separately.
 
-<code-block>
+```
 <script type="text/javascript" charset="utf-8" src="https://<yourdomain.gvideo.co>/meetBridgeApi.js"></script> 
-</code-block>
+```
 
 Example:
 
-<code-block>
+```
 <script type="text/javascript" charset="utf-8" src="https://meet.gcore.com/meetBridgeApi.js"></script> 
-</code-block>
+```
 
 JavaScript's method for initialization:
 
@@ -877,185 +876,185 @@ meetIframeBridge.method({ name: "getScreenshotByPeerId", data: "id", callback: (
 <table class="tg">
 <thead>
   <tr>
-    <th class="tg-fr2s">Method name</th>
-    <th class="tg-fr2s">Parameters</th>
-    <th class="tg-fr2s">Description</th>
+    <th  >Method name</th>
+    <th  >Parameters</th>
+    <th  >Description</th>
     <th class="tg-9r46"></th>
   </tr>
 </thead>
 <tbody>
   <tr>
-    <td class="tg-fr2s">join</td>
-    <td class="tg-1onv">"constraints" = object<br> <br>Setup new devices:<br>data: {constraints: { video: { deviceId: 'id', label: 'label', groupId: 'groupId', kind: 'video'}, audio: { deviceId: 'deviceId', label: 'label', groupId: 'groupId', kind: 'audio'}}}<br> <br>If you want to use devices by default:<br>data: {constraints: {video: true, audio: true }}<br> </td>
-    <td class="tg-1onv">The Join method receives a stream from these devices (usually used with the <a href="#nameScreenDisabled=true|false">nameScreenDisabled</a> parameter)</td>
+    <td  >join</td>
+    <td   >"constraints" = object<br> <br>Setup new devices:<br>data: {constraints: { video: { deviceId: 'id', label: 'label', groupId: 'groupId', kind: 'video'}, audio: { deviceId: 'deviceId', label: 'label', groupId: 'groupId', kind: 'audio'}}}<br> <br>If you want to use devices by default:<br>data: {constraints: {video: true, audio: true }}<br> </td>
+    <td   >The Join method receives a stream from these devices (usually used with the <a href="#nameScreenDisabled=true|false">nameScreenDisabled</a> parameter)</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">enableMic</td>
+    <td   >enableMic</td>
     <td class="tg-6tt1"> </td>
-    <td class="tg-1onv">Unmute a microphone</td>
+    <td   >Unmute a microphone</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">disableMic</td>
+    <td   >disableMic</td>
     <td class="tg-6tt1"> </td>
-    <td class="tg-1onv">Mute a microphone</td>
+    <td   >Mute a microphone</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">enableWebcam</td>
+    <td   >enableWebcam</td>
     <td class="tg-6tt1"> </td>
-    <td class="tg-1onv">Turn on a camera</td>
+    <td   >Turn on a camera</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">disableWebcam</td>
+    <td   >disableWebcam</td>
     <td class="tg-6tt1"> </td>
-    <td class="tg-1onv">Turn off a camera</td>
+    <td   >Turn off a camera</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">enableShare</td>
+    <td   >enableShare</td>
     <td class="tg-6tt1"> </td>
-    <td class="tg-1onv">Enable the screen sharing</td>
+    <td   >Enable the screen sharing</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">disableShare</td>
+    <td   >disableShare</td>
     <td class="tg-6tt1"> </td>
-    <td class="tg-1onv">Disable the screen sharing</td>
+    <td   >Disable the screen sharing</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">changeDisplayName</td>
-    <td class="tg-1onv">"name"<br>data: string</td>
-    <td class="tg-1onv">Change a name</td>
+    <td   >changeDisplayName</td>
+    <td   >"name"<br>data: string</td>
+    <td   >Change a name</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">setVolume</td>
-    <td class="tg-1onv">"volume"<br>data: number</td>
-    <td class="tg-1onv">Set a volume level (0 - 100)</td>
+    <td   >setVolume</td>
+    <td   >"volume"<br>data: number</td>
+    <td   >Set a volume level (0 - 100)</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">getScreenshotByPeerId</td>
-    <td class="tg-1onv">"peerId"<br>data: string</td>
-    <td class="tg-1onv">Get a screenshot of a user with an id equal to peerId, the screenshot is given in base64</td>
+    <td   >getScreenshotByPeerId</td>
+    <td   >"peerId"<br>data: string</td>
+    <td   >Get a screenshot of a user with an id equal to peerId, the screenshot is given in base64</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">setControlsVisible</td>
-    <td class="tg-1onv">"visible"<br>data: bool</td>
-    <td class="tg-1onv">Show and hide controls</td>
+    <td   >setControlsVisible</td>
+    <td   >"visible"<br>data: bool</td>
+    <td   >Show and hide controls</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">isCameraEnabled</td>
+    <td   >isCameraEnabled</td>
     <td class="tg-6tt1"> </td>
-    <td class="tg-1onv">The user's camera is enabled</td>
+    <td   >The user's camera is enabled</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">isMicroEnabled</td>
+    <td   >isMicroEnabled</td>
     <td class="tg-6tt1"> </td>
-    <td class="tg-1onv">The user's microphone is enabled</td>
+    <td   >The user's microphone is enabled</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">isShareEnabled</td>
+    <td   >isShareEnabled</td>
     <td class="tg-6tt1"> </td>
-    <td class="tg-1onv">The user's sharing is enabled</td>
+    <td   >The user's sharing is enabled</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">changeDevice</td>
-    <td class="tg-1onv">"constraints" = object<br>data: {constraints: { audio: { deviceId: 'deviceId', label: 'label', groupId: 'groupId', kind: 'audio'}}}<br> <br>or<br> <br>data: {constraints: { video: { deviceId: 'id', label: 'label', groupId: 'groupId', kind: 'video'}}}</td>
-    <td class="tg-1onv">Change a device on the fly. Specify 1 (one) device per method call.</td>
+    <td   >changeDevice</td>
+    <td   >"constraints" = object<br>data: {constraints: { audio: { deviceId: 'deviceId', label: 'label', groupId: 'groupId', kind: 'audio'}}}<br> <br>or<br> <br>data: {constraints: { video: { deviceId: 'id', label: 'label', groupId: 'groupId', kind: 'video'}}}</td>
+    <td   >Change a device on the fly. Specify 1 (one) device per method call.</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">playAudio</td>
+    <td   >playAudio</td>
     <td class="tg-6tt1"> </td>
-    <td class="tg-1onv">Start audio that failed to play (usually used together with autoplayWithoutAudioTrack)</td>
+    <td   >Start audio that failed to play (usually used together with autoplayWithoutAudioTrack)</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">muteAudio</td>
+    <td   >muteAudio</td>
     <td class="tg-6tt1"> </td>
-    <td class="tg-1onv">Mute incoming audio</td>
+    <td   >Mute incoming audio</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">unmuteAudio</td>
+    <td   >unmuteAudio</td>
     <td class="tg-6tt1"> </td>
-    <td class="tg-1onv">Unmute incoming audio</td>
+    <td   >Unmute incoming audio</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">setBitrate</td>
-    <td class="tg-1onv">"bitrateValue"<br>data: number</td>
-    <td class="tg-1onv">Set the maximum video bitrate in a room</td>
+    <td   >setBitrate</td>
+    <td   >"bitrateValue"<br>data: number</td>
+    <td   >Set the maximum video bitrate in a room</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">isFullscreenEnabled</td>
+    <td   >isFullscreenEnabled</td>
     <td class="tg-6tt1"> </td>
-    <td class="tg-1onv">The fullscreen is enabled</td>
+    <td   >The fullscreen is enabled</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">enableFullscreen</td>
+    <td   >enableFullscreen</td>
     <td class="tg-6tt1"> </td>
-    <td class="tg-1onv">Enable the fullscreen</td>
+    <td   >Enable the fullscreen</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">disableFullscreen</td>
+    <td   >disableFullscreen</td>
     <td class="tg-6tt1"> </td>
-    <td class="tg-1onv">Disable the fullscreen</td>
+    <td   >Disable the fullscreen</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">enablePin</td>
-    <td class="tg-1onv">"peerId"<br>data: string</td>
-    <td class="tg-1onv">Enable the PIN for a specified user</td>
+    <td   >enablePin</td>
+    <td   >"peerId"<br>data: string</td>
+    <td   >Enable the PIN for a specified user</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">disablePin</td>
+    <td   >disablePin</td>
     <td class="tg-6tt1"> </td>
-    <td class="tg-1onv">Disable the PIN </td>
+    <td   >Disable the PIN </td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">setLocale</td>
-    <td class="tg-1onv">"locale"<br>data: string</td>
-    <td class="tg-1onv">Dynamic language changes, available languages: en, ru</td>
+    <td   >setLocale</td>
+    <td   >"locale"<br>data: string</td>
+    <td   >Dynamic language changes, available languages: en, ru</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">disabledTrackByModerator</td>
-    <td class="tg-1onv">"peerId", "kind = (audio || video)"<br>data: {userPeerId: 'peerId', kind: 'audio'}</td>
-    <td class="tg-1onv">Turn off video or audio from another user in a moderator mode. Only a moderator can disable video and audio</td>
+    <td   >disabledTrackByModerator</td>
+    <td   >"peerId", "kind = (audio || video)"<br>data: {userPeerId: 'peerId', kind: 'audio'}</td>
+    <td   >Turn off video or audio from another user in a moderator mode. Only a moderator can disable video and audio</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">disableAllMics</td>
-    <td class="tg-1onv"> </td>
-    <td class="tg-1onv">Mute mics of all participants. It can be used only by a moderator</td>
+    <td   >disableAllMics</td>
+    <td   > </td>
+    <td   >Mute mics of all participants. It can be used only by a moderator</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-1onv">disableAllCameras</td>
-    <td class="tg-1onv"> </td>
-    <td class="tg-1onv">Turn off cams of all participants. It can be used only by a moderator</td>
+    <td   >disableAllCameras</td>
+    <td   > </td>
+    <td   >Turn off cams of all participants. It can be used only by a moderator</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
-    <td class="tg-7zkw">setHideIndicators</td>
-    <td class="tg-7zkw">"hide"<br>data: bool</td>
-    <td class="tg-7zkw">Show and hide indicators of other users (icons for microphones, cameras, username, pin button)</td>
+    <td  >setHideIndicators</td>
+    <td  >"hide"<br>data: bool</td>
+    <td  >Show and hide indicators of other users (icons for microphones, cameras, username, pin button)</td>
     <td class="tg-0lax"></td>
   </tr>
 </tbody>
@@ -1115,66 +1114,66 @@ To access Server API methods, you need to be authenticated. Please see "Server A
 <table class="tg">
 <thead>
   <tr>
-    <th class="tg-fr2s">Method name</th>
-    <th class="tg-fr2s">Parameters</th>
-    <th class="tg-fr2s">Description</th>
+    <th  >Method name</th>
+    <th  >Parameters</th>
+    <th  >Description</th>
   </tr>
 </thead>
 <tbody>
   <tr>
-    <td class="tg-fr2s">/rooms/:roomId/closePeer</td>
-    <td class="tg-1onv">peerId, <br>body:{peerId: id}</td>
-    <td class="tg-1onv">Remove a user from a room, POST</td>
+    <td  >/rooms/:roomId/closePeer</td>
+    <td   >peerId, <br>body:{peerId: id}</td>
+    <td   >Remove a user from a room, POST</td>
   </tr>
   <tr>
-    <td class="tg-1onv">/rooms/:roomId/closeRoom</td>
+    <td   >/rooms/:roomId/closeRoom</td>
     <td class="tg-6tt1"> </td>
-    <td class="tg-1onv"> Delete a room, GET</td>
+    <td   > Delete a room, GET</td>
   </tr>
   <tr>
-    <td class="tg-1onv">/rooms/:roomId/durationOfBroadcast</td>
+    <td   >/rooms/:roomId/durationOfBroadcast</td>
     <td class="tg-6tt1"> </td>
-    <td class="tg-1onv">View how long the room existed, GET</td>
+    <td   >View how long the room existed, GET</td>
   </tr>
   <tr>
     <td class="tg-6tt1">/rooms/:roomId/exists</td>
     <td class="tg-6tt1"> </td>
-    <td class="tg-1onv">Check if the specified room exists, GET</td>
+    <td   >Check if the specified room exists, GET</td>
   </tr>
   <tr>
-    <td class="tg-1onv">/rooms/:roomId/existingPeer<br>(depricated)</td>
-    <td class="tg-1onv">peerId,<br>body:{peerId: id}</td>
-    <td class="tg-1onv">Check does the user exist in the room, POST<br> <br>Please, use new method instead – /rooms/:roomId/existingPeer/:peerId</td>
+    <td   >/rooms/:roomId/existingPeer<br>(depricated)</td>
+    <td   >peerId,<br>body:{peerId: id}</td>
+    <td   >Check does the user exist in the room, POST<br> <br>Please, use new method instead – /rooms/:roomId/existingPeer/:peerId</td>
   </tr>
   <tr>
-    <td class="tg-1onv">/rooms/:roomId/existingPeer/:peerId</td>
+    <td   >/rooms/:roomId/existingPeer/:peerId</td>
     <td class="tg-6tt1"> </td>
-    <td class="tg-1onv">Check does the user exist in the room, GET</td>
+    <td   >Check does the user exist in the room, GET</td>
   </tr>
   <tr>
-    <td class="tg-1onv">/rooms/:roomId/numberPeers</td>
+    <td   >/rooms/:roomId/numberPeers</td>
     <td class="tg-6tt1"> </td>
-    <td class="tg-1onv">View the number of participants in the room, GET</td>
+    <td   >View the number of participants in the room, GET</td>
   </tr>
   <tr>
-    <td class="tg-1onv">chat/clear-rooms</td>
+    <td   >chat/clear-rooms</td>
     <td class="tg-6tt1">body: { hostname: string, rooms: [{roomId: id, type: "call"|"webinar"}]}</td>
-    <td class="tg-1onv">Clear chat history in specific rooms, POST<br> <br>Where:<br>"hostname" – domain name<br>"type" – type of room, unnecessary attribute, where "call" is default value</td>
+    <td   >Clear chat history in specific rooms, POST<br> <br>Where:<br>"hostname" – domain name<br>"type" – type of room, unnecessary attribute, where "call" is default value</td>
   </tr>
   <tr>
-    <td class="tg-1onv">/rooms/:roomId/recording/start</td>
+    <td   >/rooms/:roomId/recording/start</td>
     <td class="tg-6tt1"> </td>
-    <td class="tg-1onv">Start recording for a specific room, POST</td>
+    <td   >Start recording for a specific room, POST</td>
   </tr>
   <tr>
-    <td class="tg-1onv">/rooms/:roomId/recording/stop</td>
+    <td   >/rooms/:roomId/recording/stop</td>
     <td class="tg-6tt1"> </td>
-    <td class="tg-1onv">Stop recording for a specific room, POST</td>
+    <td   >Stop recording for a specific room, POST</td>
   </tr>
   <tr>
-    <td class="tg-1onv">/rooms/:roomId/recording</td>
+    <td   >/rooms/:roomId/recording</td>
     <td class="tg-6tt1"> </td>
-    <td class="tg-1onv">Check video recording status, GET</td>
+    <td   >Check video recording status, GET</td>
   </tr>
 </tbody>
 </table>
@@ -1316,7 +1315,7 @@ Video conferencing tool manages data in real time. Thus, Server API and Client A
 
 Statistics on usage and video recordings are stored in the Streaming Platform. Thus, please use
 
-Video Platform’s REST API for those methods: <a href="https://apidocs.gcore.com/streaming" target="_blank">https://apidocs.gcore.com/streaming</a>.
+Video Platform’s REST API for those methods: <a href="https://api.gcore.com/docs/streaming" target="_blank">https://api.gcore.com/docs/streaming</a>.
 
 To access Video Platform API, you need to be authenticated. Please see "Authentication of Participants and Access Limitation" above.
 
@@ -1466,7 +1465,7 @@ GET /streaming/videos/search
 
 If a session lasted more than 4 hours, the recording will be divided into several videos for 4 hours each. In this case, you need to get all videos separately.
 
-Please see more details in <a href="https://apidocs.gcore.com/streaming#operation/get_api_videos_id" target="_blank">documentation</a>. 
+Please see more details in <a href="https://api.gcore.com/docs/streaming#operation/get_api_videos_id" target="_blank">documentation</a>. 
 
 2. Get video metadata 
 
@@ -1474,7 +1473,7 @@ Please see more details in <a href="https://apidocs.gcore.com/streaming#operatio
 GET https://api.gcore.com/streaming/videos/{video_id}
 ```
 
-Please see more details in <a href="https://apidocs.gcore.com/streaming#operation/get_api_videos_id" target="_blank">documentation</a>.  
+Please see more details in <a href="https://api.gcore.com/docs/streaming#operation/get_api_videos_id" target="_blank">documentation</a>.  
 
 **Output values**: Metadata of the video. Use fields "hls_url" for .m3u8 stream in external players or "origin_host"+"origin_resource" for getting an original MP4 file.  
 
@@ -1489,13 +1488,13 @@ Example of output data:  
 
 ```
 
-Please see more details in <a href="https://apidocs.gcore.com/streaming#operation/get_api_videos_id" target="_blank">documentation</a>.  
+Please see more details in <a href="https://api.gcore.com/docs/streaming#operation/get_api_videos_id" target="_blank">documentation</a>.  
 
 Example of usage: 
 
-Step 1: <a href="https://api.gcore.com/streaming/videos/search?q=serv1test2a" target="_blank">https://api.gcore.com/streaming/videos/search?q=serv1test2a</a> 
+Step 1: ```https://api.gcore.com/streaming/videos/search?q=serv1test2a```
 
-Step 2: <a href="https://api.gcore.com/streaming/videos/117800" target="_blank">https://api.gcore.com/streaming/videos/117800</a>
+Step 2: ```https://api.gcore.com/streaming/videos/117800```
 
 #### Rate Limits
 
@@ -1598,13 +1597,13 @@ We highly recommend using RS256 asymmetric type of algorithm. See section "RSA P
 
 To access Server API and Streaming Platform API, we use an API token in the Authorization header. The API token is a unique key that all users and applications should add to requests to interact with our services.
 
-Please authenticate via <a href="https://apidocs.gcore.com/streaming#section/Authentication" target="_blank">API</a>.
+Please authenticate via <a href="https://api.gcore.com/docs/streaming#section/Authentication" target="_blank">API</a>.
 
 Choose one of the methods described below: Bearer authentication or Permanent API tokens.
 
 #### Bearer Authentication
 
-The token will be provided upon <a href="https://apidocs.gcore.com/account#tag/Account/paths/~1auth~1jwt~1login/post" target="_blank">Login</a> request with login and password from your personal account. 
+The token will be provided upon <a href="https://api.gcore.com/docs/account#tag/Account/paths/~1auth~1jwt~1login/post" target="_blank">Login</a> request with login and password from your personal account. 
 
 In the response, you will get two tokens: access and refresh. 
 
@@ -1615,11 +1614,11 @@ Authorization: Bearer eyJ0eXAiOiJKV 
 
 ```
 
-Use the  <a href="https://apidocs.gcore.com/account#tag/Account/paths/~1auth~1jwt~1refresh/post" target="_blank">Refresh</a> request to refresh your access token. 
+Use the  <a href="https://api.gcore.com/docs/account#tag/Account/paths/~1auth~1jwt~1refresh/post" target="_blank">Refresh</a> request to refresh your access token. 
 
 Steps as an example: 
 
-1.  You authorize in your backend using your username and password: https://apidocs.gcore.com/account#tag/Account/paths/~1auth~1jwt~1login/post 
+1.  You authorize in your backend using your username and password: https://api.gcore.com/docs/account#tag/Account/paths/~1auth~1jwt~1login/post 
 2.  You get two token values: "access" and "refresh".  
 3.  The "access" token is a token that is active for several hours (24 hours, but we recommend updating every 4 hours). 
 4.  You pass the auth headers into each endpoint: 'Authorization': Bearer ${token} '. 

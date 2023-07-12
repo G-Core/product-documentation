@@ -24,6 +24,7 @@ const defaultOptions: Required<MoveContentFilesPluginOptions> = {
         'reseller-support',
     ],
 };
+const sitemap = 'sitemap.xml';
 
 export const moveContentFiles = 'moveContentFiles';
 
@@ -50,6 +51,10 @@ async function moveContent(routes: Array<HandledRoute>): Promise<void> {
     fs.copySync(path.join(outDir, 'assets/scully-routes.json'), path.join(root, 'assets/scully-routes.json'), {
         overwrite: true,
     });
+
+    if (fs.existsSync(path.join(outDir, sitemap))) {
+        fs.moveSync(path.join(outDir, sitemap), path.join(root, sitemap), { overwrite: true });
+    }
 
     log(green('MoveContentFiles finished successfully'));
 }

@@ -56,7 +56,7 @@ There are two ways to use the Quality feature: in the Control panel and by query
 
 1\. Go to the **Rules** section in the settings of the CDN resource you want to apply Quality to and open the **Image optimization** rule.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11774830851473.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11774830851473.png" alt="" width="80%">
 
 2\. Select one of the built-in presets: High (95%), Medium (80%), Low (65%), or set a Custom Value. By default, after enabling the Image Stack option, the quality will be High (95%).
 

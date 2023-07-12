@@ -4,11 +4,14 @@ displayName: Buy
 published: true
 order: 10
 toc:
---1--How to move IPs from one server to another: "how-to-move-ips-from-one-server-to-another"
 ---
 # Buy an additional IP address
 
-Every server has one free IPv4, but you can order up to 14 IPv4 and 14 IPv6 additional addresses for dedicated servers and up to 9 IPv4 and 9 IPv6 addresses for virtual servers (there is one exception: only three additional IP of each type can be ordered for KVM-SSD-1) at extra charge.
+Every virtual server includes:
+- one free IPv4 address, and 
+- one free IPv6 address. 
+
+Additionally, you can buy up to nine IPv4 addresses and nine IPv6 addresses. **Exception**: For KVM-SSD-1 servers, you can only buy up to two IPv4 addresses and two IPv6 addresses.
 
 Go to Virtual Private Servers in the Control Panel.
 

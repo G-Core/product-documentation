@@ -4,25 +4,23 @@ displayName: Nginx ingress controller
 order: 30
 published: true
 toc:
-   --1--Install the controller: "install-the-nginx-ingress-controller"
-   --1--Use the controller: "use-the-nginx-controller"
+   --1--Install: "install-the-nginx-ingress-controller"
+   --1--Use: "use-the-nginx-controller"
    --1--View an ingress IP address: "view-an-ingress-ip-address"
 ---
-# Install and set up the Nginx ingress controller
+# Install and set up the Nginx Ingress Controller
 
-This article will help you install and start using the nginx ingress controller. To learn about Kubernetes services, ingress, and ingress controllers, refer to the article "<a href="https://gcore.com/docs/cloud/kubernetes/networking/set-up-the-gcore-ingress-controller" target="_blank">Set up the Gcore ingress controller</a>".
+Once you install the Nginx Ingress Controller, our system automatically creates a <a href="https://gcore.com/cloud/load-balancers/" target="_blank">load balancer</a>. The traffic will go to that load balancer, which will then forward it to the Nginx Controller. After that, the Nginx Controller will distribute traffic across services within your cluster according to the rules specified in the ingress manifests.
 
-Once you install the nginx ingress controller, our system automatically creates a <a href="https://gcore.com/cloud/load-balancers/" target="_blank">load balancer</a>. The traffic will go to that load balancer, which will then forward it to the nginx controller. After that, the nginx controller will distribute traffic across services within your cluster according to the rules specified in the ingress manifests.
+## Install the Nginx Ingress Controller
 
-## Install the nginx ingress controller
-
-1\. Run the kubectl command to create a namespace for the nginx controller.
+1\. Run the kubectl command to create a namespace for the Nginx Controller.
 
 ```
 kubectl create namespace ingress-nginx
 ```
 
-2\. Run the command to add the helm repository for the nginx controller.
+2\. Run the command to add the helm repository for the Nginx Controller.
 
 ```
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
@@ -34,7 +32,7 @@ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 helm repo update
 ```
 
-4\. Run the command to install the controller.
+4\. Run the command to install the Controller.
 
 ```
 helm install ingress-nginx ingress-nginx/ingress-nginx  \
@@ -46,7 +44,7 @@ helm install ingress-nginx ingress-nginx/ingress-nginx  \
 --set controller.hostNetwork=true
 ```
 
-You have installed the nginx controller. Now it will automatically create a load balancer on your behalf. The load balancer will be shown in your control panel in the Load Balancers section. The traffic will go to the nginx controller through this balancer. To start using the controller, you need to apply an Ingress manifest.
+You have installed the Nginx Controller. Now it will automatically create a load balancer on your behalf. The load balancer will be shown in your control panel in the Load Balancers section. The traffic will go to the nginx controller through this balancer. To start using the controller, you need to apply an Ingress manifest.
 
 ## Use the nginx controller
 
@@ -76,11 +74,11 @@ Enter your custom values instead:
 
 - <span style="color:#FF5913">hello-world</span> is the name of the Ingress object  
 - <span style="color:#FF5913">/about</span> is the URL path  
-- <span style="color:#FF5913">hello-world-about</span> is the name of the service that will manage "/about" requests  
-- <span style="color:#FF5913">80</span> is the port of the service that will manage "/login" requests  
+- <span style="color:#FF5913">hello-world-about</span> is the name of the Service that will manage "/about" requests  
+- <span style="color:#FF5913">80</span> is the port of the Service that will manage "/login" requests  
 - <span style="color:#FF5913">/login</span> is the URL path  
-- <span style="color:#FF5913">hello-world-login</span> is the name of the service that will manage "/login" requests  
-- <span style="color:#FF5913">80</span> is the port of the service that will manage "/login" requests
+- <span style="color:#FF5913">hello-world-login</span> is the name of the Service that will manage "/login" requests  
+- <span style="color:#FF5913">80</span> is the port of the Service that will manage "/login" requests
 
 Make sure to add ```ingressClassName: nginx``` to the spec attributes.
 
@@ -96,7 +94,7 @@ You’ll get the output:
 Ingress/<name of the created ingress object> created
 ```
 
-Congratulations! You’ve created and applied an ingress object for the nginx ingress controller.
+Congratulations! You’ve created and applied an Ingress object for the Nginx Ingress Controller.
 
 ## View an ingress IP address
 
@@ -108,6 +106,6 @@ kubectl get ingress <ingress name>
 
 You’ll get the output:
 
-<img src="https://assets.gcore.pro/docs/cloud/kubernetes/networking/install-and-set-up-the-nginx-ingress-controller/Output.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/networking/install-and-set-up-the-nginx-ingress-controller/Output.png" alt="" width="80%">
 
 The IP address is written in the ADDRESS column.

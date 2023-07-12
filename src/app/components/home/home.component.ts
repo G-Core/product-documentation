@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { categories } from '../../constants/categories-config';
-import { Category } from '../../models';
+import { Category, MenuItem } from '../../models';
 import { environment } from '../../../environments/environment';
+import { MenuService } from '../../services/menu.service';
 
 @Component({
     selector: 'gc-home',
@@ -9,7 +10,17 @@ import { environment } from '../../../environments/environment';
     styleUrls: ['./home.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
     public categories: Array<Category> = categories;
     public baseHref: string = environment.baseHref;
+    public isMenuExpanded: boolean = false;
+
+    constructor(private changeDetectorRef: ChangeDetectorRef, private data: MenuService) {}
+
+    public ngOnInit(): void {
+        this.data.toggleMenuEmitted$.subscribe(() => {
+            this.isMenuExpanded = !this.isMenuExpanded;
+            this.changeDetectorRef.detectChanges();
+        });
+    }
 }

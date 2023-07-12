@@ -13,6 +13,7 @@ export class LeftBarMenuComponent {
     @Input() public activeMenuItem: MenuItem;
     @Input() public activeUrl: string;
     @Input() public menuItems: any;
+    @Input() public isHomePage: boolean = false;
 
     public baseHref: string = environment.baseHref;
 

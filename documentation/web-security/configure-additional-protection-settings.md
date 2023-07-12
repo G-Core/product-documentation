@@ -39,7 +39,7 @@ Configure a separate email server. If you are running your mail server on the sa
 
 ## Restore users' IP addresses
 
-<a href="https://gcore.com/docs/web-security/get-an-actual-ip-addresses-of-visitors-from-the_x-forward-for-header" target="_blank">Configure the X-Forwarded-For HTTP header</a> to restore real visitors' IP addresses. Otherwise, you will see requests only from our subnets.
+<a href="https://gcore.com/docs/web-security/get-an-actual-ip-addresses-of-visitors-from-the-x-forward-for-header" target="_blank">Configure the X-Forwarded-For HTTP header</a> to restore real visitors' IP addresses. Otherwise, you will see requests only from our subnets.
 
 ## Reduce server load
 

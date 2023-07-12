@@ -21,7 +21,7 @@ A new SSL certificate selection form will be opened, and you will see available 
 
 Select the certificate you wish to order and click the **Order** button.
 
-<img src="https://assets.gcore.pro/docs/hosting/other-services/ssl-certificates/order-an-ssl-certificate/SSL-cert_list.JPG" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/hosting/other-services/ssl-certificates/order-an-ssl-certificate/SSL-cert_list.JPG" alt="" width="80%">
 
 ## Certificate settings
 

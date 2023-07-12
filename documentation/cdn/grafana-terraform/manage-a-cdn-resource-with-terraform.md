@@ -46,13 +46,13 @@ terraform {
 }   
 provider gcore {   
 permanent_api_token = "<span style="color:#FF5913">251$d33611b35f26d8</span>"
-gcore_cdn_api = "https://apidocs.gcore.com/cdn"  
+gcore_cdn_api = "https://api.gcore.com/docs/cdn"  
 } 
 </code-block>
 
 Where:
 
-- <span style="color:#FF5913">0.3.44</span> is the latest version of the Terraform provider indicated on the <a href="https://registry.terraform.io/providers/G-Core/gcorelabs/latest" target="_blank">page</a>;
+- <span style="color:#FF5913">0.3.44</span> is the latest version of the Terraform provider indicated on the <a href="https://registry.terraform.io/providers/G-Core/gcore/latest" target="_blank">page</a>;
 - <span style="color:#FF5913">251$d33611b35f26d8</span> is a permanent API token generated according to <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">the guide</a>.
 
 
@@ -64,7 +64,7 @@ terraform init
 
 This command will install Terraform and download a set of modules to work with our CDN. The following response will appear:
 
-<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1734.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1734.png" alt="" width="80%">
 
 This response means Terraform was successfully downloaded and installed, you can start working with it. 
 
@@ -72,7 +72,7 @@ This response means Terraform was successfully downloaded and installed, you can
 
 If you have already worked with Terraform, you can use the abridged guide on how to manage the Gcore CDN infrastructure: 
 
-1\. Copy the required code from the <a href="https://registry.terraform.io/providers/G-Core/gcorelabs/latest/docs" target="_blank">Resources section in the Terraform documentation</a> and paste it to the *main.tf* file. 
+1\. Copy the required code from the <a href="https://registry.terraform.io/providers/G-Core/gcore/latest/docs" target="_blank">Resources section in the Terraform documentation</a> and paste it to the *main.tf* file. 
 
 2\. Add your values to the code. 
 
@@ -237,7 +237,7 @@ secondary_hostnames = ["<span style="color:#FF5913">cdn.two.com</span>","<span s
 
 4\. At Step 2 and 3, you entered the code that has created an origin group and a CDN resource. Below is an example of how your code may look in your configuration file:
 
-<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1706.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1706.png" alt="" width="80%">
 
 Make sure all data is correct and save the changes.  
 
@@ -253,7 +253,7 @@ Congratulations! The origin group and CDN resource have been created! Then the C
 
 2\. On the page that opens, click "Setup guide". 
 
-<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1631.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1631.png" alt="" width="80%">
 
 3\. Copy the domain name such as _\*.gcdn.co._ from the sliding panel.
 
@@ -287,13 +287,13 @@ When you create a CDN resource via Terraform, it automatically adds the followin
 - webp — <a href="https://gcore.com/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/configure-image-compression-to-webp-and-avif" target="_blank">WebP Compression</a>, 
 - websockets  — <a href="https://gcore.com/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin" target="_blank">WebSockets</a>. 
 
-We constantly add new options. The up-to-date list is always available in the <a href="https://registry.terraform.io/providers/G-Core/gcorelabs/latest/docs/resources/gcore_cdn_resource%23optional" target="_blank">Terraform documentation for the Gcore provider</a>. 
+We constantly add new options. The up-to-date list is always available in the <a href="https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cdn_resource#optional" target="_blank">Terraform documentation for the Gcore provider</a>. 
 
 If a CDN resource was created via Terraform, you can change its options via Terraform. To do this, use the guide below. 
 
 1\. Open the *main.tf* file. 
 
-2\. The file is supposed to contain the code for the creation of your CDN resource. If it is missing, add the code according to the "[Create a new CDN resource"](#create-a-new-cdn-resource) section.  
+2\. The file is supposed to contain the code for the creation of your CDN resource. If it is missing, add the code according to the "[Create a new CDN resource"](https://gcore.com/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform#create-a-new-cdn-resource) section.  
 
 Don't worry, Terraform won't duplicate a resource. Terraform requires the code used for the creation of the resource only to identify a resource that should be changed. 
 
@@ -303,7 +303,7 @@ Don't worry, Terraform won't duplicate a resource. Terraform requires the code u
 options { 
 ```
 
-4\. Open the <a href="https://registry.terraform.io/providers/G-Core/gcorelabs/latest/docs/resources/gcore_cdn_resource%23optional" target="_blank">Terraform documentation for the Gcore provider</a> and find the required option. Follow the guide from the Terraform documentation, to enter the required option values. 
+4\. Open the <a href="https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cdn_resource" target="_blank">Terraform documentation for the Gcore provider</a> and find the required option. Follow the guide from the Terraform documentation, to enter the required option values. 
 
 5\. Be aware to add a curly bracket to a new string below: 
 
@@ -331,7 +331,7 @@ edge_cache_settings {   
 ```
 6\. The configuration file now contains the code that creates a CDN resource with your option values. An example of the file:
 
-<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1707-2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1707-2.png" alt="" width="80%">
 
 Save the changes in the configuration file.  
 
@@ -345,7 +345,7 @@ If a CDN resource was created via Terraform, you can add an SSL certificate via 
 
 1\. Open the *main.tf* file. 
 
-2_._ The file is supposed to contain the code for the creation of your CDN resource. If it is missing, add the code according to the [Create a new CDN resource](#create-a-new-cdn-resource) section.  
+2_._ The file is supposed to contain the code for the creation of your CDN resource. If it is missing, add the code according to the [Create a new CDN resource](https://gcore.com/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform#create-a-new-cdn-resource) section.  
 
 Don't worry, Terraform won't duplicate a resource. Terraform requires the code used for the creation of the resource only to identify a resource that should be changed. 
 
@@ -377,7 +377,7 @@ Here is an example of adding a certificate. Let's suppose your values are as fol
 
 To add such a certificate, you have inserted the necessary strings into the configuration file. The file is supposed to look as follows:
 
-<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1709-2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1709-2.png" alt="" width="80%">
 
 5\. Save the changes in the configuration file. 
 
@@ -391,7 +391,7 @@ If a CDN resource was created via Terraform, you can <a href="https://gcore.com/
 
 1\. Open the *main.tf* file. 
 
-2\. The file is supposed to contain the code for the creation of your CDN resource. If it is missing, add the code according to the [Create a new CDN resource](#create-a-new-cdn-resource) section.  
+2\. The file is supposed to contain the code for the creation of your CDN resource. If it is missing, add the code according to the [Create a new CDN resource](https://gcore.com/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform#create-a-new-cdn-resource) section.  
 
 Don't worry, Terraform won't duplicate a resource. Terraform requires the code used to create a resource only to identify a resource that should be changed. 
 
@@ -411,7 +411,7 @@ resource "gcore_cdn_rule" "<span style="color:#FF5913">make up Terraform name fo
 
 <code-block>
 options {   
-<span style="color:#FF5913">code to configure the necessary options; for set-up guides, refer to the <a href="https://registry.terraform.io/providers/G-Core/gcorelabs/latest/docs/resources/gcore_cdn_rule%23nested-schema-for-options" target="_blank">Terraform documentation for the Gcore provider</a>, an example of configuration can be found in the "Configure CDN resource options" section</span>   
+<span style="color:#FF5913">code to configure the necessary options; for set-up guides, refer to the <a href="https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cdn_rule#nested-schema-for-options" target="_blank">Terraform documentation for the Gcore provider</a>, an example of configuration can be found in the "Configure CDN resource options" section</span>   
 } 
 </code-block>
 
@@ -433,7 +433,7 @@ Here is an example of a configuration file. Let's say you want to add a rule wit
 
 The final code in the configuration file will look as follows:
 
-<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1712-2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1712-2.png" alt="" width="80%">
 
 6\. Save the changes in the configuration file. 
 

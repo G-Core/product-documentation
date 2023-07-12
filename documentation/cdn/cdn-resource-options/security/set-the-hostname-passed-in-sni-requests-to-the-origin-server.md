@@ -17,10 +17,10 @@ There are two modes: 
 
 1\. Dynamic SNI hostname matches the value of the "Change Host Header" option.  
   
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/set-the-hostname-passed-in-sni-requests-to-the-origin-server/sni_eng_dyn.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/set-the-hostname-passed-in-sni-requests-to-the-origin-server/sni_eng_dyn.png" alt="" width="80%">
 
 2.Custom SNI hostname where you should specify a SNI hostname. The value cannot be empty or contain an IP address.  
   
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/set-the-hostname-passed-in-sni-requests-to-the-origin-server/sni_eng_custom.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/set-the-hostname-passed-in-sni-requests-to-the-origin-server/sni_eng_custom.png" alt="" width="80%">
 
 **Note**: After a CDN resource creation, the option will be automatically activated with the default value - Dynamic SNI hostname.

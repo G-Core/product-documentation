@@ -35,13 +35,13 @@ Also, Gcore uses CMAF (Common Media Application Format) as a base for LL-HLS/DAS
 
 LL-HLS and LL-DASH reduce latency to 3–4 sec, depending on the network conditions.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-low-latency-streaming-works/13544135637137.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-low-latency-streaming-works/13544135637137.png" alt="" width="80%">
 
 ## How do LL-HLS and LL-DASH work in comparison to the standard approach?
 
 The standard video delivery approach involves sending the entirely created segment to the CDN, and once the CDN receives the complete segment, it transmits it to the player. With this approach, video latency depends on segment length. For example, if a segment is 7 seconds long when requesting and processing the first segment, the player displays a frame that is already 7 seconds late compared to the actual time.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-low-latency-streaming-works/13082039137553.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-low-latency-streaming-works/13082039137553.png" alt="" width="80%">
 
 The Low Latency approach uses the CMAF-CTE extension (Chunked Transfer-Encoding), which helps divide live stream segments into small, non-overlapping, and independent fragments (chunks) with a length of 0.5–2 seconds. The independence of the chunks allows the encoder not to wait for the end of the complete loading of the segment but to send it to the CDN and the player in ready-made small fragments.
 
@@ -49,7 +49,7 @@ This approach helps eliminate the segment duration factor affecting video latenc
 
 Compared to the standard approach, a 7-second segment will be divided into 2–3 seconds chunks. Thus, the total latency will be lower.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-low-latency-streaming-works/13082040364817.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-low-latency-streaming-works/13082040364817.png" alt="" width="80%">
 
 ## Use Low Latency streaming
 
@@ -75,7 +75,7 @@ To return to using LL HLS, delete the query parameter in bold or replace it with
 
 ### Get legacy HLSv3 mode  
 
-Contact the [support team](mailto:support@gcore.com) and ask to enable legacy HLSv3 mode for your account or add  *low_latency_enabled=false* parameter to the body of <a href="https://apidocs.gcore.com/streaming#tag/Streams/operation/patch_streams_id" target="_blank">the API request</a>.
+Contact the [support team](mailto:support@gcore.com) and ask to enable legacy HLSv3 mode for your account or add  *low_latency_enabled=false* parameter to the body of <a href="https://api.gcore.com/docs/streaming#tag/Streams/operation/patch_streams_id" target="_blank">the API request</a>.
 
 The changeover to the legacy format will be displayed in the URL:
 

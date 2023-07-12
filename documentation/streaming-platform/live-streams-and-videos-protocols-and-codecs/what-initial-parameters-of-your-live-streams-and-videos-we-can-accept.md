@@ -186,7 +186,7 @@ We recommend the following parameters for streams:
 <p><span data-contrast="none">Audio bitrate</span></p>
 </td>
 <td class="wysiwyg-text-align-center" colspan="3" data-celllook="0">
-<p><span data-contrast="none">28-Kbps&nbsp;stereo</span></p>
+<p><span data-contrast="none">128 Kbps&nbsp;stereo</span></p>
 </td>
 </tr>
 </tbody>

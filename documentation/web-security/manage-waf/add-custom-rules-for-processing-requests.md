@@ -22,21 +22,21 @@ By default, WAF uses two built-in libraries to analyze requests to protect the a
 
 On the "Rules" tab, you can add custom rules to adjust the default behavior of WAF when processing requests. This is what the tab with created rules looks like:
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/add-custom-rules-for-processing-requests/11774209838097.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/add-custom-rules-for-processing-requests/11774209838097.png" alt="" width="80%">
 
 The priority of custom rules is higher than it is for ones from the default libraries. If a request has signs of an attack but you’ve added a custom rule to ignore this attack type, the request will be marked as legitimate and will not be blocked. If a custom rule doesn’t exist, WAF will block this request.
 
-When you create rules, you specify conditions for various HTTP request parameters—the URI, method, header, etc.—and rules that determine how WAF should process the request. All requests that come to the application are matched against the specified conditions. If a request matches the conditions, the action from the rule is applied to it. If not, it’s handled by the default WAF libraries. For more information about the conditions, see "[How to use the feature](#how-to-use-the-feature)".
+When you create rules, you specify conditions for various HTTP request parameters—the URI, method, header, etc.—and rules that determine how WAF should process the request. All requests that come to the application are matched against the specified conditions. If a request matches the conditions, the action from the rule is applied to it. If not, it’s handled by the default WAF libraries. For more information about the conditions, see "[How to use the feature](https://gcore.com/docs/web-security/manage-waf/add-custom-rules-for-processing-requests#how-to-use-the-feature)".
 
 Created rules are automatically grouped into branches based on general conditions and the endpoint (the URI you specified). The top will always be the branch with the highest-level endpoint (e.g., the application root), and the bottom will have branches with lower-level endpoints (e.g., a specific section of the application or a specific file). You can also create rules that won’t be linked to any endpoint. These are called ‘Default rules’ and are inherited by all other branches.
 
 In the example below, the rules are grouped into six branches by endpoints. The branch with the common _backend_ endpoint is on the first line. Other branches (2, 3, 4) also have this endpoint in the path (e.g., _**backend**/editor_). But the first branch is higher because it has the most common condition: /*\*.\*.\* (two asterisks mean any number of nested paths). The tab also has one default rule without specified endpoints. To view it, click the **Default rules** button.
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/add-custom-rules-for-processing-requests/9910984238225.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/add-custom-rules-for-processing-requests/9910984238225.png" alt="" width="80%">
 
 If you click on a branch, a list of rules attached to it opens. For example, opening the sixth branch includes four distinct rules with specific conditions and one inherited rule from the Default rule. To view it, click the **Distinct and inherited rules** button.
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/add-custom-rules-for-processing-requests/9910977514129.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/add-custom-rules-for-processing-requests/9910977514129.png" alt="" width="80%">
 
 ## Why use the feature?
 
@@ -52,7 +52,7 @@ Let us show a few examples of when rules would be useful.
 
 Go to the Rules tab and press the **Add Rule** button.
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/add-custom-rules-for-processing-requests/11774233052817.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/add-custom-rules-for-processing-requests/11774233052817.png" alt="" width="80%">
 
 You can add a rule from the section’s main page or open one of the existing branches and create a rule based on it.
 
@@ -62,7 +62,7 @@ A shutter will appear on the right side of the screen. Here you should configure
 
 Afterward, press the **Create** button.
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/add-custom-rules-for-processing-requests/9910977585937.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/add-custom-rules-for-processing-requests/9910977585937.png" alt="" width="80%">
 
 Note that after the rule’s creation, changes don’t approve immediately. It takes some time to compile the rules and add them to the WAF filtering nodes.
 
@@ -75,7 +75,7 @@ You can configure the set of conditions in two ways:
 
 The second way requires specific knowledge of how to describe the conditions branch via the URI. In this article, we’ll only consider the advanced form method. To configure the set of conditions by advanced form, do the steps below.
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/add-custom-rules-for-processing-requests/9910977632785.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/add-custom-rules-for-processing-requests/9910977632785.png" alt="" width="80%">
 
 1\. Select the HTTP method (POST, GET, PUT, PATCH, DELETE) in the drop-down list or leave the field empty if you want to consider all methods.
 
@@ -116,7 +116,7 @@ Enter the values that should (or should not) take the parameters specified in th
 
 When the conditions are completed, add actions in the *Then* section. These actions will be applied to the requests if they match the conditions.
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/add-custom-rules-for-processing-requests/9910984485009.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/add-custom-rules-for-processing-requests/9910984485009.png" alt="" width="80%">
 
 Select the appropriate action from the drop-down list and configure the relevant settings. There are five available actions:
 

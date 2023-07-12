@@ -60,7 +60,7 @@ If you want to apply the configuration to all files sent over the CDN, use the r
 
 The new page opens. Do the remaining steps on it.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response/13198779606929.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response/13198779606929.png" alt="" width="80%">
 
 2\. Go to the "HTTP headers" section and click **CORS header support**.
 
@@ -105,7 +105,7 @@ If you want to apply the configuration only to particular files, use the "Rules"
 
 2\. Open the "Rules" section, click **Create rule** and select **Create blank rule** from the list.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response/13199698120465.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response/13199698120465.png" alt="" width="80%">
 
 A new page opens. Do the remaining steps in it. 
 
@@ -113,7 +113,7 @@ A new page opens. Do the remaining steps in it. 
 
 4\. Click **Add option**, select "CORS header support", and close the list.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response/13199806046737.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response/13199806046737.png" alt="" width="80%">
 
 5\. Configure the option. If you enable the option, the Access-Control-Allow-Origin header will be added. If you add an option but leave it disabled, the Access-Control-Allow-Origin header will not be added.
 
@@ -219,4 +219,4 @@ X-ID: m9-up-e245
 
 8\. On the "Headers" tab on the right, you will see the headers configured on your server. If you see the Access-Control-Allow-Origin header, the configuration was successful.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response/13200288365969.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response/13200288365969.png" alt="" width="80%">

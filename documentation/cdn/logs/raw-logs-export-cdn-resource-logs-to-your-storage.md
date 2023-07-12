@@ -33,7 +33,7 @@ If you are using the <a href="https://gcore.com/docs/cdn/cdn-resource-options/ge
 
 **Note**: If your account does not have "Origin Shielding" switched on, this option will not be available when setting up Raw logs.  
 
-To enable "Add logs from origin shielding", tick the appropriate box when setting up Raw Logs (step #2 in the [guide below](#export-logs-to-an-s3-storage)).
+To enable "Add logs from origin shielding", tick the appropriate box when setting up Raw Logs (step #2 in the [guide below](https://gcore.com/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage#export-logs-to-an-s3-storage)).
 
 <img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/15499340205969.png" alt="" width="50%">
 
@@ -93,7 +93,7 @@ Where:
 
 9\. Click **Save changes**.
 
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/12745153936913.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/12745153936913.png" alt="" width="80%">
 
 ### Non-Amazon storage
 
@@ -109,7 +109,7 @@ Where:
 
 6\. Specify your secret access key. If you use <a href="https://gcore.com/storage" target="_blank">Gcore S3 storage</a>, you can find its secret access key in your personal account in the "<a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage#s3" target="_blank">Secret key</a>" field.
 
-7\. Specify a bucket hostname — a bucket ID that is used by your S3 storage system in the ```{bucket_name}.{hostname}``` format. It is required to ensure that logs are exported to a correct bucket within a storage. This field is optional: for some storages, a bucket hostname is determined automatically. If you use Gcore or Yandex.Cloud storage, a bucket hostname is required. A bucket hostname of the Gcore storage looks as follows: ```{bucket name}.{hostname from step 3}```. For example: ```examplename.s-ed1.cloud.gcore.lu```. A bucket hostname of Yandex.Cloud storage looks as follows: ```{bucket name}.{Yandex.Cloud hostname}```. For example: ```examplename.storage.yandexcloud.net```.
+7\. Specify a bucket hostname — a bucket ID that is used by your S3 storage system in the ```{bucket_name}.{hostname}``` format. It is required to ensure that logs are exported to a correct bucket within a storage. A bucket hostname of the Gcore storage looks as follows: ```{bucket name}.{hostname from step 3}```. For example: ```examplename.s-ed1.cloud.gcore.lu```. 
 
 8\. Specify a region — location ID of a server where your storage is hosted. This is optional: for some storages, the region is determined automatically. You can leave the field empty. If you use <a href="https://gcore.com/storage" target="_blank">Gcore S3 storage</a>, a location ID is required. You can find it in the "Details" of the storage. Your location ID is a part of your hostname to the first dot.
 
@@ -121,7 +121,7 @@ Where:
 
 11\. Click **Save changes**.
 
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/12745252125201.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/export-logs-to-s3-storage.png" alt="" width="80%">
 
 ## Export logs to an FTP/SFTP storage
 
@@ -146,7 +146,7 @@ If you use an SFTP storage from another provider, clarify whether a root folder 
 8\. Click **Save changes**.
 
 
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/12745350391697.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/12745350391697.png" alt="" width="80%">
 
 ## Export time intervals
 
@@ -162,8 +162,7 @@ You can see the status of the Raw Logs option in your control panel:
 - "Failed" is a status indicating that an error occurred while connecting to a storage or that the service failed to export logs within 24 hours
 - "Pause" is a status showing that the option is paused
 
-<p><img src="https://support.gcore.com/hc/article_attachments/5620114453777/image_1381.png" alt="" width="50%"></p>
-
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/image_1381.png" alt="" width="50%">
 
 ## Log path example
 
@@ -185,7 +184,7 @@ s3://log-bucket-name/2019/08/20/15/nodename_primarycname.domain.ru_access.log.gz
 "$shard_addr" "$geoip2_data_asnumber" "$connection" "$connection_requests"  
 "$request_id" "$http_x_forwarded_proto" "$http_x_forwarded_request_id" "$ssl_cipher"  
 "$ssl_session_id" "$ssl_session_reused"  
-"$sent_http_content_type" "$tcpinfo_rtt" 
+"$sent_http_content_type" "$tcpinfo_rtt" "$server_country_code" 
 ```
 
 Please don’t be surprised if you see a field that is not listed above. We occasionally add new fields. If some fields are added to logs, you will receive an email about it. New fields are added to the end of the line.
@@ -200,7 +199,7 @@ AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 YaBrowser/16.10.0.23
 "MISS" "10485760" "0.0.0.0:80" "2510" "7399" "-" "-" "KZ" "-" "shield_no" "0.0.0.0" "80" "206" "-" "0.000"  
 "0.200" "0.0.0.0" "asnumber" "106980391" "1" "c1c0f12ab35b7cccccd5dc0a454879c5" "-" "-"  
 "ECDHE-RSA-AES256-GCM-SHA384" "28a4184139cb43cdc79006cf2d1a4ac93bdc****" "r"  
-"application/json" "21"
+"application/json" "21" "PL"
 ```
 
 Log fields
@@ -208,234 +207,239 @@ Log fields
 
 Not all fields are important. Some of them relate to our internal CDN system and are not meaningful for you. In the table below, we have highlighted such system fields in italics. Other fields can be helpful for traffic analysis or statistics.
 
-<table class="tg">
+<table>
 <thead>
   <tr>
-    <th class="tg-fr2s">Field</th>
-    <th class="tg-fr2s">Log value example</th>
-    <th class="tg-j0cj">Description</th>
+    <th>Field</th>
+    <th>Log value example</th>
+    <th>Description</th>
   </tr>
 </thead>
 <tbody>
   <tr>
-    <td class="tg-fr2s">$remote_addr</td>
-    <td class="tg-1onv">0.0.0.0</td>
-    <td class="tg-7zkw">User's IP address</td>
+    <td>$remote_addr</td>
+    <td>0.0.0.0</td>
+    <td>User's IP address</td>
   </tr>
   <tr>
-    <td class="tg-4jnw">$remote_user<br>(internal system variable)</td>
-    <td class="tg-4jnw">-</td>
-    <td class="tg-4oen">Username used in Basic authentication </td>
+    <td>$remote_user<br>(internal system variable)</td>
+    <td>-</td>
+    <td>Username used in Basic authentication </td>
   </tr>
   <tr>
-    <td class="tg-1onv">[$time_local]</td>
-    <td class="tg-1onv">[26/Apr/2019<br>:09:47:40 +0000]</td>
-    <td class="tg-7zkw">Local time in Common Log Format</td>
+    <td>[$time_local]</td>
+    <td>[26/Apr/2019<br>:09:47:40 +0000]</td>
+    <td>Local time in Common Log Format</td>
   </tr>
   <tr>
-    <td class="tg-7zkw">$request</td>
-    <td class="tg-7zkw">GET /ContentCommon/<br>images/image.png<br>HTTP/1.1</td>
-    <td class="tg-7zkw">HTTP method, requested file path, HTTP version</td>
+    <td>$request</td>
+    <td>GET /ContentCommon/<br>images/image.png<br>HTTP/1.1</td>
+    <td>HTTP method, requested file path, HTTP version</td>
   </tr>
   <tr>
-    <td class="tg-7zkw">$status</td>
-    <td class="tg-7zkw">200</td>
-    <td class="tg-7zkw">Response status code from a CDN server</td>
+    <td>$status</td>
+    <td>200</td>
+    <td>Response status code from a CDN server</td>
   </tr>
   <tr>
-    <td class="tg-7zkw">$body_bytes_sent</td>
-    <td class="tg-7zkw">1514283</td>
-    <td class="tg-7zkw">Number of bytes sent to a user, excluding the response header size</td>
+    <td>$body_bytes_sent</td>
+    <td>1514283</td>
+    <td>Number of bytes sent to a user, excluding the response header size</td>
   </tr>
   <tr>
-    <td class="tg-7zkw">$http_referer</td>
-    <td class="tg-7zkw">https://example.com<br>/videos/10</td>
-    <td class="tg-7zkw">Referrer - a URL requested by a user</td>
+    <td>$http_referer</td>
+    <td>https://example.com<br>/videos/10</td>
+    <td>Referrer - a URL requested by a user</td>
   </tr>
   <tr>
-    <td class="tg-7zkw">$http_user_agent</td>
-    <td class="tg-7zkw">Mozilla/5.0<br>(Macintosh; Intel<br>Mac OS X 10_12_1)<br>AppleWebKit/537.36<br>(KHTML, like Gecko)<br>Chrome/53.0.2785.116<br>YaBrowser/16.10.0.2309<br>Safari/537.36</td>
-    <td class="tg-7zkw">User agent that was used to send a request (browser or other application)</td>
+    <td>$http_user_agent</td>
+    <td>Mozilla/5.0<br>(Macintosh; Intel<br>Mac OS X 10_12_1)<br>AppleWebKit/537.36<br>(KHTML, like Gecko)<br>Chrome/53.0.2785.116<br>YaBrowser/16.10.0.2309<br>Safari/537.36</td>
+    <td>User agent that was used to send a request (browser or other application)</td>
   </tr>
   <tr>
-    <td class="tg-7zkw">$bytes_sent</td>
-    <td class="tg-7zkw">1514848</td>
-    <td class="tg-7zkw">Number of bytes sent to a user</td>
+    <td>$bytes_sent</td>
+    <td>1514848</td>
+    <td>Number of bytes sent to a user</td>
   </tr>
   <tr>
-    <td class="tg-7zkw">$edgename</td>
-    <td class="tg-7zkw">[dh-up-gc18]</td>
-    <td class="tg-7zkw">CDN server that forwarded a requested file</td>
+    <td>$edgename</td>
+    <td>[dh-up-gc18]</td>
+    <td>CDN server that forwarded a requested file</td>
   </tr>
   <tr>
-    <td class="tg-7zkw">$scheme</td>
-    <td class="tg-7zkw">https</td>
-    <td class="tg-7zkw">Protocol (HTTP or HTTPS) of a request</td>
+    <td>$scheme</td>
+    <td>https</td>
+    <td>Protocol (HTTP or HTTPS) of a request</td>
   </tr>
   <tr>
-    <td class="tg-7zkw">$host</td>
-    <td class="tg-7zkw">cdn.example.com</td>
-    <td class="tg-7zkw">Requested hostname of a CDN resource</td>
+    <td>$host</td>
+    <td>cdn.example.com</td>
+    <td>Requested hostname of a CDN resource</td>
   </tr>
   <tr>
-    <td class="tg-7zkw">$request_time</td>
-    <td class="tg-7zkw">1.500</td>
-    <td class="tg-7zkw">Request processing time in seconds (accurate to milliseconds); time elapsed between the first bytes of a request were processed and logging after the last bytes were sent to a user</td>
+    <td>$request_time</td>
+    <td>1.500</td>
+    <td>Request processing time in seconds (accurate to milliseconds); time elapsed between the first bytes of a request were processed and logging after the last bytes were sent to a user</td>
   </tr>
   <tr>
-    <td class="tg-7zkw">$upstream_response_time</td>
-    <td class="tg-7zkw">0.445</td>
-    <td class="tg-7zkw">Number of seconds (accurate to milliseconds) it took to receive a response from an origin. In case of multiple responses, commas and colons are used </td>
+    <td>$upstream_response_time</td>
+    <td>0.445</td>
+    <td>Number of seconds (accurate to milliseconds) it took to receive a response from an origin. In case of multiple responses, commas and colons are used </td>
   </tr>
   <tr>
-    <td class="tg-7zkw">$request_length</td>
-    <td class="tg-7zkw">157</td>
-    <td class="tg-7zkw">Request length (including request line, header, and request body)</td>
+    <td>$request_length</td>
+    <td>157</td>
+    <td>Request length (including request line, header, and request body)</td>
   </tr>
   <tr>
-    <td class="tg-7zkw">$http_range</td>
-    <td class="tg-7zkw">bytes=0-1901653</td>
-    <td class="tg-7zkw">File fragment size in a Range request</td>
+    <td>$http_range</td>
+    <td>bytes=0-1901653</td>
+    <td>File fragment size in a Range request</td>
   </tr>
   <tr>
-    <td class="tg-7zkw">[$responding_node]</td>
-    <td class="tg-7zkw">dh</td>
-    <td class="tg-7zkw">Responding data center</td>
+    <td>[$responding_node]</td>
+    <td>dh</td>
+    <td>Responding data center</td>
   </tr>
   <tr>
-    <td class="tg-7zkw">$upstream_cache_status</td>
-    <td class="tg-7zkw">MISS</td>
-    <td class="tg-7zkw">Status of a requested file in CDN cache:<br>- HIT is a status of a response served from CDN cache.<br>- STALE is a status of an outdated response that failed to update because an origin was not responding or responding incorrectly.<br>- UPDATING is a status of an outdated response that is still updating since a previous request.<br>- REVALIDATED is a status of a response that is identical to the one on an origin based on the proxy_cache_revalidate directive.<br>- EXPIRED is a status of a response that has expired in cache, but still matches the one on an origin. A request has been sent to an origin for re-caching.<br>- MISS is a status of a response that has been served directly from an origin, rather than from cache.<br>- BYPASS is a status of a response for the first file request after clearing the cache.<br>Note: this status appears when the file is requested by each CDN server.<br>When one CDN server requests a file for the first time, it will have the BYPASS status.<br>When the same server requests the file again, the status will be changed to HIT.<br>When another CDN server requests the file, it will again have the BYPASS status.<br></td>
+    <td>$upstream_cache_status</td>
+    <td>MISS</td>
+    <td>Status of a requested file in CDN cache:<br>- HIT is a status of a response served from CDN cache.<br>- STALE is a status of an outdated response that failed to update because an origin was not responding or responding incorrectly.<br>- UPDATING is a status of an outdated response that is still updating since a previous request.<br>- REVALIDATED is a status of a response that is identical to the one on an origin based on the proxy_cache_revalidate directive.<br>- EXPIRED is a status of a response that has expired in cache, but still matches the one on an origin. A request has been sent to an origin for re-caching.<br>- MISS is a status of a response that has been served directly from an origin, rather than from cache.<br>- BYPASS is a status of a response for the first file request after clearing the cache.<br>Note: this status appears when the file is requested by each CDN server.<br>When one CDN server requests a file for the first time, it will have the BYPASS status.<br>When the same server requests the file again, the status will be changed to HIT.<br>When another CDN server requests the file, it will again have the BYPASS status.<br></td>
   </tr>
   <tr>
-    <td class="tg-7zkw">$upstream_response_length</td>
-    <td class="tg-7zkw"> 10485760</td>
-    <td class="tg-7zkw">Response length from an origin in bytes. In case of multiple responses, commas and colons are used</td>
+    <td>$upstream_response_length</td>
+    <td> 10485760</td>
+    <td>Response length from an origin in bytes. In case of multiple responses, commas and colons are used</td>
   </tr>
   <tr>
-    <td class="tg-7zkw">$upstream_addr</td>
-    <td class="tg-7zkw">0.0.0.0:80</td>
-    <td class="tg-7zkw">Origin's IP address and port</td>
+    <td>$upstream_addr</td>
+    <td>0.0.0.0:80</td>
+    <td>Origin's IP address and port</td>
   </tr>
   <tr>
-    <td class="tg-4oen">$gcdn_api_client_id<br>(internal system variable)</td>
-    <td class="tg-4oen">123</td>
-    <td class="tg-4oen">Your ID in our system</td>
+    <td>$gcdn_api_client_id<br>(internal system variable)</td>
+    <td>123</td>
+    <td>Your ID in our system</td>
   </tr>
   <tr>
-    <td class="tg-4oen">$gcdn_api_resource_id<br>(internal system variable)</td>
-    <td class="tg-4oen">01</td>
-    <td class="tg-4oen">Your CDN-resource ID in our system</td>
+    <td>$gcdn_api_resource_id<br>(internal system variable)</td>
+    <td>01</td>
+    <td>Your CDN-resource ID in our system</td>
   </tr>
   <tr>
-    <td class="tg-4oen">$uid_got<br>(internal system variable)</td>
-    <td class="tg-4oen">-</td>
-    <td class="tg-4oen">Cookie name and received user ID</td>
+    <td>$uid_got<br>(internal system variable)</td>
+    <td>-</td>
+    <td>Cookie name and received user ID</td>
   </tr>
   <tr>
-    <td class="tg-4oen">$uid_set<br>(internal system variable)</td>
-    <td class="tg-4oen">-</td>
-    <td class="tg-4oen">Cookie name and provided user ID</td>
+    <td>$uid_set<br>(internal system variable)</td>
+    <td>-</td>
+    <td>Cookie name and provided user ID</td>
   </tr>
   <tr>
-    <td class="tg-7zkw">$geoip_country_code</td>
-    <td class="tg-7zkw">KZ</td>
-    <td class="tg-7zkw">User’s country code according to the <a href="https://www.iso.org/obp/ui/#search/code/"><span style="text-decoration:underline;color:#FF5700">ISO 3166 standard</span></a> (Alpha-2 code).</td>
+    <td>$geoip_country_code</td>
+    <td>KZ</td>
+    <td>User’s country code according to the <a href="https://www.iso.org/obp/ui/#search/code/"><span style="text-decoration:underline;color:#FF5700">ISO 3166 standard</span></a> (Alpha-2 code).</td>
   </tr>
   <tr>
-    <td class="tg-7zkw">$geoip_city</td>
-    <td class="tg-7zkw">-</td>
-    <td class="tg-7zkw">User’s city code</td>
+    <td>$geoip_city</td>
+    <td>-</td>
+    <td>User’s city code</td>
   </tr>
   <tr>
-    <td class="tg-4oen">$shield_type<br>(internal system variable)</td>
-    <td class="tg-4oen">shield_no</td>
-    <td class="tg-4oen">This field shows whether the <a href="https://gcorelabs.com/support/articles/214080309/"><span style="text-decoration:underline;color:#FF5700">shielding option</span></a> is enabled:<br>shield_old - enabled<br>shield_no - disabled</td>
+    <td>$shield_type<br>(internal system variable)</td>
+    <td>shield_no</td>
+    <td>This field shows whether the <a href="https://gcorelabs.com/support/articles/214080309/"><span style="text-decoration:underline;color:#FF5700">shielding option</span></a> is enabled:<br>shield_old - enabled<br>shield_no - disabled</td>
   </tr>
   <tr>
-    <td class="tg-4oen">$server_addr<br>(internal system variable)</td>
-    <td class="tg-4oen">0.0.0.0</td>
-    <td class="tg-4oen">IP address of an Anycast zone or CDN server</td>
+    <td>$server_addr<br>(internal system variable)</td>
+    <td>0.0.0.0</td>
+    <td>IP address of an Anycast zone or CDN server</td>
   </tr>
   <tr>
-    <td class="tg-4oen">$server_port<br>(internal system variable)</td>
-    <td class="tg-4oen">80</td>
-    <td class="tg-4oen">Requested port</td>
+    <td   >$server_port<br>(internal system variable)</td>
+    <td   >80</td>
+    <td   >Requested port</td>
   </tr>
   <tr>
-    <td class="tg-7zkw">$upstream_status</td>
-    <td class="tg-7zkw">206</td>
-    <td class="tg-7zkw">Origin response code</td>
+    <td  >$upstream_status</td>
+    <td  >206</td>
+    <td  >Origin response code</td>
   </tr>
   <tr>
-    <td class="tg-7zkw">$upstream_connect_time</td>
-    <td class="tg-7zkw">0.000</td>
-    <td class="tg-7zkw">Number of seconds (accurate to milliseconds) it took to access an origin server</td>
+    <td  >$upstream_connect_time</td>
+    <td  >0.000</td>
+    <td  >Number of seconds (accurate to milliseconds) it took to access an origin server</td>
   </tr>
   <tr>
-    <td class="tg-7zkw">$upstream_header_time</td>
-    <td class="tg-7zkw">0.200</td>
-    <td class="tg-7zkw">Number of seconds (accurate to milliseconds) it took to receive a response header from an origin server</td>
+    <td  >$upstream_header_time</td>
+    <td  >0.200</td>
+    <td  >Number of seconds (accurate to milliseconds) it took to receive a response header from an origin server</td>
   </tr>
   <tr>
-    <td class="tg-4oen">$shard_addr<br>(internal system variable)</td>
-    <td class="tg-4oen">0.0.0.0</td>
-    <td class="tg-4oen">IP address of a CDN server that was first to accept a request if the Cache Sharding feature is enabled</td>
+    <td   >$shard_addr<br>(internal system variable)</td>
+    <td   >0.0.0.0</td>
+    <td   >IP address of a CDN server that was first to accept a request if the Cache Sharding feature is enabled</td>
   </tr>
   <tr>
-    <td class="tg-7zkw">$geoip2_data_asnumber</td>
-    <td class="tg-7zkw">asnumber</td>
-    <td class="tg-7zkw">Number of an autonomous system that sent a request</td>
+    <td  >$geoip2_data_asnumber</td>
+    <td  >asnumber</td>
+    <td  >Number of an autonomous system that sent a request</td>
   </tr>
   <tr>
-    <td class="tg-4oen">$connection<br>(internal system variable)</td>
-    <td class="tg-4oen">2897494295</td>
-    <td class="tg-4oen">Connection serial number</td>
+    <td   >$connection<br>(internal system variable)</td>
+    <td   >2897494295</td>
+    <td   >Connection serial number</td>
   </tr>
   <tr>
-    <td class="tg-4oen">$connection_requests<br>(internal system variable)</td>
-    <td class="tg-4oen">1</td>
-    <td class="tg-4oen">Current number of requests made through a connection</td>
+    <td   >$connection_requests<br>(internal system variable)</td>
+    <td   >1</td>
+    <td   >Current number of requests made through a connection</td>
   </tr>
   <tr>
-    <td class="tg-4oen">$request_id<br>(internal system variable)</td>
-    <td class="tg-4oen">c1c0f12ab35b7<br>cccccd5dc0a<br>454879c5</td>
-    <td class="tg-4oen">Unique request identifier generated from 16 random bytes, in hexadecimal form</td>
+    <td   >$request_id<br>(internal system variable)</td>
+    <td   >c1c0f12ab35b7<br>cccccd5dc0a<br>454879c5</td>
+    <td   >Unique request identifier generated from 16 random bytes, in hexadecimal form</td>
   </tr>
   <tr>
-    <td class="tg-7zkw">$http_x_forwarded_proto</td>
-    <td class="tg-7zkw">-</td>
-    <td class="tg-7zkw">Initial protocol of an incoming request (HTTP or HTTPS)</td>
+    <td  >$http_x_forwarded_proto</td>
+    <td  >-</td>
+    <td  >Initial protocol of an incoming request (HTTP or HTTPS)</td>
   </tr>
   <tr>
-    <td class="tg-4oen">$http_x_forwarded_request_id<br>(internal system variable)</td>
-    <td class="tg-4oen">-</td>
-    <td class="tg-4oen">Initial ID of an incoming request</td>
+    <td   >$http_x_forwarded_request_id<br>(internal system variable)</td>
+    <td   >-</td>
+    <td   >Initial ID of an incoming request</td>
   </tr>
   <tr>
-    <td class="tg-4oen">$ssl_cipher<br>(internal system variable)</td>
-    <td class="tg-4oen">ECDHE-RSA-AES256<br>-GCM-SHA384</td>
-    <td class="tg-4oen">Cipher name used for an established SSL connection</td>
+    <td   >$ssl_cipher<br>(internal system variable)</td>
+    <td   >ECDHE-RSA-AES256<br>-GCM-SHA384</td>
+    <td   >Cipher name used for an established SSL connection</td>
   </tr>
   <tr>
-    <td class="tg-4oen">$ssl_session_id<br>(internal system variable)</td>
-    <td class="tg-4oen">28a4184139cb43<br>cdc79006cf2d1<br>a4ac93bdc****</td>
-    <td class="tg-4oen">Session ID of an established SSL connection</td>
+    <td   >$ssl_session_id<br>(internal system variable)</td>
+    <td   >28a4184139cb43<br>cdc79006cf2d1<br>a4ac93bdc****</td>
+    <td   >Session ID of an established SSL connection</td>
   </tr>
   <tr>
-    <td class="tg-4oen">$ssl_session_reused<br>(internal system variable)</td>
-    <td class="tg-4oen"> r</td>
-    <td class="tg-4oen">The filed shows whether a session was reused (“r” ) or not (“.”)</td>
+    <td   >$ssl_session_reused<br>(internal system variable)</td>
+    <td   > r</td>
+    <td   >The filed shows whether a session was reused (“r” ) or not (“.”)</td>
   </tr>
   <tr>
-    <td class="tg-7zkw">$sent_http_content_type</td>
-    <td class="tg-7zkw">application/json</td>
-    <td class="tg-7zkw">Value of the Content-Type HTTP header, indicating the MIME type of a transmitted file</td>
+    <td  >$sent_http_content_type</td>
+    <td  >application/json</td>
+    <td  >Value of the Content-Type HTTP header, indicating the MIME type of a transmitted file</td>
   </tr>
   <tr>
-    <td class="tg-7zkw">$tcpinfo_rtt</td>
-    <td class="tg-7zkw">  21</td>
-    <td class="tg-7zkw">Average time (latency) it takes to transfer a packet to/from a server. The unit of time is microseconds.</td>
+    <td  >$tcpinfo_rtt</td>
+    <td  >  21</td>
+    <td  >Average time (latency) it takes to transfer a packet to/from a server. The unit of time is microseconds.</td>
+  </tr>
+  <tr>
+  <td>$server_country_code</td>
+  <td>PL</td>
+  <td>Server’s country code according to the <a href="https://www.iso.org/obp/ui/#search/code/"><span style="text-decoration:underline;color:#FF5700">ISO 3166 standard</span></a> (Alpha-2 code).</td>
   </tr>
 </tbody>
 </table>

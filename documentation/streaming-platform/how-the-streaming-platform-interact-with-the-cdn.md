@@ -24,7 +24,7 @@ clientID.gvideo.io
 
 The *clientID* is a unique identifier for your account, which can be found in the <a href="https://accounts.gcore.com/profile/company" target="_blank">General</a> section under the "Client ID" field. For example, if your clientID is *12345*, the subdomain for the Streaming Platform will be *12345.gvideo.io*. 
 
-This subdomain is included in the URLs of all your videos or live streams uploaded to the Streaming Platform, such as *https://12345.gvideo.io/cmaf/12345_00000/master.m3u8* (a link to a live stream) or *https://12345.gvideo.io/videos/12345_ABcdefg123HiJ* (a link to a VoD).
+This subdomain is included in the URLs of all your videos or live streams uploaded to the Streaming Platform, such as ```https://12345.gvideo.io/cmaf/12345_00000/master.m3u8``` (a link to a live stream) or ```https://12345.gvideo.io/videos/12345_ABcdefg123HiJ``` (a link to a VoD).
 
 ## Change the default subdomain
 
