@@ -49,20 +49,20 @@ Customize the highlighted values:
 - <span style="color:#FF5913">yourlogin</span>: Your username on the Logging page
 - <span style="color:#FF5913">yourpassword</span>: Your password
 
-For more information on how to add INPUT for different log sources, go to the <a href="https://docs.fluentbit.io/manual/pipeline/inputs" target="_blank">"Input" section of the Fluent Bit documentation</a> and click the log source you need. 
+For more information on how to add `INPUT` for different log sources, go to the <a href="https://docs.fluentbit.io/manual/pipeline/inputs" target="_blank">"Input" section of the Fluent Bit documentation</a> and click the log source you need. 
 
-For example, if you want to gather logs from a specific file, open the <a href="https://docs.fluentbit.io/manual/pipeline/inputs/tail" target="_blank">guide for Tail</a>. Tail is a utility on UNIX-like systems used to display the tail end of a file. It helps Fluent Bit to read changes in the log file. You need to fill in the INPUT so that it corresponds with Tail.
+For example, if you want to gather logs from a specific file, open the <a href="https://docs.fluentbit.io/manual/pipeline/inputs/tail" target="_blank">guide for Tail</a>. Tail is a utility on UNIX-like systems used to display the tail end of a file. It helps Fluent Bit to read changes in the log file. You need to fill in the `INPUT` so that it corresponds with Tail.
 
 <expandable-element title="Descriptions of the OUTPUT strings">
 
-- [OUTPUT]: Type of process(export).  
-- name: Servers where logs will be delivered (Kafka servers).  
-- brokers: Server(s) where logs will be exported to.  
-- topics: Topic(s) where logs will be exported to.  
-- rdkafka.security.protocol: Security protocol that encrypts data to protect it from theft.  
-- rdkafka.sasl.mechanism: Authentication mechanism that helps to verify a login and a password entered to sign into your logs storage.  
-- rdkafka.sasl.username: The username that helps to verify the sender.  
-- rdkafka.sasl.password: The password that helps to verify the sender.
+- **[OUTPUT]**: Type of process (export).  
+- **name**: Servers where logs will be delivered (Kafka servers).  
+- **brokers**: Server(s) where logs will be exported to.  
+- **topics**: Topic(s) where logs will be exported to.  
+- **rdkafka.security.protocol**: Security protocol that encrypts data to protect it from theft.  
+- **rdkafka.sasl.mechanism**: Authentication mechanism that helps to verify a login and a password entered to sign into your logs storage.  
+- **rdkafka.sasl.username**: The username that helps to verify the sender.  
+- **rdkafka.sasl.password**: The password that helps to verify the sender.
 
 </expandable-element>
 
