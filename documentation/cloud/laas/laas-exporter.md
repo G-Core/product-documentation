@@ -1,38 +1,35 @@
 ---
 title: laas-exporter
 displayName: 'LaaS Exporter'
-published: false
+published: true
 order: 40
 toc:
-    '--1--What is LaaS Exporter?': what-is-laas-exporter
-    '--1--How does it work?': how-does-laas-exporter-work
-    '--1--Key metrics': understand-the-key-metrics
-slugs:
-    - ___UNPUBLISHED___lj2l32rq_Pc7cisQcxkHU7zdX4AG7MMEH8chDe1aq
+   --1--What is LaaS Exporter?: what-is-laas-exporter
+   --1--How does it work?: how-does-it-work
+   --1--Key metrics': key-metrics
 ---
-
 # LaaS Exporter
 
 ## What is LaaS Exporter?
 
 The LaaS Exporter is a service that offers LaaS OpenSearch index metrics to clients. It provides secure access to user-specific metrics for authenticated users. 
 
-## How does LaaS Exporter work?
+## How does it work?
 
 You configure your Prometheus target, providing the LaaS Exporter endpoint and your LaaS credentials using HTTPS Basic Authentication. For example, the Prometheus target configuration for Luxembourg would look like this:
 
-```
+<code-block>
  - job_name: 'your_awesome_job'
     scrape_interval: 5m
     scrape_timeout: 30s
     scheme: https
     static_configs:
-        - targets: ['laas-exporter.k1.luxembourg-1.cloud.gcore.com']
+        - targets: ['<span style="color:#FF5913">laas-exporter.k1.luxembourg-1.cloud.gcore.com</span>']
     metrics_path: "/v1/opensearch/indices/metrics"
     basic_auth:
       username: 'yourLaasUsername'
       password: 'yourLaasPassword'
-```
+</code-block>
 
 The LaaS endpoint for your region in specified in your control panel. 
 
