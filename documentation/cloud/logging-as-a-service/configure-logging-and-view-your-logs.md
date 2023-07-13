@@ -11,7 +11,7 @@ toc:
 
 2\. Select the region under the project name. This is the location of the data center for deploying log storage.
 
-Note: Logging may be unavailable in some regions. In this case, choose the LaaS region that is geographically closest to your equipment.
+Note: Logging may be unavailable in some regions. In this case, choose the region that is geographically closest to your equipment.
 
 3\. In the **Topics** section, click **Create topic**, name it, and click **Save**. We will create an index pattern for your topic in OpenSearch Dashboards with “@timestamp” as the default time field.
 
