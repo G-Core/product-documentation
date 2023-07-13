@@ -21,9 +21,8 @@ An up-to-date link for Filebeat installation is available on its <a href="https:
 
 ## Configure 
 
-The Filebeat configuration file consists of two sections: `INPUT` and `OUTPUT`. `INPUT` determines the source of the logs you need to collect, and `OUTPUT` indicates the destination where they will be sent. Here’s how to set up the configuration file correctly:
+The Filebeat configuration file consists of two sections: `inputs` and `output`. `inputs` determines the source of the logs you need to collect, and `output` indicates the destination where they will be sent. Here’s how to set up the configuration file correctly:
 
-Here’s how to write out the file correctly.
 1. Open the `filebeat.yml` file and add the following data:
 
 <code-block>
@@ -48,17 +47,17 @@ Customize the highlighted values:
 - <span style="color:#FF5913">yourlogin</span>: Your username on the Logging page
 - <span style="color:#FF5913">yourpassword</span>: Your password
 
-You can also collect logs from other sources such as TCP, UDP, or syslog. For more details, refer to the <a href="https://www.elastic.co/guide/en/beats/filebeat/current/configuration-filebeat-options.html" target="_blank">"Configure inputs" section of the Filebeat documentation</a>: Click the log source you need, and configure the “inputs” section following the provided guide.
+You can also collect logs from other sources such as TCP, UDP, or syslog. For more details, refer to the <a href="https://www.elastic.co/guide/en/beats/filebeat/current/configuration-filebeat-options.html" target="_blank">"Configure inputs" section of the Filebeat documentation</a>: Click the log source you need, and configure the `inputs` section following the provided guide.
 
 <expandable-element title="Descriptions of the OUTPUT strings">
 
-- output.kafka: Servers for log export (Kafka servers). 
-- hosts: Address of server(s) where logs will be exported to.  
-- topic: Topic(s) where logs will be exported to.  
-- sasl.mechanism: Authentication mechanism that helps to verify a username and password entered to sign into your logs storage.  
-- sasl.username: Username that helps to verify the sender.  
-- password: Password that helps to verify the sender.  
-- ssl.enabled: Security protocol used to encrypt your data and protect it from theft (true).
+- **output.kafka**: Servers for log export (Kafka servers). 
+- **hosts**: Address of server(s) where logs will be exported to.  
+- **topic**: Topic(s) where logs will be exported to.  
+- **sasl.mechanism**: Authentication mechanism that helps to verify a username and password entered to sign into your logs storage.  
+- **sasl.username**: Username that helps to verify the sender.  
+- **password**: Password that helps to verify the sender.  
+- **ssl.enabled**: Security protocol used to encrypt your data and protect it from theft (true).
 
 </expandable-element> 
 
