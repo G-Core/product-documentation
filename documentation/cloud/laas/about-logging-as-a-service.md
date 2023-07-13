@@ -37,7 +37,7 @@ The use cases of Logging include:  
 
 3. **Server connectivity check**. Open logs of two servers for the same time interval and see whether all data has reached an end user.  
 
-4. **Data speed measurement**. Open logs and compare the time when one server sent the data with the time when another one received it.  
+4. **Data speed measurement**. Open logs and compare the time when one server sent the data with the time when another one received it.
 
 ## Log storage 
 
