@@ -1,5 +1,5 @@
 import { Meta, Title } from '@angular/platform-browser';
-import { Component, Renderer2 } from '@angular/core';
+import { Component, OnInit, Renderer2 } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, Router } from '@angular/router';
 import { ScullyRoute, ScullyRoutesService } from '@scullyio/ng-lib';
 import { Observable, filter, map, switchMap } from 'rxjs';
@@ -12,7 +12,7 @@ const defaultTitle = 'Product Documentation';
     selector: 'app-root',
     templateUrl: './app.component.html',
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
     public links$: Observable<Array<ScullyRoute>> = this.scully.available$;
 
     constructor(
@@ -58,6 +58,18 @@ export class AppComponent {
                 }
                 this.updateCanonicalTag(currentUrl);
             });
+    }
+
+    public ngOnInit(): void {
+        if (!window.sessionStorage.getItem('fontPreloaded')) {
+            setTimeout(() => {
+                const link = document.createElement('link');
+                link.setAttribute('rel', 'stylesheet');
+                link.setAttribute('href', 'https://static.gcore.pro/fonts/inter/index.css');
+                document.head.appendChild(link);
+            }, 2000);
+            window.sessionStorage.setItem('fontPreloaded', 'true');
+        }
     }
 
     private updateCanonicalTag(url: string): void {
