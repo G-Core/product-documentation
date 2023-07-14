@@ -1,22 +1,27 @@
-import { Meta } from '@angular/platform-browser';
-import { Component, Renderer2 } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { Meta, Title } from '@angular/platform-browser';
+import { Component, OnInit, Renderer2 } from '@angular/core';
+import { ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, Router } from '@angular/router';
 import { ScullyRoute, ScullyRoutesService } from '@scullyio/ng-lib';
-import { Observable, filter } from 'rxjs';
+import { Observable, filter, map, switchMap } from 'rxjs';
 import config from '../config';
+
+const defaultDescription = 'Gcore | Global Hosting, CDN, Edge and Cloud Services';
+const defaultTitle = 'Product Documentation';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
     public links$: Observable<Array<ScullyRoute>> = this.scully.available$;
 
     constructor(
         private scully: ScullyRoutesService,
         public router: Router,
         private renderer: Renderer2,
+        private activatedRoute: ActivatedRoute,
         private meta: Meta,
+        private readonly titleService: Title,
     ) {
         if (config.environment === 'preprod') {
             this.meta.addTag({ name: 'robots', content: 'noindex, nofollow' });
@@ -26,13 +31,45 @@ export class AppComponent {
             });
         }
 
-        router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe(() => {
-            let currentUrl = `https://gcore.com/docs${this.router.url}`;
-            if (this.router.url === '/') {
-                currentUrl = currentUrl.slice(0, -1);
-            }
-            this.updateCanonicalTag(currentUrl);
-        });
+        router.events
+            .pipe(
+                filter((e) => e instanceof NavigationEnd),
+                switchMap(() => this.links$),
+                map((links) => links.find((link) => link.route === this.router.url)),
+            )
+            .subscribe((link) => {
+                const lastChildRouteSnapshot: ActivatedRouteSnapshot = this.getLastChildRouteSnapshot();
+
+                const title = link.pageTitle || lastChildRouteSnapshot.data.title || defaultTitle;
+                const description =
+                    link.pageDescription || lastChildRouteSnapshot.data.description || defaultDescription;
+
+                this.titleService.setTitle(title);
+
+                this.meta.updateTag({
+                    name: 'description',
+                    content: description,
+                });
+                this.meta.updateTag({ name: 'og:description', content: description });
+
+                let currentUrl = `https://gcore.com/docs${this.router.url}`;
+                if (this.router.url === '/') {
+                    currentUrl = currentUrl.slice(0, -1);
+                }
+                this.updateCanonicalTag(currentUrl);
+            });
+    }
+
+    public ngOnInit(): void {
+        if (!window.sessionStorage.getItem('fontPreloaded')) {
+            setTimeout(() => {
+                const link = document.createElement('link');
+                link.setAttribute('rel', 'stylesheet');
+                link.setAttribute('href', 'https://static.gcore.pro/fonts/inter/index.css');
+                document.head.appendChild(link);
+            }, 2000);
+            window.sessionStorage.setItem('fontPreloaded', 'true');
+        }
     }
 
     private updateCanonicalTag(url: string): void {
@@ -46,5 +83,19 @@ export class AppComponent {
             this.renderer.setAttribute(tag, 'href', url);
             this.renderer.appendChild(document.head, tag);
         }
+    }
+
+    private getLastChildRouteSnapshot(): ActivatedRouteSnapshot {
+        let child: ActivatedRoute = this.activatedRoute.firstChild;
+        let snapshot: ActivatedRouteSnapshot;
+        while (child) {
+            if (child.firstChild) {
+                child = child.firstChild;
+            } else {
+                snapshot = child.snapshot;
+                child = null;
+            }
+        }
+        return snapshot;
     }
 }
