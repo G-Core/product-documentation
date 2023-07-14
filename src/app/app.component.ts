@@ -40,8 +40,6 @@ export class AppComponent {
             .subscribe((link) => {
                 const lastChildRouteSnapshot: ActivatedRouteSnapshot = this.getLastChildRouteSnapshot();
 
-                console.log('link', link);
-
                 const title = link.pageTitle || lastChildRouteSnapshot.data.title || defaultTitle;
                 const description =
                     link.pageDescription || lastChildRouteSnapshot.data.description || defaultDescription;
