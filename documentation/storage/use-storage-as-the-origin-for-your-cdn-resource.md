@@ -25,6 +25,8 @@ toc:
 
 <expandable-element title="Public">
 
+<img src="https://assets.gcore.pro/docs/storage/use-storage-with-cdn/image3527.png" alt="" width="80%">
+
 1\. Select the **Specify content origin** option.
 
 2\. Select **None** in the "Type of origin authentication" option. 
@@ -77,7 +79,7 @@ For example, you've: 
 
 To request file *picture.png*, which was uploaded into the bucket, from CDN use the following URL:
 
-http://cdn.example.com/picture.png
+```http://cdn.example.com/picture.png```
 
 **Note**: By default, created buckets and all the stored files in buckets are private. To make a file public, read <a href="https://gcore.com/docs/storage/manage-s3-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/configure-access-control-on-s3-storage-with-aws-cli-and-s3cmd" target="_blank">the article on ACL and policy</a> or <a href="https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl" target="_blank">official documentation</a>.
 
@@ -91,4 +93,4 @@ Path to the uploaded file in the storage: 
 
 If the CDN Custom domain is *cdn.example.com*, the URL to request the file from CDN will be:
 
-http://cdn.example.com/picture.png
+```http://cdn.example.com/picture.png```
