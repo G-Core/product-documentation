@@ -33,6 +33,7 @@ Find the "Origin pull protocol" option in the Origin section, and click **Add gr
 Continue to <a href="https://gcore.com/docs/cdn/add-an-origin-group#step-2-enter-the-origin-group-name">Step 2</a>. 
 
 **Note**: The created origin group won’t automatically bind to the CDN resource. Follow the instruction till the end. 
+
 </expandable-element>
 
 <expandable-element title="Option 2. Origins groups">
@@ -42,6 +43,7 @@ Open the "Origins groups" section and click **Add origins group**.
 <img src="https://assets.gcore.pro/docs/cdn/add-an-origin-group/image3518.png" alt="" width="80%">
 
 **Note**: The created origins group will appear in the general list of origins groups. It won’t automatically bind to the CDN resource.
+
 </expandable-element>
 
 A pop-up window for group configuration and adding will appear. Perform steps 2–5, regardless of the option chosen above. 
@@ -113,6 +115,7 @@ At first glance, the interaction between the active/backup origins and the "Use 
 </tr>
 </tbody>
 </table>
+
 </expandable-element>
 
 <expandable-element title="Type 2. AWS signature V4">
@@ -136,6 +139,7 @@ Read about this type of origin in our article about <a href="https://gcore.com/d
 - For most other storages: ```s3.{region-code}.{storage hostname}```
 
 Don’t forget to save the changes.
+
 </expandable-element>
 
 ## Step 5. Save changes
