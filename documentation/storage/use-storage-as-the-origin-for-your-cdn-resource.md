@@ -32,11 +32,13 @@ toc:
 3\. Specify the path to your bucket in following format: ```http(s)://<bucket-name>.<location>.cloud.gcore.lu```. More details in the "<a href="https://gcore.com/docs/storage/use-storage-as-the-origin-for-your-cdn-resource#s3-storage-is-the-origin">Request content directly from the S3 storage</a>" section below. 
 
 4\. Specify custom domain, e.g., *cdn.example.com*. Read more about the personal domain setup in the "<a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">Create and set a custom domain for the content delivery via CDN</a>" guide.
+
 </expandable-element>
 
 <expandable-element title="Private">
 
 If you want to use a private bucket instead of a public S3 bucket, follow our guide on how to <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin" target="_blank">use a private bucket as an origin</a>.
+
 </expandable-element>
 
 ### Use SFTP storage
