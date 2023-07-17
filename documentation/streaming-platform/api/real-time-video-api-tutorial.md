@@ -244,7 +244,7 @@ Example: ```https://meet.gcore.com/call/?roomId=```
 A webinar room is a room  where participants are divided into two groups: speakers and viewers. Speakers  are active participants with cameras and microphones. Speakers' video is shown on the screen of the webinar room, participants can watch and hear them. Viewers can only watch the speakers without interaction. They have neither camera, nor microphone on. One webinar room can hold up between 1 and 20 speakers and between 0 and 2000 viewers.  
 A method to create video conferencing rooms is ```/webinar/```.  
 
-Moreover, please see <a href="#itisparticipant-true-false" target="_blank">&itisparticipant attribute</a>. 
+Moreover, please see <a href="https://gcore.com/docs/streaming-platform/api/real-time-video-api-tutorial#itisparticipant-true-false" target="_blank">&itisparticipant attribute</a>. 
 
 Example: ```https://meet.gcore.com/webinar/?roomId=```
 
@@ -805,7 +805,7 @@ A JWT example is: 
 <iframe allow="camera; microphone; display-capture" style="height: 100%; width: 100%;" src="https://meet.gcore.com/webinar/?roomId=qwesfder4w4&displayName=Tom&accessToken=sda3-q23aed-aerae&peerId=123123-321as-waaew-ads&apiEvent=https://example.com/api/meet&accessUrl=https://example.com/api/accessCheck/&itisparticipant=true&nameScreenDisabled=true&startWithFS=true&controlsDisabled=true"></iframe>
 ```
 
-Please see Embed a <a href="#embed-room-on-a-site">Room on Site</a> and <a href="#attribute-details">Attributes details</a>.
+Please see Embed a <a href="https://gcore.com/docs/streaming-platform/api/real-time-video-api-tutorial#embed-room-on-a-site">Room on Site</a> and <a href="https://gcore.com/docs/streaming-platform/api/real-time-video-api-tutorial#attribute-details">Attributes details</a>.
 
 #### Interaction with iFrame
 
@@ -886,7 +886,7 @@ meetIframeBridge.method({ name: "getScreenshotByPeerId", data: "id", callback: (
   <tr>
     <td  >join</td>
     <td   >"constraints" = object<br> <br>Setup new devices:<br>data: {constraints: { video: { deviceId: 'id', label: 'label', groupId: 'groupId', kind: 'video'}, audio: { deviceId: 'deviceId', label: 'label', groupId: 'groupId', kind: 'audio'}}}<br> <br>If you want to use devices by default:<br>data: {constraints: {video: true, audio: true }}<br> </td>
-    <td   >The Join method receives a stream from these devices (usually used with the <a href="#nameScreenDisabled=true|false">nameScreenDisabled</a> parameter)</td>
+    <td   >The Join method receives a stream from these devices (usually used with the <a href="https://gcore.com/docs/streaming-platform/api/real-time-video-api-tutorial#nameScreenDisabled=true|false">nameScreenDisabled</a> parameter)</td>
     <td class="tg-twlz"></td>
   </tr>
   <tr>
