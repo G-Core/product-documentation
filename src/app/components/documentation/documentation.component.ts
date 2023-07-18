@@ -47,6 +47,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
     public isActiveDislike: boolean = false;
     public activeTab: string;
     public baseHref: string = environment.baseHref;
+    public isArticleRated: boolean = false;
 
     @ViewChild('scullyContainer') public scullyContainer: ElementRef;
     @ViewChild('fullSizeImage') public fullSizeImage: ElementRef;
@@ -215,11 +216,17 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
     public onButtonLikeClick(): void {
         this.isActiveLike = !this.isActiveLike;
         this.isActiveDislike = this.isActiveLike ? false : this.isActiveDislike;
+        this.onArticleRated();
     }
 
     public onButtonDislikeClick(): void {
         this.isActiveDislike = !this.isActiveDislike;
         this.isActiveLike = this.isActiveDislike ? false : this.isActiveLike;
+        this.onArticleRated();
+    }
+
+    public onArticleRated(): void {
+        this.isArticleRated = true;
     }
 
     private setTableOfContent(links: Array<ScullyRoute>): void {
