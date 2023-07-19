@@ -35,13 +35,11 @@ With the active origin validation option, the CDN server will ensure the validit
 
 4\. The CDN server verifies the origin server’s certificate by validating the digital signature of the server’s public key using CA’s public key stored in the CDN system. 
 
-5\. If the last step is successful, the CDN server sends its certificate to the origin server. 
+5\. The origin server verifies the CDN server's certificate using the same approach.  
 
-6\. The origin server verifies the CDN server's certificate using the same approach.  
+6\. If successful, the origin server gives access to the protected information to the CDN server. 
 
-7\. If successful, the origin server gives access to the protected information to the CDN server. 
-
-8\. CDN server sends the content to the user browser.
+7\. CDN server sends the content to the user browser.
 
 ## Enable SSL validation via API
 
