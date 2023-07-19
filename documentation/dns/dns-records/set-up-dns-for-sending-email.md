@@ -10,6 +10,8 @@ toc:
     --1--Step 4. Set up an SPF record: "step-4-set-up-an-spf-record"
     --1--Step 5. Set up a DKIM record: "step-5-set-up-an-dkim-record"
     --1--Step 6. Set up a DMARC policy: "step-6-set-up-a-dmarc-policy"
+pageTitle: Guide for DNS Setup for Email Sending | Gcore
+pageDescription: Learn how to correctly set up your DNS for email sending, including setting up A, MX, PTR, SPF, DKIM records, and a DMARC policy.
 ---
 
 # Setting up DNS for sending email

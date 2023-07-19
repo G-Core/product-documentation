@@ -14,6 +14,8 @@ toc:
    --2--Allow requests from a particular IP by policy: "allow-requests-from-a-particular-ip-by-policy"
    --2--Allow requests from a particular website by policy: "allow-requests-from-a-particular-website-by-policy"
    --2--Grant a user access to a bucket by policy: "grant-a-user-access-to-a-bucket-by-policy"
+pageTitle: ACL and Policy Configuration for S3 Storage | Gcore
+pageDescription: A detailed guide on configuring Access Control Lists (ACLs) and policies for S3 storage using AWS CLI and S3cmd.
 ---
 # Configure access control on S3 storage with AWS CLI and S3cmd
 

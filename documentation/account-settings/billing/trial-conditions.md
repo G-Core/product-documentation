@@ -4,6 +4,8 @@ displayName: Trial
 published: true
 order: 10
 toc:
+pageTitle: Overview of Gcore's trial conditions and durations | Gcore
+pageDescription: Details on Gcore's free trial conditions for various services, how to start it, and where to monitor your trial status.
 ---
 # Trial conditions
 

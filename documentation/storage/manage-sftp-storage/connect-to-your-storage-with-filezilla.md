@@ -8,6 +8,8 @@ toc:
    --1--Configure connection: "configure-connection"
    --2--Connect with a password: "connect-with-a-password"
    --2--Connect with an SSH key: "connect-with-an-ssh-key"
+pageTitle: Guide to connect to storage with FileZilla | Gcore
+pageDescription: A guide on how to install FileZilla and configure its connection to your storage either using a password or an SSH key.
 ---
 # Connect to your storage with FileZilla
 

@@ -4,6 +4,8 @@ displayName: Configure and use
 published: true
 order: 20
 toc:
+pageTitle: Configuring and usage of the DNS Failover technology | Gcore
+pageDescription: A comprehensive guide on how to configure and manage DNS Failover.
 ---
 # Configure and use DNS Failover
 

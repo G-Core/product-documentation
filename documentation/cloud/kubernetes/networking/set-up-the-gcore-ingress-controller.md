@@ -1,14 +1,17 @@
 ---
 title: set-up-the-gcore-ingress-controller
-displayName: Gcore ingress controller
+displayName: 'Gcore ingress controller'
 order: 20
 published: false
 toc:
-   --1--Features of the Gcore ingress controller: "features-of-the-gcore-ingress-controller"
-   --1--Create a service: "create-a-service"
-   --1--Use the Gcore ingress controller: "use-the-gcore-ingress-controller"
-   --1--View an ingress IP address: "view-an-ingress-ip-address"
+    '--1--Features of the Gcore ingress controller': features-of-the-gcore-ingress-controller
+    '--1--Create a service': create-a-service
+    '--1--Use the Gcore ingress controller': use-the-gcore-ingress-controller
+    '--1--View an ingress IP address': view-an-ingress-ip-address
+slugs:
+    - ___UNPUBLISHED___lk8awnnw_ZgUBUWd8S6wLypa2jt2WZ89kxXRBi1WJ
 ---
+
 # Set up the Gcore ingress controller
 
 ## Features of the Gcore ingress controller

@@ -13,6 +13,8 @@ toc:
    --2--Completing the configuration: "6-complete-configuration-and-create-resource-record"
    --1--Edit: "edit-a-dns-record"
    --1--Delete: "delete-a-dns-record"
+pageTitle: Managing DNS records in non-advanced mode | Gcore
+pageDescription: Learn how to add, edit and delete DNS records in the non-advanced interface mode.
 ---
   
 # Manage DNS records (non-advanced interface mode)

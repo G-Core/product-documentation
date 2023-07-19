@@ -11,6 +11,8 @@ toc:
    --2--add: "add-a-lifecycle-policy-to-your-bucket"
    --2--delete: "delete-a-lifecycle-policy"
    --1--Manage with the UI (for S3 in Luxembourg): "manage-a-lifecycle-policy-with-the-ui"
+pageTitle: Managing lifecycle policies for Gcore storage with AWS CLI and UI | Gcore
+pageDescription: A tutorial on adding, checking, and deleting lifecycle policies in Gcore storage using AWS CLI helps automatically delete objects after a certain period.
 ---
 
 # Remove objects from a bucket automatically with AWS CLI

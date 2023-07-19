@@ -16,6 +16,8 @@ toc:
    --1--SVCB record: "svcb-record"
    --1--PTR record: "ptr-record"  
    --1--What's next?: "whats-next"
+pageTitle: Overview of the record types supported in our system | Gcore
+pageDescription: Find out what types of DNS records are supported in the Gcore interface. 
 ---
 # Supported DNS record types
 

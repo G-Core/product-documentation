@@ -4,6 +4,8 @@ displayName: S3 service URLs and default region names
 published: true
 order: 30
 toc:
+pageTitle: S3 service URLs | Gcore
+pageDescription: Table of correspondence between storage locations and service URLs.
 ---
 # S3 service URLs and default region names
 

@@ -8,6 +8,8 @@ toc:
    --1--What is the challenge with it: "what-is-the-challenge-with-cname-records"
    --1--How CNAME Flattening works: "how-does-cname-flattening-work"
    --1--Configuration: "configuration-of-cname-flattening"
+pageTitle: Guide to CNAME Flattening at Root Domain | Gcore
+pageDescription: Explore how CNAME Flattening can bypass these restrictions for improved DNS resolution and performance.
 ---
 
 # Specify CNAME at root

@@ -4,6 +4,8 @@ displayName: Reset
 published: true
 order: 20
 toc:
+pageTitle: If you forgot your password | Gcore
+pageDescription: Instructions on what to do if you forgot your personal account password.
 ---
 # What to do if you forget your password?
 

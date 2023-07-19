@@ -9,6 +9,8 @@ toc:
    --2--Backup verification codes: "backup-verification-codes"
    --2--Google Authenticator features: "google-authenticator-features" 
    --1--Disable two-factor authentication: "disable-two-factor-authentication"
+pageTitle: Secure Your Account with Two-Factor Authentication | Gcore
+pageDescription: Setting up and managing two-factor authentication for your account using a unique temporary key.
 ---
 
 # Set up Two-Factor authentication

@@ -7,6 +7,8 @@ toc:
    --1--What is a secondary DNS?: "what-is-a-secondary-dns"
    --1--Synchronize records: "synchronize-records-of-gcore-dns-with-your-dns"
    --1--Update records: "update-records-of-our-secondary-dns"
+pageTitle: Setting Up Secondary DNS with OctoDNS | Gcore
+pageDescription: An in-depth guide to using Gcore DNS as a secondary DNS with OctoDNS.
 ---
 # Use Gcore DNS as a secondary DNS with OctoDNS  
 
