@@ -10,7 +10,7 @@ import {
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { isScullyRunning, ScullyRoute, ScullyRoutesService } from '@scullyio/ng-lib';
 import { combineLatest, first, map, Observable, of, take } from 'rxjs';
 import { categories, DOCS_GITHUB_REPO, HEADER_HEIGHT, METADATA_FILE_TITLE } from '../../constants';
@@ -198,6 +198,14 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
                 return this.convertToArray(menuTree);
             }),
         );
+
+        this.router.events.subscribe((event) => {
+            if (event instanceof NavigationEnd) {
+                this.isArticleRated = false;
+                this.isActiveLike = false;
+                this.isActiveDislike = false;
+            }
+        });
     }
 
     public anchorScroll(hash: string): void {
