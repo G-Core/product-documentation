@@ -4,6 +4,8 @@ displayName: Overview
 published: true
 order: 10
 toc:
+pageTitle: Understanding user roles | Gcore
+pageDescription: A detailed guide to user roles and permissions, covering how roles affect service management, personal data changes, etc.
 ---
 # About Users
 

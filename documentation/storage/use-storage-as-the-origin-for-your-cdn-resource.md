@@ -10,6 +10,8 @@ toc:
    --1--Request content from CDN: "request-content-from-cdn"
    --2--S3 storage is the origin: "s3-storage-is-the-origin"
    --2--SFTP storage is the origin: "sftp-storage-is-the-origin"
+pageTitle: CDN Resource Setup with Storage | Gcore
+pageDescription: A step-by-step guide to using S3 or SFTP storage as the origin for your CDN resource.
 ---
 # Use storage as the origin for your CDN resource
 

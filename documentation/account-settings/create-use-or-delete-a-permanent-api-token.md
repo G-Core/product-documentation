@@ -10,6 +10,8 @@ toc:
    --1--API tokens section: "api-tokens-section"
    --1--API token expiration notifications: "api-token-expiration-notifications"
    --1--An API token and SSO: "an-api-token-and-sso"
+pageTitle: Managing Gcore's Permanent API Tokens | Gcore
+pageDescription: Learn how to create, use, and delete permanent API tokens, providing automated access with unlimited validity.
 ---
 
 # Create, use, or delete a permanent API token

@@ -8,6 +8,8 @@ toc:
    --1--Generate a presigned URL: "generate-a-presigned-url"
    --2--via AWS CLI: "generate-links-in-aws-cli"
    --2--via S3cmd: "generate-links-in-s3cmd"
+pageTitle: Guide on how to generate presigned URL | Gcore
+pageDescription: Guide about presigned URLs providing temporary access to files and their setup.  
 ---
 # Generate temporary links to files with AWS CLI and S3cmd                   
 

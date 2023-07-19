@@ -6,6 +6,8 @@ order: 10
 toc:
    --1--Overview: "gcore-dns-overview"
    --1--Interface mode comparison: "interface-modes-non-advanced-and-advanced"
+pageTitle: Understanding DNS Hosting | Gcore 
+pageDescription: Learn how to manage your domain zone with Gcore DNS and what are two interface modes.
 ---
 
 # About Gcore DNS

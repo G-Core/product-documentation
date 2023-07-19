@@ -7,6 +7,8 @@ toc:
    --1--Your billing plan: "billing-plan"
    --1--The request priority: "the-request-priority"
    --1--The workload of our support team: "the-workload-of-our-support-team"
+pageTitle: Technical support information | Gcore
+pageDescription: Understanding the factors that determine how quickly tech support responds to your question.
 ---
 
 # How quickly our support team will respond to you

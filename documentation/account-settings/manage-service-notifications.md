@@ -9,6 +9,8 @@ toc:
    --2--How does it work: "how-does-it-work"
    --2--Configure for CDN: "configure-for-cdn"
    --2--Configure for Storage: "configure-for-storage"
+pageTitle: Guide to Managing Service Notifications | Gcore
+pageDescription: Learn how to set up and manage your service notifications for CDN and Storage services, allowing for better control over traffic consumption and system usage.
 ---
 
 # Manage service notifications

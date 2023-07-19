@@ -4,6 +4,8 @@ displayName: View statistics
 published: true
 order: 80
 toc:
+pageTitle: Storage usage reports and statistics | Gcore
+pageDescription: Instructions on where to view statistics on storage resource utilization in the control panel.
 ---
 # Check storages usage reports
 

@@ -8,6 +8,8 @@ toc:
     --1--How is my tax location determined?: "how-is-my-tax-location-determined"
     --1--How can I change my tax location?: "how-can-i-change-my-tax-location"
     --1--How can I add a VAT number?: "how-can-I-add-a-vat-number"
+pageTitle: Guide to managing your tax location | Gcore
+pageDescription: Setting your tax location in Gсore, how it affects billing, and how to add a VAT number for accurate tax application.
 ---
 
 # Tax location

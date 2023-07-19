@@ -11,6 +11,8 @@ toc:
    --1--VAT for organizations (contracting): "vat-for-organizations-contracting"
    --2--VAT for EU countries: "vat-for-eu-countries"
    --2--VAT for other countries: "vat-for-other-countries"
+pageTitle: Understand VAT rates by country and type | Gcore
+pageDescription: Detailed guide on VAT rates for individuals and organizations across various countries. 
 ---
 
 # VAT rates in different countries for an individual and legal entity

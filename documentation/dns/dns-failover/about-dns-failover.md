@@ -8,6 +8,8 @@ toc:
    --1--What is it used for?: "what-is-dns-failover-used-for"
    --1--How it works: "how-dns-failover-works"
    --1--How to configure it: "configure-dns-failover"
+pageTitle: Understanding DNS Failover | Gcore
+pageDescription: What DNS Failover is, how it works and what it is for.
 ---
 
 # About DNS Failover 

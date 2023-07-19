@@ -7,6 +7,8 @@ toc:
     --1--What is a PTR record for?: "what-is-a-ptr-record-for"
     --1--What is a reverse DNS lookup zone?: "what-is-a-reverse-dns-lookup-zone"
     --1--Configure reverse DNS zone and PTR record: "configure-reverse-dns-zone-and-ptr-record"
+pageTitle: How to Set Up PTR Records & Reverse DNS Zones | Gcore
+pageDescription: A detailed guide on setting up PTR records and reverse DNS zones to prevent your emails from being marked as spam.
 ---
 # Setting up a PTR record and reverse DNS zone
 

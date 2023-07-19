@@ -8,8 +8,9 @@ toc:
     --1--What problem does it solve?: 'what-problem-does-the-https-record-solve'
     --1--How does it work?: 'how-do-https-records-work'
     --1--Configure HTTPS in the control panel: 'how-to-configure-the-https-record-in-the-control-panel'
+pageTitle: HTTPS Record Configuration Guide | Gcore
+pageDescription: Discover what an HTTPS record is, how it enhances secure internet connections, and how to configure this new DNS record type in the control panel.
 ---
-
 # What Is an HTTPS Record and How Is It Configured?
 
 ## What Is an HTTPS Record?

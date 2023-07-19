@@ -4,6 +4,8 @@ displayName: Troubleshooting
 published: true
 order: 30
 toc:
+pageTitle: Problems in receiving the password reset email | Gcore
+pageDescription: A troubleshooting guide on what to do if there's no reset email.
 ---
 # What to do if you do not receive the reset email?
 

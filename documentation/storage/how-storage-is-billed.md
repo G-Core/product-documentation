@@ -7,6 +7,8 @@ toc:
    --1--Plans and billing rules: "plans-and-billing-rules"
    --1--Change your plan: "change-your-plan"
    --1--S3 Storage limits: "s3-storage-limits"
+pageTitle: Overview of Storage Billing and Limits | Gcore
+pageDescription: Explanation of billing rules, subscription plans, how to change your plan, and S3 storage limits for optimal performance and availability.
 ---
 # How Storage is billed  
 
