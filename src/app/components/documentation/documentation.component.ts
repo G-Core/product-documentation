@@ -5,6 +5,7 @@ import {
     Component,
     ElementRef,
     NgZone,
+    OnDestroy,
     OnInit,
     Renderer2,
     ViewChild,
@@ -12,7 +13,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { isScullyRunning, ScullyRoute, ScullyRoutesService } from '@scullyio/ng-lib';
-import { combineLatest, first, map, Observable, of, take } from 'rxjs';
+import { combineLatest, first, map, Observable, of, Subscription, take } from 'rxjs';
 import { categories, DOCS_GITHUB_REPO, HEADER_HEIGHT, METADATA_FILE_TITLE } from '../../constants';
 import { MenuItem, MenuTreeItem, TableOfContents } from '../../models';
 import { GitHubAPIService } from '../../services';
@@ -27,7 +28,7 @@ import { environment } from '../../../environments/environment';
     styleUrls: ['./documentation.component.scss'],
     encapsulation: ViewEncapsulation.Emulated,
 })
-export class DocumentationComponent implements OnInit, AfterViewChecked {
+export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestroy {
     public links$: Observable<Array<MenuItem>> = of([]);
     public activeMenuItem: MenuItem;
     public activeUrl: string;
@@ -48,6 +49,8 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
     public activeTab: string;
     public baseHref: string = environment.baseHref;
     public isArticleRated: boolean = false;
+
+    private routerSubscription: Subscription;
 
     @ViewChild('scullyContainer') public scullyContainer: ElementRef;
     @ViewChild('fullSizeImage') public fullSizeImage: ElementRef;
@@ -199,13 +202,19 @@ export class DocumentationComponent implements OnInit, AfterViewChecked {
             }),
         );
 
-        this.router.events.subscribe((event) => {
+        this.routerSubscription = this.router.events.subscribe((event) => {
             if (event instanceof NavigationEnd) {
                 this.isArticleRated = false;
                 this.isActiveLike = false;
                 this.isActiveDislike = false;
             }
         });
+    }
+
+    public ngOnDestroy(): void {
+        if (this.routerSubscription) {
+            this.routerSubscription.unsubscribe();
+        }
     }
 
     public anchorScroll(hash: string): void {
