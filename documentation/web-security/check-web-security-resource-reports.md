@@ -4,6 +4,8 @@ displayName: Check reports
 published: true
 order: 90
 toc:
+pageTitle: Web Security Resource Reports | Gcore
+pageDescription: What statistics are collected in the Reports section?
 ---
 # Check Web Security resource reports
 

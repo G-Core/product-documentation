@@ -4,6 +4,8 @@ displayName: How do I change an A record?
 published: true
 order: 10
 toc:
+pageTitle: FAQ. Change of an A Record | Gcore
+pageDescription: How can I change my A record?
 ---
 # How do I change an A record?
 

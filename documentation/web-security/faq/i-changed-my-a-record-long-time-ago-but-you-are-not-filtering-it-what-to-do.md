@@ -4,6 +4,8 @@ displayName: I changed my A record long time ago, but you are not filtering it. 
 published: true
 order: 40
 toc:
+pageTitle: FAQ. Traffic is not Filtered When Changing the A Record | Gcore
+pageDescription: Why the protection doesn't work, even though the A record has been changed?
 ---
 # I changed my A record long time ago, but you are not filtering it. What to do?
 

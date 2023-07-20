@@ -6,6 +6,8 @@ order: 60
 toc:
    --1--Country Access Policy: "country-access-policy"
    --1--IP Access Policy: "ip-access-policy"
+pageTitle: Access Policy For a Resource Under Protection | Gcore 
+pageDescription: A guide on how to set the access policy for a protected resource in the control panel.
 ---
 # Set the access policy for a protected resource
 

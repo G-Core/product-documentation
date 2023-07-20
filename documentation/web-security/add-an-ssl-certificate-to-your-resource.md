@@ -8,6 +8,8 @@ toc:
    --2--None: "none-choose-protection-with-no-certificate"
    --2--Let's Encrypt: "add-lets-encrypt-certificate"
    --2--Custom: "add-custom-certificate-to-your-resource"
+pageTitle: SSL Certificate For Your Protected Resource | Gcore
+pageDescription: How to add an SSL certificate for a protected resource.
 ---
 # Add an SSL certificate to your resource
 

@@ -4,6 +4,8 @@ displayName: What criteria do you analyze?
 published: true
 order: 20
 toc:
+pageTitle: FAQ. Traffic Analysis Criteria | Gcore
+pageDescription: What criteria does Gcore analyze?
 ---
 # What criteria do you analyze?
 

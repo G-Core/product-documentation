@@ -7,6 +7,8 @@ toc:
    --1--What's the challenge?: "what-is-the-challenge-in-using-web-security-and-cdn-together"
    --1--How we solved It: "how-we-solved-the-challenge"
    --1--Configure: "configure-web-secure-and-cdn-for-your-application"
+pageTitle: Web Security and CDN | Gcore  
+pageDescription: A step-by-step guide on how to connect protection for a CDN resource.
 ---
 # Connect Web Security and CDN for the same domain
 

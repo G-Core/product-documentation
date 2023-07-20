@@ -4,6 +4,8 @@ displayName: Attackers have found out my origin IP and are attacking it directly
 published: true
 order: 50
 toc:
+pageTitle: FAQ. My Origin IP is Under Attack | Gcore
+pageDescription: What to do if your origin IP experience the attack.
 ---
 # Attackers have found out my origin IP and are attacking it directly. What should I do?
 

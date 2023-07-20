@@ -10,6 +10,8 @@ toc:
    --2--Create a rule: "add-a-new-rule"
    --2--Configure conditions (If section): "configure-set-conditions-for-the-rule-if-section"
    --2--Add rules (Then section): "add-a-rule-for-processing-requests-then-section"
+pageTitle: Customize WAF Security Rules | Gcore
+pageDescription: Learn how to add and configure custom WAF rules to secure your applications better, helping to prevent malicious requests and increase overall security.
 ---
 # Add custom rules for processing requests
   
