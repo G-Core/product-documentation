@@ -8,6 +8,8 @@ toc:
    --1--Features: "features-of-virtual-vpods"
    --1--Benefits: "benefits-of-virtual-vpods"
    --1--Configurations: "configurations"
+pageTitle: Virtual vPOD | Gcore
+pageDescription: Discover virtual vPODs. AI clusters with Poplar servers on virtual machines, offering cost savings, faster deployment, and flexible configurations.
 ---
 # About Virtual vPOD
 

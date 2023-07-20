@@ -13,6 +13,8 @@ toc:
    --1--Deployment time: "deployment-time"
    --1--How to use AI Infrastructure?: "how-to-use-ai-infrastructure"
    --1--How is AI Infrastructure billed?: "how-is-ai-infrastructure-billed"
+pageTitle: About our AI Infrastructure | Gcore
+pageDescription: Explore our AI Infrastructure. Graphcore servers, top performance, diverse tools supported. Easy deployment, per-minute billing.
 ---
 # About our AI infrastructure
 

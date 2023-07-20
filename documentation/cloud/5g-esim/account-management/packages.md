@@ -4,6 +4,8 @@ displayName: Packages
 published: true
 order: 20
 toc:
+pageTitle: Packages of 5G eSIM| Gcore
+pageDescription: Learn more about packages of GCore 5G eSIM technology.
 ---
 # Packages 
 
