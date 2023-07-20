@@ -11,6 +11,8 @@ toc:
    --1--Switch between eSIMs: "switch-between-esims"
    --1--Change your cellular data line: "change-your-cellular-data-line"
    --1--Delete: "delete-your-esim"
+pageTitle: Activate 5G eSIM| Gcore
+pageDescription: Discover how to activate, manage, and switch between eSIMs on your iPhone for seamless connectivity. Learn to delete or deactivate eSIM profiles.
 ---
 # Activate and manage your eSIM 
 

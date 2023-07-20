@@ -8,6 +8,8 @@ toc:
    --1--How does it work?: "how-does-gcore-5g-esim-work?"
    --1--Advantages: "advantages-of-5G"
    --1--Use cases: "use-cases-of-5g-esim"
+pageTitle: About 5G eSIM| Gcore
+pageDescription: Experience the power of Gcore 5G eSIM solution for secure Cloud connectivity. Benefit from ultra-low latency and global coverage.
 ---
 # About 5G eSIM
 

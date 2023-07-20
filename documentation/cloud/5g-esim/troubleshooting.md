@@ -3,6 +3,8 @@ title: troubleshooting
 displayName: Troubleshooting
 order: 30
 published: true
+pageTitle: Troubleshooting 5G eSIM| Gcore
+pageDescription: Troubleshooting guide for 5G eSIM technology. Get online and improve slow internet connection
 ---
 # Troubleshooting 
 
