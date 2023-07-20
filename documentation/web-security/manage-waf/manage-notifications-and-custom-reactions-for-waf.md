@@ -12,6 +12,8 @@ toc:
    --2--4. Reactions: "4-add-a-reaction"
    --2--5. Name and description: "5-enter-the-name-and-description"
    --1--Disable and delete: "disable-or-delete-a-trigger"
+pageTitle: Managing WAF Triggers | Gcore
+pageDescription: A guide on managing WAF triggers to tailor your security alerts and responses with condition, filter, and reaction options.
 ---
 # Manage notifications and custom reactions for WAF
   

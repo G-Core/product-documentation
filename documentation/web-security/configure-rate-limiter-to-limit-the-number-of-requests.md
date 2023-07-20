@@ -7,6 +7,8 @@ toc:
    --1--What is Bot Protection: "what-is-bot-protection"
    --1--What is Rate Limiter: "what-is-rate-limiter"
    --1--Configure it: "configure-rate-limiter"
+pageTitle: Rate Limiter | Gcore
+pageDescription: A comprehensive guide on how to limit the number of requests with Rate Limiter. 
 ---
 # Configure Rate limiter to limit the number of requests
   

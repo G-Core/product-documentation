@@ -8,6 +8,8 @@ toc:
    --1--Configure: "configure-the-realip-module-on-your-server"
    --2--Nginx: "nginx"
    --2--Apache: "apache"
+pageTitle: X-Forward-For Header Usage | Gcore 
+pageDescription: A guide on how to get actual IPs of visitors with the X-Forward-For header.  
 ---
 # Get actual IP addresses of visitors from the X-Forward-For header
 

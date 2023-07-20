@@ -3,7 +3,9 @@ title: how-long-does-the-service-enabling-take
 displayName: How long does the service enabling take?
 published: true
 order: 110
-toc:
+toc: 
+pageTitle: FAQ. Service Activation Duration | Gcore
+pageDescription: How long does the service take to activate?
 ---
 # How long does the service enabling take?
 

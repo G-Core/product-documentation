@@ -12,6 +12,8 @@ toc:
    --1--Restore users' IP addresses: "restore-users-ip-addresses"
    --1--Reduce server load: "reduce-server-load"
    --1--IPv6: "ipv6"
+pageTitle: Additional Protection Settings | Gcore
+pageDescription: IP change, check DNS records and other ways to increase protection for your resource.
 ---
 # Configure additional protection settings
 

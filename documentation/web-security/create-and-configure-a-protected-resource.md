@@ -7,6 +7,8 @@ toc:
    --1--Control panel settings: "control-panel-settings"
    --1--Origin settings: "origin-settings"
    --1--Additional measures: "additional-protective-measures"
+pageTitle: Resource Under Protection Creation | Gcore
+pageDescription: A guide on creating and configuring a protected resource in the control panel.
 ---
 # Create and configure a protected resource
 
