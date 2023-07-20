@@ -6,6 +6,8 @@ order: 20
 toc:
    --1--Tariff plan: "tariff-plan-for-streaming-platform"
    --1--Billing rules: "billing-rules"
+pageTitle: Overview of Streaming Platform Billing | Gcore 
+pageDescription: Explanation of additional features and the main service billing rules. 
 ---
 # How the Streaming Platform and additional features are billed
 

@@ -4,6 +4,8 @@ displayName: Perch
 published: true
 order: 150
 toc:
+pageTitle: Integrate CDN with Perch Guide | Gcore
+pageDescription: A comprehensive guide on integrating CDN resources with Perch CMS to enhance your site's speed and user experience.
 ---
 # Integrate CDN resource with Perch
 

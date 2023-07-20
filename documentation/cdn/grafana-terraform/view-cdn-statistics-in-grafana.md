@@ -8,6 +8,8 @@ toc:
    --1--Configure the Dashboard for a convenient display of information: "configure-the-dashboard"
    --1--Download and install the plugin: "the-download-and-install-the-plugin-step-video-instructions"
    --1--Configure the Dashboard: "configure-the-dashboard-step-video-instructions"
+pageTitle: Display CDN Stats in Grafana with Gcore | Gcore
+pageDescription: Step-by-step guide to configure CDN statistics in Grafana using Gcore's plugin for comprehensive traffic analysis.
 ---
 # Veiw CDN statistics in Grafana
 

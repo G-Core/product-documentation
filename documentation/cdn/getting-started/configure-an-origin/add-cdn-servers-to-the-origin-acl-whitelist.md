@@ -6,6 +6,8 @@ order: 10
 toc:
    --1--Whitelist CDN by HTTP headers: "whitelist-via-http-headers"
    --1--Whitelist CDN by IP addresses: "whitelist-via-ip-addresses"
+pageTitle: Whitelisting CDN Servers for Origin Access | Gcore
+pageDescription: A comprehensive guide on whitelisting CDN servers via HTTP headers or IP addresses to ensure uninterrupted content delivery.
 ---
 # Add CDN servers to the origin ACL whitelist
   

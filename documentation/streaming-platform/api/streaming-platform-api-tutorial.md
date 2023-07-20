@@ -34,6 +34,8 @@ toc:
    --2--Interruption during streaming: "interruption-during-streaming"
    --2--Stream deletion: "stream-deletion"
    --1--Other API methods: "other-api-methods"
+pageTitle: Mastering Streaming Platform API | Gcore 
+pageDescription: A guide in which we’ll take you through the API and webhook operations involved in integrating with the Streaming Platform.
 ---
 # Streaming Platform API tutorial
 

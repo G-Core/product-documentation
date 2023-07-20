@@ -6,6 +6,8 @@ order: 30
 toc:
    --1--Video and live streaming statistics: "video-and-live-streaming-statistics"
    --1--Billing statistics: "billing-statistics"
+pageTitle: Broadcast, Video and Billing Statistics | Gcore
+pageDescription: How the tab for viewing the statistics of the Streaming Platform is arranged.
 ---
 # View statistics of live streams, videos, and billing  
   

@@ -4,6 +4,8 @@ displayName: For static files
 published: true
 order: 10
 toc:
+pageTitle: Guide to Create a CDN Resource for Static Assets | Gcore
+pageDescription: Detailed instructions on how to set up a CDN resource for accelerating and protecting static assets on your website.
 ---
 # Create a CDN resource for static assets only 
 

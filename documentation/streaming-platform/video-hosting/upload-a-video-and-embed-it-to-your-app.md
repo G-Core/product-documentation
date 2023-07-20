@@ -4,6 +4,8 @@ displayName: All videos
 published: true
 order: 10
 toc:
+pageTitle: Video Upload and Embedding Guide | Gcore
+pageDescription: Step-by-step instructions on uploading, customizing, and embedding videos in your application for a seamless viewing experience and statistics tracking.
 ---
 # Upload a video and embed it to your app
   

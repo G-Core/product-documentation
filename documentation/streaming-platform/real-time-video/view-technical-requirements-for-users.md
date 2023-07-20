@@ -7,6 +7,8 @@ toc:
    --1--Call rooms with 1-4 attendees: "call-rooms-with-1-4-attendees"
    --1--Call rooms with 5-15 attendees: "call-rooms-with-5-15-attendees"
    --1--Operating system and Browser compatibility: "operating-system-and-browser-compatibility"
+pageTitle: Gcore User Tech Requirements | Gcore
+pageDescription: Technical requirements for Gcore users in call rooms with 1-4 and 5-15 attendees, covering desktop and mobile specs and compatible browsers.
 ---
 # View technical requirements for users
 

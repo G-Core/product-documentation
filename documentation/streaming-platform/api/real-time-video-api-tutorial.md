@@ -87,6 +87,8 @@ toc:
    --1--Troubleshooting: "troubleshooting"
    --2--JWT Digital Signature Algorithm: "jwt-digital-signature-algorithm"
    --2--RSA Public & Secret Key generation: "rsa-public--secret-key-generation"
+pageTitle: Mastering Real-Time Video API | Gcore
+pageDescription: A comprehensive guide on how to embed real-time calling module into applications.
 ---
 # Real-Time Video API tutorial
 

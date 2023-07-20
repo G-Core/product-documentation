@@ -13,6 +13,8 @@ toc:
    --1--How to manage the camera and microphone in Real-Time Video?: "how-to-manage-the-camera-and-microphone-in-real-time-video"
    --2--When creating a call: "when-creating-a-call"
    --2--In the video call room: "in-the-video-call-room"
+pageTitle: Camera and Microphone Setup | Gcore
+pageDescription: Explanation of how to set up and manage devices for video calls.
 ---
 # Set up and manage your camera and microphone
 

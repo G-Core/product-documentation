@@ -9,6 +9,8 @@ toc:
    --1--What features it has: "what-features-does-real-time-video-have"
    --1--How it works: "how-does-real-time-video-work"
    --1--How to use it: "how-to-use-the-real-time-video-module"
+pageTitle: Real-Time Video Overview | Gcore
+pageDescription: Explanation of how the live call module works and what features it contains.
 ---
 # About Real-Time Video
 

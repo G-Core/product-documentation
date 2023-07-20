@@ -6,6 +6,8 @@ order: 40
 toc:
    --1--What is it?: "what-is-live-imitation"
    --1--Configure: "configure-live-imitation"
+pageTitle: Overview of the Live Imitation Feature and Its Setup | Gcore
+pageDescription: A step-by-step guide on creating an illusion of live mode for your video.
 ---
 # Create an illusion of a live broadcast with uploaded videos
 

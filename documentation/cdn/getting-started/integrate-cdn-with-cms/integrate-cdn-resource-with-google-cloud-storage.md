@@ -4,6 +4,8 @@ displayName: Google Cloud Storage
 published: true
 order: 90
 toc:
+pageTitle: Integrate CDN with Google Cloud Storage Guide | Gcore
+pageDescription: A comprehensive guide on integrating CDN resources with Google Cloud Storage to enhance your site's speed and user experience.
 ---
 # Integrate CDN resource with Google Cloud Storage
 
