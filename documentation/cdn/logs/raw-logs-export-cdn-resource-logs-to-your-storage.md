@@ -16,6 +16,8 @@ toc:
    --1--Log format: "log-format"
    --1--Log example: "log-example"
    --1--Log fields: "log-fields"
+pageTitle: Mastering CDN Raw Logs | Gcore
+pageDescription: A comprehensive guide on using the CDN Raw Logs feature for exporting logs to your storage, understanding traffic calculation in log reports.
 ---
 # Raw Logs: export CDN resource logs to your storage
 

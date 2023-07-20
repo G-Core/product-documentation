@@ -4,6 +4,8 @@ displayName: Wirecast
 published: true
 order: 40
 toc:
+pageTitle: Live Stream Setup with Wirecast | Gcore
+pageDescription:  A step-by-step guide to pushing live streams via Wirecast.
 ---
 # Push live streams via Wirecast
 

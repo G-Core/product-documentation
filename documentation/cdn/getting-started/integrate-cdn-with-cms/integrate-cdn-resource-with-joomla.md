@@ -7,6 +7,8 @@ toc:
    --1--Check the Joomla Version: "check-the-joomla-version"
    --1--Install the plugin: "install-the-plugin"
    --1--Set up the extension: "set-up-the-extension"
+pageTitle: Integrate CDN with Joomla Guide | Gcore
+pageDescription: A comprehensive guide on integrating CDN resources with Joomla CMS to enhance your site's speed and user experience.
 ---
 # Integrate CDN resource with Joomla
 

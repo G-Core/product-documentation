@@ -6,6 +6,8 @@ order: 60
 toc:
    --1--Pull: "pull"
    --1--Push: "push"
+pageTitle: Guide for VOD Upload via API | Gcore
+pageDescription: Follow our step-by-step guide, including a tus standard script example for seamless VOD upload to storage in two ways, Pull and Push. 
 ---
 # Upload Video via API
 

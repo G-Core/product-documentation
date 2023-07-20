@@ -4,6 +4,8 @@ displayName: IPS
 published: true
 order: 110
 toc:
+pageTitle: Integrate CDN with IPS Guide | Gcore
+pageDescription: A comprehensive guide on integrating CDN resources with IPS CMS to enhance your site's speed and user experience.
 ---
 # Integrate CDN resource with IPS
 

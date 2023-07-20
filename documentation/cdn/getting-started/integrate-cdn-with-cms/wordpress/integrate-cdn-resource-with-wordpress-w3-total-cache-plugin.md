@@ -4,6 +4,8 @@ displayName: W3 Total Cache plugin
 published: true
 order: 30
 toc:
+pageTitle: Integrate CDN with W3 Total Cache plugin for WordPress Guide | Gcore
+pageDescription: A comprehensive guide on integrating CDN resources with the W3 Total Cache plugin for CMS WordPress to enhance your site's speed and user experience.
 ---
 # Integrate CDN resource with WordPress (W3 Total Cache plugin)
 

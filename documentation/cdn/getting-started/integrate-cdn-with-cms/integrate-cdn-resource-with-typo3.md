@@ -4,6 +4,8 @@ displayName: Typo3
 published: true
 order: 190
 toc:
+pageTitle: Integrate CDN with Typo3 Guide | Gcore
+pageDescription: A comprehensive guide on integrating CDN resources with Typo3 CMS to enhance your site's speed and user experience.
 ---
 # Integrate CDN resource with Typo3
 

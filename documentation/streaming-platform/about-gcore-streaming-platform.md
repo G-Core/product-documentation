@@ -6,6 +6,8 @@ order: 10
 toc:
    --1--Streaming directly via CDN: "method-1-streaming-directly-via-cdn"
    --1--Streaming via the Streaming Platform: "method-2-streaming-via-the-streaming-platform-with-cdn"
+pageTitle: Understanding Two Ways of Streaming | Gcore
+pageDescription: Explore the Streaming Platform overview and its high moments. 
 ---
 # About Gcore Streaming Platform  
 

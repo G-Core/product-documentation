@@ -4,6 +4,8 @@ displayName: Drupal
 published: true
 order: 80
 toc:
+pageTitle: Integrate CDN with Drupal Guide | Gcore
+pageDescription: A comprehensive guide on integrating CDN resources with Drupal CMS to enhance your site's speed and user experience.
 ---
 # Integrate CDN resource with Drupal
 

@@ -6,6 +6,8 @@ order: 10
 toc:
    --1--Supported parameters: "supported-parameters"
    --1--Recommended parameters: "recommended-stream-parameters"
+pageTitle: Guide to Gcore Streaming Parameters | Gcore
+pageDescription: Overview of the supported and recommended parameters for optimizing live streams and videos using the Gcore Streaming Platform.
 ---
 # What initial parameters of your live streams and videos we can accept
 

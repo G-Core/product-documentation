@@ -7,6 +7,8 @@ toc:
    --1--What is a Players feature: "what-is-a-players-feature"
    --1--Enable the feature: "how-to-enable-the-feature"
    --1--Configure your custom player: "configure-your-custom-player"
+pageTitle: Overview of the Custom Players feature | Gcore
+pageDescription: A step-by-step guide on configuring custom players with your branding and additional features.
 ---
 # Customize appearance of the built-in player 
   

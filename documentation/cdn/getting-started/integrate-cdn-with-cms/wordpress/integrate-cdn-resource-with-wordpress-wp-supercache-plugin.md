@@ -4,6 +4,8 @@ displayName: WP SuperCache plugin
 published: true
 order: 40
 toc:
+pageTitle: Integrate CDN with WP SuperCache plugin for WordPress Guide | Gcore
+pageDescription: A comprehensive guide on integrating CDN resources with the WP SuperCache plugin for CMS WordPress to enhance your site's speed and user experience.
 ---
 # Integrate CDN resource with WordPress (WP SuperCache plugin)
 

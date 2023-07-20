@@ -4,6 +4,8 @@ displayName: XenForo
 published: true
 order: 240
 toc:
+pageTitle: Integrate CDN with XenForo Guide | Gcore
+pageDescription: A comprehensive guide on integrating CDN resources with XenForo CMS to enhance your site's speed and user experience.
 ---
 # Integrate CDN resource with XenForo
 

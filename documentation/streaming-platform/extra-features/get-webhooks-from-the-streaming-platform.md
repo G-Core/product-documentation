@@ -8,6 +8,8 @@ toc:
    --1--What is it used for?: "what-are-the-streaming-platform-webhooks-used-for"
    --1--Configure the webhook integration: "configure-the-webhook-integration"
    --1--Examples of available webhooks: "webhook-examples-of-all-streaming-platform-events"
+pageTitle: Understanding Webhooks With Examples | Gcore
+pageDescription: What automatic notifications of the Streaming Platform events you may receive.
 ---
 # Get webhooks from the Streaming Platform 
   

@@ -4,6 +4,8 @@ displayName: Magento
 published: true
 order: 140
 toc:
+pageTitle: Integrate CDN with Magento Guide | Gcore
+pageDescription: A comprehensive guide on integrating CDN resources with Magento CMS to enhance your site's speed and user experience.
 ---
 # Integrate CDN resource with Magento
 

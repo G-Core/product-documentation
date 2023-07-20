@@ -4,6 +4,8 @@ displayName: Webasyst
 published: true
 order: 210
 toc:
+pageTitle: Integrate CDN with Webasyst Guide | Gcore
+pageDescription: A comprehensive guide on integrating CDN resources with Webasyst to enhance your site's speed and user experience.
 ---
 # Integrate CDN resource with Webasyst
 

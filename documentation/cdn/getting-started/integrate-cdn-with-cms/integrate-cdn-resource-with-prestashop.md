@@ -4,6 +4,8 @@ displayName: PrestaShop
 published: true
 order: 160
 toc:
+pageTitle: Integrate CDN with PrestaShop Guide | Gcore
+pageDescription: A comprehensive guide on integrating CDN resources with PrestaShop CMS to enhance your site's speed and user experience.
 ---
 # Integrate CDN resource with PrestaShop
 

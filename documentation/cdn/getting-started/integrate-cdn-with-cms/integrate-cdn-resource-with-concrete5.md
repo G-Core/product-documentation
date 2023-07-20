@@ -4,6 +4,8 @@ displayName: Concrete5
 published: true
 order: 40
 toc:
+pageTitle: Integrate CDN with Concrete5 Guide | Gcore
+pageDescription: A comprehensive guide on integrating CDN resources with Concrete5 CMS to enhance your site's speed and user experience.
 ---
 # Integrate CDN resource with Concrete5
 

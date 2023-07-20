@@ -14,6 +14,8 @@ toc:
    --1--Create protected links: "how-to-create-protected-links-with-the-secure-token"
    --2--Python: "python"
    --2--Go: "go"
+pageTitle: Protected Temporary Links | Gcore
+pageDescription: A guide on how to restrict access to your video content using the Secure Token feature.
 ---
 # Protect your content with temporary links and secure tokens
 

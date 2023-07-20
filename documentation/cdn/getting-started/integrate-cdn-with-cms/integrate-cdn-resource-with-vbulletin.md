@@ -4,6 +4,8 @@ displayName: vBulletin
 published: true
 order: 200
 toc:
+pageTitle: Integrate CDN with vBulletin Guide | Gcore
+pageDescription: A comprehensive guide on integrating CDN resources with vBulletin CMS to enhance your site's speed and user experience.
 ---
 # Integrate CDN resource with vBulletin
 

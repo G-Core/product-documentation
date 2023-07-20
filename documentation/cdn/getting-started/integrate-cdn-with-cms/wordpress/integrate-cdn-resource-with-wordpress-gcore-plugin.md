@@ -11,6 +11,8 @@ toc:
    --2--Folders: "folders"
    --2--Exceptions: "exceptions"
    --2--Plugin workflow: "plugin-workflow"
+pageTitle: Integrate CDN with Gcore plugin for WordPress Guide | Gcore
+pageDescription: A comprehensive guide on integrating CDN resources with the Gcore plugin for CMS WordPress to enhance your site's speed and user experience.
 ---
 # Integrate CDN resource with WordPress (Gcore plugin)
 

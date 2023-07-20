@@ -11,6 +11,8 @@ toc:
    --1--Switch to legacy HLS modes: "switch-to-legacy-hls-modes"
    --2--Regular HLS: "get-regular-hls-with-cmaf-mode"
    --2--HLSv3: "get-legacy-hlsv3-mode"
+pageTitle: Understanding Low Latency Streaming | Gcore 
+pageDescription: A guide explains streaming latency, how Gcore reduces it with LL-HLS and LL-DASH protocols, and how to use them.
 ---
 # How Low Latency streaming works
 

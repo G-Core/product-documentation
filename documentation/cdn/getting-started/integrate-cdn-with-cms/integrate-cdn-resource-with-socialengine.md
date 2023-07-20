@@ -4,6 +4,8 @@ displayName: SocialEngine
 published: true
 order: 180
 toc:
+pageTitle: Integrate CDN with SocialEngine Guide | Gcore
+pageDescription: A comprehensive guide on integrating CDN resources with SocialEngine CMS to enhance your site's speed and user experience.
 ---
 # Integrate CDN resource with SocialEngine
 

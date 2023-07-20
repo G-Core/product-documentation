@@ -4,6 +4,8 @@ displayName: Kirby
 published: true
 order: 130
 toc:
+pageTitle: Integrate CDN with Kirby Guide | Gcore
+pageDescription: A comprehensive guide on integrating CDN resources with Kirby CMS to enhance your site's speed and user experience.
 ---
 # Integrate CDN resource with Kirby
 

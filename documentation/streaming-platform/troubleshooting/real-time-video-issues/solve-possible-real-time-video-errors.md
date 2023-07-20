@@ -9,6 +9,8 @@ toc:
    --1--Microphone/camera usage: "microphone-camera-usage"
    --1--Additional options (camera change / quality change / name change / screen sharing): "additional-options"
    --1--Connection to the call: "connection-to-the-call"
+pageTitle: Solving Real-Time Video Errors | Gcore
+pageDescription: Navigate through common Real-Time Video errors, learn about possible causes, and follow our recommendations to resolve these issues.
 ---
 # Solve possible Real-Time Video errors
 

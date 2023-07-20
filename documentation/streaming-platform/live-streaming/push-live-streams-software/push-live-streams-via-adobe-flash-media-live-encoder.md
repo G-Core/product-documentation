@@ -4,6 +4,8 @@ displayName: Adobe Flash Media Live Encoder
 published: true
 order: 20
 toc:
+pageTitle: Live Stream Setup with Adobe Flash | Gcore
+pageDescription: A step-by-step guide to pushing live streams via Adobe Flash Media Live Encoder.
 ---
 # Push live streams via Adobe Flash Media Live Encoder
 

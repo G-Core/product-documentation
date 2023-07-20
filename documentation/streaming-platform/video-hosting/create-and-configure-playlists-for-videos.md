@@ -7,6 +7,8 @@ toc:
    --1--What is the Playlists feature?: "what-is-the-playlists-feature"
    --1--Enable: "enable-the-playlists-feature"
    --1--Create and configure: "create-and-configure-playlists"
+pageTitle: Overview of the Playlists Feature and Its Setup | Gcore
+pageDescription: A step-by-step guide to creating and customizing playlists that include your videos. 
 ---
 # Create and configure playlists for videos
   
