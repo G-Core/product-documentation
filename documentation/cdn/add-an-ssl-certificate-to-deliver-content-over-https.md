@@ -17,6 +17,8 @@ toc:
    --2--Activate: "activate-a-lets-encrypt-certificate"
    --2--Revoke: "revoke-a-lets-encrypt-certificate"
    --2--Restrictions and features of the option: "restrictions-and-features-of-the-option"
+pageTitle: Adding, Renewing, and Deleting of SSL Certificates | Gcore
+pageDescription: Learn how to add your certificate or get a free Let's Encrypt certificate, renew, and delete SSL certificates.
 ---
 # Add an SSL certificate to deliver content over HTTPS
 

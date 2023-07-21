@@ -6,6 +6,8 @@ order: 50
 toc:
    --1--What is Origin shielding?: "what-is-origin-shielding"
    --1--Enable it: "enable-origin-shielding"
+pageTitle: Understanging the Origin shielding feature | Gcore
+pageDescription: A step-by-step guide on the Origin shielding, why it is needed, and how to configure it in the control panel.
 ---
 # Enable and configure Origin shielding
 

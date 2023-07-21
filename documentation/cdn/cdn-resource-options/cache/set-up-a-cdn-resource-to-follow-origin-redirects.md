@@ -10,6 +10,8 @@ toc:
    --2--via the API: "via-the-api"
    --3--Request properties: "request-properties"
    --3--Example: "example"
+pageTitle: Guide to Set Up CDN Origin Redirection | Gcore
+pageDescription: Learn how to configure CDN resources to follow origin redirects in two ways—in the control panel and via API.
 ---
 # Set up a CDN resource to follow origin redirects
   

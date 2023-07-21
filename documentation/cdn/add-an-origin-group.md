@@ -11,6 +11,8 @@ toc:
    --1--Step 5. Save changes: "step-5-save-changes"
    --1--Step 6. Bind the origin group to the CDN resource: "step-6-bind-the-origin-group-to-the-cdn-resource"
    --1--If change the origin group, will the Host header change?: "if-you-change-the-origins-group-will-the-host-header-change"
+pageTitle: Guide to Adding an Origin Group to CDN | Gcore
+pageDescription: A detailed guide on how to add an origin group to your CDN resource, covering group configuration, origin authentication, and binding process.
 ---
 # Add an origin group
 

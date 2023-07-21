@@ -10,6 +10,8 @@ toc:
    --2--in the Control panel: "use-compression-in-the-control-panel"
    --2--via query parameters: "use-compression-via-query-parameters"
    --1--Check HTTP headers: "check-http-headers"
+pageTitle: Guide to converting image format to WebP and AVIF using CDN | Gcore
+pageDescription: A guide on changing image format using the Compression feature of the Image stack option.
 ---
 # Сonfigure image compression to WebP and AVIF
   

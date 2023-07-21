@@ -4,6 +4,8 @@ displayName: Identify a user's request protocol
 published: true
 order: 50
 toc:
+pageTitle: Understanding X-Forwarded-Proto Header | Gcore
+pageDescription: Learn how to find out which protocol end-users use to connect to the CDN server.
 ---
 # Use the X-Forwarded-Proto header to identify the protocol used for CDN servers requests
 

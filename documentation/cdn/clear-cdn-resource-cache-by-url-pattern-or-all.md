@@ -10,6 +10,8 @@ toc:
    --2--Purge all: "purge-all"
    --2--Purge by pattern: "purge-by-pattern"
    --1--Configure via API: "configure-purge-via-api"
+pageTitle: Understanding of the Purge option for cache clearance | Gcore
+pageDescription: A guide on how to clear the cache in one of three ways—for the whole CDN resource, by pattern, or by URL.
 ---
 # Clear CDN resource cache by URL, pattern or all 
 

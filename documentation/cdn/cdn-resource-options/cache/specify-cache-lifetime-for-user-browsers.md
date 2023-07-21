@@ -6,6 +6,8 @@ order: 30
 toc:
    --1--Origin controlled: "origin-controlled"
    --1--CDN controlled: "cdn-controlled"
+pageTitle: Understanding Browsers Cache Lifetime | Gcore
+pageDescription: A guide on how to configure the browsers cache lifetime on the origin or CDN side.
 ---
 # Specify cache lifetime for user browsers
 

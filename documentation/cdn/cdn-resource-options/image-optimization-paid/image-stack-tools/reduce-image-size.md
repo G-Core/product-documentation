@@ -8,6 +8,8 @@ toc:
    --1--Enable: "enable-resize"
    --1--Use: "use-resize"
    --1--Check HTTP headers: "check-http-headers"
+pageTitle: Guide to reducing images size using CDN | Gcore
+pageDescription: A guide on manipulating image size using the Resize feature, including enabling and operating via query parameters.
 ---
 # Reduce image size
   

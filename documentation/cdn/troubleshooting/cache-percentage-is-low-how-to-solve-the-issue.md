@@ -7,6 +7,8 @@ toc:
    --1--CDN Caching option: "cdn-caching-option"
    --1--Query-String and Set-Cookies options: "query-string-and-set-cookies-options"
    --1--Large Files Delivery Optimization: "large-files-delivery-optimization"
+pageTitle: Boost CDN Cache Hit Ratio | Gcore
+pageDescription: Learn how to improve your CDN Cache Hit Ratio. Get tips on CDN integration, cache settings, and leverage Large Files Delivery Optimization.
 ---
 # Cache percentage is low: how to solve the issue
 

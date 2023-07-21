@@ -4,6 +4,8 @@ displayName: Enable Image stack
 published: true
 order: 20
 toc:
+pageTitle: Enabling the Image Stack Option | Gcore
+pageDescription: A step-by-step guide on how to enable and configure the Image stack option.
 ---
 # Enable Image stack
 

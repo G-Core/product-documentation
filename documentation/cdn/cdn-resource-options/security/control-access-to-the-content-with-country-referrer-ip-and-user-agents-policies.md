@@ -18,6 +18,8 @@ toc:
    --2--Set via the API: "set-via-the-api"
    --3--Request properties: "request-properties"
    --3--Example: "example"
+pageTitle: Control Content Access with Gcore CDN Policies | Gcore
+pageDescription: Explore how to manage content access in Gcore CDN using referrer, country, IP, and User agents policies for enhanced security and better user control.
 ---
 # Control access to the content with country, referrer, IP, and User agents policies
   

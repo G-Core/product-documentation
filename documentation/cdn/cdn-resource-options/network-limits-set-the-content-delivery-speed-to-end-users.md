@@ -10,6 +10,8 @@ toc:
    --2--Limit After: "limit-after"
    --1--Dynamic configuration: "dynamic"
    --1--Option features: "option-features"
+pageTitle: Managing CDN Content Delivery Speed | Gcore
+pageDescription: Instructions on how to set the content delivery speed to end users using Download Speed Limit option in CDN.
 ---
 # Network limits: set the content delivery speed to end users
   

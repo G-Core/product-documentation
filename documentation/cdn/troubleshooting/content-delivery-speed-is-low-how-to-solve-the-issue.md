@@ -7,6 +7,8 @@ toc:
    --1--Check the delivery speed from a CDN-resource and an origin server.: "check-the-delivery-speed-from-a-cdn-resource-and-an-origin-server"
    --1--Check CDN-resource's settings: "cdn-resources-settings-checking"
    --1--Diagnostic information for technical support: "diagnostic-information-for-technical-support"
+pageTitle: Optimizing CDN Content Delivery Speed | Gcore
+pageDescription: Boost your CDN content delivery speed with this detailed guide.
 ---
 # Content delivery speed is low: how to solve the issue
 

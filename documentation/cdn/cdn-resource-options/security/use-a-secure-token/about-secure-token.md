@@ -12,6 +12,8 @@ toc:
    --2--How a secured URL looks: "how-a-secured-url-looks"
    --2--How content is requested via a secured link: "how-content-is-requested-via-a-secured-link"
    --1--Configure: "configure-secure-token"
+pageTitle: Understanding Secure Token in Gcore CDN | Gcore
+pageDescription: A detailed guide on Secure Token in Gcore CDN—how it protects content, its uses, parameters, operational mechanism, and how to configure it.
 ---
 # About Secure Token
 
