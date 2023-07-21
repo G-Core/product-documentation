@@ -4,6 +4,8 @@ displayName: Billing
 published: true
 order: 140
 toc:
+pageTitle: Cloud billing | Gcore
+pageDescription: Learn how to pay to Gcore cloud services. Plans, credit limits, and charges.
 ---
 # Billing
 

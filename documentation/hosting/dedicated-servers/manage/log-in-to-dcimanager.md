@@ -6,6 +6,8 @@ published: true
 toc:
     --1--What to do if you faced an error when entering: "what-to-do-if-you-faced-an-error-when-entering"
     --1--How to reboot or stop the server: "how-to-reboot-or-stop-the-server"
+pageTitle: Log in to DCImanager | Gcore
+pageDescription: Learn how to access the DCImanager panel to efficiently manage your dedicated server with ease. 
 ---
 # Log in to DCImanager
 

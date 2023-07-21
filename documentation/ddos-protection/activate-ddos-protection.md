@@ -6,6 +6,8 @@ published: true
 toc:
    --1--Order: "activate-the-service"
    --1--Deactivate: "deactivate-the-service"
+pageTitle: Activate DDoS Protection | Gcore
+pageDescription: Easily activate DDoS Protection for your virtual servers, bare metals in cloud, dedicated servers, and even third-party equipment.
 ---
 # Activate DDoS Protection
 

@@ -6,6 +6,8 @@ toc:
    --1--What is Resource reservation?: "what-is-resource-reservation"
    --1--Reserve a server: "reserve-a-server"
    --1--Can I cancel my reservation?: "can-i-cancel-my-reservation"
+pageTitle: Resource reservation | Gcore
+pageDescription: Learn how resource reservation allows long-term rental of cloud resources at a discount.
 ---
   
 # About resource reservation

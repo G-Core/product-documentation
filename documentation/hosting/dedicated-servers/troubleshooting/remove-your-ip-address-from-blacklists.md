@@ -6,6 +6,8 @@ order: 10
 toc:
     --1--Avoid being blacklisted: 'avoid-being-blacklisted'
     --1--Check if your IP is blacklisted: 'check-if-your-ip-is-blacklisted'
+pageTitle: Remove your IP address from blacklists | Gcore
+pageDescription: Learn how to remove your IP address from blacklists.
 ---
 # Remove your IP address from blacklists
 

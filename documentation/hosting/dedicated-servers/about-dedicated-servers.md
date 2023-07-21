@@ -4,6 +4,8 @@ displayName: Overview
 order: 10
 published: true
 toc:
+pageTitle: About dedicated servers | Gcore
+pageDescription: Discover the power of dedicated servers. Ideal for hosting, gaming, and more. Full resource control with IPMI management.
 ---
 # About dedicated servers
 

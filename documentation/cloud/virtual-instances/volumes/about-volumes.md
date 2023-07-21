@@ -4,6 +4,8 @@ displayName: Overview
 order: 10
 published: true
 toc:
+pageTitle: About volumes | Gcore
+pageDescription: Learn more about volume types. High IOPS SSD, Standard, Cold, Ultra, and SSD Low-Latency. Choose the cloud storage for various data and workloads.
 ---
 # About volumes
 

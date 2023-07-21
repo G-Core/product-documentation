@@ -4,6 +4,8 @@ displayName: Monitor
 published: true
 order: 60
 toc:
+pageTitle: Monitor load of a VM | Gcore
+pageDescription: Monitor your virtual machine with essential metrics. Check CPU and RAM utilization, track network traffic, and manage performance effectively.
 ---
 # Monitor load on a specific node
 

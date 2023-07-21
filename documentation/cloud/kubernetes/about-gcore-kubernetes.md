@@ -4,6 +4,8 @@ displayName: Overview
 order: 10
 published: true
 toc:
+pageTitle: Understand and manage PVC | Gcore
+pageDescription: Explore Gcore Kubernetes. Powerful features, bare metal support, autoscaling, data storage, and high availability for seamless container orchestration.
 ---
 # About Gcore Kubernetes
 

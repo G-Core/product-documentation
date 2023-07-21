@@ -7,6 +7,8 @@ toc:
     --1--For Debian/Ubuntu: "configure-an-additional-ip-address-on-debian-ubuntu"
     --1--For CentOS: "configure-an-additional-ip-address-on-centos"
     --1--For Windows 2012: "configure-an-additional-ip-address-on-windows-server-2012"
+pageTitle: Configure an additional IP address | Gcore
+pageDescription: Learn how to configure additional IP addresses on Debian/Ubuntu, CentOS, and Windows server manually.
 ---
 # Configure an additional IP address
 

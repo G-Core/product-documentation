@@ -9,6 +9,8 @@ toc:
    --1--Create a virtual IP: "create-a-virtual-ip-address"
    --1--Use a virtual IP to create a fault-tolerant system: "assign-a-virtual-ip-address-to-multiple-instances"
    --1--Assign a virtual IP address as a secondary address: ""
+pageTitle: Virtual IP address| Gcore
+pageDescription: Create and configure a virtual IP address to assign to multiple instances or use as a secondary IP address for a network interface.
 ---
 # Create and configure a virtual IP address
 

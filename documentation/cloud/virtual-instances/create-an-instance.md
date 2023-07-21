@@ -4,6 +4,8 @@ displayName: Create
 order: 10
 published: true
 toc:
+pageTitle: Create a VM | Gcore
+pageDescription: Learn how to create a Linux or Windows machine in Cloud. Start using your virtual machine in minutes with ease.
 ---
 # Create an instance
 

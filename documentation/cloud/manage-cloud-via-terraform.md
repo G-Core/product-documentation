@@ -17,6 +17,8 @@ toc:
    --2--Create a snapshot: "create-a-snapshot"
    --2--Create a volume: "create-a-volume"
    --2--Reserve an IP address: "reserve-an-ip-address"
+pageTitle: Manage Cloud via Terraform | Gcore
+pageDescription: Learn how to manage your cloud resources using Terraform. Follow the guide to install Terraform and create VMs, K8s clusters, load balancers, and more.
 ---
 # Manage Cloud via Terraform
 

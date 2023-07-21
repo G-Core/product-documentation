@@ -8,6 +8,8 @@ toc:
    --1--How does it work?: "how-does-autoscaling-work"
    --1--Change settings: ""
    --1--Disable: "disable-autoscaling"
+pageTitle: About autoscaling | Gcore
+pageDescription: Understand autoscaling in a cloud environment, where resources are adjusted based on demand to optimize performance.
 ---
 # About autoscaling
   

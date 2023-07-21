@@ -6,6 +6,8 @@ published: true
 toc:
    --1--For Ubuntu/Debian: "configure-a-10-gbps-interface-for-ubuntu-debian-servers"
    --1--For CentOS: "configure-a-10-gbps-interface-for-centos"
+pageTitle: Configure a 10 Gbps network card | Gcore
+pageDescription: Learn how to configure a 10 Gbps network card on your Ubuntu, Debian, or CentOS server with this step-by-step guide.
 ---
 # Configure a 10 Gbps network card
 

@@ -4,6 +4,8 @@ displayName: SSH connection
 published: true
 order: 10
 toc:
+pageTitle: Troubleshoot issues with SSH connection | Gcore
+pageDescription: Troubleshoot issues with SSH connection with this guide.
 ---
 # Troubleshoot issues with SSH connection
 

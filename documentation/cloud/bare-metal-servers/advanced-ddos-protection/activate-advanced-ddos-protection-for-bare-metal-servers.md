@@ -6,6 +6,8 @@ toc:
    --1--Method 1. When creating a baremetal server: "creating-a-baremetal-server"
    --1--Method 2. By changing the interface configuration: "interface-configuration"
    --1--Method 3. Via the Network tab: "ddos-protection-list"
+pageTitle: Activate DDoS Protection for bare metal servers | Gcore
+pageDescription: Activate DDoS Protection for bare metal servers with Gcore. Follow the steps in the article to enable robust defense and uninterrupted uptime.
 ---
 # Activate Advanced DDoS Protection for bare metal servers
 

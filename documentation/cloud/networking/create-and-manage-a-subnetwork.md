@@ -8,6 +8,8 @@ toc:
    --1--Network routing: "network-routing"
    --1--Setting the IP range: "setting-the-ip-range"
    --1--Subnetwork management: "managing-subnets"
+pageTitle: Add a subnetwork | Gcore
+pageDescription: Learn how to create and manage a subnetwork in the cloud to transfer information between cloud resources and establish an Internet connection.
 ---
 # Create and manage a subnetwork
 

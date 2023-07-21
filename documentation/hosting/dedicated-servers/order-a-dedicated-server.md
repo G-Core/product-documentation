@@ -8,6 +8,8 @@ toc:
    --1--Setting order parameters: "setting-order-parameters"
    --1--Payment: "payment"
    --1--Order server with other configurations: "order-server-with-configuration-not-included-in-our-tariffs"
+pageTitle: Order a dedicated server | Gcore
+pageDescription: Learn how to find an ideal dedicated server for your needs.
 ---
 # Order a dedicated server
 

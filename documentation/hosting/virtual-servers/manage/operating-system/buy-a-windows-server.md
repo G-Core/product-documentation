@@ -6,6 +6,8 @@ order: 10
 toc:
    --1--Buy a VPS with Windows OS: "buy-a-windows-server"
    --1--Features of VPS with Windows OS: "features-of-a-windows-server"
+pageTitle: Buy a Windows server | Gcore
+pageDescription: Learn how to purchase a Windows server with these steps.
 ---
 # Buy a Windows server
 

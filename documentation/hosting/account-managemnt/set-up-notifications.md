@@ -4,6 +4,8 @@ displayName: Notifications
 order: 10
 published: true
 toc:
+pageTitle: Manage your password | Gcore
+pageDescription: Stay informed with personalized notifications in the Control Panel. Set up email alerts for upcoming server end dates or new support ticket responses.
 ---
 # Set up notifications
 

@@ -8,6 +8,8 @@ toc:
    --1--Create an instance included in a placement group: "create-an-instance-included-in-a-placement-group"
    --1--Add a previously created instance to a group: "add-a-previously-created-instance-to-a-group"
    --1--Move an instance from one group to another: "move-an-instance-from-one-group-to-another"
+pageTitle: Configure a placement group | Gcore
+pageDescription: Configure a placement group to control whether virtual machines share a physical server or they are deployed on different ones.
 ---
 # Configure a placement group
 

@@ -12,6 +12,8 @@ toc:
    --1--Assign: "assign-a-floating-IP-to-an-instance"
    --1--Detach: "detach-a-floating-IP-from-an-instance"
    --1--Delete: "delete-a-floating-IP"
+pageTitle: Floating IP address| Gcore
+pageDescription: Configure a floating IP address for your instance to enable external network access. Learn how to reserve, assign, detach, and delete a floating IP.
 ---
 # Create and configure a floating IP address
 

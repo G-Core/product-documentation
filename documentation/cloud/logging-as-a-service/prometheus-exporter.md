@@ -7,6 +7,8 @@ toc:
    --1--What is Prometheus exporter?: what-is-prometheus-exporter
    --1--How does it work?: how-does-it-work
    --1--Key metrics: key-metrics
+pageTitle: Prometheus exporter | Gcore
+pageDescription: Explore the Prometheus exporter provides secure access to user-specific OpenSearch index metrics.
 ---
 # Prometheus exporter
 

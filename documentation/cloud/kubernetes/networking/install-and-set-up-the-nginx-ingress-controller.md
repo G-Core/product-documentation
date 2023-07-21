@@ -4,6 +4,8 @@ displayName: Install nginx Controller
 order: 30
 published: true
 toc:
+pageTitle: Install nginx Controller| Gcore
+pageDescription: Learn how to install nginx Ingress Controller to effectively manage network traffic within a cluster.
 ---
 # Install nginx Ingress Controller
 

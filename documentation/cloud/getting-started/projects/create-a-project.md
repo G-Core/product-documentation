@@ -6,6 +6,8 @@ order: 10
 toc:
     --1--Create: "create-a-project"
     --1--Manage: "manage-a-project"
+pageTitle: Create a project | Gcore
+pageDescription: Learn how to create and manage a Cloud project in your personal account.
 ---
 # Create and manage projects
 

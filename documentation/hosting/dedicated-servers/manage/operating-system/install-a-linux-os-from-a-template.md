@@ -5,6 +5,8 @@ published: true
 toc:
 --1--Installing OS: "installing-os-via-dci-manager"
 --1--Reinstalling OS: "reinstalling-os-via-dci-manager"
+pageTitle: Install a Linux OS from a template| Gcore
+pageDescription: Learn how to install a Linux OS from a template for a dedicated server.
 ---
 # Install a Linux OS from a template
 

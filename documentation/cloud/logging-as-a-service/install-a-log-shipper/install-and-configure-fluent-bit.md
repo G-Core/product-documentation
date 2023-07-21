@@ -7,6 +7,8 @@ toc:
    --1--Install: "install"
    --1--Configure: "configure"
    --1--No timestamps: "no-timestamps"
+pageTitle: Install and configure Fluent Bit| Gcore
+pageDescription: Easily install and configure Fluent Bit, a log shipping tool, to collect and send logs to Gcore's Logging servers.
 ---
 # Install and configure Fluent Bit
 

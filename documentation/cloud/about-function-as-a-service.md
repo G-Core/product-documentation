@@ -9,6 +9,8 @@ toc:
    --1--Use cases: "use-cases"
    --1--Features: "features-of-gcore-faas"
    --1--Billing: "billing"
+pageTitle: Function as a Service | Gcore
+pageDescription: Learn about Function-as-a-Service (FaaS) and its benefits. Explore Gcore FaaS features and runtime environments.
 ---
 # About Function as a Service
   
@@ -55,7 +57,3 @@ You can manage your functions via the Gcore <a href="https://cloud.gcore.com/clo
 You can set the pod lifetime, the limit of additional pods, and environmental variables.
 
 All data in our Cloud is protected from unauthorized access and modifications according to the PCI DSS and ISO 27001 certification. DDoS protection is available by default. We also protect all your data from loss using three-factor SAN replication and disaster recovery.
-
-## Billing
-
-The service is currently available in free beta testing mode. You can execute functions and use computing resources for free.

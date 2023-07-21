@@ -6,6 +6,8 @@ order: 50
 toc:
    --1--What is an allowed address pair?: "what-is-an-allowed-address-pair"
    --1--Configure: "assign-an-allowed-address-pair"
+pageTitle: Allowed address pair | Gcore
+pageDescription: Learn how to assign an additional IP address to your VM's interface using an allowed address.
 ---
 # Configure an allowed address pair
 

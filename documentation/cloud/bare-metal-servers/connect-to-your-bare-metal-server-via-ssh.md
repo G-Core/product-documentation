@@ -15,6 +15,8 @@ toc:
    --1--Connecting via SHH: "connecting-via-ssh"
    --2--Connecting from Windows 7/8: "connecting-from-windows-7-8"
    --2--Connecting from Windows 10, Linux OS, macOS: "connecting-from-windows-10-linux-os--macos"
+pageTitle: Connect to bare metal via SSH | Gcore
+pageDescription: Connect to your bare metal server using SSH keys or a password. Generate keys, configure passwords, and access Windows/Linux machines.
 ---
 # Connect to your bare metal server via SSH
 

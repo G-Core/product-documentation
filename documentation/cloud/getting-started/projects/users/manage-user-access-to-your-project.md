@@ -7,7 +7,8 @@ toc:
    --2--Edit user's role: "Edit-user-s-role"
    --2--Deny access: "Deny-access-to-a-project"
    --2--Restore access: "Restore-access-to-a-project-for-a-user"
-
+pageTitle: Manage user access | Gcore
+pageDescription: Discover how to manage user access to your Cloud project.
 ---
 # Manage user access to your project 
 
