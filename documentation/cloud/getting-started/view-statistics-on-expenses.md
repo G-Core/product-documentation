@@ -4,6 +4,8 @@ displayName: Statistics
 published: true
 order: 30
 toc:
+pageTitle: View expenses| Gcore
+pageDescription: Learn how to how to view your expenses on Cloud resources.
 ---
 # View statistics on expenses
 

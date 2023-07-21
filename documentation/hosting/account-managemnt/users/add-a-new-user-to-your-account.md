@@ -3,6 +3,8 @@ title: add-a-new-user-to-your-account
 displayName: Add a user
 published: true
 toc:
+pageTitle: Add a new user to your account | Gcore
+pageDescription: Learn how to add a new user to your account's Control Panel to grant secure access.
 ---
 # Add a new user to your account
 

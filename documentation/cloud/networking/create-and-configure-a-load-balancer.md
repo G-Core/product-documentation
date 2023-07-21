@@ -8,6 +8,8 @@ toc:
    --1--Manage: "manage-a-load-balancer"
    --1--Balancer statuses: "load-balancer-statuses"
    --1--Performance analysis: "performance-analysis"
+pageTitle: Add a load balancer | Gcore
+pageDescription: Learn how to create and configure a load balancer to distribute incoming requests across VMs, improving the fault tolerance of your infrastructure.
 ---
 # Create and configure a load balancer
  

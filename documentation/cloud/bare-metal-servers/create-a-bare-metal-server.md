@@ -4,6 +4,8 @@ displayName: Create a bare metal server
 published: true
 order: 20
 toc:
+pageTitle: Create a bare metal server | Gcore
+pageDescription: Create a bare metal server in the Cloud for high-performance computing. Customize configurations and connect via SSH.
 ---
 # Create a bare metal server
 

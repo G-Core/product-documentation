@@ -4,6 +4,8 @@ displayName: User roles
 published: true
 order: 10
 toc:
+pageTitle: User roles | Gcore
+pageDescription: Explore user roles and their permissions for your Cloud project.
 ---
 # User roles and rights
 Certain roles are assigned to all users in projects. Rights to manage settings, resources, and other users are set according to assigned roles. 

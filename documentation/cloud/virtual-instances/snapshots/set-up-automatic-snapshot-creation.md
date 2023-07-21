@@ -11,6 +11,8 @@ toc:
    --2--Add multiple snapshot schedules if needed: "add-multiple-snapshot-schedules-if-needed"
    --1--Disable and enable a schedule: "disable-and-enable-a-schedule"
    --1--Delete a schedule: "delete-a-schedule"
+pageTitle: Automatic snapshot creation | Gcore
+pageDescription: Learn how to set up automatic snapshot schedules based on your preferences. Keep data secure!
 ---
 # Set up automatic snapshot creation
 

@@ -6,6 +6,8 @@ order: 40
 toc:
    --1--Change hardware specifications: "change-hardware-specifications"
    --1--Change your Internet tariff: "change-your-internet-plan"
+pageTitle: Upgrade a dedicated server | Gcore
+pageDescription: Learn how to upgrade your dedicated server for better performance.
 ---
 # Upgrade your dedicated server
 

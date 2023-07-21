@@ -6,6 +6,8 @@ toc:
    --1--What is Filebeat?: "what-is-filebeat"
    --1--Install: "install"
    --1--Configure: "configure"
+pageTitle: Install and configure Filebeat| Gcore
+pageDescription: Easily install and configure Filebeat, a log shipping tool, to collect and send logs to Gcore's Logging servers.
 ---
 # Install and configure Filebeat
 

@@ -4,6 +4,8 @@ displayName: Change limits
 published: true
 order: 20
 toc:
+pageTitle: Change autoscaling limits | Gcore
+pageDescription: Learn how to change autoscaling limits in a Kubernetes cluster. 
 ---
 # Change autoscaling limits
 

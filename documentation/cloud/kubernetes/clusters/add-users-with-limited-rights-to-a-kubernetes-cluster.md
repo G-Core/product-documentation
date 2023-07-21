@@ -5,6 +5,8 @@ published: true
 toc:
    --1--Basics: "basics-you-need-to-know"
    --1--Add users with limited rights: "add-users-with-limited-rights"
+pageTitle: Users with limited rights | Gcore
+pageDescription: Understand service accounts and namespaces. Discover how to add users with limited permissions to a Kubernetes cluster.
 ---
 # Add users with limited rights to a Kubernetes cluster
 

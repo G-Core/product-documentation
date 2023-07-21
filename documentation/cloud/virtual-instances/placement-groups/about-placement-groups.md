@@ -4,6 +4,8 @@ displayName: Overview
 published: true
 order: 10
 toc:
+pageTitle: About placement groups | Gcore
+pageDescription: Understand placement groups to control whether virtual machines share a physical server or they are deployed on different ones.
 ---
 # About placement groups
 Placement groups are a setting that determines whether virtual machines will be hosted on the same physical server or on different ones.

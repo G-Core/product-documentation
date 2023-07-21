@@ -11,8 +11,10 @@ toc:
    --1--How soon the money will be credited to the balance: "how-soon-the-money-will-be-credited-to-the-balance"
    --1--I transferred the money. How soon will the server be up and running?: "i-transferred-the-money-how-soon-will-the-server-be-up-and-running"
    --1--When will the server be deleted, if I do not pay for it?: "when-will-the-server-be-deleted-if-i-do-not-pay-for-it"
+pageTitle: Troubleshoot a suspended server | Gcore
+pageDescription: Troubleshoot a server that was suspended for non-payment and recharge your balance.
 ---
-# Renew your server (virtual)
+# Renew your server
 
 The server stops working if you have not enough money on the account to pay for it. To activate it, recharge the balance.
 

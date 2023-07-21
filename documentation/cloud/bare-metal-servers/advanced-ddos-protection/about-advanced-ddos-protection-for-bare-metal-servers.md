@@ -8,6 +8,8 @@ toc:
    --1--Additional features: "additional-key-features"
    --1--Pricing: "pricing"
    --1--Activation: "activation"
+pageTitle: DDoS Protection for bare metal servers | Gcore
+pageDescription: Advanced DDoS Protection for bare metal servers. Learn more about advantages, features and pricing.
 ---
 # About advanced DDoS Protection for bare metal servers
 

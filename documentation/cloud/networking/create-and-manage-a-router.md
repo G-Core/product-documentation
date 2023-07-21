@@ -6,6 +6,8 @@ order: 30
 toc:
     --1--Router creation: "router-creation"
     --1--Managing routers: "managing-routers"
+pageTitle: Add a router | Gcore
+pageDescription: Learn how to create and manage a router in the cloud to dynamically exchange routes between networks.
 ---
 # Create and manage a router
 

@@ -6,6 +6,8 @@ order: 60
 toc:
 --1--What is PTR record used for: "what-is-ptr-record-used-for"
 --1--How to set it up: "how-to-set-it-up"
+pageTitle: Set up a PTR record | Gcore
+pageDescription: Learn how to set up a PTR (Pointer) record to map an IP address to a domain name effectively.
 ---
 # Set up a PTR record
 

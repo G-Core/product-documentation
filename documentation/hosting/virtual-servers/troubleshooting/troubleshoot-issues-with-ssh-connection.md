@@ -3,6 +3,8 @@ title: troubleshoot-issues-with-ssh-connection
 displayName: SSH connection
 published: true
 toc:
+pageTitle: Troubleshoot issues with SSH connection | Gcore
+pageDescription: Troubleshoot issues with SSH connection with this guide.
 ---
 # Troubleshoot issues with SSH connection
 

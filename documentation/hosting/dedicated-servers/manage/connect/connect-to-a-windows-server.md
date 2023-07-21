@@ -4,6 +4,8 @@ displayName: Windows server
 published: true
 order: 11
 toc:
+pageTitle: Connect to a Windows server | Gcore
+pageDescription: Learn how to connect securely to a Windows server. 
 ---
 # Connect to a Windows server
 

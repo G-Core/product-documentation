@@ -4,6 +4,8 @@ displayName: Log in to IPMI
 published: true
 order: 20
 toc:
+pageTitle: Log in to IPMI | Gcore
+pageDescription: Learn how to access IPMI to control and monitor the physical state of your server. 
 ---
 # Log in to IPMI
 

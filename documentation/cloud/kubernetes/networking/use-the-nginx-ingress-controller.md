@@ -3,6 +3,8 @@ title: use-the-nginx-ingress-controller
 displayName: Use nginx Controller
 published: true
 order: 40
+pageTitle: Use nginx Controller| Gcore
+pageDescription: Learn how to use nginx Ingress Controller to effectively manage network traffic within a cluster.
 ---
 # Use nginx Ingress Controller
 

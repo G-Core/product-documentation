@@ -6,6 +6,8 @@ published: true
 toc:
     --1--Change your password: "change-your-password"
     --1--Recover forgotten password: "recover-forgotten-password"
+pageTitle: Manage your password | Gcore
+pageDescription: Learn how to manage your password for the Control Panel efficiently.
 ---
 # Manage your password
 

@@ -10,6 +10,8 @@ toc:
    --1--Remote Console in IPMI does not open: "remote-console-in-ipmi-does-not-open"
    --2--Run full-screen mode: "how-to-run-full-screen-mode"
    --2--Can you switch between browser and console?: "can-you-switch-between-browser-and-console"
+pageTitle: Troubleshoot IPMI errors | Gcore
+pageDescription: Troubleshoot IPMI errors of your dedicated server with this guide.
 ---
 # Troubleshoot IPMI errors
   

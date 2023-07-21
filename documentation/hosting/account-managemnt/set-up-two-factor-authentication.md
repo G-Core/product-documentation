@@ -8,6 +8,8 @@ toc:
    --1--Authorize with two-factor authentication: "authorize-with-two-factor-authentication"
    --1--Disable two-step authentication: "disable-two-step-authentication"
    --1--Access recovery: "access-recovery"
+pageTitle: Set 2FA authentication | Gcore
+pageDescription: Stay informed with personalized notifications in the Control Panel. Set up email alerts for upcoming server end dates or new support ticket responses.
 ---
 # Set up two-factor authentication
 

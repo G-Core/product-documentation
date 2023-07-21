@@ -7,6 +7,8 @@ toc:
    --1--For Windows: "install-kubectl-on-windows-and-connect-to-a-cluster"
    --1--For Ubuntu and Linux: "install-kubectl-on-ubuntu-linux-and-connect-to-a-cluster"
    --1--For macOS: "install-kubectl-on-macos-and-connect-to-a-cluster"
+pageTitle: Connect to Kubernetes nodes via kubectl | Gcore
+pageDescription: Discover how to install kubectl, a command-line tool used to manage Kubernetes clusters and connect to them.
 ---
 # Install kubectl and connect to a Kubernetes cluster
   

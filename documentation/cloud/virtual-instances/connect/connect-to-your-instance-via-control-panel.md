@@ -6,6 +6,8 @@ order: 10
 toc:
    --1--Linux instance: "connect-to-a-linux-instance"
    --1--Windows instance: "connect-to-a-windows-instance"
+pageTitle: Connect to a VM via Control Panel | Gcore
+pageDescription: Connect to your Linux or Windows machine from the Gcore Control Panel
 ---
 # Connect to your instance via Control Panel
 

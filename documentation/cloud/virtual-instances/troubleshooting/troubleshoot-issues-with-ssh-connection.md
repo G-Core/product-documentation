@@ -7,6 +7,8 @@ toc:
     --1--Incorrectly added SSH key. Errors. Connection refused. Connection timed out: "incorrectly-added-ssh-key-errors-connection-refused"
     --1--No floating (public) IP address. Connection refused error: "no-floating-public-ip-address-connection-refused-error"
     --1--The failure to connect to the remote server with Windows OS on it. Connection error.: "the-failure-to-connect-to-the-remote-server-with-windows-os-on-it-connection-error"
+pageTitle: Troubleshoot issues with an SSH connection | Gcore
+pageDescription: Learn how to troubleshoot issues with an SSH connection
 ---
 # Troubleshoot issues with an SSH connection
 

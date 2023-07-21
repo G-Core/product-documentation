@@ -15,6 +15,8 @@ toc:
    --1--Connecting via SHH: "connecting-via-ssh"
    --2--Connecting from Windows 7/8: "connecting-from-windows-7-8"
    --2--Connecting from Windows 10, Linux OS, macOS: "connecting-from-windows-10-linux-os--macos"
+pageTitle: Connect to a VM via SSH | Gcore
+pageDescription: Learn how to connect to your Linux or Windows virtual machine via SSH.
 ---
 # Connect to your instance via SSH
 You can connect to an instance using a pair of SSH keys or a password. We'll tell you in detail about each method.

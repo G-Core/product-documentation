@@ -4,6 +4,8 @@ displayName: Configure
 order: 20
 published: true
 toc:
+pageTitle: Configure Logging| Gcore
+pageDescription: Configure and access Logging for centralized log collection. Set up log shippers, view logs in OpenSearch Dashboards.
 ---
 # Configure Logging and view your logs
 

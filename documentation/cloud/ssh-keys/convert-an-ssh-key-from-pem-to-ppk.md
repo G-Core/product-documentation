@@ -3,6 +3,8 @@ title: convert-an-ssh-key-from-pem-to-ppk
 displayName: Convert an SSH key from PEM to PPK
 published: true
 toc:
+pageTitle: Convert an SSH key | Gcore
+pageDescription: Learn how to convert an SSH key from PEM to PPK format
 ---
 # Convert an SSH key from PEM to PPK
 
