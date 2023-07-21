@@ -16,6 +16,8 @@ toc:
    --3--using a ratio of unwanted areas: "specify-a-location-using-the-ratio-of-unwanted-areas"
    --3--using one offset and one coordinate: "specify-a-location-using-one-offset-measured-in-pixels-and-one-coordinate-measured-as-a-percentage-of-the-original-image"
    --1--Check HTTP headers: "check-http-headers"
+pageTitle: Guide to cropping images using CDN | Gcore
+pageDescription: A guide on manipulating image displayed area using the Crop feature, including enabling and operating via query parameters.
 ---
 # Crop images
 

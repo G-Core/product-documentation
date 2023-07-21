@@ -4,6 +4,8 @@ displayName: Custom HTTP status code
 published: true
 order: 50
 toc:
+pageTitle: Apply Custom HTTP Codes to CDN Content | Gcore
+pageDescription: Discover how to specify custom HTTP status codes for content delivered by a CDN, either for all content or specific files.
 ---
 # Specify custom HTTP status code for the content delivered by the CDN
 

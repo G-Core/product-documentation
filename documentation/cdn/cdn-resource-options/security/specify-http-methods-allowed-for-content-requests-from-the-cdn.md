@@ -4,6 +4,8 @@ displayName: Specify HTTP methods
 published: true
 order: 40
 toc:
+pageTitle: Understanding HTTP Methods Allowed for CDN Requests | Gcore
+pageDescription: A guide on how to specify HTTP methods allowed for content requests from CDN.
 ---
 # Specify HTTP methods allowed for content requests from the CDN
 

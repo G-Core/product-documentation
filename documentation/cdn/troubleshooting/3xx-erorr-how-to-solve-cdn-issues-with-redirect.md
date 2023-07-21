@@ -6,6 +6,8 @@ order: 50
 toc:
    --1--Origin Pull Protocol: "origin-pull-protocol"
    --1--Change Host Header: "change-host-header"
+pageTitle: Solving 3xx Issues | Gcore  
+pageDescription: Changing the origin pull protocol or host header to solve redirecting issues. 
 ---
 # 3xx erorr: how to solve CDN issues with redirect
 

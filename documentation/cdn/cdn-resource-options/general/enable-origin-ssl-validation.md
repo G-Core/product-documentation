@@ -7,6 +7,8 @@ toc:
    --1--What is it for: "what-is-this-option-for"
    --1--How does it work: "how-does-it-work"
    --1--Enable via API: "enable-ssl-validation-via-api"
+pageTitle: Boost CDN Security with Origin SSL Validation | Gcore
+pageDescription: Enhance your CDN security through Origin SSL Validation—an effective way to safeguard the connection between CDN and the origin server.
 ---
 # Enable origin SSL Validation
  

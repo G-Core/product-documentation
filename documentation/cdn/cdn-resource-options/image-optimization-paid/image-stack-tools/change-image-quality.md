@@ -10,6 +10,8 @@ toc:
    --2--in the Control panel: "use-quality-in-the-control-panel"
    --2--via query parameters: "use-quality-via-query-parameters"
    --1--Check HTTP headers: "check-http-headers"
+pageTitle: Guide to altering image quality using CDN | Gcore
+pageDescription: A guide on manipulating image quality using the Quality feature, including enabling and operating in the control panel and via query parameters.
 ---
 # Change image quality
   

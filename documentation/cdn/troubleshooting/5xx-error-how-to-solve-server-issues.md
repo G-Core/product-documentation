@@ -9,6 +9,8 @@ toc:
    --1--Check settings of your CDN resource: "check-your-cdn-resource-settings"
    --2--Incorrect Origin Pull Protocol: "incorrect-origin-pull-protocol"
    --2--Incorrect Host Header: "incorrect-host-header"
+pageTitle: Solving 5xx Issues | Gcore 
+pageDescription: Explaining what methods can be used to solve 5xx server problems.
 ---
 # 5xx error: how to solve server issues
 

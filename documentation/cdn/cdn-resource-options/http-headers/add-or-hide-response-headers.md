@@ -8,6 +8,8 @@ toc:
    --2--Add multiple header values: "add-multiple-header-values"
    --2--Check headers: "check-headers"
    --1--Hide response headers: "hide-response-headers"
+pageTitle: Manage CDN Response Headers Effectively | Gcore
+pageDescription: A detailed guide to add, hide or customize CDN response headers, enhancing control over HTTP responses and refining user-end data security and privacy.
 ---
 # Add or hide response headers
 

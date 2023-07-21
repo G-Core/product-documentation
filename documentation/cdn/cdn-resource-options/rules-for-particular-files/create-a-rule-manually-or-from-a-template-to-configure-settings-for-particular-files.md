@@ -12,6 +12,8 @@ toc:
    --2--prohibit image caching: "prohibit-image-caching-in-cdn"
    --2--set CORS for .ttf: "set-access-control-allow-origin-for-ttf-files"
    --1--Disable or enable a rule: "disable-or-enable-a-rule"
+pageTitle: Understanding of Rule Creation | Gcore
+pageDescription: A guide on how to create a rule manually or from a template.
 ---
 # Create a rule manually or from a template to configure settings for particular files
   

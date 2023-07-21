@@ -6,6 +6,8 @@ order: 40
 toc:
    --1--Ignore Query string: "query-string-setting"
    --1--Ignore Set-Cookie: "set-cookie-setting"
+pageTitle: Manage CDN caching with Query String and Set-Cookie | Gcore
+pageDescription: A detailed guide on managing CDN caching by ignoring query strings or Set-Cookie parameters.
 ---
 # Ignore the Set Cookie or Query string parameters when caching content on CDN servers
 

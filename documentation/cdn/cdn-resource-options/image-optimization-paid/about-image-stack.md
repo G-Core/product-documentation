@@ -8,6 +8,8 @@ toc:
    --1--How it works: "how-image-stack-works"
    --1--When images cannot be processed: "when-images-cannot-be-processed"
    --1--Rewrite doesn’t work: "the-rewrite-option-does-not-work-when-image-stack-is-enabled"
+pageTitle: Overview the Image Stack Option | Gcore 
+pageDescription: Explanation of how the option helps to optimize images - resize, crop, reduce quality, and convert to WEBP and AVIF formats.
 ---
 # About Image stack
   

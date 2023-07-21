@@ -5,6 +5,8 @@ published: true
 order: 140
 toc:
    --1--Enable or disable the option: "how-to-enable-or-disable-the-option"
+pageTitle: Guidance on Geo Balancer for CDN Use | Gcore
+pageDescription: A helpful guide on determining regional content delivery using the Geo Balancer feature in a paid CDN tariff.
 ---
 # Determine in which regions the content will be delivered with geo balancer for paid tariffs
 

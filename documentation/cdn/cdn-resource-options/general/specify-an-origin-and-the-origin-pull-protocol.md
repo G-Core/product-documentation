@@ -6,6 +6,8 @@ order: 10
 toc:
    --1--Origin Pull protocol: "origin-pull-protocol"
    --1--Pull content from: "pull-content-from"
+pageTitle: Understanding CDN Origin Pull Protocol & Origins | Gcore
+pageDescription: Learn to correctly set up your CDN Origin Pull Protocol and define origins to avoid redirects or delivery failures.
 ---
 # Specify an origin and the origin pull protocol
   

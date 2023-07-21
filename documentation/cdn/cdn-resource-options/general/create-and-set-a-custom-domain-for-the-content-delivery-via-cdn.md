@@ -8,6 +8,8 @@ toc:
    --1--Set a custom domain: "set-a-custom-domain"
    --1--Check DNS: "check-the-dns-setup-status"
    --1--Set an additional domain: "specify-additional-domain"
+pageTitle: Understanding a CDN Domain | Gcore
+pageDescription: A comprehensive guide on how to set up a custom domain in the control panel and on the DNS hosting side for content delivery via CDN.
 ---
 # Create and set a custom domain for the content delivery via CDN
   

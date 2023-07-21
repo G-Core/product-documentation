@@ -4,6 +4,8 @@ displayName: Add request headers
 published: true
 order: 10
 toc:
+pageTitle: Setting HTTP Headers for CDN Origin Requests | Gcore
+pageDescription: A step-by-step guide to configure HTTP headers that a CDN will include when requesting the origin.
 ---
 # Specify HTTP headers that CDN adds to requests to the origin
 

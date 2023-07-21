@@ -11,6 +11,8 @@ toc:
    --1--Configure: "configure-a-private-bucket-as-an-origin"
    --2--in the control panel: "configure-a-private-origin-in-the-control-panel"
    --2--via the API: "configure-a-private-origin-via-the-api"
+pageTitle: Understanding Private Bucket as an Origin | Gcore
+pageDescription: A step-by-step guide on how to use a private S3 bucket as an origin for your CDN resource.
 ---
 # Use a private bucket as an origin
 

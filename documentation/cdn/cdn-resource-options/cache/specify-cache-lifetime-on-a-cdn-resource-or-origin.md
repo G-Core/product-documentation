@@ -12,6 +12,8 @@ toc:
    --2--using cURL: "check-through-curl"
    --2--in a browser: "check-with-devtools-in-a-browser"
    --2--caching headers: "check-caching-http-headers"
+pageTitle: Setting CDN Cache Lifetime on Origin or CDN Side | Gcore
+pageDescription: A guide on how to configure the CDN resource cache lifetime on the origin or CDN side.
 ---
 # Specify cache lifetime on a CDN resource or origin
 

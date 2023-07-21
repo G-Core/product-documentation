@@ -5,6 +5,8 @@ published: true
 order: 30
 toc:
    --1--How it is going to work?: "how-it-is-going-to-work"
+pageTitle: Avoid Indexing with a Custom robots.txt | Gcore
+pageDescription: Guide on setting up a custom robots.txt to prevent web crawlers from indexing your CDN's custom domain, keeping your main website unaffected.
 ---
 # Set robots.txt to avoid adding to index by web crawlers
 

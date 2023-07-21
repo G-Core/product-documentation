@@ -6,8 +6,10 @@ order: 60
 toc:
    --1--Check the content availability on the Origin source: "check-the-content-availability-on-the-origin-source"
    --1--Check your CDN resource's settings: "check-your-cdn-resources-settings"
+pageTitle: Solving 4xx Issues | Gcore 
+pageDescription: Checking your Origin availability and resource settings.
 ---
-# 4xx error: how to solve CDN issues with the limited access and content non-existence
+# 4xx error: how to solve CDN issues with the limited access and content non-existence.
 
 4xx errors could be caused by a malfunction on the Origin side or incorrect CDN-resource settings. 
 

@@ -11,6 +11,8 @@ toc:
    --1--Features: "features"
    --1--Configuration guidelines: "configuration-guidelines"
    --1--Configuration steps: "configuration-steps"
+pageTitle: Setting Up GZip and Brotli Compression | Gcore
+pageDescription: A detailed guide on configuring GZip and Brotli compression on CDN for efficient content delivery.
 ---
 # Configure GZip and Brotli compression
 

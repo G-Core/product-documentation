@@ -6,7 +6,6 @@ order: 20
 toc:
 pageTitle: Integrate CDN with B2evolution Guide | Gcore
 pageDescription: A comprehensive guide on integrating CDN resources with B2evolution CMS to enhance your site's speed and user experience.
-
 ---
 # Integrate CDN resource with B2evolution
 

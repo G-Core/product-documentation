@@ -7,6 +7,8 @@ toc:
    --1--About the option: "about-the-option"
    --1--Configuration guidelines: "configuration-guidelines"
    --1--Configuration steps: "configuration-steps"
+pageTitle: Optimizing Large File Delivery via CDN | Gcore
+pageDescription: Guide on how to efficiently serve large files (>10MB) using CDN's Large Files Delivery Optimization feature.
 ---
 # Optimize large file delivery
 

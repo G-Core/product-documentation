@@ -4,6 +4,8 @@ displayName: Redirect from HTTP to HTTPS
 published: true
 order: 20
 toc:
+pageTitle: Understanding Redirects from HTTP to HTTPS | Gcore
+pageDescription: A guide on how to set up a redirect from HTTP to HTTPS.
 ---
 # Set up a redirect from HTTP to HTTPS
 
