@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { filter, Subject, Subscription, takeUntil } from 'rxjs';
 
 import { MenuService } from '../../services/menu.service';
 import { environment } from '../../../environments/environment';
@@ -16,6 +16,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     public baseHref: string = environment.baseHref;
     public searchKey: string;
+    public isHosting: boolean = false;
+    public isLoginModalOpen: boolean = false;
+
+    private routerSubscription: Subscription;
 
     constructor(private menuService: MenuService, private router: Router, private cd: ChangeDetectorRef) {}
 
@@ -24,11 +28,22 @@ export class HeaderComponent implements OnInit, OnDestroy {
             this.searchKey = '';
             this.cd.detectChanges();
         });
+
+        this.routerSubscription = this.router.events
+            .pipe(filter((event) => event instanceof NavigationEnd))
+            .subscribe((event) => {
+                this.checkUrl();
+                this.cd.detectChanges();
+            });
     }
 
     public ngOnDestroy(): void {
         this.destroy$.next();
         this.destroy$.complete();
+
+        if (this.routerSubscription) {
+            this.routerSubscription.unsubscribe();
+        }
     }
 
     public toggleMenu(event: Event): void {
@@ -39,5 +54,20 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.router.navigate(['/search'], {
             queryParams: { key: encodeURI(this.searchKey.trim()) },
         });
+    }
+
+    public checkUrl(): boolean {
+        const currentUrl = this.router.url;
+        if (currentUrl.includes('/hosting')) {
+            this.isHosting = true;
+        } else {
+            this.isHosting = false;
+        }
+
+        return this.isHosting;
+    }
+
+    public login(): void {
+        this.isLoginModalOpen = true;
     }
 }

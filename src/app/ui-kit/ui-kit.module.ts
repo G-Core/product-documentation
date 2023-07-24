@@ -5,9 +5,16 @@ import { RedirectLinkButtonComponent } from './redirect-link-button/redirect-lin
 import { SearchBoxComponent } from './search-box/search-box.component';
 import { CallToActionBoxComponent } from './call-to-action-box/call-to-action-box.component';
 import { PaginationComponent } from './pagination';
+import { ModalComponent } from './modal';
 
 @NgModule({
-    declarations: [RedirectLinkButtonComponent, SearchBoxComponent, CallToActionBoxComponent, PaginationComponent],
+    declarations: [
+        RedirectLinkButtonComponent,
+        SearchBoxComponent,
+        CallToActionBoxComponent,
+        PaginationComponent,
+        ModalComponent,
+    ],
     imports: [FormsModule, CommonModule],
     exports: [
         RedirectLinkButtonComponent,
@@ -15,6 +22,7 @@ import { PaginationComponent } from './pagination';
         CallToActionBoxComponent,
         FormsModule,
         PaginationComponent,
+        ModalComponent,
     ],
     providers: [],
 })
