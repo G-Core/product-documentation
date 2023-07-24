@@ -4,19 +4,19 @@ displayName: Connect to your bare metal server via SSH
 published: true
 order: 30
 toc:
-   --1--Connecting using a pair of SSH keys. Preparation: "connecting-using-a-pair-of-ssh-keys-preparation"
-   --2--SSH keys generation (Windows 7/8): "generate-ssh-keys-windows-7-8"
-   --2--SSH keys generation (Windows 10, Linux OS, macOS): ""
-   --2--SSH keys generation in the personal account: "how-to-add-ssh-keys-to-your-gcore-cloud-personal-account"
-   --2--How to delete an SSH key: "how-to-delete-ssh-keys-in-your-gcore-cloud-personal-account"
-   --2--How to generate SSH keys when creating an Instance or Bare Metal server: "how-to-generate-and-add-ssh-keys-when-creating-an-instance-or-bare-metal-server"
-   --1--Connecting using a password. Preparation: "connecting-using-a-password-preparation"
-   --2--Configuring a password: "configuring-a-password"
-   --1--Connecting via SHH: "connecting-via-ssh"
-   --2--Connecting from Windows 7/8: "connecting-from-windows-7-8"
-   --2--Connecting from Windows 10, Linux OS, macOS: "connecting-from-windows-10-linux-os--macos"
+   --1--Connect with SSH keys: "connect-with-ssh-keys"
+   --2--Generate a key (Windows 7/8): "generate-a-key-windows-7-8"
+   --2--Generate a key (Windows 10, Linux OS, macOS): "generate-a-key-windows-10-linux-os-macos"
+   --2--Generate a key in the personal account: "generate-a-key-in-the-personal-account"
+   --2--Add a key to your account: "add-a-key-to-your-account"
+   --2--Delete a key: "delete-a-key"
+   --2--Generate a key when creating an instance : "generate-a-key-when-creating-an-instance"
+   --1--Connect with a password: "connect-with-a-password"
+   --1--Connect via SSH: "connect-via-ssh"
+   --2--Connect from Windows 7/8: "connect-from-windows-7-8"
+   --2--Connect from Windows 10, Linux OS, macOS: "connect-from-windows-10-linux-os-macos"
 pageTitle: Connect to bare metal via SSH | Gcore
-pageDescription: Connect to your bare metal server using SSH keys or a password. Generate keys, configure passwords, and access Windows/Linux machines.
+pageDescription: Connect to your bare metal server using SSH keys or a password. Generate keys, configure passwords, and access your server.
 ---
 # Connect to your bare metal server via SSH
 
@@ -26,11 +26,11 @@ The SSH protocol (also referred to as Secure Shell) is a method for secure r
 
 Please note: you cannot connect to Windows instances via SSH. But you can connect to them via RDP protocol or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from the console in Control Panel</a>. Linux machines can be accessed via SSH or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from your Control Panel</a>.
 	
-## Connecting using a pair of SSH keys. Preparation
+## Connect with SSH keys
 
 To connect to an instance or Bare Metal server, create a public key that will be stored on your machine and a private key that will be placed on your local storage.  
 
-### **Generate SSH keys (Windows 7/8)** 
+### Generate a key (Windows 7/8) 
 
 ! SSH key generation using the command line interface (cmd) is not available for Windows 7/8 operating systems.  
 
@@ -66,7 +66,7 @@ Important! During the key generation, move the cursor in the Key field until th
 
  <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/notepad.png" alt="notepad.png" width="457" height="255">
 
-### **Generate SSH keys (Windows 10, Linux OS, macOS)** 
+### Generate a key (Windows 10, Linux OS, macOS) 
 
 1\. To generate keys on Linux/macOS/Windows 10: 
 
@@ -90,7 +90,7 @@ Important! During the key generation, move the cursor in the Key field until th
 
 9\. The public part of the key will be saved in the <key_name>.pub file. Use it to add it to your machine. You can open the ssh key file in text format for copying in the Notepad app. 
 
-### **Generate SSH keys in the personal account** 
+### Generate a key in the personal account
 
 To create an SSH key from your personal account, follow the steps below. 
 
@@ -110,7 +110,7 @@ To create an SSH key from your personal account, follow the steps below. 
 
 5\. To view the private key, find it in your local storage and open it using the Notepad app.   
 
-### **How to add SSH keys to your Gcore Cloud personal account** 
+### Add a key to your account
 
 To add an already created SSH key to your personal account: 
 
@@ -130,7 +130,7 @@ To add an already created SSH key to your personal account: 
 
 6\. The key will appear in the list of SSH keys. 
 
-### **How to delete SSH keys in your Gcore Cloud personal account** 
+### Delete a key 
 
 1\. Select the SSH key you want to delete. 
 
@@ -140,7 +140,7 @@ To add an already created SSH key to your personal account: 
 
 <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/ssh_delete.png" alt="ssh_delete.png">
 
-### **How to generate and add SSH keys when creating an Instance or Bare Metal server** 
+### Generate a key when creating an instance
 
 In your personal account, you can create and add an SSH key when creating an instance or Bare Metal server. 
 
@@ -160,13 +160,11 @@ Next, select a key from the drop-down list to add it to your machine.  
 
 The key will be automatically added to your machine.  
 
- After adding or generating a new SSH key, the keys will appear in the SSH Keys section. 
+After adding or generating a new SSH key, the keys will appear in the SSH Keys section. 
 
 <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/mceclip0.png" alt="mceclip0.png">
 
-## Connecting using a password. Preparation
-
-### **Configuring a password**
+## Connect with a password
 
 To connect using a password, configure it while creating an instance or Bare Metal server. In Additional options click on "User data". This will open a field, where you can enter the script that will be processed by a cloud-init agent running on your machine. 
 
@@ -197,9 +195,9 @@ passwd = input() if not sys.stdin.isatty() else getpass()
 print(sha512_crypt.hash(passwd , rounds = 5000 ))
 ```
 
-## Connecting via SSH
+## Connect via SSH
 
-### **Connecting from Windows 7/8**
+### Connect from Windows 7/8
 
 !Connecting to an instance or Bare Metal server over ssh using the command line (cmd) is not available on Windows 7/8 operating systems.  
 
@@ -241,11 +239,11 @@ To connect, use <a href="https://www.putty.org/" target="_blank">the PuTTY app<
 11\. Press Enter.  
 You have connected to your machine.  
 
-### **Connecting from Windows 10, Linux OS, macOS** 
+### Connect from Windows 10, Linux OS, macOS
 
-_Attention! If you use Linux OS or macOS, go to step 7._ 
+**Please note: If you use Linux OS or macOS, go to step 7.**
 
-Windows 10 has a built-in OpenSSH client that allows you to access the server via the console, like on Linux OS. By default, this component is not activated.  
+Windows 10 has a built-in OpenSSH client that allows you to access the server via the console, like on Linux OS. By default, this component is not activated.
 
 Follow the steps below to activate it. 
 
