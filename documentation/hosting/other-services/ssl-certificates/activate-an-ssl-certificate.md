@@ -6,6 +6,8 @@ published: true
 toc:
     --1--DV certificates: "dv-certificates"
     --1--OV certificates: "ov-certificates"
+pageTitle: Activate an SSL certificate | Gcore
+pageDescription: Learn how to activate a DV or an OV SSL certificate.
 ---
 # Activate an SSL certificate
 

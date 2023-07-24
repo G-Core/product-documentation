@@ -6,6 +6,8 @@ published: true
 toc:
    --1--Option activation: "to-enable-this-option"
    --1--Work features of auto payment: "work-features-of-auto-payment"
+pageTitle: Set up auto payment | Gcore
+pageDescription: Learn how to set up auto-payment for your server.
 ---
 # Set up auto payment
 

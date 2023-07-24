@@ -4,6 +4,8 @@ displayName: Choose a configuration
 published: true
 order: 10
 toc:
+pageTitle: Choose a virtul server | Gcore
+pageDescription: Learn how to choose the right virtual server for your needs. Compare plans, specifications, and performance levels. 
 ---
 # Choose a virtul server for your needs
 

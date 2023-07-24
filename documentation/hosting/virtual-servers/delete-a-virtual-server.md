@@ -6,8 +6,8 @@ order: 60
 toc:
    --2--How to delete a server: "how-to-delete-a-server"
    --2--You received an error while deleting a server. What should you do?: "you-received-an-error-while-deleting-a-server-what-should-you-do"
-pageTitle: Delete a dedicated server | Gcore
-pageDescription: Learn how to delete a dedicated server
+pageTitle: Delete a virtual server | Gcore
+pageDescription: Learn how to delete a virtual server.
 ---
 # Delete a virtual server
 

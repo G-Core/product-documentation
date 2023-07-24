@@ -4,6 +4,8 @@ displayName: Upgrade
 published: true
 order: 40
 toc:
+pageTitle: Upgrade your virtual server | Gcore
+pageDescription: Learn how to upgrade the plan of your virtual server.
 ---
 # Upgrade your virtual server
 

@@ -4,8 +4,10 @@ displayName: Become a reseller
 order: 90
 published: true
 toc:
+pageTitle: Become a reseller | Gcore
+pageDescription: Learn how to become a Gcore reseller.
 ---
-# Become reseller and resell our services
+# Become a reseller and resell our services
 
 Reselling is a way of a partnership when you purchase our servers and provide them to your customers using your own billing system.
 

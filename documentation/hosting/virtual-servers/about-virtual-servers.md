@@ -4,6 +4,8 @@ displayName: Overview
 order: 10
 published: true
 toc:
+pageTitle: About virtual servers | Gcore
+pageDescription: Explore the power of virtual servers. Learn about available operating system and configurations.
 ---
 # About virtual servers
 

@@ -8,6 +8,8 @@ toc:
 --1--Available actions: "what-can-you-do-with-vmmanager-6"
 --1--Key features: "key-features-of-vmmanager-6"
 --1--Navigation: "navigation-in-the-vmmanager-6"
+pageTitle: Features and functions of VMmanager 6 | Gcore
+pageDescription: Explore the features of VMmanager 6 to efficiently manage virtual servers. Perform key actions like OS reinstallation, script running, and more.
 ---
 # Features and functions of VMmanager 6
 
