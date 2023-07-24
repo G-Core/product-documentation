@@ -21,6 +21,7 @@ import { TextColumnsComponent } from './web-components/text-columns/text-columns
 import { GalleryComponent } from './web-components/gallery/gallery.component';
 import { SearchComponent } from './components/search/search.component';
 import { MenuService } from './services/menu.service';
+import { ModalLoginModule } from './components/modal-login';
 
 @NgModule({
     declarations: [
@@ -44,6 +45,7 @@ import { MenuService } from './services/menu.service';
         BrowserAnimationsModule,
         UiKitModule,
         ReactiveFormsModule,
+        ModalLoginModule,
     ],
     providers: [MenuService, { provide: APP_BASE_HREF, useValue: '/docs/' }],
     bootstrap: [AppComponent],
