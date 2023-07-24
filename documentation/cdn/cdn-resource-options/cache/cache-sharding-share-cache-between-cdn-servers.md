@@ -34,7 +34,7 @@ If the group has no X in its cache, the server that was initially chosen using a
 
 If a server fails, it is removed from the group, and the hash will be recalculated to reflect the failed server. Thus, all subsequent requests will be distributed among other servers of the same group. 
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/cache-sharding-share-cache-between-cdn-servers/image3534.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/cache-sharding-share-cache-between-cdn-servers/image3534.png" alt="" width="80%">
 
 ## What are the benefits of using Cache Sharding?
 
