@@ -4,6 +4,8 @@ displayName: Manage SSH keys
 published: true
 toc:
 order: 30
+pageTitle: Manage SSH keys | Gcore
+pageDescription: Learn how to add, change and delete SSH keys in your personal account.
 ---
 # Manage SSH keys
 

@@ -7,6 +7,8 @@ toc:
    --1--Via PayPal: "pay-via-paypal"
    --1--Via bank transfer: "pay-via-bank-transfer"
    --1--Via bank card or Alipay: "pay-via-bank-card-or-alipay"
+pageTitle: Pay for Gcore services | Gcore
+pageDescription: Learn about payment methods for Gcore services.
 ---
 # Pay for Gcore services (payment methods)
   

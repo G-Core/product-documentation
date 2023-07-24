@@ -5,6 +5,8 @@ published: true
 toc:
  --1--Setup example for Ubuntu 14.04: "setup-example-for-ubuntu-14-04"
  --1--Configure LACP on the server: "configure-lasp-on-the-server"
+pageTitle: Activate Link Aggregation | Gcore
+pageDescription: Learn how to activate Link Aggregation (LACP) to boost server performance and enhance fault tolerance.
 ---
 # Activate Link Aggregation
 

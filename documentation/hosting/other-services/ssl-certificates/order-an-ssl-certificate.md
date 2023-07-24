@@ -10,6 +10,8 @@ toc:
     --1--Generating a key: "generating-a-key"
     --1--Enter the contact information: "enter-the-contact-information"
     --1--Confirm domain ownership: "confirm-domain-ownership"
+pageTitle: Activate an SSL certificate | Gcore
+pageDescription: Learn how to buy an SSL certificate.
 ---
 # Order an SSL certificate
 

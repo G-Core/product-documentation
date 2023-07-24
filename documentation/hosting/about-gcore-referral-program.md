@@ -4,6 +4,8 @@ displayName: Referral program
 order: 100
 published: true
 toc:
+pageTitle: About Gcore Referral program | Gcore
+pageDescription: Discover the Gcore Referral Program! Earn monetary bonuses by sharing your referral link on websites, forums, or online platforms.
 ---
 # About Gcore Referral program
 

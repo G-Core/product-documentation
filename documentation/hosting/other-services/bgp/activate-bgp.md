@@ -3,6 +3,8 @@ title: activate-bgp
 displayName: Activate BGP
 published: true
 toc:
+pageTitle: Activate BGP | Gcore
+pageDescription: Learn how to activate BGP for enhanced IP-address announcements, getting connected in China, or reselling. 
 ---
 # Activate BGP
 
