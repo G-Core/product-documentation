@@ -29,10 +29,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
             this.cd.detectChanges();
         });
 
-        this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((event) => {
-            this.checkUrl();
-            this.cd.detectChanges();
-        });
+        this.routerSubscription = this.router.events
+            .pipe(filter((event) => event instanceof NavigationEnd))
+            .subscribe((event) => {
+                this.checkUrl();
+                this.cd.detectChanges();
+            });
     }
 
     public ngOnDestroy(): void {
@@ -57,7 +59,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     public checkUrl(): boolean {
         const currentUrl = this.router.url;
         if (currentUrl.includes('/hosting')) {
-            return (this.isHosting = true);
+            this.isHosting = true;
+        } else {
+            this.isHosting = false;
         }
 
         return this.isHosting;
