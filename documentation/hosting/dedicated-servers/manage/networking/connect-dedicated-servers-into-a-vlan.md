@@ -6,6 +6,8 @@ published: true
 toc:
 --1--VLAN initiation: "vlan-initiation"
 --1--Adding new members: "adding-new-members"
+pageTitle: Create a VLAN | Gcore
+pageDescription: Learn how to set up a Virtual Local Area Network (VLAN) between your dedicated servers using DCI Manager with this step-by-step guide. 
 ---
 # Connect dedicated servers into a VLAN
 

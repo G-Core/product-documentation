@@ -6,6 +6,8 @@ order: 30
 toc:
    --1--About Restreams: "about-restreams"
    --1--Configure: "configure-a-restream"
+pageTitle: Overview of the Restreaming Feature and Its Setup | Gcore
+pageDescription: A step-by-step guide on how to push your broadcasts to social media.
 ---
 # Create and configure a restream to social media
   

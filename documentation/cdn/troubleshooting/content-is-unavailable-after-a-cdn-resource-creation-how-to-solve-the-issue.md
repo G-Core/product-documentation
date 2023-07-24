@@ -14,6 +14,8 @@ toc:
    --3--Your SSL: "personal-ssl-certificate"
    --2--5. Cache options: "5-check-the-cache-options"
    --2--6. Purge: "6-check-the-purge-option"
+pageTitle: Common CDN Issues | Gcore
+pageDescription: What to do if the content is unavailable after integration your site with the CDN resource.
 ---
 # Content is unavailable after a CDN resource creation: how to solve the issue
 

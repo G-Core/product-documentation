@@ -4,6 +4,8 @@ displayName: Which web crawlers doesn't your service block?
 published: true
 order: 120
 toc:
+pageTitle: FAQ. Web Crawlers | Gcore
+pageDescription: Which web crawlers Gcore doesn't block. 
 ---
 # Which web crawlers doesn't your service block?
 

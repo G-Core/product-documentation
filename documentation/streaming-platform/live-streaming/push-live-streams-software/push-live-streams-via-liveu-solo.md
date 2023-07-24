@@ -4,6 +4,8 @@ displayName: LiveU Solo
 published: true
 order: 30
 toc:
+pageTitle: Live Stream Setup with LiveU Solo | Gcore
+pageDescription: A step-by-step guide to pushing live streams via LiveU Solo.
 ---
 # Push live streams via LiveU Solo
 

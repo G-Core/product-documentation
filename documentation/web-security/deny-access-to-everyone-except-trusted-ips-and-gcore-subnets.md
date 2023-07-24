@@ -8,6 +8,8 @@ toc:
    --1--Web server: "web-server"
    --2--Apache: "apache"
    --2--Nginx: "nginx"
+pageTitle: Strict Access Restrictions | Gcore
+pageDescription: Learn how to bolster your website's security by denying access to all but trusted IPs and Gcore subnets using Network Firewall or web server configurations.
 ---
 # Deny access to everyone except trusted IPs and Gcore subnets
 

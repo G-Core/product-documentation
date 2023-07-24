@@ -12,6 +12,8 @@ toc:
    --1--Assign to a load balancer: "assign-a-reserved-ip-to-a-load-balancer-and-detach-it"
    --1--Determine which server the reserved IP is assigned to: "determine-which-server-the-specific-reserved-ip-is-assigned-to"
    --1--Delete: "delete-a-reserved-ip-address"
+pageTitle: Reserved IP address| Gcore
+pageDescription: Create and configure a reserved IP address to assign to instances or load balancers. Learn how to reserve, assign, detach, and delete a reserved IP.
 ---
 # Create and configure a reserved IP address
 

@@ -4,6 +4,8 @@ displayName: Overview
 order: 10
 published: true
 toc:
+pageTitle: About images| Gcore
+pageDescription: Learn about images for virtual machines in Cloud computing.
 ---
 # About images
 

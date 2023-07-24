@@ -3,6 +3,8 @@ title: create-a-new-pool-in-cluster
 displayName: Create a pool
 order: 30
 published: true
+pageTitle: Create a new pool | Gcore
+pageDescription: Learn how to create a new pool in a Kubernetes cluster. 
 ---
 # Create a new pool in a cluster
 

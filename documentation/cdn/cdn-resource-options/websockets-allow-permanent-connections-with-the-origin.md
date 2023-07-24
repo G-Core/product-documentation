@@ -7,6 +7,8 @@ toc:
    --1--What is WebSocket?: "what-is-websocket"
    --1--How it differs from HTTP: "how-is-websocket-different-from-http"
    --1--Manage the feature: "manage-the-websockets-feature"
+pageTitle: Manage WebSockets for Permanent Connections | Gcore
+pageDescription: Learn how to manage WebSockets for persistent data transfer between client and server, enhancing services like chat rooms or trading platforms.
 ---
 # WebSockets: allow permanent connections with the origin
   

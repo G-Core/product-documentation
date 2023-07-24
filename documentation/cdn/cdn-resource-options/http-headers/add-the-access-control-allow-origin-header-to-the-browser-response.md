@@ -13,6 +13,8 @@ toc:
    --1--Check: "check-cors"
    --2--through cURL: "check-cors-through-curl"
    --2--in a browser: "check-cors-with-devtools-in-a-browser"
+pageTitle: CORS for Content Delivery across Different Domains | Gcore
+pageDescription: A comprehensive guide to understanding and implementing CORS in various settings, ensuring secure content access across domains.
 ---
 # Add the Access-Control-Allow-Origin header to the browser response
 

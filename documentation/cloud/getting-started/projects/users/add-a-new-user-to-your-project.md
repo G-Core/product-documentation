@@ -4,6 +4,8 @@ displayName: Add a user
 published: true
 order: 20
 toc:
+pageTitle: Add a new user | Gcore
+pageDescription: Learn how to add users to your Cloud project.
 ---
 # Add a new user to your project
 Only the user with the Administrator role can add new users to the project. To send an invitation:

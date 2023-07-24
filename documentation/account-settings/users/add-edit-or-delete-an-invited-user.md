@@ -8,8 +8,9 @@ toc:
    --1--Edit: "change-users-account-information"
    --1--Delete: "delete-a-user"
    --2--Features: "deletion-features"
+pageTitle: Guide to managing users' roles | Gcore 
+pageDescription: A detailed step-by-step guide on inviting, editing, and deleting users in your Gcore account.
 ---
-
 # Add, edit, or delete an invited user
 
 ## Add a user

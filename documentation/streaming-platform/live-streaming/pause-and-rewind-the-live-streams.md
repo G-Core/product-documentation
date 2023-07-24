@@ -7,6 +7,8 @@ toc:
    --1--What is it?: "what-is-the-dvr-feature"
    --1--Enable: "enable-the-dvr-feature"
    --1--Use: "use-the-dvr-feature"
+pageTitle: Overview of the DVR Feature and Its Setup | Gcore
+pageDescription: A step-by-step guide on how to pause and rewind the live streams.    
 ---
 # Pause and rewind the live streams
   

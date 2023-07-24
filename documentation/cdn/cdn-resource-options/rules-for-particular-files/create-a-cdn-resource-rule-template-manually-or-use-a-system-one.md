@@ -8,6 +8,8 @@ toc:
    --1--Create your own template: "create-a-template"
    --1--Use a system template: "use-a-system-template"
    --1--Create a rule from a template: "create-a-rule-from-a-template"
+pageTitle: Understanding of Rule Templates | Gcore
+pageDescription: A comprehensive guide on how to create a template for rules or use a system one.
 ---
 # Create a CDN resource rule template manually or use a system one
   

@@ -4,6 +4,8 @@ displayName: Manage an SSH key
 published: true
 order: 20
 toc:
+pageTitle: Guide to create and add an SSH key to a storage | Gcore
+pageDescription: Learn how to generate an SSH key to connect to SFTP storage.
 ---
 # Create and add an SSH key to your storage
 

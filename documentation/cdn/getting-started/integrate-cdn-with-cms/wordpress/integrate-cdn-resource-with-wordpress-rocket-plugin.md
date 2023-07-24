@@ -4,6 +4,8 @@ displayName: Rocket plugin
 published: true
 order: 20
 toc:
+pageTitle: Integrate CDN with Rocket plugin for WordPress Guide | Gcore
+pageDescription: A comprehensive guide on integrating CDN resources with the Rocket plugin for CMS WordPress to enhance your site's speed and user experience.
 ---
 # Integrate CDN resource with WordPress (Rocket plugin)
 

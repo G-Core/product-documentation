@@ -13,6 +13,8 @@ toc:
    --2--Creating a disk from a disk snapshot: "create-a-disk-from-a-disk-snapshot"
    --2--Deleting a snapshot: "delete-a-snapshot"
    --2--Reverting a volume to the latest snapshot: "also-you-can-revert-a-volume-to-the-latest-snapshot--open-the--volumes--section--detach-the-volume-from-your-instance-and-select-the-reverting-option-on-the-selector"
+pageTitle: Take a snapshot of your file system | Gcore
+pageDescription: Learn how to take a snapshot of your file system to backup your data.
 ---
 # Take a snapshot of your file system
 

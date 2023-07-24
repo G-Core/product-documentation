@@ -4,6 +4,8 @@ displayName: Craft
 published: true
 order: 50
 toc:
+pageTitle: Integrate CDN with Craft Guide | Gcore
+pageDescription: A comprehensive guide on integrating CDN resources with Craft CMS to enhance your site's speed and user experience.
 ---
 # Integrate CDN resource with Craft
 

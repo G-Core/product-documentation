@@ -19,6 +19,8 @@ toc:
    --3--Set CORS policy: "set-cors-policy-on-a-bucket"
    --3--Add objects: "add-objects-to-a-bucket"
    --3--Get a list of objects: "get-a-list-of-objects"
+pageTitle: Сonnect AWS CLI, S3cmd, and AWS SDK with Storage | Gcore
+pageDescription: Instructions on configuring and using AWS CLI, S3cmd, and AWS SDK with Gcore Object Storage.
 ---
 # Connect AWS CLI, S3cmd, and AWS SDK
 

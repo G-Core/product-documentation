@@ -6,6 +6,8 @@ order: 10
 toc:
    --1--Prepare for uploading: "prepare-images-for-uploading"
    --1--Upload: "upload-an-image"
+pageTitle: Upload an image | Gcore
+pageDescription: Learn how to upload images for virtual machines to Cloud storage.
 ---
 # Upload an image to the storage
 

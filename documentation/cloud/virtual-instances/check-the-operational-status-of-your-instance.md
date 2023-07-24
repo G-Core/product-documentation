@@ -4,6 +4,8 @@ displayName: Check the status
 order: 20
 published: true
 toc:
+pageTitle: VM status | Gcore
+pageDescription: Understand the operational status of your VM - Building, Power on, Power off, Error, and Deleted.
 ---
 # Check the operational status of your instance
 You can find the instance statues inside the project, in the "Instances" section, in the "Status" column 

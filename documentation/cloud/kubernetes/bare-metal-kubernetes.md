@@ -8,6 +8,8 @@ toc:
    --1--Advantages: "advantages"
    --1--Configurations: "available-configurations"
    --1--Create a cluster: "create-a-bare-metal-kuberenetes-cluster"
+pageTitle: Bare Metal Kubernetes | Gcore
+pageDescription: Unlock the power of Bare Metal Kubernetes and deploy nodes directly on physical servers for better performance, security, and direct internet access.
 ---
 # Bare Metal Kubernetes
 

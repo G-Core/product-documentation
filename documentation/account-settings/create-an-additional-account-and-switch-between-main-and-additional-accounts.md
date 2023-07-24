@@ -7,6 +7,8 @@ toc:
    --1--Create an additional account: "create-an-additional-account"
    --1--Switch between accounts: "switch-to-another-account"
    --1--Log in: "log-in-to-a-desirable-account"
+pageTitle: Guide to managing an additional account | Gcore
+pageDescription: A step-by-step guide on creating an additional account and switching between main and additional accounts. 
 ---
 
 # Create an additional account and switch between main and additional accounts

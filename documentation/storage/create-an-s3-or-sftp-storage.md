@@ -8,6 +8,8 @@ toc:
    --2--S3 storage: "s3"
    --2--SFTP storage: "sftp"
    --1--Storage status indicator: "storage-status-indicator"
+pageTitle: S3 and SFTP storage creation | Gcore
+pageDescription: Step-by-step instructions on how to create S3 and SFTP storage.
 ---
 # Create an S3 or SFTP storage
 

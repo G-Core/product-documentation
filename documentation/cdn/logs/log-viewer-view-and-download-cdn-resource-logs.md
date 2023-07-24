@@ -8,6 +8,8 @@ toc:
    --1--View logs: "view-logs-in-your-control-panel"
    --1--Export logs: "export-logs"
    --1--Manage via API: "manage-log-viewer-via-the-api"
+pageTitle: Analyzing CDN Resource Logs with Log Viewer | Gcore
+pageDescription: A detailed guide to using Log Viewer for viewing, exporting, and managing CDN resource logs via API for optimizing network performance.
 ---
 # Log viewer: view and download CDN resource logs
 

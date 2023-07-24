@@ -10,6 +10,8 @@ toc:
    --2--Via Сontrol panel: "how-to-record-your-live-stream-via-the-control-panel"
    --2--Via API: "how-to-record-your-live-stream-via-api"
    --1--Where records are kept: "where-the-records-are-kept"
+pageTitle:  Overview of Live Streams Recording | Gcore
+pageDescription: A step-by-step guide on how to record your live streams and where to get the recordings.    
 ---
 # Record your live streams and save them as videos
   

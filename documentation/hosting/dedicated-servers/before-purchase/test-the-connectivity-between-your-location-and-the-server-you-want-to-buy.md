@@ -4,6 +4,8 @@ displayName: Test network performance
 order: 10
 published: true
 toc:
+pageTitle: Test the connectivity | Gcore
+pageDescription: Learn how to test the connectivity between your location and the desired server before purchase using the Looking Glass tool.
 ---
 # Test the connectivity between your location and the server you want to buy
 

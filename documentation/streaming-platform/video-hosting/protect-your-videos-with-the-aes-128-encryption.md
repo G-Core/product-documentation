@@ -8,6 +8,8 @@ toc:
    --1--How it works with VoDs: "how-does-aes-128-work-with-vods"
    --1--Enable: "enable-aes-128"
    --1--Configure: "configure-the-keyserver"
+pageTitle: Overview of AES-128 Protection | Gcore
+pageDescription: A comprehensive guide on how to protect your videos with AES-128 encryption.
 ---
 # Protect your videos with the AES-128 encryption
   

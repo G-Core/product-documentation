@@ -7,6 +7,8 @@ toc:
    --1--How does it work?: "how-does-ddos-protection-work"
    --1--Advanced protection modes: "advanced-protection-modes"
    --1--Pricing: "pricing"
+pageTitle: About DDoS Protection | Gcore
+pageDescription: Learn how DDoS Protection safeguards your servers. Explore use cases for different protection modes and select the best option for your needs.
 ---
 # About DDoS Protection
 

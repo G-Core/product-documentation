@@ -6,6 +6,8 @@ order: 20
 toc:
    --1--Disable: "disable-a-service"
    --1--Resume: "resume-a-service"
+pageTitle: Instructions on how to disable or resume services | Gcore
+pageDescription: A step-by-step guide to disable or resume services. Disabling deletes certain resources and settings after a set period.
 ---
 
 # Disable and resume a service

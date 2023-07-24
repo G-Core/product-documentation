@@ -4,6 +4,8 @@ displayName: Use stale cache if origin is unavailable
 published: true
 order: 50
 toc:
+pageTitle: Explanation of the Always Online CDN Feature | Gcore
+pageDescription: A guide on providing the stale cache if the origin experience outages.
 ---
 # Always online: provide the stale cache if the origin is unavailable
 

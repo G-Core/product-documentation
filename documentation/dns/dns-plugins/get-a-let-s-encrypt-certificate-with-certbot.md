@@ -9,6 +9,8 @@ toc:
    --1--Create credentials: "create-credentials-for-the-certbot-plugin"
    --1--Acquire a certificate: "acquire-a-certificate-via-the-certbot-plugin"
    --1--Renew a certificate: "renew-a-certificate"
+pageTitle: Understanding Certbot plugin | Gcore
+pageDescription: Issuing and revoking Let's Encrypt certificates with Certbot plugin.
 ---
 
 # Get a Let’s Encrypt certificate with Certbot
@@ -17,7 +19,7 @@ toc:
 
 The Certbot plugin automates Let’s Encrypt certificate issuance with Gcore DNS API.
 
-**How it works.** To issue a Let’s Encrypt certificate for a domain, you need to confirm that you are its owner. You can do this in several ways (you can find more info in <a href="https://letsencrypt.org/docs/challenge-types" target="_blank">Let’s Encrypt documentation</a>. One of the most common ways is a DNS-01 challenge that asks you to prove that you control the DNS for your domain name by creating a specific value in a TXT record under that domain name. You can use the Certbot plugin to send a request to issue a certificate. It automatically creates TXT records and subsequently removes them for obtaining, renewing, or revoking certificates. You can get more information about this in the <a href="https://eff-certbot.readthedocs.io/en/stable/" target="_blank">Certbot documentation</a>.
+**How it works.** To issue a Let’s Encrypt certificate for a domain, you need to confirm that you are its owner. You can do this in several ways (you can find more info in <a href="https://letsencrypt.org/docs/challenge-types" target="_blank">Let’s Encrypt documentation</a>). One of the most common ways is a DNS-01 challenge that asks you to prove that you control the DNS for your domain name by creating a specific value in a TXT record under that domain name. You can use the Certbot plugin to send a request to issue a certificate. It automatically creates TXT records and subsequently removes them for obtaining, renewing, or revoking certificates. You can get more information about this in the <a href="https://eff-certbot.readthedocs.io/en/stable/" target="_blank">Certbot documentation</a>.
 
 To use the Certbot plugin, you’ll need:
 

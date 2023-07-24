@@ -7,6 +7,8 @@ toc:
    --2--Service: "what-is-a-service"
    --2--Ingress: "what-is-ingress"
    --2--Ingress Controllers: "what-is-an-ingress-controller"
+pageTitle: Networking in Kubernetes | Gcore
+pageDescription: Learn about Kubernetes networking essentials—Services, Ingress, and Ingress Controllers—to effectively manage network traffic within a cluster.
 ---
 # About networking in Kubernetes
 

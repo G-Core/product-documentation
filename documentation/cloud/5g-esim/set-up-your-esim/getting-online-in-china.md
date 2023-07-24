@@ -3,6 +3,8 @@ title: getting-online-in-china
 displayName: Getting online in China
 order: 20
 published: true
+pageTitle: Getting online in Chine with 5G eSIM| Gcore
+pageDescription: Ensure smooth 5G network access in China with our essential tips. 
 ---
 # Getting online in China 
 

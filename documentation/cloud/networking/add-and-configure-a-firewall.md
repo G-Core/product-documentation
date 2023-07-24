@@ -9,6 +9,8 @@ toc:
    --2--Add, change and delete rules: "add-change-and-delete-rules"
    --2--Assign to an instance and detach from it: "assign-to-an-instance-and-detach-from-it"
    --2--Delete: "delete-a-firewall"
+pageTitle: Add a firewall | Gcore
+pageDescription: Learn how to add and configure a firewall to protect your servers from network threats.
 ---
 # Add and configure a firewall
 

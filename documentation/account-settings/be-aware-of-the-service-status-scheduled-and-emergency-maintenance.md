@@ -18,6 +18,8 @@ toc:
    --1--Components: "components"
    --2--Components statuses: "components-statuses"
    --2--Notification types: "notification-types"
+pageTitle: Guide to Gcore Status Page Subscriptions | Gcore
+pageDescription: A guide on subscribing to and managing notifications about service status, outages, and planned maintenance.
 ---
 
 # Be aware of the service status, scheduled and emergency maintenance

@@ -4,6 +4,8 @@ displayName: I see lots of requests from several IPs. Could this be an attack?
 published: true
 order: 30
 toc:
+pageTitle: FAQ. How to Recognize an Attack | Gcore
+pageDescription: Multiple requests from multiple IPs could be an attack?
 ---
 # I see lots of requests from several IPs. Could this be an attack?
 

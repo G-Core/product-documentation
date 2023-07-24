@@ -14,6 +14,8 @@ toc:
    --3--Devices: "devices"
    --3--OS: "os"
    --2--How statistics are collected: "how-statistics-are-collected"
+pageTitle: CDN Statistics | Gcore
+pageDescription: A comprehensive guide on how to view statistics of your CDN resource.
 ---
 # View statistics of a CDN resource
 

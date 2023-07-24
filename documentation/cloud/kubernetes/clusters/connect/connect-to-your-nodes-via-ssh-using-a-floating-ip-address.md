@@ -5,7 +5,10 @@ published: true
 toc:
    --1--Assign a floating IP: "assign-a-floating-ip-address"
    --1--Connect to a node: "connect-to-your-node-via-ssh"
+pageTitle: Connect to Kubernetes nodes via SSH | Gcore
+pageDescription: Learn how to connect to Kubernetes nodes via SSH.
 ---
+
 # Connect to your nodes via SSH
 
 You can connect to your nodes via <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address" target="_blank">a floating IP address</a> address.

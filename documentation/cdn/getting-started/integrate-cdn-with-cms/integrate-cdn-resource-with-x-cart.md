@@ -4,6 +4,8 @@ displayName: X-Cart
 published: true
 order: 230
 toc:
+pageTitle: Integrate CDN with X-Cart Guide | Gcore
+pageDescription: A comprehensive guide on integrating CDN resources with X-Cart CMS to enhance your site's speed and user experience.
 ---
 # Integrate CDN resource with X-Cart
 

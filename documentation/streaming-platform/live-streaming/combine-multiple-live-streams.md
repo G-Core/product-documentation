@@ -6,6 +6,8 @@ order: 40
 toc:
    --1--What is Multicamera?: "what-is-multicamera"
    --1--Configure: "configure-multicamera"
+pageTitle: Overview of the Multicamera Feature and Its Setup | Gcore
+pageDescription: A step-by-step guide on how to combine several live streams in one interface.
 ---
 # Combine multiple live streams
 

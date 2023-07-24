@@ -12,6 +12,8 @@ toc:
    --2--Add a folder: "add-a-folder-to-a-bucket"
    --2--Manage files: "manage-files"
    --1--Delete buckets: "delete-buckets"
+pageTitle: Comprehensive guide to manage Gcore buckets | Gcore
+pageDescription: Creating, configuring, and deleting Gcore storage buckets, adding lifecycle policies, managing files, and setting CORS in the control panel.
 ---
 
 # Manage buckets via the Control panel

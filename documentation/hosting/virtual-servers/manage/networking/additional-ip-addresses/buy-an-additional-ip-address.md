@@ -4,6 +4,8 @@ displayName: Buy
 published: true
 order: 10
 toc:
+pageTitle: Buy an additional IP address | Gcore
+pageDescription: Learn how to easily buy additional IP addresses for your virtual server. 
 ---
 # Buy an additional IP address
 

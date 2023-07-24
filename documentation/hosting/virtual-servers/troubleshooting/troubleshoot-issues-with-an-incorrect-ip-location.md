@@ -3,6 +3,8 @@ title: troubleshoot-issues-with-an-incorrect-ip-location
 displayName: Incorrect IP location
 published: true
 toc:
+pageTitle: Incorrect IP location | Gcore
+pageDescription: Troubleshoot issues with an incorrect IP location with this guide.
 ---
 # Troubleshoot issues with an incorrect IP location
 

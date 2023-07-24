@@ -6,6 +6,8 @@ order: 40
 toc:
    --1--Can't attach a personal certificate to a resource: "cant-attach-a-personal-certificate-to-a-resource"
    --1--Can't get Let's Encrypt certificate: "cant-get-lets-encrypt-certificate"
+pageTitle: SSL certificate Issues | Gcore
+pageDescription: What to do if you can't attach personal or Let's Encrypt certificates.
 ---
 # An SSL certificate isn't working: how to solve to issue
 

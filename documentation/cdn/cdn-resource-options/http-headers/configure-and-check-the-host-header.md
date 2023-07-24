@@ -8,6 +8,8 @@ toc:
    --1--Manage: "how-to-manage-the-host-header"
    --1--Disable: "how-to-disable-the-change-host-header-option"
    --1--Check: "how-to-check-the-host-header"
+pageTitle: Understanding Host Header | Gcore
+pageDescription: A guide on configuring and checking the Host header.
 ---
 # Configure and check the Host header
   

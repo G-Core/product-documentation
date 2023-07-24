@@ -9,6 +9,8 @@ toc:
    --1--Use cases: "use-cases"
    --1--Log storage: "log-storage"
    --1--Restrictions: "restrictions"
+pageTitle: Logging as a service| Gcore
+pageDescription: Discover Logging for both VMs and bare metal servers. Troubleshoot errors, analyze security incidents and other data using OpenSearch Dashboards.
 ---
 # About Logging as a service
 
@@ -33,8 +35,8 @@ The use cases of Logging include:  
 
 1. **Error detection and troubleshooting**. Enter an error message into the OpenSearch Dashboards search bar, identify when and which server experienced an issue, and be empowered to fix it.  
 
-2. **Investigation of security incidents**. If data on your server was stolen last month, you can find logs from that time period, see which account signed in to the storage, and detect the culprit.  
-
+2. **Investigation of security incidents**. By monitoring and analyzing logs, you can detect suspicious activities, unauthorized access attempts, or other potential security breaches.  
+ 
 3. **Server connectivity check**. Open logs of two servers for the same time interval and see whether all data has reached an end user.  
 
 4. **Data speed measurement**. Open logs and compare the time when one server sent the data with the time when another one received it.

@@ -9,6 +9,8 @@ toc:
    --2--Create: "create-a-dns-zone"
    --2--Edit: "edit-a-dns-zone"
    --2--Delete: "delete-a-dns-zone"
+pageTitle: A DNS zone creation | Gcore
+pageDescription: Step-by-step instructions on how to create a DNS zone and delegate it to Gcore NS servers.
 ---
 # Manage a DNS zone
 

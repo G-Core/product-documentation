@@ -4,6 +4,8 @@ displayName: IPv6 in VMmanager 6
 published: true
 order: 30
 toc:
+pageTitle: IPv6 address in VMmanager 6 | Gcore
+pageDescription: Learn how to allocate an IPv6 address in VMmanager 6.
 ---
 # Allocate an IPv6 address in VMmanager 6
 

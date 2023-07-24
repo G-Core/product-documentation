@@ -10,6 +10,8 @@ toc:
    --2--Open a list of events: "open-a-list-of-events"
    --2--Filter: "apply-filters"
    --2--Mark requests as false positive: "mark-requests-as-false-positive"
+pageTitle: Explore WAF's Events | Gcore
+pageDescription: Identify cyber attacks, find vulnerabilities, block IPs, and gather insightful analytics for superior application security with the WAF events log.
 ---
 # View the history of attacks on your application
    

@@ -3,6 +3,8 @@ title: account-types-and-permissions
 displayName: Account types and permissions
 order: 10
 published: true
+pageTitle: Account types for 5G eSIM| Gcore
+pageDescription: Learn more about different account types and their permissions of GCore 5G eSIM technology.
 ---
 ## Account types and permissions
 

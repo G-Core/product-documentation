@@ -10,6 +10,8 @@ toc:
    --2--Upload: "upload"
    --2--Player: "player"
    --1--Open a support ticket: "open-a-support-ticket"
+pageTitle: Solving Streaming Platform Issues | Gcore
+pageDescription: An explanation of common basic checks to address issues that may arise when working with a streaming platform.
 ---
 # Solve common Streaming Platform issues
   

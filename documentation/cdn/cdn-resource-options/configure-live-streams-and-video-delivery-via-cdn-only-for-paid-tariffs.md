@@ -12,6 +12,8 @@ toc:
    --2--4. Integrate the stream with CDN: "4-integrate-the-stream-with-cdn"
    --2--5. Turn on the preset (only for streams): "5-turn-on-the-preset-only-for-streams" 
    --2--6. Share your stream or videos: "6-share-your-stream-or-videos"
+pageTitle: Setting up CDN for Live Streams and Videos | Gcore
+pageDescription: A comprehensive guide to configure live streams and video delivery via CDN.
 ---
 # Configure live streams and video delivery via CDN (only for paid tariffs)
   

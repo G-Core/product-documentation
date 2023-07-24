@@ -8,6 +8,8 @@ toc:
    --1--Bonuses debiting: "bonuses-debiting"
    --1--Managing bonuses: "managing-bonuses"
    --1--Bonus credits statuses: "bonus-credits-statuses"
+pageTitle: Guide to using bonus credits | Gcore
+pageDescription: Understand how to manage, and use bonus credits, including details on how they impact your tax calculations.
 ---
 
 # Use bonus credits

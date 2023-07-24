@@ -4,6 +4,8 @@ displayName: Cs-cart
 published: true
 order: 60
 toc:
+pageTitle: Integrate CDN with Cs-cart Guide | Gcore
+pageDescription: A comprehensive guide on integrating CDN resources with Cs-cart CMS to enhance your site's speed and user experience.
 ---
 # Integrate CDN resource with Cs-cart
 

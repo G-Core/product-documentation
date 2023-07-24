@@ -4,6 +4,8 @@ displayName: Create
 order: 10
 published: true
 toc:
+pageTitle: Create a Kubernetes cluster | Gcore
+pageDescription: Learn how to create a Kubernetes cluster on a virtual machine or a bare metal server.
 ---
 # Create a Kubernetes cluster
 

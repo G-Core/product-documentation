@@ -10,6 +10,8 @@ toc:
    --2--Filter and search: "filter-and-search"
    --2--Manage options: "manage-options"
    --2--Delete: "delete-a-resource"
+pageTitle: CDN Resources Tab Overview | Gcore
+pageDescription: Explanation of how the CDN resources tab is arranged. 
 ---
 # About CDN resources interface: how it is arranged
 

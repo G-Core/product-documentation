@@ -11,6 +11,8 @@ toc:
    --2--Configure options: "configure-cdn-resource-options"
    --2--Add an SSL certificate: "add-an-ssl-certificate"
    --2--Create a rule: "create-a-rule"
+pageTitle: Managing CDN Resources with Terraform | Gcore
+pageDescription: A detailed guide on how to create a CDN resource and configure needed settings via Terraform.
 ---
 # Manage a CDN resource with Terraform
 

@@ -6,6 +6,8 @@ order: 70
 toc:
    --1--S3: "request-content-directly-from-the-s3-storage"
    --1--SFTP: "request-content-directly-from-the-sftp-storage"
+pageTitle: Schemes for requesting files in S3 and SFTP storages | Gcore
+pageDescription: Instructions on how to request content directly from the S3 and SFTP storage.
 ---
 # Request content directly from the storage
 

@@ -4,8 +4,10 @@ displayName: For static files
 published: true
 order: 10
 toc:
+pageTitle: Guide to Create a CDN Resource for Static Assets | Gcore
+pageDescription: Detailed instructions on how to set up a CDN resource for accelerating and protecting static assets on your website.
 ---
-# Create a CDN resource for only static files
+# Create a CDN resource for static assets only 
 
 You can create up to 30 CDN resources in one account. 
 
@@ -21,13 +23,16 @@ You can create up to 30 CDN resources in one account. 
 
 **Description (optional)**. You can add an internal comment about the CDN resource. It will not affect any setting, but it will be only displayed in the "<a href="https://cdn.gcore.com/resources" target="_blank">CDN resources</a>" section next to the resource CNAME.  
 
-**Origin.** If you have already created <a href="https://gcore.com/docs/cdn/add-an-origin-group" target="_blank">origin groups</a>, select the one you need from the list. If you don't have groups, specify a domain name or an IP address of a website that hosts the static content — the CDN will pull it from there. By default, the CDN connects to an origin via port 80 or 443. If you want to use a custom port, disable the "Use default port" option and indicate the required port. 
+**Origin**. An origin is a source (e.g., a website, an application, a private bucket) from where the CDN resource will request the content. In the Gcore control panel, each origin is allocated to an origin group.
+
+- If you didn’t create the origin group, choose the **Specify content origin** option and follow our instructions to <a href="https://gcore.com/docs/cdn/add-an-origin-group#step-3-select-the-type-of-origin-authentication" target="_blank">add an origin group (step 3)</a>. 
+- If you created the origin group previously, choose the **Select origins group** option, click on the field, and select the required origin group.
 
 **Custom domain**. Create a <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">custom domain</a> as *cdn.[your website domain]* for delivering static files via the CDN. For example, if your website is *yourdomain.com*, enter *cdn.yourdomain.com*. Dynamic content will be sent to users from *yourdomain.com*, while static files will be delivered from *cdn.yourdomain.com*. You can specify multiple domains in one go by clicking the "+" icon. Later in Step 5, you can configure your website to deliver different types of static files from separate domains. Please note that a custom domain such as *cdn.yourdomain.com* cannot be changed after creating a CDN resource. 
 
 **SSL**. If you want to make your static files accessible over HTTPS, toggle on the "Enable HTTPS" feature. Choose one of two options: "Get free Let's Encrypt certificate" or "Add or select your own SSL certificate". When choosing the first one, an SSL certificate will be issued automatically for a domain of your CDN resource (*cdn.yourdomain.com*) after Step 4 of this instruction. If you select the second option, you can add your own certificate using the instruction <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/add-an-ssl-certificate-to-deliver-content-over-https" target="_blank">Add an SSL certificate to transfer content over HTTPS</a>.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/image_1461.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/image1.png" alt="" width="80%">
 
 4\. Add a CNAME record for the domain that you specified in Step 3 as *cdn.yourdomain.com*. You need to do it in your DNS provider's personal account. For a CNAME value, enter a subdomain shown in our personal account as _*.gcdn.co_. For example, in the screenshot below it is written as *cl-2db15545.gcdn.co*, so, for the *cdn.yourdomain.com* subdomain, you need to create a CNAME record with the value *cl-2db15545.gcdn.co*. 
 

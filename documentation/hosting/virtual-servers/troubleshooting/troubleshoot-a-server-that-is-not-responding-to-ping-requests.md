@@ -3,6 +3,8 @@ title: troubleshoot-a-server-that-is-not-responding-to-ping-requests
 displayName: Server is not responding to ping requests
 published: true
 toc:
+pageTitle: Troubleshoot a server not responding to ping | Gcore
+pageDescription: Troubleshoot a server that is not responding to ping requests with this guide.
 ---
 # Troubleshoot a server that is not responding to ping requests
 

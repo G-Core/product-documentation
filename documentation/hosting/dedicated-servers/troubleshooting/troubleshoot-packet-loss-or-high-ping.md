@@ -4,6 +4,8 @@ displayName: Packet loss or high ping
 published: true
 order: 10
 toc:
+pageTitle: Packet loss and high ping | Gcore
+pageDescription: Troubleshoot packet loss and high ping with this guide.
 ---
 # Troubleshoot packet loss and high ping
 

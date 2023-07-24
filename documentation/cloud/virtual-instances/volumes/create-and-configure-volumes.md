@@ -7,6 +7,8 @@ toc:
    --1--Volumes section: "volumes-section"
    --1--Create: "create-a-volume"
    --1--Manage: "manage-your-volumes"
+pageTitle: Create a volume | Gcore
+pageDescription: Create and configure volumes for cloud storage. Choose from High IOPS SSD, Standard, Cold, Ultra, and SSD Low-Latency types.
 ---
 # Create and configure volumes
 

@@ -8,6 +8,8 @@ toc:
    --2--Nginx: "for-nginx"
    --2--Apache: "for-apache"
    --1--Benefits: "benefits-of-http2-for-cdn"
+pageTitle: Configuring HTTP/2 on Origin Server | Gcore 
+pageDescription: Detailed steps to configure HTTP/2 on Nginx and Apache servers and how this protocol improves CDN performance.
 ---
 # Сonfigure HTTP/2 on the origin
 

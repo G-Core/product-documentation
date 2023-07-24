@@ -6,6 +6,8 @@ order: 30
 toc:
    --1--Navigate to monitoring: "navigate-to-monitoring"
    --1--Metrics: "metrics"
+pageTitle: Monitor load of Kubernetes nodes| Gcore
+pageDescription: Monitor your Kubernetes nodes with essential metrics. Check CPU and RAM utilization, track network traffic, and manage performance effectively.
 ---
 # Monitor load on a specific node
 

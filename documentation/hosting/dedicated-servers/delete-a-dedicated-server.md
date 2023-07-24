@@ -4,6 +4,8 @@ displayName: Delete
 order: 70
 published: true
 toc:
+pageTitle: Delete a dedicated server | Gcore
+pageDescription: Learn how to delete a dedicated server.
 ---
 # Delete a dedicated server
 

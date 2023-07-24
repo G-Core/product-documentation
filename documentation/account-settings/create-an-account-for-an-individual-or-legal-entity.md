@@ -6,6 +6,8 @@ order: 10
 toc:
    --1--For individuals: "for-individuals"
    --1--For legal entities: "for-legal-entities"
+pageTitle: Guide to account creation | Gcore
+pageDescription: A guide on how to create an account for individuals or legal entities. 
 ---
 # Create an account for an individual or legal entity
 

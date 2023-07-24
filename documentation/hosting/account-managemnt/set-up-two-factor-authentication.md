@@ -8,6 +8,8 @@ toc:
    --1--Authorize with two-factor authentication: "authorize-with-two-factor-authentication"
    --1--Disable two-step authentication: "disable-two-step-authentication"
    --1--Access recovery: "access-recovery"
+pageTitle: Set 2FA authentication | Gcore
+pageDescription: Stay informed with personalized notifications in the Control Panel. Set up email alerts for upcoming server end dates or new support ticket responses.
 ---
 # Set up two-factor authentication
 
@@ -61,6 +63,6 @@ Important! Make sure that the exact time and time zone are set correctly on your
 
 3\. Click OK to save your changes.
 
-## REcover access
+## Recover access
 
 If for some reason after enabling two-factor authentication, you cannot enter the verification code from the app during authorization, please contact our technical support  ([support@gcore.com](mailto:support@gcore.com)) and provide your first and last name and phone number that you pointed during registration.

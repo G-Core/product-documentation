@@ -6,6 +6,8 @@ order: 20
 toc:
    --1--Plans and billing rules: "plans-and-billing-rules"
    --1--Change your plan: "change-your-plan"
+pageTitle: Overview of Web Security Billing | Gcore
+pageDescription: Explanation of billing and plan change rules.
 ---
 # How Web Security service is billed
 

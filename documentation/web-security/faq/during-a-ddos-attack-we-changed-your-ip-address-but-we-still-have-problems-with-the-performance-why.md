@@ -4,6 +4,8 @@ displayName: During a DDoS attack, we changed your IP address, but we still have
 published: true
 order: 80
 toc:
+pageTitle: FAQ. Problems With Performance After Changing IP | Gcore
+pageDescription: Possible reasons why performance issues continue even though we changed your IP during the DDoS attack.
 ---
 # During a DDoS attack, we changed your IP address, but we still have problems with the performance. Why?
 

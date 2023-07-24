@@ -11,6 +11,8 @@ toc:
    --2--Review your DNS records: "3-review-your-dns-records"
    --2--Change nameservers: "4-change-nameservers"
    --2--(Optional) Setup additional options: "5-optional-setup-additional-options"
+pageTitle: Guide to Create a CDN Resource for the Entire Site | Gcore
+pageDescription: Detailed instructions on how to set up a CDN resource for the entire website.
 ---
 # Create a CDN resource for the entire site
 

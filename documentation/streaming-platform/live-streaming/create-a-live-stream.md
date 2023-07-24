@@ -4,6 +4,8 @@ displayName: Create a live stream
 published: true
 order: 10
 toc:
+pageTitle: Guide to Creating Live Streams | Gcore
+pageDescription: A step-by-step tutorial on how to create live streams using Gcore's interface. Learn about stream types, encoder settings, and embedding options.
 ---
 # Create a live stream
 

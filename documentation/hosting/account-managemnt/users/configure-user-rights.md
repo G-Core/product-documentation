@@ -5,6 +5,8 @@ published: true
 toc:
 --1--Full and restricted user rights: "full-and-restricted-user-rights"
 --1--User blocking: "user-blocking"
+pageTitle: Configure user rights | Gcore
+pageDescription: Learn how to configure user rights in the Control Panel to manage access levels and permissions.
 ---
 # Configure user rights
 

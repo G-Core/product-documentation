@@ -4,6 +4,8 @@ displayName: AWS S3
 published: true
 order: 10
 toc:
+pageTitle: Integrate CDN with AWS S3 Guide | Gcore
+pageDescription: A comprehensive guide on integrating CDN resources with AWS S3 to enhance your site's speed and user experience.
 ---
 # Integrate CDN resource with AWS S3
 

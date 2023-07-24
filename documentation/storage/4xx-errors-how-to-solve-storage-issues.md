@@ -6,6 +6,8 @@ order: 90
 toc:
    --1--HTTP 404 error: "http-404"
    --1--HTTP 403 error: "http-403"
+pageTitle: Fix 403 and 404 errors for your storage | Gcore
+pageDescription: How to solve storage issues connected with 403 and 404 errors.
 ---
 
 # 4xx errors: how to solve Storage issues

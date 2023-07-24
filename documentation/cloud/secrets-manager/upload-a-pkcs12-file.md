@@ -9,6 +9,8 @@ toc:
    --2--2. Merge certificate files into PKCS12: "2-merge-certificate-files-into-pkcs12"
    --2--3. Base64 encode: "3-base64-encode"
    --1--How to create a Load Balancer with an HTTPS listener: "how-to-create-a-load-balancer-with-an-https-listener"
+pageTitle: Upload a PKCS12 file | Gcore
+pageDescription: Learn how to upload PKCS12 files (SSL/TLS certificates) to Secrets Manager for creating load balancers with HTTPS listeners. 
 ---
 # Upload a PKCS12 file
 

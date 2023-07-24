@@ -4,6 +4,8 @@ displayName: Overview
 published: true
 order: 10
 toc:
+pageTitle: Cloud Platform | Gcore
+pageDescription: Discover more about Gcore Cloud. Multiple cloud services with on-demand delivery and pay-as-you-go. Global presence, high reliability, and elasticity.
 ---
 # About Gcore Cloud
 

@@ -16,6 +16,8 @@ toc:
    --1--Check the camera and microphone in your OS: "check-the-camera-and-microphone-settings-in-your-os"
    --2--macOS: "macos"
    --2--Windows: "windows"
+pageTitle: Camera and Microphone Issues | Gcore
+pageDescription: A troubleshooting guide on how to solve camera and microphone issues.
 ---
 # Fix the camera or microphone if they do not work
 

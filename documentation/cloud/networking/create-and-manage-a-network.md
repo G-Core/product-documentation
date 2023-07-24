@@ -8,6 +8,8 @@ toc:
    --1--Network management: "network-management"
    --1--Rename network: "rename"
    --1--Delete network: "delete"
+pageTitle: Add a network | Gcore
+pageDescription: Learn how to create and manage a network in the cloud to transfer information between cloud resources and establish an Internet connection.
 ---
 # Create and manage a network
 

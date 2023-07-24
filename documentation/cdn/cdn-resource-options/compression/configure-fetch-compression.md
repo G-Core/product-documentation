@@ -9,6 +9,8 @@ toc:
    --1--Content compression without settings on CDN: "content-compression-without-settings-on-cdn"
    --2--Origin supports compression: "origin-supports-compression"
    --2--Origin doesn't support compression: "origin-doesnt-support-compression"
+pageTitle: Guide to Configuring Fetch Compression | Gcore
+pageDescription: Discover how to configure Fetch compression on CDN to reduce bandwidth and enhance content delivery speed.
 ---
 # Configure Fetch compression
 

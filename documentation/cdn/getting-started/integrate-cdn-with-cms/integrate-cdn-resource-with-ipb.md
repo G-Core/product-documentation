@@ -4,6 +4,8 @@ displayName: IPB
 published: true
 order: 100
 toc:
+pageTitle: Integrate CDN with IPB Guide | Gcore
+pageDescription: A comprehensive guide on integrating CDN resources with IPB CMS to enhance your site's speed and user experience.
 ---
 # Integrate CDN resource with IPB 
 

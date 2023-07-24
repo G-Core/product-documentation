@@ -4,6 +4,8 @@ displayName: Reboot
 published: true
 order: 70
 toc:
+pageTitle: Reboot a server | Gcore
+pageDescription: Learn how to reboot your server.
 ---
 # Reboot a server
 

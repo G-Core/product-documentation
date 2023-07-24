@@ -9,6 +9,8 @@ toc:
    --2--PHP: "generate-links-with-a-secure-token-in-php"
    --2--Python: "generate-links-with-a-secure-token-in-python"
    --2--OpenSSL: "generate-a-secure-token-in-openssl"
+pageTitle: Configuring Secure Token | Gcore
+pageDescription:  A detailed guide on configuring Secure Token with the PHP, Python, and OpenSSL scripts.
 ---
 # Configure and use Secure Token
   

@@ -8,6 +8,8 @@ toc:
    --1--Configure connection: "configure-connection"
    --2--Connect with a password: "connect-with-a-password"
    --2--Connect with an SSH key: "connect-with-an-ssh-key"
+pageTitle: Guide to connect to storage with FileZilla | Gcore
+pageDescription: A guide on how to install FileZilla and configure its connection to your storage either using a password or an SSH key.
 ---
 # Connect to your storage with FileZilla
 
@@ -31,9 +33,6 @@ Give it a name and navigate to the General tab on the right.
 
 ### Connect with a password
 
-<img src="https://support.gcore.com/hc/article_attachments/13814507121937" alt="" width="50%">
-
-
 Choose SFTP - SSH File Transfer Protocol in the "Protocol" field drop-down menu.
 
 Put the **Hostname** from the Control Panel in the "Host" field, and specify port **2200**.
@@ -45,9 +44,6 @@ The user is your storage name.
 Click **OK** to save the changes and Connect to establish a connection to the storage.
 
 ### Connect with an SSH key
-
-<img src="https://support.gcore.com/hc/article_attachments/13814523568017" alt="" width="50%">
-
 
 Choose SFTP - SSH File Transfer Protocol in the Protocol field drop-down menu.
 

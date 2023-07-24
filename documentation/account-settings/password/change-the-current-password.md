@@ -4,6 +4,8 @@ displayName: Change
 published: true
 order: 10
 toc:
+pageTitle: How to change the password for you account | Gcore
+pageDescription: A step-by-step guide on how to change the password. 
 ---
 # Change the current password
 

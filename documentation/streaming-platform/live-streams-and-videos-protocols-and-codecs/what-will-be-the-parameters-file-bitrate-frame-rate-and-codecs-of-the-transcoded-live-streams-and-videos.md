@@ -7,6 +7,8 @@ toc:
    --1--File bitrates for different qualities: "transcode-file-bitrates-for-different-qualities"
    --1--File frame rate: "transcode-frame-rate"
    --1--Codecs: "transcode-audio--video-codecs"
+pageTitle: Transcoding Specs for Gcore Streams | Gcore
+pageDescription: Learn about Gcore's transcoding process, including details on file bitrates, frame rates, and codecs for different video quality levels.
 ---
 
 # What will be the parameters (file bitrate, frame rate, and codecs) of the transcoded live streams and videos  

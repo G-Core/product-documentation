@@ -4,6 +4,8 @@ displayName: Authorization history
 order: 50
 published: true
 toc:
+pageTitle: Authorization history | Gcore
+pageDescription: Monitor the security of your account with the authorization history feature.
 ---
 # View the authorization history of your account
 

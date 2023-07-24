@@ -6,6 +6,8 @@ order: 30
 toc:
    --1--CNAME record setup: "cname-record-setup"
    --1--Origin Pull Protocol setup: "origin-pull-protocol-setup"
+pageTitle: Integrate CDN with ClouldFlare Guide | Gcore
+pageDescription: A comprehensive guide on integrating CDN resources with ClouldFlare CMS to enhance your site's speed and user experience.
 ---
 # Integrate CDN resource with ClouldFlare
 

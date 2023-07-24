@@ -7,6 +7,8 @@ toc:
    --1--How is video content distributed: "how-does-our-streaming-platform-distribute-video-content"
    --1--From which subdomain?: "from-which-subdomain-is-your-content-distributed"
    --1--Change the subdomain: "change-the-default-subdomain"
+pageTitle: Interaction with CDN | Gcore
+pageDescription: An explanation of how the Streaming Platform interacts with CDN.
 ---
 # How the Streaming Platform interact with the CDN
  

@@ -6,6 +6,8 @@ order: 21
 toc:
 --1--By SSH: "by-ssh"
 --1--By DCI manager or VM Manager panel: "by-dci-manager-or-vm-manager-panel"
+pageTitle: Connect to a Linux server | Gcore
+pageDescription: Learn how to connect securely to a Linux server using SSH. 
 ---
 # Connect to a Linux server
 

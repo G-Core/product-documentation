@@ -9,6 +9,8 @@ toc:
    --1--Service suspension for non-payment: "service-suspension-for-non-payment"
    --1--View charges and payment history: "view-your-charges-and-payment-history"
    --1--Change your billing plan: "change-your-billing-plan"
+pageTitle: Guide to CDN service and options billing | Gcore
+pageDescription: Understand how CDN services are billed, including monthly traffic limits, overages, and additional options.
 ---
 # How the CDN service and its additional options are billed
 

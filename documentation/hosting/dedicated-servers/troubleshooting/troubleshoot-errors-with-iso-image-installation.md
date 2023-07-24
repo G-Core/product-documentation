@@ -6,6 +6,8 @@ order: 10
 toc:
 --1--Can't upload ISO in the panel: "Can-t-upload-iso-in-the-panel"
 --1--Error in DCI manager: "error-in-dci-manager"
+pageTitle: Troubleshoot errors with ISO image | Gcore
+pageDescription: Troubleshoot ISO image installation errors with this guide.
 ---
 # Troubleshoot errors with ISO image installation
 

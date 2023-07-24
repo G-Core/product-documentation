@@ -3,6 +3,8 @@ title: quality-of-service
 displayName: Quality of Service
 order: 30
 published: true
+pageTitle: Quality of Servise of 5G eSIM| Gcore
+pageDescription: Learn about Quality of Service (QoS)-managing data consumption and internet access for better user experience.
 ---
 # Quality of Service
 

@@ -4,6 +4,8 @@ displayName: Rewrite
 published: true
 order: 70
 toc:
+pageTitle: Setting Up Redirect Requests via CDN Rewrite | Gcore
+pageDescription: Learn how to redirect requests from CDN to origin using the Rewrite option, applying it to paths and directories.
 ---
 # Rewrite: redirect requests from the CDN to the origin
 

@@ -4,6 +4,8 @@ displayName: Difference between virtual, floating, and reserved IP addresses
 published: true
 order: 40
 toc:
+pageTitle: Types of IP addresses| Gcore
+pageDescription: Understand the differences between virtual, floating, and reserved IP addresses.
 ---
 # Difference between virtual, floating and reserved IP addresses
 

@@ -12,6 +12,8 @@ toc:
    --1--Pricing: "pricing"
    --1--Bare metals vs. virtual machines: "bare-metals-vs-virtual-machines"
    --1--Bare metals vs. dedicated servers in Hosting: "bare-metals-vs-dedicated-servers-in-hosting"
+pageTitle: Bare metal servers | Gcore
+pageDescription: Explore bare metal servers for gaming, HPC, and big data. High performance, fault-tolerance, data security. Compare virtual machines & bare metal.
 ---
 # About bare metal servers
 

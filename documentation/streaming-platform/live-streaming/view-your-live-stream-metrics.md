@@ -8,6 +8,8 @@ toc:
    --1--Open the monitoring page: "open-the-monitoring-page"
    --1--Use the monitoring page: "use-the-monitoring-page"
    --1--Use stream metrics to troubleshoot: "use-stream-metrics-to-troubleshoot"
+pageTitle: Live Stream Monitoring | Gcore 
+pageDescription: A guide on how to view your live stream metrics.
 ---
 # View your live stream metrics
   

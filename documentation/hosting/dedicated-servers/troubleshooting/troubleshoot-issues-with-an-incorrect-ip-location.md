@@ -4,6 +4,8 @@ displayName: Incorrect IP location
 published: true
 order: 10
 toc:
+pageTitle: Incorrect IP location | Gcore
+pageDescription: Troubleshoot issues with an incorrect IP location with this guide.
 ---
 # Troubleshoot issues with an incorrect IP location
 

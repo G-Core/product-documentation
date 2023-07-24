@@ -4,6 +4,8 @@ displayName: PyroCMS
 published: true
 order: 170
 toc:
+pageTitle: Integrate CDN with PyroCMS Guide | Gcore
+pageDescription: A comprehensive guide on integrating CDN resources with PyroCMS to enhance your site's speed and user experience.
 ---
 # Integrate CDN resource with PyroCMS
 

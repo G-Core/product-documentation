@@ -4,6 +4,8 @@ displayName: View user actions
 published: true
 order: 40
 toc:
+pageTitle: View user actions | Gcore
+pageDescription: Explore how to view user actions in your personal account.
 ---
 # View user actions
 

@@ -7,6 +7,8 @@ toc:
    --1--What is Ads?: "what-is-the-ads-feature"
    --1--Enable: "enable-the-ads-feature"
    --1--Configure: "configure-the-ads-feature"
+pageTitle: Overview of the Ads Feature and Its Setup | Gcore
+pageDescription: A step-by-step guide on how to add monetization to your video content. 
 ---
 # Add monetization to your live streams and videos  
   

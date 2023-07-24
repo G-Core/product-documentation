@@ -6,6 +6,8 @@ order: 60
 toc:
    --1--A volume of incoming and outcoming traffic: "a-volume-of-incoming-and-outcoming-traffic"
    --1--Total traffic volume: "total-traffic-volume"
+pageTitle: Check statistics of your dedicated server | Gcore
+pageDescription: Learn how to check the traffic statistics of your server.
 ---
 # Check statistics of your dedicated server
 

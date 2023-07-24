@@ -12,6 +12,8 @@ toc:
    --1--Use tags: "how-to-use-tags"
    --2--Add to a video: "add-a-tag-to-a-video"
    --2--Filter videos: "filter-videos-by-tags"
+pageTitle: Folders and Tags | Gcore
+pageDescription: Understanding of video organization in the Gcore control panel with folders and tags. 
 ---
 # Organize uploaded videos
 

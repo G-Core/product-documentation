@@ -10,6 +10,8 @@ toc:
    --2--Output: "output-parameters"
    --2--Audio: "audio-parameters"
    --2--Video: "video-parameters"
+pageTitle: Live Stream Setup with OBS | Gcore
+pageDescription: A step-by-step guide to pushing live streams via Open Broadcaster Software (OBS).
 ---
 # Push live streams via OBS  
 

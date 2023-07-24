@@ -4,6 +4,8 @@ displayName: SSH key
 order: 31
 published: true
 toc:
+pageTitle: Manage SSH keys | Gcore
+pageDescription: Learn how to easily manage SSH keys in DCImanager for enhanced server security.
 ---
 # Manage SSH keys
 
@@ -18,6 +20,7 @@ Fill in the fields for Key Name and Public Key. Pay attention to the key format,
 <img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/connect/manage-ssh-keys/joxi_screenshot_1509788759836.png" alt="" width="80%">
 
 SSH key will be automatically added to all future servers and used OS. That is, using a specific key, you can connect to the server if:  
+
 - You had added an SSH key and bought a server later  
 - You had bought a server, had added an SSH key and later reinstalled the OS on the server
 

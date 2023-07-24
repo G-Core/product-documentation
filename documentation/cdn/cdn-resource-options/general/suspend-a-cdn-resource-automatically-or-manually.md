@@ -6,6 +6,8 @@ order: 60
 toc:
    --1--Automatic CDN resource suspension: "automatic-cdn-resource-suspension"
    --1--Manual CDN resource suspension: "manual-cdn-resource-suspension"
+pageTitle: Guide to suspending a CDN resource | Gcore
+pageDescription: Explore how your CDN resource can be suspended—manually or automatically.
 ---
 # Suspend a CDN resource automatically or manually
 

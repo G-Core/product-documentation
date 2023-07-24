@@ -9,6 +9,8 @@ toc:
    --1--Available options screen sharing, chat: "available-options-screen-sharing-chat"
    --2--Chat: "chat"
    --2--Screen sharing: "screen-sharing"
+pageTitle: Conference Creation | Gcore
+pageDescription: A step-by-step guide on how to create and manage a conference via the Real-Time Video module. 
 ---
 # Create and manage a conference
 
