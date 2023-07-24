@@ -1,18 +1,18 @@
 ---
 title: determine-in-which-regions-the-content-will-be-delivered-with-geo-balancer-for-paid-tariffs
-displayName: Geo Balancer (for paid tariffs)
+displayName: Geobalancer (for paid tariffs)
 published: true
 order: 140
 toc:
    --1--Enable or disable the option: "how-to-enable-or-disable-the-option"
-pageTitle: Guidance on Geo Balancer for CDN Use | Gcore
-pageDescription: A helpful guide on determining regional content delivery using the Geo Balancer feature in a paid CDN tariff.
+pageTitle: Guidance on Geobalancer for CDN Use | Gcore
+pageDescription: A helpful guide on determining regional content delivery using the Geobalancer feature in a paid CDN tariff.
 ---
-# Determine in which regions the content will be delivered with geo balancer for paid tariffs
+# Determine in which regions the content will be delivered with Geobalancer for paid tariffs
 
 **Note**: The option is not available for the Free tariff.
 
-Geo Balancer option disables content distribution in certain regions. It can increase the Cache Hit Ratio if your primary audience is located in one, two, or maybe three regions.
+Geobalancer option disables content distribution in certain regions. It can increase the Cache Hit Ratio if your primary audience is located in one, two, or maybe three regions.
 
 Regions for managing:
 - North America
