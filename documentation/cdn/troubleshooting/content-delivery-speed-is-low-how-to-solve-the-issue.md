@@ -56,7 +56,7 @@ test.jpg 100%[=================================================>\] 290 --.-KB/s 
 ## CDN-resource's settings checking 
 
 1\. Make sure that you don’t use a VPN or proxy.   
-VPN affects the CDN Geo-balancing and you may receive content from a not optimal edge with lower speed. 
+VPN affects the CDN Geobalancing and you may receive content from a not optimal edge with lower speed. 
 
 2\. Make sure that content is being cached. The cache rate is presented by <a href="https://gcore.com/docs/cdn/view-statistics-of-a-cdn-resource" target="_blank">Cache Hit Ratio report</a>. If you noticed that the cache rate is low, use our <a href="https://gcore.com/docs/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue" target="_blank">instructions</a> to analyze and solve this issue.  
 
