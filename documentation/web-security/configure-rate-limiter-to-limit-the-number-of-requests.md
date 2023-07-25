@@ -28,9 +28,21 @@ Rate Limiter is an additional feature of Bot Protection that allows you to confi
 
 2\. Open the **Bot** tab and follow the remaining steps.
 
-<img src="https://assets.gcore.pro/docs/web-security/configure-rate-limiter-to-limit-the-number-of-requests/14901941266321.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/web-security/configure-rate-limiter-to-limit-the-number-of-requests/image3535.png" alt="" width="80%">
 
 3\. Make sure that the Bot Protection is set to **Low** or **High** mode. If set to **Off** mode, the Rate Limiter feature will be inactive, and configurations will be unavailable.
+
+<expandable-element title="Use testcookie">
+
+When Bot Protection is set to **High**, the testcookie function is available. It lets you check whether the HTTP client that sent the request can process cookies. If the client cannot process cookies, the request is considered robotic and is blocked.
+
+**Note**: If you set Bot Protection to **Low**, the testcookie function will be unavailable. 
+
+The testcookie function is displayed as the slider in the “High” column in the control panel. You can turn testcookie on/off for specific URIs. When you make changes, don’t forget to save them. 
+
+<img src="https://assets.gcore.pro/docs/web-security/configure-rate-limiter-to-limit-the-number-of-requests/image3531.png" alt="" width="80%">
+ 
+</expandable-element>
 
 4\. Enter the number of allowed requests to your <a href="https://gcore.com/docs/web-security/create-and-configure-a-protected-resource" target="_blank">protected resource</a> between 1 and 100,000 per second.
 
@@ -46,7 +58,7 @@ Rate Limiter is an additional feature of Bot Protection that allows you to confi
 
 **Note**: Regular expressions are not supported in URI. The feature supports only partly match with an asterisk (*) which includes all possible nesting. 
 
-<img src="https://assets.gcore.pro/docs/web-security/configure-rate-limiter-to-limit-the-number-of-requests/14902022060433.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/web-security/configure-rate-limiter-to-limit-the-number-of-requests/image3534.png" alt="" width="50%">
 
 For example, your website address is https://test.com, and you create a rule with URI api and the limit of 2 requests per second as follows:
 
