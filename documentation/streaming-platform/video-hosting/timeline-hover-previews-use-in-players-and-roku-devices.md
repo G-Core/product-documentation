@@ -10,8 +10,8 @@ toc:
    --2--Gcore Player: "gcore-playes"
    --2--WebVTT: "webvtt-format-in-api"
    --2--Roku trick play: "roku-trick-play"
-pageTitle:  | Gcore
-pageDescription: . 
+pageTitle: Integrate Video Previews in Gcore Player & External Players | Gcore 
+pageDescription: A detailed guide on embedding video previews into Gcore Player and external players using WebVTT and Roku trick play formats. 
 ---
 # Timeline hover previews: use with players and Roku devices
 
