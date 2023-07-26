@@ -70,7 +70,7 @@ With an always-on mode, your traffic passes through the TMS, even when there is 
 
 ## DDoS attack statistics
 
-With the real-time DDoS attack statistics feature, you can access a live dashboard that provides a comprehensive overview of ongoing attacks on their protected resources.
+With the real-time DDoS attack statistics feature, you can access a live dashboard that provides a comprehensive overview of ongoing attacks on your protected resources.
 
 You can filter statistics by specific data centers, time intervals, and attack metrics such as bits per second (bps) and packets per second (pps.)
 
