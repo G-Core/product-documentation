@@ -65,6 +65,7 @@ Example:
 FnlHXwA16ZMxmUr_sprite.jpg#xywh=0,0,100,42
 
 ...
+
 16
 00:01:15,000 --> 00:01:20,000
 FnlHXwA16ZMxmUr_sprite.jpg#xywh=100,84,100,42
