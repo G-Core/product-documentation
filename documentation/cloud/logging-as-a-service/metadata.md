@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: Logging as a Service
+displayName: Managed Logging
 published: true
 order: 120
 ---
