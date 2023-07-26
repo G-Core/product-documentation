@@ -16,7 +16,7 @@ pageDescription: Learn about Function-as-a-Service (FaaS) and its benefits. Expl
   
 ## What is FaaS?
 
-FaaS (Function-as-a-Service) is a cloud service that lets users run code without dealing with the underlying infrastructure. A FaaS provider saves the code to their cloud resources and runs it when requested.
+Function-as-a-Service (FaaS) is a cloud service that lets users run code without dealing with the underlying infrastructure. A FaaS provider saves the code to their cloud resources and runs it when requested.
 
 FaaS is based on serverless computing, in which you can use computing resources such as CPU and memory without actually renting servers on a cloud. You don’t have to choose an operating system, configure networking, patch dependencies, or scale capacity up and down. The necessary number of resources is allocated to you automatically as they are needed.
 
