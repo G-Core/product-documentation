@@ -7,7 +7,7 @@ toc:
    --1--Timeline hover previews: "what-are-timeline-hover-previews"
    --1--Consist of previews: "what-do-the-previews-consist-of"
    --1--Add previews: "adding-timeline-hover-previews-to-players"
-   --2--Gcore Player: "gcore-playes"
+   --2--Gcore Player: "gcore-player"
    --2--WebVTT: "webvtt-format-in-api"
    --2--Roku trick play: "roku-trick-play"
 pageTitle: Integrate Video Previews in Gcore Player & External Players | Gcore 
