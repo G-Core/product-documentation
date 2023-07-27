@@ -5,7 +5,7 @@ order: 20
 published: true
 toc:
    --1--Connect with SSH keys: "connect-with-ssh-keys"
-   --2--Generate a key (Windows 7/8): "generate-a-key-windows-7-8"
+   --2--Generate a key (Windows 7/8): "generate-a-key-windows-78"
    --2--Generate a key (Windows 10, Linux OS, macOS): "generate-a-key-windows-10-linux-os-macos"
    --2--Generate a key in the personal account: "generate-a-key-in-the-personal-account"
    --2--Add a key to your account: "add-a-key-to-your-account"
@@ -13,7 +13,7 @@ toc:
    --2--Generate a key when creating an instance: "generate-a-key-when-creating-an-instance"
    --1--Connect with a password: "connect-with-a-password"
    --1--Connect via SSH: "connect-via-ssh"
-   --2--Connect from Windows 7/8: "connect-from-windows-7-8"
+   --2--Connect from Windows 7/8: "connect-from-windows-78"
    --2--Connect from Windows 10, Linux OS, macOS: "connect-from-windows-10-linux-os-macos"
 pageTitle: Connect to a VM via SSH | Gcore
 pageDescription: Learn how to connect to your virtual machine via SSH using a password or an SSH key.
