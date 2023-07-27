@@ -12,11 +12,11 @@ toc:
 pageTitle: Logging as a service| Gcore
 pageDescription: Discover Logging for both VMs and bare metal servers. Troubleshoot errors, analyze security incidents and other data using OpenSearch Dashboards.
 ---
-# About Logging as a service
+# About Managed Logging as a service
 
-## What is Logging?  
+## What is Managed Logging?  
 
-Logging, also known as LaaS (logging-as-a-service,) is a service that collects and stores logs from both virtual machines and bare metal servers. Whether you are using Gcore’s infrastructure or your own server, logging can collect logs from any system. You can work with Logging via OpenSearch Dashboards.
+Managed Logging, also known as LaaS (logging-as-a-service,) is a service that collects and stores logs from both virtual machines and bare metal servers. Whether you are using Gcore’s infrastructure or your own server, logging can collect logs from any system. You can work with Logging via OpenSearch Dashboards.
 
 ## How Logging works
 

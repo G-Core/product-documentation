@@ -4,6 +4,8 @@ displayName: API
 order: 80
 published: true
 toc:
+pageTitle: Manage Hosting services via API | Gcore
+pageDescription: Discover the links to the Gcore API documentation to manage Hosting services.
 ---
 # Manage Hosting services via API
 

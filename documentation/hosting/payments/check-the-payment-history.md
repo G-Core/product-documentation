@@ -4,6 +4,8 @@ displayName: Payment history
 published: true
 order: 50
 toc:
+pageTitle: Check the payment history | Gcore
+pageDescription: Learn how to check the history of payments for your account.
 ---
 # Check the payment history
 

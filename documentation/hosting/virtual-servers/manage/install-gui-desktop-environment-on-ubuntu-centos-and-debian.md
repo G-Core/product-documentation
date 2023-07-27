@@ -13,6 +13,8 @@ toc:
    --1--Quit the XFCE desktop environment: "how-to-log-out-of-xfce"
    --2--For Ubuntu server with "lightdm": "for-ubuntu-server-with-lightdm"
    --2--For all other servers: "for-all-other-servers"
+pageTitle: Install GUI (desktop environment) | Gcore
+pageDescription: Discover how to install the desktop environment on Ubuntu, CentOS, and Debian servers for a user-friendly graphical interface.
 ---
 # Install GUI (desktop environment) on Ubuntu, CentOS and Debian
 

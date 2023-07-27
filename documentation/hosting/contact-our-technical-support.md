@@ -6,6 +6,8 @@ order: 70
 toc:
 --1--Chat: "chat"
 --1--Ticket: "ticket"
+pageTitle: Contact our technical support | Gcore
+pageDescription: Learn how to send tickets to the Gcore support team.
 ---
 # Contact our technical support
 

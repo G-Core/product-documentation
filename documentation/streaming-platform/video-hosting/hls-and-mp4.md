@@ -39,7 +39,7 @@ Where:
 - <span style="color:#FF5913">{video_id}</span>: identifier of the video
 - <span style="color:#FF5913">-min-N</span>: special suffix that specifies the lower available video quality limit
 - <span style="color:#FF5913">-max-N</span>: special suffix that specifies the  upper available video quality limit
-- <span style="color:#FF5913">-img</span>: special suffix, information about preview files is added to the manifest when specified. Read more in the article Timeline hover previews & Roku trick play
+- <span style="color:#FF5913">-img</span>: special suffix, information about preview files is added to the manifest when specified. Read more in the article <a href="https://gcore.com/docs/streaming-platform/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices#roku-trick-play" target="_blank">Timeline hover previews: use with players and Roku devices</a>
 
 Example of the manifest link: https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/master.m3u8 
 

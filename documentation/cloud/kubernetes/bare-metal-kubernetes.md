@@ -13,7 +13,7 @@ pageDescription: Unlock the power of Bare Metal Kubernetes and deploy nodes dire
 ---
 # Bare Metal Kubernetes
 
-With managed Kubernetes-as-a-service, users can deploy worker nodes of their Kubernetes cluster directly on bare metal servers. This empowers users to leverage the full potential of Kubernetes while enjoying the substantial benefits of dedicated hardware resources.
+With Managed Kubernetes, users can deploy worker nodes of their Kubernetes cluster directly on bare metal servers. This empowers users to leverage the full potential of Kubernetes while enjoying the substantial benefits of dedicated hardware resources.
 
 ## How does it work?
 

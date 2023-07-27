@@ -22,7 +22,7 @@ From the left–side menu, you can access in–depth documentation about Cloud:
 - **Secrets Manager** – management of PKCS12 files for load balancers with HTTP listeners
 - **AI Infrastructure** – overview of Gcore AI infrastructure, AI clusters, virtual vPODs
 - **Function as a Service** – features of Gcore FaaS
-- **Logging as a Service** – overview, configuration, installation of log shippers
+- **Managed Logging** – overview, configuration, installation of log shippers
 - **Terraform** – Cloud management via Terraform
 - **Billing** – charges and invoicing
 

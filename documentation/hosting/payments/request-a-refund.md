@@ -4,6 +4,8 @@ displayName: Refund
 published: true
 order: 50
 toc:
+pageTitle: Request a refund | Gcore
+pageDescription: Learn how to request a refund for your server.
 ---
 # Request a refund
 
