@@ -10,6 +10,8 @@ toc:
    --2--Unsupported payment method for the selected currency: "unsupported-payment-method-for-the-selected-currency"
    --2--Ayden processing error (for bank cards, AMEX, WeChat and AliPay): "ayden-processing-errors-for-bank-cards--amex--wechat-and-alipay"
    --1--Payment via bank transfer: "payment-via-bank-transfer"
+pageTitle: Troubleshoot payment errors | Gcore
+pageDescription: Learn how to troubleshoot payment errors when using PayPal, bank cards, AMEX, WeChat, AliPay, or bank transfers. 
 ---
 # Troubleshoot payment errors
 

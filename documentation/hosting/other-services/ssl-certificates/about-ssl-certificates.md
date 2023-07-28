@@ -6,6 +6,8 @@ published: true
 toc:
    --1--Domain Validated Certificate (DV): "domain-validated-certificate-dv"
    --1--Company Validated Certificate (OV): "company-validated-certificate-ov"
+pageTitle: About SSL certificates | Gcore
+pageDescription: Learn about SSL certificates, which provide essential security by encrypting communications between your website and users.
 ---
 # About SSL certificates
 

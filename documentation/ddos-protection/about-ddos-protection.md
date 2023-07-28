@@ -6,6 +6,7 @@ order: 10
 toc:
    --1--How does it work?: "how-does-ddos-protection-work"
    --1--Advanced protection modes: "advanced-protection-modes"
+   --1--DDoS attack statistics: ddos-attack-statistics
    --1--Pricing: "pricing"
 pageTitle: About DDoS Protection | Gcore
 pageDescription: Learn how DDoS Protection safeguards your servers. Explore use cases for different protection modes and select the best option for your needs.
@@ -66,6 +67,14 @@ With an always-on mode, your traffic passes through the TMS, even when there is 
       <td>• Your server is hardly ever attacked<br><br>• Your server doesn't host any critical business applications</td>
    </tr>
 </table>
+
+## DDoS attack statistics
+
+With the real-time DDoS attack statistics feature, you can access a live dashboard that provides a comprehensive overview of ongoing attacks on your protected resources.
+
+You can filter statistics by specific data centers, time intervals, and attack metrics such as bits per second (bps) and packets per second (pps.)
+
+<img src="https://assets.gcore.pro/docs/ddos-protection/ddos-attack-statistics.png" alt="">
 
 ## Pricing
 

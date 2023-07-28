@@ -4,6 +4,8 @@ displayName: Activate
 order: 20
 published: true
 toc:
+pageTitle: Activate DDoS Protection | Gcore
+pageDescription: Learn how to activate Advanced DDoS Protection for dedicated servers.
 ---
 # Activate DDoS Protection for your dedicated servers
 

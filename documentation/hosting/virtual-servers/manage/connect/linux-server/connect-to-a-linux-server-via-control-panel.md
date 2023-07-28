@@ -4,6 +4,8 @@ displayName: Connect to a Linux server via Control panel
 published: true
 order: 10
 toc:
+pageTitle: Connect to a Linux server via Control Panel | Gcore
+pageDescription: Learn how to connect to a Linux server via Control Panel. 
 ---
 # Connect to a Linux server via Control Panel
 

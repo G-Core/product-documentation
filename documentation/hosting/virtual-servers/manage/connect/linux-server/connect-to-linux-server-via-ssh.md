@@ -4,6 +4,8 @@ displayName: SSH connection
 order: 20
 published: true
 toc:
+pageTitle: Connect to a Linux server via SSH | Gcore
+pageDescription: Learn how to connect to a Linux server via SSH. 
 ---
 # Connect to a Linux server via SSH
 
