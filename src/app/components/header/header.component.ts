@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { filter, Subject, Subscription, takeUntil } from 'rxjs';
+import { filter, Observable, Subject, takeUntil } from 'rxjs';
 
 import { MenuService } from '../../services/menu.service';
 import { environment } from '../../../environments/environment';
@@ -34,9 +34,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
             )
             .subscribe((event) => {
                 const currentUrl = this.router.url;
-                this.menuService.isHosting = currentUrl.includes('/hosting');
-                this.menuService.setCurrentUrl(currentUrl);
-                this.isHosting = this.menuService.isHosting;
+                this.isHosting = currentUrl.includes('/hosting');
+                this.menuService.setCurrentUrl(this.isHosting);
                 this.cd.detectChanges();
             });
 
