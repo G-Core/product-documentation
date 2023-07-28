@@ -108,7 +108,7 @@ To configure a network, select an existing network from the drop-down list or cr
 
  * Enter the network name.
 
- * (optional) Turn on the <b>Baremetal network</b> toggle to connect bare metal servers to the network
+ * (optional) Turn on the <b>Bare Metal Network</b> toggle to connect bare metal servers to the network
 
  * (optional) Turn on the <b>Add tags</b> toggle to add metadata to the network.
 
