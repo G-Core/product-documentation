@@ -25,8 +25,8 @@ export class LeftBarMenuComponent implements OnInit, OnDestroy {
     constructor(private menuService: MenuService, private router: Router, private cd: ChangeDetectorRef) {}
 
     public ngOnInit(): void {
-        this.menuService.isHosting$.pipe(takeUntil(this.destroy$)).subscribe((isInclude) => {
-            this.isHosting = isInclude;
+        this.menuService.isHosting$.pipe(takeUntil(this.destroy$)).subscribe((isHosting) => {
+            this.isHosting = isHosting;
         });
     }
 

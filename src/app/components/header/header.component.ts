@@ -35,7 +35,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
             .subscribe((event) => {
                 const currentUrl = this.router.url;
                 this.isHosting = currentUrl.includes('/hosting');
-                this.menuService.setCurrentUrl(this.isHosting);
+                this.menuService.setIsHostingSubject(this.isHosting);
                 this.cd.detectChanges();
             });
 
