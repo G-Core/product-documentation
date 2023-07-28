@@ -23,8 +23,8 @@ export class MenuService {
         this.searchPageLeave.next();
     }
 
-    public setCurrentUrl(isInclude: boolean): void {
-        this.isHostingSubject.next(isInclude);
+    public setIsHostingSubject(isHosting: boolean): void {
+        this.isHostingSubject.next(isHosting);
     }
 
     public setIsLoginModalOpen(isOpen: boolean): void {
