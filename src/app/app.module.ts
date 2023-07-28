@@ -22,7 +22,6 @@ import { GalleryComponent } from './web-components/gallery/gallery.component';
 import { SearchComponent } from './components/search/search.component';
 import { MenuService } from './services/menu.service';
 import { ModalLoginModule } from './components/modal-login';
-import { HideIfUrlContainsDirective } from './components/header/hide-if-url-contains.directive';
 
 @NgModule({
     declarations: [
@@ -38,7 +37,6 @@ import { HideIfUrlContainsDirective } from './components/header/hide-if-url-cont
         TextColumnsComponent,
         GalleryComponent,
         SearchComponent,
-        HideIfUrlContainsDirective,
     ],
     imports: [
         BrowserModule,
