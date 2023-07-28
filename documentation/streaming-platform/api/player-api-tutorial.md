@@ -17,7 +17,10 @@ The API allows you to manage the player settings using JavaScript and collect da
 
 ## Player Initialization via iFrame
 
-Copy the iFrame code from the VOD/broadcast settings in your account.
+Copy the iFrame code from the VOD/broadcast settings in your account:
+
+- For videos: the All videos section, Settings, Export, Code
+- For live streaming: the Live streaming section, Settings, Links for the export
 
 Add the ```id='gplayer'``` parameter to the iFrame and paste it into the site code.
 
@@ -39,10 +42,8 @@ Parameters:
 After the iframe add the following code to initialize the player:
 
 ```
-<script type="text/javascript" charset="utf-8" src="https://vplatform.gcdn.co/\_players/v2.1.18/gplayerAPI.js"></script>  
-```
+<script type="text/javascript" charset="utf-8" src="https://vplatform.gcdn.co/_players/v2.1.18/gplayerAPI.js"></script>
 
-```
 <script>  
   window.onload = function() {  
     let gplayerAPI = new GcorePlayer.gplayerAPI(document.getElementById('gplayer'));   
@@ -187,7 +188,7 @@ gplayerAPI.on('error', () => {
   
 gplayerAPI.on('ended', () => {  
  console.log('[Event]', 'ended')  
- })   
+ }) }  
 </script>
 ```
 
