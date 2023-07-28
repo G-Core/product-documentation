@@ -4,69 +4,96 @@ displayName: Upload
 published: true
 order: 10
 toc:
-   --1--Prepare for uploading: "prepare-images-for-uploading"
+   --1--Image requirements: "image-requirements"
    --1--Upload: "upload-an-image"
 pageTitle: Upload an image | Gcore
 pageDescription: Learn how to upload images for virtual machines to Cloud storage.
 ---
 # Upload an image to the storage
 
-## Prepare images for uploading
+## Image requirements
 
-1. **OS preparation.** High-performance VirtIO SCSI controllers are used for the virtual volumes in Gcore. Please make sure that virtio-scsi block devices are supported by your operating system and that the VirtIO drivers are set up.
+1. **Format**. The image should be in one of the following formats:
+- raw
+- vhd
+- vhdx
+- vmdk
+- vdi
+- ploop
+- qcow2
+- aki
+- ari
+- ami
 
-2\. **Compatible image format.** Gcore Cloud automatically updates supported source image formats into raw format for fast instance loading, and into qcow2 format for standard instance loading. Here is the list of supported formats:
+2. **VirtIO drivers**. If you are uploading an image that was previously downloaded from another cloud, the image should already have VirtIO drivers installed. However, if you have built your own image, please make sure to install and configure the VirtIO SCSI drivers.
 
-*   raw
-*   vhd
-*   vhdx
-*   vmdk
-*   vdi
-*   ploop
-*   qcow2
-*   aki
-*   ari
-*   ami
+3. **`cloud-init`**. If you are uploading an image that was previously downloaded from another cloud, the image should already have the `cloud-init` package installed. However, if you have built your own image, please make sure to install and configure the `cloud-init` package accordingly.
 
 ## Upload an image
 
-1. Under the **Cloud** tab, go to **Projects** and select the project name.
+1\. In the **Cloud** menu, select the desired project and region.
 
-<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/12397877016977.png" alt="" width="665" height="299">
+2\. Go to the **Images** tab and then proceed to **Import via URL**.
 
-2. Select the region where you need this image.
+<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/3-menu.png" alt="">
 
-<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/12397876992273.png" alt="" width="666" height="304">
+3\. Enter the image name and specify the URL from where the image will be downloaded.
 
-3. Once you have selected the region, click on **Images**, and then proceed to **Import via URL**.
+<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/2-image-settings.png" alt="" width="300" height="225">
 
-<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/12397871888145.png" alt="" width="666" height="305">
+4. Turn on the **Show advanced options** toggle to access additional settings.
 
-4. Enter the image name and make sure to specify the URL where the image will be downloaded from.
+<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/1-advanced-settings.png" alt="" width="300" height="436">
 
-<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/12397872071313.png" alt="" width="300" height="225">
+Additional settings include:
 
-5. Toggle on **Show advanced options** to edit additional information such as Quick instance start, permission to use SSH key, firmware types, and operating system.
+- **Instance quick start**: If this option is on, the instances will be deployed faster with this image mounted. However, please note that you cannot delete this image if there are active instances created from this image.
 
-<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/12397872160785.png" alt="" width="300" height="436">
+Standard start vs quick start:
 
-**Quick instance start.** If the **Quick instance start** option is enabled, you can deploy instances using your image faster, but you will not be able to delete the image while these instances are running.
+<table>
+   <tr>
+      <td>Start type</td>
+      <td>Standard</td>
+      <td>Quick</td>
+   </tr>
+   <tr>
+      <td>Technology</td>
+      <td>RBD Copy-On-Write</td>
+      <td>RBD Copy-On-Write</td>
+   </tr>
+   <tr>
+      <td>Image data</td>
+      <td>All data is copied to a separate volume</td>
+      <td>Image data is NOT copied when reading or writing new information, i.e. all changes and updates are applied directly to the original image</td>
+   </tr>
+   <tr>
+      <td>Format</td>
+      <td>qcow2</td>
+      <td>raw</td>
+   </tr>
+   <tr>
+      <td>Resource usage</td>
+      <td>Resource-intensive</td>
+      <td>Less resources used</td>
+   </tr>
+   <tr>
+      <td>Image deletion</td>
+      <td>The image can be deleted without affecting an instance operation</td>
+      <td>The image can be deleted only when there are NO active instances created from this image</td>
+   </tr>
+</table>
 
-The difference between standard and quick start:
+- **Permission to use an SSH key in instances** (for Linux images): We recommend using SSH-key authorization for security reasons.
 
-*   RBD Copy-On-Write technology (standard start) uses full copying of image data to a volume. The qcow2 format is used. This method is resource-intensive and time-consuming, but it allows for the images loaded to be deleted later without affecting an instance’s operation.
-*   RBD Copy-On-Write (quick start) technology prevents copying image data when reading and writing new information to the original data area. The raw format is used. Since data for running an instance is read directly from the image loaded, the instance can be started more quickly.
+- **Image will be used for bare metal instances** Turn on this toggle, if you want to use the image for bare metal servers. This ensures that necessary properties are added to the image for the use in a bare metal environment, as the deep looping process for physical servers is different from that of virtual servers.
 
-**Permission to use SSH key in instances.** This option is specified for Linux images. We strongly recommend using SSH-key authorization since this is the most secure option.
+- **Operating system installed on the image**. Choose between Linux or Windows.
 
-**The image will be used for bare metal instances.** This option should be selected if you plan to download the image for use with bare metal servers. The deep looping process for physical servers is slightly different from that of virtual servers. Setting this option is important to ensure that suitable properties are added to the image for use in the appropriate situation.
+- **Type of firmware with which to boot the guest.** Select either BIOS or UEFI. For bare metal servers, UEFI is recommended for proper functionality. For virtual machines, the choice depends on your personal preference.
 
-The operating system is installed on the image. You have the option to choose Linux or Windows.
+- **Virtual Chipset type.** Choose between q35 and i440 virtual chipsets based on the OS version, required functionality, and supported virtual devices.
 
-**Type of firmware with which to boot the guest.** Gives you the option to choose BIOS or UEFI. For bare metal instances, we strongly recommend using UEFI for it to work properly on our servers. For virtual machines, this depends on your personal preference.
+5\. (optional) Add tags to identify images using the "Key" and "Value" principles.
 
-**Virtual Chipset type.** You have the option to choose between q35 and i440 virtual chipsets. The setting depends on the version of the operating system, the required functionality, and the supported virtual devices.
-
-**Add tags.** Users can set custom tags according to the "Key" and "Value" principles to identify the images in the list correctly.
-
-6. Click the **Next** button. Your image will be uploaded.
+6\. Click the **Next** button. Your image will be uploaded.

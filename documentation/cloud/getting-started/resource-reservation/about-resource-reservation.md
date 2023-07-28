@@ -65,7 +65,7 @@ If something went wrong with your request, you might see one of the following st
 
 ![Reservation status](https://assets.gcore.pro/docs/cloud/getting-started/resource-reservation/about-resource-reservation/3-reservation-status.png)
 
-10. We have reserved equipment for you, but you cannot yet see it in your control panel. To access your servers, you’ll need to activate them. To activate your equipment, go to the Baremetal section and create servers with the reserved characteristics (region, Windows license, server type, quantity). You will not be charged for creating them, since it’s included as part of your reservation plan.
+10. We have reserved equipment for you, but you cannot yet see it in your control panel. To access your servers, you’ll need to activate them. To activate your equipment, go to the **Bare Metal Servers** section and create servers with the reserved characteristics (region, Windows license, server type, quantity). You will not be charged for creating them, since it’s included as part of your reservation plan.
 
 If you create a server later or do not create a server at all, your payment will stay the same because the hardware in the data center is set aside for you. Creating a server will simply make it visible in your control panel.
 
