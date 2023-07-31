@@ -40,7 +40,7 @@ When the DNS zone creation is completed, you can set the DNS records of your dom
 
 <img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/13137695150865.png" alt="" width="80%">
 
-4\. Go to your domain registrar account, replace the current nameservers with the Gcore Name Servers (*ns1.gcorelabs.net* and *ns2.gcdn.services*), and click **Confirm**.
+4\. Go to your domain registrar account, replace the current name servers with the Gcore name servers (*ns1.gcorelabs.net* and *ns2.gcdn.services*), and click **Confirm**.
 
 <img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/13138477756689.png" alt="" width="80%">
 

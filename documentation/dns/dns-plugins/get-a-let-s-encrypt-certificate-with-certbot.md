@@ -23,7 +23,7 @@ The Certbot plugin automates Let’s Encrypt certificate issuance with Gcore DNS
 
 To use the Certbot plugin, you’ll need:
 
-- A domain with Gcore nameservers (*ns1.gcorelabs.net* and *ns2.gcdn.services*) that the certificate is hosted on or delegated to
+- A domain with Gcore name servers (*ns1.gcorelabs.net* and *ns2.gcdn.services*) that the certificate is hosted on or delegated to
 - A Gcore account
 
 ## Install the Certbot plugin
@@ -122,7 +122,7 @@ Repeat the command from step 1 with the new value for propagation:
 certbot certonly --authenticator dns-gcore --dns-gcore-credentials=./gcore.ini --dns-gcore-propagation-seconds=80 -d '*.example.com' --key-type ecdsa --logs-dir=. --config-dir=. --work-dir=
 ```
 
-If that didn’t work, make sure that the domain is delegated to Gcore nameservers using *dig* utility or via online services. If not, change nameservers and wait 24 hours for the DNS to update. Then try to issue the certificate again.
+If that didn’t work, make sure that the domain is delegated to Gcore name servers using *dig* utility or via online services. If not, change name servers and wait 24 hours for the DNS to update. Then try to issue the certificate again.
 
 ## Renew a certificate
 

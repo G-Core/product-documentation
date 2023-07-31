@@ -9,7 +9,7 @@ toc:
    --2--Choose the acceleration type: "1-choose-the-acceleration-type"
    --2--Enter a site name: "2-enter-a-site-name"
    --2--Review your DNS records: "3-review-your-dns-records"
-   --2--Change nameservers: "4-change-nameservers"
+   --2--Change name servers: "4-change-name-servers"
    --2--(Optional) Setup additional options: "5-optional-setup-additional-options"
 pageTitle: Guide to Create a CDN Resource for the Entire Site | Gcore
 pageDescription: Detailed instructions on how to set up a CDN resource for the entire website.
@@ -74,11 +74,11 @@ Our system looks for DNS records associated with your site domain at this step.
 
 <img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/13050648890385.png" alt="" width="80%">
 
-### 4. Change nameservers
+### 4. Change name servers
 
 If all the steps are completed successfully, a CDN resource and DNS zone will be automatically created for the site you specified in step 2.
 
-To complete the site acceleration setup, log into your domain registrar account and replace the current nameservers with the Gcore Name Servers and click **Confirm**:
+To complete the site acceleration setup, log into your domain registrar account and replace the current name servers with the Gcore name servers and click **Confirm**:
 
 ```
 ns1.gcorelabs.net  
@@ -87,7 +87,7 @@ ns2.gcdn.services
 
 <img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/13050764764177.png" alt="mceclip5.png" width="80%">
 
-**Note**: The Name Servers can change. The current values will be specified on the wizard page.
+**Note**: The name servers can change. The current values will be specified on the wizard page.
 
 Remember that the name server change can take up to 24 hours.
 
