@@ -241,10 +241,10 @@ To make sure that everything is configured properly, send yourself a test email 
 
 <img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/dnsaas-settings-190.png" alt="" width="80%">
 
-If the DNS service is available for your clients, you can set the values of your primary nameserver, secondary nameserver, and email address that will be used to generate SOA records.
+If the DNS service is available for your clients, you can set the values of your primary name server, secondary name server, and email address that will be used to generate SOA records.
 This information will be displayed in the client's control panel when they add a domain name for the DNS zone.
 
-By default, we show Gcore primary and secondary nameservers and Gcore email address.
+By default, we show Gcore primary and secondary name servers and Gcore email address.
 
 ## Services
 

@@ -7,7 +7,7 @@ published: true
 
 Welcome to the <a href="https://gcore.com/dns" target="_blank">Gcore DNS Hosting</a> documentation page! Here we explain how to use and configure Gcore’s DNS Hosting.
 
-DNS Hosting is a service that allows you to manage domain DNS records by specifying Gcore nameservers. You can balance your users on different servers depending on their location and configure network settings.
+DNS Hosting is a service that allows you to manage domain DNS records by specifying Gcore name servers. You can balance your users on different servers depending on their location and configure network settings.
 
 From the left-side menu, you can access in-depth documentation about DNS:
 
