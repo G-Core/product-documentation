@@ -56,57 +56,57 @@ A transcoded video stream has the following codecs by default:
 <td>UHD 4K</td>
 <td>3840 × 2160</td>
 <td>30</td>
-<td>14 000</td>
-<td>196</td>
+<td>14,000</td>
+<td>0,196</td>
 </tr>
 <tr>
 <td>QHD 2K</td>
 <td>2560 × 1440</td>
 <td>30</td>
-<td>7 200</td>
-<td>196</td>
+<td>7,200</td>
+<td>0,196</td>
 </tr>
 <tr>
 <td>Full HD 1080p</td>
 <td>1920 × 1080</td>
 <td>30</td>
-<td>4 050</td>
-<td>128</td>
+<td>4,050</td>
+<td>0,128</td>
 </tr>
 <tr>
 <td>HD 720p</td>
 <td>1280 × 720</td>
 <td>30</td>
-<td>1 800</td>
-<td>128</td>
+<td>1,800</td>
+<td>0,128</td>
 </tr>
 <tr>
 <td>SD 480p</td>
 <td>854 × 480</td>
 <td>30</td>
-<td>800</td>
-<td>128</td>
+<td>0,800</td>
+<td>0,128</td>
 </tr>
 <tr>
 <td>360p</td>
 <td>640 × 360</td>
 <td>30</td>
-<td>450</td>
-<td>64</td>
+<td>0,450</td>
+<td>0,064</td>
 </tr>
 <tr>
 <td>240p</td>
 <td>427 × 240</td>
 <td>30</td>
-<td>200</td>
-<td>64</td>
+<td>0,200</td>
+<td>0,064</td>
 </tr>
 <tr>
 <td>144p<span style="color:#FF5913">*</span></td>
 <td>254 × 144</td>
 <td>30</td>
-<td>72</td>
-<td>64 (1ch)</td>
+<td>0,072</td>
+<td>0,064 (1ch)</td>
 </tr>
 </tbody>
 </table>
