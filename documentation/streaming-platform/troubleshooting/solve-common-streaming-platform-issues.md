@@ -96,7 +96,7 @@ To avoid this situation:
 
 - Upload during late night or early morning hours when there is less load on the queue.
 - Upload a small batch of videos (e.g., 10 at a time).
-- <a href="https://gcore.com/docs/streaming-platform/video-hosting/upload-video-via-api-to-vod-storage" target="_blank">Upload via API</a>.
+- <a href="https://gcore.com/docs/streaming-platform/video-hosting/upload-video-via-api" target="_blank">Upload via API</a>.
 
 **Upload is stuck in the Processed state for a long time**
 
