@@ -13,6 +13,7 @@ toc:
 pageTitle: Solving Streaming Platform Issues | Gcore
 pageDescription: An explanation of common basic checks to address issues that may arise when working with a streaming platform.
 ---
+
 # Solve common Streaming Platform issues
   
 We are covering some issues you may encounter when working with both Live and VOD streams, as well as steps you can take to troubleshoot them.
