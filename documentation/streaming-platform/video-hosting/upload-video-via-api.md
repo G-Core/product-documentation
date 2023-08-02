@@ -1,5 +1,5 @@
 ---
-title: upload-video-via-api-to-vod-storage
+title: upload-video-via-api
 displayName: Upload video via API
 published: true
 order: 60
@@ -102,7 +102,7 @@ Examples of good and bad links to video files from external storage:
 - **Good link**: ```https://demo-files.gvideo.io/gcore.mp4``` (13,8MB) 
 - **Bad link** (because of chunked HLS format): ```https://demo-files.gvideo.io/hls/master.m3u8```  
 
-Below, we explain how to <a href="https://gcore.com/docs/streaming-platform/video-hosting/upload-video-via-api-to-vod-storage#batch-upload-to-migrate-a-vast-number-of-videos-from-other-services">get HTTP public access links</a> in different external storages. 
+Below, we explain how to <a href="https://gcore.com/docs/streaming-platform/video-hosting/upload-video-via-api#batch-upload-to-migrate-a-vast-number-of-videos-from-other-services">get HTTP public access links</a> in different external storages. 
 
 To copy a video from another server, specify the attribute ```origin_url``` in the <a href="https://api.gcore.com/docs/streaming#tag/Videos/operation/post_api_videos" target="_blank">POST API request</a>. The original video will be downloaded for Video Hosting on our server side. 
 
