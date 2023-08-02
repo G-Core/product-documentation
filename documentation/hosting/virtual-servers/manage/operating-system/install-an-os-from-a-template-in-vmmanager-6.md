@@ -7,7 +7,7 @@ toc:
 pageTitle: Install an OS from a template in VMmanager 6| Gcore
 pageDescription: Learn how to install an OS from a template for a virtual server in VMManager 6.
 ---
-# Install an OS from a template in VMmanager 6
+# Install an operating system from a template in VMmanager 6
 
 In VMmanager 6, you have the option to install various operating systems using templates. The available OS templates include: 
 
