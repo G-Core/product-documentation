@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: DNS Failover
+displayName: Health checks
 published: true
 order: 50
 ---
