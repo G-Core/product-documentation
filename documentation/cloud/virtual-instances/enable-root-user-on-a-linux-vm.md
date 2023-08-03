@@ -1,19 +1,19 @@
 ---
-title: enable-root-user-on-a-linux-or-mac-vm
+title: enable-root-user-on-a-linux-vm
 displayName: Enable root user
 order: 22
 published: true
 toc:
-pageTitle: Enable root user on a Linux or Mac VM | Gcore
-pageDescription: Learn how to enable root user on a Linux or Mac VM using "sudo" or "sudo su" commands. Understand the differences and alternative methods.
+pageTitle: Enable root user on a Linux VM | Gcore
+pageDescription: Learn how to enable root user on a Linux VM using "sudo" or "sudo su" commands. Understand the differences and alternative methods.
 ---
-# Enable root user on a Linux or Mac VM
+# Enable root user on a Linux VM
 
 Once you have connected to your virtual machine via <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">Control Panel</a> or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">SSH</a>, you can perform commands with root user rights. To do this, you can use one of the two options: the `sudo` command or the `sudo su` superuser (root user) shell.
 
-## sudo vs sudo su for Linux and Mac OS
+## sudo vs sudo su
 
-**`sudo`** (which stands for <a href="https://www.sudo.ws/" target="_blank">Super Do</a>) is a free command-line utility used in Unix-like operating systems such as the Linux family of distributions (including Ubuntu, Debian, and CentOS) and macOS. sudo allows a regular user to temporarily elevate their privileges to a higher level, such as root, in order to execute tasks that require root user rights.
+**`sudo`** (which stands for <a href="https://www.sudo.ws/" target="_blank">Super Do</a>) is a free command-line utility used in Unix-like operating systems such as the Linux family of distributions (including Ubuntu, Debian, and CentOS). `sudo` allows a regular user to temporarily elevate their privileges to a higher level, such as root, in order to execute tasks that require root user rights.
 
 **`sudo su`** is a combination of `sudo` and `su`, where `su` means “switch user” or “substitute user.” Using `sudo su`, you can switch to being the root user for the duration of an active session. Consequently, all actions within the current session will be performed with root user permissions.
 
