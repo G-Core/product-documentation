@@ -24,7 +24,7 @@ With Real-Time Video, it is possible to hold online conferences for 2–20 parti
 
 To create an online room for a conference:
 
-1\. Click **Create Room for Free** on the <a href="https://meet.gcore.com" target="_blank">website</a>.
+1\. Click **Create Room for Free** on the <a href="https://meet.gcore.com/new" target="_blank">website</a>.
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/create-and-manage-a-conference/crewate_a_room.png" alt="" width="80%">
 

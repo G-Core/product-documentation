@@ -25,11 +25,11 @@ Your billing plan determines how and when we can respond to your question. You c
 
 <img src="https://assets.gcore.pro/docs/account-settings/technical-support/billing-plan-10.png" alt="">
 
-Check what support is provided by your plan on the <a href="https://www.gcore.com/pricing/edge-network" target="_blank">Pricing</a> page.
+Check what support is provided by your plan on the <a href="https://gcore.com/pricing/edge-network" target="_blank">Pricing</a> page.
 
 There are three support modes available:
 
-- **For free plans**, there is no technical support, meaning our support team cannot assist you. However, you can always find answers to your questions in our <a href="https://gcore.com/docs/" target="_blank">Knowledge Base</a>. There are hundreds of articles describing how to configure our services and solve issues. 
+- **For free plans**, there is no technical support, meaning our support team cannot assist you. However, you can always find answers to your questions in our <a href="https://gcore.com/docs" target="_blank">Knowledge Base</a>. There are hundreds of articles describing how to configure our services and solve issues. 
 - **For "medium" plans** (e.g., "Start" CDN plan), we provide support during business hours on business days (8/5). 
 - **For PRO+ plans**, we provide round-the-clock support (24/7).
 

@@ -24,7 +24,7 @@ pageDescription: Instructions on configuring and using AWS CLI, S3cmd, and AWS S
 ---
 # Connect AWS CLI, S3cmd, and AWS SDK
 
-With <a href="https://www.gcore.com/storage" target="_blank">Gcore Object Storage</a>, you can utilize S3-compatible software, such as AWS CLI and S3cmd.
+With <a href="https://gcore.com/storage" target="_blank">Gcore Object Storage</a>, you can utilize S3-compatible software, such as AWS CLI and S3cmd.
 
 
 ## AWS CLI 

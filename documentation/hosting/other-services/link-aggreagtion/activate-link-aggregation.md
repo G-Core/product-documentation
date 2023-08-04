@@ -12,7 +12,7 @@ pageDescription: Learn how to activate Link Aggregation (LACP) to boost server p
 
 Bonding is the technology of aggregating several parallel channels in Ethernet network. The feature helps to balance server loading and increase fault tolerance. 
 
-We set up channel aggregation using the standard LACP protocol. It is paid feature, take a look at prices <a href="https://gcore.com/hosting/miscellaneous/" target="_blank">at the LACP tab</a>.
+We set up channel aggregation using the standard LACP protocol. It is paid feature, take a look at prices <a href="https://gcore.com/hosting/miscellaneous" target="_blank">at the LACP tab</a>.
 
 To get bonding order the service Port Channel from the Control Panel, prepare your server and then contact us via ticket to set it up. 
 

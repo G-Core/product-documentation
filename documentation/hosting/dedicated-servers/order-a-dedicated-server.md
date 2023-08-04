@@ -23,7 +23,7 @@ Choose a tariff. You can see the list of tariffs on the shop window of the Contr
 
 <img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/order-a-dedicated-server/image2.png" alt="" width="80%">
 
-<a href="https://gcore.com/hosting/" target="_blank">On the website</a>, you can find the complete list of tariffs with a filter by technical characteristics.
+<a href="https://gcore.com/hosting" target="_blank">On the website</a>, you can find the complete list of tariffs with a filter by technical characteristics.
 
 <media-gallery>
 

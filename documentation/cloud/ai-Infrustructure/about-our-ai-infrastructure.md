@@ -28,7 +28,7 @@ This infrastructure consists of three entities:
 - **M2000 or Bow-2000 server** (different types are available in different regions) — a Graphcore server which is used for calculations made while training your model. You don’t have access to it, this server receives commands from the Poplar server.
 - **vIPU controller** (virtual Intelligence Processing Unit) — a service which configures M2000/Bow-2000 servers of your AI Infrastructure to make them a cluster. It is involved while the cluster is being created and while you’re changing its configuration, e.g. resizing partitions. You have access to vIPU controller via API and can rebuild the cluster if desired.
 
-For datasets storage, you can use Poplar server disk space, external S3 storage, or <a href="https://gcore.com/storage/" target="_blank">our S3 storage</a>.
+For datasets storage, you can use Poplar server disk space, external S3 storage, or <a href="https://gcore.com/storage" target="_blank">our S3 storage</a>.
 
 <img src="https://assets.gcore.pro/docs/cloud/ai-Infrustructure/about-our-ai-infrastructure/image__10_.png" alt="" width="80%">
 

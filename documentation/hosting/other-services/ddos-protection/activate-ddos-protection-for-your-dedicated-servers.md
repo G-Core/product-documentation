@@ -21,14 +21,14 @@ DDoS Protection is provided for a dedicated (physical) server — both rented fr
 - Bandwidth
 - Whitelist and blacklist of IP (optional, you can send it later)
 
-2. To order protection for a third-party server, fill out an application at the bottom of the <a href="https://gcore.com/ddos-protection-for-servers/" target="_blank">DDoS Protection</a> section of our website. Specify in the application:
+2. To order protection for a third-party server, fill out an application at the bottom of the <a href="https://gcore.com/ddos-protection-for-servers" target="_blank">DDoS Protection</a> section of our website. Specify in the application:
 
 - You contact details
 - Location of your equipment
 - Subnet of your equipment
 - Whitelist and blacklist of IP (optional, you can send it later)
 
-3. To rent a new server with the DDoS Protection, select the configuration of the server in the <a href="https://gcore.com/hosting/dedicated/" target="_blank">Dedicated servers</a> section of our website and fill out an application at the bottom of the page. Specify in it:
+3. To rent a new server with the DDoS Protection, select the configuration of the server in the <a href="https://gcore.com/hosting/dedicated" target="_blank">Dedicated servers</a> section of our website and fill out an application at the bottom of the page. Specify in it:
 
 - Server configuration
 - OSI layers to be protected (L3-L4 or L3-L7)

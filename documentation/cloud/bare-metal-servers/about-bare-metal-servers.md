@@ -21,7 +21,7 @@ pageDescription: Explore bare metal servers for gaming, HPC, and big data. High 
 
 A bare metal server is a form of cloud service in which the user rents a physical machine from a provider. This machine is dedicated to the user and not shared with any other tenants.
 
-You can rent one or multiple bare metals in one of <a href="https://gcore.com/cloud/bare-metal-servers/" target="_blank">15+ locations</a>. You can find all the locations on <a href="https://gcore.com/cloud/bare-metal-servers/" target="_blank">our website</a>.
+You can rent one or multiple bare metals in one of <a href="https://gcore.com/cloud/bare-metal-servers" target="_blank">15+ locations</a>. You can find all the locations on <a href="https://gcore.com/cloud/bare-metal-servers" target="_blank">our website</a>.
 
 ## How does bare metal work?
 
@@ -60,7 +60,7 @@ Bare metal servers have the following benefits:
 *   **Easy management.** Create, rebuild, and control your bare metals via the <a href="https://cloud.gcore.com/" target="_blank">Gcore control panel</a>, <a href="https://api.gcore.com/docs/cloud" target="_blank">API</a>, or <a href="https://registry.terraform.io/providers/G-Core/gcore/" target="_blank">Terraform provider</a>.
 *   **Scalability.** Scale your resources up or down on demand. Whenever you need extra resources, you can easily create new virtual machines and bare metals and connect them to existing ones. Once your workload decreases, you can delete the added resources and stop paying for them.
 *   **Hybrid landscape.** Bring virtual machines and bare metals together into single networks.
-*   **Gcore integration.** Integrate bare metals with other Gcore services, such as <a href="https://gcore.com/cdn/" target="_blank">CDN</a>, <a href="https://gcore.com/streaming-platform/" target="_blank">Streaming Platform</a>, or  <a href="https://gcore.com/ddos-protection/" target="_blank">DDoS Protection</a>.
+*   **Gcore integration.** Integrate bare metals with other Gcore services, such as <a href="https://gcore.com/cdn" target="_blank">CDN</a>, <a href="https://gcore.com/streaming-platform" target="_blank">Streaming Platform</a>, or  <a href="https://gcore.com/ddos-protection" target="_blank">DDoS Protection</a>.
 
 ## Use cases
 
@@ -103,7 +103,7 @@ But bare metal servers are the right fit for a few primary use cases that take a
 
 ## Bare metals vs. dedicated servers in Hosting
 
-The table below shows the key differences between our bare metal servers in <a href="https://gcore.com/cloud/" target="_blank">Cloud</a> and dedicated servers in <a href="https://gcore.com/hosting/" target="_blank">Hosting</a>.
+The table below shows the key differences between our bare metal servers in <a href="https://gcore.com/cloud" target="_blank">Cloud</a> and dedicated servers in <a href="https://gcore.com/hosting" target="_blank">Hosting</a>.
 
  
 

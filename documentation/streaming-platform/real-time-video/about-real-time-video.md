@@ -20,7 +20,7 @@ Real-Time Video is a paid module of the Streaming Platform. It has an API, SDK, 
 
 This is how Real-Time Video works with different platforms:
 
-- <a href="https://meet.gcore.com" target="_blank">Web apps</a>
+- <a href="https://meet.gcore.com/new" target="_blank">Web apps</a>
 - <a href="https://github.com/G-Core/reactnative-demo-video-calls" target="_blank">ReactNative</a>
 - <a href="https://github.com/G-Core/android-demo-video-calls" target="_blank">Android</a>
 - <a href="https://github.com/G-Core/ios-demo-video-calls" target="_blank">iOS</a>

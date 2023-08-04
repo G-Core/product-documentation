@@ -26,7 +26,7 @@ You can use a CDN service for streaming if the following conditions are met:
 - You stream in HLS format
 - You use Start, Pro 5 TB, or Pro 10 TB subscription
 
-If your stream is in another format (RTMP, SRT, MP4), use the <a href="https://gcore.com/streaming-platform/" target="_blank">Streaming</a> service.
+If your stream is in another format (RTMP, SRT, MP4), use the <a href="https://gcore.com/streaming-platform" target="_blank">Streaming</a> service.
 
 ## Configure the delivery of streams or videos via CDN
 

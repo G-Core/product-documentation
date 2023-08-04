@@ -19,7 +19,7 @@ You can set up RAID or change its type, increase the volume and number of disks,
 
 Changing specifications includes six steps:
 
-1\.  You select the desired specifications in the <a href="https://gcore.com/hosting/dedicated/" target="_blank">Dedicated Servers section</a> of our website. 10 Gbps network cards are not listed there, but they can be installed too. New specifications must not be lower than the current ones.  
+1\.  You select the desired specifications in the <a href="https://gcore.com/hosting/dedicated" target="_blank">Dedicated Servers section</a> of our website. 10 Gbps network cards are not listed there, but they can be installed too. New specifications must not be lower than the current ones.  
       
 <img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/upgrade-your-dedicated-server/image7.png" alt="" width="80%">
 
