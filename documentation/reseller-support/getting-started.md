@@ -78,7 +78,7 @@ Articles on service management:
 
 ## Useful links
 
-If you would like to get notifications about planned maintenance activities and incidents, subscribe to our <a href="https://status.gcore.com/" target="_blank">Status Page</a>. You can read more about the service and its subscription methods in <a href="https://gcore.com/docs/account-settings/be-aware-of-the-service-status-scheduled-and-emergency-maintenance" target="_blank">this article</a>.
+If you would like to get notifications about planned maintenance activities and incidents, subscribe to our <a href="https://status.gcore.com" target="_blank">Status Page</a>. You can read more about the service and its subscription methods in <a href="https://gcore.com/docs/account-settings/be-aware-of-the-service-status-scheduled-and-emergency-maintenance" target="_blank">this article</a>.
 
 - <a href="https://gcore.com/docs/reseller-support/api" target="_blank">Reseller API documentation</a>
 - <a href="https://api.gcore.com/docs/iam" target="_blank">Services API documentation</a>

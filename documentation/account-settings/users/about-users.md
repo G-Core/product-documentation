@@ -9,9 +9,9 @@ pageDescription: A detailed guide to user roles and permissions, covering how ro
 ---
 # About Users
 
-In the Gcore Control Panel, there are roles that define user rights, such as permitted actions to manage the <a href="https://cdn.gcore.com/" target="_blank">CDN</a> and <a href="https://streaming.gcore.com/" target="_blank">Streaming Platform</a> and change personal data.
+In the Gcore Control Panel, there are roles that define user rights, such as permitted actions to manage the <a href="https://cdn.gcore.com" target="_blank">CDN</a> and <a href="https://streaming.gcore.com" target="_blank">Streaming Platform</a> and change personal data.
 
-**Note**: The <a href="https://cloud.gcore.com/" target="_blank">Cloud</a> service has its own role system. Read the "<a href="https://gcore.com/docs/cloud/getting-started/projects/users/user-roles-and-rights" target="_blank">User roles and rights</a>" guide for more details. For other Gcore services (<a href="https://dns.gcore.com/" target="_blank">DNS Hosting</a>, <a href="https://storage.gcore.com/" target="_blank">Storage</a>, <a href="https://control.gcore.com/" target="_blank">Web Security and DDoS Protection</a>), roles do not apply. This means that regardless of the user's role, they can perform any actions with the DNS service.
+**Note**: The <a href="https://cloud.gcore.com" target="_blank">Cloud</a> service has its own role system. Read the "<a href="https://gcore.com/docs/cloud/getting-started/projects/users/user-roles-and-rights" target="_blank">User roles and rights</a>" guide for more details. For other Gcore services (<a href="https://dns.gcore.com" target="_blank">DNS Hosting</a>, <a href="https://storage.gcore.com" target="_blank">Storage</a>, <a href="https://control.gcore.com" target="_blank">Web Security and DDoS Protection</a>), roles do not apply. This means that regardless of the user's role, they can perform any actions with the DNS service.
 
 By default, a user who registers an account has the "Administrator" role with the most extensive rights. An Administrator can invite up to five new users to their account daily and assign one of the available roles to each of them:
 

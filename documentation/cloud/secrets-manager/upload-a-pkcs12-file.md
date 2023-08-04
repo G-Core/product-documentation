@@ -50,7 +50,7 @@ CA does not always send a client a chain of certificates along with the main cer
 
 Now you have all the files needed. There are several ways to merge them into PKCS12 format. Below we describe a common case — creating PKCS12 from PEM files.
 
-1\. Install OpenSSL. This is a library containing tools for working with SSL/TLS protocols. You can find installation links and instructions for working with OpenSSL on its <a href="https://www.openssl.org" target="_blank">official website</a>.
+1\. Install OpenSSL. This is a library containing tools for working with SSL/TLS protocols. You can find installation links and instructions for working with OpenSSL on its <a href="https://openssl.org" target="_blank">official website</a>.
 2\. Check if your certificate files are in PEM format. Such files must have the extension .pem, .crt, .cer or .key, begin with the line ```----- BEGIN CERTIFICATE -----``` and end with the line ```----- END CERTIFICATE -----```. To see the beginning and the end of a file, open it in a text editor.
 3\. If some files are not in PEM, convert them using OpenSSL. Enter the command in OpenSSL, replacing the text in square brackets with your names:
 

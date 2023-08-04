@@ -14,7 +14,7 @@ pageDescription: Understand how CDN services are billed, including monthly traff
 ---
 # How the CDN service and its additional options are billed
 
-You can view the current CDN pricing on <a href="https://gcore.com/pricing/" target="_blank">our website</a>. 
+You can view the current CDN pricing on <a href="https://gcore.com/pricing" target="_blank">our website</a>. 
 
 ## Understand CDN billing
 
@@ -39,7 +39,7 @@ The credit limit may differ from the one that is given in this article. You can 
 
 <img src="https://assets.gcore.pro/docs/cdn/how-the-cdn-service-and-its-additional-options-are-billed/image-7.png" alt="" width="80%">
 
-Additional options are listed on <a href="https://gcore.com/pricing/" target="_blank">the CDN pricing page</a>. To activate it, contact our technical support via chat or email [support@gcore.com](mailto:support@gcore.com). Each option has a fixed price and is billed together with the plan fee on the 2nd day of every month. For example, if you activate a plan for €100/month and the "Extended statistics" option for €200. On the 2nd day of a following month, the system will charge you €300.
+Additional options are listed on <a href="https://gcore.com/pricing" target="_blank">the CDN pricing page</a>. To activate it, contact our technical support via chat or email [support@gcore.com](mailto:support@gcore.com). Each option has a fixed price and is billed together with the plan fee on the 2nd day of every month. For example, if you activate a plan for €100/month and the "Extended statistics" option for €200. On the 2nd day of a following month, the system will charge you €300.
 
 Please note that when you activate the "<a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin Shielding</a>" option, the traffic will be calculated differently. Usually, a traffic plan counts two types of traffic:
 

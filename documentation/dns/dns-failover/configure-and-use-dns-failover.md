@@ -9,7 +9,7 @@ pageDescription: A comprehensive guide on how to configure and manage DNS Health
 ---
 # Configure and use DNS Health checks
 
-1\. Open the <a href="https://dns.gcore.com/" target="_blank">DNS interface</a>.
+1\. Open the <a href="https://dns.gcore.com" target="_blank">DNS interface</a>.
 
 2\. Go to the DNS zone of the site or application that you want to use with DNS Health checks.
 

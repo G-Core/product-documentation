@@ -13,7 +13,7 @@ pageDescription: Explanation of billing and plan change rules.
 
 ## Plans and billing rules 
 
-Prices and plans are described on the <a href="https://gcore.com/pricing/security/" target="_blank">website</a>.
+Prices and plans are described on the <a href="https://gcore.com/pricing/security" target="_blank">website</a>.
 
 The plan subscription fee and the traffic overcommitment fee are charged on the 2nd day of each month. If the payment fails, the service will be stopped.
 

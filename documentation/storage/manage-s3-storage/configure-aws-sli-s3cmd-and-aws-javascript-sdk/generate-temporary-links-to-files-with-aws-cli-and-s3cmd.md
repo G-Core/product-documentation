@@ -76,7 +76,7 @@ where:
 
 - *example-bucket* — the name of the bucket that hosts the file,
 - *image.jpg* — the file you want to share,
-- *1657457538* — link expiry time in the Timestamp format, use the <a href="https://www.epochconverter.com/" target="_blank">converter</a> to convert time formats.
+- *1657457538* — link expiry time in the Timestamp format, use the <a href="https://epochconverter.com" target="_blank">converter</a> to convert time formats.
 
 You can also set the link expiry date by running the Echo command as an alternative to Timestamp. For example, you can set a lifespan of 7 days by entering the following string:
 

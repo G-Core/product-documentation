@@ -49,7 +49,7 @@ A system template is a template that we have developed for common cases of our c
 
 **Playlists template (.m3u8)** is a rule template for caching playlists (<a href="https://gcore.com/docs/cdn/cdn-resource-options/configure-live-streams-and-video-delivery-via-cdn-only-for-paid-tariffs" target="_blank">streaming via CDN</a>).
 
-**Let's Encrypt HTTP-01 challenge** is a rule template for validating a Let's Encrypt certificate that is issued with the <a href="https://letsencrypt.org/docs/challenge-types/" target="_blank">HTTP—01 challenge</a> method and not via the Gcore UI. To ensure your certificate is validated, create a CDN resource, create a rule from the template and only then request a certificate. Without this rule, the resource settings will block certificate validation.
+**Let's Encrypt HTTP-01 challenge** is a rule template for validating a Let's Encrypt certificate that is issued with the <a href="https://letsencrypt.org/docs/challenge-types" target="_blank">HTTP—01 challenge</a> method and not via the Gcore UI. To ensure your certificate is validated, create a CDN resource, create a rule from the template and only then request a certificate. Without this rule, the resource settings will block certificate validation.
 
 **Static content** is a rule template for caching static files of the resources integrated with the DNS.
 

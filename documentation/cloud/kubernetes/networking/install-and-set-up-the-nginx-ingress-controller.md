@@ -9,7 +9,7 @@ pageDescription: Learn how to install nginx Ingress Controller to effectively ma
 ---
 # Install nginx Ingress Controller
 
-When you install the nginx Ingress Controller, our system automatically creates a <a href="https://gcore.com/cloud/load-balancers/" target="_blank">load balancer</a>. This load balancer acts as an entry point for incoming traffic. When traffic arrives, the load balancer forwards it to the Ingress Controller. The Ingress Controller is responsible for routing the traffic to the appropriate services within your Kubernetes cluster based on the rules defined in the Ingress manifests.
+When you install the nginx Ingress Controller, our system automatically creates a <a href="https://gcore.com/cloud/load-balancers" target="_blank">load balancer</a>. This load balancer acts as an entry point for incoming traffic. When traffic arrives, the load balancer forwards it to the Ingress Controller. The Ingress Controller is responsible for routing the traffic to the appropriate services within your Kubernetes cluster based on the rules defined in the Ingress manifests.
 
 1\. Run the kubectl command to create a namespace:
 

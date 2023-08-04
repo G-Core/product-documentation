@@ -23,7 +23,7 @@ OBS links your device (a laptop or a PC) and different streaming platforms (Gcor
 
 ## Configure the OBS encoder for Gcore Streaming
 
-1\. Download Open Broadcaster Software (OBS) from the <a href="https://obsproject.com/" target="_blank">official website</a> and install it.
+1\. Download Open Broadcaster Software (OBS) from the <a href="https://obsproject.com" target="_blank">official website</a> and install it.
 
 2\. Open the **Settings** section and go to the **Stream** tab. Complete the remaining steps in it.
 

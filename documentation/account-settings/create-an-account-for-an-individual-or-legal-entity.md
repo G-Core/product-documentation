@@ -13,7 +13,7 @@ pageDescription: A guide on how to create an account for individuals or legal en
 
 ## For individuals
 
-1. To sign up for Gcore services, go to <a href="https://gcore.com/" target="_blank">
+1. To sign up for Gcore services, go to <a href="https://gcore.com" target="_blank">
 our website</a> and click the **Get started for free** button.
 
 <img src="https://assets.gcore.pro/docs/account-settings/account/get-started-gcore-website-10.png" alt="" width="635">

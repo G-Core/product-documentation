@@ -55,7 +55,7 @@ Compared to the standard approach, a 7-second segment will be divided into 2–3
 
 ## Use Low Latency streaming
 
-We support <a href="https://www.gcore.com/news/low-latency-hls/" target="_blank">Low Latency streaming</a> by default. It means your live streams are automatically transcoded to LL-HLSv6 or LL-DASH protocol when you <a href="https://gcore.com/docs/streaming-platform/live-streaming/create-a-live-stream" target="_blank">create and configure a live stream</a>. Links for embedding the live stream to your own player contain the */cmaf/* part and look as follows:
+We support <a href="https://gcore.com/news/low-latency-hls/" target="_blank">Low Latency streaming</a> by default. It means your live streams are automatically transcoded to LL-HLSv6 or LL-DASH protocol when you <a href="https://gcore.com/docs/streaming-platform/live-streaming/create-a-live-stream" target="_blank">create and configure a live stream</a>. Links for embedding the live stream to your own player contain the */cmaf/* part and look as follows:
 
 - ```https://12345.gvideo.io/cmaf/12345_111/index.mpd``` (LL-DASH, which is supported by any device but does not work with iOS). 
 - ```https://12345.gvideo.io/cmaf/12345_111/master.m3u8``` (LL HLSv6, which is supported by iOS (Safari browser) but doesn’t work with non-Apple devices).

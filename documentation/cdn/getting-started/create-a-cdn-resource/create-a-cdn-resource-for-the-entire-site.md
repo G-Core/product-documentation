@@ -20,7 +20,7 @@ pageDescription: Detailed instructions on how to set up a CDN resource for the e
 
 A CDN resource of this type is a feature that allows you to accelerate and protect the entire site with CDN and DNS services. This CDN resource helps accelerate both kinds of content delivery: static and dynamic. If you only need to deliver static assets, use a <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">separate CDN resource for static content</a>.
 
-We explain the difference in delivery in the "<a href="https://www.gcore.com/materials/how-to-speed-up-dynamic-content-delivery-using-cdn/" target="_blank">How to speed up dynamic content delivery using a CDN</a>" article.
+We explain the difference in delivery in the "<a href="https://gcore.com/materials/how-to-speed-up-dynamic-content-delivery-using-cdn/" target="_blank">How to speed up dynamic content delivery using a CDN</a>" article.
 
 ## Create and integrate a CDN resource for the entire site
 
@@ -32,7 +32,7 @@ To create a CDN resource for the entire site:
 
 ### 1. Choose the acceleration type
 
-Go to the <a href="https://cdn.gcore.com/" target="_blank">CDN resources</a> tab and click **Create CDN resource**.
+Go to the <a href="https://cdn.gcore.com" target="_blank">CDN resources</a> tab and click **Create CDN resource**.
 
 <img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/13050309991441.png" alt="">
 
@@ -42,7 +42,7 @@ The new page will open. Select "Accelerate and protect entire site" and click **
 
 ### 2. Enter a site name
 
-**Note**: This step requires the creation of a DNS zone (similar to the site name) in the <a href="https://www.gcore.com/dns" target="_blank">Gcore DNS service</a>. In our example, a DNS zone will be *testdomain.com*. If you haven’t used the DNS service before, the Free plan will activate automatically at this step. If you have already used the DNS service, the specified DNS zone will also be created automatically, and you can view it in the <a href="https://dns.gcore.com" target="_blank">Control panel</a>.
+**Note**: This step requires the creation of a DNS zone (similar to the site name) in the <a href="https://gcore.com/dns" target="_blank">Gcore DNS service</a>. In our example, a DNS zone will be *testdomain.com*. If you haven’t used the DNS service before, the Free plan will activate automatically at this step. If you have already used the DNS service, the specified DNS zone will also be created automatically, and you can view it in the <a href="https://dns.gcore.com" target="_blank">Control panel</a>.
 
 Enter the domain of the site you want to create a CDN resource. You can use as a site name the following values:
 

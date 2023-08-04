@@ -152,7 +152,7 @@ Once successfully uploaded and processed, the video will be available on our pla
 
 When you develop your service, a video must be uploaded from the local host (your backend) or by users from a browser or mobile app. 
 
-We use the <a href="https://tus.io/" target="_blank">TUS resumable upload protocol</a> for uploading files, which works by cutting the video for upload into small segments and, if an interruption occurs, continuing from the point of interruption.  
+We use the <a href="https://tus.io" target="_blank">TUS resumable upload protocol</a> for uploading files, which works by cutting the video for upload into small segments and, if an interruption occurs, continuing from the point of interruption.  
 
 The uploading process consists of three steps.
 

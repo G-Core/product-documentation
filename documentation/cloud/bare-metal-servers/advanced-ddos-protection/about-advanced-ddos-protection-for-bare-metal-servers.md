@@ -39,7 +39,7 @@ Here at Gcore, we provide basic protection to all customers, and it is enabled b
 
 ## Pricing
 
-Advanced protection is a paid service. The cost is determined by your location and the amount of incoming traffic that needs to be filtered. For approximate prices, refer to the <a href="https://gcore.com/ddos-protection/" target="_blank">DDoS Protection webpage</a>. For an accurate price, you can also contact technical support via chat or [email support@gcore.com](mailto:support@gcore.com).
+Advanced protection is a paid service. The cost is determined by your location and the amount of incoming traffic that needs to be filtered. For approximate prices, refer to the <a href="https://gcore.com/ddos-protection" target="_blank">DDoS Protection webpage</a>. For an accurate price, you can also contact technical support via chat or [email support@gcore.com](mailto:support@gcore.com).
 
 Activation
 ----------
