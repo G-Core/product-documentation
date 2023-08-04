@@ -34,9 +34,9 @@ To connect to an instance or a bare metal server, create a public key that will 
 
 ! SSH key generation using the command line interface (cmd) is not available for Windows 7/8 operating systems.  
 
-1\. To generate key pairs, use <a href="https://www.putty.org/" target="_blank">PuTTY and PuTTYgen</a>.
+1\. To generate key pairs, use <a href="https://putty.org" target="_blank">PuTTY and PuTTYgen</a>.
 
-2\. Download and install <a href="https://www.putty.org/" target="_blank">the PuTTY package</a>. 
+2\. Download and install <a href="https://putty.org" target="_blank">the PuTTY package</a>. 
 
 3\. Launch the PuTTYgen app. 
 
@@ -201,9 +201,9 @@ print(sha512_crypt.hash(passwd , rounds = 5000 ))
 
 !Connecting to an instance or a bare metal server over SSH using the command line (cmd) is not available on Windows 7/8 operating systems.  
 
-To connect, use <a href="https://www.putty.org/" target="_blank">the PuTTY app</a>.
+To connect, use <a href="https://putty.org" target="_blank">the PuTTY app</a>.
 
-1\. Download and run <a href="https://www.putty.org/" target="_blank">the PuTTY app</a>.
+1\. Download and run <a href="https://putty.org" target="_blank">the PuTTY app</a>.
 
 2\. Go to the Session section, in the Host Name (or IP address) field enter the machine's IP address. 
 

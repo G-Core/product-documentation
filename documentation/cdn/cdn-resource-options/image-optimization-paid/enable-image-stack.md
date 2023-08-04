@@ -9,7 +9,7 @@ pageDescription: A step-by-step guide on how to enable and configure the Image s
 ---
 # Enable Image stack
 
-1\. Send us a request to activate the option via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of <a href="https://gcore.com/" target="_blank">our website</a>. Please specify your ID in the request so we can identify your account. You can find it on the main page of your <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>.
+1\. Send us a request to activate the option via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of <a href="https://gcore.com" target="_blank">our website</a>. Please specify your ID in the request so we can identify your account. You can find it on the main page of your <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/enable-image-stack/11774056177297.png" alt="" width="80%">
 

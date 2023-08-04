@@ -21,7 +21,7 @@ For more information about VMmanager 6’s features and functions, refer to <a h
 
 To proceed with the OS installation, follow these steps:
 
-1. Go to the <a href="https://bix-v6.vm.gcore.com/vm/manager/host/" target="_blank">**Virtual machines** page</a> and find the desired server.
+1. Go to the <a href="https://bix-v6.vm.gcore.com/vm/manager/host" target="_blank">**Virtual machines** page</a> and find the desired server.
 
 2. Click the three-dot menu on the right-hand side and select Reinstall OS.
 

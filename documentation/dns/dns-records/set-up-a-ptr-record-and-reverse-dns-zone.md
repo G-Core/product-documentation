@@ -35,7 +35,7 @@ And the IPv6 in a reverse DNS lookup will work the same way, but with a slight d
 
 You need to have a dedicated IP space (IPv4 or IPv6) to configure the reverse DNS zone. Here’s how to do it:
 
-1\. Contact an organization with <a href="https://www.nro.net/about/rirs/" target="_blank">RIR status</a> (that is, a technical registrar authorized to create and delegate reverse DNS zones) and ask them to delegate the zone of your subnet to Gcore NSs.
+1\. Contact an organization with <a href="https://nro.net/about/rirs" target="_blank">RIR status</a> (that is, a technical registrar authorized to create and delegate reverse DNS zones) and ask them to delegate the zone of your subnet to Gcore NSs.
 
 2\. When you get a reverse DNS zone, add it in the Gcore control panel according to our guide <a href="https://gcore.com/docs/dns/manage-a-dns-zone#create-a-dns-zone" target="_blank">Create a DNS zone</a>.
 **Note**: You can add a subnet up to /24 bits for your IP address.

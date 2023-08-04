@@ -59,7 +59,7 @@ Here are some of the distinctive features that set VMmanager 6 apart from altern
 
 2. **Faster deployment time**. In VMmanager 6, servers are created in 2–5 minutes.
 
-3. **Recovery mode**. For VM maintenance, diagnostics, and troubleshooting, you can use a special operating system called SystemRescueCD. To use it, you typically need to create a bootable media (e.g., CD, USB drive) using the provided ISO image. You can then boot your computer from the media to access the SystemRescueCD environment. For more information, refer to the <a href="http://www.system-rescue-cd.org/manual/" target="_blank">SystemRescueCD official documentation</a>.
+3. **Recovery mode**. For VM maintenance, diagnostics, and troubleshooting, you can use a special operating system called SystemRescueCD. To use it, you typically need to create a bootable media (e.g., CD, USB drive) using the provided ISO image. You can then boot your computer from the media to access the SystemRescueCD environment. For more information, refer to the <a href="https://system-rescue-cd.org/manual" target="_blank">SystemRescueCD official documentation</a>.
 
 4. **Scripts**. In VMmanager 6, you can use scripts to set up virtual machines automatically: install software applications, modify configuration files, and perform other operations. You can use the default scripts or create your own. On a Linux OS, you can run Shell scripts written in bash, and on a Windows OS, you can run Powershell scripts.
 

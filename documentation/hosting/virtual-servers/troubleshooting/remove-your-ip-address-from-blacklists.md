@@ -15,7 +15,7 @@ An IP address is sometimes added to blacklists due to malicious activity such as
 Please note that according to clause 6.4 of the User Agreement, **we cannot influence third-party restrictions**. If your IP address is blocked, you may consider purchasing an additional IP address or using the methods outlined below to remove the IP address from blacklists.
 
 
-It is important to note that **Gcore does NOT tolerate** the use of its services for distributing unsolicited emails, chain letters, mailbombs, or SPAM (including in particular unsolicited bulk e-mail ("UBE") and/or UCE) in accordance with the Acceptable Use Policy. You may find more information on this within the <a href="https://gcore.com/legal/" target="_blank">Legal Information</a> section.
+It is important to note that **Gcore does NOT tolerate** the use of its services for distributing unsolicited emails, chain letters, mailbombs, or SPAM (including in particular unsolicited bulk e-mail ("UBE") and/or UCE) in accordance with the Acceptable Use Policy. You may find more information on this within the <a href="https://gcore.com/legal" target="_blank">Legal Information</a> section.
 
 ## Avoid being blacklisted
 

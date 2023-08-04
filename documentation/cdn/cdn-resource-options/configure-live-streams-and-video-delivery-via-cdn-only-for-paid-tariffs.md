@@ -26,7 +26,7 @@ You can use a CDN service for streaming if the following conditions are met:
 - You stream in HLS format
 - You use Start, Pro 5 TB, or Pro 10 TB subscription
 
-If your stream is in another format (RTMP, SRT, MP4), use the <a href="https://gcore.com/streaming-platform/" target="_blank">Streaming</a> service.
+If your stream is in another format (RTMP, SRT, MP4), use the <a href="https://gcore.com/streaming-platform" target="_blank">Streaming</a> service.
 
 ## Configure the delivery of streams or videos via CDN
 
@@ -76,7 +76,7 @@ You can set cache settings either on your origin (in the Cache-Control HTTP head
 
 Change your domain address URLs from the origin to your <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">CDN domain name</a>. For example, ```http://domain/playlist.m3u8`` (a stream URL from origin) → ```http://cdn.domain/playlist.m3u8``` (a stream URL from the CDN).
 
-You can check your stream on any player that supports online HLS streaming (for example, <a href="https://www.videolan.org/" target="_blank">VLC</a>).
+You can check your stream on any player that supports online HLS streaming (for example, <a href="https://videolan.org" target="_blank">VLC</a>).
 
 ### 5. Turn on the preset (only for streams)
 

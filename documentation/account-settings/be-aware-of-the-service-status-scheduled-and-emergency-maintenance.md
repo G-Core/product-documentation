@@ -28,7 +28,7 @@ Status Page is a communication tool that displays information about service sta
 
 ## Subscription methods 
 
-To receive notifications about scheduled works and incidents, subscribe to the Status Page: go to <a href="https://status.gcore.com/" target="_blank">Status Page of Gcore</a> and click on the **Subscribe to updates** button in the upper-right corner. 
+To receive notifications about scheduled works and incidents, subscribe to the Status Page: go to <a href="https://status.gcore.com" target="_blank">Status Page of Gcore</a> and click on the **Subscribe to updates** button in the upper-right corner. 
 
 <img src="https://assets.gcore.pro/docs/account-settings/status-page/subscribe-sp-10.png" alt="" width="80%">
 
@@ -51,7 +51,7 @@ Then select the appropriate subscription method (email, slack, webhook). 
 
 #### How to unsubscribe from the old version of Status Page  
 
-To correctly configure notifications from the new <a href="https://status.gcore.com/" target="_blank">Status Page of Gcore</a>, disable the notifications from the old Status Page: 
+To correctly configure notifications from the new <a href="https://status.gcore.com" target="_blank">Status Page of Gcore</a>, disable the notifications from the old Status Page: 
 
 1\. Open your workspace in Slack. 
 

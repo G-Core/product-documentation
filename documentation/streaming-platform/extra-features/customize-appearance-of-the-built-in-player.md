@@ -27,7 +27,7 @@ Let’s compare the default and custom player. To show you the customization opt
 
 ## How to enable the feature
 
-Send us the request to activate the option via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of <a href="https://gcore.com/" target="_blank">our website</a>. Please specify your ID in the request, so we can identify your account. You can find it on the main page of your <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>. 
+Send us the request to activate the option via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of <a href="https://gcore.com" target="_blank">our website</a>. Please specify your ID in the request, so we can identify your account. You can find it on the main page of your <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>. 
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/customize-appearance-of-the-built-in-player/image_1694.png" alt="" width="80%">
 
@@ -57,7 +57,7 @@ The configuration page opens. Complete the remaining steps in it.
 
 - **Mute**. If the option is active, video plays with the sound off.
 
-**Note**! If both Autoplay and Mute are active, only one option will work. It depends on an end user's browser policy (<a href="https://developer.mozilla.org/en-US/docs/Web/Media/Autoplay_guide" target="_blank">Mozilla</a>, <a href="https://developer.chrome.com/blog/autoplay/" target="_blank">Chrome</a>).
+**Note**! If both Autoplay and Mute are active, only one option will work. It depends on an end user's browser policy (<a href="https://developer.mozilla.org/en-US/docs/Web/Media/Autoplay_guide" target="_blank">Mozilla</a>, <a href="https://developer.chrome.com/blog/autoplay" target="_blank">Chrome</a>).
 
 5\.  Enable necessary player control options:
 

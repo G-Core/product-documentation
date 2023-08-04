@@ -11,7 +11,7 @@ pageDescription: A comprehensive guide on integrating CDN resources with AWS S3 
 
 Before you start, please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
 
-Login to the <a href="https://console.aws.amazon.com/" target="_blank">AWS Console</a> and navigate to S3.
+Login to the <a href="https://console.aws.amazon.com" target="_blank">AWS Console</a> and navigate to S3.
 
 Create an S3 bucket (define the Bucket Name and the Region you want)
 

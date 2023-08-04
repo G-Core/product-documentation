@@ -17,7 +17,7 @@ pageDescription: A guide on how to install FileZilla and configure its connectio
 
 You can use bash to connect to the SFTP storage. In the example, we use the FTP client FileZilla.
 
-To download and install FileZilla, use <a href="https://filezilla-project.org/" target="_blank">this link</a>.
+To download and install FileZilla, use <a href="https://filezilla-project.org" target="_blank">this link</a>.
 
 ## Configure connection
 

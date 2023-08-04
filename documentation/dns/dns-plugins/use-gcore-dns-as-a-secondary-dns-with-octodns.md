@@ -56,7 +56,7 @@ mkdir ~/octodns ~/octodns/config
 cd ~/octodns
 ```
 
-6\. Create a <a href="https://www.python.org/dev/peps/pep-0405/" target="_blank">python virtual environment</a>, activate it and stay in it while you work with this tutorial.
+6\. Create a <a href="https://python.org/dev/peps/pep-0405" target="_blank">python virtual environment</a>, activate it and stay in it while you work with this tutorial.
 
 7\. (Optional) if you don’t have Git, install it via the following command:
 

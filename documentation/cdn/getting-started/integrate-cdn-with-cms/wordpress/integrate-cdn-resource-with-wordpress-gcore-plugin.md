@@ -24,7 +24,7 @@ To activate the plugin, click on the Activate button or go to Plugins -> Install
 
 <img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-gcore-plugin/________________.png" alt="" width="50%">
 
-You can also download the Gcore plugin via the <a href="https://wordpress.org/plugins/g-core-labs-cdn/" target="_blank">link</a>.
+You can also download the Gcore plugin via the <a href="https://wordpress.org/plugins/g-core-labs-cdn" target="_blank">link</a>.
 After successful installation, you will see the Gcore plugin in the WordPress menu.
 
 ## Working with the plugin

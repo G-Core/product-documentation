@@ -24,7 +24,7 @@ FaaS is based on serverless computing, in which you can use computing resources 
 
 1\. You write the code of the app or app component that you want to run automatically via FaaS.
 
-2\. In your Gcore <a href="https://cloud.gcore.com/cloud/" target="_blank">Control panel</a> or in an API request, you create a function and insert your code into it.
+2\. In your Gcore <a href="https://cloud.gcore.com/cloud" target="_blank">Control panel</a> or in an API request, you create a function and insert your code into it.
 
 3\. Our system deploys a Kubernetes pod exclusively for this function. You don’t have to worry about the pod or other infrastructure resources. We create, manage, and monitor it for you.
 
@@ -50,9 +50,9 @@ FaaS is the best solution to:
 
 ## Features of Gcore FaaS
 
-Our FaaS supports several runtime environments. You can find available runtimes and locations on <a href="https://gcore.com/cloud/faas/" target="_blank">our website</a> and the Gcore <a href="https://cloud.gcore.com/cloud/" target="_blank">Control panel</a>.
+Our FaaS supports several runtime environments. You can find available runtimes and locations on <a href="https://gcore.com/cloud/faas" target="_blank">our website</a> and the Gcore <a href="https://cloud.gcore.com/cloud" target="_blank">Control panel</a>.
 
-You can manage your functions via the Gcore <a href="https://cloud.gcore.com/cloud/" target="_blank">Control panel</a> and <a href="https://api.gcore.com/docs/cloud" target="_blank">REST API</a>.
+You can manage your functions via the Gcore <a href="https://cloud.gcore.com/cloud" target="_blank">Control panel</a> and <a href="https://api.gcore.com/docs/cloud" target="_blank">REST API</a>.
 
 You can set the pod lifetime, the limit of additional pods, and environmental variables.
 

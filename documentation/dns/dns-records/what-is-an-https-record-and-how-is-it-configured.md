@@ -63,7 +63,7 @@ Combining all relevant parameters into a single lookup response reduces the numb
 
 ## How to Configure the HTTPS Record in the Control Panel
 
-1\. Navigate to the <a href="https://dns.gcore.com/" target="_blank">DNS</a> section. Click on the zone of the domain where you wish to add the HTTPS record.
+1\. Navigate to the <a href="https://dns.gcore.com" target="_blank">DNS</a> section. Click on the zone of the domain where you wish to add the HTTPS record.
 
 2\. Click **Add record**.
 

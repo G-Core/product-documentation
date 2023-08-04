@@ -10,7 +10,7 @@ pageDescription: Learn how to test the connectivity between your location and th
 # Test the connectivity between your location and the server you want to buy
 
 
-To test the connectivity between your IP address and one of our static nodes, you can use our <a href="https://lg.gcore.lu/" target="_blank">Looking Glass</a> tool.
+To test the connectivity between your IP address and one of our static nodes, you can use our <a href="https://lg.gcore.lu" target="_blank">Looking Glass</a> tool.
 
 1\. In the **Nodes**, choose the location of the server from the drop-down list.
 

@@ -15,13 +15,13 @@ pageDescription: A guide on how to get actual IPs of visitors with the X-Forward
 
 ## Why use the X-Forwarded-For header
 
-When you enable <a href="https://www.gcore.com/web-security" target="_blank">Web Application Security</a>, our servers function as a reverse proxy and filter requests to your server. By default, only our IP addresses will be visible in the access logs. If you want to obtain the actual IP addresses of your visitors, you can configure your system to retrieve the addresses from the *X-Forwarded-For* header using the *realip* module.
+When you enable <a href="https://gcore.com/web-security" target="_blank">Web Application Security</a>, our servers function as a reverse proxy and filter requests to your server. By default, only our IP addresses will be visible in the access logs. If you want to obtain the actual IP addresses of your visitors, you can configure your system to retrieve the addresses from the *X-Forwarded-For* header using the *realip* module.
 
 ## Configure the realip module on your server
 
 ### Nginx
 
-1\. Use the <a href="http://nginx.org/en/docs/http/ngx_http_realip_module.html" target="_blank">ngx_http_realip_module</a> and add two key directives: *set_real_ip_from* and *real_ip_header*.
+1\. Use the <a href="https://nginx.org/en/docs/http/ngx_http_realip_module.html" target="_blank">ngx_http_realip_module</a> and add two key directives: *set_real_ip_from* and *real_ip_header*.
 
 - The *set_real_ip_from* directive specifies the trusted subnets.
 

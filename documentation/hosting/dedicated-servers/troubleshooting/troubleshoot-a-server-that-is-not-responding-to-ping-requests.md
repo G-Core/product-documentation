@@ -11,8 +11,8 @@ pageDescription: Troubleshoot a server that is not responding to ping requests w
 
 1\. If you can't reach your IP address from China, make sure the IP address is not blocked by the Great Firewall. Use the following services:
 
-- <a href="http://ping.chinaz.com/" target="_blank">PingChinaz</a> - the tool shows a connectivity status only in China
-- <a href="http://ping.pe/" target="_blank">ping.pe</a> - the tool shows a worldwide connectivity status, including China
+- <a href="https://ping.chinaz.com" target="_blank">PingChinaz</a> - the tool shows a connectivity status only in China
+- <a href="https://ping.pe" target="_blank">ping.pe</a> - the tool shows a worldwide connectivity status, including China
 
 Please note that due to the Chinese network restrictions, we cannot guarantee the proper functioning of our service in China. The Great Firewall randomly blocks IP addresses, but you may solve this issue by purchasing <a href="https://gcore.com/docs/hosting/dedicated-servers/manage/networking/additional-ip-addresses/buy-an-additional-ip-address" target="_blank">additional IP addresses</a>.
 
