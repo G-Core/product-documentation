@@ -21,7 +21,7 @@ When you enable <a href="https://gcore.com/web-security" target="_blank">Web App
 
 ### Nginx
 
-1\. Use the <a href="http://nginx.org/en/docs/http/ngx_http_realip_module.html" target="_blank">ngx_http_realip_module</a> and add two key directives: *set_real_ip_from* and *real_ip_header*.
+1\. Use the <a href="https://nginx.org/en/docs/http/ngx_http_realip_module.html" target="_blank">ngx_http_realip_module</a> and add two key directives: *set_real_ip_from* and *real_ip_header*.
 
 - The *set_real_ip_from* directive specifies the trusted subnets.
 

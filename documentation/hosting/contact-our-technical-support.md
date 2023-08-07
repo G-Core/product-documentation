@@ -15,7 +15,7 @@ The technical support specialists are here for you 24/7. There are two ways to 
 
 ## Chat
 
-Go to our <a href="https://gcore.com/" target="_blank">website</a>. Click the chat icon in the corner of the page and start a dialogue with a specialist.
+Go to our <a href="https://gcore.com" target="_blank">website</a>. Click the chat icon in the corner of the page and start a dialogue with a specialist.
 
 ## Ticket
 

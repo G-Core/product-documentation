@@ -28,7 +28,7 @@ When the DNS zone creation is completed, you can set the DNS records of your dom
 
 ### Create a DNS zone
 
-1\. Go to the <a href="https://dns.gcore.com/" target="_blank">DNS</a> section and click the **Add zone** button. 
+1\. Go to the <a href="https://dns.gcore.com" target="_blank">DNS</a> section and click the **Add zone** button. 
 
 <img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/13137090774673.png" alt="">
 

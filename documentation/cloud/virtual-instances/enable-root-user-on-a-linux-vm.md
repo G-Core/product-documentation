@@ -13,7 +13,7 @@ Once you have connected to your virtual machine via <a href="https://gcore.com/d
 
 ## sudo vs sudo su
 
-**`sudo`** (which stands for <a href="https://www.sudo.ws/" target="_blank">Super Do</a>) is a free command-line utility used in Unix-like operating systems such as the Linux family of distributions (including Ubuntu, Debian, and CentOS). `sudo` allows a regular user to temporarily elevate their privileges to a higher level, such as root, in order to execute tasks that require root user rights.
+**`sudo`** (which stands for <a href="https://sudo.ws" target="_blank">Super Do</a>) is a free command-line utility used in Unix-like operating systems such as the Linux family of distributions (including Ubuntu, Debian, and CentOS). `sudo` allows a regular user to temporarily elevate their privileges to a higher level, such as root, in order to execute tasks that require root user rights.
 
 **`sudo su`** is a combination of `sudo` and `su`, where `su` means “switch user” or “substitute user.” Using `sudo su`, you can switch to being the root user for the duration of an active session. Consequently, all actions within the current session will be performed with root user permissions.
 

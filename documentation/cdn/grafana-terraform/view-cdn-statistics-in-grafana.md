@@ -53,7 +53,7 @@ Video instructions of the steps:
 
 Unzip the archive to the Grafana plugin folder. By default, this is the *Grafana\grafana\data\plugins* installation folder.
 
-<a href="https://grafana.com/docs/grafana/latest/installation/restart-grafana/" target="_blank">Restart</a> and <a href="https://grafana.com/docs/grafana/latest/getting-started/getting-started/#step-2-log-in" target="_blank">log</a> in to Grafana.
+<a href="https://grafana.com/docs/grafana/latest/installation/restart-grafana" target="_blank">Restart</a> and <a href="https://grafana.com/docs/grafana/latest/getting-started/getting-started/#step-2-log-in" target="_blank">log</a> in to Grafana.
 
 Click the gear icon in the menu to open the "Configuration" section, select "Data Sources".
 

@@ -24,7 +24,7 @@ To work with Terraform, you create a configuration file where you specify the ch
 
 ## Install Terraform and integrate it with our CDN 
 
-1\. Download the appropriate Terraform package for your OS from the <a href="https://www.terraform.io/downloads" target="_blank">official Terraform website</a>.  
+1\. Download the appropriate Terraform package for your OS from the <a href="https://terraform.io/downloads" target="_blank">official Terraform website</a>.  
 
 2\. Create a new folder and name it just as the downloaded package. 
 

@@ -341,7 +341,7 @@ Not all fields are important. Some of them relate to our internal CDN system and
   <tr>
     <td>$geoip_country_code</td>
     <td>KZ</td>
-    <td>User’s country code according to the <a href="https://www.iso.org/obp/ui/#search/code/"><span style="text-decoration:underline;color:#FF5700">ISO 3166 standard</span></a> (Alpha-2 code).</td>
+    <td>User’s country code according to the <a href="https://iso.org/obp/ui/#search/code"><span style="text-decoration:underline;color:#FF5700">ISO 3166 standard</span></a> (Alpha-2 code).</td>
   </tr>
   <tr>
     <td>$geoip_city</td>
@@ -351,7 +351,7 @@ Not all fields are important. Some of them relate to our internal CDN system and
   <tr>
     <td>$shield_type<br>(internal system variable)</td>
     <td>shield_no</td>
-    <td>This field shows whether the <a href="https://gcorelabs.com/support/articles/214080309/"><span style="text-decoration:underline;color:#FF5700">shielding option</span></a> is enabled:<br>shield_old - enabled<br>shield_no - disabled</td>
+    <td>This field shows whether the <a href="https://gcorelabs.com/support/articles/214080309"><span style="text-decoration:underline;color:#FF5700">shielding option</span></a> is enabled:<br>shield_old - enabled<br>shield_no - disabled</td>
   </tr>
   <tr>
     <td>$server_addr<br>(internal system variable)</td>
@@ -441,7 +441,7 @@ Not all fields are important. Some of them relate to our internal CDN system and
   <tr>
   <td>$server_country_code</td>
   <td>PL</td>
-  <td>Server’s country code according to the <a href="https://www.iso.org/obp/ui/#search/code/"><span style="text-decoration:underline;color:#FF5700">ISO 3166 standard</span></a> (Alpha-2 code).</td>
+  <td>Server’s country code according to the <a href="https://iso.org/obp/ui/#search/code"><span style="text-decoration:underline;color:#FF5700">ISO 3166 standard</span></a> (Alpha-2 code).</td>
   </tr>
 </tbody>
 </table>

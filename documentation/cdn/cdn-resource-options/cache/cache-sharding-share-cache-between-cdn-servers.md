@@ -22,7 +22,7 @@ This feature is particularly important for websites and applications with a larg
 
 In a system without Cache Sharding, a CDN server only checks *its own* cache for a file request. This is inefficient when there are many servers in one PoP: if a server *without* the file gets a request, it retrieves a file from the origin instead of a neighboring server.
 
-When Cache Sharding is enabled for a CDN resource, CDN servers within one PoP (or data center) are clustered to use each others’ cache with the <a href="https://www.toptal.com/big-data/consistent-hashing#:~:text=according%20to%20Wikipedia).-,Consistent%20Hashing%20is%20a%20distributed%20hashing%20scheme%20that%20operates%20independently,without%20affecting%20the%20overall%20system" target="_blank">consistent hashing algorithm</a>.
+When Cache Sharding is enabled for a CDN resource, CDN servers within one PoP (or data center) are clustered to use each others’ cache with the <a href="https://toptal.com/big-data/consistent-hashing#:~:text=according%20to%20Wikipedia).-,Consistent%20Hashing%20is%20a%20distributed%20hashing%20scheme%20that%20operates%20independently,without%20affecting%20the%20overall%20system" target="_blank">consistent hashing algorithm</a>.
 
 Consistent hashing is a method in which data is stored in a hash table using a hash function. The key of each data item is passed through a hash function, which calculates the address in the “hash ring” and determines in which sector of this ring the hash code is. This hash code indicates on which server the data is stored.
 

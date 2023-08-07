@@ -30,7 +30,7 @@ To work with Terraform, you create a configuration file where you specify the ch
 
 ## Install Terraform and integrate it with our Cloud
 
-1\. Download a Terraform package suitable for your OS from the <a href="https://www.terraform.io/downloads" target="_blank">official Terraform website</a>.
+1\. Download a Terraform package suitable for your OS from the <a href="https://terraform.io/downloads" target="_blank">official Terraform website</a>.
 
 2\. Create a new folder and name it the same as the downloaded package.
 

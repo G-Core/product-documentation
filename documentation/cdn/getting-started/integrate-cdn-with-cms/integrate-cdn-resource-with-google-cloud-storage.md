@@ -9,7 +9,7 @@ pageDescription: A comprehensive guide on integrating CDN resources with Google 
 ---
 # Integrate CDN resource with Google Cloud Storage
 
-This guide describes how you could use <a href="https://cloud.google.com/storage/" target="_blank">Google Cloud Storage</a> as an origin server.  
+This guide describes how you could use <a href="https://cloud.google.com/storage" target="_blank">Google Cloud Storage</a> as an origin server.  
 
 Create a Google Cloud Storage (GCS) bucket.
 

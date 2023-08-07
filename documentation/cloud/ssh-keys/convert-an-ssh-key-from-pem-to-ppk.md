@@ -10,7 +10,7 @@ pageDescription: Learn how to convert an SSH key from PEM to PPK format
 
 To convert an SSH key from PEM format to PPK format, you can use PuTTYgen:
 
-1\. Install and open <a href="https://www.putty.org/" target="_blank">PuTTY</a>.  
+1\. Install and open <a href="https://putty.org" target="_blank">PuTTY</a>.  
 
 2\. Click the **Load** button and select the PEM file with the key you want to convert.
 

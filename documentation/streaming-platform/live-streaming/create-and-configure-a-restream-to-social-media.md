@@ -23,7 +23,7 @@ Example: you use our Streaming Platform for an educational site where you hold w
 
 ## Configure a restream
 
-1\. To enable the feature, send us a request via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of <a href="https://gcore.com/" target="_blank">our website</a>. Please specify your ID in the request, so that we can identify your account. You can find it on the main page of your <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>.
+1\. To enable the feature, send us a request via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of <a href="https://gcore.com" target="_blank">our website</a>. Please specify your ID in the request, so that we can identify your account. You can find it on the main page of your <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>.
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-and-configure-a-restream-to-social-media/Your_ID.png" alt="" width="80%">
 
@@ -35,7 +35,7 @@ We will notify you when the feature is activated. After that, you will be able t
 
 2\. Get credentials from the target platform for the restream. Our guides for popular platforms describe how to do it: <a href="https://en-gb.facebook.com/help/587160588142067?helpref=faq_content" target="_blank">Facebook</a>, <a href="https://support.google.com/youtube/answer/2907883?hl=en" target="_blank">YouTube</a> and <a href="https://help.twitch.tv/s/article/twitch-stream-key-faq" target="_blank">Twitch</a>.
 
-For example, we want to broadcast our live stream on YouTube. To do so, we should go to <a href="https://www.youtube.com/" target="_blank">YouTube</a> and click **Go live**. Then select a Streaming software solution. There we will need the credentials (stream URL and stream key). We will use them in step 6 of this guide.
+For example, we want to broadcast our live stream on YouTube. To do so, we should go to <a href="https://youtube.com" target="_blank">YouTube</a> and click **Go live**. Then select a Streaming software solution. There we will need the credentials (stream URL and stream key). We will use them in step 6 of this guide.
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-and-configure-a-restream-to-social-media/Stream_key.png" alt="">
 

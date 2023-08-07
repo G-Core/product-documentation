@@ -20,7 +20,7 @@ pageDescription: Explore our AI Infrastructure. Graphcore servers, top performan
 
 ## What is AI Infrastructure?
 
-AI Infrastructure is a cluster of <a href="https://www.graphcore.ai/" target="_blank">Graphcore</a> servers which are designed for ML tasks. These servers have [high specifications](https://gcore.com/docs/cloud/ai-Infrustructure/about-our-ai-infrastructure#server-specifications-and-performance) and are configured for processing a great amount of data in a short time (you can find the results of performance tests in the [Performance tests](https://gcore.com/docs/cloud/ai-Infrustructure/about-our-ai-infrastructure#performance-tests-graphcore-m2000-vs-nvidia-dgx-a100) section).
+AI Infrastructure is a cluster of <a href="https://graphcore.ai" target="_blank">Graphcore</a> servers which are designed for ML tasks. These servers have [high specifications](https://gcore.com/docs/cloud/ai-Infrustructure/about-our-ai-infrastructure#server-specifications-and-performance) and are configured for processing a great amount of data in a short time (you can find the results of performance tests in the [Performance tests](https://gcore.com/docs/cloud/ai-Infrustructure/about-our-ai-infrastructure#performance-tests-graphcore-m2000-vs-nvidia-dgx-a100) section).
 
 This infrastructure consists of three entities:
 
@@ -62,7 +62,7 @@ We provide two types of Graphcore servers: M2000 and Bow-2000. M2000 is a second
 
 ### Performance tests: Graphcore M2000 vs NVIDIA DGX A100
 
-Here are results of <a href="https://www.graphcore.ai/posts/graphcore-sets-new-ai-performance-standards-with-mk2-ipu-systems" target="_blank">processing of two popular computer vision models on M2000 and NVIDIA DGX A100</a> (another popular solution for machine learning).
+Here are results of <a href="https://graphcore.ai/posts/graphcore-sets-new-ai-performance-standards-with-mk2-ipu-systems" target="_blank">processing of two popular computer vision models on M2000 and NVIDIA DGX A100</a> (another popular solution for machine learning).
 
 <media-gallery>
 <img src="https://www.graphcore.ai/hs-fs/hubfs/ResNet%2050%20Training_December%202020.jpg?width=590&amp;name=ResNet%2050%20Training_December%202020.jpg">
@@ -74,7 +74,7 @@ Here are results of <a href="https://www.graphcore.ai/posts/graphcore-sets-new-a
 <img src="https://www.graphcore.ai/hs-fs/hubfs/ResNeXt%20Inference_December%202020.jpg?width=591&amp;name=ResNeXt%20Inference_December%202020.jpg">
 </media-gallery>
 
-You can find results of a higher number of comparative tests (12 in total) in the article <a href="https://www.graphcore.ai/posts/graphcore-sets-new-ai-performance-standards-with-mk2-ipu-systems" target="_blank">Graphcore Sets New Ai Performance Standards With MK2 IPU System</a>. 
+You can find results of a higher number of comparative tests (12 in total) in the article <a href="https://graphcore.ai/posts/graphcore-sets-new-ai-performance-standards-with-mk2-ipu-systems" target="_blank">Graphcore Sets New Ai Performance Standards With MK2 IPU System</a>. 
 
 ## Tools our AI Infrastructure supports
 

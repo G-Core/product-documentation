@@ -9,7 +9,7 @@ pageDescription: Troubleshoot issues with SSH connection with this guide.
 ---
 # Troubleshoot issues with SSH connection
 
-SSH connection uses 22 port, so, first of all, check the server availability via 22 port running _telnet_ command or by using <a href="https://www.putty.org/" target="_blank">Putty</a> application.
+SSH connection uses 22 port, so, first of all, check the server availability via 22 port running _telnet_ command or by using <a href="https://putty.org" target="_blank">Putty</a> application.
 
 For example:  
 

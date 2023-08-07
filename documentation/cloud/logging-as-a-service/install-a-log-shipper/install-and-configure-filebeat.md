@@ -19,7 +19,7 @@ In Filebeat’s Settings, specify a source of the logs you need, for example, lo
 
 ## Install
 
-An up-to-date link for Filebeat installation is available on its <a href="https://www.elastic.co/beats/filebeat" target="_blank">Filebeat official webpage</a>. Open the Filebeat website and click **Download**.
+An up-to-date link for Filebeat installation is available on its <a href="https://elastic.co/beats/filebeat" target="_blank">Filebeat official webpage</a>. Open the Filebeat website and click **Download**.
 
 ## Configure 
 
@@ -49,7 +49,7 @@ Customize the highlighted values:
 - <span style="color:#FF5913">yourlogin</span>: Your username on the Logging page
 - <span style="color:#FF5913">yourpassword</span>: Your password
 
-You can also collect logs from other sources such as TCP, UDP, or syslog. For more details, refer to the <a href="https://www.elastic.co/guide/en/beats/filebeat/current/configuration-filebeat-options.html" target="_blank">"Configure inputs" section of the Filebeat documentation</a>: Click the log source you need, and configure the `inputs` section following the provided guide.
+You can also collect logs from other sources such as TCP, UDP, or syslog. For more details, refer to the <a href="https://elastic.co/guide/en/beats/filebeat/current/configuration-filebeat-options.html" target="_blank">"Configure inputs" section of the Filebeat documentation</a>: Click the log source you need, and configure the `inputs` section following the provided guide.
 
 <expandable-element title="Descriptions of the OUTPUT strings">
 

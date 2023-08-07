@@ -388,7 +388,7 @@ Example: ```&itisparticipant=true```
 
 #### &amp;lang=&lt;code&gt;
 
-This helps to set the UI language of a meeting to match your product or service. In general, the UI language depends on language settings of a participant's browser. A user sets the language in their browser settings, and then its value is transmitted by the browser in the "Accept-Language" header of an HTTP request <a href="https://www.w3.org/International/questions/qa-lang-priorities" target="_blank">info</a>.  
+This helps to set the UI language of a meeting to match your product or service. In general, the UI language depends on language settings of a participant's browser. A user sets the language in their browser settings, and then its value is transmitted by the browser in the "Accept-Language" header of an HTTP request <a href="https://w3.org/International/questions/qa-lang-priorities" target="_blank">info</a>.  
 
 Select one of these: 
 
@@ -527,7 +527,7 @@ Example: ```&startWithFS=true```
 
 #### &amp;token=&lt;jwt&gt;
 
-The JSON Web Tokens is an open, standard method for representing claims securely between two parties: <a href="https://jwt.io/" target="_blank">https://jwt.io/</a>
+The JSON Web Tokens is an open, standard method for representing claims securely between two parties: <a href="https://jwt.io" target="_blank">https://jwt.io/</a>
 
 The JWT allows you:
 
@@ -746,7 +746,7 @@ As you know, recording of a room is made by our Streaming Platform, and video fi
 
 Steps: 
 
-1. Generate a permanent token in your personal account via the <a href="https://accounts.gcore.com/profile/api-tokens/" target="_blank">link</a>.  
+1. Generate a permanent token in your personal account via the <a href="https://accounts.gcore.com/profile/api-tokens" target="_blank">link</a>.  
 2. Use parameters: 
   - Name = "Video conference recording" or any title you prefer; 
   - Role = Administrator; 
@@ -1694,7 +1694,7 @@ We use RS256 or HS256 algorithm for signing and generating hash. RS256 refers to
 | RS256               | RSASSA-PKCS1-v1_5 using SHA-256 |
 |  HS256              |  HMAC using SHA-256             |
 
-Please use <a href="https://jwt.io/" target="_blank">https://jwt.io/</a> to verify your JWT tokens.
+Please use <a href="https://jwt.io" target="_blank">https://jwt.io/</a> to verify your JWT tokens.
 
 **RS256**
 

@@ -12,7 +12,7 @@ toc:
 
 ## What is the "Block" feature?
 
-The <a href="https://admin-platform.gcore.top/" target="_blank">new admin panel's</a> "Block" feature allows you to block users and sellers, which is an effective tool for managing access to the admin or control panel and maintaining a secure and trustworthy community of consumers.
+The <a href="https://admin-platform.gcore.top" target="_blank">new admin panel's</a> "Block" feature allows you to block users and sellers, which is an effective tool for managing access to the admin or control panel and maintaining a secure and trustworthy community of consumers.
 
 The following restrictions apply to blocked users and sellers:
 

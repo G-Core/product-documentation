@@ -5,7 +5,7 @@ published: true
 ---
 # Account settings
 
-Welcome to the <a href="https://accounts.gcore.com/" target="_blank">Gcore account settings</a> documentation page! Here we explain how the control panel is arranged and how to configure functions.
+Welcome to the <a href="https://accounts.gcore.com" target="_blank">Gcore account settings</a> documentation page! Here we explain how the control panel is arranged and how to configure functions.
 
 From the left-side menu, you can access in-depth documentation about your account and control panel:
 

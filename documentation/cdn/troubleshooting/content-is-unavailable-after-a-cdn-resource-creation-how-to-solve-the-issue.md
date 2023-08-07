@@ -59,7 +59,7 @@ If the CNAME record doesn’t set up, this notification will appear:
 
 If there is a notification, go to step 3. If there isn’t, go to the [next troubleshooting section](https://gcore.com/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue#2-check-the-host-header-option).
 
-3\. Open <a href="https://toolbox.googleapps.com/apps/dig/" target="_blank">Google Admin Toolbox</a>, select the CNAME tab, and enter the CNAME of your CDN resource from the notification (in the screenshot above, it is *cdn.example.com*). Press **Enter**.
+3\. Open <a href="https://toolbox.googleapps.com/apps/dig" target="_blank">Google Admin Toolbox</a>, select the CNAME tab, and enter the CNAME of your CDN resource from the notification (in the screenshot above, it is *cdn.example.com*). Press **Enter**.
 
 <img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image4.png" alt="" width="80%">
 
@@ -205,7 +205,7 @@ If you see that the certificate is issued for the personal domain of your resour
 
 If not, you need to renew the certificate (if the problem is caused by expiration) or issue a new one for the personal domain of your CDN resource.
 
-3\. Go to the <a href="https://www.ssllabs.com/ssltest/" target="_blank">SSLlabs</a> website, enter the personal domain name in the Hostname field and press the **Submit** button as follows:
+3\. Go to the <a href="https://ssllabs.com/ssltest" target="_blank">SSLlabs</a> website, enter the personal domain name in the Hostname field and press the **Submit** button as follows:
 
 <img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image15.png" alt="" width="80%">
 
@@ -290,6 +290,6 @@ If you see that the **Etag** and **Content-Length** values of the two files don�
 
 If the values are the same and the date is relevant, purging has been performed correctly.
 
-4\. Try to repeat purging according to the "<a href="https://gcore.com/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all" target="_blank">Clear CDN resource cache by URL, pattern or all</a>" guide. Pay attention to the path pattern if you select Selective purge. We recommend checking whether the pattern was right by using the <a href="https://regex101.com/" target="_blank">regular expressions</a> service. To do this, enter the path pattern for purging on the top line, and in the bottom area, enter the URL of the file. If you see the result “no matches”, there was an error in the path pattern. Correct the path pattern and repeat purging.
+4\. Try to repeat purging according to the "<a href="https://gcore.com/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all" target="_blank">Clear CDN resource cache by URL, pattern or all</a>" guide. Pay attention to the path pattern if you select Selective purge. We recommend checking whether the pattern was right by using the <a href="https://regex101.com" target="_blank">regular expressions</a> service. To do this, enter the path pattern for purging on the top line, and in the bottom area, enter the URL of the file. If you see the result “no matches”, there was an error in the path pattern. Correct the path pattern and repeat purging.
 
 If the problem persists after performing troubleshooting according to this guide, contact support via chat or email at [support@gcore.com](mailto:support@gcore.com). You may have an atypical problem that requires assistance from technical specialists. We’ll be happy to help!

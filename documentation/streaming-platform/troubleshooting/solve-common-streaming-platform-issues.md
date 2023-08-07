@@ -22,7 +22,7 @@ We are covering some issues you may encounter when working with both Live and VO
 
 For the most common issues, such as video not playing, taking a long time to start streaming, or looking blurry, these basic checks should help:
 
-- **Status page**. Check if the issue you are experiencing is related to any known issue or is an isolated one by visiting the <a href="https://status.gcore.com/" target="_blank">status page</a>.
+- **Status page**. Check if the issue you are experiencing is related to any known issue or is an isolated one by visiting the <a href="https://status.gcore.com" target="_blank">status page</a>.
 - **Source video**. Ensure that the source content is uploaded for streaming. If the same issue occurs in the source, re-upload the video or restart the stream.
 - **Stream URL and code**. Make sure to use the exact URL and embed code that appear in the Streaming settings.
 - **Streaming settings**. Make sure the stream is enabled. If configured to pull a stream, make sure the source URL is correct.
@@ -77,7 +77,7 @@ To avoid this situation:
 *Suggested solution*: Our low latency solution has a latency of 4-5 seconds. If the delay is more than 5 seconds:
 
 - Make sure that the player supports the DASH.JS library.
-- Try testing your low latency stream at the open source <a href="https://reference.dashif.org/dash.js/" target="_blank">DASH.JS player</a>.
+- Try testing your low latency stream at the open source <a href="https://reference.dashif.org/dash.js" target="_blank">DASH.JS player</a>.
 
 ### Upload
 
