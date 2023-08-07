@@ -91,7 +91,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
                 this.tableOfContentsHeaders = this.tableOfContents
                     .map(({ fragment }) => {
                         if (fragment) {
-                            return document.querySelector(`#${fragment}`);
+                            return document.getElementById(`${fragment}`);
                         }
                         return null;
                     })
