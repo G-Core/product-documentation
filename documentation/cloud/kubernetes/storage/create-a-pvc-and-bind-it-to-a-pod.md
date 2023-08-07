@@ -5,8 +5,6 @@ published: true
 toc:
    --1--What are PV and PVC?: "what-are-pv-and-pvc"
    --1--Create a PVC: "create-a-pvc"
-   --2--To connect to ‘standard’ disk-type storage: "create-a-pvc-to-connect-to-a-standard-disk-type-storage-class"
-   --2--To connect to ‘ultra’, ‘cold’, or ‘ssd_hiiops’ disk-type storage: "create-a-pvc-to-connect-to-ultra-cold-ssd-hiiops-disk-type-storage"
    --1--Bind a PVC to a pod: "bind-your-pvc-to-a-pod"
 pageTitle: Understand and manage PVC | Gcore
 pageDescription: Learn how to create a Persistent Volume Claim (PVC) for different disk types in Kubernetes to request storage and bind it to a pod.
