@@ -37,11 +37,7 @@ All tiles are collected in a single array—*storyboard*. A storyboard is a larg
 
 Timeline hover previews are embedded into Gcore’s Player by default, so previews are displayed automatically. For example:
 
-```
-
-
-<iframe width="1280" height="720" src="https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-```
+<iframe width="720" height="360" src="https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
 For external players, previews are available in two ways: 
 
