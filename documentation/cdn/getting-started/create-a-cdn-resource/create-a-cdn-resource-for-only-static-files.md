@@ -34,7 +34,7 @@ You can create up to 30 CDN resources in one account. 
 
 <img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/image1.png" alt="" width="80%">
 
-4\. Add a CNAME record for the domain that you specified in Step 3 as *cdn.yourdomain.com*. You need to do it in your DNS provider's personal account. For a CNAME value, enter a subdomain shown in our personal account as _*.gcdn.co_. For example, in the screenshot below it is written as *cl-2db15545.gcdn.co*, so, for the *cdn.yourdomain.com* subdomain, you need to create a CNAME record with the value *cl-2db15545.gcdn.co*. 
+4\. Add a CNAME record for the domain that you specified in Step 3 as *cdn.yourdomain.com*. You need to do it in your DNS provider's personal account. For a CNAME value, enter a subdomain shown in your Gcore personal account as _*.gcdn.co_. For example, in the screenshot below it is written as *cl-2db15545.gcdn.co*, so, for the *cdn.yourdomain.com* subdomain, you need to create a CNAME record with the value *cl-2db15545.gcdn.co*. 
 
 If you specified additional domain names in Step 3, create CNAME records for them with the same value as well.
 
