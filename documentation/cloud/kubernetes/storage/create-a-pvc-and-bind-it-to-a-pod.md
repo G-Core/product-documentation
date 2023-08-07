@@ -15,55 +15,50 @@ pageDescription: Learn how to create a Persistent Volume Claim (PVC) for differe
   
 ## What are PV and PVC?
 
-A PV (Persistent Volume) in Kubernetes is a resource used to store data. It is attached to pods but have a separate lifecycle, specified by its Reclaim Policy. This policy determines if a PV will continue to exist or will be deleted when a pod attached to it gets destroyed.
+A PV (PersistentVolume) in Kubernetes is a resource used to store data. It is attached to pods but has a separate lifecycle, specified by its reclaim policy. This policy determines if a PV will continue to exist or will be deleted when a pod attached to it gets destroyed.
 
-A PV represents a piece of available storage. To use a PV, a user needs to create a persistent volume claim (PVC), which is a request for storage. Kubernetes passes this request to a storage class, which creates PVs automatically in response to the PVC.
+A PV represents a piece of available storage. To use a PV, a user needs to create a PersistentVolumeClaim (PVC,) which is a request for storage. Kubernetes passes this request to a storage class, which creates PVs automatically in response to the PVC.
 
 ## Create a PVC
 
-There are four storage classes based on the disk type: standard, ultra, cold, and ssd_hiiops. The standard disk-type storage class exists by default, so you simply need to create a default PVC. For any other disk type, you first have to create a storage class with the required disk type and then create a PVC.
+Before you create a PVC, you need to create a storage class with the required disk type. Gcore provides the following disk types:
 
-### Create a PVC to connect to a standard disk-type storage class
+<table>
+   <tr>
+      <td>Volume type</td>
+      <td>Features</td>
+   </tr>
+   <tr>
+      <td>standard</td>
+      <td> Standard
 
-1\. Create a YAML file to configure a PVC:
+Network SSD disk, which provides stable and high random I/O performance, as well as high data reliability (6 IOPS per 1 GiB; 0.4 MB/s per 1 GiB.) The IOPS performance limit is 4,500. The bandwidth limit is 300 MB/s.
+      </td>
+   </tr>
+   <tr>
+      <td>ssd_hiiops</td>
+      <td> High IOPS SSD
 
-<code-block>
-apiVersion: v1  
-kind: PersistentVolumeClaim  
-metadata:  
-  name: <span style="color:#FF5913">block-pvc</span>  
-spec:  
-  accessModes:  
-    - ReadWriteOnce  
-  resources:  
-    requests:  
-      storage: <span style="color:#FF5913">1Gi</span>
-</code-block>
+High-performance SSD block storage designed for latency-sensitive transactional workloads (60 IOPS per 1 GiB; 2.5 MB/s per 1 GiB.) The IOPS performance limit is 9,000. The bandwidth limit is 500 MB/s.
+      </td>
+   </tr>
+   <tr>
+      <td>ssd_lowlatency</td>
+      <td>SSD Low Latency
 
-Enter your custom values instead:
+SSD block storage, designed for applications that require low-latency storage and real-time data processing. It can achieve IOPS performance of up to 5000, with an average latency of 300 µs.
+      </td>
+</table>
 
-- <span style="color:#FF5913">block-pvc</span>—the PVC name  
-- <span style="color:#FF5913">1Gi</span>—the required storage size
+To proceed with a PVC, follow the steps:
 
-2\. Run the kubectl command from the file directory:
+1. Make sure the required disk type is available in your region. To do so, go to the **Kubernetes** tab, select the required region and click **Create new cluster**. Click the **Volume type** field and check which options are available on the drop-down list. 
 
-```
-kubectl apply -f <name of the YAML file>.yaml
-```
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/storage/create-a-pvc-and-bind-it-to-a-pod/1-available-volumes.jpg" alt="">
 
-You will get the output:
+If you create a storage class with a volume type that is not available in your region, the PV won’t work.
 
-```
-persistentvolumeclaim/<the name of the created PVC> created
-```
-
-It means you have created a PVC with a standard disk-type storage class. To connect the PVC to your pods, refer to the [Bind a PVC to a pod](https://gcore.com/docs/cloud/kubernetes/storage/create-a-pvc-and-bind-it-to-a-pod#bind-your-pvc-to-a-pod) section.
-
-### Create a PVC to connect to ultra/cold/ssd_hiiops disk-type storage
-
-You can check the available disk types in different regions in the <a href="https://cloud.gcore.com/cloud/projects/list" target="_blank">Gcore Control panel</a> or via <a href="https://api.gcore.com/docs/cloud" target="_blank">an API request</a>.
-
-1\. Create a YAML file to configure a storage class with the required disk type:
+2. Create a YAML file to create a storage class with the required disk type:
 
 <code-block>
 apiVersion: storage.k8s.io/v1  
@@ -80,8 +75,8 @@ allowVolumeExpansion: true
 
 Enter your custom values instead:
 
-- <span style="color:#FF5913">csi-sc-cinderplugin-hiiops</span>—the storage class name  
-- <span style="color:#FF5913">ssd_hiiops</span>—the required disk type
+- <span style="color:#FF5913">`csi-sc-cinderplugin-hiiops`</span>: Storage class name  
+- <span style="color:#FF5913">`ssd_hiiops`</span>: Disk type (`standard`, `ssd_hiiops`, or `ssd_lowlatency`)
 
 2\. Run the kubectl command from the file directory:
 
@@ -89,7 +84,7 @@ Enter your custom values instead:
 kubectl apply -f <name of the created YAML file>.yaml
 ```
 
-You will get the output:
+You will get this output:
 
 ```
 storageclass/<the name of the created storage class> created
@@ -113,9 +108,9 @@ spec:
 
 Enter your custom values instead:
 
-- <span style="color:#FF5913">block-pvc</span>—your PVC name  
-- <span style="color:#FF5913">csi-sc-cinderplugin-hiiops</span>—the name of the created storage class  
-- <span style="color:#FF5913">1Gi</span>— the required storage size
+- <span style="color:#FF5913">`block-pvc`</span>: PVC name  
+- <span style="color:#FF5913">`csi-sc-cinderplugin-hiiops`</span>: Name of the created storage class  
+- <span style="color:#FF5913">`1Gi`</span>: Storage size
 
 4\. Run the kubectl command from the file directory:
 
@@ -123,13 +118,13 @@ Enter your custom values instead:
 kubectl apply -f <name of the created YAML file>.yaml
 ```
 
-You will get the output:
+You will get this output:
 
 ```
 persistentvolumeclaim/<the name of the created PVC> created
 ```
 
-It means you have created a PVC with a storage class of the required disk type. To connect the PVC to your pods, refer to the section below.
+This means you have successfully created a PVC with a storage class of the required disk type. To connect the PVC to your pods, refer to the section below.
 
 ## Bind your PVC to a pod
 
@@ -155,11 +150,11 @@ spec:
 
 Enter your custom values instead:
 
-- <span style="color:#FF5913">mypod</span>—the pod name  
-- <span style="color:#FF5913">myfrontend</span>—the container name  
-- <span style="color:#FF5913">"/var/www/html"</span>—the destination inside the pod where to mount the storage class  
-- <span style="color:#FF5913">mypd</span>—the storage class name  
-- <span style="color:#FF5913">block-pvc</span>—the created PVC name
+- <span style="color:#FF5913">`mypod`</span>: Pod name  
+- <span style="color:#FF5913">`myfrontend`</span>: Container name  
+- <span style="color:#FF5913">`"/var/www/html"`</span>: Destination inside the pod where to mount the storage class  
+- <span style="color:#FF5913">`mypd`</span>: Storage class name  
+- <span style="color:#FF5913">`block-pvc`</span>: Created PVC name
 
 2\. Run the kubectl command from the file directory:
 
@@ -167,10 +162,10 @@ Enter your custom values instead:
 kubectl apply -f <name of the created YAML file>.yaml
 ```
 
-3\. You will get the output:
+3\. You will get this output:
 
 ```
 pod/<the pod name> created
 ```
 
-It means you have connected the PVC to your pod, and now its containers can access the storage.
+This means you have successfully connected the PVC to your pod, and its containers can now access the storage.
