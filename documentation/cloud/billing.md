@@ -11,7 +11,7 @@ pageDescription: Learn how to pay for Gcore cloud services.
 
 All clients are subscribed to the PAYG (pay-as-you-go) billing plan, which means you only pay for the amount of time they use our Cloud resources. Resources are charged per minute.
 
-To start using Cloud services, you need to add at least €4/$4 to your balance.**Please note:** this payment cannot be refunded.
+To start using Cloud services, you need to add at least €4/$4 to your balance. **Please note:** this payment cannot be refunded.
 
 As soon as your expenses reach €4/$4, the system will deduct this amount from your existing balance. If your balance has insufficient funds, the system will charge this amount from the added payment method. If payment is successful, you will continue using resources as before until your expenses reach the €4/$4 threshold again.
 
