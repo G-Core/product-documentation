@@ -11,17 +11,15 @@ pageDescription: A step-by-step guide on how to use Prefetch to upload content t
 
 Use Prefetch to upload the content to CDN cache before users request it. 
 
-1\. On left in the control panel find Prefetch.  
-  
-<img src="https://assets.gcore.pro/docs/cdn/load-the-content-to-cdn-before-users-request-it/chrome_2017-04-11_19-12-13.png" alt="">  
+1\. Go to the <a href="https://cdn.gcore.com/" target="_blank">CDN</a> section on left in the control panel find **Prefetch**.  
   
 2\. Choose the desired CDN Resource.
 
-3\. In the field write paths to the files without a domain name that you want to prepopulate to the CDN.
+3\. In the field write paths to the files without a domain name, e.g. ```path/file1.jpg```, that you want to prepopulate to the CDN.
 
-<img src="https://assets.gcore.pro/docs/cdn/load-the-content-to-cdn-before-users-request-it/Screenshot-2018-1-1_G-Core_Labs___________CDN-_________________.png" alt="" width="80%">  
+<img src="https://assets.gcore.pro/docs/cdn/load-the-content-to-cdn-before-users-request-it/prefetch-hint.png" alt="" width="80%">  
 
-4\. Click on Prefetch.
+4\. Click on **Prefetch**.
 
 **Important!** 
 

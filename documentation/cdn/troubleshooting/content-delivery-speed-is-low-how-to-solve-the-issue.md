@@ -23,10 +23,10 @@ Revise your origin to find errors or misconfigurations that may affect
 - wget –S + static file URL.
 
 ```
-wget -S testsupport.gcdn.co/files/test.jpg  
---2019-12-10 13:29:17-- http://testsupport.gcdn.co/files/test.jpg  
-Resolving testsupport.gcdn.co... 92.223.97.97  
-Connecting to testsupport.gcdn.co|92.223.97.97|:80... connected.  
+wget -S testsupport.cdn.com/files/test.jpg  
+--2019-12-10 13:29:17-- http://testsupport.cdn.com/files/test.jpg  
+Resolving testsupport.cdn.com... 92.223.97.97  
+Connecting to testsupport.cdn.com|92.223.97.97|:80... connected.  
 HTTP request sent, awaiting response...  
 HTTP/1.1 200 OK  
 Server: nginx  

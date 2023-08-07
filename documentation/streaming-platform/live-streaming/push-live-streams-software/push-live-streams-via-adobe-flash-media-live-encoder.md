@@ -11,7 +11,7 @@ pageDescription: A step-by-step guide to pushing live streams via Adobe Flash Me
 
 Download «Adobe Flash Media Live Encoder», install it, and launch it.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-adobe-flash-media-live-encoder/mceclip0.png" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-adobe-flash-media-live-encoder/micro.png" alt="">
 
 You can find RTMP URL and a stream key in your control panel according to the <a href="https://gcore.com/docs/streaming-platform/live-streaming/create-a-live-stream" target="_blank">Create a live stream</a> guide. Choose the stream, click edit, and look at the Push URL.
 

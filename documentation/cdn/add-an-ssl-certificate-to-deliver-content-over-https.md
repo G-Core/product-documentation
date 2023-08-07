@@ -114,7 +114,7 @@ A certificate added to the SSL Certificates page can be attached to a CDN resour
 
 1\. Go to **CDN** and select the CDN resource you want to configure.
 
-<img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12472174727185.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/ssl-attach.png" alt="">
 
 2\. In the navigation panel, under the **General** section, click **SSL**.
 
@@ -146,7 +146,7 @@ There is no way to change the data of an added certificate, so when the certific
 
 5\. To verify that the SSL certificate has been correctly installed and bound to the resource, enter your CNAME into the browser (e.g., https://example.ru). Click the lock icon in the address bar, navigate to **Connection is secure**, and click **Certificate is valid**.
 
-<img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/12505093148305.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https/ssl-browser.png" alt="" width="50%">
 
 Compare the displayed certificate data with the certificate data you just installed. If the settings are match, you can safely [delete](https://gcore.com/docs/cdn/add-an-ssl-certificate-to-deliver-content-over-https#delete-an-ssl-certificate) the old certificate from the SSL Certificates page.
 
