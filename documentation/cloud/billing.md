@@ -5,24 +5,26 @@ published: true
 order: 140
 toc:
 pageTitle: Cloud billing | Gcore
-pageDescription: Learn how to pay to Gcore cloud services. Plans, credit limits, and charges.
+pageDescription: Learn how to pay for Gcore cloud services.
 ---
 # Billing
 
-All our clients have the same billing plan — PAYG (pay-as-you-go). You pay only for the time you use resources. Billing is per minute. Payment is made as follows:
+All clients are subscribed to the PAYG (pay-as-you-go) billing plan, which means you only pay for the amount of time they use our Cloud resources. Resources are charged per minute.
 
-- **Expenses are charged in portions of €50/$60** (currency depends on account settings). This is the credit limit — the amount within which you can use Cloud without charges. As soon as expenses reach €50/$60, the system will charge this amount from your balance or from the added payment resource (if the balance has insufficient funds). After that, the credit limit will be renewed. If the payment fails, the service will stop working until you top up your balance.
-- **On the 2nd day of a new month, debts for the previous one are charged**. For example, if last month's unpaid expenses are €43, this money will be written off on the 2nd day of the next month and the credit limit will be renewed.
+To start using Cloud services, you need to add at least €4/$4 to your balance.**Please note:** this payment cannot be refunded.
 
+As soon as your expenses reach €4/$4, the system will deduct this amount from your existing balance. If your balance has insufficient funds, the system will charge this amount from the added payment method. If payment is successful, you will continue using resources as before until your expenses reach the €4/$4 threshold again.
 
-The cost is calculated for the time of using the instance, from the moment it is started until it is completely stopped. The instance starts automatically once it is created.
+If the payment fails both from your Gcore balance and the added payment method, the service will be suspended. If you don’t top up your balance within the next 14 days, all Cloud resources associated with your account will be deleted. To avoid service suspension and ensure uninterrupted access to Cloud resources, you can top up your balance in advance. 
 
-The cost of an instance depends on the allocated computing resources, operating system, and usage time.
+Up-to-date prices for our Cloud resources are available on <a href="https://gcore.com/pricing/cloud" target="_blank">our website</a>.
 
-The attached disks are charged separately regardless of whether the instance is running or not. When creating a disk, you specify its size: the amount of block storage that the disk occupies. The cost of the service depends on the time between the disk's creation and deletion, disk space, and disk type.
+**Virtual instances** are charged from the moment you create them until they are completely stopped. Please note that volumes, snapshots, IP addresses (a floating IP, virtual IP, and reserved IP address), images and the Windows license are charged separately. The outgoing traffic is free.
 
-When creating an instance, you can assign a public IP address to it. A public IP address is charged separately.
+**Volumes, IP addresses (a floating IP, virtual IP, and reserved IP address), images, snapshots** are charged from the moment you create them until the moment you delete them, regardless of whether the instance is running or not.
 
-The bandwidth is up to 1 Gbps.
+**Bare metal servers and AI IPUs** are charged from the moment you create them until the moment you delete them, regardless of whether the server is running or not. Please note that Windows license and outgoing traffic are charged separately. 
 
-If you create an image or a snapshot, you pay for its storage separately depending on its size.
+**Logging** is charged per the volume of stored logs.
+
+**Functions** are charged for the amount of compute resources used to execute the function.
