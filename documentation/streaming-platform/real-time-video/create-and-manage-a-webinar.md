@@ -26,7 +26,7 @@ With Real-Time Video, you can conduct webinars for 1-5 speakers and 2000 viewers
 
 To create an online room for a webinar:
 
-1\. Click Create Room for Free on the <a href="https://meet.gcore.com" target="_blank">website</a>.
+1\. Click Create Room for Free on the <a href="https://meet.gcore.com/new" target="_blank">website</a>.
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/create-and-manage-a-webinar/crewate_a_room.png" alt="" width="80%">
 

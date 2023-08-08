@@ -20,7 +20,7 @@ pageDescription: Detailed instructions on how to set up a CDN resource for the e
 
 A CDN resource of this type is a feature that allows you to accelerate and protect the entire site with CDN and DNS services. This CDN resource helps accelerate both kinds of content delivery: static and dynamic. If you only need to deliver static assets, use a <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">separate CDN resource for static content</a>.
 
-We explain the difference in delivery in the "<a href="https://gcore.com/materials/how-to-speed-up-dynamic-content-delivery-using-cdn/" target="_blank">How to speed up dynamic content delivery using a CDN</a>" article.
+We explain the difference in delivery in the "<a href="https://gcore.com/blog/how-to-speed-up-dynamic-content-delivery-using-cdn/" target="_blank">How to speed up dynamic content delivery using a CDN</a>" article.
 
 ## Create and integrate a CDN resource for the entire site
 
