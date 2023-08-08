@@ -9,7 +9,6 @@ toc:
    --2--How does it work: "how-does-it-work"
    --2--Configure for CDN: "configure-for-cdn"
    --2--Configure for Storage: "configure-for-storage"
-   --1--Why am I subscribed?: "## why-am-i-subscribed-to-certain-notifications"
 pageTitle: Guide to Managing Service Notifications | Gcore
 pageDescription: Learn how to set up and manage your service notifications for CDN and Storage services, allowing for better control over traffic consumption and system usage.
 ---
@@ -81,8 +80,9 @@ To do it go to the Storage notification section, select Storage and Bucket (opti
 
 <img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/storage-notifications-30.png" alt="" width="70%">
 
-## Why am I subscribed to certain notifications?
-
+<expandable-element title="Why am I subscribed to certain notifications?">
 **Technical notifications**: We automatically subscribe all users to technical notifications.
 
 **Promotional emails**: You checked the box to receive promotional emails during the registration process.
+ 
+</expandable-element>
