@@ -81,9 +81,8 @@ To do it go to the Storage notification section, select Storage and Bucket (opti
 <img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/storage-notifications-30.png" alt="" width="70%">
 
 <expandable-element title="Why am I subscribed to certain notifications?">
+Technical notifications: We automatically subscribe all users to technical notifications.
 
-**Technical notifications**: We automatically subscribe all users to technical notifications.
-
-**Promotional emails**: You checked the box to receive promotional emails during the registration process.
+Promotional emails: You checked the box to receive promotional emails during the registration process.
  
 </expandable-element>
