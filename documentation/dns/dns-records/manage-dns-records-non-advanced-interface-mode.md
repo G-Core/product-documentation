@@ -5,12 +5,12 @@ published: true
 order: 20
 toc:
    --1--Create: "create-a-dns-record"
-   --2--Records settings: "1-go-to-records-settings"
-   --2--Record type: "2-select-record-type"
-   --2--Domain or subdomain the record belongs to: "3-specify-subdomain-record-belongs-to"
-   --2--Content of the record: "4-specify-content-of-record"
-   --2--TTL: "5-specify-ttl"
-   --2--Completing the configuration: "6-complete-configuration-and-create-resource-record"
+   --2--Step 1. Records settings: "1-go-to-records-settings"
+   --2--Step 2. Record type: "2-select-record-type"
+   --2--Step 3. Domain or subdomain the record belongs to: "3-specify-subdomain-record-belongs-to"
+   --2--Step 4. Content of the record: "4-specify-content-of-record"
+   --2--Step 5. TTL: "5-specify-ttl"
+   --2--Step 6. Completing the configuration: "6-complete-configuration-and-create-resource-record"
    --1--Edit: "edit-a-dns-record"
    --1--Delete: "delete-a-dns-record"
 pageTitle: Managing DNS records in non-advanced mode | Gcore
