@@ -271,11 +271,11 @@ index-svod240n-v1-a1.m3u8
 
 ### Examples of different players’ playback interfaces
 
-<media-gallery>
+Example of iOS player playback:
 <img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/subtitles-and-closed-captions-for-vod/captions-30.png" alt="">
-<figcaption>Example of iOS player playback:</figcaption>
+
+Example of Android Exoplayer playback:
 <img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/subtitles-and-closed-captions-for-vod/captions-40.png" alt="">
-<figcaption>Example of Android Exoplayer playback:</figcaption>
+
+Example of Android Exoplayer playback:
 <img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/subtitles-and-closed-captions-for-vod/captions-50.png" alt="">
-<figcaption>Example of other custom player playback, e.g., Theo Player:</figcaption>
-</media-gallery>
