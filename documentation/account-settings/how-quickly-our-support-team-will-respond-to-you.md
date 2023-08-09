@@ -10,7 +10,6 @@ toc:
 pageTitle: Technical support information | Gcore
 pageDescription: Understanding the factors that determine how quickly tech support responds to your question.
 ---
-
 # How quickly our support team will respond to you
 
 The response time of our support team depends on three parameters:
