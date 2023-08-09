@@ -24,8 +24,8 @@ toc:
    --2--Custom players: "custom-playback-via-api"
    --2--Players with HLS support: "native-playback-with-hls"
    --2--Examples: "examples-of-different-players-playback-interfaces"
-pageTitle:  | Gcore
-pageDescription: . 
+pageTitle: Guide to subtitles and captions in Gcore Player | Gcore
+pageDescription: Comprehensive guide to using subtitles and closed captions in videos with Gcore Player, supporting formats like SRT and WebVTT. 
 ---
 # Subtitles and closed captions for VOD
 
