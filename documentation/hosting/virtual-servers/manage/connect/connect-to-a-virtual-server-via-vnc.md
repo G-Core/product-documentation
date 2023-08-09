@@ -25,7 +25,7 @@ Here’s how to connect via VNC to your virtual server.
 
 2. Open the control panel. 
 
-If you’re using the old interface (shown below,) select **Products/Services* → **Virtual private servers**, click the selected server, and click **To panel**.
+If you’re using the old interface (shown below,) select **Products/Services** → **Virtual private servers**, click the selected server, and click **To panel**.
 
 <img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/connect-to-your-virtual-server-via-vnc-in-vmmanager-6/3-to-panel-old-interface.png" alt="" width="80%">
 
