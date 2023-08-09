@@ -22,7 +22,6 @@ toc:
    --2--Show API documentation: "show-api-documentation"
    --2--Show Knowledge Base: "show-knowledge-base"
    --2--Show Status Page: "show-status-page"
-   --2--Show tickets: "show-tickets"
    --2--Show online chat: "show-online-chat"
    --2--Show Create new account: "show-create-new-account"
    --1--SMTP Provider Settings: "smtp-provider-settings" 
@@ -93,7 +92,7 @@ This configures the color of hovered menu items and links in the control panel a
 
 ## Customer Support Tools
 
-Customer support tools include the phone number and email address of technical support, as well as links to the Status Page that informs about incidents and maintenance, the company's website, Knowledge Base and API documentation, tickets and chat with the Gcore technical support.
+Customer support tools include the phone number and email address of technical support, as well as links to the Status Page that informs about incidents and maintenance, the company's website, Knowledge Base and API documentation, and chat with the Gcore technical support.
 
 All tools, except for the chat, are available in the client control panel in the "Help" section.
 
@@ -177,14 +176,6 @@ It has two parameters:
 - Custom link — if you want to specify a link to your Status Page.
 
 <img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/status-page-130.png" alt="" width="80%">
-
-### Show tickets
-
-This setting allows your clients to send requests directly to Gcore technical support.
-
-Activate the setting so that your clients can contact technical support via the ticket system in their control panel.
-
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/show-tickets-140.png" alt="" width="50%">
 
 ### Show online chat
 

@@ -15,7 +15,6 @@ toc:
    --2--Step 2. Get TUS parameters: "step-2-get-tus-session-parameters"
    --2--Step 3. Upload video via TUS protocol: "step-3-upload-file-via-tus-chunked-protocol"
    --1--Batch upload (in development): "batch-upload-to-migrate-a-vast-number-of-videos-from-other-services"
-
 pageTitle: Guide for VOD Upload via API | Gcore
 pageDescription: Follow our step-by-step guide, including a tus standard script example for seamless VOD upload to storage in two ways, Pull and Push. 
 ---
@@ -23,7 +22,7 @@ pageDescription: Follow our step-by-step guide, including a tus standard script 
 
 ## How is Gcore Video Hosting organized?
 
-Video Hosting refers to cloud storage of videos that are ready to be distributed and watched on end devices via the public internet. You can upload original video files in <a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/what-initial-parameters-of-your-live-streams-and-videos-we-can-accept" target="_blank">different formats</a>, we process the videos in various ways, and we save the result to our internal storage. As a result, you get videos in <a href="https://gcore.com/docs/streaming-platform/video-hosting/hls-and-mp4" target="_blank">HLS/MP4 format</a> with subtitles, <a href="https://gcore.com/docs/streaming-platform/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices" target="_blank">timeline previews</a>, and other features available.
+Video Hosting refers to cloud storage of videos that are ready to be distributed and watched on end devices via the public internet. You can upload original video files in <a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/what-initial-parameters-of-your-live-streams-and-videos-we-can-accept" target="_blank">different formats</a>, we process the videos in various ways, and we save the result to our internal storage. As a result, you get videos in <a href="https://gcore.com/docs/streaming-platform/video-hosting/hls-and-mp4" target="_blank">HLS/MP4 format</a> with <a href="https://gcore.com/docs/streaming-platform/video-hosting/subtitles-and-closed-captions-for-vod" target="_blank">subtitles</a>, <a href="https://gcore.com/docs/streaming-platform/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices" target="_blank">timeline previews</a>, and other features available.
 
 You can upload videos to the storage via the control panel or API. Learn how to <a href="https://gcore.com/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app" target="_blank">add a video via the control panel</a>.
 
