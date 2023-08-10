@@ -6,15 +6,14 @@ order: 10
 toc:
    --1--For individuals: "for-individuals"
    --1--For legal entities: "for-legal-entities"
-pageTitle: Guide to account creation | Gcore
+pageTitle: Information about the account creation | Gcore
 pageDescription: A guide on how to create an account for individuals or legal entities. 
 ---
 # Create an account for an individual or legal entity
 
 ## For individuals
 
-1. To sign up for Gcore services, go to <a href="https://gcore.com" target="_blank">
-our website</a> and click the **Get started for free** button.
+1. To sign up for Gcore services, go to <a href="https://gcore.com" target="_blank">our website</a> and click the **Get started for free** button.
 
 <img src="https://assets.gcore.pro/docs/account-settings/account/get-started-gcore-website-10.png" alt="" width="635">
 
