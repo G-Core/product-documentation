@@ -58,4 +58,4 @@ On this tab you can choose the video size and download the uploaded video in the
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app/upload-video60.png" alt="" width="80%">  
 
-If the video is requested over a direct link or from the website where you have inserted the iFrame code, all views will be counted for the statistics. To see it, go to the video settings (step 5) and click the "Statistics" tab.
+If the video is requested over a direct link or from the website where you have inserted the iFrame code, all views will be counted for the statistics. To see it go to the video settings (step 5) and click the "Statistics" tab.
