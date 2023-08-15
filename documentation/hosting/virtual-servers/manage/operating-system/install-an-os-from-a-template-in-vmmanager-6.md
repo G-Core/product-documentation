@@ -1,5 +1,5 @@
 ---
-title: install-on-os-from-a-template-in-vmmanager-6
+title: install-an-os-from-a-template-in-vmmanager-6
 displayName: Install an OS from a template in VMmanager 6
 published: true
 order: 31
