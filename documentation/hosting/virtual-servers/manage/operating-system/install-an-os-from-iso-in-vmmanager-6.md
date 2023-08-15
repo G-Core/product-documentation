@@ -44,6 +44,9 @@ If you’re using the new interface, please select **Products/Services** section
 
 3. Enter the link to the file you want to upload to the current directory, where the ISO image is available. The image can be available via HTTP(S) or FTP. Optionally, you can specify tags for the connected OS if this VM needs to run scripts. The script will run on the VM if at least one of its tags matches the OS tag. 
 
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/install-an-os-from-iso-image/4-url-tags.png
+" width=70% alt="">
+
 4. Select **Download and connect**.
 
 Now you can use the server with the operating system that you installed from an ISO image. To connect to your server via VNC, you can refer to <a href="https://gcore.com/docs/hosting/virtual-servers/manage/connect/connect-to-a-virtual-server-via-vnc" target="_blank">our PD article</a>. 
