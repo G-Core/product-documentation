@@ -10,7 +10,7 @@ pageDescription: Discover the step-by-step guide on how to easily change the por
 
 # Change the port for SSH connections
 
-Follow these instructions to modify the SSH port through which you connect to your Linux server.
+Follow these instructions to modify the SSH port through which you connect to your dedicated Linux server.
 
 1. Log in to your server.
 
