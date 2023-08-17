@@ -30,19 +30,23 @@ The **Records list/Edit record set** page will open. Complete the remaining step
 
 7\. Set the check options. Different protocols have their own set of options.
 
-**Check by TCP/UDP**
+<expandable-element title="Check by TCP/UDP">
 
 - Port is where you specify the port to connect to. For example, 80, 443, or another one.
 - Check Frequency lets you choose the interval of checks from the list.
 - Timeout sets the time that your web servers should give the response.
 - (optional) Command allows you to enter the text that will be sent to the host of the site as plain text, e.g., *GET/HTTP/1.1*.
 
-**Check by ICMP**
+</expandable-element>
+
+<expandable-element title="Check by ICMP">
 
 - Check Frequency lets you choose the interval of checks from the list.
 - Timeout sets the time that your servers should give the response.
 
-**Check by HTTP**
+</expandable-element>
+
+<expandable-element title="Check by HTTP">
 
 - Port is where you specify the port to connect to. For example, 80, 443, or another one.
 - Check Frequency lets you choose the interval of checks from the list.
@@ -52,6 +56,8 @@ The **Records list/Edit record set** page will open. Complete the remaining step
 - Use TLS lets you choose whether TLS should be used.
 - HTTP status code is used to put the expected HTTP response code or leave it blank if any response is ok.
 - Expected content regexp is where you enter a regular expression that would match the response body or leave it blank.
+
+</expandable-element>
 
 8\. Here, you can set IP addresses and logic that will be used to distribute requests among available servers when some of them are unavailable. By default, DNS Health checks uses round-robin balancing. If it's suitable for you, just go to the next step of this guide. If you want to change the criteria of balancing according to the "<a href="https://gcore.com/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing" target="_blank">Manage DNS records (advanced interface mode with balancing)</a>".
 

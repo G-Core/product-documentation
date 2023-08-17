@@ -36,7 +36,7 @@ Three types of balancing are available:
 - By non-coordinate meta (all metadata types except latlong)
 - By coordinates (geo proximity) 
 
-**Note**: Balancing (Geobalancing and weight balancing) is a paid option, and additional charges will occur.
+**Note**: Balancing (Geobalancing and weight balancing) is a paid option, mind your tariff plan limits.
 
 ## Configure balancing in the control panel
 
@@ -72,9 +72,9 @@ With weight balancing, you can manage the probability of having a particular rec
 
 Probability is calculated only if the value of max records per answer exceeds the number of resource records. For a record R1 from RRset with weight W1, its probability(P1) is calculated as its weight divided by the sum of the weights of all other records. 
 
-```
-P1= W1 / Sumi(Wi)
-```
+<code-block>
+P<sub>1</sub>= W<sub>1</sub> / Sum<sub>i</sub>(W<sub>i</sub>)
+</code-block>
 
 **Example**. You have weight balancing enabled, specified max one record per response, and added three records with these weight metadata:
 

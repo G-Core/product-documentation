@@ -55,17 +55,18 @@ If a web server doesn’t send a response to Health checks within the set timeou
 
 <img src="https://assets.gcore.pro/docs/dns/dns-failover/about-dns-failover/health-checks-5.png" alt="" width="80%">
 
-3\. If a web server is unavailable, Health checks will notify the DNS server: *"Stop responding with the … IP (address of the unavailable server)"*.
+3\. If a web server is unavailable, Health checks will mark the corresponding record as unavailable and the DNS server excludes it from responses.
 
 <img src="https://assets.gcore.pro/docs/dns/dns-failover/about-dns-failover/health-checks-6.png" alt="" width="80%">
 
-**Note:** If all web servers don’t respond, all of their A records will be added to the DNS response regarding other filters like geo or *first_n*.
+**Note**: If all health check are failed, all of their A records will be used in a DNS response respecting other filters like *geo county* or *first_n*.
+
 
 4\. The DNS server excludes the A record of the unavailable server from responses. All requests that were destined for this server are directed to other available servers.
 
 <img src="https://assets.gcore.pro/docs/dns/dns-failover/about-dns-failover/health-checks-7.png" alt="" width="80%">
 
-The balancing mechanism determines which server responds to requests destined for the unavailable server. By default, DNS Health checks use round-robin, but you can configure your own mechanism, such as Geobalancing. The configuration for this mechanism is described in the article "<a href="https://gcore.com/docs/dns/dns-failover/configure-and-use-dns-failover" target="_blank">Configure and use DNS Health checks</a>".
+The balancing mechanism determines which server responds to requests destined for the unavailable server. By default, DNS Health checks use round-robin, but you can configure your own mechanism, such as Geobalancing. The configuration for this mechanism is described in the article <a href="https://gcore.com/docs/dns/dns-records/configure-weight-balancing-and-geobalancing" target="_blank">Configure weight balancing and Geobalancing</a>.
 
 5\. Health checks keep sending requests to web servers. When the web server becomes available and responds, the feature will send the appropriate update to the DNS server.
 
