@@ -6,7 +6,7 @@ order: 20
 toc:
     --1--What's next?: "whats-next"
     --1--Inviting Sellers: "inviting-sellers"
-    --1-Setting up client control panel: "setting-up-client-control-panel"
+    --1--Setting up client control panel: "setting-up-client-control-panel"
     --1--Creating client accounts: "creating-client-accounts"
     --1--Service management: "service-management"
     --1--Useful links: "useful-links"
