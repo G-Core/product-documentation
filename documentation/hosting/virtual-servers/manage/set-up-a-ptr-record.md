@@ -2,7 +2,7 @@
 title: set-up-a-ptr-record
 displayName: PTR record
 published: true
-order: 50
+order: 51
 toc:
 --1--What is a PTR record used for?: "what-is-a-ptr-record-used-for"
 --1--Set up on new interface: "set-up-on-new-interface"
