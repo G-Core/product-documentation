@@ -186,7 +186,7 @@ s3://log-bucket-name/2019/08/20/15/nodename_primarycname.domain.ru_access.log.gz
 "$shard_addr" "$geoip2_data_asnumber" "$connection" "$connection_requests"  
 "$request_id" "$http_x_forwarded_proto" "$http_x_forwarded_request_id" "$ssl_cipher"  
 "$ssl_session_id" "$ssl_session_reused"  
-"$sent_http_content_type" "$tcpinfo_rtt" "$server_country_code" 
+"$sent_http_content_type" "$tcpinfo_rtt" "$server_country_code" "$gcdn_tcpinfo_snd_cwnd" "$gcdn_tcpinfo_total_retrans" 
 ```
 
 Please don’t be surprised if you see a field that is not listed above. We occasionally add new fields. If some fields are added to logs, you will receive an email about it. New fields are added to the end of the line.
@@ -201,11 +201,10 @@ AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 YaBrowser/16.10.0.23
 "MISS" "10485760" "0.0.0.0:80" "2510" "7399" "-" "-" "KZ" "-" "shield_no" "0.0.0.0" "80" "206" "-" "0.000"  
 "0.200" "0.0.0.0" "asnumber" "106980391" "1" "c1c0f12ab35b7cccccd5dc0a454879c5" "-" "-"  
 "ECDHE-RSA-AES256-GCM-SHA384" "28a4184139cb43cdc79006cf2d1a4ac93bdc****" "r"  
-"application/json" "21" "PL"
+"application/json" "21" "PL" "45" "10"
 ```
 
-Log fields
-----------
+## Log fields
 
 Not all fields are important. Some of them relate to our internal CDN system and are not meaningful for you. In the table below, we have highlighted such system fields in italics. Other fields can be helpful for traffic analysis or statistics.
 
@@ -351,7 +350,7 @@ Not all fields are important. Some of them relate to our internal CDN system and
   <tr>
     <td>$shield_type<br>(internal system variable)</td>
     <td>shield_no</td>
-    <td>This field shows whether the <a href="https://gcorelabs.com/support/articles/214080309"><span style="text-decoration:underline;color:#FF5700">shielding option</span></a> is enabled:<br>shield_old - enabled<br>shield_no - disabled</td>
+    <td>This field shows whether the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding"><span style="text-decoration:underline;color:#FF5700">shielding option</span></a> is enabled:<br>shield_old - enabled<br>shield_no - disabled</td>
   </tr>
   <tr>
     <td>$server_addr<br>(internal system variable)</td>
@@ -442,6 +441,16 @@ Not all fields are important. Some of them relate to our internal CDN system and
   <td>$server_country_code</td>
   <td>PL</td>
   <td>Server’s country code according to the <a href="https://iso.org/obp/ui/#search/code"><span style="text-decoration:underline;color:#FF5700">ISO 3166 standard</span></a> (Alpha-2 code).</td>
+  </tr>
+  <tr>
+    <td>$gcdn_tcpinfo_snd_cwnd</td>
+    <td>45</td>
+    <td>Size of the TCP Congestion window, i.e. the maximum number of TCP segments that the connection can send before an acknowledgement is required.</td>
+  </tr>
+  <tr>
+    <td>$tcpi_total_retrans</td>
+    <td>10</td>
+    <td>Total number of retransmitted packets over the life of the connection.</td>
   </tr>
 </tbody>
 </table>
