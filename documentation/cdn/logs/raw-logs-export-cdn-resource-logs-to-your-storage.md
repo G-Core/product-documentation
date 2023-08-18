@@ -185,8 +185,8 @@ s3://log-bucket-name/2019/08/20/15/nodename_primarycname.domain.ru_access.log.gz
 "$upstream_status" "-" "$upstream_connect_time" "$upstream_header_time"  
 "$shard_addr" "$geoip2_data_asnumber" "$connection" "$connection_requests"  
 "$request_id" "$http_x_forwarded_proto" "$http_x_forwarded_request_id" "$ssl_cipher"  
-"$ssl_session_id" "$ssl_session_reused"  
-"$sent_http_content_type" "$tcpinfo_rtt" "$server_country_code" "$gcdn_tcpinfo_snd_cwnd" "$gcdn_tcpinfo_total_retrans" 
+"$ssl_session_id" "$ssl_session_reused" "$sent_http_content_type" "$tcpinfo_rtt" 
+"$server_country_code" "$gcdn_tcpinfo_snd_cwnd" "$gcdn_tcpinfo_total_retrans" 
 ```
 
 Please don’t be surprised if you see a field that is not listed above. We occasionally add new fields. If some fields are added to logs, you will receive an email about it. New fields are added to the end of the line.
