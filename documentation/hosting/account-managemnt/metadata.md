@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: Account managemnt
+displayName: Account management
 published: true
 order: 50
 ---
