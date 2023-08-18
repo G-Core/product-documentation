@@ -54,7 +54,7 @@ sudo service sshd restart
 7. Add a rule to permit traffic exchange on the new port using the command:
 
 ```
-sudo ufw allow 2233.
+sudo ufw allow 2233
 ```
 Replace “2233” with the chosen port.
 
