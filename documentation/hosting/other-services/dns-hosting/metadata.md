@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: BGP
-order: 40
+displayName: DNS Hosting
+order: 20
 published: true
 ---
