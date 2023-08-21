@@ -78,12 +78,14 @@ More information about where to find the keys can be found in the "[Authenticati
 
 **Note**: If you selected Amazon S3 storage in step #4, the configuration is now complete. If you selected Other and specified the Hostname after the CDN resource creation, go to the resource settings and open the Host header option in the "HTTP headers" section. Specify the URL of your storage Hostname (the URL depends on your S3 provider) in the following format: 
 
-- For Gcore S3 storage: ```s-ed1.cloud.gcore.lu```
-- For most other storages: ```s3.{region-code}.{storage hostname}```
+- For Gcore S3 storage: ```{bucket-name}.s-ed1.cloud.gcore.lu```
+- For most other storages: ```{bucket-name}.s3.{region-code}.{storage-hostname}```
+
+**Note**: The bucket in the "Host header" is very important to specify for the security of the storage data outside the bucket.
 
 Click **Save changes**.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15355039530769.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/image-3719.png" alt="">
 
 ### Configure a private origin via the API 
 
