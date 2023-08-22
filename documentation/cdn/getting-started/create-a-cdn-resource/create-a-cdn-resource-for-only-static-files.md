@@ -9,7 +9,7 @@ pageDescription: Detailed instructions on how to set up a CDN resource for accel
 ---
 # Create a CDN resource for static assets only 
 
-You can create up to 30 CDN resources in one account. 
+You can create up to 30 CDN resources in one account.  
 
 1\. In the "CDN" section, click "Create CDN resource".
 
