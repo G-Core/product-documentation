@@ -17,6 +17,7 @@ toc:
 pageTitle: Adding Your Own SSL Certificates | Gcore
 pageDescription: Learn how to add and attach your certificate to the CDN resource.
 ---
+# Configure your own SSL certificate
 
 **Note**: Your SSL certificate should be issued for the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">custom domain of your CDN resource</a>, e.g., *cdn.example.com*. You can use a wildcard certificate, which allows you to protect all subdomains (_*.example.com_).
 
