@@ -36,7 +36,7 @@ A new page will open.
 - Certificate chain (personal certificate, intermediate CA, root CA) in the <a href="https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail" target="_blank">PEM format</a> 
 - Private key
 
-For help inserting the certificate chain and key contents, <a href="" target="_blank">explore our guide</a>.
+For help inserting the certificate chain and key contents, <a href="https://gcore.com/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate#how-to-insert-an-ssl-chain-and-a-key-correctly" target="_blank">explore our guide</a>.
 
 3\. Click **Create SSL Certificate**.
 
@@ -109,6 +109,7 @@ If you haven’t yet added a certificate or want to upload a new one for this re
 3\. Select **Add or select your own SSL certificate**. If you’ve already <a href="https://gcore.com/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate#how-to-upload-an-ssl-certificate-to-your-account" target="_blank">uploaded the SSL certificate to your account</a>, select the certificate from the list and save changes.
 
 <img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-10.png" alt="" width="80%">
+
 
 <expandable-element title="If you haven’t uploaded the SSL certificate">
 
