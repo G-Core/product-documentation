@@ -133,8 +133,8 @@ If a user with the IP from the subnet *192.168.1.0/24* requests the domain, the 
 
 With coordinates balancing, you can assign coordinates to each record and add the latlong (latitude and longitude) type metadata. Users will receive the record with the nearest coordinates when they request your domain. You can use the map icon to check you’ve entered the correct coordinates—simplyclick on the icon to see the location corresponding to your parameters.
 
-**Example**. A user closer to the coordinate *51.52318152049715/-0.13458412218999416* (the center of London) will receive an A record with the value *10.0.0.0*, while a user nearer to *48.859741241898114/2.3415648470109653* (the center of Paris) will receive an A record with the value *10.0.0.1*.
+**Example**. A user closer to the coordinate 40.43733088856228/-3.566434349995511 (the center of Madrid) will receive an A record with the value *127.0.0.1*, while a user nearer to 52.20328569593686/21.081144277439293 (the center of Warsaw) will receive an A record with the value *127.0.0.2*.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/configure-balancing-40.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/image-3723.png" alt="" width="80%">
 
 The configuration is complete. As soon as you finish creating records, balancing will be enabled.
