@@ -23,7 +23,7 @@ If the button is un-clickable, you have reached your live stream limit. To creat
 
 A new page will open. Do the remaining steps connected with Gcore’s interface in it. 
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/13542742887185.png">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/create-live.png">
 
 **3.1.** Ensure the **Enable live stream (with Low Latency)** switch is turned on.
 
