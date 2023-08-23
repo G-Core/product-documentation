@@ -65,7 +65,7 @@ While the resource is active, the certificate is renewed automatically. An attem
 
 In the event of an unsuccessful attempt to reissue a certificate, the current certificate will remain active for another 30 days. After the certificate's end date, the content will become unavailable via HTTPS.
 
-To avoid interruption of content delivery, please reissue the certificate yourself. To do this, <a href="https://gcore.com/docs/cdn/ssl-certificate/configure-lets-encypt-certificate#revoke-a-lets-encrypt-certificate" target="_blank">revoke</a> the Let's Encrypt certificate in your account and then .
+To avoid interruption of content delivery, please reissue the certificate yourself. To do this, <a href="https://gcore.com/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate#revoke-a-lets-encrypt-certificate" target="_blank">revoke</a> the Let's Encrypt certificate in your account and then .
 
 ## Revoke a Let's Encrypt certificate
 
@@ -78,7 +78,7 @@ To revoke a certificate, go to the Resource Settings and click **Revoke Let's En
 ## Restrictions and features of the option
 
 - A wildcard domain cannot be issued a certificate
-- If a Let's Encrypt certificate is issued, the certificate selector will not be displayed in the resource settings. Personal certificates will become available for selection after <a href="https://gcore.com/docs/cdn/ssl-certificate/configure-lets-encypt-certificate#revoke-a-lets-encrypt-certificate" target="_blank">revoking Let's Encrypt</a>
+- If a Let's Encrypt certificate is issued, the certificate selector will not be displayed in the resource settings. Personal certificates will become available for selection after <a href="https://gcore.com/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate#revoke-a-lets-encrypt-certificate" target="_blank">revoking Let's Encrypt</a>
 - A Let's Encrypt certificate will not be displayed on the SSL Certificates page
 
 <img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-7.png" alt="" width="80%">
