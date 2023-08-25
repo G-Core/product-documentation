@@ -12,7 +12,7 @@ toc:
 pageTitle: Secure Your Account with Two-factor Authentication | Gcore
 pageDescription: Setting up and managing Two-factor authentication for your account using a unique temporary key.
 ---
-# Set Up Two-factor Authentication
+# Set Up Two-factor authentication
 
 ## Two-factor authentication overview
 

@@ -27,22 +27,22 @@ Add the ```id='gplayer'``` parameter to the iFrame and paste it into the site co
 Example of the iFrame code from the control panel with the id= 'gplayer' parameter:
 
 ```
-<iframe width="640" height="360" src="https://12345.gvideo.io/video/dSmuIp-tNRtwACT" allow= 'autoplay' allowfullscreen frameborder="0" id= 'gplayer'></iframe>
+<iframe width="640" height="360" src="https://12345.gvideo.io/video/dSmuIp-tNRtwACT" allow="autoplay" allowfullscreen frameborder="0" id="gplayer"></iframe>
 ```
 
 Parameters:
 
-- width - the width of the player,
-- height - the height of the player,
-- src - content URL (link to VOD or live stream),
-- allowfullscreen - if the parameter is added to the iframe, a button for switching to full-screen mode is added to the controls of the player,
-- frameborder - border of the player. The default value is "0" (the border shouldn't be visible),
-- id - the player ID. Required for further initialization of the player when calling API methods.
+- **width** - the width of the player,
+- **height** - the height of the player,
+- **src** - content URL (link to VOD or live stream),
+- **allowfullscreen** - if the parameter is added to the iframe, a button for switching to full-screen mode is added to the controls of the player,
+- **frameborder** - border of the player. The default value is "0" (the border shouldn't be visible),
+- **id** - the player ID. Required for further initialization of the player when calling API methods.
 
 After the iframe add the following code to initialize the player:
 
 ```
-<script type="text/javascript" charset="utf-8" src="https://vplatform.gcdn.co/_players/v2.1.18/gplayerAPI.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://vplatform.gcdn.co/_players/latest/gplayerAPI.min.js"></script>
 
 <script>  
   window.onload = function() {  
@@ -63,7 +63,7 @@ Example of the full player initialization code and iframe for HTML page:
 </head>  
 <body>  
  <iframe width="640" height="360" src="https://12345.gvideo.io/video/dSmuIp-tNRtwACT" allowfullscreen frameborder="0" id='gplayer'></iframe>  
- <script type="text/javascript" charset="utf-8" src="https://vplatform.gcdn.co/\_players/v2.1.18/gplayerAPI.js"></script>  
+ <script type="text/javascript" charset="utf-8" src="https://vplatform.gcdn.co/_players/latest/gplayerAPI.min.js"></script>  
  <script>  
  window.onload = function() {  
  let gplayerAPI = new GcorePlayer.gplayerAPI(document.getElementById('gplayer'));  
@@ -197,9 +197,6 @@ gplayerAPI.on('ended', () => {
 You can test the player API online <a href="https://iframes.gcdn.co/gplayer/iframe-api/iframeAPI.html" target="_blank">here</a>.
 
 Copy and paste the iframe from your control panel in the upper field, and click on the "Upload your iframe" button. To search for an iFrame in your account, use the guides from the following articles: for <a href="https://gcore.com/docs/streaming-platform/live-streaming/create-a-live-stream" target="_blank">broadcasts</a> (step 7), for <a href="https://gcore.com/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app" target="_blank">VOD</a> (step 6), and for <a href="https://gcore.com/docs/streaming-platform/video-hosting/create-and-configure-playlists-for-videos" target="_blank">playlists</a> (step 7).
-
-
- 
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/api/player-api-tutorial/1567057078730.png" alt="" width="80%">
 
