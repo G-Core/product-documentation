@@ -4,145 +4,141 @@ displayName: Reports
 published: true
 order: 110
 toc:
+   --1--Reports overview: "reports-overview"
    --1--Statistics: "statistics"
-   --1--Advanced Analytics: "advanced-analytics"
-   --2--Filters: "filters"
-   --2--Report types: "report-types"
-   --3--Geography: "geography"
-   --3--Directories: "directories"
-   --3--Browsers: "browsers"
-   --3--Devices: "devices"
-   --3--OS: "os"
-   --2--How statistics are collected: "how-statistics-are-collected"
+   --1--Advanced analytics: "advanced-analytics"
+   --2--Overview: "advanced-analytics-overview"
+   --2--Manage: "manage-advanced-analytics"
+   --2--How it collects: "how-advanced-analytics-reports-are-collected"
 pageTitle: CDN Statistics | Gcore
 pageDescription: A comprehensive guide on how to view statistics of your CDN resource.
 ---
-# View statistics of a CDN resource
+# View statistics of CDN resources
+
+## Reports overview
+
+Reports is a section of your control panel that displays statistics on your CDN resources. There are two tabs in the section: “Statistics” (basic reports are available on all tariffs) and “Advanced analytics” (paid option.)
 
 ## Statistics
 
-Statistics on traffic volume, bandwidth, response codes, cache hit ratio, requests, traffic from servers in different regions, and traffic from the top 5 countries **are included in the price of all tariffs**.
+To view basic statistics:
 
-To view basic reports, go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN resources</a> page, and select the "Reports" section, "Statistics" tab.
+1\. Go to the <a href="https://cdn.gcore.com/reports/statistics" target="_blank">Statistics</a> page. 
 
-In the "Statistic" tab, there are statistics data for:
+<img src="https://assets.gcore.pro/docs/cdn/reports/reports-10.png" alt="" width="80%">
 
-- Traffic;   
-- Bandwidth;  
-- Response codes; 
-- Cache hit ratio;  
-- Requests;
-- Traffic by region (it shows traffic from servers in different regions);
-- Traffic by country (it shows traffic from countries);
-- Image optimization. 
 
-<img src="https://assets.gcore.pro/docs/cdn/reports/1.png" alt="">
+2\. Select the CDN resource dropdown menu to display statistics as desired. You can view one resource, several, or all resources.
 
-On the Statistics tab, you can: 
+3\. Select the required report:
 
-- Select CDN resources to display statistics: one resource, several, or all resources. 
+- Aggregated data (displays traffic volume and bandwidth information for the last three months)
+- Traffic
+- Bandwidth
+- Response codes
+- Cache hit ratio
+- Requests
+- Traffic by region (shows traffic from servers in different regions)
+- Traffic by country (shows traffic from the five countries with the highest traffic)
+- Image optimization (shows the hourly count of WebP conversions)
 
-<img src="https://assets.gcore.pro/docs/cdn/reports/2.png" alt="" width="50%">
+4\. Set a specific time interval and the report auto-refresh period.
 
-- Select the required report.
+The appearance of the graph and metrics depend on the characteristic on which it is based. For example, a graph depicting the usage of the “Image optimization” WebP conversion feature would look like this:
 
-<img src="https://assets.gcore.pro/docs/cdn/reports/3.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/reports/reports-20.png" alt="" width="80%">
 
-**Note**:  The "Aggregated Data" report displays traffic volume and bandwidth information for the last three months. The "Traffic by Country" report shows the top 5 countries with the highest traffic.
+A graph depicting the Response codes would look as follows:
 
-- Set a specific time interval and the report auto-refresh period.
+<img src="https://assets.gcore.pro/docs/cdn/reports/reports-30.png" alt="" width="80%">
 
-<img src="https://assets.gcore.pro/docs/cdn/reports/4.png" alt="" width="80%"> 
+## Advanced analytics
 
-The appearance of the graph and metrics depend on the characteristic on which it is based. For example, a graph depicting the usage of the Image optimization feature would look like this:
+### Advanced analytics overview
 
-<img src="https://assets.gcore.pro/docs/cdn/reports/5.png" alt="" width="80%">
+Advanced analytics is a set of reports on requests, traffic, and unique visitors. Data is calculated based on end-user requests. You can filter information with five filters (Countries, Directories, Browsers, Devices, and Operating systems.) 
 
-And a graph depicting the Response codes would look as follows:
+**Note**: Advanced analytics is a paid option.
 
-<img src="https://assets.gcore.pro/docs/cdn/reports/6.png" alt="" width="80%">
+To activate Advanced analytics, contact us via [support@gcore.com](mailto:support@gcore.com), chat, or write to your account manager. You can enable all filters, or opt for only those required.
 
-## Advanced Analytics
+After activation, it takes around 24 hours to collect statistics and display the data correctly. Before activation of advanced analytics reports, the Advanced analytics tab displays examples of reports with random data.
 
-Advanced analytics is a set of paid reports on requests, traffic, and unique users, grouped by "Countries", "Directories", "Browsers", "Devices", and "Operating systems".
+### Manage Advanced analytics
 
-**Note**: Advanced analytics is a paid option. To activate, contact us via [support@gcore.com](mailto:support@gcore.com), chat, or write to your account manager. You can start all reports or only those required, such as "Directories" and "Devices".
+To view advanced reports:
 
-Before activation of advanced analytics reports, the Advanced Analytics tab displays examples of reports with random data.
+1\. Go to the <a href="https://cdn.gcore.com/reports/advanced" target="_blank">Advanced analytics</a> page.
 
-**Note**: After reports activation, collecting statistics and displaying the data correctly will take about 24 hours. 
+<img src="https://assets.gcore.pro/docs/cdn/reports/reports-40.png" alt="" width="80%">
 
-### Filters
+2\. Specify the resource for which you want to display statistics.
 
-For more detailed analysis, use filters. They are applied to all available report types.
-
-1\. Specify the resource you want to display statistics for.
-
-2\. Select the type of advanced analytics: requests, traffic, or unique users.
+3\. Select the type of advanced analytics: Requests, Traffic, or Unique visitors.
 
 **Note**: Unique users are defined by IP + user-agent parameters.
 
-3\. Choose the period for which you want to display statistics.
+4\. Choose the period for which you want to display statistics, in either UTC or your local time zone.
 
-4\. In the filters by country, directory, browser, device, and operating system, you can specify the parameters displayed on the charts in the reports.
+5\. Use filters (Geography, Directories, Browsers, Devices, OS) to get a more specific report. For example, you can set an “Android” parameter in the “OS” filter to observe only requests to your web app from users with Android.
 
-<img src="https://assets.gcore.pro/docs/cdn/reports/7.png" alt="" width="80%">
+<expandable-elements title="Geography">
 
-The parameters specified in the filters influence the data displayed in all report types.
+The report below contains information collected based on the parameters specified in the filters. For this filter, you can select which countries will be displayed on the chart.
 
-For example, suppose you select "PC" in the "Device" filter. In that case, other reports (Geography, Directories, Browsers, OS) will display data based on your choice, e.g., countries with traffic/unique users/requests from PCs or traffic/unique users/requests from browsers running from PCs.
+For quick navigation, type the countries you want to view into the search bar.
 
-**Note**: Filters by country, directory, browser, devices, and operating systems are available depending on whether the required report type is activated. Filters are not available for a demo mode.
+<img src="https://assets.gcore.pro/docs/cdn/reports/reports-50.png" alt="" width="80%">
 
-### Report types
+</expandable-elements>
 
-#### Geography
+<expandable-elements title="Directories">
 
-The Geography report shows the traffic, requests, or unique users from different countries. Data is calculated based on end-user requests.
+The report shows information about directories that users requested. You can select which directories will be displayed on the chart.
 
-The map shows data for all world's countries.
+For quick navigation, type the concrete path you want to view into the search bar.
 
-The table below contains information collected based on the parameters specified in the filters. Here you can select the countries that will be displayed on the chart.
+<img src="https://assets.gcore.pro/docs/cdn/reports/reports-60.png" alt="" width="80%">
 
-To quickly navigate through countries, use the search.
+</expandable-elements>
 
-<img src="https://assets.gcore.pro/docs/cdn/reports/8.png" alt="" width="80%">
+<expandable-elements title="Browsers">
 
-#### Directories
+The report below contains information collected based on the parameters specified in the filters. For this filter, you can choose which browsers will be displayed on the chart.
 
-The report shows information about directories that users requested.
+For quick navigation, use the search bar.
 
-The table below contains information collected based on the parameters specified in the filters. Here you can select the directories that will be displayed on the chart.
+<img src="https://assets.gcore.pro/docs/cdn/reports/reports-70.png" alt="" width="80%">
 
-For quick navigation, use the search.
+</expandable-elements>
 
+<expandable-elements title="Devices">
 
-#### Browsers
+The table below contains information collected based on the parameters specified in the filters. For this filter, you can select which devices will be displayed on the chart.
 
-The table below contains information collected based on the parameters specified in the filters. Here you can choose the browsers that will be displayed on the chart.
+For quick navigation, use the search bar.
 
-For quick navigation, use the search.
+<img src="https://assets.gcore.pro/docs/cdn/reports/reports-80.png" alt="" width="80%">
 
-#### Devices
+</expandable-elements>
 
-The table below contains information collected based on the parameters specified in the filters. Here you can select the devices that will be displayed on the chart.
+<expandable-elements title="OS">
 
-For quick navigation, use the search.
+The table below contains information collected based on the parameters specified in the filters. For this filter, you can select which operating systems will be displayed on the chart.
 
-#### OS
+For quick navigation, use the search bar.
 
-The table below contains information collected based on the parameters specified in the filters. Here you can select the operating systems displayed on the chart.
+<img src="https://assets.gcore.pro/docs/cdn/reports/reports-90.png" alt="" width="80%">
 
-For quick navigation, use the search.
+</expandable-elements>
 
-### How statistics are collected 
+### How Advanced analytics reports are collected
 
 Statistics are used for invoices and displaying data on CDN resources in your personal account.
 
-There are two methods for statistics calculation. The first is based on accuracy, which is needed to create invoices, and the second is based on speed and relevance, which are needed to create and display reports in your personal account.
+There are two methods for statistics calculation. 
 
-1\. For billing statistics and invoices, we use Nginx access logs. It is resource logs we collect, process, and store. There are a lot of logs that contain a large amount of data. Their processing requires time and resources, so we do not use them as real-time statistics.
+1. **For billing statistics and invoices**: Accuracy is essential, so we use nginx access logs, which contain a large amount of data. Processing these logs necessitates considerable time and resources, which is why this method isn’t suitable for real-time statistics.
+2. **For reports in your personal account**: Speed is important, so we use nginx virtual host traffic status module, which contains information about the current status of resources. We use this method to create and display reports in your personal account.
 
-2\. For real-time reports, we use Nginx virtual host traffic status module. It is a special request to get information about the current resources state.
-
-**Note**: The UTC zone is used for all statistics.
+**Note**: UTC time zone is used for all statistics.
