@@ -35,19 +35,25 @@ There are three support modes available:
 
 ## The request priority
 
-The request priority reflects the impact of service issues on your business. The more critical the problem, the sooner we will start solving it. You set the priority when sending a ticket from your <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">control panel</a> or in the chat on the website.
+The request priority reflects the impact of service issues on your business. The more critical the problem, the sooner we will start solving it.
 
 | Priority  | Criteria                                                                                                                                       | Response time     |
 |---------------|----------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------|
-| Very High | Business-critical functions are unavailable, or degraded and will soon be unavailable                                                          | Within 30 minutes |
+| Urgent | Business-critical functions are unavailable, or degraded and will soon be unavailable                                                          | Within 30 minutes |
 | High      | Business-critical functions are partially unavailable or degraded                                                                              | Within 1 hour    |
 | Normal    | Non-business-critical functions are inoperable or non-standard errors are observed                                                             | Within 2 hours    |
 | Low       | You have a general question concerning the infrastructure; you want to request a new function of the Gcore services or discuss an existing onen | Within 4 hours    |
 
 
-If you use CDN, Streaming platform, Cloud, Web protection, Storage, or DNS, you can set the priority of the request and manage it in the <a href="https://accounts.gcore.com/tickets/all" target="_blank">My tickets</a> section when creating the ticket.
+If you use CDN, Streaming platform, Cloud, Web protection, Storage, or DNS, you can set the priority of the request and manage it in the "Help center" while creating a request. For other services, priority is indicated in the chat on our website.
 
-<img src="https://assets.gcore.pro/docs/account-settings/technical-support/ticket-priority-20.png" alt="" width="80%">
+To create a request, click **Help** and then **Help center**.
+
+<img src="https://assets.gcore.pro/docs/account-settings/technical-support/image-3762.png" alt="" width="50%">
+
+The new page will open. Specify the details of your request and set the "Priority" option.
+
+<img src="https://assets.gcore.pro/docs/account-settings/technical-support/image-3765.png" alt="" width="70%">
 
 This functionality will soon be available for Hosting clients.
 
