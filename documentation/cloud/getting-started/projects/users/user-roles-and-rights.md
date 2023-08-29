@@ -12,10 +12,67 @@ Certain roles are assigned to all users in projects. Rights to manage settings, 
 
 All available roles, their descriptions, and the rights assigned to them are listed below.    
 
-| Role                                                  | Description                                                                                                                                                                                                                                               | Rights                                                                                                |
-|-----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------|
-| Account owner (administrator of the default project)  | The user has full access to all the Gcore Cloud functionality (if not restricted within the quotas) for all projects. A user can create resources, projects, and manage users for any project.                                                            | All Gcore Cloud functionality for a client.                                                           |
-| Administrator                                         | The user has full access to all the Gcore Cloud functionality (if not restricted within the quotas) only within their project and does not have access to other projects. A user can create resources, projects, and manage users within their projects.  | All Gcore Cloud functionality for a client within their projects.                                     |
-| User                                                  | The user has access to a specific project. A user can manage resources, but can't create projects/manage users.                                                                                                                                           | Resources management within a project.                                                                |
-| Observer                                              | The user has access to a specific project, except a default one. Read-only access. A user can only see resources without the ability to manage resources, projects, or users.                                                                             | Read-only access to a project.                                                                        |
-| Internal Network Only User                            | The user can create resources only in private networks and cannot in public ones                                                                                                                                                                          | Resources management within a project, restrictions on the creation of resources in a public network. |
+
+### Client Administrator
+
+Scope: Account
+
+**Account Management:**
+- Full access to create, read, list, edit, and delete projects.
+- Ability to invite other users to projects and assign them a role (up to the Client Administrator).
+- Full access to all cost reports, tasks, and audit logs (user actions).
+- Ability to read account quotas and request quota limits increases.
+- Full access to create, read, list, edit, and delete resource reservations.
+
+**Resource Management:**
+- Full access to create, read, list, edit, and delete any cloud resources in any project of the account. This includes Virtual Instances, Bare Metal Servers, Volumes, Snapshots, File Shares, AI Infrastructure, Kubernetes clusters, Functions, Logging, Images, SSH Keys, Networks, Firewalls, Load Balancers, and more.
+
+### Project Administrator
+
+Scope: Project
+
+**Account Management:**
+- Ability to invite other users to the project and assign them a role (up to the Project Administrator).
+- Access to the cost report, tasks, and audit logs (user actions) but only for the project. No access to the reservation cost report.
+- Ability to read account quotas.
+
+**Resource Management:**
+- Full access to create, read, list, edit, and delete any cloud resources in the project, including Virtual Instances, Bare Metal Servers, Volumes, Snapshots, File Shares, AI Infrastructure, Kubernetes clusters, Functions, Logging, Images, SSH Keys, Networks, Firewalls, Load Balancers, and more.
+
+### Project User
+
+Scope: Project
+
+**Account Management:**
+- Access to the cost report, tasks, and audit logs (user actions) but only for the project. No access to the reservation cost report.
+- Ability to read account quotas.
+
+**Resource Management:**
+- Full access to create, read, list, edit, and delete any cloud resources in the project, including Virtual Instances, Bare Metal Servers, Volumes, Snapshots, File Shares, AI Infrastructure, Kubernetes clusters, Functions, Logging, Images, SSH Keys, Networks, Firewalls, Load Balancers, and more.
+
+### Project Internal Network Only User
+
+Scope: Project
+
+**Account Management:**
+- Access to the cost report, tasks, and audit logs (user actions) but only for the project. No access to the reservation cost report.
+- Ability to read account quotas.
+
+**Resource Management:**
+- Limited access to create, read, list, edit, and delete any cloud resources in the project. This includes Virtual Instances, Bare Metal Servers, Volumes, Snapshots, File Shares, AI Infrastructure, Kubernetes clusters, Functions, Logging, Images, SSH Keys, Networks, Firewalls, Load Balancers, etc.
+
+**Extra Limitations:**
+- Cannot create resources with a public IP address (virtual and bare metal instances, AI clusters, load balancers, Kubernetes clusters).
+- Cannot use floating IP addresses.
+- Cannot edit any resources by attaching a public IP address.
+
+### Project Observer
+
+Scope: Project
+
+**Account Management:**
+- Access to the cost report, tasks, and audit logs (user actions) but only for the project. No access to the reservation cost report.
+- Ability to read account quotas.
+
+**Resource Management:**
+- List and read any cloud resources in the project, including Virtual Instances, Bare Metal Servers, Volumes, Snapshots, File Shares, AI Infrastructure, Kubernetes clusters, Functions, Logging, Images, SSH Keys, Networks, Firewalls, Load Balancers, etc.
