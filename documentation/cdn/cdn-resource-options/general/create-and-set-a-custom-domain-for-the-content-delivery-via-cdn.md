@@ -45,7 +45,7 @@ Replace _cl-\*\*\*\*.gcdn.co_ will the value specific to your account.
 
 If you specified multiple custom domains in step 1, add CNAME records for all additional custom domains.
 
-You can use the ```dig``` command in the terminal or an <a href="https://toolbox.googleapps.com/apps/dig" target="_blank">online dig tool</a> to check the record. If the record was added correctly, you should receive a response similar to the one specified above.
+You can use the ```dig``` command in the terminal or an <a href="https://gcore.com/dev-tools/dns-lookup" target="_blank">online dig tool</a> to check the record. If the record was added correctly, you should receive a response similar to the one specified above.
 
 6\. Complete the CDN resource creation. You will see the following pop-up when all configurations are completed:
 
