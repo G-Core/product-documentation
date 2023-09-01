@@ -4,24 +4,24 @@ displayName: Configure and use
 published: true
 order: 20
 toc:
-pageTitle: Configuring and usage of the DNS  Health Checks technology | Gcore
-pageDescription: A comprehensive guide on how to configure and manage DNS  Health Checks.
+pageTitle: Configuring and usage of the DNS Health Checks technology | Gcore
+pageDescription: A comprehensive guide on how to configure and manage DNS Health Checks.
 ---
-# Configure and use DNS  Health Checks
+# Configure and use DNS Health Checks
 
 1\. Go to the <a href="https://dns.gcore.com" target="_blank">DNS</a> service.
 
-2\. Navigate to the DNS zone where you intend to set up  Health Checks. A new page will open.
+2\. Navigate to the DNS zone where you intend to set up Health Checks. A new page will open.
 
 <img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-3571.png" alt="" width="70%">
 
-3\. 3. Ensure that <a href="https://gcore.com/docs/dns/about-gcore-dns#interface-modes-non-advanced-and-advanced" target="_blank">Advanced interface mode</a> is enabled. In non-advanced mode, the  Health Checks feature will not appear.
+3\. 3. Ensure that <a href="https://gcore.com/docs/dns/about-gcore-dns#interface-modes-non-advanced-and-advanced" target="_blank">Advanced interface mode</a> is enabled. In non-advanced mode, the Health Checks feature will not appear.
 
 4\. Click the name of the A, AAAA, or CNAME record. The “Records list/Edit record set” page will open.
 
 <img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/group-90994.png" alt="" width="80%">
 
-5\. Enable the  Health Checks feature. To configure it, select a protocol (TCP, UDP, ICMP, or HTTP) that  Health Checks will use when sending requests to your web servers. Follow the instructions below:
+5\. Enable the Health Checks feature. To configure it, select a protocol (TCP, UDP, ICMP, or HTTP) that Health Checks will use when sending requests to your web servers. Follow the instructions below:
 
 <expandable-element title="TCP/UDP">
 
@@ -54,15 +54,15 @@ pageDescription: A comprehensive guide on how to configure and manage DNS  Healt
 
 <img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-checks-50.png" alt="" width="70%">
 
-6\. (Optional) You can enable backup metadata for  Health Checks. In this case, records marked as backups will not participate in the response if at least one “healthy,” valid record exists. If all records not marked as backup are non-functional, the “healthy” backup records will appear in the response. 
+6\. (Optional) You can enable backup metadata for Health Checks. In this case, records marked as backups will not participate in the response if at least one “healthy,” valid record exists. If all records not marked as backup are non-functional, the “healthy” backup records will appear in the response. 
 
 To configure backup metadata, select which record will be used as a backup (Record 2 in the example,) choose “backup” from the dropdown list, and enable the toggle.
 
 <img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-checks-60.png" alt="" width="70%">
 
-“Failover” is a read-only meta that appears on the records with the  Health Checks enabled (step no. 5).
+“Failover” is a read-only meta that appears on the records with the Health Checks enabled (step no. 5).
 
-7\. (Optional) You can configure logic that will be used to distribute requests among available servers when some of them are unavailable. By default, DNS  Health Checks use round-robin balancing. <a href="https://gcore.com/docs/dns/dns-records/configure-weight-balancing-and-geobalancing" target="_blank">Use our detailed guide</a> for more information. In the example, we set the weight balancing with DNS  Health Checks and backup metadata. 
+7\. (Optional) You can configure logic that will be used to distribute requests among available servers when some of them are unavailable. By default, DNS Health Checks use round-robin balancing. <a href="https://gcore.com/docs/dns/dns-records/configure-weight-balancing-and-geobalancing" target="_blank">Use our detailed guide</a> for more information. In the example, we set the weight balancing with DNS Health Checks and backup metadata. 
 
 <img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-checks-70.png" alt="" width="70%">
 
@@ -73,8 +73,8 @@ To configure backup metadata, select which record will be used as a backup (Reco
 <img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-checks-80.png" alt="">
 
 
-The configuration is complete! Refresh your DNS cache renewal and  Health Checks will start to monitor your site’s availability.
+The configuration is complete! Refresh your DNS cache renewal and Health Checks will start to monitor your site’s availability.
 
-You can also check for recent monitoring events in  Health Checks logs. Go to the page of the DNS zone for which your configured DNS  Health Checks. Select the needed record, click the three dots on the right, and click ** Health Checks logs**.
+You can also check for recent monitoring events in Health Checks logs. Go to the page of the DNS zone for which your configured DNS Health Checks. Select the needed record, click the three dots on the right, and click **Health Checks logs**.
 
 <img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-3589.png" alt="" width="80%"> 
