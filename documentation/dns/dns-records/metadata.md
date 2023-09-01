@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: DNS records
+displayName: Records
 published: true
 order: 30
 ---

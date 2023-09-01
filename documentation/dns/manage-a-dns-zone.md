@@ -1,6 +1,6 @@
 ---
 title: manage-a-dns-zone
-displayName: DNS zone
+displayName: Zone
 published: true
 order: 20
 toc:
