@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: Health Checks
+displayName:  Health Checks
 published: true
 order: 50
 ---

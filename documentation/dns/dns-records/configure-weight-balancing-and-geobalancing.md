@@ -50,13 +50,13 @@ Three types of balancing are available:
 
 4. Specify the maximum number of records in one response in the right field. The default value is one record per response.
 
-5. Configure Health checks if needed. Learn more about them in <a href="https://gcore.com/docs/dns/dns-failover/about-dns-failover" target="_blank">our article</a>.
+5. Configure  Health Checks if needed. Learn more about them in <a href="https://gcore.com/docs/dns/dns-failover/about-dns-failover" target="_blank">our article</a>.
 
 6. Specify the record’s value.
 
 7. Select appropriate metadata and specify the value. You can add several metadata fields for one value. To do this, click **+**.
 
-**Note**: “Failover” is a read-only meta that appears on the records with the Health checks enabled (step no. 5).
+**Note**: “Failover” is a read-only meta that appears on the records with the  Health Checks enabled (step no. 5).
 
 8. Click **Add record** if needed and repeat steps 6-7. 
 
@@ -99,14 +99,14 @@ When a DNS request is made, the answer will be formed using the chosen *Records 
 - Continents
 - Countries
 - Fallback (only used in an answer if no other records were selected)
-- Backup (only used in combination with health checks to provide failover capability; if the rest of the records are not “healthy,” backup records will be used to form an answer; if at least one non-backup record is “healthy,” the record with the backup metadata does not participate in the response)
+- Backup (only used in combination with  Health Checks to provide failover capability; if the rest of the records are not “healthy,” backup records will be used to form an answer; if at least one non-backup record is “healthy,” the record with the backup metadata does not participate in the response)
 - Notes (any comments; for example, you can specify a city, data center name, or cluster name)
 
 Our system will check if a user matches the criteria from the metadata in the following order: IP, ASN, country, and continent. The processing logic works like this:
 
 1. Our DNS server receives a request to the domain.
 
-2. If Health checks are configured, we filter off all “non-healthy” records.
+2. If  Health Checks are configured, we filter off all “non-healthy” records.
 
 3. The DNS server compares the requestor user’s IP (respecting EDNS(0)) with the IP from the metadata. The server uses records with matched metadata to form an answer if there is a match.
 
