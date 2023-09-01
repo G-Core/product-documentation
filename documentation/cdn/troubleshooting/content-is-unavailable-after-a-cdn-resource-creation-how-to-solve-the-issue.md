@@ -61,14 +61,9 @@ If there is a notification, go to step 3. If there isn’t, go to the [next tro
 
 3\. Open <a href="https://gcore.com/dev-tools/dns-lookup" target="_blank">Gcore DNS Lookup</a> enter the CNAME of your CDN resource from the notification (in the screenshot above, it is *cdn.example.com*), choose from which servers the domain should be checked and press **Search**.
 
-Choose the CNAME tab at the bottom of the page. If the value from the Setup guide appears, 
-it means that you have already configured the CNAME record with the correct value, but the DNS records didn’t update. Repeat step 2 again in 15 minutes. It must show that the record is configured.
+Choose the CNAME tab at the bottom of the page. If the value from the Setup guide appears, it means that you have already configured the CNAME record with the correct value, but the DNS records didn’t update. Repeat step 2 again in 15 minutes. It must show that the record is configured.
 
-If you see the “Record not found!” label
-
-<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image6.png" alt="" width="80%">
-
-add the CNAME record according to the "<a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">CNAME record configuration in DNS settings</a>" guide.
+If you see the “No records were found” label, add the CNAME record according to the "<a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">CNAME record configuration in DNS settings</a>" guide.
 
 4\. Save the changes and wait for the records to update. Usually, it takes 15 minutes. But if you have recently changed the domain's NS servers, it may take up to 24 hours for the DNS records to be updated.
 
