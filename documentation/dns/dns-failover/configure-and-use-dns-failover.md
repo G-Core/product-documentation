@@ -60,8 +60,6 @@ To configure backup metadata, select which record will be used as a backup (Reco
 
 <img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-checks-60.png" alt="" width="70%">
 
-“Failover” is a read-only meta that appears on the records with the Health Checks enabled (step no. 5).
-
 7\. (Optional) You can configure logic that will be used to distribute requests among available servers when some of them are unavailable. By default, DNS Health Checks use round-robin balancing. <a href="https://gcore.com/docs/dns/dns-records/configure-weight-balancing-and-geobalancing" target="_blank">Use our detailed guide</a> for more information. In the example, we set the weight balancing with DNS Health Checks and backup metadata. 
 
 <img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-checks-70.png" alt="" width="70%">
