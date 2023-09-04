@@ -32,7 +32,8 @@ The Gzip method reduces file size by 80% and up to 90%. The following MIME types
 - application/xml
 - application/xml+rss
 - application/wasm
-- text/css text/html
+- text/css
+- text/html
 - text/javascript
 - text/plain
 - text/xml
