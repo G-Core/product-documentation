@@ -50,7 +50,7 @@ Gcore Cloud’s File Shares service enables you to:
 
 ## File Shares vs Cloud Storage
 
-<table>
+<table style="text-align: left">
    <tr>
       <td>    </td>
       <td>S3 Object Storage</td>
