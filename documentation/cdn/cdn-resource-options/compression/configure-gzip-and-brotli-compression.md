@@ -31,6 +31,7 @@ The Gzip method reduces file size by 80% and up to 90%. The following MIME types
 - application/x-javascript
 - application/xml
 - application/xml+rss
+- application/wasm
 - text/css text/html
 - text/javascript
 - text/plain
@@ -59,6 +60,7 @@ You can specify the MIME types to be considered for Brotli compression. These ty
 - **application/x-font-ttf**. Not added by default.
 - **image/x-icon**. Not added by default.
 - **image/svg+xml**. Not added by default.
+- **application/wasm**. Not added by default.
 
 **Note**: Image formats (e.g., image/jpeg, image/png), video formats (e.g., video/mpeg), PDF, and other binary formats are already compressed. It is not recommended to apply additional compression to these types as it can actually increase the file size.
 
