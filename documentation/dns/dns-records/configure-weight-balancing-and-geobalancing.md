@@ -56,8 +56,6 @@ Three types of balancing are available:
 
 7. Select appropriate metadata and specify the value. You can add several metadata fields for one value. To do this, click **+**.
 
-**Note**: “Failover” is a read-only meta that appears on the records with the Health Checks enabled (step no. 5).
-
 8. Click **Add record** if needed and repeat steps 6-7. 
 
 9. Click **Create**.
