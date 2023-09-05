@@ -88,13 +88,42 @@ If you don’t specify a query string, files with all the possible query string 
 
 Several types of patterns are available:
 
-| Type and explanation                                                                                                                                                                                                                                                                                                         | Purge target                  | Purge pattern            |
-|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------|--------------------------|
-| 1. Purge the selected fileSpecify a file path without a domain name. As a result, all files at cdn.site/static/image.jpg will be purged,     including files with query string .jpg?VERSION. If you want to purge only a selected file with a query string, specify it in the file path: /static/image.jpg?VERSION | cdn.site/static/image.jpg | /static/image.jpg  |
-| 2. Purge the group of files from one folderInput pattern without a domain name and * operator: /statiс/*                                                                                                                                                                                                               | cdn.site/static               | /statiс/*                |
-| 3. Purge the group of files with a certain type Input the * operator and the file name extension .jpgAs a result, all the jpg files will be purged, including files with the query string .jpg?VERSION                                                                                                               | cdn.site/*.jpg                | *.jpg                    |
-| 4. Purge the group of files having a common folder in the pathInput path pattern without a domain name and use the * operator twice                                                                                                                                                                                    | cdn.site/*/static/*           | */static/*               |
-| 5. Purge the group of files with a certain type having a common folder in the pathInput path pattern with the * operator                                                                                                                                                                                               | cdn.site/*/static/*.jpg       | */static/*.jpg           |
+<table>
+<thead>
+<tr>
+<td><b>Type and explanation</b></td>
+<td><b>Purge target</b></td>
+<td><b>Purge pattern</b></td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left">1. Purge the selected file<br><br>Specify a file path without a domain name.<br> As a result, all files at <i>cdn.site/static/image.jpg</i>will be purged,<br> including files with query string <i>.jpg?VERSION</i><br>If you want to purge only a selected file with a query string,<br>specify it in the file path: <i>/static/image.jpg?VERSION</i></td>
+<td style="text-align: left">cdn.site/static/image.jpg</td>
+<td style="text-align: left">/static/image.jpg</td>
+</tr>
+<tr>
+<td style="text-align: left">2. Purge the group of files from one folder<br><br>Input pattern without a domain name and <i>*</i> operator: <i>/statiс/*</i> </td>
+<td style="text-align: left">cdn.site/static</td>
+<td style="text-align: left">/statiс/*</td>
+</tr>
+<tr>
+<td style="text-align: left">3. Purge the group of files with a certain type<br><br>Input the <i>*</i> operator and the file name extension <i>.jpg</i><br><br>As a result, all the jpg files will be purged,<br> including files with the query string <i>.jpg?VERSION</i></td>
+<td style="text-align: left">cdn.site/*.jpg</td>
+<td style="text-align: left">*.jpg</td>
+</tr>
+<tr>
+<td style="text-align: left">4. Purge the group of files having a common folder in the path<br><br>Input path pattern without a domain name and use the <i>*</i> operator twice</td>
+<td style="text-align: left">cdn.site/*/static/*</td>
+<td style="text-align: left">*/static/*</td>
+</tr>
+<tr>
+<td style="text-align: left">5. Purge the group of files with a certain type<br> having a common folder in the path<br><br>Input path pattern with the <i>*</i> operator</td>
+<td style="text-align: left">cdn.site/*/static/*.jpg</td>
+<td style="text-align: left">*/static/*.jpg</td>
+</tr>
+</tbody>
+</table>
 
 ## Configure Purge via API
 
@@ -103,24 +132,24 @@ We will explain in detail how to do "Purge by URL" via API calls. Examples of ot
 <table>
 <tbody>
 <tr>
-<td>Method</td>
-<td>POST</td>
+<td style="text-align: left">Method</td>
+<td style="text-align: left">POST</td>
 </tr>
 <tr>
-<td>URL</td>
-<td>https://api.gcore.com/cdn/resources/{{resource_id}}/purge</td>
+<td style="text-align: left">URL</td>
+<td style="text-align: left">https://api.gcore.com/cdn/resources/{{resource_id}}/purge</td>
 </tr>
 <tr>
-<td>URL parameter</td>
-<td>resource_id<br />ID of the CDN resource that the content to purge belongs to</td>
+<td style="text-align: left">URL parameter</td>
+<td style="text-align: left">resource_id<br />ID of the CDN resource that the content to purge belongs to</td>
 </tr>
 <tr>
-<td>Header</td>
-<td>Bearer {{access_token}}<br />application/json</td>
+<td style="text-align: left">Header</td>
+<td style="text-align: left">Bearer {{access_token}}<br />application/json</td>
 </tr>
 <tr>
-<td>Payload</td>
-<td>
+<td style="text-align: left">Payload</td>
+<td style="text-align: left">
 <p>1. Purge by URL:</p>
 <p>{ <br /> "urls": [ <br /> "/example1.jpg", <br /> "/img/example2.png", <br /> "/style.css?ver=2.0" <br /> ] <br />}</p>
 <p>2.&nbsp;Purge all:</p>
@@ -134,8 +163,8 @@ We will explain in detail how to do "Purge by URL" via API calls. Examples of ot
 </td>
 </tr>
 <tr>
-<td>Request parameter </td>
-<td>
+<td style="text-align: left">Request parameter </td>
+<td style="text-align: left">
 <p>paths</p>
 <p>1. Purge by URL:</p>
 <p>(required, string) An array of one or more content URLs to purge</p>
@@ -146,8 +175,8 @@ We will explain in detail how to do "Purge by URL" via API calls. Examples of ot
 </td>
 </tr>
 <tr>
-<td>Response</td>
-<td>
+<td style="text-align: left">Response</td>
+<td style="text-align: left">
 <p><strong>201 Created<br /></strong>Returns an array of the purged URLs</p>
 <p><strong>400 Bad Request<br /></strong>The user has exceeded the URL quota</p>
 <p><strong>401 Unauthorized<br /></strong>The user does not have the correct authentication credentials</p>
