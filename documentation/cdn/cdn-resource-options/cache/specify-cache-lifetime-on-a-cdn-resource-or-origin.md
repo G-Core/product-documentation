@@ -113,7 +113,7 @@ For instance, if we set a cache expiry of 4 days and add two rules in the "Advan
 2\. Run the following command:
 
 <code-block>
-<span style="color:#FF5913">http://cdn.testdomain.com/css/style.css</span>
+curl -I <span style="color:#FF5913">http://cdn.testdomain.com/css/style.css</span>
 </code-block>
 
 where <span style="color:#FF5913">http://cdn.testdomain.com/css/style.css</span> is a link to your file delivered via CDN.
