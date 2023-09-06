@@ -52,7 +52,7 @@ For more details about the "Base control panel domain" field, refer to <a href="
 
 ### Brand name 
 
-Enter your brand name. It will be displayed in the title tag of the page’s tab, in the “Help” menu > “Website”, on the Welcome page and in emails. If you do not specify anything, Gcore will be displayed
+Enter your brand name. It will be displayed in the title tag of the page’s tab, in the “Help” menu > “Website”, on the Welcome page, in the body of email notifications, and in the sender's name. 
 
 ### Languages
 
@@ -70,7 +70,7 @@ The setting configures the logo in the service column and on the user sign-in pa
 
 <img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/header-logo-40.png" alt="">
 
-**Please note**: Your image must be: smaller than 4 MB, SVG (recommended)/PNG/JPG file. The maximum allowed resolution is 75 x 40px. If you don't add a logo, the Gcore logo will be displayed
+**Please note**: Your image must be: smaller than 4 MB, SVG (recommended)/PNG/JPG file. The maximum allowed resolution is 75 x 40px.
 
 ### Header text color
 
@@ -104,13 +104,9 @@ By default, when the "Branding settings" are not activated, the client control p
 
 This setting allows displaying the phone number of your technical support.
 
-If the setting is not activated, the client control panel shows the phone number of the Gcore technical support.
-
 ### Support email
 
 The setting allows displaying the email address of your technical support.
-
-If the setting is not activated, the client control panel will show the email address of the Gcore technical support.
 
 <img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/support-email-70.png" alt="" width="50%">
 
@@ -124,58 +120,23 @@ To receive emails, turn on the "Email for deletion request" toggle and enter you
 
 ### Link to User Agreement
 
-The setting allows displaying the link to legal documents.
+The setting allows displaying the link to your legal documents.
 
-It has two parameters:
-
-- Gcore link — if you want to use the link to Gcore legal documents.
-- Custom link — if you want to specify a link to your legal documents.
-
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/user-agreement-90.png" alt="" width="80%">
-
-### Link to company website
+### Link to a company website
 
 The "Link to website" setting allows displaying the link to your website.
 
-It has two parameters:
-
-- Gcore link — if you want to use the link to Gcore website.
-- Custom link — if you want to specify a link to your website.
-
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/company-website-100.png" alt="" width="80%">
-
 ### Show API documentation
 
-The setting allows displaying links to API documentation.
-
-It has two parameters:
-
-- Gcores link — if you want to use the link to the GcoreAPI documentation.
-- Custom link — if you want to specify a link to your API documentation.
-
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/api-documentation-110.png" alt="" width="80%">
+The setting allows displaying links to your API documentation.
 
 ### Show Knowledge Base
 
 The setting allows displaying a link to your Knowledge Base
 
-It has two parameters:
-
-- Gcore link — if you want to use the link to the Gcore Knowledge Base.
-- Custom link — if you want to specify a link to your Knowledge Basee.
-
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/knowledge-base-120.png" alt="" width="80%">
-
 ### Show Status Page
 
 The setting allows displaying a link to your Status Page.
-
-It has two parameters:
-
-- Gcore link — if you want to use the link to the Gcore Status Page.
-- Custom link — if you want to specify a link to your Status Page.
-
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/status-page-130.png" alt="" width="80%">
 
 ### Show online chat
 
