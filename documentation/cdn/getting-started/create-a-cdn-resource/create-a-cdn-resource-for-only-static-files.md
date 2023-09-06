@@ -53,7 +53,7 @@ Click "Confirm" to complete the creation and set-up of your CDN resource.
 
 <img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/mceclip0.png" alt="" width="80%">
 
-The resource will be created automatically. You will see a page with its advanced settings. If there is no text box ```... steps lef``` in the upper-right corner, everything is ok and the resource is working. 
+The resource will be created automatically. You will see a page with its advanced settings. If there is no text box ```... steps left``` in the upper-right corner, everything is ok and the resource is working. 
 
 If you see the ```... steps left``` text box, it means that something went wrong while creating or integrating the CDN resource. 
 
