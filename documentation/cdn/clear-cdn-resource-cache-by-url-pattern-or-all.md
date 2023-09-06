@@ -98,27 +98,27 @@ Several types of patterns are available:
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left">1. Purge the selected file<br><br>Specify a file path without a domain name.<br> As a result, all files at <i>cdn.site/static/image.jpg</i>will be purged,<br> including files with query string <i>.jpg?VERSION</i><br>If you want to purge only a selected file with a query string,<br>specify it in the file path: <i>/static/image.jpg?VERSION</i></td>
+<td style="text-align: left"><b>1. Purge the selected file</b><br><br>Specify a file path without a domain name.<br> As a result, all files at <i>cdn.site/static/image.jpg</i><br>will be purged,<br> including files with query string <i>.jpg?VERSION</i><br><br>If you want to purge only a selected file with a query string, specify it in the file path: <i>/static/image.jpg?VERSION</i></td>
 <td style="text-align: left">cdn.site/static/image.jpg</td>
 <td style="text-align: left">/static/image.jpg</td>
 </tr>
 <tr>
-<td style="text-align: left">2. Purge the group of files from one folder<br><br>Input pattern without a domain name and <i>*</i> operator: <i>/statiс/*</i> </td>
+<td style="text-align: left"><b>2. Purge the group of files from one folder</b><br><br>Input pattern without a domain name and <i>*</i> operator: <i>/statiс/*</i> </td>
 <td style="text-align: left">cdn.site/static</td>
 <td style="text-align: left">/statiс/*</td>
 </tr>
 <tr>
-<td style="text-align: left">3. Purge the group of files with a certain type<br><br>Input the <i>*</i> operator and the file name extension <i>.jpg</i><br><br>As a result, all the jpg files will be purged,<br> including files with the query string <i>.jpg?VERSION</i></td>
+<td style="text-align: left"><b>3. Purge the group of files with a certain type</b><br><br>Input the <i>*</i> operator and the file name extension <i>.jpg</i><br>As a result, all the jpg files will be purged,<br> including files with the query string <i>.jpg?VERSION</i></td>
 <td style="text-align: left">cdn.site/*.jpg</td>
 <td style="text-align: left">*.jpg</td>
 </tr>
 <tr>
-<td style="text-align: left">4. Purge the group of files having a common folder in the path<br><br>Input path pattern without a domain name and use the <i>*</i> operator twice</td>
+<td style="text-align: left"><b>4. Purge the group of files having a common folder in the path</b><br><br>Input path pattern without a domain name and use the <i>*</i> operator twice</td>
 <td style="text-align: left">cdn.site/*/static/*</td>
 <td style="text-align: left">*/static/*</td>
 </tr>
 <tr>
-<td style="text-align: left">5. Purge the group of files with a certain type<br> having a common folder in the path<br><br>Input path pattern with the <i>*</i> operator</td>
+<td style="text-align: left"><b>5. Purge the group of files with a certain type having a common folder in the path</b><br><br>Input path pattern with the <i>*</i> operator</td>
 <td style="text-align: left">cdn.site/*/static/*.jpg</td>
 <td style="text-align: left">*/static/*.jpg</td>
 </tr>
