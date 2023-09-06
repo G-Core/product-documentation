@@ -57,7 +57,7 @@ A new page will open. Complete the remaining steps of the manual in the "Origin"
 
 In the example below, we use the private bucket ```test-private``` in S3 Gcore storage with the Hostname ```s-ed1.cloud.gcore.lu``` and configure an origin group as follows:
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15353220184977.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/image-3406.png" alt="" width="80%">
 
 2\. Select the **Specify content origin** option.
 
@@ -68,9 +68,9 @@ In the example below, we use the private bucket ```test-private``` in S3 Gcore s
 5\. Specify the needed authentication data. It depends on the type of storage selected in the previous step.
 
   - **For Amazon storage**: Access Key ID, Secret access key, and AWS region
-  - **For Other**: Hostname, Access Key ID, Secret access key, and Region
+  - **For Other**: Hostname (there's a bucket at the beginning), Access Key ID, Secret access key, and Region
 
-More information about where to find the keys can be found in the "[Authentication data](https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn#set-a-custom-domain)" section.
+More information about where to find the keys can be found in the "<a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage" target="_blank">Authentication data</a>" section.
 
 6\. Enter the **Bucket name**.
 
