@@ -17,6 +17,18 @@ pageDescription: Configure a placement group to control whether virtual machines
 
 In the "Placement Groups" section, create a new group. Give it a name and select a policy — affinity or anti-affinity — and click Create Placement Group.
 
+<expandable-element title="Types of placement groups">
+
+You can place your virtual machine in one of three types of groups:
+
+- **Affinity** groups assemble virtual machines on the same hardware. Machines launched in one affinity group will exchange data faster because they are located on the same server.
+
+- **Anti-affinity** groups work the opposite way: All virtual machines in this group will be separated across different physical hardware. This increases fault tolerance of a cluster: Even if something happens to one server, machines on the other(s) will remain available.
+
+- **Soft anti-affinity** groups encourage, but don't strictly enforce, the separation of virtual machines. Unlike a strict anti-affinity policy, where machines may never be placed together, soft anti-affinity allows placement on the same hardware when it is necessary due to factors like resource constraints or high demand. It is suitable for users who want to use the anti-affinity policy by default while also avoiding machine creation failures if an unused host was not found.
+
+</expandable-element>
+
 [<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/placement-groups/configure-a-placement-group/image-6.png" alt="">](https://assets.gcore.pro/docs/cloud/virtual-instances/placement-groups/configure-a-placement-group/image-6.png)
 
 ## Create an instance included in a placement group
