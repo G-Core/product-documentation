@@ -193,8 +193,17 @@ print(sha512_crypt.hash(passwd , rounds = 5000 ))
 
 ![The field to add the instance to a placement group](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/15-add-placement-group.png)
 
-**Placement Group** is a setting that determines whether virtual machines will be hosted on the same physical server (**affinity** policy) or on different ones (**anti-affinity** policy). For more detail, see the article: <a href="https://gcore.com/docs/cloud/virtual-instances/placement-groups/about-placement-groups
-" target="_blank">About placement groups</a>.
+<expandable-element title="Types of placement groups">
+
+You can place your virtual machine in one of three types of groups:
+
+- **Affinity** groups assemble virtual machines on the same hardware. Machines launched in one affinity group will exchange data faster because they are located on the same server.
+
+- **Anti-affinity** groups work the opposite way: All virtual machines in this group will be separated across different physical hardware. This increases fault tolerance of a cluster: Even if something happens to one server, machines on the other(s) will remain available.
+
+- **Soft anti-affinity** groups encourage, but don't strictly enforce, the separation of virtual machines. Unlike a strict anti-affinity policy, where machines may never be placed together, soft anti-affinity allows placement on the same hardware when it is necessary due to factors like resource constraints or high demand. It is suitable for users who want to use the anti-affinity policy by default while also avoiding machine creation failures if an unused host was not found.
+
+</expandable-element>
 
 You can add the instance to an existing placement group or create a new one by clicking **Add placement group**.
 
