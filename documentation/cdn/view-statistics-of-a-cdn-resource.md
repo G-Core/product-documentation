@@ -82,7 +82,7 @@ To view advanced reports:
 
 5\. Use filters (Geography, Directories, Browsers, Devices, OS) to get a more specific report. For example, you can set an “Android” parameter in the “OS” filter to observe only requests to your web app from users with Android.
 
-<expandable-elements title="Geography">
+<expandable-element title="Geography">
 
 The report below contains information collected based on the parameters specified in the filters. For this filter, you can select which countries will be displayed on the chart.
 
@@ -90,9 +90,9 @@ For quick navigation, type the countries you want to view into the search bar.
 
 <img src="https://assets.gcore.pro/docs/cdn/reports/reports-50.png" alt="" width="80%">
 
-</expandable-elements>
+</expandable-element>
 
-<expandable-elements title="Directories">
+<expandable-element title="Directories">
 
 The report shows information about directories that users requested. You can select which directories will be displayed on the chart.
 
@@ -100,9 +100,9 @@ For quick navigation, type the concrete path you want to view into the search ba
 
 <img src="https://assets.gcore.pro/docs/cdn/reports/reports-60.png" alt="" width="80%">
 
-</expandable-elements>
+</expandable-element>
 
-<expandable-elements title="Browsers">
+<expandable-element title="Browsers">
 
 The report below contains information collected based on the parameters specified in the filters. For this filter, you can choose which browsers will be displayed on the chart.
 
@@ -110,9 +110,9 @@ For quick navigation, use the search bar.
 
 <img src="https://assets.gcore.pro/docs/cdn/reports/reports-70.png" alt="" width="80%">
 
-</expandable-elements>
+</expandable-element>
 
-<expandable-elements title="Devices">
+<expandable-element title="Devices">
 
 The table below contains information collected based on the parameters specified in the filters. For this filter, you can select which devices will be displayed on the chart.
 
@@ -120,9 +120,9 @@ For quick navigation, use the search bar.
 
 <img src="https://assets.gcore.pro/docs/cdn/reports/reports-80.png" alt="" width="80%">
 
-</expandable-elements>
+</expandable-element>
 
-<expandable-elements title="OS">
+<expandable-element title="OS">
 
 The table below contains information collected based on the parameters specified in the filters. For this filter, you can select which operating systems will be displayed on the chart.
 
@@ -130,7 +130,7 @@ For quick navigation, use the search bar.
 
 <img src="https://assets.gcore.pro/docs/cdn/reports/reports-90.png" alt="" width="80%">
 
-</expandable-elements>
+</expandable-element>
 
 ### How Advanced analytics reports are collected
 
