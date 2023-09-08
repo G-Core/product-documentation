@@ -28,7 +28,6 @@ A pop-up will open.
 
 <img src="https://assets.gcore.pro/docs/account-settings/set-up-two-factor-authentication/2fa-20.png" alt="" width="50%">
 
-
 2\. Download the free app on your mobile device and sign up there. We recommend using one of the following:
 
 - <a href="https://support.google.com/accounts/answer/1066447?hl=en" target="_blank">Google Authenticator</a> (for <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=ru" target="_blank">Android</a>/<a href="https://apps.apple.com/eng/app/google-authenticator/id388497605" target="_blank">iOS</a>/<a href="https://appworld.blackberry.com/webstore/content/29401059/?countrycode=US&lang=en" target="_blank">BlackBerry</a>) 
