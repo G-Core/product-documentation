@@ -12,7 +12,7 @@ toc:
 pageTitle: Explore Gcore Error Status Codes | Gcore
 pageDescription: A comprehensive guide on how to troubleshoot special errors with the codes 402, 403, 404, 458, 504, 508, 556, 557.
 ---
-# Gcore error status codes 
+# Resolve Errors by Status Code for Gcore CDN
 
 This article reviews errors caused by misconfigurations in Gcore services or option settings, their corresponding status codes, and solutions for each case.
 
