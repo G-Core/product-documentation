@@ -38,12 +38,12 @@ Status codes 403 and 404 have multiple meanings. Explanations of each scenario t
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left">1. The CDN resource is currently disabled.</td>
+<td style="text-align: left">The CDN resource is currently disabled.</td>
 <td style="text-align: left">CDN resources have two states: “Enabled” and “Disabled.” <br>Disabled resources are inactive from your end and will not function.</td>
 <td style="text-align: left">Navigate to the CDN resource settings and <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/suspend-a-cdn-resource-automatically-or-manually" target="_blank">turn on the resource</a>.</td>
 </tr>
 <tr>
-<td style="text-align: left">2. The current resource security settings limit access for a user.</td>
+<td style="text-align: left">The current resource security settings limit access for a user.</td>
 <td style="text-align: left">You may have restricted access to content delivered via CDN to some users.</td>
 <td style="text-align: left">Determine which parameter (Referrer, Country, IP, User agent) is causing the user receiving error 403 to be blocked, and disable it according to the <a href="https://gcore.com/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies" target="_blank">guide</a>.<br><br><b>Example</b>: If you set the Country restriction to Angola and the user with error 403 is located there, you should remove this setting.</td>
 </tr>
@@ -62,25 +62,25 @@ Status codes 403 and 404 have multiple meanings. Explanations of each scenario t
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left">1. You provided a link to a missing file on the origin.</td>
+<td style="text-align: left">You provided a link to a missing file on the origin.</td>
 <td style="text-align: left">In your web page’s HTML file, you provide links to a content item on your origin via the CDN.<br> The link causing this error leads to a content item that does not exist on the origin. 
 <br><br>
 <b>Example</b>: If the link is <i>website.example.cdn/files/image.png</i>, then the file <i>image.png</i> is not found in the files directory.</td>
 <td style="text-align: left">You need to place the content item on your origin.<br> The name and path to the item must match the link in your webpage HTML file.<br> If necessary, you can edit the link in the HTML file to specify a different content item name or path.<br><br>Alternatively, if you don’t want to deliver this content item via the CDN, remove the link to this content from the HTML file of the webpage.</td>
 </tr>
 <tr>
-<td style="text-align: left">2. WebP compression and WebSockets options conflict.</td>
+<td style="text-align: left">WebP compression and WebSockets options conflict.</td>
 <td style="text-align: left">Due to internal limitations, the <a href="https://gcore.com/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/configure-image-compression-to-webp-and-avif" target="_blank">WebP compression</a> and <a href="https://gcore.com/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin" target="_blank">WebSockets</a> options cannot be enabled simultaneously.</td>
 <td style="text-align: left">Disable one of the options.</td>
 </tr>
 <tr>
-<td style="text-align: left">3. The “Host header” is incorrect.</td>
+<td style="text-align: left">The “Host header” is incorrect.</td>
 <td style="text-align: left">The “Host header” option informs the CDN where to address to receive the content.<br><br><b>Example</b>: You specified <i>website.com</i> as the origin, but the content is hosted on another server <i>mycontent.com</i>.<br> By default, the CDN uses the origin domain name as the value for the “Host header” and will contact the <i>mycontent.com</i> server with an incorrect Host header, and this will cause an error. 
 </td>
 <td style="text-align: left">Use the <a href="https://gcore.com/docs/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header" target="_blank">Host header option</a> in the CDN settings to provide the accurate Host header.<br> You can verify the validity of the new Host header using <a href="https://gcore.com/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue#2-check-the-host-header-option" target="_blank">this instruction</a>.</td>
 </tr>
 <tr>
-<td id="restricted-access">4. Access to an origin is restricted for the CDN.</td>
+<td style="text-align: left">Access to an origin is restricted for the CDN.</td>
 <td style="text-align: left">The CDN can’t reach the origin if the access is restricted, and can’t deliver content to users.
 <br><br>
 <b>Note</b>: This case may also result in the 504 status code.</td>
@@ -118,8 +118,10 @@ Status codes 403 and 404 have multiple meanings. Explanations of each scenario t
 <tr>
 <td style="text-align: left">504</td>
 <td style="text-align: left">Access to an origin is restricted for the CDN.</td>
-<td style="text-align: left"><a href="https://gcore.com/docs/cdn/troubleshooting/gcore-error-status-codes#restricted-access">See above</a></td>
-<td style="text-align: left"><a href="https://gcore.com/docs/cdn/troubleshooting/gcore-error-status-codes#restricted-access">See above</a></td>
+<td style="text-align: left">The CDN can’t reach the origin if the access is restricted, and can’t deliver content to users.
+<br><br>
+<b>Note</b>: This case may also result in the 404 status code.</td>
+<td style="text-align: left">Whitelist the IP addresses of Gcore servers using this <a href="https://gcore.com/docs/cdn/getting-started/configure-an-origin/add-cdn-servers-to-the-origin-acl-whitelist" target="_blank">guide</a>.<br> If the IP addresses are already whitelisted, Gcore subnets may be excluded from the ACL.<br> In such a case, configure the ACL using an HTTP header instead of an IP list using the <a href="https://gcore.com/docs/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin" target="_blank">Request headers option</a> in the CDN resource settings.</td>
 </tr>
 <tr>
 <td style="text-align: left">508</td>
