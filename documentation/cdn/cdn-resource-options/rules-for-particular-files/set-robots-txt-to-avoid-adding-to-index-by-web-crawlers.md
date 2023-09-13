@@ -9,7 +9,7 @@ toc:
 pageTitle: Avoid Indexing with a Directive in User-agent | Gcore
 pageDescription: Guide on setting up User-agent to prevent web crawlers from indexing your CDN's custom domain, keeping your main website unaffected.
 ---
-# Avoid Indexing of Your CDN Resource by Web Crawlers
+# Avoid indexing of your CDN resource by web crawlers
 
 Search engines use web crawlers to index content from various websites, making it discoverable to users. However, when your CDN resources are indexed, it can lead to problems, so we’ll explain how to avoid it here.
 
