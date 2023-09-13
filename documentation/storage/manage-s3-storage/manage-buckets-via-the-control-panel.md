@@ -5,6 +5,7 @@ published: true
 order: 10
 toc:
    --1--Create buckets: "create-buckets"
+   --2--Naming requirements: "naming-requirements"
    --1--Add Lifecycle policy (S3 Luxembourg): "add-lifecycle-policy-available-for-s3-in-luxembourg-only"
    --1--Configure HTTP access: "configure-http-access"
    --1--Use File manager: "use-file-manager"
@@ -20,23 +21,35 @@ pageDescription: Creating, configuring, and deleting Gcore storage buckets, addi
 
 ## Create buckets
 
-1. Go to the <a href="https://storage.gcore.com/storage/list" target="_blank">Storage</a> section.
+1\. Go to the <a href="https://storage.gcore.com/storage/list" target="_blank">Storage</a> section.
 
-2. Click the **···** icon opposite the storage that you want to use for the bucket’s creations and select **Buckets**.
+2\. Click the **···** icon opposite the storage that you want to use for the bucket’s creations and select **Buckets**.
 
 <img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/bucket-main-menu-10.png" alt="" width="80%">
 
-2. Click the **Add new bucket** button.
+3\. Click the **Add new bucket** button.
 
 <img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/add-bucket-20.png" alt="" width="50%">
 
-3. Enter the name of the bucket and click **Create**.
-
-**Note**: The name must be unique. Our system checks the names of buckets of all users. If the name matches the name of the bucket of another user, you will see the error: ```create bucket: bucket already exist: bad params```.
+4\. Enter the bucket's name (follow the <a href="https://gcore.com/docs/storage/manage-s3-storage/manage-buckets-via-the-control-panel#naming-requirements" target="_blank">instructions below with the naming requirements</a>) and click **Create**.
 
 <img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/confirm-creation-30.png" alt="" width="50%">
 
 The bucket’s creation is complete.
+
+### Naming requirements
+
+When naming your S3 buckets, follow the requirements:
+
+1. **Uniqueness**. You must choose a unique name that doesn't repeat any existing bucket names in the Gcore S3 repository. Our system checks the names of buckets of all users. If the name matches the name of the bucket of another user, you will see the error: create bucket: bucket already exists: bad params. Try another name.
+
+2. **DNS compliant**. Do not use the following characters in the name, since they don't match DNS notation: underscores, dashes (at the end), multiple dots in a row, or a combination of dots and dashes.
+
+3. **Lowercase**. Use only lowercase in names.
+
+4. **Length**. The length must be 3–63 characters.
+
+5. **Confidentiality**. Do not include sensitive information in the bucket name as it will be visible in the URL, and attackers can take advantage of this.
 
 ## Add Lifecycle policy (available for S3 in Luxembourg only)
 
