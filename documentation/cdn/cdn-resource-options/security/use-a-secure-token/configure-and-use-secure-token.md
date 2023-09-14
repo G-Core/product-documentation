@@ -96,21 +96,16 @@ The script for creating temporary links with the IP-based access restriction. Th
 ```
 import base64
 from hashlib import md5
-from time import time
-secret = 'secret_key'  
+from time import timesecret = 'secret_key'  
 path = "/images/1.jpg"  
 ip = '1.2.3.4' 
-expires = int(time()) + 100000
 # TTL of URL (in sec)
-#Token generation
-token = base64.encodestring(
-md5(
-"%s%s%s %s" % (expires, path, ip, secret)
-).digest()
-).replace("\n", "").replace("+", "-").replace("/", "_").replace("=", "")
-secured_url = "http://cdn.site.com%s?md5=%s&expires=%s" % (path, token, expires)
-# File's URL
-print secured_url
+ttl = 100000
+expires = int(time()) + ttl#Token generation
+token_hash = md5(f"{expires}{path}{ip} {secret}".encode()).digest()
+token = base64.b64encode(token_hash).decode().replace("\n", "").replace("+", "-").replace("/", "_").replace("=", "")
+secured_url = f"http://cdn.site.com{path}?md5={token}&expires={expires}"# File's URL
+print(secured_url) 
 ```
 
 Below is the script for creating temporary links without any IP-based access restriction. The files will be accessible from any IP address, but only until the link expires. 
@@ -118,17 +113,15 @@ Below is the script for creating temporary links without any IP-based access res
 ```
 import base64
 from hashlib import md5
-from time import time
-secret = 'secret_key' 
-path = "/images/1.jpg" 
-expires = int(time()) + 100000
-token = base64.encodestring(
- md5(
- "%s%s %s" % (expires, path, secret)
- ).digest()
- ).replace("\n", "").replace("+", "-").replace("/", "_").replace("=", "")
-secured_url = "http://cdn.site.com%s?md5=%s&expires=%s" % (path, token, expires) 
-print secured_url
+from time import timesecret = 'secret_key'  
+path = "/images/1.jpg"  
+# TTL of URL (in sec)
+ttl = 100000
+expires = int(time()) + ttl#Token generation
+token_hash = md5(f"{expires}{path} {secret}".encode()).digest()
+token = base64.b64encode(token_hash).decode().replace("\n", "").replace("+", "-").replace("/", "_").replace("=", "")
+secured_url = f"http://cdn.site.com{path}?md5={token}&expires={expires}"# File's URL
+print(secured_url) 
 ```
 
 In these scripts: 
