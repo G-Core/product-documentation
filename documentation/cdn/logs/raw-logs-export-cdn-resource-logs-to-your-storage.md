@@ -31,7 +31,7 @@ Raw Logs is an option that enables an automatic export of CDN resource logs to y
 
 ## What is the "Add logs from origin shielding" option? 
 
-If you are using the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin Shielding</a> feature, we recommend that you enable the "Add logs from rigin shielding" option. This means that the report will include not only requests to cache services, but also those to the pre-cache server. As a result, you will receive more detailed information on resource usage.
+If you are using the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin Shielding</a> feature, we recommend that you enable the "Add logs from origin shielding" option. This means that the report will include not only requests to cache services, but also those to the pre-cache server. As a result, you will receive more detailed information on resource usage.
 
 **Note**: If your account does not have "Origin Shielding" switched on, this option will not be available when setting up Raw logs.  
 
