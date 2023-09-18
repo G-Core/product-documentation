@@ -8,6 +8,7 @@ toc:
    --1--Statistics: "statistics"
    --1--Advanced analytics: "advanced-analytics"
    --2--Overview: "advanced-analytics-overview"
+   --2--Get: "how-to-get-advanced-analytics"
    --2--Manage: "manage-advanced-analytics"
    --2--How it collects: "how-advanced-analytics-reports-are-collected"
 pageTitle: CDN Statistics | Gcore
@@ -65,7 +66,9 @@ Advanced analytics is a set of reports on requests, traffic, and unique visitors
 
 **Note**: Advanced analytics is a paid option.
 
-To activate Advanced analytics, contact us via [support@gcore.com](mailto:support@gcore.com), chat, or write to your account manager. You can enable all filters, or opt for only those required.
+### How to get advanced analytics
+
+To activate Advanced analytics, contact us via [support@gcore.com](mailto:support@gcore.com), <a href="https://gcore.com/" target="_blank">chat with us</a>, or write to your account manager. You can enable all filters, or opt for only those required.
 
 After activation, it takes around 24 hours to collect statistics and display the data correctly. Before activation of advanced analytics reports, the Advanced analytics tab displays examples of reports with random data.
 
