@@ -17,7 +17,10 @@ pageDescription: A comprehensive guide on how to view statistics of your CDN res
 
 ## Reports overview
 
-Reports is a section of your control panel that displays statistics on your CDN resources. There are two tabs in the section: “Statistics” (basic reports are available on all tariffs) and “Advanced analytics” (paid option.)
+Reports is a section of your control panel that displays statistics on your CDN resources. There are two tabs in the section:
+
+- Statistics: Basic reports are available on all tariffs
+- Advanced analytics: Paid option
 
 ## Statistics
 
@@ -28,19 +31,21 @@ To view basic statistics:
 <img src="https://assets.gcore.pro/docs/cdn/reports/reports-10.png" alt="" width="80%">
 
 
-2\. Select the CDN resource dropdown menu to display statistics as desired. You can view one resource, several, or all resources.
+2\. Select the relevant resource(s) from the “CDN resource” dropdown menu to display their statistics.
 
 3\. Select the required report:
 
-- Aggregated data (displays traffic volume and bandwidth information for the last three months)
+- Aggregated data: Traffic volume and bandwidth information for the last three months
 - Traffic
 - Bandwidth
 - Response codes
 - Cache hit ratio
 - Requests
-- Traffic by region (shows traffic from servers in different regions)
-- Traffic by country (shows traffic from the five countries with the highest traffic)
-- Image optimization (shows the hourly count of WebP conversions)
+- Traffic by region: Traffic from servers in different regions
+- Traffic by country: Traffic from the five countries with the highest traffic
+- Image optimization: Hourly count of WebP conversions
+- Request time: Time elapsed in seconds between the first bytes of a request being processed and logging after the last bytes were sent to a user
+- Upstream response times: Seconds to receive a response from an Origin
 
 4\. Set a specific time interval and the report auto-refresh period.
 
