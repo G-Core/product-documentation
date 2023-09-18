@@ -20,7 +20,7 @@ toc:
 
 To open the general CDN settings of the particular client, go to the client settings:
 
-1\. Open the list of clients, in the "Accounts" section.
+1\. Go to the <a href="https://admin.gcore.top/clients" target="_blank">Accounts</a> section and open the list of clients.
 
 2\. Click on the ID of the desired client, or click on the "Edit" button in the "Actions" сolumn.
 
