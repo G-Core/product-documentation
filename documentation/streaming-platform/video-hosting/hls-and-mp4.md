@@ -101,7 +101,7 @@ Select the video in the <a href="https://streaming.gcore.com/video/list" target=
 To get information about the video, call a method:
 
 ```
-https://apidocs.gcore.com/docs/streaming#tag/Videos/operation/get_api_videos_id
+https://api.gcore.com/docs/streaming#tag/Videos/operation/get_api_videos_id
 ```
 Example request:
 
