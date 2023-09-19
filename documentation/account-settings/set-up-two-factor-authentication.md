@@ -31,7 +31,7 @@ A pop-up will open.
 
 2\. Download the free app on your mobile device and sign up there. We recommend using one of the following:
 
-- <a href="https://support.google.com/accounts/answer/1066447?hl=en" target="_blank">Google Authenticator</a> (for <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=ru" target="_blank">Android</a>/<a href="https://apps.apple.com/eng/app/google-authenticator/id388497605" target="_blank">iOS</a>/<a href="https://appworld.blackberry.com/webstore/content/29401059/?countrycode=US&lang=en" target="_blank">BlackBerry</a>) 
+- <a href="https://support.google.com/accounts/answer/1066447?hl=en" target="_blank">Google Authenticator</a> (for <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=ru" target="_blank">Android</a>/<a href="https://apps.apple.com/eng/app/google-authenticator/id388497605" target="_blank">iOS</a>/<a href="https://www.blackberry.com/us/en/products/blackberry-2fa" target="_blank">BlackBerry</a>) 
 - <a href="https://microsoft.com/en-us/store/apps/authenticator/9wzdncrfj3rj" target="_blank">Microsoft Authenticator</a> (for <a href="https://apps.apple.com/eng/app/microsoft-authenticator/id983156458" target="_blank">iOS</a>/<a href="https://play.google.com/store/apps/details?id=com.azure.authenticator&hl=en" target="_blank">Android</a>/<a href="https://apps.microsoft.com/store/apps?hl=en&gl=EN&activetab=pivot:overviewtab" target="_blank">Windows Phone</a>) 
 - <a href="https://authy.com/download" target="_blank">Authy</a> (for <a href="https://play.google.com/store/apps/details?id=com.authy.authy" target="_blank">Android</a>/<a href="https://apps.apple.com/us/app/authy/id494168017" target="_blank">iOS</a>) 
 

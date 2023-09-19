@@ -135,8 +135,8 @@ To get links, check the boxes on the left of files and click **Copy S3 URL** or 
 
 For example, for the file *sample.txt*, the links look as follows:
 
-- s3://s-ed1.cloud.gcore.lu/example/folder1/sample.txt
-- https://s-ed1.cloud.gcore.lu/example/folder1/sample.txt
+- ```s3://s-ed1.cloud.gcore.lu/example/folder1/sample.txt```
+- ```https://s-ed1.cloud.gcore.lu/example/folder1/sample.txt```
 
 where
 
