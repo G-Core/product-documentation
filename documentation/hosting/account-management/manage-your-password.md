@@ -23,7 +23,7 @@ Type your new password in the appropriate field. The password must contain 8 or 
 
 ## Recover forgotten password
 
-You can easily recover your password on this <a href="https://hosting.gcore.lu/billmgr?func=recovery" target="_blank">page</a>.
+You can easily recover your password on this <a href="https://hosting.gcore.com/billmgr?func=recovery" target="_blank">page</a>.
 
 Keep in mind that after 3 unsuccessful attempts to log into the account, it might be temporarily disabled. To unlock your account, contact us via chat on the <a href="https://gcore.com" target="_blank">website</a>.
 
@@ -31,6 +31,6 @@ If you initiated a password reset but have not received an email several minut
 
 The message title is Password Recovery. We send them from [billing@gcore.lu](mailto:billing@gcore.lu) 
 
-If you cannot find the email, start the reset process again on this <a href="https://hosting.gcore.lu/billmgr?func=recovery" target="_blank">page</a>.
+If you cannot find the email, start the reset process again on this <a href="https://hosting.gcore.com/billmgr?func=recovery" target="_blank">page</a>.
 
 If you still have not received the email, contact us via chat on this <a href="https://gcore.com" target="_blank">page</a>.
