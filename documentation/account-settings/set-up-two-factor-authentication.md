@@ -9,10 +9,11 @@ toc:
    --1--Backup codes: "backup-verification-codes"
    --1--Login: "log-in-with-two-factor-authentication" 
    --1--Disable: "disable-two-factor-authentication"
+   --1--Filter users: "filter-users-by-two-factor-authentication-feature-enabled"
 pageTitle: Secure Your Account with Two-factor Authentication | Gcore
 pageDescription: Setting up and managing Two-factor authentication for your account using a unique temporary key.
 ---
-# Set Up Two-factor authentication
+# Set up two-factor authentication
 
 ## Two-factor authentication overview
 
@@ -92,3 +93,9 @@ You will be redirected to your personal account if the access code is entered co
 Go to the <a href="https://accounts.gcore.com/profile/2fa" target="_blank">Two-factor authentication</a> page and click **Disable 2-Factor authentication**.
 
 <img src="https://assets.gcore.pro/docs/account-settings/set-up-two-factor-authentication/2fa-50.png" alt="Disable two-factor authentication" width="70%">
+
+## Filter users by two-factor authentication feature enabled
+
+The <a href="https://accounts.gcore.com/profile/users" target="_blank">Users</a> section displays information about which users have activated two-factor authentication. There are two options: “Not activated” and “Activated.” You can filter users by this criterion.
+
+<img src="https://assets.gcore.pro/docs/account-settings/set-up-two-factor-authentication/2fa-filter.png" alt="Filter users by 2fa feature enabled">
