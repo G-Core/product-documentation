@@ -30,7 +30,7 @@ Status Page is a communication tool that displays information about service sta
 
 To receive notifications about scheduled works and incidents, subscribe to the Status Page: go to <a href="https://status.gcore.com" target="_blank">Status Page of Gcore</a> and click on the **Subscribe to updates** button in the upper-right corner. 
 
-<img src="https://assets.gcore.pro/docs/account-settings/status-page/subscribe-sp-10.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/subscribe-sp-10.png" alt="Subscription methods" width="80%">
 
 Then select the appropriate subscription method (email, slack, webhook). 
 
@@ -42,7 +42,7 @@ Then select the appropriate subscription method (email, slack, webhook). 
 
 3\. Select the components which status information you would like to receive and click the Save button.
 
-<img src="https://assets.gcore.pro/docs/account-settings/status-page/email-sp-20.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/email-sp-20.png" alt="Status Page of Gcore">
 
 4\. Confirm your subscription to get notifications about the status of incidents and scheduled works. To do this, click Confirm subscription in the email sent to the specified email address.  
 
@@ -57,17 +57,17 @@ To correctly configure notifications from the new <a href="https://status
 
 2\. On the left side of the workspace, click More, select Apps
 
-<img src="https://assets.gcore.pro/docs/account-settings/status-page/slack-30.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/slack-30.png" alt="Click more in Slack">
 
 3\. Enter **Incoming WebHooks** in the search bar.  
   
 4\. Click the app to open its settings.
 
-<img src="https://assets.gcore.pro/docs/account-settings/status-page/open-old-app-40.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/open-old-app-40.png" alt="Incoming WebHooks">
 
 5\. Go to the Configuration section.  
   
-<img src="https://assets.gcore.pro/docs/account-settings/status-page/configuration-50.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/configuration-50.png" alt="Configuration section." width="80%">
 
 6\. Find the channel for which the notifications are configured. 
 
@@ -75,7 +75,7 @@ To correctly configure notifications from the new <a href="https://status
 
 8\. In the upper-right corner, click **Disable** to switch off the integration and Remove to delete the integration.  
   
-<img src="https://assets.gcore.pro/docs/account-settings/status-page/remove-integration-60.png" alt=""  width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/remove-integration-60.png" alt="Disable and Remove"  width="80%">
 
 9\. Confirm the action.
 
@@ -83,7 +83,7 @@ To correctly configure notifications from the new <a href="https://status
 
 #### Subscribe via Slack
 
-<img src="https://assets.gcore.pro/docs/account-settings/status-page/slack-70.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/slack-70.png" alt="Subscribe via Slack">
 
 1\. Click **Subscribe via Slack**.
 
@@ -91,7 +91,7 @@ To correctly configure notifications from the new <a href="https://status
 
 3\. Click Continue.
 
-<img src="https://assets.gcore.pro/docs/account-settings/status-page/slack-continue-80.png" alt=""  width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/slack-continue-80.png" alt="Slack sign in" width="80%">
 
 4\. Log in using your email address and password for the selected workspace in Slack.
 
@@ -100,15 +100,15 @@ To correctly configure notifications from the new <a href="https://status
 
 **Important**: If you want to use a private channel to send notifications, first add the Status Page app to the channel. To do this, open the channel details and click More > Add Apps.
 
-<img src="https://assets.gcore.pro/docs/account-settings/status-page/private-slack-90.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/private-slack-90.png" alt="Sign in" width="50%">
 
 6\. Enter **Status page** and click on the **Add** button next to the Status page app.  
   
-<img src="https://assets.gcore.pro/docs/account-settings/status-page/add-private-100.png" alt=""  width="50%">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/add-private-100.png" alt="Add apps"  width="50%">
 
 7\. On the page of integration, in the section Where should Status page post specify the channel that will be used to publish notifications. Click Allow.                    
 
-<img src="https://assets.gcore.pro/docs/account-settings/status-page/allow-110.png" alt=""  width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/allow-110.png" alt="Enter Status page"  width="80%">
 
 Next, you will receive a notification from Slack that notifications have been successfully configured, and you will also be automatically redirected to the subscription management page.
 
@@ -116,7 +116,7 @@ Select the components which status information you would like to receive and cli
 
 ### Webhook 
 
-<img src="https://assets.gcore.pro/docs/account-settings/status-page/webhook-120.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/webhook-120.png" alt="Permission to access" width="80%">
 
 1\. In the first field, enter the URL for sending notifications. 
 
@@ -142,7 +142,7 @@ You can change the subscription from any notification sent by the system to your
 
 2\. At the bottom of the notification, find and click Manage your subscription.
 
-<img src="https://assets.gcore.pro/docs/account-settings/status-page/manage-130.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/manage-130.png" alt="Email management " width="80%">
 
 3\. Edit the component subscription and click **Save**.
 
@@ -182,7 +182,7 @@ We use the Updates component (in Releases) to inform you about our releases biwe
 
 ### Components statuses  
 
-<img src="https://assets.gcore.pro/docs/account-settings/status-page/components-140.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/status-page/components-140.png" alt="Components statuses ">
 
 **Operational**: the component is operating normally. 
 

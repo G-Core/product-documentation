@@ -23,7 +23,7 @@ The response time of our support team depends on three parameters:
 
 Your billing plan determines how and when we can respond to your question. You can check your billing plan on the <a href="https://accounts.gcore.com/billing/services" target="_blank">Services</a> page by selecting a service.
 
-<img src="https://assets.gcore.pro/docs/account-settings/technical-support/billing-plan-10.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/technical-support/billing-plan-10.png" alt="Billing plan">
 
 Check what support is provided by your plan on the <a href="https://gcore.com/pricing/edge-network" target="_blank">Pricing</a> page.
 
@@ -49,11 +49,11 @@ If you use CDN, Streaming platform, Cloud, Web protection, Storage, or DNS, you 
 
 To create a request, click **Help** and then **Help center**.
 
-<img src="https://assets.gcore.pro/docs/account-settings/technical-support/image-3762.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/account-settings/technical-support/image-3762.png" alt="Help center" width="50%">
 
 The new page will open. Specify the details of your request and set the "Priority" option.
 
-<img src="https://assets.gcore.pro/docs/account-settings/technical-support/image-3765.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/account-settings/technical-support/image-3765.png" alt="Priority" width="70%">
 
 This functionality will soon be available for Hosting clients.
 

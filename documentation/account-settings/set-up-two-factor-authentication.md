@@ -22,11 +22,11 @@ Two-factor authentication (2FA) provides an extra layer of security for your acc
 
 1\. Go to the <a href="https://accounts.gcore.com/profile/2fa" target="_blank">Two-factor authentication</a> page and click **Enable 2-Factor authentication**.
 
-<img src="https://assets.gcore.pro/docs/account-settings/set-up-two-factor-authentication/2fa-10.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/account-settings/set-up-two-factor-authentication/2fa-10.png" alt="Configure two-factor authentication" width="70%">
 
 A pop-up will open. 
 
-<img src="https://assets.gcore.pro/docs/account-settings/set-up-two-factor-authentication/2fa-20.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/account-settings/set-up-two-factor-authentication/2fa-20.png" alt="Enable two-factor popup" width="50%">
 
 
 2\. Download the free app on your mobile device and sign up there. We recommend using one of the following:
@@ -71,7 +71,7 @@ That’s it! Copy the backup codes (more on this below,) store them securely, an
 
 ### Backup verification codes 
 
-<img src="https://assets.gcore.pro/docs/account-settings/set-up-two-factor-authentication/2fa-30.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/account-settings/set-up-two-factor-authentication/2fa-30.png" alt="Backup verification codes" width="50%">
 
 Backup verification code can be used if you can’t generate one-time codes while logging in. Click **Generate backup verification codes**. You will have thirty seconds to copy and save five codes in a way convenient to you. Each time the **Generate…** button is pressed again, the old codes will be invalidated.
 
@@ -81,7 +81,7 @@ Backup verification code can be used if you can’t generate one-time codes whil
 
 1\. Enter your email and password on the <a href="https://auth.gcore.com/login/signin" target="_blank">login page</a> and click **Log in**.
 
-<img src="https://assets.gcore.pro/docs/account-settings/set-up-two-factor-authentication/2fa-40.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/set-up-two-factor-authentication/2fa-40.png" alt="Log in with two-factor authentication">
 
 2\. You will be redirected to enter the generated key. Open the app, enter the code displayed there, or use a <a href="https://gcore.com/docs/account-settings/set-up-two-factor-authentication#backup-verification-codes" target="_blank">backup code</a>. Click **Log in**.
 
@@ -91,4 +91,4 @@ You will be redirected to your personal account if the access code is entered co
 
 Go to the <a href="https://accounts.gcore.com/profile/2fa" target="_blank">Two-factor authentication</a> page and click **Disable 2-Factor authentication**.
 
-<img src="https://assets.gcore.pro/docs/account-settings/set-up-two-factor-authentication/2fa-50.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/account-settings/set-up-two-factor-authentication/2fa-50.png" alt="Disable two-factor authentication" width="70%">

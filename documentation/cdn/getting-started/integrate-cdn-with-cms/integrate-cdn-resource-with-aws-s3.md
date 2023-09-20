@@ -15,19 +15,19 @@ Login to the <a href="https://console.aws.amazon.com" target="_blank">AWS Conso
 
 Create an S3 bucket (define the Bucket Name and the Region you want)
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/create-s3.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/create-s3.png" alt="Create an S3 bucket" width="50%">
 
 Upload content to your S3 bucket.
 
 <media-gallery>
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/upload-content-s33.png" alt="" width="50%">
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/upload-content-s3-2-1024x546.png" alt="" width="80%">
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/upload-complete.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/upload-content-s33.png" alt="Upload content to your S3 bucket" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/upload-content-s3-2-1024x546.png" alt="Upload content to your S3 bucket" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/upload-complete.png" alt="Upload content to your S3 bucket" width="50%">
 </media-gallery>
 
 Enable Website Hosting and define the Index Document (does not need to exist e.g., index.html) for your S3 bucket under Properties > Static Website Hosting.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/s3-enable-hosting1.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/s3-enable-hosting1.png" alt="Enable Website Hosting">
 
 Use the following example to set a Bucket Policy (replace "example-bucket" with your S3 bucket name):
 

@@ -34,7 +34,7 @@ When selecting the currency of payment, please ensure that your chosen payment p
 *   For payments in EUR, the provider is G-core.
 *   For payments in USD, the provider is G-Core usd.
 
-<img src="https://assets.gcore.pro/docs/hosting/payments/troubleshoot-payment-errors/13219595520273.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/payments/troubleshoot-payment-errors/13219595520273.png" alt="Unsupported payment method for the selected currency">
 
 ### Ayden processing errors (for bank cards, AMEX, WeChat and AliPay)
 

@@ -74,7 +74,7 @@ With the real-time DDoS attack statistics feature, you can access a live dashboa
 
 You can filter statistics by specific data centers, time intervals, and attack metrics such as bits per second (bps) and packets per second (pps.)
 
-<img src="https://assets.gcore.pro/docs/ddos-protection/ddos-attack-statistics.png" alt="">
+<img src="https://assets.gcore.pro/docs/ddos-protection/ddos-attack-statistics.png" alt="DDoS attack statistics">
 
 ## Pricing
 

@@ -21,7 +21,7 @@ http(s)://<bucket-name>.<location>.cloud.gcore.lu
 
 You can find the hostname on the <a href="https://storage.gcore.com/storage/list" target="_blank">Storages</a> tab in the "Details" section.
 
-<img src="https://assets.gcore.pro/docs/storage/request-content-directly-from-the-storage/10275919634193.png" alt="">
+<img src="https://assets.gcore.pro/docs/storage/request-content-directly-from-the-storage/10275919634193.png" alt="Details section">
 
 For example, your storage is in the Luxembourg location. You've created a bucket *mybucket* and uploaded *picture.png* there:
 

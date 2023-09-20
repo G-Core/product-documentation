@@ -26,7 +26,7 @@ The DNS service allows you to create, update, and delete DNS records for your do
 
 The DNS service interface offers two modes: non-advanced (for basic settings) and advanced. You can toggle between them on the page of any DNS zone.
 
-<img src="https://assets.gcore.pro/docs/dns/about-gcore-dns/12990176402705.png" alt="">
+<img src="https://assets.gcore.pro/docs/dns/about-gcore-dns/12990176402705.png" alt="Interface modes">
 
 |                                                              | Non-advanced mode                                                                                                                                                                                                                        | Advanced mode  | 
 |--------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------|

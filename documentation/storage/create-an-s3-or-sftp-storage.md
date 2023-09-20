@@ -32,7 +32,7 @@ To create an S3 storage, specify its name and location, and click the **Create**
 
 You will see both access and secret key in the next window. Copy and save them since we show the keys only once.
 
-<img src="https://assets.gcore.pro/docs/storage/create-storage/s3-storage-created-10.png" alt="">
+<img src="https://assets.gcore.pro/docs/storage/create-storage/s3-storage-created-10.png" alt="Create a storage">
 
 The created storage will appear in the storage list.
 
@@ -42,19 +42,19 @@ If you have forgotten to copy the keys and want to change them, click the **Gene
 
 The **Delete storage** button automatically deletes all the files in your storage.
 
-<img src="https://assets.gcore.pro/docs/storage/create-storage/s3-storage-settings-20.png" alt="">
+<img src="https://assets.gcore.pro/docs/storage/create-storage/s3-storage-settings-20.png" alt="Delete storage">
 
 ### SFTP
 
 To create an SFTP storage, specify name, location, and preferred authentication method: SSH key or password. Once the storage is created, you will be able to use both.
 
-<img src="https://assets.gcore.pro/docs/storage/create-storage/sftp-storage-created-30.png" alt="">
+<img src="https://assets.gcore.pro/docs/storage/create-storage/sftp-storage-created-30.png" alt="create an SFTP storage,">
 
 To see the hostname, click the **Details** button (use port 2200 to connect to the storage).
 
 Password can be set, removed, and updated. To add new keys (up to 5 per storage) or limit access to the uploaded ones go to the SSH keys manager.
 
-<img src="https://assets.gcore.pro/docs/storage/create-storage/sftp-storage-settings-40.png" alt="">
+<img src="https://assets.gcore.pro/docs/storage/create-storage/sftp-storage-settings-40.png" alt="Dropdown">
 
 To set an alias or regulate the Expires header value, click **Edit**.
 
@@ -62,7 +62,7 @@ Specify a domain name (subdomains are okay too) in the Server alias field, and a
 
 Expires header can be modified via the "Expires" field. The default value is a year.
 
-<img src="https://assets.gcore.pro/docs/storage/create-storage/sftp-expires-header-50.png" alt="">
+<img src="https://assets.gcore.pro/docs/storage/create-storage/sftp-expires-header-50.png" alt="Edit popup">
 
 ## Storage status indicator
 

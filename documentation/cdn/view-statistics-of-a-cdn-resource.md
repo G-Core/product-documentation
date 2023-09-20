@@ -29,7 +29,7 @@ To view basic statistics:
 
 1\. Go to the <a href="https://cdn.gcore.com/reports/statistics" target="_blank">Statistics</a> page. 
 
-<img src="https://assets.gcore.pro/docs/cdn/reports/reports-10.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/reports/reports-10.png" alt="Statistics" width="80%">
 
 
 2\. Select the relevant resource(s) from the “CDN resource” dropdown menu to display their statistics.
@@ -52,11 +52,11 @@ To view basic statistics:
 
 The appearance of the graph and metrics depend on the characteristic on which it is based. For example, a graph depicting the usage of the “Image optimization” WebP conversion feature would look like this:
 
-<img src="https://assets.gcore.pro/docs/cdn/reports/reports-20.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/reports/reports-20.png" alt="Graph and metrics" width="80%">
 
 A graph depicting the Response codes would look as follows:
 
-<img src="https://assets.gcore.pro/docs/cdn/reports/reports-30.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/reports/reports-30.png" alt="A graph depicting the Response codes" width="80%">
 
 ## Advanced analytics
 
@@ -78,7 +78,7 @@ To view advanced reports:
 
 1\. Go to the <a href="https://cdn.gcore.com/reports/advanced" target="_blank">Advanced analytics</a> page.
 
-<img src="https://assets.gcore.pro/docs/cdn/reports/reports-40.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/reports/reports-40.png" alt="Manage Advanced analytics" width="80%">
 
 2\. Specify the resource for which you want to display statistics.
 
@@ -96,7 +96,7 @@ The report below contains information collected based on the parameters specifie
 
 For quick navigation, type the countries you want to view into the search bar.
 
-<img src="https://assets.gcore.pro/docs/cdn/reports/reports-50.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/reports/reports-50.png" alt="Map tab" width="80%">
 
 </expandable-element>
 
@@ -106,7 +106,7 @@ The report shows information about directories that users requested. You can sel
 
 For quick navigation, type the concrete path you want to view into the search bar.
 
-<img src="https://assets.gcore.pro/docs/cdn/reports/reports-60.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/reports/reports-60.png" alt="Directories tab" width="80%">
 
 </expandable-element>
 
@@ -116,7 +116,7 @@ The report below contains information collected based on the parameters specifie
 
 For quick navigation, use the search bar.
 
-<img src="https://assets.gcore.pro/docs/cdn/reports/reports-70.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/reports/reports-70.png" alt="Browsers tab" width="80%">
 
 </expandable-element>
 
@@ -126,7 +126,7 @@ The table below contains information collected based on the parameters specified
 
 For quick navigation, use the search bar.
 
-<img src="https://assets.gcore.pro/docs/cdn/reports/reports-80.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/reports/reports-80.png" alt="Devices tab" width="80%">
 
 </expandable-element>
 
@@ -136,7 +136,7 @@ The table below contains information collected based on the parameters specified
 
 For quick navigation, use the search bar.
 
-<img src="https://assets.gcore.pro/docs/cdn/reports/reports-90.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/reports/reports-90.png" alt="OS tab" width="80%">
 
 </expandable-element>
 
