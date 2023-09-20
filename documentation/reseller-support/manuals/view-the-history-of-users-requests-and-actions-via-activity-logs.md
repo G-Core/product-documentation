@@ -24,7 +24,7 @@ The Activity logs section displays changes that users have made. Users are all t
 
 The entities will be displayed on the right.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/view-the-history-of-users-requests-and-actions-via-activity-logs/image3499-10.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/view-the-history-of-users-requests-and-actions-via-activity-logs/image3499-10.png" alt="Activity logs" width="80%">
 
 You can sort and filter entities by the following columns:
 
@@ -41,7 +41,7 @@ You can sort and filter entities by the following columns:
 
 If certain columns are not required, you can disable them. Click **Manage Columns** in the upper right area and turn off the switch.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/view-the-history-of-users-requests-and-actions-via-activity-logs/image3501-20.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/view-the-history-of-users-requests-and-actions-via-activity-logs/image3501-20.png" alt="Manage Columns" width="50%">
 
 ## Use filters 
 
@@ -54,7 +54,7 @@ To filter logs by a specific parameter:
 3\. Select the period.
 4\. Click **Apply filter**.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/view-the-history-of-users-requests-and-actions-via-activity-logs/Group190991-30.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/view-the-history-of-users-requests-and-actions-via-activity-logs/Group190991-30.png" alt="Use filters" width="80%">
 
 That’s it. As a result, you will see only entities for the specified period (in this case, from June 27, 2023, to July 04, 2023.)
 
@@ -64,6 +64,6 @@ Clients’ accounts can be changed not only by clients themselves, but also by s
 
 To look for all changes, you should specify the client ID in the “Path” filter as shown below.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/view-the-history-of-users-requests-and-actions-via-activity-logs/image3503-40.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/view-the-history-of-users-requests-and-actions-via-activity-logs/image3503-40.png" alt="Path filter" width="80%">
 
 With this approach, all entities that are related to the client will be filtered out, regardless of who made the change.

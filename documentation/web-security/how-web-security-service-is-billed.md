@@ -19,7 +19,7 @@ The plan subscription fee and the traffic overcommitment fee are charged on the 
 
 Additional features are charged at the beginning of the month.
 
-<img src="https://assets.gcore.pro/docs/web-security/how-web-security-service-is-billed/__________________________.jpg" alt="">
+<img src="https://assets.gcore.pro/docs/web-security/how-web-security-service-is-billed/__________________________.jpg" alt="Plans and billing rules">
 
 ## Change your plan
 
@@ -27,6 +27,6 @@ Navigate to the "Profile" icon in the lower-left corner of the page, choose <a h
 
 The new plan will be applied on the 1st day of the next month.
 
-<img src="https://assets.gcore.pro/docs/web-security/how-web-security-service-is-billed/mceclip0.png" alt="">
+<img src="https://assets.gcore.pro/docs/web-security/how-web-security-service-is-billed/mceclip0.png" alt="Change your plan">
 
 If you have any questions, please contact us via chat or email ([support@gcore.com](mailto:support@gcoreы.com)).

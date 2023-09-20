@@ -24,13 +24,13 @@ Also, this tab displays the following:
 1\. Current tariff plan. If you want to change it, press **Upgrade** (if you use Free plan) or **Change plan** on the left.   
 2\. Balance. If you need, press **Recharge** on the right.  
 
-<img src="https://assets.gcore.pro/docs/cdn/about-cdn-resources-interface-how-it-is-arranged/10276342871697.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/about-cdn-resources-interface-how-it-is-arranged/10276342871697.png" alt="CDN resources tab">
 
 ## Create a CDN resource
 
 Click the **Create CDN Resource** button.
 
-<img src="https://assets.gcore.pro/docs/cdn/about-cdn-resources-interface-how-it-is-arranged/10272561190417.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/about-cdn-resources-interface-how-it-is-arranged/10272561190417.png" alt="Create a CDN resource">
 
 See the "<a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">Create and integrate CDN resource for only static files</a>" guide for detailed instructions on creating a CDN resource. 
 
@@ -55,7 +55,7 @@ For custom search use:
 - Search bar. Enter the main or additional CNAME of the needful resource or its ID.
 - Status section. Select the needful status or the "Select all" option.  
 
-<img src="https://assets.gcore.pro/docs/cdn/about-cdn-resources-interface-how-it-is-arranged/10274072513937.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/about-cdn-resources-interface-how-it-is-arranged/10274072513937.png" alt="Manage CDN resources" width="80%">
 
 ### Manage options
 
@@ -65,7 +65,7 @@ To do this, click on the three dots sign next to the required resource.
 
 A list of possible options opens:
 
-<img src="https://assets.gcore.pro/docs/cdn/about-cdn-resources-interface-how-it-is-arranged/10274251831185.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/about-cdn-resources-interface-how-it-is-arranged/10274251831185.png" alt="Manage options" width="80%">
 
 - "Settings" opens the resource settings. You can also go to the resource settings by clicking on the CNAME of the resource.
 - "Prefetch" opens the <a href="https://gcore.com/docs/cdn/load-the-content-to-cdn-before-users-request-it" target="_blank">Prefetch</a> section to upload the content to CDN before users request it.
