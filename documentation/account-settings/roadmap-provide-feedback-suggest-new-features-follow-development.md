@@ -37,27 +37,27 @@ Requests are divided into four columns:
 3. **In Progress**: Requests currently in a development stage
 4. **Completed**: Requests for which new features have been released
 
-<img src="https://assets.gcore.pro/docs/account-settings/roadmap-provide-feedback-suggest-new-features-follow-development/roadmap-10.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/roadmap-provide-feedback-suggest-new-features-follow-development/roadmap-10.png" alt="Roadmap page">
 
 You can click each post from the main page and view brief details about its development (its status, the Gcore developer who oversees the request, creation time, and the Gcore admin who created the post,) read comments, and upvote to show interest in the feature. 
 
-<img src="https://assets.gcore.pro/docs/account-settings/roadmap-provide-feedback-suggest-new-features-follow-development/roadmap-20.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/roadmap-provide-feedback-suggest-new-features-follow-development/roadmap-20.png" alt="Post" width="80%">
 
 ### Products
 
 View requests for a particular product by selecting it in the “Products” tab/dropdown:
 
-<img src="https://assets.gcore.pro/docs/account-settings/roadmap-provide-feedback-suggest-new-features-follow-development/roadmap-30.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/account-settings/roadmap-provide-feedback-suggest-new-features-follow-development/roadmap-30.png" alt="Products" width="50%">
 
 For example, if we select CDN, the following page will open displaying all relevant posts. Here you can range posts by necessary criteria (date, amount of votes, or status) or search for a particular post by typing keywords in the search bar.
 
-<img src="https://assets.gcore.pro/docs/account-settings/roadmap-provide-feedback-suggest-new-features-follow-development/roadmap-40.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/roadmap-provide-feedback-suggest-new-features-follow-development/roadmap-40.png" alt="All relevant posts" width="80%">
 
 ### Changelog
 
 Under the “Changelog” tab, you can view all the latest Gcore releases, tag posts with reactions, and share via email, Twitter, or by simply copying the link.
 
-<img src="https://assets.gcore.pro/docs/account-settings/roadmap-provide-feedback-suggest-new-features-follow-development/roadmap-50.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/roadmap-provide-feedback-suggest-new-features-follow-development/roadmap-50.png" alt="Changelog" width="80%">
 
 ## What features do authorized and unauthorized users have?
 
@@ -112,11 +112,11 @@ Below, we will look at some of the available actions that require clarification.
 
 1\. Click **New post**.
 
-<img src="https://assets.gcore.pro/docs/account-settings/roadmap-provide-feedback-suggest-new-features-follow-development/roadmap-60.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/roadmap-provide-feedback-suggest-new-features-follow-development/roadmap-60.png" alt="New post" width="80%">
 
 2\. Enter the title of your request, select a product, type a description, and click **New post**.
 
-<img src="https://assets.gcore.pro/docs/account-settings/roadmap-provide-feedback-suggest-new-features-follow-development/roadmap-70.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/account-settings/roadmap-provide-feedback-suggest-new-features-follow-development/roadmap-70.png" alt="Create new post popup" width="50%">
 
 Your post will appear in the “In Review” column.
 
@@ -124,4 +124,4 @@ Your post will appear in the “In Review” column.
 
 Open the post for which you want to track activity and press **Subscribe**.
 
-<img src="https://assets.gcore.pro/docs/account-settings/roadmap-provide-feedback-suggest-new-features-follow-development/roadmap-80.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/roadmap-provide-feedback-suggest-new-features-follow-development/roadmap-80.png" alt="subscribe to posts" width="80%">

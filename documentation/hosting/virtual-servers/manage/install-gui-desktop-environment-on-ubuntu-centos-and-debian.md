@@ -189,7 +189,7 @@ That's how the desktop with default configuration looks:
 
 If only folders and widgets are visible on the desktop and there is no panel with the "Applications" button, it’s okay — the panel is simply hidden at the top. Move the slider up to see it.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image34.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image34.png" alt="Move the slider up" width="80%">
 
 Everything is ready to go. Use your server with XFCE on it.
 
@@ -200,17 +200,18 @@ If you restart the server, it will open the terminal again. You can start the de
 1\. Connect to the server through your Control Panel or via SSH. To connect through the Control Panel, go to the server control panel and click the monitor icon.
 
 <media-gallery>
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/12899747666833.png">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu
+-centos-and-debian/12899747666833.png" alt="Service control panel">
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/12899761970449.png">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/12899761970449.png" alt="Dashboard">
 </media-gallery>
 
 You can find the login and password for connection in your Control Panel in the "Instructions" section.
 
 <media-gallery>
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/12900025590289.png">  
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/12900025590289.png" alt="Service control panel>  
   
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/12900217123473.png">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/12900217123473.png" alt="Server information">
 </media-gallery>
 
 2\. Install XFCE with the command:
@@ -221,7 +222,7 @@ apt-get install xfce4
 
 The system will warn you that the installation will take several hundred megabytes of hard disk space.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image16.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image16.png" alt="Warning">
 
 Confirm the operation with: ```y```
 
@@ -233,7 +234,7 @@ apt-get install xfce4-goodies
 
 The system will warn you that the installation will take several megabytes of hard disk space.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image27.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/install-gui-desktop-environment-on-ubuntu-centos-and-debian/image27.png" alt="Confirmation">
 
 Confirm the operation with: ```y```
 

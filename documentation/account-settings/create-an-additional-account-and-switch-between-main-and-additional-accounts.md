@@ -25,11 +25,11 @@ This is convenient if you are a user of several accounts and if you need to swit
 
 3\. Click **Create a new account**.
 
-<img src="https://assets.gcore.pro/docs/account-settings/additional-account/create-additional-account-10.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/additional-account/create-additional-account-10.png" alt="Create a new account" width="80%">
 
 4\. Enter a company name and click **Create new account** in the opened window.
 
-<img src="https://assets.gcore.pro/docs/account-settings/additional-account/create-account-popup-20.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/account-settings/additional-account/create-account-popup-20.png" alt="Enter a company name" width="50%">
 
 **Attention!** The company name must be unique. If a company name already exists in the system, the account will not be created.
 
@@ -37,7 +37,7 @@ If the company name is not registered in the system, the account will be created
 
 ## Switch to another account
 
-<img src="https://assets.gcore.pro/docs/account-settings/additional-account/switch-account-30.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/additional-account/switch-account-30.png" alt="Switch to another account" width="80%">
 
 1\. Click on the profile icon in the lower-right corner of the page.
 
