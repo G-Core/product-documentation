@@ -23,7 +23,7 @@ pageDescription: Find out what types of DNS records are supported in the Gcore i
 
 At the time of writing (June 2023,) <a href="https://gcore.com/dns" target="_blank">Gcore DNS Hosting</a> supports eleven record types. In this article, we provide brief information about each of them.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/supported-dns-record-types/dns-record-types-10.png" alt="">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/supported-dns-record-types/dns-record-types-10.png" alt="Supported DNS record types">
 
 ## A record
 

@@ -11,7 +11,7 @@ pageDescription: Learn how to create a Kubernetes cluster on a virtual machine o
 
 1. Open the **Kubernetes** tab and click **Create Cluster**.
 
-<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/10611849724433.png" alt="" width="666" height="312">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/10611849724433.png" alt="Kubernetes tab " width="666" height="312">
 
 2.Select a region — the location of the data center where your cluster will be deployed. 
 
@@ -19,7 +19,7 @@ pageDescription: Learn how to create a Kubernetes cluster on a virtual machine o
 
 4\. Under **Pools**, configure a pool — a set of cluster nodes with the same specifications. 
 
-<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/15409511448209.png" alt="" width=80%>
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/15409511448209.png" alt="Pools" width=80%>
 
 Enter the **pool name**, set the **minimum nodes** and **maximum nodes** for <a href="https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling" target="_blank">autoscaling</a>.
 

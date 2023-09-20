@@ -31,7 +31,7 @@ Normally, a successfully converted image is returned with code 200, the converte
 
 However, you may encounter problems when using <a href="https://gcore.com/docs/cdn/cdn-resource-options/image-optimization-paid/about-image-stack" target="_blank">Image Stack</a>. For example, an image might be delivered to your web page in its original state without Image Stack processing, or an image may not be displayed on the page at all.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/possible-image-stack-errors/image3733.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/possible-image-stack-errors/image3733.png" alt="Troubleshooting overview" width="80%">
 
 This article describes all possible errors that may occur when working with Image Stack, and explains how to fix them.
 
@@ -39,7 +39,7 @@ This article describes all possible errors that may occur when working with Imag
 
 The developer tools allow you to check your processed image’s status code, response headers, and body outputs. 
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/possible-image-stack-errors/image1.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/possible-image-stack-errors/image1.png" alt="How to check an image’s details for troubleshooting">
 
 1\. Go to the page where you used Image Stack and open the developer tools (Ctrl+Shift+I for Chrome)
 

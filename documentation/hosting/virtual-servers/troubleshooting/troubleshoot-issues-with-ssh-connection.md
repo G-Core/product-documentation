@@ -40,11 +40,11 @@ If 22 port is opened, and you are still having issues with connection, check log
 
 Find login and password in the Control Panel. Choose the server and then click the Instructions button.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/troubleshooting/troubleshoot-issues-with-ssh-connection/mceclip0.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/troubleshooting/troubleshoot-issues-with-ssh-connection/mceclip0.png" alt="Instructions " width="80%">
 
 You need User and Password fields located after Server IP address.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-issues-with-ssh-connection/mceclip1.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-issues-with-ssh-connection/mceclip1.png" alt="Server information">
 
 **Note**: If you change the password in OS by yourself it won't change in the Instruction.
 

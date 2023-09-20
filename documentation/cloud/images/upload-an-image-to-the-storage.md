@@ -35,15 +35,15 @@ pageDescription: Learn how to upload images for virtual machines to Cloud storag
 
 2\. Go to the **Images** tab and then proceed to **Import via URL**.
 
-<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/3-menu.png" alt="">
+<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/3-menu.png" alt="Images tab ">
 
 3\. Enter the image name and specify the URL from where the image will be downloaded.
 
-<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/2-image-settings.png" alt="" width="300" height="225">
+<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/2-image-settings.png" alt="Upload an Image" width="300" height="225">
 
 4. Turn on the **Show advanced options** toggle to access additional settings.
 
-<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/1-advanced-settings.png" alt="" width="300" height="436">
+<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/1-advanced-settings.png" alt="Show advanced options " width="300" height="436">
 
 Additional settings include:
 

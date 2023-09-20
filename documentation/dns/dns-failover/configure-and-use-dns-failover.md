@@ -13,13 +13,13 @@ pageDescription: A comprehensive guide on how to configure and manage DNS Health
 
 2\. Navigate to the DNS zone where you intend to set up Health Checks. A new page will open.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-3571.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-3571.png" alt="DNS service" width="70%">
 
 3\. 3. Ensure that <a href="https://gcore.com/docs/dns/about-gcore-dns#interface-modes-non-advanced-and-advanced" target="_blank">Advanced interface mode</a> is enabled. In non-advanced mode, the Health Checks feature will not appear.
 
 4\. Click the name of the A, AAAA, or CNAME record. The “Records list/Edit record set” page will open.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/group-90994.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/group-90994.png" alt="Records list/Edit record set" width="80%">
 
 5\. Enable the Health Checks feature. To configure it, select a protocol (TCP, UDP, ICMP, or HTTP) that Health Checks will use when sending requests to your web servers. Follow the instructions below:
 
@@ -52,27 +52,27 @@ pageDescription: A comprehensive guide on how to configure and manage DNS Health
 
 </expandable-element>
 
-<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-checks-50.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-checks-50.png" alt="configure backup metadata" width="70%">
 
 6\. (Optional) You can enable backup metadata for Health Checks. In this case, records marked as backups will not participate in the response if at least one “healthy,” valid record exists. If all records not marked as backup are non-functional, the “healthy” backup records will appear in the response. 
 
 To configure backup metadata, select which record will be used as a backup (Record 2 in the example,) choose “backup” from the dropdown list, and enable the toggle.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-checks-60.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-checks-60.png" alt="configure logic " width="70%">
 
 7\. (Optional) You can configure logic that will be used to distribute requests among available servers when some of them are unavailable. By default, DNS Health Checks use round-robin balancing. <a href="https://gcore.com/docs/dns/dns-records/configure-weight-balancing-and-geobalancing" target="_blank">Use our detailed guide</a> for more information. In the example, we set the weight balancing with DNS Health Checks and backup metadata. 
 
-<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-checks-70.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-checks-70.png" alt="add more records" width="70%">
 
 8\. (Optional) You can add more records, specify content, and specify metadata (steps 7–8.)
 
 9\. Save changes.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-checks-80.png" alt="">
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-checks-80.png" alt="The configuration is complete">
 
 
 The configuration is complete! Refresh your DNS cache renewal and Health Checks will start to monitor your site’s availability.
 
 You can also check for recent monitoring events in Health Checks logs. Go to the page of the DNS zone for which your configured DNS Health Checks. Select the needed record, click the three dots on the right, and click **Health Checks logs**.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-3589.png" alt="" width="80%"> 
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-3589.png" alt="recent monitoring events" width="80%"> 

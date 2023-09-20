@@ -21,11 +21,11 @@ When you <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resour
 
 1\. Go to the <a href="" target="_blank">CDN resource</a> and click the custom domain of the CDN resource you want to prohibit from indexing.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/set-robots-txt-to-avoid-adding-to-index-by-web-crawlers/web-crawlers-10.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/set-robots-txt-to-avoid-adding-to-index-by-web-crawlers/web-crawlers-10.png" alt="CDN resource" width="80%">
 
 A new page will open, where you will perform the remaining steps.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/set-robots-txt-to-avoid-adding-to-index-by-web-crawlers/web-crawlers-20.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/set-robots-txt-to-avoid-adding-to-index-by-web-crawlers/web-crawlers-20.png" alt="A new page ">
 
 2\. Click **Content**, then **Status code**.
 

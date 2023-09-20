@@ -50,13 +50,13 @@ Use the following example to set a Bucket Policy (replace "example-bucket" with 
 Add the bucket policy in the Permissions drop-down menu.
 
 <media-gallery>
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/add-s3-bucket-policy.png" alt="">
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/s3-bucket-policy-example.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/add-s3-bucket-policy.png" alt="Permissions drop-down menu">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/s3-bucket-policy-example.png" alt="Permissions drop-down menu">
 </media-gallery>
 
 Check accessibility of the file at the URL link in the browser. For example, the link for the file from this guide is bucket.s3-website.eu-central-1.amazonaws.com/logo.png
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/s3-endpoint-url.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/s3-endpoint-url.png" alt="Check accessibility " width="80%">
 
 Log in your Gcore <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a> and <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">create a CDN resource</a>. Use S3 Endpoint as an origin source. For example, bucket.s3-website.eu-central-1.amazonaws.com
 

@@ -18,7 +18,7 @@ pageDescription:  A detailed guide on configuring Secure Token with the PHP, Pyt
 
 Do the first three steps in your control panel in the "Secure token" tab. 
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/mceclip4.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/mceclip4.png" alt="Configure Secure Token" width="80%">
 
 1\. Enable the "Secure token" option in the resource settings. 
 
@@ -28,7 +28,7 @@ Do the first three steps in your control panel in the "Secure token" tab. 
 
 4\. Do this step on your origin server. Insert a script on your website which generates secure links. The generated links should look like as below:
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/mceclip3.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/mceclip3.png" alt="generated links" width="80%">
 
 Where:
 
@@ -156,7 +156,7 @@ In these scripts:
 
 The scripts above can only generate a secure token. You need to create a separate script that will add a secure token and expiry time to links. The script is supposed to create a link as shown below:
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/mceclip3.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/mceclip3.png" alt="created a link" width="80%">
 
 Where:
 

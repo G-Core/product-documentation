@@ -13,7 +13,7 @@ With this feature, you can apply custom HTTP code to the CDN content. For exampl
 
 Activate the Status code option in the Content section of resource or rule settings.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/_______________.jpg" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/_______________.jpg" alt="Content section " width="50%">
 
 Specify any HTTP code except  408, 444, 494, 495, 496, 497, 499 codes in the "Status Code" field. You can add only one HTTP code to the field. Specify a URL for a redirect or an HTTP status code text, If you need.
 

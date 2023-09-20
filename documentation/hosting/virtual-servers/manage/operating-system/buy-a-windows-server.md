@@ -27,7 +27,7 @@ pageDescription: Learn how to purchase a Windows server with these steps.
 
 4\. Then select a server data center.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/buy-a-windows-server/13261603594513.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/buy-a-windows-server/13261603594513.png" alt="server data center" width="80%">
 
 5\. Choose your payment period: you can pay a month, three months, six months, or a year up front. 
 

@@ -23,7 +23,7 @@ pageDescription: Learn how to add, edit and delete DNS records in the advanced i
 
 This article explains how to create DNS records in the advanced mode of <a href="https://gcore.com/dns" target="_blank">Gcore DNS Hosting</a>. Interface mode differences are described in the "<a href="https://gcore.com/docs/dns/about-gcore-dns" target="_blank">About Gcore DNS</a>" article.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/12986908920977.png" alt="" width="80%">  
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/12986908920977.png" alt="Manage DNS records" width="80%">  
 
 ## Create a DNS record
 
@@ -31,11 +31,11 @@ This article explains how to create DNS records in the advanced mode of <a href=
 
 Open the <a href="https://dns.gcore.com/zones" target="_blank">All zones</a> tab and select the domain zone you want to add records for. Click the domain zone or click **Go to records** in the menu that appears when you click on three dots opposite the domain zone. Alternatively, click on the domain name in the "Quick zone selection" list on the left.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/12987072566929.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/12987072566929.png" alt="All zones tab " width="80%">
 
 The DNS record management page will open. Click **Add record set** there and proceed with other steps.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/12987146006929.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/12987146006929.png" alt="DNS record management page" width="80%">
 
 ### 2. Select the record type
 
@@ -86,7 +86,7 @@ We have dedicated a separate article to balancing: <a href="https://gcore.com/do
 
 After completing the configuration, click the **Create** button. DNS records with the specified parameters will be created.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/12988802225041.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/12988802225041.png" alt="Complete the configuration and create resource records" width="80%">
 
 ## Edit a DNS record
 
@@ -94,7 +94,7 @@ After completing the configuration, click the **Create** button. DNS records wit
 
 2\. Click **Edit** in the menu that appears when you click on the three dots next to the desired resource record or on its name.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/12989011552529.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/12989011552529.png" alt="Edit a DNS record" width="80%">
 
 3\. Make the necessary changes.
 
@@ -106,6 +106,6 @@ After completing the configuration, click the **Create** button. DNS records wit
 
 2\. Click **Delete** in the menu that appears when you click on the three dots next to the desired resource record.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/12989062101393.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/12989062101393.png" alt="Delete a DNS record " width="80%">
 
 3\. Confirm the deletion.

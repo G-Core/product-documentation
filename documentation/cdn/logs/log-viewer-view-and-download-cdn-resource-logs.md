@@ -17,7 +17,7 @@ pageDescription: A detailed guide to using Log Viewer for viewing, exporting, an
 
 Log Viewer is a free tool designed to view and export logs of CDN resources to your device. With it, you can see and download information about requests to your resources. The service stores the logs  that were recorded for the last 3 days of CDN operation.  
   
-<img src="https://assets.gcore.pro/docs/cdn/logs/log-viewer-view-and-download-cdn-resource-logs/image_1330-2.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/logs/log-viewer-view-and-download-cdn-resource-logs/image_1330-2.png" alt="Log Viewer">
 
 ## View logs in your control panel
 
@@ -25,7 +25,7 @@ Log Viewer can show logs collected for a maximum of 6 hours of CDN operation. Mo
 
 When you open the tab, you can see logs of all CDN resources for the last 6 hours.  
   
-<img src="https://assets.gcore.pro/docs/cdn/logs/log-viewer-view-and-download-cdn-resource-logs/image_1331.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/logs/log-viewer-view-and-download-cdn-resource-logs/image_1331.png" alt="logs in your control panel">
 
 You can customize a log report:
 
@@ -33,11 +33,11 @@ You can customize a log report:
 - To filter logs, click "Add filter" and set the required parameter: time, user's IP address, HTTP method, status code, data center, or cache status.
 - To see logs for another time interval, click the timestamp field and specify your values. You can choose any interval of up to 6 hours for any of the last 3 days.
 
-<img src="https://assets.gcore.pro/docs/cdn/logs/log-viewer-view-and-download-cdn-resource-logs/image_1332.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/logs/log-viewer-view-and-download-cdn-resource-logs/image_1332.png" alt="customize a log report" width="80%">
 
 To see more details about a log, hover the mouse over the "i" icon on the right. You will see twelve request parameters.  
   
-<img src="https://assets.gcore.pro/docs/cdn/logs/log-viewer-view-and-download-cdn-resource-logs/image_1333-2.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/logs/log-viewer-view-and-download-cdn-resource-logs/image_1333-2.png" alt="more details about a log" width="80%">
 
 - **Client IP** — an IP address of the client who sent the request.
 - **Timestamp** — UTC time of the request.
@@ -65,7 +65,7 @@ Logs are exported based on the filters that you have applied. To download logs t
 
 The file will be downloaded to your browser download location.
 
-<img src="https://assets.gcore.pro/docs/cdn/logs/log-viewer-view-and-download-cdn-resource-logs/image_1334.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/logs/log-viewer-view-and-download-cdn-resource-logs/image_1334.png" alt="Export" width="80%">
 
 ## Manage Log Viewer via the API
 

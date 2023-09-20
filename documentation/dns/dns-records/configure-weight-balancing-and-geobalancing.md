@@ -42,7 +42,7 @@ Three types of balancing are available:
 
 1. Create a <a href="https://gcore.com/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing" target="_blank">resource record in advanced mode</a> (steps 1–6.)
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/configure-balancing-10.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/configure-balancing-10.png" alt="Configure balancing in the control panel" width="80%">
 
 2. Move the slider in the **Records selection** using section to enable balancing.
 
@@ -82,7 +82,7 @@ P<sub>1</sub>= W<sub>1</sub> / Sum<sub>i</sub>(W<sub>i</sub>)
 - *4.5.6.7* with the “weight” 10, probability = 0.06(6)
 - *7.8.9.0* with the “weight” empty (i.e., set by default to 50,) probability = 0.3(3)
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/configure-balancing-20.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/configure-balancing-20.png" alt="Balancing by weight" width="80%">
 
 ### Balancing by non-coordinates meta
 
@@ -125,7 +125,7 @@ Our system will check if a user matches the criteria from the metadata in the fo
 
 Here’s how it looks when you add these records:
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/configure-balancing-30.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/configure-balancing-30.png" alt="Here’s how it looks when you add these records" width="80%">
 
 If a user with the IP from the subnet *192.168.1.0/24* requests the domain, the record with the value *10.0.0.0* will be returned. If the requestor’s subnet is *192.0.2.0/24*, the *10.0.0.1* record will be returned.
 
@@ -135,6 +135,6 @@ With coordinates balancing, you can assign coordinates to each record and add th
 
 **Example**. A user closer to the coordinate 40.43733088856228/-3.566434349995511 (the center of Madrid) will receive an A record with the value *127.0.0.1*, while a user nearer to 52.20328569593686/21.081144277439293 (the center of Warsaw) will receive an A record with the value *127.0.0.2*.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/image-3723.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/image-3723.png" alt="Balancing by non-coordinates meta" width="80%">
 
 The configuration is complete. As soon as you finish creating records, balancing will be enabled.
