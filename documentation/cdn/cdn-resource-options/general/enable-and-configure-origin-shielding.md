@@ -17,13 +17,13 @@ Origin shielding is a Gcore CDN paid option that helps protect your origin serve
 
 The shield server works like a usual CDN server but is located between your origin server and the entire content delivery network. It receives requests, caches content, transmits files from the cache, and requests the source only if it doesn’t have the needed file in the cache. When a burst in traffic occurs, the shield server receives all the requests from CDN servers, thus protecting your server from being overloaded.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding/Shield_server.jpeg" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding/Shield_server.jpeg" alt="What is Origin shielding" width="80%">
 
 ## Enable Origin shielding
 
 1\. Go to the Origin shielding section in Resource settings and complete the remaining steps there.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding/13341830161809.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding/13341830161809.png" alt="Enable Origin shielding">
 
 2\. Turn on the **Enable origin shielding** toggle.
 
@@ -33,4 +33,4 @@ The shield server works like a usual CDN server but is located between your orig
 
 The option will begin to activate. It takes less than 15 minutes. You’ll see the notification:
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding/Activation.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding/Activation.png" alt="Save changes" width="50%">

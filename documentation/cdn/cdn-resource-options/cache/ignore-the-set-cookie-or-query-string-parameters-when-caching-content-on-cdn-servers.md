@@ -23,17 +23,17 @@ This option is disabled by default. To enable it via the Control panel:
 
 1\. Go to CDN and select the CDN resource you want to configure.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/12414969223185.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/12414969223185.png" alt="CDN resource ">
 
 2\. In the navigation panel, under the "Cache" section, click **Query string**.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/12420789740177.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/12420789740177.png" alt="Cache" width="80%">
 
 The enabled option has 3 modes:
 
 - **Ignore All**. Selected by default. Files with different query parameters are cached as objects with the same key, regardless of the parameter value.
     
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/12415341115665.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/12415341115665.png" alt="Ignore All" width="50%">
     
 For example, the following files will be cached as objects with a single cache key because all parameters will be ignored:
     
@@ -46,7 +46,7 @@ http://cdn.example.com/photo.jpeg?id=1&color=blue
 
 In the **Parameter** field, enter each parameter on a separate line.
     
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/12415729590801.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/12415729590801.png" alt=" Parameter field," width="50%">
     
 For example, you specified *id* in the Parameter field. The following files will be cached as objects with different keys because the values of the *id* parameter are different, and the value of the *color* parameter will be ignored.
 
@@ -66,7 +66,7 @@ http://cdn.example.com/photo.jpeg?id=1&color=blue
     
 In the **Parameter** field, enter each parameter on a separate line.
     
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/12415745809041.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/12415745809041.png" alt=" Parameter field" width="50%">
     
 For example, you specified *id* in the Parameter field. The following files will be cached as objects with the same keys because the values of the *id* parameter will be ignored, and the values of the *color* parameters are the same.
     
@@ -88,4 +88,4 @@ A CDN defines a file with the Set-Cookies header as a unique one. As a result, 
 
 Enable Ignore Set-Cookie option and files with cookies will be cached like one object. Go to CDN Resources, choose a CDN Resource and press Settings, open Advanced Settings and check Ignore Set-Cookies.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/Screenshot-2018-1-1_G-Core_Labs___________CDN-___________________8_.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/Screenshot-2018-1-1_G-Core_Labs___________CDN-___________________8_.png" alt="Set-Cookie setting">

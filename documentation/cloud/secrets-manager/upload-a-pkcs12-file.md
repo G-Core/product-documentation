@@ -16,7 +16,7 @@ pageDescription: Learn how to upload PKCS12 files (SSL/TLS certificates) to Secr
 
 Secrets Manager is a tab where you can upload PKCS12 files (called secrets in the system) to. They are needed to create Load Balancers with HTTPS listeners.
 
-<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/mceclip0.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/mceclip0.png" alt="Upload a PKCS12 file" width="80%">
 
 ## What PKCS12 file is 
 
@@ -129,17 +129,17 @@ A new code64 file with the contents of the base64 encoded PKCS12 file will be cr
 1\. Add the base64 encoded content of the PKCS12 file as a Secret (in examples above it is the content of "code64").  
 
 <media-gallery>
-<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/mceclip0.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/mceclip0.png" alt="How to Create a Load Balancer with an HTTPS Listener" width="80%">
 
-<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/image4.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/image4.png" alt="How to Create a Load Balancer with an HTTPS Listener" width="80%">
 </media-gallery>
 
 2\. When creating or editing a Load Balancer, click "Add Listener". In the opened window, enter the name of a new listener, select the "Terminated HTTPS" protocol and specify the desired secret below.  
 
 <media-gallery>
-<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/image2.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/image2.png" alt="Add Listener" width="80%">
 
-<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/image1.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/image1.png" alt="Add Listener" width="80%">
 </media-gallery>
    
 The listener will be created.

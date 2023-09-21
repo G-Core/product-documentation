@@ -92,4 +92,4 @@ Confirm the deletion.
 - If a permanent API token was issued by a user who will be deleted, first <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token#delete-an-api-token" target="_blank">delete the required token</a>. Otherwise, an error will appear: “You can’t remove the user as they have active tokens.”
 - After deleting a user, their name and email address will be crossed out in the API tokens section next to the tokens issued by them. When you roll over their name, you will see “The user has been deleted”:
 
-<img src="https://assets.gcore.pro/docs/account-settings/users/add-edit-or-delete-an-invited-user/deletion-massage-70.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/users/add-edit-or-delete-an-invited-user/deletion-massage-70.png" alt=" API tokens section" width="80%">

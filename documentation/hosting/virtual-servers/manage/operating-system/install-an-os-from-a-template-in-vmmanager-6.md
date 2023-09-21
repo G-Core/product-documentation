@@ -25,11 +25,11 @@ To proceed with the OS installation, follow these steps:
 
 2. Click the three-dot menu on the right-hand side and select Reinstall OS.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/install-an-os-from-a-template/1-menu.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/install-an-os-from-a-template/1-menu.png" alt="Virtual machines page ">
 
 3. On the next page, select the operating system you want to install.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/install-an-os-from-a-template/2-configuration-options.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/install-an-os-from-a-template/2-configuration-options.png" alt="next page,">
 
 4. For **Applications and scripts**, select the relevant scripts that can prepare your server for specific necessary operations: install packages, edit configuration files, etc. The scripts will automate necessary steps involved in setting up your server’s applications and environment. This means that after the OS installation, you don’t have to manually perform these tasks. You can create your own script in advance or use the default one from the VMmanager repository. If you don’t want to use any scripts, select the **Without script** option.
 

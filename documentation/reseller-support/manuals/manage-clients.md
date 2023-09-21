@@ -20,7 +20,7 @@ In the "Accounts" section, "Clients" subsection, you can add, view, edit, and de
 
 To create a new client account, go to the "Clients" subsection and click the "Add new client" button in the upper-right corner. 
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/add-new-client-10.png" alt="">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/add-new-client-10.png" alt="Clients subsection ">
 
 In the next window, add information about a client and select the services that will be available for them.
 
@@ -28,7 +28,7 @@ In the field on the left, enter information about a new client: e-mail, first an
 
 In the field on the right, toggle on the services that you want to make available for the client. By default, the <a href="https://gcore.com/docs/reseller-support/manuals/configure-global-visibility " target="_blank">global service visibility</a> settings are inherited.  
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/list-of-services-20.png" alt="">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/list-of-services-20.png" alt="global service visibility settings">
 
 **Important!** If you want to customize service visibility and override settings of the global service visibility in the "Vendor settings" section, the "Services" subsection switch on and off a service toggle as required. Be aware that further changes in the global service visibility settings will not affect the client's custom service visibility. To learn more about it, click <a href="https://gcore.com/docs/reseller-support/manuals/configure-personal-visibility " target="_blank">here</a>. 
 
@@ -36,7 +36,7 @@ You can reconfigure customized service visibility in the client settings after c
 
 Enabling a service in the "Services" section **creates a tab of a given service** in the client settings and the client control panel, **but does not activate the service**. To activate a service, go to a client settings, check "Activate Service" and set the service status. To learn how to set up a service, refer to our guide on <a href="https://gcore.com/docs/reseller-support/cdn-service-management" target="_blank">CDN configuration</a>.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/cdn-settings-30.png" alt="">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/cdn-settings-30.png" alt=" CDN configuration">
 
 ## Edit an account
 
@@ -53,7 +53,7 @@ For set-up guides, refer to the following product docs:
 
 To edit the personal data and manage user rights, click on the ID of the desired client, or click on the "Edit" button in the "Actions" сolumn. If you click on the "Log in" button you'll log in the client control panel under client's admin user. 
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/edit-account-40.png" alt="">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/edit-account-40.png" alt="Edit an account">
 
 ### Edit client tab
 
@@ -67,7 +67,7 @@ In the "Custom ID" field, you can set or change your own customer ID. You can en
 
 If you click on the "Log in as Admin using client’s credentials" button you'll log in the client control panel under client's admin user.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/edit-client-50.png" alt="">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/edit-client-50.png" alt="Edit client tab">
 
 ### Services tab
 
@@ -79,7 +79,7 @@ On this tab, you can edit personal data and manage user rights. You can <a href=
 
 You can edit a client's name, email address, language of automatic emails and user type.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/edit-user-60.png" alt="">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/edit-user-60.png" alt="Users tab">
 
 <a href="https://gcore.com/docs/account-settings/users/about-users" target="_blank">About Users</a>
 
@@ -87,7 +87,7 @@ You can edit a client's name, email address, language of automatic emails and us
 
 A client can send a request to delete the account from the "Profile" menu in the control panel.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/delete-account-70.png" alt="">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/delete-account-70.png" alt="Delete client">
 
 When a client clicks "Got it, request the deletion", all services of his/her account will be stopped, and the deletion request appears in the control panel. 
 
@@ -97,7 +97,7 @@ When you receive a deletion request, you have 10 days to contact the client and 
 
 To process the request manually, open the "Delete client" tab.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/confirmation-deletion-80.png" alt="">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/confirmation-deletion-80.png" alt="Delete client">
 
 On the left you'll see information about a current request status. On the right you will find the history of all the client's deletion requests. Below there are two buttons used to manage requests.
 

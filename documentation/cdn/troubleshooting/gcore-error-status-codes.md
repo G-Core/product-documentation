@@ -20,7 +20,7 @@ This article reviews errors caused by misconfigurations in Gcore services or opt
 
 Use the <a href="https://cdn.gcore.com/logs/log-viewer" target="_blankk">Log viewer</a> to check the delivery status codes of your content. Refer to the <a href="https://gcore.com/docs/cdn/logs/log-viewer-view-and-download-cdn-resource-logs" target="_blank">article about our Log viewer</a> for the information on configuring time and filters.
 
-<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/gcore-error-status-codes/error-codes.png" alt="" width="">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/gcore-error-status-codes/error-codes.png" alt="How to check status codes" width="">
 
 ## Error status codes
 

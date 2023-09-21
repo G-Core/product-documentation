@@ -26,14 +26,14 @@ You can start the trial period of services from your personal account. There are
 
 1\. Click the icon of the service in the navigation menu and press the **Start free trial** button.
 
-<img src="https://assets.gcore.pro/docs/account-settings/billing/trial/start-from-product-tab-10.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/billing/trial/start-from-product-tab-10.png" alt="Start free trial button">
 
 2\. Click the Profile menu, go to the Billing tab and the <a href="https://accounts.gcore.com/billing/services" target="_blank">Service page</a>. Select the required service and click **Start free trial**.
 
-<img src="https://assets.gcore.pro/docs/account-settings/billing/trial/start-from-service-page-20.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/billing/trial/start-from-service-page-20.png" alt="Service page.">
 
 You can check the remaining days and GB at the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Dashboard</a> page in the Control Panel.  
 
-<img src="https://assets.gcore.pro/docs/account-settings/billing/trial/check-leftovers-30.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/billing/trial/check-leftovers-30.png" alt="Dashboard page ">
 
 To extend the trial duration or add GB contact the support ([support@gcore.com](mailto:support@gcore.com) or chat) or your manager.

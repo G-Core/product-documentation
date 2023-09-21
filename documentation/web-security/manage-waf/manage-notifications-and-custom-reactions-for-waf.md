@@ -33,11 +33,11 @@ Let's say, for example, that you want to receive alerts about XSS attacks (if th
 *   Filter. XSS attack type.
 *   Reaction. A message and the e-mail address for integration.
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/10592570751633.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/10592570751633.png" alt="Triggers " width="80%">
 
 This is what a tab looks like with two triggers that add IP addresses that meet the conditions to the denylist:
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/10592555347729.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/10592555347729.png" alt="tab " width="80%">
 
 ## Create a trigger
 
@@ -45,7 +45,7 @@ This is what a tab looks like with two triggers that add IP addresses that meet
 
 Go to the <a href="https://web-protect.gcore.com/waf/triggers/list" target="_blank">Triggers</a> tab and click **Create trigger**.
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/11773688591889.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/11773688591889.png" alt="Triggers" width="80%">
 
 A new window opens.
 
@@ -53,7 +53,7 @@ A new window opens.
 
 Click the appropriate condition from the list to the right.
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/10592570864017.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/10592570864017.png" alt="condition" width="80%">
 
 There are ten conditions available for triggers:
 
@@ -79,13 +79,13 @@ There are ten conditions available for triggers:
 
 Filters detail the chosen condition. The set of available filters depends on the selected condition. In the example below, there are available filters for the 'Number of attacks' condition to the right.
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/10592570987281.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/10592570987281.png" alt="Add a filter" width="80%">
 
 Click the needed filters from the list to add them to the condition. After that, the filter will display on the left, and you can specify its values.
 
 For example, we added the 'Type' filter and selected 'xss', 'sqli', and 'rce' types to determine only those types of attack we want to be notified about.
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/10592570995985.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/10592570995985.png" alt="Type filter" width="80%">
 
 To add other filters, click the one you need on the right.
 
@@ -108,7 +108,7 @@ The example below shows two available reactions for the 'Brute force' (requests 
 
 Click **Add a reaction** to add the suitable response and set it up if necessary.
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/10592571105937.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/10592571105937.png" alt="Add a reaction" width="80%">
 
 We list all available reactions below.
 
@@ -125,13 +125,13 @@ New trigger by ```<username>```, ```<creation_date>```, and an empty description
 
 Click **Create**.
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/10592571112721.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/10592571112721.png" alt="name and description" width="80%">
 
 ## Disable or delete a trigger
 
 Go to the <a href="https://web-protect.gcore.com/waf/triggers/list" target="_blank">Triggers</a> tab, click the three dots next to the trigger you want to disable or delete, select the needed option, and confirm the action.
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/10592589376529.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/10592589376529.png" alt="Disable or delete a trigger" width="80%">
 
 - If you disable a trigger, reactions for the trigger will be stopped until the trigger is enabled again. The disabled triggers are displayed in the list. To re-enable, use the Enable option.
 - If you delete a trigger, it'll be permanently stopped and removed from the general list forever.

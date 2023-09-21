@@ -26,7 +26,7 @@ If you already set up CDN delivery for all possible static content, 
 
 ## CDN Caching option
 
-<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue/_______________________.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue/_______________________.png" alt="CDN Caching option" width="80%">
 
 Check if this option is added and activated. If you use this option with Origin controlled parameter make sure that origin settings are suitable for caching.
 
@@ -36,13 +36,13 @@ CDN caches according to Cache-Control headers from your origin. 
 
 ## Query-String and Set-Cookies options
 
-<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue/___________________________.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue/___________________________.png" alt="Query-String and Set-Cookies options" width="80%">
 
 CDN caches content with different query-strings and Set-Cookie headers separately by default If you have such content on your website or application, we recommend you to use Ignore Query-String and Ignore Set-Cookies options for the CDN-resource. It will help to decrease the number of requests from CDN to the origin server and increase the Cache hit ratio. 
 
 ## Large Files Delivery Optimization 
 
-<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue/________________.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue/________________.png" alt="Large Files Delivery Optimization " width="50%">
 
 Use the Large Files Delivery Optimization option for the large content caching. You may know more about the option from the <a href="https://gcore.com/docs/cdn/cdn-resource-options/optimize-large-file-delivery" target="_blank">article</a>. 
 

@@ -795,7 +795,7 @@ A JWT example is: 
 - PAYLOAD: (DATA) 
 - ```{ "role": "interpreter", "featureInterpreters": true, "intLang": "de", "roomId": "serv0_test1" }``` 
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/api/real-time-video-api-tutorial/11649788899601.png" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/api/real-time-video-api-tutorial/11649788899601.png" alt="example">
 
 ## Client API
 

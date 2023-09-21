@@ -40,7 +40,7 @@ You can access and use the User Data field in three ways:
 
 By default, the **User Data** field is disabled for new instances. Enable it by switching on the toggle and adding your User Data content in the textbox.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/customize-initial-setup-for-your-instance/user-data-from-ui.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/customize-initial-setup-for-your-instance/user-data-from-ui.png" alt="User Data conten" width="80%">
 
 ### From Gcore’s API
 

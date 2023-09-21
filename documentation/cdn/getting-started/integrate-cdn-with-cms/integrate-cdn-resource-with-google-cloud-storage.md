@@ -14,13 +14,13 @@ This guide describes how you could use <a href="https://cloud.google.com/storag
 Create a Google Cloud Storage (GCS) bucket.
 
 <media-gallery>
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-google-cloud-storage/google-storage-create-bucket-1024x363.png" alt="" width="50%">
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-google-cloud-storage/google-storage-bucket-settings-1024x863.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-google-cloud-storage/google-storage-create-bucket-1024x363.png" alt="Create a Google Cloud Storage (GCS) bucket." width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-google-cloud-storage/google-storage-bucket-settings-1024x863.png" alt="Create a Google Cloud Storage (GCS) bucket.">
 </media-gallery>
 
 Upload your data and mark it as Shared publicly.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-google-cloud-storage/google-storage-upload-file.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-google-cloud-storage/google-storage-upload-file.png" alt="Upload your data and mark it as Shared publicly" width="80%">
 
 Login to the Gcore <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a> at our site and <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">create a CDN resource</a> using ```storage.googleapis.com``` as origin.
 

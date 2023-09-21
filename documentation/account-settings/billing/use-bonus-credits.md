@@ -24,7 +24,7 @@ Bonuses are credited to a special bonus account by the decision of the company'
 
 You bonus credits displays at the <a href="https://accounts.gcore.com/billing/services" target="_blank">Services</a> section. 
 
-<img src="https://assets.gcore.pro/docs/account-settings/billing/bonus-credits/bonus-credits-10.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/billing/bonus-credits/bonus-credits-10.png" alt="Services section">
 
 ## Bonuses debiting  
 
@@ -45,7 +45,7 @@ This section displays information about bonus credits and all operations with 
 
 For a better search of the desired bonus credits, use the search by sum and date.  
 
-<img src="https://assets.gcore.pro/docs/account-settings/billing/bonus-credits/manage-credits-20.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/billing/bonus-credits/manage-credits-20.png" alt="Managing bonuses " width="80%">
 
 ## Bonus credits statuses  
 

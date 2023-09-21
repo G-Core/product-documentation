@@ -20,7 +20,7 @@ Please note that due to the Chinese network restrictions, we cannot guarantee th
 
 If you have installed your OS from an ISO, you need to set up the network configuration. Otherwise, an IP address won’t be available. To find the required settings, open the control panel, choose your server and click **IP addresses**.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-a-server-that-is-not-responding-to-ping-requests/13169671371153.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-a-server-that-is-not-responding-to-ping-requests/13169671371153.png" alt="IP addresses" width="80%">
 
 Check the IP address, the network mask and the default gateway.
 

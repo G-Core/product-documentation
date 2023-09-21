@@ -24,11 +24,11 @@ $config ['javaScriptUrl'] = 'http://cdn.site.com/js';
 
 Login to your XenForo admin area.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-xenforo/xenadmin.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-xenforo/xenadmin.png" alt="Login to your XenForo admin area" width="50%">
 
 Navigate to Style -> General -> Settings.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-xenforo/xensettings.png" alt=""> 
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-xenforo/xensettings.png" alt="Settings"> 
 
 Replace the Path to images field existing record (*/styles/default*) with the following:
 

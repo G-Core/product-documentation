@@ -34,7 +34,7 @@ If your stream is in another format (RTMP, SRT, MP4), use the <a href="https://g
 
 Send us a request to activate the streaming workflow for the CDN at [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of our website. Please specify your ID in the request, so we can identify your account. You can find it on the main page of your control panel.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/configure-live-streams-and-video-delivery-via-cdn-only-for-paid-tariffs/12947023694225.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/configure-live-streams-and-video-delivery-via-cdn-only-for-paid-tariffs/12947023694225.png" alt="Send the request" width="80%">
 
 In the request, provide the following information:
 
@@ -66,7 +66,7 @@ Firstly, the browser requests a playlist (.m3u8) and then playback segments (.ts
 
 You can set cache settings either on your origin (in the Cache-Control HTTP header) or in the control panel.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/configure-live-streams-and-video-delivery-via-cdn-only-for-paid-tariffs/11775065795729.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/configure-live-streams-and-video-delivery-via-cdn-only-for-paid-tariffs/11775065795729.png" alt="set cache settings" width="80%">
 
 1.  Go to the Resource settings and then the "Rules" section.
 2.  Click **Create rule**.
@@ -84,7 +84,7 @@ If you’re going to deliver videos (VOD), go to the next step. To reduce the lo
 
 To do this, go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN resources</a> list. Click the three dots next to the resource and choose **Turn on LIVE STREAMING preset**.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/configure-live-streams-and-video-delivery-via-cdn-only-for-paid-tariffs/12947072884881.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/configure-live-streams-and-video-delivery-via-cdn-only-for-paid-tariffs/12947072884881.png" alt="CDN resources list.">
 
 ### 6. Share your stream or videos
 

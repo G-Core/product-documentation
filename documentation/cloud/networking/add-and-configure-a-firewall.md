@@ -26,7 +26,7 @@ If you don’t create your custom firewall, the default firewall will be used.
 
 *   In the Cloud menu, go to **Networking** → **Firewalls** → **Create firewall**.  
 
- <img src="https://assets.gcore.pro/docs/cloud/networking/add-and-configure-a-firewall/13257548714001.png" alt="" width="580" height="271">  
+ <img src="https://assets.gcore.pro/docs/cloud/networking/add-and-configure-a-firewall/13257548714001.png" alt="Firewalls " width="580" height="271">  
     
 *   When you’re creating a virtual machine, find the **Firewall settings** section, select **Add a Firewall**. 
 
@@ -38,7 +38,7 @@ Click **New rule** and select one of the template rules or choose **Custom** to 
 *   Template rules (All TCP/all UDP/SSH/HTTP/HTTPS/MySQL/DNS UPD/DNS TCP/postgreSQL): template rules come with pre-configured protocols and ports for typical connections 
 *   Custom rule: if you select a custom rule, specify the protocol and port manually. 
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/add-and-configure-a-firewall/13257703188369.png" alt="" width="569" height="166">
+<img src="https://assets.gcore.pro/docs/cloud/networking/add-and-configure-a-firewall/13257703188369.png" alt="Inbound rule" width="569" height="166">
 
 For **Sources**, set a specific IP address range in the CIDR format. Otherwise, the rule will be applied to all IP addresses. 
 
@@ -51,7 +51,7 @@ Click **New rule** and select one of the template rules or choose **Custom** to 
 *   Template rules (All TCP/all UDP/SSH/HTTP/HTTPS/MySQL/DNS UPD/DNS TCP/postgreSQL): template rules come with pre-configured protocols and ports for typical connections 
 *   Custom rule: If you select a custom rule, specify the protocol and port manually.
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/add-and-configure-a-firewall/13257703188369.png" alt="" width="569" height="166">
+<img src="https://assets.gcore.pro/docs/cloud/networking/add-and-configure-a-firewall/13257703188369.png" alt="Custom rule" width="569" height="166">
 
 For **Sources**, set a specific IP address range in the CIDR format. Otherwise, the rule will be applied to all IP addresses. 
 
@@ -78,7 +78,7 @@ The default firewall allows the following traffic:
 
 2\. Find the required firewall, click the ⋯ menu on the right and select **Rules**.
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/add-and-configure-a-firewall/13257832035729.png" alt="">
+<img src="https://assets.gcore.pro/docs/cloud/networking/add-and-configure-a-firewall/13257832035729.png" alt="Firewalls">
 
 ### Assign to an instance and detach from it
 
@@ -86,7 +86,7 @@ The default firewall allows the following traffic:
 
 2\. Find the required firewall, click the ⋯ menu on the right and select **Instances**.
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/add-and-configure-a-firewall/13258087088401.png" alt="">
+<img src="https://assets.gcore.pro/docs/cloud/networking/add-and-configure-a-firewall/13258087088401.png" alt="Firewalls">
 
 ### Delete a firewall
 
@@ -94,4 +94,4 @@ The default firewall allows the following traffic:
 
 2\. Find the required firewall, click the ⋯ menu on the right and select **Delete**.
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/add-and-configure-a-firewall/13258132640145.png" alt="">
+<img src="https://assets.gcore.pro/docs/cloud/networking/add-and-configure-a-firewall/13258132640145.png" alt="Delete a firewall">

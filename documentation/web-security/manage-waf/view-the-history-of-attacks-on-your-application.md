@@ -19,7 +19,7 @@ pageDescription: Identify cyber attacks, find vulnerabilities, block IPs, and ga
 
 "Events" is a log that stores information about all malicious requests for your resources that were repelled by the <a href="https://gcore.com/web-security" target="_blank">Web Application Firewall (WAF)</a>. This is what the log looks like:
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/view-the-history-of-attacks-on-your-application/13308735756561.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/view-the-history-of-attacks-on-your-application/13308735756561.png" alt="Events log" width="80%">
 
 Each line in the log is called an _event_. An event is a single malicious request or several such requests connected to each other. For example, if a hacker sends one request to inject malicious code into the structure of an XML document, the log shows this as a separate event. And if a hacker makes a thousand requests to guess a password, the log groups all requests into one event with the "brute force" type of an attack. You can open such an event and view information on each of the thousand of requests.  
 
@@ -32,7 +32,7 @@ The WAF combines several requests into one event if they have three things in co
 
 At the same time, an attacker's IP address and the time of requests may differ. Even if requests are sent from different IP addresses and on different days, but they use the same attack type, payload and attacked URL, they will be combined into one event.
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/view-the-history-of-attacks-on-your-application/image_1863.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/view-the-history-of-attacks-on-your-application/image_1863.png" alt="attack type" width="80%">
 
 All events in the log are divided into two types: attacks and incidents. 
 
@@ -70,7 +70,7 @@ Example of the check: an attacker sends a request of the "open redirect" (redir)
 
 Go to "Events" and select which events you want to see — incidents or attacks. The list of events opens.
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/view-the-history-of-attacks-on-your-application/13308771037585.png" alt="">
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/view-the-history-of-attacks-on-your-application/13308771037585.png" alt="Open a list of events">
 
 The list shows the following columns:  
 
@@ -88,7 +88,7 @@ If an event contains multiple requests, you can expand the list of all requests 
 
 To sort events, use filters.
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/view-the-history-of-attacks-on-your-application/image_1835.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/view-the-history-of-attacks-on-your-application/image_1835.png" alt="Apply filters  " width="80%">
 
 **Selected Types** — types of attacks. Twenty types are available: sqli, xss, rce, ptrav, crlf, nosqli, overlimit_res, xxe, ldapi, scanner, ssti, ssi, mail_injetion, invalid_xml, data_bomb, dirbust, brute, vpatch, infoleak, redir.
 
@@ -110,4 +110,4 @@ To sort events, use filters.
 
 If the WAF has blocked a legitimate request, click the "+" icon in the event line (after clicking it will change to "–"), and then click the **Mark as false positive** button. The WAF will stop blocking such requests.
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/view-the-history-of-attacks-on-your-application/13308797025553.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/view-the-history-of-attacks-on-your-application/13308797025553.png" alt="Mark requests as false positive" width="80%">

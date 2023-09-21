@@ -15,7 +15,7 @@ pageDescription: Learn to correctly set up your CDN Origin Pull Protocol and def
 
 Use the Origin Pull Protocol option to set the protocol which CDN servers will use to pull content from an origin server: HTTP, HTTPS or HTTP and HTTPS.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol/13339352573201.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol/13339352573201.png" alt="Origin Pull protocol " width="50%">
 
 Select the Origin pull protocol, depending on which protocol the origin server uses to send the content.  
 
@@ -57,10 +57,10 @@ If you want to change the current origin, click **Edit the group**.
 
 You can also add an origin group by clicking **Add group**.  
   
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol/13339453926417.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol/13339453926417.png" alt="Add group" width="50%">
 
 **Note**: When you add an origin group from the resource settings, it is not automatically assigned to the resource. It should be manually selected from the list.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol/13339542285201.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol/13339542285201.png" alt="manually selected from the list" width="50%">
 
 Read more about <a href="https://gcore.com/docs/cdn/add-an-origin-group" target="_blank">how to edit and add origin groups</a>.

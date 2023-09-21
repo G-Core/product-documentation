@@ -13,7 +13,7 @@ Install and launch LiveU Solo.
 
 Click on the «Edit Destination» button.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-liveu-solo/mceclip1.png" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-liveu-solo/mceclip1.png" alt=" LiveU Solo">
 
 Find RTMP URL and a stream key in your control panel according to the <a href="https://gcore.com/docs/streaming-platform/live-streaming/create-a-live-stream" target="_blank">Create a live stream</a> guide. Choose the stream, click edit, and look at the Push URL.
 

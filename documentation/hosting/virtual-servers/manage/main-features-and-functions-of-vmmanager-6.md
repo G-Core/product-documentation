@@ -73,7 +73,7 @@ Here are some of the distinctive features that set VMmanager 6 apart from altern
 
 The VMmanager's UI simplifies navigation to essential options. 
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/vmmanager-6/1-navigation.jpg" alt=""> 
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/vmmanager-6/1-navigation.jpg" alt="Navigation in the VMmanager 6"> 
 
 In the screenshot above, we've labeled the following numbers for reference:
 

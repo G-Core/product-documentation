@@ -52,7 +52,7 @@ pip install certbot-dns-gcore
 
 If you see the output *Successfully installed …*, installation is complete.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-plugins/get-a-let-s-encrypt-certificate-with-certbot/9620506251025.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-plugins/get-a-let-s-encrypt-certificate-with-certbot/9620506251025.png" alt="installation is complete" width="80%">
 
 ## Create credentials for the Certbot plugin
 
@@ -102,11 +102,11 @@ where _*.example.com_ is the domain and its subdomains for which you want to iss
 
 Then enter **Y** to agree to the terms. After that, certificate issuance will start.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-plugins/get-a-let-s-encrypt-certificate-with-certbot/9620506234257.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-plugins/get-a-let-s-encrypt-certificate-with-certbot/9620506234257.png" alt="certificate issuance" width="80%">
 
 3. If the certificate for your domain is issued, you will see the following notification:
 
-<img src="https://assets.gcore.pro/docs/dns/dns-plugins/get-a-let-s-encrypt-certificate-with-certbot/9620491170833.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-plugins/get-a-let-s-encrypt-certificate-with-certbot/9620491170833.png" alt="notification" width="80%">
 
 If you get the *Some challenges have failed* error, try to increase the propagation time:
 

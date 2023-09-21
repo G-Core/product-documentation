@@ -25,11 +25,11 @@ pageDescription: Learn how to add and attach your certificate to the CDN resourc
 
 1\. Go to <a href="https://cdn.gcore.com/ssl/" target="_blank">SSL certificates</a> and click **Add SSL certificate**. 
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-1.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-1.png" alt="SSL certificates">
 
 A new page will open.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-2.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-2.png" alt="new page will open" width="70%">
 
 2\. Enter the following details of the certificate that you purchased from the Certificate Authority:
 
@@ -43,7 +43,7 @@ For help inserting the certificate chain and key contents, <a href="https://gcor
 
 That’s it. The certificate will be added to the list of certificates in the <a href="https://cdn.gcore.com/ssl/" target="_blank">SSL Certificates</a> section. 
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-3.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-3.png" alt="Create SSL Certificate">
 
 **Note**: Attach the entry to the related CDN resource after uploading your SSL certificate data. 
 
@@ -57,11 +57,11 @@ That’s it. The certificate will be added to the list of certificates in the <a
 
 4\. The certificate chain must be inserted without blank lines, as in the example below:
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-4.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-4.png" alt="certificate chain" width="80%">
 
 5\. Make sure to add a new line at the end of the certificate chain.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-5.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-5.png" alt="new line at the end of the certificate chain" width="80%">
 
 6\. Open the private key file (.key) using a text editor.
 
@@ -78,7 +78,7 @@ You can attach the SSL certificate to your CDN resource in two ways:
 
 1\. Follow steps 1–3 of the guide <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">Create a CDN resource for static assets only</a> until the “Custom domain” field is filled in.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-6.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-6.png" alt="Create a CDN resource" width="80%">
 
 2\. In the **Custom domain** section, enter your desired custom domain name—e.g., *cdn.example.com*—for your CDN resource.
 
@@ -93,7 +93,7 @@ You can attach the SSL certificate to your CDN resource in two ways:
 
 If you haven’t yet added a certificate or want to upload a new one for this resource, click Add **SSL certificate**. Specify your SSL certificate’s data in the pop-up window. <a href="https://gcore.com/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate#how-to-insert-an-ssl-chain-and-a-key-correctly" target="_blank">Check our guide</a> for help inserting the certificate and key contents. After pasting the data, сlick **Add SSL certificate**.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-7.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-7.png" alt=" Add SSL certificate" width="70%">
 
 </expandable-element>
 
@@ -101,22 +101,22 @@ If you haven’t yet added a certificate or want to upload a new one for this re
 
 1\. Select the resource you want to configure in the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN resources</a> section.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-8.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-8.png" alt="CDN resources section">
 
 2\. In the navigation panel, under the General section, click **SSL** and enable the **Enable HTTPS switch**.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-9.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-9.png" alt="General section">
 
 3\. Select **Add or select your own SSL certificate**. If you’ve already <a href="https://gcore.com/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate#how-to-upload-an-ssl-certificate-to-your-account" target="_blank">uploaded the SSL certificate to your account</a>, select the certificate from the list and save changes.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-10.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-10.png" alt="Add or select your own SSL certificate" width="80%">
 
 
 <expandable-element title="If you haven’t uploaded the SSL certificate">
 
 If you haven’t yet added a certificate or want to upload a new one for this resource, click Add **SSL certificate**. Specify your SSL certificate’s data in the pop-up window. <a href="https://gcore.com/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate#how-to-insert-an-ssl-chain-and-a-key-correctly" target="_blank">Check our guide</a> for help inserting the certificate and key contents. After pasting the data, сlick **Add SSL certificate**.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-7.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-7.png" alt="SSL certificates overview" width="70%">
 
 </expandable-element>
 
@@ -126,7 +126,7 @@ If you haven’t yet added a certificate or want to upload a new one for this re
 
 The certificate will be displayed in the <a href="https://cdn.gcore.com/ssl/list" target="_blank">SSL certificates</a> section of your control panel. This page contains a table that lists your personal certificates and associated information, such as the ID, name, CDN resources connected to the certificate, and expiration date.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-11.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-11.png" alt="Renew an SSL certificate">
 
 ### Renew an SSL certificate
 
@@ -142,7 +142,7 @@ There is no way to change the data of a certificate once it has been added, so w
 
 5\. To verify that the SSL certificate has been correctly installed and bound to the resource, enter your CNAME into the browser (e.g., ```https://example.com```). Click the lock icon in the address bar, navigate to **Connection is secure**, and click **Certificate is valid**.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-12.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-12.png" alt="verify that the SSL certificate">
 
 Compare the displayed certificate data with the new certificate data you just added. If the settings match, you can safely <a href="https://gcore.com/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate#delete-an-ssl-certificate" target="_blank">delete the old certificate</a> from the SSL Certificates page.
 
@@ -159,22 +159,22 @@ Users are notified by email:
 
 In addition, when you log in to your account during the fourteen days before certificate expiration or any time after that, you will see a reminder. The <a href="https://cdn.gcore.com/ssl/list" target="_blank">SSL certificates</a> in the side panel will also be marked with an exclamation point if there are expired certificates or certificates that will expire within the next fourteen days.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-13.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-13.png" alt="SSL certificates">
 
 In the certificates table, warning signs will appear next to the specific certificates that need attention.
 
 If the certificate has already expired, a red exclamation point will be shown.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-14.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-14.png" alt="certificate has already expired">
 
 If the certificate is due to expire in fourteen days or fewer, a yellow warning triangle will be shown.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-15.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-15.png" alt="certificate is due to expire">
 
 ### Delete an SSL certificate
 
 To delete a certificate, click the three dots next to the certificate, then click **Delete**.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-16.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-16.png" alt="Delete an SSL certificate">
 
 **Note**: It is not possible to delete certificates that are currently in use by a CDN resource. If you want to delete such a certificate, you must first unattach it. To do this, open the SSL section in the CDN resource settings and turn off the **Enable HTTPS option**.

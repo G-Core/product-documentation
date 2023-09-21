@@ -20,7 +20,7 @@ The Prometheus exporter is a service that offers OpenSearch index metrics to cli
 
 You configure your Prometheus target, providing the Prometheus exporter endpoint and your Logging credentials using HTTPS Basic Authentication. To get the URL endpoint for your region, open the **Prometheus exporter endpoint** tab and copy the API link.
 
-<img src="https://assets.gcore.pro/docs/cloud/laas/Logging.jpg" alt="" width=70%>
+<img src="https://assets.gcore.pro/docs/cloud/laas/Logging.jpg" alt="How does it work" width=70%>
 
 For example, the Prometheus target configuration for Luxembourg would look like this:
 

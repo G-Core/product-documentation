@@ -23,7 +23,7 @@ If you do not have your own SSL certificate, you can activate the free Let's Enc
 
 On the **Set up initial configuration** step, navigate to the **SSL** section, and turn on the toggle for **Enable HTTPS**. Then, select **Get free Let's Encrypt certificate**. 
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-1.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-1.png" alt="During resource creation" width="70%">
 
 The certificate issuance may take up to 30 minutes after the resource is created. During this time, please do not:
 
@@ -35,15 +35,15 @@ The certificate issuance may take up to 30 minutes after the resource is created
 
 1\. Go to CDN and select the **CDN** resource you want to configure.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-2.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-2.png" alt="CDN resource" width="80%">
 
 2\. In the navigation panel, under the **General** section, click **SSL**.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-3.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-3.png" alt="General section" width="80%">
 
 3\. In the **SSL** section, turn on the toggle for **Enable HTTPS**, select **Get free Let's Encrypt certificate**, and click on **Save changes**.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-4.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-4.png" alt="SSL section" width="80%">
 
 ### Notes regarding issuing
 
@@ -59,7 +59,7 @@ If an error occurs during certificate issuance, the Enable HTTPS toggle will be 
 - You can only issue a Let's Encrypt certificate for an existing resource. If the CNAME of the resource in the DNS settings is not pointing to the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">value specified in the setup guide</a>, or the source is not available, the certificate will not be issued.
 - Only one Let's Encrypt certificate can be issued per resource. If you need to add or remove an additional personal domain for a resource, we will reissue the certificate after making the changes. You will receive a warning that the current certificate will only be valid for 30 minutes and will be automatically replaced.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-5.jpg" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-5.jpg" alt="Warning">
 
 While the resource is active, the certificate is renewed automatically. An attempt to reissue the certificate will be made 30 days before the expiration of the current certificate. There is only one attempt to reissue the certificate. If the certificate is not reissued, a notification will be sent to your email.
 
@@ -71,7 +71,7 @@ To avoid interruption of content delivery, please reissue the certificate yourse
 
 To revoke a certificate, go to the Resource Settings and click **Revoke Let's Encrypt certificate** in the SSL section.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-6.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-6.png" alt="Revoke a Let's Encrypt certificate" width="70%">
 
 **Note**: You can also use an <a href="https://api.gcore.com/docs/cdn#tag/SSL-Certificates" target="_blank">API request</a> to replace the Let's Encrypt certificate with your own certificate without having to revoke it.
 
@@ -81,10 +81,10 @@ To revoke a certificate, go to the Resource Settings and click **Revoke Let's En
 - If a Let's Encrypt certificate is issued, the certificate selector will not be displayed in the resource settings. Personal certificates will become available for selection after <a href="https://gcore.com/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate#revoke-a-lets-encrypt-certificate" target="_blank">revoking Let's Encrypt</a>
 - A Let's Encrypt certificate will not be displayed on the SSL Certificates page
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-7.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-7.png" alt="Restrictions and features of the option" width="80%">
 
 - A certificate is **only** visible in the settings of the resource for which it is issued.
 - Issuing and revoking a Let's Encrypt certificate does not require saving the Resource Settings.
 - If you are using DNS Cloudflare, be sure not to set the **CNAME Flattering** option to Flatten all CNAMEs. This will cause Cloudflare to return an A-record instead of a CNAME, which will prevent the issuance of a Let's Encrypt certificate. To successfully issue a Let's Encrypt certificate, set the CNAME Flattering option to **Flatten CNAME at root**.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-8.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-8.png" alt="Status" width="80%">
