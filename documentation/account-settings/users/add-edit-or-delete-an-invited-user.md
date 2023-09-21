@@ -62,7 +62,7 @@ That’s it! An entry containing information about the invited user with their u
 
 After the user has been sent an invitation, their user row will show whether they have accepted the invitation (“Status” column) and whether they have enabled two-factor authentication (column “Two-Factor authentication.”)
 
-<img src="https://assets.gcore.pro/docs/account-settings/users/manage/edit-user-30.png" alt="Users section">
+<img src="https://assets.gcore.pro/docs/account-settings/users/add-edit-or-delete-an-invited-user/invite-users-30.png" alt="How to resend an invitation to a user">
 
 ## Change the user’s account information
 
