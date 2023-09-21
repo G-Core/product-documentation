@@ -17,7 +17,7 @@ pageDescription: A detailed step-by-step guide on inviting, editing, and deletin
 
 **Note**: Only the user with the Administrator role can add new users to the account. 
 
-<img src="https://assets.gcore.pro/docs/account-settings/users/manage/invite-user-10.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/users/manage/invite-user-10.png" alt="Add a user">
 
 1\. Click on the profile icon in the lower-right corner of the page and select the Profile settings.
 
@@ -27,7 +27,7 @@ pageDescription: A detailed step-by-step guide on inviting, editing, and deletin
 
 The pop-up appears. Do the remaining steps in it. 
 
-<img src="https://assets.gcore.pro/docs/account-settings/users/manage/fill-the-form-20.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/users/manage/fill-the-form-20.png" alt="Popup" width="80%">
 
 4\. Enter the name of the invited user.
 
@@ -59,7 +59,7 @@ User account information can be changed by 
 
 3\. Select **Edit**.
 
-<img src="https://assets.gcore.pro/docs/account-settings/users/manage/edit-user-30.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/users/manage/edit-user-30.png" alt="Edit">
 
 In the pop-up window, you can change your (the user with the Administrator role) username, Role, and Language. As for the other users, in their settings, you can change only Role. 
 
@@ -81,7 +81,7 @@ In the pop-up window, you can change your (the user with the Administrator role)
 
 4\. Confirm the deletion.
 
-<img src="https://assets.gcore.pro/docs/account-settings/users/manage/delete-user-40.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/users/manage/delete-user-40.png" alt="deletion">
 
 Now the user has no access to the current account.
 
@@ -91,8 +91,8 @@ Now the user has no access to the current account.
 
 2\. If a permanent API token was issued by a user who is going to be deleted, first delete the required token. Otherwise, an error will appear.
 
-<img src="https://assets.gcore.pro/docs/account-settings/users/manage/token-deletion-error-50.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/account-settings/users/manage/token-deletion-error-50.png" alt="error " width="50%">
 
 3\. After deleting a user, in the API tokens section, his name and email address will be crossed out next to the tokens issued by him, and a hint will be displayed:
 
-<img src="https://assets.gcore.pro/docs/account-settings/users/manage/deletion-massage-60.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/users/manage/deletion-massage-60.png" alt=" API tokens section" width="80%">

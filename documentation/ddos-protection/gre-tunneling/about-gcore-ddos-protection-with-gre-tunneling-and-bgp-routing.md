@@ -21,7 +21,7 @@ Gcore provides a comprehensive solution designed to protect network infrastructu
 
 <a href="https://gcore.com/blog/gre-tunneling-for-server-protection/" target="_blank">Generic Routing Encapsulation</a>, or GRE, is a tunneling protocol that creates a virtual point-to-point connection between two endpoints over an IP network. The endpoints are usually routers or firewalls that are assigned IP addresses when connected with a GRE tunnel. Much like a real-life tunnel, a GRE tunnel acts as a pathway for data to travel from point A to point B.
 
-<img src="https://assets.gcore.pro/docs/ddos-protection/gre-tunneling/overview/1-gre-tunnel.jpg" alt="">
+<img src="https://assets.gcore.pro/docs/ddos-protection/gre-tunneling/overview/1-gre-tunnel.jpg" alt="What is the GRE protocol">
 
 Here’s how it works: The router at the source location encapsulates the data packages: it wraps a GRE packet around the original packet so that the original packet becomes a payload of the GRE packet. The GRE header is added to the packet, indicating the destination and the protocol of the packet inside.
 

@@ -47,7 +47,7 @@ Your videos may need text accompaniment in the following cases:
 
 Gcore Player supports timed text tracks for videos: subtitles and closed captions, as in the example:
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/subtitles-and-closed-captions-for-vod/captions-10.gif" alt="" wifth="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/subtitles-and-closed-captions-for-vod/captions-10.gif" alt="Gcore Player" wifth="">
 
 ## Formats of subtitles and captions
 
@@ -123,7 +123,7 @@ Here are some helpful guides on how to download subtitles from popular external 
 
 1\. Go to the <a href="https://streaming.gcore.com/video/list" target="_blank">Video Hosting</a> section and open the video where you want to add subtitles or captions.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/subtitles-and-closed-captions-for-vod/captions-20.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/subtitles-and-closed-captions-for-vod/captions-20.png" alt="Video Hosting section" width="80%">
 
 2\. Click **Add subtitles**. You can add several files.
 
@@ -272,10 +272,10 @@ index-svod240n-v1-a1.m3u8
 ### Examples of different players’ playback interfaces
 
 Example of iOS player playback:
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/subtitles-and-closed-captions-for-vod/captions-30.png" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/subtitles-and-closed-captions-for-vod/captions-30.png" alt="Example of iOS player playback">
 
 Example of Android Exoplayer playback:
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/subtitles-and-closed-captions-for-vod/captions-40.png" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/subtitles-and-closed-captions-for-vod/captions-40.png" alt="Example of Android Exoplayer playback">
 
 Example of Android Exoplayer playback:
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/subtitles-and-closed-captions-for-vod/captions-50.png" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/subtitles-and-closed-captions-for-vod/captions-50.png" alt="Example of Android Exoplayer playback">

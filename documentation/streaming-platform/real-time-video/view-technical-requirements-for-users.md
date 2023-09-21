@@ -116,4 +116,4 @@ pageDescription: Technical requirements for Gcore users in call rooms with 1-4 a
 
 ## Operating system and Browser compatibility
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/view-technical-requirements-for-users/____________________________.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/view-technical-requirements-for-users/____________________________.png" alt="Operating system and Browser compatibility" width="80%">

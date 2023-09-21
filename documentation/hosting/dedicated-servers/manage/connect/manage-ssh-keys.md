@@ -13,11 +13,11 @@ Manage SSH-keys in the <a href="https://gcore.com/docs/hosting/dedicated-servers
 
 To create a key, go to the SSH keys section and click on Add button.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/connect/manage-ssh-keys/joxi_screenshot_1509788651407.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/connect/manage-ssh-keys/joxi_screenshot_1509788651407.png" alt=" DCImanager">
 
 Fill in the fields for Key Name and Public Key. Pay attention to the key format, try not to move the lines.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/connect/manage-ssh-keys/joxi_screenshot_1509788759836.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/connect/manage-ssh-keys/joxi_screenshot_1509788759836.png" alt="fields " width="80%">
 
 SSH key will be automatically added to all future servers and used OS. That is, using a specific key, you can connect to the server if:  
 

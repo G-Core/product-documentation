@@ -17,15 +17,15 @@ Additionally, you can buy up to 14 IPv4 addresses and 14 IPv6 addresses.
 
 Go to "Dedicated Servers" in the Control Panel.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/additional-ip-addresses/buy-an-additional-ip-address/chrome_2017-09-06_16-38-27.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/additional-ip-addresses/buy-an-additional-ip-address/chrome_2017-09-06_16-38-27.png" alt="Dedicated Servers">
 
 Choose server for which one you'd like to order additional IPs, click IP Addresses.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/additional-ip-addresses/buy-an-additional-ip-address/chrome_2017-09-06_16-36-35.png" alt="" >
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/additional-ip-addresses/buy-an-additional-ip-address/chrome_2017-09-06_16-36-35.png" alt="Choose server" >
 
 On the opened tab click **Order**.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/additional-ip-addresses/buy-an-additional-ip-address/chrome_2017-09-06_16-37-04.png" alt="" >
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/additional-ip-addresses/buy-an-additional-ip-address/chrome_2017-09-06_16-37-04.png" alt="Order" >
 
 Enter a number of IPs and pay for your order.
 

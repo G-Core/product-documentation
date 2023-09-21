@@ -25,13 +25,13 @@ This is how you work with the presigned URLs:
 
 3\. The users receive a link as follows:
 
-<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/generate-a-presigned-url/link-explanation-10.png" alt="">
+<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/generate-a-presigned-url/link-explanation-10.png" alt="link ">
 
 4\. After that, users will be able to view and download the file during the link lifespan that has been set by the owner. 
 
 5\. When the link expires, the access will be revoked. When clicking the link, users will see the "AccessDenied" error.
 
-<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/generate-a-presigned-url/example-temp-link-20.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/generate-a-presigned-url/example-temp-link-20.png" alt="AccessDenied" width="80%">
 
 A presigned URL doesn't require user's authentication. This means that everyone with a valid temporary link can access the file. For example, if you send such a link to a user who then forwards it to another person, that person will also be able to view and download files.
 
