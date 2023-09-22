@@ -25,6 +25,8 @@ At the time of writing (June 2023,) <a href="https://gcore.com/dns" target="_bla
 
 <img src="https://assets.gcore.pro/docs/dns/dns-records/supported-dns-record-types/dns-record-types-10.png" alt="Supported DNS record types">
 
+You can check the resource records of your domain name using the <a href="https://gcore.com/dev-tools/dns-lookup" target="_blank">Gcore DNS Lookup</a> tool. 
+
 ## A record
 
 An А record defines the IP address to which the domain corresponds. The value of the A record is the server IP address in IPv4 format associated with your domain name. 

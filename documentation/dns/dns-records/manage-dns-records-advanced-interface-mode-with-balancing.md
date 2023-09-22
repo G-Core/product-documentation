@@ -88,6 +88,8 @@ After completing the configuration, click the **Create** button. DNS records wit
 
 <img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/12988802225041.png" alt="Complete the configuration and create resource records" width="80%">
 
+You can check if the created record has been added correctly using the <a href="https://gcore.com/dev-tools/dns-lookup" target="_blank">Gcore DNS Lookup</a> tool.
+
 ## Edit a DNS record
 
 1\. Open the record settings as described in <a href="https://gcore.com/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing#1-go-to-records-settings" target="_blank">step 1</a> of the instructions above.
