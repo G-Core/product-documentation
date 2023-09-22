@@ -79,6 +79,8 @@ After completing the configuration, click the **Add** button. The DNS record wit
 
 <img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/image_20__1_.png" alt="All zones" width="80%">
 
+You can check if the created record has been added correctly using the <a href="https://gcore.com/dev-tools/dns-lookup" target="_blank">Gcore DNS Lookup</a> tool.
+
 ## Edit a DNS record
 
 1\. Go to records of the required DNS zone by clicking the zone name or the "Go to records" button. 

@@ -61,7 +61,7 @@ When a browser requests the HTTPS record from the DNS server, it receives all ne
 
 Combining all relevant parameters into a single lookup response reduces the number of round trips required to optimally connect to a web server. When used together with <a href="https://datatracker.ietf.org/doc/html/rfc3168" target="_blank">ECN</a> configuration this eliminates the need for multiple rounds of TLS negotiation while still supporting cutting-edge multi-CDN scenarios.
 
-## How to Configure the HTTPS Record in the Control Panel
+## How to Configure the HTTPS Record in the control panel
 
 1\. Navigate to the <a href="https://dns.gcore.com" target="_blank">DNS</a> section. Click on the zone of the domain where you wish to add the HTTPS record.
 
@@ -99,7 +99,7 @@ After configuration, the record should look something like this:
 
 <img src="https://assets.gcore.pro/docs/dns/dns-records/what-is-an-https-record-and-how-is-it-configured/15663198075793.png" alt="record " width="80%">
 
-You can verify the responses with kdig (a version of “dig” from Knot DNS). If you're using “dig,” please ensure you have the latest version, as older versions do not support HTTPS record types.
+You can verify the responses with kdig (a version of “dig” from Knot DNS). If you're using “dig,” please ensure you have the latest version, as older versions do not support HTTPS record types. You can also check if the created record has been added correctly using the <a href="https://gcore.com/dev-tools/dns-lookup" target="_blank">Gcore DNS Lookup</a> tool.
 
 ```
 kdig https example.com @ns1.gcorelabs.net
