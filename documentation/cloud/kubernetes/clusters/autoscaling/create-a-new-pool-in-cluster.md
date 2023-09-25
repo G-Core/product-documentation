@@ -18,7 +18,7 @@ pageDescription: Learn how to create a new pool in a Kubernetes cluster.
 
 3\. The new window will expand. 
 
-<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/15416891909265.png">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/15416891909265.png" alt="Expanded window">
 
 Enter the **pool name**, set the **minimum nodes** and **maximum nodes** for <a href="https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling" target="_blank">autoscaling</a>. Autoscaling will regulate the number of nodes within the specified limits by removing unnecessary nodes during low load and deploying new ones during high loads.
 

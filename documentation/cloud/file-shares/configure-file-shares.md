@@ -10,13 +10,13 @@ pageDescription: Learn how to configure Gcore File Shares, mount them to virtual
 
 **Please note**: Before you proceed with configuration, make sure you have enough quotas to create a file share. To increase quotas, send us a request according to <a href="https://gcore.com/docs/cloud/getting-started/request-a-quota-increase" target="_blank">our guide</a>. The quotas for Files Shares are located on the **Storage** tab and include **File Share count** and **File Share size** (GiB) as shown below.
 
-<img src="https://assets.gcore.pro/docs/cloud/file-shares/1.png" width=60%>
+<img src="https://assets.gcore.pro/docs/cloud/file-shares/1.png" width=60% alt="Storage tab ">
 
 ## Configure file shares for Linux VMs and Bare Metal
 
 **Step 0 (for bare metal servers only)**: Make sure the network that you want to use for sharing supports bare metal servers because they require a dedicated VLAN. Otherwise, create a new dedicated VLAN by switching the **Bare Metal Network** toggle when creating a new network.
 
-<img src="https://assets.gcore.pro/docs/cloud/file-shares/2-1.png" width=60%>
+<img src="https://assets.gcore.pro/docs/cloud/file-shares/2-1.png" width=60% alt="Bare Metal Network toggle">
 
 **Please note**: To change the network interface of an existing bare metal server, you need to do so manually in the OS settings. 
 
@@ -24,7 +24,7 @@ pageDescription: Learn how to configure Gcore File Shares, mount them to virtual
 
 1. In the **Cloud** menu, go to the **Storage** tab, select **File Shares** and click **Create File Share**.
 
-<img src="https://assets.gcore.pro/docs/cloud/file-shares/3-1.png" width=60%>
+<img src="https://assets.gcore.pro/docs/cloud/file-shares/3-1.png" width=60% alt="File Shares">
 
 2. A new page will open. In **Basic settings**, enter the name of the file share, specify its size and protocol.
 
@@ -53,7 +53,7 @@ sudo yum install nfs-utils
 
 2. Copy the mount command from your personal account. Go to the **Overview** tab of the required file share and copy the command from the field in the **File Share mount** section, as shown below.
 
-<img src="https://assets.gcore.pro/docs/cloud/file-shares/4-1.jpg">
+<img src="https://assets.gcore.pro/docs/cloud/file-shares/4-1.jpg" alt="Mount the file share">
 
 Run the command:
 
@@ -75,6 +75,6 @@ umount -lf /your/share
 ```
 To resize your file share, go to the **Overview** tab and click **Resize** as shown below. 
 
-<img src="https://assets.gcore.pro/docs/cloud/file-shares/5-1.png">
+<img src="https://assets.gcore.pro/docs/cloud/file-shares/5-1.png" alt="Overview tab">
  
 
