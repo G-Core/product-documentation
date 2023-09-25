@@ -16,7 +16,7 @@ We set up channel aggregation using the standard LACP protocol. It is pa
 
 To get bonding order the service Port Channel from the Control Panel, prepare your server and then contact us via ticket to set it up. 
 
-<img class="WACImage SCXW53247752" src="https://assets.gcore.pro/docs/hosting/other-services/link-aggreagtion/activate-link-aggregation/blobid1.png">
+<img class="WACImage SCXW53247752" src="https://assets.gcore.pro/docs/hosting/other-services/link-aggreagtion/activate-link-aggregation/blobid1.png" alt="Port Channel from the Control Panel">
 
 ## Server Setup
 
