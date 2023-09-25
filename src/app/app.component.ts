@@ -4,9 +4,21 @@ import { ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, Router } from '@
 import { ScullyRoute, ScullyRoutesService } from '@scullyio/ng-lib';
 import { Observable, filter, map, switchMap } from 'rxjs';
 import config from '../config';
+import { sourcebuster } from './utils/sourcebuster';
 
 const defaultDescription = 'Gcore | Global Hosting, CDN, Edge and Cloud Services';
 const defaultTitle = 'Product Documentation';
+
+const defineDomain = (): string => {
+    switch (config.environment) {
+        case 'prod':
+            return 'gcore.com';
+        case 'preprod':
+            return 'preprod.world';
+        default:
+            return '';
+    }
+};
 
 @Component({
     selector: 'app-root',
@@ -61,6 +73,8 @@ export class AppComponent implements OnInit {
     }
 
     public ngOnInit(): void {
+        this.setUTMCookie();
+
         if (!window.sessionStorage.getItem('fontPreloaded')) {
             setTimeout(() => {
                 const link = document.createElement('link');
@@ -97,5 +111,11 @@ export class AppComponent implements OnInit {
             }
         }
         return snapshot;
+    }
+
+    private setUTMCookie(): void {
+        sourcebuster.init({
+            domain: defineDomain(),
+        });
     }
 }
