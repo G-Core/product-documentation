@@ -73,7 +73,7 @@ Certain features, such as Resources with Shared Cache Zone, Wildcard Purge, and 
 
 ## Traffic
 
-<img src="https://assets.gcore.pro/docs/reseller-support/cdn-service-management/balancer-70-v2.png" alt="Balancer tab" width="80%">
+<img src="https://assets.gcore.pro/docs/reseller-support/cdn-service-management/balancer-tab.png" alt="Balancer tab" width="80%">
 
 CDN servers are grouped into several regions in <a href="https://gcore.com/docs/cdn/cdn-resource-options/determine-in-which-regions-the-content-will-be-delivered-with-geo-balancer-for-paid-tariffs" target="_blank">Geobalancer</a>: North America, Asia, the Middle East, Europe, Australia, the World (with the World anycast address behind this region), the CIS, Latin America, and Africa.
 
