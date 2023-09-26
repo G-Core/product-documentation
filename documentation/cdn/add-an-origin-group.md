@@ -4,6 +4,7 @@ displayName: Origin group
 published: true
 order: 60
 toc:
+   --1--Origin groups: "what-is-the-origin-groups-feature"
    --1--Step 1. Add a new origin group: "step-1-add-a-new-origin-group"
    --1--Step 2. Enter the origin group name: "step-2-enter-the-origin-group-name"
    --1--Step 3. Select the type of origin authentication: "step-3-select-the-type-of-origin-authentication"
@@ -16,11 +17,20 @@ pageDescription: A detailed guide on how to add an origin group to your CDN reso
 ---
 # Add an origin group
 
-In this guide, we will explain how to add an origin group to your CDN resource. 
+This guide will explain the origin groups feature and show you how to configure and add an origin group to your CDN resource.
+
+## What is the origin groups feature?
+
+Origin groups is a feature that allows you to specify sources for a CDN resource. One origin group can consist of a single site/private bucket or of multiple sites. 
+
+Specifying several sites increases fault tolerance. If one origin fails, another can function as a backup. You can specify a group and set the logic of interaction between origins.
+
+For example, if you make both origins in the group active, requests between them will be distributed 50:50. If you make one source the backup, then that source will respond only when the primary source gives an error 5xx. 
+
 
 ## Step 1. Add a new origin group
 
-You can do this in two ways: in the CDN resource settings or in the "Origins groups" section.
+You can do this in two ways: in the CDN resource settings or in the "origin groups" section.
 
 <expandable-element title="Option 1. CDN resources">
 
@@ -34,17 +44,17 @@ Find the "Origin pull protocol" option in the Origin section, and click **Add gr
 
 Continue to <a href="https://gcore.com/docs/cdn/add-an-origin-group#step-2-enter-the-origin-group-name">Step 2</a>. 
 
-**Note**: The created origin group won’t automatically bind to the CDN resource. Follow the instruction till the end. 
+**Note**: The created origin group won’t automatically bind to the CDN resource. Follow the instructions untill the end. 
 
 </expandable-element>
 
-<expandable-element title="Option 2. Origins groups">
+<expandable-element title="Option 2. Origin groups">
 
-Open the "Origins groups" section and click **Add origins group**.
+Open the "Origin groups" section and click **Add origin group**.
 
 <img src="https://assets.gcore.pro/docs/cdn/add-an-origin-group/image3518.png" alt="Origins groups section" width="80%">
 
-**Note**: The created origins group will appear in the general list of origins groups. It won’t automatically bind to the CDN resource.
+**Note**: The created origin group will appear in the general list of origin groups. It won’t automatically bind to the CDN resource.
 
 </expandable-element>
 
