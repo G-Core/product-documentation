@@ -7,6 +7,7 @@ toc:
    --1--Attach: "attach-a-lets-encrypt-certificate"
    --2--Duration resource creation: "during-resource-creation"
    --2--For created resource: "for-created-resource"
+   --2--DNS-01 challenge: "issuance-with-the-dns-01-challenge"
    --2--Notes: "notes-regarding-issuing"
    --1--Revoke: "revoke-a-lets-encrypt-certificate"
    --1--Restrictions: "restrictions-and-features-of-the-option"
@@ -44,6 +45,20 @@ The certificate issuance may take up to 30 minutes after the resource is created
 3\. In the **SSL** section, turn on the toggle for **Enable HTTPS**, select **Get free Let's Encrypt certificate**, and click on **Save changes**.
 
 <img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-4.png" alt="SSL section" width="80%">
+
+### Issuance with the DNS-01 challenge
+
+We use the <a href="https://letsencrypt.org/docs/challenge-types/#http-01-challenge" target="_blank">HTTP-01 challenge</a> by default to validate your ownership of the domain to which you want to issue the Let’s Encrypt certificate. But sometimes, this challenge type isn’t suitable. For example, if you use <a href="https://gcore.com/cdn/multi-cdn" target="_blank">multi-CDNs</a> with a balancer, CNAME may answer with the non-Gcore value, and the Let’s Encrypt certificate issuance can fail. 
+
+To avoid this problem and make the process more flexible, we have added support for the DNS-01 challenge. You can read more about the principles of its operation <a href="https://letsencrypt.org/docs/challenge-types/#dns-01-challenge" target="_blank">in the official documentation</a>.
+
+To use the DNS-01 challenge, you need to:
+
+1\. Activate <a href="https://gcore.com/dns" target="_blank">Gcore DNS Hosting</a> in your personal account.
+
+2\. Delegate your custom domain name to Gcore's name servers (*ns1.gcorelabs.net* and *ns2.gcdn.services*).
+
+3\. Enable the ```use_dns01_le_challenge``` option. Check our <a href="https://api.gcore.com/docs/cdn#tag/CDN-Resources/operation/change_cdn_resource" target="_blank">API documentation</a> for help with this.
 
 ### Notes regarding issuing
 
