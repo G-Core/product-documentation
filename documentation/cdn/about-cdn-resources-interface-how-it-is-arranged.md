@@ -21,7 +21,8 @@ pageDescription: Explanation of how the CDN resources tab is arranged.
 
 Also, this tab displays the following:
 
-1\. Current tariff plan. If you want to change it, press **Upgrade** (if you use Free plan) or **Change plan** on the left.   
+1\. Current tariff plan. If you want to change it, press **Upgrade** (if you use Free plan) or **Change plan** on the left.
+
 2\. Balance. If you need, press **Recharge** on the right.  
 
 <img src="https://assets.gcore.pro/docs/cdn/about-cdn-resources-interface-how-it-is-arranged/10276342871697.png" alt="CDN resources tab">
