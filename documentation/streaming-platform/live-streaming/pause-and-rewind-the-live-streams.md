@@ -26,7 +26,7 @@ To enable the feature, send us a request via [support@gcore.com](mailto:support@
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/pause-and-rewind-the-live-streams/9654962196625.png" alt="Live stream settings page" width="80%">
 
-The message template: *"Greetings! Please enable the DVD feature for the account with ID … (your ID)"*. Specify if you want to increase the playback time to 4 hours.
+The message template: *"Greetings! Please enable the DVR feature for the account with ID … (your ID)"*. Specify if you want to increase the playback time to 4 hours.
 
 We will notify you when the feature is enabled. After that, you will be able to use it for your account.
 
