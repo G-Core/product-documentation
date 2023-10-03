@@ -38,7 +38,7 @@ In the example below, the rules are grouped into six branches by endpoints. The 
 
 If you click on a branch, a list of rules attached to it opens. For example, opening the sixth branch includes four distinct rules with specific conditions and one inherited rule from the Default rule. To view it, click the **Distinct and inherited rules** button.
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/add-custom-rules-for-processing-requests/9910977514129.png" alt="Rules tab" width="80%">
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/add-custom-rules-for-processing-requests/rules-10.png" alt="Rules tab" width="80%">
 
 ## Why use the feature?
 
@@ -58,7 +58,7 @@ Go to the Rules tab and press the **Add Rule** button.
 
 You can add a rule from the section’s main page or open one of the existing branches and create a rule based on it.
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/add-custom-rules-for-processing-requests/9910977570449.png" alt="Rules tab" width="50%">
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/add-custom-rules-for-processing-requests/rules-20.png" alt="Rules tab" width="50%">
 
 A shutter will appear on the right side of the screen. Here you should configure conditions in the **If request is** section and add a rule for processing requests in the **Then** section according to the instructions below. Users’ requests will be fulfilled with the specified conditions. If they match, the defined actions will be applied to the requests.
 
