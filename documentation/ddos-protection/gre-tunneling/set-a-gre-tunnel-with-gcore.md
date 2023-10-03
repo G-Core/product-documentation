@@ -84,7 +84,7 @@ Let’s start with the Side A configuration.
 ip prefix DEFAULT_ROUTE seq permit 5 0.0.0.0/0
 
 ip prefix CLIENT_ROUTES seq 5 permit 50.50.1.0/24
-ip prefix CLIENT_ROUTES seq permit 10 50.50.2.0/24
+ip prefix CLIENT_ROUTES seq 10 permit 50.50.2.0/24
 ```
 
 Prefix-list lines are responsible for defining routes.
