@@ -19,7 +19,7 @@ pageDescription: Identify cyber attacks, find vulnerabilities, block IPs, and ga
 
 "Events" is a log that stores information about all malicious requests for your resources that were repelled by the <a href="https://gcore.com/web-security" target="_blank">Web Application Firewall (WAF)</a>. This is what the log looks like:
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/view-the-history-of-attacks-on-your-application/13308735756561.png" alt="Events log" width="80%">
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/view-the-history-of-attacks-on-your-application/event-10.png" alt="Events log" width="80%">
 
 Each line in the log is called an _event_. An event is a single malicious request or several such requests connected to each other. For example, if a hacker sends one request to inject malicious code into the structure of an XML document, the log shows this as a separate event. And if a hacker makes a thousand requests to guess a password, the log groups all requests into one event with the "brute force" type of an attack. You can open such an event and view information on each of the thousand of requests.  
 
