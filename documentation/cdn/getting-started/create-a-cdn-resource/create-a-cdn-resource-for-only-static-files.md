@@ -25,6 +25,8 @@ You can create up to 30 CDN resources in one account. 
 
 **Origin**. An origin is a source (e.g., a website, an application, a private bucket) from where the CDN resource will request the content. In the Gcore control panel, each origin is allocated to an origin group.
 
+**Note**: The default timeout for CDN resources is set to 30 seconds. If the edge servers do not receive a response from the origin within this timeframe, they will respond either with an error or with an outdated cache file if <a href="https://gcore.com/docs/cdn/cdn-resource-options/cache/always-online-provide-the-stale-cache-if-the-origin-is-unavailable" target="_blank">Always Online</a> is enabled.
+
 - If you didn’t create the origin group, choose the **Specify content origin** option and follow our instructions to <a href="https://gcore.com/docs/cdn/add-an-origin-group#step-3-select-the-type-of-origin-authentication" target="_blank">add an origin group (step 3)</a>. 
 - If you created the origin group previously, choose the **Select origins group** option, click on the field, and select the required origin group.
 
