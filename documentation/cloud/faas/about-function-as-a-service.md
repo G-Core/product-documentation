@@ -2,7 +2,7 @@
 title: about-function-as-a-service
 displayName: Function as a Service
 published: true
-order: 110
+order: 10
 toc:
    --1--What is FaaS?: "what-is-faas"
    --1--How it works: "how-it-works"
