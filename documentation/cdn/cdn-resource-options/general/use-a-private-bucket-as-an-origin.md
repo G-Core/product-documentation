@@ -76,10 +76,10 @@ More information about where to find the keys can be found in the "<a href="http
 
 7\. Continue the CDN resource creation according to the "<a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">Create CDN resource for only static files</a>" guide (steps #3–6).
 
-**Note**: If you selected Amazon S3 storage in step #4, the configuration is now complete. If you selected Other and specified the Hostname after the CDN resource creation, go to the resource settings and open the Host header option in the "HTTP headers" section. Specify the URL of your storage Hostname (the URL depends on your S3 provider) in the following format: 
+8\. Go to the resource settings and open the Host header option in the "HTTP headers" section. Specify the URL of your storage Hostname (the URL depends on your S3 provider) in the following format: 
 
 - For Gcore S3 storage: ```{bucket-name}.s-ed1.cloud.gcore.lu```
-- For most other storages: ```{bucket-name}.s3.{region-code}.{storage-hostname}```
+- For most other storages (including Amazon): ```{bucket-name}.s3.{region-code}.{storage-hostname}```
 
 **Note**: The bucket in the "Host header" is very important to specify for the security of the storage data outside the bucket.
 
