@@ -57,17 +57,34 @@ To edit the personal data and manage user rights, click on the ID of the desired
 
 ### Edit client tab
 
-On this tab, you can change a client's email address (Company email) and company name (Company).  In the "Seller" drop-down list, select "Seller" for every client to facilitate the search. 
+In this section, you can:
 
-The "Client status" field is a system one. Currently, it includes only a trial status and is not editable. 
+1\. Log in to the control panel using the client’s credentials.
 
-Check the "Test Account" checkbox to hide a client from the all-clients list on the "Clients" subsection (it works when the "Test Account" filter value is "false").
+2\. Check the “Test Account” checkbox to hide a client from the all clients list in the “Clients” subsection. Client accounts marked as test accounts will not be displayed in the list. If you want to see test accounts, set the filter to “Test account true.”
 
-In the "Custom ID" field, you can set or change your own customer ID. You can enter letters, numbers and special characters. Your clients can see the Custom ID value with an API request, but they will not be allowed to edit it. 
+In the “Settings” section, fields with the information about the client are included per steps 3–6.
 
-If you click on the "Log in as Admin using client’s credentials" button you'll log in the client control panel under client's admin user.
+3\. Review the “Client status.” It shows the steps of using an account. The client’s status is determined automatically according to the conditions:
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/edit-client-50.png" alt="Edit client tab">
+- **Preparation**. An account has been created, but the user has not yet used any service.
+- **Trial**. An account has at least one service in “Trial” status, but no service in “Active” status.
+- **Active**. An account has at least one service in “Active” status.
+- **Trial End**. At least one of the services is in the “Deleted,” “Trial End,” or “Paused” status, and no service is in “Active” or “Trial” status.
+- **Deleted**. An account is deleted.
+
+**Note**: You can’t edit the “Client status” field.  
+
+4\. Change a client’s email address (Company email) and company name (Company.) 
+
+5\. Set your customer ID in the “Custom ID” field. You can use letters, numbers, and special characters. Your clients will see the value in the API requests but cannot edit it.
+
+6\. Select “Seller” for every client in the “Seller” dropdown list, to facilitate the search.
+
+7\. If you change something, don’t forget to save the changes at the top of the page.
+
+
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/edit-clients-tab.png" alt="Edit client tab" width="80%">
 
 ### Services tab
 
