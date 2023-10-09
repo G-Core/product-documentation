@@ -15,7 +15,7 @@ pageDescription: A comprehensive guide on how to configure and manage DNS Health
 
 <img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-3571.png" alt="DNS service" width="70%">
 
-3\. 3. Ensure that <a href="https://gcore.com/docs/dns/about-gcore-dns#interface-modes-non-advanced-and-advanced" target="_blank">Advanced interface mode</a> is enabled. In non-advanced mode, the Health Checks feature will not appear.
+3\. Ensure that <a href="https://gcore.com/docs/dns/about-gcore-dns#interface-modes-non-advanced-and-advanced" target="_blank">Advanced interface mode</a> is enabled. In non-advanced mode, the Health Checks feature will not appear.
 
 4\. Click the name of the A, AAAA, or CNAME record. The “Records list/Edit record set” page will open.
 
@@ -64,7 +64,7 @@ To configure backup metadata, select which record will be used as a backup (Reco
 
 <img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-checks-70.png" alt="add more records" width="70%">
 
-8\. (Optional) You can add more records, specify content, and specify metadata (steps 7–8.)
+8\. (Optional) You can add more records, specify content, and specify metadata (steps 6–7.)
 
 9\. Save changes.
 
