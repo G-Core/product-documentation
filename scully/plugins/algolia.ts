@@ -71,7 +71,7 @@ const updateAlgoliaIndex = async (dom, options): Promise<JSDOM> => {
         return dom;
     }
     try {
-        if (options.data.title !== 'metadata' && options.data.published && !options.data.redirect) {
+        if (options.data?.title !== 'metadata' && options.data?.published && !options.data?.redirect) {
             const { window } = dom;
             const { document } = window;
             const mainTitle = document.querySelector('h1')?.innerHTML || '';

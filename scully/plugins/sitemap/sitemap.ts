@@ -137,8 +137,9 @@ export const sitemapPlugin = async (routes: Array<HandledRoute>): Promise<void> 
     const maps = {};
 
     routes.forEach((route: HandledRoute) => {
+        console.log('route', route);
         if (
-            route.data.redirect ||
+            route.data?.redirect ||
             config.ignoredRoutes.includes(route.route) ||
             config.ignoredRoutesPattern.some((regExp) => regExp.test(route.route))
         ) {
