@@ -17,7 +17,7 @@ pageDescription: Learn how to improve your CDN Cache Hit Ratio. Get tips on CDN 
 
 The cache hit ratio is the percentage of traffic delivered from the CDN edge cache without requesting the origin server. You can check it in the <a href="https://cdn.gcore.com/reports/statistics" target="_blank">Statistics</a> section within the control panel.  
 
-<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue/.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue/statistics-low-cache-hit-ratio.png" alt="" width="80%">
 
 A high cache hit ratio shows the efficiency and practicality of using CDNs. The higher it is, the better. By reducing the number of times CDN edge servers request a file from the source, you improve performance, reduce the load on the source, and reduce outbound traffic costs.
 
@@ -75,7 +75,7 @@ The response will contain different headers. You should focus on the inappropria
 <tbody>
 <tr>
 <td>Cache-Control: <i>max-age=0</i></td>
-<td rowspan="3">This value prohibits content caching.<br> It may cause an issue with the Cache hit ratio and reduce performance.<br> However, in some cases, this value is ok.</td>
+<td rowspan="3" style="text-align: left">This value prohibits content caching.<br> It may cause an issue with the Cache hit ratio<br> and reduce performance.<br> However, in some cases, this value is ok.</td>
 </tr>
 <tr>
 <td>Cache-Control: <i>no-cache</i></td>
@@ -85,13 +85,13 @@ The response will contain different headers. You should focus on the inappropria
 </tr>
 <tr>
 <td>Cache-Control: <i>private</i></td>
-<td>This value caches content only in users’ browsers, not the edge servers’ cache.
+<td style="text-align: left">This value caches content only in users’ browsers,<br> not the edge servers’ cache.
 <br><br>
-<b>Note</b>: If the request contains custom headers starting with X (e.g., “X-custom-header”),<br> the CDN will treat the request as a new request and forward it to the origin (as with cookies.)</td>
+<b>Note</b>: If the request contains custom headers<br> starting with X (e.g., “X-custom-header”),<br> the CDN will treat the request as a new request<br> and forward it to the origin (as with cookies.)</td>
 </tr>
 <tr>
 <td>Cache: <i>MISS</i></td>
-<td>This value specifies that the response is received from the origin, bypassing the cache.<br> Our CDN caches files on the first request.<br> This means that the first request for a file will result in MISS<br> (CDN had to reach the origin to pull the resource and cache it locally)<br> and every following request for the same file will result in HIT (served from a local CDN cache.)</td>
+<td style="text-align: left">This value specifies that the response is received<br> from the origin, bypassing the cache.<br> Our CDN caches files on the first request.<br> This means that the first request for a file<br> will result in MISS (CDN had to reach the origin<br> to pull the resource and cache it locally)<br> and every following request for the same file will result in HIT<br> (served from a local CDN cache.)</td>
 </tr>
 </tbody>
 </table>
@@ -114,15 +114,15 @@ The response will contain different headers. You should focus on the inappropria
 <tbody>
 <tr>
 <td>Traffic started less than two days ago, and more cache needs to be collected.</td>
-<td>Traffic patterns and amounts dictate how long you should wait to populate the cache.<br> Usually, waiting for around 48 hours after the CDN integration is enough to cache most resources, but the exact time is individual.<br> You can also deliver more content through CDN.</td>
+<td style="text-align: left">Traffic patterns and amounts dictate how long you should wait to populate the cache.<br> Usually, waiting for around 48 hours after the CDN integration is enough to cache most resources, but the exact time is individual.<br> You can also deliver more content through CDN.</td>
 </tr>
 <tr>
 <td>Content is not requested enough, and the cache per server is low.</td>
-<td>Increase the traffic to your content or use the paid <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin shielding</a> option to accumulate requests.</td>
+<td style="text-align: left">Increase the traffic to your content or use the paid <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin shielding</a> option to accumulate requests.</td>
 </tr>
 <tr>
 <td>A “Cache-Control” value prohibits the CDN from caching content.</td>
-<td>Ensure that the <a href="https://gcore.com/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin" target="_blank">CDN Caching</a> option is enabled and configured in the following way.
+<td style="text-align: left">Ensure that the <a href="https://gcore.com/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin" target="_blank">CDN Caching</a> option is enabled and configured in the following way.
 <ul>
 <li>For CDN controlled: <b>Don’t</b> set 0 in the "Cache expiry" field.</li>
 <li>For Origin controlled: <b>Don’t</b> set values from the step above (<i>max-age=0, no-cache, no-store, private</i>.)</li>
@@ -131,11 +131,11 @@ The response will contain different headers. You should focus on the inappropria
 </tr>
 <tr>
 <td>Responses contain query strings or a Set-Cookie header, so the files are cached as different.</td>
-<td>Enable <a href="https://gcore.com/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers" target="_blank">Ignore Query String and Ignore Set Cookie options</a>. Then, a single file will be delivered from the cache, regardless of the request parameters and the Set Cookie header.</td>
+<td style="text-align: left">Enable <a href="https://gcore.com/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers" target="_blank">Ignore Query String and Ignore Set Cookie options</a>. Then, a single file will be delivered from the cache, regardless of the request parameters and the Set Cookie header.</td>
 </tr>
 <tr>
 <td>The Vary header is set on origins so that content is cached suboptimally.</td>
-<td>Change the Vary header settings on your origin.</td>
+<td style="text-align: left">Change the Vary header settings on your origin.</td>
 </tr>
 </tbody>
 </table>
