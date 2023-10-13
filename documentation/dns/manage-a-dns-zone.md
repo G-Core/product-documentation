@@ -66,9 +66,15 @@ The pop-up opens. Configure it according to the guide below and click **Save cha
 
 ### Export a DNS zone in BIND format
 
-Gcore DNS API supports the BIND zone format for the DNS zone configuration. To export a zone in BIND, click the three dots icon next to the desired DNS zone in the <a href="https://dns.gcore.com/zones" target="_blank">All zones</a> section and then click **Export zone**.
+Gcore DNS API supports the BIND zone format for the DNS zone configuration. To export a zone in BIND:
 
-<img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/bind-format.png" alt="how-to-export-zone-in-bind">
+1\. Go to <a href="https://dns.gcore.com/zones" target="_blank">All zones</a>, click three dots, and choose **Go to records** to open the records of the needed zone. 
+
+<img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/export-bind-10.png" alt="export a zone in bind first step" width="80%">
+
+2\. Click **Export records** to download the file.  
+
+<img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/export-bind-20.png" alt="export a zone in bind second step" width="80%">
 
 The file will be downloaded to your PC as a text file with the *.zone* extension, e.g., *test.dnsexample.com.zone*.
 
