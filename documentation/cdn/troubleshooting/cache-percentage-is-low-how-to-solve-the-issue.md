@@ -91,7 +91,7 @@ The response will contain different headers. You should focus on the inappropria
 </tr>
 <tr>
 <td>Cache: <i>MISS</i></td>
-<td style="text-align: left">This value specifies that the response is received<br> from the origin, bypassing the cache.<br> Our CDN caches files on the first request.<br> This means that the first request for a file<br> will result in MISS (CDN had to reach the origin<br> to pull the resource and cache it locally)<br> and every following request for the same file will result in HIT<br> (served from a local CDN cache.)</td>
+<td style="text-align: left">This value specifies that the response is received<br> from the origin, bypassing the cache.<br> Our CDN caches files on the first request.<br> This means that the first request for a file<br> will result in MISS (CDN had to reach the origin<br> to pull the resource and cache it locally)<br> and every following request for the same file will result in HIT(served from a local CDN cache.)</td>
 </tr>
 </tbody>
 </table>
