@@ -35,16 +35,16 @@ Regions can be of two types: Core and Edge. A region determines the equipment sp
 
 3. Select an **Image**.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/3-image-selection.png" alt="" width=80%>
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/3-image-selection.png" alt="Select an Image" width=80%>
 
 *   Choose an OS template, a volume, a snapshot, a custom <a href="https://gcore.com/docs/cloud/images/upload-an-image-to-the-storage" target="_blank">image</a>, or a template from the marketplace.
 *   (for a Linux instance) Remember the login from the **For login to OS** field to connect to your instance on Linux OS via SSH from another Linux device. For details, refer to the article: <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">Connect to your instance via SSH</a>.
 
-**Important!** If you want to connect to a Linux instance from a Windows device, use a special application such as <a href="https://www.putty.org/" target="_blank">PuTTY</a>.
+**Important!** If you want to connect to a Linux instance from a Windows device, use a special application such as <a href="https://putty.org" target="_blank">PuTTY</a>.
 
 4. For **Type**, choose the configuration.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/4-type%20selection.png" alt="" width=80%>
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/4-type%20selection.png" alt="choose the configuration" width=80%>
 
 Select the CPU generation and a flavor. 
 
@@ -72,7 +72,7 @@ Select the CPU generation and a flavor.
 
 5. Configure **Volumes**.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/5-volume-selection.png" alt="" width=80%>
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/5-volume-selection.png" alt="Configure Volumes" width=80%>
 
 Enter a volume name, choose its type and set its size in GiB
 
@@ -80,13 +80,23 @@ Enter a volume name, choose its type and set its size in GiB
 
 * **High IOPS SSD**. This is a high-performance SSD block storage designed for latency-sensitive transactional workloads (60 IOPS per 1 GiB; 2.5 MB/s per 1 GiB). The IOPS performance limit is 9,000. The bandwidth limit is 500 MB/s.
 
+Availability: Amsterdam, Frankfurt, London, Luxembourg, Luxembourg-2, Manassas, Paris-2, Singapore
+
 * **Standard**. This is a network SSD disk, which provides stable and high random I/O performance, as well as high data reliability (6 IOPS per 1 GiB; 0.4 MB/s per 1 GiB). The IOPS performance limit is 4,500. The bandwidth limit is 300 MB/s.
 
-* **Cold**. This is a network HDD disk, suitable for less frequently accessed workloads. The maximum number of IOPS is 1,000. The bandwidth limit is 100 MB/s. Please note that this option is unavailable in Manassas.
+Availability: all regions
+
+* **Cold**. This is a network HDD disk, suitable for less frequently accessed workloads. The maximum number of IOPS is 1,000. The bandwidth limit is 100 MB/s.
+
+Availability: Luxembourg
 
 * **Ultra**. This is the network block storage option, recommended for non-critical data and workloads that are accessed less frequently. The maximum number of IOPS is 1,000. The bandwidth limit is 100 MB/s.
 
+Availability: Luxembourg
+
 * **SSD Low-Latency**. This is an SSD block storage, designed for applications that require low-latency storage and real-time data processing. It can achieve IOPS performance of up to 5000, with an average latency of 300 µs.
+
+Availability: Amsterdam-2, Frankfurt, Hong Kong, Luxembourg-2, Manassas, Tokyo
 
 </expandable-element>
 
@@ -96,19 +106,19 @@ Enter a volume name, choose its type and set its size in GiB
 
 If you select a **public** interface, you can turn on the **Use Reserved IP** toggle and assign a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address" target="_blank">reserved IP address</a> to your instance.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/6-public-network-selected.png" alt="" width=80%>
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/6-public-network-selected.png" alt="Reserved IP toggle" width=80%>
 
 If you select a **private** interface, configure a network and a subnetwork according to the steps below. 
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/7-private-network-selected.jpg" alt="" width=80%>
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/7-private-network-selected.jpg" alt="private interface" width=80%>
 
 To configure a network, select an existing network from the drop-down list or create a new one by clicking **Add a new network**. If you choose the latter, the new window will open:
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/8-create-network-window.png" alt="" width=80%>
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/8-create-network-window.png" alt="Add a new network" width=80%>
 
  * Enter the network name.
 
- * (optional) Turn on the <b>Baremetal network</b> toggle to connect bare metal servers to the network
+ * (optional) Turn on the <b>Bare Metal Network</b> toggle to connect bare metal servers to the network
 
  * (optional) Turn on the <b>Add tags</b> toggle to add metadata to the network.
 
@@ -116,7 +126,7 @@ To configure a network, select an existing network from the drop-down list or cr
 
 To create a subnet, select an existing subnet from the drop-down list or create a new one by clicking **Add a new subnetwork**. If you choose the latter, the new window will open:
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/9-create-subnetwork-window.png" alt="" width=50%>
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/9-create-subnetwork-window.png" alt="Add a new subnetwork" width=50%>
 
  * Enter the subnet name.
 
@@ -193,8 +203,17 @@ print(sha512_crypt.hash(passwd , rounds = 5000 ))
 
 ![The field to add the instance to a placement group](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/15-add-placement-group.png)
 
-**Placement Group** is a setting that determines whether virtual machines will be hosted on the same physical server (**affinity** policy) or on different ones (**anti-affinity** policy). For more detail, see the article: <a href="https://gcore.com/docs/cloud/virtual-instances/placement-groups/about-placement-groups
-" target="_blank">About placement groups</a>.
+<expandable-element title="Types of placement groups">
+
+You can place your virtual machine in one of three types of groups:
+
+- **Affinity** groups assemble virtual machines on the same hardware. Machines launched in one affinity group will exchange data faster because they are located on the same server.
+
+- **Anti-affinity** groups work the opposite way: All virtual machines in this group will be separated across different physical hardware. This increases fault tolerance of a cluster: Even if something happens to one server, machines on the other(s) will remain available.
+
+- **Soft anti-affinity** groups encourage, but don't strictly enforce, the separation of virtual machines. Unlike a strict anti-affinity policy, where machines may never be placed together, soft anti-affinity allows placement on the same hardware when it is necessary due to factors like resource constraints or high demand. It is suitable for users who want to use the anti-affinity policy by default while also avoiding machine creation failures if an unused host was not found.
+
+</expandable-element>
 
 You can add the instance to an existing placement group or create a new one by clicking **Add placement group**.
 

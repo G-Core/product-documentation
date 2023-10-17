@@ -27,17 +27,17 @@ Raw Logs is an option that enables an automatic export of CDN resource logs to y
 
 **Note**: The feature is paid. To activate, contact us via [support@gcore.com](mailto:support@gcore.com). After activation, enable "Raw Logs" in your control panel and configure export to S3, FTP, or SFTP storage.
 
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/13202181890193.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/13202181890193.png" alt="What is a Raw Logs feature">
 
 ## What is the "Add logs from origin shielding" option? 
 
-If you are using the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin Shielding</a> feature, we recommend that you enable the "Add logs from rigin shielding" option. This means that the report will include not only requests to cache services, but also those to the pre-cache server. As a result, you will receive more detailed information on resource usage.
+If you are using the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin Shielding</a> feature, we recommend that you enable the "Add logs from origin shielding" option. This means that the report will include not only requests to cache services, but also those to the pre-cache server. As a result, you will receive more detailed information on resource usage.
 
 **Note**: If your account does not have "Origin Shielding" switched on, this option will not be available when setting up Raw logs.  
 
 To enable "Add logs from origin shielding", tick the appropriate box when setting up Raw Logs (step #2 in the [guide below](https://gcore.com/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage#export-logs-to-an-s3-storage)).
 
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/15499340205969.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/15499340205969.png" alt="Add logs from origin shielding" width="50%">
 
 ## How is traffic calculated in log reports?
 
@@ -95,7 +95,7 @@ Where:
 
 9\. Click **Save changes**.
 
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/12745153936913.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/12745153936913.png" alt="Raw logs" width="80%">
 
 ### Non-Amazon storage
 
@@ -115,7 +115,7 @@ Where:
 
 8\. Specify a region — location ID of a server where your storage is hosted. This is optional: for some storages, the region is determined automatically. You can leave the field empty. If you use <a href="https://gcore.com/storage" target="_blank">Gcore S3 storage</a>, a location ID is required. You can find it in the "Details" of the storage. Your location ID is a part of your hostname to the first dot.
 
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/image_1377.png" alt="" width="50%">  
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/image_1377.png" alt="Specify a region " width="50%">  
 
 9\. Choose how to organize storage: put logs of all CDN resources into one bucket or to use separate buckets for each CDN resource.
 
@@ -123,7 +123,7 @@ Where:
 
 11\. Click **Save changes**.
 
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/export-logs-to-s3-storage.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/export-logs-to-s3-storage.png" alt="Specify a region " width="80%">
 
 ## Export logs to an FTP/SFTP storage
 
@@ -139,7 +139,7 @@ Where:
 
 6\. Specify a folder for export. If you use <a href="https://gcore.com/storage" target="_blank">Gcore SFTP storage</a>, specify the root (home) folder where other folders originate from. You can find its name in the "Details" of your SFTP storage at the end of the "Upload path" field.
 
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/image_1379.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/image_1379.png" alt="Raw logs" width="50%">
 
 If you use an SFTP storage from another provider, clarify whether a root folder that includes other folders is created by default. If not, leave the field empty. If yes, specify a folder name.
 
@@ -148,7 +148,7 @@ If you use an SFTP storage from another provider, clarify whether a root folder 
 8\. Click **Save changes**.
 
 
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/12745350391697.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/12745350391697.png" alt="Specify a folder for export" width="80%">
 
 ## Export time intervals
 
@@ -164,7 +164,7 @@ You can see the status of the Raw Logs option in your control panel:
 - "Failed" is a status indicating that an error occurred while connecting to a storage or that the service failed to export logs within 24 hours
 - "Pause" is a status showing that the option is paused
 
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/image_1381.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/image_1381.png" alt="Raw logs" width="50%">
 
 ## Log path example
 
@@ -185,8 +185,8 @@ s3://log-bucket-name/2019/08/20/15/nodename_primarycname.domain.ru_access.log.gz
 "$upstream_status" "-" "$upstream_connect_time" "$upstream_header_time"  
 "$shard_addr" "$geoip2_data_asnumber" "$connection" "$connection_requests"  
 "$request_id" "$http_x_forwarded_proto" "$http_x_forwarded_request_id" "$ssl_cipher"  
-"$ssl_session_id" "$ssl_session_reused"  
-"$sent_http_content_type" "$tcpinfo_rtt" "$server_country_code" 
+"$ssl_session_id" "$ssl_session_reused" "$sent_http_content_type" "$tcpinfo_rtt" 
+"$server_country_code" "$gcdn_tcpinfo_snd_cwnd" "$gcdn_tcpinfo_total_retrans" 
 ```
 
 Please don’t be surprised if you see a field that is not listed above. We occasionally add new fields. If some fields are added to logs, you will receive an email about it. New fields are added to the end of the line.
@@ -201,11 +201,10 @@ AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 YaBrowser/16.10.0.23
 "MISS" "10485760" "0.0.0.0:80" "2510" "7399" "-" "-" "KZ" "-" "shield_no" "0.0.0.0" "80" "206" "-" "0.000"  
 "0.200" "0.0.0.0" "asnumber" "106980391" "1" "c1c0f12ab35b7cccccd5dc0a454879c5" "-" "-"  
 "ECDHE-RSA-AES256-GCM-SHA384" "28a4184139cb43cdc79006cf2d1a4ac93bdc****" "r"  
-"application/json" "21" "PL"
+"application/json" "21" "PL" "45" "10"
 ```
 
-Log fields
-----------
+## Log fields
 
 Not all fields are important. Some of them relate to our internal CDN system and are not meaningful for you. In the table below, we have highlighted such system fields in italics. Other fields can be helpful for traffic analysis or statistics.
 
@@ -341,7 +340,7 @@ Not all fields are important. Some of them relate to our internal CDN system and
   <tr>
     <td>$geoip_country_code</td>
     <td>KZ</td>
-    <td>User’s country code according to the <a href="https://www.iso.org/obp/ui/#search/code/"><span style="text-decoration:underline;color:#FF5700">ISO 3166 standard</span></a> (Alpha-2 code).</td>
+    <td>User’s country code according to the <a href="https://iso.org/obp/ui/#search/code"><span style="text-decoration:underline;color:#FF5700">ISO 3166 standard</span></a> (Alpha-2 code).</td>
   </tr>
   <tr>
     <td>$geoip_city</td>
@@ -351,7 +350,7 @@ Not all fields are important. Some of them relate to our internal CDN system and
   <tr>
     <td>$shield_type<br>(internal system variable)</td>
     <td>shield_no</td>
-    <td>This field shows whether the <a href="https://gcorelabs.com/support/articles/214080309/"><span style="text-decoration:underline;color:#FF5700">shielding option</span></a> is enabled:<br>shield_old - enabled<br>shield_no - disabled</td>
+    <td>This field shows whether the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding"><span style="text-decoration:underline;color:#FF5700">shielding option</span></a> is enabled:<br>shield_old - enabled<br>shield_no - disabled</td>
   </tr>
   <tr>
     <td>$server_addr<br>(internal system variable)</td>
@@ -441,7 +440,17 @@ Not all fields are important. Some of them relate to our internal CDN system and
   <tr>
   <td>$server_country_code</td>
   <td>PL</td>
-  <td>Server’s country code according to the <a href="https://www.iso.org/obp/ui/#search/code/"><span style="text-decoration:underline;color:#FF5700">ISO 3166 standard</span></a> (Alpha-2 code).</td>
+  <td>Server’s country code according to the <a href="https://iso.org/obp/ui/#search/code"><span style="text-decoration:underline;color:#FF5700">ISO 3166 standard</span></a> (Alpha-2 code).</td>
+  </tr>
+  <tr>
+    <td>$gcdn_tcpinfo_snd_cwnd</td>
+    <td>45</td>
+    <td>Size of the TCP Congestion window, i.e. the maximum number of TCP segments that the connection can send before an acknowledgement is required.</td>
+  </tr>
+  <tr>
+    <td>$tcpi_total_retrans</td>
+    <td>10</td>
+    <td>Total number of retransmitted packets over the life of the connection.</td>
   </tr>
 </tbody>
 </table>

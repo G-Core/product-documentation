@@ -12,24 +12,36 @@ toc:
 pageTitle: Guide to Managing Service Notifications | Gcore
 pageDescription: Learn how to set up and manage your service notifications for CDN and Storage services, allowing for better control over traffic consumption and system usage.
 ---
+# Manage service notifications and promotional emails
 
-# Manage service notifications
+You have the ability to customize notification settings for users invited to your client account. Important notifications are customized per user, whereas general notifications are common to all users.
 
 ## Manage notifications
 
-A user who has access to the personal account can configure sending notifications to an email.
+Here’s how to manage service notifications and promotional emails:
 
-<img src="https://assets.gcore.pro/docs/account-settings/notifications/set-notifications-10.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/image3.png" alt="Manage notifications">
 
-1\. Click on the profile icon in the lower-left corner and select **Profile**.
+1\. Click on the profile icon in the lower-left corner.
 
-2\. Go to the Notifications section.
+2\. Select **Profile**.
 
-3\. Use toggle switches to configure notifications.
+3\. Go to the Notifications section.
 
-All notifications are divided into groups: general notifications and groups based on the services available to you (for example, CDN, Cloud, Streaming). 
+4\. Use toggle switches to configure notifications and/or promotional emails.
 
-You can disable both a single notification and an entire group.
+<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/image1.png" alt="Notifications">
+
+All notifications are divided into groups: 
+
+1. **Important notifications** about service availability and promotions. Each user with access to the client account has individual settings for important notifications.
+2. **General notifications** about changes to your services. General notification settings are shared for all account users.
+
+<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/image4.png" alt="Notifications groups">
+
+You can choose the settings for either a single notification or an entire group.
+
+**Note**: We advise that you leave *Service emails* turned on, in order to stay up-to-date about any changes that could affect your services’ performance.
 
 ## Limitation notifications
 
@@ -49,7 +61,7 @@ Each user of the personal account can configure this notification.
 
 To do it, specify the traffic limit in the Traffic consumption level field. Click **Save** to apply the settings.
 
-<img src="https://assets.gcore.pro/docs/account-settings/notifications/set-limit-20.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/set-limit-20.png" alt="Manage service notifications" width="50%">
 
 **Note**: Traffic consumption level is _not configured_ individually, it is the same for all users of the account who use this notification.
 
@@ -66,4 +78,12 @@ You can receive notifications about:
 
 To do it go to the Storage notification section, select Storage and Bucket (optional) and specify the limit. Then click **Save**.
 
-<img src="https://assets.gcore.pro/docs/account-settings/notifications/storage-notifications-30.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/storage-notifications-30.png" alt="Configure for Storage" width="70%">
+
+<expandable-element title="Why am I subscribed to certain notifications?">
+
+Technical notifications: We automatically subscribe all users to technical notifications.
+
+Promotional emails: You checked the box to receive promotional emails during the registration process.
+ 
+</expandable-element>

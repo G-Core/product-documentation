@@ -46,15 +46,26 @@ To create a volume in the **Volumes** section:
 
 Five types of volumes are available:
 
-* **High IOPS SSD**. High-performance SSD for latency-sensitive transactional workloads (60 IOPS per 1 GiB; 2.5 MB/s per 1 GiB). Limit: 9,000 IOPS, 500 MB/s bandwidth.
+* **High IOPS SSD**. This is a high-performance SSD block storage designed for latency-sensitive transactional workloads (60 IOPS per 1 GiB; 2.5 MB/s per 1 GiB). The IOPS performance limit is 9,000. The bandwidth limit is 500 MB/s.
 
-* **Standard**. Network SSD with stable and high random I/O performance, as well as high data reliability (6 IOPS per 1 GiB; 0.4 MB/s per 1 GiB). Limit: 4,500 IOPS, 300 MB/s bandwidth.
+Availability: Amsterdam, Frankfurt, London, Luxembourg, Luxembourg-2, Manassas, Paris-2, Singapore
 
-* **Cold**. Network HDD for less frequently accessed workloads. Limit: 1,000 IOPS, 100 MB/s bandwidth. Unavailable in Manassas.
+* **Standard**. This is a network SSD disk, which provides stable and high random I/O performance, as well as high data reliability (6 IOPS per 1 GiB; 0.4 MB/s per 1 GiB). The IOPS performance limit is 4,500. The bandwidth limit is 300 MB/s.
 
-* **Ultra**. Network block storage for non-critical data and workloads that are accessed less frequently. Limit: 1,000 IOPS, 100 MB/s bandwidth.
+Availability: all regions
 
-* **SSD Low-Latency**. SSD block storage for low-latency storage and real-time data processing. The maximum performance is 5000 IOPS, average latency of 300 µs.
+* **Cold**. This is a network HDD disk, suitable for less frequently accessed workloads. The maximum number of IOPS is 1,000. The bandwidth limit is 100 MB/s.
+
+Availability: Luxembourg
+
+* **Ultra**. This is the network block storage option, recommended for non-critical data and workloads that are accessed less frequently. The maximum number of IOPS is 1,000. The bandwidth limit is 100 MB/s.
+
+Availability: Luxembourg
+
+* **SSD Low-Latency**. This is an SSD block storage, designed for applications that require low-latency storage and real-time data processing. It can achieve IOPS performance of up to 5000, with an average latency of 300 µs.
+
+Availability: Amsterdam-2, Frankfurt, Hong Kong, Luxembourg-2, Manassas, Tokyo
+
 For **High IOPS SSD** and **Standard** volumes:
 
 - Volume IO Burst and Volume Throughput Burst are supported.

@@ -24,10 +24,11 @@ Below is a photo to which we have applied the Quality feature. The appearance of
 <table>
 		<thead>
 			<tr>
-				<th><img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11030503003793.png" width="135" height="192"></th>
-				<th><img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11030503010449.png" width="135" height="192"></th>
-				<th><img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11030503150481.png" width="135" height="192"></th>
-				<th><img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11030503151121.png" width="135" height="192"></th>
+				<th><img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11030503003793.png" width="135" height="192" alt="Example of high image quality"></th>
+				<th><img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11030503010449.png" width="135" height="192" alt="Example of medium image quality"></th>
+				<th><img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11030503150481.png" width="135" height="192" alt="Example of low image quality"></th>
+				<th><img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11030503151121.png" width="135" height="192" alt="Example of custom value of image 
+quality"></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -58,7 +59,7 @@ There are two ways to use the Quality feature: in the Control panel and by query
 
 1\. Go to the **Rules** section in the settings of the CDN resource you want to apply Quality to and open the **Image optimization** rule.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11774830851473.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11774830851473.png" alt="Control panel" width="80%">
 
 2\. Select one of the built-in presets: High (95%), Medium (80%), Low (65%), or set a Custom Value. By default, after enabling the Image Stack option, the quality will be High (95%).
 
@@ -66,7 +67,7 @@ You can also toggle on **Enable lossless for PNG** to avoid quality reduction fo
 
 **Note**: You cannot set the quality to more than 100%.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11030503278097.png" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11030503278097.png" alt="Selection of the built-in presets" width="60%">
 
 3. Click **Save changes** at the top right corner of the page.
 
@@ -112,14 +113,14 @@ Let’s see how the photo of Charly, our business analyst’s pet, will change w
             <p>Link: <em>img.jpg</em></p>
             <p>Size: 813 KB</p>
             <p>Quality: 100%</p><p>The original image before WebP compression:</p> 
-            <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11030480618769.png" alt="" width="222" height="393">
+            <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11030480618769.png" alt="Before webp compression" width="222" height="393">
          </td>
          <td>
             <p>Link: <em>img.jpg?quality=95&amp;fmt=webp</em></p>
             <p>Size: 97.4 KB</p>
             <p>Quality: 95%</p>
             <p>The image with the default quality:</p>
-            <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11030480610193.png" alt="" width="216" height="382">
+            <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11030480610193.png" alt="After webp compression" width="216" height="382">
          </td>
 		</tr>
 		<tr>
@@ -127,13 +128,13 @@ Let’s see how the photo of Charly, our business analyst’s pet, will change w
             <p>Link: <em>img.jpg?quality=50&fmt=avif</em></p>
             <p>Size: 97.4 KB</p>
             <p>Quality: 48%</p>
-            <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11030480735249.png" alt="" width="216" height="382">
+            <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11030480735249.png" alt="After avif compression 50%" width="216" height="382">
          </td>
          <td>
             <p>Link: <em>img.jpg?quality=10&crop=300,600</em></p>
             <p>Size: 18.5 KB</p>
             <p>Quality: 10%</p>
-            <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11030480735505.png" alt="" width="216" height="382">
+            <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11030480735505.png" alt="After avif compression 10%" width="216" height="382">
          </td>
 		</tr>
 	</tbody>
@@ -145,8 +146,8 @@ After converting, an image does not change its URL or extension. So you can use 
 
 The X-Img-Operations header reflects all the conversions performed. If the value includes “convert”, the image quality has changed.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11030503623825.png" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11030503623825.png" alt="Check HTTP headers" width="60%">
 
 If the HTTP header contains no convert value and CDN returns the image with original quality, check the Img-Skip-Reason HTTP header. This will explain the reason why the operation could not be done. For example, “converted image bigger than origin value” appears when the value that you set is higher than the original one. You can also try to use Quality within other features.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11030503627153.png" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11030503627153.png" alt="Check HTTP headers" width="60%">

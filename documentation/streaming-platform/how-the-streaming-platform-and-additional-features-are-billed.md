@@ -17,7 +17,7 @@ There is only one tariff plan for the Streaming Platform. It has no limits and c
 
 You can acquaint prices for streaming resources on the <a href="https://gcore.com/pricing/streaming-platform" target="_blank">Gcore website</a>.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/how-the-streaming-platform-and-additional-features-are-billed/10512203476241.png" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/how-the-streaming-platform-and-additional-features-are-billed/10512203476241.png" alt="Tariff plan for Streaming Platform">
 
 ## Billing rules
 

@@ -25,13 +25,13 @@ This is how you work with the presigned URLs:
 
 3\. The users receive a link as follows:
 
-<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/generate-a-presigned-url/link-explanation-10.png" alt="">
+<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/generate-a-presigned-url/link-explanation-10.png" alt="link ">
 
 4\. After that, users will be able to view and download the file during the link lifespan that has been set by the owner. 
 
 5\. When the link expires, the access will be revoked. When clicking the link, users will see the "AccessDenied" error.
 
-<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/generate-a-presigned-url/example-temp-link-20.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/generate-a-presigned-url/example-temp-link-20.png" alt="AccessDenied" width="80%">
 
 A presigned URL doesn't require user's authentication. This means that everyone with a valid temporary link can access the file. For example, if you send such a link to a user who then forwards it to another person, that person will also be able to view and download files.
 
@@ -76,7 +76,7 @@ where:
 
 - *example-bucket* — the name of the bucket that hosts the file,
 - *image.jpg* — the file you want to share,
-- *1657457538* — link expiry time in the Timestamp format, use the <a href="https://www.epochconverter.com/" target="_blank">converter</a> to convert time formats.
+- *1657457538* — link expiry time in the Timestamp format, use the <a href="https://epochconverter.com" target="_blank">converter</a> to convert time formats.
 
 You can also set the link expiry date by running the Echo command as an alternative to Timestamp. For example, you can set a lifespan of 7 days by entering the following string:
 

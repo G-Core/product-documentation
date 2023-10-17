@@ -19,7 +19,7 @@ pageDescription: A detailed guide on embedding video previews into Gcore Player 
 
 Timeline hover previews, or trick play, is an option that makes it easier to rewind and find a specific moment in a video. It shows users previews when they point their cursor to any specific point on the video’s timeline. For example:
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices/coffeerun8.gif" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices/coffeerun8.gif" alt="Timeline hover previews" width="80%">
 
 ## What do the previews consist of?
 
@@ -27,7 +27,7 @@ In the <a href="https://gcore.com/streaming-platform" target="_blank">Gcore Stre
 
 All tiles are collected in a single array—*storyboard*. A storyboard is a large JPEG image of tiles chronologically arranged one after another. Here is an example of the storyboard for Blender Studio’s cartoon “Coffee Run”:
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices/image3538.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices/image3538.png" alt="storyboard" width="80%">
 
 **Note**: We create storyboards for all videos automatically. 
 
@@ -37,9 +37,7 @@ All tiles are collected in a single array—*storyboard*. A storyboard is a larg
 
 Timeline hover previews are embedded into Gcore’s Player by default, so previews are displayed automatically. For example:
 
-```
-<iframe width="1280" height="720" src="https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-```
+<iframe width="720" height="360" src="https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
 For external players, previews are available in two ways: 
 
@@ -58,6 +56,8 @@ Example:
 ```GET https://api.gcore.com/streaming/videos/{video_id}/```
 
 ```
+
+
 "sprite": "https://demo-public.gvideo.io/static/videoplatform/sprites/2675/2474723_FnlHXwA16ZMxmUr.mp4_sprite.jpg", 
 
 "sprite_vtt": "1 
@@ -88,7 +88,7 @@ The VTT field structure is:
 
 In the picture below, the 17th tile (third one from left, third from top) is highlighted in VTT format:
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices/Group190992.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices/Group190992.png" alt="WebVTT format in API" width="80%">
 
 ### Roku trick play
 

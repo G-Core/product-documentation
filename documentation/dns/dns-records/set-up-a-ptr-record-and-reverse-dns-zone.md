@@ -35,17 +35,17 @@ And the IPv6 in a reverse DNS lookup will work the same way, but with a slight d
 
 You need to have a dedicated IP space (IPv4 or IPv6) to configure the reverse DNS zone. Here’s how to do it:
 
-1\. Contact an organization with <a href="https://www.nro.net/about/rirs/" target="_blank">RIR status</a> (that is, a technical registrar authorized to create and delegate reverse DNS zones) and ask them to delegate the zone of your subnet to Gcore NSs.
+1\. Contact an organization with <a href="https://nro.net/about/rirs" target="_blank">RIR status</a> (that is, a technical registrar authorized to create and delegate reverse DNS zones) and ask them to delegate the zone of your subnet to Gcore NSs.
 
 2\. When you get a reverse DNS zone, add it in the Gcore control panel according to our guide <a href="https://gcore.com/docs/dns/manage-a-dns-zone#create-a-dns-zone" target="_blank">Create a DNS zone</a>.
 **Note**: You can add a subnet up to /24 bits for your IP address.
 
 3\. Open the added reverse zone *xx.xx.xx.in-addr-arpa* in the control panel and add the PTR records you need.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/set-up-a-ptr-record-and-reverse-dns-zone/add-ptr-record-10.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/set-up-a-ptr-record-and-reverse-dns-zone/add-ptr-record-10.png" alt="Configure reverse DNS zone and PTR record" width="80%">
 
 4\. Specify Gcore’s name servers *ns1.gcorelabs.net* and *ns2.gcdn.services* for the subnet *xx.xx.xx/24* and wait up to 24 hours for DNS cache updating.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/set-up-a-ptr-record-and-reverse-dns-zone/added-record-20.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/set-up-a-ptr-record-and-reverse-dns-zone/added-record-20.png" alt="Configure reverse DNS zone and PTR record" width="80%">
 
 That’s it! The PTR record is now added and will prevent your mail from ending up as spam.

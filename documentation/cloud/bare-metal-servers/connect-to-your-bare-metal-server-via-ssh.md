@@ -20,7 +20,7 @@ pageDescription: Connect to your bare metal server using SSH keys or a password.
 ---
 # Connect to your bare metal server via SSH
 
-You can connect to an instance or a baremetal server using a pair of SSH keys or a password. We tell you in detail about each method.
+You can connect to an instance or a bare metal server using a pair of SSH keys or a password. We tell you in detail about each method.
 
 The SSH protocol (also referred to as Secure Shell) is a method for secure remote login from one server to another. To connect via SSH, make sure that all the necessary rules for incoming traffic are in the firewall settings set.
 
@@ -28,15 +28,15 @@ Please note: you cannot connect to Windows instances via SSH. But you can connec
 	
 ## Connect with SSH keys
 
-To connect to an instance or Bare Metal server, create a public key that will be stored on your machine and a private key that will be placed on your local storage.  
+To connect to an instance or a bare metal server, create a public key that will be stored on your machine and a private key that will be placed on your local storage.  
 
 ### Generate a key (Windows 7/8) 
 
 ! SSH key generation using the command line interface (cmd) is not available for Windows 7/8 operating systems.  
 
-1\. To generate key pairs, use <a href="https://www.putty.org/" target="_blank">PuTTY and PuTTYgen</a>.
+1\. To generate key pairs, use <a href="https://putty.org" target="_blank">PuTTY and PuTTYgen</a>.
 
-2\. Download and install <a href="https://www.putty.org/" target="_blank">the PuTTY package</a>. 
+2\. Download and install <a href="https://putty.org" target="_blank">the PuTTY package</a>. 
 
 3\. Launch the PuTTYgen app. 
 
@@ -166,7 +166,7 @@ After adding or generating a new SSH key, the keys will appear in the SSH Keys s
 
 ## Connect with a password
 
-To connect using a password, configure it while creating an instance or Bare Metal server. In Additional options click on "User data". This will open a field, where you can enter the script that will be processed by a cloud-init agent running on your machine. 
+To connect using a password, configure it while creating an instance or a bare metal server. In Additional options click on "User data". This will open a field, where you can enter the script that will be processed by a cloud-init agent running on your machine. 
 
 <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/13.png" alt="13.png">  
 
@@ -199,11 +199,11 @@ print(sha512_crypt.hash(passwd , rounds = 5000 ))
 
 ### Connect from Windows 7/8
 
-!Connecting to an instance or Bare Metal server over ssh using the command line (cmd) is not available on Windows 7/8 operating systems.  
+!Connecting to an instance or a bare metal server over SSH using the command line (cmd) is not available on Windows 7/8 operating systems.  
 
-To connect, use <a href="https://www.putty.org/" target="_blank">the PuTTY app</a>.
+To connect, use <a href="https://putty.org" target="_blank">the PuTTY app</a>.
 
-1\. Download and run <a href="https://www.putty.org/" target="_blank">the PuTTY app</a>.
+1\. Download and run <a href="https://putty.org" target="_blank">the PuTTY app</a>.
 
 2\. Go to the Session section, in the Host Name (or IP address) field enter the machine's IP address. 
 
@@ -232,7 +232,7 @@ To connect, use <a href="https://www.putty.org/" target="_blank">the PuTTY app<
 
  <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/login_as.png" alt="login_as.png" width="545" height="345">
 
-9\. In the "login" field, enter the user name that was given when creating the instance or Bare Metal server. You can find it in the instance's tab, you will see is an inscription of the "\[login\]@\[IP of your machine\]" type. Most often, the login coincides with the name of the OS. For example, for the machine below it is "Ubuntu".
+9\. In the "login" field, enter the user name that was given when creating the instance or bare metal server. You can find it in the instance's tab, you will see is an inscription of the "\[login\]@\[IP of your machine\]" type. Most often, the login coincides with the name of the OS. For example, for the machine below it is "Ubuntu".
 
 10\. (Step for connecting using a pair of SSH keys only) enter the password you configured while creating an instance or Bare Metal server.
 
@@ -280,6 +280,6 @@ Important! If you created an instance with only a private interface, create a fl
 
 <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/yes.png" alt="yes.png">
 
-8\. (Step for connecting using a password only) enter the password you configured while creating an instance or Bare Metal server.
+8\. (Step for connecting using a password only) enter the password you configured while creating an instance or a bare metal server.
 
 You have connected to your machine.

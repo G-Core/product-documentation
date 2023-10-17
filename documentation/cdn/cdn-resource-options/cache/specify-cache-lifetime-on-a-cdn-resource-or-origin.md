@@ -59,11 +59,11 @@ server {
 
 2\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN</a> section in the control panel and click the custom domain of the resource on which origin you configured the Cache-Control header.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/13249373793809.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/13249373793809.png" alt="CDN section">
 
 The new page opens. Do the remaining steps on it.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/13249168410769.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/13249168410769.png" alt="The new page opens" width="80%">
 
 3\. Go to the "Cache" section and click **CDN caching**.
 
@@ -77,11 +77,11 @@ The new page opens. Do the remaining steps on it.
 
 1\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN</a> section in the control panel and click the custom domain of the resource for which you want to configure the CDN caching feature.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/13249311265809.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/13249311265809.png" alt="CDN controlled">
 
 The new page opens. Do the remaining steps on it.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/13249271726353.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/13249271726353.png" alt="The new page opens" width="80%">
 
 2\. Go to the "Cache" section and click **CDN caching**.
 
@@ -113,7 +113,7 @@ For instance, if we set a cache expiry of 4 days and add two rules in the "Advan
 2\. Run the following command:
 
 <code-block>
-<span style="color:#FF5913">http://cdn.testdomain.com/css/style.css</span>
+curl -I <span style="color:#FF5913">http://cdn.testdomain.com/css/style.css</span>
 </code-block>
 
 where <span style="color:#FF5913">http://cdn.testdomain.com/css/style.css</span> is a link to your file delivered via CDN.
@@ -159,7 +159,7 @@ If you suspect any content caching issues, check the settings on the source, rea
 
 8\. On the "Headers" tab on the right, you will see the configured headers. Analyze them using the description of the important headings below.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/13249609604753.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/13249609604753.png" alt="Headers tab" width="80%">
 
 ### Check caching HTTP headers
 
@@ -170,7 +170,4 @@ There are several HTTP header parameters that help analyze the state of the cach
 | CACHE: HIT                              | The file has been delivered from the CDN. This parameter indicates that caching is working correctly.                                                                                                                                                                                                     |
 | CACHE: MISS                             | The file has been delivered from your origin server. Try to reload the page and clear the browser cache. If the value remains, it indicates something went wrong, and the file is not delivered from the cache.                                                                                           |
 | X-ID: ab-cd-d123                          | The file has been delivered from the Gcore CDN server with the identifier ab-cd-d123.                                                                                                                                                                                                                     |
-| X-Cached-Since: 2023-02-23T14:33:07+00:00 | The time when the file was cached in the CDN server in UTC.                                                                                                                                                                                                                                               |
-| Cache-Control: max-age=1000, public         | The public parameter indicates that not only the end users' clients (browsers) can cache the file but also proxy servers, CDN servers, etc. The max-age=1000 parameter shows that the file is cached for 1000 seconds. These parameters of the Cache-Control header are compatible with CDN caching. |
-| Cache-Control: private                      | This parameter indicates that the file cannot be cached by proxies. Note: It’s incompatible with CDN Caching.                                                                                                                                                                                        |
-| Cache-Control: no-cache                 | This parameter indicates that the file is not cached on CDN and will be pulled from the origin each time. Note: It is incompatible with CDN caching.                                                                                                                                                |
+| X-Cached-Since: 2023-02-23T14:33:07+00:00 | The time when the file was cached in the CDN server in UTC.       |                                                                                                                                                                                                                                       

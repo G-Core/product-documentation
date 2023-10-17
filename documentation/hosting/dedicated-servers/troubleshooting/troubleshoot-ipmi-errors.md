@@ -21,11 +21,11 @@ You may encounter various errors when logging into IPMI. We will tell you what t
 
 Usually, it’s not needed to type username and password manually. They will be filled in automatically if you click on the field and then on the appropriate button in a corner of the screen.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-ipmi-errors/1_eng.bmp" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-ipmi-errors/1_eng.bmp" alt=" login and password in DCImanager" width="80%">
 
 If autocomplete doesn't work, try to enter data manually. You can find your login and password in <a href="https://gcore.com/docs/hosting/dedicated-servers/manage/log-in-to-dcimanager" target="_blank">DCImanager</a> — point the mouse cursor to a monitor icon, and you will see the login information.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-ipmi-errors/2eng.bmp" alt="" width="80%">  
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-ipmi-errors/2eng.bmp" alt=" login and password in DCImanager" width="80%">  
 
 Even if you managed to log in with manual data entering, <a href="https://gcore.com/docs/hosting/contact-our-technical-support" target="_blank">write to technical support</a> — we will repair fields autocomplete. If you can't log in, contact support too. We will help to establish a connection to IPMI.
 
@@ -33,7 +33,7 @@ Even if you managed to log in with manual data entering, <a href="https://gcore.
 
 This error appears when two sessions with IPMI are opened simultaneously — for example, when you connect from two devices or from different tabs of the browser.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-ipmi-errors/3.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-ipmi-errors/3.png" alt="DCImanager" width="80%">
 
 When you see the error 1006, try doing four things in turn:
 
@@ -48,7 +48,7 @@ If none of these methods helped, <a href="https://gcore.com/docs/hosting/contact
 
 This error occurs when the server fails or when emergency or planned work is taking place in the location.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-ipmi-errors/4.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-ipmi-errors/4.png" alt="error " width="80%">
 
 If you experience this error, <a href="https://gcore.com/docs/hosting/contact-our-technical-support" target="_blank">write to technical support</a> — we will help to establish a connection to IPMI. When writing the message, please attach a copy of the error description or a screenshot of the screen: it will help us to understand what the matter is.
 
@@ -56,7 +56,7 @@ If you experience this error, <a href="https://gcore.com/docs/hosting/contact-ou
 
 Connection failed Error:
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-ipmi-errors/13832346165777.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-ipmi-errors/13832346165777.png" alt="Connection failed Error" width="80%">
 
 - make the KVM reset. In the IPMI panel, open the «Maintenance» menu and choose «IKVM Reset».  
 - make the Unit reset. In the IPMI panel, open the «Maintenance» menu and choose «Unit Reset».

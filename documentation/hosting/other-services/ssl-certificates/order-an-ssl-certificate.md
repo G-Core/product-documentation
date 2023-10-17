@@ -17,13 +17,13 @@ pageDescription: Learn how to buy an SSL certificate.
 
 In the hosting control panel, go to the Products / Services section, then select the SSL certificates tab.
 
-<img src="https://assets.gcore.pro/docs/hosting/other-services/ssl-certificates/order-an-ssl-certificate/SSL-certificates.JPG" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/hosting/other-services/ssl-certificates/order-an-ssl-certificate/SSL-certificates.JPG" alt="Order an SSL certificate" width="50%">
 
 A new SSL certificate selection form will be opened, and you will see available providers and types of certificates.
 
 Select the certificate you wish to order and click the **Order** button.
 
-<img src="https://assets.gcore.pro/docs/hosting/other-services/ssl-certificates/order-an-ssl-certificate/SSL-cert_list.JPG" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/other-services/ssl-certificates/order-an-ssl-certificate/SSL-cert_list.JPG" alt="Select the certificate " width="80%">
 
 ## Certificate settings
 

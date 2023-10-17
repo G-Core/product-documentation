@@ -4,74 +4,75 @@ displayName: Configure and use
 published: true
 order: 20
 toc:
-pageTitle: Configuring and usage of the DNS Failover technology | Gcore
-pageDescription: A comprehensive guide on how to configure and manage DNS Failover.
+pageTitle: Configuring and usage of the DNS Health Checks technology | Gcore
+pageDescription: A comprehensive guide on how to configure and manage DNS Health Checks.
 ---
-# Configure and use DNS Failover
+# Configure and use DNS Health Checks
 
-1\. To enable the DNS Failover feature, send us a request by email at [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of <a href="https://gcore.com/" target="_blank">our website</a>. Please specify your ID in the request, so we can identify your account. You can find it on the main page of your <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>.
+1\. Go to the <a href="https://dns.gcore.com" target="_blank">DNS</a> service.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/9619861814417.png" alt="">
+2\. Navigate to the DNS zone where you intend to set up Health Checks. A new page will open.
 
-The message template: *"Good afternoon! Please enable the DNS Failover imitation feature for the account with ID … (your ID)"*.
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-3571.png" alt="DNS service" width="70%">
 
-We will notify you when the feature is activated. After that, you will be able to use it for your site or application.
+3\. Ensure that <a href="https://gcore.com/docs/dns/about-gcore-dns#interface-modes-non-advanced-and-advanced" target="_blank">Advanced interface mode</a> is enabled. In non-advanced mode, the Health Checks feature will not appear.
 
-2\. Open the <a href="https://dns.gcore.com/" target="_blank">DNS interface</a>.
+4\. Click the name of the A, AAAA, or CNAME record. The “Records list/Edit record set” page will open.
 
-3\. Go to the DNS zone of the site or application that you want to use with DNS Failover.
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/group-90994.png" alt="Records list/Edit record set" width="80%">
 
-<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/9619861818513.png" alt="">
+5\. Enable the Health Checks feature. To configure it, select a protocol (TCP, UDP, ICMP, or HTTP) that Health Checks will use when sending requests to your web servers. Follow the instructions below:
 
-The **DNS records** section will open. Do the next steps in it.
+<expandable-element title="TCP/UDP">
 
-<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/9619861864721.png" alt="" width="80%">
+- **Port**: Specify the port to connect to; for example, 80 or 443
+- **Check Frequency**: Choose the interval of checks from the list
+- **Timeout**: Set the time within which your web servers should give the response before being considered down
+- **Command (optional)**: Enter the text that will be sent to the host of the site as plain text, e.g., GET / HTTP/1.1\n\n
 
-4\. Enable the **Advanced interface mode.** In the non-advanced mode, the DNS Failover feature will not appear.
+</expandable-element>
 
-5\. Go to the settings of the appropriate A, AAAA, or CNAME record. To do this click, the domain name or press the "···" icon on the right and click **Edit record**.
+<expandable-element title="ICMP">
 
-The **Records list/Edit record set** page will open. Complete the remaining steps in it.
+- **Check Frequency**: Choose the interval of checks from the list
+- **Timeout**: Set the time within which your web servers should give the response before being considered down
 
-<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/9619897145361.png" alt="" width="80%">
+</expandable-element>
 
-6\. Enable the **Failover checks (beta)** service.
+<expandable-element title="HTTP">
 
-7\. Choose the appropriate type of protocol that DNS Failover will use when sending requests to web servers. The choice depends on how you want to monitor the web servers of your site or application.
+- **Port**: Specify the port to connect to; for example, 80 or 443
+- **Check Frequency**: Choose the interval of checks from the list
+- **Timeout**: Set the time within which your web servers should give the response before being considered down
+- **Requested URL**: Enter the URL that will be requested for checks.
+- **Requested Method**: Choose the method for checking requests; e.g., GET
+- **Using TLS**: Choose whether TLS should be used.
+- **HTTP status code**: Put the expected HTTP response code or leave it blank if any response is ok.
+- **Expected content regexp**: Enter a regular expression that would match the response body or leave it blank.
 
-8\. Set the check options. Different protocols have their own set of options.
+</expandable-element>
 
-**Check by TCP/UDP**
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-checks-50.png" alt="configure backup metadata" width="70%">
 
-- Port is where you specify the port to connect to. For example, 80, 443, or another one.
-- Check Frequency lets you choose the interval of checks from the list.
-- Timeout sets the time that your web servers should give the response.
-- (optional) Command allows you to enter the text that will be sent to the host of the site as plain text, e.g., *GET/HTTP/1.1*.
+6\. (Optional) You can enable backup metadata for Health Checks. In this case, records marked as backups will not participate in the response if at least one “healthy,” valid record exists. If all records not marked as backup are non-functional, the “healthy” backup records will appear in the response. 
 
-**Check by ICMP**
+To configure backup metadata, select which record will be used as a backup (Record 2 in the example,) choose “backup” from the dropdown list, and enable the toggle.
 
-- Check Frequency lets you choose the interval of checks from the list.
-- Timeout sets the time that your servers should give the response.
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-checks-60.png" alt="configure logic " width="70%">
 
-**Check by HTTP**
+7\. (Optional) You can configure logic that will be used to distribute requests among available servers when some of them are unavailable. By default, DNS Health Checks use round-robin balancing. <a href="https://gcore.com/docs/dns/dns-records/configure-weight-balancing-and-geobalancing" target="_blank">Use our detailed guide</a> for more information. In the example, we set the weight balancing with DNS Health Checks and backup metadata. 
 
-- Port is where you specify the port to connect to. For example, 80, 443, or another one.
-- Check Frequency lets you choose the interval of checks from the list.
-- Timeout sets the time that your web servers should give the response.
-- Requested URL is where you enter the URL that will be requested for checks.
-- Requested Method lets you choose the method for checking requests. For example, GET.
-- Use TLS lets you choose whether TLS should be used.
-- HTTP status code is used to put the expected HTTP response code or leave it blank if any response is ok.
-- Expected content regexp is where you enter a regular expression that would match the response body or leave it blank.
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-checks-70.png" alt="add more records" width="70%">
 
-9\. Here, you can set IP addresses and logic that will be used to distribute requests among available servers when some of them are unavailable. By default, DNS Failover uses round-robin balancing. If it's suitable for you, just go to the next step of this guide. If you want to change the criteria of balancing according to the "<a href="https://gcore.com/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing" target="_blank">Manage DNS records (advanced interface mode with balancing)</a>".
+8\. (Optional) You can add more records, specify content, and specify metadata (steps 6–7.)
 
-10\. Save the changes.
+9\. Save changes.
 
-Configuration is complete! Now DNS Failover monitors the availability of your site.
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-checks-80.png" alt="The configuration is complete">
 
-Also, you can check for recent monitoring events in Failover logs.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/9619897190417.png" alt="" width="80%"> 
+The configuration is complete! Refresh your DNS cache renewal and Health Checks will start to monitor your site’s availability.
 
-Please note that this is a beta version, and the feature may be unstable. Write to us via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of <a href="https://gcore.com/" target="_blank">our website</a>. Describe options you would like to see in the final version of the product.
+You can also check for recent monitoring events in Health Checks logs. Go to the page of the DNS zone for which your configured DNS Health Checks. Select the needed record, click the three dots on the right, and click **Health Checks logs**.
+
+<img src="https://assets.gcore.pro/docs/dns/dns-failover/configure-and-use-dns-failover/image-3589.png" alt="recent monitoring events" width="80%"> 

@@ -15,7 +15,7 @@ An IP address is sometimes added to blacklists due to malicious activity such as
 Please note that according to clause 6.4 of the User Agreement, **we cannot influence third-party restrictions**. If your IP address is blocked, you may consider purchasing an additional IP address or using the methods outlined below to remove the IP address from blacklists.
 
 
-It is important to note that **Gcore does NOT tolerate** the use of its services for distributing unsolicited emails, chain letters, mailbombs, or SPAM (including in particular unsolicited bulk e-mail ("UBE") and/or UCE) in accordance with the Acceptable Use Policy. You may find more information on this within the <a href="https://gcore.com/legal/" target="_blank">Legal Information</a> section.
+It is important to note that **Gcore does NOT tolerate** the use of its services for distributing unsolicited emails, chain letters, mailbombs, or SPAM (including in particular unsolicited bulk e-mail ("UBE") and/or UCE) in accordance with the Acceptable Use Policy. You may find more information on this within the <a href="https://gcore.com/legal" target="_blank">Legal Information</a> section.
 
 ## Avoid being blacklisted
 
@@ -35,14 +35,14 @@ Your mail server IP will be checked against more than 100 blacklists.
 
 2. If your IP address is blacklisted, you will receive the following message and a list of blacklists.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/remove-your-ip-address-from-blacklists/aaaaa.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/remove-your-ip-address-from-blacklists/aaaaa.png" alt="message " width="80%">
 
 3. Click the **Details** button for information about the blacklist, the reason for blocking, and possible ways to get delisted.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/remove-your-ip-address-from-blacklists/bbbbb.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/remove-your-ip-address-from-blacklists/bbbbb.png" alt=" Details button " width="80%">
 
 4. Contact the blacklist and provide details about possible reasons for the blocking, as well as the start date of using Gcore services.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/remove-your-ip-address-from-blacklists/reason_for_listing.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/remove-your-ip-address-from-blacklists/reason_for_listing.png" alt="Details " width="80%">
 
 5. Wait for a response.

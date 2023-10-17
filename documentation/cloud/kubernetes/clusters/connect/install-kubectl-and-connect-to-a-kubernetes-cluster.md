@@ -18,7 +18,7 @@ Kubectl is a command-line tool which allows you to control Kubernetes clusters. 
 
 The utility runs as follows: you enter a command, kubeclt accesses the cluster and sends an API request to it. The cluster executes the command and makes changes. For the latest list of kubectl operations, see the <a href="https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands" target="_blank">kubectl official documentation</a>.
 
-Alternatively, there is a tool with a graphical user interface called "Lens". It lets you manage the cluster not from the command line, but from the application window. You can download it on <a href="https://k8slens.dev/" target="_blank">k8slens.dev</a>. The guide below applies only to kubectl.
+Alternatively, there is a tool with a graphical user interface called "Lens". It lets you manage the cluster not from the command line, but from the application window. You can download it on <a href="https://k8slens.dev" target="_blank">k8slens.dev</a>. The guide below applies only to kubectl.
 
 ## Install kubectl on Windows and connect to a cluster
 

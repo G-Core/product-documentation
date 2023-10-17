@@ -9,9 +9,9 @@ pageDescription: A step-by-step guide on how to enable and configure the Image s
 ---
 # Enable Image stack
 
-1\. Send us a request to activate the option via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of <a href="https://gcore.com/" target="_blank">our website</a>. Please specify your ID in the request so we can identify your account. You can find it on the main page of your <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>.
+1\. Send us a request to activate the option via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of <a href="https://gcore.com" target="_blank">our website</a>. Please specify your ID in the request so we can identify your account. You can find it on the main page of your <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/enable-image-stack/11774056177297.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/enable-image-stack/11774056177297.png" alt="Enable Image stack" width="80%">
 
 Message template: "*Good afternoon! Please enable the Image Stack option for the account with ID [your ID]*".
 
@@ -23,15 +23,15 @@ We have outlined how to enable the option through rule creation below.
 
 2\. Open the settings of the required CDN resource and go to **Rules**. Click **Create rule** and select the image optimization template.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/enable-image-stack/11774126764817.png" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/enable-image-stack/11774126764817.png" alt="Rules" width="60%">
 
 On the next page, you will be able to create a rule for image optimization. You only need to configure the Image Stack section.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/enable-image-stack/11085759569041.png" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/enable-image-stack/11085759569041.png" alt="Image Stack section" width="60%">
 
 3\. Enable the Image Stack option and set parameters:
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/enable-image-stack/11085790662801.png" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/enable-image-stack/11085790662801.png" alt="Image Stack option" width="60%">
 
 **Image quality**. Specify in what quality the images will be delivered to your users. Four values are available:
 

@@ -20,7 +20,7 @@ The plan subscription fee and the traffic overcommitment fee are charged on the 
 
 Additional features are charged at the beginning of the month.
 
-<img src="https://assets.gcore.pro/docs/storage/billing/storage-tariffs-10.jpg" alt="">
+<img src="https://assets.gcore.pro/docs/storage/billing/storage-tariffs-10.jpg" alt="Plans and billing rules">
 
 ## Change your plan
 

@@ -57,7 +57,7 @@ For example, users share videos in your app. When a user adds a new video, it is
 
 2\. Contact us via chat or email [support@gcore.com](mailto:support@gcore.com) and ask to enable the webhook integration. Specify your ID (personal client ID) and the URL of the server that will receive webhooks. You can find your ID in your <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/get-webhooks-from-the-streaming-platform/image.png" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/get-webhooks-from-the-streaming-platform/image.png" alt="your ID in your Control panel">
 
 The message template: *"Good afternoon! Please configure the Streaming Platform webhook integration for my account with ID..... The URL of my server to send webhooks to is ...."*.
 

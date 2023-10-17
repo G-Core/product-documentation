@@ -5,12 +5,12 @@ published: true
 order: 20
 toc:
    --1--Create: "create-a-dns-record"
-   --2--Records settings: "1-go-to-records-settings"
-   --2--Record type: "2-select-record-type"
-   --2--Domain or subdomain the record belongs to: "3-specify-subdomain-record-belongs-to"
-   --2--Content of the record: "4-specify-content-of-record"
-   --2--TTL: "5-specify-ttl"
-   --2--Completing the configuration: "6-complete-configuration-and-create-resource-record"
+   --2--Step 1. Records settings: "1-go-to-records-settings"
+   --2--Step 2. Record type: "2-select-record-type"
+   --2--Step 3. Domain or subdomain the record belongs to: "3-specify-subdomain-record-belongs-to"
+   --2--Step 4. Content of the record: "4-specify-content-of-record"
+   --2--Step 5. TTL: "5-specify-ttl"
+   --2--Step 6. Completing the configuration: "6-complete-configuration-and-create-resource-record"
    --1--Edit: "edit-a-dns-record"
    --1--Delete: "delete-a-dns-record"
 pageTitle: Managing DNS records in non-advanced mode | Gcore
@@ -21,7 +21,7 @@ pageDescription: Learn how to add, edit and delete DNS records in the non-advanc
     
 This article describes operations in the non-advanced mode of the "DNS" product interface. Differences in interfaces modes are described in the article "<a href="https://gcore.com/docs/dns/about-gcore-dns" target="_blank">About Gcore DNS</a>".
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/image_21__1_.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/image_21__1_.png" alt="All zones" width="50%">
 
 ## Create a DNS record
 
@@ -29,15 +29,15 @@ This article describes operations in the non-advanced mode of the "DNS" product 
 
 Open the “All zones” tab and select the domain zone you want to add records for. Click it or the **Go to records** button next to it.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/mceclip0.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/mceclip0.png" alt="All zones" width="80%">
 
 Click **Add record**.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/image_14__2_.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/image_14__2_.png" alt="Add record" width="80%">
 
 You will see the interface for adding new DNS record. Perform other steps in it.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/mceclip1.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/mceclip1.png" alt="DNS record" width="80%">
 
 ### 2. Select record type
 
@@ -77,17 +77,19 @@ Example: A-record has a TTL of 300. You have changed the value of this record fr
 
 After completing the configuration, click the **Add** button. The DNS record with specified parameters will be created.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/image_20__1_.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/image_20__1_.png" alt="All zones" width="80%">
+
+You can check if the created record has been added correctly using the <a href="https://gcore.com/dev-tools/dns-lookup" target="_blank">Gcore DNS Lookup</a> tool.
 
 ## Edit a DNS record
 
 1\. Go to records of the required DNS zone by clicking the zone name or the "Go to records" button. 
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/mceclip0.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/mceclip0.png" alt="Add record" width="80%">
 
 2\. Click on the pencil icon next to the desired resource record.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/image_15.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/image_15.png" alt="DNS record" width="80%">
 
 3\. Make changes. 
 
@@ -97,10 +99,10 @@ After completing the configuration, click the **Add** button. The DNS record wit
 
 1\. Go to records of the required DNS zone by clicking the zone name or the **Go to records** button. 
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/mceclip0.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/mceclip0.png" alt="DNS zone " width="80%">
 
 2\. Click the wastebasket icon next to the desired resource record.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/image_17.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/image_17.png" alt="record" width="80%">
 
 3\. Confirm deletion.

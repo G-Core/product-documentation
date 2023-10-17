@@ -20,7 +20,7 @@ Snapshot Schedules is a feature that allows you to automate the creation of snap
 
 You can access this feature by logging into your personal account and navigating to the Snapshot Schedules section within your project. We'll provide you with instructions on how to use this feature.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/snapshots/set-up-automatic-snapshot-creation/mceclip0.png" alt="">
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/snapshots/set-up-automatic-snapshot-creation/mceclip0.png" alt="Set up automatic snapshot creation">
 
 ## Create a schedule
 
@@ -28,7 +28,7 @@ You can access this feature by logging into your personal account and navigating
 
 Open "Snapshot Schedules" and click "Create Snapshot Schedule" in the upper right corner. The system will ask you to enter a name. Name the schedule so that it will be easier to distinguish it from others later — for example, you can use a volume name: "Snapshot of \[your volume name\]".
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/snapshots/set-up-automatic-snapshot-creation/mceclip0.png" alt="">
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/snapshots/set-up-automatic-snapshot-creation/mceclip0.png" alt="Create a schedule">
 
 Click on the created schedule to configure it.
 

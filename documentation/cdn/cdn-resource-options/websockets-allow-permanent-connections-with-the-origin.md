@@ -24,7 +24,7 @@ WebSocket is suitable for services that require constant data exchange, such as 
 
 2\. WebSocket establishes one connection and keeps it open permanently. HTTP establishes a new connection every time the client makes a request and breaks it after the server responds.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/4.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/4.png" alt="How is WebSocket different from HTTP" width="80%">
 
 ## Manage the WebSockets feature
 
@@ -34,11 +34,11 @@ To manage the WebSocket feature:
 
 1\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN</a> section in the control panel and open the settings of the resource for which you want to manage WebSockets by clicking its custom domain.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/13167645190929.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/13167645190929.png" alt="Manage the WebSockets feature">
 
 The new page opens. Do the remaining steps on it.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/13167716346385.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/13167716346385.png" alt="Manage the WebSockets feature" width="80%">
 
 2\. Open the "Content" section and click **Websockets**.
 

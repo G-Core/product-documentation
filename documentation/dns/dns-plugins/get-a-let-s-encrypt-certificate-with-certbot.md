@@ -19,11 +19,11 @@ pageDescription: Issuing and revoking Let's Encrypt certificates with Certbot pl
 
 The Certbot plugin automates Let’s Encrypt certificate issuance with Gcore DNS API.
 
-**How it works.** To issue a Let’s Encrypt certificate for a domain, you need to confirm that you are its owner. You can do this in several ways (you can find more info in <a href="https://letsencrypt.org/docs/challenge-types" target="_blank">Let’s Encrypt documentation</a>). One of the most common ways is a DNS-01 challenge that asks you to prove that you control the DNS for your domain name by creating a specific value in a TXT record under that domain name. You can use the Certbot plugin to send a request to issue a certificate. It automatically creates TXT records and subsequently removes them for obtaining, renewing, or revoking certificates. You can get more information about this in the <a href="https://eff-certbot.readthedocs.io/en/stable/" target="_blank">Certbot documentation</a>.
+**How it works.** To issue a Let’s Encrypt certificate for a domain, you need to confirm that you are its owner. You can do this in several ways (you can find more info in <a href="https://letsencrypt.org/docs/challenge-types" target="_blank">Let’s Encrypt documentation</a>). One of the most common ways is a DNS-01 challenge that asks you to prove that you control the DNS for your domain name by creating a specific value in a TXT record under that domain name. You can use the Certbot plugin to send a request to issue a certificate. It automatically creates TXT records and subsequently removes them for obtaining, renewing, or revoking certificates. You can get more information about this in the <a href="https://eff-certbot.readthedocs.io/en/stable" target="_blank">Certbot documentation</a>.
 
 To use the Certbot plugin, you’ll need:
 
-- A domain with Gcore nameservers (*ns1.gcorelabs.net* and *ns2.gcdn.services*) that the certificate is hosted on or delegated to
+- A domain with Gcore name servers (*ns1.gcorelabs.net* and *ns2.gcdn.services*) that the certificate is hosted on or delegated to
 - A Gcore account
 
 ## Install the Certbot plugin
@@ -52,7 +52,7 @@ pip install certbot-dns-gcore
 
 If you see the output *Successfully installed …*, installation is complete.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-plugins/get-a-let-s-encrypt-certificate-with-certbot/9620506251025.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-plugins/get-a-let-s-encrypt-certificate-with-certbot/9620506251025.png" alt="installation is complete" width="80%">
 
 ## Create credentials for the Certbot plugin
 
@@ -102,11 +102,11 @@ where _*.example.com_ is the domain and its subdomains for which you want to iss
 
 Then enter **Y** to agree to the terms. After that, certificate issuance will start.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-plugins/get-a-let-s-encrypt-certificate-with-certbot/9620506234257.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-plugins/get-a-let-s-encrypt-certificate-with-certbot/9620506234257.png" alt="certificate issuance" width="80%">
 
 3. If the certificate for your domain is issued, you will see the following notification:
 
-<img src="https://assets.gcore.pro/docs/dns/dns-plugins/get-a-let-s-encrypt-certificate-with-certbot/9620491170833.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-plugins/get-a-let-s-encrypt-certificate-with-certbot/9620491170833.png" alt="notification" width="80%">
 
 If you get the *Some challenges have failed* error, try to increase the propagation time:
 
@@ -122,7 +122,7 @@ Repeat the command from step 1 with the new value for propagation:
 certbot certonly --authenticator dns-gcore --dns-gcore-credentials=./gcore.ini --dns-gcore-propagation-seconds=80 -d '*.example.com' --key-type ecdsa --logs-dir=. --config-dir=. --work-dir=
 ```
 
-If that didn’t work, make sure that the domain is delegated to Gcore nameservers using *dig* utility or via online services. If not, change nameservers and wait 24 hours for the DNS to update. Then try to issue the certificate again.
+If that didn’t work, make sure that the domain is delegated to Gcore name servers using *dig* utility or via online services. If not, change name servers and wait 24 hours for the DNS to update. Then try to issue the certificate again.
 
 ## Renew a certificate
 

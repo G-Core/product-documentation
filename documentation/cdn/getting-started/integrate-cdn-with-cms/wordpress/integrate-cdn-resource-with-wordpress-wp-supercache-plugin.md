@@ -30,7 +30,7 @@ Check "Skip Https URLs To Avoid Mixed Content Errors", if you do not use custom 
 
 Click **Save Changes**.
    
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-wp-supercache-plugin/wp-super-cache.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-wp-supercache-plugin/wp-super-cache.png" alt="Cache" width="80%">
 
 Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the control panel.
 

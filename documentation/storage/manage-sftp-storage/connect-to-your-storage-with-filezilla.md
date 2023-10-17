@@ -17,17 +17,17 @@ pageDescription: A guide on how to install FileZilla and configure its connectio
 
 You can use bash to connect to the SFTP storage. In the example, we use the FTP client FileZilla.
 
-To download and install FileZilla, use <a href="https://filezilla-project.org/" target="_blank">this link</a>.
+To download and install FileZilla, use <a href="https://filezilla-project.org" target="_blank">this link</a>.
 
 ## Configure connection
 
 Start by opening up Site Manager:
 
-<img src="https://assets.gcore.pro/docs/storage/manage-sftp-storage/connect-to-your-storage-with-filezilla/13822230046353.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/storage/manage-sftp-storage/connect-to-your-storage-with-filezilla/13822230046353.png" alt="Site Manager" width="80%">
 
 In an open window, click on the **New Site** button:
 
-<img src="https://assets.gcore.pro/docs/storage/manage-sftp-storage/connect-to-your-storage-with-filezilla/13814505201553.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/storage/manage-sftp-storage/connect-to-your-storage-with-filezilla/13814505201553.png" alt="New Site button" width="50%">
 
 Give it a name and navigate to the General tab on the right.
 

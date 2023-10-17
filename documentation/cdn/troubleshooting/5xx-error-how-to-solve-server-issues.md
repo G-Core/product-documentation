@@ -18,7 +18,7 @@ HTTP 5xx codes can be caused by an error on an origin server or CDN 
 
 ## Check for incidents or maintenances
 
-If you have noticed a significant increase of 5xx codes or received multiple complaints from users, we recommend checking our <a href="https://status.gcore.com/" target="_blank">Status Page</a> for incidents or maintenance associated with the following services: 
+If you have noticed a significant increase of 5xx codes or received multiple complaints from users, we recommend checking our <a href="https://status.gcore.com" target="_blank">Status Page</a> for incidents or maintenance associated with the following services: 
 
 - CDN service,
 - other Gcore services (if you use one of them as an origin: Storage, VPS, Dedicated Server, Cloud). 

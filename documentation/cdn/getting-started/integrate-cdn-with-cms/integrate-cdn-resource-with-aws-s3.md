@@ -11,23 +11,23 @@ pageDescription: A comprehensive guide on integrating CDN resources with AWS S3 
 
 Before you start, please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
 
-Login to the <a href="https://console.aws.amazon.com/" target="_blank">AWS Console</a> and navigate to S3.
+Login to the <a href="https://console.aws.amazon.com" target="_blank">AWS Console</a> and navigate to S3.
 
 Create an S3 bucket (define the Bucket Name and the Region you want)
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/create-s3.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/create-s3.png" alt="Create an S3 bucket" width="50%">
 
 Upload content to your S3 bucket.
 
 <media-gallery>
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/upload-content-s33.png" alt="" width="50%">
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/upload-content-s3-2-1024x546.png" alt="" width="80%">
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/upload-complete.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/upload-content-s33.png" alt="Upload content to your S3 bucket" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/upload-content-s3-2-1024x546.png" alt="Upload content to your S3 bucket" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/upload-complete.png" alt="Upload content to your S3 bucket" width="50%">
 </media-gallery>
 
 Enable Website Hosting and define the Index Document (does not need to exist e.g., index.html) for your S3 bucket under Properties > Static Website Hosting.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/s3-enable-hosting1.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/s3-enable-hosting1.png" alt="Enable Website Hosting">
 
 Use the following example to set a Bucket Policy (replace "example-bucket" with your S3 bucket name):
 
@@ -50,13 +50,13 @@ Use the following example to set a Bucket Policy (replace "example-bucket" with 
 Add the bucket policy in the Permissions drop-down menu.
 
 <media-gallery>
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/add-s3-bucket-policy.png" alt="">
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/s3-bucket-policy-example.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/add-s3-bucket-policy.png" alt="Permissions drop-down menu">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/s3-bucket-policy-example.png" alt="Permissions drop-down menu">
 </media-gallery>
 
 Check accessibility of the file at the URL link in the browser. For example, the link for the file from this guide is bucket.s3-website.eu-central-1.amazonaws.com/logo.png
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/s3-endpoint-url.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/s3-endpoint-url.png" alt="Check accessibility " width="80%">
 
 Log in your Gcore <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a> and <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">create a CDN resource</a>. Use S3 Endpoint as an origin source. For example, bucket.s3-website.eu-central-1.amazonaws.com
 

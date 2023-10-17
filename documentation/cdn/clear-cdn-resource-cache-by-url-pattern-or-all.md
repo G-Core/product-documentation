@@ -33,7 +33,7 @@ There are two ways to clear the cache: via API (use the <a href="https://api.gco
 
 A new page opens. Do the remaining steps there.
 
-<img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/14339545400209.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/14339545400209.png" alt="Configure the Purge option" width="80%">
 
 2\. Select the CDN resource from the dropdown menu to which the content to purge belongs.
 
@@ -53,7 +53,7 @@ In the text area, specify one or more content URLs to purge, entering one URL pe
 
 For example, to purge the file ```https://www.example.com/pictures/icon.jpg?size=small```, specify the following: */pictures/icon.jpg?size=small*.
 
-<img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/14339546960145.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/14339546960145.png" alt="Purge by URL" width="80%">
 
 We recommend using other types of Purge in the following cases:
 
@@ -72,7 +72,7 @@ The configuration of Purge by URL also depends on the settings in the Ignore Que
 
 To purge all files from the cache, select the "Purge All" option and click the **Purge** button.
 
-<img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/14339549617041.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/14339549617041.png" alt="Purge all" width="80%">
 
 Please note that purging all files from the cache will cause a significant load on your server as CDN servers will pull all files from the origin. Therefore, if you have a large amount of content, we recommend using Purge by URL or pattern.
 
@@ -82,19 +82,48 @@ Please note that purging all files from the cache will cause a significant load 
 
 To purge files by pattern, specify the path to the file you want to purge or a path pattern without a domain name in the input line. Use the * operator, which replaces any number of symbols in your path (you can use several * operators in one request). A path must start with the / or the * symbols and each path must be on a separate line. 
 
-<img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/14339551969425.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/14339551969425.png" alt="Purge by pattern" width="80%">
 
 If you don’t specify a query string, files with all the possible query string parameters will be purged from the cache according to the path pattern.
 
 Several types of patterns are available:
 
-| Type and explanation                                                                                                                                                                                                                                                                                                         | Purge target                  | Purge pattern            |
-|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------|--------------------------|
-| 1. Purge the selected fileSpecify a file path without a domain name. As a result, all files at cdn.site/static/image.jpg will be purged,     including files with query string .jpg?VERSION. If you want to purge only a selected file with a query string, specify it in the file path: /static/image.jpg?VERSION | cdn.site/static/image.jpg | /static/image.jpg  |
-| 2. Purge the group of files from one folderInput pattern without a domain name and * operator: /statiс/*                                                                                                                                                                                                               | cdn.site/static               | /statiс/*                |
-| 3. Purge the group of files with a certain type Input the * operator and the file name extension .jpgAs a result, all the jpg files will be purged, including files with the query string .jpg?VERSION                                                                                                               | cdn.site/*.jpg                | *.jpg                    |
-| 4. Purge the group of files having a common folder in the pathInput path pattern without a domain name and use the * operator twice                                                                                                                                                                                    | cdn.site/*/static/*           | */static/*               |
-| 5. Purge the group of files with a certain type having a common folder in the pathInput path pattern with the * operator                                                                                                                                                                                               | cdn.site/*/static/*.jpg       | */static/*.jpg           |
+<table>
+<thead>
+<tr>
+<td><b>Type and explanation</b></td>
+<td><b>Purge target</b></td>
+<td><b>Purge pattern</b></td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left"><b>1. Purge the selected file</b><br><br>Specify a file path without a domain name.<br> As a result, all files at <i>cdn.site/static/image.jpg</i><br>will be purged,<br> including files with query string <i>.jpg?VERSION</i><br><br>If you want to purge only a selected file with a query string, specify it in the file path: <i>/static/image.jpg?VERSION</i></td>
+<td style="text-align: left">cdn.site/static/image.jpg</td>
+<td style="text-align: left">/static/image.jpg</td>
+</tr>
+<tr>
+<td style="text-align: left"><b>2. Purge the group of files from one folder</b><br><br>Input pattern without a domain name and <i>*</i> operator: <i>/statiс/*</i> </td>
+<td style="text-align: left">cdn.site/static</td>
+<td style="text-align: left">/statiс/*</td>
+</tr>
+<tr>
+<td style="text-align: left"><b>3. Purge the group of files with a certain type</b><br><br>Input the <i>*</i> operator and the file name extension <i>.jpg</i><br>As a result, all the jpg files will be purged,<br> including files with the query string <i>.jpg?VERSION</i></td>
+<td style="text-align: left">cdn.site/*.jpg</td>
+<td style="text-align: left">*.jpg</td>
+</tr>
+<tr>
+<td style="text-align: left"><b>4. Purge the group of files having a common folder in the path</b><br><br>Input path pattern without a domain name and use the <i>*</i> operator twice</td>
+<td style="text-align: left">cdn.site/*/static/*</td>
+<td style="text-align: left">*/static/*</td>
+</tr>
+<tr>
+<td style="text-align: left"><b>5. Purge the group of files with a certain type having a common folder in the path</b><br><br>Input path pattern with the <i>*</i> operator</td>
+<td style="text-align: left">cdn.site/*/static/*.jpg</td>
+<td style="text-align: left">*/static/*.jpg</td>
+</tr>
+</tbody>
+</table>
 
 ## Configure Purge via API
 
@@ -103,24 +132,24 @@ We will explain in detail how to do "Purge by URL" via API calls. Examples of ot
 <table>
 <tbody>
 <tr>
-<td>Method</td>
-<td>POST</td>
+<td style="text-align: left">Method</td>
+<td style="text-align: left">POST</td>
 </tr>
 <tr>
-<td>URL</td>
-<td>https://api.gcore.com/cdn/resources/{{resource_id}}/purge</td>
+<td style="text-align: left">URL</td>
+<td style="text-align: left">https://api.gcore.com/cdn/resources/{{resource_id}}/purge</td>
 </tr>
 <tr>
-<td>URL parameter</td>
-<td>resource_id<br />ID of the CDN resource that the content to purge belongs to</td>
+<td style="text-align: left">URL parameter</td>
+<td style="text-align: left">resource_id<br />ID of the CDN resource that the content to purge belongs to</td>
 </tr>
 <tr>
-<td>Header</td>
-<td>Bearer {{access_token}}<br />application/json</td>
+<td style="text-align: left">Header</td>
+<td style="text-align: left">Bearer {{access_token}}<br />application/json</td>
 </tr>
 <tr>
-<td>Payload</td>
-<td>
+<td style="text-align: left">Payload</td>
+<td style="text-align: left">
 <p>1. Purge by URL:</p>
 <p>{ <br /> "urls": [ <br /> "/example1.jpg", <br /> "/img/example2.png", <br /> "/style.css?ver=2.0" <br /> ] <br />}</p>
 <p>2.&nbsp;Purge all:</p>
@@ -134,8 +163,8 @@ We will explain in detail how to do "Purge by URL" via API calls. Examples of ot
 </td>
 </tr>
 <tr>
-<td>Request parameter </td>
-<td>
+<td style="text-align: left">Request parameter </td>
+<td style="text-align: left">
 <p>paths</p>
 <p>1. Purge by URL:</p>
 <p>(required, string) An array of one or more content URLs to purge</p>
@@ -146,8 +175,8 @@ We will explain in detail how to do "Purge by URL" via API calls. Examples of ot
 </td>
 </tr>
 <tr>
-<td>Response</td>
-<td>
+<td style="text-align: left">Response</td>
+<td style="text-align: left">
 <p><strong>201 Created<br /></strong>Returns an array of the purged URLs</p>
 <p><strong>400 Bad Request<br /></strong>The user has exceeded the URL quota</p>
 <p><strong>401 Unauthorized<br /></strong>The user does not have the correct authentication credentials</p>
@@ -168,7 +197,7 @@ a. Set the request method to *POST*.
 
 b. Enter the resource URL in the request URL field. Replace **{{resource_id}}** with your actual value.
 
-<img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/14339834314641.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/14339834314641.png" alt="New request tab in Postman" width="80%">
 
 2\. Go to the **Authorization** tab and do the following:
 
@@ -176,7 +205,7 @@ a. Select *Bearer Token* from the **Type** dropdown.
 
 b. Copy the generated access token and paste it into the **Token** field.
 
-<img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/14339852303249.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/14339852303249.png" alt="Authorization" width="80%">
 
 3\. Go to the Body tab and do the following:
 
@@ -186,14 +215,14 @@ b. Select *JSON* from the format dropdown.
 
 c. Enter the payload in the text area. Replace the sample values indicated by {{ }} with your actual values.
 
-<img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/14339837932177.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/14339837932177.png" alt="Body tab" width="80%">
 
 4\. Click Send.
 
 If the purge is successful, you will receive an HTTP 201 and a response message that contains a list of purged URLs.
 
-<img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/14339892700945.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/14339892700945.png" alt="purge is successful" width="80%">
 
 If an error occurs with the request, the API will return a status code and a body that contains a description of what caused the error. Here is an example: 
 
-<img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/14339878706961.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/14339878706961.png" alt="error occurs" width="80%">

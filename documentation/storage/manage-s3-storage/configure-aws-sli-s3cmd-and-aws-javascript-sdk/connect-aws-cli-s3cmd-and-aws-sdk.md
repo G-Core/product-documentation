@@ -12,9 +12,9 @@ toc:
    --2--Configure S3cmd: "configure-your-storage-for-use-with-s3cmd"
    --3--With wizard: "configure-with-the-wizard"
    --3--Without wizard: "configure-without-the-wizard"
-   --1--AWS SDK: "aws-sdk"
-   --2--Connect: "connect-aws-sdk"
-   --2--Manage your storage: "manage-storage-with-aws-sdk"
+   --1--AWS JavaScript SDK: "aws-javascript-sdk"
+   --2--Connect: "connect-aws-javascript-sdk"
+   --2--Manage your storage: "manage-storage-with-aws-javascript-sdk"
    --3--Configure and create a bucket: "configure-storage-and-create-an-s3-bucket"
    --3--Set CORS policy: "set-cors-policy-on-a-bucket"
    --3--Add objects: "add-objects-to-a-bucket"
@@ -22,14 +22,13 @@ toc:
 pageTitle: Сonnect AWS CLI, S3cmd, and AWS SDK with Storage | Gcore
 pageDescription: Instructions on configuring and using AWS CLI, S3cmd, and AWS SDK with Gcore Object Storage.
 ---
-# Connect AWS CLI, S3cmd, and AWS SDK
+# Connect AWS CLI, S3cmd, and AWS JavaScript SDK
 
-With <a href="https://www.gcore.com/storage" target="_blank">Gcore Object Storage</a>, you can utilize S3-compatible software, such as AWS CLI and S3cmd.
-
+With <a href="https://gcore.com/storage" target="_blank">Gcore Object Storage</a>, you can utilize S3-compatible software, such as AWS CLI and S3cmd.
 
 ## AWS CLI 
 
-AWS CLI, or the AWS Command Line Interface, is the software for managing AWS services and has been integrated with our Storage for managing your buckets using commands from <a href="https://docs.aws.amazon.com/cli/latest/reference/" target="_blank">Amazon's official documentation</a>.
+AWS CLI, or the AWS Command Line Interface, is the software for managing AWS services and has been integrated with our Storage for managing your buckets using commands from <a href="https://docs.aws.amazon.com/cli/latest/reference" target="_blank">Amazon's official documentation</a>.
 
 ### Install AWS CLI 
 
@@ -134,11 +133,11 @@ Where:
 - _EXAMPLE*****_ is the secret key you received after creating the storage in your account.
 - *s-ed1.cloud.gcore.lu* is the <a href="https://gcore.com/docs/storage/manage-s3-storage/s3-service-urls-and-default-region-names" target="_blank">storage URL</a>.
 
-## AWS SDK
+## AWS JavaScript SDK
 
 The methods described below are relevant for <a href="https://github.com/aws/aws-sdk-js/releases/tag/v2.742.0" target="_blank">AWS JavaScript SDK version 2.742.0</a>.
 
-### Connect AWS SDK
+### Connect AWS JavaScript SDK
 
 To connect the interface with your storage, add AWS SDK to your HTML page according to the following example:
 
@@ -156,7 +155,7 @@ To connect the interface with your storage, add AWS SDK to your HTML page accord
 </html> 
 ```
 
-### Manage storage with AWS SDK
+### Manage storage with AWS JavaScript SDK
 
 #### Configure storage and create an S3 bucket
 

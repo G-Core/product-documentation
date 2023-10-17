@@ -25,10 +25,10 @@ To connect, you need the following data:
 
 To find this information go to Products/Services - select the appropriate server - Instructions.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/connect/connect-to-a-linux-server/joxi_screenshot_1509912408746.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/connect/connect-to-a-linux-server/joxi_screenshot_1509912408746.png" alt="Instructions">
 
 ## By DCI manager or VM Manager panel
 
-You can manage the server directly from the Control Panel of the server: <a href="https://dci-ed.gcore.lu/dcimgr" target="_blank">DCI Manager panel</a> and <a href="https://kvmmgr.gcore.lu/vmmgr?sfrom=loginform" target="_blank">VM Manager panel</a>.
+You can manage the server directly from the Control Panel of the server: <a href="https://dra4.dci.gcore.com:1500/dcimgr" target="_blank">DCI Manager panel</a> and <a href="https://drf.vm.gcore.com:1500/vmmgr" target="_blank">VM Manager panel</a>.
 
 To log in, you need a login and password from the DCI panel. Find them in the email that was sent to you after the server was activated, or in the section with the instructions for this server. The credentials do not match the login and password for the Control panel.

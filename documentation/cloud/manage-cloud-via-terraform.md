@@ -30,7 +30,7 @@ To work with Terraform, you create a configuration file where you specify the ch
 
 ## Install Terraform and integrate it with our Cloud
 
-1\. Download a Terraform package suitable for your OS from the <a href="https://www.terraform.io/downloads" target="_blank">official Terraform website</a>.
+1\. Download a Terraform package suitable for your OS from the <a href="https://terraform.io/downloads" target="_blank">official Terraform website</a>.
 
 2\. Create a new folder and name it the same as the downloaded package.
 
@@ -72,7 +72,7 @@ terraform init
 
 You’ll get the output:
 
-<img src="https://assets.gcore.pro/docs/cloud/manage-cloud-via-terraform/12966689446417.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/manage-cloud-via-terraform/12966689446417.png" alt="output" width="80%">
 
 This means Terraform has been successfully downloaded and installed, and you can start working with it.
 

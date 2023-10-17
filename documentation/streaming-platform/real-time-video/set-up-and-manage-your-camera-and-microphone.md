@@ -34,23 +34,23 @@ After you first visit the Real-Time Video conference or webinar creating page, a
 
 ### Google Chrome
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/_______________________.png" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/_______________________.png" alt="Google Chrome">
 
 ### Safari
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/Safari_fullscreen.png" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/Safari_fullscreen.png" alt="Safari">
 
 ### Firefox
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/firefox_allow__1_.png" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/firefox_allow__1_.png" alt="Firefox">
 
 ### Opera
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/opera_allow.png" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/opera_allow.png" alt="Opera">
 
 ### Yandex.Browser
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/Yandex_______________.png" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/Yandex_______________.png" alt="Yandex.Browser">
 
 ## How to manage the camera and microphone in Real-Time Video?
 
@@ -62,17 +62,17 @@ If the camera and microphone buttons are orange, they are turned off. Other call
 
 If the camera and microphone buttons are green, they are turned on. Other call participants can see and hear you.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/_____________________________.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/_____________________________.png" alt="When creating a call" width="80%">
 
 When the camera and microphone are turned on, it is possible to select the required video and sound sources.
 
 To select a video source, click on the arrow to expand the list of available cameras:
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/____________________.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/____________________.png" alt="select a video source" width="80%">
 
 To select a sound source, click on the arrow to expand the list of available microphones:
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/_______________________.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/_______________________.png" alt="select a sound source" width="80%">
 
 ### In the video call room
 
@@ -80,14 +80,14 @@ If the camera and microphone buttons are blue, they are turned off. Other call p
 
 If the camera and microphone buttons are green, they are turned on. Other call participants can see and hear you.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/________________________________.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/________________________________.png" alt="camera and microphone buttons are green" width="80%">
 
 In the mobile version of Real-Time Video, you can change the camera during a call. The camera change button is located to the right of the camera button.
 
 If the camera change button is green, the main camera is on.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/meet________________.jpg" alt="" width="254">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/meet________________.jpg" alt="If the camera change button is green" width="254">
 
 If the camera change button is blue, the front camera is on.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/meet_______.png" alt="" width="253">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/set-up-and-manage-your-camera-and-microphone/meet_______.png" alt="If the camera change button is blue" width="253">

@@ -29,11 +29,11 @@ Create at least two live streams before you configure the Multicamera. To do thi
 
 You can also select only one stream. 
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/combine-multiple-live-streams/9768430076433.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/combine-multiple-live-streams/9768430076433.png" alt="Configure Multicamera" width="80%">
 
 A new window will open. Do the remaining steps in it. 
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/combine-multiple-live-streams/9768930910097.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/combine-multiple-live-streams/9768930910097.png" alt="remaining steps" width="80%">
 
 2\. Select a stream status. The status determines what a viewer will see in the player:
 
@@ -56,4 +56,4 @@ You can change the status as you stream. For example, in case of a technical pro
 
 The player will show the primary stream, and your users will be able to switch to other streams using the button in the corner.  
   
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/combine-multiple-live-streams/image_1437.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/combine-multiple-live-streams/image_1437.png" alt="primary stream" width="50%">

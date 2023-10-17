@@ -20,12 +20,12 @@ Real-Time Video is a paid module of the Streaming Platform. It has an API, SDK, 
 
 This is how Real-Time Video works with different platforms:
 
-- <a href="https://meet.gcore.com" target="_blank">Web apps</a>
+- <a href="https://meet.gcore.com/new" target="_blank">Web apps</a>
 - <a href="https://github.com/G-Core/reactnative-demo-video-calls" target="_blank">ReactNative</a>
 - <a href="https://github.com/G-Core/android-demo-video-calls" target="_blank">Android</a>
 - <a href="https://github.com/G-Core/ios-demo-video-calls" target="_blank">iOS</a>
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/mobile-video-calls-module-10.gif" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/mobile-video-calls-module-10.gif" alt="Real-Time Video">
 
 ## Use cases for Real-Time Video module
 
@@ -35,7 +35,7 @@ Our video call feature can be used for diverse purposes and group sizes:
 - Video meetings with 2–300+ people, ideal for small and medium businesses, online education, and online events.
 - Webinars with 1–25 speakers and 10M+ viewers, like major online events.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/one-to-one-call-20.gif" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/one-to-one-call-20.gif" alt="Real-Time Video">
 
 ## What features does Real-Time Video have?
 
@@ -56,7 +56,7 @@ Here are the Real-Time Video features:
 - Screen sharing and presentation
 - Works on any device and modern browsers, supporting WebRTC protocol
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/web-video-calls-module-30.gif" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/web-video-calls-module-30.gif" alt="Real-Time Video">
 
 ## How does Real-Time Video work?
 
@@ -64,7 +64,7 @@ Real-Time Video uses WebRTC technology for video calls. This technology allows r
 
 **Note**: Real-Time Video does not connect users directly. All communication is sent via the server, even if there are only two people in the room.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/web-calls-protocols-40.jpg" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/web-calls-protocols-40.jpg" alt="How does Real-Time Video work">
 <figcaption>This article uses an image taken from the website bloggeek.me</figcaption>
 
 Simulcast streaming technology is used for live broadcasts. This technology helps to deliver video to each user, even if their internet is not stable. With this technology, several video streams of different quality are made on the user’s device. These streams are sent to a server. The server chooses what quality to send to each user, depending on their internet connection and device type.
@@ -73,7 +73,7 @@ Simulcast streaming technology is used for live broadcasts. This technology help
 
 All data streams are made safe using the DTLS (Datagram Transport Layer Security) protocol. This prevents anyone from spying on the data or interfering with it. Media streams are encrypted using standard encryption. You can also use SRTP (Secure Real-Time Transport Protocol) for extra security.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/video-calls-gcore-process-50.png" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/video-calls-gcore-process-50.png" alt="How does Real-Time Video work">
 
 ## How to use the Real-Time Video module
 

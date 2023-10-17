@@ -23,11 +23,11 @@ We have prepared some templates for you in advance. They are called "system". Yo
 
 1\. In the CDN resource settings, open the "Rules" tab, go to the "Templates" section and click **Create template**.  
   
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-cdn-resource-rule-template-manually-or-use-a-system-one/image_1506.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-cdn-resource-rule-template-manually-or-use-a-system-one/image_1506.png" alt="Create a template" width="80%">
 
 As the "Create template" page opens, do the remaining steps in it.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-cdn-resource-rule-template-manually-or-use-a-system-one/image_1507.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-cdn-resource-rule-template-manually-or-use-a-system-one/image_1507.png" alt="Create a template" width="80%">
 
 2\. Specify the template name. You can search a template by its name after creation.
 
@@ -43,13 +43,13 @@ As the "Create template" page opens, do the remaining steps in it.
 
 A system template is a template that we have developed for common cases of our customers. Such templates have the "System" label.  
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-cdn-resource-rule-template-manually-or-use-a-system-one/image_1510.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-cdn-resource-rule-template-manually-or-use-a-system-one/image_1510.png" alt="Use a system template">
 
 **Video segments template (.ts)** is a rule template for caching chunks (<a href="https://gcore.com/docs/cdn/cdn-resource-options/configure-live-streams-and-video-delivery-via-cdn-only-for-paid-tariffs" target="_blank">streaming via CDN</a>).
 
 **Playlists template (.m3u8)** is a rule template for caching playlists (<a href="https://gcore.com/docs/cdn/cdn-resource-options/configure-live-streams-and-video-delivery-via-cdn-only-for-paid-tariffs" target="_blank">streaming via CDN</a>).
 
-**Let's Encrypt HTTP-01 challenge** is a rule template for validating a Let's Encrypt certificate that is issued with the <a href="https://letsencrypt.org/docs/challenge-types/" target="_blank">HTTP—01 challenge</a> method and not via the Gcore UI. To ensure your certificate is validated, create a CDN resource, create a rule from the template and only then request a certificate. Without this rule, the resource settings will block certificate validation.
+**Let's Encrypt HTTP-01 challenge** is a rule template for validating a Let's Encrypt certificate that is issued with the <a href="https://letsencrypt.org/docs/challenge-types" target="_blank">HTTP—01 challenge</a> method and not via the Gcore UI. To ensure your certificate is validated, create a CDN resource, create a rule from the template and only then request a certificate. Without this rule, the resource settings will block certificate validation.
 
 **Static content** is a rule template for caching static files of the resources integrated with the DNS.
 
@@ -59,10 +59,10 @@ A system template is a template that we have developed for common cases of our c
 
 1\. Open the settings of the required CDN resource. In the "Rules" tab, click "Create rule" and select a template from the list. 
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-cdn-resource-rule-template-manually-or-use-a-system-one/image_1508.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-cdn-resource-rule-template-manually-or-use-a-system-one/image_1508.png" alt="Create a rule from a template " width="80%">
 
 2\. You will see the form for creating a new rule with pre-filled settings from the template. Check if all the settings suit you; edit it, if necessary. 
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-cdn-resource-rule-template-manually-or-use-a-system-one/image_1509.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-cdn-resource-rule-template-manually-or-use-a-system-one/image_1509.png" alt="Create a rule from a template " width="80%">
 
 3\. Click **Create rule**.

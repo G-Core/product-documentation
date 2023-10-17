@@ -15,7 +15,7 @@ pageDescription: Learn how resource reservation allows long-term rental of cloud
 What is Resource reservation?
 -----------------------------
 
-Resource reservation is a service used to rent resources for a long time at a discount. [Cloud](https://gcore.com/cloud/) resources are usually rented for a short time and paid by the minute or hour. Resource reservation works like a wholesale purchase: you rent a server for one or three years at once at a reduced price.
+Resource reservation is a service used to rent resources for a long time at a discount. [Cloud](https://gcore.com/cloud) resources are usually rented for a short time and paid by the minute or hour. Resource reservation works like a wholesale purchase: you rent a server for one or three years at once at a reduced price.
 
 You’ll be able to see your discount before buying on a "Discount" line. For example, in the screenshot below, the discount is 58% and the total price is €117 per month. This means that if you ordered a server for a month without the Resource reservation option, you would pay 58% more, or €278 for the month.
 
@@ -65,7 +65,7 @@ If something went wrong with your request, you might see one of the following st
 
 ![Reservation status](https://assets.gcore.pro/docs/cloud/getting-started/resource-reservation/about-resource-reservation/3-reservation-status.png)
 
-10. We have reserved equipment for you, but you cannot yet see it in your control panel. To access your servers, you’ll need to activate them. To activate your equipment, go to the Baremetal section and create servers with the reserved characteristics (region, Windows license, server type, quantity). You will not be charged for creating them, since it’s included as part of your reservation plan.
+10. We have reserved equipment for you, but you cannot yet see it in your control panel. To access your servers, you’ll need to activate them. To activate your equipment, go to the **Bare Metal Servers** section and create servers with the reserved characteristics (region, Windows license, server type, quantity). You will not be charged for creating them, since it’s included as part of your reservation plan.
 
 If you create a server later or do not create a server at all, your payment will stay the same because the hardware in the data center is set aside for you. Creating a server will simply make it visible in your control panel.
 

@@ -23,9 +23,9 @@ Example: you use our Streaming Platform for an educational site where you hold w
 
 ## Configure a restream
 
-1\. To enable the feature, send us a request via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of <a href="https://gcore.com/" target="_blank">our website</a>. Please specify your ID in the request, so that we can identify your account. You can find it on the main page of your <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>.
+1\. To enable the feature, send us a request via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of <a href="https://gcore.com" target="_blank">our website</a>. Please specify your ID in the request, so that we can identify your account. You can find it on the main page of your <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-and-configure-a-restream-to-social-media/Your_ID.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-and-configure-a-restream-to-social-media/Your_ID.png" alt="Configure a restream" width="80%">
 
 The message template: *"Greetings! Please enable the Restreams feature for an account with ID … (your ID)"*.
 
@@ -35,17 +35,17 @@ We will notify you when the feature is activated. After that, you will be able t
 
 2\. Get credentials from the target platform for the restream. Our guides for popular platforms describe how to do it: <a href="https://en-gb.facebook.com/help/587160588142067?helpref=faq_content" target="_blank">Facebook</a>, <a href="https://support.google.com/youtube/answer/2907883?hl=en" target="_blank">YouTube</a> and <a href="https://help.twitch.tv/s/article/twitch-stream-key-faq" target="_blank">Twitch</a>.
 
-For example, we want to broadcast our live stream on YouTube. To do so, we should go to <a href="https://www.youtube.com/" target="_blank">YouTube</a> and click **Go live**. Then select a Streaming software solution. There we will need the credentials (stream URL and stream key). We will use them in step 6 of this guide.
+For example, we want to broadcast our live stream on YouTube. To do so, we should go to <a href="https://youtube.com" target="_blank">YouTube</a> and click **Go live**. Then select a Streaming software solution. There we will need the credentials (stream URL and stream key). We will use them in step 6 of this guide.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-and-configure-a-restream-to-social-media/Stream_key.png" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-and-configure-a-restream-to-social-media/Stream_key.png" alt="Configure a restream">
 
 3\. Go to the <a href="https://streaming.gcore.com/restreams/list" target="_blank">Restreams</a> section and click **Create a restream**.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-and-configure-a-restream-to-social-media/Create_a_restream.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-and-configure-a-restream-to-social-media/Create_a_restream.png" alt="Restreams section" width="80%">
 
 The configuration page opens. Complete the remaining steps in it.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-and-configure-a-restream-to-social-media/9665929864593.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-and-configure-a-restream-to-social-media/9665929864593.png" alt=" remaining steps" width="50%">
 
 4\. Turn on the **Active** toggle if you want to broadcast your video content after configuration. If you don’t turn the toggle off, an inactive restream won’t be broadcasted.
 
@@ -59,7 +59,7 @@ URL/KEY
 
 For example, our stream URL is: *rtmp://a.rtmp.youtube.com/live2* and stream key is: *ab123-cde4-f56g-hi78-90j*. So, in the URL field, we should add the following:
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-and-configure-a-restream-to-social-media/rtmp.png" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-and-configure-a-restream-to-social-media/rtmp.png" alt="stream URL ">
 
 where:
 
@@ -77,8 +77,8 @@ where:
 
 Then you should enable the live stream or playlist (depending on your choice), wait several minutes while the settings are applied, and restart the <a href="https://streaming.gcore.com/restreams/list" target="_blank">Restreams</a> page. If everything was set up correctly, you would see the **Live** label.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-and-configure-a-restream-to-social-media/Live.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-and-configure-a-restream-to-social-media/Live.png" alt="Restreams page" width="80%">
 
 You can do this if the live stream or playlist is over, but you want to restream it again in a while. If the key and URL were not changed, and the restream still exists in the Control panel, there are no additional settings. If the key or URL were changed, you should add current credentials in the configuration of restream.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-and-configure-a-restream-to-social-media/Settings.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-and-configure-a-restream-to-social-media/Settings.png" alt="Restreams page" width="80%">

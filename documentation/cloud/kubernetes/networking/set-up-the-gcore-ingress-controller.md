@@ -59,7 +59,7 @@ You’ll get the output:
 service/<service name> created
 ```
 
-Congratulations! You’ve created a service of the default ClusterIP type. For more information about other types of Kubernetes services, refer to the <a href="https://kubernetes.io/docs/concepts/services-networking/service/" target="_blank">official Kubernetes documentation</a>.
+Congratulations! You’ve created a service of the default ClusterIP type. For more information about other types of Kubernetes services, refer to the <a href="https://kubernetes.io/docs/concepts/services-networking/service" target="_blank">official Kubernetes documentation</a>.
 
 ## Use the Gcore ingress controller
 
@@ -120,6 +120,6 @@ kubectl get ingress <ingress name>
 
 You’ll get the output:
 
-<img src="https://assets.gcore.pro/docs/cloud/kubernetes/networking/set-up-the-gcore-ingress-controller/Output.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/networking/set-up-the-gcore-ingress-controller/Output.png" alt="output" width="80%">
 
 The IP address is written in the ADDRESS column.

@@ -17,7 +17,8 @@ pageDescription: Learn how to manage your domain zone with Gcore DNS and what ar
 The DNS service allows you to create, update, and delete DNS records for your domain. To manage your domain configuration, follow these steps:
 
 1\. <a href="https://gcore.com/docs/dns/manage-a-dns-zone" target="_blank">Create a domain zone in your account</a>.  
-2\. Specify Gcore nameservers (*ns1.gcorelabs.net* and *ns2.gcdn.services*) in the domain settings on the registrar's website.  
+
+2\. Specify Gcore name servers (*ns1.gcorelabs.net* and *ns2.gcdn.services*) in the domain settings on the registrar's website.  
 
 3\. Configure DNS records in <a href="https://gcore.com/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode" target="_blank">non-advanced</a> or <a href="https://gcore.com/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing" target="_blank">advanced mode</a>. 
 
@@ -25,7 +26,7 @@ The DNS service allows you to create, update, and delete DNS records for your do
 
 The DNS service interface offers two modes: non-advanced (for basic settings) and advanced. You can toggle between them on the page of any DNS zone.
 
-<img src="https://assets.gcore.pro/docs/dns/about-gcore-dns/12990176402705.png" alt="">
+<img src="https://assets.gcore.pro/docs/dns/about-gcore-dns/12990176402705.png" alt="Interface modes">
 
 |                                                              | Non-advanced mode                                                                                                                                                                                                                        | Advanced mode  | 
 |--------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------|

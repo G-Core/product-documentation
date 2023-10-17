@@ -15,7 +15,7 @@ The technical support specialists are here for you 24/7. There are two ways to 
 
 ## Chat
 
-Go to our <a href="https://gcore.com/" target="_blank">website</a>. Click the chat icon in the corner of the page and start a dialogue with a specialist.
+Go to our <a href="https://gcore.com" target="_blank">website</a>. Click the chat icon in the corner of the page and start a dialogue with a specialist.
 
 ## Ticket
 
@@ -23,4 +23,4 @@ Submit a ticket to technical support directly from the Control Panel. Proceed t
 
 Go to Dashboard - Submit a ticket to submit the ticket the second way.
 
-<img class="confluence-embedded-image confluence-external-resource" src="https://assets.gcore.pro/docs/hosting/contact-our-technical-support/uVEscGw.png" data-image-src="https://assets.gcore.pro/docs/hosting/contact-our-technical-support/uVEscGw.png" alt="" width="50%">
+<img class="confluence-embedded-image confluence-external-resource" src="https://assets.gcore.pro/docs/hosting/contact-our-technical-support/uVEscGw.png" data-image-src="https://assets.gcore.pro/docs/hosting/contact-our-technical-support/uVEscGw.png" alt="Dashboard - Submit a ticket" width="50%">

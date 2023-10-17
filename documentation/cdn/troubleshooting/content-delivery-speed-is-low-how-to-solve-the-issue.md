@@ -23,10 +23,10 @@ Revise your origin to find errors or misconfigurations that may affect
 - wget –S + static file URL.
 
 ```
-wget -S testsupport.gcdn.co/files/test.jpg  
---2019-12-10 13:29:17-- http://testsupport.gcdn.co/files/test.jpg  
-Resolving testsupport.gcdn.co... 92.223.97.97  
-Connecting to testsupport.gcdn.co|92.223.97.97|:80... connected.  
+wget -S testsupport.cdn.com/files/test.jpg  
+--2019-12-10 13:29:17-- http://testsupport.cdn.com/files/test.jpg  
+Resolving testsupport.cdn.com... 92.223.97.97  
+Connecting to testsupport.cdn.com|92.223.97.97|:80... connected.  
 HTTP request sent, awaiting response...  
 HTTP/1.1 200 OK  
 Server: nginx  
@@ -70,7 +70,7 @@ If you revised your CDN resource's settings but are still unsatisfied wit
 - Follow the link ```http://iam.gcdn.co/info```, copy all information from the page or save a screenshot. 
 - Follow the try speed test link, click on the Start button, save the result, and add it to the ticket. 
 
-<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-delivery-speed-is-low-how-to-solve-the-issue/iam.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-delivery-speed-is-low-how-to-solve-the-issue/iam.png" alt="Diagnostic information for technical support" width="50%">
 
 - Wget –S output for the URL from your CDN-resource.
 - Open a file or a web-page and save a <a href="https://toolbox.googleapps.com/apps/har_analyzer/?lang=en"target="_blank">HAR file</a>.

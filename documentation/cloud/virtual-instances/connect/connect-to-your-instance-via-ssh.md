@@ -5,7 +5,7 @@ order: 20
 published: true
 toc:
    --1--Connect with SSH keys: "connect-with-ssh-keys"
-   --2--Generate a key (Windows 7/8): "generate-a-key-windows-7-8"
+   --2--Generate a key (Windows 7/8): "generate-a-key-windows-78"
    --2--Generate a key (Windows 10, Linux OS, macOS): "generate-a-key-windows-10-linux-os-macos"
    --2--Generate a key in the personal account: "generate-a-key-in-the-personal-account"
    --2--Add a key to your account: "add-a-key-to-your-account"
@@ -13,7 +13,7 @@ toc:
    --2--Generate a key when creating an instance: "generate-a-key-when-creating-an-instance"
    --1--Connect with a password: "connect-with-a-password"
    --1--Connect via SSH: "connect-via-ssh"
-   --2--Connect from Windows 7/8: "connect-from-windows-7-8"
+   --2--Connect from Windows 7/8: "connect-from-windows-78"
    --2--Connect from Windows 10, Linux OS, macOS: "connect-from-windows-10-linux-os-macos"
 pageTitle: Connect to a VM via SSH | Gcore
 pageDescription: Learn how to connect to your virtual machine via SSH using a password or an SSH key.
@@ -33,9 +33,9 @@ To connect to an instance, create a public key that will be stored on your insta
 
 ! SSH key generation using the command line interface (cmd) is not available for Windows 7/8 operating systems.  
 
-1\. To generate key pairs, use <a href="https://www.putty.org/" target="_blank">PuTTY and PuTTYgen</a>.  
+1\. To generate key pairs, use <a href="https://putty.org" target="_blank">PuTTY and PuTTYgen</a>.  
 
-2\. Download and install <a href="https://www.putty.org/" target="_blank">the PuTTY package</a>.  
+2\. Download and install <a href="https://putty.org" target="_blank">the PuTTY package</a>.  
 
 3\. Launch the PuTTYgen app. 
 
@@ -198,9 +198,9 @@ print(sha512_crypt.hash(passwd , rounds = 5000 ))
 
 Connecting to an instance over ssh using the command line (cmd) is not available on Windows 7/8 operating systems.  
 
-To connect, use <a href="https://www.putty.org/" target="_blank">the PuTTY app</a>. 
+To connect, use <a href="https://putty.org" target="_blank">the PuTTY app</a>. 
 
-1\. Download and run <a href="https://www.putty.org/" target="_blank">the PuTTY app</a>.  
+1\. Download and run <a href="https://putty.org" target="_blank">the PuTTY app</a>.  
 
 2\. Go to the Session section, in the Host Name (or IP address) field enter the instance's IP address. You can find the IP address in the IP address column on the Instances page.  
 

@@ -31,7 +31,9 @@ The Gzip method reduces file size by 80% and up to 90%. The following MIME types
 - application/x-javascript
 - application/xml
 - application/xml+rss
-- text/css text/html
+- application/wasm
+- text/css
+- text/html
 - text/javascript
 - text/plain
 - text/xml
@@ -59,6 +61,7 @@ You can specify the MIME types to be considered for Brotli compression. These ty
 - **application/x-font-ttf**. Not added by default.
 - **image/x-icon**. Not added by default.
 - **image/svg+xml**. Not added by default.
+- **application/wasm**. Not added by default.
 
 **Note**: Image formats (e.g., image/jpeg, image/png), video formats (e.g., video/mpeg), PDF, and other binary formats are already compressed. It is not recommended to apply additional compression to these types as it can actually increase the file size.
 
@@ -89,11 +92,11 @@ To configure Gzip and Brotli options via the control panel:
 
 1\. Go to CDN and select the CDN resource you want to configure.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/12422800579217.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/12422800579217.png" alt="Gzip and Brotli options">
 
 2\. In the navigation panel, under the "Content" section, click **Gzip compression** or **Brotli compression**.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/12423128187537.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/12423128187537.png" alt="navigation panel">
 
 3\. Turn on the toggle for **Enable Gzip compression** to enable the option.
 
