@@ -18,7 +18,7 @@ pageDescription:  A detailed guide on configuring Secure Token with the PHP, Pyt
 
 Do the first three steps in your control panel in the "Secure token" tab. 
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/mceclip4.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/mceclip4.png" alt="Configure Secure Token" width="80%">
 
 1\. Enable the "Secure token" option in the resource settings. 
 
@@ -28,7 +28,7 @@ Do the first three steps in your control panel in the "Secure token" tab. 
 
 4\. Do this step on your origin server. Insert a script on your website which generates secure links. The generated links should look like as below:
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/mceclip3.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/mceclip3.png" alt="generated links" width="80%">
 
 Where:
 
@@ -96,21 +96,16 @@ The script for creating temporary links with the IP-based access restriction. Th
 ```
 import base64
 from hashlib import md5
-from time import time
-secret = 'secret_key'  
+from time import timesecret = 'secret_key'  
 path = "/images/1.jpg"  
 ip = '1.2.3.4' 
-expires = int(time()) + 100000
 # TTL of URL (in sec)
-#Token generation
-token = base64.encodestring(
-md5(
-"%s%s%s %s" % (expires, path, ip, secret)
-).digest()
-).replace("\n", "").replace("+", "-").replace("/", "_").replace("=", "")
-secured_url = "http://cdn.site.com%s?md5=%s&expires=%s" % (path, token, expires)
-# File's URL
-print secured_url
+ttl = 100000
+expires = int(time()) + ttl#Token generation
+token_hash = md5(f"{expires}{path}{ip} {secret}".encode()).digest()
+token = base64.b64encode(token_hash).decode().replace("\n", "").replace("+", "-").replace("/", "_").replace("=", "")
+secured_url = f"http://cdn.site.com{path}?md5={token}&expires={expires}"# File's URL
+print(secured_url) 
 ```
 
 Below is the script for creating temporary links without any IP-based access restriction. The files will be accessible from any IP address, but only until the link expires. 
@@ -118,17 +113,15 @@ Below is the script for creating temporary links without any IP-based access res
 ```
 import base64
 from hashlib import md5
-from time import time
-secret = 'secret_key' 
-path = "/images/1.jpg" 
-expires = int(time()) + 100000
-token = base64.encodestring(
- md5(
- "%s%s %s" % (expires, path, secret)
- ).digest()
- ).replace("\n", "").replace("+", "-").replace("/", "_").replace("=", "")
-secured_url = "http://cdn.site.com%s?md5=%s&expires=%s" % (path, token, expires) 
-print secured_url
+from time import timesecret = 'secret_key'  
+path = "/images/1.jpg"  
+# TTL of URL (in sec)
+ttl = 100000
+expires = int(time()) + ttl#Token generation
+token_hash = md5(f"{expires}{path} {secret}".encode()).digest()
+token = base64.b64encode(token_hash).decode().replace("\n", "").replace("+", "-").replace("/", "_").replace("=", "")
+secured_url = f"http://cdn.site.com{path}?md5={token}&expires={expires}"# File's URL
+print(secured_url) 
 ```
 
 In these scripts: 
@@ -163,7 +156,7 @@ In these scripts:
 
 The scripts above can only generate a secure token. You need to create a separate script that will add a secure token and expiry time to links. The script is supposed to create a link as shown below:
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/mceclip3.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/mceclip3.png" alt="created a link" width="80%">
 
 Where:
 

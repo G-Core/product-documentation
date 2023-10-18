@@ -17,9 +17,9 @@ Here’s how to connect via VNC to your virtual server.
 
 <media-gallery>
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/connect-to-your-virtual-server-via-vnc-in-vmmanager-6/1-intsructions-in-the-menu.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/connect-to-your-virtual-server-via-vnc-in-vmmanager-6/1-intsructions-in-the-menu.png" alt="Connect to a virtual server via VNC" width="80%">
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/connect-to-your-virtual-server-via-vnc-in-vmmanager-6/2-instructions-in-the-email.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/connect-to-your-virtual-server-via-vnc-in-vmmanager-6/2-instructions-in-the-email.png" alt="Connect to a virtual server via VNC" width="80%">
 
 </media-gallery>
 
@@ -27,18 +27,18 @@ Here’s how to connect via VNC to your virtual server.
 
 If you’re using the old interface (shown below,) select **Products/Services** → **Virtual private servers**, click the selected server, and click **To panel**.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/connect-to-your-virtual-server-via-vnc-in-vmmanager-6/3-to-panel-old-interface.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/connect-to-your-virtual-server-via-vnc-in-vmmanager-6/3-to-panel-old-interface.png" alt="virtual server" width="80%">
 
 If you’re using the new interface (shown below,) select **Products/Services**, click **Virtual private servers**, and then click **To Panel**.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/connect-to-your-virtual-server-via-vnc-in-vmmanager-6/4-to-panel-new-interface.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/connect-to-your-virtual-server-via-vnc-in-vmmanager-6/4-to-panel-new-interface.png" alt="control panel." width="80%">
 
 3. In the VMmanager panel, select the three-dot menu and click **VNC**.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/connect-to-your-virtual-server-via-vnc-in-vmmanager-6/5-vnc-in-vmmanager-6.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/connect-to-your-virtual-server-via-vnc-in-vmmanager-6/5-vnc-in-vmmanager-6.png" alt="VMmanager panel" width="80%">
 
 The VNC server management console will open. Enter your root login and password credentials that you received in the initial email or on the **Instructions** tab (Step 1.)
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/connect-to-your-virtual-server-via-vnc-in-vmmanager-6/6-vnc.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/connect-to-your-virtual-server-via-vnc-in-vmmanager-6/6-vnc.png" alt="VNC server management console" width="80%">
 
 You have successfully connected to your server using VNC.

@@ -30,9 +30,9 @@ sudo nano sshd_config
 
 <media-gallery>
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/change-the-port-for-ssh-connections/1-port-22.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/change-the-port-for-ssh-connections/1-port-22.png" alt="terminal">
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/change-the-port-for-ssh-connections/2-port-2233.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/change-the-port-for-ssh-connections/2-port-2233.png" alt="terminal">
 
 </media-gallery>
 
@@ -68,6 +68,6 @@ Replace “8.8.8.8” with your server IP address, and “2233” with the chose
 
 The output should look like this:
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/change-the-port-for-ssh-connections/3-output.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/change-the-port-for-ssh-connections/3-output.png" alt="output">
 
 9. Attempt to establish a connection to your server using the new port in a separate window **without closing your current session**. This step is crucial to prevent any potential loss of access to your server. If you encounter difficulties connecting to your server through the new port, revert the port back to 22 and then try again.

@@ -14,7 +14,9 @@ pageDescription: A comprehensive guide about the account deletion.
 
 ## Deletion overview 
 
-You can request account deletion at any time. You have a ten-day period during which you have the option to cancel the deletion request. After the ten days elapse, your account, data, and services will be permanently deleted, and you will receive a notification confirming the deletion of your account.
+You can request account deletion at any time. You have a ten-day period during which you have the option to cancel the deletion request. 
+
+After the **ten days** elapse, your account, data, and services will be permanently and unrecoverably deleted, and you will receive a notification confirming the deletion of your account.
 
 **Note**: If your account has a debt, it won’t be deleted until the debt is paid off. 
 
@@ -22,13 +24,13 @@ You can request account deletion at any time. You have a ten-day period during w
 
 Go to <a href="https://accounts.gcore.com/profile/delete-account" target="_blank">Delete account</a> and click **Got it, request the deletion**.
 
-<img src="https://assets.gcore.pro/docs/account-settings/account-deletion/deletion-10.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/account-deletion/deletion-10.png" alt="How to delete your account" width="80%">
 
 In the pop-up that appears, please complete the short survey and click **Confirm**.
 
-<img src="https://assets.gcore.pro/docs/account-settings/account-deletion/deletion-20.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/account-settings/account-deletion/deletion-20.png" alt="Survey" width="70%">
 
-**Note**: Once you’ve submitted a deletion request, all of your services will be suspended and will stop functioning. 
+**Note**: Once you’ve submitted a deletion request, all of your services will be suspended and will stop functioning. If you don't cancel the deletion request, your account will be automatically deleted after ten days. Any services you've created will also be permanently removed and cannot be recovered.
 
 ## When can an account NOT be deleted?
 
@@ -36,4 +38,4 @@ If your account has a debt (negative balance) and you send a deletion request, i
 
 To check whether your account has a debt or not, open the <a href="https://accounts.gcore.com/billing/services" target="_blank">Billing</a> section and check the top right corner of the page.
 
-<img src="https://assets.gcore.pro/docs/account-settings/account-deletion/deletion-30.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/account-deletion/deletion-30.png" alt="Balance" width="80%">

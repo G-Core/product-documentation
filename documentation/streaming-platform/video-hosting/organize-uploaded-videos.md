@@ -32,15 +32,15 @@ Let’s examine the difference between the two ways. For example, you have 100 v
 
 1\. Go to the **Videos** tab, press the **Add** button, and select **Create a folder**.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/Create_a_folder.png" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/Create_a_folder.png" alt="Videos tab,">
 
 2\. Enter the folder name in the pop-up and click **Create**.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/Create.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/Create.png" alt="pop-up" width="50%">
 
 3\. The created folder will open. Press the **Add** button and select **Upload video** to upload a video or videos from your PC or the originating site to this folder.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/Upload_video.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/Upload_video.png" alt="Upload video" width="80%">
 
 ### Move videos to a folder
 
@@ -50,7 +50,7 @@ Let’s examine the difference between the two ways. For example, you have 100 v
 
 3\. Select the target folder and confirm the actions.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/Move.gif" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/Move.gif" alt="Videos tab" width="80%">
 
 ### Delete a folder
 
@@ -58,7 +58,7 @@ Let’s examine the difference between the two ways. For example, you have 100 v
 
 To delete a folder with content, click the ```···``` icon opposite the relevant folder, select **Remove directory**, and confirm the actions.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/Remove_directory.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/Remove_directory.png" alt="Delete a folder" width="80%">
 
 ## How to use tags
 
@@ -72,10 +72,10 @@ You can add as many tags as you want.
 
 3\. Save the changes.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/9799464687505.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/9799464687505.png" alt="Add a tag to a video" width="80%">
 
 ### Filter videos by tags
 
 You will see the list of created tags on the left in the <a href="https://streaming.gcore.com/video/list" target="_blank">Video</a> tab. To filter videos by tag, click on the tag’s name.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/9799475309329.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/9799475309329.png" alt="Filter videos by tags" width="80%">

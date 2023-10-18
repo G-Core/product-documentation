@@ -20,7 +20,7 @@ The Fetch compressed option helps you to reduce the bandwidth between origin a
 
 You can activate the option in the resource settings in the Content section.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/compression/configure-fetch-compression/fetch_compressed.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/compression/configure-fetch-compression/fetch_compressed.png" alt="Fetch compressed">
 
 Enable "Fetch compressed" to make a CDN pull already compressed content.
 

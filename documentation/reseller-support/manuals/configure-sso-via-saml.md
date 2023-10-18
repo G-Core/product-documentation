@@ -17,7 +17,7 @@ To implement the technology, our systems use the SAML 2.0 XML protocol which is 
 
 ## Configuring SSO in the Admin Panel
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-sso-via-saml/authorization-sso-10.png" alt="">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-sso-via-saml/authorization-sso-10.png" alt="SSO in the Admin Panel">
 
 To allow your users to log in using SSO, in the admin panel:
 
@@ -68,30 +68,30 @@ If you use a self-signed SSL certificate, you must enable the use of such certif
 
 1\. Click "Sign in with SAML SSO".
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-sso-via-saml/sign-in-with-sso-20.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-sso-via-saml/sign-in-with-sso-20.png" alt="Sign in with SAML SSO" width="50%">
 
 2\. This step will appear if you have not activated the "Force redirect to the Identity provider" option. If you have done, it will not appear.
 
 Enter the corporate domain for which SSO authorization is connected and click "Sign in with SAML SSO".
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-sso-via-saml/welcome-sso-page-30.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-sso-via-saml/welcome-sso-page-30.png" alt="SSO authorization " width="50%">
 
 3\. Enter your username and password and log in.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-sso-via-saml/login-pass-40.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-sso-via-saml/login-pass-40.png" alt=" log in" width="50%">
 
 ## Authorization via SSO in the Admin panel 
 
 1\. Click "Sign in with SAML SSO".
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-sso-via-saml/sign-in-50.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-sso-via-saml/sign-in-50.png" alt="Sign in with SAML SSO" width="50%">
 
 2\. This step will appear if you have not activated the "Force redirect to the Identity provider" option. If you have done, it will not appear.
 
 Enter the corporate domain for which SSO authorization is connected and click "Sign in".
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-sso-via-saml/sign-in-60.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-sso-via-saml/sign-in-60.png" alt=" SSO authorization" width="50%">
 
 3\. Enter your username and password and log in.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-sso-via-saml/login-password-70.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-sso-via-saml/login-password-70.png" alt="log in" width="50%">

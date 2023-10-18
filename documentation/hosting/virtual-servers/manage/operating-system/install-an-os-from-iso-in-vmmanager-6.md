@@ -32,20 +32,19 @@ If you are installing an OS on a VM from an ISO image, then you should be aware 
 
 Select **Virtual private servers**, click selected server and go **To panel** (if you’re using the old interface).
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/install-an-os-from-iso-image/1-to-panel-old-interface.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/install-an-os-from-iso-image/1-to-panel-old-interface.png" alt="Virtual private servers">
 
 If you’re using the new interface, please select **Products/Services** section, then choose **Virtual private servers** and click to **To Panel**.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/install-an-os-from-iso-image/2-to-panel-new-interface.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/install-an-os-from-iso-image/2-to-panel-new-interface.png" alt="To Panel">
 
 2. In the VMmanager panel, select the three-dot menu and then select the **Mount ISO-image**. 
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/install-an-os-from-iso-image/3-mount-iso.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/install-an-os-from-iso-image/3-mount-iso.png" alt="Mount ISO-image">
 
 3. Enter the link to the file you want to upload to the current directory, where the ISO image is available. The image can be available via HTTP(S) or FTP. Optionally, you can specify tags for the connected OS if this VM needs to run scripts. The script will run on the VM if at least one of its tags matches the OS tag. 
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/install-an-os-from-iso-image/4-url-tags.png
-" width=70% alt="">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/operating-system/install-an-os-from-iso-image/4-url-tags.png" width=70% alt="upload">
 
 4. Select **Download and connect**.
 

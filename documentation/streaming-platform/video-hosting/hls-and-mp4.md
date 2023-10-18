@@ -94,14 +94,14 @@ Select the video in the <a href="https://streaming.gcore.com/video/list" target=
 - Web player: https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr 
 - HLS: https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/master.m3u8 
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/hls-and-mp4/image3526.png" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/hls-and-mp4/image3526.png" alt="Control panel">
 
 ### API
 
 To get information about the video, call a method:
 
 ```
-https://apidocs.gcore.com/docs/streaming#tag/Videos/operation/get_api_videos_id
+https://api.gcore.com/docs/streaming#tag/Videos/operation/get_api_videos_id
 ```
 Example request:
 

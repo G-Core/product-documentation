@@ -21,6 +21,6 @@ To find this information, follow these steps:
 2\. Click the server you want to connect to.
 3\. Click the **Instructions** menu in the upper menu bar to find the IP address, username, and password.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/connect/connect-to-a-windows-server/13068570817553.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/connect/connect-to-a-windows-server/13068570817553.png" alt="Connect to a Windows server" width="80%">
 
 Alternatively, you can also find this information in the email you received after purchasing the server.

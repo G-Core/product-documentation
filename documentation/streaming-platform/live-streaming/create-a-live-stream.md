@@ -11,19 +11,19 @@ pageDescription: A step-by-step tutorial on how to create live streams using Gco
 
 1\. Go to the <a href="https://streaming.gcore.com" target="_blank">Live streaming</a> section in the Streaming tab and click **Create Live stream**.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/13542247871633.png" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/13542247871633.png" alt="Live streaming section">
 
 2\. Enter the name of your live stream in the window that appears and click **Create**.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/9651635790481.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/9651635790481.png" alt="Enter the name of your live stream" width="50%">
 
 If the button is un-clickable, you have reached your live stream limit. To create a new stream, delete an existing stream from the list.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/9651664092049.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/9651664092049.png" alt="live stream limit" width="80%">
 
 A new page will open. Do the remaining steps connected with Gcore’s interface in it. 
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/13542742887185.png">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/create-live.png" alt="Live streaming settings">
 
 **3.1.** Ensure the **Enable live stream (with Low Latency)** switch is turned on.
 
@@ -47,13 +47,13 @@ The next step of the guide depends on the stream type you’ve chosen: Pull or P
 
 **(If you selected Pull)** Put a link to a stream from your media server in the URL field.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/13542997210897.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/13542997210897.png" alt="Live streaming section" width="50%">
 
 You can specify in the URL field several media servers separated by space. In this case, the first media server will be used as the primary source and the next as backup servers. If the signal from the first source cuts out, we will automatically resume the stream from the second source.
 
 **(If you selected Push)** Select the encoder that you will use for streaming from the drop-down list. Copy the server URL and Stream Key. In the screenshot below, *rtmp://vp-push-ed1.gvideo.co/* is the server URL while *425969?7395…* is the stream key.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/13543145952785.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/13543145952785.png" alt="encoder" width="50%">
 
 Insert the copied values in the interface of your encoder according to the appropriate instructions from the "Push live streams software" section.
 
@@ -64,7 +64,7 @@ Insert the copied values in the interface of your encoder according to the appro
 - Copy the iFrame code to embed the live stream within the built-in player.
 - Copy the export link in the needed protocol to paste it into your player. Use the **LL-DASH** link if your live stream will be viewed from any device except iOS. Use **LL HLS** for iOS viewing.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/13543414027409.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/13543414027409.png" alt="live streams" width="80%">
 
 Then your viewers see the live stream.
 

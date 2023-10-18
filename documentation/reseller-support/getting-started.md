@@ -51,11 +51,11 @@ Along with the Reseller account, we create a client account with the same email 
 
 All our services are available for reselling: CDN, Web Protection, Streaming, Cloud, DNS, and Storage. When signing the contract, you discuss with your manager what services you want to resell. By default, the selected services will be displayed in the client's control panel. You can adjust the visibility of products to all customers in the "Vendor setting" section, "Services" subsection of the admin panel:
 
-<img src="https://assets.gcore.pro/docs/reseller-support/getting-started/services-10.png" alt="">
+<img src="https://assets.gcore.pro/docs/reseller-support/getting-started/services-10.png" alt="Service management">
 
 You can also override the General settings from the "Services" section in the client settings. Go to the client settings, open the list of clients, in the "Accounts" section, click on the ID of the desired client, or click on the "Edit" button in the "Actions" сolumn. If you click on the "Log in" button you'll log in the client control panel under client's admin user
 
-<img src="https://assets.gcore.pro/docs/reseller-support/getting-started/client-editing-20.png" alt="">
+<img src="https://assets.gcore.pro/docs/reseller-support/getting-started/client-editing-20.png" alt="Clients">
 
 On the "Services" tab, choose services that you want to display in the client's control panel.
 
@@ -63,11 +63,11 @@ On the "Services" tab, choose services that you want to display in the client's 
 - If you enable a service, it will be displayed in the client's control panel.
 - If you disable a service, it will not be displayed in the client's control panel.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/getting-started/client-services-30.jpg" alt="">
+<img src="https://assets.gcore.pro/docs/reseller-support/getting-started/client-services-30.jpg" alt="Services">
 
 **Please note**: Displaying a service in the control panel does not allow the client to manage it by default. If the service is displayed but not configured (see the service management articles below), the customer will see the service activation request window:
 
-<img src="https://assets.gcore.pro/docs/reseller-support/getting-started/welcome-page-40.png" alt="">
+<img src="https://assets.gcore.pro/docs/reseller-support/getting-started/welcome-page-40.png" alt="Storage">
 
 When submitting an activation request, Gсore technical support or you — depending on the setting of the "Support email" field in the "<a href="https://gcore.com/docs/reseller-support/manuals/vendor-settings" target="_blank">Vendor settings</a>" section — will receive an email about the client's wish to access the service.
 

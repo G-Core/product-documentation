@@ -1,35 +1,47 @@
 ---
 title: set-robots-txt-to-avoid-adding-to-index-by-web-crawlers
-displayName: Set robots.txt
+displayName: Avoid indexing
 published: true
 order: 30
 toc:
-   --1--How it is going to work?: "how-it-is-going-to-work"
-pageTitle: Avoid Indexing with a Custom robots.txt | Gcore
-pageDescription: Guide on setting up a custom robots.txt to prevent web crawlers from indexing your CDN's custom domain, keeping your main website unaffected.
+   --1--Problem with indexing: "what-is-the-problem-with-cdn-custom-domain-indexing"
+   --1--Prohibit indexing: "how-to-prohibit-web-crawlers-from-indexing-your-cdn-custom-domain"
+pageTitle: Avoid Indexing with a Directive in User-agent | Gcore
+pageDescription: Guide on setting up User-agent to prevent web crawlers from indexing your CDN's custom domain, keeping your main website unaffected.
 ---
-# Set robots.txt to avoid adding to index by web crawlers
+# Avoid indexing of your CDN resource by web crawlers
 
-When you put your website domain as the Origin-Source, the copy of your website that located on your personal domain name (cname) could be indexed by search engines. 
+Search engines use web crawlers to index content from various websites, making it discoverable to users. However, when your CDN resources are indexed, it can lead to problems, so we’ll explain how to avoid it here.
 
-If you want to prevent it: 
+## What is the problem with CDN custom domain indexing?
 
-1. Create a folder _on the origin_ and add a _robots.txt_ file with the following settings:   
-- User-agent: ```*```    
-- Disallow: ```/``` 
-2. Create a Rule for your CDN-resource with the following settings:   
-- Match Type: ```Regular expression```   
-- Rule pattern: ```robots.*```   
-- Rewrite: ```/(.*) /folder/$1``` 
+When you <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">create a CDN resource for static assets</a> for your original website, part of your content is available from the main (e.g., website-example.com/image.png) and <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">CDN custom domains</a> (e.g., cdn.website-example.com/image.png.) This can lead to duplicated content in search results which negatively affects SEO, degrading your site’s position on search engines like Google. By using the <a href="https://gcore.com/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn" target="_blank">Status code</a> option, you can forbid crawlers from indexing custom domains hence avoiding duplicate content.
 
-Where ```folder``` is the name of the folder that you’ve created in the first step.
+## How to prohibit web crawlers from indexing your CDN custom domain
 
-Example: 
+1\. Go to the <a href="" target="_blank">CDN resource</a> and click the custom domain of the CDN resource you want to prohibit from indexing.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/set-robots-txt-to-avoid-adding-to-index-by-web-crawlers/______.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/set-robots-txt-to-avoid-adding-to-index-by-web-crawlers/web-crawlers-10.png" alt="CDN resource" width="80%">
 
-## How it is going to work? 
+A new page will open, where you will perform the remaining steps.
 
-The **robots.txt** file controls how search engine spiders see and interact with your webpage. The added rule allows us to rewrite a path for **robots.txt** that will be used by web crawlers. For example,  if your personal domain is **cdn.domain.com**, the search engine crawlers will request the **cdn.domain.com/robots.txt URL** which contains restrictions for indexing. Consequently, domain **cdn.domain.com** won’t be indexed.
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/set-robots-txt-to-avoid-adding-to-index-by-web-crawlers/web-crawlers-20.png" alt="A new page ">
 
-**Note**: These settings don’t affect the website itself.
+2\. Click **Content**, then **Status code**.
+
+3\. Enable the **Status code** option.
+
+4\. In the **URL or code text (optional)** field, enter the following directive:
+
+```
+User-agent: *\nDisallow: /\n
+```
+
+5\. Save changes.
+
+That’s it. You have successfully prevented content requested from the custom CDN domain from being indexed. 
+
+**Note**: This configuration doesn’t affect the website itself.
+
+
+

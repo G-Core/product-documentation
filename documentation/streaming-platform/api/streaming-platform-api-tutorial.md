@@ -45,7 +45,7 @@ You can integrate your product to use the Streaming Platform for unlimited video
 
 Typically, your app presents users with an interface through which they can create and manage a stream. Each user action represents a request to an endpoint in the Streaming Platform API and a webhook. The following diagram shows the typical high-level sequence of the operations grouped into stages:
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/api/streaming-platform-api-tutorial/12876274382481.png" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/api/streaming-platform-api-tutorial/12876274382481.png" alt="How integration works">
 
 You’ll need to have:
 

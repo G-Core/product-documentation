@@ -39,3 +39,5 @@ Gcore DNS provides CNAME Flattening to customers on all plans by default. To use
 1\. Remove the A record for the root domain before creating the CNAME record.
 
 2\. Ensure that there is only one CNAME record to ensure that flattening works as expected.
+
+You can check the CNAME record's value using the <a href="https://gcore.com/dev-tools/dns-lookup" target="_blank">Gcore DNS Lookup</a> tool.

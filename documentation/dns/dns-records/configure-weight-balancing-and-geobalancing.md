@@ -42,7 +42,7 @@ Three types of balancing are available:
 
 1. Create a <a href="https://gcore.com/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing" target="_blank">resource record in advanced mode</a> (steps 1–6.)
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/configure-balancing-10.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/configure-balancing-10.png" alt="Configure balancing in the control panel" width="80%">
 
 2. Move the slider in the **Records selection** using section to enable balancing.
 
@@ -50,7 +50,7 @@ Three types of balancing are available:
 
 4. Specify the maximum number of records in one response in the right field. The default value is one record per response.
 
-5. Configure Health checks if needed. Learn more about them in <a href="https://gcore.com/docs/dns/dns-failover/about-dns-failover" target="_blank">our article</a>.
+5. Configure Health Checks if needed. Learn more about them in <a href="https://gcore.com/docs/dns/dns-failover/about-dns-failover" target="_blank">our article</a>.
 
 6. Specify the record’s value.
 
@@ -82,7 +82,7 @@ P<sub>1</sub>= W<sub>1</sub> / Sum<sub>i</sub>(W<sub>i</sub>)
 - *4.5.6.7* with the “weight” 10, probability = 0.06(6)
 - *7.8.9.0* with the “weight” empty (i.e., set by default to 50,) probability = 0.3(3)
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/configure-balancing-20.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/configure-balancing-20.png" alt="Balancing by weight" width="80%">
 
 ### Balancing by non-coordinates meta
 
@@ -97,14 +97,14 @@ When a DNS request is made, the answer will be formed using the chosen *Records 
 - Continents
 - Countries
 - Fallback (only used in an answer if no other records were selected)
-- Backup (only used in combination with health checks to provide failover capability; if the rest of the records are not “healthy,” backup records will be used to form an answer; if at least one non-backup record is “healthy,” the record with the backup metadata does not participate in the response)
+- Backup (only used in combination with Health Checks to provide failover capability; if the rest of the records are not “healthy,” backup records will be used to form an answer; if at least one non-backup record is “healthy,” the record with the backup metadata does not participate in the response)
 - Notes (any comments; for example, you can specify a city, data center name, or cluster name)
 
 Our system will check if a user matches the criteria from the metadata in the following order: IP, ASN, country, and continent. The processing logic works like this:
 
 1. Our DNS server receives a request to the domain.
 
-2. If Health checks are configured, we filter off all “non-healthy” records.
+2. If Health Checks are configured, we filter off all “non-healthy” records.
 
 3. The DNS server compares the requestor user’s IP (respecting EDNS(0)) with the IP from the metadata. The server uses records with matched metadata to form an answer if there is a match.
 
@@ -125,7 +125,7 @@ Our system will check if a user matches the criteria from the metadata in the fo
 
 Here’s how it looks when you add these records:
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/configure-balancing-30.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/configure-balancing-30.png" alt="Here’s how it looks when you add these records" width="80%">
 
 If a user with the IP from the subnet *192.168.1.0/24* requests the domain, the record with the value *10.0.0.0* will be returned. If the requestor’s subnet is *192.0.2.0/24*, the *10.0.0.1* record will be returned.
 
@@ -133,8 +133,8 @@ If a user with the IP from the subnet *192.168.1.0/24* requests the domain, the 
 
 With coordinates balancing, you can assign coordinates to each record and add the latlong (latitude and longitude) type metadata. Users will receive the record with the nearest coordinates when they request your domain. You can use the map icon to check you’ve entered the correct coordinates—simplyclick on the icon to see the location corresponding to your parameters.
 
-**Example**. A user closer to the coordinate *51.52318152049715/-0.13458412218999416* (the center of London) will receive an A record with the value *10.0.0.0*, while a user nearer to *48.859741241898114/2.3415648470109653* (the center of Paris) will receive an A record with the value *10.0.0.1*.
+**Example**. A user closer to the coordinate 40.43733088856228/-3.566434349995511 (the center of Madrid) will receive an A record with the value *127.0.0.1*, while a user nearer to 52.20328569593686/21.081144277439293 (the center of Warsaw) will receive an A record with the value *127.0.0.2*.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/configure-balancing-40.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/image-3723.png" alt="Balancing by non-coordinates meta" width="80%">
 
 The configuration is complete. As soon as you finish creating records, balancing will be enabled.

@@ -252,7 +252,7 @@ client_id = {client_id}
 
 Try the <a href="https://codepen.io/apih9000/pen/wvQmNEW?editors=1011" target="_blank">CodePen template</a> by copying your ```token```, ```video_id```, and ```client_id``` to find out the upload functionality of the TUS protocol:  
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/upload-video-via-api/codepen-example.png" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/upload-video-via-api/codepen-example.png" alt="CodePen template">
 
 Example of JS code: 
 

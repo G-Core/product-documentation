@@ -6,7 +6,7 @@ published: true
 pageTitle: Account types for 5G eSIM| Gcore
 pageDescription: Learn more about different account types and their permissions of GCore 5G eSIM technology.
 ---
-## Account types and permissions
+# Account types and permissions
 
 We offer two types of accounts: users and teammates. 
 

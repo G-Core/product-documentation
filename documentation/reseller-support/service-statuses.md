@@ -17,7 +17,7 @@ toc:
 
 You can configure the service statuses on the "Service" page in the settings of the desired client.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/service-statuses/client-services-10.png" alt="">
+<img src="https://assets.gcore.pro/docs/reseller-support/service-statuses/client-services-10.png" alt="Service statuses">
 
 ## Activate Service  
 
@@ -51,4 +51,4 @@ If you want to temporarily suspend the client, use the Paused status. All of the
 
 This status is connected to the Transition to Deleted status setting. The Deleted status is set automatically once the specified number of days is over. When the Status is switched the product resources get deleted. You cannot change the number of days yourself. To change the number of days for a specific client, email us at [support@gcore.com](mailto:support@gcore.com). 
 
-<img src="https://assets.gcore.pro/docs/reseller-support/service-statuses/status-deleted-20.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/reseller-support/service-statuses/status-deleted-20.png" alt="Transition to Deleted status setting" width="50%">

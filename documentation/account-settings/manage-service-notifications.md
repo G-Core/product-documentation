@@ -20,7 +20,7 @@ You have the ability to customize notification settings for users invited to you
 
 Here’s how to manage service notifications and promotional emails:
 
-<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/image3.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/image3.png" alt="Manage notifications">
 
 1\. Click on the profile icon in the lower-left corner.
 
@@ -30,14 +30,14 @@ Here’s how to manage service notifications and promotional emails:
 
 4\. Use toggle switches to configure notifications and/or promotional emails.
 
-<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/image1.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/image1.png" alt="Notifications">
 
 All notifications are divided into groups: 
 
 1. **Important notifications** about service availability and promotions. Each user with access to the client account has individual settings for important notifications.
 2. **General notifications** about changes to your services. General notification settings are shared for all account users.
 
-<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/image4.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/image4.png" alt="Notifications groups">
 
 You can choose the settings for either a single notification or an entire group.
 
@@ -61,7 +61,7 @@ Each user of the personal account can configure this notification.
 
 To do it, specify the traffic limit in the Traffic consumption level field. Click **Save** to apply the settings.
 
-<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/set-limit-20.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/set-limit-20.png" alt="Manage service notifications" width="50%">
 
 **Note**: Traffic consumption level is _not configured_ individually, it is the same for all users of the account who use this notification.
 
@@ -78,7 +78,7 @@ You can receive notifications about:
 
 To do it go to the Storage notification section, select Storage and Bucket (optional) and specify the limit. Then click **Save**.
 
-<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/storage-notifications-30.png" alt="" width="70%">
+<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/storage-notifications-30.png" alt="Configure for Storage" width="70%">
 
 <expandable-element title="Why am I subscribed to certain notifications?">
 

@@ -18,7 +18,7 @@ pageDescription: A step-by-step guide to disable or resume services. Disabling d
 
 2\.  Find the service you need and click **Disable service**.
 
-<img src="https://assets.gcore.pro/docs/account-settings/billing/services/disable-10.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/billing/services/disable-10.png" alt="Disable a service">
 
 **Please, note**:  After disabling the service or after the end of the trial period (if the service was not activated), all service resources and settings will be deleted after a certain period of time.
 
@@ -59,4 +59,4 @@ pageDescription: A step-by-step guide to disable or resume services. Disabling d
 
 2\.  Find the service you need and click **Resume service**.
 
-<img src="https://assets.gcore.pro/docs/account-settings/billing/services/resume-20.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/billing/services/resume-20.png" alt="Services tab.">

@@ -20,7 +20,7 @@ You can view the current CDN pricing on <a href="https://gcore.com/pricing" targ
 
 Each plan description shows prices for traffic within a month limit and for overage. There is also a request limit. When the number of requests exceeds your plan's limit, you are charged additionally.
 
-<img src="https://assets.gcore.pro/docs/cdn/how-the-cdn-service-and-its-additional-options-are-billed/image-5.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/how-the-cdn-service-and-its-additional-options-are-billed/image-5.png" alt="Understand CDN billing" width="80%">
 
 
 |             | Monthly traffic limit                                                                                                                                                                                           | Traffic overage                                                                                                                                                                                                                                                                                                                                                                                                               | Request overage                                                                                                                            |
@@ -37,7 +37,7 @@ The credit limit may differ from the one that is given in this article. You can 
 
 ## Understand additional options billing
 
-<img src="https://assets.gcore.pro/docs/cdn/how-the-cdn-service-and-its-additional-options-are-billed/image-7.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/how-the-cdn-service-and-its-additional-options-are-billed/image-7.png" alt="Understand additional options billing" width="80%">
 
 Additional options are listed on <a href="https://gcore.com/pricing" target="_blank">the CDN pricing page</a>. To activate it, contact our technical support via chat or email [support@gcore.com](mailto:support@gcore.com). Each option has a fixed price and is billed together with the plan fee on the 2nd day of every month. For example, if you activate a plan for €100/month and the "Extended statistics" option for €200. On the 2nd day of a following month, the system will charge you €300.
 
@@ -68,7 +68,7 @@ Log in to your account, click the profile icon and go to "Billing". Find the fo
 - Expenses — all transactions that have been made to pay for all products and services,
 - Payments —all transactions you have made to recharge your account.
 
-<img src="https://assets.gcore.pro/docs/cdn/how-the-cdn-service-and-its-additional-options-are-billed/mceclip0.png" alt="">
+<img src="https://assets.gcore.pro/docs/cdn/how-the-cdn-service-and-its-additional-options-are-billed/mceclip0.png" alt="View your charges and payment history">
 
 ## Change your billing plan
 

@@ -52,7 +52,7 @@ To proceed with a PVC, follow the steps:
 
 1. Make sure the required disk type is available in your region. To do so, go to the **Kubernetes** tab, select the required region and click **Create new cluster**. Click the **Volume type** field and check which options are available on the drop-down list. 
 
-<img src="https://assets.gcore.pro/docs/cloud/kubernetes/storage/create-a-pvc-and-bind-it-to-a-pod/1-available-volumes.jpg" alt="">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/storage/create-a-pvc-and-bind-it-to-a-pod/1-available-volumes.jpg" alt="Create new cluster">
 
 If you create a storage class with a volume type that is not available in your region, the PV won’t work.
 

@@ -27,7 +27,7 @@ The following restrictions apply to blocked users and sellers:
 
 The new page will open, and you can do the remaining steps there.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/block-activate-users-and-sellers/block-users-10.png" alt="">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/block-activate-users-and-sellers/block-users-10.png" alt="Sellers section">
 
 2\. Find the user/seller you need using the filters.
 
@@ -47,7 +47,7 @@ Click **Activate** if you need to unblock the user/seller in step #4.
 
 3\. Check the value of the user/seller in the "Blocked" column.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/block-activate-users-and-sellers/blocked-status-20.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/block-activate-users-and-sellers/blocked-status-20.png" alt="Blocked column" width="80%">
 
 - If the status is "true", the user is blocked and cannot access the account and services.
 - If the status is "false", the user is active and has access to the account and services.

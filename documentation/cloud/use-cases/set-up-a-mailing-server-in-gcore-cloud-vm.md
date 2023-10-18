@@ -21,13 +21,13 @@ Install Cloud VM using <a href="https://gcore.com/docs/cloud/virtual-instances/c
 
 Check the **Network settings** tab in the machine settings. The interface must be set to the public to access the internet.
 
-<img src="https://assets.gcore.pro/docs/cloud/use-cases/1.png">
+<img src="https://assets.gcore.pro/docs/cloud/use-cases/1.png" alt="Network settings tab in the machine settings">
 
 However, if you first chose the option private method, then you need to get a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address" target="_blank">floating IP address</a> to access the internet.
 
 **Please note**: By default, Gcore Cloud VM has limits on SMTP port 25. In order to open a port and successfully install a mail server, <a href="https://accounts.gcore.com/tickets/all" target="_blank">contact support</a> and click **Create Ticket**.
 
-<img src="https://assets.gcore.pro/docs/cloud/use-cases/2.png">
+<img src="https://assets.gcore.pro/docs/cloud/use-cases/2.png" alt="Create Ticket">
 
 3. Connect to your Gcore Cloud VM via either <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">SSH</a> or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">the VNC concole</a> in your control panel.
 
@@ -42,7 +42,7 @@ sudo apt-get install postfix
 
 During Postfix installation, you will be prompted to select a configuration type. Select the `Internet Site` option and enter the fully qualified hostname of your server, then click `<Ok>`.
 
-<img src="https://assets.gcore.pro/docs/cloud/use-cases/3.png">
+<img src="https://assets.gcore.pro/docs/cloud/use-cases/3.png" alt="Internet Site option">
 
 5. Configure Postfix.
 
@@ -66,7 +66,7 @@ mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
 
 - **mynetworks**: Specify a list of networks or IP addresses from which mail messages are allowed to be sent through this server.
 
-<img src="https://assets.gcore.pro/docs/cloud/use-cases/4.png">
+<img src="https://assets.gcore.pro/docs/cloud/use-cases/4.png" alt="Configure Postfix">
 
 Save the changes and restart Postfix:
 
@@ -97,7 +97,7 @@ ssl_key = </etc/ssl/private/ssl-cert-snakeoil.key
 
 Insert the required SSL parameters below, as noted in the screenshot, after `listen = *, ::`.
 
-<img src="https://assets.gcore.pro/docs/cloud/use-cases/5.png">
+<img src="https://assets.gcore.pro/docs/cloud/use-cases/5.png" alt="required SSL parameters">
 
 Save your changes and restart Dovecot:
 
@@ -116,7 +116,7 @@ sudo passwd username
 
 Create a password for each user and retype it. The password will be saved automatically.
 
-<img src="https://assets.gcore.pro/docs/cloud/use-cases/6.png">
+<img src="https://assets.gcore.pro/docs/cloud/use-cases/6.png" alt="Create a password">
 
 9. Add DNS records.
 

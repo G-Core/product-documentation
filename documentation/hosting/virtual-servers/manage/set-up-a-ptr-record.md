@@ -24,15 +24,15 @@ PTR records are normally used for outbound email servers, since incoming mail se
 
 2. Mark the checkbox next to the server for which you wish to edit PTR records and click on **IP addresses**.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/set-up-a-ptr-record/1-id-ip-address-new.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/set-up-a-ptr-record/1-id-ip-address-new.png" alt="IP addresses tab">
 
 3. In the newly opened window, mark the checkbox next to the IP for which you wish to edit PTR records and click on **Edit**.
-
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/set-up-a-ptr-record/2-ip-address-edit-new.png" alt="">
+   
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/set-up-a-ptr-record/2-ip-address-edit-new.png" alt="Edit tab">
 
 4. In the newly opened window, put a domain name into the **Domain** field and click **OK**. The PTR record will be created automatically.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/set-up-a-ptr-record/3-domain-new.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/set-up-a-ptr-record/3-domain-new.png" alt="IP addresses window">
 
 ## Set up on old interface
 
@@ -40,12 +40,12 @@ PTR records are normally used for outbound email servers, since incoming mail se
 
 2. Click on the server for which you want to create PTR records, and then click on **IP addresses**.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/set-up-a-ptr-record/4-ip-addressess-old.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/set-up-a-ptr-record/4-ip-addressess-old.png" alt="IP addresses list">
 
 3. Choose the IP address for which you want to set or change a PTR record and click on **Edit**.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/set-up-a-ptr-record/5-edit-old.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/set-up-a-ptr-record/5-edit-old.png" alt="Edit tab">
 
 4. In the newly opened window, put a domain name into the **Domain** field and click **OK**. The PTR record will be created automatically.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/set-up-a-ptr-record/6-domain-old.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/set-up-a-ptr-record/6-domain-old.png" alt="IP addresses window">

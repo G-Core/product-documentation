@@ -15,7 +15,7 @@ When they purchase our products, you get a monetary bonus. The bonus is tra
 
 To get a referral link and activate the affiliate program, go to your Control Panel. In the "Client" section, open "Referral Program" tab. Everyone starts with a 12% bonus.  
 
-<img src="https://assets.gcore.pro/docs/hosting/about-gcore-referral-program/Screenshot_4.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/hosting/about-gcore-referral-program/Screenshot_4.png" alt="Referral program tab" width="50%">
 
 Click **Statistics** to see a number of attracted users.
 

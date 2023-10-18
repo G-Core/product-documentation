@@ -5,6 +5,7 @@ published: true
 order: 10
 toc:
    --1--Create buckets: "create-buckets"
+   --2--Naming requirements: "naming-requirements"
    --1--Add Lifecycle policy (S3 Luxembourg): "add-lifecycle-policy-available-for-s3-in-luxembourg-only"
    --1--Configure HTTP access: "configure-http-access"
    --1--Use File manager: "use-file-manager"
@@ -20,23 +21,35 @@ pageDescription: Creating, configuring, and deleting Gcore storage buckets, addi
 
 ## Create buckets
 
-1. Go to the <a href="https://storage.gcore.com/storage/list" target="_blank">Storage</a> section.
+1\. Go to the <a href="https://storage.gcore.com/storage/list" target="_blank">Storage</a> section.
 
-2. Click the **···** icon opposite the storage that you want to use for the bucket’s creations and select **Buckets**.
+2\. Click the **···** icon opposite the storage that you want to use for the bucket’s creations and select **Buckets**.
 
-<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/bucket-main-menu-10.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/bucket-main-menu-10.png" alt="Storage" width="80%">
 
-2. Click the **Add new bucket** button.
+3\. Click the **Add new bucket** button.
 
-<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/add-bucket-20.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/add-bucket-20.png" alt="Add new bucket" width="50%">
 
-3. Enter the name of the bucket and click **Create**.
+4\. Enter the bucket's name (follow the <a href="https://gcore.com/docs/storage/manage-s3-storage/manage-buckets-via-the-control-panel#naming-requirements" target="_blank">instructions below with the naming requirements</a>) and click **Create**.
 
-**Note**: The name must be unique. Our system checks the names of buckets of all users. If the name matches the name of the bucket of another user, you will see the error: ```create bucket: bucket already exist: bad params```.
-
-<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/confirm-creation-30.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/confirm-creation-30.png" alt=" Enter the bucket's name" width="50%">
 
 The bucket’s creation is complete.
+
+### Naming requirements
+
+When naming your S3 buckets, follow the requirements:
+
+1. **Uniqueness**. You must choose a unique name that doesn't repeat any existing bucket names in the Gcore S3 repository. Our system checks the names of buckets of all users. If the name matches the name of the bucket of another user, you will see the error: create bucket: bucket already exists: bad params. Try another name.
+
+2. **DNS compliant**. Do not use the following characters in the name, since they don't match DNS notation: underscores, dashes (at the end), multiple dots in a row, or a combination of dots and dashes.
+
+3. **Lowercase**. Use only lowercase in names.
+
+4. **Length**. The length must be 3–63 characters.
+
+5. **Confidentiality**. Do not include sensitive information in the bucket name as it will be visible in the URL, and attackers can take advantage of this.
 
 ## Add Lifecycle policy (available for S3 in Luxembourg only)
 
@@ -44,13 +57,13 @@ You can configure the lifecycle policy for a bucket via the *aws cli* client acc
 
 1. Open the bucket page, click the **···** icon and select **Lifecycle Management**.
 
-<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/lifecycle-management-40.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/lifecycle-management-40.png" alt="bucket page" width="80%">
 
 **Note**: If your S3 storage is in different locations OTHER THAN Luxembourg (e.g., Chicago, Singapore, and so on), the Lifecycle Management menu item will be absent.
 
 2. Enter the number of days. After this time, files will be deleted from the bucket. Click **Save changes**.
 
-<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/change-lifecycle-50.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/change-lifecycle-50.png" alt="Enter the number of days" width="80%">
 
 If you want to discard the expiration time, click the **Cancel policy** button.
 
@@ -60,11 +73,11 @@ If you want to use <a href="https://gcore.com/docs/storage/use-storage-as-the-or
 
 1. Open the bucket page, click the **···** icon and select **HTTP access to all files**.
 
-<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/http-access-60.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/http-access-60.png" alt="Enter the number of day" width="80%">
 
 2. Press **Apply**.
 
-<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/apply-http-access-70.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/apply-http-access-70.png" alt="Configure HTTP access" width="50%">
 
 ## Use File manager
 
@@ -86,15 +99,15 @@ To configure CORS in the control panel:
 
 1. Open the bucket page, click the **···** icon, and select **File manager**.
 
-<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/file-manager-80.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/file-manager-80.png" alt="Open the bucket page" width="80%">
 
 2. Click the **Override CORS** button.
 
-<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/override-cors-90.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/override-cors-90.png" alt="Override CORS" width="80%">
 
 That’s it. After this action, you should enter the Access and Secret key to log in to the File Manager. Access and Secret keys are the credentials that are generated after storage creation. We don’t keep them in our system because it’s private and secure information. If you’ve forgotten keys, generate a new one in the Storage section by pressing the **···** icon and selecting **Generate new keys**.
 
-<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/generate-key-100.png" alt="">
+<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/generate-key-100.png" alt="File Manager">
 
 ### Add a folder to a bucket
 
@@ -102,7 +115,7 @@ That’s it. After this action, you should enter the Access and Secret key to lo
 
 2. Click **Add folder**. Enter the name of the folder and click **Create**.
 
-<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/add-folder-110.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/add-folder-110.png" alt="Copy" width="80%">
 
 The folder is created. After this, you can work with files.
 
@@ -112,18 +125,18 @@ The folder is created. After this, you can work with files.
 
 2. Click **Select files**, select them from your PC, and click **Upload**.
 
-<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/manage-files-120.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/manage-files-120.png" alt="Delete buckets" width="80%">
 
 Files will be loaded to a folder or a bucket. Then, you can copy links to files from the bucket in different formats: in S3 to manage them via the console or terminal, and conventional HTTP/HTTPS links to view files in the browser.
 
 To get links, check the boxes on the left of files and click **Copy S3 URL** or **Copy URL**.
 
-<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/copy-url-130.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/copy-url-130.png" alt="Delete buckets" width="80%">
 
 For example, for the file *sample.txt*, the links look as follows:
 
-- s3://s-ed1.cloud.gcore.lu/example/folder1/sample.txt
-- https://s-ed1.cloud.gcore.lu/example/folder1/sample.txt
+- ```s3://s-ed1.cloud.gcore.lu/example/folder1/sample.txt```
+- ```https://s-ed1.cloud.gcore.lu/example/folder1/sample.txt```
 
 where
 
@@ -141,4 +154,4 @@ Deletion time depends on the overall size of the files that are in the bucket.
 
 To delete a bucket, click the **···** icon on the bucket’s page, select **Delete** and confirm.
 
-<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/delete-bucket-140.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets/delete-bucket-140.png" alt="Delete buckets" width="80%">

@@ -11,9 +11,9 @@ toc:
 pageTitle: HTTPS Record Configuration Guide | Gcore
 pageDescription: Discover what an HTTPS record is, how it enhances secure internet connections, and how to configure this new DNS record type in the control panel.
 ---
-# What Is an HTTPS Record and How Is It Configured?
+# What is an HTTPS record and how is it configured?
 
-## What Is an HTTPS Record?
+## What is an HTTPS record?
 
 <a href="https://gcore.com/dns" target="_blank">Gcore DNS</a> now supports a new DNS record type: HTTPS. The HTTPS record is a specialized form of the Service Binding (SVCB) DNS record. These record types have been established by the <a href="https://datatracker.ietf.org/doc/html/draft-ietf-dnsop-svcb-https-10" target="_blank">Internet Engineering Task Force (IETF)</a> to enhance the flexibility of secure internet connections, making them more reliable and faster. HTTPS records achieve this by reducing the number of round trips required to establish a connection, and also by supporting future protocol upgrades.
 
@@ -33,7 +33,7 @@ Traditional methods of establishing secure connections, like HTTPS, often necess
 
 These three steps can add significant latency due to the multiple round trips required to establish the optimal connection type with the web server. Moreover, these steps also pose a security risk, as they create an opportunity to inject malicious ads or captive portals during the upgrade from HTTP to HTTPS.
 
-## How Do HTTPS Records Work?
+## How do HTTPS records work?
 
 An HTTPS record can be set up for the domain _example.com_ as shown below:
 
@@ -61,17 +61,17 @@ When a browser requests the HTTPS record from the DNS server, it receives all ne
 
 Combining all relevant parameters into a single lookup response reduces the number of round trips required to optimally connect to a web server. When used together with <a href="https://datatracker.ietf.org/doc/html/rfc3168" target="_blank">ECN</a> configuration this eliminates the need for multiple rounds of TLS negotiation while still supporting cutting-edge multi-CDN scenarios.
 
-## How to Configure the HTTPS Record in the Control Panel
+## How to configure the HTTPS record in the control panel
 
 1\. Navigate to the <a href="https://dns.gcore.com" target="_blank">DNS</a> section. Click on the zone of the domain where you wish to add the HTTPS record.
 
 2\. Click **Add record**.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/what-is-an-https-record-and-how-is-it-configured/15663201710737.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/what-is-an-https-record-and-how-is-it-configured/15663201710737.png" alt="Add record" width="80%">
 
 The remaining attribute configurations are displayed in the screenshot below:
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/what-is-an-https-record-and-how-is-it-configured/15663195985553.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/what-is-an-https-record-and-how-is-it-configured/15663195985553.png" alt="attribute configurations" width="80%">
 
 3\. **Type**. Select “HTTPS”.
 
@@ -97,9 +97,9 @@ The remaining attribute configurations are displayed in the screenshot below:
 
 After configuration, the record should look something like this:
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/what-is-an-https-record-and-how-is-it-configured/15663198075793.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/what-is-an-https-record-and-how-is-it-configured/15663198075793.png" alt="record " width="80%">
 
-You can verify the responses with kdig (a version of “dig” from Knot DNS). If you're using “dig,” please ensure you have the latest version, as older versions do not support HTTPS record types.
+You can verify the responses with kdig (a version of “dig” from Knot DNS). If you're using “dig,” please ensure you have the latest version, as older versions do not support HTTPS record types. You can also check if the created record has been added correctly using the <a href="https://gcore.com/dev-tools/dns-lookup" target="_blank">Gcore DNS Lookup</a> tool.
 
 ```
 kdig https example.com @ns1.gcorelabs.net

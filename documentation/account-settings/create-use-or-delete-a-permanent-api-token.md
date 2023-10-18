@@ -32,7 +32,7 @@ To manage services add your permanent API token after APIKey in the authorizatio
 
 **Note:** There is currently a limit of 50 API tokens per account
 
-<img src="https://assets.gcore.pro/docs/account-settings/api-tokens/create-token-10.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/api-tokens/create-token-10.png" alt="Create a permanent API token">
 
 1\. In your Personal Account, go to Profile.
 
@@ -42,7 +42,7 @@ To manage services add your permanent API token after APIKey in the authorizatio
 
 The form for an API token creation will be opened.  
   
-<img src="https://assets.gcore.pro/docs/account-settings/api-tokens/fill-api-token-form-20.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/api-tokens/fill-api-token-form-20.png" alt="API token creation" width="80%">
 
 4\. In the Token name field, specify the token name.
 
@@ -65,13 +65,13 @@ A pop-up window with the API token will be opened.
 
 10\. After you have saved the generated token, click **OK, I've copied token**. Information about the token will be displayed in the API tokens section.
 
-<img src="https://assets.gcore.pro/docs/account-settings/api-tokens/creation-notification-30.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/account-settings/api-tokens/creation-notification-30.png" alt="New API token" width="50%">
 
 ## Delete an API token
 
 Only users with the Administrators role can delete any tokens issued for the account. Users with other roles can only delete tokens that were issued only by these users.
 
-<img src="https://assets.gcore.pro/docs/account-settings/api-tokens/delete-token-40.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/api-tokens/delete-token-40.png" alt="Delete an API token">
 
 1\.  In your Personal Account, go to Profile.
 2\.  Open the API tokens section.
@@ -89,7 +89,7 @@ For a quick search, use:
 - Role filter for filtering by the role assigned to the token
 - Status filter for filtering by token status: active/expired/deleted-filter
 
-<img src="https://assets.gcore.pro/docs/account-settings/api-tokens/token-section-50.png" alt="">
+<img src="https://assets.gcore.pro/docs/account-settings/api-tokens/token-section-50.png" alt="API tokens section">
 
 
 ## API token expiration notifications
@@ -98,7 +98,7 @@ API token expiration notifications are displayed in your personal account and ar
 
 You <a href=".documentation/account-settings/manage-service-notifications" target="_blank">can configure</a> notifications in the Notifications section of the Profile tab.  
   
-<img src="https://assets.gcore.pro/docs/account-settings/api-tokens/expiration-notification-60.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/api-tokens/expiration-notification-60.png" alt="API token expiration notifications" width="80%">
 
 Users are notified by email:
 

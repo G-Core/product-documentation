@@ -795,7 +795,7 @@ A JWT example is: 
 - PAYLOAD: (DATA) 
 - ```{ "role": "interpreter", "featureInterpreters": true, "intLang": "de", "roomId": "serv0_test1" }``` 
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/api/real-time-video-api-tutorial/11649788899601.png" alt="">
+<img src="https://assets.gcore.pro/docs/streaming-platform/api/real-time-video-api-tutorial/11649788899601.png" alt="example">
 
 ## Client API
 
@@ -1235,10 +1235,10 @@ A server can be derived from a room ID. For example: &roomId = serv1qweqwe.
 
 | Server | Country    | Server URL                      | Description                                                    |
 |------------|----------------|-------------------------------------|--------------------------------------------------------------------|
-| serv0  | Luxembourg | https://webrtc3.gvideo.co:443   | DEFAULT server, unless states otherwise (like &amp;roomId=BMW) |
-| serv1  | Australia  | https://webrtc4.gvideo.co:443   |                                                                |
-| serv2  | USA        | https://webrtc5.gvideo.co:443   |                                                                |
-| serv3  | Singapore  | https://webrtc6.gvideo.co:443 |                                                              |
+| serv0  | Luxembourg | ```https://webrtc3.gvideo.co:443```   | DEFAULT server, unless states otherwise (like &amp;roomId=BMW) |
+| serv1  | Australia  | ```https://webrtc4.gvideo.co:443```   |                                                                |
+| serv2  | USA        | ```https://webrtc5.gvideo.co:443```   |                                                                |
+| serv3  | Singapore  | ```https://webrtc6.gvideo.co:443``` |                                                              |
 
 
 **Note**: There is an offset in a server’s URL. This is a temporary but necessary solution that will be changed soon. We will inform you additionally.

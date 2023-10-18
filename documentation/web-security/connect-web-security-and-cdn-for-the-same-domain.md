@@ -31,7 +31,7 @@ We changed the bot-identifying process, thereby resolving the connectivity confl
 
 **Note**: The IP from the example (*5.188.189.82*) will be different from yours.
 
-<img src="https://assets.gcore.pro/docs/web-security/connect-web-security-and-cdn-for-the-same-domain/13997686949649.png" alt="">
+<img src="https://assets.gcore.pro/docs/web-security/connect-web-security-and-cdn-for-the-same-domain/13997686949649.png" alt="Web protection">
 
 
 3\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN resources</a> tab and create a CDN resource according to the appropriate guide: Create a CDN resource <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">for only static files</a> or <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site" target="_blank">an entire site</a>.
@@ -42,7 +42,7 @@ We changed the bot-identifying process, thereby resolving the connectivity confl
 - The IP address copied at step #2 in the "Origin" field (e.g., *5.188.189.82*).
 - The custom domain based on your application domain in the "Custom domain" field (e.g., *cdn.test-domain.com*).
 
-<img src="https://assets.gcore.pro/docs/web-security/connect-web-security-and-cdn-for-the-same-domain/13997787631505.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/web-security/connect-web-security-and-cdn-for-the-same-domain/13997787631505.png" alt="Set up initial configuration" width="80%">
 
 Complete the creation of the CDN resource by making all the necessary settings.
 
@@ -51,7 +51,7 @@ Complete the creation of the CDN resource by making all the necessary settings.
 - The domain of your application in the "Enter site name" step (e.g., *test-domain.com*).
 - The IP address copied at step #2 in the "IPv4 address" field (e.g., *5.188.189.82*).
 
-<img src="https://assets.gcore.pro/docs/web-security/connect-web-security-and-cdn-for-the-same-domain/13997781806353.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/web-security/connect-web-security-and-cdn-for-the-same-domain/13997781806353.png" alt="Add DNS record" width="80%">
 
 Complete the creation of the CDN resource by making all the necessary settings.
 

@@ -19,7 +19,7 @@ Enter your CNAME from the Gcore <a href="https://accounts.gcore.com/reports/das
 
 Ensure that your <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">CNAME record has been configured</a> in a proper way before using it for integration.  
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-socialengine/socialenginev1.jpeg" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-socialengine/socialenginev1.jpeg" alt="Integrate CDN resource with SocialEngine" width="80%">
 
 Click **Save Changes** button at the bottom of the page.  
   

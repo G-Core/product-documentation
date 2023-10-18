@@ -34,21 +34,21 @@ Connection closed by foreign host.
 
 Putty interface:
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-issues-with-ssh-connection/mceclip0.png" alt="" width="60%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-issues-with-ssh-connection/mceclip0.png" alt="Putty interface" width="60%">
 
 Specify the IP address in the field, be sure to have 22 port typed, then press Open. Enter the credentials from the Instruction (example follows next). A little note, User goes for Login.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-issues-with-ssh-connection/mceclip1.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-issues-with-ssh-connection/mceclip1.png" alt="Specify the IP address " width="80%">
 
 If 22 port is opened and you are still having issues with connection, check login and password.
 
 Find login and password in the Control Panel. Choose the server and then click Instructions button.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-issues-with-ssh-connection/mceclip1.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-issues-with-ssh-connection/mceclip1.png" alt="Find login and password " width="80%">
 
 You need User and Password fields located after Server IP address.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-issues-with-ssh-connection/mceclip1.png" alt="">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-issues-with-ssh-connection/mceclip1.png" alt="Find login and password ">
 
 **Note**: If you change the password in OS by yourself it won't change in the Instruction.
 

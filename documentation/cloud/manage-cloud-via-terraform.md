@@ -72,7 +72,7 @@ terraform init
 
 You’ll get the output:
 
-<img src="https://assets.gcore.pro/docs/cloud/manage-cloud-via-terraform/12966689446417.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/manage-cloud-via-terraform/12966689446417.png" alt="output" width="80%">
 
 This means Terraform has been successfully downloaded and installed, and you can start working with it.
 

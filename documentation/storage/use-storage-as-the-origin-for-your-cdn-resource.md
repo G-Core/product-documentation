@@ -21,13 +21,13 @@ pageDescription: A step-by-step guide to using S3 or SFTP storage as the origin 
 
 1\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN</a> tab and press **Create CDN resource**.
 
-<img src="https://assets.gcore.pro/docs/storage/use-storage-with-cdn/create-cdn-resource-10.png" alt="">
+<img src="https://assets.gcore.pro/docs/storage/use-storage-with-cdn/create-cdn-resource-10.png" alt="CDN resource">
 
 2\. Select which S3 storage you want to use as a content source: public or private - and follow the instructions.
 
 <expandable-element title="Public">
 
-<img src="https://assets.gcore.pro/docs/storage/use-storage-with-cdn/image3527.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/storage/use-storage-with-cdn/image3527.png" alt="Set up initial configuration" width="80%">
 
 1\. Select the **Specify content origin** option.
 
@@ -49,7 +49,7 @@ If you want to use a private bucket instead of a public S3 bucket, follow our gu
 
 Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN</a> tab and press **Create CDN resource**.
 
-<img src="https://assets.gcore.pro/docs/storage/use-storage-with-cdn/create-cdn-resource-10.png" alt="">
+<img src="https://assets.gcore.pro/docs/storage/use-storage-with-cdn/create-cdn-resource-10.png" alt="Use SFTP storage">
 
 
 To specify the Origin Source, use the following schema: 
@@ -58,7 +58,7 @@ To specify the Origin Source, use the following schema:
 
 Both name and hostname can be found on the Storage tab > Storages > Details.
 
-<img src="https://assets.gcore.pro/docs/storage/use-storage-with-cdn/use-sftp-as-origin-40.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/storage/use-storage-with-cdn/use-sftp-as-origin-40.png" alt="Set up initial configuration" width="80%">
 
 If your storage name is 12345-test and your hostname is *ams.origin.gcdn.co*, you should specify *12345-test.ams.origin.gcdn.co* as the Origin Source. Read more about personal domain setup in the "<a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">Create and set a custom domain for the content delivery via CDN</a>" guide.
 

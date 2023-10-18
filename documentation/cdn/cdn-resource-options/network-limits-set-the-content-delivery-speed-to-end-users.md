@@ -31,7 +31,7 @@ To configure the speed limit via the Control panel:
 
 This option has 2 modes: *Static* and *Dynamic*.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/network-limits-set-the-content-delivery-speed-to-end-users/12392873863953.png" alt="" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/network-limits-set-the-content-delivery-speed-to-end-users/12392873863953.png" alt="Static and Dynamic" width="50%">
 
 ## Static
 
