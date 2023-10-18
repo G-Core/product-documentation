@@ -27,28 +27,37 @@ Regions can be of two types: Core and Edge. A region determines the equipment sp
 | Designed for high scalability on the fly | Yes                         | Not                                 |
 | Available resources                      | 1000 cores and 30 TB of RAM | Up to 300 cores and 1 TB of RAM     |
 | Ports for user traffic and storage       | Separate                    | Shared                              |
-| Choice of configurations                 | 8 types, 45 configurations  | 1 type (Standard), 4 configurations |
 | Price                                    | Higher                      | Lower                               |
 
 
 \* We can always transform an edge region to core upon your request.
 
-3. Select an **Image**.
+3. Configure the image.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/3-image-selection.png" alt="" width=80%>
+Select the type of hardware architecture on which your instance will be running:
 
-*   Choose an OS template, a volume, a snapshot, a custom <a href="https://gcore.com/docs/cloud/images/upload-an-image-to-the-storage" target="_blank">image</a>, or a template from the marketplace.
-*   (for a Linux instance) Remember the login from the **For login to OS** field to connect to your instance on Linux OS via SSH from another Linux device. For details, refer to the article: <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">Connect to your instance via SSH</a>.
+- **x86-64**: This architecture is known for its broad compatibility with Linux operating systems and Windows distributions. It is commonly used in general purpose computing applications.
+- **ARM**: ARM architecture is designed for energy efficiency and low power consumption, which also supports strong performance, making it ideal for high-performance computing tasks. However, ARM instances are compatible with fewer OS distributions.
 
-**Important!** If you want to connect to a Linux instance from a Windows device, use a special application such as <a href="https://putty.org" target="_blank">PuTTY</a>.
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/17.png" alt="Choose x86-64 or ARM architecture">
 
-4. For **Type**, choose the configuration.
+Your choice of hardware architecture will affect the available OS options and instance flavors. Choose an OS distribution, a volume, a snapshot, a custom image, or a template from the marketplace.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/4-type%20selection.png" alt="" width=80%>
+4. Configure the instance type.
 
-Select the CPU generation and a flavor. 
+Select the appropriate CPU generation:
 
-<expandable-element title="Available flavors of virtual machines ">
+- **Intel® Xeon® Scalable, 3rd Gen or 2nd Gen** if you’ve selected x-86-64 architecture at the previous step.
+
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/18.png" alt="VM based on Intel® Xeon® Scalable, 3rd Gen or 2nd Gen">
+
+- **ARM Ampere® Altra® Max Family** if you’ve selected ARM architecture at the previous step.
+
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/19.png" alt="VM based on Ampere® Altra® Max Family">
+
+Choose one of the available flavors.
+
+<expandable-element title="Description of flavors">
 
 *   **Shared**. VMs that share a core of a physical machine with other VMs, designed for workloads that do not require high performance.  
     Availability: Luxembourg
