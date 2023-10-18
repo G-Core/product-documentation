@@ -49,6 +49,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
     public activeTab: string;
     public baseHref: string = environment.baseHref;
     public isArticleRated: boolean = false;
+    public isArticleReady: boolean = false;
 
     private routerSubscription: Subscription;
 
@@ -73,6 +74,14 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
         });
 
         if (this.scullyContainer.nativeElement) {
+            if (this.scullyContainer.nativeElement.childElementCount > 1) {
+                this.isArticleReady = true;
+                this.changeDetectorRef.detectChanges();
+            } else {
+                this.isArticleReady = false;
+                this.changeDetectorRef.detectChanges();
+            }
+
             this.scullyContainer.nativeElement.querySelectorAll(':not(.gc-gallery p) > img').forEach((img: Element) => {
                 this.ngZone.runOutsideAngular(() => {
                     this.renderer.listen(img, 'click', (event) => this.expandImage(event));
