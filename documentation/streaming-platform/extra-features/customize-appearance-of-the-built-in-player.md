@@ -14,7 +14,7 @@ pageDescription: A step-by-step guide on configuring custom players with your br
   
 ## What is a Players feature
 
-Player is a paid feature that allows customizing the default player.
+Player is a free feature that allows customizing the default player.
 
 Let’s compare the default and custom player. To show you the customization options:
 
