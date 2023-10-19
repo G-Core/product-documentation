@@ -42,4 +42,8 @@ export const categories: Array<Category> = [
         name: 'Reseller Support',
         url: 'reseller-support',
     },
+    {
+        name: 'Edit article guide',
+        url: 'edit-article-guide',
+    },
 ];
