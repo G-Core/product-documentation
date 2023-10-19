@@ -10,5 +10,5 @@ export class RedirectLinkButtonComponent {
     @Input() public href: string;
     @Input() public label: string;
     @Input() public hideIcon: boolean;
-    @Input() public variant: 'white' | 'brand';
+    @Input() public variant: 'primary' | 'secondary' | 'contrast-secondary' = 'secondary';
 }
