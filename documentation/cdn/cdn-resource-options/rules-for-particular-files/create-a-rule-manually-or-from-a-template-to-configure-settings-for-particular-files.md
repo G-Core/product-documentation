@@ -41,7 +41,7 @@ A new page will open. Follow the remaining steps on that page.
 
 2\. Enter the rule name.
 
-3\. Specify the path to the file or folder for which the rule will be applied. The path muststart with “**^/**” or “**/**” and cannot contain the domain name of your origin. You can specify a URI or use <a href="https://en.wikipedia.org/wiki/Regular_expression" target="_blank">regular expressions (regex)</a>.
+3\. Specify the path to the file or folder for which the rule will be applied. The path must start with “**^/**” or “**/**” and cannot contain the domain name of your origin. You can specify a URI or use <a href="https://en.wikipedia.org/wiki/Regular_expression" target="_blank">regular expressions (regex)</a>.
 
 **Note**: If a URI matches multiple rules, the one higher in the order of the rules will be applied. For example, there are two rules on the resource: ```/folder/.*``` (the first rule) and ```/folder/image.jpg``` (the second rule). The first rule will be applied to the ```/folder/image file.jpg``` file.
 
