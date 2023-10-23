@@ -22,6 +22,7 @@ const defaultOptions: Required<MoveContentFilesPluginOptions> = {
         'ddos-protection',
         'web-security',
         'reseller-support',
+        'edit-article-guide',
     ],
 };
 const sitemap = 'sitemap.xml';
