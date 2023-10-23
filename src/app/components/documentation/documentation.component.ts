@@ -204,6 +204,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
                         this.buildMenuSubTree(menuTree, routeSegments, link);
                     }
                 });
+
                 return this.convertToArray(menuTree);
             }),
         );
