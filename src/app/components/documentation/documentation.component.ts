@@ -4,7 +4,6 @@ import {
     ChangeDetectorRef,
     Component,
     ElementRef,
-    NgZone,
     OnDestroy,
     OnInit,
     Renderer2,
@@ -13,7 +12,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { isScullyRunning, ScullyRoute, ScullyRoutesService } from '@scullyio/ng-lib';
-import { combineLatest, filter, first, map, Observable, of, Subscription, take } from 'rxjs';
+import { combineLatest, first, map, Observable, of, Subscription, take } from 'rxjs';
 import { categories, DOCS_GITHUB_REPO, HEADER_HEIGHT, METADATA_FILE_TITLE } from '../../constants';
 import { MenuItem, MenuTreeItem, TableOfContents } from '../../models';
 import { GitHubAPIService } from '../../services';
@@ -39,7 +38,6 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
     public tableOfContents: Array<TableOfContents> = [];
     public tableOfContentsHeaders: Array<Element> = [];
     public activeTocItem: string = '';
-    public showFullSizeImage: boolean = false;
     public targetImageSrc: string = '';
     public isMenuExpanded: boolean = false;
     public category: string;
@@ -49,6 +47,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
     public activeTab: string;
     public baseHref: string = environment.baseHref;
     public isArticleRated: boolean = false;
+    public isArticleReady: boolean = false;
 
     private routerSubscription: Subscription;
     private hasScrolled = false;
@@ -65,27 +64,37 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
         private renderer: Renderer2,
         private changeDetectorRef: ChangeDetectorRef,
         private data: MenuService,
-        private elementRef: ElementRef,
     ) {}
 
     public ngAfterViewChecked(): void {
-        const contentElement = this.elementRef.nativeElement.querySelector('h1');
-        if (contentElement && !this.hasScrolled) {
-            this.route.fragment.pipe(first()).subscribe((fragment) => {
-                this.viewportScroller.scrollToAnchor(fragment);
-                this.hasScrolled = true;
-            });
+        if (this.scullyContainer.nativeElement) {
+            if (this.scullyContainer.nativeElement.childElementCount > 1) {
+                this.isArticleReady = true;
+                this.changeDetectorRef.detectChanges();
+            } else {
+                this.isArticleReady = false;
+                this.changeDetectorRef.detectChanges();
+            }
 
-            this.scullyContainer.nativeElement.querySelectorAll(':not(.gc-gallery p) > img').forEach((img: Element) => {
-                this.renderer.listen(img, 'click', (event) => this.expandImage(event));
-            });
+            if (this.isArticleReady && !this.hasScrolled) {
+                this.route.fragment.pipe(first()).subscribe((fragment) => {
+                    this.viewportScroller.scrollToAnchor(fragment);
+                    this.hasScrolled = true;
+                });
 
-            window.document.addEventListener('scroll', this.handlePageScroll, true);
+                this.scullyContainer.nativeElement
+                    .querySelectorAll(':not(.gc-gallery p) > img')
+                    .forEach((img: Element) => {
+                        this.renderer.listen(img, 'click', (event) => this.expandImage(event));
+                    });
 
-            this.renderer.listen(this.fullSizeImage.nativeElement, 'click', () => this.closeFullSizeModal());
+                window.document.addEventListener('scroll', this.handlePageScroll, true);
+
+                this.renderer.listen(this.fullSizeImage.nativeElement, 'click', () => this.closeFullSizeModal());
+            }
         }
 
-        if (this.tableOfContents && contentElement) {
+        if (this.isArticleReady && this.tableOfContents) {
             this.tableOfContentsHeaders = this.tableOfContents
                 .map(({ fragment }) => {
                     if (fragment) {

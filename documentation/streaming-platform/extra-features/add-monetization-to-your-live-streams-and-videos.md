@@ -14,7 +14,7 @@ pageDescription: A step-by-step guide on how to add monetization to your video c
   
 ## What is the Ads feature?
 
-Ads is a paid feature for adding custom ads in any part of videos (VOD) and live streams that allows you to monetize content. We support different ad formats: Videos, banners, hyperlinks, and various advertising vendors such as Google, Criteo, Adfox, etc.
+Ads is a free feature for adding custom ads in any part of videos (VOD) and live streams that allows you to monetize content. We support different ad formats: Videos, banners, hyperlinks, and various advertising vendors such as Google, Criteo, Adfox, etc.
 
 We use VAST (Video Ad Serving Template) integration, which contains all the information about the ad: Its physical location, format, URLs that will be invoked when different events occur, and more.
 

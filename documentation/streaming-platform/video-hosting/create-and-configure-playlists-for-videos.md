@@ -14,7 +14,7 @@ pageDescription: A step-by-step guide to creating and customizing playlists that
   
 ## What is the Playlists feature?
 
-Playlists are a paid feature that allows you to merge several videos into one playlist and play them alternately.
+Playlists are a free feature that allows you to merge several videos into one playlist and play them alternately.
 
 ## Enable the Playlists feature
 

@@ -5,6 +5,7 @@ published: true
 order: 40
 toc:
    --1--What is Multicamera?: "what-is-multicamera"
+   --1--Enable: "enable-the-multicamera-feature"
    --1--Configure: "configure-multicamera"
 pageTitle: Overview of the Multicamera Feature and Its Setup | Gcore
 pageDescription: A step-by-step guide on how to combine several live streams in one interface.
@@ -13,13 +14,24 @@ pageDescription: A step-by-step guide on how to combine several live streams in 
 
 ## What is Multicamera? 
 
-Multicamera is a free option used to combine two or more live streams. You deliver several streams at once, and a user can switch between them using a button in the player. 
+Multicamera is a free feature used to combine two or more live streams. You deliver several streams at once, and a user can switch between them using a button in the player. 
 
-This option is useful when you need to stream the event simultaneously from several angles or in different languages. 
+This feature is useful when you need to stream the event simultaneously from several angles or in different languages. 
 
 **Multiple angles.** You are broadcasting a film award ceremony. Your audience wants to see not only the stage, where the host announces winners but also the hall with celebrities. With a Multicamera, you stream from two cameras at once — one shoots the stage, and the other films the hall.  Each viewer can click a button in the player to switch between cameras at any time. 
 
 **Multiple languages.** You are broadcasting for a multilingual audience: Germans, English and French. You create three live streams dubbed into English, German and French, respectively. You send these streams through Multicamera, and viewers get the opportunity to instantly switch between different voice-overs. 
+
+## Enable the Multicamera feature
+
+Please, send us the request to activate the option via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of our website. Specify your ID in the request so that we can identify your account. You can find it on the main page of your control panel.
+
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/record-your-live-streams-and-save-them-as-videos/9612975911185.png" alt="Enable the Record feature" width="80%">
+
+The message template: *"Good afternoon! Please enable the Multicamera feature for an account with ID … (your ID)"*.
+
+We will notify you when we activate the Multicamera feature. After that, you will be able to work with several live streams in one player.
+
 
 ## Configure Multicamera
 
