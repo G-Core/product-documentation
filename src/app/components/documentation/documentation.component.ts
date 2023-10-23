@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { isScullyRunning, ScullyRoute, ScullyRoutesService } from '@scullyio/ng-lib';
-import { combineLatest, first, map, Observable, of, Subscription, take } from 'rxjs';
+import { combineLatest, filter, first, map, Observable, of, Subscription, take } from 'rxjs';
 import { categories, DOCS_GITHUB_REPO, HEADER_HEIGHT, METADATA_FILE_TITLE } from '../../constants';
 import { MenuItem, MenuTreeItem, TableOfContents } from '../../models';
 import { GitHubAPIService } from '../../services';
@@ -51,6 +51,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
     public isArticleRated: boolean = false;
 
     private routerSubscription: Subscription;
+    private hasScrolled = false;
 
     @ViewChild('scullyContainer') public scullyContainer: ElementRef;
     @ViewChild('fullSizeImage') public fullSizeImage: ElementRef;
@@ -61,42 +62,38 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
         private route: ActivatedRoute,
         private githubApiService: GitHubAPIService,
         private viewportScroller: ViewportScroller,
-        private ngZone: NgZone,
         private renderer: Renderer2,
         private changeDetectorRef: ChangeDetectorRef,
         private data: MenuService,
+        private elementRef: ElementRef,
     ) {}
 
     public ngAfterViewChecked(): void {
-        this.route.fragment.pipe(first()).subscribe((fragment) => {
-            this.viewportScroller.scrollToAnchor(fragment);
-        });
+        const contentElement = this.elementRef.nativeElement.querySelector('h1');
+        if (contentElement && !this.hasScrolled) {
+            this.route.fragment.pipe(first()).subscribe((fragment) => {
+                this.viewportScroller.scrollToAnchor(fragment);
+                this.hasScrolled = true;
+            });
 
-        if (this.scullyContainer.nativeElement) {
             this.scullyContainer.nativeElement.querySelectorAll(':not(.gc-gallery p) > img').forEach((img: Element) => {
-                this.ngZone.runOutsideAngular(() => {
-                    this.renderer.listen(img, 'click', (event) => this.expandImage(event));
-                });
+                this.renderer.listen(img, 'click', (event) => this.expandImage(event));
             });
 
-            this.ngZone.runOutsideAngular(() => {
-                window.document.addEventListener('scroll', this.handlePageScroll, true);
-            });
+            window.document.addEventListener('scroll', this.handlePageScroll, true);
 
-            this.ngZone.runOutsideAngular(() => {
-                this.renderer.listen(this.fullSizeImage.nativeElement, 'click', () => this.closeFullSizeModal());
-            });
+            this.renderer.listen(this.fullSizeImage.nativeElement, 'click', () => this.closeFullSizeModal());
+        }
 
-            if (this.tableOfContents) {
-                this.tableOfContentsHeaders = this.tableOfContents
-                    .map(({ fragment }) => {
-                        if (fragment) {
-                            return document.getElementById(`${fragment}`);
-                        }
-                        return null;
-                    })
-                    .filter((item: Element) => item);
-            }
+        if (this.tableOfContents && contentElement) {
+            this.tableOfContentsHeaders = this.tableOfContents
+                .map(({ fragment }) => {
+                    if (fragment) {
+                        return document.getElementById(`${fragment}`);
+                    }
+                    return null;
+                })
+                .filter((item: Element) => item);
         }
     }
 
