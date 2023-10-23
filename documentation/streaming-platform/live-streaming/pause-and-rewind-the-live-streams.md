@@ -14,7 +14,7 @@ pageDescription: A step-by-step guide on how to pause and rewind the live stream
   
 ## What is the DVR feature?
 
-DVR (Digital Video Recorder) is a paid feature that allows your viewers to pause and rewind the broadcast.
+DVR (Digital Video Recorder) is a free feature that allows your viewers to pause and rewind the broadcast.
 
 DVR is based on caching technology. When you enable the feature, we start caching your live streams for 1 hour by default. This means that viewers can rewind your broadcast for up to one hour.
 
