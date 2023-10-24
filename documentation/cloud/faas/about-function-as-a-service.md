@@ -11,6 +11,7 @@ toc:
    --1--Billing: "billing"
 pageTitle: Function as a Service | Gcore
 pageDescription: Learn about Function-as-a-Service (FaaS) and its benefits. Explore Gcore FaaS features and runtime environments.
+oldUrl: /cloud/faas/authenticate-to-functions-with-api-keys
 ---
 # About Function as a Service
   

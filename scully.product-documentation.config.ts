@@ -21,11 +21,13 @@ const categories = [
     'reseller-support',
 ];
 import { moveContentFiles } from './scully/plugins/move-content-files/move-content-files';
+import { setOldUrlsRedirects } from './scully/plugins/redirects/redirects';
 
 const SitemapPlugin = getSitemapPlugin();
 
 const defaultPostRenderers = [updateAlgolia, copyToClipboardPlugin, replaceImgSrc];
 setPluginConfig('md', { enableSyntaxHighlighting: true });
+setPluginConfig(setOldUrlsRedirects, {});
 setPluginConfig(moveContentFiles, {
     root: 'docs',
     categories: [
