@@ -15,7 +15,6 @@ published: true
 
 <img src="https://assets.gcore.pro/docs/edit-article-guide/propose-changes-10.png" alt="Fork this repository function on GitHub" width="80%">
 
-
 <expandable-element title="Correct text: errors, typos, irrelevant product information">
 
 1\. Make edits in the field, click **Commit changes...** and then click **Propose changes** in the pop-up.
