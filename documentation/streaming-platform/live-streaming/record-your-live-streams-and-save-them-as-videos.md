@@ -17,11 +17,11 @@ pageDescription: A step-by-step guide on how to record your live streams and whe
   
 ## What is the Record feature
 
-Record is a paid feature that allows you to record your live streams and store them in the Streaming storage. You can automatically record entire streams or manually record only desired fragments.
+Record is a free feature that allows you to record your live streams and store them in the Streaming storage. You can automatically record entire streams or manually record only desired fragments.
 
 ## Enable the Record feature
 
-Please, send us the request to activate the option via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of our website. Specify your ID in the request so that we can identify your account. You can find it on the main page of your Control panel.
+Please, send us the request to activate the option via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of our website. Specify your ID in the request so that we can identify your account. You can find it on the main page of your control panel.
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/record-your-live-streams-and-save-them-as-videos/9612975911185.png" alt="Enable the Record feature" width="80%">
 

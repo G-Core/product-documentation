@@ -4,7 +4,6 @@ import {
     ChangeDetectorRef,
     Component,
     ElementRef,
-    NgZone,
     OnDestroy,
     OnInit,
     Renderer2,
@@ -39,7 +38,6 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
     public tableOfContents: Array<TableOfContents> = [];
     public tableOfContentsHeaders: Array<Element> = [];
     public activeTocItem: string = '';
-    public showFullSizeImage: boolean = false;
     public targetImageSrc: string = '';
     public isMenuExpanded: boolean = false;
     public category: string;
@@ -49,9 +47,11 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
     public activeTab: string;
     public baseHref: string = environment.baseHref;
     public isArticleRated: boolean = false;
+    public isArticleReady: boolean = false;
     public isEditArticleGuidePage: boolean = false;
 
     private routerSubscription: Subscription;
+    private hasScrolled = false;
 
     @ViewChild('scullyContainer') public scullyContainer: ElementRef;
     @ViewChild('fullSizeImage') public fullSizeImage: ElementRef;
@@ -62,42 +62,48 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
         private route: ActivatedRoute,
         private githubApiService: GitHubAPIService,
         private viewportScroller: ViewportScroller,
-        private ngZone: NgZone,
         private renderer: Renderer2,
         private changeDetectorRef: ChangeDetectorRef,
         private data: MenuService,
     ) {}
 
     public ngAfterViewChecked(): void {
-        this.route.fragment.pipe(first()).subscribe((fragment) => {
-            this.viewportScroller.scrollToAnchor(fragment);
-        });
-
         if (this.scullyContainer.nativeElement) {
-            this.scullyContainer.nativeElement.querySelectorAll(':not(.gc-gallery p) > img').forEach((img: Element) => {
-                this.ngZone.runOutsideAngular(() => {
-                    this.renderer.listen(img, 'click', (event) => this.expandImage(event));
-                });
-            });
-
-            this.ngZone.runOutsideAngular(() => {
-                window.document.addEventListener('scroll', this.handlePageScroll, true);
-            });
-
-            this.ngZone.runOutsideAngular(() => {
-                this.renderer.listen(this.fullSizeImage.nativeElement, 'click', () => this.closeFullSizeModal());
-            });
-
-            if (this.tableOfContents) {
-                this.tableOfContentsHeaders = this.tableOfContents
-                    .map(({ fragment }) => {
-                        if (fragment) {
-                            return document.getElementById(`${fragment}`);
-                        }
-                        return null;
-                    })
-                    .filter((item: Element) => item);
+            if (this.scullyContainer.nativeElement.childElementCount > 1) {
+                this.isArticleReady = true;
+                this.changeDetectorRef.detectChanges();
+            } else {
+                this.isArticleReady = false;
+                this.changeDetectorRef.detectChanges();
             }
+
+            if (this.isArticleReady && !this.hasScrolled) {
+                this.route.fragment.pipe(first()).subscribe((fragment) => {
+                    this.viewportScroller.scrollToAnchor(fragment);
+                    this.hasScrolled = true;
+                });
+
+                this.scullyContainer.nativeElement
+                    .querySelectorAll(':not(.gc-gallery p) > img')
+                    .forEach((img: Element) => {
+                        this.renderer.listen(img, 'click', (event) => this.expandImage(event));
+                    });
+
+                window.document.addEventListener('scroll', this.handlePageScroll, true);
+
+                this.renderer.listen(this.fullSizeImage.nativeElement, 'click', () => this.closeFullSizeModal());
+            }
+        }
+
+        if (this.isArticleReady && this.tableOfContents) {
+            this.tableOfContentsHeaders = this.tableOfContents
+                .map(({ fragment }) => {
+                    if (fragment) {
+                        return document.getElementById(`${fragment}`);
+                    }
+                    return null;
+                })
+                .filter((item: Element) => item);
         }
     }
 
