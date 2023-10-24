@@ -49,6 +49,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
     public activeTab: string;
     public baseHref: string = environment.baseHref;
     public isArticleRated: boolean = false;
+    public isEditArticleGuidePage: boolean = false;
 
     private routerSubscription: Subscription;
 
@@ -147,6 +148,8 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
                 };
                 this.showContent = !!document;
                 this.tableOfContents = [];
+
+                this.isEditArticleGuidePage = category === 'edit-article-guide' ? true : false;
 
                 const filterdLinks = links.filter(({ route }) => {
                     return route.replace('/', '').startsWith(category) && !route.endsWith(`/${category}`);
