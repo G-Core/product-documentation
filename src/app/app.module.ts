@@ -22,6 +22,7 @@ import { GalleryComponent } from './web-components/gallery/gallery.component';
 import { SearchComponent } from './components/search/search.component';
 import { MenuService } from './services/menu.service';
 import { ModalLoginModule } from './components/modal-login';
+import { EditGithubButtonComponent } from './web-components/edit-github-button/edit-github-button.component';
 
 @NgModule({
     declarations: [
@@ -64,9 +65,13 @@ export class AppModule {
         const gallery = createCustomElement(GalleryComponent, {
             injector,
         });
+        const editGithubButton = createCustomElement(EditGithubButtonComponent, {
+            injector,
+        });
         customElements.define('expandable-element', expandableElement);
         customElements.define('code-block', codeBlock);
         customElements.define('columns-layout', columnsLayout);
         customElements.define('media-gallery', gallery);
+        customElements.define('edit-github-button', editGithubButton);
     }
 }

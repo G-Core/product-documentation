@@ -48,6 +48,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
     public baseHref: string = environment.baseHref;
     public isArticleRated: boolean = false;
     public isArticleReady: boolean = false;
+    public isEditArticleGuidePage: boolean = false;
 
     private routerSubscription: Subscription;
     private hasScrolled = false;
@@ -154,6 +155,8 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
                 this.showContent = !!document;
                 this.tableOfContents = [];
 
+                this.isEditArticleGuidePage = category === 'edit-article-guide' ? true : false;
+
                 const filterdLinks = links.filter(({ route }) => {
                     return route.replace('/', '').startsWith(category) && !route.endsWith(`/${category}`);
                 });
@@ -204,6 +207,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
                         this.buildMenuSubTree(menuTree, routeSegments, link);
                     }
                 });
+
                 return this.convertToArray(menuTree);
             }),
         );
