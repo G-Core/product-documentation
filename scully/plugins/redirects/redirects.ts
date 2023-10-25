@@ -11,7 +11,7 @@ async function setRedirects(routes: Array<HandledRoute>): Promise<void> {
     const redirectString = redirectedRoutes
         .map(
             (route) =>
-                `location ~ ^/docs${route.data.oldUrl as string}/?$ { rewrite https://$host/docs${route.route}; }`,
+                `location ~ ^/docs${route.data.oldUrl as string}/?$ { return 301 https://$host/docs${route.route}; }`,
         )
         .join('\n    ');
     const config = fs.readFileSync(configPath, {
