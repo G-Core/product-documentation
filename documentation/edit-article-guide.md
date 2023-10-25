@@ -16,6 +16,7 @@ published: true
 <img src="https://assets.gcore.pro/docs/edit-article-guide/propose-changes-10.png" alt="Fork this repository function on GitHub" width="80%">
 
 <expandable-element title="Correct text: errors, typos, irrelevant product information">
+
 1\. Make edits in the field, click **Commit changes...** and then click **Propose changes** in the pop-up.
 
 <img src="https://assets.gcore.pro/docs/edit-article-guide/propose-changes-20.gif" alt="How to propose changes if you want to correct text" width="80%">
@@ -33,6 +34,7 @@ That’s it. The Gcore technical writers will be notified of your request and wi
 </expandable-element>
 
 <expandable-element title="Correct an invalid link">
+
 1\. Remove the incorrect information from the <code>&lt;a href="https://wrong-link"&gt;</code> attribute. Insert the correct <code>&lt;a href="https://right-link"&gt;</code> link in its place, click <b>Commit changes…</b>, and then click <b>Propose changes</b> in the pop-up.
 
 <img src="https://assets.gcore.pro/docs/edit-article-guide/propose-changes-v2-50.gif" alt="How to propose changes if you want to correct a link" width="80%">
