@@ -12,6 +12,8 @@ import {
     SimpleChanges,
     ViewChild,
 } from '@angular/core';
+import { Router } from '@angular/router';
+
 import { MenuItem } from '../../../models';
 
 @Component({
@@ -25,6 +27,7 @@ export class DropdownMenuItemComponent implements OnInit, OnChanges, AfterViewIn
     @Input() public menuItemTitle: string;
     @Input() public menuItems: Array<MenuItem> = [];
     @Input() public activeUrl: string = '';
+    @Input() public menuUrl: string = '';
 
     public isExpanded: boolean = false;
     public menuItemDisplayName: string = '';
