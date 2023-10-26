@@ -163,14 +163,14 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
 
                 this.setTableOfContent(filterdLinks);
 
-                const breadcrumbs = this.setBreadCrumbs(pageUrl, category);
+                let breadcrumbs = this.setBreadCrumbs(pageUrl, category);
 
                 if (this.showContent) {
                     this.githubUrl = `${DOCS_GITHUB_REPO}${documentUrlWithCategory}.md`;
                     if (!isScullyRunning()) {
                         this.setLastModifiedDate(`documentation/${documentUrlWithCategory}.md`);
                     }
-                    this.breadCrumbs = this.getDocumentBreadcrumbs(breadcrumbs, documentUrl, document, filterdLinks);
+                    breadcrumbs = this.getDocumentBreadcrumbs(breadcrumbs, documentUrl, document, filterdLinks);
                 }
 
                 this.breadCrumbs = breadcrumbs;
