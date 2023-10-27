@@ -163,29 +163,14 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
 
                 this.setTableOfContent(filterdLinks);
 
-                const breadcrumbs = this.setBreadCrumbs(pageUrl, category);
+                let breadcrumbs = this.setBreadCrumbs(pageUrl, category);
 
                 if (this.showContent) {
                     this.githubUrl = `${DOCS_GITHUB_REPO}${documentUrlWithCategory}.md`;
                     if (!isScullyRunning()) {
                         this.setLastModifiedDate(`documentation/${documentUrlWithCategory}.md`);
                     }
-                    documentUrl
-                        .split('/')
-                        .filter((value) => value)
-                        .forEach((routeSegment, index, arr) => {
-                            breadcrumbs.push({
-                                name:
-                                    index === arr.length - 1
-                                        ? filterdLinks.find((link) => link.title === document)?.displayName
-                                        : filterdLinks.find(
-                                              (link) =>
-                                                  link.title === METADATA_FILE_TITLE &&
-                                                  link.route.endsWith(`${routeSegment}/metadata`),
-                                          )?.displayName || routeSegment.split('-').join(' '),
-                                url: '',
-                            });
-                        });
+                    breadcrumbs = this.getDocumentBreadcrumbs(breadcrumbs, documentUrl, document, filterdLinks);
                 }
 
                 this.breadCrumbs = breadcrumbs;
@@ -196,13 +181,17 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
                     const routeSegments = link.route.replace(`/${category}/`, '').split('/');
 
                     if (routeSegments.length === 1) {
-                        menuTree.set(routeSegments[0], {
-                            url: link.redirect || link.route,
-                            name: link.displayName,
-                            order: link.order,
-                            title: link.title,
-                            children: null,
-                        });
+                        if (menuTree.has(routeSegments[0])) {
+                            menuTree.get(routeSegments[0]).url = link.route;
+                        } else {
+                            menuTree.set(routeSegments[0], {
+                                url: link.redirect || link.route,
+                                name: link.displayName,
+                                order: link.order,
+                                title: link.title,
+                                children: null,
+                            });
+                        }
                     } else {
                         this.buildMenuSubTree(menuTree, routeSegments, link);
                     }
@@ -271,11 +260,15 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
     private buildMenuSubTree(tree: Map<string, MenuTreeItem>, routeSegments: Array<string>, link: ScullyRoute): void {
         const unhandledRouteSegments = routeSegments.slice(1);
         let menuItem;
+
         if (tree.has(routeSegments[0])) {
             menuItem = tree.get(routeSegments[0]);
-            if (!menuItem.children) {
-                menuItem.children = new Map();
+
+            if (!unhandledRouteSegments.length) {
+                menuItem.url = link.route;
             }
+
+            menuItem.children = menuItem.children || new Map();
         } else {
             menuItem = {
                 url: unhandledRouteSegments.length ? '' : link.redirect || link.route,
@@ -360,6 +353,38 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
             menuItem.order = metadataDoc.order || 9999;
             menuItem.name = metadataDoc.name || menuItem.name;
         }
+    }
+
+    private getDocumentBreadcrumbs(
+        rootBreadCrumbs: Array<MenuItem>,
+        documentUrl: string,
+        document: string,
+        filterdLinks: Array<ScullyRoute>,
+    ): Array<MenuItem> {
+        const breadcrumbs = [...rootBreadCrumbs];
+
+        documentUrl
+            .split('/')
+            .filter((value) => value)
+            .forEach((routeSegment, index, arr) => {
+                const name =
+                    index === arr.length - 1
+                        ? filterdLinks.find((link) => link.title === document)?.displayName
+                        : filterdLinks.find(
+                              (link) =>
+                                  link.title === METADATA_FILE_TITLE && link.route.endsWith(`${routeSegment}/metadata`),
+                          )?.displayName || routeSegment.split('-').join(' ');
+                const url =
+                    index === arr.length - 1
+                        ? ''
+                        : filterdLinks.find((link) => link.title === routeSegment)?.route || '';
+                breadcrumbs.push({
+                    name,
+                    url,
+                });
+            });
+
+        return breadcrumbs;
     }
 
     private getContentLevel(name: string): number {
