@@ -9,7 +9,7 @@ toc:
    --1--DDoS attack statistics: ddos-attack-statistics
    --1--Pricing: "pricing"
 pageTitle: About DDoS Protection | Gcore
-pageDescription: Learn how DDoS Protection safeguards your servers. Explore use cases for different protection modes and select the best option for your needs.
+pageDescription: Learn how DDoS Protection safeguards your servers, explore use cases for different protection modes and select the best option for your needs.
 ---
 # About DDoS Protection
 
