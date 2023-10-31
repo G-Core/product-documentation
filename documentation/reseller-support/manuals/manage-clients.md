@@ -98,7 +98,7 @@ You can edit a client's name, email address, language of automatic emails and us
 
 <img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/edit-user-60.png" alt="Users tab">
 
-<a href="https://gcore.com/docs/account-settings/users/about-users" target="_blank">About Users</a>
+<a href="https://gcore.com/docs/account-settings/users" target="_blank">About Users</a>
 
 ## Delete client
 
