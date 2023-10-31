@@ -8,9 +8,9 @@ toc:
    --1--Advanced protection modes: "advanced-protection-modes"
    --1--Billing: "billing"
 pageTitle: DDoS Protection for dedicated servers | Gcore
-pageDescription: Discover GCore DDoS Protection for dedicated servers. Choose between Basic (free) and Advanced (paid) Protection.
+pageDescription: Discover Gcore DDoS Protection for dedicated servers. Choose between Basic (free) and Advanced (paid) Protection.
 ---
-# About GCore DDoS Protection for dedicated servers
+# About Gcore DDoS Protection for dedicated servers
 
 ## How it works
 DDoS Protection is a service that protects dedicated servers from DDoS attacks.
