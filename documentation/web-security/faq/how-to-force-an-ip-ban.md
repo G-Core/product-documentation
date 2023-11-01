@@ -9,7 +9,7 @@ toc:
 pageTitle: FAQ. Force an IP ban | Gcore
 pageDescription: How to force an IP ban in the customer portal and via API. 
 ---
-# How to force an IP ban
+# How to force an IP ban?
 
 You can force an IP or subnet mask ban using a whitelist policy. This allows requests from all IPs or subnets, except specified IPs or subnet masks.
 
