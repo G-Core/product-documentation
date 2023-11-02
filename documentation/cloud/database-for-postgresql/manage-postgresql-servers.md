@@ -14,7 +14,7 @@ toc:
    --2--psql client: "connect-using-the-psql-client"
    --2--pgAdmin: "connect-using-pgadmin"
 pageTitle: A Guide on how to Manage a PostgreSQL Server. | Gcore
-pageDescription: .
+pageDescription: This guide describes how to manage (create, get credentials, update version, connect and delete) a PostgreSQL server..
 ---
 #  Manage a PostgreSQL server 
 
