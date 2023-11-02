@@ -136,7 +136,7 @@ The response will contain different headers. You should focus on the inappropria
 <tr>
 <td>The Vary header is set on origins so that content is cached suboptimally.</td>
 <td style="text-align: left">Change the Vary header settings on your origin or use the <a href="https://gcore.com/docs/cdn/cdn-resource-options/http-headers/add-or-hide-response-headers#hide-response-headers" target="_blank">Hide response headers</a> feature in the customer portal.<br>Set “Hide only,” select the Vary header and other that are necessary and save changes.
-<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue/low-cache-hit-ratio-20.png" alt="How to hide the Vary header" width="50%">
+<br><img src="https://assets.gcore.pro/docs/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue/low-cache-hit-ratio-20.png" alt="How to hide the Vary header" width="50%">
 </td>
 </tr>
 </tbody>
