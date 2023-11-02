@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { categories } from '../../constants/categories-config';
 import { Category, MenuItem } from '../../models';
 import { environment } from '../../../environments/environment';
@@ -22,5 +22,7 @@ export class HomeComponent implements OnInit {
             this.isMenuExpanded = !this.isMenuExpanded;
             this.changeDetectorRef.detectChanges();
         });
+
+        window.scrollTo({ top: 0, behavior: 'auto' });
     }
 }
