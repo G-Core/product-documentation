@@ -15,7 +15,7 @@ To start using Cloud services, you need to add at least €4/$4 to your balance.
 
 As soon as your expenses reach €4/$4, the system will deduct this amount from your existing balance. If your balance has insufficient funds, the system will charge this amount from the added payment method. If payment is successful, you will continue using resources as before until your expenses reach the €4/$4 threshold again.
 
-If the payment fails both from your Gcore balance and the added payment method, the service will be suspended. If you don’t top up your balance within the next 7 days, VMs will be deleted. Other cloud resources associated with your account will be deleted in 30 days. To avoid service suspension and ensure uninterrupted access to Cloud resources, you can top up your balance in advance. 
+If the payment fails both from your Gcore balance and the added payment method, the service will be suspended. If you don’t top up your balance within the next 7 days, basic VMs will be deleted. Other cloud resources associated with your account will be deleted in 30 days. To avoid service suspension and ensure uninterrupted access to Cloud resources, you can top up your balance in advance. 
 
 Up-to-date prices for our Cloud resources are available on <a href="https://gcore.com/pricing/cloud" target="_blank">our website</a>.
 
