@@ -124,7 +124,7 @@ The response will contain different headers. You should focus on the inappropria
 <td>A “Cache-Control” value prohibits the CDN from caching content.</td>
 <td style="text-align: left">Ensure that the <a href="https://gcore.com/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin" target="_blank">CDN Caching</a> option is enabled and configured in the following way.
 <ul>
-<li>For CDN controlled: <b>Don’t</b> set 0 in the "Cache expiry" field.</li>
+<li>For CDN controlled: <b>Don’t</b> set 0 in the “Cache expiry” field.</li>
 <li>For Origin controlled: <b>Don’t</b> set values from the step above (<i>max-age=0, no-cache, no-store, private</i>.)</li>
 </ul>
 </td>
@@ -135,7 +135,9 @@ The response will contain different headers. You should focus on the inappropria
 </tr>
 <tr>
 <td>The Vary header is set on origins so that content is cached suboptimally.</td>
-<td style="text-align: left">Change the Vary header settings on your origin.</td>
+<td style="text-align: left">Change the Vary header settings on your origin or use the <a href="https://gcore.com/docs/cdn/cdn-resource-options/http-headers/add-or-hide-response-headers#hide-response-headers" target="_blank">Hide response headers</a> feature in the customer portal.<br>Set “Hide only,” select the Vary header and other that are necessary and save changes.
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue/low-cache-hit-ratio-20.png" alt="How to hide the Vary header" width="50%">
+</td>
 </tr>
 </tbody>
 </table>
