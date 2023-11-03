@@ -11,7 +11,7 @@ export class EditGithubButtonComponent implements OnInit {
     public articleUrl: string = '';
 
     public ngOnInit(): void {
-        const prevPage = document.referrer.split('/docs/')[1];
-        this.articleUrl = `${DOCS_GITHUB_REPO}${prevPage}.md`;
+        const prevPage = sessionStorage.getItem('activeDocument');
+        this.articleUrl = prevPage ? `${DOCS_GITHUB_REPO}${prevPage}.md` : DOCS_GITHUB_REPO;
     }
 }

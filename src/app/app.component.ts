@@ -54,7 +54,7 @@ export class AppComponent implements OnInit {
 
                 const title = link.pageTitle || lastChildRouteSnapshot.data.title || defaultTitle;
                 const description =
-                    link.pageDescription || lastChildRouteSnapshot.data.description || defaultDescription;
+                    link?.pageDescription || lastChildRouteSnapshot.data.description || defaultDescription;
 
                 this.titleService.setTitle(title);
 
