@@ -11,6 +11,7 @@ toc:
    --1--Billing: "billing"
 pageTitle: Function as a Service | Gcore
 pageDescription: Learn about Function-as-a-Service (FaaS) and its benefits. Explore Gcore FaaS features and runtime environments.
+customUrl: /cloud/some-old-url
 ---
 # About Function as a Service
   

@@ -12,7 +12,6 @@ import {
     SimpleChanges,
     ViewChild,
 } from '@angular/core';
-import { Router } from '@angular/router';
 
 import { MenuItem } from '../../../models';
 
@@ -23,11 +22,8 @@ import { MenuItem } from '../../../models';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DropdownMenuItemComponent implements OnInit, OnChanges, AfterViewInit {
-    @Input() public menuItemName: string;
-    @Input() public menuItemTitle: string;
-    @Input() public menuItems: Array<MenuItem> = [];
+    @Input() public menuItem: MenuItem;
     @Input() public activeUrl: string = '';
-    @Input() public menuUrl: string = '';
 
     public isExpanded: boolean = false;
     public menuItemDisplayName: string = '';
@@ -38,16 +34,15 @@ export class DropdownMenuItemComponent implements OnInit, OnChanges, AfterViewIn
 
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.activeUrl) {
-            this.isExpanded =
-                changes.activeUrl.currentValue &&
-                changes.activeUrl.currentValue
-                    .split('/')
-                    .includes(changes.menuItemTitle?.currentValue || this.menuItemTitle);
+            this.isExpanded = this.hasActiveChildItem(
+                changes.menuItem?.currentValue || this.menuItem,
+                changes.activeUrl.currentValue,
+            );
         }
     }
 
     public ngOnInit(): void {
-        this.menuItemDisplayName = this.menuItemName || this.menuItemTitle.split('-').join(' ');
+        this.menuItemDisplayName = this.menuItem.name || this.menuItem.title.split('-').join(' ');
     }
 
     public ngAfterViewInit(): void {
@@ -61,5 +56,12 @@ export class DropdownMenuItemComponent implements OnInit, OnChanges, AfterViewIn
     public toggleMenu(): void {
         this.isExpanded = !this.isExpanded;
         this.changeDetector.detectChanges();
+    }
+
+    private hasActiveChildItem(menuItem: MenuItem, activeUrl: string): boolean {
+        return (
+            (menuItem.url && activeUrl?.endsWith(menuItem.url)) ||
+            menuItem.children?.some((childMenuItem) => this.hasActiveChildItem(childMenuItem, activeUrl))
+        );
     }
 }
