@@ -124,9 +124,13 @@ If your current PostgreSQL version is not the latest one, you can upgrade it.
 
 2\. On the **Overview** tab, click **Update** in the General info section.
 
+**Note**: if you use the latest version, the button will be absent. 
+
 <img src="https://assets.gcore.pro/docs/cloud/database-for-postgresql/manage-postgresql-servers/manage-postgresql-140.png" alt="manage postgresql update version">
 
 3\. Select the version you need from the drop-down list and click **Update**.
+
+<img src="https://assets.gcore.pro/docs/cloud/database-for-postgresql/manage-postgresql-servers/manage-postgresql-145.png" alt="manage postgresql update version pop up" width="70%">
 
 ## Delete a server
 
@@ -138,7 +142,7 @@ If your current PostgreSQL version is not the latest one, you can upgrade it.
 
 3\. In the new window, type in *Delete* and click the **Delete server** button.
 
-<img src="https://assets.gcore.pro/docs/cloud/database-for-postgresql/manage-postgresql-servers/manage-postgresql-160.png" alt="manage postgresql confirm deletion">
+<img src="https://assets.gcore.pro/docs/cloud/database-for-postgresql/manage-postgresql-servers/manage-postgresql-160-v2.png" alt="manage postgresql confirm deletion" width="70%">
 
 ## Connect to a PostgreSQL server 
 
@@ -157,7 +161,7 @@ Before you connect to your PostgreSQL server, make sure to do the following:
 - Port. You can find it by copying the connection strings in the “Connection details”
 - Password. You should have got it separately after creating a server. If you forgot your password, <a href="https://gcore.com/docs/cloud/database-for-postgresql/manage-postgresql-servers#get-your-credentials" target="_blank">reset it</a>. 
 
-2\. Make sure your client computer is in the access control list of the PostgreSQL server.
+2\. Make sure your client computer is in the access control list of the PostgreSQL server. It means that te external IP address of PC which is trying to connect to PostgreSQL should be in allowlist (ACL).
 
 3\. Determine what tool you will use to connect to your server. 
 
@@ -181,7 +185,7 @@ psql -h hostname -p port -d dbname -U username
 
 Replace ```hostname```, ```port```, ```dbname```, and ```username``` with your custom values.
 
-3\. Enter the password.
+3\. Enter the password and press **Enter**.
 
 For more details, refer to the <a href="https://www.postgresql.org/docs/" target="_blank">PostgreSQL official documentation</a>.
 
@@ -195,10 +199,14 @@ For more details, refer to the <a href="https://www.postgresql.org/docs/" target
 
 <img src="https://assets.gcore.pro/docs/cloud/database-for-postgresql/manage-postgresql-servers/manage-postgresql-180.png" alt="manage postgresql connect phpmyadmin 1">
 
-4\. In the Create - Server dialog box that appears, type the server’s name in the **General** tab.
+4\. In the Create - Server dialog box that appears, type the server’s name in the **General** tab and click **Save**.
 
 <img src="https://assets.gcore.pro/docs/cloud/database-for-postgresql/manage-postgresql-servers/manage-postgresql-190.png" alt="manage postgresql connect phpmyadmin 2">
 
 5\. Go to the **Connection** tab and enter the host (endpoint,) port, username, and password in the relevant fields.
 
 <img src="https://assets.gcore.pro/docs/cloud/database-for-postgresql/manage-postgresql-servers/manage-postgresql-190.png" alt="manage postgresql connect phpmyadmin 3">
+
+6\. Click **Save**. 
+
+7\. Locate the server you’ve added in the left-side menu and click it to access. For more details, refer to the <a href="https://www.pgadmin.org/docs/" target="_blank">pgAdmin official documentation</a>.

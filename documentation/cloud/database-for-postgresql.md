@@ -25,7 +25,7 @@ Within each server, you can create multiple relational databases. Users and appl
 
 ## Supported versions
 
-Gcore DBaaS currently supports PostgreSQL 13,14 and 15.
+Gcore Managed Database currently supports PostgreSQL 13,14 and 15.
 
 ## Key features
 
