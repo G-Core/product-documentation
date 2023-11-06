@@ -57,7 +57,7 @@ A new page will open. Complete the remaining steps of the manual in the "Origin"
 
 In the example below, we use the private bucket ```test-private``` in S3 Gcore storage with the Hostname ```s-ed1.cloud.gcore.lu``` and configure an origin group as follows:
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/image-3406.png" alt="Origin section" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/private-bucket-other-s3-configuration.png" alt="Origin section" width="80%">
 
 2\. Select the **Specify content origin** option.
 
