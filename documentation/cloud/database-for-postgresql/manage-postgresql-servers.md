@@ -191,7 +191,7 @@ For more details, refer to the <a href="https://www.postgresql.org/docs/" target
 
 ### Connect using pgAdmin
 
-1\. <a href="http://www.pgadmin.org/" target="_blank">Download</a> and install pgAdmin to your client computer.
+1\. <a href="https://www.pgadmin.org/" target="_blank">Download</a> and install pgAdmin to your client computer.
 
 2\. Launch pgAdmin.
 

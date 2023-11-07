@@ -33,7 +33,7 @@ However, if you first chose the option private method, then you need to get a <a
 
 4. Install Postfix.
 
-<a href="http://www.postfix.org/" target="_blank">Postfix</a> is one of the popular Mail Transfer Agents (MTAs) responsible for sending and delivering mail messages. To install Postfix, run the following commands:
+<a href="https://www.postfix.org/" target="_blank">Postfix</a> is one of the popular Mail Transfer Agents (MTAs) responsible for sending and delivering mail messages. To install Postfix, run the following commands:
 
 ```
 sudo apt-get update
@@ -74,7 +74,7 @@ Save the changes and restart Postfix:
 sudo service postfix restart
 ```
 
-More information about Postfix is available in their <a href="http://www.postfix.org/documentation.html" target="_blank">documentation</a>.
+More information about Postfix is available in their <a href="https://www.postfix.org/documentation.html" target="_blank">documentation</a>.
 
 6. Install Dovecot.
 
