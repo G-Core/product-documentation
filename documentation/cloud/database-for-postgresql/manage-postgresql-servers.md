@@ -175,7 +175,7 @@ Before you connect to your PostgreSQL server, make sure to do the following:
 
 ### Connect using the psql client
 
-1\. <a href="" target="_blank">Download the PostgreSQL client</a> from the PostgreSQL website for your operating system in order to install psql.
+1\. <a href="https://www.postgresql.org/download/" target="_blank">Download the PostgreSQL client</a> from the PostgreSQL website for your operating system in order to install psql.
 
 2\. Start psql by typing the following command in your terminal:
 
