@@ -5,7 +5,6 @@ published: true
 order: 10
 pageTitle: About File Shares | Gcore
 pageDescription: Learn about Gcore’s NFS service for seamless collaboration & cost savings.
-customUrl: /cloud/faas/some-old-url
 ---
 # About Files Shares
 
