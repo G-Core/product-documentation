@@ -5,6 +5,7 @@ published: true
 toc:
 pageTitle: Understanding user roles | Gcore
 pageDescription: A detailed guide to user roles and permissions, covering how roles affect service management, personal data changes, etc.
+customUrl: /account-settings/users/about-users
 ---
 
 # About Users
