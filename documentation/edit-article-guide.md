@@ -7,11 +7,15 @@ published: true
 
 ### If you need help in proposing changes on GitHub, use the guide below:
 
-1\. <a href="https://github.com/login" target="_blank">Sign in</a> to your GitHub account.
+1\. Open any article and scroll down to the footer. Click **Edit on GitHub**.
 
-2\. (First time only) Click **Fork this repository**. This will copy the Gcore ```product-documentation``` repository to your account. Next time you propose changes to our articles, this page will not be there.
+2\. The new page will open (this page). Click **Edit on GitHub** above again.
 
-3\. Select the appropriate action from the options below, and follow the instructions.
+3\. <a href="https://github.com/login" target="_blank">Sign in</a> to your GitHub account.
+
+4\. (First time only) Click **Fork this repository**. This will copy the Gcore ```product-documentation``` repository to your account. Next time you propose changes to our articles, this page will not be there.
+
+5\. Select the appropriate action from the options below, and follow the instructions.
 
 <img src="https://assets.gcore.pro/docs/edit-article-guide/propose-changes-10.png" alt="Fork this repository function on GitHub" width="80%">
 
