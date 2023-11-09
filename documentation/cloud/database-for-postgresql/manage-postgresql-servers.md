@@ -90,7 +90,7 @@ Choose Public network and configure the Access control list to limit the access 
 
 9\. In **Authentication**, add your username.
 
-<img src="https://assets.gcore.pro/docs/cloud/database-for-postgresql/manage-postgresql-servers/manage-postgresql-110.png" alt="manage postgresql manage authentication">
+<img src="https://assets.gcore.pro/docs/cloud/database-for-postgresql/manage-postgresql-servers/manage-postgresql-110-v2.png" alt="manage postgresql manage authentication">
 
 10\. In **Server details**, specify the server name and database name.
 
