@@ -34,6 +34,7 @@ The following pop-up will appear, where you will perform the remaining steps.
 
 You can invite both existing Gcore users and users who are not yet registered with Gcore:
 
+
 - If a user isn’t yet in the Gcore system, when you try to add them, an email will be sent to their email address with a link to create a password. The invited user should accept the invitation and create a password. Then, they can log in to the account.
 - If a user already exists in the Gcore system, a notification about the new account access will be sent to their email address. After accepting the invitation, users can log in to their account during authorization.
 
