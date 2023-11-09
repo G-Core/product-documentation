@@ -6,6 +6,7 @@ order: 40
 toc:
 pageTitle: Understanding HTTP Methods Allowed for CDN Requests | Gcore
 pageDescription: A guide on how to specify HTTP methods allowed for content requests from CDN.
+customUrl: /cdn/cdn-resource-options/access/specify-http-methods-allowed-for-content-requests-from-the-cdn
 ---
 # Specify HTTP methods allowed for content requests from the CDN
 
