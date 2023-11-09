@@ -14,6 +14,7 @@ toc:
    --1--Configure: "configure-secure-token"
 pageTitle: Understanding Secure Token in Gcore CDN | Gcore
 pageDescription: A detailed guide on Secure Token in Gcore CDN—how it protects content, its uses, parameters, operational mechanism, and how to configure it.
+customUrl: /cdn/cdn-resource-options/access/use-a-secute-token/about-secure-token
 ---
 # About Secure Token
 

@@ -6,6 +6,7 @@ order: 50
 toc:
 pageTitle: Setting SNI Hostname in CDN Requests | Gcore
 pageDescription: Understand how to set the hostname for SNI requests in CDN to ensure accurate SSL certificate retrieval and enhanced security.
+customUrl: /cdn/cdn-resource-options/access/set-the-hostname-passed-in-sni-requests-to-the-origin-server
 ---
 # Set the hostname passed in SNI requests to the origin
 
