@@ -26,7 +26,8 @@ export class ModalLoginComponent {
         'ImageStack (Optimize and Resize)',
         'Edge Compute (Coming soon)',
     ];
-    public gcoreHostingProducts: Array<string> = ['VPS Hosting', 'Dedicated Servers', 'SSL Certificates'];
+
+    public gcoreHostingProducts: Array<string> = ['VPS Hosting', 'Dedicated Servers'];
 
     constructor(private deviceService: DeviceService) {}
 
