@@ -6,7 +6,6 @@ order: 20
 toc:
 pageTitle: Understanding Redirects from HTTP to HTTPS | Gcore
 pageDescription: A guide on how to set up a redirect from HTTP to HTTPS.
-customUrl: /cdn/cdn-resource-options/access/set-up-a-redirect-from-http-to-https
 ---
 # Set up a redirect from HTTP to HTTPS
 
