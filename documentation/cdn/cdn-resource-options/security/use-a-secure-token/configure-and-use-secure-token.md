@@ -11,7 +11,6 @@ toc:
    --2--OpenSSL: "generate-a-secure-token-in-openssl"
 pageTitle: Configuring Secure Token | Gcore
 pageDescription:  A detailed guide on configuring Secure Token with the PHP, Python, and OpenSSL scripts.
-customUrl: /cdn/cdn-resource-options/access/use-a-secute-token/configure-and-use-secure-token
 ---
 # Configure and use Secure Token
   

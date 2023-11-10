@@ -11,7 +11,6 @@ toc:
    --1--Basic WAF blocks some unwanted content: "what-to-do-if-basic-waf-blocks-some-content-that-should-not-be-blocked"
 pageTitle: Protection from cyberthreads with Gcore Basic WAF | Gcore
 pageDescription: A comprehensive guide on how to protect the entire CDN resource or specific urls.
-customUrl: /cdn/cdn-resource-options/security/protect-cdn-resources-with-basic-waf
 ---
 # Protect CDN resources with Basic WAF
 

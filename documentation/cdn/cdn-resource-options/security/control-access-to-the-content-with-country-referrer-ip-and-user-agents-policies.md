@@ -20,7 +20,6 @@ toc:
    --3--Example: "example"
 pageTitle: Control Content Access with Gcore CDN Policies | Gcore
 pageDescription: Explore how to manage content access in Gcore CDN using referrer, country, IP, and User agents policies for enhanced security and better user control.
-customUrl: /cdn/cdn-resource-options/access/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies
 ---
 # Control access to the content with country, referrer, IP, and User agents policies
   
