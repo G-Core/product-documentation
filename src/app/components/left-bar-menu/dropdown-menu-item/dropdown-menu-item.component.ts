@@ -14,6 +14,7 @@ import {
 } from '@angular/core';
 
 import { MenuItem } from '../../../models';
+import { MenuService } from '../../../services/menu.service';
 
 @Component({
     selector: 'gc-dropdown-menu-item',
@@ -30,7 +31,12 @@ export class DropdownMenuItemComponent implements OnInit, OnChanges, AfterViewIn
 
     @ViewChild('menuDropdown') public menuDropdown: ElementRef;
 
-    constructor(private ngZone: NgZone, private renderer: Renderer2, private changeDetector: ChangeDetectorRef) {}
+    constructor(
+        private ngZone: NgZone,
+        private renderer: Renderer2,
+        private changeDetector: ChangeDetectorRef,
+        private menuService: MenuService,
+    ) {}
 
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.activeUrl) {
@@ -56,6 +62,10 @@ export class DropdownMenuItemComponent implements OnInit, OnChanges, AfterViewIn
     public toggleMenu(): void {
         this.isExpanded = !this.isExpanded;
         this.changeDetector.detectChanges();
+    }
+
+    public toggleSideMenu(event: Event): void {
+        this.menuService.toggleMenu(event);
     }
 
     private hasActiveChildItem(menuItem: MenuItem, activeUrl: string): boolean {
