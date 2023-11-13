@@ -9,7 +9,9 @@ pageDescription: Configure and access Logging for centralized log collection. Se
 ---
 # Configure Logging and view your logs
 
-1\. In the **Cloud** menu, go to the **Logging** tab and click **Set up Logging**.
+1\. In the **Cloud** menu, go to the **Logging** tab, click **Set up Logging**. The pop up will appear. Type the namespace in the field and click **Create**.
+
+<img src="https://assets.gcore.pro/docs/cloud/laas/configure-logging-and-view-your-logs/logging-create-namespace.png" alt="Create namespace" width="70%">
 
 2\. Select the region under the project name. This is the location of the data center for deploying log storage.
 
