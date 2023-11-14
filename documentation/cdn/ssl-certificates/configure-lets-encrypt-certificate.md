@@ -137,4 +137,4 @@ If the challenge verification is successful, the certificate will be issued, and
 
 After five unsuccessful attempts, the certificate status will be “Failed.” You can fix the error(s) causing failure using <a href="" target="_blank">our dedicated guide</a>. Click **Retry issue** to attempt issuance again. 
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/failed-50.png" alt="Failed status" width="c">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/failed-50.png" alt="Failed status" width="75%">
