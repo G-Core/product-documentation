@@ -1,15 +1,22 @@
 ---
-title: edit-article-guide
-displayName: Edit article guide
+title: propose-changes-to-articles-on-github
+displayName: Change articles on GitHub
 published: true
+order: 95
+toc:
+pageTitle: A guide on how to change articles on GitHub | Gcore
+pageDescription: A comprehensive guide on how to propose changes to articles of the Gcore Product Documentation on GitHub.
 ---
-<edit-github-button></edit-github-button>
+# How to propose changes to Gcore Product Documentation articles on GitHub
 
-### If you need help in proposing changes on GitHub, use the guide below:
 
-1\. Open any article and scroll down to the footer. Click **Edit on GitHub**.
+1\. Open any article in the <a href="https://gcore.com/docs/" target="_blank">Product Documentation</a> section and scroll down to the footer. Click **Edit on GitHub**. In the example below we open the <a href="https://gcore.com/docs/account-settings/password/what-to-do-if-you-forget-your-password" target="_blank">What to do if you forget your password?</a> guide.
 
-2\. The new page will open (this page). Click **Edit on GitHub** above again.
+<img src="https://assets.gcore.pro/docs/edit-article-guide/edit-on-github-1.png" alt="Edit on GitHub" width="80%">
+
+2\. The new page will open. Click **Edit on GitHub** again. Under the button, you will see a duplicate of this guide on how to propose changes. 
+
+<img src="https://assets.gcore.pro/docs/edit-article-guide/edit-on-gh-2.png" alt="Edit on GitHub" width="70%">
 
 3\. <a href="https://github.com/login" target="_blank">Sign in</a> to your GitHub account.
 
