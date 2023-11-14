@@ -7,7 +7,7 @@ pageTitle: Request a quota increase | Gcore
 pageDescription: Explore how to increase your qoutas for Cloud resources.
 ---
 # Request a quota increase
-In the Quotas section, you can find how much of the available resources (like RAM size, CPUs count, etc.) you're currently using as well as limits to it. Also, you can request more resources. We will consider your request within two business days and send an email — will write to you, whether the limit extension has been approved.
+In the , you can find how much of the available resources (like RAM size, CPUs count, etc.) you're currently using as well as limits to it. Also, you can request more resources. We will consider your request within two business days and send an email — will write to you, whether the limit extension has been approved.
 
 All quotes are grouped by categories.
 
