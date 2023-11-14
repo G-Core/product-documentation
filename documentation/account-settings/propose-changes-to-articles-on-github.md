@@ -22,9 +22,9 @@ pageDescription: A comprehensive guide on how to propose changes to articles of 
 
 4\. (First time only) Click **Fork this repository**. This will copy the Gcore ```product-documentation``` repository to your account. Next time you propose changes to our articles, this page will not be there.
 
-5\. Select the appropriate action from the options below, and follow the instructions.
-
 <img src="https://assets.gcore.pro/docs/edit-article-guide/propose-changes-10.png" alt="Fork this repository function on GitHub" width="80%">
+
+5\. Select the appropriate action from the options below, and follow the instructions.
 
 <expandable-element title="Correct text: errors, typos, irrelevant product information">
 
