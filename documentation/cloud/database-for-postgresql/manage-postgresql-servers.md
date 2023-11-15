@@ -94,6 +94,8 @@ Choose Public network and configure the Access control list to limit the access 
 
 10\. In **Server details**, specify the server name and database name.
 
+**Note**: The database size limit is 100 GB.
+
 <img src="https://assets.gcore.pro/docs/cloud/database-for-postgresql/manage-postgresql-servers/manage-postgresql-120.png" alt="manage postgresql specify server details">
 
 11\. Click **Create PostgreSQL server** in the window on the left-hand side.

@@ -8,6 +8,7 @@ toc:
    --1--Key features: "key-features"
    --1--Use cases: "use-cases"
    --1--Billing: "billing"
+   --1--Limitations: "limitations"
    --1--Use: "how-to-use"
 pageTitle: A Database for PostgreSQL for Relational Databases | Gcore
 pageDescription: Gcore Managed Database for PostgreSQL is a fully managed cloud solution designed to simplify management of relational databases.
@@ -50,6 +51,10 @@ Managed Database for PostgreSQL can be the best fit for different industries and
 ## Billing
 
 During the beta testing period, you can use the service for free.
+
+## Limitations
+
+The database size limit is 100 GB.
 
 ## How to use
 
