@@ -29,5 +29,10 @@ export class MenuService {
 
     public setIsLoginModalOpen(isOpen: boolean): void {
         this.isLoginModalOpenSubject.next(isOpen);
+        if (isOpen) {
+            document.body.style.overflowY = 'hidden';
+        } else {
+            document.body.style.overflowY = 'auto';
+        }
     }
 }
