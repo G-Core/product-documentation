@@ -70,7 +70,7 @@ Your request will be processed within fifteen minutes and the number of quotas w
 
 <img src="https://assets.gcore.pro/docs/cloud/database-for-postgresql/manage-postgresql-servers/manage-postgresql-80.png" alt="manage postgresql configure pg">
 
-7\. (optionally) Switch on the **Enable High availability** toggle to deploy three replicas with the same configuration to ensure that your database remains accessible even in the event of a server failure. If you turn on this feature, select the appropriate eeplication mode:
+7\. (optionally) Switch on the **Enable High availability** toggle to deploy three replicas with the same configuration to ensure that your database remains accessible even in the event of a server failure. If you turn on this feature, select the appropriate replication mode:
 
 - Asynchronous: In asynchronous replication, servers work independently. The primary database sends the changes to the replicas and does not wait for confirmation that the changes have been applied. This mode is suitable for scenarios where data consistency with some level of delay is acceptable, though high performance is crucial.
 
@@ -163,7 +163,7 @@ Before you connect to your PostgreSQL server, make sure to do the following:
 - Port. You can find it by copying the connection strings in the “Connection details”
 - Password. You should have got it separately after creating a server. If you forgot your password, <a href="https://gcore.com/docs/cloud/database-for-postgresql/manage-postgresql-servers#get-your-credentials" target="_blank">reset it</a>. 
 
-2\. Make sure your client computer is in the access control list of the PostgreSQL server. It means that te external IP address of PC which is trying to connect to PostgreSQL should be in allowlist (ACL).
+2\. Make sure your client computer is in the access control list of the PostgreSQL server. It means that the external IP address of PC which is trying to connect to PostgreSQL should be in allowlist (ACL).
 
 3\. Determine what tool you will use to connect to your server. 
 
