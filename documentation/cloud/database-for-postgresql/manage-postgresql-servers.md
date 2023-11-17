@@ -2,6 +2,7 @@
 title: manage-postgresql-servers
 displayName:  Manage PostgreSQL servers
 published: true
+order: 10
 toc:
    --1--Create a server: "create-a-server"
    --2--Before creation: "before-you-begin"
@@ -13,8 +14,8 @@ toc:
    --2--Before: "before-the-beginning"
    --2--psql client: "connect-using-the-psql-client"
    --2--pgAdmin: "connect-using-pgadmin"
-pageTitle: A Guide on how to Manage a PostgreSQL Server. | Gcore
-pageDescription: This guide describes how to manage (create, get credentials, update version, connect and delete) a PostgreSQL server..
+pageTitle: A Guide on how to Manage a PostgreSQL Server | Gcore
+pageDescription: This guide describes how to manage (create, get credentials, update version, connect and delete) a PostgreSQL server.
 ---
 #  Manage a PostgreSQL server 
 
