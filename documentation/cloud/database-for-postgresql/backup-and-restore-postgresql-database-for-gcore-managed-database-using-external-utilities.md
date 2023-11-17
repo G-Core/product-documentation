@@ -6,7 +6,7 @@ order: 20
 toc:
    --1--1. Install external utilities: "1-install-external-utilities"
    --1--2. Get credentials: "2-get-your-credentials"
-   --1--3. Launch pg_backup: "3-launch-pgbackup"
+   --1--3. Back up databases: "3-back-up-databases"
    --2--Specific database: "back-up-a-specific-database"
    --2--All databases: "back-up-all-databases" 
    --1--4. Restore databases: "4-restore-databases"
@@ -68,7 +68,7 @@ The package contains all required tools.
 
 To launch backup and restore tools, you need credentials (``username``, ```password```, ```port```, and ```dbname```) to connect to the Gcore Managed Database server, where databases are stored. You can find credentials in the customer portal, with instructions available in <a href="https://gcore.com/docs/cloud/database-for-postgresql/manage-postgresql-servers#get-your-credentials" target="_blank">our dedicated guide</a>. 
 
-## 3. Launch pg_backup
+## 3. Back up databases
 
 ### Back up a specific database
 
