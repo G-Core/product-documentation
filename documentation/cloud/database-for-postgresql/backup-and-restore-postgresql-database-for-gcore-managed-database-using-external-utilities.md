@@ -53,13 +53,15 @@ $ sudo yum install postgresql-server
 ```
 
 The package contains all required tools.
+
 </expandable-element>
 
 <expandable-element title="Windows">
 
 1\. Download the <a href="https://www.enterprisedb.com/downloads/postgres-postgresql-downloads" target="_blank">installer of the relevant PostgreSQL version</a>.
 
-2\. Run the installation process. 
+2\. Run the installation process.
+
 </expandable-element>
 
 ## 2. Get your credentials
