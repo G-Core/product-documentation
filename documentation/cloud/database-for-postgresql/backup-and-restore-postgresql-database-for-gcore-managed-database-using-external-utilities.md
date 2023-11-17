@@ -6,7 +6,7 @@ order: 20
 toc:
    --1--1. Install external utilities: "1-install-external-utilities"
    --1--2. Get credentials: "2-get-your-credentials"
-   --1--3. Launch pg_backup: "3-launch-pgbackup"
+   --1--3. Launch pg_backup: "3-launch-pg-backup"
    --2--Specific database: "back-up-a-specific-database"
    --2--All databases: "back-up-all-databases" 
    --1--4. Restore databases: "4-restore-databases"
@@ -103,7 +103,7 @@ Where:
 - ```username``` is your username from the customer portal
 - ```hostname``` is your hostname from the customer portal
 
-## Restore databases
+## 4. Restore databases
 
 Run the command: 
 
