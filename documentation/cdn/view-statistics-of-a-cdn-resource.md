@@ -23,6 +23,8 @@ Reports is a section of your control panel that displays statistics on your CDN 
 - Statistics: Basic reports are available on all tariffs
 - Advanced analytics: Paid option
 
+**Note**: We recommend requesting statistics two days or more after the desired period ends to ensure you receive the most complete data. Requesting statistics immediately may result in incomplete data.
+
 ## Statistics
 
 To view basic statistics:
