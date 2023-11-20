@@ -60,8 +60,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
         });
     }
 
-    public login(): void {
-        this.menuService.setIsLoginModalOpen(true);
+    public toggleLoginModal(event: boolean): void {
+        this.menuService.setIsLoginModalOpen(event);
         this.cd.detectChanges();
     }
 }
