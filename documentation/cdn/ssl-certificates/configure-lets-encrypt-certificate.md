@@ -11,6 +11,11 @@ toc:
    --2--Notes: "notes-regarding-issuing"
    --1--Revoke: "revoke-a-lets-encrypt-certificate"
    --1--Restrictions: "restrictions-and-features-of-the-option"
+   --1--Statuses: "lets-encrypt-issuing-statuses"
+   --2--Pre-validation failed: "pre-validation-failed"
+   --2--Processing: "processing"
+   --2--Active: "active"
+   --2--Failed: "failed"
 pageTitle: Adding Let's Encrypt Certificates | Gcore
 pageDescription: Learn how to issue Let's Encrypt certificate to the CDN resource.
 ---
@@ -103,3 +108,33 @@ To revoke a certificate, go to the Resource Settings and click **Revoke Let's En
 - If you are using DNS Cloudflare, be sure not to set the **CNAME Flattering** option to Flatten all CNAMEs. This will cause Cloudflare to return an A-record instead of a CNAME, which will prevent the issuance of a Let's Encrypt certificate. To successfully issue a Let's Encrypt certificate, set the CNAME Flattering option to **Flatten CNAME at root**.
 
 <img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-8.png" alt="Status" width="80%">
+
+## Let’s Encrypt issuing statuses
+
+### Pre-validation failed
+
+If your CDN resource domain cannot be ACME challenged, you will see a message informing you of the issue and the release button will be inactive. To avoid this problem, follow <a href="https://gcore.com/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue#free-lets-encrypt-certificate" target="_blank">our dedicated guide</a>.
+
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/pre-issuing-failed-10.png" alt="Pre-validation failed status" width="75%">
+
+### Processing
+
+After selecting the “Get free Let’s Encrypt certificate” option, if your CDN resource configurations are correct, the “Processing” status will be displayed in your customer portal while the certificate is being issued.
+
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/processing-20.png" alt="Processing status" width="75%">
+
+However, if some issues get in the way of the ACME challenge, you will see the following description of the error of issuing. Such an error can occur if a CDN resource is still in the process of creation, for example. The next attempt will occured in fifteen minutes. If you want to accelerate the reattempt, click **force retry**. 
+
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/force-retry-30.png" alt="Processing with issue status" width="75%">
+
+### Active
+
+If the challenge verification is successful, the certificate will be issued, and you will see the status “Active.” The certificate will also be renewed automatically after three months.
+
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/active-40.png" alt="Active status" width="75%">
+
+### Failed
+
+After five unsuccessful attempts, the certificate status will be “Failed.” You can fix the error(s) causing failure using <a href="" target="_blank">our dedicated guide</a>. Click **Retry issue** to attempt issuance again. 
+
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/failed-50.png" alt="Failed status" width="75%">

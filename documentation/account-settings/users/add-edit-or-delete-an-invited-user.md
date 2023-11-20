@@ -18,7 +18,7 @@ In the article, you’ll learn how to manage users in the Control Panel. You can
 
 ## Invite a user
 
-**Note**: Only the user with the <a href="https://gcore.com/docs/account-settings/users" target="_blank">Administrator role</a> can add new users to the account.
+**Note**: Only the user with the <a href="https://gcore.com/docs/account-settings/users/about-users" target="_blank">Administrator role</a> can add new users to the account.
 
 1\. Navigate to <a href="https://accounts.gcore.com/profile/users" target="_blank">Users</a>.
 
@@ -34,6 +34,7 @@ The following pop-up will appear, where you will perform the remaining steps.
 
 You can invite both existing Gcore users and users who are not yet registered with Gcore:
 
+
 - If a user isn’t yet in the Gcore system, when you try to add them, an email will be sent to their email address with a link to create a password. The invited user should accept the invitation and create a password. Then, they can log in to the account.
 - If a user already exists in the Gcore system, a notification about the new account access will be sent to their email address. After accepting the invitation, users can log in to their account during authorization.
 
@@ -41,7 +42,7 @@ You can invite both existing Gcore users and users who are not yet registered wi
 
 5\.  Specify the language of the interface: English, German, Chinese, or Russian.
 
-6\. Select the CDN service and control panel (IAM) role. Learn more about <a href="https://gcore.com/docs/account-settings/users" target="_blank">which actions are available for each role</a>. 
+6\. Select the CDN service and control panel (IAM) role. Learn more about <a href="https://gcore.com/docs/account-settings/users/about-users" target="_blank">which actions are available for each role</a>. 
 
 **Note**: Depending on the role selected in IAM/CDN, the role for Cloud will be automatically selected. For example, if you want to create a user with the Administrator CDN role, the user will also have the most access to the Cloud service.  
 
@@ -72,7 +73,7 @@ After the user has been sent an invitation, their user row will show whether the
 
 <img src="https://assets.gcore.pro/docs/account-settings/users/add-edit-or-delete-an-invited-user/invite-users-40.png" alt="Edit a user from the Users page">
 
-In the pop-up window, you can change your (Administrator) username, Role, and Language. As for other users, you can change only their <a href="https://gcore.com/docs/account-settings/users" target="_blank">Role</a>.
+In the pop-up window, you can change your (Administrator) username, Role, and Language. As for other users, you can change only their <a href="https://gcore.com/docs/account-settings/users/about-users" target="_blank">Role</a>.
 
 - If you are a user, edit your info in the General section of the <a href="https://accounts.gcore.com/profile/general" target="_blank">Account</a> page.
 

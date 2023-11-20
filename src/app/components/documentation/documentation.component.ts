@@ -229,6 +229,8 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
                 name: key.replace(/--\d--/g, ''),
                 fragment: currentLink.toc[key],
             }));
+        } else {
+            this.tableOfContents = [];
         }
     }
 
