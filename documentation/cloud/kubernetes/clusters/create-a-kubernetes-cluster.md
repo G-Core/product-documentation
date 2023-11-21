@@ -9,23 +9,23 @@ pageDescription: Learn how to create a Kubernetes cluster on a virtual machine o
 ---
 # Create a Kubernetes cluster
 
-1. Open the **Kubernetes** tab and click **Create Cluster**.
+1\. Open the **Kubernetes** tab and click **Create Cluster**.
 
-<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/10611849724433.png" alt="Kubernetes tab " width="666" height="312">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/10611849724433.png" alt="Kubernetes tab " width="80%">
 
-2.Select a region — the location of the data center where your cluster will be deployed. 
+2\. Select a region — the location of the data center where your cluster will be deployed. 
 
 3\. Select your **Kubernetes cluster version.** 
 
 4\. Under **Pools**, configure a pool — a set of cluster nodes with the same specifications. 
 
-<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/15409511448209.png" alt="Pools" width=80%>
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/pool-setup.png" alt="Pools" width="65%">
 
-Enter the **pool name**, set the **minimum nodes** and **maximum nodes** for <a href="https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling" target="_blank">autoscaling</a>.
+- Enter the **pool name** 
+- Set the **minimum nodes** and **maximum nodes** for <a href="https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling" target="_blank">autoscaling</a>.
+- Select the type of a worker node: a virtual instance or a bare metal server. 
 
-For **Type**, select the type of a worker node: a virtual instance or a bare metal server. 
-
-For virtual instances, you should select its flavor, disk size in GiB and the disk type.
+    - For **Virtual instances**, select its flavor, disk size in GiB and the disk type.
 
 <expandable-element title="Available flavors of virtual instances">
 
@@ -55,7 +55,7 @@ For virtual instances, you should select its flavor, disk size in GiB and the di
 
 </expandable-element>
 
-For bare metal servers, you also should select a flavor:
+   - For **Baremetal instances**, also select a flavor:
 
 <expandable-element title="Available flavors of bare metal servers">
 
@@ -65,18 +65,20 @@ For bare metal servers, you also should select a flavor:
 
 </expandable-element>
 
-Make sure the **Autohealing nodes** toggle is on to enable automatic recovery of failed nodes. The option monitors node statuses. When it detects a non-working node, the autohealer initiates replacement. If one of the machines fails, the application will not stand idle: the node will be replaced, and the app will keep working.
+- Make sure the **Autohealing nodes** toggle is on to enable automatic recovery of failed nodes. The option monitors node statuses. When it detects a non-working node, the autohealer initiates replacement. If one of the machines fails, the application will not stand idle: the node will be replaced, and the app will keep working.
+
+- (Optional) Enable the **Public IPv4 address** option to set a public network with external IPs.   
 
 Add as many pools as you need using the **Add pool** button.
 
-5. Under **Network settings**, select a network and subnet from existing ones or create a new one.
+5\. Under **Network settings**, select a network and subnet from existing ones or create a new one.
 
-6. Under **SSH key**, specify the key that will be added to all nodes for connection.
+6\. Under **SSH key**, specify the key that will be added to all nodes for connection.
 
 You can select the key from existing ones or create a new one.
 
-7. Enter the cluster name.
+7\. Enter the cluster name.
 
-8s. On the right side of the screen, double-check the cluster settings. If everything is correct, click **Create cluster**.
+8\. On the right side of the screen, double-check the cluster settings. If everything is correct, click **Create cluster**.
 
 The cluster will be created in a few minutes!
