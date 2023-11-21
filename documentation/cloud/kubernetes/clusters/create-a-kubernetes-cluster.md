@@ -25,7 +25,7 @@ pageDescription: Learn how to create a Kubernetes cluster on a virtual machine o
 - Set the **minimum nodes** and **maximum nodes** for <a href="https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling" target="_blank">autoscaling</a>.
 - Select the type of a worker node: a virtual instance or a bare metal server. 
 
-    - For **Virtual instances**, select its flavor, disk size in GiB and the disk type.
+For **Virtual instances**, select its flavor, disk size in GiB and the disk type.
 
 <expandable-element title="Available flavors of virtual instances">
 
@@ -55,7 +55,7 @@ pageDescription: Learn how to create a Kubernetes cluster on a virtual machine o
 
 </expandable-element>
 
-    - For **Baremetal instances**, also select a flavor:
+For **Baremetal instances**, also select a flavor:
 
 <expandable-element title="Available flavors of bare metal servers">
 
