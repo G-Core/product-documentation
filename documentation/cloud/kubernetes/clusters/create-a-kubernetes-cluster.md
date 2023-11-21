@@ -55,7 +55,7 @@ pageDescription: Learn how to create a Kubernetes cluster on a virtual machine o
 
 </expandable-element>
 
-   - For **Baremetal instances**, also select a flavor:
+    - For **Baremetal instances**, also select a flavor:
 
 <expandable-element title="Available flavors of bare metal servers">
 
