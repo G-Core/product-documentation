@@ -11,6 +11,10 @@ export const categories: Array<Category> = [
         url: 'cdn',
     },
     {
+        name: 'FastEdge',
+        url: 'fastedge',
+    },
+    {
         name: 'Cloud',
         url: 'cloud',
     },
