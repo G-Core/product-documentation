@@ -67,7 +67,7 @@ For **Baremetal instances**, also select a flavor:
 
 - Make sure the **Autohealing nodes** toggle is on to enable automatic recovery of failed nodes. The option monitors node statuses. When it detects a non-working node, the autohealer initiates replacement. If one of the machines fails, the application will not stand idle: the node will be replaced, and the app will keep working.
 
-- (Optional) Enable the **Public IPv4 address** option to set a public network with external IPs.   
+- (Optional) Enable the **Public IPv4 address** option to assign public IPv4 addresses to cluster nodes.   
 
 Add as many pools as you need using the **Add pool** button.
 
