@@ -408,7 +408,7 @@ Not all fields are important. Some of them relate to our internal CDN system and
     <td  >Initial protocol of an incoming request (HTTP or HTTPS)</td>
   </tr>
   <tr>
-    <td>$gcdn_internal_status_code,$gcdn_rule_id<br>(internal system variables)</td>
+    <td>$gcdn_internal_status_code,<br>$gcdn_rule_id<br>(internal system variables)</td>
     <td>-,-</td>
     <td>Initial status code and ID of an incoming request. Possible values are: <code>-,-</code>, or <code>100700,-</code>, or <code>-,12344</code>, or <code>10070,12344</code></td>
   </tr>
