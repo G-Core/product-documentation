@@ -54,7 +54,7 @@ During the beta testing period, you can use the service for free.
 
 ## Limitations
 
-The database size limit is 100 GB.
+The database size limit is 100 GB. This limit is for the beta stage only. If you need a more extensive database size during beta—please get in touch with [support](mailto:support@gcore.com).
 
 ## How to use
 
