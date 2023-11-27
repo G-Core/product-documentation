@@ -18,8 +18,8 @@ toc:
    --2--Step 2. Compile and upload binary: "step-2-compile-and-upload-the-binary-file"
    --2--Step 3. Update the app: "step-3-update-the-app"
    --2--Step 4. Test an app: "step-4-test-an-app"
-pageTitle: | Gcore 
-pageDescription: .
+pageTitle: A Guide on How to Create an App with FastEdge | Gcore 
+pageDescription: A step-by-step guide on how to create a Wasm binary file and upload the app to our edge network.
 ---
 # How to create a FastEdge app
 
