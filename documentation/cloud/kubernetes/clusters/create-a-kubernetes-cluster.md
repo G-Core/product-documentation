@@ -87,7 +87,7 @@ Add as many pools as you need using the **Add pool** button.
 
 8\. (Optional) Enable **Logging**. It’s a paid option that allows you to collect and store Kubernetes logs. For more details on Managed Logging, read the <a href="https://gcore.com/docs/cloud/logging-as-a-service/configure-logging-and-view-your-logs" target="_blank">separate guide</a>. To configure logging in the customer portal, you can choose one of two options: 
 
-- **Select an existing topic**. If you already used logging, select the exciting topic.  
+- **Select an existing topic**. If you already used logging, select the existing topic.  
 - **Create new topic**. Specify the needed information if you have no existing topics where the logs retention time before deletion is set.   
 
 <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/logging-cluster.png" alt="Logging for Cluster" width="70%">
