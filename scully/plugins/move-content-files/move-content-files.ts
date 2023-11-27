@@ -14,6 +14,7 @@ const defaultOptions: Required<MoveContentFilesPluginOptions> = {
     categories: [
         'account-settings',
         'cdn',
+        'fastedge',
         'cloud',
         'dns',
         'hosting',
