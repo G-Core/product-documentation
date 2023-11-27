@@ -87,9 +87,9 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.page$.next(pageNumber);
     }
 
-    public selectAll(): void {
+    public selectAll(value: boolean): void {
         const formArray = this.filterForm.get('product') as FormArray;
-        formArray.patchValue(formArray.controls.map(() => true));
+        formArray.patchValue(formArray.controls.map(() => value));
     }
 
     public search(key: string): void {

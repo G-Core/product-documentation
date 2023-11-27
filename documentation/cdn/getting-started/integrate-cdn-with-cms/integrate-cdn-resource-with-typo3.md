@@ -11,7 +11,7 @@ pageDescription: A comprehensive guide on integrating CDN resources with Typo3 C
 
 Before you take any steps please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
 
-This tutorial guides you through the CDN integration of <a href="https://typo3.org" target="_blank">Typo3</a> with the <a href="http://typo3.org/extensions/repository/view/smile_cdn" target="_blank">smile_cdn</a> extension. We used Typo3 6.2 LTS and smile_cdn version 2.1.0 in the following example.
+This tutorial guides you through the CDN integration of <a href="https://typo3.org" target="_blank">Typo3</a> with the <a href="https://typo3.org/extensions/repository/view/smile_cdn" target="_blank">smile_cdn</a> extension. We used Typo3 6.2 LTS and smile_cdn version 2.1.0 in the following example.
 
 Login to the Typo3 backend.
 

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, EventEmitter, Output } from '@angular/core';
 import { Observable } from 'rxjs';
 import { DeviceService } from '../../services/device';
 
@@ -9,6 +9,8 @@ import { DeviceService } from '../../services/device';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ModalLoginComponent {
+    @Output() public closeModalEvent: EventEmitter<any> = new EventEmitter();
+
     public isMobile$: Observable<boolean> = this.deviceService.isMobile$;
     public showAllProducts = false;
     public gcoreEdgeSolutionsProducts: Array<string> = [
@@ -26,11 +28,15 @@ export class ModalLoginComponent {
         'ImageStack (Optimize and Resize)',
         'Edge Compute (Coming soon)',
     ];
-    public gcoreHostingProducts: Array<string> = ['VPS Hosting', 'Dedicated Servers', 'SSL Certificates'];
+    public gcoreHostingProducts: Array<string> = ['VPS Hosting', 'Dedicated Servers'];
 
     constructor(private deviceService: DeviceService) {}
 
     public showAll(): void {
         this.showAllProducts = true;
+    }
+
+    public closeModal(): void {
+        this.closeModalEvent.emit();
     }
 }
