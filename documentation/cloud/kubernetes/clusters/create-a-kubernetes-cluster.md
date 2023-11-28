@@ -13,17 +13,19 @@ pageDescription: Learn how to create a Kubernetes cluster on a virtual machine o
 
 <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/10611849724433.png" alt="Kubernetes tab " width="80%">
 
-2\. Select a region — the location of the data center where your cluster will be deployed. 
+The new page will open. Do the remaining steps there. 
+
+2\. Select a **region**—the location of the data center where your cluster will be deployed. 
 
 3\. Select your **Kubernetes cluster version.** 
 
-4\. Under **Pools**, configure a pool — a set of cluster nodes with the same specifications. 
+4\. Under the **Pools** block, configure a pool — a set of cluster nodes with the same specifications. 
 
 <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/pool-setup.png" alt="Pools" width="65%">
 
-- Enter the **pool name** 
-- Set the **minimum nodes** and **maximum nodes** for <a href="https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling" target="_blank">autoscaling</a>.
-- Select the type of a worker node: a virtual instance or a bare metal server. 
+- Enter the **Pool name** 
+- Set the **Minimum nodes** and **Maximum nodes** for <a href="https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling" target="_blank">autoscaling</a>.
+- Select the type of a worker node: a **Virtual instance** or a **Bare metal instance**. 
 
 For **Virtual instances**, select its flavor, disk size in GiB and the disk type.
 
@@ -55,7 +57,7 @@ For **Virtual instances**, select its flavor, disk size in GiB and the disk type
 
 </expandable-element>
 
-For **Baremetal instances**, also select a flavor:
+For **Bare metal instances**, also select a flavor:
 
 <expandable-element title="Available flavors of bare metal servers">
 
@@ -65,20 +67,31 @@ For **Baremetal instances**, also select a flavor:
 
 </expandable-element>
 
-- Make sure the **Autohealing nodes** toggle is on to enable automatic recovery of failed nodes. The option monitors node statuses. When it detects a non-working node, the autohealer initiates replacement. If one of the machines fails, the application will not stand idle: the node will be replaced, and the app will keep working.
+- Ensure the **Autohealing nodes** toggle is on to enable automatic recovery of failed nodes. The option monitors node statuses. When it detects a non-working node, the autohealer initiates replacement. If one of the machines fails, the application will not stand idle: the node will be replaced, and the app will keep working.
 
 - (Optional) Enable the **Public IPv4 address** option to assign public IPv4 addresses to cluster nodes.   
 
 Add as many pools as you need using the **Add pool** button.
 
-5\. Under **Network settings**, select a network and subnet from existing ones or create a new one.
+5\. Under the **Network settings** block, select a network and subnet from existing ones or create a new one, according to the <a href="" target="_blank">separate guide</a>.
 
-6\. Under **SSH key**, specify the key that will be added to all nodes for connection.
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/network-settings-cluster.png" alt="Network settings for Cluster" width="70%">
 
-You can select the key from existing ones or create a new one.
+6\. Under **SSH key**, configure an SSH key for a remote SSH connection to all nodes. You can select the key from existing ones or create a new one. For details, see the article: <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">Connect to your instance via SSH</a>. 
 
-7\. Enter the cluster name.
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/ssh-cluster.png" alt="SSH settings for Cluster" width="70%">
 
-8\. On the right side of the screen, double-check the cluster settings. If everything is correct, click **Create cluster**.
+7\. Enter the cluster name in the field.
 
-The cluster will be created in a few minutes!
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/name-cluster.png" alt="Name for Cluster" width="70%">
+
+8\. (Optional) Enable **Logging**. It’s a paid option that allows you to collect and store Kubernetes logs. For more details on Managed Logging, read the <a href="https://gcore.com/docs/cloud/logging-as-a-service/configure-logging-and-view-your-logs" target="_blank">separate guide</a>. To configure logging in the customer portal, you can choose one of two options: 
+
+- **Select an existing topic**. If you already used logging, select the existing topic.  
+- **Create new topic**. Specify the needed information if you have no existing topics where the logs retention time before deletion is set.   
+
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/logging-cluster.png" alt="Logging for Cluster" width="70%">
+
+9\. Double-check the cluster settings on the right side of the screen. If everything is correct, click **Create cluster**. 
+
+The cluster will be created in a few minutes! 

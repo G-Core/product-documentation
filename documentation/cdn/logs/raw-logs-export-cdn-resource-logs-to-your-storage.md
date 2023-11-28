@@ -184,9 +184,9 @@ s3://log-bucket-name/2019/08/20/15/nodename_primarycname.domain.ru_access.log.gz
 "$geoip_country_code" "$geoip_city" "$shield_type" "$server_addr" "$server_port"  
 "$upstream_status" "-" "$upstream_connect_time" "$upstream_header_time"  
 "$shard_addr" "$geoip2_data_asnumber" "$connection" "$connection_requests"  
-"$request_id" "$http_x_forwarded_proto" "$http_x_forwarded_request_id" "$ssl_cipher"  
+"$http_traceparent" "$http_x_forwarded_proto" "$gcdn_internal_status_code" "$ssl_cipher"  
 "$ssl_session_id" "$ssl_session_reused" "$sent_http_content_type" "$tcpinfo_rtt" 
-"$server_country_code" "$gcdn_tcpinfo_snd_cwnd" "$gcdn_tcpinfo_total_retrans" 
+"$server_country_code" "$gcdn_tcpinfo_snd_cwnd" "$gcdn_tcpinfo_total_retrans" "$gcdn_rule_id" 
 ```
 
 Please don’t be surprised if you see a field that is not listed above. We occasionally add new fields. If some fields are added to logs, you will receive an email about it. New fields are added to the end of the line.
@@ -199,9 +199,9 @@ Please don’t be surprised if you see a field that is not listed above. We occa
 AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 YaBrowser/16.10.0.2309 Safari/537.36"  
 "1514848" "[dh-up-gc18]" "https" "origin.cdn.com" "1.500" "0.445" "157" "bytes=0-1901653" "[dh]"  
 "MISS" "10485760" "0.0.0.0:80" "2510" "7399" "-" "-" "KZ" "-" "shield_no" "0.0.0.0" "80" "206" "-" "0.000"  
-"0.200" "0.0.0.0" "asnumber" "106980391" "1" "c1c0f12ab35b7cccccd5dc0a454879c5" "-" "-"  
+"0.200" "0.0.0.0" "asnumber" "106980391" "1" "00-d5fe1dc9035165ce36952daf29686b6c-14330be33197dd1a-01" "-" "-"  
 "ECDHE-RSA-AES256-GCM-SHA384" "28a4184139cb43cdc79006cf2d1a4ac93bdc****" "r"  
-"application/json" "21" "PL" "45" "10"
+"application/json" "21" "PL" "45" "10" "100700"
 ```
 
 ## Log fields
@@ -398,19 +398,19 @@ Not all fields are important. Some of them relate to our internal CDN system and
     <td   >Current number of requests made through a connection</td>
   </tr>
   <tr>
-    <td   >$request_id<br>(internal system variable)</td>
-    <td   >c1c0f12ab35b7<br>cccccd5dc0a<br>454879c5</td>
-    <td   >Unique request identifier generated from 16 random bytes, in hexadecimal form</td>
+    <td>$http_traceparent<br>(internal system variable)</td>
+    <td   >00-d5fe1dc903<br>5165ce36952da<br>f29686b6c-143<br>30be33197dd1a<br>-01</td>
+    <td>Unique request identifier generated from 16 random bytes, in hexadecimal form</td>
   </tr>
   <tr>
-    <td  >$http_x_forwarded_proto</td>
+    <td>$http_x_forwarded_proto</td>
     <td  >-</td>
-    <td  >Initial protocol of an incoming request (HTTP or HTTPS)</td>
+    <td>Initial protocol of an incoming request (HTTP or HTTPS)</td>
   </tr>
   <tr>
-    <td   >$http_x_forwarded_request_id<br>(internal system variable)</td>
-    <td   >-</td>
-    <td   >Initial ID of an incoming request</td>
+    <td>$gcdn_internal_status_code,<br>(internal system variables)</td>
+    <td>-</td>
+    <td>Initial status code. Possible values are: <code>-</code>, or <code>100700</code></td>
   </tr>
   <tr>
     <td   >$ssl_cipher<br>(internal system variable)</td>
@@ -451,6 +451,11 @@ Not all fields are important. Some of them relate to our internal CDN system and
     <td>$tcpi_total_retrans</td>
     <td>10</td>
     <td>Total number of retransmitted packets over the life of the connection.</td>
+  </tr>
+  <tr>
+  <td>$gcdn_rule_id</td>
+  <td>100700</td>
+  <td>Initial rule ID (beta). Possible values are: <code>-</code>, or <code>100700</code></td>
   </tr>
 </tbody>
 </table>
