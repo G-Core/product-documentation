@@ -34,8 +34,8 @@ Select **Accelerate and protect only static files** on the open page and click *
 Fill in the fields to configure your CDN resource on the open page.
 
 <img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/cdn-resource-30.png" alt="Initial configuration" width="70%">
-
-1\. (Optional) Add **Description**. Enter an internal comment about the CDN resource. It will not affect any setting but will only be displayed in the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN resources</a> section next to the resource CNAME.
+Make the screenshot even nicer!
+1\. (Optional) Add **Description**. Enter an internal comment about the CDN resource. This will not affect any settings but will only be displayed in the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN resources</a> section next to the resource CNAME.
 
 <p id="origin">2. Configure <b>Origin</b>. An Origin is a source (e.g., a website, an application, a private bucket) from where the CDN resource will request the content. In the Gcore customer portal, each origin is allocated to an origins group.</p> 
 
