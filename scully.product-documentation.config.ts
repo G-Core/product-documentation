@@ -7,6 +7,23 @@ import { replaceImgSrc } from './scully/plugins/replaceImgSrc';
 import 'prismjs/components/prism-ruby.min.js';
 import { updateAlgolia } from './scully/plugins/algolia';
 import { getSitemapPlugin } from './scully/plugins/sitemap';
+import * as os from 'os';
+
+let browserPath;
+
+switch (os.platform()) {
+  case 'win32':
+    browserPath = 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe';
+    break;
+  case 'darwin':
+    browserPath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+    break;
+  case 'linux':
+    browserPath = '/usr/bin/chromium-browser';
+    break;
+  default:
+    throw new Error('Unsupported platform: ' + os.platform());
+}
 
 const categories = [
     'web-security',
@@ -63,7 +80,7 @@ export const config: ScullyConfig = {
         process.env.BUILD_ENV === 'develop'
             ? undefined
             : {
-                  executablePath: '/usr/bin/chromium-browser',
+                  executablePath: browserPath,
                   args: ['--no-sandbox'],
               },
     routes: {
