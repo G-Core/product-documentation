@@ -9,6 +9,7 @@ toc:
 pageTitle: Load Balancer Logging for Seamless Cloud Resource Monitoring | Gcore
 pageDescription: Learn to enable logging on your load balancer and explore guaranteed throughput results across various regions with Gcore Logging.
 ---
+
 # Logging for Load Balancers
 
 Gcore Logging collects and stores logs from various Cloud resources, including load balancers. This guide outlines the process of configuring logging for an existing load balancer and highlights the guaranteed throughput between different load balancer regions and Logging regions.
