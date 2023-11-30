@@ -10,7 +10,7 @@ toc:
    --1--Performance analysis: "performance-analysis"
 pageTitle: Add a load balancer | Gcore
 pageDescription: Learn how to create and configure a load balancer to distribute incoming requests across VMs, improving the fault tolerance of your infrastructure.
-customUrl: https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer
+customUrl: /cloud/networking/create-and-configure-a-load-balancer
 ---
 
 # Create and configure a load balancer
