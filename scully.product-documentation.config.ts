@@ -7,7 +7,6 @@ import { replaceImgSrc } from './scully/plugins/replaceImgSrc';
 import 'prismjs/components/prism-ruby.min.js';
 import { updateAlgolia } from './scully/plugins/algolia';
 import { getSitemapPlugin } from './scully/plugins/sitemap';
-require('dotenv').config()
 
 const categories = [
     'web-security',
@@ -55,7 +54,7 @@ setPluginConfig(SitemapPlugin, {
 });
 setPluginConfig(setCustomUrls, {});
 
-
+console.log(process.env.BUILD_ENV);
 
 export const config: ScullyConfig = {
     projectRoot: './src',
@@ -66,7 +65,7 @@ export const config: ScullyConfig = {
         process.env.BUILD_ENV === 'develop'
             ? undefined
             : {
-                  executablePath: process.env.CHROME_PATH || '/usr/bin/chromium-browser',
+                  executablePath: '/usr/bin/chromium-browser',
                   args: ['--no-sandbox'],
               },
     routes: {
