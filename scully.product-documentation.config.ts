@@ -54,8 +54,6 @@ setPluginConfig(SitemapPlugin, {
 });
 setPluginConfig(setCustomUrls, {});
 
-console.log(process.env.BUILD_ENV);
-
 export const config: ScullyConfig = {
     projectRoot: './src',
     projectName: 'product-documentation',
