@@ -2,6 +2,7 @@
 title: troubleshoot-blocked-smtp-ports
 displayName: SMTP ports
 published: true
+order: 50
 toc:
 pageTitle: Troubleshoot blocked SMTP ports | Gcore
 pageDescription: Learn how to troubleshoot blocked SMTP ports. 
