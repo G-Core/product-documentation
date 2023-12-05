@@ -4,7 +4,7 @@ displayName: Logging
 published: true
 order: 20
 toc:
-   --1--Configure: "configure-logging-for-a-load-balancer"
+   --1--Configure: "configure-managed-logging-for-a-load-balancer"
    --1--Test results: "throughput-test-results"
 pageTitle: Load Balancer Logging for Seamless Cloud Resource Monitoring | Gcore
 pageDescription: Learn to enable logging on your load balancer and explore guaranteed throughput results across various regions with Gcore Logging.
