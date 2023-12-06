@@ -11,7 +11,7 @@ pageDescription: Learn how to purchase a Windows server with these steps.
 ---
 # Buy a Windows server
 
-**Note**: Windows OS is available for any plan except KVM-SSD-1, KVM-SSD-2 и KVM-SSD-3.
+**Note**: Windows OS is available for any plan except KVM-SSD-1, KVM-SSD-2, and KVM-SSD-3.
 
 ## Buy a Windows server
 
