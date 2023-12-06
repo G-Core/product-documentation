@@ -11,13 +11,13 @@ pageDescription: Learn how to connect securely to a Windows server.
 
 To connect to a Windows server, use the default Remote Desktop Connection application. You will need to enter the following information:
 
-- Server URL: the IP address of your server
+- Server URL—the IP address of your server
 - Username
 - Password
 
 To find this information, follow these steps:
 
-1\. In the left menu, select **Products/Services → Dedicated servers**.
+1\. In the left menu, select **Products/Services** → **Dedicated servers** or **Virtual private servers**.
 2\. Click the server you want to connect to.
 3\. Click the **Instructions** menu in the upper menu bar to find the IP address, username, and password.
 

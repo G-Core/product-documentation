@@ -11,9 +11,9 @@ pageDescription: Learn how to add, change and delete SSH keys in your personal a
 
 To create a key, go to the SSH keys section and click on the **Add** button.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/linux-server/manage-ssh-keys/mceclip0.png" alt="Manage SSH keys" width="50%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/connect/manage-ssh-keys/joxi_screenshot_1509788651407.png" alt=" DCImanager">
 
-Fill in the fields for 'Key Name" and "Public Key". Pay attention to the key format, try not to move the lines.
+Fill in the fields for "Key Name" and "Public Key". Pay attention to the key format, try not to move the lines.
 
 <img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/connect/manage-ssh-keys/joxi_screenshot_1509788759836.png" alt="Manage SSH keys" width="50%">
 
@@ -21,4 +21,4 @@ SSH key will be automatically added to all future servers and used OS. That is, 
 - You had added an SSH key and bought a server later  
 - You had bought a server, had added an SSH key and later reinstalled the OS on the server
 
-To change the key go to SSH keys - Edit. To delete it go to SSH keys - Delete.
+To change the key go to SSH keys - click **Edit**. To delete it go to SSH keys - **Delete**.
