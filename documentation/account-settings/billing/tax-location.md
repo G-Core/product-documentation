@@ -1,6 +1,6 @@
 ---
 title: tax-location
-displayName: Tax location
+displayName: TAX location
 published: true
 order: 50
 toc:
@@ -12,7 +12,7 @@ pageTitle: Guide to managing your tax location | Gcore
 pageDescription: Setting your tax location in Gсore, how it affects billing, and how to add a VAT number for accurate tax application.
 ---
 
-# Tax location
+# TAX location
 
 Every Gсore client has to specify their tax location in the billing profile. The tax location defines the country whose tax regulations and rates will be applied to a particular account.
 

@@ -2,6 +2,7 @@
 title: troubleshoot-a-server-that-was-suspended-for-non-payment
 displayName: Suspended server
 published: true
+order: 10
 toc:
    --1--How to know that the server was stopped precisely for non-payment: "how-to-know-that-the-server-was-stopped-precisely-for-non-payment"
    --1--How to renew the server: "how-to-renew-the-server"

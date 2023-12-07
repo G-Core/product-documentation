@@ -2,7 +2,7 @@
 title: troubleshoot-errors-with-iso-image-installation
 displayName: ISO images
 published: true
-order: 10
+order: 40
 toc:
 --1--Can't upload ISO in the panel: "Can-t-upload-iso-in-the-panel"
 --1--Error in DCI manager: "error-in-dci-manager"

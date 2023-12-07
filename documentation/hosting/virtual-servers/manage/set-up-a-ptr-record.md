@@ -20,7 +20,7 @@ PTR records are normally used for outbound email servers, since incoming mail se
 
 ## Set up on new interface
 
-1. Navigate to the **Virtual private servers** section on the left-side menu.
+1. Navigate to the **Virtual private servers** or **Dedicated servers** section on the left-side menu.
 
 2. Mark the checkbox next to the server for which you wish to edit PTR records and click on **IP addresses**.
 
@@ -36,7 +36,7 @@ PTR records are normally used for outbound email servers, since incoming mail se
 
 ## Set up on old interface
 
-1. Navigate to the **Virtual private servers** section on the left-side menu.
+1. Navigate to the **Virtual private servers** or **Dedicated servers** section on the left-side menu.
 
 2. Click on the server for which you want to create PTR records, and then click on **IP addresses**.
 

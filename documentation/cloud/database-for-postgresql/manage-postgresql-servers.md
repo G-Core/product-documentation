@@ -95,7 +95,8 @@ Choose Public network and configure the Access control list to limit the access 
 
 10\. In **Server details**, specify the server name and database name.
 
-**Note**: The database size limit is 100 GB.
+**Note**: The database size limit is 100 GB. This limit is for the beta stage only. If you need a more extensive database size during beta—please get in touch with [support](mailto:support@gcore.com).
+
 
 <img src="https://assets.gcore.pro/docs/cloud/database-for-postgresql/manage-postgresql-servers/manage-postgresql-120.png" alt="manage postgresql specify server details">
 

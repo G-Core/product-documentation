@@ -2,6 +2,7 @@
 title: remove-your-ip-address-from-blacklists
 displayName: IP address is in the blacklists
 published: true
+order: 30
 toc:
     --1--Avoid being blacklisted: "avoid-being-blacklisted"
     --1--Check if your IP is blacklisted: "check-if-your-ip-is-blacklisted"

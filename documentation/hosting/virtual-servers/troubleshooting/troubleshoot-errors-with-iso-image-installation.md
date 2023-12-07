@@ -2,6 +2,7 @@
 title: troubleshoot-errors-with-iso-image-installation
 displayName: ISO image
 published: true
+order: 40
 toc:
 pageTitle: Troubleshoot errors with ISO image | Gcore
 pageDescription: Troubleshoot ISO image installation errors with this guide.
