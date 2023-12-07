@@ -9,7 +9,6 @@ toc:
     --1--What’s new: "new-features-of-the-new-admin-panel"
     --2--Quick filters: "quick-filters"
     --2--Presets: "search-presets"
-    --1--Switch to the old admin panel: "switch-on-the-previous-version-of-the-admin-panel"
 ---
 # New admin panel interface
 
@@ -92,11 +91,3 @@ To create a preset:
 <img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/search-presets-120.png" alt="Create preset" width="50%">
 
 After that, the created preset will be displayed in the list of presets.
-
-## Switch on the previous version of the admin panel 
-
-By default, the new admin panel will open after <a href="https://auth.gcore.top/login/admin/signin" target="_blank">authorization</a>. We will continue to support the previous interface version for several months. Click the "Old panel" tab on the left menu to switch it on. 
-
-<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/switch-to-old-130.png" alt="Switch on the previous version of the admin panel" width="50%">
-
-**Note**: After a few months, support for the old admin panel will be suspended. We recommend using the new admin panel to become familiar with it as soon as possible. 
