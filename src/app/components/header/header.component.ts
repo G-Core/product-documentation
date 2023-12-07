@@ -62,6 +62,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     public toggleLoginModal(event: boolean): void {
         this.menuService.setIsLoginModalOpen(event);
+        document.body.style.overflowY = event ? 'hidden' : 'auto';
         this.cd.detectChanges();
     }
 }
