@@ -24,4 +24,4 @@ If you have installed your OS from an ISO, you need to set up the network config
 
 Check the IP address, the network mask and the default gateway.
 
-3\. If you can’t ping an additional IP address, make sure that <a href="https://gcore.com/docs/hosting/dedicated-servers/manage/networking/additional-ip-addresses/configure-an-additional-ip-address" target="_blank">you have configured</a> it on your server. To configure an additional IP address, reinstall your OS.
+3\. If you can’t ping an additional IP address, make sure that <a href="https://gcore.com/docs/hosting/virtual-servers/manage/networking/additional-ip-addresses/configure-an-additional-ip-address" target="_blank">you have configured</a> it on your server. To configure an additional IP address, reinstall your OS.
