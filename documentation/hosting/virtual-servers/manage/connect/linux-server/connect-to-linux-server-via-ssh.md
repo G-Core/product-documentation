@@ -9,7 +9,7 @@ pageDescription: Learn how to connect to a Linux server via SSH.
 ---
 # Connect to a Linux server via SSH
 
-Via SSH, you can remotely connect to CentOS, Debian, Ubuntu and FreeBSD servers. You can <a href="https://gcore.com/docs/hosting/virtual-servers/manage/connect/connect-to-a-windows-server" target="_blank">connect to a Windows server</a> using the RDP protocol.
+Via SSH, you can remotely connect to CentOS, Debian, Ubuntu and FreeBSD servers. You can <a href="https://gcore.com/docs/hosting/dedicated-servers/manage/connect/connect-to-a-windows-server" target="_blank">connect to a Windows server</a> using the RDP protocol.
 
 1\. Open the list of your servers and click on the one you need. Click the **Instructions** button.
 

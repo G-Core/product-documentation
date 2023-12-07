@@ -11,8 +11,7 @@ pageDescription: Troubleshoot packet loss and high ping with this guide.
 
 If you ping a server, and some of the packets are lost, or they take too much time to return (more than 110 milliseconds), it indicates a network issue.
 
-Please note that this article is for those whose server is available, despite the network issue. If the server does not return any packets at all, please refer to the guide <a href="https://gcore.com/docs/hosting/virtual-servers/troubleshooting/troubleshoot-a-server-that-is-not-responding-to-ping-requests 
-" target="_blank">for the case when a server does not respond to ping</a>.
+Please note that this article is for those whose server is available, despite the network issue. If the server does not return any packets at all, please refer to the guide <a href="https://gcore.com/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-a-server-that-is-not-responding-to-ping-requests" target="_blank">for the case when a server does not respond to ping</a>.
 
 1\. If you are using a proxy or VPN, disable it and ping again. If it helps, the problem was caused by an intermediate server. Connect without it or consider changing the VPN/proxy.
 
