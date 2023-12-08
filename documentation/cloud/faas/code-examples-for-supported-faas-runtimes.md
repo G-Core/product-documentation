@@ -4,7 +4,7 @@ displayName: Function examples
 published: true
 order: 30
 toc:
-   --1--.NET: "net"
+   --1--NET: "net"
    --2--Basic: "basic-hello-world-function"
    --2--With deps: "function-with-dependencies"
    --2--Accessing data requests: "function-accessing-the-data-request"
@@ -35,7 +35,7 @@ This article aims to introduce developers to the capabilities of <a href="https:
 - a function with dependencies 
 - a function accessing a data request/response 
 
-## .NET
+## NET
 
 ### Basic “hello world” function
 
