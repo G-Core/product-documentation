@@ -1,10 +1,10 @@
 ---
-title: code-examples-for-supported-faas-runtimes 
+title: code-examples-for-supported-faas-runtimes
 displayName: Function examples
 published: true
 order: 30
 toc:
-   --1--.NET: ".net"
+   --1--.NET: "net"
    --2--Basic: "basic-hello-world-function"
    --2--With deps: "function-with-dependencies"
    --2--Accessing data requests: "function-accessing-the-data-request"
