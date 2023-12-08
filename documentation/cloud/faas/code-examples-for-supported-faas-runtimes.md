@@ -4,7 +4,7 @@ displayName: Function examples
 published: true
 order: 30
 toc:
-   --1--C#: "c#"
+   --1--.NET: ".net"
    --2--Basic: "basic-hello-world-function"
    --2--With deps: "function-with-dependencies"
    --2--Accessing data requests: "function-accessing-the-data-request"
@@ -29,14 +29,13 @@ pageDescription: Explore basic functions, functions with dependencies, and data 
 ---
 # Code examples for supported FaaS runtimes
 
-
-This article aims to introduce developers to the capabilities of <a href="https://gcore.com/docs/cloud/faas/about-function-as-a-service" target="_blank">FaaS</a> for all supported runtimes: С# (.NET), Go, Java, Node.js, and Python. For each runtime, we provide examples of three abstract functions of ascending levels of complexity: 
+This article aims to introduce developers to the capabilities of <a href="https://gcore.com/docs/cloud/faas/about-function-as-a-service" target="_blank">FaaS</a> for all supported runtimes: .NET, Go, Java, Node.js, and Python. For each runtime, we provide examples of three abstract functions of ascending levels of complexity: 
 
 - a basic function (“Hello world!”)
 - a function with dependencies 
 - a function accessing a data request/response 
 
-## C#
+## .NET
 
 ### Basic “hello world” function
 
