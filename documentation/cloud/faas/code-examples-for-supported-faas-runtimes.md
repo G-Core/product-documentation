@@ -4,26 +4,26 @@ displayName: Function examples
 published: true
 order: 30
 toc:
-   --1--NET: "net"
-   --2--Basic: "basic-hello-world-function"
-   --2--With deps: "function-with-dependencies"
-   --2--Accessing data requests: "function-accessing-the-data-request"
+   --1--C#: "c#"
+   --2--Basic: "basic-c#-hello-world-function"
+   --2--With deps: "c#-function-with-dependencies"
+   --2--Accessing data requests: "c#-function-accessing-the-data-request"
    --1--Go: "go"
-   --2--Basic: "basic-hello-world-function"
-   --2--With deps: "function-with-dependencies"
-   --2--Accessing request/response objects: "function-accessing-requestresponse-objects"
+   --2--Basic: "basic-go-hello-world-function"
+   --2--With deps: "go-function-with-dependencies"
+   --2--Accessing request/response objects: "go-function-accessing-requestresponse-objects"
    --1--Java: "java"
-   --2--Basic: "basic-hello-world-function"
-   --2--With deps: "function-with-dependencies"
-   --2--Accessing requests: "function-accessing-the-request"
+   --2--Basic: "basic-java-hello-world-function"
+   --2--With deps: "java-function-with-dependencies"
+   --2--Accessing requests: "java-function-accessing-the-request"
    --1--Node.js: "nodejs"
-   --2--Basic: "basic-hello-world-function"
-   --2--With deps: "function-with-dependencies"
-   --2--Accessing object requests: "Function accessing object requestresponse"
-   --1--Python: python"
-   --2--Basic: "basic-hello-world-function"
-   --2--With deps: "function-with-dependencies"
-   --2--Accessing object requests: "function-accessing-object-requestresponse"
+   --2--Basic: "basic-nodejs-hello-world-function"
+   --2--With deps: "nodejs-function-with-dependencies"
+   --2--Accessing object requests: "nodejs-function-accessing-object-requestresponse"
+   --1--Python: "python"
+   --2--Basic: "basic-python-hello-world-function"
+   --2--With deps: "python-function-with-dependencies"
+   --2--Accessing object requests: "python-function-accessing-object-requestresponse"
 pageTitle: FaaS Runtimes Code Examples for C#, Go, Java, Node.js, and Python | Gcore
 pageDescription: Explore basic functions, functions with dependencies, and data request/response handling for different runtimes.
 ---
@@ -35,9 +35,9 @@ This article aims to introduce developers to the capabilities of <a href="https:
 - a function with dependencies 
 - a function accessing a data request/response 
 
-## NET
+## C#
 
-### Basic “hello world” function
+### Basic C# “hello world” function
 
 ```
 using System;
@@ -55,7 +55,7 @@ public class module
 }
 ```
 
-### Function with dependencies
+### C# function with dependencies
 
 This function uses the ```YamlDotNet``` dependencies.
 
@@ -101,7 +101,7 @@ To build this function, specify the dependencies in the .csproj format as follow
 </Project>
 ```
 
-### Function accessing the data request 
+### C# function accessing the data request 
 
 For all runtimes, you can find the request object in the ```event``` map field. Each language will have its unique type. For C#, it will be ```HttpRequest``` from ```Microsoft.AspNetCore.Http```.
 
@@ -164,7 +164,7 @@ The dependencies should be structured in this manner:
 
 ## Go
 
-### Basic “hello world” function
+### Basic Go “hello world” function
 
 ```
 package kubeless
@@ -176,7 +176,7 @@ func Handler(event map[string]interface{}, context map[string]string) (string, e
 }
 ```
 
-### Function with dependencies
+### Go function with dependencies
 
 This function uses the ```yaml``` dependencies.
 
@@ -216,7 +216,7 @@ require (
 )
 ```
 
-### Function accessing request/response objects
+### Go function accessing request/response objects
 
 In the Go runtime, the event extension includes request, response, and context objects. These can be accessed for improved precision in function management:
 
@@ -266,7 +266,7 @@ func Handler(event map[string]interface{}, k8sContext map[string]string) (string
 
 ## Java
 
-### Basic “hello world” function
+### Basic Java “hello world” function
 
 ```
 package io.kubeless;
@@ -282,7 +282,7 @@ public class Module {
 }
 ```
 
-### Function with dependencies
+### Java fnction with dependencies
 
 ```
 package io.kubeless;
@@ -325,7 +325,7 @@ Dependencies should be defined as follows:
 </project>
 ```
 
-### Function accessing the request
+### Java function accessing the request
 
 ```
 package io.kubeless;
@@ -360,7 +360,7 @@ public class Module {
 
 ## Node.js
 
-### Basic “hello world” function
+### Basic Node.js “hello world” function
 
 ```
 module.exports = {
@@ -370,7 +370,7 @@ module.exports = {
 }
 ```
 
-### Function with dependencies
+### Node.js function with dependencies
 
 ```
 'use strict';
@@ -406,7 +406,7 @@ The dependencies should be structured in this manner:
 }
 ```
 
-### Function accessing object request/response
+### Node.js function accessing object request/response
 
 ```
 'use strict';
@@ -425,14 +425,14 @@ module.exports = {
 
 ## Python
 
-### Basic “hello world” function
+### Basic Python “hello world” function
 
 ```
 def handler(event, context):
     return "hello world"
 ```
 
-### Function with dependencies
+### Python function with dependencies
 
 ```
 import yaml
@@ -453,7 +453,7 @@ The dependencies should be structured in this manner:
 PyYAML==6.0.1
 ```
 
-### Function accessing object request/response
+### Python function accessing object request/response
 
 ```
 import yaml
