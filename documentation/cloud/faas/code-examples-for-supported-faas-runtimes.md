@@ -29,11 +29,11 @@ pageDescription: Explore basic functions, functions with dependencies, and data 
 ---
 # Code examples for supported FaaS runtimes
 
-This article aims to introduce developers to the capabilities of <a href="https://gcore.com/docs/cloud/faas/about-function-as-a-service" target="_blank">FaaS</a> for all supported runtimes: .NET, Go, Java, Node.js, and Python. For each runtime, we provide examples of three abstract functions of ascending levels of complexity: 
+This article introduces developers to the capabilities of <a href="https://gcore.com/docs/cloud/faas/about-function-as-a-service" target="_blank">FaaS</a> for all supported runtimes: .NET, Go, Java, Node.js, and Python. For each runtime, we provide examples of three abstract functions of ascending levels of complexity: 
 
-- a basic function (“Hello world!”)
-- a function with dependencies 
-- a function accessing a data request/response 
+- A basic function (“Hello world!”)
+- A function with dependencies 
+- A function for accessing a data request/response 
 
 ## C#
 
@@ -87,7 +87,7 @@ public class Person
 }
 ```
 
-To build this function, specify the dependencies in the .csproj format as follows:
+To build this function, specify the dependencies in the .csproj format:
 
 ```
 <Project Sdk="Microsoft.NET.Sdk">
@@ -103,7 +103,7 @@ To build this function, specify the dependencies in the .csproj format as follow
 
 ### C# function accessing the data request 
 
-For all runtimes, you can find the request object in the ```event``` map field. Each language will have its unique type. For C#, it will be ```HttpRequest``` from ```Microsoft.AspNetCore.Http```.
+For all runtimes, you can find the request object in the ```event``` map field. Each language has a unique type. For C#, it's ```HttpRequest``` from ```Microsoft.AspNetCore.Http```.
 
 ```
 using System;
@@ -142,7 +142,7 @@ public class module
 }
 ```
 
-The dependencies should be structured in this manner:
+The dependencies should be structured as follows:
 
 ```
 <Project Sdk="Microsoft.NET.Sdk">
@@ -218,7 +218,7 @@ require (
 
 ### Go function accessing request/response objects
 
-In the Go runtime, the event extension includes request, response, and context objects. These can be accessed for improved precision in function management:
+The event extension includes request, response, and context objects. These can be accessed for improved precision in function management:
 
 ```
 package kubeless
@@ -282,7 +282,7 @@ public class Module {
 }
 ```
 
-### Java fnction with dependencies
+### Java function with dependencies
 
 ```
 package io.kubeless;
@@ -387,7 +387,7 @@ module.exports = {
 };
 ```
 
-The dependencies should be structured in this manner:
+The dependencies should be structured as follows:
 
 ```
 {
@@ -447,7 +447,7 @@ def handler(event, context):
     return yaml.dump(person)
 ```
 
-The dependencies should be structured in this manner:
+The dependencies should be structured as follows:
 
 ```
 PyYAML==6.0.1
