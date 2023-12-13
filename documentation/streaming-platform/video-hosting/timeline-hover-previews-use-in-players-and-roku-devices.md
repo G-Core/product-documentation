@@ -19,7 +19,7 @@ pageDescription: A detailed guide on embedding video previews into Gcore Player 
 
 Timeline hover previews, or trick play, is an option that makes it easier to rewind and find a specific moment in a video. It shows users previews when they point their cursor to any specific point on the video’s timeline. For example:
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices/coffeerun8.gif" alt="Timeline hover previews" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices/coffeerun8.gif" loading="lazy" alt="Timeline hover previews" width="80%">
 
 ## What do the previews consist of?
 

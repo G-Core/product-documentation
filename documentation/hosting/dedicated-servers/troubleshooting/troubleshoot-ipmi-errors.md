@@ -21,11 +21,11 @@ You may encounter various errors when logging into IPMI. We will tell you what t
 
 Usually, it’s not needed to type username and password manually. They will be filled in automatically if you click on the field and then on the appropriate button in a corner of the screen.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-ipmi-errors/1_eng.bmp" alt=" login and password in DCImanager" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-ipmi-errors/1_eng.png" alt=" login and password in DCImanager" width="80%">
 
 If autocomplete doesn't work, try to enter data manually. You can find your login and password in <a href="https://gcore.com/docs/hosting/dedicated-servers/manage/log-in-to-dcimanager" target="_blank">DCImanager</a> — point the mouse cursor to a monitor icon, and you will see the login information.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-ipmi-errors/2eng.bmp" alt=" login and password in DCImanager" width="80%">  
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-ipmi-errors/2eng.png" alt=" login and password in DCImanager" width="80%">  
 
 Even if you managed to log in with manual data entering, <a href="https://gcore.com/docs/hosting/contact-our-technical-support" target="_blank">write to technical support</a> — we will repair fields autocomplete. If you can't log in, contact support too. We will help to establish a connection to IPMI.
 

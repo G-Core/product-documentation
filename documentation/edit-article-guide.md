@@ -23,7 +23,7 @@ published: true
 
 1\. Make edits in the field, click **Commit changes...** and then click **Propose changes** in the pop-up.
 
-<img src="https://assets.gcore.pro/docs/edit-article-guide/propose-changes-20.gif" alt="How to propose changes if you want to correct text" width="80%">
+<img src="https://assets.gcore.pro/docs/edit-article-guide/propose-changes-20.gif" loading="lazy" alt="How to propose changes if you want to correct text" width="80%">
 
 2\. Click **Create pull request**.
 
@@ -41,7 +41,7 @@ That’s it. The Gcore technical writers will be notified of your request and wi
 
 1\. Remove the incorrect information from the <code>&lt;a href="https://wrong-link"&gt;</code> attribute. Insert the correct <code>&lt;a href="https://right-link"&gt;</code> link in its place, click <b>Commit changes…</b>, and then click <b>Propose changes</b> in the pop-up.
 
-<img src="https://assets.gcore.pro/docs/edit-article-guide/propose-changes-v2-50.gif" alt="How to propose changes if you want to correct a link" width="80%">
+<img src="https://assets.gcore.pro/docs/edit-article-guide/propose-changes-v2-50.gif" loading="lazy" alt="How to propose changes if you want to correct a link" width="80%">
 
 2\. Click **Create pull request**.
 
@@ -61,7 +61,7 @@ That’s it. The Gcore technical writers will be notified of your request and wi
 
 1\. To delete a screenshot or a fragment with an error, click **Commit changes** in the pop-up that appears, describe the error, and click **Propose changes**.
 
-<img src="https://assets.gcore.pro/docs/edit-article-guide/propose-changes-60.gif" alt="How to propose changes if you want to correct a screenshot" width="80%">
+<img src="https://assets.gcore.pro/docs/edit-article-guide/propose-changes-60.gif" loading="lazy" alt="How to propose changes if you want to correct a screenshot" width="80%">
 
 2\. Click **Create pull request**.
 
@@ -81,7 +81,7 @@ If you found an error in the text and do not want to correct it yourself, follow
 
 1\. Highlight the text fragment with the error, delete it, or write a suggestion to enable comments. Click **Commit changes**, describe the error in the popup, and click **Propose changes**.
 
-<img src="https://assets.gcore.pro/docs/edit-article-guide/propose-changes-70.gif" alt="How to propose changes if you want to let us know about corrections" width="80%">
+<img src="https://assets.gcore.pro/docs/edit-article-guide/propose-changes-70.gif" loading="lazy" alt="How to propose changes if you want to let us know about corrections" width="80%">
 
 2\. Click **Create pull request**.
 
