@@ -29,7 +29,7 @@ pageDescription: Learn how to add and attach your certificate to the CDN resourc
 
 A new page will open.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-2.png" alt="new page will open" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/ssl-certificate-data.png" alt="new page will open" width="70%">
 
 2\. Enter the following details of the certificate that you purchased from the Certificate Authority:
 
@@ -39,7 +39,9 @@ A new page will open.
 
 For help inserting the certificate chain and key contents, <a href="https://gcore.com/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate#how-to-insert-an-ssl-chain-and-a-key-correctly" target="_blank">explore our guide</a>.
 
-3\. Click **Create SSL Certificate**.
+3\. Check the box if the certificate is signed by the trusted CA.
+
+4\. Click **Create SSL Certificate**.
 
 That’s it. The certificate will be added to the list of certificates in the <a href="https://cdn.gcore.com/ssl/" target="_blank">SSL Certificates</a> section. 
 
