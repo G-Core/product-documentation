@@ -1,5 +1,5 @@
 ---
-title: backup-and-restore-postgresql-database-for-gcore-managed-database-using-external-utilities
+title: backup-and-restore-postgresql-database-for-gcore-managed-database-for-postgresql-using-external-utilities
 displayName: Backup and restore
 published: true
 order: 20
@@ -13,7 +13,7 @@ toc:
 pageTitle: PostgreSQL Database Backup and Restore with Gcore Managed Database | Gcore
 pageDescription: Learn how to secure your data with easy PostgreSQL backup and restore on Gcore Managed Database using pg_dump and pg_restore tools.
 ---
-# Backup and restore PostgreSQL database for Gcore Managed Database using external utilities 
+# Backup and restore PostgreSQL database for Managed Database for PostgreSQL using external utilities 
 
 This guide will explain how to backup and restore PostgreSQL databases with the ```pg_dump``` (```pg_dumpall```) and ```pg_restore``` tools.
 
