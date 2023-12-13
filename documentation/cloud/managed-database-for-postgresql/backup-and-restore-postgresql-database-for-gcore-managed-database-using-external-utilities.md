@@ -17,7 +17,7 @@ pageDescription: Learn how to secure your data with easy PostgreSQL backup and r
 
 This guide will explain how to backup and restore PostgreSQL databases with the ```pg_dump``` (```pg_dumpall```) and ```pg_restore``` tools.
 
-To protect yourself against data loss, we recommend frequently backing up the databases you manage with <a href="https://gcore.com/docs/cloud/database-for-postgresql" target="_blank">Gcore Managed Database for PostgreSQL</a>.
+To protect yourself against data loss, we recommend frequently backing up the databases you manage with <a href="https://gcore.com/docs/cloud/managed-database-for-postgresql" target="_blank">Gcore Managed Database for PostgreSQL</a>.
 
 ## 1. Install external utilities
 
@@ -66,7 +66,7 @@ The package contains all required tools.
 
 ## 2. Get your credentials
 
-To launch backup and restore tools, you need credentials (``username``, ```password```, ```port```, and ```dbname```) to connect to the Gcore Managed Database server, where databases are stored. You can find credentials in the customer portal, with instructions available in <a href="https://gcore.com/docs/cloud/database-for-postgresql/manage-postgresql-servers#get-your-credentials" target="_blank">our dedicated guide</a>. 
+To launch backup and restore tools, you need credentials (``username``, ```password```, ```port```, and ```dbname```) to connect to the Gcore Managed Database server, where databases are stored. You can find credentials in the customer portal, with instructions available in <a href="https://gcore.com/docs/cloud/managed-database-for-postgresql/manage-postgresql-servers#get-your-credentials" target="_blank">our dedicated guide</a>. 
 
 ## 3. Back up databases
 
@@ -79,7 +79,7 @@ Use one of the following commands depending on your choice of backup format:
 - **Custom format**: ```$ pg_dump -F c -U username -W -h hostname -d database_name > backup_file.dump```
 - **Directory format**: ```$ pg_dump -F d -U username -W -h hostname -d database_name -f backup_dir```
 
-Instead of ```username```, ```hostname```, and ```database_name```, enter custom values, which you can access <a href="https://gcore.com/docs/cloud/database-for-postgresql/manage-postgresql-servers#get-your-credentials" target="_blank">using our guide</a>. For ```backup_file``` or ```backup_dir```, specify the relevant name for the backup file or directory.
+Instead of ```username```, ```hostname```, and ```database_name```, enter custom values, which you can access <a href="https://gcore.com/docs/cloud/managed-database-for-postgresql/manage-postgresql-servers#get-your-credentials" target="_blank">using our guide</a>. For ```backup_file``` or ```backup_dir```, specify the relevant name for the backup file or directory.
 
 Below are some other details for the commands:
 
