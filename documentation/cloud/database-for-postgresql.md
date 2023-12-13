@@ -1,6 +1,6 @@
 ---
-title: database-for-postgresql
-displayName: Database for PostgreSQL 
+title: managed-database-for-postgresql
+displayName: Managed Database for PostgreSQL 
 published: true
 toc:
    --1--How it works: "how-does-it-work"
@@ -10,7 +10,7 @@ toc:
    --1--Billing: "billing"
    --1--Limitations: "limitations"
    --1--Use: "how-to-use"
-pageTitle: A Database for PostgreSQL for Relational Databases | Gcore
+pageTitle: Managed Database for PostgreSQL for Relational Databases | Gcore
 pageDescription: Gcore Managed Database for PostgreSQL is a fully managed cloud solution designed to simplify management of relational databases.
 ---
 # About Managed Database for PostgreSQL
@@ -27,7 +27,7 @@ Within each server, you can create multiple relational databases. Users and appl
 
 ## Supported versions
 
-Gcore Managed Database currently supports PostgreSQL 13,14 and 15.
+Gcore Managed Database for PostgreSQL currently supports PostgreSQL 13,14 and 15.
 
 ## Key features
 
@@ -58,4 +58,4 @@ The database size limit is 100 GB. This limit is for the beta stage only. If you
 
 ## How to use
 
-We have prepared a <a href="https://gcore.com/docs/cloud/database-for-postgresql/manage-postgresql-servers" target="_blank">guide on how to manage the service</a>: create a server, get credentials, update the version, login via psql client and pgAdmin.
+We have prepared a <a href="https://gcore.com/docs/cloud/managed-database-for-postgresql/manage-postgresql-servers" target="_blank">guide on how to manage the service</a>: create a server, get credentials, update the version, login via psql client and pgAdmin.
