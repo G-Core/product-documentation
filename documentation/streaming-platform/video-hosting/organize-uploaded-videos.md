@@ -50,7 +50,7 @@ Let’s examine the difference between the two ways. For example, you have 100 v
 
 3\. Select the target folder and confirm the actions.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/Move.gif" alt="Videos tab" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/Move.gif" loading="lazy" alt="Videos tab" width="80%">
 
 ### Delete a folder
 

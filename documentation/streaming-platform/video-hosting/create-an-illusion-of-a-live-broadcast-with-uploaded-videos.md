@@ -4,11 +4,12 @@ displayName: Live imitation
 published: true
 order: 40
 toc:
-   --1--What is it?: "what-is-live-imitation"
-   --1--Configure: "configure-live-imitation"
+    --1--What is it?: 'what-is-live-imitation'
+    --1--Configure: 'configure-live-imitation'
 pageTitle: Overview of the Live Imitation Feature and Its Setup | Gcore
 pageDescription: A step-by-step guide on creating an illusion of live mode for your video.
 ---
+
 # Create an illusion of a live broadcast with uploaded videos
 
 ## What is Live imitation?
@@ -23,7 +24,7 @@ Example: You are the owner of a movie streaming service. On September 1, you are
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/create-an-illusion-of-a-live-broadcast-with-uploaded-videos/Your_ID.png" alt=" specify your ID " width="80%">
 
-The message template: *"Greetings! Please enable the Live imitation feature for an account with ID … (your ID)"*.
+The message template: _"Greetings! Please enable the Live imitation feature for an account with ID … (your ID)"_.
 
 We will notify you when the feature is activated. After that, you will be able to use it for your account.
 
@@ -31,7 +32,7 @@ We will notify you when the feature is activated. After that, you will be able t
 
 3\. Go to the Live imitation section and click **Create a Live imitation**. Then enter its name and click **Create** in the pop-up.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/create-an-illusion-of-a-live-broadcast-with-uploaded-videos/Create.gif" alt="Create a Live imitation">
+<img loading="lazy" src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/create-an-illusion-of-a-live-broadcast-with-uploaded-videos/Create.gif" width="688" height="311" alt="Create a Live imitation">
 
 A new window will open. Complete the remaining steps in it.
 

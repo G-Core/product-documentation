@@ -34,7 +34,7 @@ The drawback of the first approach is that if you change the player, the overlay
 
 In the example below, you can see the game score widget in the upper left corner, the weather widget in the upper right corner, the poll widget in the lower right corner, and the time and date widget in the lower left corner.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/insert-html-overlays-in-live-streams/coffee_run_overlays.gif" alt="Example of Gcore overlay">
+<img loading="lazy" src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/insert-html-overlays-in-live-streams/coffee_run_overlays.gif" alt="Example of Gcore overlay">
 
 ## Gcore supports HTML overlays
 
