@@ -1,5 +1,5 @@
 ---
-title: managed-database-for-postgresql
+title: managed-database-postgresql
 displayName: Managed Database for PostgreSQL 
 published: true
 toc:
