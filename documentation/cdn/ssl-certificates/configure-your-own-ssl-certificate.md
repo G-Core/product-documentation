@@ -39,7 +39,7 @@ A new page will open.
 
 For help inserting the certificate chain and key contents, <a href="https://gcore.com/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate#how-to-insert-an-ssl-chain-and-a-key-correctly" target="_blank">explore our guide</a>.
 
-3\. Check the box if the certificate is signed by the trusted CA.
+3\. Uncheck the box if the certificate is not signed by the trusted CA.
 
 4\. Click **Create SSL Certificate**.
 
@@ -95,7 +95,7 @@ You can attach the SSL certificate to your CDN resource in two ways:
 
 If you haven’t yet added a certificate or want to upload a new one for this resource, click Add **SSL certificate**. Specify your SSL certificate’s data in the pop-up window. <a href="https://gcore.com/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate#how-to-insert-an-ssl-chain-and-a-key-correctly" target="_blank">Check our guide</a> for help inserting the certificate and key contents. After pasting the data, сlick **Add SSL certificate**.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-7.png" alt=" Add SSL certificate" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/ssl-cert-adding.png" alt=" Add SSL certificate" width="70%">
 
 </expandable-element>
 
@@ -118,7 +118,7 @@ If you haven’t yet added a certificate or want to upload a new one for this re
 
 If you haven’t yet added a certificate or want to upload a new one for this resource, click Add **SSL certificate**. Specify your SSL certificate’s data in the pop-up window. <a href="https://gcore.com/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate#how-to-insert-an-ssl-chain-and-a-key-correctly" target="_blank">Check our guide</a> for help inserting the certificate and key contents. After pasting the data, сlick **Add SSL certificate**.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-7.png" alt="SSL certificates overview" width="70%">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/ssl-cert-adding.png" alt="SSL certificates overview" width="70%">
 
 </expandable-element>
 

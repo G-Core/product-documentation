@@ -15,7 +15,7 @@ pageDescription: Gcore Managed Database for PostgreSQL is a fully managed cloud 
 ---
 # About Managed Database for PostgreSQL
 
-Gcore Managed Database for PostgreSQL is a fully managed cloud solution designed to simplify management of relational databases. We take care of server maintenance and administration tasks, so you can focus on your application and users.
+<a hred="https://gcore.com/cloud/managed-database-postgresql" target="_blank">Gcore Managed Database for PostgreSQL</a> is a fully managed cloud solution designed to simplify management of relational databases. We take care of server maintenance and administration tasks, so you can focus on your application and users.
 
 ## How does it work?
 
