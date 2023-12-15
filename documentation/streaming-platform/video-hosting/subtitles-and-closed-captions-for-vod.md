@@ -47,7 +47,7 @@ Your videos may need text accompaniment in the following cases:
 
 Gcore Player supports timed text tracks for videos: subtitles and closed captions, as in the example:
 
-<img loading="lazy" src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/subtitles-and-closed-captions-for-vod/captions-10.gif" alt="Gcore Player" wifth="">
+<img loading="lazy" src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/subtitles-and-closed-captions-for-vod/captions-10.gif" alt="Gcore Player" width="">
 
 ## Formats of subtitles and captions
 
