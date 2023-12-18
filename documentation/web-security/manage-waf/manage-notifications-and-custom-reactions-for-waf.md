@@ -5,12 +5,11 @@ published: true
 order: 30
 toc:
    --1--What are triggers?: "what-are-triggers"
-   --1--Create a trigger: "create-a-trigger"
-   --2--1. Triggers: "1-go-to-triggers"
-   --2--2. Сondition: "2-choose-a-condition"
-   --2--3. Filters: "3-add-a-filter-optional"
-   --2--4. Reactions: "4-add-a-reaction"
-   --2--5. Name and description: "5-enter-the-name-and-description"
+   --1--Create triggers: "create-triggers"
+   --2--Step 1. Сondition: "step-1-choose-a-condition"
+   --2--Step 2. Filters: "step-2-add-a-filter"
+   --2--Step 3. Reactions: "step-3-add-reactions"
+   --2--Step 4. Saving : "step-4-save-the-trigger"
    --1--Disable and delete: "disable-or-delete-a-trigger"
 pageTitle: Managing WAF Triggers | Gcore
 pageDescription: A guide on managing WAF triggers to tailor your security alerts and responses with condition, filter, and reaction options.
@@ -45,7 +44,7 @@ Triggers are managed and collected in the <a href="https://web-protect.gcore.com
 
 <img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/triggers-waf-10.png" alt="Triggers" width="80%">
 
-## Create a trigger
+## Create triggers
 
 1. Click **Create trigger**.
 2. Choose conditions.
