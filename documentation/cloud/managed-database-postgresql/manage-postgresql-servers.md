@@ -49,7 +49,7 @@ Your request will be processed within fifteen minutes and the number of quotas w
 
 <img src="https://assets.gcore.pro/docs/cloud/database-for-postgresql/manage-postgresql-servers/manage-postgresql-40.png" alt="manage postgresql choose region">
 
-3\. Choose the appropriate <a href="https://gcore.com/docs/cloud/managed-database-for-postgresql#supported-versions" target="_blank">PostgreSQL version</a>.
+3\. Choose the appropriate <a href="https://gcore.com/docs/cloud/managed-database-postgresql#supported-versions" target="_blank">PostgreSQL version</a>.
 
 <img src="https://assets.gcore.pro/docs/cloud/database-for-postgresql/manage-postgresql-servers/manage-postgresql-50.png" alt="manage postgresql select version">
 
@@ -163,7 +163,7 @@ Before you connect to your PostgreSQL server, make sure to do the following:
 - Endpoint. You can find it in the “Connection details”
 - Username. You can find it in the “Connection detais”
 - Port. You can find it by copying the connection strings in the “Connection details”
-- Password. You should have got it separately after creating a server. If you forgot your password, <a href="https://gcore.com/docs/cloud/managed-database-for-postgresql/manage-postgresql-servers#get-your-credentials" target="_blank">reset it</a>. 
+- Password. You should have got it separately after creating a server. If you forgot your password, <a href="https://gcore.com/docs/cloud/managed-database-postgresql/manage-postgresql-servers#get-your-credentials" target="_blank">reset it</a>. 
 
 2\. Make sure your client computer is in the access control list of the PostgreSQL server. It means that the external IP address of PC which is trying to connect to PostgreSQL should be in allowlist (ACL).
 

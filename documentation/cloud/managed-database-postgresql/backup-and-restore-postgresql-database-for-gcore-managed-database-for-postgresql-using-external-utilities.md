@@ -17,7 +17,7 @@ pageDescription: Learn how to secure your data with easy PostgreSQL backup and r
 
 This guide will explain how to backup and restore PostgreSQL databases with the ```pg_dump``` (```pg_dumpall```) and ```pg_restore``` tools.
 
-To protect yourself against data loss, we recommend frequently backing up the databases you manage with <a href="https://gcore.com/docs/cloud/managed-database-for-postgresql" target="_blank">Gcore Managed Database for PostgreSQL</a>.
+To protect yourself against data loss, we recommend frequently backing up the databases you manage with <a href="https://gcore.com/docs/cloud/managed-database-postgresql" target="_blank">Gcore Managed Database for PostgreSQL</a>.
 
 ## 1. Install external utilities
 
