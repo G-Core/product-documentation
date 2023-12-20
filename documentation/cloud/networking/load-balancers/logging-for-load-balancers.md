@@ -43,7 +43,7 @@ Below are the test results that demonstrate the throughput for various region pa
 <tr>
 <td><b>Source</b></td>
 <td><b>Destination</b></td>
-<td><b>Guaranteed log delivery throughput, K RPS</b></td>
+<td><b>Measured log delivery throughput, K RPS</b></td>
 </tr>
 <thead>
 </thead>
