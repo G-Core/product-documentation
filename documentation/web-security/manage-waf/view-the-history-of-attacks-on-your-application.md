@@ -64,7 +64,6 @@ Events provide detailed insights into malicious requests directed at your applic
 **Identify and resolve vulnerabilities**. By examining “incident”-type events, you can determine which parts of your application are susceptible and which types of attacks. This allows you to address these vulnerabilities.
 
 **Prevent specific attacks**. The event log lets you see if your application is frequently targeted from a particular region or IP address. While these attacks are innocuous (since WAF blocks them,)  they still require processing by your server, thus reducing performance for end users. To conserve server resources, you can opt to block the offending IP addresses or regions in the “Access Settings” as per the <a href="https://gcore.com/docs/web-security/set-the-access-policy-for-a-protected-resource" target="_blank">Access Policy guide</a>.
-Dash, can we be more specific about "draining resources"? I guess it means money, right? Does it also affect performance for legitimate users during the attack or sth?
 
 **Gather analytical data to secure the private sections of your application**. By analyzing the logs of malicious requests, you can ascertain the most common attack techniques and the IP addresses frequently used. Using this information, you can better protect internal resources not covered by WAF (like an application administration panel or a private platform for employees) against common attacks. Additionally, you can block the IP addresses of frequent offenders.
 
