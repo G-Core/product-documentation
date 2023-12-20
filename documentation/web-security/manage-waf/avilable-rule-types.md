@@ -14,16 +14,16 @@ toc:
    --2--Blocking all requests with an incorrect User-agent header: "blocking-all-requests-with-an-incorrect-user-agent-header"
    --1--Ignore certain attack types: "ignore-certain-attack-types"
    --1--Ignoring attack signs in the binary data: "ignoring-attack-signs-in-the-binary-data"
-pageTitle: Discover Effective Ways to Manage Web Application Security with WAF Rules | Gcore
+pageTitle: Manage Web Application Security with WAF Rules | Gcore
 pageDescription: Explore how to enhance web application security using various rules and configurations in the WAF system.
 ---
 # Available rule types
 
 ## Manage request parsers
 
-The rule **Disable/Enable request parser** allows managing the set of parsers applied to the request during its analysis.
+The rule **Disable/Enable request parser** allows you to manage the set of parsers applied to the request during its analysis.
 
-By default, when analyzing the request, the WAF node attempts to sequentially apply each suitable parser to each request element. However, certain parsers can be applied mistakenly so that the WAF node may detect attack signs in the decoded value.
+By default, when analyzing the request, the WAF node attempts to apply each suitable parser to each request element sequentially. However, certain parsers can be applied mistakenly, causing the WAF node to detect (false) attack signs in the decoded value.
 
 For instance, the WAF node might incorrectly interpret unencoded data as being encoded into Base64, given that Base64 alphabet symbols are frequently found in regular text, token values, UUID values, and other data formats. If the WAF node decodes the unencoded data and identifies signs of attack in the resulting value, a false positive is registered.
 
@@ -33,21 +33,22 @@ To avoid such false positives, the **Disable/Enable request parser** rule can be
 
 The rule can be both created and applied within the **Attacks** and **Rules** WAF sections.
 
-- In the **Attacks** section, rules are generated with a pre-existing description of the endpoints where the rule will be applied. This description aligns with the request for which you've clicked the **Rule** button. To finalize the rule setup, choose the rule's type action and ensure all elements of the rule are set up correctly
-- In the **Rules** section, you'll need to manually input all components of the rule
+- In the **Attacks** section, rules are generated with a pre-existing description of the endpoints where the rule will be applied. This description aligns with the request for which you've clicked the **Rule** button. To finalize the rule setup, choose the rule's action type and ensure all elements of the rule are set up correctly.
+- In the **Rules** section, you'll need to manually input all components of the rule.
 
 To create and apply the rule in the **Rules** section:
 
 1\. Create the rule **Disable/Enable request parser** in the **Rules** WAF section. The rule consists of the following components:
 
-- The condition describes the endpoints where the rule will be applied. - Parsers that should be enabled or disabled for the specific request element.
-- The part of request refers to the original request element that should be parsed or left unparsed with the selected parsers. If multiple options are chosen sequentially **in this part of request**, they should represent the order of parsers that the WAF would use to read the necessary request element.
+- The condition, describing the endpoints where the rule will be applied.
+- Parsers that should be enabled or disabled for the specific request element.
+- The part of the request refers to the original request element that should be parsed or left unparsed with the selected parsers. If multiple options are chosen sequentially **in this part of the request**, they should represent the order of parsers that the WAF would use to read the necessary request element.
 
-2\. Wait for the rule creation to complete.
+2\. Wait for the rule creation to be completed.
 
 ## Rule example
 
-Suppose the requests to ```https://example.com/users/``` necessitate the authentication header ```X-AUTHTOKEN```. The header value might include specific combinations of symbols (like ```'='``` at the end) that WAF could potentially decode using the base64 parser.
+Suppose the requests to ```https://example.com/users/``` necessitate the authentication header ```X-AUTHTOKEN```. The header value might include specific combinations of symbols (like ```'='``` at the end) that WAF could potentially decode using the Base64 parser.
 
 You can configure the **Disable/Enable request parser** rule to prevent false positives in the USER-AGENT values as follows:
 
@@ -62,42 +63,41 @@ You can configure the **Disable/Enable request parser** rule to prevent false po
 ## Rules for data masking
 
 The WAF node transmits the following information to the WAF Cloud:
-
+dash, plz check if Cloud in row 65 should definitely be capitalized (only capitalize if it's about Gcore Cloud specifically)
 - Serialized requests with detected attacks
 - WAF system counters
 - System statistics such as CPU load and RAM usage
-- WAF system statistics, including the number of processed NGINX requests and Tarantool statistics
+- WAF system statistics, including the number of processed nginx requests and Tarantool statistics
 - Data about the type of traffic that WAF requires to accurately identify the application structure
 
-Certain information should not be sent outside of the server where it is processed. This generally includes authorization details (like cookies, tokens, passwords), personal data, and payment information.
+Certain information should not be sent outside of the server where it is processed. This generally includes authorization details (like cookies, tokens, and passwords,) personal data, and payment information.
 
-The WAF Node can mask data in requests. Using this rule, the original value of the specified request point is removed before the request is sent to the postanalytics module and the WAF Cloud. This approach ensures that sensitive data does not unintentionally leave the secure environment.
+The WAF node can mask data in requests. Using this rule, the original value of the specified request point is removed before the request is sent to the postanalytics module and the WAF Cloud. This approach ensures that sensitive data does not unintentionally leave the secure environment.
 
-This rule can impact the visibility of attacks, the verification of active threats, and the identification of brute force attacks.
+This rule can impact the visibility of attacks, the verification of active threats, and the identification of brute-force attacks.
 
 ### Masking of a cookie value
 
-Here's an illustration of such rule creation. Use the <a href="https://gcore.com/docs/web-security/manage-waf/available-rule-types#create-and-apply-rules" target="_blank">instructions above</a>. The rule applies if the following conditions are specified in the **If** section:
+Here's an illustration of such rule creation. First, use the <a href="https://gcore.com/docs/web-security/manage-waf/available-rule-types#create-and-apply-rules" target="_blank">instructions above</a>. The rule applies if the following conditions are specified in the **If** section:
 
-- the application is accessible at the domain ```example.com```
-- the application uses a ```PHPSESSID``` cookie for user authentication
-- security policies deny access to this information for employees using WAF
+- The application is accessible at the domain ```example.com```
+- The application uses a ```PHPSESSID``` cookie for user authentication
+- Security policies deny access to this information for employees using WAF
 
 To create a data masking rule for this cookie, the following actions should be performed in the **Then** section:
 
-1\. Go to the **Rules** tab
+1\. Go to the **Rules** tab.
 
-2\. Find the branch for ```example.com/**/*.*``` and click **Add rule**
+2\. Find the branch for ```example.com/**/*.*``` and click **Add rule**.
 
-3\. Choose **Mask sensitive data**
+3\. Choose **Mask sensitive data**.
 
-4\. Select the *Header* parameter and enter its value ```COOKIE```; select
-the ```cookie``` parameter and enter its value ```PHPSESSID``` after **in this part of request**. Options sequentally (if several) selected in in this part of request should reflect a sequence of parsers WAF would apply to read the required request element
+4\. Select the *Header* parameter and enter its value ```COOKIE```. Select the ```cookie``` parameter and enter its value ```PHPSESSID``` after **in this part of request**. Options sequentially selected (if several) in this part of the request should reflect a sequence of parsers that WAF would apply to read the required request element.
 
-5\. Click **Create**
+5\. Click **Create**.
 
 <img src="https://assets.gcore.pro/docs/web-security/manage-waf/available-rule-types/rules-waf-30.png" alt="Masking of the cookie value (example)" width="80%">
-
+dash, plz merge PR, but I will start again here tomorrow. didn't finish and have to leave now
 ## User-defined detection rules
 
 In certain situations, it might be beneficial to manually add a signature for attack detection or to create a virtual patch. While WAF doesn't employ regular expressions for attack detection, it does permit users to supplement with additional signatures that are based on regular expressions.
