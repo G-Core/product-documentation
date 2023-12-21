@@ -66,7 +66,7 @@ The package contains all required tools.
 
 ## 2. Get your credentials
 
-To launch backup and restore tools, you need credentials (``username``, ```password```, ```port```, and ```dbname```) to connect to the Gcore Managed Database server, where databases are stored. You can find credentials in the customer portal, with instructions available in <a href="https://gcore.com/docs/cloud/managed-database-for-postgresql/manage-postgresql-servers#get-your-credentials" target="_blank">our dedicated guide</a>. 
+To launch backup and restore tools, you need credentials (``username``, ```password```, ```port```, and ```dbname```) to connect to the Gcore Managed Database server, where databases are stored. You can find credentials in the customer portal, with instructions available in <a href="https://gcore.com/docs/cloud/managed-database-postgresql/manage-postgresql-servers#get-your-credentials" target="_blank">our dedicated guide</a>. 
 
 ## 3. Back up databases
 
