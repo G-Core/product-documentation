@@ -100,46 +100,46 @@ the ```cookie``` parameter and enter its value ```PHPSESSID``` after **in this p
 
 ## User-defined detection rules
 
-In certain situations, it might be beneficial to manually add a signature for attack detection or to create a virtual patch. While WAF doesn't employ regular expressions for attack detection, it does permit users to supplement with additional signatures that are based on regular expressions.
+In certain situations, it's beneficial to add a signature for attack detection manually or create a virtual patch. While WAF doesn't employ regular expressions for attack detection, it does permit users to supplement with additional signatures that are based on regular expressions.
 
 ### Add a new detection rule
 
 **Click the Create regexp-based attack indicator** rule and fill in the fields:
 
-- **Regular expression**—this is the signature used. If the value of the subsequent parameter aligns with the expression, the request is identified as an attack. The syntax and specifics of regular expressions are detailed in the <a href="https://gcore.com/docs/web-security/manage-waf/add-custom-rules-for-processing-requests#uri-constructor" target="_blank">instructions for adding rules</a>
+- **Regular expression:** This is the signature used. If the value of the subsequent parameter aligns with the expression, the request is identified as an attack. The syntax and specifics of regular expressions are detailed in the <a href="https://gcore.com/docs/web-security/manage-waf/add-custom-rules-for-processing-requests#uri-constructor" target="_blank">instructions for adding rules</a>.
 
-- **Changing the regular expression specified in the rule**—if you alter the regular expression in an existing **Create regexp-based attack indicator** rule, any **Disable regexp-based attack detection** rules using the previous expression will be automatically deleted
+- **Changing the regular expression specified in the rule:** If you alter the regular expression in an existing **Create regexp-based attack indicator** rule, any **Disable regexp-based attack detection** rules using the previous expression will be deleted automatically.
 
-**Note**: To disable attack detection by a new regular expression, you need to create a new **Disable regexp-based attack detection** rule specifying the new regular expression
+**Note:** To disable attack detection by a new regular expression, create a new **Disable regexp-based attack detection** rule specifying the new regular expression.
 
-- **Experimental**—this feature allows you to securely test the trigger of a regular expression without blocking requests. Even when the filter node is in blocking mode, requests won't be blocked. These requests will be viewed as attacks detected via the experimental method and will be hidden from the event list by default. They can be found using the search query ```experimental attacks```
+- **Experimental:** Test the trigger of a regular expression securely without blocking requests. Even when the filter node is in blocking mode, requests won't be blocked. These requests will be viewed as attacks detected via the experimental method and will be hidden from the event list by default. They can be found using the search query ```experimental attacks```.
 
-- **Attack**—this refers to the type of attack that will be detected when the parameter value in the request matches the regular expression
+- **Attack:** The type of attack that will be detected when the parameter value in the request matches the regular expression.
 
-- **in this part of request**—this determines the point in the request where the system should detect corresponding attacks. If multiple options are selected sequentially **in this part of the request**, they should represent the order of parsers that WAF would use to read the necessary request element
+- **in this part of request:** Determines the point in the request where the system should detect corresponding attacks. If multiple options are selected sequentially in **in this part of the request**, they should represent the order of parsers that WAF would use to read the necessary request element.
 
-### Blocking all requests with an incorrect User-agent header
+### Blocking all requests with an incorrect user-agent header
 
 Here's an illustration of such a rule. The rule applies if the following conditions are specified in the **If** section:
 
-- the application is accessible at the domain ```example.com```
-- the application uses the ```USER-AGENT``` header
+- The application is accessible at the domain ```example.com```
+- The application uses the ```USER-AGENT``` header
 
 To create a rule for rejecting incorrect format tokens, specify the following in the **Then** section:
 
-1\. Go to the **Rules** tab
+1\. Go to the **Rules** tab.
 
-2\. Find the branch for ```example.com/**/*.*``` and click **Add rule**
+2\. Find the branch for ```example.com/**/*.*``` and click **Add rule**.
 
-3\. Select **Define as an attack on the basis of a regular expression**
+3\. Select **Define as an attack on the basis of a regular expression**.
 
-4\. Set **Regex** value as ```^Malicious-Actor$```
+4\. Set **Regex** value as ```^Malicious-Actor$```.
 
-5\. Choose **Virtual patch** as the attack type
+5\. Choose **Virtual patch** as the attack type.
 
-6\. Set the USER-AGENT header 
+6\. Set the USER-AGENT header.
 
-7\. Click **Create**
+7\. Click **Create**.
 
 <img src="https://assets.gcore.pro/docs/web-security/manage-waf/available-rule-types/rules-waf-40.png" alt="Blocking all requests with an incorrect User-agent header" width="80%">
 
@@ -147,13 +147,13 @@ To create a rule for rejecting incorrect format tokens, specify the following in
 
 The rule **Ignore certain attack types** allows you to disable the detection of specific types of attacks in certain request elements.
 
-By default, if the WAF node detects signs of any type of attack in any element of a request, it labels the request as an attack. However, some requests that contain signs of attacks might actually be legitimate. For instance, a request publishing a post on the Database Administrator Forum might contain a description of a malicious SQL command, but it's not an attack.
+By default, if the WAF node detects signs of any type of attack in any element of a request, it labels the request as an attack. However, some requests that contain signs of attacks are actually legitimate. For instance, a request to publish a post on a database administrator forum might contain a description of a malicious SQL command, but it's not an attack.
 
-If the WAF node mistakenly identifies a standard request payload as malicious, a false positive is registered. To avoid such false positives, standard attack detection rules may need to be customized using rules of specific types to suit the peculiarities of the protected application. The **Ignore certain attack types** rule is an example of such a custom rule.
+If the WAF node mistakenly identifies a standard request payload as malicious, a false positive is registered. To avoid such false positives, customize standard attack detection rules by adding custom rules. The **Ignore certain attack types** rule is an example of such a custom rule.
 
-Here's an illustration of such rule creation. Use the <a href="https://gcore.com/docs/web-security/manage-waf/available-rule-types#create-and-apply-rules" target="_blank">instructions above</a>. 
+Here's an illustration of such rule creation. First, use the <a href="https://gcore.com/docs/web-security/manage-waf/available-rule-types#create-and-apply-rules" target="_blank">instructions above</a>. 
 
-Let's consider an example where a user confirms the publication of a post on the Database Administrator Forum. The client sends a POST request to the endpoint ```https://example.com/posts/```. This request has specific properties:
+Let's consider an example where a user confirms the publication of a post on a database administrator forum. The client sends a POST request to the endpoint ```https://example.com/posts/```. This request has specific properties:
 
 - The content of the post is transmitted in the request body parameter ```postBody```. This content may incorporate SQL commands that WAF could potentially flag as malicious.
 - The request body is of the ```application/json``` type.
@@ -177,25 +177,25 @@ To disregard SQL injections in the ```postBody``` parameter of the requests to `
 
 The rules **Allow binary data** and **Allow certain file types** are used to adjust the standard attack detection rules for binary data.
 
-By default, the WAF node analyzes incoming requests for all known attack signs. During the analysis, the WAF node may not consider the attack signs to be regular binary symbols and mistakenly detect malicious payloads in the binary data.
+By default, the WAF node analyzes incoming requests for all known attack signs. During the analysis, the WAF node may not consider the attack signs to be regular binary symbols and therefore may mistakenly detect malicious payloads in the binary data.
 
-- The rule **Allow binary data** allows fine-tuning attack detection for request elements containing binary data (e.g. archived or encrypted files).
-- The rule **Allow certain file types** allows fine-tuning attack detection for request elements containing specific file types (e.g. PDF, JPG).
+- The rule **Allow binary data** allows you to fine-tune attack detection for request elements containing binary data (e.g. archived or encrypted files.)
+- The rule **Allow certain file types** allows you to fine-tune attack detection for request elements containing specific file types (e.g. PDF, JPG.)
 
 To adjust the attack detection rules for the binary data passed in the specified request elements, create the rule **Allow binary data** in the **Rules** WAF section. 
 
 The rule consists of the following components:
 
-- Condition describes the endpoints to apply the rule to.
-- Part of request points to the original request element containing the binary data.
-- Options sequentally (if several) selected **in this part of request** should reflect a sequence of parsers WAF would apply to read the required request element.
+- **Condition** describes the endpoints to which the rule is applied.
+- **Part of request** points to the original request element containing the binary data.
+- **Options** refers to the sequence of parsers (if multiple) that WAF should apply to read the required request element as selected in this part of the request.
 
 To adjust the attack detection rules for certain file types passed in the specified request element, create the rule **Allow certain file types** in the **Rules** WAF section. The rule consists of the following components:
 
-- Condition describes the endpoints to apply the rule to.
-- File types to ignore the attack signs in.
-- Part of request points to the original request element containing the specified file types.
-- Options sequentally (if several) selected **in this part of request** should reflect a sequence of parsers WAF would apply to read the required request element.
+- **Condition** describes the endpoints to which the rule is applied.
+- **File types** specifies the formats in which to ignore the signs of attack.
+- **Part of request** points to the original request element containing the binary data.
+- **Options** refers to the sequence of parsers (if multiple) that WAF should apply to read the required request element as selected in this part of the request.
 
 Let's consider an example where a user uploads a binary file containing an image using a form on a website. The client sends a POST request of the type ```multipart/form-data``` to ```https://example.com/uploads/```. The binary file is included in the body parameter ```fileContents```.
 
