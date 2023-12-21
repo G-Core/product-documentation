@@ -58,4 +58,4 @@ The database size limit is 100 GB. This limit is for the beta stage only. If you
 
 ## How to use
 
-We have prepared a <a href="https://gcore.com/docs/cloud/managed-database-for-postgresql/manage-postgresql-servers" target="_blank">guide on how to manage the service</a>: create a server, get credentials, update the version, login via psql client and pgAdmin.
+We have prepared a <a href="https://gcore.com/docs/cloud/managed-database-postgresql/manage-postgresql-servers" target="_blank">guide on how to manage the service</a>: create a server, get credentials, update the version, login via psql client and pgAdmin.
