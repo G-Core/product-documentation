@@ -68,7 +68,7 @@ Where:
 
 That’s it! It will be displayed in your app as the following module: 
 
-<iframe src="https://meet.gcore.com/call/serv2testroom?role=interpreter" allow="camera; microphone; fullscreen; display-capture; autoplay; screen-wake-lock"></iframe>
+<iframe src="https://meet.gcore.com/call/serv2testroom?role=interpreter" allow="camera; microphone; fullscreen; display-capture; autoplay; screen-wake-lock" width="100%" height="100%"></iframe>
 
 ### For developers (advanced customization)
 
@@ -407,4 +407,4 @@ $(window).on('load', function() {
 
 That’s it! It will be displayed in your app as the following module: 
 
-<iframe src="https://demo-files.gvideo.io/vcapi-iframe-demo/index.html" width="100%"></iframe>
+<iframe src="https://demo-files.gvideo.io/vcapi-iframe-demo/index.html" width="100%" height="100%"></iframe>
