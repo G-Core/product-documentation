@@ -67,8 +67,7 @@ FastEdge is in the early beta now. It means:
 
 ## FastEdge limits
 
-> [!WARNING]
-> The limits mentioned in this article may change. please contact [technical support](mailto:support@gcore.com) to find out the current values. 
+> **Note**: The limits mentioned in this article may change. Contact [technical support](mailto:support@gcore.com) to find out the current values. 
 
 <table>
 <thead>
