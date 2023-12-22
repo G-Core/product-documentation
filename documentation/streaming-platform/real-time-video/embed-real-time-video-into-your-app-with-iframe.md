@@ -403,7 +403,8 @@ $(window).on('load', function() {
     })
 })
 ```
+</expandable-element>
 
 That’s it! It will be displayed in your app as the following module: 
 
-<iframe src="https://demo-files.gvideo.io/vcapi-iframe-demo/index.html" ></iframe>
+<iframe src="https://demo-files.gvideo.io/vcapi-iframe-demo/index.html" width="100%"></iframe>
