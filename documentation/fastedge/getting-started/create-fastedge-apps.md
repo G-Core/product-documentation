@@ -25,7 +25,7 @@ pageDescription: A step-by-step guide on how to create a Wasm binary file and up
 
 This guide describes how to create a FastEdge app. Check out our <a href="https://gcore.com/docs/fastedge/getting-started" target="_blank">FastEdge overview</a> article to learn more about the product.
 
-**Note**: Currently, FastEdge is in beta. Contact your personal manager or [support team](mailto:support@gcore.com) to enable the product for your account.
+**Note**: Currently, FastEdge is in early beta.
 
 ## Stage 1. Create a Wasm binary file
 

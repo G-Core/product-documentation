@@ -9,7 +9,6 @@ toc:
    --1--Use cases: "fastedge-use-cases"
    --1--Features: "fastedge-features"
    --1--Limits: "fastedge-limits"
-   --1--Enable: "how-to-enable-fastedge"
 pageTitle: Accelerate Your Web Apps with Serverless Edge Computing | Gcore
 pageDescription: Explore FastEdge Beta for low-latency, scalable edge computing, enabling quick development, enhanced security, and personalized user experiences globally.
 ---
@@ -65,9 +64,9 @@ FastEdge is in the early beta now. It means:
 
 **Note**: Wait to use this product for mission-critical tasks and prod environments until the early beta ends.
 
-## FastEdge limits
+## FastEdge limits 
 
-> **Note**: The limits mentioned in this article may change. Contact [technical support](mailto:support@gcore.com) to find out the current values. 
+> **Note**: The limits specified in this article may be changed without prior notice. 
 
 <table>
 <thead>
@@ -103,7 +102,3 @@ FastEdge is in the early beta now. It means:
 </tr>
 </tbody>
 </table>
-
-## How to enable FastEdge?
-
-Request access to FastEdge from your personal manager or by contacting the [technical support](mailto:support@gcore.com).
