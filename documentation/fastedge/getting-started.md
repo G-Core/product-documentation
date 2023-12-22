@@ -8,6 +8,7 @@ toc:
    --1--Benefits: "key-benefits"
    --1--Use cases: "fastedge-use-cases"
    --1--Features: "fastedge-features"
+   --1--Limits: "fastedge-limits"
    --1--Enable: "how-to-enable-fastedge"
 pageTitle: Accelerate Your Web Apps with Serverless Edge Computing | Gcore
 pageDescription: Explore FastEdge Beta for low-latency, scalable edge computing, enabling quick development, enhanced security, and personalized user experiences globally.
@@ -64,6 +65,49 @@ FastEdge is in the early beta now. It means:
 
 **Note**: Wait to use this product for mission-critical tasks and prod environments until the early beta ends.
 
+## FastEdge limits
+
+:::warning
+
+The limits mentioned in this article may change. please contact [technical support](mailto:support@gcore.com) to find out the current values. 
+
+:::
+
+<table>
+<thead>
+<tr>
+<td><b>Limit</b></td>
+<td><b>Value</b></td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Max number of apps per customer</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Max number of app calls (for all your apps) within one hour (from 00:00 to 59:59)</td>
+<td>10000</td>
+</tr>
+<tr>
+<td>Max number of app calls (for all your apps) within one day (from 00:00:00 to 23:59:59 UTC)</td>
+<td>100000</td>
+</tr>
+<tr>
+<td>Max execution time for singe app call</td>
+<td>500 ms</td>
+</tr>
+<tr>
+<td>Max memory used during one app call</td>
+<td>100 MB</td>
+</tr>
+<tr>
+<td>Max network requests from the app during one app call</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+
 ## How to enable FastEdge?
 
-Request access to FastEdge from your personal manager or by contacting the [support team](mailto:support@gcore.com).
+Request access to FastEdge from your personal manager or by contacting the [technical support](mailto:support@gcore.com).
