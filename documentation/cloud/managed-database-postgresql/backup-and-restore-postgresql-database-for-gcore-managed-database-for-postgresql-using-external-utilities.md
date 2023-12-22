@@ -79,7 +79,7 @@ Use one of the following commands depending on your choice of backup format:
 - **Custom format**: ```$ pg_dump -F c -U username -W -h hostname -d database_name > backup_file.dump```
 - **Directory format**: ```$ pg_dump -F d -U username -W -h hostname -d database_name -f backup_dir```
 
-Instead of ```username```, ```hostname```, and ```database_name```, enter custom values, which you can access <a href="https://gcore.com/docs/cloud/managed-database-for-postgresql/manage-postgresql-servers#get-your-credentials" target="_blank">using our guide</a>. For ```backup_file``` or ```backup_dir```, specify the relevant name for the backup file or directory.
+Instead of ```username```, ```hostname```, and ```database_name```, enter custom values, which you can access <a href="https://gcore.com/docs/cloud/managed-database-postgresql/manage-postgresql-servers#get-your-credentials" target="_blank">using our guide</a>. For ```backup_file``` or ```backup_dir```, specify the relevant name for the backup file or directory.
 
 Below are some other details for the commands:
 
