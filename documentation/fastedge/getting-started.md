@@ -67,11 +67,8 @@ FastEdge is in the early beta now. It means:
 
 ## FastEdge limits
 
-:::warning
-
-The limits mentioned in this article may change. please contact [technical support](mailto:support@gcore.com) to find out the current values. 
-
-:::
+> [!WARNING]
+> The limits mentioned in this article may change. please contact [technical support](mailto:support@gcore.com) to find out the current values. 
 
 <table>
 <thead>
@@ -82,27 +79,27 @@ The limits mentioned in this article may change. please contact [technical suppo
 </thead>
 <tbody>
 <tr>
-<td>Max number of apps per customer</td>
+<td style="text-align: left">Max number of apps per customer</td>
 <td>3</td>
 </tr>
 <tr>
-<td>Max number of app calls (for all your apps) within one hour (from 00:00 to 59:59)</td>
+<td style="text-align: left">Max number of app calls (for all your apps)<br> within one hour (from 00:00 to 59:59)</td>
 <td>10000</td>
 </tr>
 <tr>
-<td>Max number of app calls (for all your apps) within one day (from 00:00:00 to 23:59:59 UTC)</td>
+<td style="text-align: left">Max number of app calls (for all your apps)<br> within one day (from 00:00:00 to 23:59:59 UTC)</td>
 <td>100000</td>
 </tr>
 <tr>
-<td>Max execution time for singe app call</td>
+<td style="text-align: left">Max execution time for singe app call</td>
 <td>500 ms</td>
 </tr>
 <tr>
-<td>Max memory used during one app call</td>
+<td style="text-align: left">Max memory used during one app call</td>
 <td>100 MB</td>
 </tr>
 <tr>
-<td>Max network requests from the app during one app call</td>
+<td style="text-align: left">Max network requests from the app during one app call</td>
 <td>3</td>
 </tr>
 </tbody>
