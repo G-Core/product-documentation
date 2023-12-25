@@ -407,4 +407,4 @@ $(window).on('load', function() {
 
 That’s it! It will be displayed in your app as the following module: 
 
-<iframe src="https://demo-files.gvideo.io/vcapi-iframe-demo/index.html"  width="100%" height="70%"></iframe>
+<iframe src="https://demo-files.gvideo.io/vcapi-iframe-demo/index.html"  width="100%" height="800px"></iframe>
