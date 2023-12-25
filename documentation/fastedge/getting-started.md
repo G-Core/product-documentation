@@ -66,7 +66,7 @@ FastEdge is in the early beta now. It means:
 
 ## FastEdge limits 
 
-> **Note**: The limits specified in this article may be changed without prior notice. 
+> **Note**: The limits specified in this article are subject to change without prior notice. 
 
 <table>
 <thead>
@@ -77,27 +77,27 @@ FastEdge is in the early beta now. It means:
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left">Max number of apps per customer</td>
+<td style="text-align: left">Maximum number of apps per customer</td>
 <td>3</td>
 </tr>
 <tr>
-<td style="text-align: left">Max number of app calls (for all your apps)<br> within one hour (from 00:00 to 59:59)</td>
-<td>10000</td>
+<td style="text-align: left">Maximum number of app calls (for all your apps)<br> within one hour (from 00:00 to 59:59)</td>
+<td>10,000</td>
 </tr>
 <tr>
-<td style="text-align: left">Max number of app calls (for all your apps)<br> within one day (from 00:00:00 to 23:59:59 UTC)</td>
-<td>100000</td>
+<td style="text-align: left">Maximum number of app calls (for all your apps)<br> within one day (from 00:00:00 to 23:59:59 UTC)</td>
+<td>100,000</td>
 </tr>
 <tr>
-<td style="text-align: left">Max execution time for singe app call</td>
+<td style="text-align: left">Maximum execution time for a single app call</td>
 <td>500 ms</td>
 </tr>
 <tr>
-<td style="text-align: left">Max memory used during one app call</td>
+<td style="text-align: left">Maximum memory use for a single app call</td>
 <td>100 MB</td>
 </tr>
 <tr>
-<td style="text-align: left">Max network requests from the app during one app call</td>
+<td style="text-align: left">Maximum network requests from the app for a single app call</td>
 <td>3</td>
 </tr>
 </tbody>
