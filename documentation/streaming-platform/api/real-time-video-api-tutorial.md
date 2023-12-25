@@ -35,7 +35,6 @@ toc:
    --3--&nameScreenDisabled=<true|false>: "namescreendisabledtruefalse"
    --3--&peerId=<id>: "peeridid"
    --3--&role=<role>: "rolerole"
-   --3--&roomId=<id>: "roomidid"
    --3--&sortPeers=<true|false>: "sortpeerstruefalse"
    --3--&startWithFS=<true|false>: "startwithfstruefalse"
    --3--&token=<jwt>: "tokenjwt"
@@ -115,19 +114,19 @@ Create a meeting in a browser:
 
 5\. Send the URL to other attendees to join your video call.
 
-Example: ```https://meet.gcore.com/call/?roomId=serv2testroom```
+Example: ```https://meet.gcore.com/call/serv2testroom```
 
 **Embed a video call room in your website or app via iFrame**. The iframe’s src attribute is specified as the URL.
 
 Example:
 
 ```
-<iframe allow="camera; microphone; fullscreen; display-capture" src="https://meet.gcore.com/call/?roomId=serv2testroom"></iframe>
+<iframe allow="camera; microphone; fullscreen; display-capture" src="https://meet.gcore.com/call/serv2testroom"></iframe>
 ```
 
 **Customize a video call room with URL attributes**. 
 
-Example: ```https://meet.gcore.com/call/?roomId=serv2testroom&displayName=JohnSnow```
+Example: ```https://meet.gcore.com/call/serv2testroom?displayName=JohnSnow```
 
 ## Codeless integration
 
@@ -139,7 +138,7 @@ Example: ```https://meet.gcore.com/call/?roomId=serv2testroom&displayName=JohnSn
 
 3\. Specify */call/* as a method for your video call room.
 
-4\. Insert the Room ID into the final URL. The result should be as follows: ```https://meet.gcore.com/call/?roomId=serv2bokxlj33```
+4\. Insert the Room ID into the final URL. The result should be as follows: ```https://meet.gcore.com/call/serv2bokxlj33```
 
 You can create a URL, save it, send it, or write it in your notes. The URL is reusable. The URL will be accessible all the time – before an event, during an event, and even 1 year later after an event.
 
@@ -167,7 +166,7 @@ HTTP Feature-Policy header provides a mechanism to allow: 
 Example:
 
 ```
-<iframe src="https://meet.gcore.com/call/?roomId=serv2bokxlj33"    
+<iframe src="https://meet.gcore.com/call/serv2bokxlj33"    
 allow="camera; microphone; fullscreen; display-capture; autoplay; screen-wake-lock"></iframe>
 
 ```
@@ -239,7 +238,7 @@ A video conferencing room is a room where all invited participants are active 
 
 A method to create video conferencing rooms is ```/call/```. 
 
-Example: ```https://meet.gcore.com/call/?roomId=```
+Example: ```https://meet.gcore.com/call/roomId```
 
 #### Webinar rooms 
 
@@ -248,7 +247,7 @@ A method to create video conferencing rooms is ```/webinar/```.  
 
 Moreover, please see <a href="https://gcore.com/docs/streaming-platform/api/real-time-video-api-tutorial#itisparticipant-true-false" target="_blank">&itisparticipant attribute</a>. 
 
-Example: ```https://meet.gcore.com/webinar/?roomId=```
+Example: ```https://meet.gcore.com/webinar/roomId```
 
 ### Allowed domain names
 
@@ -283,7 +282,6 @@ Conferencing is customized by optional URL parameters for each iframe instance.
 | &amp;minimizeTiles=&lt;true|false&gt;             | Increase the number of participants displayed on a single screen without scrolling to the maximum | URL       |
 | &amp;nameScreenDisabled=&lt;true|false&gt;        | Skip welcome page with a cam/mic selection and a name input                                       | URL       |
 | &amp;peerId=&lt;id&gt;                            | ID of a participant from your internal system                                                     | JWT, URL  |
-| &amp;roomId=&lt;id&gt;                            | Room ID                                                                                           | URL       |
 | &amp;role=&lt;role&gt;                            | Set a privilege role for a participant                                                            | JWT only  |
 | &amp;sortPeers=&lt;true|false&gt;                 | Move participants with cameras up to the visible area                                             | URL       |
 | &amp;startWithFS=&lt;true|false&gt;               | Start meeting in the full screen mode                                                             | URL       |
@@ -294,11 +292,11 @@ Conferencing is customized by optional URL parameters for each iframe instance.
 ```
 Examples:
 
-1. https://meet.gcore.com/call/?roomId=serv2testroom&displayName=JohnSnow
+1. https://meet.gcore.com/call/serv2testroom?displayName=JohnSnow
   
-2. https://meet.gcore.com/call/?roomId=serv2testroom&displayName=JohnSnow&disableChat=true
+2. https://meet.gcore.com/call/serv2testroom?displayName=JohnSnow&disableChat=true
   
-3. https://meet.gcore.com/call/?roomId=serv2testroom&displayName=JohnSnow&disableChat=true&lang=en
+3. https://meet.gcore.com/call/serv2testroom?displayName=JohnSnow&disableChat=true&lang=en
 
 ```  
 
@@ -485,26 +483,6 @@ Type: String, default = not set.
 
 Example: ```&role=moderator```
 
-#### roomId=&lt;id&gt;
-
-A room ID is set by you according to your rules. You don't need to call any special methods that might restrict you in naming rooms. 
-
-An identifier consists of two parts: «server ID» + «room ID». A server ID is a "servN". Please see the List of servers. A room ID is any alphanumeric character set. If a server is not specified, you will be connected to a default one. If a server is specified explicitly, you will be connected to it.
-
-Please note that &roomId determines the room number, but the prefixes */call/* or */webinar/* are interface modifiers. Thus, the methods */call/?roomId=testroom* and */webinar/?roomId=testroom* lead to the same room with a different interface. 
-
-Type: String. Default = required field to be specified explicitly.
-
-Example:
-
-```
-&roomId=1111   
-&roomId=bokxlj33   
-&roomId=serv21111   
-&roomId=serv2bokxlj33   
-&roomId=serv2f53c1aa5-1492-4964-b4fe-f83b5b545e8d
-``` 
-
 #### &amp;sortPeers=&lt;true|false&gt;
 
 It is used to arrange tiles of participants so that those who have cameras on will be displayed on the top.  
@@ -558,7 +536,7 @@ This is a super feature for joint viewing of online broadcasts directly in a vid
 
 Type=String, default value = not set.
 
-Example: ```https://meet.gcore.com/call/?roomId=serv2testroom&displayName=John%20Snow&video=https%3A%2F%2Fwww.youtube.com%2Fembed%2FXBPjVzSoepo```
+Example: ```https://meet.gcore.com/call/serv2testroom?displayName=John%20Snow&video=https%3A%2F%2Fwww.youtube.com%2Fembed%2FXBPjVzSoepo```
 
 #### &amp;waitingRoom=&lt;true|false&gt;
 
@@ -654,7 +632,7 @@ A moderator can do the following:  
 To use the moderator role, you need to follow these steps: 
 
 1.  Get a Secret Key for JWT. See the "Security" section.  
-2.  Generate a link for regular participants with &roomId=XXX parameter. 
+2.  Generate a link for regular participants with ```call/roomId``` parameter. 
 3.  Generate a JWT token and add additional attribute &role=moderator to it.  
 4.  Generate a link for moderators. Concatenate the JWT token from Step 3 to the general link from Step 2. 
 
@@ -663,13 +641,13 @@ Example:
 Link for a regular user:
 
 ```
-https://meet.gcore.com/call/?roomId=serv0_test1
+https://meet.gcore.com/call/serv0_test1
 ```
 
 Link for a moderator:
 
 ```
-https://meet.gcore.com/call/?roomId=serv0_test1&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoibW9kZXJhdG9yIiwid2FpdGluZ1Jvb20iOnRydWUsImhhbmRFbmFibGVkIjp0cnVlfQ.DO_JHMDfK2mi5rycIepLVxDVs0qcQAXAhHvI7hcOIjw
+https://meet.gcore.com/call/serv0_test1?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoibW9kZXJhdG9yIiwid2FpdGluZ1Jvb20iOnRydWUsImhhbmRFbmFibGVkIjp0cnVlfQ.DO_JHMDfK2mi5rycIepLVxDVs0qcQAXAhHvI7hcOIjw
 ```
 
 Where JWT is:
@@ -795,7 +773,7 @@ A JWT example is: 
 - PAYLOAD: (DATA) 
 - ```{ "role": "interpreter", "featureInterpreters": true, "intLang": "de", "roomId": "serv0_test1" }``` 
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/api/real-time-video-api-tutorial/11649788899601.png" alt="example">
+<img src="https://assets.gcore.pro/docs/streaming-platform/api/real-time-video-api-tutorial/11649788899601.png" alt="example of the video module API integration">
 
 ## Client API
 
@@ -804,7 +782,7 @@ A JWT example is: 
 #### Example of iFrame integration
 
 ```
-<iframe allow="camera; microphone; display-capture" style="height: 100%; width: 100%;" src="https://meet.gcore.com/webinar/?roomId=qwesfder4w4&displayName=Tom&accessToken=sda3-q23aed-aerae&peerId=123123-321as-waaew-ads&apiEvent=https://example.com/api/meet&accessUrl=https://example.com/api/accessCheck/&itisparticipant=true&nameScreenDisabled=true&startWithFS=true&controlsDisabled=true"></iframe>
+<iframe allow="camera; microphone; display-capture" style="height: 100%; width: 100%;" src="https://meet.gcore.com/webinar/qwesfder4w4?displayName=Tom&accessToken=sda3-q23aed-aerae&peerId=123123-321as-waaew-ads&apiEvent=https://example.com/api/meet&accessUrl=https://example.com/api/accessCheck/&itisparticipant=true&nameScreenDisabled=true&startWithFS=true&controlsDisabled=true"></iframe>
 ```
 
 Please see Embed a <a href="https://gcore.com/docs/streaming-platform/api/real-time-video-api-tutorial#embed-room-on-a-site">Room on Site</a> and <a href="https://gcore.com/docs/streaming-platform/api/real-time-video-api-tutorial#attribute-details">Attributes details</a>.
@@ -875,189 +853,189 @@ meetIframeBridge.method({ name: "changeDisplayName", data: "Tom", callback: (e) 
 meetIframeBridge.method({ name: "getScreenshotByPeerId", data: "id", callback: (e) => { // "e" parameter will have screenshotted data } });
 ```
 
-<table class="tg">
+<table>
 <thead>
   <tr>
-    <th  >Method name</th>
-    <th  >Parameters</th>
-    <th  >Description</th>
-    <th class="tg-9r46"></th>
+    <th>Method name</th>
+    <th>Parameters</th>
+    <th>Description</th>
+    <th></th>
   </tr>
 </thead>
 <tbody>
   <tr>
-    <td  >join</td>
-    <td   >"constraints" = object<br> <br>Setup new devices:<br>data: {constraints: { video: { deviceId: 'id', label: 'label', groupId: 'groupId', kind: 'video'}, audio: { deviceId: 'deviceId', label: 'label', groupId: 'groupId', kind: 'audio'}}}<br> <br>If you want to use devices by default:<br>data: {constraints: {video: true, audio: true }}<br> </td>
-    <td   >The Join method receives a stream from these devices (usually used with the <a href="https://gcore.com/docs/streaming-platform/api/real-time-video-api-tutorial#nameScreenDisabled=true|false">nameScreenDisabled</a> parameter)</td>
-    <td class="tg-twlz"></td>
+    <td>join</td>
+    <td>"constraints" = object<br> <br>Setup new devices:<br>data: {constraints: { video: { deviceId: 'id', label: 'label', groupId: 'groupId', kind: 'video'}, audio: { deviceId: 'deviceId', label: 'label', groupId: 'groupId', kind: 'audio'}}}<br> <br>If you want to use devices by default:<br>data: {constraints: {video: true, audio: true }}<br> </td>
+    <td>The Join method receives a stream from these devices (usually used with the <a href="https://gcore.com/docs/streaming-platform/api/real-time-video-api-tutorial#nameScreenDisabled=true|false">nameScreenDisabled</a> parameter)</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >enableMic</td>
-    <td class="tg-6tt1"> </td>
-    <td   >Unmute a microphone</td>
-    <td class="tg-twlz"></td>
+    <td>enableMic</td>
+    <td> </td>
+    <td>Unmute a microphone</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >disableMic</td>
-    <td class="tg-6tt1"> </td>
-    <td   >Mute a microphone</td>
-    <td class="tg-twlz"></td>
+    <td>disableMic</td>
+    <td> </td>
+    <td>Mute a microphone</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >enableWebcam</td>
-    <td class="tg-6tt1"> </td>
-    <td   >Turn on a camera</td>
-    <td class="tg-twlz"></td>
+    <td>enableWebcam</td>
+    <td> </td>
+    <td>Turn on a camera</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >disableWebcam</td>
-    <td class="tg-6tt1"> </td>
-    <td   >Turn off a camera</td>
-    <td class="tg-twlz"></td>
+    <td>disableWebcam</td>
+    <td> </td>
+    <td>Turn off a camera</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >enableShare</td>
-    <td class="tg-6tt1"> </td>
-    <td   >Enable the screen sharing</td>
-    <td class="tg-twlz"></td>
+    <td>enableShare</td>
+    <td> </td>
+    <td>Enable the screen sharing</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >disableShare</td>
-    <td class="tg-6tt1"> </td>
-    <td   >Disable the screen sharing</td>
-    <td class="tg-twlz"></td>
+    <td>disableShare</td>
+    <td> </td>
+    <td>Disable the screen sharing</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >changeDisplayName</td>
-    <td   >"name"<br>data: string</td>
-    <td   >Change a name</td>
-    <td class="tg-twlz"></td>
+    <td>changeDisplayName</td>
+    <td>"name"<br>data: string</td>
+    <td>Change a name</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >setVolume</td>
-    <td   >"volume"<br>data: number</td>
-    <td   >Set a volume level (0 - 100)</td>
-    <td class="tg-twlz"></td>
+    <td>setVolume</td>
+    <td>"volume"<br>data: number</td>
+    <td>Set a volume level (0 - 100)</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >getScreenshotByPeerId</td>
-    <td   >"peerId"<br>data: string</td>
-    <td   >Get a screenshot of a user with an id equal to peerId, the screenshot is given in base64</td>
-    <td class="tg-twlz"></td>
+    <td>getScreenshotByPeerId</td>
+    <td>"peerId"<br>data: string</td>
+    <td>Get a screenshot of a user with an id equal to peerId, the screenshot is given in base64</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >setControlsVisible</td>
-    <td   >"visible"<br>data: bool</td>
-    <td   >Show and hide controls</td>
-    <td class="tg-twlz"></td>
+    <td>setControlsVisible</td>
+    <td>"visible"<br>data: bool</td>
+    <td>Show and hide controls</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >isCameraEnabled</td>
-    <td class="tg-6tt1"> </td>
-    <td   >The user's camera is enabled</td>
-    <td class="tg-twlz"></td>
+    <td>isCameraEnabled</td>
+    <td> </td>
+    <td>The user's camera is enabled</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >isMicroEnabled</td>
-    <td class="tg-6tt1"> </td>
-    <td   >The user's microphone is enabled</td>
-    <td class="tg-twlz"></td>
+    <td>isMicroEnabled</td>
+    <td> </td>
+    <td>The user's microphone is enabled</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >isShareEnabled</td>
-    <td class="tg-6tt1"> </td>
-    <td   >The user's sharing is enabled</td>
-    <td class="tg-twlz"></td>
+    <td>isShareEnabled</td>
+    <td> </td>
+    <td>The user's sharing is enabled</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >changeDevice</td>
-    <td   >"constraints" = object<br>data: {constraints: { audio: { deviceId: 'deviceId', label: 'label', groupId: 'groupId', kind: 'audio'}}}<br> <br>or<br> <br>data: {constraints: { video: { deviceId: 'id', label: 'label', groupId: 'groupId', kind: 'video'}}}</td>
-    <td   >Change a device on the fly. Specify 1 (one) device per method call.</td>
-    <td class="tg-twlz"></td>
+    <td>changeDevice</td>
+    <td>"constraints" = object<br>data: {constraints: { audio: { deviceId: 'deviceId', label: 'label', groupId: 'groupId', kind: 'audio'}}}<br> <br>or<br> <br>data: {constraints: { video: { deviceId: 'id', label: 'label', groupId: 'groupId', kind: 'video'}}}</td>
+    <td>Change a device on the fly. Specify 1 (one) device per method call.</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >playAudio</td>
-    <td class="tg-6tt1"> </td>
-    <td   >Start audio that failed to play (usually used together with autoplayWithoutAudioTrack)</td>
-    <td class="tg-twlz"></td>
+    <td>playAudio</td>
+    <td> </td>
+    <td>Start audio that failed to play (usually used together with autoplayWithoutAudioTrack)</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >muteAudio</td>
-    <td class="tg-6tt1"> </td>
-    <td   >Mute incoming audio</td>
-    <td class="tg-twlz"></td>
+    <td>muteAudio</td>
+    <td> </td>
+    <td>Mute incoming audio</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >unmuteAudio</td>
-    <td class="tg-6tt1"> </td>
-    <td   >Unmute incoming audio</td>
-    <td class="tg-twlz"></td>
+    <td>unmuteAudio</td>
+    <td> </td>
+    <td>Unmute incoming audio</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >setBitrate</td>
-    <td   >"bitrateValue"<br>data: number</td>
-    <td   >Set the maximum video bitrate in a room</td>
-    <td class="tg-twlz"></td>
+    <td>setBitrate</td>
+    <td>"bitrateValue"<br>data: number</td>
+    <td>Set the maximum video bitrate in a room</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >isFullscreenEnabled</td>
-    <td class="tg-6tt1"> </td>
-    <td   >The fullscreen is enabled</td>
-    <td class="tg-twlz"></td>
+    <td>isFullscreenEnabled</td>
+    <td> </td>
+    <td>The fullscreen is enabled</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >enableFullscreen</td>
-    <td class="tg-6tt1"> </td>
-    <td   >Enable the fullscreen</td>
-    <td class="tg-twlz"></td>
+    <td>enableFullscreen</td>
+    <td> </td>
+    <td>Enable the fullscreen</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >disableFullscreen</td>
-    <td class="tg-6tt1"> </td>
-    <td   >Disable the fullscreen</td>
-    <td class="tg-twlz"></td>
+    <td>disableFullscreen</td>
+    <td> </td>
+    <td>Disable the fullscreen</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >enablePin</td>
-    <td   >"peerId"<br>data: string</td>
-    <td   >Enable the PIN for a specified user</td>
-    <td class="tg-twlz"></td>
+    <td>enablePin</td>
+    <td>"peerId"<br>data: string</td>
+    <td>Enable the PIN for a specified user</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >disablePin</td>
-    <td class="tg-6tt1"> </td>
-    <td   >Disable the PIN </td>
-    <td class="tg-twlz"></td>
+    <td>disablePin</td>
+    <td> </td>
+    <td>Disable the PIN </td>
+    <td></td>
   </tr>
   <tr>
-    <td   >setLocale</td>
-    <td   >"locale"<br>data: string</td>
-    <td   >Dynamic language changes, available languages: en, ru</td>
-    <td class="tg-twlz"></td>
+    <td>setLocale</td>
+    <td>"locale"<br>data: string</td>
+    <td>Dynamic language changes, available languages: en, ru</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >disabledTrackByModerator</td>
-    <td   >"peerId", "kind = (audio || video)"<br>data: {userPeerId: 'peerId', kind: 'audio'}</td>
-    <td   >Turn off video or audio from another user in a moderator mode. Only a moderator can disable video and audio</td>
-    <td class="tg-twlz"></td>
+    <td>disabledTrackByModerator</td>
+    <td>"peerId", "kind = (audio || video)"<br>data: {userPeerId: 'peerId', kind: 'audio'}</td>
+    <td>Turn off video or audio from another user in a moderator mode. Only a moderator can disable video and audio</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >disableAllMics</td>
-    <td   > </td>
-    <td   >Mute mics of all participants. It can be used only by a moderator</td>
-    <td class="tg-twlz"></td>
+    <td>disableAllMics</td>
+    <td> </td>
+    <td>Mute mics of all participants. It can be used only by a moderator</td>
+    <td></td>
   </tr>
   <tr>
-    <td   >disableAllCameras</td>
-    <td   > </td>
-    <td   >Turn off cams of all participants. It can be used only by a moderator</td>
-    <td class="tg-twlz"></td>
+    <td>disableAllCameras</td>
+    <td> </td>
+    <td>Turn off cams of all participants. It can be used only by a moderator</td>
+    <td></td>
   </tr>
   <tr>
     <td  >setHideIndicators</td>
     <td  >"hide"<br>data: bool</td>
     <td  >Show and hide indicators of other users (icons for microphones, cameras, username, pin button)</td>
-    <td class="tg-0lax"></td>
+    <td></td>
   </tr>
 </tbody>
 </table>
@@ -1113,7 +1091,7 @@ Please see REST API specification. Below is a brief list of endpoints.
 
 To access Server API methods, you need to be authenticated. Please see "Server API Authentication" below.
 
-<table class="tg">
+<table>
 <thead>
   <tr>
     <th  >Method name</th>
@@ -1124,58 +1102,58 @@ To access Server API methods, you need to be authenticated. Please see "Server A
 <tbody>
   <tr>
     <td  >/rooms/:roomId/closePeer</td>
-    <td   >peerId, <br>body:{peerId: id}</td>
-    <td   >Remove a user from a room, POST</td>
+    <td>peerId, <br>body:{peerId: id}</td>
+    <td>Remove a user from a room, POST</td>
   </tr>
   <tr>
-    <td   >/rooms/:roomId/closeRoom</td>
-    <td class="tg-6tt1"> </td>
-    <td   > Delete a room, GET</td>
+    <td>/rooms/:roomId/closeRoom</td>
+    <td> </td>
+    <td> Delete a room, GET</td>
   </tr>
   <tr>
-    <td   >/rooms/:roomId/durationOfBroadcast</td>
-    <td class="tg-6tt1"> </td>
-    <td   >View how long the room existed, GET</td>
+    <td>/rooms/:roomId/durationOfBroadcast</td>
+    <td> </td>
+    <td>View how long the room existed, GET</td>
   </tr>
   <tr>
-    <td class="tg-6tt1">/rooms/:roomId/exists</td>
-    <td class="tg-6tt1"> </td>
-    <td   >Check if the specified room exists, GET</td>
+    <td>/rooms/:roomId/exists</td>
+    <td> </td>
+    <td>Check if the specified room exists, GET</td>
   </tr>
   <tr>
-    <td   >/rooms/:roomId/existingPeer<br>(depricated)</td>
-    <td   >peerId,<br>body:{peerId: id}</td>
-    <td   >Check does the user exist in the room, POST<br> <br>Please, use new method instead – /rooms/:roomId/existingPeer/:peerId</td>
+    <td>/rooms/:roomId/existingPeer<br>(depricated)</td>
+    <td>peerId,<br>body:{peerId: id}</td>
+    <td>Check does the user exist in the room, POST<br> <br>Please, use new method instead – /rooms/:roomId/existingPeer/:peerId</td>
   </tr>
   <tr>
-    <td   >/rooms/:roomId/existingPeer/:peerId</td>
-    <td class="tg-6tt1"> </td>
-    <td   >Check does the user exist in the room, GET</td>
+    <td>/rooms/:roomId/existingPeer/:peerId</td>
+    <td> </td>
+    <td>Check does the user exist in the room, GET</td>
   </tr>
   <tr>
-    <td   >/rooms/:roomId/numberPeers</td>
-    <td class="tg-6tt1"> </td>
-    <td   >View the number of participants in the room, GET</td>
+    <td>/rooms/:roomId/numberPeers</td>
+    <td> </td>
+    <td>View the number of participants in the room, GET</td>
   </tr>
   <tr>
-    <td   >chat/clear-rooms</td>
-    <td class="tg-6tt1">body: { hostname: string, rooms: [{roomId: id, type: "call"|"webinar"}]}</td>
-    <td   >Clear chat history in specific rooms, POST<br> <br>Where:<br>"hostname" – domain name<br>"type" – type of room, unnecessary attribute, where "call" is default value</td>
+    <td>chat/clear-rooms</td>
+    <td>body: { hostname: string, rooms: [{roomId: id, type: "call"|"webinar"}]}</td>
+    <td>Clear chat history in specific rooms, POST<br> <br>Where:<br>"hostname" – domain name<br>"type" – type of room, unnecessary attribute, where "call" is default value</td>
   </tr>
   <tr>
-    <td   >/rooms/:roomId/recording/start</td>
-    <td class="tg-6tt1"> </td>
-    <td   >Start recording for a specific room, POST</td>
+    <td>/rooms/:roomId/recording/start</td>
+    <td> </td>
+    <td>Start recording for a specific room, POST</td>
   </tr>
   <tr>
-    <td   >/rooms/:roomId/recording/stop</td>
-    <td class="tg-6tt1"> </td>
-    <td   >Stop recording for a specific room, POST</td>
+    <td>/rooms/:roomId/recording/stop</td>
+    <td> </td>
+    <td>Stop recording for a specific room, POST</td>
   </tr>
   <tr>
-    <td   >/rooms/:roomId/recording</td>
-    <td class="tg-6tt1"> </td>
-    <td   >Check video recording status, GET</td>
+    <td>/rooms/:roomId/recording</td>
+    <td> </td>
+    <td>Check video recording status, GET</td>
   </tr>
 </tbody>
 </table>
@@ -1235,7 +1213,7 @@ A server can be derived from a room ID. For example: &roomId = serv1qweqwe.
 
 | Server | Country    | Server URL                      | Description                                                    |
 |------------|----------------|-------------------------------------|--------------------------------------------------------------------|
-| serv0  | Luxembourg | ```https://webrtc3.gvideo.co:443```   | DEFAULT server, unless states otherwise (like &amp;roomId=BMW) |
+| serv0  | Luxembourg | ```https://webrtc3.gvideo.co:443```   | DEFAULT server, unless states otherwise |
 | serv1  | Australia  | ```https://webrtc4.gvideo.co:443```   |                                                                |
 | serv2  | USA        | ```https://webrtc5.gvideo.co:443```   |                                                                |
 | serv3  | Singapore  | ```https://webrtc6.gvideo.co:443``` |                                                              |
@@ -1288,7 +1266,7 @@ Example: 
 Example:
 
 ```
-https://meet.gcore.com/call/?roomId=44fde071&displayName=user16&accessToken=caa630bb&peerId=de9b6927&apiEvent=https://dev.com/api/events&accessUrl=https://dev.com/api/accesscheck
+https://meet.gcore.com/call/44fde071?displayName=user16&accessToken=caa630bb&peerId=de9b6927&apiEvent=https://dev.com/api/events&accessUrl=https://dev.com/api/accesscheck
 ```
 
 #### Webhook closePeer
@@ -1358,7 +1336,7 @@ Output values:
 
 Example:
 
-```https://meet.gcore.com/call/?roomId=serv2test1``` used for 60 minutes each day on Monday Jun 21 and on Tuesday Jun 22.
+```https://meet.gcore.com/call/serv2test1``` used for 60 minutes each day on Monday Jun 21 and on Tuesday Jun 22.
 
 - /summary?from=2021-06-21T00:00:00.0Z&to=2021-06-21T23:59:59.99Z&room_id=serv1test1 – will return 60 minutes (60 mins on Jun 21).
 - /summary?from=2021-06-21T00:00:00.0Z&to=2021-06-22T23:59:59.99Z&room_id=serv1test1 – will return 120 minutes (60 mins on Jun 21 + 60 mins on Jun 22).
@@ -1581,7 +1559,7 @@ PAYLOAD:DATA
 Example:
 
 ```
-https://meet.gcore.com/call/?roomId=YOUR_ROOM_ID&token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoibW9kZXJhdG9yIiwic3RhcnRUaW1lIjoiMjAyMS0wNi0yMVQwMDowMDowMC4wWiJ9.Atj-TPL_GSLyuI565pI6X_6GFjopXf62C6y4OgeeEk9KEb_1cosDmo2sytpBv44PRuMRwgDg8AcqlMMgA0kcdJrBZ7AAywjb6RZVXlian6-6XQ0zx7OhYyDo2-mVxCO9dgYroXfz2Fw8lyNuqFl0AKEfFMPKaYf46u5kjwWmSyhh7bLbL969Eu3zW_Mk3sYLpW_xULyndhkXrLqOVspK08Mla-AbxGJ94pZXJCKHK5UslhrGJ6RProN5nL4NaXOCKRX0ffKnklxiyn9MgKf0cc6Za0GCpjg-d3y6-UOVd0AXW8TWR-RllTgXaTUMMSLyWzHPsv-e2O-GsA0WJnBJEg
+https://meet.gcore.com/call/YOUR_ROOM_ID?token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoibW9kZXJhdG9yIiwic3RhcnRUaW1lIjoiMjAyMS0wNi0yMVQwMDowMDowMC4wWiJ9.Atj-TPL_GSLyuI565pI6X_6GFjopXf62C6y4OgeeEk9KEb_1cosDmo2sytpBv44PRuMRwgDg8AcqlMMgA0kcdJrBZ7AAywjb6RZVXlian6-6XQ0zx7OhYyDo2-mVxCO9dgYroXfz2Fw8lyNuqFl0AKEfFMPKaYf46u5kjwWmSyhh7bLbL969Eu3zW_Mk3sYLpW_xULyndhkXrLqOVspK08Mla-AbxGJ94pZXJCKHK5UslhrGJ6RProN5nL4NaXOCKRX0ffKnklxiyn9MgKf0cc6Za0GCpjg-d3y6-UOVd0AXW8TWR-RllTgXaTUMMSLyWzHPsv-e2O-GsA0WJnBJEg
 
 ```
 
@@ -1646,7 +1624,7 @@ These debugging attributes can be used in the URL. But for public use, you need 
 Example:
 
 ```
-https://meet.gcore.com/call/?roomId=44fde071&displayName=user16&accessToken=caa630bb&peerId=de9b6927&apiEvent=https://dev.com/api/events&accessUrl=https://dev.com/api/accesscheck
+https://meet.gcore.com/call/44fde071&displayName=user16&accessToken=caa630bb&peerId=de9b6927&apiEvent=https://dev.com/api/events&accessUrl=https://dev.com/api/accesscheck
 
 ```
 
@@ -1655,7 +1633,7 @@ POST
 Input values:
 
 - accessToken – unique security identifier from ```&accessToken``` attribute
-- roomId – ID of the room from &roomId attribute
+- roomId – ID of the room after ```call/```
 - peerId – ID of the participant from &peerId attribute
 
 Example:
