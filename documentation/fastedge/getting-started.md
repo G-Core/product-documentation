@@ -16,9 +16,9 @@ pageDescription: Explore FastEdge Beta for low-latency, scalable edge computing,
 
 ## What is FastEdge?
 
-FastEdge is a new Gcore product, currently in beta, for serverlessly executing your apps at the edge. FastEdge lets you launch your apps compiled to WebAssembly on the Gcore scalable CDN network worldwide for quick deployment. There’s no need for any environment configuration or infrastructure maintanence. 
+FastEdge is a new Gcore product, currently in beta, for serverless execution of your apps at the edge. FastEdge lets you launch your apps compiled to WebAssembly on the Gcore scalable CDN network worldwide for quick deployment. There’s no need for any environment configuration or infrastructure maintenance. 
 
-FastEdge can be used for CDN request modification, frontend serving, image conversion, custom DNS resolving, etc. See the <a href="https://gcore.com/docs/fastedge/getting-started#fastedge-use-cases" target="_blank">use cases</a> section for more details.
+FastEdge can be used for CDN tasks like request modification, frontend serving, image conversion, and custom DNS resolving. See the <a href="https://gcore.com/docs/fastedge/getting-started#fastedge-use-cases" target="_blank">use cases</a> section for more details.
 
 FastEdge is currently in early beta, so it’s available free but has some restrictions. Read about this in the <a href="https://gcore.com/docs/fastedge/getting-started#fastedge-features" target="_blank">FastEdge features</a> section.
 
@@ -54,15 +54,15 @@ For both approaches, the overall concept works in broadly similar ways:
 
 **Improved user experience**. Suppose your application uses a CMS that generates non-human-readable URLs for site sections. This can cause negative feedback from users. FastEdge allows you to convert URLs to a user-friendly option in the response upon user request. You can also cut off some undesirable custom HTTP headers in the responses. 
 
-## FastEdge features
+## FastEdge early beta features
 
-FastEdge is in the early beta now. It means:
+FastEdge is in the early beta now. This means:
 
-- Right now, code for FastEdge can be written only in JS and Rust. Support for Go is in development.
+- Right now, code for FastEdge can be written in JS and Rust. Support for Go is in development.
 - Configuration and usage statistics are available only <a href="https://api.gcore.com/docs/fast_edge" target="_blank">via API</a>. The UI is in development.
 - During the early beta period, access is completely free. Pricing will be released at a later date.
 
-**Note**: Wait to use this product for mission-critical tasks and prod environments until the early beta ends.
+**Note**: Don't use this product for mission-critical tasks or prod environments until the early beta ends.
 
 ## FastEdge limits 
 
