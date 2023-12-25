@@ -33,7 +33,7 @@ Even if you managed to log in with manual data entering, <a href="https://gcore.
 
 This error appears when two sessions with IPMI are opened simultaneously — for example, when you connect from two devices or from different tabs of the browser.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-ipmi-errors/3.png" alt="DCImanager" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-ipmi-errors/3.png" alt="Server disconnected 1006 error" width="80%">
 
 When you see the error 1006, try doing four things in turn:
 
@@ -48,7 +48,7 @@ If none of these methods helped, <a href="https://gcore.com/docs/hosting/contact
 
 This error occurs when the server fails or when emergency or planned work is taking place in the location.
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-ipmi-errors/4.png" alt="error " width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/troubleshooting/troubleshoot-ipmi-errors/4.png" alt="IPMI is not available error" width="80%">
 
 If you experience this error, <a href="https://gcore.com/docs/hosting/contact-our-technical-support" target="_blank">write to technical support</a> — we will help to establish a connection to IPMI. When writing the message, please attach a copy of the error description or a screenshot of the screen: it will help us to understand what the matter is.
 

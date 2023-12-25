@@ -14,7 +14,7 @@ If you can't send email through SMTP ports 25, 465 and 587, most likely your vi
 Go to "Support tickets" in your control panel and check if there are any messages about blocking.
 
 <media-gallery>
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/troubleshooting/troubleshoot-blocked-smtp-ports/10138328512401.png" alt="Troubleshoot blocked SMTP ports">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/troubleshooting/troubleshoot-blocked-smtp-ports/10138328512401.png" alt="Support ticket in the Control Panel">
 
 <img src="https://assets.gcore.pro/docs/hosting/virtual-servers/troubleshooting/troubleshoot-blocked-smtp-ports/10138347613713.png" alt="Troubleshoot blocked SMTP ports">
 </media-gallery>

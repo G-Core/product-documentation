@@ -17,7 +17,7 @@ pageDescription: Learn how to improve your CDN Cache Hit Ratio. Get tips on CDN 
 
 The cache hit ratio is the percentage of traffic delivered from the CDN edge cache without requesting the origin server. You can check it in the <a href="https://cdn.gcore.com/reports/statistics" target="_blank">Statistics</a> section within the control panel.  
 
-<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue/statistics-low-cache-hit-ratio.png" alt="" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue/statistics-low-cache-hit-ratio.png" alt="How to check Cache Hit Ration in the Statistics tab of the Gcore Customer Portal" width="80%">
 
 A high cache hit ratio shows the efficiency and practicality of using CDNs. The higher it is, the better. By reducing the number of times CDN edge servers request a file from the source, you improve performance, reduce the load on the source, and reduce outbound traffic costs.
 

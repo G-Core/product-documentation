@@ -64,7 +64,7 @@ VPN affects the CDN Geobalancing and you may receive content from a not
 
 ## Diagnostic information for technical support
 
-If you revised your CDN resource's settings but are still unsatisfied with the download speed, contact [technical Support](mailto:support@gcore.com) and provide the following information:
+If you revised your CDN resource's settings but are still unsatisfied with the download speed, contact [technical support](mailto:support@gcore.com) and provide the following information:
 
 - File URL
 - Follow the link ```http://iam.gcdn.co/info```, copy all information from the page or save a screenshot. 
@@ -73,4 +73,4 @@ If you revised your CDN resource's settings but are still unsatisfied wit
 <img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-delivery-speed-is-low-how-to-solve-the-issue/iam.png" alt="Diagnostic information for technical support" width="50%">
 
 - Wget –S output for the URL from your CDN-resource.
-- Open a file or a web-page and save a <a href="https://toolbox.googleapps.com/apps/har_analyzer/?lang=en"target="_blank">HAR file</a>.
+- Open a file or a web-page and save a <a href="https://toolbox.googleapps.com/apps/har_analyzer/?lang=en" target="_blank">HAR file</a>.

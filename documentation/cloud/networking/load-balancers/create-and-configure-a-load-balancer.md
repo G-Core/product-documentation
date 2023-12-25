@@ -21,15 +21,13 @@ A **load balancer** is a tool used to sort incoming requests across your virtua
 
 1\. Go to your project - > **Networking** - > **Load Balancers** - > **Create Load Balancer**. 
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/__________________.png" alt="">
-
 The new window opens. Do the remaining steps in it. 
 
 2\. Select a region for balancing. Please note that you can balance traffic only within a single data center.
 
 3\. Select a network. If you want to use a private network for load balancing, enable the **Use private network** option. For more information, see the article <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-network" target="_blank">"Create and manage a network"</a>.
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/_____________________.png" alt="">
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/_____________________.png" alt="Use private network option">
 
 4\. Add one or more listeners. A listener is a process that checks for connection requests using the protocol and port that you configure. 
 
@@ -39,13 +37,13 @@ In the drop-down window, specify the listener name, protocol (TCP or HTTP), and 
 
 We also support the option to add an X-Forwarded-For header to identify an origin of the IP address of the client connecting to a web server via a load balancer. 
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/mceclip1.png" alt="" width="401" height="334">
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/mceclip1.png" alt="Listener configuration" width="50%">
 
 5\.  Configure a pool. A pool is a list of virtual machines to which the listener will redirect incoming traffic. 
 
 Click **Add pool** to start configuring.
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/_______________.png" alt="">
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/_______________.png" alt="The balancing algorithm configuration">
 
 5\. 1. Specify the pool name.
 
@@ -78,7 +76,7 @@ Specify the following setting for the protocols: 
 
 6\. Enter a name for the load balancer and click **Create Load Balancer.**
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/___________________.png" alt="">
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/___________________.png" alt="Create a Load Balancer finishing step">
 
 7\. Configure firewalls for instances in the pool.
 
@@ -92,7 +90,7 @@ Make sure their ports are open for the load balancer traffic:
 
 Create a custom security group (this is the firewall) and edit it: configure the rules for inbound and outbound traffic.
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/mceclip0.png" alt="">
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/mceclip0.png" alt="Create a custom security group also known as a firewall">
 
 ## **Manage a load balancer**
 
@@ -106,17 +104,17 @@ There you can:
 
 To do it, select the necessary action on the selector on the right from the balancer.
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/____________________.png" alt="">
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/____________________.png" alt="Interface for managing created Load Balancers">
 
 Go to your project - > Networking - > Load balancers -> select the Overview option on the selector on the right from the chosen balancer.
 
 In the drop-down window, you can edit existing listeners in the load balancer and also add new ones.
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/________________________________________.png" alt="">
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/________________________________________.png" alt="Add new Listener">
 
 You can **edit** and **delete** listeners. Select the appropriate option on the selector on the right from the listener. 
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/____________________________.png" alt="">
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/____________________________.png" alt="Edit or Delete listeners">
 
 In the editor, you can:
 
@@ -134,7 +132,7 @@ In the editor, you can:
 
 *   Change the parameters in the Health Check section
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/__________________.png" alt="__________________.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/__________________.png" alt="Health Check configuration">
 
 ## **Load Balancer statuses**
 
