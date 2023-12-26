@@ -61,17 +61,7 @@ Your request will be processed within fifteen minutes and the number of quotas w
 
 <img src="https://assets.gcore.pro/docs/cloud/database-for-postgresql/manage-postgresql-servers/manage-postgresql-70.png" alt="manage postgresql choose volume">
 
-6\. In **PG configuration**, select the appropriate connection pooler:
-
-- Session: This is the standard database connection mode that does not require additional coding. It offers a straightforward way to interact with the database without the overhead of the connection management. However, it does not load the database server with re-creating connections.
-
-- Transactional: This mode is more efficient but requires work with locks. It comes with some limitations:
-    - Prepared statements cannot be used in this mode.
-    - The use of the SET statement, temporary tables, and locks must be transaction-scoped. This means that these resources are confined to the duration of a specific database transaction.
-
-<img src="https://assets.gcore.pro/docs/cloud/database-for-postgresql/manage-postgresql-servers/manage-postgresql-80.png" alt="manage postgresql configure pg">
-
-7\. (optionally) Switch on the **Enable High availability** toggle to deploy three replicas with the same configuration to ensure that your database remains accessible even in the event of a server failure. If you turn on this feature, select the appropriate replication mode:
+6\. (Optionally) Switch on the **Enable High availability** toggle in **PG configuration** to deploy three replicas with the same configuration to ensure that your database remains accessible even in the event of a server failure. If you turn on this feature, select the appropriate replication mode:
 
 - Asynchronous: In asynchronous replication, servers work independently. The primary database sends the changes to the replicas and does not wait for confirmation that the changes have been applied. This mode is suitable for scenarios where data consistency with some level of delay is acceptable, though high performance is crucial.
 
@@ -81,7 +71,7 @@ Your request will be processed within fifteen minutes and the number of quotas w
 
 You can enable or disable this feature later.
 
-8\. In **Network settings**, configure the network interface.
+7\. In **Network settings**, configure the network interface.
 
 Choose Public network and configure the Access control list to limit the access to your server to the specified IP addresses.
 
@@ -89,18 +79,18 @@ Choose Public network and configure the Access control list to limit the access 
 
 **Note**: If you add *0.0.0.0/0*, you will allow unrestricted access to all IP addresses from the Internet. We strongly recommend using this setting only temporarily and exclusively on test servers without any sensitive data.
 
-9\. In **Authentication**, add your username.
+8\. In **Authentication**, add your username.
 
 <img src="https://assets.gcore.pro/docs/cloud/database-for-postgresql/manage-postgresql-servers/manage-postgresql-110-v2.png" alt="manage postgresql manage authentication">
 
-10\. In **Server details**, specify the server name and database name.
+9\. In **Server details**, specify the server name and database name.
 
 **Note**: The database size limit is 100 GB. This limit is for the beta stage only. If you need a more extensive database size during beta—please get in touch with [support](mailto:support@gcore.com).
 
 
 <img src="https://assets.gcore.pro/docs/cloud/database-for-postgresql/manage-postgresql-servers/manage-postgresql-120.png" alt="manage postgresql specify server details">
 
-11\. Click **Create PostgreSQL server** in the window on the left-hand side.
+10\. Click **Create PostgreSQL server** in the window on the left-hand side.
 
 The server will be created in a few minutes.
 
