@@ -38,12 +38,12 @@ The timeouts set for the servers proxied by the Gcore Edge Network vary from the
 </tr>
 <tr>
 <td><a href="https://nginx.org/en/docs/http/ngx_http_core_module.html#client_header_timeout" target="_blank">client_header_timeout</a></td>
-<td style="text-align: left">The time limit for a proxy server to read a client request header.<br> If the entire header is not received within this time,<br> the client will receive a 408 (Request Time-out) error.</td>
+<td style="text-align: left">The time limit for a proxy server to read a client request header.<br> If the entire header is not received within this time, the client will receive a 408 (request timeout) error.</td>
 <td>10s</td>
 </tr>
 <tr>
 <td><a href="https://nginx.org/en/docs/http/ngx_http_core_module.html#client_body_timeout" target="_blank">client_body_timeout</a></td>
-<td style="text-align: left">The time limit for a proxy server to read a client request body.<br> If no data is sent within this time,<br> the client will receive a 408 (Request Time-out) error.</td>
+<td style="text-align: left">The time limit for a proxy server to read a client request body.<br> If no data is sent within this time, the client will receive a 408 (Request Time-out) error.</td>
 <td>30s</td>
 </tr>
 <tr>
@@ -64,4 +64,4 @@ The timeouts set for the servers proxied by the Gcore Edge Network vary from the
 </tbody>
 </table>
 
-The timeouts can be changed via [technical support](mailto:support@gcore.com) if you have the Enterprise plan.
+The timeouts can be changed via [technical support](mailto:support@gcore.com) if you have an enterprise plan.
