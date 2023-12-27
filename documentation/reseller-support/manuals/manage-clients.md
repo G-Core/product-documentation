@@ -20,7 +20,7 @@ In the "Accounts" section, "Clients" subsection, you can add, view, edit, and de
 
 To create a new client account, go to the "Clients" subsection and click the "Add new client" button in the upper-right corner. 
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/add-new-client-10.png" alt="Clients subsection ">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/manage-clients-10.png" alt="Clients subsection ">
 
 In the next window, add information about a client and select the services that will be available for them.
 
@@ -28,7 +28,7 @@ In the field on the left, enter information about a new client: e-mail, first an
 
 In the field on the right, toggle on the services that you want to make available for the client. By default, the <a href="https://gcore.com/docs/reseller-support/manuals/configure-global-visibility " target="_blank">global service visibility</a> settings are inherited.  
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/list-of-services-20.png" alt="global service visibility settings">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/manage-clients-20.png" alt="global service visibility settings">
 
 **Important!** If you want to customize service visibility and override settings of the global service visibility in the "Vendor settings" section, the "Services" subsection switch on and off a service toggle as required. Be aware that further changes in the global service visibility settings will not affect the client's custom service visibility. To learn more about it, click <a href="https://gcore.com/docs/reseller-support/manuals/configure-personal-visibility " target="_blank">here</a>. 
 

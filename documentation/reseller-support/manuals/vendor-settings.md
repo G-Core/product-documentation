@@ -34,7 +34,7 @@ Here you can add your trademark, corporate identity, symbols and contact info wh
 
 To set up branding, go to the "Branding settings" tab in the "Vendor settings" section.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/branding-settings-10.png" alt="Branding settings" width="50%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/vendor-settings-10.png" alt="Branding settings" width="80%">
 
 ## Base control panel domain
 
@@ -165,27 +165,24 @@ If you want to send automatic emails from another email address, specify your SM
 
 1\. Open "Branding settings" and make sure the "Base control panel domain" field is filled in. If not, emails will not be sent.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/smtp-settings-160.png" alt="Branding settings">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/vendor-settings-20.png" alt="Branding settings">
 
-2\. Go to the "SMTP Provider Settings" tab and enable the "Email for service emails" option.
+2\. Go to the "SMTP Provider Settings" tab and enable the "Email for service emails" option. You will see the page with SMTP settings that need to be configured.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/smtp-settings-170.png" alt="SMTP Provider Settings">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/vendor-settings-30.png" alt="SMTP settings that need to be configured">
 
-You will see the page with SMTP settings that need to be configured.
+3\. Configure the following settings:
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/smtp-settings-180.png" alt="SMTP settings that need to be configured">
+- Enter the email address that you want to use to send automatic emails to your clients. It will be displayed in the "From" field in emails.   
+- Enter the domain of your SMTP server such as smtp.serveraddress.com, or specify its IP address.  
+- Enter the port that your SMTP server uses. 
 
-3\. Enter the email address that you want to use to send automatic emails to your clients. It will be displayed in the "From" field in emails.   
+**Note**: Port 25 is commonly abused to send spam, so some ISPs block this port. If so, some clients may not get your emails via port 25. We recommend using port 465 or 587. 
 
-4\. Enter the domain of your SMTP server such as smtp.serveraddress.com, or specify its IP address.  
+- Check the "TLS" box if this security protocol for email encryption is enabled on your SMTP server. 
+- Enter your username and password of your SMTP server. 
 
-5\. Enter the port that your SMTP server uses. Please note: port 25 is commonly abused to send spam, so some ISPs block this port. If so, some clients may not get your emails via port 25. We recommend using port 465 or 587. 
-
-6\. Check the "TLS" box if this security protocol for email encryption is enabled on your SMTP server. 
-
-7\. Enter your username and password of your SMTP server. 
-
-8\. Save the changes.  
+4\. Save changes.  
 
 To make sure that everything is configured properly, send yourself a test email by clicking the "Send test email" button. The email will be sent to your account's primary email address.
 
@@ -206,8 +203,8 @@ There are two levels of visibility: global (or default) and personal.
 
 In the settings of <a href="https://gcore.com/docs/reseller-support/manuals/configure-global-visibility" target="_blank">global visibility</a> is set the visibility of services for all your clients.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/services-200.png" alt="Services" width="80%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/vendor-settings-40.png" alt="Global services" width="80%">
 
 In the settings of <a href="https://gcore.com/docs/reseller-support/manuals/configure-personal-visibility" target="_blank">personal visibility</a> you can enable or disable the visibility of services for a particular client. The visibility statuses of personally configured products will not be available for changes from the global visibility settings. 
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/services-210.png" alt="Services" width="80%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/vendor-settings-50.png" alt="Concrete account services" width="80%">
