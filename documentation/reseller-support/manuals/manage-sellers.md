@@ -16,7 +16,7 @@ Use the "Users" section, "Sellers" tab to add, edit or delete users with Sellers
 
 To add a Seller go the "Sellers" tab and click on the "Add Seller" button. 
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-sellers/add-sellers-10.png" alt="Creating Seller accounts" width="50%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-sellers/manage-sellers.png" alt="Creating Seller accounts" width="80%">
 
 In a new window specify the Seller's name, email and phone number then click on the Send Invite button. An email with the password set up link will be sent to the specified email. The link will be active for 24 hours. 
 
