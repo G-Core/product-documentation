@@ -9,7 +9,7 @@ toc:
 
 You can configure personal visibility in the client's settings: Accounts > Clients > ID > Services. 
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-personal-visibility/services-10.png" alt="Configure personal visibility of services" width="80%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/personal-visibility-10.png" alt="Configure personal visibility of services" width="80%">
 
 To change the service visibility from OFF to ON, confirm and save settings. 
 
@@ -26,10 +26,8 @@ For example, "CDN", "Streaming", "Cloud", "Storage", "Web Protection", and "DNS"
 
 "CDN", "Streaming", and "Cloud" are enabled by default for all clients.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-personal-visibility/services-visibility-20.png" alt="enabled by default " width="80%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-personal-visibility/personal-visibility-20.png" alt="Enabled by default " width="80%">
 
 And the "Storage" service is enabled only for one client, i.e. all three products ("CDN", "Streaming", "Cloud", and "Storage") are visible in the personal visibility settings.
-
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-personal-visibility/services-visibility-30.png" alt="Storage">
 
 By these settings the "Storage" service is considered as the service with individual settings, **all further actions with this service in the global visibility will not affect the "Storage" visibility settings in the personal visibility of this client**. 

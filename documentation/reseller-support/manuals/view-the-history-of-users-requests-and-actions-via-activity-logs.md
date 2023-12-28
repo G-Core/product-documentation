@@ -24,7 +24,7 @@ The Activity logs section displays changes that users have made. Users are all t
 
 The entities will be displayed on the right.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/view-the-history-of-users-requests-and-actions-via-activity-logs/image3499-10.png" alt="Activity logs" width="80%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/view-the-history-of-users-requests-and-actions-via-activity-logs/activity-logs-resellers-10.png" alt="Activity logs" width="80%">
 
 You can sort and filter entities by the following columns:
 

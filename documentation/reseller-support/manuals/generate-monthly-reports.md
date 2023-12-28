@@ -19,7 +19,7 @@ Generate monthly reports to analyze your clients' traffic consumption.
 
 Go to the "Reports" section in the Admin panel and click on the Create new report button in the upper-right corner.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/generate-monthly-reports/create-report-10.png" alt="Reports section ">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/generate-monthly-reports/resellers-reports-10.png" alt="Reports section" width="80%">
 
 Choose the report parameters in the pop-up window.
 
