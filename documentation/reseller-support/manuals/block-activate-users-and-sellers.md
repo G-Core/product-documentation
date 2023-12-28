@@ -27,7 +27,7 @@ The following restrictions apply to blocked users and sellers:
 
 The new page will open, and you can do the remaining steps there.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/block-activate-users-and-sellers/block-users-10.png" alt="Sellers section">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/block-activate-users-and-sellers/block-user-10.png" alt="Sellers section">
 
 2\. Find the user/seller you need using the filters.
 

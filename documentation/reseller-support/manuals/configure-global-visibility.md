@@ -9,7 +9,7 @@ toc:
 
 You can configure global visibility in the "Vendor settings" section, "Services" tab of the Admin Panel.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-global-visibility/services-admin-panel-10.png" alt="Services tab" width="80%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-global-visibility/global-visibility-10.png" alt="Services tab" width="80%">
 
 **As the result of switching the global service visibility from OFF to ON** a service is activated for all clients, except clients with individual settings for this service.  
 
