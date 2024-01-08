@@ -27,7 +27,7 @@ A new page opens. Perform the remaining steps there.
 
 3\.  In the **Container image** block, select the image type: **Public** or **Private**. The difference between them is a password secures that private image.
 
-- For public image type, enter the image name, e.g. ```nginx:latest``` and go to the next step. 
+- For public image type, enter the image name, e.g. ```nginx:latest```, and go to the next step. 
 
 <img src="https://assets.gcore.pro/docs/cloud/caas/manage-containers/caas-public-container-image.png" alt="Public containers" width="50%">
 
