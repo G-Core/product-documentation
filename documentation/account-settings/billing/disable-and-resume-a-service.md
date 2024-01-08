@@ -5,7 +5,7 @@ published: true
 order: 20
 toc:
    --1--Disable: "disable-services"
-   --2--Deletion periods: "when-is-the-data-to-be-deleted"
+   --2--Deletion periods: "when-are-services-and-resources-deleted"
    --1--Resume: "resume-services"
 pageTitle: Instructions on How to Disable or Resume Products | Gcore
 pageDescription: A step-by-step guide to disable or resume products. Disabling deletes certain resources and settings after a set period.
