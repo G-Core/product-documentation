@@ -23,6 +23,7 @@ import { SearchComponent } from './components/search/search.component';
 import { MenuService } from './services/menu.service';
 import { ModalLoginModule } from './components/modal-login';
 import { EditGithubButtonComponent } from './web-components/edit-github-button/edit-github-button.component';
+import { CookiesSettingsModule } from './components/cookies-settings/cookies-settings.module';
 
 @NgModule({
     declarations: [
@@ -47,6 +48,7 @@ import { EditGithubButtonComponent } from './web-components/edit-github-button/e
         UiKitModule,
         ReactiveFormsModule,
         ModalLoginModule,
+        CookiesSettingsModule,
     ],
     providers: [MenuService, { provide: APP_BASE_HREF, useValue: '/docs/' }],
     bootstrap: [AppComponent],
