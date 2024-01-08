@@ -1,62 +1,80 @@
 ---
 title: disable-and-resume-a-service
-displayName: Services
+displayName: Disable/Resume
 published: true
 order: 20
 toc:
-   --1--Disable: "disable-a-service"
-   --1--Resume: "resume-a-service"
-pageTitle: Instructions on how to disable or resume services | Gcore
-pageDescription: A step-by-step guide to disable or resume services. Disabling deletes certain resources and settings after a set period.
+   --1--Disable: "disable-services"
+   --2--Deletion periods: "when-is-the-data-to-be-deleted"
+   --1--Resume: "resume-services"
+pageTitle: Instructions on How to Disable or Resume Products | Gcore
+pageDescription: A step-by-step guide to disable or resume products. Disabling deletes certain resources and settings after a set period.
 ---
-
-# Disable and resume a service
+# How to disable or resume services
   
-## Disable a service
+## Disable services
 
-1\.  Click on the profile icon in the lower-left corner and select **Billing** or just follow the <a href="https://accounts.gcore.com/billing/services" target="_blank">Services</a> link.
+1\. Open the <a href="https://accounts.gcore.com/billing/services" target="_blank">Services</a> page.
 
-2\.  Find the service you need and click **Disable service**.
+2\. Find the service you want to disable, dropdown the service block and click **Disable service**.
 
 <img src="https://assets.gcore.pro/docs/account-settings/billing/services/disable-10.png" alt="Disable a service">
 
-**Please, note**:  After disabling the service or after the end of the trial period (if the service was not activated), all service resources and settings will be deleted after a certain period of time.
+**Note:** After disabling, the service will continue working till the date specified in the Customer Portal. Then, it will be suspended, and you won't be able to use the service. Some time after the suspension, the service and its data (associated resources and settings) will be deleted.
+
+### When are services and resources deleted?
+
+<expandable-element title="What data will be deleted"> 
+
+- **CDN:** CDN resources, SSL certificates, created rules, origin groups; all paid and free features will be turned off
+- **Cloud:** VMs with all settings and projects
+- **Storage:** storages
+- **DNS:** zones, records
+- **Streaming:** recources, added files  
+
+</expandable-element>  
 
 <table>
     <tr>
-        <td>Service</td>
-        <td>Period </td>
+        <td><b>Service</b></td>
+        <td><b>Period</b></td>
     </tr>
     <tr>
         <td>CDN</td>
-        <td>90 days </td>
+        <td>90 days</td>
     </tr>
     <tr>
         <td>Cloud</td>
-        <td>14 days </td>
+        <td>7 days for Basic VM<br>30 days for other services</td>
     </tr>
     <tr>
         <td>Storage</td>
-        <td>90 days </td>
+        <td>14 days (if the service was disabled while being in the Trial)<br>30 days (if the service with the paid plan was disabled)<br><b>Note:</b> After deleting manual recovery is available<br> by contacting <a href="mailto:support@gcore.com">technical support</a> for additional 14 days</td>
     </tr>
     <tr>
         <td>DNS</td>
-        <td>90 days </td>
+        <td>90 days</td>
     </tr>
     <tr>
         <td>Streaming</td>
-        <td>Exception! Resources won&#39;t be deleted. </td>
+        <td>90 days</td>
     </tr>
     <tr>
-        <td>Web protection</td>
-        <td>Exception! Resources won&#39;t be deleted.</td>
+        <td>Web Security</td>
+        <td>5 days</td>
+    </tr>
+    <tr>
+        <td>DDoS Protection</td>
+        <td>90 days</td>
     </tr>
 </table>
 
-## Resume a service
+> **Note:** All dates mentioned above are default. They can differ in particular cases if a personal manager or technical support changed amount of the days for your account by mutual preliminary arrangement.  
+
+## Resume services
 
 1\.  Go to the <a href="https://accounts.gcore.com/billing/services" target="_blank">Services</a> tab.
 
 2\.  Find the service you need and click **Resume service**.
 
-<img src="https://assets.gcore.pro/docs/account-settings/billing/services/resume-20.png" alt="Services tab.">
+<img src="https://assets.gcore.pro/docs/account-settings/billing/services/resume-20.png" alt="Services tab">

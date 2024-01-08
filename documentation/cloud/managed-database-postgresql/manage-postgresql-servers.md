@@ -90,7 +90,7 @@ Choose Public network and configure the Access control list to limit the access 
 
 <img src="https://assets.gcore.pro/docs/cloud/database-for-postgresql/manage-postgresql-servers/manage-postgresql-120.png" alt="manage postgresql specify server details">
 
-10\. Click **Create PostgreSQL server** in the window on the left-hand side.
+10\. Click **Create PostgreSQL server** in the window on the right-hand side.
 
 The server will be created in a few minutes.
 
