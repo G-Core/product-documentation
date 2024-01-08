@@ -15,8 +15,6 @@ export enum CookiesConsent {
     providedIn: 'root',
 })
 export class AnalyticsService {
-    constructor(private cookies: CookieService) {}
-
     public getCookies(): { [key: string]: string } {
         return document.cookie.split('; ').reduce((cookesMap: { [key: string]: string }, cookie: string) => {
             const [key, value] = cookie.split('=');
