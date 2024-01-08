@@ -25,6 +25,7 @@ import { MenuService } from './services/menu.service';
 import { ModalLoginModule } from './components/modal-login';
 import { EditGithubButtonComponent } from './web-components/edit-github-button/edit-github-button.component';
 import { AlertElementComponent } from './web-components/alert-element/alert-element.component';
+import { CookiesSettingsModule } from './components/cookies-settings/cookies-settings.module';
 
 @NgModule({
     declarations: [
@@ -51,6 +52,7 @@ import { AlertElementComponent } from './web-components/alert-element/alert-elem
         ReactiveFormsModule,
         ModalLoginModule,
         AngularSvgIconModule.forRoot(),
+        CookiesSettingsModule,
     ],
     providers: [MenuService, { provide: APP_BASE_HREF, useValue: '/docs/' }],
     bootstrap: [AppComponent],
