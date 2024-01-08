@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { marketingCookies, statisticCookies } from '../constants/analytics';
-import { CookieService } from './cookie.service';
 
 const ONE_YEAR = 1000 * 60 * 60 * 24 * 365;
 
