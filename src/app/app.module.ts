@@ -24,6 +24,7 @@ import { MenuService } from './services/menu.service';
 import { ModalLoginModule } from './components/modal-login';
 import { EditGithubButtonComponent } from './web-components/edit-github-button/edit-github-button.component';
 import { CookiesSettingsModule } from './components/cookies-settings/cookies-settings.module';
+import { TabsetComponent } from './web-components/tabset/tabset.component';
 
 @NgModule({
     declarations: [
@@ -38,6 +39,7 @@ import { CookiesSettingsModule } from './components/cookies-settings/cookies-set
         CodeBlockComponent,
         TextColumnsComponent,
         GalleryComponent,
+        TabsetComponent,
         SearchComponent,
     ],
     imports: [
@@ -67,6 +69,9 @@ export class AppModule {
         const gallery = createCustomElement(GalleryComponent, {
             injector,
         });
+        const tabset = createCustomElement(TabsetComponent, {
+            injector,
+        });
         const editGithubButton = createCustomElement(EditGithubButtonComponent, {
             injector,
         });
@@ -74,6 +79,7 @@ export class AppModule {
         customElements.define('code-block', codeBlock);
         customElements.define('columns-layout', columnsLayout);
         customElements.define('media-gallery', gallery);
+        customElements.define('tabset-element', tabset);
         customElements.define('edit-github-button', editGithubButton);
     }
 }
