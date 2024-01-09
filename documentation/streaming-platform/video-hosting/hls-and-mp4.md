@@ -87,7 +87,9 @@ Gcore’s Streaming Platform provides HLS by default. If you want to enable MP4 
 
 You can get links to videos in two ways: in the control panel or via the API.
 
-### Control panel
+<tabset-element>
+
+###### Control panel
 
 Select the video in the <a href="https://streaming.gcore.com/video/list" target="_blank">Video Hosting</a> section, open the "Export" tab, and copy the following links.
 
@@ -96,7 +98,7 @@ Select the video in the <a href="https://streaming.gcore.com/video/list" target=
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/hls-and-mp4/image3526.png" alt="Control panel">
 
-### API
+###### API
 
 To get information about the video, call a method:
 
@@ -143,6 +145,8 @@ Where:
 - ```iframe_embed_code``` contains web player embed code
 - ```hls_url``` contains the HLS link
 - ```mp4_url``` contains the MP4 link
+
+</tabset-element>
 
 ## Limitation of the lowest and highest quality in HLS adaptive bitrate
 
