@@ -7,7 +7,6 @@ toc:
    --1--Player Initialization via iFrame: "player-initialization-via-iframe"
    --1--Events: "events"
    --1--Calling player methods: "calling-player-methods"
-   --1--API testing tool: "api-testing-tool"
 pageTitle: Player API. Initialization, Events, Methods | Gcore
 pageDescription: A detailed guide on using Player API to manage player settings, collect data, and handle various events.
 ---
