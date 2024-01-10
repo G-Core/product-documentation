@@ -89,7 +89,7 @@ You can get links to videos in two ways: in the control panel or via the API.
 
 <tabset-element>
 
-###### Control panel
+### Control panel
 
 Select the video in the <a href="https://streaming.gcore.com/video/list" target="_blank">Video Hosting</a> section, open the "Export" tab, and copy the following links.
 
@@ -98,7 +98,7 @@ Select the video in the <a href="https://streaming.gcore.com/video/list" target=
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/hls-and-mp4/image3526.png" alt="Control panel">
 
-###### API
+### API
 
 To get information about the video, call a method:
 
