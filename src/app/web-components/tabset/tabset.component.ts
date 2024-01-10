@@ -26,6 +26,8 @@ export class TabsetComponent implements OnDestroy, AfterViewInit {
 
     public tabs: Array<HTMLInputElement> = [];
 
+    private tagType = '';
+
     private subscription: Subscription;
 
     constructor(private renderer: Renderer2, private route: ActivatedRoute, private cdr: ChangeDetectorRef) {}
@@ -36,19 +38,7 @@ export class TabsetComponent implements OnDestroy, AfterViewInit {
         const tabset = this.tabset.nativeElement;
         const elements = [...tabset.childNodes] as Array<HTMLElement>;
 
-        const content = elements.reduce((acc, el) => {
-            if (!el.tagName) {
-                return acc;
-            }
-            if (headerTagNameList.includes(el.tagName)) {
-                this.buttons = [...this.buttons, { id: el.id, title: el.textContent }];
-                el.remove();
-                return acc;
-            }
-            const n = this.buttons.length - 1;
-            acc[n] = [...(acc[n] || []), el];
-            return acc;
-        }, []);
+        const content = elements.reduce(this.sortTags, []);
 
         const tabsetName = uuidv4();
 
@@ -99,4 +89,24 @@ export class TabsetComponent implements OnDestroy, AfterViewInit {
         this.activeTab = index;
         this.cdr.detectChanges();
     }
+
+    private sortTags = (acc: Array<Array<HTMLElement>>, el: HTMLElement): Array<Array<HTMLElement>> => {
+        if (!el.tagName) {
+            return acc;
+        }
+
+        if (headerTagNameList.includes(el.tagName) && (!this.tagType || this.tagType === el.tagName)) {
+            if (!this.tagType) {
+                this.tagType = el.tagName;
+            }
+
+            this.buttons = [...this.buttons, { id: el.id, title: el.textContent }];
+            el.remove();
+            return acc;
+        }
+
+        const n = this.buttons.length - 1;
+        acc[n] = [...(acc[n] || []), el];
+        return acc;
+    };
 }
