@@ -1,17 +1,34 @@
-import { AfterViewInit, Component, ElementRef, Renderer2, ViewChild } from '@angular/core';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    OnDestroy,
+    Renderer2,
+    ViewChild,
+} from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
+import { HEADER_HEIGHT, headerTagNameList } from '../../constants';
 
 @Component({
     selector: 'gc-tabset',
     templateUrl: './tabset.component.html',
     styleUrls: ['./tabset.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TabsetComponent implements AfterViewInit {
+export class TabsetComponent implements OnDestroy, AfterViewInit {
     @ViewChild('tabset') public tabset: ElementRef;
 
     public buttons: Array<{ id: string; title: string }> = [];
 
-    constructor(private renderer: Renderer2) {}
+    public tabs: Array<HTMLInputElement> = [];
+
+    private subscription: Subscription;
+
+    constructor(private renderer: Renderer2, private route: ActivatedRoute, private cdr: ChangeDetectorRef) {}
 
     public activeTab = 0;
 
@@ -23,8 +40,9 @@ export class TabsetComponent implements AfterViewInit {
             if (!el.tagName) {
                 return acc;
             }
-            if (el.tagName === 'H6') {
-                this.buttons = [...this.buttons, { id: uuidv4(), title: el.textContent }];
+            if (headerTagNameList.includes(el.tagName)) {
+                this.buttons = [...this.buttons, { id: el.id, title: el.textContent }];
+                el.remove();
                 return acc;
             }
             const n = this.buttons.length - 1;
@@ -43,13 +61,42 @@ export class TabsetComponent implements AfterViewInit {
             input.id = button.id;
             input.name = tabsetName;
             input.checked = !i;
+            this.tabs = [...this.tabs, input];
 
             tab.append(...content[i]);
             tabset.append(input, tab);
         });
+
+        if (this.subscription) {
+            this.subscription.unsubscribe();
+        }
+
+        this.subscription = this.route.fragment.subscribe((fragment) => {
+            let idx = 0;
+            const tab = this.tabs.find((tab, i) => {
+                if (tab.id === fragment) {
+                    idx = i;
+                    return true;
+                }
+                return false;
+            });
+            if (tab) {
+                this.activeTabChange(idx);
+                tab.checked = true;
+
+                window.scrollTo({ top: tabset.offsetTop - HEADER_HEIGHT });
+            }
+        });
+
+        this.cdr.detectChanges();
+    }
+
+    public ngOnDestroy(): void {
+        this.subscription?.unsubscribe();
     }
 
     public activeTabChange(index: number): void {
         this.activeTab = index;
+        this.cdr.detectChanges();
     }
 }

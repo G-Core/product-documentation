@@ -52,7 +52,7 @@ export class AppComponent implements OnInit {
             .subscribe((link) => {
                 const lastChildRouteSnapshot: ActivatedRouteSnapshot = this.getLastChildRouteSnapshot();
 
-                const title = link.pageTitle || lastChildRouteSnapshot.data.title || defaultTitle;
+                const title = link?.pageTitle || lastChildRouteSnapshot.data.title || defaultTitle;
                 const description =
                     link?.pageDescription || lastChildRouteSnapshot.data.description || defaultDescription;
 

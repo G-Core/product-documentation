@@ -13,7 +13,7 @@ import {
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { isScullyRunning, ScullyRoute, ScullyRoutesService } from '@scullyio/ng-lib';
 import { combineLatest, first, map, Observable, of, Subscription, take } from 'rxjs';
-import { categories, HEADER_HEIGHT, METADATA_FILE_TITLE } from '../../constants';
+import { categories, HEADER_HEIGHT, headerTagNameList, METADATA_FILE_TITLE } from '../../constants';
 import { MenuItem, MenuTreeItem, TableOfContents } from '../../models';
 import { GitHubAPIService } from '../../services';
 import { MenuService } from '../../services/menu.service';
@@ -282,7 +282,10 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
         }
 
         const activeSectionId = this.tableOfContentsHeaders.reduce((activeItem: string, item) => {
-            if (document.documentElement.scrollTop + HEADER_HEIGHT + 18 > (item as HTMLElement).offsetTop) {
+            if (
+                document.documentElement.scrollTop + HEADER_HEIGHT + 18 > (item as HTMLElement).offsetTop &&
+                headerTagNameList.includes(item.tagName)
+            ) {
                 activeItem = item.id;
             }
             return activeItem;
