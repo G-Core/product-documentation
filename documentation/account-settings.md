@@ -3,15 +3,6 @@ title: account-settings
 displayName: Account Settings
 published: true
 ---
-
-<alert-element type="tip" title="Hello world from title of the alert">
-
-Lorem ipsum dolor sit amet, consectetur adipisicing elit. A ab amet autem blanditiis, consequuntur cupiditate earum, enim excepturi harum in laudantium molestiae nihil numquam officia omnis qui quo sed ut!
-
-<a href="#">Link</a><a href="#">Link</a><a href="#">Link</a>
-
-</alert-element>
-
 # Account settings
 
 Welcome to the <a href="https://accounts.gcore.com" target="_blank">Gcore account settings</a> documentation page! Here we explain how the control panel is arranged and how to configure functions.
