@@ -400,7 +400,7 @@ Not all fields are important. Some of them relate to our internal CDN system and
   <tr>
     <td>$http_traceparent<br>(internal system variable)</td>
     <td   >00-d5fe1dc903<br>5165ce36952da<br>f29686b6c-143<br>30be33197dd1a<br>-01</td>
-    <td>Unique request identifier, more info in the <a href="https://gcore.com/docs/cdn/troubleshooting/traceparent-header-for-troubleshooting" target="_blank">guide</a></td>
+    <td>Unique request identifier, more info in the <a href="https://gcore.com/docs/cdn/troubleshooting/traceparent-header-for-troubleshooting" target="_blank">Traceparent guide</a></td>
   </tr>
   <tr>
     <td>$http_x_forwarded_proto</td>
