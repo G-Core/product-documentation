@@ -30,7 +30,11 @@ To manage services add your permanent API token after APIKey in the authorizatio
 
 ## Create a permanent API token
 
-**Note:** There is currently a limit of 50 API tokens per account
+<alert-element type="caution" title="Caution">
+
+There is currently a limit of 50 API tokens per account.
+
+</alert-element>
 
 <img src="https://assets.gcore.pro/docs/account-settings/api-tokens/create-token-10.png" alt="Create a permanent API token">
 
