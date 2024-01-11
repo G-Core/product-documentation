@@ -14,6 +14,7 @@ const defaultOptions: Required<MoveContentFilesPluginOptions> = {
     categories: [
         'account-settings',
         'cdn',
+        'fastedge',
         'cloud',
         'dns',
         'hosting',
@@ -22,6 +23,7 @@ const defaultOptions: Required<MoveContentFilesPluginOptions> = {
         'ddos-protection',
         'web-security',
         'reseller-support',
+        'edit-article-guide',
     ],
 };
 const sitemap = 'sitemap.xml';

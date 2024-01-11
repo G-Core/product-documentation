@@ -22,9 +22,9 @@ After the **ten days** elapse, your account, data, and services will be permanen
 
 ## How to delete your account
 
-Go to <a href="https://accounts.gcore.com/profile/delete-account" target="_blank">Delete account</a> and click **Got it, request the deletion**.
+Go to the <a href="https://accounts.gcore.com/profile/delete-account" target="_blank">Delete account</a> page and click **Delete my account**.
 
-<img src="https://assets.gcore.pro/docs/account-settings/account-deletion/deletion-10.png" alt="How to delete your account" width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/account-deletion/delete-acc-10.png" alt="How to delete your account" width="80%">
 
 In the pop-up that appears, please complete the short survey and click **Confirm**.
 

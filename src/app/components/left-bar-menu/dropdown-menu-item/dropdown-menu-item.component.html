@@ -1,5 +1,12 @@
 <button class="menu-dropdown" [class.expanded]="isExpanded" #menuDropdown>
-    <span>{{ menuItemDisplayName }}</span>
+    <span *ngIf="!menuItem.url">{{ menuItemDisplayName }}</span>
+    <a
+        *ngIf="menuItem.url"
+        [routerLink]="menuItem.url"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        >{{ menuItemDisplayName }}</a
+    >
     <div class="menu-dropdown-arrow">
         <svg width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
@@ -13,20 +20,19 @@
     </div>
 </button>
 <div class="sub-items-wrapper" [class.gc-active]="isExpanded">
-    <ng-container *ngFor="let menuItem of menuItems">
+    <ng-container *ngFor="let childMenuItem of menuItem.children">
         <a
-            *ngIf="(!menuItem.children || !menuItem.children.length) && menuItem.title !== 'metadata'"
+            *ngIf="(!childMenuItem.children || !childMenuItem.children.length) && childMenuItem.title !== 'metadata'"
             class="side-nav-list-item"
-            [routerLink]="menuItem.url"
+            [routerLink]="childMenuItem.url"
+            (click)="toggleSideMenu($event)"
             [routerLinkActive]="'active'"
-            >{{ menuItem.name }}</a
+            >{{ childMenuItem.name }}</a
         >
         <gc-dropdown-menu-item
-            *ngIf="menuItem.children && menuItem.children.length"
+            *ngIf="childMenuItem.children && childMenuItem.children.length"
             [activeUrl]="activeUrl"
-            [menuItemName]="menuItem.name"
-            [menuItems]="menuItem.children"
-            [menuItemTitle]="menuItem.title"
+            [menuItem]="childMenuItem"
         ></gc-dropdown-menu-item>
     </ng-container>
 </div>

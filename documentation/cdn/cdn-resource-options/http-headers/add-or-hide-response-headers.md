@@ -132,6 +132,8 @@ To adjust the headers that are being passed:
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/add-or-hide-response-headers/11595288042385.png" alt="Hide only" width="50%">
 
+Headers to hide that can be chosen in the customer portal: *accept, accept-charset, accept-encoding, accept-language, accept-ranges, age, allow, alternates, authorization, cache-control, content-disposition, content-encoding, content-language, content-location, content-md5, content-range, content-version, derived-from, etag, expect, expires, from, host, if-match, if-modified-since, if-none-match, if-range, if-unmodified-since, last-modified, link, location, max-forwards, mime-version, pragma, proxy-authenticate, proxy-authorization, public, range, referer, retry-after, title, te, trailer, transfer-encoding, upgrade, user-agent, vary, via, warning, www-authenticate, keep-alive*.
+
 **Note**: There are some mandatory headers: *connection, content-length, content-type, server, and date*. These cannot be hidden from responses.
 
 4\. Save changes.

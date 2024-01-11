@@ -23,6 +23,8 @@ import { SearchComponent } from './components/search/search.component';
 import { MenuService } from './services/menu.service';
 import { ModalLoginModule } from './components/modal-login';
 import { EditGithubButtonComponent } from './web-components/edit-github-button/edit-github-button.component';
+import { CookiesSettingsModule } from './components/cookies-settings/cookies-settings.module';
+import { TabsetComponent } from './web-components/tabset/tabset.component';
 
 @NgModule({
     declarations: [
@@ -37,6 +39,7 @@ import { EditGithubButtonComponent } from './web-components/edit-github-button/e
         CodeBlockComponent,
         TextColumnsComponent,
         GalleryComponent,
+        TabsetComponent,
         SearchComponent,
     ],
     imports: [
@@ -47,6 +50,7 @@ import { EditGithubButtonComponent } from './web-components/edit-github-button/e
         UiKitModule,
         ReactiveFormsModule,
         ModalLoginModule,
+        CookiesSettingsModule,
     ],
     providers: [MenuService, { provide: APP_BASE_HREF, useValue: '/docs/' }],
     bootstrap: [AppComponent],
@@ -65,6 +69,9 @@ export class AppModule {
         const gallery = createCustomElement(GalleryComponent, {
             injector,
         });
+        const tabset = createCustomElement(TabsetComponent, {
+            injector,
+        });
         const editGithubButton = createCustomElement(EditGithubButtonComponent, {
             injector,
         });
@@ -72,6 +79,7 @@ export class AppModule {
         customElements.define('code-block', codeBlock);
         customElements.define('columns-layout', columnsLayout);
         customElements.define('media-gallery', gallery);
+        customElements.define('tabset-element', tabset);
         customElements.define('edit-github-button', editGithubButton);
     }
 }

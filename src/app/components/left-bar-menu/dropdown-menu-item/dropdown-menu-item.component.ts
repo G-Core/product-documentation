@@ -12,7 +12,9 @@ import {
     SimpleChanges,
     ViewChild,
 } from '@angular/core';
+
 import { MenuItem } from '../../../models';
+import { MenuService } from '../../../services/menu.service';
 
 @Component({
     selector: 'gc-dropdown-menu-item',
@@ -21,9 +23,7 @@ import { MenuItem } from '../../../models';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DropdownMenuItemComponent implements OnInit, OnChanges, AfterViewInit {
-    @Input() public menuItemName: string;
-    @Input() public menuItemTitle: string;
-    @Input() public menuItems: Array<MenuItem> = [];
+    @Input() public menuItem: MenuItem;
     @Input() public activeUrl: string = '';
 
     public isExpanded: boolean = false;
@@ -31,20 +31,24 @@ export class DropdownMenuItemComponent implements OnInit, OnChanges, AfterViewIn
 
     @ViewChild('menuDropdown') public menuDropdown: ElementRef;
 
-    constructor(private ngZone: NgZone, private renderer: Renderer2, private changeDetector: ChangeDetectorRef) {}
+    constructor(
+        private ngZone: NgZone,
+        private renderer: Renderer2,
+        private changeDetector: ChangeDetectorRef,
+        private menuService: MenuService,
+    ) {}
 
     public ngOnChanges(changes: SimpleChanges): void {
         if (changes.activeUrl) {
-            this.isExpanded =
-                changes.activeUrl.currentValue &&
-                changes.activeUrl.currentValue
-                    .split('/')
-                    .includes(changes.menuItemTitle?.currentValue || this.menuItemTitle);
+            this.isExpanded = this.hasActiveChildItem(
+                changes.menuItem?.currentValue || this.menuItem,
+                changes.activeUrl.currentValue,
+            );
         }
     }
 
     public ngOnInit(): void {
-        this.menuItemDisplayName = this.menuItemName || this.menuItemTitle.split('-').join(' ');
+        this.menuItemDisplayName = this.menuItem.name || this.menuItem.title.split('-').join(' ');
     }
 
     public ngAfterViewInit(): void {
@@ -58,5 +62,16 @@ export class DropdownMenuItemComponent implements OnInit, OnChanges, AfterViewIn
     public toggleMenu(): void {
         this.isExpanded = !this.isExpanded;
         this.changeDetector.detectChanges();
+    }
+
+    public toggleSideMenu(event: Event): void {
+        this.menuService.toggleMenu(event);
+    }
+
+    private hasActiveChildItem(menuItem: MenuItem, activeUrl: string): boolean {
+        return (
+            (menuItem.url && activeUrl?.endsWith(menuItem.url)) ||
+            menuItem.children?.some((childMenuItem) => this.hasActiveChildItem(childMenuItem, activeUrl))
+        );
     }
 }

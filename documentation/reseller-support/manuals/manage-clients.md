@@ -92,7 +92,7 @@ You can customize <a href="https://gcore.com/docs/reseller-support/manuals/confi
 
 ### Users tab
 
-On this tab, you can edit personal data and manage user rights. You can <a href="https://gcore.com/docs/account-settings/users/add-edit-or-delete-an-invited-user" target="_blank">invite new users</a> only via the client control panel.
+On this tab, you can edit personal data and manage user rights. You can <a href="https://gcore.com/docs/account-settings/users/about-users/add-edit-or-delete-an-invited-user" target="_blank">invite new users</a> only via the client control panel.
 
 You can edit a client's name, email address, language of automatic emails and user type.
 
