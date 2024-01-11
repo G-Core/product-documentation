@@ -6,6 +6,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { APP_BASE_HREF } from '@angular/common';
 
+import { AngularSvgIconModule } from 'angular-svg-icon';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DocumentationComponent } from './components/documentation/documentation.component';
@@ -23,10 +24,12 @@ import { SearchComponent } from './components/search/search.component';
 import { MenuService } from './services/menu.service';
 import { ModalLoginModule } from './components/modal-login';
 import { EditGithubButtonComponent } from './web-components/edit-github-button/edit-github-button.component';
+import { AlertElementComponent } from './web-components/alert-element/alert-element.component';
 
 @NgModule({
     declarations: [
         AppComponent,
+        AlertElementComponent,
         DocumentationComponent,
         LeftBarMenuComponent,
         BreadCrumbsComponent,
@@ -47,12 +50,16 @@ import { EditGithubButtonComponent } from './web-components/edit-github-button/e
         UiKitModule,
         ReactiveFormsModule,
         ModalLoginModule,
+        AngularSvgIconModule.forRoot(),
     ],
     providers: [MenuService, { provide: APP_BASE_HREF, useValue: '/docs/' }],
     bootstrap: [AppComponent],
 })
 export class AppModule {
     constructor(private injector: Injector) {
+        const alertElement = createCustomElement(AlertElementComponent, {
+            injector,
+        });
         const expandableElement = createCustomElement(ExandableElementComponent, {
             injector,
         });
@@ -73,5 +80,6 @@ export class AppModule {
         customElements.define('columns-layout', columnsLayout);
         customElements.define('media-gallery', gallery);
         customElements.define('edit-github-button', editGithubButton);
+        customElements.define('alert-element', alertElement);
     }
 }
