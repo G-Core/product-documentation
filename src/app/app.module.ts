@@ -6,6 +6,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { APP_BASE_HREF } from '@angular/common';
 
+import { AngularSvgIconModule } from 'angular-svg-icon';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DocumentationComponent } from './components/documentation/documentation.component';
@@ -25,10 +26,12 @@ import { ModalLoginModule } from './components/modal-login';
 import { EditGithubButtonComponent } from './web-components/edit-github-button/edit-github-button.component';
 import { CookiesSettingsModule } from './components/cookies-settings/cookies-settings.module';
 import { TabsetComponent } from './web-components/tabset/tabset.component';
+import { AlertElementComponent } from './web-components/alert-element/alert-element.component';
 
 @NgModule({
     declarations: [
         AppComponent,
+        AlertElementComponent,
         DocumentationComponent,
         LeftBarMenuComponent,
         BreadCrumbsComponent,
@@ -50,6 +53,7 @@ import { TabsetComponent } from './web-components/tabset/tabset.component';
         UiKitModule,
         ReactiveFormsModule,
         ModalLoginModule,
+        AngularSvgIconModule.forRoot(),
         CookiesSettingsModule,
     ],
     providers: [MenuService, { provide: APP_BASE_HREF, useValue: '/docs/' }],
@@ -57,6 +61,9 @@ import { TabsetComponent } from './web-components/tabset/tabset.component';
 })
 export class AppModule {
     constructor(private injector: Injector) {
+        const alertElement = createCustomElement(AlertElementComponent, {
+            injector,
+        });
         const expandableElement = createCustomElement(ExandableElementComponent, {
             injector,
         });
@@ -81,5 +88,6 @@ export class AppModule {
         customElements.define('media-gallery', gallery);
         customElements.define('tabset-element', tabset);
         customElements.define('edit-github-button', editGithubButton);
+        customElements.define('alert-element', alertElement);
     }
 }
