@@ -9,6 +9,7 @@ type AlertType = 'tip' | 'info' | 'warning' | 'caution';
 })
 export class AlertElementComponent {
     @Input() public type: AlertType = 'tip';
+    @Input() public title: string = '';
     @Input() public isShowLinks = false;
     public svgNames: { [key: string]: string } = {
         tip: 'check-circle',
