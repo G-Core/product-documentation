@@ -14,7 +14,11 @@ pageDescription: Enhance your CDN security through Origin SSL Validation—an ef
  
 ## What is this option for?
 
-Note: This option is only accessible via <a href="https://api.gcore.com/docs/iam" target="_blank">API</a>.  
+<alert-element type="note" title="Note">
+
+This option is only accessible via <a href="https://api.gcore.com/docs/iam" target="_blank">API</a>.
+
+</alert-element>
 
 In the Origin Pull Protocol option, you are to set the protocol which CDN servers will use to pull content from an origin server: HTTP, HTTPS or HTTP and HTTPS. It allows you to control whether the connection between the CDN and the origin server is encrypted or not. 
 
