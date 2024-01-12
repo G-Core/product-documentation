@@ -1,6 +1,7 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+import * as fs from 'fs';
+import { join } from 'path';
 import crypto from 'crypto';
-import { registerPlugin, log, green, red, logError } from '@scullyio/scully';
+import { log, green, red, logError, HandledRoute, scullyConfig } from '@scullyio/scully';
 import algoliasearch, { SearchClient } from 'algoliasearch';
 import { JSDOM } from 'jsdom';
 
@@ -16,8 +17,6 @@ interface Payload {
 
 const INDEX_NAME = process.env.ALGOLIA_PD_INDEX;
 const SCULLY_CODE = "try {window['scullyContent']";
-
-export const updateAlgolia = 'updateAlgolia';
 
 function getPageContent(document: any): string {
     const text = document.querySelector('.scully-container').textContent;
@@ -48,11 +47,23 @@ function initAlgoliaClient(): SearchClient {
     return algoliasearch(appId, apiKey);
 }
 
-function buildPayload(options, mainTitle: string, content: string): Payload {
+const createDOM = async (pathToHtml: string): Promise<any> => {
+    const fileContent = await fs.promises.readFile(pathToHtml, 'utf-8');
+    return new JSDOM(fileContent);
+};
+
+async function buildPayload(options: HandledRoute): Promise<Payload> {
+    const path = join(scullyConfig.outDir, 'docs', options.route, 'index.html');
+    const dom = await createDOM(path);
+    const { window } = dom;
+    const { document } = window;
+    const mainTitle = document.querySelector('h1')?.textContent || '';
+    const content = getPageContent(document);
+
     const { data, route } = options;
     const hash = crypto.createHash('sha256');
     const url = route.replace('/', '');
-    const category = url.indexOf('/') !== -1 ? url.substr(0, url.indexOf('/')) : url;
+    const category = url.indexOf('/') !== -1 ? url.substring(0, url.indexOf('/')) : url;
     hash.update(route, 'utf8');
 
     return {
@@ -66,33 +77,33 @@ function buildPayload(options, mainTitle: string, content: string): Payload {
     };
 }
 
-const updateAlgoliaIndex = async (dom, options): Promise<JSDOM> => {
-    if (process.env.BUILD_ENV === 'develop' || options.route.startsWith('/reseller-support')) {
-        return dom;
-    }
-    try {
-        if (options.data?.title !== 'metadata' && options.data?.published && !options.data?.redirect) {
-            const { window } = dom;
-            const { document } = window;
-            const mainTitle = document.querySelector('h1')?.innerHTML || '';
-            const content = getPageContent(document);
+export const updateAlgoliaIndex = async (routes: Array<HandledRoute>): Promise<void> => {
+    if (process.env.BUILD_ENV !== 'develop') {
+        try {
             const client = initAlgoliaClient();
-            const payload = buildPayload(options, mainTitle, content);
 
             const indexToUse = client.initIndex(INDEX_NAME);
 
-            const { taskID } = await indexToUse.saveObject(payload);
-            await indexToUse.waitTask(taskID);
+            const objects = await Promise.all(
+                routes.reduce((acc, route) => {
+                    if (
+                        route.data?.title !== 'metadata' &&
+                        route.data?.published &&
+                        !route.data?.redirect &&
+                        !route.route.startsWith('/reseller-support')
+                    ) {
+                        return [...acc, buildPayload(route)];
+                    }
+                    return acc;
+                }, []),
+            );
 
-            log(green(`Updated index for [${payload.title}]`));
+            await indexToUse.replaceAllObjects(objects, { autoGenerateObjectIDIfNotExist: true });
+
+            log(green(`updateAlgolia finished successfully with ${objects.length} index items`));
+        } catch (e) {
+            logError('updateAlgolia failed with error', e);
+            process.exit(1);
         }
-    } catch (e) {
-        logError(red(JSON.stringify(e, null, 2)));
     }
-
-    return dom;
 };
-
-const validator = async (): Promise<Array<any>> => [];
-
-registerPlugin('postProcessByDom', updateAlgolia, updateAlgoliaIndex, validator);
