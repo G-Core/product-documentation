@@ -20,7 +20,7 @@ const categories = [
     'reseller-support',
 ];
 import { setCustomUrls } from './scully/plugins/custom-url/custom-url';
-import { moveContentFiles, updateAlgolia } from './scully/plugins/registerPlagins';
+import { moveContentFiles, updateAlgolia } from './scully/plugins/registerPlugins';
 
 const SitemapPlugin = getSitemapPlugin();
 

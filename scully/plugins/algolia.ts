@@ -84,7 +84,7 @@ export const updateAlgoliaIndex = async (routes: Array<HandledRoute>): Promise<v
 
             const indexToUse = client.initIndex(INDEX_NAME);
 
-            const objects = await Promise.all(
+            const indexObjectList = await Promise.all(
                 routes.reduce((acc, route) => {
                     if (
                         route.data?.title !== 'metadata' &&
@@ -98,9 +98,9 @@ export const updateAlgoliaIndex = async (routes: Array<HandledRoute>): Promise<v
                 }, []),
             );
 
-            await indexToUse.replaceAllObjects(objects, { autoGenerateObjectIDIfNotExist: true });
+            await indexToUse.replaceAllObjects(indexObjectList, { autoGenerateObjectIDIfNotExist: true });
 
-            log(green(`updateAlgolia finished successfully with ${objects.length} index items`));
+            log(green(`updateAlgolia finished successfully with ${indexObjectList.length} index items`));
         } catch (e) {
             logError('updateAlgolia failed with error', e);
             process.exit(1);
