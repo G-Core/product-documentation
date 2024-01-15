@@ -4,12 +4,12 @@ displayName: Create a live stream
 published: true
 order: 10
 toc:
-   --1--1. Start creation: "step 1-start-creation"
+   --1--1. Start creation: "step-1-start-creation"
    --1--2. Set type and features: "step-2-set-the-stream-type-and-additional-features"
    --1--3. Configure Push or Pull: "step-3-configure-your-stream-for-push-or-pull"
    --2--Pull: "if-you-selected-pull" 
    --2--Push: "if-you-selected-push"
-   --1--4. Start stream: "step-4-start -he-stream"
+   --1--4. Start stream: "step-4-start-the-stream"
    --1--5. Embed to app: "step-5-embed-the-stream-to-your-app" 
 pageTitle: Guide to Creating Live Streams | Gcore
 pageDescription: A step-by-step tutorial on how to create live streams using Gcore's interface. Learn about stream types, encoder settings, and embedding options.
