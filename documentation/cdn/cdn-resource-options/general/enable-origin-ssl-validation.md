@@ -20,6 +20,7 @@ This option is only accessible via <a href="https://api.gcore.com/docs/iam" targ
 
 </alert-element>
 
+
 In the Origin Pull Protocol option, you are to set the protocol which CDN servers will use to pull content from an origin server: HTTP, HTTPS or HTTP and HTTPS. It allows you to control whether the connection between the CDN and the origin server is encrypted or not. 
 
 If you choose the HTTPS protocol, CDN servers will send a request for the content via HTTPS protocol, such a content transfer process is encrypted, but still do not save the connection from the attack called <a href="https://en.wikipedia.org/wiki/Man-in-the-middle_attack" target="_blank">Man In The Middle</a>. 
