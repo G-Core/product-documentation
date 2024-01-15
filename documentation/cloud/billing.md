@@ -13,7 +13,7 @@ All clients are subscribed to the PAYG (pay-as-you-go) billing plan, which means
 
 To start using Cloud services, you need to add at least €4/$4 to your balance.
 
-<alert-element type="warning" title="Warning">
+<alert-element type="caution" title="Caution">
 
 This payment (€4/$4) cannot be refunded.
 
