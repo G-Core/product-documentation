@@ -30,7 +30,7 @@ To manage services add your permanent API token after APIKey in the authorizatio
 
 ## Create a permanent API token
 
-<alert-element type="caution" title="Caution">
+<alert-element type="warning" title="Warning">
 
 There is currently a limit of 50 API tokens per account.
 
