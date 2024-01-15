@@ -18,15 +18,15 @@ pageDescription: Explore how the traceparent HTTP header aids in request identif
 
 We have initiated support for the traceparent HTTP header, as outlined in the <a href="https://www.w3.org/TR/trace-context/" target="_blank">W3C Trace Context specification</a>. This move is aimed at standardizing the methods of transmitting and modifying tracing information between services.
 
->**Note:** Currently, we just pass on the *tracestate* request header, which is also part of the same specification, without change.
+>**Note:** Currently, we only pass on the *tracestate* request header, which is also part of the same specification, without changing it.
 
 ## How it works
 
 ### Request header
 
-The <a href="https://www.w3.org/TR/trace-context/#traceparent-header" target="_blank">traceparent</a> header comprises four fields: version, trace-id, parent-id, and trace-flags. They are detailed in <a href="https://www.w3.org/TR/trace-context/#bib-rfc5234" target="_blank">Augmented Backus-Naur Form (ABNF) notation</a> and are designed to identify the incoming request in a tracing system.
+The <a href="https://www.w3.org/TR/trace-context/#traceparent-header" target="_blank">traceparent header</a> comprises four fields: ```version```, ```trace-id```, ```parent-id```, and ```trace-flags```. They are detailed in <a href="https://www.w3.org/TR/trace-context/#bib-rfc5234" target="_blank">Augmented Backus-Naur Form (ABNF) notation</a> and identify incoming requests in a tracing system.
 
-We accept client-passed traceparent request headers. Within the Gcore Edge Network, only the *parent-id* field can be modified, while the *trace-id* remains constant. Thus, we will pass the traceparent header to your origin. Don't worry about losing the route as it traverses through the CDN.
+We are able to receive traceparent request headers that are sent to us by clients. In the Gcore Edge Network, the only field that can be changed is the ```parent-id```, while the ```trace-id``` stays the same. We then forward the traceparent header to your original location. So, you can rest assured that the route won't be lost as it moves through the CDN.
 
 If the traceparent request header isn't utilized on your end or is in the wrong format, we will generate it according to the specification.
 
@@ -46,7 +46,7 @@ You can use the traceparent response header to track the request or send it to [
 
 ## Traceparent in Raw logs 
 
-We have extended the support for the traceparent header to the <a href="https://gcore.com/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage" target="_blank">Raw logs</a> feature. You can find the sample of the traceparent header in the <a href="https://gcore.com/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage#log-fields" target="_blank">Raw logs guide</a> by searching the *$http_traceparent* field. In a nutshell:
+We have extended the support for the traceparent header to <a href="https://gcore.com/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage" target="_blank">Raw Logs</a>. You can find the sample of the traceparent header in the <a href="https://gcore.com/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage#log-fields" target="_blank">Raw Logs guide</a> by searching the ```$http_traceparent``` field. In a nutshell:
 
 ```
 00-d5fe1dc9035165ce36952daf29686b6c-14330be33197dd1a-01
