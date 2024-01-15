@@ -14,7 +14,7 @@ pageDescription: Enhance your CDN security through Origin SSL Validation—an ef
  
 ## What is this option for?
 
-<alert-element type="note" title="Note">
+<alert-element type="info" title="Info">
 
 This option is only accessible via <a href="https://api.gcore.com/docs/iam" target="_blank">API</a>.
 
