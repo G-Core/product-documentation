@@ -5,6 +5,14 @@ published: true
 ---
 # Account settings
 
+<alert-element type="tip" title="Hello world">
+
+I am description form the alert element <a href="#">Link</a>
+
+<a href="#">Api</a>
+
+</alert-element>
+
 Welcome to the <a href="https://accounts.gcore.com" target="_blank">Gcore account settings</a> documentation page! Here we explain how the control panel is arranged and how to configure functions.
 
 From the left-side menu, you can access in-depth documentation about your account and control panel:
