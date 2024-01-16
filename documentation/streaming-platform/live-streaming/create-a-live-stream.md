@@ -69,7 +69,11 @@ Insert a link to a stream from your media server in the URL field.
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/13542997210897.png" alt="Live streaming section" width="50%">
 
-> **Tip**: You can specify multiple media servers separated by space in the URL field. In this case, the first media server will be the primary source, and the subsequent ones will serve as backup servers. If the signal from the first source fails, we will automatically continue the stream from the second source. Example: “rtmps://main-server/live1 rtmp://backup-server/live1 rtmp://backup-server/live2”.
+<alert-element type="tip" title="Tip">
+
+You can specify multiple media servers separated by space in the URL field. In this case, the first media server will be the primary source, and the subsequent ones will serve as backup servers. If the signal from the first source fails, we will automatically continue the stream from the second source. Example: “rtmps://main-server/live1 rtmp://backup-server/live1 rtmp://backup-server/live2”.
+
+</alert-element>
 
 ### If you selected Push
 
@@ -127,4 +131,8 @@ Embed the created live stream into your web app by one of the following methods:
 
 That’s it. Your viewers see the live stream.
 
-> **Warning**: We support <a href="https://gcore.com/docs/streaming-platform/extra-features/view-statistics-of-live-streams-videos-and-billing" target="_blank">statistic data</a> collection only for Gcore players. If you use your player, the statistics page will be empty. Independently from the player, you can view <a href="https://gcore.com/docs/streaming-platform/live-streaming/view-your-live-stream-metrics" target="_blank">monitoring metrics</a> for performance analysis and troubleshooting. 
+<alert-element type="warning" title="Warning">
+
+We support <a href="https://gcore.com/docs/streaming-platform/extra-features/view-statistics-of-live-streams-videos-and-billing" target="_blank">statistic data</a> collection only for Gcore players. If you use your player, the statistics page will be empty. Independently from the player, you can view <a href="https://gcore.com/docs/streaming-platform/live-streaming/view-your-live-stream-metrics" target="_blank">monitoring metrics</a> for performance analysis and troubleshooting. 
+
+</alert-element>

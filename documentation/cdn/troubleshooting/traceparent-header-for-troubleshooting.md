@@ -18,7 +18,11 @@ pageDescription: Explore how the traceparent HTTP header aids in request identif
 
 We have initiated support for the traceparent HTTP header, as outlined in the <a href="https://www.w3.org/TR/trace-context/" target="_blank">W3C Trace Context specification</a>. This move is aimed at standardizing the methods of transmitting and modifying tracing information between services.
 
->**Note:** Currently, we only pass on the *tracestate* request header, which is also part of the same specification, without changing it.
+<alert-element type="info" title="Info">
+
+Currently, we only pass on the *tracestate* request header, which is also part of the same specification, without changing it.
+
+</alert-element>
 
 ## How it works
 
