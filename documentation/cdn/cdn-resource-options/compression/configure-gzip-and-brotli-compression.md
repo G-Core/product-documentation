@@ -26,16 +26,19 @@ Our CDN supports Gzip and Brotli edge compression, so even if your origin server
 
 The Gzip method reduces file size by 80% and up to 90%. The following MIME types can be compressed using Gzip:
 
+- application/dash+xml
 - application/javascript
 - application/json
 - application/x-javascript
 - application/xml
+- application/vnd.apple.mpegurl
 - application/xml+rss
 - application/wasm
 - text/css
 - text/html
 - text/javascript
 - text/plain
+- text/vtt
 - text/xml
 - image/svg+xml
 
@@ -43,7 +46,7 @@ The Gzip method reduces file size by 80% and up to 90%. The following MIME types
 
 The Brotli method has a higher compression ratio compared to Gzip, and the minimum file size that can be compressed is 128 bytes.
 
-CDN supports Brotli compression only when <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin Shielding</a> is activated. If a resource has no shielding set, the content will not be compressed even if the Brotli option is enabled. To activate Origin Shielding, please reach out to our [support team](mailto:support@gcore.com).
+CDN supports Brotli compression only when <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin Shielding</a> is activated. If a resource has no shielding set, the content will not be compressed even if the Brotli option is enabled. To activate Origin Shielding, please reach out to our [technical support](mailto:support@gcore.com).
 
 You can specify the MIME types to be considered for Brotli compression. These types include:
 
@@ -83,25 +86,29 @@ Check the following requirements and recommendations before configuring the opti
 - Gzip and Brotli compressions are mutually exclusive with <a href="https://gcore.com/docs/cdn/cdn-resource-options/compression/configure-fetch-compression" target="_blank">Fetch Compressed</a> and <a href="" target="_blank">Large Files Delivery Optimization</a> within the Resource Settings and within the same rule. This means that you cannot enable the latter options when Gzip or Brotli is already enabled.
 - You can allow all incoming requests to be compressed on the edge, and also allow certain requests to be compressed on the origin. This can be accomplished by enabling Gzip and Brotli compressions in the Resource Settings, and enabling Fetch Compressed in the Rules.  
     
-**Note**: Doing it the other way around is not possible. That is, you cannot enable Gzip and Brotli compressions in the Rules when Fetch Compressed is already enabled in the Resource Settings.
-    
+
+<alert-element type="warning" title="Warning">
+
+Doing it the other way around is not possible. That is, you cannot enable Gzip and Brotli compressions in the Rules when Fetch Compressed is already enabled in the Resource settings.
+
+</alert-element> 
 
 ## Configuration steps
 
 To configure Gzip and Brotli options via the control panel:
 
-1\. Go to CDN and select the CDN resource you want to configure.
+1\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN resources</a> list and select the CDN resource you want to configure.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/12422800579217.png" alt="Gzip and Brotli options">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/cdn-resource-list-10.png" alt="CDN resources page" width="70%">
 
 2\. In the navigation panel, under the "Content" section, click **Gzip compression** or **Brotli compression**.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/12423128187537.png" alt="navigation panel">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/compression-settings-20.png" alt="GZip and Brotli compression" width="80%">
 
 3\. Turn on the toggle for **Enable Gzip compression** to enable the option.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/12423333741969.png" alt="Enable_Gzip.png" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/gzip-30.png" alt="Enable Gzip" width="50%">
 
 4\. Turn on the toggle for **Enable Brotli compression** to enable the option. Select the MIME types you want to compress in the "Content types" area.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/12423398729873.png" alt="Enable_Brotli.png" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/brotli-40.png" alt="Enable Brotli" width="50%">
