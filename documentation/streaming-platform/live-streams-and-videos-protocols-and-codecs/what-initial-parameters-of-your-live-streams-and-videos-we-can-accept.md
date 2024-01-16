@@ -11,14 +11,14 @@ toc:
 pageTitle: Guide to Gcore Streaming Parameters | Gcore
 pageDescription: Overview of the supported and recommended parameters for optimizing live streams and videos using the Gcore Streaming Platform.
 ---
-# What initial parameters of your live streams and videos we can accept
+# Initial parameters of your live streams and videos that we can accept
 
 ## Supported parameters
 
 The Streaming Platform supports:
 
-- Receiving live streams from <a href="https://gcore.com/docs/streaming-platform/live-streaming/create-a-live-stream" target="_blank">your server (PULL) or a dedicated publishing point (PUSH)</a> using the RTMP(S), SRT and many  others. The stream is transcoded to get streams of lower quality and sent with <a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-we-optimize-live-stream-and-video-performance-by-creating-different-bitrates" target="_blank">adaptive streaming</a> via CDN in  HLS/MPEG-DASH (CMAF Low Latency) formats. 
-- Uploading videos in almost any format, from standard MP4 to 4k HDR Video, is transcoded to get videos of lower quality and sent with adaptive streaming via CDN in HLS format. 
+- Receiving live streams from <a href="https://gcore.com/docs/streaming-platform/live-streaming/create-a-live-stream" target="_blank">your server (PULL) or a dedicated publishing point (PUSH)</a> using numerous protocols including RTMP(S) and SRT (all supported live protocols are listed in the table below). The stream is transcoded and sent with <a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-we-optimize-live-stream-and-video-performance-by-creating-different-bitrates" target="_blank">adaptive streaming</a> via CDN in  HLS/MPEG-DASH (CMAF low latency) formats. 
+- Videos uploaded in almost any format, from standard MP4 to 4k HDR Video, are transcoded to get videos of lower quality, and then sent with adaptive streaming via CDN in HLS format.  
 
 ## Recommended stream parameters
 
@@ -36,7 +36,7 @@ We recommend the following parameters for streams:
 </tr>
 <tr>
 <td class="wysiwyg-text-align-center" rowspan="6" data-celllook="0">
-<p><span data-contrast="none">Video Bitrate &amp; Resolution</span></p>
+<p><span data-contrast="none">Video bitrate &amp; resolution</span></p>
 </td>
 <td class="wysiwyg-text-align-center" data-celllook="0">
 <p><span data-contrast="none">Quality</span></p>
@@ -47,7 +47,7 @@ We recommend the following parameters for streams:
 <p>&nbsp;</p>
 </td>
 <td class="wysiwyg-text-align-center" data-celllook="0">
-<p><span data-contrast="none">Video Bitrate Range</span></p>
+<p><span data-contrast="none">Video bitrate range</span></p>
 </td>
 </tr>
 <tr>
@@ -153,7 +153,7 @@ We recommend the following parameters for streams:
 </tr>
 <tr>
 <td>Live protocols <strong>(Live Streaming)</strong></td>
-<td>RTMP, RTMPS, SRT, RTSP, HLS</td>
+<td colspan="2">RTMP, RTMPS, SRT, RTSP, HLS</td>
 </tr>
 <tr>
 <td class="wysiwyg-text-align-center" data-celllook="0">
@@ -220,7 +220,7 @@ RTMPS is a variation of RTMP but incorporates SSL usage.
 <tbody>
 <tr>
 <td rowspan="2" style="text-align: left">SSL issues</td>
-<td style="text-align: left">You use ```rtmps://``` but in the encoder ```rtmp://``` is specified</td>
+<td style="text-align: left">You use <pre>rtmps://</pre> but in the encoder <pre>rtmp://</pre> is specified</td>
 <td style="text-align: left">Check the protocol in your encoder. Follow <a href="" target="_blank">step 3 of the guide</a>.</td>
 </tr>
 <tr>
@@ -231,7 +231,7 @@ rtmp://vp-push-ed1.gvideo.co:<span style="color:#FF5913">443</span>/in/</td>
 <tr>
 <td rowspan="2" style="text-align: left">“Connection timed out”</td>
 <td style="text-align: left">The server URL is incorrect</td>
-<td style="text-align: left">Check the server URL in the encoder settings. Ensure that protocol is ```rtmps://```</td>
+<td style="text-align: left">Check the server URL in the encoder settings. Ensure that protocol is <pre>rtmps://</pre></td>
 </tr>
 <tr>
 <td style="text-align: left">Your encoder doesn’t support RTMPS</td>
