@@ -4,7 +4,7 @@ displayName: Create a live stream
 published: true
 order: 10
 toc:
-   --1--1. Start creation: "step-1-start-creation"
+   --1--1. Initiate process: "initiate-the-process"
    --1--2. Set type and features: "step-2-set-the-stream-type-and-additional-features"
    --1--3. Configure Push or Pull: "step-3-configure-your-stream-for-push-or-pull"
    --2--Pull: "if-you-selected-pull" 
@@ -16,13 +16,13 @@ pageDescription: A step-by-step tutorial on how to create live streams using Gco
 ---
 # Create a live stream
 
-## Step 1. Start creation
+## Step 1. Initiate the process
 
-1\. Navigate to the <a href="https://streaming.gcore.com/streaming/list">Live streaming</a> section and select **Create Live stream**.
+1\. Navigate to <a href="https://streaming.gcore.com/streaming/list">Live Streaming</a> section and select **Create Live stream**.
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/13542247871633.png" alt="Live streaming section" width="80%">
 
-<expandable-block title="The Create… button is unavailable">
+<expandable-element title="The Create… button is unavailable">
 
 If the button is non-responsive, you have exceeded your live stream limit. To create a new stream, remove an existing stream from the list or request [technical support](mailto:support@gcore.com) to increase your limits.
 
@@ -33,27 +33,27 @@ If the button is non-responsive, you have exceeded your live stream limit. To cr
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/9651635790481.png" alt="Enter the name of your live stream" width="50%">
 
-A new page will appear. Do the remaining steps connected with Gcore’s interface in it. 
+A new page will appear. Perform the remaining steps there. 
 
 ## Step 2. Set the stream type and additional features 
 
 1\. Ensure the **Enable live stream** switch is on.
 
-<expandable-block title="Low Latency explanation">
+<expandable-element title="Low Latency explanation">
 
-By default, we offer live streams with Low Latency (a 4–5 second delay). Low Latency is available in two protocols: LL-DASH (<a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-low-latency-streaming-works" target="_blank">compatible with all devices except iOS</a>) and LL-HLS (compatible with iOS). Also, you can obtain legacy HLS with MPEGTS format segments. If you need it, read <a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-low-latency-streaming-works" target="_blank">our article</a>.
+By default, we offer live streams with low latency (a 4–5 second delay.) Low latency is available in two protocols: LL-DASH (<a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-low-latency-streaming-works" target="_blank">compatible with all devices except iOS</a>) and LL-HLS (compatible with iOS). You can also obtain legacy HLS with MPEGTS format segments, in which case, please read <a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-low-latency-streaming-works" target="_blank">our article</a>.
 
 </expandable-element>
 
-2\. (Optional) Review the live stream name and modify if necessary.
+2\. (Optional) Review the live stream name and modify it if necessary.
 
-3\. Select the suitable stream type: Push or Pull. 
+3\. Select the relevant stream type: push or pull. 
 
-- The **Pull stream type** will suit you if you have a streaming media server. The live stream will operate on your server. Our server will convert it from the RTMP, RTMPS or SRT protocol to  MPEG-DASH and HLS protocols. After that, our CDN will distribute the original live stream in the new format to end users.
+- Choose **pull stream** if you have a streaming media server. The live stream will operate on your server. Our server will convert it from the RTMP, RTMPS or SRT protocol to  MPEG-DASH and HLS protocols. Then, our CDN will distribute the original live stream in the new format to end users.
 
-- The **Push stream type** will suit you if you do not use your own media server. Establish the URL of our server and the unique stream key in your encoder (e.g., OBS, Streamlabs, vMix, LiveU Solo, etc). You can use protocols RTMP, RTMPS, and SRT too. Following this, the live stream will operate on our server, be converted to MPEG-DASH and HLS protocols, and be distributed to end users via our CDN.
+- Choose **push stream** if you do not use your own media server. Establish the URL of our server and the unique stream key in your encoder (e.g., OBS, Streamlabs, vMix, LiveU Solo, etc). You can use protocols RTMP, RTMPS, and SRT too. The live stream will operate on our server, be converted to MPEG-DASH and HLS protocols, and be distributed to end users via our CDN.
 
-4. Enable additional features If you activated them earlier:
+4. Enable additional features If you activated them previosly:
 
 - <a href="https://gcore.com/docs/streaming-platform/live-streaming/record-your-live-streams-and-save-them-as-videos" target="_blank">Record</a> for live stream recording. It will be active when you start streaming. Remember to enable the toggle if you require a record of your stream.  
 - <a href="https://gcore.com/docs/streaming-platform/live-streaming/pause-and-rewind-the-live-streams" target="_blank">DVR</a> for an improved user experience: when the DVR feature is enabled, your viewers can pause and rewind the broadcast.
@@ -63,9 +63,9 @@ By default, we offer live streams with Low Latency (a 4–5 second delay). Low L
 
 ## Step 3. Configure your stream for Push or Pull 
 
-### If you selected Pull
+### If you selected pull
 
-Insert a link to a stream from your media server in the URL field.
+In the URL field, insert a link to the stream from your media server.
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/13542997210897.png" alt="Live streaming section" width="50%">
 
@@ -75,24 +75,24 @@ You can specify multiple media servers separated by space in the URL field. In t
 
 </alert-element>
 
-### If you selected Push
+### If you selected push
 
-1\. Select the encoder (OBS, VMix, Wirecast) you use for streaming from the drop-down list. 
+1\. From the drop-down list, select the encoder (OBS, VMix, Wirecast) you use for streaming. 
 
 2\. Select the protocol for your stream: RTMP, RTMPS, or SRT. The main difference between these protocols is their security levels and ability to handle packet loss.
 
-- RTMP is the standard open-source protocol for live broadcasting over the Internet which supports low latency. 
-- RTMPS is a variation of RTMP but incorporates SSL usage. 
+- RTMP is the standard open-source protocol for live broadcasting over the internet. It supports low latency. 
+- RTMPS is a variation of RTMP that incorporates SSL usage.
 - SRT is a protocol designed to transmit data reliably with protection against packet loss.
 
 3\. Copy the relevant data to insert into your encoder.
 
 <expandable-element title="RTMP(S)">
 
-Copy the following values:
+Insert the following values:
 
-- **Server (URL)** is the target server where your encoder will relay the broadcast. E.g., ```rtmp://vp-push-ed1.gvideo.co/in/ ```
-- **Stream key** is the unique identifier of the created live stream
+- **Server (URL)** is the target server where your encoder will relay the broadcast; e.g., ```rtmp://vp-push-ed1.gvideo.co/in/ ```.
+- **Stream key** is the unique identifier of the created live stream.
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/rtmps.png" alt="URLs for encoder configuration" width="80%">
 
@@ -100,7 +100,7 @@ Copy the following values:
 
 <expandable-element title="SRT">
 
-Copy Push URL SRT. It will contain the server URL, port, stream ID (internal for Gcore), and stream key. For example:
+Copy the Push URL SRT. It contains the server URL, port, stream ID (internal for Gcore,) and stream key. For example:
 
 ```
 srt://vp-push-ed1-srt.gvideo.co:5001?streamid=000000#12ab345c678901d…
@@ -112,13 +112,13 @@ srt://vp-push-ed1-srt.gvideo.co:5001?streamid=000000#12ab345c678901d…
 
 <expandable-element title="Backup links">
 
-We provide backup links. You can specify it in the encoder interface. In case of inaccessibility and overloading of your primary server, the stream will be minimally interrupted and continue from the backup server.
+We provide backup links, which you can specify in the encoder interface. In case of inaccessibility and overloading of your primary server, the stream will be minimally interrupted and will continue automatically from the backup server.
 
 </expandable-element>
 
 ## Step 4. Start the stream
 
-Start a live stream on your media server or encoder. You will see a streaming preview on the Gcore Live stream settings page if everything is configured correctly.
+Start a live stream on your media server or encoder. You will see a streaming preview on the Gcore Live Stream Settings page if everything is configured correctly.
 
 ## Step 5. Embed the stream to your app
 
@@ -129,10 +129,10 @@ Embed the created live stream into your web app by one of the following methods:
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/embed-to-app.png" alt="Links for embeding them to the app" width="80%">
 
-That’s it. Your viewers see the live stream.
+That’s it. Your viewers can see the live stream.
 
 <alert-element type="warning" title="Warning">
 
-We support <a href="https://gcore.com/docs/streaming-platform/extra-features/view-statistics-of-live-streams-videos-and-billing" target="_blank">statistic data</a> collection only for Gcore players. If you use your player, the statistics page will be empty. Independently from the player, you can view <a href="https://gcore.com/docs/streaming-platform/live-streaming/view-your-live-stream-metrics" target="_blank">monitoring metrics</a> for performance analysis and troubleshooting. 
+We only support <a href="https://gcore.com/docs/streaming-platform/extra-features/view-statistics-of-live-streams-videos-and-billing" target="_blank">statistic data</a> collection for Gcore players. If you use your own, non-Gcore player, the statistics page will be empty. Independent of the player, you can view <a href="https://gcore.com/docs/streaming-platform/live-streaming/view-your-live-stream-metrics" target="_blank">monitoring metrics</a> for performance analysis and troubleshooting. 
 
 </alert-element>
