@@ -287,48 +287,48 @@ HTTP/2 200
 server: nginx
 date: Thu, 19 Oct 2023 22:17:46 GMT
 content-length: 616
-custom-header: <span style="color:#FF5913">foo</span>                           
+<span style="color:#FF5913">custom-header</span>: foo                          
 access-control-allow-origin: *
 cache-control: no-store
 x-id: ed-hw-edge-preprod-gc39
 cache: MISS
 accept-ranges: bytes	                                                 
-dc: <span style="color:#FF5913">ed</span>                                            	
-geoip-asn: <span style="color:#FF5913">7922</span>                                       
-geoip-lat: 37.75580
-geoip-long: -121.95270
-geoip-reg: CA
-geoip-city: San Ramon
-geoip-continent: NA
-geoip-country-name: United States
-geoip-country-code: US
-server_addr: <span style="color:#FF5913">92.223.112.26</span>                            
-server_name: <span style="color:#FF5913">mistake-globe-6396.fastedge.gcore.dev</span>	
+<span style="color:#FF5913">dc</span>: ed                                           	
+<span style="color:#FF5913">geoip-</span>asn: 7922                                       
+<span style="color:#FF5913">geoip-</span>lat: 37.75580
+<span style="color:#FF5913">geoip-</span>long: -121.95270
+<span style="color:#FF5913">geoip-</span>reg: CA
+<span style="color:#FF5913">geoip-</span>city: San Ramon
+<span style="color:#FF5913">geoip-</span>continent: NA
+<span style="color:#FF5913">geoip-</span>country-name: United States
+<span style="color:#FF5913">geoip-</span>country-code: US
+<span style="color:#FF5913">server_addr</span>: 92.223.112.26                          
+<span style="color:#FF5913">server_name</span>: mistake-globe-6396.fastedge.gcore.dev	
 connection: upgrade
 x-real-ip: 1.2.3.4
-x-cdn-requestor: <span style="color:#FF5913">ed-hw-edge-preprod-gc39</span>          	
-x-forwarded-for: <span style="color:#FF5913">1.2.3.4</span>                              
+<span style="color:#FF5913">x-cdn-requestor</span>: ed-hw-edge-preprod-gc39        	
+<span style="color:#FF5913">x-forwarded-for</span>: 1.2.3.4                           
 host: fastedge.gcore.dev
 x-forwarded-proto: https
 user-agent: curl/7.88.1
 accept: */*
 cdn-loop: nb1d2; c=11
-pop-long: <span style="color:#FF5913">6.1294</span>                                     
-pop-lat: 49.6113
-pop-reg: LU
-pop-continent: EU
-pop-city: Luxembourg
-pop-country-code: LU
-pop-country-name: Luxembourg
+<span style="color:#FF5913">pop-</span>long: 6.1294
+<span style="color:#FF5913">pop-</span>lat: 49.6113
+<span style="color:#FF5913">pop-</span>reg: LU
+<span style="color:#FF5913">pop-</span>continent: EU
+<span style="color:#FF5913">pop-</span>city: Luxembourg
+<span style="color:#FF5913">pop-</span>country-code: LU
+<span style="color:#FF5913">pop-</span>country-name: Luxembourg
 </code-block>
 
 Where:
 
-- <span style="color:#FF5913">foo</span> is the added custom header
-- <span style="color:#FF5913">ed</span> is the Data centre
-- <span style="color:#FF5913">7922</span> is the client GeoIP data
-- <span style="color:#FF5913">92.223.112.26</span> is the PoP IP address
-- <span style="color:#FF5913">mistake-globe-6396.fastedge.gcore.dev</span> is the app domain name
-- <span style="color:#FF5913">ed-hw-edge-preprod-gc39</span> is the PoP hostname
-- <span style="color:#FF5913">1.2.3.4</span> is the client IP address
-- <span style="color:#FF5913">6.1294</span> is the PoP GeoIP data
+- <span style="color:#FF5913">custom-header</span> is the added custom header
+- <span style="color:#FF5913">dc</span> is the Data center
+- <span style="color:#FF5913">geoip-*</span> is the client GeoIP data (e.g., asn, latitude, longitude, region, city, continent, country name and country code)
+- <span style="color:#FF5913">server_addr</span> is the PoP IP address
+- <span style="color:#FF5913">server_name</span> is the app hostname name
+- <span style="color:#FF5913">x-cdn-requestor</span> is the PoP hostname
+- <span style="color:#FF5913">x-forwarded-for</span> is the client IP address
+- <span style="color:#FF5913">pop-*</span> is the PoP GeoIP data (e.g., asn, latitude, longitude, region, city, continent, country name and country code)
