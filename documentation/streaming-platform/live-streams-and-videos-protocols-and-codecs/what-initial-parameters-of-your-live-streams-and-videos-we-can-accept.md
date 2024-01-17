@@ -153,7 +153,7 @@ We recommend the following parameters for streams:
 </tr>
 <tr>
 <td>Live protocols <strong>(Live Streaming)</strong></td>
-<td colspan="2">RTMP, RTMPS, SRT, RTSP, HLS</td>
+<td colspan="3">RTMP, RTMPS, SRT, RTSP, HLS</td>
 </tr>
 <tr>
 <td class="wysiwyg-text-align-center" data-celllook="0">

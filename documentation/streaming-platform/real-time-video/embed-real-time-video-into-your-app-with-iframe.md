@@ -26,7 +26,7 @@ pageDescription: Instructions on how to integrate video call module into your ap
 
 This is how the module is displayed after implementing iframe in websites:
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/embed-real-time-video-into-your-app-with-iframe/iframe-example.gif" alt="Example of Real-Time Video implementing" width="80%">
+<img loading="lazy" src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/web-video-calls-module-30.gif" width="602" height="350" alt="Real-Time Video">
 
 We have described the process of embedding the module in various types of OS in the following materials:
 

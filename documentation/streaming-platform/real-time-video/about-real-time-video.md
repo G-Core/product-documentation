@@ -35,7 +35,7 @@ Our video call feature can be used for diverse purposes and group sizes:
 - Video meetings with 2–300+ people, ideal for small and medium businesses, online education, and online events.
 - Webinars with 1–25 speakers and 10M+ viewers, like major online events.
 
-<img loading="lazy" src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/one-to-one-call-20.gif" width="242" height="532" alt="Real-Time Video">
+<video width="400px" controls autoplay loop><source src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/one-to-one-call-20.mp4" type="video/mp4"></video>
 
 ## What features does Real-Time Video have?
 
