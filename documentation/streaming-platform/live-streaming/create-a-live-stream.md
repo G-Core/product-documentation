@@ -37,6 +37,8 @@ A new page will appear. Perform the remaining steps there.
 
 ## Step 2. Set the stream type and additional features 
 
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/stream-settings.png" alt="Live stream page" width="80%">
+
 1\. Ensure the **Enable live stream** switch is on.
 
 <expandable-element title="Low Latency explanation">
@@ -57,9 +59,6 @@ By default, we offer live streams with low latency (a 4–5 second delay.) Low l
 
 - <a href="https://gcore.com/docs/streaming-platform/live-streaming/record-your-live-streams-and-save-them-as-videos" target="_blank">Record</a> for live stream recording. It will be active when you start streaming. Remember to enable the toggle if you require a record of your stream.  
 - <a href="https://gcore.com/docs/streaming-platform/live-streaming/pause-and-rewind-the-live-streams" target="_blank">DVR</a> for an improved user experience: when the DVR feature is enabled, your viewers can pause and rewind the broadcast.
-
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/stream-settings.png" alt="Live stream page" width="80%">
-
 
 ## Step 3. Configure your stream for Push or Pull 
 

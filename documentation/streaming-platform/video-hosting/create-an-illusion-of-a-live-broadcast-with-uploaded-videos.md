@@ -5,11 +5,11 @@ published: true
 order: 40
 toc:
     --1--What is it?: 'what-is-live-imitation'
+    --1--Enable: "enable-live-imitation"
     --1--Configure: 'configure-live-imitation'
 pageTitle: Overview of the Live Imitation Feature and Its Setup | Gcore
 pageDescription: A step-by-step guide on creating an illusion of live mode for your video.
 ---
-
 # Create an illusion of a live broadcast with uploaded videos
 
 ## What is Live imitation?
@@ -18,9 +18,9 @@ Live imitation is a free feature that is used for broadcasting videos uploaded t
 
 Example: You are the owner of a movie streaming service. On September 1, you are going to premiere a new series for your viewers. One way to do it is to use the Live imitation feature. In this case, you upload episodes to our Streaming Platform as usual videos and select the start date and time (e.g., September 1 at 9 pm). So, up to this moment, videos will not be shown. Your viewers will be able to see it only at a fixed time. From their point of view, it would not look like watching a video but like a live stream.
 
-## Configure Live imitation
+## Enlable Live imitation
 
-1\. To enable the feature, send us a request via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of our website. Please specify your ID in the request, so that we can identify your account. You can find it on the main page of your control panel.
+To enable the feature, send us a request via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of our website. Please specify your ID in the request, so that we can identify your account. You can find it on the main page of your control panel.
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/create-an-illusion-of-a-live-broadcast-with-uploaded-videos/Your_ID.png" alt=" specify your ID " width="80%">
 
@@ -28,11 +28,17 @@ The message template: _"Greetings! Please enable the Live imitation feature for 
 
 We will notify you when the feature is activated. After that, you will be able to use it for your account.
 
-2\. Upload videos that you want to broadcast in live mode as a live stream according to 1–4 steps in the <a href="https://gcore.com/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app" target="_blank">Upload a video and embed it to your app</a> guide.
+## Configure Live imitation
 
-3\. Go to the Live imitation section and click **Create a Live imitation**. Then enter its name and click **Create** in the pop-up.
+1\. Upload videos that you want to broadcast in live mode as a live stream according to 1–4 steps in the <a href="https://gcore.com/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app" target="_blank">Upload a video and embed it to your app</a> guide.
 
-<img loading="lazy" src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/create-an-illusion-of-a-live-broadcast-with-uploaded-videos/Create.gif" width="688" height="311" alt="Create a Live imitation">
+2\. Go to the <a href="" target="_blank">Live imitation</a> section and click **Create a Live imitation**.
+
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/create-an-illusion-of-a-live-broadcast-with-uploaded-videos/live-imitation-10.png" width="75%" alt="Create a Live imitation">
+
+3\.Enter its name and click **Create** in the pop-up.
+
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/create-an-illusion-of-a-live-broadcast-with-uploaded-videos/live-imitation-20.png" width="50%" alt="Create a Live imitation popup">
 
 A new window will open. Complete the remaining steps in it.
 
