@@ -13,7 +13,24 @@ pageDescription: Configure and access Logging for centralized log collection. Se
 
 **Note**: Logging may be unavailable in some regions. In this case, choose the region that is geographically closest to your equipment.
 
-2\. In the **Cloud** menu, go to the **Logging** tab, click **Set up Logging**. The pop up will appear. Type the namespace in the field and click **Create**.
+2\. In the **Cloud** menu, go to the **Logging** tab, click **Set up Logging**. The pop up will appear. 
+
+<expandable-element title="What is a namespace">
+
+Previously, when activating Logging, you could see a non-human-readable string, e.g., ```cbc25c71af8d4f7ca6cbbcdc5a4d68fe.your-topic``` as a *namespace* that is used as prefixed for topics. To make this process more user-friendly, we created the possibility of making human-readable namespaces, e.g., ```namespace123.your-topic```.
+
+**Note**: You can only create a namespace for a new project where the default value is not set up.
+
+</expandable-element>
+
+To create a namespace, input the namespace name according to the following restrictions:
+
+- Lowercase Latin letters and digits can be used
+- Underscore and spaces are prohibited
+- Length is between 2–32
+- The name should be unique for the destination region. If it’s already used, the system will suggest inputting another name. 
+
+Click **Create**.
 
 <img src="https://assets.gcore.pro/docs/cloud/laas/configure-logging-and-view-your-logs/logging-create-namespace.png" alt="Create namespace" width="70%">
  
