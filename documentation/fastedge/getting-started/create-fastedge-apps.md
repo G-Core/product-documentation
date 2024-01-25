@@ -128,7 +128,7 @@ Execute the API request from the ```myapp``` directory to upload the created Was
 
 ```
 curl -X 'POST' \
-    'https://https://api.gcore.com/fastedge/binaries/raw' \
+    'https://api.gcore.com/fastedge/binaries/raw' \
     -H 'accept: application/json' \
     -H 'Authorization: APIKey <api_key>' \
     -H 'Content-Type: application/octet-stream' \
@@ -305,8 +305,7 @@ accept-ranges: bytes
 <span style="color:#FF5913">server_addr</span>: 92.223.112.26                          
 <span style="color:#FF5913">server_name</span>: mistake-globe-6396.fastedge.gcore.dev	
 connection: upgrade
-x-real-ip: 1.2.3.4
-<span style="color:#FF5913">x-cdn-requestor</span>: ed-hw-edge-preprod-gc39        	
+x-real-ip: 1.2.3.4        	
 <span style="color:#FF5913">x-forwarded-for</span>: 1.2.3.4                           
 host: fastedge.gcore.dev
 x-forwarded-proto: https
@@ -329,6 +328,5 @@ Where:
 - <span style="color:#FF5913">geoip-*</span> is the client GeoIP data (e.g., asn, latitude, longitude, region, city, continent, country name and country code)
 - <span style="color:#FF5913">server_addr</span> is the PoP IP address
 - <span style="color:#FF5913">server_name</span> is the app hostname name
-- <span style="color:#FF5913">x-cdn-requestor</span> is the PoP hostname
 - <span style="color:#FF5913">x-forwarded-for</span> is the client IP address
 - <span style="color:#FF5913">pop-*</span> is the PoP GeoIP data (e.g., asn, latitude, longitude, region, city, continent, country name and country code)
