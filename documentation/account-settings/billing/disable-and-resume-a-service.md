@@ -49,7 +49,7 @@ pageDescription: A step-by-step guide to disable or resume products. Disabling d
     </tr>
     <tr>
         <td>Storage</td>
-        <td>48 hours<br><b>Note:</b> You can retain data<br> by contacting <a href="mailto:support@gcore.com">technical support</a> for some time after deletion.</td>
+        <td>48 hours<br><b>Note:</b> You can retain data<br> by contacting <a href="mailto:support@gcore.com">technical support</a><br>for some time after deletion.</td>
     </tr>
     <tr>
         <td>DNS</td>
