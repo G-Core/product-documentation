@@ -9,7 +9,8 @@ toc:
     --2--Activate Service: "activate-service"
     --2--Transition to deleted status: "transition-to-deleted-status"
     --1--Features: "free-and-paid-features"
-    --1--Traffic: "traffic"
+    --1--Balancer: "balancer"
+    --2--Set: "set-traffic-balancer"
 ---
 # CDN service management
 
@@ -71,10 +72,28 @@ After activation, don’t forget to save changes.
 
 Certain features, such as Resources with Shared Cache Zone, Wildcard Purge, and Image Stack, can only be enabled by contacting the support team at [support@gcore.com](mailto:support@gcore.com). You can learn more about these features by placing your cursor on the question mark.
 
-## Traffic
+## Balancer
 
-<img src="https://assets.gcore.pro/docs/reseller-support/cdn-service-management/balancer-tab.png" alt="Balancer tab" width="80%">
+CDN servers are grouped into regions in <a href="https://gcore.com/docs/cdn/cdn-resource-options/determine-in-which-regions-the-content-will-be-delivered-with-geo-balancer-for-paid-tariffs" target="_blank">Geobalancer</a>: *North America*, *CIS*, *Australia*, *Middle East*, *Africa*, *Europe*, *Asia*, *Latin America*, and *World*. The *World* option means anycast addressing behind this region.
 
-CDN servers are grouped into several regions in <a href="https://gcore.com/docs/cdn/cdn-resource-options/determine-in-which-regions-the-content-will-be-delivered-with-geo-balancer-for-paid-tariffs" target="_blank">Geobalancer</a>: North America, Asia, the Middle East, Europe, Australia, the World (with the World anycast address behind this region), the CIS, Latin America, and Africa.
+<img src="https://assets.gcore.pro/docs/reseller-support/cdn-service-management/balancer.png" alt="Balancer tab" width="80%">
 
-**Note**: To disable one of the regions for the client, you should also disable the "World" region. Otherwise, the balance won't work correctly.
+### Set traffic balancer
+
+By default, this feature is disabled. If you want to manage routing, e.g., exclude some regions from delivery if there are no end-users in this region:
+
+1\. Click **Enable traffic balancer**. 
+
+2\. Ensure that “Enable IPv6 delivery” checkbox is checked if you want to include IPv6 addresses in responses (AAAA record). If you need only IPv4 addresses (A record)—uncheck it. 
+
+3\. Uncheck the checkboxes of the regions you want to exclude.
+
+<alert-element type="caution" title="Caution">
+
+To disable regions for your clients, you must also disable the “World” region. Otherwise, the balance won't work correctly.
+
+</alert-element>
+
+4\. Save changes.  
+
+<img src="https://assets.gcore.pro/docs/reseller-support/cdn-service-management/balancer-set.png" alt="Balancer settings" width="80%">
