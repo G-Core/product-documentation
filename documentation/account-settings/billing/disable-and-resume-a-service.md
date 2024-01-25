@@ -44,12 +44,12 @@ pageDescription: A step-by-step guide to disable or resume products. Disabling d
         <td>90 days</td>
     </tr>
     <tr>
-        <td>Cloud</td>
-        <td>7 days for Basic VM<br>30 days for other services</td>
+        <td>Cloud (Basic VM)</td>
+        <td>48 hours</td>
     </tr>
     <tr>
         <td>Storage</td>
-        <td>14 days (if the service was disabled while being in the Trial)<br>30 days (if the service with the paid plan was disabled)<br><b>Note:</b> After deleting manual recovery is available<br> by contacting <a href="mailto:support@gcore.com">technical support</a> for additional 14 days</td>
+        <td>48 hours<br><b>Note:</b> You can retain data<br> by contacting <a href="mailto:support@gcore.com">technical support</a> for some time after deletion.</td>
     </tr>
     <tr>
         <td>DNS</td>
