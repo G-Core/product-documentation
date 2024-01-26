@@ -36,7 +36,7 @@ This guide describes how to create a FastEdge app. Check out our <a href="https:
 2\. Clone the FastEdge SDK to your local directory:
 
 ```
-git clone git@github.com:G-Core/FastEdgeSDK.git
+git clone git@github.com:G-Core/FastEdgeSDK.git --recurse-submodules 
 ```
 
 3\. Install the Rust compiler and cargo (package manager):
@@ -63,7 +63,7 @@ cargo new myapp --lib
 2. Create a directory:
 
 ```
-myapp/.cargo
+mkdir myapp/.cargo
 ```
 
 3\. Set the Wasm compilation target for the project by creating a config file ```myapp/.cargo/config.toml``` with the following content:
@@ -127,15 +127,19 @@ Since FastEdge is available in beta, it doesn’t yet have a UI. Therefore, you 
 Execute the API request from the ```myapp``` directory to upload the created Wasm binary file to our edge servers: 
 
 ```
-curl -X 'POST' \
-    'https://api.gcore.com/fastedge/binaries/raw' \
+ myapp % curl -X 'POST' \
+    'https://api.gcore.com/fastedge/v1/binaries/raw' \
     -H 'accept: application/json' \
     -H 'Authorization: APIKey <api_key>' \
     -H 'Content-Type: application/octet-stream' \
     --data-binary '@target/wasm32-wasi/release/myapp.wasm'
 ```
 
-**Note**: Replace ```<api_key>``` with actual value.
+<alert-element type="note" title="Note">
+
+Replace ```<api_key>``` with actual value.
+
+</alert-element>
 
 For more details, read the <a href="https://api.gcore.com/docs/fast_edge#tag/Binaries/operation/storeBinary" target="_blank">API documentation</a>.
 
@@ -147,7 +151,7 @@ Execute the following API request to create the app:
 
 ```
 curl -X 'POST' \
-    'https://api.gcore.com/fastedge/apps' \
+    'https://api.gcore.com/fastedge/v1/apps' \
     -H 'name: <app_name>' \
     -H 'accept: application/json' \
     -H 'client_id: 0' \
@@ -251,7 +255,7 @@ Execute the following request to update the app:
 
 ```
 curl -X 'PUT' \
-  'https://api.gcore.com/fastedge/apps/<app_id>' \
+  'https://api.gcore.com/fastedge/v1/apps/<app_id>' \
   -H 'accept: application/json' \
   -H 'Authorization: APIKey <api_key>' \
   -H 'Content-Type: application/json' \
