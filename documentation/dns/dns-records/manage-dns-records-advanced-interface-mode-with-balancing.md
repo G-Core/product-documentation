@@ -78,6 +78,12 @@ You can add multiple records of the same type to your domain. Click **Add record
 
 ### 7. (Optional) Configure balancing
 
+<alert-element type="tip" title="Tip">
+
+You can also configure balancing by weight and Geo data via API requests using Dynamic RRsets. For more information about pickers and selectors, read the <a href="https://api.gcore.com/docs/dns#tag/RRsets/operation/CreateRRSet" target="_blank">API documentation</a>.
+
+</alert-element>
+
 Our DNS server can give different DNS records to different users, for example, sending users from Asia to an Asian server and European users to a European one. This is called balancing. To enable balancing, move the slider in the "Records selection using" section. If balancing is not needed, leave the slider disabled and go to <a href="https://gcore.com/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing#9-complete-the-configuration-and-create-resource-records" target="_blank">step 8</a>.
 
 We have dedicated a separate article to balancing: <a href="https://gcore.com/docs/dns/dns-records/configure-weight-balancing-and-geobalancing" target="_blank">Configure weight balancing and Geobalancing</a>. Please acquaint yourself with it to set it up correctly. 
