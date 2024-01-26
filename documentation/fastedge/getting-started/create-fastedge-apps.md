@@ -159,7 +159,7 @@ curl -X 'POST' \
     -H 'Content-Type: application/json' \
     -d '{
     "binary": <binary_id>,
-    "plan": "tiny",
+    "plan": "beta",
     "status": 1
 }'
 ```
@@ -261,7 +261,7 @@ curl -X 'PUT' \
   -H 'Content-Type: application/json' \
   -d '{
   "binary": <new_binary_id>,
-  "plan": "tiny",
+  "plan": "beta",
   "status": 1,
   "name": <app_name>,
   "env": {
