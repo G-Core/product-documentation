@@ -17,9 +17,16 @@ A new page will open. Perform the remaining steps there.
 
 2\. Select a **region**—the location of the data center where your cluster will be deployed. 
 
-3\. Select your **Kubernetes cluster version.** 
+3\. Select your **Kubernetes cluster version**.
 
-4\. Under the **Pools** block, configure a pool—a set of cluster nodes with the same specifications. 
+4\. Under the **CNI Provider** block, choose the network stack of either *Cilium* or *Calico*— networking and network security solutions for containers: 
+
+- Cilium—uses eBPF to inject functionality into the kernel and provides a broader range of additional features (load balancing, advanced security, failure detection, etc.) than Calico. Additionally, you can add necessary functions by checking the following boxes: DSR, tunneling, load balancer acceleration, and encryption. 
+- Calico—uses a more conservative stack based on iptables.  
+
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/cni-provider.png" alt="Network stack" width="65%">
+
+5\. Under the **Pools** block, configure a pool—a set of cluster nodes with the same specifications. 
 
 <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/pool-setup.png" alt="Pools" width="65%">
 
@@ -73,25 +80,25 @@ For **Bare Metal instances**, select a flavor:
 
 Add as many pools as you need using the **Add pool** button.
 
-5\. Under the **Network settings** block, select an existing network and subnet or create new ones according to the instructions in our <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-network" target="_blank">dedicated guide</a>.
+6\. Under the **Network settings** block, select an existing network and subnet or create new ones according to the instructions in our <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-network" target="_blank">dedicated guide</a>.
 
 <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/network-settings-cluster.png" alt="Network settings for Cluster" width="70%">
 
-6\. Under **SSH key**, configure an SSH key for a remote SSH connection to all nodes. Select an existing key or create a new one. For details, consult our article on <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">how to connect to your instance via SSH</a>.
+7\. Under **SSH key**, configure an SSH key for a remote SSH connection to all nodes. Select an existing key or create a new one. For details, consult our article on <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">how to connect to your instance via SSH</a>.
 
 <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/ssh-cluster.png" alt="SSH settings for Cluster" width="70%">
 
-7\. Enter the cluster's name in the field.
+8\. Enter the cluster's name in the field.
 
 <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/name-cluster.png" alt="Name for Cluster" width="70%">
 
-8\. (Optional) Enable **Logging**. This is a paid option that allows you to collect and store Kubernetes logs. For more details on Managed Logging, read our <a href="https://gcore.com/docs/cloud/logging-as-a-service/configure-logging-and-view-your-logs" target="_blank">dedicated guide</a>. To configure Managed Logging in the customer portal, choose one of two options:
+9\. (Optional) Enable **Logging**. This is a paid option that allows you to collect and store Kubernetes logs. For more details on Managed Logging, read our <a href="https://gcore.com/docs/cloud/logging-as-a-service/configure-logging-and-view-your-logs" target="_blank">dedicated guide</a>. To configure Managed Logging in the customer portal, choose one of two options:
 
 - **Select an existing topic**. If you already use Managed Logging, select this option.  
 - **Create new topic**. If you don't have existing topics with a specified log retention time, choose this option and specify the required information.    
 
 <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/logging-cluster.png" alt="Logging for Cluster" width="70%">
 
-9\. Double-check the cluster settings on the right side of the screen. If everything is correct, click **Create cluster**. 
+10\. Double-check the cluster settings on the right side of the screen. If everything is correct, click **Create cluster**. 
 
 The cluster will be created in just a few minutes! 
