@@ -22,7 +22,7 @@ The principle of actions is described in the <a href="https://docs.github.com/en
 
 - **Events** that trigger workflows (e.g., pull_request).
 - **Jobs** that define the steps that will be executed on the runner or actions that will be run.
-- **Actions**, which are applications (<a href="https://github.com/marketplace?type=actions" target="_blank">GitHub actions</a>) that contain repeating code for simplification.
+- **Actions**, which are applications for the <a href="https://github.com/marketplace?type=actions" target="_blank">GitHub Actions platform</a> that performs a complex but frequently repeated task.
 - **Runners**, which are servers where workflows are executed. 
 
 ## How to use the Gcore action
