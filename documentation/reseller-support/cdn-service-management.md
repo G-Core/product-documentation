@@ -16,71 +16,71 @@ toc:
 
 ## General CDN settings
 
-To open the general CDN settings of the particular client, go to the client settings:
+To open the general CDN settings of a particular client, go to the client settings:
 
-1\. Go to the <a href="https://admin.gcore.top/clients" target="_blank">Accounts</a> section and open the list of clients.
+1\. Go to  <a href="https://admin.gcore.top/clients" target="_blank">Accounts</a> and open the list of clients.
 
-2\. Click on the ID of the desired client, or click three dots and the **Edit** button.
+2\. Click on the ID of the desired client. Or, click the three dots and then click **Edit**.
 
 <img src="https://assets.gcore.pro/docs/reseller-support/cdn-service-management/cdn-settings-10.png" alt="Clients">
 
-The new page will open. 
+A new page will open. 
 
 ## Manage general settings
-
+Hey Dash. Let's add some copy. It's best to put copy right after a heading to introduce the new section, even 1 short sentence. Also, let's explain the image.
 <img src="https://assets.gcore.pro/docs/reseller-support/cdn-service-management/cdn-settings-20.png" alt="Services" width="80%">
 
-### Activate Service
+### Activate service
 
 1\. Go to the "Services" page.
-
+I think it would be better to have the image in this section so it's linked to the text. Otherwise, I see the H3 "activate service" and I assume that we finished with the previous image.
 2\. Click **Show more** to open settings. 
 
-3\. Enable the **Activate service** checkbox. If the "Activate Service" checkbox is enabled, a client can use the service: create CDN resources and manage them. You can deactivate the service by unchecking the checkbox. In this case, the client will see a service activation request form on the CDN tab instead of the CDN resources list.
+3\. Enable the **Activate service** checkbox. Once the "Activate Service" checkbox is enabled, the client can create and manage CDN resources. You can deactivate the service by unchecking the checkbox. In this case, the client will see a service activation request form on the CDN tab instead of the CDN resources list.
 
 **Note**: Deactivating the "Activate service" checkbox may suspend the work of active resources.
 
 ### Transition to deleted status
 
-After the specified number of days, the CDN service status switches from "TrialEnd"/"Paused" to "Deleted". During the switch, the client's resources get deleted. You cannot change the number of days yourself. To change the number of days for a specific client, email us at [support@gcore.com](mailto:support@gcore.com).
-
+The CDN service status switches from "TrialEnd"/"Paused" to "Deleted" after a specified number of days. The "Deleted" status means the client's resources are deleted. You cannot change the number of days yourself. To change the number of days before deletion for a specific client, email us at [support@gcore.com](mailto:support@gcore.com).
+Let's write how they can check how many days there are between paused and deleted.
 Don’t forget to click **Save changes** to apply them.
-
+The line above doesn't match the section, can you check it?
 ## Free and paid features
 
 To see the list of available features, click **CDN setting**.
-
+Dash, the UI is wrong, it should be CDN settings (plural) sorry :(
 <img src="https://assets.gcore.pro/docs/reseller-support/cdn-service-management/cdn-settings-30.png" alt="Services" width="80%">
 
-You can also go to the client settings through the CDN application
+You can also access client settings via the CDN application.
 
-1\. Open the list of clients, in the "СDN" section
+1\. Open the list of clients in the "СDN" section.
 
-2\. Click on the ID of the desired client, or click three dots and **Edit**.
+2\. Click on the ID of the desired client. Or, click the three dots and then click **Edit**.
 
-3\. Go to the **Features** tab.
+3\. Navigate to the **Features** tab.
 
 <img src="https://assets.gcore.pro/docs/reseller-support/cdn-service-management/cdn-settings-40-v2.png" alt="Edit client" width="80%">
+Dash, i think we should say sth like "All available features will appear as a list with toggle buttons. Some features are free, while others are paid."
+Free features can be identified by the "Show Origin, Shield, and CDN Traffic Separately" option. Enabling this option allows you to view the traffic data in your Control Panel in a more detailed way. By default, this feature is turned off, which means all traffic data from the origin, shield, and Content Delivery Network (CDN) is displayed together as a combined report. However, if you enable this feature, you can see the traffic from the origin, shield, and CDN separately. Each of these categories will have its own individual report, allowing you to analyze and understand the traffic from each source more clearly.
 
-A free feature includes the "Show Origin, Shield, and CDN Traffic Separately" option. It affects the traffic report in the Control Panel. If disabled (the default setting), it shows the origin, shield, and CDN traffic combined. If enabled, it shows the traffic separately.
-
-Paid features includes <a href="https://gcore.com/docs/cdn/view-statistics-of-a-cdn-resource" target="_blank">Advanced directory, user agents, geo statistics</a>, <a href="https://gcore.com/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage" target="_blank">Raw logs</a>, <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin shielding</a> (to set the locations, contact technical support or your manager), and <a href="https://gcore.com/docs/cdn/cdn-resource-options/configure-live-streams-and-video-delivery-via-cdn-only-for-paid-tariffs" target="_blank">Streaming</a>.
+Paid features include <a href="https://gcore.com/docs/cdn/view-statistics-of-a-cdn-resource" target="_blank">advanced directory, user agents, geo statistics</a>, <a href="https://gcore.com/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage" target="_blank">raw logs</a>, <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">origin shielding</a> (to set the locations, contact technical support or your manager), and <a href="https://gcore.com/docs/cdn/cdn-resource-options/configure-live-streams-and-video-delivery-via-cdn-only-for-paid-tariffs" target="_blank">Streaming</a>.
 
 <img src="https://assets.gcore.pro/docs/reseller-support/cdn-service-management/cdn-settings-50.png" alt="Paid features" width="80%">
 
 After activation, don’t forget to save changes.
 
-Certain features, such as Resources with Shared Cache Zone, Wildcard Purge, and Image Stack, can only be enabled by contacting the support team at [support@gcore.com](mailto:support@gcore.com). You can learn more about these features by placing your cursor on the question mark.
+Certain features, such as resources with shared cache zone, wildcard purge, and Image Stack, can only be enabled by contacting the support team at [support@gcore.com](mailto:support@gcore.com). You can learn more about these features by hovering your cursor over the question mark by their name.
 
 ## Balancer
 
-CDN servers are grouped into regions in <a href="https://gcore.com/docs/cdn/cdn-resource-options/determine-in-which-regions-the-content-will-be-delivered-with-geo-balancer-for-paid-tariffs" target="_blank">Geobalancer</a>: *North America*, *CIS*, *Australia*, *Middle East*, *Africa*, *Europe*, *Asia*, *Latin America*, and *World*. The *World* option means anycast addressing behind this region.
-
+CDN servers are grouped into regions in <a href="https://gcore.com/docs/cdn/cdn-resource-options/determine-in-which-regions-the-content-will-be-delivered-with-geo-balancer-for-paid-tariffs" target="_blank">Geobalancer</a>: *North America*, *CIS*, *Australia*, *Middle East*, *Africa*, *Europe*, *Asia*, *Latin America*, and *World*. The *World* option means anycast addressing is used, so the content could be served from any region in the global network, depending on which server can deliver the content most efficiently at that particular moment.
+dash please check if the above is true after my edits
 <img src="https://assets.gcore.pro/docs/reseller-support/cdn-service-management/balancer.png" alt="Balancer tab" width="80%">
 
 ### Set traffic balancer
 
-By default, this feature is disabled. If you want to manage routing, e.g., exclude some regions from delivery if there are no end-users in this region:
+By default, this feature is disabled. If you want to manage routing, e.g., exclude some regions from delivery if there are no end users in this region, enable the feature as follows:
 
 1\. Click **Enable traffic balancer**. 
 
@@ -90,8 +90,8 @@ By default, this feature is disabled. If you want to manage routing, e.g., exclu
 
 <alert-element type="caution" title="Caution">
 
-To disable regions for your clients, you must also disable the “World” region. Otherwise, the balance won't work correctly.
-
+To disable regions for your clients, you must also disable the “World” region. Otherwise, the balancer won't work correctly.
+dash, does it mean they can only click world if they select all other regions?
 </alert-element>
 
 4\. Save changes.  
