@@ -70,7 +70,7 @@ Cloud
 </tr>
 <tr>
 <td>
-<p><a href="https://gcore.com/docs/cloud/faas/about-function-as-a-service" target="_blank">Function as a Service</a>
+<a href="https://gcore.com/docs/cloud/faas/about-function-as-a-service" target="_blank">Function as a Service</a>
 </td>
 </tr>
 <tr>
