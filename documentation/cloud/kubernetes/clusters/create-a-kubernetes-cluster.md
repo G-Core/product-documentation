@@ -21,8 +21,8 @@ A new page will open. Perform the remaining steps there.
 
 4\. Under the **CNI Provider** block, choose the network stack of either *Cilium* or *Calico*— networking and network security solutions for containers: 
 
-- Cilium—uses eBPF to inject functionality into the kernel and provides a broader range of additional features (load balancing, advanced security, failure detection, etc.) than Calico. Additionally, you can add necessary functions by checking the following boxes: DSR, tunneling, load balancer acceleration, and encryption. 
-- Calico—uses a more conservative stack based on iptables.  
+- Cilium uses eBPF to inject functionality into the kernel and provides a broader range of additional features (load balancing, advanced security, failure detection, etc.) than Calico. Additionally, you can add necessary functions by checking the following boxes: DSR, tunneling, load balancer acceleration, and encryption. 
+- Calico uses a more conservative stack based on iptables.  
 
 <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/cni-provider.png" alt="Network stack" width="65%">
 
@@ -30,11 +30,11 @@ A new page will open. Perform the remaining steps there.
 
 <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/pool-setup.png" alt="Pools" width="65%">
 
-- Enter the **Pool name** 
-- Set the **Minimum nodes** and **Maximum nodes** for <a href="https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling" target="_blank">autoscaling</a>.
+- Enter the **Pool name** .
+- Set the **minimum nodes** and **maximum nodes** for <a href="https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling" target="_blank">autoscaling</a>.
 - Select the type of a worker node: a **Virtual Instance** or a **Bare Metal instance**. 
 
-For a **Virtual Instance**, select its flavor, disk size in GiB, and the disk type.
+For a **Virtual Instance**, select its flavor, disk size in GiB, and disk type.
 
 <expandable-element title="Available Virtual Instance flavors">
 
@@ -46,7 +46,7 @@ For a **Virtual Instance**, select its flavor, disk size in GiB, and the disk ty
 
 **High Frequency**. High CPU clock speed (3.7 GHz in the basic configuration)
 
-**SGX**. Support Intel SGX technology
+**SGX**. Supports Intel SGX technology
 
 </expandable-element>
 
@@ -74,13 +74,13 @@ For **Bare Metal instances**, select a flavor:
 
 </expandable-element>
 
-- Ensure the **Autohealing nodes** toggle is on to enable automatic recovery of failed nodes. When toggled on, this feature monitors node statuses. When it detects a non-working node, the autohealer initiates replacement. If one of the machines fails, the application will not stand idle: the node(s) will be replaced on a working machine, and the app will keep working.
+- Ensure the **Autohealing nodes** toggle is on to enable automatic recovery of failed nodes. When toggled on, this feature monitors node statuses. When it detects a non-working node, the autohealer initiates replacement. If one of the machines fails, the application will not stand idle: The node(s) will be replaced on a working machine, and the app will keep working.
 
 - (Optional) Enable the **Public IPv4 address** option to assign public IPv4 addresses to cluster nodes.   
 
 Add as many pools as you need using the **Add pool** button.
 
-6\. Under the **Network settings** block, select an existing network and subnet or create new ones according to the instructions in our <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-network" target="_blank">dedicated guide</a>.
+6\. Under **Network settings**, select an existing network and subnet or create new ones according to the instructions in our <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-network" target="_blank">dedicated guide</a>.
 
 <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/network-settings-cluster.png" alt="Network settings for Cluster" width="70%">
 
@@ -99,6 +99,6 @@ Add as many pools as you need using the **Add pool** button.
 
 <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/logging-cluster.png" alt="Logging for Cluster" width="70%">
 
-10\. Double-check the cluster settings on the right side of the screen. If everything is correct, click **Create cluster**. 
+10\. Check the cluster settings on the right side of the screen. If everything is correct, click **Create cluster**. 
 
 The cluster will be created in just a few minutes! 
