@@ -223,7 +223,7 @@ Databases and other data
 </tr>
 <tr>
 <td>
-<strong>Storage</strong>
+Storage
 </td>
 <td>&nbsp;</td>
 <td>
@@ -232,7 +232,7 @@ Storages, buckets, all files and objects
 </tr>
 <tr>
 <td>
-<strong>DNS</strong>
+DNS
 </td>
 <td>&nbsp;</td>
 <td>
@@ -241,7 +241,7 @@ Zones and records
 </tr>
 <tr>
 <td>
-<strong>Streaming</strong>
+Streaming
 </td>
 <td>&nbsp;</td>
 <td>
@@ -250,14 +250,14 @@ CDN resources and added media
 </tr>
 <tr>
 <td>
-<strong>Web Security</strong>
+Web Security
 </td>
 <td>&nbsp;</td>
 <td>Resources under protection</td>
 </tr>
 <tr>
 <td>
-<strong>DDoS Protection</strong>
+DDoS Protection
 </td>
 <td>&nbsp;</td>
 <td>
