@@ -58,11 +58,11 @@ CDN
 </td>
 </tr>
 <tr>
-<td rowspan="5">
+<td rowspan="6">
 Cloud 
 </td>
 <td>
-<a href="https://gcore.com/docs/cloud/kubernetes/about-gcore-kubernetes" target="_blank"></a>
+<a href="https://gcore.com/docs/cloud/kubernetes/about-gcore-kubernetes" target="_blank">Managed Kubernetes</a>
 </td>
 <td rowspan="3">
 0<span style="color:#FF5913">*</span>
