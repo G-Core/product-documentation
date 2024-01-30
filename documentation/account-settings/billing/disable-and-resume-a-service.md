@@ -1,80 +1,28 @@
 ---
 title: disable-and-resume-a-service
-displayName: Disable/Resume
+displayName: Disable or resume
 published: true
 order: 20
 toc:
    --1--Disable: "disable-services"
-   --2--Deletion periods: "when-are-services-and-resources-deleted"
    --1--Resume: "resume-services"
 pageTitle: Instructions on How to Disable or Resume Products | Gcore
 pageDescription: A step-by-step guide to disable or resume products. Disabling deletes certain resources and settings after a set period.
 ---
-# How to disable or resume services
+# Disable or resume services
+
+You can disable services in the Customer Portal and resume them. 
   
 ## Disable services
 
-1\. Open the <a href="https://accounts.gcore.com/billing/services" target="_blank">Services</a> page.
+Open the <a href="https://accounts.gcore.com/billing/services" target="_blank">Services</a> page and find the service you want to disable. Then, click on the service block to expand it and click **Disable service**.
 
-2\. Find the service you want to disable, dropdown the service block and click **Disable service**.
+<img src="https://assets.gcore.pro/docs/account-settings/billing/disable-and-resume-a-service/disable-cp-10.png" alt="Disable a service" width="85%">
 
-<img src="https://assets.gcore.pro/docs/account-settings/billing/services/disable-10.png" alt="Disable a service">
-
-**Note:** After disabling, the service will continue working till the date specified in the Customer Portal. Then, it will be suspended, and you won't be able to use the service. Some time after the suspension, the service and its data (associated resources and settings) will be deleted.
-
-### When are services and resources deleted?
-
-<expandable-element title="What data will be deleted"> 
-
-- **CDN:** CDN resources, SSL certificates, created rules, origin groups; all paid and free features will be turned off
-- **Cloud:** VMs with all settings and projects
-- **Storage:** storages
-- **DNS:** zones, records
-- **Streaming:** recources, added files  
-
-</expandable-element>  
-
-<table>
-    <tr>
-        <td><b>Service</b></td>
-        <td><b>Period</b></td>
-    </tr>
-    <tr>
-        <td>CDN</td>
-        <td>90 days</td>
-    </tr>
-    <tr>
-        <td>Cloud (Basic VM)</td>
-        <td>48 hours</td>
-    </tr>
-    <tr>
-        <td>Storage</td>
-        <td>48 hours<br><b>Note:</b> You can retain data<br> by contacting <a href="mailto:support@gcore.com">technical support</a><br>for some time after deletion.</td>
-    </tr>
-    <tr>
-        <td>DNS</td>
-        <td>90 days</td>
-    </tr>
-    <tr>
-        <td>Streaming</td>
-        <td>90 days</td>
-    </tr>
-    <tr>
-        <td>Web Security</td>
-        <td>5 days</td>
-    </tr>
-    <tr>
-        <td>DDoS Protection</td>
-        <td>90 days</td>
-    </tr>
-</table>
-
-> **Note:** All dates mentioned above are default. They can differ in particular cases if a personal manager or technical support changed amount of the days for your account by mutual preliminary arrangement.  
+After disabling, the service will continue working till the date specified in the Customer Portal. Then, it will be suspended, and you won't be able to use the service. After the suspension, the service and its data (associated resources and settings) will be deleted. Deletion will take place after the specified time after suspension. Read about <a href="https://gcore.com/docs/account-settings/billing/data-deletion" target="_blank">deletion time spans</a>.
 
 ## Resume services
 
-1\.  Go to the <a href="https://accounts.gcore.com/billing/services" target="_blank">Services</a> tab.
+Open the <a href="https://accounts.gcore.com/billing/services" target="_blank">Services</a> page, find the service you need and click **Resume service**. Confirm the action and continue instructions in the Customer Portal.
 
-2\.  Find the service you need and click **Resume service**.
-
-<img src="https://assets.gcore.pro/docs/account-settings/billing/services/resume-20.png" alt="Services tab">
+<img src="https://assets.gcore.pro/docs/account-settings/billing/disable-and-resume-a-service/resume-cp-20.png" alt="Resume a service" width="85%"> 
