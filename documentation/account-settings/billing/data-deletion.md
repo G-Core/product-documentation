@@ -58,7 +58,7 @@ CDN
 </td>
 </tr>
 <tr>
-<td rowspan="6">
+<td rowspan="5">
 Cloud 
 </td>
 <td>
