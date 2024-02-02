@@ -95,7 +95,7 @@ A transcoded video stream has the following codecs by default:
 <td>0,064</td>
 </tr>
 <tr>
-<td>240p</td>
+<td>240p<span style="color:#FF5913">*</span></td>
 <td>427 × 240</td>
 <td>30</td>
 <td>0,200</td>
