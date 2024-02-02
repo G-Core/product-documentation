@@ -14,7 +14,7 @@ toc:
    --1--Statuses: "lets-encrypt-issuing-statuses"
    --2--Pre-validation failed: "pre-validation-failed"
    --2--Processing: "processing"
-   --2--Active: "active"
+   --2--Success: "success"
    --2--Failed: "failed"
 pageTitle: Adding Let's Encrypt Certificates | Gcore
 pageDescription: Learn how to issue Let's Encrypt certificate to the CDN resource.
@@ -127,11 +127,11 @@ However, if some issues get in the way of the ACME challenge, you will see the f
 
 <img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/force-retry-30.png" alt="Processing with issue status" width="75%">
 
-### Active
+### Success
 
-If the challenge verification is successful, the certificate will be issued, and you will see the status “Active.” The certificate will also be renewed automatically after three months.
+If the challenge verification is successful, the certificate will be issued, and you will see the status “Success.” The certificate will also be renewed automatically after three months.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/active-40.png" alt="Active status" width="75%">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/success-40.png" alt="Success status" width="75%">
 
 ### Failed
 
