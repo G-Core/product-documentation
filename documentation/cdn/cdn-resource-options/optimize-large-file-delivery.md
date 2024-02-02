@@ -46,3 +46,9 @@ To configure Large Files Delivery Optimization option via the Control panel:
 3\. Turn on the toggle for **Enable Large files delivery optimization** to enable the option.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/optimize-large-file-delivery/12479601956241.png" alt="Enable Large files delivery optimization " width="50%">
+
+<alert-element type="warning" title="Warning">
+
+When Large File delivery optimization is enabled, the HTTP *Etag* header will be concealed in responses.
+
+</alert-element>
