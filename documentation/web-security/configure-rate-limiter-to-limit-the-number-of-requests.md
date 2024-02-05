@@ -60,7 +60,7 @@ The testcookie function is displayed as the slider in the “High” column in t
 
 <img src="https://assets.gcore.pro/docs/web-security/configure-rate-limiter-to-limit-the-number-of-requests/image3534.png" alt="Add Rule" width="50%">
 
-For example, your website address is https://test.com, and you create a rule with URI api and the limit of 2 requests per second as follows:
+For example, your website address is ```https://test.com```, and you create a rule with URI api and the limit of 2 requests per second as follows:
 
 ```
 Rule:        GET   /api/*   2 

@@ -22,7 +22,13 @@ Our DNS server can provide different DNS responses to different users. For examp
 
 This is called dynamic record selection. Depending on which parameter is used to select which record will be shown, it may also be referred to as weight balancing, traffic steering, GeoDNS, or failover. 
 
-At Gcore, we offer two kinds of balancing: *weight balancing* and *Geobalancing*; the latter is a specific kind of balancing by location. This article will show how to configure weight balancing and Geobalancing by coordinates and other parameters. 
+At Gcore, we offer two kinds of balancing: *weight balancing* and *Geobalancing*; the latter is a specific kind of balancing by location. This article will show how to configure weight balancing and Geobalancing by coordinates and other parameters.
+
+<alert-element type="tip" title="Tip">
+
+You can also configure balancing by weight and Geo data via API requests using Dynamic RRsets. For more information about pickers and selectors, read the <a href="https://api.gcore.com/docs/dns#tag/RRsets/operation/CreateRRSet" target="_blank">API documentation</a>.
+
+</alert-element>
 
 ## How is balancing controlled?
 

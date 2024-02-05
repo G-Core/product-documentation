@@ -36,7 +36,7 @@ This guide describes how to create a FastEdge app. Check out our <a href="https:
 2\. Clone the FastEdge SDK to your local directory:
 
 ```
-git clone git@github.com:G-Core/FastEdgeSDK.git
+git clone git@github.com:G-Core/FastEdgeSDK.git --recurse-submodules 
 ```
 
 3\. Install the Rust compiler and cargo (package manager):
@@ -63,7 +63,7 @@ cargo new myapp --lib
 2. Create a directory:
 
 ```
-myapp/.cargo
+mkdir myapp/.cargo
 ```
 
 3\. Set the Wasm compilation target for the project by creating a config file ```myapp/.cargo/config.toml``` with the following content:
@@ -127,15 +127,19 @@ Since FastEdge is available in beta, it doesn’t yet have a UI. Therefore, you 
 Execute the API request from the ```myapp``` directory to upload the created Wasm binary file to our edge servers: 
 
 ```
-curl -X 'POST' \
-    'https://https://api.gcore.com/fastedge/binaries/raw' \
+ myapp % curl -X 'POST' \
+    'https://api.gcore.com/fastedge/v1/binaries/raw' \
     -H 'accept: application/json' \
     -H 'Authorization: APIKey <api_key>' \
     -H 'Content-Type: application/octet-stream' \
     --data-binary '@target/wasm32-wasi/release/myapp.wasm'
 ```
 
-**Note**: Replace ```<api_key>``` with actual value.
+<alert-element type="note" title="Note">
+
+Replace ```<api_key>``` with actual value.
+
+</alert-element>
 
 For more details, read the <a href="https://api.gcore.com/docs/fast_edge#tag/Binaries/operation/storeBinary" target="_blank">API documentation</a>.
 
@@ -147,7 +151,7 @@ Execute the following API request to create the app:
 
 ```
 curl -X 'POST' \
-    'https://api.gcore.com/fastedge/apps' \
+    'https://api.gcore.com/fastedge/v1/apps' \
     -H 'name: <app_name>' \
     -H 'accept: application/json' \
     -H 'client_id: 0' \
@@ -155,7 +159,7 @@ curl -X 'POST' \
     -H 'Content-Type: application/json' \
     -d '{
     "binary": <binary_id>,
-    "plan": "tiny",
+    "plan": "beta",
     "status": 1
 }'
 ```
@@ -251,13 +255,13 @@ Execute the following request to update the app:
 
 ```
 curl -X 'PUT' \
-  'https://api.gcore.com/fastedge/apps/<app_id>' \
+  'https://api.gcore.com/fastedge/v1/apps/<app_id>' \
   -H 'accept: application/json' \
   -H 'Authorization: APIKey <api_key>' \
   -H 'Content-Type: application/json' \
   -d '{
   "binary": <new_binary_id>,
-  "plan": "tiny",
+  "plan": "beta",
   "status": 1,
   "name": <app_name>,
   "env": {
@@ -287,48 +291,46 @@ HTTP/2 200
 server: nginx
 date: Thu, 19 Oct 2023 22:17:46 GMT
 content-length: 616
-custom-header: <span style="color:#FF5913">foo</span>                           
+<span style="color:#FF5913">custom-header</span>: foo                          
 access-control-allow-origin: *
 cache-control: no-store
 x-id: ed-hw-edge-preprod-gc39
 cache: MISS
 accept-ranges: bytes	                                                 
-dc: <span style="color:#FF5913">ed</span>                                            	
-geoip-asn: <span style="color:#FF5913">7922</span>                                       
-geoip-lat: 37.75580
-geoip-long: -121.95270
-geoip-reg: CA
-geoip-city: San Ramon
-geoip-continent: NA
-geoip-country-name: United States
-geoip-country-code: US
-server_addr: <span style="color:#FF5913">92.223.112.26</span>                            
-server_name: <span style="color:#FF5913">mistake-globe-6396.fastedge.gcore.dev</span>	
+<span style="color:#FF5913">dc</span>: ed                                           	
+<span style="color:#FF5913">geoip-</span>asn: 7922                                       
+<span style="color:#FF5913">geoip-</span>lat: 37.75580
+<span style="color:#FF5913">geoip-</span>long: -121.95270
+<span style="color:#FF5913">geoip-</span>reg: CA
+<span style="color:#FF5913">geoip-</span>city: San Ramon
+<span style="color:#FF5913">geoip-</span>continent: NA
+<span style="color:#FF5913">geoip-</span>country-name: United States
+<span style="color:#FF5913">geoip-</span>country-code: US
+<span style="color:#FF5913">server_addr</span>: 92.223.112.26                          
+<span style="color:#FF5913">server_name</span>: mistake-globe-6396.fastedge.gcore.dev	
 connection: upgrade
-x-real-ip: 1.2.3.4
-x-cdn-requestor: <span style="color:#FF5913">ed-hw-edge-preprod-gc39</span>          	
-x-forwarded-for: <span style="color:#FF5913">1.2.3.4</span>                              
+x-real-ip: 1.2.3.4        	
+<span style="color:#FF5913">x-forwarded-for</span>: 1.2.3.4                           
 host: fastedge.gcore.dev
 x-forwarded-proto: https
 user-agent: curl/7.88.1
 accept: */*
 cdn-loop: nb1d2; c=11
-pop-long: <span style="color:#FF5913">6.1294</span>                                     
-pop-lat: 49.6113
-pop-reg: LU
-pop-continent: EU
-pop-city: Luxembourg
-pop-country-code: LU
-pop-country-name: Luxembourg
+<span style="color:#FF5913">pop-</span>long: 6.1294
+<span style="color:#FF5913">pop-</span>lat: 49.6113
+<span style="color:#FF5913">pop-</span>reg: LU
+<span style="color:#FF5913">pop-</span>continent: EU
+<span style="color:#FF5913">pop-</span>city: Luxembourg
+<span style="color:#FF5913">pop-</span>country-code: LU
+<span style="color:#FF5913">pop-</span>country-name: Luxembourg
 </code-block>
 
 Where:
 
-- <span style="color:#FF5913">foo</span> is the added custom header
-- <span style="color:#FF5913">ed</span> is the Data centre
-- <span style="color:#FF5913">7922</span> is the client GeoIP data
-- <span style="color:#FF5913">92.223.112.26</span> is the PoP IP address
-- <span style="color:#FF5913">mistake-globe-6396.fastedge.gcore.dev</span> is the app domain name
-- <span style="color:#FF5913">ed-hw-edge-preprod-gc39</span> is the PoP hostname
-- <span style="color:#FF5913">1.2.3.4</span> is the client IP address
-- <span style="color:#FF5913">6.1294</span> is the PoP GeoIP data
+- <span style="color:#FF5913">custom-header</span> is the added custom header
+- <span style="color:#FF5913">dc</span> is the Data center
+- <span style="color:#FF5913">geoip-*</span> is the client GeoIP data (e.g., asn, latitude, longitude, region, city, continent, country name and country code)
+- <span style="color:#FF5913">server_addr</span> is the PoP IP address
+- <span style="color:#FF5913">server_name</span> is the app hostname name
+- <span style="color:#FF5913">x-forwarded-for</span> is the client IP address
+- <span style="color:#FF5913">pop-*</span> is the PoP GeoIP data (e.g., asn, latitude, longitude, region, city, continent, country name and country code)

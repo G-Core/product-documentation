@@ -39,7 +39,7 @@ That’s it. The Gcore technical writers will be notified of your request and wi
 
 <expandable-element title="Correct an invalid link">
 
-1\. Remove the incorrect information from the <code>&lt;a href="https://wrong-link"&gt;</code> attribute. Insert the correct <code>&lt;a href="https://right-link"&gt;</code> link in its place, click <b>Commit changes…</b>, and then click <b>Propose changes</b> in the pop-up.
+1\. Remove the incorrect information from the `<a href="https://wrong-link">` attribute. Insert the correct `<a href="https://right-link">` link in its place, click <b>Commit changes…</b>, and then click <b>Propose changes</b> in the pop-up.
 
 <video width="800" controls autoplay loop><source src="https://assets.gcore.pro/docs/edit-article-guide/edit-gh-50.mp4" type="video/mp4"></video>
 

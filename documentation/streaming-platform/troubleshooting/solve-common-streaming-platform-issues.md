@@ -50,7 +50,7 @@ Other things to try:
 *Possible cause*: Transcoding is in progress.  
 *Suggested solution*: Each video chunk may take several seconds to transcode. Allow 10 to 15 seconds for this to happen. Once the chunks have been transcoded, the stream should be ready to play.
 
-*Possible cause*: Low Latency is enabled on the admin panel, but not on the control panel.  
+*Possible cause*: Low Latency is not enabled in the Customer Portal.  
 *Suggested solution*: Contact our [support team](mailto:support@gcore.com) to activate this option.
 
 **Stream returns an HTTP 502 error**

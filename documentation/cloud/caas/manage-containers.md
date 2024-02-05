@@ -27,9 +27,9 @@ A new page opens. Perform the remaining steps there.
 
 3\.  In the **Container image** block, select the image type: **Public** or **Private**. The difference between them is a password secures that private image.
 
-- For public image type, enter the URL from where the image will be downloaded in the format ```https://registry.mysite.com``` and go to the next step. 
+- For public image type, enter the image name, e.g. ```nginx:latest```, and go to the next step. 
 
-<img src="https://assets.gcore.pro/docs/cloud/caas/manage-containers/manage-containers-20.png" alt="Public containers" width="50%">
+<img src="https://assets.gcore.pro/docs/cloud/caas/manage-containers/caas-public-container-image.png" alt="Public containers" width="50%">
 
 - For private image type, enter the URL in the format ```https://registry.mysite.com``` and specify registry credentials. If you have already saved them, choose **Select credentials**. If you do not have them, click **Create credentials**: 
 

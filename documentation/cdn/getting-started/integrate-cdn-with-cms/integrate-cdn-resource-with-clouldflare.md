@@ -13,7 +13,7 @@ pageDescription: A comprehensive guide on integrating CDN resources with ClouldF
 
 ## CNAME record setup
 
-If you use the CloudFront DNS service, the CloudFront servers function as proxy for all DNS records. The CloudFlare's DDoS protection and CDN services are based on that.
+If you use the CloudFlare DNS service, the CloudFlare servers function as proxy for all DNS records. The CloudFlare's DDoS protection and CDN services are based on that.
 
 If you want to use Gcore as your CDN provider, disable the proxying in the CloudFlare DNS settings by clicking the cloud icon during the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">CNAME record creation</a>.
 

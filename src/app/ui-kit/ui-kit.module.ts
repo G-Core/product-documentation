@@ -7,6 +7,7 @@ import { CallToActionBoxComponent } from './call-to-action-box/call-to-action-bo
 import { PaginationComponent } from './pagination';
 import { ModalComponent } from './modal';
 import { LoaderComponent, LoaderModule } from './loader';
+import { SwitcherComponent } from './switcher';
 
 @NgModule({
     declarations: [
@@ -15,6 +16,7 @@ import { LoaderComponent, LoaderModule } from './loader';
         CallToActionBoxComponent,
         PaginationComponent,
         ModalComponent,
+        SwitcherComponent,
     ],
     imports: [FormsModule, CommonModule, LoaderModule],
     exports: [
@@ -25,6 +27,7 @@ import { LoaderComponent, LoaderModule } from './loader';
         PaginationComponent,
         ModalComponent,
         LoaderComponent,
+        SwitcherComponent,
     ],
     providers: [],
 })

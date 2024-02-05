@@ -26,7 +26,7 @@ pageDescription: Instructions on how to integrate video call module into your ap
 
 This is how the module is displayed after implementing iframe in websites:
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/embed-real-time-video-into-your-app-with-iframe/iframe-example.gif" alt="Example of Real-Time Video implementing" width="80%">
+<img loading="lazy" src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/web-video-calls-module-30.gif" width="602" height="350" alt="Real-Time Video">
 
 We have described the process of embedding the module in various types of OS in the following materials:
 
@@ -68,7 +68,7 @@ Where:
 
 That’s it! It will be displayed in your app as the following module: 
 
-<iframe src="https://meet.gcore.com/call/serv2testroom?role=interpreter" allow="camera; microphone; fullscreen; display-capture; autoplay; screen-wake-lock" height="600px" width="100%"></iframe>
+<iframe src="https://meet.gcore.com/call/serv2testroom?role=interpreter" allow="camera; microphone; fullscreen; display-capture; autoplay; screen-wake-lock" height="300px" width="100%"></iframe>
 
 ### For developers (advanced customization)
 
@@ -407,4 +407,4 @@ $(window).on('load', function() {
 
 That’s it! It will be displayed in your app as the following module: 
 
-<iframe src="https://demo-files.gvideo.io/vcapi-iframe-demo/index.html"  width="100%" height="800px"></iframe>
+<iframe src="https://demo-files.gvideo.io/vcapi-iframe-demo/index.html"  width="100%" height="450px"></iframe>
