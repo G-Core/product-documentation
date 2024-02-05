@@ -17,7 +17,6 @@ pageDescription: Learn how to upload images for virtual machines to Cloud storag
 - raw
 - vhd
 - vhdx
-- vmdk
 - vdi
 - ploop
 - qcow2
