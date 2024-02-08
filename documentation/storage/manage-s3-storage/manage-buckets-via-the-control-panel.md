@@ -12,7 +12,7 @@ toc:
    --2--Upload files: "uploading-files"
    --2--Delet folders and files: "deleting-folders-and-files"
    --2--Copy URL or S3 URL: "copying-url-or-s3-url"
-   --1--Configure HTTP access: "configuring-http-access"
+   --1--Manage access: "managing-access"
    --1--Add lifecycle policy (for Luxembourg S3): "adding-lifecycle-policy-for-s3-in-luxembourg-only"
 pageTitle: A Comprehensive Guide on How to Manage Gcore Buckets | Gcore
 pageDescription: Creating and configuring Gcore storage buckets, adding lifecycle policies, managing files, and setting CORS in the Customer Portal.
@@ -119,12 +119,16 @@ For instance, the links for the file ```image 3972.png``` will look like this:
 
 **Note**: If you haven't enabled <a href="https://gcore.com/docs/storage/manage-s3-storage/manage-buckets-via-the-control-panel#configuring-http-access" target="_blank">HTTP access to all files</a>, you'll encounter a 403 error when opening the file.
 
-## Configuring HTTP access
+## Managing access
 
-If you wish to <a href="https://gcore.com/docs/storage/use-storage-as-the-origin-for-your-cdn-resource" target="_blank">use S3 storage as the origin for a CDN resource</a> or to make files accessible via an S3 URL, you'll need to allow HTTP access to your bucket. To do this, go to the bucket interface, click on the three dots on the right, and select **HTTP access to all files**. Then, click **Apply**.
+If you wish to <a href="https://gcore.com/docs/storage/use-storage-as-the-origin-for-your-cdn-resource" target="_blank">use S3 storage as the origin for a CDN resource</a> or to make files accessible via an S3 URL, you'll need to allow public (HTTP) access to your bucket. To do this, go to the bucket interface, click on the three dots on the right, and select **Public access to all files**. Then, click **Apply** in the pop-up confirmation window.
 
 
-<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets-via-the-control-panel/manage-buckets-cp-110.gif" alt="Configure HTTP access to all files" width="80%">
+<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets-via-the-control-panel/http-access-s3-bucket.png" alt="Configure HTTP access to all files" width="80%">
+
+if you want to make objects unavailable via HTTP (private), repeat the steps from the instructions above, but select the item **Default access to all files**. 
+
+<img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets-via-the-control-panel/default-access-s3-bucket.png" alt="Configure default access to all files" width="80%">
 
 ## Adding lifecycle policy (for S3 in Luxembourg only)
 
