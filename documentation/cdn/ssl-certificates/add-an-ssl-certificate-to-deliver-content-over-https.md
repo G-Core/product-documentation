@@ -6,7 +6,6 @@ order: 10
 toc:
    --1--SSL certificate: "what-is-an-ssl-certificate"
    --1--Types: "ssl-certificate-types-in-gcore"
-
 pageTitle: Adding, Renewing, and Deleting of SSL Certificates | Gcore
 pageDescription: Learn how to add your certificate or get a free Let's Encrypt certificate, renew, and delete SSL certificates.
 ---
