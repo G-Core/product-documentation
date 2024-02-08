@@ -6,11 +6,12 @@ order: 11
 toc:
    --1--Overview: "overview"
    --1--Authentication data: "authentication-data"
-   --2--Amazon: "amazon-aws-storage"
-   --2--Gcore: "gcore-s3-storage"
+   --2--Amazon: "amazon-aws"
+   --2--Gcore: "gcore"
    --1--Configure: "configure-a-private-bucket-as-an-origin"
-   --2--in the control panel: "configure-a-private-origin-in-the-control-panel"
-   --2--via the API: "configure-a-private-origin-via-the-api"
+   --2--Customer Portal: "customer-portal"
+   --2--API: "api"
+   --1--Troubleshooting Amazon S3: "troubleshooting-amazon-s3-403-forbidden-for-head-requests"
 pageTitle: Understanding Private Bucket as an Origin | Gcore
 pageDescription: A step-by-step guide on how to use a private S3 bucket as an origin for your CDN resource.
 ---
@@ -18,27 +19,35 @@ pageDescription: A step-by-step guide on how to use a private S3 bucket as an or
 
 ## Overview
 
-We have introduced a feature that allows the use of a private bucket inside S3-compatible storage (such as Amazon or others) as a <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol#pull-content-from" target="_blank">CDN resource origin</a>. To grant CDN servers access to content stored in the private bucket, you must specify authentication data (Access Key ID, Secret access key, Hostname, Region). Otherwise, they won’t be able to access the content.
+Gcore allows private buckets in S3-compatible storage services, including Amazon and Gcore, as a <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files#origin" target="_blank">CDN resource origin</a>. However, to allow CDN servers to access the content stored in these private buckets, you must provide authentication data, including Access Key ID, Secret Access Key, Hostname, and Region. Without this information, the servers cannot access the content.
 
 ## Authentication data
 
-You can access the necessary authentication data in the personal S3 storage account.
+You can find the necessary authentication data in your personal S3 storage account.
 
-### Amazon AWS storage
+<tabset-element>
 
-You can find the Access Key ID and Secret access key according to the "<a href="https://docs.aws.amazon.com/powershell/latest/userguide/pstools-appendix-sign-up.html" target="_blank">AWS Account and Access Keys</a>" guide. 
+### Amazon AWS
 
-### Gcore S3 storage
+To locate all the essential keys, refer to the <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html" target="_blank">Managing access keys</a> guide.
 
-You can find the Hostname and Region in the "Details" section under the <a href="https://storage.gcore.com/storage/list" target="_blank">Storages</a> tab.
+### Gcore
+
+You can find the Hostname and Region in the “Details” section under the <a href="https://storage.gcore.com/storage/list" target="_blank">Storages</a> tab.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15353064572561.png" alt="Gcore S3 storage">
 
-**Note**: We don’t store the Access Key ID and Secret access key for S3 storage. It is your responsibility to save them after creating the storage.  If you forget them, click **Generate new keys** under the "Details" section. 
+<alert-element type="caution" title="Caution">
 
-## Configure a private bucket as an origin
+We don’t store the Access Key ID and Secret access key for S3 storage. It is your responsibility to save them after creating the storage. If you forget them, click **Generate new keys** under the “Details” section.
 
-### Configure a private origin in the control panel
+</alert-element>
+
+</tabset-element>
+
+<tabset-element>
+
+### Customer Portal
 
 There are two options for configuring a private bucket as an origin:
 
@@ -63,10 +72,14 @@ A new page will open. Complete the remaining steps of the manual in the "Origin"
 
 5\. Specify the needed authentication data. It depends on the type of storage selected in the previous step.
 
-  - **For Amazon storage**: Access Key ID, Secret access key, and AWS region
-  - **For Other**: Hostname (there's a bucket at the beginning), Access Key ID, Secret access key, and Region
+  - for **Amazon**: Access Key ID, Secret access key, and AWS region
+  - for **Other**: Hostname (there's a bucket at the beginning), Access Key ID, Secret access key, and Region
 
-**Note**: To determine the region of your Gcore S3 storage, use the <a href="https://gcore.com/docs/storage/manage-s3-storage/s3-service-urls-and-default-region-names" target="_blank">S3 service URLs and default region names</a> guide.
+<alert-element type="tip" title="Tip">
+
+ To determine the region of your Gcore S3 storage, use the <a href="https://gcore.com/docs/storage/manage-s3-storage/s3-service-urls-and-default-region-names" target="_blank">S3 service URLs and default region names</a> guide.
+
+</alert-element>
 
 More information about where to find the keys can be found in the "<a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage" target="_blank">Authentication data</a>" section.
 
@@ -75,7 +88,6 @@ More information about where to find the keys can be found in the "<a href="http
 In the example below, we use the private bucket ```test-private``` in S3 Gcore storage with the endpoint (service URL) ```s-ed1.cloud.gcore.lu```. Configure an origin group as follows:
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/private-bucket-conf.png" alt="Origin section" width="70%">
-
 
 7\. Continue the CDN resource creation according to the "<a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">Create CDN resource for only static files</a>" guide.
 
@@ -92,8 +104,7 @@ Click **Save changes**.
 
 ### Configure a private origin via the API 
 
-Next, we will explain in detail how to specify Private origin via API calls. 
-
+Next, we will explain in detail how to specify private origin via API calls. 
 
 <table>
 <tr>
@@ -170,3 +181,19 @@ c. Enter the payload in the text area. Replace the sample values indicated by ``
 4\. Click **Send**.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15353638607505.png" alt="Send" width="80%">
+
+</tabset-element>
+
+## Troubleshooting Amazon S3 (403 Forbidden for HEAD requests)
+
+When using private buckets in Amazon S3 storage as an origin, you might encounter a 403 Forbidden error for HEAD requests meant to retrieve metadata. However, a GET request may operate without any errors and return a 200 OK status. The disparity in the results of these requests can be attributed to several reasons:
+
+1. **Restricted object-level permissions**: If the buckets or IAM policy permits public read access but the object's Access Control List (ACL) denies access to your user or role, AWS S3 will return a 403 status for HEAD requests.
+
+2. **Different policies in effect**: If the user making the HEAD request doesn't have the necessary permissions to read the object's metadata, AWS S3 will return a 403 status for HEAD requests.
+
+3. **Incorrect parameters in presigned URLs**: If a <a href="https://gcore.com/docs/storage/manage-s3-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/generate-temporary-links-to-files-with-aws-cli-and-s3cmd" target="_blank">presigned URL</a> for a HEAD request was generated with incorrect parameters, AWS will return a 403. The parameters for URL generation (like access key, secret access key, bucket name, object key, etc.) must be consistent for both HEAD and GET requests.
+
+4. **Different owners for bucket and object**: If the bucket and object belong to different AWS accounts and the object owner hasn't granted the necessary permissions to the bucket owner, AWS will return a 403 for a HEAD request and a 200 for a GET request.
+
+To resolve the issue, you need to modify the bucket policy, IAM, or the object's ACL.
