@@ -104,7 +104,7 @@ Click **Save changes**.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/image-3719.png" alt="Save changes">
 
-### Configure a private origin via the API 
+### API 
 
 Next, we will explain in detail how to specify private origin via API calls. 
 
