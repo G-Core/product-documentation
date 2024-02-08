@@ -45,6 +45,8 @@ We don’t store the Access Key ID and Secret access key for S3 storage. It is y
 
 </tabset-element>
 
+## Configure a private bucket as an origin
+
 <tabset-element>
 
 ### Customer Portal
