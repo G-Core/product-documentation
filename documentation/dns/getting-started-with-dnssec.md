@@ -108,7 +108,7 @@ Here's an example output.
 }
 ```
 
-<alert-element type="warning" title="Warning"
+<alert-element type="warning" title="Warning">
 
 The DS value of the record is represented in the “ds” field, not “digest.”
 
