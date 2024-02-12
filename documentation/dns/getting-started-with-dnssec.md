@@ -27,7 +27,7 @@ DNSSEC does not encrypt the data between the end user and the recursor. To ensur
 
 ## Enable DNSSEC via DNS API
 
-<alert-element type="note" title="Note"> 
+<alert-element type="info" title="Info"> 
 
 Remember to replace the placeholders in the API request samples in double curly brackets with your own values.
 
@@ -138,7 +138,7 @@ Click the info icon to open the popup with keys and other signing information.
 
 ## Disable DNSSEC
 
-<alert-element type="note" title="Note"> 
+<alert-element type="info" title="Info"> 
 
 Remember to replace the placeholders in the API request samples in double curly brackets with your own values.
 
