@@ -116,7 +116,7 @@ The DS value of the record is represented in the “ds” field, not “digest.�
 
 5\. Input the Delegation Signer record in your registrar’s control panel.
 
-<alert-element type="caution" title="Caution"
+<alert-element type="caution" title="Caution">
 
 Once you've added a Delegation Signer record in your domain registrar's control panel, the changes may take up to 24 hours to take effect, though usually, it takes about an hour.
 
@@ -148,7 +148,7 @@ To disable DNSSEC:
 
 1\. Remove the DS record in the registrar control panel. The DNS record in the upper-level zone informs the recursors that they must validate authoritative servers responses for your zone. If DNSSEC is disabled in Gcore but not in the upper-level domain, recursors will attempt to validate a record signature that is already disabled. This scenario will cause an outage for your domain.
 
-2.\ Disable DNSSEC in Gcore using the following API request:
+2\. Disable DNSSEC in Gcore using the following API request:
 
 ```
 PATCH https://api.gcore.com/dns/v2/zones/{{zone_name}}/dnssec 
