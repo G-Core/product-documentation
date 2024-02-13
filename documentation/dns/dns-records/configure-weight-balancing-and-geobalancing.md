@@ -1,146 +1,201 @@
 ---
 title: configure-weight-balancing-and-geobalancing
-displayName: Configure balancing 
+displayName: Dynamic response 
 published: true
 order: 25
 toc:
-   --1--Overview: "overview"
-   --1--Balancing: "how-is-balancing-controlled"
-   --1--Configure: "configure-balancing-in-the-control-panel"
-   --1--Types: "types-of-balancing"
-   --2--weight: "balancing-by-weight-default"
-   --2--non-coordinate (ip, e.g.): "balancing-by-non-coordinates-meta"
-   --2--coordinates: "balancing-by-coordinates-geo-proximity"
-pageTitle: Configure weight & Geobalancing in DNS | Gcore
-pageDescription: Learn how to configure weight balancing and Geobalancing for DNS records with Gcore.
+   --1--Overview: "How-dynamic-response-works"
+   --1--Configure: "configure-dynamic-response"
+   --1--Preset settings: "examples-of-preset-settings"
+   --2--Geo DNS: "geo-dns"
+   --2--Geo distance: "geo-distance"
+   --2--Weighted shuffle: "weighted-shuffle"
+pageTitle: Configure dynamic response for DNSSet | Gcore
+pageDescription: Learn how to configure dynamic responses, select pickers and specify metadata with Gcore.
 ---
-# Configure weight balancing and Geobalancing
+# Dynamic response
 
-## Overview
+## How dynamic response works
 
-Our DNS server can provide different DNS responses to different users. For example, you can specify that particular records will be delivered to users from Asia verses Europe, or choose the weight for the records, i.e. the probability with which they will be shown in the responses.
+Our DNS server can provide different DNS responses to different users. For example, you can specify that particular records will be delivered to users from Asia versus Europe or choose the weight for the records, i.e., the probability with which they will be shown in the responses. This is called dynamic response. 
 
-This is called dynamic record selection. Depending on which parameter is used to select which record will be shown, it may also be referred to as weight balancing, traffic steering, GeoDNS, or failover. 
+Depending on which parameter is used to select which record will be shown, it may also be referred to as weight balancing, traffic steering, GeoDNS, or failover.
 
-At Gcore, we offer two kinds of balancing: *weight balancing* and *Geobalancing*; the latter is a specific kind of balancing by location. This article will show how to configure weight balancing and Geobalancing by coordinates and other parameters.
+The dynamic response makes RRSet dynamic. You can add several records and determine which one will be in DNS responses depending on how the query meets the established criteria (e.g., user’s subnet or ASN, geo metadata, etc.)
 
-<alert-element type="tip" title="Tip">
+Pickers are used to control dynamic responses. They determine in what order the DNS query data will be checked and compared with the metadata set for the particular record. 
 
-You can also configure balancing by weight and Geo data via API requests using Dynamic RRsets. For more information about pickers and selectors, read the <a href="https://api.gcore.com/docs/dns#tag/RRsets/operation/CreateRRSet" target="_blank">API documentation</a>.
+Dynamic response setup consists of two stages:
+
+1. **Set the metadata** or other data types against which the query parameters will be compared.
+2. **Select pickers**, i.e., define the sequence in which the resolver will compare the query data for your record and check for matches against the metadata or other criteria of the specified record. 
+
+For example, you can set the “Continent” picker and add metadata of the “continent” type with the value “Africa” to a record, which will only be given to users from Africa.
+
+## Configure dynamic response
+
+1\. Create a DNS record set in the advanced mode (steps 1–4.)
+
+2\. Enable the **Dynamic response** toggle.
+
+<alert-element type="warning" title="Warning">
+
+The dynamic response feature is available for the Free plan, but you can create only one dynamic RRSet in this plan. 
 
 </alert-element>
 
-## How is balancing controlled?
+3\. Select the preset of pickers (Geo DNS, Geo distance, or Weighted shuffle) or particular pickers manually from the right list and confirm the action. Selected pickers on the left at the top of the list will be considered first and so on in descending order.
 
-Balancing is controlled by the metadata that you add to each record in your RRSet. You can add nine types of data: *ip, asn, continents, countries, latlong, fallback, backup, notes,* and *weight*.
+<alert-element type="tip" title="Tip">
 
-The system will check if a requestor’s IP (usually a recursive DNS) correlates to the specified meta parameters for the records in RRset and our geodatabase. If they do, the system will pick those records for the response. For example, you can add metadata of the “continent” type with the value “Africa” to a record, which will only be given to users from Africa.
+Presets are editable: you can select a preset and then change the position of pickers or add/remove pickers manually. 
 
-Three types of balancing are available:
+</alert-element>
 
-- By weight (default)
-- By non-coordinate meta (all metadata types except latlong)
-- By coordinates (geo proximity) 
+<expandable-element title="Picker">
 
-**Note**: Balancing (Geobalancing and weight balancing) is a paid option, mind your tariff plan limits.
+The following pickers are available:
 
-## Configure balancing in the control panel
+- **GeoDistance.** Geo proximity to the latlong (latitude and longitude) in the metadata determines the record in the response; the fallback metadata will be ignored.
+- **Weighted shuffle.** Weight metadata determines the probability of the record hitting the response. 
+- **Default.** Fallback metadata determines the record in the response if no other pickers were selected.
+- **ASN.** The match with the ASN (autonomous system number) in the metadata determines the record in the response.
+- **Country.** The match with the country in the metadata determines the record in the response.  
+- **Continent.** The match with the continent in the metadata determines the record in the response.
+- **Region.** The match with the region in the metadata determines the record in the response.
+- **IP.** The match with IP address or CIDR notation (in IPv4 and IPv6) determines the record in the response.
+Healthcheck. Configure the choice of the record in response depending on the availability determined with <a href="https://gcore.com/docs/dns/dns-failover/about-dns-failover" target="_blank">Healthcheck</a>. 
 
-1. Create a <a href="https://gcore.com/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing" target="_blank">resource record in advanced mode</a> (steps 1–6.)
+Also, the **First N** option is in the list of pickers. It controls the maximum number of records used per response and is added to each preset. The default value is 1.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/configure-balancing-10.png" alt="Configure balancing in the control panel" width="80%">
+</expandable-element>
 
-2. Move the slider in the **Records selection** using section to enable balancing.
+Below you will see a list of available actions for pickers: 
 
-3. Tick the balancing type you wish to select. More details <a href="https://gcore.com/docs/dns/dns-records/configure-weight-balancing-and-geobalancing#types-of-balancing" target="_blank">below</a>. 
+- To raise or lower a picker, use the drag-and-drop method. 
+- To remove a picker, click the cross. 
+- To remove all selected pickers, click Clear.
 
-4. Specify the maximum number of records in one response in the right field. The default value is one record per response.
+<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/pickers-10.png" alt="Dynamic response configuration" width="80%">
 
-5. Configure Health Checks if needed. Learn more about them in <a href="https://gcore.com/docs/dns/dns-failover/about-dns-failover" target="_blank">our article</a>.
+4\. Specify the record’s value.
 
-6. Specify the record’s value.
+5\. Set appropriate metadata to which the value in the query will be compared and specify the value. You can add several metadata fields for one value by clicking the plus button.
 
-7. Select appropriate metadata and specify the value. You can add several metadata fields for one value. To do this, click **+**.
+<expandable-element title="Metadata">
 
-8. Click **Add record** if needed and repeat steps 6-7. 
+Ten metadata types are available:
 
-9. Click **Create**.
+- asn (autonomous system number)
+- continents
+- countries
+- regions
+- latlong (latitude and longitude)
+- fallback (only used in the response if no other metadata were selected)
+- backup (only used in combination with health checks to provide failover capability; if the rest of the records are not “healthy,” backup records will be used to form an answer; if at least one non-backup record is “healthy,” the record with the backup metadata does not participate in the response)
+- notes (any comments; for example, you can specify a city, data center - name, or cluster name)
+weight
+- ip (IP address or CIDR notation, IPv4 and IPv6)
 
-## Types of balancing
+</expandable-element>
 
-For each type of balancing, we will break down the principle of operation, look at its features, and consider an example.
+6\. Click **Add record** to add several records to your response and repeat steps 4 and 5. 
 
-### Balancing by weight (default)
+7\. Click **Create**.
 
-With weight balancing, you can manage the probability of having a particular record in the answer by specifying its weight.
+That's it. 
 
-**Note**: If the metadata field “weight” is left empty, the default value 50 is used. So you can expect the same probability for each record.
+## Examples of preset settings
 
-Probability is calculated only if the value of max records per answer exceeds the number of resource records. For a record R1 from RRset with weight W1, its probability(P1) is calculated as its weight divided by the sum of the weights of all other records. 
+<tabset-element>
+
+### Geo DNS
+
+With the “Geo DNS” preset, you can add metadata of different types to each record.
+
+<alert-element type="warning" title="Warning">
+
+The *latlong* and *weight* metadata will be ignored if you don’t add the corresponding pickers from the list.
+
+</alert-element>
+
+When a DNS request is made, the response will be formed using the chosen *Records selection* option and metadata specified for records.
+
+Our system will check if a user matches the criteria from the metadata in the following order: IP, ASN, country, and continent. The processing logic works like this:
+
+1. Our DNS server receives a request to the domain.
+2. If Health checks are configured, we filter off all “non-healthy” records.
+3. The DNS server compares the requestor user’s IP (respecting EDNS(0)) with the IP from the metadata. The server uses records with matched metadata to form an answer if there is a match.
+4. If no matches are found, the ASN meta is considered as in step 3.
+5. If no matches are found, the country meta is considered as in step 3.
+6. If no matches are found, the continent meta is considered as in step 3.
+7. If no matches are found, the region meta is considered as in step 3. 
+8. If no matches are found, the records with “fallback=true” metadata are considered
+9. If no matches are found, all records are used in the answer (respecting max answers value)
+
+**Example**: You have selected the “Geo DNS” preset, specified one record per response in the *First N*.
+
+<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/geo-dns-20.png" alt="Configure Geo DNS preset" width="70%">
+
+Then you added two records with IP metadata:
+
+- For ```10.0.0.0``` record, subnet *192.168.1.0/24*
+- For ```10.0.0.1``` record, subnet *192.0.2.0/24 *
+
+<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/geo-dns-30.png" alt="Configure metadata" width="80%">
+
+If a user with the IP from the subnet *192.168.1.0/24* requests the domain, the record with the value ```10.0.0.0``` will be returned. If the requestor’s subnet is *192.0.2.0/24*, the ```10.0.0.1``` record will be returned.
+
+### Geo distance
+
+With the “Geo distance” preset, you instruct resolvers that when requesting a record, to analyze the proximity of the geolocation of the request to the latlong (latitude and longitude) specified in the record’s metadata. Users will receive the record with the nearest coordinates when they request your domain. 
+
+**Example**. You have selected the “Geo distance” preset and specified one record per response in the *First N*.
+
+<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/geo-distance-40.png" alt="Configure Geo distance preset" width="80%">
+
+Then you added two records with the following coordinates:
+
+- For the ```10.0.0.0``` record, latlong *51.52318152049715/-0.13458412218999416* (the center of London.)
+- For the ```10.0.0.1``` record, latlong *48.859741241898114/2.3415648470109653* (the center of Paris.)
+
+<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/geo-distance-50.png" alt="Configure metadata" width="80%">
+
+<figcaption>The orange color shows where two zones are close together, while the red and yellow show distinct zones</figcaption>
+
+A user closer to the coordinate *51.52318152049715/-0.13458412218999416* (the center of London) will receive an A record with the value ```10.0.0.0```, while a user nearer to *48.859741241898114/2.3415648470109653* (the center of Paris) will receive an A record with the value ```10.0.0.1```.
+
+### Weighted shuffle
+
+With the “Weighted shuffle” preset, you can manage the probability of having a particular record in the answer by specifying its weight.
+
+<alert-element type="info" title="Info">
+
+If the metadata field “weight” is left empty, the default value 50 is used. So you can expect the same probability for each record.
+
+</alert-element>
+
+Probability is calculated only if the value of First N exceeds the number of resource records. For a record R<sub>1</sub> from RRset with weight W<sub>1</sub>, its probability(P<sub>1</sub>) is calculated as its weight divided by the sum of the weights of all other records. 
 
 <code-block>
 P<sub>1</sub>= W<sub>1</sub> / Sum<sub>i</sub>(W<sub>i</sub>)
 </code-block>
 
-**Example**. You have weight balancing enabled, specified max one record per response, and added three records with these weight metadata:
+**Example**. You have the “Weighted shuffle” preset enabled, specified max one record per response in the *First N*:
+
+<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/weighted-shuffle-60.png" alt="Configure Weighted shuffle picker" width="80%">
+
+Metadata was specified as follows: 
 
 - *1.2.3.4* with the “weight” 90, probability = 0.6
 - *4.5.6.7* with the “weight” 10, probability = 0.06(6)
 - *7.8.9.0* with the “weight” empty (i.e., set by default to 50,) probability = 0.3(3)
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/configure-balancing-20.png" alt="Balancing by weight" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/weighted-shuffle-70.png" alt="Configure records for weighted shuffle usage" width="80%">
 
-### Balancing by non-coordinates meta
+Over the course of 300 answers, each record will appear with the following frequency:
+- ```~180``` responses with the record ```1.2.3.4``` (weight 90)
+- ```~20``` responses with the record ```4.5.6.7``` (weight 10)
+- ```~100``` responses with the record ```7.8.9.0``` (weight 50)
 
-With non-coordinates meta balancing, you can add metadata of different types to each record.
-
-**Note**: The *latlong* and *weight* will be ignored when using non-coordinate metadata.
-
-When a DNS request is made, the answer will be formed using the chosen *Records selection* option and metadata specified for records. The following metadata can be used to be checked against the source of the DNS query:
-
-- IP (IP address or CIDR notation, IPv4 and IPv6)
-- ASN (autonomous system number)
-- Continents
-- Countries
-- Fallback (only used in an answer if no other records were selected)
-- Backup (only used in combination with Health Checks to provide failover capability; if the rest of the records are not “healthy,” backup records will be used to form an answer; if at least one non-backup record is “healthy,” the record with the backup metadata does not participate in the response)
-- Notes (any comments; for example, you can specify a city, data center name, or cluster name)
-
-Our system will check if a user matches the criteria from the metadata in the following order: IP, ASN, country, and continent. The processing logic works like this:
-
-1. Our DNS server receives a request to the domain.
-
-2. If Health Checks are configured, we filter off all “non-healthy” records.
-
-3. The DNS server compares the requestor user’s IP (respecting EDNS(0)) with the IP from the metadata. The server uses records with matched metadata to form an answer if there is a match.
-
-4. If no matches are found, the ASN meta is considered as in step 3.
-
-5. If no matches are found, the country meta is considered as in step 3.
-
-6. If no matches are found, the continent meta is considered as in step 3.
-
-7. If no matches are found, the records with “fallback=true” metadata are considered.
-
-8. If no matches are found, all records are used in the answer (respecting max answers value).
-
-**Example**: You have non-coordinates balancing enabled, specified max one record per response, and you add two records with IP metadata:
-
-- For *10.0.0.0* record, subnet *192.168.1.0/24*
-- For *10.0.0.1* record, subnet *192.0.2.0/24* 
-
-Here’s how it looks when you add these records:
-
-<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/configure-balancing-30.png" alt="Here’s how it looks when you add these records" width="80%">
-
-If a user with the IP from the subnet *192.168.1.0/24* requests the domain, the record with the value *10.0.0.0* will be returned. If the requestor’s subnet is *192.0.2.0/24*, the *10.0.0.1* record will be returned.
-
-### Balancing by coordinates (geo proximity) 
-
-With coordinates balancing, you can assign coordinates to each record and add the latlong (latitude and longitude) type metadata. Users will receive the record with the nearest coordinates when they request your domain. You can use the map icon to check you’ve entered the correct coordinates—simplyclick on the icon to see the location corresponding to your parameters.
-
-**Example**. A user closer to the coordinate 40.43733088856228/-3.566434349995511 (the center of Madrid) will receive an A record with the value *127.0.0.1*, while a user nearer to 52.20328569593686/21.081144277439293 (the center of Warsaw) will receive an A record with the value *127.0.0.2*.
-
-<img src="https://assets.gcore.pro/docs/dns/dns-records/configure-weight-balancing-and-geobalancing/image-3723.png" alt="Balancing by non-coordinates meta" width="80%">
-
-The configuration is complete. As soon as you finish creating records, balancing will be enabled.
+</tabset-element>
