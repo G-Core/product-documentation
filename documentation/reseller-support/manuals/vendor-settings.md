@@ -108,7 +108,7 @@ This setting allows displaying the phone number of your technical support.
 
 The setting allows displaying the email address of your technical support.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/support-email-70.png" alt="Support email" width="50%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/contact-reseller.png" alt="Support email" width="50%">
 
 ### Email for deletion requests
 
@@ -137,6 +137,9 @@ The setting allows displaying a link to your Knowledge Base
 ### Show Status Page
 
 The setting allows displaying a link to your Status Page.
+
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/links-info.png" alt="Useful links for customers" width="50%">
+
 
 ### Show online chat
 
