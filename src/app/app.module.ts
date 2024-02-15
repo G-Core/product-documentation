@@ -27,6 +27,7 @@ import { EditGithubButtonComponent } from './web-components/edit-github-button/e
 import { CookiesSettingsModule } from './components/cookies-settings/cookies-settings.module';
 import { TabsetComponent } from './web-components/tabset/tabset.component';
 import { AlertElementComponent } from './web-components/alert-element/alert-element.component';
+import { DisclaimerComponent } from './components/disclaimer/disclaimer.component';
 
 @NgModule({
     declarations: [
@@ -44,6 +45,7 @@ import { AlertElementComponent } from './web-components/alert-element/alert-elem
         GalleryComponent,
         TabsetComponent,
         SearchComponent,
+        DisclaimerComponent,
     ],
     imports: [
         BrowserModule,
