@@ -151,7 +151,7 @@ The setting allows your clients to create additional accounts.
 
 If it is activated, your clients can create additional accounts from their control panels.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/create-new-account-150.png" alt="Show Create new account" width="50%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/create-new-acc-reseller.png" alt="Show Create new account" width="50%">
 
 ## SMTP Provider Settings 
 
