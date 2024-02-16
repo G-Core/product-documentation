@@ -1,4 +1,6 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
+import { Subscription, filter } from 'rxjs';
 
 @Component({
     selector: 'gc-disclaimer',
@@ -6,4 +8,15 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
     styleUrls: ['./disclaimer.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DisclaimerComponent {}
+export class DisclaimerComponent implements OnInit {
+    public isResellerSupportPage = false;
+
+    constructor(private router: Router, private cd: ChangeDetectorRef) {}
+
+    public ngOnInit(): void {
+        this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
+            this.isResellerSupportPage = this.router.url.includes('/reseller-support');
+            this.cd.detectChanges();
+        });
+    }
+}
