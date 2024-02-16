@@ -53,6 +53,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
 
     private routerSubscription: Subscription;
     private hasScrolled = false;
+    public isResellerPage = false;
 
     @ViewChild('scullyContainer') public scullyContainer: ElementRef;
     @ViewChild('fullSizeImage') public fullSizeImage: ElementRef;
@@ -114,11 +115,12 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
             this.changeDetectorRef.detectChanges();
         });
 
+        this.isResellerPage = this.router.url.includes('reseller-support');
+
         this.links$ = combineLatest([this.route.url, this.scully.available$]).pipe(
             map(([url, links]) => {
                 const anchorIndex = this.router.url.indexOf('#');
                 const pageUrl = this.getAnchor(anchorIndex, this.router.url);
-
                 this.category = url[0].path;
                 this.activeUrl = pageUrl;
                 this.activeCategoryItem = {
@@ -178,6 +180,8 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
                 this.isArticleRated = false;
                 this.isActiveLike = false;
                 this.isActiveDislike = false;
+                this.isResellerPage = this.router.url.includes('reseller-support');
+                this.changeDetectorRef.detectChanges();
             }
         });
     }

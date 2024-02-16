@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    HostBinding,
+    Input,
+    OnDestroy,
+    OnInit,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { MenuItem } from '../../models';
@@ -16,6 +24,7 @@ export class LeftBarMenuComponent implements OnInit, OnDestroy {
     @Input() public activeUrl: string;
     @Input() public menuItems: any;
     @Input() public isHomePage: boolean = false;
+    @HostBinding('class.with-disclaimer') public isNotResellerPage: boolean = false;
 
     private destroy$: Subject<void> = new Subject();
 
@@ -27,6 +36,8 @@ export class LeftBarMenuComponent implements OnInit, OnDestroy {
     public ngOnInit(): void {
         this.menuService.isHosting$.pipe(takeUntil(this.destroy$)).subscribe((isHosting) => {
             this.isHosting = isHosting;
+            this.isNotResellerPage = !this.router.url.includes('reseller-support');
+            this.cd.detectChanges();
         });
     }
 
