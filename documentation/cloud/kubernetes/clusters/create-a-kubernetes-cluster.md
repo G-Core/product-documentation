@@ -45,11 +45,10 @@ Select your **Kubernetes cluster version**.
 
 Under the **Pools** block, configure a pool—a set of cluster nodes with the same specifications. 
 
-<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/pool-k8s.png" alt="Pools" width="80%">
-
 - Enter the **Pool name** .
 - Set the **minimum nodes** and **maximum nodes** for <a href="https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling" target="_blank">autoscaling</a>.
 - Select the type of a worker node: a **Virtual Instance** or a **Bare Metal instance**. 
+
 
 <tabset-element>
 
@@ -88,6 +87,8 @@ Select a flavor:
 
 Add as many pools as you need using the **Add pool** button.
 
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/pool-k8s.png" alt="Pools" width="80%">
+
 ## Step 5. Select the CNI Provider 
 
 Choose the network stack of either *Cilium* or *Calico*—networking and network security solutions for containers: 
@@ -95,7 +96,7 @@ Choose the network stack of either *Cilium* or *Calico*—networking and network
 - Cilium uses eBPF to inject functionality into the kernel and provides a broader range of additional features (load balancing, advanced security, failure detection, etc.) than Calico. Additionally, you can add necessary functions by checking the following boxes: DSR, tunneling, load balancer acceleration, and encryption. 
 - Calico uses a more conservative stack based on iptables.  
 
-<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/cni-provider.png" alt="Network stack" width="65%">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/cni-provider.png" alt="Network stack" width="70%">
 
 ## Step 6. Configure Network settings
 
@@ -117,13 +118,13 @@ Depending on the selected template, the settings will be different. For example,
 
 Configure an SSH key for a remote SSH connection to all nodes. Select an existing key or create a new one. For details, consult our article on <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">how to connect to your instance via SSH</a>.
 
-<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/ssh-cluster.png" alt="SSH settings for Cluster" width="50%">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/ssh-cluster.png" alt="SSH settings for Cluster" width="70%">
 
 ## Step 8. Specify a cluster name
 
 Enter the cluster's name in the field.
 
-<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/name-cluster.png" alt="Name for Cluster" width="50%">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/name-cluster.png" alt="Name for Cluster" width="70%">
 
 ## Step 9. (Optional) Configure logging 
 
