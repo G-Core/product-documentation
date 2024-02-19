@@ -9,7 +9,7 @@ toc:
    --2--"Edit client" tab: "edit-client-tab"
    --2--"Services" tab: "services-tab"
    --2--"Users" tab: "users-tab"
-   --1--Delete client: "delete-client"
+   --1--Delete: "delete-account"
    --1--Log in to a client account: "log-in-to-a-client-account"
 ---
 # Manage clients
@@ -100,13 +100,17 @@ You can edit a client's name, email address, language of automatic emails and us
 
 <a href="https://gcore.com/docs/account-settings/users/about-users" target="_blank">About Users</a>
 
-## Delete client
+## Delete account
 
-A client can send a request to delete the account from the "Profile" menu in the control panel.
+To delete their accounts, customers should navigate to the "Profile" section: 
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/delete-account-70.png" alt="Delete client">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/go-to-profile.png" alt="Open profile" width="75%">
 
-When a client clicks "Got it, request the deletion", all services of his/her account will be stopped, and the deletion request appears in the control panel. 
+Then, open the "Account profile" tab, go to the "Delete account" page and click **Delete my account**. 
+
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/delete-account.png" alt="Delete account"width="85%">
+
+After confirmation all services of their accounts will be stopped, and the deletion request appears in the Customer Portal. 
 
 You can also receive emails about status updates of deletion requests. We describe how to do it in the "<a href="https://gcore.com/docs/reseller-support/manuals/vendor-settings" target="_blank">Vendor settings</a>" article.
 
