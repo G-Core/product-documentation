@@ -108,7 +108,7 @@ To delete their accounts, customers should navigate to the "Profile" section:
 
 Then, open the "Account profile" tab, go to the "Delete account" page and click **Delete my account**. 
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/delete-account.png" alt="Delete account"width="85%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/delete-account.png" alt="Delete account" width="85%">
 
 After confirmation all services of their accounts will be stopped, and the deletion request appears in the Customer Portal. 
 
