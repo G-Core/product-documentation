@@ -14,27 +14,17 @@ pageDescription: An article about conditions and periods of data deletion.
 
 ## Grounds for product and data deletion
 
-We delete the product, its settings and associated customer data some time after the product was suspended. Products can be suspended in three cases:
+We delete a service, its settings, and associated customer data after the service is suspended. The duration depends on the product; scroll down for full details.
+
+Products can be suspended in three cases:
 
 1. If you <a href="https://gcore.com/docs/account-settings/billing/disable-and-resume-a-service#disable-services" target="_blank">disabled the product</a> manually.
-2. After the end of the <a href="https://gcore.com/docs/account-settings/billing/trial-conditions" target="_blank">trial</a>, if you did not enable any plan.
-3. After an unsuccessful payment charge attempt. 
+2. At the end of a <a href="https://gcore.com/docs/account-settings/billing/trial-conditions" target="_blank">Base Trial</a>, if you didn't enable a plan.
+3. After an unsuccessful payment charge attempt. If one of your products is suspended because of an unsuccessful payment attempt, all other products in your account are also suspended.
 
-<alert-element type="caution" title="Caution">
+## When are services and data deleted after suspension?
 
-If at least one of your products were suspended because of an unsuccessful payment attempt, all other products in your account would be suspended, too.
-
-</alert-element>
-
-## When are products and data deleted after suspension?
-
-After the product is suspended, some time passes before it will be deleted with all <a href="https://gcore.com/docs/account-settings/billing/data-deletion#what-data-will-be-deleted" target="_blank">customer data</a>. The period between suspension and deletion depends on the product.  
-
-<alert-element type="warning" title="Warning">
-
-All periods mentioned below are applied to all Gcore accounts by default. They can differ in particular cases if a personal manager or technical support changes the number of days for your account by mutual preliminary arrangement.
-
-</alert-element>
+After a service is suspended, we don't immediately delete it and its associated <a href="https://gcore.com/docs/account-settings/billing/data-deletion#what-data-will-be-deleted" target="_blank">customer data</a>. The period between suspension and deletion depends on the product.  
 
 <table>
 <tr>
@@ -148,9 +138,11 @@ DDoS Protection
 
 <span style="color:#FF5913">*</span>Data stored on worker nodes will be deleted immediately after suspension. Data stored on volumes attached to the cluster will be deleted within 48 hours.
 
-<alert-element type="caution" title="Caution">
+<alert-element type="warning" title="Warning">
 
-The mentioned periods are subject to change. Check the <a href="https://gcore.com/legal" target="_blank">Master Services Agreement</a> (item 16) and product specifications.
+The durations mentioned above are applied to all Gcore accounts by default. They can differ in particular cases if a personal manager or technical support changes the number of days for your account by mutual preliminary arrangement.
+
+The standard durations are subject to change. Check the <a href="https://gcore.com/legal" target="_blank">Master Services Agreement</a> (item 16) and product specifications.
 
 </alert-element>
 
@@ -266,3 +258,4 @@ DDoS profile
 </tr>
 </tbody>
 </table>
+Dash, don't hate me but I really dislike that the table copy is centered. Can we go back to left-align? It's easier to read.
