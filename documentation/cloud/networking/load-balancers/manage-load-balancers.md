@@ -1,6 +1,6 @@
 ---
 title: manage-load-balancers
-displayName: Load balancer
+displayName: Manage load balancer
 published: true
 order: 15
 toc:
