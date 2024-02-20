@@ -69,11 +69,11 @@ Configure listeners—an option that checks for connection requests using the pr
 
 In the pop-up window, specify the needed configuration:
 
-1. Type the listener's name.
-2. Select a protocol (TCP, UDP, HTTP, Terminated HTTPS or Prometheus).
-3. Specify the port in the range from 1 to 65535.
-4. Enable "Add headers X-Forwarded-For, X-Forwarded-Port, X-Forwarded-Proto to requests" to identify the origin of the user's IP address connecting to a web server via a load balancer. 
-5. Specify connection limit (number of simultaneous connections).
+1\. Type the listener's name.
+2\. Select a protocol (TCP, UDP, HTTP, Terminated HTTPS or Prometheus).
+3\. Specify the port in the range from 1 to 65535.
+4\. Enable "Add headers X-Forwarded-For, X-Forwarded-Port, X-Forwarded-Proto to requests" to identify the origin of the user's IP address connecting to a web server via a load balancer. 
+5\. Specify connection limit (number of simultaneous connections).
 
 Click **Create Listener**.
 
@@ -85,13 +85,13 @@ Configure a pool—a list of virtual machines to which the listener will redirec
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-pools-lb.png" alt="Add pools" width="55%">
 
-1. Specify the pool name.
-2. Select the balancing algorithm:          
+1\. Specify the pool name.
+2\. Select the balancing algorithm:          
     - **Round robin**—requests are distributed across servers within a cluster one by one: the first request is sent to the first server, the second request is sent to the second server, and so on in a circle. 
     - **Least Connection**—new requests are sent to a server with the fewest active connections. 
     - **Source IP**—a client's IP address is used to determine which server receives the request. 
-3. A protocol will be automatically selected based on the listener's settings: the HTTP listener can communicate with servers via the HTTP protocol.
-4. Select **App Cookie** and fill in the "Cookie"**" field. <a href="https://code.google.com/p/nginx-sticky-module/)" target="_blank">A special module</a> creates a cookie and then uses it to forward requests to the same server.  
+3\. A protocol will be automatically selected based on the listener's settings: the HTTP listener can communicate with servers via the HTTP protocol.
+4\. Select **App Cookie** and fill in the "Cookie"**" field. <a href="https://code.google.com/p/nginx-sticky-module/)" target="_blank">A special module</a> creates a cookie and then uses it to forward requests to the same server.  
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-pool-conf-lb.png" alt="Pool configuration" width="70%">
 
@@ -101,18 +101,18 @@ Configure a pool—a list of virtual machines to which the listener will redirec
 
 Click **Add Instance** to add virtual machines that will participate in the traffic distribution for the configured listener. 
 
-1. Select Custom IP, Instance or Bare Metal and appropriate configurations. 
-2. Specify its port and weight in the distribution. 
+1\. Select Custom IP, Instance or Bare Metal and appropriate configurations. 
+2\. Specify its port and weight in the distribution. 
 
 ### Health Сheck
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-instance-conf-lb.png" alt="Configure Health Check" width="65%">
 
-1. Select the protocol for checking: TCP, Ping, HTTP and appropriate configurations. 
-2. Specify сheck interval (sec)—time between sent requests 
-3. Specify response time (sec)—the time to wait for a response from a server 
-4. Specify unhealthy threshold—the number of failed requests after which traffic will no longer be sent to the virtual machine 
-5. Specify healthy thresholds—the number of successful requests after which the virtual machine will be considered ready to receive traffic.
+1\. Select the protocol for checking: TCP, Ping, HTTP and appropriate configurations. 
+2\. Specify сheck interval (sec)—time between sent requests 
+3\. Specify response time (sec)—the time to wait for a response from a server 
+4\. Specify unhealthy threshold—the number of failed requests after which traffic will no longer be sent to the virtual machine 
+5\. Specify healthy thresholds—the number of successful requests after which the virtual machine will be considered ready to receive traffic.
 
 ### Timeouts
 
