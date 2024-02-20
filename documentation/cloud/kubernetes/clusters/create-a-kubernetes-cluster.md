@@ -118,7 +118,7 @@ By default, your container is under Basic DDoS Protection. It can prevent certai
 
 You can enable **Advanced DDoS Protection** for your private network. To do so, activate the **Enable Advanced DDoS Protection** toggle, open the drop-down menu, and select the desired template from the list. We currently support the following templates: CS:GO, Rust, ARK, Basic L3/L4, or TCP protection. 
 
-The settings offered depend on the selected template. For example, for the Basic L3/L4 specify the uppermost threshold of attack that our DDoS Protection can mitigate in the “Mitigation capacity” field.
+The settings offered depend on the selected template. For example, for the Basic L3/L4 specify the uppermost threshold of attack in Gbps that our DDoS Protection can mitigate in the “Mitigation capacity” field.
 
 <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/ddos-k8s.png" alt="Configure profile template">
 
