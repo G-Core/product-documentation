@@ -9,7 +9,7 @@ toc:
    --1--View in Customer Portal: "view-values-for-dnssec-in-the-customer-portal"
    --1--Disable: "disable-dnssec"
 pageTitle: DNSSEC—Security Extensions Overview & Configuration Guide | Gcore 
-pageDescription: Learn about DNSSEC, its benefits, and how to enable or disable it using API requests in the Gcore Customer Portal.
+pageDescription: Learn about DNSSEC, its benefits, and how to enable or disable it via API requests or the Gcore Customer Portal.
 ---
 # Getting started with DNSSEC 
 
@@ -17,14 +17,14 @@ pageDescription: Learn about DNSSEC, its benefits, and how to enable or disable 
 
 DNSSEC (DNS Security Extensions) is a set of security extensions for DNS, functioning as an additional layer of authentication. DNSSEC guards against attacks such as DNS cache poisoning, where scammers attempt to redirect users to a harmful site even when users input a valid web address.
 
-At its core, DNSSEC validates digital signatures in a sequential manner across a chain of trust, extending from the DNS root to the specific DNS record being requested. DNSSEC permits authoritative DNS servers to respond with a signature. Recursive DNS resolvers (recursors) then use these signatures to authenticate the DNS responses.
+DNSSEC validates digital signatures in a sequential manner across a chain of trust, extending from the DNS root to the specific DNS record being requested. DNSSEC permits authoritative DNS servers to respond with a signature. Recursive DNS resolvers (recursors) then use these signatures to authenticate the DNS responses.
 
 <alert-element type="warning" title="Warning">
 
 DNSSEC does not encrypt the data between the end user and the recursor. To ensure confidentiality and integrity between clients and recursors, use technologies such as DNS over HTTPS (DoH) and DNS over TLS (DoT). We plan to implement DNS over TLS/HTTPS secure protocols on our public servers to reduce the risk of query interceptions.
-
+Dash please add a timeline in line 24, even like "on our public servers in 2024 to reduce" or sth. Otherwise sounds like an empty promise and we are leaving users in a bad situation.
 </alert-element>
-
+Dash, we only show API method. We should mention it's possible also via Customer Portal. Please, can you add a section for it. Also, please can you remove all the "info" and "warning" boxes. They make the page cluttered, it's not necessary (but I understand the logic)
 ## Enable DNSSEC via DNS API
 
 <alert-element type="info" title="Info"> 
