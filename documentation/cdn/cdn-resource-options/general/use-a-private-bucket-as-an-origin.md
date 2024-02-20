@@ -188,14 +188,14 @@ c. Enter the payload in the text area. Replace the sample values indicated by ``
 
 ## Troubleshooting Amazon S3 (403 Forbidden for HEAD requests)
 
-When using private buckets in Amazon S3 storage as an origin, you might encounter a 403 Forbidden error for HEAD requests meant to retrieve metadata. However, a GET request may operate without any errors and return a 200 OK status. The disparity in the results of these requests can be attributed to several reasons:
+When using private buckets in Amazon S3 storage as an origin, you might encounter a 403 Forbidden error for HEAD requests intended to retrieve metadata. However, a GET request may operate without any errors and return a 200 OK status. The disparity in the results of these requests can be attributed to several causes:
 
-1. **Restricted object-level permissions**: If the buckets or IAM policy permits public read access but the object's Access Control List (ACL) denies access to your user or role, AWS S3 will return a 403 status for HEAD requests.
+1. **Restricted object-level permissions:** If the buckets or IAM policy permits public read access but the object's Access Control List (ACL) denies access to your user or role, AWS S3 will return a 403 status for HEAD requests.
 
-2. **Different policies in effect**: If the user making the HEAD request doesn't have the necessary permissions to read the object's metadata, AWS S3 will return a 403 status for HEAD requests.
+2. **Different policies in effect:** If the user making the HEAD request doesn't have the necessary permissions to read the object's metadata, AWS S3 will return a 403 status for HEAD requests.
 
-3. **Incorrect parameters in presigned URLs**: If a <a href="https://gcore.com/docs/storage/manage-s3-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/generate-temporary-links-to-files-with-aws-cli-and-s3cmd" target="_blank">presigned URL</a> for a HEAD request was generated with incorrect parameters, AWS will return a 403. The parameters for URL generation (like access key, secret access key, bucket name, object key, etc.) must be consistent for both HEAD and GET requests.
+3. **Incorrect parameters in presigned URLs:** If a <a href="https://gcore.com/docs/storage/manage-s3-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/generate-temporary-links-to-files-with-aws-cli-and-s3cmd" target="_blank">presigned URL</a> for a HEAD request was generated with incorrect parameters, AWS will return a 403 error. The parameters for URL generation (access key, secret access key, bucket name, object key, etc.) must be consistent for both HEAD and GET requests.
 
-4. **Different owners for bucket and object**: If the bucket and object belong to different AWS accounts and the object owner hasn't granted the necessary permissions to the bucket owner, AWS will return a 403 for a HEAD request and a 200 for a GET request.
+4. **Different owners for bucket and object:** If the bucket and object belong to different AWS accounts and the object owner hasn't granted the necessary permissions to the bucket owner, AWS will return a 403 error for a HEAD request and a 200 status for a GET request.
 
-To resolve the issue, you need to modify the bucket policy, IAM, or the object's ACL.
+To resolve the issue, modify the bucket policy, IAM, or the object's ACL as required.
