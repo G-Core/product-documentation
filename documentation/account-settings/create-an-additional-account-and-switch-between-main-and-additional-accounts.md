@@ -19,7 +19,7 @@ You can manage multiple accounts from your personal account without re-authoriza
 
 This is convenient if you are a user of several accounts and if you need to switch between them while working.
 
-1\. Click on the profile icon in the lower-right corner of the page.
+1\. 
 
 2\. Point the cursor over the account name. A list of all the accounts available to you will be opened. At the end of the list, you will see Create a new account button.
 
