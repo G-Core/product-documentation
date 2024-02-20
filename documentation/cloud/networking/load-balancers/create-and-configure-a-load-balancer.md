@@ -1,6 +1,6 @@
 ---
 title: create-and-configure-a-load-balancer
-displayName: Load balancer
+displayName: Create load balancer
 published: true
 order: 10
 toc:
