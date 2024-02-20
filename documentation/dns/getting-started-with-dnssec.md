@@ -5,11 +5,12 @@ published: true
 order: 60
 toc:
    --1--Overview: "dnssec-overview"
-   --1--Enable via API: "enable-dnssec-via-dns-api"
-   --1--View in Customer Portal: "view-values-for-dnssec-in-the-customer-portal"
+   --1--Enable: "enable-dnssec"
+   --2--API: "dns-api"
+   --2--Customer Portal: "customer-portal"
    --1--Disable: "disable-dnssec"
 pageTitle: DNSSEC—Security Extensions Overview & Configuration Guide | Gcore 
-pageDescription: Learn about DNSSEC, its benefits, and how to enable or disable it using API requests in the Gcore Customer Portal.
+pageDescription: Learn about DNSSEC, its benefits, and how to enable or disable it via API requests or the Gcore Customer Portal.
 ---
 # Getting started with DNSSEC 
 
@@ -17,21 +18,22 @@ pageDescription: Learn about DNSSEC, its benefits, and how to enable or disable 
 
 DNSSEC (DNS Security Extensions) is a set of security extensions for DNS, functioning as an additional layer of authentication. DNSSEC guards against attacks such as DNS cache poisoning, where scammers attempt to redirect users to a harmful site even when users input a valid web address.
 
-At its core, DNSSEC validates digital signatures in a sequential manner across a chain of trust, extending from the DNS root to the specific DNS record being requested. DNSSEC permits authoritative DNS servers to respond with a signature. Recursive DNS resolvers (recursors) then use these signatures to authenticate the DNS responses.
+DNSSEC validates digital signatures in a sequential manner across a chain of trust, extending from the DNS root to the specific DNS record being requested. DNSSEC permits authoritative DNS servers to respond with a signature. Recursive DNS resolvers (recursors) then use these signatures to authenticate the DNS responses.
 
 <alert-element type="warning" title="Warning">
 
-DNSSEC does not encrypt the data between the end user and the recursor. To ensure confidentiality and integrity between clients and recursors, use technologies such as DNS over HTTPS (DoH) and DNS over TLS (DoT). We plan to implement DNS over TLS/HTTPS secure protocols on our public servers to reduce the risk of query interceptions.
+DNSSEC does not encrypt the data between the end user and the recursor. To ensure confidentiality and integrity between clients and recursors, use technologies such as DNS over HTTPS (DoH) and DNS over TLS (DoT). We plan to implement DNS over TLS/HTTPS secure protocols on our public servers in 2024 to reduce the risk of query interceptions.
 
 </alert-element>
 
-## Enable DNSSEC via DNS API
+## Enable DNSSEC 
 
-<alert-element type="info" title="Info"> 
+<tabset-element>
+
+### DNS API
 
 Remember to replace the placeholders in the API request samples in double curly brackets with your own values.
 
-</alert-element>
 
 1\. <a href="https://api.gcore.com/docs/dns#tag/Zones/operation/CreateZone" target="_blank">Create a domain zone</a> for which you want to use DNSSEC using the following API request:
 
@@ -108,11 +110,7 @@ Here's an example output.
 }
 ```
 
-<alert-element type="warning" title="Warning">
-
 The DS value of the record is represented in the “ds” field, not “digest.”
-
-</alert-element>
 
 5\. Input the Delegation Signer record in your registrar’s control panel.
 
@@ -124,25 +122,32 @@ Once you've added a Delegation Signer record in your domain registrar's control 
 
 That's it. You have completed the configuration on your end.
 
-## View values for DNSSEC in the Customer Portal
+### Customer Portal
 
 To enable the DNSSEC feature in the Gcore Customer Portal, contact [technical support](mailto:support@gcore.com). This step is only necessary during closed beta testing.
 
-Open the added domain zone in the Customer Portal. If DNSSEC was successfully enabled for your Gcore account, you will see the activated toggle in the advanced mode.
+1\. Go to the <a href="https://portal.gcore.com/dns/zones" target="_blank">All zones</a> section and open the existing zone or create the new one according to the <a href="https://gcore.com/docs/dns/manage-a-dns-zone#create-a-dns-zone" target="_blank">dedicated guide</a>.
 
-<img src="https://assets.gcore.pro/docs/dns/getting-started-with-dnssec/dnssec-is-enabled-10.png" alt="How to know that DNSSEC is enabled" width="80%">
+2\. Ensure that the <a href="https://gcore.com/docs/dns/about-gcore-dns#interface-modes-non-advanced-and-advanced" target="_blank">advanced interface mode</a> is enabled. If not—enable it.
 
-Click the info icon to open the popup with keys and other signing information.
+3\. Enable DNSSEC
 
-<img src="https://assets.gcore.pro/docs/dns/getting-started-with-dnssec/dnssec-configuration-20.png" alt="DNSSEC configuration page" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/getting-started-with-dnssec/enable-dnssec-cp.png" alt="Enable DNSSEC" width="80%"> 
+
+The pop-up window will apear. 
+
+4\. Copy the value in the "DS record" (Deligation Signer) field.
+
+<img src="https://assets.gcore.pro/docs/dns/getting-started-with-dnssec/ds-value-dnssec.png" alt="Copy the DS record" width="80%"> 
+ 
+5\. Input the Delegation Signer record in your registrar’s control panel.
+
+</tabset-element>
 
 ## Disable DNSSEC
 
-<alert-element type="info" title="Info"> 
-
 Remember to replace the placeholders in the API request samples in double curly brackets with your own values.
 
-</alert-element>
 
 To disable DNSSEC:
 
@@ -156,5 +161,7 @@ Content-Type: application/json
 Authorization: APIKey {{apikey}} 
 {"enabled":false}
 ```
+
+Or just disable the feature in the Customer Portal. 
 
 3\. After disabling DNSSEC, wait for the TTL of the DS record to expire so the cached record will expire.
