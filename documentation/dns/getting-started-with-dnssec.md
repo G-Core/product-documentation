@@ -54,9 +54,9 @@ Authorization: APIKey {{apikey}}
 } 
 ```
 
-<alert-element type="warning" title="Warning">
+<alert-element type="warning" title="Tip">
 
-If you're transferring your DNS zone from one DNS provider to another, disable DNSSEC in advance and wait for the DS record TTL time before taking further actions.
+If you're transferring your DNS zone from one DNS provider to another, disable DNSSEC in advance and wait the duration of the DS record TTL time before taking further action.
 
 </alert-element>
 
@@ -86,7 +86,7 @@ Authorization: APIKey {{apikey}}
 {"enabled":true}
 ```
 
-4\. Obtain Delegation Signer record data for your registrar control panel using the following API request:
+4\. Obtain Delegation Signer (DS) record data for your registrar control panel using the following API request:
 
 ```
 GET https://api.gcore.com/dns/v2/zones/{{zone_name}}/dnssec 
@@ -112,35 +112,29 @@ Here's an example output.
 
 The DS value of the record is represented in the “ds” field, not “digest.”
 
-5\. Input the Delegation Signer record in your registrar’s control panel.
+5\. Input the Delegation Signer (DS) record in your registrar’s control panel.
 
-<alert-element type="caution" title="Caution">
-
-Once you've added a Delegation Signer record in your domain registrar's control panel, the changes may take up to 24 hours to take effect, though usually, it takes about an hour.
-
-</alert-element>
-
-That's it. You have completed the configuration on your end.
+That's it. You have completed the configuration on your end. However, please note that adding a Delegation Signer (DS) record in your domain registrar's control panel may take up to 24 hours to take effect, though usually, it takes about an hour.
 
 ### Customer Portal
 
 To enable the DNSSEC feature in the Gcore Customer Portal, contact [technical support](mailto:support@gcore.com). This step is only necessary during closed beta testing.
 
-1\. Go to the <a href="https://portal.gcore.com/dns/zones" target="_blank">All zones</a> section and open the existing zone or create the new one according to the <a href="https://gcore.com/docs/dns/manage-a-dns-zone#create-a-dns-zone" target="_blank">dedicated guide</a>.
+1\. Go to <a href="https://portal.gcore.com/dns/zones" target="_blank">All zones</a> and open the existing zone, or create the new one according to our <a href="https://gcore.com/docs/dns/manage-a-dns-zone#create-a-dns-zone" target="_blank">dedicated guide</a>.
 
-2\. Ensure that the <a href="https://gcore.com/docs/dns/about-gcore-dns#interface-modes-non-advanced-and-advanced" target="_blank">advanced interface mode</a> is enabled. If not—enable it.
+2\. Enable <a href="https://gcore.com/docs/dns/about-gcore-dns#interface-modes-non-advanced-and-advanced" target="_blank">advanced interface mode</a> if it's not already enabled.
 
 3\. Enable DNSSEC
 
 <img src="https://assets.gcore.pro/docs/dns/getting-started-with-dnssec/enable-dnssec-cp.png" alt="Enable DNSSEC" width="80%"> 
 
-The pop-up window will apear. 
+A pop-up window will appear. 
 
 4\. Copy the value in the "DS record" (Deligation Signer) field.
 
 <img src="https://assets.gcore.pro/docs/dns/getting-started-with-dnssec/ds-value-dnssec.png" alt="Copy the DS record" width="80%"> 
  
-5\. Input the Delegation Signer record in your registrar’s control panel.
+5\. Paste this Delegation Signer record value into your registrar’s control panel.
 
 </tabset-element>
 
@@ -151,7 +145,7 @@ Remember to replace the placeholders in the API request samples in double curly 
 
 To disable DNSSEC:
 
-1\. Remove the DS record in the registrar control panel. The DNS record in the upper-level zone informs the recursors that they must validate authoritative servers responses for your zone. If DNSSEC is disabled in Gcore but not in the upper-level domain, recursors will attempt to validate a record signature that is already disabled. This scenario will cause an outage for your domain.
+1\. Remove the DS record in the registrar control panel. The DNS record in the upper-level zone informs the recursors that they must validate authoritative servers' responses for your zone. If DNSSEC is disabled in Gcore but not in the upper-level domain, recursors will attempt to validate a record signature that is already disabled. This scenario will cause an outage for your domain.
 
 2\. Disable DNSSEC in Gcore using the following API request:
 
@@ -162,6 +156,6 @@ Authorization: APIKey {{apikey}}
 {"enabled":false}
 ```
 
-Or just disable the feature in the Customer Portal. 
+Or, disable the feature in the Customer Portal by turning off the toggle.
 
-3\. After disabling DNSSEC, wait for the TTL of the DS record to expire so the cached record will expire.
+3\. After disabling DNSSEC, wait the duration of the TTL of the DS record. The cached record will expire for seamless performance.
