@@ -118,8 +118,6 @@ That's it. You have completed the configuration on your end. However, please not
 
 ### Customer Portal
 
-To enable the DNSSEC feature in the Gcore Customer Portal, contact [technical support](mailto:support@gcore.com). This step is only necessary during closed beta testing.
-
 1\. Go to <a href="https://portal.gcore.com/dns/zones" target="_blank">All zones</a> and open the existing zone, or create the new one according to our <a href="https://gcore.com/docs/dns/manage-a-dns-zone#create-a-dns-zone" target="_blank">dedicated guide</a>.
 
 2\. Enable <a href="https://gcore.com/docs/dns/about-gcore-dns#interface-modes-non-advanced-and-advanced" target="_blank">advanced interface mode</a> if it's not already enabled.
