@@ -216,6 +216,8 @@ Headers: {
    "<span style="color:#FF5913">pop-city</span>": "Luxembourg",
 }
 
+</code-block>
+
 Where:
 
 - <span style="color:#FF5913">custom-header</span> is the added custom header
