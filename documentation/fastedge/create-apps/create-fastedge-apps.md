@@ -1,6 +1,6 @@
 ---
 title: create-fastedge-apps
-displayName: Create apps
+displayName: Rust
 published: true
 order: 10
 toc:
@@ -18,10 +18,11 @@ toc:
    --2--Step 2. Compile and upload binary: "step-2-compile-and-upload-the-binary-file"
    --2--Step 3. Update the app: "step-3-update-the-app"
    --2--Step 4. Test an app: "step-4-test-an-app"
-pageTitle: A Guide on How to Create an App with FastEdge | Gcore 
-pageDescription: A step-by-step guide on how to create a Wasm binary file and upload the app to our edge network.
+pageTitle: How to Create an Rust App with FastEdge | Gcore 
+pageDescription: How to create a Wasm binary file in Rust and upload the app to our edge network.
+customUrl: /fastedge/getting-started/create-fastedge-apps
 ---
-# How to create a FastEdge app
+# Create a FastEdge app using Rust
 
 This guide describes how to create a FastEdge app. Check out our <a href="https://gcore.com/docs/fastedge/getting-started" target="_blank">FastEdge overview</a> article to learn more about the product.
 
