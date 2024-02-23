@@ -67,14 +67,14 @@ node ./componentize-cli.js dist/index.js dist/main.wasm
 
 1\. Upload the Wasm binary to our edge servers by running the <a href="https://api.gcore.com/docs/fastedge#tag/Binaries/operation/storeBinary" target="_blnk">API request</a> from the repository’s root directory.
 
-```
+<code-block>
 curl -X 'POST' \
     'https://api.gcore.com/fastedge/v1/binaries/raw' \
     -H 'accept: application/json' \
     -H 'Authorization: APIKey <api_key>' \
     -H 'Content-Type: application/octet-stream' \
     --data-binary '@./dist/main.wasm'
-```
+</code-block>
 
 Here, ```<api_key>``` is your permanent <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">API token</a>.
 
@@ -82,20 +82,20 @@ In the response, you will receive the ID of the uploaded binary (```<binary_id>`
 
 2\. Create the app by running the <a href="https://api.gcore.com/docs/fastedge#tag/Apps/operation/addApp" target="_blank">API request</a>:
 
-```
+<code-block>
 curl -X 'POST' \
    'https://api.gcore.com/fastedge/v1/apps' \
    -H 'name: <app_name>' \
    -H 'accept: application/json' \
    -H 'client_id: 0' \
-   -H 'Authorization: APIKey <api_key> ' \
+   -H 'Authorization: APIKey <api_key>' \
    -H 'Content-Type: application/json' \
    -d '{
    "binary": <binary_id>,
    "plan": "beta",
    "status": 1
 }'
-```
+</code-block>
 
 Where: 
 
@@ -107,9 +107,9 @@ Where:
 
 Test the app by running the curl request:
 
-```
+<code-block>
 curl https://<app_name>.fastedge.gcore.dev/
-```
+</code-block>
 
 Here, ```<app_name>``` is the actual name of your app assigned in the previous stage. If everything is correct, the response will be: ```You made a request to /```
 
@@ -119,7 +119,7 @@ You can add more functionality to your app. For instance, instead of printing ``
 
 1\. Replace the <a href="https://gcore.com/docs/fastedge/create-apps/create-a-fastedge-app-using-javascript-sdk#basic-javascript-example" target="_blank">basic example</a> in the ```dist/index.js``` with the following code to display request headers and create a custom response header:
 
-```
+<code-block>
 import { getEnv } from 'fastedge::getenv';
 async function eventHandler(event) {
    const request = event.request;
@@ -134,7 +134,7 @@ async function eventHandler(event) {
 addEventListener('fetch', (event) => {
    event.respondWith(eventHandler(event));
 });
-```
+</code-block>
 
 The application logic (e.g., location-aware redirection) assumes the use of the headers listed below. These headers may change in the future. 
 
@@ -150,11 +150,11 @@ Don’t forget to save the ID of the new Wasm binary.
 
 4\. Update the app by running the following API request:
 
-```
+<code-block>
 curl -X 'PUT' \
- 'https://api.gcore.com/fastedge/v1/apps/ <app_id> ' \
+ 'https://api.gcore.com/fastedge/v1/apps/ <app_id>' \
  -H 'accept: application/json' \
- -H 'Authorization: APIKey <api_key> ' \
+ -H 'Authorization: APIKey <api_key>' \
  -H 'Content-Type: application/json' \
  -d '{
    "binary": <new_binary_id>,
@@ -165,7 +165,7 @@ curl -X 'PUT' \
      "MY_CUSTOM_ENV_VAR": "Custom-Header-Value"
    }
  }
-```
+</code-block>
 
 Where:
 
@@ -185,7 +185,6 @@ Where ```<app_name>``` is your actual app name assigned at the previous stage.
 If everything is correct, the response will be: 
 
 <code-block>
-
 Headers: {
    "<span style="color:#FF5913">dc</span>": "ed",  
    "<span style="color:#FF5913">my-custom-header</span>": "Custom-Header-Value",  
@@ -215,7 +214,6 @@ Headers: {
    "<span style="color:#FF5913">pop-continent</span>": "EU",  
    "<span style="color:#FF5913">pop-city</span>": "Luxembourg",
 }
-
 </code-block>
 
 Where:
