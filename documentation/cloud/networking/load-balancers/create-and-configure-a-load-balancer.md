@@ -16,7 +16,7 @@ toc:
    --2--Timeouts: "timeouts"
    --1--6. Enter name: "step-6-enter-the-name"
    --1--7. (Optional) Enable Logging: "step-7-optional-enable-logging"
-   --1--8. (Optional) Add tags: "step-8-Optional-add-tags"
+   --1--8. (Optional) Add tags: "step-8-optional-add-tags"
    --1--9. Finalize: "step-9-finalize-creation"
    --1--10. Check firewall: "step-10-configure-firewall"
 pageTitle: Add a Load Balancer | Gcore
