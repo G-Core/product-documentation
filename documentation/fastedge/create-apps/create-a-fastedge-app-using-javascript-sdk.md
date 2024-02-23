@@ -1,7 +1,7 @@
 ---
 title: create-a-fastedge-app-using-javascript-sdk
 displayName: JavaScript SDK
-published: true
+published: false
 order: 20
 toc:
    --1--Overview: "overview"
