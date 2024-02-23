@@ -12,22 +12,6 @@ pageDescription: Learn how to configure a load balancer to distribute incoming r
 ---
 # Manage load balancers
 
-Configure firewalls for instances in the pool.
-
-Make sure their ports are open for the load balancer traffic:
-
-*   If a balancer and instances are in a **public network,** set a rule to receive and transmit traffic to the balancer's IP address (specified in the menu) in firewalls settings of the instances.
-*   If a balancer and instances are in a **private subnetwork,** set a rule to receive and transmit traffic to the entire private subnetwork or to the balancer's IP address (specified in the menu).
-*   If a balancer is in a **public network** and instances are in a **private subnetwork**, set a rule to receive and transmit traffic to the entire private subnetwork or to the balancer's internal IP address (send a request to the technical support).
-
-Set up the balancer's firewall (optionally)
-
-Create a custom security group (this is the firewall) and edit it: configure the rules for inbound and outbound traffic.
-
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/mceclip0.png" alt="Create a custom security group also known as a firewall">
-
-## Manage a load balancer
-
 The list of created balancers is located inside the project - > Networking - > Load balancers
 
 There you can:

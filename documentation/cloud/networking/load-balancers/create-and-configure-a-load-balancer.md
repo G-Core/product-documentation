@@ -17,7 +17,8 @@ toc:
    --1--6. Enter name: "step-6-enter-the-name"
    --1--7. (Optional) Enable Logging: "step-7-optional-enable-logging"
    --1--8. (Optional) Add tags: "step-8-Optional-add-tags"
-   --1--9. Finalize: "step-9-finalize"
+   --1--9. Finalize: "step-9-finalize-creation"
+   --1--10. Check firewall: "step-10-configure-firewall"
 pageTitle: Add a Load Balancer | Gcore
 pageDescription: Learn how to create and configure a load balancer to distribute incoming requests across VMs, improving the fault tolerance of your infrastructure.
 customUrl: /cloud/networking/create-and-configure-a-load-balancer
@@ -70,9 +71,13 @@ Configure listeners—an option that checks for connection requests using the pr
 In the pop-up window, specify the needed configuration:
 
 1\. Type the listener's name.
+
 2\. Select a protocol (TCP, UDP, HTTP, Terminated HTTPS or Prometheus).
+
 3\. Specify the port in the range from 1 to 65535.
+
 4\. Enable "Add headers X-Forwarded-For, X-Forwarded-Port, X-Forwarded-Proto to requests" to identify the origin of the user's IP address connecting to a web server via a load balancer. 
+
 5\. Specify connection limit (number of simultaneous connections).
 
 Click **Create Listener**.
@@ -86,11 +91,14 @@ Configure a pool—a list of virtual machines to which the listener will redirec
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-pools-lb.png" alt="Add pools" width="55%">
 
 1\. Specify the pool name.
+
 2\. Select the balancing algorithm:          
     - **Round robin**—requests are distributed across servers within a cluster one by one: the first request is sent to the first server, the second request is sent to the second server, and so on in a circle. 
     - **Least Connection**—new requests are sent to a server with the fewest active connections. 
     - **Source IP**—a client's IP address is used to determine which server receives the request. 
+
 3\. A protocol will be automatically selected based on the listener's settings: the HTTP listener can communicate with servers via the HTTP protocol.
+
 4\. Select **App Cookie** and fill in the "Cookie"**" field. <a href="https://code.google.com/p/nginx-sticky-module/)" target="_blank">A special module</a> creates a cookie and then uses it to forward requests to the same server.  
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-pool-conf-lb.png" alt="Pool configuration" width="70%">
@@ -102,6 +110,7 @@ Configure a pool—a list of virtual machines to which the listener will redirec
 Click **Add Instance** to add virtual machines that will participate in the traffic distribution for the configured listener. 
 
 1\. Select Custom IP, Instance or Bare Metal and appropriate configurations. 
+
 2\. Specify its port and weight in the distribution. 
 
 ### Health Сheck
@@ -109,9 +118,13 @@ Click **Add Instance** to add virtual machines that will participate in the traf
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-instance-conf-lb.png" alt="Configure Health Check" width="65%">
 
 1\. Select the protocol for checking: TCP, Ping, HTTP and appropriate configurations. 
-2\. Specify сheck interval (sec)—time between sent requests 
-3\. Specify response time (sec)—the time to wait for a response from a server 
-4\. Specify unhealthy threshold—the number of failed requests after which traffic will no longer be sent to the virtual machine 
+
+2\. Specify сheck interval (sec)—time between sent requests.
+
+3\. Specify response time (sec)—the time to wait for a response from a server.
+
+4\. Specify unhealthy threshold—the number of failed requests after which traffic will no longer be sent to the virtual machine.
+
 5\. Specify healthy thresholds—the number of successful requests after which the virtual machine will be considered ready to receive traffic.
 
 ### Timeouts
@@ -138,6 +151,20 @@ Create tags for your load balancer by entering "Key" and "Valu."
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-8-lb.png" alt="Configure tags" width="65%"> 
 
-## Step 9. Finalize
+## Step 9. Finalize creation
 
 Check the settings and click **Create Load Balancer** on the right. 
+
+## Step 10. Configure firewall
+
+Configure firewalls for instances in the pool according to the <a href="https://gcore.com/docs/cloud/networking/add-and-configure-a-firewall" target="_blank">separate guide</a>.
+
+Make sure their ports are open for the load balancer traffic:
+
+- If a balancer and instances are in a **public network,** set a rule to receive and transmit traffic to the balancer's IP address (specified in the menu) in firewalls settings of the instances.
+- If a balancer and instances are in a **private subnetwork,** set a rule to receive and transmit traffic to the entire private subnetwork or to the balancer's IP address (specified in the menu).
+- If a balancer is in a **public network** and instances are in a **private subnetwork**, set a rule to receive and transmit traffic to the entire private subnetwork or to the balancer's internal IP address (send a request to the technical support).
+
+Create a custom security group (this is the firewall) and edit it: configure the rules for inbound and outbound traffic.
+
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/firewall-lb.png" alt="Create a custom security group also known as a firewall">

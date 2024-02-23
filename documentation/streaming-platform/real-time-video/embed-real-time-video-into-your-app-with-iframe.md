@@ -4,89 +4,111 @@ displayName: Embed with iframe
 published: true
 order: 60
 toc:
-   --1--Overview: "overview-of-how-the-real-time-video-module-is-embedded-into-apps"
-   --1--Embedding: "how-to-embed-a-real-time-video-module-into-your-app"
+   --1--Overview: "overview-of-gcore-real-time-video-app-embedding"
+   --1--Embedding: "how-to-embed-a-gcore-real-time-video-module-into-your-app"
    --2--For beginners: "for-beginners"
-   --2--For pro: "for-developers-advanced-customization"
-pageTitle: A Detailed Guide on how to Embed the Real-Time Video via Iframe | Gcore
-pageDescription: Instructions on how to integrate video call module into your application for beginners and advanced users. 
+   --2--For developers: "for-developers-advanced-customization"
+pageTitle: How to Embed the Real-Time Video via Iframe | Gcore
+pageDescription: How to integrate Gcore's video call module into your application for beginners and advanced users. 
 ---
-# How to embed Real-Time Video into your app with iframe
+# How to embed Gcore Real-Time Video into your app with iframe
 
-## Overview of how the Real-Time Video module is embedded into apps
+## Overview of Gcore Real-Time Video app embedding
 
-<a href="https://gcore.com/streaming-platform/realtime" target="_blank">Real-Time Video</a> is an embeddable customizable Gcore Video Streaming Platform module. Using the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe" target="_blank">iframe HTML element</a>, you should embed the video calls module into your apps. For example:  
+<a href="https://gcore.com/streaming-platform/realtime" target="_blank">Gcore Real-Time Video</a> is an embeddable customizable Gcore Streaming Platform module. Using the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe" target="_blank">iframe HTML element</a>, you can embed the video calls module into your app.
+
+Here is an example of code that may be used for this purpose:  
 
 ```
 <iframe src="https://meet.gcore.com/call/serv2testroom" allow="camera; microphone; fullscreen; display-capture; autoplay; screen-wake-lock"></iframe>
 ```
 
-- In the <span style="color:#FF5913">src</span> attribute, the <a href="https://gcore.com/docs/streaming-platform/api/real-time-video-api-tutorial#create-room-url" target="_blank">URL with your video room ID</a> should be specified
-- In the <span style="color:#FF5913">allow</span> attribute, the necessary <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy#specifications" target="_blank">permission policies</a> (e.g., for the camera, microphone, fullscreen, etc.) should be set.
+- In the <span style="color:#FF5913">src</span> attribute, set the <a href="https://gcore.com/docs/streaming-platform/api/real-time-video-api-tutorial#create-room-url" target="_blank">URL with your video room ID</a>.
+- In the <span style="color:#FF5913">allow</span> attribute, set the necessary <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy#specifications" target="_blank">permission policies</a> (e.g., for the camera, microphone, fullscreen, etc.)
 
-This is how the module is displayed after implementing iframe in websites:
+This is how the module is displayed after implementing iframe on a website:
 
 <img loading="lazy" src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/web-video-calls-module-30.gif" width="602" height="350" alt="Real-Time Video">
 
-We have described the process of embedding the module in various types of OS in the following materials:
+The process of embedding the module in various OSs is explained in the following materials:
 
 - <a href="https://gcore.com/blog/add-video-call-feature-to-ios-app/" target="_blank">How to add a video call feature to your iOS app in 15 minutes</a> 
 - <a href="https://gcore.com/blog/how-to-launch-rtc-for-ios-and-android/" target="_blank">How to launch real-time communications for iOS/Android</a> 
 - <a href="https://github.com/G-Core/reactnative-demo-video-calls" target="_blank">Embed into ReacNative app</a> (GitHub code)
 - <a href="https://gcore.com/docs/streaming-platform/api/real-time-video-api-tutorial" target="_blank">Real-Time Video API tutorial</a> 
 
-## How to embed a Real-Time Video module into your app
+## How to embed a Gcore Real-Time Video module into your app
+
+Below we will look at embedding the module in a demo page, paying attention to the attributes and methods used.
 
 ### For beginners
 
-1\. Generate a room URL for your video call according to the <a href="https://gcore.com/docs/streaming-platform/api/real-time-video-api-tutorial#create-room-url" target="_blank">Create room URL guide</a>. For example, we generated the URL ```https://meet.gcore.com/call/serv2testroom```.
+1\. Generate a room URL for your video call according to <a href="https://gcore.com/docs/streaming-platform/api/real-time-video-api-tutorial#create-room-url" target="_blank">our guide</a>. For this example, we generated the URL ```https://meet.gcore.com/call/serv2testroom```.
 
-2\.  Add additional attributes from the table for managing security and Real-Time Video module features, if necessary, to your URL. For example, if we want to invite to our call a user with the Interpreter role, we should add the <a href="https://gcore.com/docs/streaming-platform/api/real-time-video-api-tutorial#rolerole" target="_blank">following attribute</a> to the URL from the first step:
+2\. Add additional attributes from the table for managing security and Gcore Real-Time Video module features, if necessary, to your URL. For example, to invite a user with the <a href="https://gcore.com/docs/streaming-platform/api/real-time-video-api-tutorial#rolerole" target="_blank">Interpreter role</a> to our call, add the following attribute to the URL from the first step:
+
 
 ```
 https://meet.gcore.com/call/serv2testroom?role=interpreter
 ```
 
-> **Note**: Additional attributes are necessarily separated from the URL by “?” and each other by the characters “&.”
+<alert-element type="tip" title="Tip">
+
+Additional attributes are necessarily separated from the URL by “?” and each other by the characters “&.” For example: 
+
+```
+https://meet.gcore.com/call/serv2testroom?role=interpreter&startWithFS=true&waitingRoom=<true|false>
+```
+
+Where:
+
+- ```https://meet.gcore.com/call/serv2testroom``` is the URL of the call
+- ```?``` is the sign indicating that it is followed by attributes.
+- ```role=interpreter``` is the first attribute which assigns the Interpreter role for the user.
+- ```startWithFS=true``` is the second attribute that enables the full-screen mode.
+- ```waitingRoom=<true|false>``` is the third attribute that enables the waiting room for participants when they connect to the call.
+- ```&``` is the separator between attributes.
+
+</alert-element>
+
 
 3\. Create an iframe HTML code. Don’t forget to add permissions policy attributes, e.g., ```allow="camera; microphone; fullscreen; display-capture; autoplay; screen-wake-lock"```. You can use the “disallow” policy.  
 
-For example, with the parameters above, the code of our iframe will be: 
+For example, with the parameters above, the iframe code will be:  
 
 ```
 <iframe src="https://meet.gcore.com/call/serv2testroom?role=interpreter" allow="camera; microphone; fullscreen; display-capture; autoplay; screen-wake-lock"></iframe>
 ```
 
 Where: 
+- ```https://meet.gcore.com/call/serv2testroom``` is a room URL.
+- ```?``` is a delimiter character for adding optional attributes.
+- ```role=interpreter``` is an additional attribute.
+- ```camera; microphone; fullscreen; display-capture; autoplay; screen-wake-lock``` are permission policies.
 
-- ```https://meet.gcore.com/call/serv2testroom``` is a room URL
-- ```?``` is a delimiter character for adding optional attributes
-- ```role=interpreter``` is an additional attribute
-- ```camera; microphone; fullscreen; display-capture; autoplay; screen-wake-lock``` are permission policies
+4\. Add the iframe your web app's code. 
 
-4\. Add the iframe to the code of your web app. 
-
-That’s it! It will be displayed in your app as the following module: 
+That’s it! Gcore Real-Time Video will be displayed in your app as the following module: 
 
 <iframe src="https://meet.gcore.com/call/serv2testroom?role=interpreter" allow="camera; microphone; fullscreen; display-capture; autoplay; screen-wake-lock" height="300px" width="100%"></iframe>
 
 ### For developers (advanced customization)
 
-1\. Build an HTML page with iframes, buttons, and other interface elements. This page will be bound to the methods necessary to control the Real-Time Video module. In the expandable block below, you can acquaint yourself with the example of implementing the Real-Time Video module into HTML. 
+1\. Build an HTML page with iframes, buttons, and other interface elements. This page will be bound to the methods necessary to control the Real-Time Video module. The expandable block below contains an example of implementing Gcore Real-Time Video module into HTML. 
 
 <expandable-element title="Example of an HTML code">
 
 We have prepared a demo page using a simple HTML sample to demonstrate elements. We used: 
 
-- **Room ID** field inserted using ```<input>``` tag with ID ```<id="id-room">```. Users should enter an ID in the field. When they click the “Generate ID” button, the content entered in the field will be pasted as a part of the src attribute after ```src="https://meet.gcore.com/call/$id-room"```. Also, autogeneration of ID with substitution of value from an array using ```getRandomInt``` function is added to the field. Values are changed every 2 seconds. When clicking “Generate ID,” a random value is substituted into the src attribute.
+- **Room ID field.** Inserted using ```<input>``` tag with ID ```<id="id-room">```. Users should enter an ID in the field. When they click the “Generate ID” button, the content entered in the field will be pasted as a part of the src attribute after ```src="https://meet.gcore.com/call/$id-room"```. Also, autogeneration of ID with substitution of value from an array using ```getRandomInt``` function is added to the field. Values are changed every 2 seconds. When clicking “Generate ID,” a random value is substituted into the src attribute.
 
-- **iframe** tag with ```src``` attribute and enabling access policy to enable camera, microphone, fullscreen mode, autoplay, hide buttons from iframe field (as we will put them separately), and participant's name. For example:
+- **iframe tag** with ```src``` attribute. Enables access policy to enable camera, microphone, fullscreen mode, autoplay, hide buttons from iframe field (as we will put them separately,) and participant's name. For example:
 
 ```
 <iframe src="https://meet.gcore.com/call/serv2test2room?controlsDisabled=true&displayName=<name>" allow="camera; microphone; fullscreen; display-capture; autoplay; screen-wake-lock" id="myIframe"></iframe>
 ```
 
-- **Buttons** control the participant's camera, microphone, and buttons responsible for sharing the screen and showing/hiding buttons inside the iframe. Real-Time Video API methods will be applied to them. 
+- **Buttons** that control the participant's camera, microphone, and buttons responsible for sharing the screen and showing/hiding buttons inside the iframe. Real-Time Video API methods will be applied to them. An additional button toggles between the mobile and desktop versions of iframe.
 - **A field and a button** to change the participant's name specified in the iframe.
 - **Buttons** that toggle between the mobile version and the desktop version of iframe.
 
@@ -121,7 +143,7 @@ We have prepared a demo page using a simple HTML sample to demonstrate elements.
                 </section>
                 <section class="step-two">
                     <h2>Step 2</h2>
-                    <p> Copy the folowing iFrame of the room and paste to your code:</p>
+                    <p> Copy the following iFrame of the room and paste to your code:</p>
                     <div class="iframe-code-block">
                         <span class="green">&lt;iframe&nbsp;</span><span class="blue"> src=</span>"https://meet.gcore.com/call/<span id="urlroom"></span>&controlsDisabled=true&displayName=<name>"<span class="blue">&nbsp;allow=</span>"camera; microphone; fullscreen; display-capture; autoplay; screen-wake-lock" id="myIframe"<span class="green">&gt;&lt;/iframe&gt;</span>
                     </div>
@@ -201,13 +223,13 @@ We have prepared a demo page using a simple HTML sample to demonstrate elements.
 npm i @gcorevideo/videocalls-iframe-adapter
 ```
 
-3\. In the JS file (instead can be used Vue, React, Angular, or another component), import ```MeetIframeBridge``` from the *npm* package;
+3\. In the JS file (instead can be used Vue, React, Angular, or another component), import ```MeetIframeBridge``` from the *npm* package.
 
 ```
 import MeetIframeBridge from "@gcorevideo/videocalls-iframe-adapter"
 ```
 
-4\. Initialize a ```MeetIframeBridge``` for the iframe (request via the ID). The following part of the code performs this action:  
+4\. Initialize a ```MeetIframeBridge``` for the iframe (request via the ID.) The following part of the code performs this action:  
 
 ```
     let bridge;
@@ -405,6 +427,6 @@ $(window).on('load', function() {
 ```
 </expandable-element>
 
-That’s it! It will be displayed in your app as the following module: 
+That’s it! Gcore Real-Time Video will be displayed in your app as the following module: 
 
 <iframe src="https://demo-files.gvideo.io/vcapi-iframe-demo/index.html"  width="100%" height="450px"></iframe>
