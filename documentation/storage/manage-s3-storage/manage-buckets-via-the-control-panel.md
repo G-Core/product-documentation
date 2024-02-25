@@ -121,21 +121,21 @@ For instance, the links for the file ```image 3972.png``` will look like this:
 
 ## Managing access
 
-If you wish to <a href="https://gcore.com/docs/storage/use-storage-as-the-origin-for-your-cdn-resource" target="_blank">use S3 storage as the origin for a CDN resource</a> or to make files accessible via an S3 URL, you'll need to allow public (HTTP) access to your bucket. To do this, go to the bucket interface, click on the three dots on the right, and select **Public access to all files**. Then, click **Apply** in the pop-up confirmation window.
+If you wish to <a href="https://gcore.com/docs/storage/use-storage-as-the-origin-for-your-cdn-resource" target="_blank">use S3 storage as the origin for a CDN resource</a> or to make files accessible via an S3 URL, you must allow public (HTTP) access to your bucket. To do this, go to the bucket interface, click on the three dots on the right, and click **Public access to all files**. Then, click **Apply** in the pop-up window.
 
 
 <img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets-via-the-control-panel/http-access-s3-bucket.png" alt="Configure HTTP access to all files" width="80%">
 
-if you want to make objects unavailable via HTTP (private), repeat the steps from the instructions above, but select the item **Default access to all files**. 
+if you want to make objects unavailable via HTTP, meaning make them private, repeat the steps from the instructions above, go to the bucket interface, click on the three dots on the right, and click **Default access to all files**. 
 
 <img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets-via-the-control-panel/default-access-s3-bucket.png" alt="Configure default access to all files" width="80%">
 
 ## Adding lifecycle policy (for S3 in Luxembourg only)
 
-To add a lifecycle policy, navigate to the bucket interface, click the three dots to the right, and select **Lifecycle management**. Set the period after which files will be deleted and click **Save changes**.
+To add a lifecycle policy, navigate to the bucket interface, click the three dots to the right, and select **Lifecycle management**. Set how long files should be retained in your bucket before deletion and click **Save changes**.
 
 <img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets-via-the-control-panel/manage-buckets-cp-120.gif" alt="Set lifecycle policy" width="80%">
 
-If you decide to remove the expiry time, click **Cancel policy**.
+If you don't want any expiry time, click **Cancel policy**.
 
-You can still set a lifecycle policy if your storage is outside the S3 Luxembourg location. Do so using the AWS CLI tool, as outlined in the <a href="https://gcore.com/docs/storage/manage-s3-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/remove-objects-from-a-bucket-automatically-with-aws-cli" target="_blank">separate guide</a>.
+You can still set a lifecycle policy if your storage is outside the S3 Luxembourg location by using the AWS CLI tool, as outlined in the <a href="https://gcore.com/docs/storage/manage-s3-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/remove-objects-from-a-bucket-automatically-with-aws-cli" target="_blank">separate guide</a>.
