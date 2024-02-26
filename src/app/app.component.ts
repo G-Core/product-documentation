@@ -5,6 +5,7 @@ import { ScullyRoute, ScullyRoutesService } from '@scullyio/ng-lib';
 import { Observable, filter, map, switchMap } from 'rxjs';
 import config from '../config';
 import { sourcebuster } from './utils/sourcebuster';
+import { AnalyticsService } from './services/analitycs.service';
 
 const defaultDescription = 'Gcore | Global Hosting, CDN, Edge and Cloud Services';
 const defaultTitle = 'Product Documentation';
@@ -27,6 +28,8 @@ const defineDomain = (): string => {
 export class AppComponent implements OnInit {
     public links$: Observable<Array<ScullyRoute>> = this.scully.available$;
 
+    public showCookieModal: boolean;
+
     constructor(
         private scully: ScullyRoutesService,
         public router: Router,
@@ -34,6 +37,7 @@ export class AppComponent implements OnInit {
         private activatedRoute: ActivatedRoute,
         private meta: Meta,
         private readonly titleService: Title,
+        private analitycsService: AnalyticsService,
     ) {
         if (config.environment === 'preprod') {
             this.meta.addTag({ name: 'robots', content: 'noindex, nofollow' });
@@ -52,7 +56,7 @@ export class AppComponent implements OnInit {
             .subscribe((link) => {
                 const lastChildRouteSnapshot: ActivatedRouteSnapshot = this.getLastChildRouteSnapshot();
 
-                const title = link.pageTitle || lastChildRouteSnapshot.data.title || defaultTitle;
+                const title = link?.pageTitle || lastChildRouteSnapshot.data.title || defaultTitle;
                 const description =
                     link?.pageDescription || lastChildRouteSnapshot.data.description || defaultDescription;
 
@@ -84,6 +88,11 @@ export class AppComponent implements OnInit {
             }, 2000);
             window.sessionStorage.setItem('fontPreloaded', 'true');
         }
+
+        // Wait until scripts are loaded and completed
+        setTimeout(() => {
+            this.showCookieModal = this.analitycsService.applyCookiesConsent();
+        }, 10000);
     }
 
     private updateCanonicalTag(url: string): void {
@@ -117,5 +126,9 @@ export class AppComponent implements OnInit {
         sourcebuster.init({
             domain: defineDomain(),
         });
+    }
+
+    public closeCookiesModal(): void {
+        this.showCookieModal = false;
     }
 }

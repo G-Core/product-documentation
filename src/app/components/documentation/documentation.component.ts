@@ -13,7 +13,7 @@ import {
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { isScullyRunning, ScullyRoute, ScullyRoutesService } from '@scullyio/ng-lib';
 import { combineLatest, first, map, Observable, of, Subscription, take } from 'rxjs';
-import { categories, HEADER_HEIGHT, METADATA_FILE_TITLE } from '../../constants';
+import { categories, HEADER_HEIGHT, headerTagNameList, METADATA_FILE_TITLE } from '../../constants';
 import { MenuItem, MenuTreeItem, TableOfContents } from '../../models';
 import { GitHubAPIService } from '../../services';
 import { MenuService } from '../../services/menu.service';
@@ -53,6 +53,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
 
     private routerSubscription: Subscription;
     private hasScrolled = false;
+    public isResellerPage = false;
 
     @ViewChild('scullyContainer') public scullyContainer: ElementRef;
     @ViewChild('fullSizeImage') public fullSizeImage: ElementRef;
@@ -114,11 +115,12 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
             this.changeDetectorRef.detectChanges();
         });
 
+        this.isResellerPage = this.router.url.includes('reseller-support');
+
         this.links$ = combineLatest([this.route.url, this.scully.available$]).pipe(
             map(([url, links]) => {
                 const anchorIndex = this.router.url.indexOf('#');
                 const pageUrl = this.getAnchor(anchorIndex, this.router.url);
-
                 this.category = url[0].path;
                 this.activeUrl = pageUrl;
                 this.activeCategoryItem = {
@@ -178,6 +180,8 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
                 this.isArticleRated = false;
                 this.isActiveLike = false;
                 this.isActiveDislike = false;
+                this.isResellerPage = this.router.url.includes('reseller-support');
+                this.changeDetectorRef.detectChanges();
             }
         });
     }
@@ -282,7 +286,10 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
         }
 
         const activeSectionId = this.tableOfContentsHeaders.reduce((activeItem: string, item) => {
-            if (document.documentElement.scrollTop + HEADER_HEIGHT + 18 > (item as HTMLElement).offsetTop) {
+            if (
+                document.documentElement.scrollTop + HEADER_HEIGHT + 18 > (item as HTMLElement).offsetTop &&
+                headerTagNameList.includes(item.tagName)
+            ) {
                 activeItem = item.id;
             }
             return activeItem;
