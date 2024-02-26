@@ -85,7 +85,11 @@ We offer two billing options:
 
 If you're committed to paying 12+ months upfront or buying multiple bare metal servers at once, we can offer you a discount. Contact our [Sales team](mailto:sales@gcore.com) for details.
 
-Please note: a bare metal server is billed even while it's stopped because all resources are still reserved for you. If you want to stop charges, delete your server.
+<alert-element type="tip" title="Tip">
+
+A bare metal server is billed even while it's stopped because all resources are still reserved for you. If you want to stop charges, delete your server.
+
+</alert-element>
 
 If you want to test the service, you can activate the Trial Period. It will expire in 14 days, and you'll be switched to the basic PAYG plan.
 

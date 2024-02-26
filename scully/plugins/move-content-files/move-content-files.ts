@@ -1,6 +1,6 @@
 import * as path from 'path';
 import fs from 'fs-extra';
-import { registerPlugin, HandledRoute, scullyConfig, log, green } from '@scullyio/scully';
+import { HandledRoute, scullyConfig, log, green } from '@scullyio/scully';
 
 /* Plugin to move all articles and assets inside docs folder */
 
@@ -28,9 +28,7 @@ const defaultOptions: Required<MoveContentFilesPluginOptions> = {
 };
 const sitemap = 'sitemap.xml';
 
-export const moveContentFiles = 'moveContentFiles';
-
-async function moveContent(routes: Array<HandledRoute>): Promise<void> {
+export async function moveContent(routes: Array<HandledRoute>): Promise<void> {
     const { outDir } = scullyConfig;
     const root = path.join(outDir, defaultOptions.root);
 
@@ -62,4 +60,3 @@ async function moveContent(routes: Array<HandledRoute>): Promise<void> {
 }
 
 const validator = async (): Promise<any> => [];
-registerPlugin('allDone', moveContentFiles, moveContent, validator);

@@ -5,12 +5,12 @@ published: true
 order: 11
 toc:
    --1--Overview: "overview"
-   --1--Authentication data: "authentication-data"
-   --2--Amazon: "amazon-aws-storage"
-   --2--Gcore: "gcore-s3-storage"
+   --2--Authentication data: "authentication-data"
+   --3--Amazon: "amazon-aws-storage"
+   --3--Gcore: "gcore-s3-storage"
    --1--Configure: "configure-a-private-bucket-as-an-origin"
-   --2--in the control panel: "configure-a-private-origin-in-the-control-panel"
-   --2--via the API: "configure-a-private-origin-via-the-api"
+   --2--Control panel: "control-panel"
+   --2--API: "api"
 pageTitle: Understanding Private Bucket as an Origin | Gcore
 pageDescription: A step-by-step guide on how to use a private S3 bucket as an origin for your CDN resource.
 ---
@@ -20,15 +20,17 @@ pageDescription: A step-by-step guide on how to use a private S3 bucket as an or
 
 We have introduced a feature that allows the use of a private bucket inside S3-compatible storage (such as Amazon or others) as a <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol#pull-content-from" target="_blank">CDN resource origin</a>. To grant CDN servers access to content stored in the private bucket, you must specify authentication data (Access Key ID, Secret access key, Hostname, Region). Otherwise, they won’t be able to access the content.
 
-## Authentication data
+### Authentication data
 
 You can access the necessary authentication data in the personal S3 storage account.
 
-### Amazon AWS storage
+<tabset-element>
+
+#### Amazon AWS storage
 
 You can find the Access Key ID and Secret access key according to the "<a href="https://docs.aws.amazon.com/powershell/latest/userguide/pstools-appendix-sign-up.html" target="_blank">AWS Account and Access Keys</a>" guide. 
 
-### Gcore S3 storage
+#### Gcore S3 storage
 
 You can find the Hostname and Region in the "Details" section under the <a href="https://storage.gcore.com/storage/list" target="_blank">Storages</a> tab.
 
@@ -36,9 +38,13 @@ You can find the Hostname and Region in the "Details" section under the <a href=
 
 **Note**: We don’t store the Access Key ID and Secret access key for S3 storage. It is your responsibility to save them after creating the storage.  If you forget them, click **Generate new keys** under the "Details" section. 
 
+</tabset-element>
+
 ## Configure a private bucket as an origin
 
-### Configure a private origin in the control panel
+<tabset-element>
+
+### Control panel
 
 There are two options for configuring a private bucket as an origin:
 
@@ -90,7 +96,7 @@ Click **Save changes**.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/image-3719.png" alt="Save changes">
 
-### Configure a private origin via the API 
+### API 
 
 Next, we will explain in detail how to specify Private origin via API calls. 
 

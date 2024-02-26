@@ -6,6 +6,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { APP_BASE_HREF } from '@angular/common';
 
+import { AngularSvgIconModule } from 'angular-svg-icon';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DocumentationComponent } from './components/documentation/documentation.component';
@@ -23,10 +24,15 @@ import { SearchComponent } from './components/search/search.component';
 import { MenuService } from './services/menu.service';
 import { ModalLoginModule } from './components/modal-login';
 import { EditGithubButtonComponent } from './web-components/edit-github-button/edit-github-button.component';
+import { CookiesSettingsModule } from './components/cookies-settings/cookies-settings.module';
+import { TabsetComponent } from './web-components/tabset/tabset.component';
+import { AlertElementComponent } from './web-components/alert-element/alert-element.component';
+import { DisclaimerComponent } from './components/disclaimer/disclaimer.component';
 
 @NgModule({
     declarations: [
         AppComponent,
+        AlertElementComponent,
         DocumentationComponent,
         LeftBarMenuComponent,
         BreadCrumbsComponent,
@@ -37,7 +43,9 @@ import { EditGithubButtonComponent } from './web-components/edit-github-button/e
         CodeBlockComponent,
         TextColumnsComponent,
         GalleryComponent,
+        TabsetComponent,
         SearchComponent,
+        DisclaimerComponent,
     ],
     imports: [
         BrowserModule,
@@ -47,12 +55,17 @@ import { EditGithubButtonComponent } from './web-components/edit-github-button/e
         UiKitModule,
         ReactiveFormsModule,
         ModalLoginModule,
+        AngularSvgIconModule.forRoot(),
+        CookiesSettingsModule,
     ],
     providers: [MenuService, { provide: APP_BASE_HREF, useValue: '/docs/' }],
     bootstrap: [AppComponent],
 })
 export class AppModule {
     constructor(private injector: Injector) {
+        const alertElement = createCustomElement(AlertElementComponent, {
+            injector,
+        });
         const expandableElement = createCustomElement(ExandableElementComponent, {
             injector,
         });
@@ -65,6 +78,9 @@ export class AppModule {
         const gallery = createCustomElement(GalleryComponent, {
             injector,
         });
+        const tabset = createCustomElement(TabsetComponent, {
+            injector,
+        });
         const editGithubButton = createCustomElement(EditGithubButtonComponent, {
             injector,
         });
@@ -72,6 +88,8 @@ export class AppModule {
         customElements.define('code-block', codeBlock);
         customElements.define('columns-layout', columnsLayout);
         customElements.define('media-gallery', gallery);
+        customElements.define('tabset-element', tabset);
         customElements.define('edit-github-button', editGithubButton);
+        customElements.define('alert-element', alertElement);
     }
 }
