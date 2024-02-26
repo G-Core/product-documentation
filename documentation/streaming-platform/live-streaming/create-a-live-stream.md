@@ -32,7 +32,7 @@ By default, we provide live streams with Low Latency (4–5 seconds of delay). L
 **3.2.** Choose the appropriate stream type: Push or Pull. 
 
 - The **Pull stream type** will suit you if you have a streaming media server. The live stream will be running on your server. Our server will convert it from the RTMP, RTSP, or SRT protocol to the Low Latency protocols. Furthermore, our CDN will deliver the initial live stream in the new format to end users.
-- The **Push stream type** will suit you if you don’t use your own media server. Set the URL of our server and the unique stream key in your <a href="https://gcore.com/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-obs" target="_blank">encoder</a> (like OBS, Wirecast, LiveU Solo, and others). After that, the live stream will run on our server, be converted to HLS or CMAF (Low Latency) format, and be delivered to end users via our CDN.
+- The **Push stream type** will suit you if you don’t use your own media server. Set the URL of our server and the unique stream key in your <a href="https://gcore.com/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-obs" target="_blank">encoder</a> (like OBS, LiveU Solo, and others). After that, the live stream will run on our server, be converted to HLS or CMAF (Low Latency) format, and be delivered to end users via our CDN.
 
 **3.3.** Edit the name of the live stream from step#2 if necessary.
 

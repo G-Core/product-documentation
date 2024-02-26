@@ -28,9 +28,20 @@ iface eth0:N inet static
                 netmask 255.255.255.255
 ```
 
-Replace "N" with the serial number of the interface (0 for the first one, 1 for the second, etc.), "Х.Х.Х.Х" with the IP address you want to add, and "255.255.255.255" with the net mask. You can find it in your Control Panel. Go to the **Virtual private servers** tab, choose the server you need, and click the IP addresses button.
+Replace 
+
+- ```N``` with the serial number of the interface (0 for the first one, 1 for the second, etc.)
+- ```Х.Х.Х.Х``` with the IP address you want to add
+- ```255.255.255.255``` with the net mask. You can find it in your Control Panel. Go to the **Virtual private servers** or **Dedicated servers** tab, choose the server you need, and click the IP addresses button.
+
+<media-gallery>
 
 <img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/networking/additional-ip-addresses/configure-an-additional-ip-address/13639728366353.png" alt="Configure an additional IP address on CentOS" width="80%">
+
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/additional-ip-addresses/configure-an-additional-ip-address/13640001933073.png" alt="Configure an additional IP address on CentOS" width="80%">
+
+</media-gallery>
+
 
 If you need to add an IPv6 address, add the following:
 
@@ -57,10 +68,16 @@ IPADDR=X.X.X.X
 NETMASK=255.255.255.255
 ```
 
-Replace "N" with the serial number of the interface (0 for the first one, 1 for the second, etc.), "Х.Х.Х.Х" with the IP address you want to add, and "255.255.255.255" with the netmask. You can find it in your Control Panel. Go to the **Virtual private servers** tab, choose the server you need, and click the IP addresses button.
+Replace "N" with the serial number of the interface (0 for the first one, 1 for the second, etc.), "Х.Х.Х.Х" with the IP address you want to add, and "255.255.255.255" with the netmask. You can find it in your Control Panel. Go to the **Virtual private servers** or **Dedicated servers** tab, choose the server you need, and click the IP addresses button.
 
+
+<media-gallery>
 
 <img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/networking/additional-ip-addresses/configure-an-additional-ip-address/13639728366353.png" alt="Configure an additional IP address on CentOS" width="80%">
+
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/networking/additional-ip-addresses/configure-an-additional-ip-address/13640001933073.png" alt="Configure an additional IP address on CentOS" width="80%">
+
+</media-gallery>
 
 If you need to add an IPv6 address, add the following:
 
