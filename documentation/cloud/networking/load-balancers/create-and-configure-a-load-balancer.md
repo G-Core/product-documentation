@@ -93,13 +93,14 @@ Configure a pool—a list of virtual machines to which the listener will redirec
 1\. Specify the pool name.
 
 2\. Select the balancing algorithm:          
-    - **Round robin**—requests are distributed across servers within a cluster one by one: the first request is sent to the first server, the second request is sent to the second server, and so on in a circle. 
-    - **Least Connection**—new requests are sent to a server with the fewest active connections. 
-    - **Source IP**—a client's IP address is used to determine which server receives the request. 
+ 
+- **Round robin**—requests are distributed across servers within a cluster one by one: the first request is sent to the first server, the second request is sent to the second server, and so on in a circle. 
+- **Least Connection**—new requests are sent to a server with the fewest active connections. 
+- **Source IP**—a client's IP address is used to determine which server receives the request. 
 
 3\. A protocol will be automatically selected based on the listener's settings: the HTTP listener can communicate with servers via the HTTP protocol.
 
-4\. Select **App Cookie** and fill in the "Cookie"**" field. <a href="https://code.google.com/p/nginx-sticky-module/)" target="_blank">A special module</a> creates a cookie and then uses it to forward requests to the same server.  
+4\. Select **App Cookie** and fill in the "Cookie" field. <a href="https://code.google.com/p/nginx-sticky-module/)" target="_blank">A special module</a> creates a cookie and then uses it to forward requests to the same server.  
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-pool-conf-lb.png" alt="Pool configuration" width="70%">
 
@@ -165,6 +166,6 @@ Make sure their ports are open for the load balancer traffic:
 - If a balancer and instances are in a **private subnetwork,** set a rule to receive and transmit traffic to the entire private subnetwork or to the balancer's IP address (specified in the menu).
 - If a balancer is in a **public network** and instances are in a **private subnetwork**, set a rule to receive and transmit traffic to the entire private subnetwork or to the balancer's internal IP address (send a request to the technical support).
 
-Create a custom security group (this is the firewall) and edit it: configure the rules for inbound and outbound traffic.
+In the Load Balancers section, open the created balancer and click **Create** or **Edit** a custom security group (this is the firewall) and edit it: configure the rules for inbound and outbound traffic.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/firewall-lb.png" alt="Create a custom security group also known as a firewall">
