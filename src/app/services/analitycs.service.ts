@@ -43,6 +43,7 @@ export class AnalyticsService {
                     marketingCookies.forEach((cookie) => this.disableCookie(cookie, cookies));
                     break;
             }
+            this.setCookiesConsent(cookiesConsent as CookiesConsent);
             return false;
         } else {
             return true;
@@ -51,7 +52,6 @@ export class AnalyticsService {
 
     public setCookiesConsent(value: CookiesConsent): void {
         document.cookie = `cookies_consent=${value}; max-age=${ONE_YEAR}`;
-        this.applyCookiesConsent();
     }
 
     private formatGaId(value: string): string {

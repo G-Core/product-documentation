@@ -2,7 +2,7 @@ import { Meta, Title } from '@angular/platform-browser';
 import { Component, OnInit, Renderer2 } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, Router } from '@angular/router';
 import { ScullyRoute, ScullyRoutesService } from '@scullyio/ng-lib';
-import { Observable, filter, map, switchMap } from 'rxjs';
+import { filter, map, Observable, switchMap } from 'rxjs';
 import config from '../config';
 import { sourcebuster } from './utils/sourcebuster';
 import { AnalyticsService } from './services/analitycs.service';
@@ -89,10 +89,11 @@ export class AppComponent implements OnInit {
             window.sessionStorage.setItem('fontPreloaded', 'true');
         }
 
-        // Wait until scripts are loaded and completed
-        setTimeout(() => {
-            this.showCookieModal = this.analitycsService.applyCookiesConsent();
-        }, 10000);
+        this.showCookieModal = this.analitycsService.applyCookiesConsent();
+    }
+
+    public closeCookiesModal(): void {
+        this.showCookieModal = false;
     }
 
     private updateCanonicalTag(url: string): void {
@@ -126,9 +127,5 @@ export class AppComponent implements OnInit {
         sourcebuster.init({
             domain: defineDomain(),
         });
-    }
-
-    public closeCookiesModal(): void {
-        this.showCookieModal = false;
     }
 }
