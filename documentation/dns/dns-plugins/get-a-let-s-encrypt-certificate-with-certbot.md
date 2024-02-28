@@ -12,7 +12,6 @@ toc:
 pageTitle: Understanding Certbot plugin | Gcore
 pageDescription: Issuing and revoking Let's Encrypt certificates with Certbot plugin.
 ---
-
 # Get a Let’s Encrypt certificate with Certbot
   
 ## What is the Certbot plugin?
