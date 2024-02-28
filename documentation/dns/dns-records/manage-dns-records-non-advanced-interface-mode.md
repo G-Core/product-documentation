@@ -16,7 +16,6 @@ toc:
 pageTitle: Managing DNS records in non-advanced mode | Gcore
 pageDescription: Learn how to add, edit and delete DNS records in the non-advanced interface mode.
 ---
-  
 # Manage DNS records (non-advanced interface mode)
     
 This article describes operations in the non-advanced mode of the "DNS" product interface. Differences in interfaces modes are described in the article "<a href="https://gcore.com/docs/dns/about-gcore-dns" target="_blank">About Gcore DNS</a>".
