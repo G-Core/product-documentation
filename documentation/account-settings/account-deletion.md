@@ -18,7 +18,7 @@ You can request account deletion at any time. You have a ten-day period during w
 
 After the **ten days** elapse, your account, data, and services will be permanently and unrecoverably deleted, and you will receive a notification confirming the deletion of your account.
 
-**Note**: If your account has a debt, it won’t be deleted until the debt is paid off. 
+If your account has a debt, it won’t be deleted until the debt is paid off. 
 
 ## How to delete your account
 
