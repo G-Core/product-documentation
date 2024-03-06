@@ -7,7 +7,6 @@ pageTitle: Understanding user roles | Gcore
 pageDescription: A detailed guide to user roles and permissions, covering how roles affect service management, personal data changes, etc.
 customUrl: /account-settings/users/about-users
 ---
-
 # About Users
 
 In the Gcore Control Panel, there are roles that define user rights, such as permitted actions to manage the <a href="https://cdn.gcore.com" target="_blank">CDN</a> and <a href="https://streaming.gcore.com" target="_blank">Streaming Platform</a> and change personal data.
