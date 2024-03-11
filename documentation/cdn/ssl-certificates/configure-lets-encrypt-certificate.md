@@ -139,6 +139,6 @@ After five unsuccessful attempts, the certificate status will be “Failed.” Y
 
 <img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/failed-50.png" alt="Failed status" width="75%">
 
-Also, the “Failed” status can occur when the Let's Encrypt certificate wasn't renewed automatically. Correct the error (for example, change the domain’s DNS records) and click **Renew certificate** to issue a new certificate and attach it to your CDN resource.
+The “Failed” status can also occur when the Let's Encrypt certificate isn't renewed automatically. Correct the error (for example, change the domain’s DNS records) and click **Renew certificate** to issue a new certificate and attach it to your CDN resource.
 
 <img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/failed-reissuing.png" alt="Failed status (reissuing)" width="75%">
