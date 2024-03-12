@@ -135,7 +135,7 @@ If the challenge verification is successful, the certificate will be issued, and
 
 ### Failed
 
-After five unsuccessful attempts, the certificate status will be “Failed.” You can fix the error(s) causing failure using <a href="" target="_blank">our dedicated guide</a>. Click **Retry issue** to attempt issuance again. 
+After five unsuccessful attempts, the certificate status will be “Failed.” You can fix the error(s) causing failure using <a href="https://gcore.com/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue#free-lets-encrypt-certificate" target="_blank">our dedicated guide</a>. Click **Retry issue** to attempt issuance again. 
 
 <img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/failed-50.png" alt="Failed status" width="75%">
 
