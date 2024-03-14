@@ -14,6 +14,7 @@ toc:
    --2--4. Add subtitles to videos: "step-4-add-ai-generated-subtitles-to-videos"
 pageTitle: AI-Generated Subtitles with Translations | Gcore
 pageDescription: Effortlessly generate and add AI subtitles in various languages with Gcore.
+customUrl: /streaming-platform/video-hosting/ai-for-video/generate-ai-subtitles-and-add-them-to-video
 ---
 # Generating AI subtitles and adding them to videos 
 
@@ -50,7 +51,7 @@ GET https://api.gcore.com/docs/streaming#tag/Videos/operation/get_api_videos_id
 
 From the response, copy the value of the ```mp4_url``` field.
 
-<alert-element type="warning" title="Warning">
+<alert-element type="warning" title="Warning"> 
 
 If the mp4_url field isn't in your response, contact [technical support](maito:support@gcore.com). This field may be missing because MP4 support is disabled for your account. Technical support will enable it for you.
 
