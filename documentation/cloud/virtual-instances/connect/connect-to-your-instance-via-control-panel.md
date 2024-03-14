@@ -27,7 +27,7 @@ You will see the login to the right of the "Access to Console" button. There is 
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel/image7.png" alt="image7.png">
 
-You entered the password during the <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance" target="_blank">creation of the instance</a> when you filled in the user data in the "Additional options" field. Please note: if the instance is only in a private subnet, DHCP must be enabled in the settings of this subnet so you can log in with a password.
+You entered the password during the <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance" target="_blank">creation of the instance</a> when you filled in the user data in the "Additional options" field. Please note: if the instance is only in a private subnet, the [Dynamic Host Configuration Protocol (DHCP)](#enable-DHCP) must be enabled in the settings of this subnet so you can log in with a password.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel/image3.png" alt="image3.png">
 
