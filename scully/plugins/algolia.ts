@@ -102,7 +102,7 @@ export const updateAlgoliaIndex = async (routes: Array<HandledRoute>): Promise<v
 
             log(green(`updateAlgolia finished successfully with ${indexObjectList.length} index items`));
         } catch (e) {
-            logError('updateAlgolia failed with error', e);
+            logError('updateAlgolia failed with error', JSON.stringify(e));
             process.exit(1);
         }
     }
