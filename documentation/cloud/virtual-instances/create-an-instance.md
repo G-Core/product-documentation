@@ -141,7 +141,7 @@ To create a subnet, select an existing subnet from the drop-down list or create 
 
  * Set CIDR between ranges: 10.0.0.0 - 10.255.255.255, 172.16.0.0—172.31.255.255, 192.168.0.0—192.168.255.255. Set the mask between 16 and 24.
 
- * (optional) Turn on the <b>Enable DHCP</b> toggle to automatically assign IP addresses to machines in the subnet.
+ * <a id="enable-DHCP"> (optional) Turn on the <b>Enable DHCP</b> toggle to automatically assign IP addresses to machines in the subnet.
 
  * (optional) Turn on the <b>Non-routable subnetwork</b> toggle to block access to the subnet from external networks and other subnets. If you keep the network routable, you can specify the **Gateway IP** address. Otherwise, a random IP address will be assigned.
 
