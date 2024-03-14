@@ -12,7 +12,6 @@ toc:
    --3--Translation: "if-you-need-translation"
    --2--3. Get the result: "step-3-get-the-task-result"
    --2--4. Add subtitles to videos: "step-4-add-ai-generated-subtitles-to-videos"
-
 pageTitle: AI-Generated Subtitles with Translations | Gcore
 pageDescription: Effortlessly generate and add AI subtitles in various languages with Gcore.
 ---
