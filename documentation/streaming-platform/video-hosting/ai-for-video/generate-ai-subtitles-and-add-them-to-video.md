@@ -51,7 +51,7 @@ GET https://api.gcore.com/docs/streaming#tag/Videos/operation/get_api_videos_id
 
 From the response, copy the value of the ```mp4_url``` field.
 
-<alert-element type="Warning" title="Warning">
+<alert-element type="warning" title="Warning">
 
 If the mp4_url field isn't in your response, contact [technical support](maito:support@gcore.com). This field may be missing because MP4 support is disabled for your account. Technical support will enable it for you.
 
