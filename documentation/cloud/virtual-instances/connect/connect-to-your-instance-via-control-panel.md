@@ -48,17 +48,13 @@ To connect to an instance:
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel/windows-connected.png" alt="Windows desktop" width="80%"> 
 
-</tabset-element>
-
-<tabset-element>
-
 ## Connect to a Linux instance 
 
 If you <a href="https://gcore.com/docs/cloud/virtual-instances/customize-initial-setup-for-your-instance#set-a-password-for-an-instance" target="_blank">didn't set a password</a> when creating a Linux instance, you can't connect to that instance via the Customer Portal. Instead, <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-via-ssh" target="_blank">connect with SSH keys</a>.
 
 <alert-element type="info" title="Info">
 
-If your instance is only in a private subnet, the [Dynamic Host Configuration Protocol (DHCP)](https://gcore.com/docs/cloud/virtual-instances/create-an-instance#enable-DHCP) must be enabled in the settings of this subnet so you can log in with a password. 
+If your instance is only in a private subnet, the <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance#enable-DHCP" target="_blank">Dynamic Host Configuration Protocol</a> must be enabled in the settings of this subnet so you can log in with a password. 
 
 </alert-element>
 
@@ -81,7 +77,6 @@ To connect to an instance:
 * **password**: enter the password you configured in the user data field in the “Additional options” section when creating the instance. 
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel/linux-credentials.png" alt="Ubuntu terminal displaying login information" width="80%">
-
 
 <alert-element type="tip" title="Tip">
  
