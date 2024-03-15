@@ -27,31 +27,32 @@ export class AnalyticsService {
     }
 
     public applyCookiesConsent(): boolean {
-        const cookies = this.getCookies();
-        const cookiesConsent = cookies.cookies_consent;
-        if (cookiesConsent) {
-            switch (cookiesConsent) {
-                case CookiesConsent.All:
-                    break;
-                case CookiesConsent.DeclineAll:
-                    marketingCookies.concat(statisticCookies).forEach((cookie) => this.disableCookie(cookie, cookies));
-                    break;
-                case CookiesConsent.Marketing:
-                    statisticCookies.forEach((cookie) => this.disableCookie(cookie, cookies));
-                    break;
-                case CookiesConsent.Statistic:
-                    marketingCookies.forEach((cookie) => this.disableCookie(cookie, cookies));
-                    break;
-            }
-            this.setCookiesConsent(cookiesConsent as CookiesConsent);
-            return false;
-        } else {
-            return true;
-        }
+        // const cookies = this.getCookies();
+        // const cookiesConsent = cookies.cookies_consent;
+        // if (cookiesConsent) {
+        //     switch (cookiesConsent) {
+        //         case CookiesConsent.All:
+        //             break;
+        //         case CookiesConsent.DeclineAll:
+        //             marketingCookies.concat(statisticCookies).forEach((cookie) => this.disableCookie(cookie, cookies));
+        //             break;
+        //         case CookiesConsent.Marketing:
+        //             statisticCookies.forEach((cookie) => this.disableCookie(cookie, cookies));
+        //             break;
+        //         case CookiesConsent.Statistic:
+        //             marketingCookies.forEach((cookie) => this.disableCookie(cookie, cookies));
+        //             break;
+        //     }
+        //     this.setCookiesConsent(cookiesConsent as CookiesConsent);
+        //     return false;
+        // } else {
+        //     return true;
+        // }
+        return true;
     }
 
     public setCookiesConsent(value: CookiesConsent): void {
-        document.cookie = `cookies_consent=${value}; max-age=${ONE_YEAR}`;
+        // document.cookie = `cookies_consent=${value}; max-age=${ONE_YEAR}`;
     }
 
     private formatGaId(value: string): string {

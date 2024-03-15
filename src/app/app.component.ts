@@ -89,7 +89,7 @@ export class AppComponent implements OnInit {
             window.sessionStorage.setItem('fontPreloaded', 'true');
         }
 
-        this.showCookieModal = this.analitycsService.applyCookiesConsent();
+        // this.showCookieModal = this.analitycsService.applyCookiesConsent();
     }
 
     public closeCookiesModal(): void {
