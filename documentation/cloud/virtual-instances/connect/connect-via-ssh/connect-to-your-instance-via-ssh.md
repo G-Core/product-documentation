@@ -26,12 +26,10 @@ This guide provides instructions for configuring a pair of SSH keys, adding a pu
 
 ## Generate SSH keys 
 
-You can generate SSH keys in several ways:
+You can generate SSH keys in different ways: 
 
-- [In the Customer Portal](#generate-ssh-keys-in-the-customer-portal)
-- [Via CLI tools or SSH clients](#generate-ssh-keys-via-cli-tools-or-ssh-clients)
-- [From the Windows Subsystem for Linux](#windows-subsystem-for-linux-wsl)
-- [Via PuTTY](#putty)
+- [In the Customer Portal](https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh#generate-ssh-keys-in-the-customer-portal)
+- [Via CLI tools and SSH clients](https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh#generate-ssh-keys-via-cli-tools-or-ssh-clients)
 
 <alert-element type="warning" title="Warning">
 
@@ -41,7 +39,7 @@ Never share your private SSH key or password with third parties. This might resu
 
 ### Generate SSH keys in the Customer Portal
 
-You can create SSH keys when creating a virtual instance or generate them separately in the [“SSH Keys”](#generate-an-ssh-key-in-the-ssh-keys-section) section. 
+You can create SSH keys when creating a virtual instance or generate them separately in the [“SSH Keys”](https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh#generate-an-ssh-key-in-the-ssh-keys-section) section. 
 
 After you generate the keys, a public key will be added to the system and appear in the “SSH Keys” section, along with the other added or created keys. A private key will be downloaded to your local storage.
 
@@ -70,8 +68,8 @@ To generate a key right there, select the **Generate SSH key** link:
 2\. Select **Create SSH key** and save its public part locally.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh/autogenerate-ssh-key.png" alt="A dialog with options to name and create an SSH key" width="80%">
-
-### Generate an SSH key in the SSH Keys section 
+ 
+#### Generate an SSH key in the SSH Keys section 
 
 You generate a pair of SSH keys separately and then use a public key for authentication during the instance creation.
 
@@ -115,7 +113,7 @@ You'll be asked to enter the file where the keys should be saved. You can specif
 
 6\. Confirm the password by entering it again, or leave the field empty and press **Enter**. You can find your key in the default directory or in the custom location you've specified during the key creation.
 
-7\. The public key will be saved in the .pub file. You need to add this public key to an instance as described in the [Add a public SSH key to the Customer Portal](#add-public-key-to-customer-portal) section. 
+7\. The public key will be saved in the .pub file. You need to add this public key to an instance as described in the [Add a public SSH key to the Customer Portal](https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh#add-a-public-ssh-key-to-the-customer-portal) section. 
 
 ### Windows Subsystem for Linux (WSL)
 
@@ -147,9 +145,9 @@ There are multiple ways to run a Linux distribution, you can read more about the
 
 7\. Confirm the password by entering it one more time or leave the field empty and press **Enter**. You can find your key in the default directory or in the custom location you've specified during the key creation.
 
-8\. The public key will be saved in the .pub file. You need to add this public key to an instance as described in the [Add a public SSH key to the Customer Portal](#add-a-public-ssh-key-to-the-customer-portal) section. 
+8\. The public key will be saved in the .pub file. You need to add this public key to an instance as described in the [Add a public SSH key to the Customer Portal](https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh#add-a-public-ssh-key-to-the-customer-portal) section. 
 
-## PuTTY 
+### PuTTY 
 
 Follow these instructions to generate SSH keys on Windows 10/11 devices:
 
@@ -179,6 +177,7 @@ If you generated your SSH keys via PuTTYgen or in the Gcore Customer Portal and 
 
 </tabset-element>
 
+
 ## Add a public SSH key to the Customer Portal
 
 If you didn’t generate your SSH key via the Gcore Customer Portal, you need to add a public part of your key there. 
@@ -200,7 +199,7 @@ To add the key:
 
 <alert-element type="info" title="Info">
 
-After you add a public key, it’ll be automatically shared with all users who belong to the same project. To change the key’s visibility, follow the instructions from this section: [Stop sharing SSH keys](#stop-sharing-ssh-keys)
+After you add a public key, it’ll be automatically shared with all users who belong to the same project. To change the key’s visibility, follow the instructions from this section: [Stop sharing SSH keys](https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh#stop-sharing-ssh-keys)
 
 </alert-element>
  

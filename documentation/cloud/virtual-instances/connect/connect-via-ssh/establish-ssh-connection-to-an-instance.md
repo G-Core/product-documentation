@@ -18,8 +18,6 @@ Before you proceed with the connection steps, make sure that:
 - If your instance is only connected to a private network, it has a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address" target="_blank">floating IP address</a>. 
 - You have set up the <a href="https://gcore.com/docs/cloud/networking/add-and-configure-a-firewall#use-the-default-firewall" target="_blank">necessary protocols in firewall settings</a> to allow outgoing and incoming connections to an instance. 
 
-<tabset-element>
-
 ## Connect from Terminal, Command Prompt, or WSL
 
 Follow these instructions to connect to an instance from Linux, macOS, or Windows 10/11 devices:
@@ -53,7 +51,7 @@ Typically, the login coincides with the name of the OS. For example, `ubuntu`.
 
 4\. You’ve successfully connected to the instance.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh/linux-connected.png" alt="Ubuntu terminal displaying successful connection" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/establish-ssh-connection-to-an-instance/linux-connected.png" alt="Ubuntu terminal displaying successful connection" width="80%">
 
 ## Connect with PuTTY
 
@@ -153,5 +151,3 @@ Typically, the login coincides with the name of the OS. For example, `ubuntu`.
 7\. You’ve successfully connected to the instance.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/establish-ssh-connection-to-an-instance/linux-connected.png" alt="Ubuntu terminal displaying successful connection" width="80%"> 
-
-</tabset-element>
