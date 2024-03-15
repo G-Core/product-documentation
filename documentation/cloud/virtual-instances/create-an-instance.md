@@ -9,11 +9,11 @@ pageDescription: Learn how to create a Linux or Windows machine in Cloud. Start 
 ---
 # Create an instance
 
-1. Open **Instances** tab and click **Create Instance**.
+1\. Open **Instances** tab and click **Create Instance**.
 
 ![The Create Instance button](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/1-create-instancebutton.png)
 
-2. Select the region where you want to deploy the instance.
+2\. Select the region where you want to deploy the instance.
 
 ![Region selection](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/2-region-selection.png)
 
@@ -32,7 +32,7 @@ Regions can be of two types: Core and Edge. A region determines the equipment sp
 
 \* We can always transform an edge region to core upon your request.
 
-3. Configure the image.
+3\. Configure the image.
 
 Select the type of hardware architecture on which your instance will be running:
 
@@ -43,7 +43,7 @@ Select the type of hardware architecture on which your instance will be running:
 
 Your choice of hardware architecture will affect the available OS options and instance flavors. Choose an OS distribution, a volume, a snapshot, a custom image, or a template from the marketplace.
 
-4. Configure the instance type.
+4\. Configure the instance type.
 
 Select the appropriate CPU generation:
 
@@ -79,7 +79,7 @@ Choose one of the available flavors.
 
 </expandable-element>
 
-5. Configure **Volumes**.
+5\. Configure **Volumes**.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/5-volume-selection.png" alt="Configure Volumes" width=80%>
 
@@ -111,7 +111,7 @@ Availability: Amsterdam-2, Frankfurt, Hong Kong, Luxembourg-2, Manassas, Tokyo
 
 (optional) Add an **Attachment Tag**.
 
-6. Add one or multiple interfaces in Network settings.
+6\. Add one or multiple interfaces in Network settings.
 
 If you select a **public** interface, you can turn on the **Use Reserved IP** toggle and assign a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address" target="_blank">reserved IP address</a> to your instance.
 
@@ -153,7 +153,7 @@ To create a subnet, select an existing subnet from the drop-down list or create 
 
 Optionally, you can turn on the **Use Reserved IP** toggle to assign a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address" target="_blank">reserved IP address</a> to your instance and/or turn on the **Use Floating IP** toggle to assign a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address" target="_blank">floating IP address</a> to your instance.
 
-7. For **Firewall settings**, select the default firewall or create a new one by clicking **Add firewall**.
+7\. For **Firewall settings**, select the default firewall or create a new one by clicking **Add firewall**.
 
 ![The Firewall settings](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/10-firewall-settings.png)
 
@@ -161,27 +161,39 @@ If you keep the default firewall, the incoming traffic will be allowed over ICMP
 
 If you want to create a new firewall, refer to the article: <a href="https://gcore.com/docs/cloud/networking/add-and-configure-a-firewall" target="_blank">Add and configure a firewall</a>.
 
-8. (for a Linux instance) Configure an **SSH key** for a remote SSH connection.
+<tabset-element>
 
-![The SSH key field](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/11-ssh-key.png)
+#### Linux instance 
 
-You can add an existing SSH key or generate a new one. You enter a public key and use a private key for connection. For details, see the article: <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">Connect to your instance via SSH</a>.
+8\. Configure an SSH key for a remote SSH connection. You can add an existing SSH key or generate a new one. For instructions on how to generate and configure the key, check out this guide: <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-via-ssh" target="_blank">Connect to an instance via SSH</a>.
 
-9. (for a Windows instance) Configure **Access** by setting a password for the Admin user.
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/11-ssh-key.png" alt="SSH keys section with three options: select, generate, or add a new SSH key" width="80%"> 
 
-![the field for credentials to access a Windows instance](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/12-access-for-windows-instance.png)
+In addition to SSH keys, you can also set up a password for your instance, as described in [step 9](#configure-user-data). Setting a password is necessary if you want to connect to a Linux instance <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel#connect-to-a-linux-instance" target="_blank">from the Customer Portal</a>. 
 
-Your password must contain between 8 and 16 characters and at least one lowercase letter (a-z), one uppercase letter (A-Z), one number (0-9) and one special character (!#$%&’()\*+,-./:;<=>?@\[\]^_{|}~).
+#### Windows instance 
 
-You can connect to a Windows instance <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from your Control Panel</a> or from your computer over RDP protocol.
+8\. Configure **Access** by setting a password for the Admin user.
 
-10. (optional) Configure **Additional options**.
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/12-access-for-windows-instance.png" alt="Access field with a password" width="80%"> 
 
-*   Turn on **User data** to customize your VM during the initial boot by a cloud-init agent.
+<alert-element type="info" title="Info">
 
-![The field to add user data](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/13-add-user-data.png)
+Your password must contain between 8 and 16 characters, including at least one lowercase letter (a-z), one uppercase letter (A-Z), one number (0-9), and one special character (!#$%&’()\*+,-./:;<=>?@\[\]^_{|}~).
 
-You can configure your password to connect to your Linux instance <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from your Control Panel</a> or via SSH. To do it, insert the code below to the **User data** field and enter your password:
+</alert-element>
+
+You can use passwrod to connect to a Windows instance from the <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">Gcore Customer Portal</a> or from your computer using RDP (Remote Desktop Protocol).
+
+</tabset-element> 
+
+<p id="configure-user-data"> 9. (optional) Configure **Additional options**.</p>
+
+*   Enable the **User data** toggle to customize your instance during the initial boot by a `cloud-init` agent.
+
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/13-add-user-data.png" alt="User data field with password configuration" width="80%"> 
+
+You can configure your password to connect to your Linux instance <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from your Control Panel</a> or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-via-ssh" target="_blank">via SSH</a>. To do it, insert the following code to the field, replacing `**your password**` with your chosen password:
 
 ```
 #cloud-config  
@@ -190,7 +202,15 @@ chpasswd: { expire: False }
 ssh_pwauth: True
 ```
 
-**Note:** If an instance is only in a private subnet, DHCP must be enabled in the settings of this subnet, so you can log in with a password.
+<alert-element type="info" title="Info">
+
+On Cloud instances with Windows OS, you can't use the `password` parameter both in the “Access” and “User data” fields. Since the "Access" field is required, configuring user data on Windows instances is not possible. 
+
+Read more about the allowed instance parameters in our <a href="https://api.gcore.com/docs/cloud#tag/Instances/operation/InstanceCreateSetV2.post" target="_blank">API docs</a>.
+
+</alert-element>
+
+<expandable-element title="Configure a password hash">
 
 You can configure the password hash—a machine-readable set of symbols. It’ll protect your real password from being compromised. To generate a hash, use the Python script:
 
@@ -203,6 +223,14 @@ from passlib.hash import sha512_crypt
 passwd = input() if not sys.stdin.isatty() else getpass()  
 print(sha512_crypt.hash(passwd , rounds = 5000 ))
 ```
+
+</expandable-element>
+
+<alert-element type="warning" title="Warning">
+
+If an instance is only in a private subnet, DHCP must be enabled in the settings of this subnet, so you can log in with a password.
+
+</alert-element>
 
 *   Turn on **Add tags** to add a key-value pair that form the metadata of the virtual machine description.
 
@@ -226,7 +254,7 @@ You can place your virtual machine in one of three types of groups:
 
 You can add the instance to an existing placement group or create a new one by clicking **Add placement group**.
 
-11. Specify the number of machines with the same configuration you need and give them names.
+10\. Specify the number of machines with the same configuration you need and give them names.
 
 ![The field to set the number of instances](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/16-number-of-instances.png)
 
@@ -234,7 +262,7 @@ The maximum number is limited by your quotas.
 
 For names, use Latin characters, underscores, spaces, and dots.
 
-12. Click **Create virtual machine**.
+11\. Click **Create virtual machine**.
 
 Your server will be transitioned to the **Building** status. The system will allocate resources for your virtual machine.
 
