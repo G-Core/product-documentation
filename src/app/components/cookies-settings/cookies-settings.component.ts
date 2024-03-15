@@ -49,7 +49,5 @@ export class CookiesSettingsComponent {
         }
         this.analitycsService.setCookiesConsent(cookieConsent);
         this.closeModal.emit();
-
-        console.log('reer');
     }
 }
