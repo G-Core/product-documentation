@@ -1,12 +1,13 @@
 import { Meta, Title } from '@angular/platform-browser';
 import { Component, OnInit, Renderer2 } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, Router } from '@angular/router';
-import { ScullyRoute, ScullyRoutesService } from '@scullyio/ng-lib';
-import { filter, map, Observable, switchMap } from 'rxjs';
+import { isScullyRunning, ScullyRoute, ScullyRoutesService } from '@scullyio/ng-lib';
+import { Observable, filter, map, switchMap } from 'rxjs';
 import config from '../config';
 import { sourcebuster } from './utils/sourcebuster';
 import { AnalyticsService } from './services/analitycs.service';
 
+declare const addAnalyticsScripts: any;
 const defaultDescription = 'Gcore | Global Hosting, CDN, Edge and Cloud Services';
 const defaultTitle = 'Product Documentation';
 
@@ -77,7 +78,10 @@ export class AppComponent implements OnInit {
     }
 
     public ngOnInit(): void {
-        this.setUTMCookie();
+        if (!isScullyRunning()) {
+            this.setUTMCookie();
+            addAnalyticsScripts();
+        }
 
         if (!window.sessionStorage.getItem('fontPreloaded')) {
             setTimeout(() => {
@@ -88,12 +92,6 @@ export class AppComponent implements OnInit {
             }, 2000);
             window.sessionStorage.setItem('fontPreloaded', 'true');
         }
-
-        // this.showCookieModal = this.analitycsService.applyCookiesConsent();
-    }
-
-    public closeCookiesModal(): void {
-        this.showCookieModal = false;
     }
 
     private updateCanonicalTag(url: string): void {
@@ -127,5 +125,9 @@ export class AppComponent implements OnInit {
         sourcebuster.init({
             domain: defineDomain(),
         });
+    }
+
+    public closeCookiesModal(): void {
+        this.showCookieModal = false;
     }
 }

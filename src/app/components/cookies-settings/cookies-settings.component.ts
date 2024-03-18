@@ -17,37 +17,37 @@ export class CookiesSettingsComponent {
 
     constructor(private analitycsService: AnalyticsService) {}
 
-    public showSetting(): void {
-        this.isSettings = true;
-    }
-
-    public backFromSettings(): void {
-        this.isSettings = false;
-    }
-
-    public acceptAll(): void {
-        this.analitycsService.setCookiesConsent(CookiesConsent.All);
-        this.closeModal.emit();
-    }
-
-    public rejectAll(): void {
-        this.analitycsService.setCookiesConsent(CookiesConsent.DeclineAll);
-        this.closeModal.emit();
-    }
-
-    public acceptSelected(): void {
-        let cookieConsent;
-
-        if (this.marketing === 'decline' && this.statistic === 'decline') {
-            cookieConsent = CookiesConsent.DeclineAll;
-        } else if (this.marketing === 'accept' && this.statistic === 'accept') {
-            cookieConsent = CookiesConsent.All;
-        } else if (this.marketing === 'accept') {
-            cookieConsent = CookiesConsent.Marketing;
-        } else if (this.statistic === 'accept') {
-            cookieConsent = CookiesConsent.Statistic;
-        }
-        this.analitycsService.setCookiesConsent(cookieConsent);
-        this.closeModal.emit();
-    }
+    // public showSetting(): void {
+    //     this.isSettings = true;
+    // }
+    //
+    // public backFromSettings(): void {
+    //     this.isSettings = false;
+    // }
+    //
+    // public acceptAll(): void {
+    //     this.analitycsService.setCookiesConsent(CookiesConsent.All);
+    //     this.closeModal.emit();
+    // }
+    //
+    // public rejectAll(): void {
+    //     this.analitycsService.setCookiesConsent(CookiesConsent.DeclineAll);
+    //     this.closeModal.emit();
+    // }
+    //
+    // public acceptSelected(): void {
+    //     let cookieConsent;
+    //
+    //     if (this.marketing === 'decline' && this.statistic === 'decline') {
+    //         cookieConsent = CookiesConsent.DeclineAll;
+    //     } else if (this.marketing === 'accept' && this.statistic === 'accept') {
+    //         cookieConsent = CookiesConsent.All;
+    //     } else if (this.marketing === 'accept') {
+    //         cookieConsent = CookiesConsent.Marketing;
+    //     } else if (this.statistic === 'accept') {
+    //         cookieConsent = CookiesConsent.Statistic;
+    //     }
+    //     this.analitycsService.setCookiesConsent(cookieConsent);
+    //     this.closeModal.emit();
+    // }
 }

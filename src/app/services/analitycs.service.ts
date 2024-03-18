@@ -51,9 +51,9 @@ export class AnalyticsService {
         return true;
     }
 
-    public setCookiesConsent(value: CookiesConsent): void {
-        // document.cookie = `cookies_consent=${value}; max-age=${ONE_YEAR}`;
-    }
+    // public setCookiesConsent(value: CookiesConsent): void {
+    //     // document.cookie = `cookies_consent=${value}; max-age=${ONE_YEAR}`;
+    // }
 
     private formatGaId(value: string): string {
         if (!value) {
