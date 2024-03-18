@@ -85,6 +85,12 @@ The following Bare Metal flavors are available:
 
 - (Optional) Enable the **Public IPv4 address** option to assign public IPv4 addresses to cluster nodes.   
 
+<alert-element type="info" title="Info">
+
+If you want to [enable an IPv6 dual-stack](https://gcore.com/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster#enable-ipv6) for your cluster, at least one of the pools must have a public IPv4 address. 
+
+</alert-element>
+
 - Add as many pools as you need using the **Add pool** button.
 
 <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/pool-k8s.png" alt="Pools" width="80%">
@@ -106,13 +112,13 @@ You cannot change the network stack after the cluster has been created.
 
 ## Step 6. Configure network settings
 
-Select an existing network and subnet, or create a new network and/or subnet according to the instructions in our <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-network" target="_blank">dedicated guide</a>.
+Select an existing network and subnetwork or create new ones according to the instructions in the following guide: <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-network" target="_blank">Create and manage a network</a>.
 
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/network-kubernetes.png" alt="Network settings for Cluster" alt="Network settings available for the Kubernetes cluster" width="80%">
 
+-  <p id="enable-ipv6"> (Optional) Enable IPv6 dual-stack to assign both IPv4 and IPv6 addresses for network interfaces of worker nodes and pods. If the **Enable IPv6 dual-stack** toggle is not available, make sure that at least one pool from your cluster is in a public network. If your Kubernetes cluster is only connected to a private network, you also need to configure and add an IPv6 subnetwork. </p>
 
-<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/network-k8s.png" alt="Network settings for Cluster" width="70%">
-
-By default, your container is under Basic DDoS Protection. It can prevent certain attacks by blocking IP addresses that are used by malicious actors. But for a higher level of protection, we recommend enabling Advanced DDoS Protection.   
+- DDoS protection. By default, your container is under Basic DDoS Protection. It can prevent certain attacks by blocking IP addresses that are used by malicious actors. But for a higher level of protection, we recommend enabling Advanced DDoS Protection.   
 
 <expandable-element title="Advanced DDoS Protection"> 
 
