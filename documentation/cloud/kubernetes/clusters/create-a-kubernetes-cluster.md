@@ -116,7 +116,7 @@ Select an existing network and subnetwork or create new ones according to the in
 
 <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/network-kubernetes.png" alt="Network settings for Cluster" alt="Network settings available for the Kubernetes cluster" width="80%">
 
--  <p id="enable-ipv6"> (Optional) Enable IPv6 dual-stack to assign both IPv4 and IPv6 addresses for network interfaces of worker nodes and pods. If the **Enable IPv6 dual-stack** toggle is not available, make sure that at least one pool from your cluster is in a public network. If your Kubernetes cluster is only connected to a private network, you also need to configure and add an IPv6 subnetwork. </p>
+-  <p id="enable-ipv6"> (Optional) Enable IPv6 dual-stack to assign both IPv4 and IPv6 addresses for network interfaces of worker nodes and pods. If the <b>Enable IPv6 dual-stack</b> toggle is not available, make sure that at least one pool from your cluster is in a public network. If your Kubernetes cluster is only connected to a private network, you also need to configure and add an IPv6 subnetwork. </p>
 
 - DDoS protection. By default, your container is under Basic DDoS Protection. It can prevent certain attacks by blocking IP addresses that are used by malicious actors. But for a higher level of protection, we recommend enabling Advanced DDoS Protection.   
 
