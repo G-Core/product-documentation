@@ -12,15 +12,15 @@ toc:
 
 ## Overview
 
-Gcore AI Video Services provide advanced video content processing, including subtitle generation. This service is a part of our Video Streaming product that guarantees instant, efficient, and cost-effective results. 
+Gcore AI Video Services provides advanced video content processing, including subtitle generation. This service is a part of Gcore Video Streaming. It provides instant, efficient, and cost-effective results.  
 
-Our Whisper ASR-powered <a href="https://gcore.com/docs/streaming-platform/video-hosting/ai-for-video/generate-ai-subtitles-and-add-them-to-video" target="_blank">audio recognition feature</a> automatically converts audio to text (transcription) and translates it to generate accurate and readable subtitles, which can be seamlessly added to videos. 
+Gcore AI ASR is a Whisper ASR-powered <a href="https://gcore.com/docs/streaming-platform/video-hosting/ai-for-video/generate-ai-subtitles-and-add-them-to-video" target="_blank">audio recognition feature</a> that automatically converts audio to text (transcription) and translates it to generate accurate and readable subtitles (translation), which can be seamlessly added to videos. 
 
 ## AI infrastructure
 
-We utilize our own Gcore infrastructure to execute AI models, thereby ensuring all data is processed within our company on EU and US servers, minimizing the risk of data leaks. 
+We utilize our own Gcore infrastructure to execute AI models, ensuring that all data is processed within our company on EU and US servers, minimizing the risk of data leaks. 
 
-Using a unified infrastructure facilitates the integration of your project with other Gcore AI-powered solutions, such as the <a href="https://gcore.com/cloud/ai-platform" target="_blank">AI IPU Cloud</a> for accelerating machine learning and <a href="https://gcore.com/fastedge" target="_blank">FastEdge</a> for low-latency edge computing for serverless app deployment.
+Using a unified infrastructure facilitates the integration of your project with other Gcore AI-powered solutions, such as the <a href="https://gcore.com/cloud/ai-gpu" target="_blank">AI GPU Cloud</a> for accelerating machine learning and <a href="https://gcore.com/fastedge" target="_blank">FastEdge</a> for low-latency edge computing for serverless app deployment.
 
 ## Activating AI video services
 
