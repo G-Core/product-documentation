@@ -46,7 +46,7 @@ If you forget your credentials, click **Generate credentials** again for a new p
 
 If you use Logging in multiple regions (Step 2), a new storage will be created in each region, and you will need to generate unique credentials for each one.
 
-5\. Select a log shipper (e.g., <a href="https://docs.fluentbit.io/manual/installation/getting-started-with-fluent-bit" target="_blank">Fluent Bit</a> or <a href="https://elastic.co/beats/filebeat" target="_blank">Filebeat</a>) which supports Kafka output. 
+5\. Select a log shipper (e.g. <a href="https://gcore.com/docs/cloud/logging-as-a-service/install-a-log-shipper/install-and-configure-fluent-bit" target="_blank">Fluent Bit</a>, <a href="https://gcore.com/docs/cloud/logging-as-a-service/install-a-log-shipper/install-and-configure-filebeat" target="_blank">Filebeat</a>, or <a href="https://gcore.com/docs/cloud/logging-as-a-service/install-a-log-shipper/install-and-configure-logstash" target="_blank">Logstash</a>) that supports Kafka output. 
 
 Configure the log shipper with our Kafka endpoints, credentials generated at Step 4, and target topic name “yourusername.topicname”. We recommend using “@timestamp” as the default time field in your log shipper. If you prefer to use another time field, you should delete the pre-created index pattern and create a new one with a desired time field.
 
