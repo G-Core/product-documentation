@@ -3,16 +3,13 @@ title: install-and-configure-fluent-bit
 displayName: Fluent Bit
 published: true
 toc:
-   --1--What is Fluent Bit?: "what-is-fluent-bit"
-   --1--Install: "install"
-   --1--Configure: "configure"
+   --1--Install Fluent Bit: "install"
+   --1--Configure Fluent Bit: "configure"
    --1--No timestamps: "no-timestamps"
 pageTitle: Install and configure Fluent Bit| Gcore
 pageDescription: Easily install and configure Fluent Bit, a log shipping tool, to collect and send logs to Gcore's Logging servers.
 ---
 # Install and configure Fluent Bit
-
-## What is Fluent Bit?  
 
 Fluent Bit is a log shipping tool. This means that it is a service that collects logs from a device and sends them to an external storage.
 
@@ -55,7 +52,7 @@ For more information on how to add `INPUT` for different log sources, go to the 
 
 For example, if you want to gather logs from a specific file, open the <a href="https://docs.fluentbit.io/manual/pipeline/inputs/tail" target="_blank">guide for Tail</a>. Tail is a utility on UNIX-like systems used to display the tail end of a file. It helps Fluent Bit to read changes in the log file. You need to fill in the `INPUT` so that it corresponds with Tail.
 
-<expandable-element title="Descriptions of the OUTPUT strings">
+<expandable-element title="Descriptions of the OUTPUT parameters">
 
 - **[OUTPUT]**: Type of process (export).  
 - **name**: Servers where logs will be delivered (Kafka servers).  

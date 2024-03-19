@@ -20,7 +20,7 @@ Managed Logging, also known as LaaS (logging-as-a-service,) is a service that co
 
 ## How Logging works
 
-1. Install and configure any log shipper that supports Kafka. You can use <a href="https://docs.fluentbit.io/manual/installation/getting-started-with-fluent-bit" target="_blank">Fluent Bit</a>, <a href="https://elastic.co/beats/filebeat" target="_blank">Filebeat</a>, or any other log source that can export logs to Kafka, such as a Python application with configured Kafka logger output.
+1. Install and configure any log shipper that supports Kafka. You can use <a href="https://docs.fluentbit.io/manual/installation/getting-started-with-fluent-bit" target="_blank">Fluent Bit</a>, <a href="https://elastic.co/beats/filebeat" target="_blank">Filebeat</a>, <a href="https://www.elastic.co/logstash" target="_blank">Logstash</a>, or any other log source that can export logs to Kafka, such as a Python application with configured Kafka logger output.
 2. Access the logs via OpenSearch Dashboards.
 
 ## Advantages
