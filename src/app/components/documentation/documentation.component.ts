@@ -52,7 +52,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
     public activeDocument: ScullyRoute;
 
     private routerSubscription: Subscription;
-    private hasScrolled = false;
+    private isNewContent = true;
     public isResellerPage = false;
 
     @ViewChild('scullyContainer') public scullyContainer: ElementRef;
@@ -79,33 +79,16 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
                 this.changeDetectorRef.detectChanges();
             }
 
-            if (this.isArticleReady && !this.hasScrolled) {
+            if (this.isArticleReady && this.isNewContent) {
                 this.route.fragment.pipe(first()).subscribe((fragment) => {
                     this.viewportScroller.scrollToAnchor(fragment);
-                    this.hasScrolled = true;
                 });
 
-                this.scullyContainer.nativeElement
-                    .querySelectorAll(':not(.gc-gallery p) > img')
-                    .forEach((img: Element) => {
-                        this.renderer.listen(img, 'click', (event) => this.expandImage(event));
-                    });
+                this.addListeners();
+                this.setTocHeaders();
 
-                window.document.addEventListener('scroll', this.handlePageScroll, true);
-
-                this.renderer.listen(this.fullSizeImage.nativeElement, 'click', () => this.closeFullSizeModal());
+                this.isNewContent = false;
             }
-        }
-
-        if (this.isArticleReady && this.tableOfContents) {
-            this.tableOfContentsHeaders = this.tableOfContents
-                .map(({ fragment }) => {
-                    if (fragment) {
-                        return document.getElementById(`${fragment}`);
-                    }
-                    return null;
-                })
-                .filter((item: Element) => item);
         }
     }
 
@@ -181,6 +164,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
                 this.isActiveLike = false;
                 this.isActiveDislike = false;
                 this.isResellerPage = this.router.url.includes('reseller-support');
+                this.isNewContent = true;
                 this.changeDetectorRef.detectChanges();
             }
         });
@@ -286,10 +270,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
         }
 
         const activeSectionId = this.tableOfContentsHeaders.reduce((activeItem: string, item) => {
-            if (
-                document.documentElement.scrollTop + HEADER_HEIGHT + 18 > (item as HTMLElement).offsetTop &&
-                headerTagNameList.includes(item.tagName)
-            ) {
+            if (scrollTop > (item as HTMLElement).offsetTop && headerTagNameList.includes(item.tagName)) {
                 activeItem = item.id;
             }
             return activeItem;
@@ -397,5 +378,27 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
             return +name.slice(0, 4).replace(/-/g, '');
         }
         return 1;
+    }
+
+    private setTocHeaders(): void {
+        if (this.tableOfContents) {
+            this.tableOfContentsHeaders = this.tableOfContents
+                .map(({ fragment }) => {
+                    if (fragment) {
+                        return document.getElementById(`${fragment}`);
+                    }
+                    return null;
+                })
+                .filter((item: Element) => item);
+        }
+    }
+
+    private addListeners(): void {
+        window.document.addEventListener('scroll', this.handlePageScroll, true);
+
+        this.scullyContainer.nativeElement.querySelectorAll(':not(.gc-gallery p) > img').forEach((img: Element) => {
+            this.renderer.listen(img, 'click', (event) => this.expandImage(event));
+        });
+        this.renderer.listen(this.fullSizeImage.nativeElement, 'click', () => this.closeFullSizeModal());
     }
 }
