@@ -1,14 +1,15 @@
 ---
 title: ai-video-service
-displayName: AI video service
+displayName: AI Video Services
 published: true
 toc: 
    --1--Overview: "overview"
    --1--AI infrastructure: "ai-infrastructure"
    --1--Activating: "activating-ai-video-services"
    --1--Features: "available-features"
+customUrl: /streaming-platform/video-hosting/ai-video-service
 ---
-# AI video service
+# AI Video Services
 
 ## Overview
 
@@ -22,9 +23,9 @@ We utilize our own Gcore infrastructure to execute AI models, ensuring that all 
 
 Using a unified infrastructure facilitates the integration of your project with other Gcore AI-powered solutions, such as the <a href="https://gcore.com/cloud/ai-gpu" target="_blank">AI GPU Cloud</a> for accelerating machine learning and <a href="https://gcore.com/fastedge" target="_blank">FastEdge</a> for low-latency edge computing for serverless app deployment.
 
-## Activating AI video services
+## Activating AI Video Services
 
-To activate the AI video service for your account, send a request to our [technical support](mailto:support@gcore.com). While the general usage of the AI video service is free, certain features, like translation, may incur charges. For more details, refer to our <a href="https://api.gcore.com/docs/streaming#tag/AI" target="_blank">API documentation</a>. 
+To activate the AI Video Services for your account, send a request to our [technical support](mailto:support@gcore.com). While the general usage of the AI video service is free, certain features, like translation, may incur charges. For more details, refer to our <a href="https://api.gcore.com/docs/streaming#tag/AI" target="_blank">API documentation</a>. 
 
 ## Available features
 
