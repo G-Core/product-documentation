@@ -26,11 +26,11 @@ Let’s compare the default and custom player. To show you the customization opt
 
 ## Configure your custom player
 
-1\. Go to the <a href="https://streaming.gcore.com/players/list" target="">Players</a> tab and press the **Create a player** button.
+1\. Go to the <a href="https://streaming.gcore.com/players/list" target="">Players</a> tab and click **Create a player**.
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/customize-appearance-of-the-built-in-player/mceclip1.png" alt="Players tab">
 
-2\. Enter the name of your player (it will be displayed on the control panel) and press the **Create** button.
+2\. Enter the name of your player (it will be displayed in the Gcore Customer Portal) and click **Create**.
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/customize-appearance-of-the-built-in-player/mceclip2.png" alt="Enter the name of your player" width="50%">
 
@@ -46,7 +46,7 @@ The configuration page opens. Complete the remaining steps in it.
 
 - **Mute**. If the option is active, video plays with the sound off.
 
-<alert-element type="info" title="info">
+<alert-element type="info" title="Info">
 
 If both Autoplay and Mute options are active, only one option will work. It depends on an end user's browser policy (<a href="https://developer.mozilla.org/en-US/docs/Web/Media/Autoplay_guide" target="_blank">Mozilla</a>, <a href="https://developer.chrome.com/blog/autoplay" target="_blank">Chrome</a>).
 
@@ -55,7 +55,7 @@ If both Autoplay and Mute options are active, only one option will work. It depe
 5\.  Enable necessary player control options:
 
 - **Disable skin**. If the option is active, the player control elements are hidden. 
-- **Save user settings.** If the option is active, users watch the video with the same quality and sound settings they have had previously. It works until the browser cache gets cleared**.**
+- **Save user settings.** If the option is active, users watch the video with the same quality and sound settings they have had previously. It works until the browser cache gets cleared.
 - **Share video.** If the option is active, a sharing button appears in the upper-right corner of the video for the users to post it to social networks.
 - **Playback speed control.** If the option is active, users can slow down and speed up VOD playback. 
 - **Pause when clicking on player.** If the option is active, video stops by clicking at any point on the player's screen.
