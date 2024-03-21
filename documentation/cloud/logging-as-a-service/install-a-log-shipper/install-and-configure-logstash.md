@@ -5,24 +5,24 @@ published: true
 toc:
    --1--Install Logstash: "install-logstash"
    --1--Configure Logstash: "configure-logstash"
-pageTitle: Install and Configure Logstash| Gcore
+pageTitle: Install and Configure Logstash | Gcore
 pageDescription: Easily install and configure Logstash, a log shipping tool, to collect and send logs to Gcore's logging servers.
 ---
 # Install and configure Logstash
 
 Logstash is an open-source data collection and processing tool. It’s used to collect, parse, enrich, and transform log data from various sources, including log files, event streams, and databases.
 
-## Install
+## Install Logstash
 
 You can download Logstash from the <a href="https://www.elastic.co/logstash" target="_blank">official Elastic website</a>. 
 
-## Configure
+## Configure Logstash
 
 A standard Logstash configuration consists of three sections: `input`, `filter`, and `output`. The `input` and `filter` sections depend on the sources of logs.
 
 To send logs to Gcore LaaS (Logging as a Service), you need to configure Logstash with Kafka output and enable the <a href="https://github.com/logstash-plugins/logstash-integration-kafka" target="_blank">Kafka Integration Plugin</a> in your Logstash installation.
 
-1\. Configure Logstash with Kafka output by adding the following data to the `logstash.conf` file :
+1\. Configure Logstash with Kafka output by adding the following data to the `logstash.conf` file:
 
 <code-block>
 output {
@@ -46,18 +46,15 @@ Customize the highlighted values:
 - <span style="color:#FF5913">yourlogin.yourtopic</span>: Your login
 - <span style="color:#FF5913">yourpassword</span>: Your password
 
-
 <alert-element type="tip" title="Tip">
  
-You can find your username, password, login, and topic name information in the Gcore Customer Portal on the **Logging** page. 
-
-Learn more about logging configuration in the <a href="https://gcore.com/docs/cloud/logging-as-a-service/configure-logging-and-view-your-logs" target="_blank">Configure Logging and view your logs</a> guide.
+You can find your username, password, login, and topic name information in the Gcore Customer Portal on the **Logging** page. Learn more about logging configuration in the <a href="https://gcore.com/docs/cloud/logging-as-a-service/configure-logging-and-view-your-logs" target="_blank">Configure Logging and view your logs</a> guide.
  
 </alert-element>
 
-For more settings, check out <a href="https://www.elastic.co/guide/en/logstash/current/plugins-outputs-kafka.html" target="_blank">Kafka output plugin </a>documentation. 
+For more settings, check out <a href="https://www.elastic.co/guide/en/logstash/current/plugins-outputs-kafka.html" target="_blank">Kafka output plugin</a> documentation. 
 
-<expandable-element title="Descriptions of the OUTPUT parameters">
+<expandable-element title="Descriptions of the “output” parameters">
 
 - **topic_id**: ID of a Kafka topic to which Logstash will publish messages.
 - **bootstrap_servers**: A comma-separated list of Kafka broker addresses.
