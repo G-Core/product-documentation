@@ -207,13 +207,13 @@ After you configure user data, wait a few minutes for your virtual instance to l
 
 1\. Run the following command: `ssh guest@your_instance_ip`
 
-2\. Type `guest` and press **Enter**. 
+2\. Type `guest` and press **Enter**
 
 You should be able to log in to your guest user account.
 
 <alert-element type="info" title="Info" id="check-user-groups">
 
-To check for the user groups that guest belongs to, run the following command: `groups`. You should see the `users` and `admin` groups listed, indicating that the `guest` user belongs to the `users` and `admin` groups.
+To check for the groups that the `guest` user belongs to, run the following command: `groups`. You should see the `users` and `admin` groups listed, indicating that the `guest` user belongs to the `users` and `admin` groups.
 
 </alert-element>
 
@@ -226,7 +226,7 @@ When creating an instance, you can enable user access to root by adding the foll
 disable_root: false 
 ```
 
-To enable user access to root after the instance creation, check out this guide: <a href="https://gcore.com/docs/cloud/virtual-instances/enable-root-user-on-a-linux-vm#enable-root-user-via-terminal" target="_blank">Enable root user</a>. 
+Check out this guide for details on how to enable user access to root after creating an instance: <a href="https://gcore.com/docs/cloud/virtual-instances/enable-root-user-on-a-linux-vm#enable-root-user-via-terminal" target="_blank">Enable root user</a>. 
 
 ## Configure user groups
 
