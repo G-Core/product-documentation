@@ -44,6 +44,24 @@ sudo su
 Having now logged in with the `sudo su` command, you are in the superuser (root) shell. All further commands will be performed with root user rights.
 To exit superuser mode and return to your user account, simply run the command `exit`.
 
+## Enable root user via Terminal
+
+1\. Run the following command to open your `cloud-init` configuration: 
+
+```
+sudo nano /etc/cloud/cloud.cfg
+```
+
+2\. Change the line `'disable_root: true'` to `'disable_root: false'`.
+
+3\. Save the changes and close the file. 
+
+4\. Update the `cloud-init` configuration by running the following command:
+
+```
+sudo cloud-init clean -r
+```
+
 ## Alternative ways to enable root user
 
 You can also enter an interactive and non-interactive superuser (root) shell:
