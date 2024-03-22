@@ -187,7 +187,7 @@ You can use passwrod to connect to a Windows instance from the <a href="https://
 
 </tabset-element> 
 
-<p id="configure-user-data"> 9. (optional) Configure **Additional options**.</p>
+<p id="configure-user-data"> 9. (optional) Configure <b>Additional options</b>.</p>
 
 *   Enable the **User data** toggle to customize your instance during the initial boot by a `cloud-init` agent.
 

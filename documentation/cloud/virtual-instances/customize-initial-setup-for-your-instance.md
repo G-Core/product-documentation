@@ -11,6 +11,7 @@ toc:
     --1--What is cloud-init?: what-is-cloud-init
     --1--Set a password: "set-a-password-for-an-instance"
     --1--Create a user: "create-a-user"
+    --1--Enable root user: "enable-root-user"
     --1--Configure groups: "configure-user-groups"
     --1--Add an SSH key: "add-an-ssh-key"
     --1--Add repositories and install packages: "add-repositories-and-install-packages"
@@ -166,9 +167,9 @@ Provide your password value; you should now be able to access the virtual instan
 
 ## Create a user
 
-Using the User Data field, you can create a new user in the virtual instance. Let’s say you want to create a user name, guest, with the same password. 
+With the **User data** field, you can create a new user in the virtual instance. 
 
-Below is an example of a `cloud-init` script for creating the `guest` user.
+Let’s say you want to create a user called `guest` with the same password as the first user has. Here’s the example of a `cloud-init` script for creating this `guest` user:
 
 ```
 #cloud-config
@@ -186,36 +187,46 @@ power_state:
   condition: True
 ```
 
-- The `sudo` option with the value `ALL=(ALL) NOPASSWD:ALL` adds sudo rights to this `guest` user
+Description of configuration parameters:
 
-- You need to provide the encrypted value of your password in the `passwd` field using the SHA-512 encryption method. To generate the SHA-512 encrypted value for your password, you can use the `mkpasswd` command line tool
+- `sudo`: give superuser rights to the guest user by setting the value `ALL=(ALL) NOPASSWD:ALL`. 
+
+- `passwd`: provide an encrypted value of your password according to the SHA-512 encryption method. To generate the SHA-512 encrypted value, you can use the `mkpasswd` command line tool: 
 
 ```
 mkpasswd -m sha512crypt guest
 ```
 
-- The `guest` user will be added automatically to the users and admin groups. If you want to add the user to other groups, check they exist first
+- `groups`: list all groups the `guest` user will belong to. In this configuration, the user will be automatically added to the `users` and `admin` groups. If you want to add the user to other groups, first <a href="https://gcore.com/docs/cloud/virtual-instances/customize-initial-setup-for-your-instance#check-user-groups">make sure that these groups exist</a>. 
 
-- The `lock_passwd` option with the value *false* allows you to access the virtual instance using a username and password
+- `lock_passwd`: a value set to `false` allows you to access the virtual instance with a username and password.
 
-- The `shell` option with the value `bin/bash` sets the default shell as `bash` for the `guest` user.
+- `shell`: a value set to `bin/bash` defines the default shell as `bash` for the `guest` user.
 
-Wait a few minutes for your virtual instance to launch, then try to use the guest user to access the instance by running the following command:
+After you configure user data, wait a few minutes for your virtual instance to launch and use the `guest` user to access the instance:
 
+1\. Run the following command: `ssh guest@your_instance_ip`
+
+2\. Type `guest` and press **Enter**. 
+
+You should be able to log in to your guest user account.
+
+<alert-element type="info" title="Info" id="check-user-groups">
+
+To check for the user groups that guest belongs to, run the following command: `groups`. You should see the `users` and `admin` groups listed, indicating that the `guest` user belongs to the `users` and `admin` groups.
+
+</alert-element>
+
+## Enable root user 
+
+When creating an instance, you can enable user access to root by adding the following line to the **User data** field:
 
 ```
-ssh guest@your_instance_ip
+#cloud-config
+disable_root: false 
 ```
 
-Type in `guest` and press **Enter**. You should be able to log in to your guest user account.
-
-To check for the user groups that guest belongs to, run the following command:
-
-```
-groups
-```
-
-You should see the `users` and `admin` groups listed, indicating that the `guest` user belongs to the `users` and `admin` groups.
+To enable user access to root after the instance creation, check out this guide: <a href="https://gcore.com/docs/cloud/virtual-instances/enable-root-user-on-a-linux-vm#enable-root-user-via-terminal" target="_blank">Enable root user</a>. 
 
 ## Configure user groups
 
