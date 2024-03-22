@@ -107,13 +107,13 @@ resource "gcore_instance" "instance" {
 }
 ```
 
-The User Data field features were built based on cloud-init, an industry-standard multi-distribution method for cross-platform cloud instance initialization. 
+The User Data field features were built based on `cloud-init`, an industry-standard multi-distribution method for cross-platform cloud instance initialization. 
 
 ## What is cloud-init?
 
-Cloud-init is an industry-standard software for automating the initialization of cloud instances. You can use cloud-init to perform a number of initial tasks when your instance is booted for the first time, such as installing packages, running a shell script, or configuring the network interfaces.
+`Cloud-init` is an industry-standard software for automating the initialization of cloud instances. You can use `cloud-init` to perform a number of initial tasks when your instance is booted for the first time, such as installing packages, running a shell script, or configuring the network interfaces.
 
-Cloud-init supports all major Linux distributions:
+`Cloud-init` supports all major Linux distributions:
 
 - Alpine Linux
 - ArchLinux
@@ -154,7 +154,7 @@ power_state:
 
 - `ssh_pwauth: True` allows your instance to be accessible using a username and password
 
-- The `power_state` block option tells cloud-init to wait 30 seconds for the cloud-init process to finish before shutting down the system
+- The `power_state` block option tells `cloud-init` to wait 30 seconds for the `cloud-init` process to finish before shutting down the system
 
 After the virtual instance is up and running, you can access the instance using the ssh command below:
 
@@ -168,7 +168,7 @@ Provide your password value; you should now be able to access the virtual instan
 
 Using the User Data field, you can create a new user in the virtual instance. Let’s say you want to create a user name, guest, with the same password. 
 
-Below is an example of a cloud-init script for creating the `guest` user.
+Below is an example of a `cloud-init` script for creating the `guest` user.
 
 ```
 #cloud-config
@@ -358,7 +358,7 @@ You can also configure network interfaces using the **User Data** field. For exa
 - Allowing you to host a web server using the static IP
 - Allowing other instances access to your instance reliably using the static IP
 
-When your virtual instance is created, cloud-init will generate a new file named `50-cloud-init.yaml` in the `/etc/netplan` directory and create a new network interface based on that file. To add a static IP address to the network interface, you need to create another file in the `/etc/netplan` other than `50-cloud-init.yaml`. When cloud-init creates the network interface, it will try to merge the content of these two configuration files. As a result, the static IP address will be added to the network interface. Below is an example content of the `50-cloud-init.yaml` file.
+When your virtual instance is created, `cloud-init` will generate a new file named `50-cloud-init.yaml` in the `/etc/netplan` directory and create a new network interface based on that file. To add a static IP address to the network interface, you need to create another file in the `/etc/netplan` other than `50-cloud-init.yaml`. When `cloud-init` creates the network interface, it will try to merge the content of these two configuration files. As a result, the static IP address will be added to the network interface. Below is an example content of the `50-cloud-init.yaml` file.
 
 ```
 network:
@@ -400,11 +400,11 @@ power_state:
   condition: True
 ```
 
-Cloud-init will execute two steps based on this configuration.
+`Cloud-init` will execute two steps based on this configuration.
 
-- First, cloud-init will create a new file named `00-add-static-ip.yaml` in `/etc/netplan` with instructions to add static IP addresses for both IPv4 (192.170.1.25) and IPv6 (2020:1::1.) The permission of the file is 0644, which means it is readable by any user and writable by cloud-init.
+- First, `cloud-init` will create a new file named `00-add-static-ip.yaml` in `/etc/netplan` with instructions to add static IP addresses for both IPv4 (192.170.1.25) and IPv6 (2020:1::1.) The permission of the file is 0644, which means it is readable by any user and writable by `cloud-init`.
 
-- When the instance is rebooted (using the `power_state` block configuration), cloud-init will try to merge the network configuration for both `00-add-static-ip.yaml` and `50-cloud-init.yaml` files so that you can add static IP addresses to the `enp3s0` network interface.
+- When the instance is rebooted (using the `power_state` block configuration), `cloud-init` will try to merge the network configuration for both `00-add-static-ip.yaml` and `50-cloud-init.yaml` files so that you can add static IP addresses to the `enp3s0` network interface.
 
 Access the instance once it is ready, and run the following command:
 

@@ -85,7 +85,7 @@ If you select Windows Server OS, you should set a password for the Admin user. I
     
 <img style="font-size: 15px;" src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/create-a-bare-metal-server/10._Admin.png" alt="10._Admin.png">
 
-6. In "Additional options", you can add metadata for processing by a cloud-init agent running on a virtual machine. To do it insert your script in the "User data" field.
+6. In "Additional options", you can add metadata for processing by a `cloud-init` agent running on a virtual machine. To do it insert your script in the "User data" field.
 
  <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/create-a-bare-metal-server/11._User_data.png" alt="11._User_data.png">
 

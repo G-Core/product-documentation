@@ -166,7 +166,7 @@ After adding or generating a new SSH key, the keys will appear in the SSH Keys s
 
 ## Connect with a password
 
-To connect using a password, configure it while creating an instance or a bare metal server. In Additional options click on "User data". This will open a field, where you can enter the script that will be processed by a cloud-init agent running on your machine. 
+To connect using a password, configure it while creating an instance or a bare metal server. In Additional options click on "User data". This will open a field, where you can enter the script that will be processed by a `cloud-init` agent running on your machine. 
 
 <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/13.png" alt="13.png">  
 
