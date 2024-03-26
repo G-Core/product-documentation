@@ -22,8 +22,6 @@ pageDescription: Learn how to manage your cloud resources using Terraform. Follo
 ---
 # Manage Cloud via Terraform
 
-## What is Terraform?
-
 Terraform is a declarative command-line utility used to manage the infrastructure of Terraform partner providers. With this tool, you can manage our Cloud service.
 
 To work with Terraform, you create a configuration file where you specify the changes you want to make to your Cloud resources, for example, to create an instance or a Kubernetes cluster. Then you run the Terraform command to make changes. The utility reads the configuration file and sends the necessary API requests. The required Cloud settings are then applied.
