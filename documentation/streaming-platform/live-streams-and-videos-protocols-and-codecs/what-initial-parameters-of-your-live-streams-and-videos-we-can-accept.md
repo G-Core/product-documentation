@@ -207,7 +207,7 @@ If the recommended parameters do not suit your stream, write to us in the chat o
 RTMPS is a variation of RTMP but incorporates SSL usage. 
 - SRT (Secure Reliable Transport) is an open-source video transport protocol for delivering high-quality, secure, low-latency video across unreliable networks.
 
-## RTMPS troubleshooting
+## RTMP/S troubleshooting
 
 <table>
 <thead>
@@ -227,6 +227,17 @@ RTMPS is a variation of RTMP but incorporates SSL usage.
 <td style="text-align: left">You use a port (80) unsuitable for secure data transfer</td>
 <td style="text-align: left">Manually add a correct port (443) to the server link, e.g.:
 rtmp://vp-push-ed1.gvideo.co:<span style="color:#FF5913">443</span>/in/</td>
+</tr>
+<tr>
+<td style="text-align: left">No transcoding or image degradation when using web cameras with custom video codecs</td>
+<td style="text-align: left">Video codec <i>H264+</i> extension with over-increased keyframe</td>
+<td style="text-align: left">Check the outgoing live stream parameters of the web camera:
+<ul>
+   <li>Streams must be encoded by H264. No hacks/codecs like H264+ etc.</li>
+   <li>“Smart” mode codecs must be turned off. </li>
+</ul>
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/what-initial-parameters-of-your-live-streams-and-videos-we-can-accept/dahua-video-codec-settings.png" alt="Web camera codec settings">
+</td>
 </tr>
 <tr>
 <td rowspan="2" style="text-align: left">“Connection timed out”</td>
