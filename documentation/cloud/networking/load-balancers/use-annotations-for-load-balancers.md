@@ -23,9 +23,9 @@ pageDescription: Discover how to enhance your Kubernetes clusters using Gcore se
 ---
 # Use annotations for Load Balancers
 
-Annotations are a way to add custom, not-identifying metadata to objects. They are used to configure additional behavior for Load Balancers service in <a href="https://gcore.com/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster" target="_blank">Kubernetes clusters</a> beyond what the standard configuration offers. Learn more about annotations in the <a href="" target="_blank">official Kubernetes documentation</a>. 
+Annotations are a way to add custom, non-identifiable metadata to objects. They are used to configure additional behavior for Load Balancers service in <a href="https://gcore.com/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster" target="_blank">Kubernetes clusters</a> beyond the standard configuration offerings. Learn more about annotations in the <a href="https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/" target="_blank">official Kubernetes documentation</a>. 
 
-You can add annotations through the <a href="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_annotate/" target="_blank">command line (kubectl)</a> or the Kubernetes service manifest using the annotations field as follows:
+You can add annotations via the <a href="https://kubernetes.io/docs/reference/kubectl/generated/kubectl_annotate/" target="_blank">command line (kubectl)</a> or the Kubernetes service manifest using the annotations field as follows:
 
 ```
 metadata: {
@@ -130,7 +130,7 @@ Below, we have compiled annotations that apply to clusters created in Gcore:
 
 ## Examples
 
-Here are several examples of annotations using. 
+Here, several examples of annotations using are presented. 
 
 To assign an Advanced DDoS protection profile to your cluster, use the following code in the manifest: 
 
