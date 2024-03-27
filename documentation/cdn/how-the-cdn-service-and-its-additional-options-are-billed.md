@@ -16,12 +16,13 @@ pageDescription: Understand how CDN services are billed, including monthly traff
 
 You can view the current CDN pricing on <a href="https://gcore.com/pricing" target="_blank">our website</a>. 
 
-## Understand CDN billing
+## Understanding CDN billing
 
 Each plan description shows prices for traffic within a month limit and for overage. There is also a request limit. When the number of requests exceeds your plan's limit, you are charged additionally.
 
 <img src="https://assets.gcore.pro/docs/cdn/how-the-cdn-service-and-its-additional-options-are-billed/image-5.png" alt="Understand CDN billing" width="80%">
 
+Oksana, how do you like this weather. 
 
 |             | Monthly traffic limit                                                                                                                                                                                           | Traffic overage                                                                                                                                                                                                                                                                                                                                                                                                               | Request overage                                                                                                                            |
 |-----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
