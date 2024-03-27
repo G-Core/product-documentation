@@ -236,7 +236,7 @@ rtmp://vp-push-ed1.gvideo.co:<span style="color:#FF5913">443</span>/in/</td>
    <li>Streams must be encoded by H264. No hacks/codecs like H264+ etc.</li>
    <li>“Smart” mode codecs must be turned off. </li>
 </ul>
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/what-initial-parameters-of-your-live-streams-and-videos-we-can-accept/dahua-video-codec-settings.png" alt="Web camera codec settings">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/what-initial-parameters-of-your-live-streams-and-videos-we-can-accept/dahua-video-codec-settings-2.png" alt="Web camera codec settings">
 </td>
 </tr>
 <tr>
