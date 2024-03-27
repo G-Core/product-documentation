@@ -4,8 +4,8 @@ displayName: Billing
 published: true
 order: 30
 toc:
-   --1--Understand CDN billing: "understand-cdn-billing"
-   --1--Understand additional options billing: "understand-additional-options-billing"
+   --1--Understanding CDN billing: "understanding-cdn-billing"
+   --1--Understanding additional options billing: "understanding-additional-options-billing"
    --1--Service suspension for non-payment: "service-suspension-for-non-payment"
    --1--View charges and payment history: "view-your-charges-and-payment-history"
    --1--Change your billing plan: "change-your-billing-plan"
@@ -16,7 +16,7 @@ pageDescription: Understand how CDN services are billed, including monthly traff
 
 You can view the current CDN pricing on <a href="https://gcore.com/pricing" target="_blank">our website</a>. 
 
-## Understand CDN billing
+## Understanding CDN billing
 
 Each plan description shows prices for traffic within a month limit and for overage. There is also a request limit. When the number of requests exceeds your plan's limit, you are charged additionally.
 
@@ -35,7 +35,7 @@ For example, you use the Pro 5 TB plan for €100/month, the credit limit is €
 
 The credit limit may differ from the one that is given in this article. You can always check the current limit in your account Dashboard.
 
-## Understand additional options billing
+## Understanding additional options billing
 
 <img src="https://assets.gcore.pro/docs/cdn/how-the-cdn-service-and-its-additional-options-are-billed/image-7.png" alt="Understand additional options billing" width="80%">
 
