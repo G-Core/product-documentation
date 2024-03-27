@@ -37,7 +37,7 @@ Select a **region**—the location of the data center where your cluster will be
 
 ## Step 3. Select the version
 
-Select your Kubernetes cluster version from the drop-down menu.
+Select your Kubernetes cluster version from the dropdown menu.
 
 <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/version-k8s.png" alt="Kubernetes cluster version" width="60%">
 
