@@ -9,16 +9,16 @@ toc:
    --1--RTMP, RTMPS, and SRT: "rtmp-rtmps-and-srt-for-live-streaming"
    --1--RTMPS troubleshooting: "rtmps-troubleshooting"
 pageTitle: Guide to Gcore Streaming Parameters | Gcore
-pageDescription: Overview of the supported and recommended parameters for optimizing live streams and videos using the Gcore Streaming Platform.
+pageDescription: Overview of the supported and recommended parameters for optimizing live streams and videos using Gcore Streaming Platform.
 ---
-# Initial parameters of your live streams and videos that we can accept
+# Accepted initial parameters of your live streams and videos
 
 ## Supported parameters
 
-The Streaming Platform supports:
+Gcore Streaming Platform supports:
 
-- Receiving live streams from <a href="https://gcore.com/docs/streaming-platform/live-streaming/create-a-live-stream" target="_blank">your server (PULL) or a dedicated publishing point (PUSH)</a> using numerous protocols including RTMP(S) and SRT (all supported live protocols are listed in the table below). The stream is transcoded and sent with <a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-we-optimize-live-stream-and-video-performance-by-creating-different-bitrates" target="_blank">adaptive streaming</a> via CDN in  HLS/MPEG-DASH (CMAF low latency) formats. 
-- Videos uploaded in almost any format, from standard MP4 to 4k HDR Video, are transcoded to get videos of lower quality, and then sent with adaptive streaming via CDN in HLS format.  
+- Receiving live streams from <a href="https://gcore.com/docs/streaming-platform/live-streaming/create-a-live-stream" target="_blank">your server (PULL) or a dedicated publishing point (PUSH)</a> using numerous protocols including RTMP(S) and SRT. All supported live protocols are listed in the table below. The stream is transcoded and sent with <a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-we-optimize-live-stream-and-video-performance-by-creating-different-bitrates" target="_blank">adaptive streaming</a> via CDN in  HLS/MPEG-DASH (CMAF low latency) formats. 
+- Videos uploaded in almost any format, from standard MP4 to 4K HDR Video, are first transcoded to get videos of lower quality. Then, they're sent with adaptive streaming via CDN in HLS format. 
 
 ## Recommended stream parameters
 
@@ -36,7 +36,7 @@ We recommend the following parameters for streams:
 </tr>
 <tr>
 <td class="wysiwyg-text-align-center" rowspan="6" data-celllook="0">
-<p><span data-contrast="none">Video bitrate &amp; resolution</span></p>
+<p><span data-contrast="none">Video bitrate and resolution</span></p>
 </td>
 <td class="wysiwyg-text-align-center" data-celllook="0">
 <p><span data-contrast="none">Quality</span></p>
@@ -207,7 +207,7 @@ If the recommended parameters do not suit your stream, write to us in the chat o
 RTMPS is a variation of RTMP but incorporates SSL usage. 
 - SRT (Secure Reliable Transport) is an open-source video transport protocol for delivering high-quality, secure, low-latency video across unreliable networks.
 
-## RTMP/S troubleshooting
+## RTMP(S) troubleshooting
 
 <table>
 <thead>
@@ -220,20 +220,20 @@ RTMPS is a variation of RTMP but incorporates SSL usage.
 <tbody>
 <tr>
 <td rowspan="2" style="text-align: left">SSL issues</td>
-<td style="text-align: left">You use <pre>rtmps://</pre> but in the encoder <pre>rtmp://</pre> is specified</td>
+<td style="text-align: left">You used <pre>rtmps://</pre> but in the encoder <pre>rtmp://</pre> is specified</td>
 <td style="text-align: left">Check the protocol in your encoder. Follow <a href="" target="_blank">step 3 of the guide</a>.</td>
 </tr>
 <tr>
-<td style="text-align: left">You use a port (80) unsuitable for secure data transfer</td>
+<td style="text-align: left">You used a port (80) unsuitable for secure data transfer</td>
 <td style="text-align: left">Manually add a correct port (443) to the server link, e.g.:
 rtmp://vp-push-ed1.gvideo.co:<span style="color:#FF5913">443</span>/in/</td>
 </tr>
 <tr>
 <td style="text-align: left">No transcoding or image degradation when using web cameras with custom video codecs</td>
-<td style="text-align: left">Video codec <i>H264+</i> extension with over-increased keyframe</td>
+<td style="text-align: left">The video codec H264+ extension has an over-increased keyframe</td>
 <td style="text-align: left">Check the outgoing live stream parameters of the web camera:
 <ul>
-   <li>Streams must be encoded by H264. No hacks/codecs like H264+ etc.</li>
+   <li>Streams must be encoded by H264. No hacks/codecs like H264+ maybe be used.</li>
    <li>“Smart” mode codecs must be turned off. </li>
 </ul>
 <img src="https://assets.gcore.pro/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/what-initial-parameters-of-your-live-streams-and-videos-we-can-accept/dahua-video-codec-settings-2.png" alt="Web camera codec settings">
@@ -242,11 +242,11 @@ rtmp://vp-push-ed1.gvideo.co:<span style="color:#FF5913">443</span>/in/</td>
 <tr>
 <td rowspan="2" style="text-align: left">“Connection timed out”</td>
 <td style="text-align: left">The server URL is incorrect</td>
-<td style="text-align: left">Check the server URL in the encoder settings. Ensure that protocol is <pre>rtmps://</pre></td>
+<td style="text-align: left">Check the server URL in the encoder settings. Ensure that protocol is <pre>rtmps://</pre>.</td>
 </tr>
 <tr>
 <td style="text-align: left">Your encoder doesn’t support RTMPS</td>
-<td style="text-align: left">Check if there is RTMPS support, change encoder</td>
+<td style="text-align: left">Check if there is RTMPS support, change encoder if required</td>
 </tr>
 </tbody>
 </table>
