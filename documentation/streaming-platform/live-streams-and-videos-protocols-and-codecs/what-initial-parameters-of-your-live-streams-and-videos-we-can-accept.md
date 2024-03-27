@@ -221,7 +221,7 @@ RTMPS is a variation of RTMP but incorporates SSL usage.
 <tr>
 <td rowspan="2" style="text-align: left">SSL issues</td>
 <td style="text-align: left">You used <pre>rtmps://</pre> but in the encoder <pre>rtmp://</pre> is specified</td>
-<td style="text-align: left">Check the protocol in your encoder. Follow <a href="" target="_blank">step 3 of the guide</a>.</td>
+<td style="text-align: left">Check the protocol in your encoder. Follow <a href="https://gcore.com/docs/streaming-platform/live-streaming/create-a-live-stream#step-3-configure-your-stream-for-push-or-pull" target="_blank">step 3 of the guide</a>.</td>
 </tr>
 <tr>
 <td style="text-align: left">You used a port (80) unsuitable for secure data transfer</td>
