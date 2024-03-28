@@ -24,7 +24,7 @@ If you don’t create your custom firewall, the default firewall will be used.
 
 1\. Open a window to create a firewall. You can do in two ways:
 
-*   In the Cloud menu, go to **Networking** → **Firewalls** → **Create firewall**.  
+*   In the Cloud menu, go to **Networking** > **Firewalls** > **Create firewall**.  
 
  <img src="https://assets.gcore.pro/docs/cloud/networking/add-and-configure-a-firewall/13257548714001.png" alt="Firewalls " width="580" height="271">  
     
@@ -74,7 +74,7 @@ The default firewall allows the following traffic:
 
 ### Add, change and delete rules
 
-1\. Go to the **Networking** tab → **Firewalls.**
+1\. Go to the **Networking** tab > **Firewalls**.
 
 2\. Find the required firewall, click the ⋯ menu on the right and select **Rules**.
 
@@ -82,7 +82,7 @@ The default firewall allows the following traffic:
 
 ### Assign to an instance and detach from it
 
-1\. Go to the **Networking** tab → **Firewalls.**
+1\. Go to the **Networking** tab > **Firewalls**.
 
 2\. Find the required firewall, click the ⋯ menu on the right and select **Instances**.
 
@@ -90,7 +90,7 @@ The default firewall allows the following traffic:
 
 ### Delete a firewall
 
-1\. Go to the **Networking** tab → **Firewalls.**
+1\. Go to the **Networking** tab > **Firewalls**.
 
 2\. Find the required firewall, click the ⋯ menu on the right and select **Delete**.
 
