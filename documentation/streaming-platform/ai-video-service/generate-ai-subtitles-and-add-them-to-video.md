@@ -2,7 +2,7 @@
 title: generate-ai-subtitles-and-add-them-to-video
 displayName: AI subtitles
 published: true
-order: 20
+order: 10
 toc:
    --1--Overview: "overview"
    --1--Benefits: "benefits-of-gcore-ai-asr"
