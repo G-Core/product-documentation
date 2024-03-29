@@ -251,7 +251,7 @@ If there’s no nudity detected the array will be empty:
 
 The following response elements may be useful for further video moderation:
 
-- **class**—a nudity type; see more details in <a href="https://gcore.com/docs/streaming-platform/video-hosting/ai-video-service/ai-nudity detection#what-objects-can-be-detected">What objects can be detected</a>, for example, `FEMALE_BREAST_EXPOSED`. 
+- **class**—a nudity type; see more details in <a href="https://gcore.com/docs/streaming-platform/video-hosting/ai-video-service/ai-nudity-detection#what-objects-can-be-detected">What objects can be detected</a>, for example, `FEMALE_BREAST_EXPOSED`. 
 - **score**—the probability that the object does relate to nudity, for example, `0.5`.  
 - **frame-no**— the video frame number where nudity was found, for example, `5`.
 
