@@ -39,10 +39,10 @@ The request priority reflects the impact of service issues on your business. The
 
 | Priority  | Criteria                                                                                                                                       | Response time     |
 |---------------|----------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------|
-| Urgent | Business-critical functions are unavailable, or degraded and will soon be unavailable                                                          | Within 30 minutes |
-| High      | Business-critical functions are partially unavailable or degraded                                                                              | Within 1 hour    |
-| Normal    | Non-business-critical functions are inoperable or non-standard errors are observed                                                             | Within 2 hours    |
-| Low       | You have a general question concerning the infrastructure; you want to request a new function of the Gcore services or discuss an existing onen | Within 4 hours    |
+| Urgent | Business-critical functions are unavailable, or degraded and will soon be unavailable                                                          | Within 1 hour |
+| High      | Business-critical functions are partially unavailable or degraded                                                                              | Within 2 hours    |
+| Normal    | Non-business-critical functions are inoperable or non-standard errors are observed                                                             | Within 4 hours    |
+| Low       | You have a general question concerning the infrastructure; you want to request a new function of the Gcore services or discuss an existing onen | Within 8 hours    |
 
 
 If you use CDN, Streaming platform, Cloud, Web protection, Storage, or DNS, you can set the priority of the request and manage it in the "Help center" while creating a request. For other services, priority is indicated in the chat on our website.
