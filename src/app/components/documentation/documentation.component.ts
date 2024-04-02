@@ -52,6 +52,8 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
     public activeDocument: ScullyRoute;
 
     private routerSubscription: Subscription;
+    private closeFullSizeModalListener: () => void;
+
     private isNewContent = true;
     public isResellerPage = false;
 
@@ -69,7 +71,19 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
         private data: MenuService,
     ) {}
 
+    private isContentInitialized = false;
+
     public ngAfterViewChecked(): void {
+        if (!this.isContentInitialized && this.fullSizeImage) {
+            this.closeFullSizeModalListener = this.renderer.listen(this.fullSizeImage.nativeElement, 'click', () =>
+                this.closeFullSizeModal(),
+            );
+
+            window.document.addEventListener('scroll', this.handlePageScroll, true);
+
+            this.isContentInitialized = true;
+        }
+
         if (this.scullyContainer.nativeElement) {
             if (this.scullyContainer.nativeElement.childElementCount > 1) {
                 this.isArticleReady = true;
@@ -84,7 +98,12 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
                     this.viewportScroller.scrollToAnchor(fragment);
                 });
 
-                this.addListeners();
+                this.scullyContainer.nativeElement
+                    .querySelectorAll(':not(.gc-gallery p) > img')
+                    .forEach((img: Element) => {
+                        this.renderer.listen(img, 'click', (event) => this.expandImage(event));
+                    });
+
                 this.setTocHeaders();
 
                 this.isNewContent = false;
@@ -174,6 +193,12 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
         if (this.routerSubscription) {
             this.routerSubscription.unsubscribe();
         }
+
+        if (this.closeFullSizeModalListener) {
+            this.closeFullSizeModalListener();
+        }
+
+        window.document.removeEventListener('scroll', this.handlePageScroll, true);
     }
 
     public anchorScroll(hash: string): void {
@@ -391,14 +416,5 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
                 })
                 .filter((item: Element) => item);
         }
-    }
-
-    private addListeners(): void {
-        window.document.addEventListener('scroll', this.handlePageScroll, true);
-
-        this.scullyContainer.nativeElement.querySelectorAll(':not(.gc-gallery p) > img').forEach((img: Element) => {
-            this.renderer.listen(img, 'click', (event) => this.expandImage(event));
-        });
-        this.renderer.listen(this.fullSizeImage.nativeElement, 'click', () => this.closeFullSizeModal());
     }
 }
