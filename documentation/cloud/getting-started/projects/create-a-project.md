@@ -107,7 +107,7 @@ If you have a large number of projects, you can also use search to find the one 
 
 3\. Select **Settings**.
 
-<img src="https://assets.gcore.pro/docs/cloud/getting-started/projects/create-a-project/project-settings-annotated.png" alt="Project settings menu with Open and Settings options" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/getting-started/projects/create-a-project/annotated-project-settings.png" alt="Project settings menu with Open and Settings options" width="80%">
 
 4\. Update project information and then click **Save changes** to apply the updates.
 
@@ -125,13 +125,13 @@ To change access to the project:
 
 3\. Select **Settings**.
 
-<img src="https://assets.gcore.pro/docs/cloud/getting-started/projects/create-a-project/project-settings-annotated.png" alt="Project settings menu with Open and Settings options" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/getting-started/projects/create-a-project/annotated-project-settings.png" alt="Project settings menu with Open and Settings options" width="80%">
 
 4\. Open the **Access** tab. You’ll see the list of users who belong to the project, along with their access levels. To manage user access, follow the instructions in this guide: <a href="https://gcore.com/docs/cloud/getting-started/projects/users/manage-user-access-to-your-project" target="_blank">Manage user access to your project</a>.
 
 To configure user access within your account, click the "Manage users via profile" link. 
 
-<img src="https://assets.gcore.pro/docs/cloud/getting-started/projects/create-a-project/project-settings-access.png" alt="Project access tab displaying one user added to the project" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/getting-started/projects/create-a-project/access-project-settings.png" alt="Project access tab displaying one user added to the project" width="80%">
 
 ### Delete a project
 
