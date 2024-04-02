@@ -89,7 +89,7 @@ A project name can contain between 3 and 63 characters, including Latin letters,
 
 4\. Click **Create project**. 
 
-<img src="https://assets.gcore.pro/docs/cloud/getting-started/projects/create-a-project/create-project-annotated.png" alt="A dialog with configuration of project name and description" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/getting-started/projects/create-a-project/create-project-annotated.png" alt="A dialog with configuration of project name and description" width="60%">
 
 The new project will appear in your project list. 
 
@@ -157,6 +157,6 @@ To delete a project:
 
 5\. Click **Yes, delete**.
 
-<img src="https://assets.gcore.pro/docs/cloud/getting-started/projects/create-a-project/project-conifirm-deletetion.png" alt="Delete project dialog" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/getting-started/projects/create-a-project/project-conifirm-deletetion.png" alt="Delete project dialog" width="60%">
 
 6\. Your project has been successfully deleted.  
