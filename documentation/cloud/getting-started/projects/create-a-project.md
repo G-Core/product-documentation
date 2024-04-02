@@ -29,9 +29,9 @@ There are two ways to view projects in the Gcore Customer Portal: either from th
 
 <img src="https://assets.gcore.pro/docs/cloud/getting-started/projects/create-a-project/open-projects-from-dropdown.png" alt="A dropdown displaying a list of projects" width="80%">
 
-The **Projects** page will open. Here you can view, search, and manage your projects.  
+3\. The **Projects** page will open. Here you can view, search, and manage your projects.  
 
-3\. To open the resource management panel for a particular project, click **Open project**.
+To open the resource management panel for a particular project, click **Open project**.
 
 <img src="https://assets.gcore.pro/docs/cloud/getting-started/projects/create-a-project/projects-page-open-project.png" alt="A list of projects with the highlighted Open project button" width="80%">
 
@@ -41,9 +41,9 @@ The **Projects** page will open. Here you can view, search, and manage your proj
 
 2\. Click **Projects**. 
 
-The **Projects** page will open. Here you can view, search, and manage your projects. 
+3\. The **Projects** page will open. Here you can view, search, and manage your projects. 
 
-3\. To open the resource management panel for a particular project, click the project name.
+To open the resource management panel for a particular project, click the project name.
 
 <img src="https://assets.gcore.pro/docs/cloud/getting-started/projects/create-a-project/open-projects.png" alt="A list of projects with the highlighted project name" width="80%">
 
@@ -69,7 +69,9 @@ You can switch between two layouts by clicking the layout icon to the right of t
 
 When you first navigate to the Cloud page, you’ll have only one **Default** project. This project is created automatically for every account and can’t be deleted. 
 
-You can create more projects to organize your cloud resources:
+You can create more projects to organize your cloud resources. The number of projects doesn't affect your expenses. We charge only for the used resources.
+
+To create a project:
 
 1\. Navigate to the **Projects** page.
 
@@ -85,11 +87,11 @@ A project name can contain between 3 and 63 characters, including Latin letters,
 
 </alert-element>
 
-4\. Click **Create project**. The new project will appear in your project list. 
+4\. Click **Create project**. 
 
 <img src="https://assets.gcore.pro/docs/cloud/getting-started/projects/create-a-project/create-project-annotated.png" alt="A dialog with configuration of project name and description" width="80%">
 
-The number of projects doesn't affect your expenses. We charge only for the used resources.
+The new project will appear in your project list. 
 
 ## Manage projects
 
@@ -99,7 +101,7 @@ If you have a large number of projects, you can also use search to find the one 
 
 ### Edit project name or description
 
-1\. Navigate to the Projects page.
+1\. Navigate to the **Projects** page.
 
 2\. Click the three-dot (...) icon next to the project you want to edit.
 
