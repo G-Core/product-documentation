@@ -40,4 +40,4 @@ Each flavor of virtual vPOD comes with:
 - 1 virtual machine. The configuration of a virtual machine depends on the capacity of vCPU, RAM and ephemeral storage.
 - Host server(s) with 4 IPU-processors on each. The exact number of host servers depends on the flavor you choose.
 
-For up-to-date prices and availability, refer to <a href="https://gcore.com/cloud/ai-platform" target="_blank">our website</a> or your <a href="https://cloud.gcore.com/cloud/projects/list" target="_blank">Control panel</a>.
+For up-to-date prices and availability, refer to <a href="https://gcore.com/cloud/ai-platform" target="_blank">our website</a> or your <a href="https://cloud.gcore.com/cloud/projects/list" target="_blank">Customer Portal</a>.

@@ -81,7 +81,7 @@ Please note that after creating a bare metal server, you will not be able to att
     
 <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/create-a-bare-metal-server/9._SSH.png" alt="9._SSH.png"> 
 
-If you select Windows Server OS, you should set a password for the Admin user. It can contain Latin letters (a-zA-Z), numbers (0-9) and special characters (!#$%&'()*+,-./:;<=>?@[]^_{|}~). Valid length is from 8 to 16 characters. You can connect to the Windows server <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from your Control Panel</a> or from your computer using the RDP protocol.
+If you select Windows Server OS, you should set a password for the Admin user. It can contain Latin letters (a-zA-Z), numbers (0-9) and special characters (!#$%&'()*+,-./:;<=>?@[]^_{|}~). Valid length is from 8 to 16 characters. You can connect to the Windows server <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from the Customer Portal</a> or from your computer using the RDP protocol.
     
 <img style="font-size: 15px;" src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/create-a-bare-metal-server/10._Admin.png" alt="10._Admin.png">
 
@@ -89,7 +89,7 @@ If you select Windows Server OS, you should set a password for the Admin user. I
 
  <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/create-a-bare-metal-server/11._User_data.png" alt="11._User_data.png">
 
-For example, you may insert a script that will allow connecting to a Linux server directly <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from your Control Panel</a> or <a href="https://gcore.com/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh" target="_blank">via SSH</a> (this script is not needed to connect to a Windows server). Enter this code with the password chosen by you into the User data field:
+For example, you may insert a script that will allow connecting to a Linux server directly <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from the Customer Portal</a> or <a href="https://gcore.com/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh" target="_blank">via SSH</a> (this script is not needed to connect to a Windows server). Enter this code with the password chosen by you into the User data field:
 
 ```    
 #cloud-config  

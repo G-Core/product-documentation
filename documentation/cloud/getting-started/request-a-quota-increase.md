@@ -31,7 +31,7 @@ Categories group the resources for which there are quotas:
 
 ## How to send a request
 
-1\. Go to **Quotas Viewer** in the Cloud Management section and select the region where you want to request a quota increase.
+1\. In the Gcore Customer Portal, navigate to **Quotas Viewer** in the Cloud Management section and select the region where you want to request a quota increase.
 
 **Note**: Some resources may only be available in some regions.
 

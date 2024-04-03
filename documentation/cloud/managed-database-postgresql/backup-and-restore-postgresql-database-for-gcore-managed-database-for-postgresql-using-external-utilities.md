@@ -66,7 +66,7 @@ The package contains all required tools.
 
 ## 2. Get your credentials
 
-To launch backup and restore tools, you need credentials (``username``, ```password```, ```port```, and ```dbname```) to connect to the Gcore Managed Database server, where databases are stored. You can find credentials in the customer portal, with instructions available in <a href="https://gcore.com/docs/cloud/managed-database-postgresql/manage-postgresql-servers#get-your-credentials" target="_blank">our dedicated guide</a>. 
+To launch backup and restore tools, you need credentials (``username``, ```password```, ```port```, and ```dbname```) to connect to the Gcore Managed Database server, where databases are stored. You can find credentials in the Customer Portal, with instructions available in <a href="https://gcore.com/docs/cloud/managed-database-postgresql/manage-postgresql-servers#get-your-credentials" target="_blank">our dedicated guide</a>. 
 
 ## 3. Back up databases
 
@@ -100,8 +100,8 @@ $ pg_dumpall -U username -W -h hostname > all_pg.sql
 Where: 
 
 - ```all_pg.sql``` is the output backup name
-- ```username``` is your username from the customer portal
-- ```hostname``` is your hostname from the customer portal
+- ```username``` is your username from the Customer Portal
+- ```hostname``` is your hostname from the Customer Portal
 
 ## 4. Restore databases
 
@@ -113,7 +113,7 @@ $ pg_restore -U username -W -h hostname -d database_name < backup_file.tar
 
 Where: 
 
-- ```username``` is your username from the customer portal
-- ```hostname``` is your hostname from the customer portal  
-- ```database_name``` is your database name from the customer portal
+- ```username``` is your username from the Customer Portal
+- ```hostname``` is your hostname from the Customer Portal 
+- ```database_name``` is your database name from the Customer Portal
 - ```backup_file.tar``` is the file or directory with your backup

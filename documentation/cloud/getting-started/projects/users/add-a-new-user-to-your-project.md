@@ -10,7 +10,7 @@ pageDescription: Learn how to add users to your Cloud project.
 # Add a new user to your project
 Only the user with the Administrator role can add new users to the project. To send an invitation:
 
-1.  Go to the [Projects](https://cloud.gcore.com/cloud/projects/list) section, click the three points icon opposite to the project and select **Settings**.  
+1.  In the Gcore Customer Portal, navigate to the [Projects](https://cloud.gcore.com/cloud/projects/list) section, click the three-dots menu next to the project, and select **Settings**.  
   
 ![Project settings](https://assets.gcore.pro/docs/cloud/getting-started/projects/users/add-a-new-user-to-your-project/1-project-settings.png)     
     

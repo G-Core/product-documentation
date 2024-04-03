@@ -193,7 +193,7 @@ You can use passwrod to connect to a Windows instance from the <a href="https://
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/13-add-user-data.png" alt="User data field with password configuration" width="80%"> 
 
-You can configure your password to connect to your Linux instance <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from your Control Panel</a> or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-via-ssh" target="_blank">via SSH</a>. To do it, insert the following code to the field, replacing `**your password**` with your chosen password:
+You can configure your password to connect to your Linux instance <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from the Customer Portal</a> or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-via-ssh" target="_blank">via SSH</a>. To do it, insert the following code to the field, replacing `**your password**` with your chosen password:
 
 ```
 #cloud-config  

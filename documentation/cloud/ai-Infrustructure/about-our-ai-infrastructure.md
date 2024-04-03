@@ -92,7 +92,7 @@ Deployment time is about 15 minutes. This is the time between the moment you cli
 
 ## How to use AI Infrastructure?
 
-1.  Create a cluster in the Gcore Control panel.
+1.  Create a cluster in the Gcore Customer Portal.
 2.  Access a Poplar server via SSH.
 3.  Upload a clone of the repository with your model to the Poplar server.
 4.  Upload datasets to the Poplar server or connect the S3 storage that hosts your datasets.

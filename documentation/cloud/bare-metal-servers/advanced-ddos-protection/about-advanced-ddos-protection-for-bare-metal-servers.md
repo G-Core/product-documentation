@@ -35,7 +35,7 @@ Here at Gcore, we provide basic protection to all customers, and it is enabled b
 *   **Time-to-Mitigate (start of mitigation)** within 5 seconds after an attack is detected.
 *   **IP addressing** with a dedicated subnet.
 *   **DPI.** We utilize some DPI elements (as part of DDoS protection) to analyze traffic.
-*   **Billing.** A billing plan is shown in the Gcore client control panel.
+*   **Billing.** A billing plan is shown in the Gcore Customer Portal.
 
 ## Pricing
 

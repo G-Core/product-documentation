@@ -41,7 +41,7 @@ This guide explains how to add and edit API keys to protect your function endpoi
 
 Your API key is active. From now on, anyone attempting to access your function endpoint must include a valid API key in the `X-API-Key` header. Otherwise, they will receive a 401 error.
 
-If you’ve set the expiry date, you’ll get a notification in the customer portal before it expires.
+If you’ve set the expiry date, you’ll get a notification in the Customer Portal before it expires.
 
 ## Change API key settings
 
@@ -70,11 +70,11 @@ You can change the description, expiration date, and functions that can be acces
 
 1. **What should I do if I forget or lose my API key?**
 
-Delete the key in the customer portal, create a new one and add it to the function.
+Delete the key in the Customer Portal, create a new one and add it to the function.
 
 2. **Can I revoke an API key if it was compromised?**
 
-If your key was compromised, delete it in the customer portal, create a new one and add it to the function.
+If your key was compromised, delete it in the Customer Portal, create a new one and add it to the function.
 
 3. **How can I check if my API key is still valid?**
 
