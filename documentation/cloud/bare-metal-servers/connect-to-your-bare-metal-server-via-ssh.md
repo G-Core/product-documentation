@@ -24,7 +24,7 @@ You can connect to an instance or a bare metal server using a pair of SSH keys o
 
 The SSH protocol (also referred to as Secure Shell) is a method for secure remote login from one server to another. To connect via SSH, make sure that all the necessary rules for incoming traffic are in the firewall settings set.
 
-Please note: you cannot connect to Windows instances via SSH. But you can connect to them via RDP protocol or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from the console in Control Panel</a>. Linux machines can be accessed via SSH or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from your Control Panel</a>.
+Please note: you cannot connect to Windows instances via SSH. But you can connect to them via RDP protocol or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from the console in the Customer Portal</a>. Linux machines can be accessed via SSH or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from the Customer Portal</a>.
 	
 ## Connect with SSH keys
 
@@ -94,7 +94,7 @@ Important! During the key generation, move the cursor in the Key field until th
 
 To create an SSH key from your personal account, follow the steps below. 
 
-1\. In the Gcore Cloud control panel, go to SSH Keys. 
+1\. In the Gcore Customer Portal, go to SSH Keys. 
 
 2\. Click Autogenerate SSH key. 
 
@@ -114,7 +114,7 @@ To create an SSH key from your personal account, follow the steps below. 
 
 To add an already created SSH key to your personal account: 
 
-1.  In the Gcore Cloud control panel, go to SSH Keys. 
+1.  In the Gcore Customer Portal, go to SSH Keys. 
 
 2\. Click Add SSH key. 
 
@@ -179,7 +179,7 @@ chpasswd: { expire: False }
 ssh_pwauth: True
 ```
 
-Using the specified password, you will be able to connect to the instance or Bare Metal server via SSH or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from your Control Panel</a>.
+Using the specified password, you will be able to connect to the instance or Bare Metal server via SSH or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from the Customer Portal</a>.
 
 It is not necessary to specify the password explicitly, you can enter its hash (the same password, only in a converted form; the system will be able to read it, but for a person, it looks like a random set of symbols). Then, even if someone gets into the system, he or she won’t know the password — only the hash will be stored inside. And the system will open its doors only to the user who knows the password. To generate a hash, you can use the Python script:
 

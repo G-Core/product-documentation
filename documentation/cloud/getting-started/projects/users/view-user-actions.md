@@ -13,7 +13,7 @@ Gcore Cloud Action Logging is a service for logging client actions in the Cloud.
 
 ![User actions in the Gcore Control Panel](https://assets.gcore.pro/docs/cloud/getting-started/projects/users/view-user-actions/view-user-actions.png)
 
-Logs of user actions in Cloud are located in the User actions tab.
+Logs of user actions in Cloud are located in the Gcore Customer Portal on the **User actions** page.
 
  The section has filters for: 
 

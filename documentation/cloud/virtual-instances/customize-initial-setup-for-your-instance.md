@@ -5,7 +5,7 @@ order: 15
 published: true
 toc:
     --1--Why automate the initial setup?: "why-automate-the-initial-setup"
-    --2--From the UI panel: "from-the-ui-panel"
+    --2--From the Customer Portal: "from-the-customer-portal"
     --2--From Gcore’s API: "from-gcores-api"
     --2--From Terraform: "from-terraform"
     --1--What is cloud-init?: what-is-cloud-init
@@ -37,7 +37,7 @@ Automating the initial setup saves time and effort, eliminates manual tasks, red
 
 You can access and use the User Data field in three ways:
 
-### From the UI Panel
+### From the Customer Portal
 
 By default, the **User Data** field is disabled for new instances. Enable it by switching on the toggle and adding your User Data content in the textbox.
 

@@ -39,7 +39,7 @@ pageDescription: Activate DDoS Protection for bare metal servers with Gcore. Fol
 
 ## Interface configuration
 
-1. From the **Cloud** panel, select **Bare Metal Servers**, then click the name of your bare metal server.
+1.On the **Cloud** page, select **Bare Metal Servers**, then click the name of your bare metal server.
 
 <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers/11773445344913.png" alt="mceclip6.png">
 
@@ -55,7 +55,7 @@ pageDescription: Activate DDoS Protection for bare metal servers with Gcore. Fol
 
 <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers/11773522634769.png" alt="mceclip9.png">
 
-5. To check, click **DDoS Protection** under the Cloud panel on the left-hand side. The type of security should show as **Advanced**.
+5. To check, click **DDoS Protection** on the Cloud page on the left-hand side. The type of security should show as **Advanced**.
 
 <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers/11773524742417.png" alt="mceclip10.png">
 

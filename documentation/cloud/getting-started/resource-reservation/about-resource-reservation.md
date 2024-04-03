@@ -31,7 +31,7 @@ Payment is charged once a month during the reservation period. If you rent a ser
 Reserve a server
 ----------------
 
-1. Open the **Reservations** tab and click **Create**. When the reservation configurator opens, follow the steps below.
+1. In the Gcore Customer Portal, open the **Reservations** tab and click **Create**. When the reservation configurator opens, follow the steps below.
 
 ![The Reservations section in the menu](https://assets.gcore.pro/docs/cloud/getting-started/resource-reservation/about-resource-reservation/2-create-reservation-button.jpeg)
 
@@ -65,9 +65,9 @@ If something went wrong with your request, you might see one of the following st
 
 ![Reservation status](https://assets.gcore.pro/docs/cloud/getting-started/resource-reservation/about-resource-reservation/3-reservation-status.png)
 
-10. We have reserved equipment for you, but you cannot yet see it in your control panel. To access your servers, you’ll need to activate them. To activate your equipment, go to the **Bare Metal Servers** section and create servers with the reserved characteristics (region, Windows license, server type, quantity). You will not be charged for creating them, since it’s included as part of your reservation plan.
+10. We have reserved equipment for you, but you cannot yet see it in the Customer Portal. To access your servers, you’ll need to activate them. To activate your equipment, go to the **Bare Metal Servers** section and create servers with the reserved characteristics (region, Windows license, server type, quantity). You will not be charged for creating them, since it’s included as part of your reservation plan.
 
-If you create a server later or do not create a server at all, your payment will stay the same because the hardware in the data center is set aside for you. Creating a server will simply make it visible in your control panel.
+If you create a server later or do not create a server at all, your payment will stay the same because the hardware in the data center is set aside for you. Creating a server will simply make it visible in the Customer Portal.
 
 11\. Reserved servers will appear in the list, and you will be able to use them. Your balance will be billed automatically once a month.
 
