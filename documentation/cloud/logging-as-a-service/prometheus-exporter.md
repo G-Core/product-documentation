@@ -37,7 +37,7 @@ For example, the Prometheus target configuration for Luxembourg would look like 
       password: '<span style="color:#FF5913">yourLaasPassword</span>'
 </code-block>
 
-The Prometheus exporter endpoint for your region in specified in your control panel. 
+The Prometheus exporter endpoint for your region in specified in the Customer Portal. 
 
 ## Understand the key metrics
 

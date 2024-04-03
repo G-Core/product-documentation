@@ -36,7 +36,7 @@ pageDescription: Learn how to configure Gcore File Shares, mount them to virtual
 
 **Step 2: Connect to your server.**
 
-Connect to your server via the <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">Control panel</a> or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">SSH</a> and install the NFS client to enable your system to access the file share.
+Connect to your server via the <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">Customer Portal</a> or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-via-ssh" target="_blank">SSH</a> and install the NFS client to enable your system to access the file share.
 
 - For Ubuntu and Debian, use the following command: 
 ```

@@ -65,7 +65,7 @@ In the pop-up, enter the necessary data: Image registry name, URL, username, and
 
 <img src="https://assets.gcore.pro/docs/cloud/caas/manage-containers/manage-containers-90.png" alt="API key authentication for containers" width="70%">
 
-10\. In the **Container details** block, specify the container name (this will be displayed in the customer portal) and additional information if needed. 
+10\. In the **Container details** block, specify the container name (this will be displayed in the Customer Portal) and additional information if needed. 
 
 <img src="https://assets.gcore.pro/docs/cloud/caas/manage-containers/manage-containers-100.png" alt="Container details" width="70%">
 

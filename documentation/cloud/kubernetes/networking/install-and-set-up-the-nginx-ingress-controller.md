@@ -46,4 +46,4 @@ watch kubectl -n ingress get svc
 ```
 Wait until the `<pending> state` of the `EXTERNAL-IP` column changes to the IP address.
 
-The load balancer will be shown in your control panel in the **Load Balancers** section. The traffic will reach the nginx Ingress Controller via this balancer.
+The load balancer will be shown in the Gcore Customer Portal on the **Load Balancers** page. The traffic will reach the nginx Ingress Controller via this balancer.

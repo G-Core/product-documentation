@@ -29,7 +29,7 @@ However, if you first chose the option private method, then you need to get a <a
 
 <img src="https://assets.gcore.pro/docs/cloud/use-cases/2.png" alt="Create Ticket">
 
-3. Connect to your Gcore Cloud VM via either <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">SSH</a> or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">the VNC concole</a> in your control panel.
+3. Connect to your Gcore Cloud VM via either <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">SSH</a> or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">the VNC concole</a> in the Customer Portal.
 
 4. Install Postfix.
 
