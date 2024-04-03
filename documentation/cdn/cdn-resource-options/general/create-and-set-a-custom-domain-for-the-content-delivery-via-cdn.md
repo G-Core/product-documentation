@@ -23,15 +23,21 @@ When specifying a custom domain, you can use any domain or subdomain for which y
 
 ## Set a custom domain
 
-1\. When <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">creating a CDN resource</a>, enter your desired domain or subdomain name in the "Custom domain" section (Step #3). You can also specify multiple domains by clicking the "+" icon.  
+1\. When <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">creating a CDN resource</a>, enter your desired domain or subdomain name in the "Custom domain" section (Step #3). You can also specify multiple domains by clicking the "+" icon. 
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/12865716431377.png" alt="Custom domain" width="50%">
+<alert-element type="warning" title="Warning">
+
+You can add multiple custom domains only if you are creating a CDN resource for static assets, not for the entire site.
+
+</alert-element>
+
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/12865716431377.png" alt="Custom domain" width="70%">
 
 2\. Continue with the creation of the CDN resource.
 
 3\. Copy the value _cl-\*\*\*\*.gcdn.co_ (which is unique for every account and the same for all custom domains of your account) from the "Set up your DNS" page. You can click **Confirm** at this step or later.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/12865779424017.png" alt="Copy the value"  width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/12865779424017.png" alt="Copy the value"  width="70%">
 
 4\. Go to your DNS provider’s website. 
 
