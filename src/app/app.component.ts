@@ -8,7 +8,8 @@ import { sourcebuster } from './utils/sourcebuster';
 import { AnalyticsService } from './services/analitycs.service';
 
 declare const addAnalyticsScripts: any;
-const defaultDescription = 'Gcore | Global Hosting, CDN, Edge and Cloud Services';
+const defaultDescription =
+    'Explore product documentation for essential product functionality, configuration, API references, sample code, troubleshooting and how to guides.';
 const defaultTitle = 'Product Documentation';
 
 const defineDomain = (): string => {
