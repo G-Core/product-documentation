@@ -17,7 +17,7 @@ toc:
     --1--Add repositories and install packages: "add-repositories-and-install-packages"
     --1--Write files: "write-files"
     --1--Configure network interfaces: "configure-network-interfaces"
-pageTitle: Initial setup of a VM | Gcore
+pageTitle: Initial setup of a Virtual Machines | Gcore
 pageDescription: Learn how to customize the initial setup for your VM using cloud-init.
 ---
 
