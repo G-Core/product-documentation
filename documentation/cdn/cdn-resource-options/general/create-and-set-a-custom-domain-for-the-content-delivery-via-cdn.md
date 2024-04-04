@@ -5,9 +5,9 @@ published: true
 order: 30
 toc:
    --1--What is a custom domain?: "what-is-a-custom-domain"
-   --1--Set a custom domain: "set-a-custom-domain"
+   --1--Set a custom domain: "set-a-custom-domain-only-for-static-cdn-recources"
    --1--Check DNS: "check-the-dns-setup-status"
-   --1--Set an additional domain: "specify-additional-domain"
+   --1--Set an additional domain: "specify-additional-domain-only-for-static-cdn-recources"
 pageTitle: Understanding a CDN Domain | Gcore
 pageDescription: A comprehensive guide on how to set up a custom domain in the control panel and on the DNS hosting side for content delivery via CDN.
 ---
@@ -15,19 +15,25 @@ pageDescription: A comprehensive guide on how to set up a custom domain in the c
   
 ## What is a custom domain?
 
-A custom domain is a domain name used for content delivery through a CDN. For example, if you have a website with the domain _mywebsite.com_, you create a CDN resource for static content delivery and specify a custom domain for the resource, such as _cdn.mywebsite.com._ This way, your static assets will be delivered to end-users with URLs like _cdn.mywebsite.com/sample.jpg_. 
+A custom domain is a domain name used for content delivery through a CDN. For example, if you have a website with the domain *mywebsite.com*, you create a CDN resource for static content delivery and specify a custom domain for it, such as *cdn.mywebsite.com*. This way, your static assets will be delivered to end-users with URLs like *cdn.mywebsite.com/sample.jpg*. 
 
-When specifying a custom domain, you can use any domain or subdomain for which you can edit the DNS records (typically, our clients use a third-level subdomain based on the website domain). 
+When specifying a custom domain, you can use any domain or subdomain for which you can edit the DNS records. Usually, for <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">CDN resources intended to deliver static assets</a>, our customers use third-level domain based on the website domain, e.g. *cdn.mywebsite.com*. For <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site" target="_blank">CDN resources integrated with the entire site</a>—second-level domains, e.g., *mywebsite.com*. 
 
-**Note:** The main custom domain must be specified when creating the CDN resource and cannot be changed afterward. If you want to use a different domain, you’ll need to add multiple domains. Learn how to do this in the [Specify additional domain](https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn#specify-additional-domain) module.
+<alert-element type="caution" title="Caution">
 
-## Set a custom domain
+You will not be able to change the custom domain once the CDN resource has been created. If you need to change domains, use [additional (multiple) domains](https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn#specify-additional-domain). This option is only available for CDN resources for static content, not for site-wide integrated resources.
 
-1\. When <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">creating a CDN resource</a>, enter your desired domain or subdomain name in the "Custom domain" section (Step #3). You can also specify multiple domains by clicking the "+" icon. 
+</alert-element>
+
+## Set a custom domain (only for static CDN recources)
+
+The instructions below describe how to set up a custom domain for static CDN resources with the addition of a CNAME record. Setting up a custom domain for site-wide CDN resources is different and involves delegating the domain to Gcore's NS servers. Check out the article to learn more: <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site#create-and-integrate-a-cdn-resource-for-the-entire-site" target="_blank">Create a CDN resource for the entire site</a>.   
+
+1\. When <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">creating a CDN resource</a>, enter your desired domain or subdomain name in the "Custom domain" section (Step #3). You can also specify additional domains by clicking the "+" icon. 
 
 <alert-element type="warning" title="Warning">
 
-You can add multiple custom domains only if you are creating a CDN resource for static assets, not for the entire site.
+You can add additional (multiple) custom domains only if you are creating a CDN resource for static assets, not for the entire site.
 
 </alert-element>
 
@@ -81,7 +87,7 @@ The "Setup Guide" will help verify that the configuration was completed successf
 
 To check the front end of your integrated website, right-click on any static files and choose "Inspect". This will show you the content delivery URL where your file is served.
 
-## Specify additional domain
+## Specify additional domain (only for static CDN resources)
 
 1\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN resource list</a> and click on the custom domain of the resource you want to configure.
 
