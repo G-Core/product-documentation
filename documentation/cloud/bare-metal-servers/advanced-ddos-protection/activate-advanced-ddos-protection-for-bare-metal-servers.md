@@ -47,7 +47,7 @@ pageDescription: Activate DDoS Protection for bare metal servers with Gcore. Fol
 
 <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers/11773450082065.png" alt="mceclip7.png" width="503" height="413">
 
-3\. Click on the interfaces. Click on the kebab menu on the far right-hand side, then choose to enable advanced DDoS protection.
+3\. Click on the interfaces. Click the three-dot menu on the far right-hand side, then choose to enable advanced DDoS protection.
 
 <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers/11773488996113.png" alt="mceclip8.png">
 
@@ -69,11 +69,11 @@ pageDescription: Activate DDoS Protection for bare metal servers with Gcore. Fol
 
 <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers/11773581148049.png" alt="DDoS Protection " width=80%>
 
-3. In the **DDoS Protection** section, select the bare metal server you want to enable advanced DDoS protection for by clicking the kebab menu on the right side.
+3. In the **DDoS Protection** section, select the bare metal server you want to enable advanced DDoS protection for by clicking the three-dot menu on the right side.
 
 <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/advanced-ddos-protection/activate-advanced-ddos-protection-for-bare-metal-servers/11773583120913.png" alt="mceclip13.png">
 
-4. The **Edit advanced DDoS protection profile** pop-up will appear. Click the dropdown to choose your preference. Examples for a profile are the following:
+4. The **Edit advanced DDoS protection profile** pop-up will appear. Click the dropdown to choose your preference. Examples of a profile are the following:
 
 *   CMP block
 *   CS:GO
