@@ -50,12 +50,13 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
     public isArticleReady: boolean = false;
     public isEditArticleGuidePage: boolean = false;
     public activeDocument: ScullyRoute;
+    public isResellerPage = false;
 
     private routerSubscription: Subscription;
     private closeFullSizeModalListener: () => void;
 
     private isNewContent = true;
-    public isResellerPage = false;
+    private isTocInit = false;
 
     @ViewChild('scullyContainer') public scullyContainer: ElementRef;
     @ViewChild('fullSizeImage') public fullSizeImage: ElementRef;
@@ -103,11 +104,10 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
                     .forEach((img: Element) => {
                         this.renderer.listen(img, 'click', (event) => this.expandImage(event));
                     });
-
-                this.setTocHeaders();
-
                 this.isNewContent = false;
             }
+
+            this.setTocHeaders();
         }
     }
 
@@ -184,6 +184,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
                 this.isActiveDislike = false;
                 this.isResellerPage = this.router.url.includes('reseller-support');
                 this.isNewContent = true;
+                this.isTocInit = false;
                 this.changeDetectorRef.detectChanges();
             }
         });
@@ -406,7 +407,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
     }
 
     private setTocHeaders(): void {
-        if (this.tableOfContents) {
+        if (!this.isTocInit && this.tableOfContents.length && this.isArticleReady) {
             this.tableOfContentsHeaders = this.tableOfContents
                 .map(({ fragment }) => {
                     if (fragment) {
@@ -415,6 +416,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
                     return null;
                 })
                 .filter((item: Element) => item);
+            this.isTocInit = true;
         }
     }
 }
