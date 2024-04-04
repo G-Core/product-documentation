@@ -21,13 +21,13 @@ When specifying a custom domain, you can use any domain or subdomain for which y
 
 <alert-element type="caution" title="Caution">
 
-You will not be able to change the custom domain once the CDN resource has been created. If you need to change domains, use [additional (multiple) domains](https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn#specify-additional-domain). This option is only available for CDN resources for static content, not for site-wide integrated resources.
+You will not be able to change the custom domain once the CDN resource has been created. If you need to change domains, use [additional (multiple) domains](https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn#specify-additional-domain). This option is only available for CDN resources for static content, not for CDN resources integrated with the entire sites.
 
 </alert-element>
 
 ## Set a custom domain (only for static CDN recources)
 
-The instructions below describe how to set up a custom domain for static CDN resources with the addition of a CNAME record. Setting up a custom domain for site-wide CDN resources is different and involves delegating the domain to Gcore's NS servers. Check out the article to learn more: <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site#create-and-integrate-a-cdn-resource-for-the-entire-site" target="_blank">Create a CDN resource for the entire site</a>.   
+The instructions below describe how to set up a custom domain for static CDN resources with the addition of a CNAME record. Setting up a custom domain for CDN resources integrated with the entire sites is different and involves delegating the domain to Gcore's NS servers. Check out the article to learn more: <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site#create-and-integrate-a-cdn-resource-for-the-entire-site" target="_blank">Create a CDN resource for the entire site</a>.   
 
 1\. When <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">creating a CDN resource</a>, enter your desired domain or subdomain name in the "Custom domain" section (Step #3). You can also specify additional domains by clicking the "+" icon. 
 
