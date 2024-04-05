@@ -33,7 +33,7 @@ You can create snapshots both from the boot and regular volumes. For instruction
 
  ## Available volume types 
 
-In the Gcore Customer Portal, you can create different types of volumes. For instructions on how to create a volume, check out the <a href="" target="_blank">Create and configure volumes</a> guide.
+In the Gcore Customer Portal, you can create different types of volumes. For instructions on how to create a volume, check out the <a href="https://gcore.com/docs/cloud/virtual-instances/volumes/create-and-configure-volumes" target="_blank">Create and configure volumes</a> guide.
 
 You can check volume availability for a specific region on our website in the <a href="https://gcore.com/pricing/cloud" target="_blank">Gcore Cloud calculator</a>.
 
