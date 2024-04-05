@@ -61,7 +61,7 @@ You can use a volume only in the same region where an instance is created.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/new-volume-volumes-page.png" alt="Dialog with options for configuring new volume" width="75%">
 
-4\. Specify how many GB of disk space you need. If it exceeds your current limit, [send a request for quota increase](https://gcore.com/docs/cloud/getting-started/request-a-quota-increase#how-to-send-a-request).
+4\. Specify how many GiB of disk space you need. If it exceeds your current limit, [send a request for quota increase](https://gcore.com/docs/cloud/getting-started/request-a-quota-increase#how-to-send-a-request).
 
 5\. Select [volume type](https://gcore.com/docs/cloud/virtual-instances/volumes/about-volumes#available-volume-types). Faster volume types are designed for latency-sensitive transactional operations and storing critical data. Slower volumes are more suitable for archived or non-critical data and for less frequent operations.
 
@@ -107,9 +107,9 @@ The volume will appear on the **Volumes** page.
 
 ## Attach volumes to an existing instance
 
-If a volume is attached to an instance, you’ll see the instance name on the Volumes page in the Instance column. Otherwise, you’ll see the "Attach to instance" link. You can attach more than one volume to an instance. However, these volumes can only be used in the same region where the instance is created.
+If a volume is attached to an instance, you’ll see the instance name on the **Volumes** page in the **Instance** column. Otherwise, you’ll see the "Attach to instance" link. You can attach more than one volume to an instance. However, these volumes can only be used in the same region where the instance is created.
 
-You can attach volumes to an instance either from the Volumes page or from the instance settings.
+You can attach volumes to an instance either from the **Volumes** page or from the instance settings.
 
 <tabset-element>
 
@@ -123,11 +123,11 @@ You can attach volumes to an instance either from the Volumes page or from the i
 
 3\. Select the instance from the **Choose instance to attach to** dropdown.
 
-4\. (Optional) Specify a tag if you want to add metadata to a volume.
+4\. (Optional) Add an attachment tag.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/attach-volume-to-instance.png" alt="Attach volume dialog with options to select instance and add a tag" width="75%">
 
-5\. Select **Attach volume**.
+5\. Click **Attach volume**.
 
 Your volume is added to the selected instance.
 
@@ -141,7 +141,7 @@ Your volume is added to the selected instance.
 
 3\. Open the **Volumes** tab.
 
-4\. Select **Add volume**.
+4\. Click **Add volume**.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/attach-volume-instance-settings.png" alt="Volumes tab with Add volume button highlighted" width="80%">
 
@@ -243,7 +243,7 @@ This option is available for regular volumes of High IOPS and Standard types. Yo
 
 <alert-element type="info" title="Info">
 
-Before proceeding with the following instructions, make sure that a volume is detached from an instance. Otherwise, the Retype button won’t appear in your settings list.
+Before proceeding with the following instructions, make sure that a volume is detached from an instance. Otherwise, the **Retype** button won’t appear in your settings list.
 
 </alert-element>
 
@@ -285,7 +285,7 @@ To take a snapshot:
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/take-snapshot.png" alt="Dialog asking to add a snapshot name" width="80%">
 
-The snapshot will appear on the Snapshots page, along with the other created snapshots.
+The snapshot will appear on the **Snapshots** page, along with the other created snapshots.
 
 ### Revert volume to the latest snapshot
 
