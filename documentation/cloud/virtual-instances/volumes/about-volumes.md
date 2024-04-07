@@ -6,14 +6,14 @@ published: true
 toc:
    --1--Boot and regular volumes: "boot-and-regular-volumes"
    --1--Volume types: "available-volume-types"
-pageTitle: About volumes and their types | Gcore
-pageDescription: Learn more about volume types. High IOPS SSD, Standard, Cold, Ultra, and SSD Low-Latency. Choose the cloud storage for various data and workloads.
+pageTitle: Volumes and volume types | Gcore
+pageDescription: Learn more about volume types: High IOPS SSD, Standard, Cold, Ultra, and SSD Low-Latency. Choose the right cloud storage for your data and workloads.
 ---
 # Volumes
 
 A volume is a file storage that is similar to traditional physical disks (SSD and HDD) but is located in the cloud.
 
-When you create a new instance, you may need to store data or manage information. This is where volumes come in—they provide a convenient way to maintain information within the instance. Volumes are also essential for booting instances as they store an operating system and all files necessary for machine startup.
+When you create a new instance, you may need to store data or manage information. This is where volumes come in: They provide a convenient way to maintain information within the instance. Volumes are also essential for booting instances as they store an operating system and all files necessary for machine startup.
 
 We use a software-defined distributed file system to store data. This system comprises a cluster of easily scalable nodes that provide storage, triple data replication, and load distribution, ensuring the high availability of volumes in our cloud infrastructure. 
 
@@ -33,7 +33,7 @@ You can create snapshots both from the boot and regular volumes. For instruction
 
  ## Available volume types 
 
-In the Gcore Customer Portal, you can create different types of volumes. For instructions on how to create a volume, check out the <a href="https://gcore.com/docs/cloud/virtual-instances/volumes/create-and-configure-volumes" target="_blank">Create and configure volumes</a> guide.
+In the Gcore Customer Portal, you can create different types of volumes. For instructions on how to create a volume, check out our <a href="https://gcore.com/docs/cloud/virtual-instances/volumes/create-and-configure-volumes" target="_blank">Create and configure volumes</a> guide.
 
 You can check volume availability for a specific region on our website in the <a href="https://gcore.com/pricing/cloud" target="_blank">Gcore Cloud calculator</a>.
 
@@ -47,7 +47,7 @@ You can check volume availability for a specific region on our website in the <a
 <tbody>
 <tr>
 <td style="text-align: left">High IOPS SSD</td>
-<td style="text-align: left">This is a high-performance SSD block storage designed for latency-sensitive transactional workloads (60 IOPS per 1 GiB; 2.5 MB/s per 1 GiB). The IOPS performance limit is 9,000. The bandwidth limit is 500 MB/s.</td>
+<td style="text-align: left">This is a high-performance SSD block storage designed for latency-sensitive transactional workloads (60 IOPS per 1 GB; 2.5 MB/s per 1 GB). The IOPS performance limit is 9,000. The bandwidth limit is 500 MB/s.</td>
 </tr>
 <tr>
 <td style="text-align: left">Standard</td>
@@ -73,11 +73,11 @@ You can check volume availability for a specific region on our website in the <a
 
 For **Cold**, **High IOPS SSD**, and **Standard** volumes:
 
-- Both volume IO (Input/Output) burst and volume throughput burst are supported
+- Both volume IO (Input/Output) burst and volume throughput burst are supported.
 
-- You get both IO and throughput credits to exceed base limits and ensure optimal performance at peak IOPS and throughput
+- You get both IO and throughput credits to exceed base limits and ensure optimal performance at peak IOPS and throughput.
 
-- Credits increase IOPS and volume throughput by 10x times for 10 minutes
+- Credits increase IOPS and volume throughput by 10x times for 10 minutes.
 
 For example, your instance has a 3 GB High IOPS SSD volume with base limits of 180 IOPS and 7.5 MB (60 IOPS x 3 GB and 2.5 MB/s x 3 GB). If the IOPS and throughput values ​​exceed these limits, you’ll get renewable resources: (60 IOPS x 3 GB + 2.5 MB/s x 3 GB = 180 IOPS + 7.5 MB) x 10 = 1800 IOPS + 75 MB/s.
 
