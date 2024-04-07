@@ -5,7 +5,7 @@ order: 22
 published: true
 toc:
 pageTitle: Enable root user on a Linux VM | Gcore
-pageDescription: Learn how to enable root user on a Linux VM using "sudo" or "sudo su" commands. Understand the differences and alternative methods.
+pageDescription: How to enable root user on a Linux VM using "sudo" or "sudo su" commands. Understand the differences and alternative methods.
 ---
 # Enable root user on a Linux VM
 
