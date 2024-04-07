@@ -17,33 +17,33 @@ toc:
    --2--Delete volume: "delete-volume"
 
 pageTitle: Create and configure volumes | Gcore
-pageDescription: Create and configure volumes for cloud storage. Choose from High IOPS SSD, Standard, Cold, Ultra, and SSD Low-Latency types.
+pageDescription: Create and configure volumes for Gcore Storage. Choose from High IOPS SSD, Standard, Cold, Ultra, and SSD Low-Latency types.
 ---
 # Create and configure a volume
 
-You can view, create, and manage volumes in the Gcore Customer Portal on the **Volumes** page.
+You can view, create, and manage volumes in the Gcore Customer Portal on the **Volumes** page. Here's how to navigate the page:
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/volumes-page-annotated.png" alt="Volumes page with numbered UI elements" width="80%">
 
-1\. **Volumes**: view all volumes created in a project.
+1\. **Volumes**: View all volumes created in a project.
 
-2\. **Instance**: check if a volume is attached to an instance.
+2\. **Instance**: Check if a volume is attached to an instance.
 
-3\. **IOPS limit/burst**: check the maximum number of read and write operations a volume can handle in a second and when a burst traffic occurs. 
+3\. **IOPS limit/burst**: Check the maximum number of read and write operations a volume can handle in a second and when a burst traffic occurs. 
 
-4\. **MBps limit/burst**: check the bandwidth limit for a volume and a max bandwidth when a burst traffic occurs.
+4\. **MBps limit/burst**: Check the bandwidth limit for a volume and a max bandwidth when a burst traffic occurs.
 
-5\. **Without attachments**: view all volumes that aren’t attached to any instance.
+5\. **Without attachments**: View all volumes that aren’t attached to an instance.
 
 In the following sections, you’ll find information on how to create and manage volumes. For a general overview of volumes and available volume types, check out our <a href="https://gcore.com/docs/cloud/virtual-instances/volumes/about-volumes" target="_blank">dedicated guide</a>. 
 
 ## Create a volume
 
-You can create volumes in several ways: <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance" target="_blank">when creating a virtual instance</a>, from the **Volumes** page, or from a snapshot. The last two approaches are described in the following sections. 
+You can create volumes in several ways: <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance" target="_blank">when creating a virtual instance</a>, from the **Volumes** page, or from a snapshot. The latter two approaches are described in the following sections. 
 
 <alert-element type="info" title="Info">
  
-You can use a volume only in the same region where an instance is created.
+You can only use a volume in the same region as its instance.
  
 </alert-element>
 
@@ -61,17 +61,17 @@ You can use a volume only in the same region where an instance is created.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/new-volume-volumes-page.png" alt="Dialog with options for configuring new volume" width="75%">
 
-4\. Specify how many GiB of disk space you need. If it exceeds your current limit, [send a request for quota increase](https://gcore.com/docs/cloud/getting-started/request-a-quota-increase#how-to-send-a-request).
+4\. Specify how many GB of disk space you need. If it exceeds your current limit, [send a request for quota increase](https://gcore.com/docs/cloud/getting-started/request-a-quota-increase#how-to-send-a-request).
 
-5\. Select [volume type](https://gcore.com/docs/cloud/virtual-instances/volumes/about-volumes#available-volume-types). Faster volume types are designed for latency-sensitive transactional operations and storing critical data. Slower volumes are more suitable for archived or non-critical data and for less frequent operations.
+5\. Select the [volume type](https://gcore.com/docs/cloud/virtual-instances/volumes/about-volumes#available-volume-types). Faster volume types are designed for latency-sensitive transactional operations and storing critical data. Slower volumes are more suitable for archived or non-critical data and for less frequent operations.
 
-6\. (Optional) Attach the volume to an instance. Consider that a volume can only be used in the same region where an instance is created.
+6\. (Optional) Attach the volume to an instance. A volume can only be used in the same region as its instance.
 
-7\. Enter volume name. You can use Latin letters, numbers, underscores, spaces, and dots. The name should be between 3 and 63 characters long.
+7\. Create a name for the volume. You can use Latin letters, numbers, underscores, spaces, and dots. The name should be between 3 and 63 characters long.
 
 <alert-element type="tip" title="Tip">
  
-When you add volumes via Customer Portal or API, you don’t have to keep volume names consistent in the operating system (like sda, sdb, or sdc). We recommend using Universally Unique Identifiers (UUID) instead of names for OS operations.
+When you add volumes via the Gcore Customer Portal or API, you don’t have to keep volume names consistent in the operating system (like sda, sdb, or sdc). We recommend using Universally Unique Identifiers (UUID) instead of names for OS operations.
  
 </alert-element>
 
@@ -79,7 +79,7 @@ When you add volumes via Customer Portal or API, you don’t have to keep volume
 
 9\. Click **Save**. 
 
-The created volume will appear in the **Volumes** section.
+Your volume will appear under **Volumes**.
 
 ### From a volume snapshot
 
@@ -107,7 +107,7 @@ The volume will appear on the **Volumes** page.
 
 ## Attach volumes to an existing instance
 
-If a volume is attached to an instance, you’ll see the instance name on the **Volumes** page in the **Instance** column. Otherwise, you’ll see the "Attach to instance" link. You can attach more than one volume to an instance. However, these volumes can only be used in the same region where the instance is created.
+If a volume is attached to an instance, you'll see the instance name on the **Volumes** page in the **Instance** column. Otherwise, you’ll see the "Attach to instance" link in the **Instance** column. You can attach more than one volume to an instance. However, volumes can only be used in the same region as their instance.
 
 You can attach volumes to an instance either from the **Volumes** page or from the instance settings.
 
@@ -129,11 +129,11 @@ You can attach volumes to an instance either from the **Volumes** page or from t
 
 5\. Click **Attach volume**.
 
-Your volume is added to the selected instance.
+You’ve successfully attached a volume to the instance. 
 
 ### From instance settings
 
-1\. In the Customer Portal, navigate to **Cloud** > **Virtual instances**.
+1\. In the Gcore Customer Portal, navigate to **Cloud** > **Virtual instances**.
 
 2\. Find the instance you want to update and click its name to open it.
 
@@ -147,9 +147,9 @@ Your volume is added to the selected instance.
 
 5\. Click **Use existing** to attach an existing volume to an instance. 
 
-You can also create a new volume here—click **Create new** and configure the settings as described in the [Create a volume](https://gcore.com/docs/cloud/virtual-instances/volumes/create-and-configure-volumes#create-a-volume) section. 
+You can also create a new volume here; click **Create new** and configure the settings as described under [Create a volume](https://gcore.com/docs/cloud/virtual-instances/volumes/create-and-configure-volumes#create-a-volume). 
 
-6\. Select a volume that you want to attach to the instance.
+6\. Select the volume that you want to attach to the instance.
 
 7\. (Optional). Add an attachment tag.
 
@@ -163,21 +163,21 @@ You’ve successfully attached a volume to the instance.
 
 ## Manage volumes
 
-The options for managing volumes differ depending on the volume you want to modify: boot or a regular one. 
+The options for managing volumes differ depending on the volume you want to modify: boot or regular. 
 
 If you have a large number of volumes, you can also search for volumes by name or UUID values to find the one you need. 
 
 ### Rename a volume
 
-You can rename both a boot and regular volume:
+You can rename both boot and regular volumes:
 
 1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.
 
-2\. Click the three-dot icon next to the volume you want to rename.
+2\. Click the three dots next to the volume you want to rename.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/three-dot-menu-regular.png" alt="Volumes tab with expanded settings menu" width="80%">
 
-3\. Select **Rename**.
+3\. Click **Rename**.
 
 4\. Enter a new name.
 
@@ -195,7 +195,7 @@ To detach a volume:
 
 1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.
 
-2\. Click the three-dot icon next to the volume you want to detach.
+2\. Click the three dots next to the volume you want to detach.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/three-dot-menu-attached.png" alt="Volumes tab with expanded settings menu" width="80%">
 
@@ -215,11 +215,11 @@ Detaching a volume will not cancel your payment unless you delete the volume. Yo
 
 ### Resize a volume
 
-You can resize both a boot and a regular volume:
+You can resize both boot and regular volumes:
 
 1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.
 
-2\. Click the three-dot icon next to the volume you want to resize.
+2\. Click the three dots next to the volume you want to resize.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/three-dot-menu-regular.png" alt="Volumes tab with expanded settings menu" width="80%">
 
@@ -229,7 +229,7 @@ You can resize both a boot and a regular volume:
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/resize-volume.png" alt="Dialog asking for a new volume size" width="80%">
 
-You’ve increased your volume size. 
+You’ve changed your volume size. 
 
 <alert-element type="warning" title="Warning">
 
@@ -251,7 +251,7 @@ To retype a volume:
 
 1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.
 
-2\. Click the three-dot icon next to the volume you want to retype.
+2\. Click the three dots next to the volume you want to retype.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/three-dot-menu-regular.png" alt="Volumes tab with expanded settings menu" width="80%">
 
@@ -261,19 +261,19 @@ To retype a volume:
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/retype-volume.png" alt="Dialog asking to select a new volume type" width="80%">
 
-You’ve successfully changed a volume type. 
+You’ve successfully changed the volume type. 
 
 If you have multiple volumes attached to one instance, you can use the `rsync` and `cp` utilities to migrate data between volumes within an operating system.
 
 ### Take a volume snapshot
 
-You can create a volume snapshot and use it later for backup and further recovery, as well as for deploying new instances from snapshots of boot volumes. 
+You can create a volume snapshot and use it later for backup, further recovery, and deploying new instances from snapshots of boot volumes. 
 
 To take a snapshot:
 
 1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.
 
-2\. Click the three-dot icon next to the needed volume.
+2\. Click the three dots next to the desired volume.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/three-dot-menu-regular.png" alt="Volumes tab with expanded settings menu" width="80%">
 
@@ -289,11 +289,11 @@ The snapshot will appear on the **Snapshots** page, along with the other created
 
 ### Revert volume to the latest snapshot
 
-In case of an accidental data loss, data corruption, or for a similar reason, you might need to restore a volume to its previous state. If you [made a snapshot of that volume](https://gcore.com/docs/cloud/virtual-instances/volumes/create-and-configure-volumes#take-volume-snapshot), you can roll your volume back to the state when that snapshot was taken. 
+In case of an accidental data loss or data corruption, you might need to restore a volume to its previous state. If you [made a snapshot of that volume](https://gcore.com/docs/cloud/virtual-instances/volumes/create-and-configure-volumes#take-volume-snapshot), you can roll your volume back to the state when that snapshot was taken. 
 
 <alert-element type="info" title="Info">
 
-Before proceeding with the following instructions, make sure that a volume is [detached from an instance](https://gcore.com/docs/cloud/virtual-instances/volumes/create-and-configure-volumes#detach-a-volume-from-an-instance) and that you have the volume’s snapshot. Otherwise, you’ll get an error when trying to revert a volume to its previous state. 
+Before proceeding with the following instructions, make sure that the volume is [detached from an instance](https://gcore.com/docs/cloud/virtual-instances/volumes/create-and-configure-volumes#detach-a-volume-from-an-instance) and that you have the volume’s snapshot. Otherwise, you’ll get an error when trying to revert the volume to its previous state. 
 
 </alert-element>
 
@@ -301,7 +301,7 @@ To revert a volume:
 
 1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.
 
-2\. Click the three-dot icon next to the volume you want to revert.
+2\. Click the three dots next to the volume you want to revert.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/three-dot-menu-regular.png" alt="Volumes tab with expanded settings menu" width="80%">
 
@@ -317,13 +317,13 @@ After resizing a volume, reversion is unavailable because the latest snapshot is
 
 </alert-element>
 
-### Create image from a bootable volume
+### Create an image from a bootable volume
 
 You can create an image from a boot volume and use that image to create a new instance. 
 
 1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.
 
-2\. Click the three-dot icon next to the volume from which you want to create an image.
+2\. Click the three dots next to the volume from which you want to create an image.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/three-dot-menu-boot.png" alt="Volumes tab with expanded settings menu" width="80%">
 
@@ -337,17 +337,17 @@ You can create an image from a boot volume and use that image to create a new in
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/create-image.png" alt="Dialog to select image and and architecture" width="80%">
 
-Within several minutes, the image will be created and available in the Images section.
+Within a few minutes, the image will be created and available under Images.
 
 ### Delete volume
 
-You can delete a regular volume that’s not attached to an instance. The boot volume can only be deleted together with the instance.
+You can delete a regular volume that’s not attached to an instance. Bboot volumes can only be deleted together with the instance.
 
 To delete a volume: 
 
 1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.
 
-2\. Click the three-dot icon next to the volume you want to remove.
+2\. Click the three dots next to the volume you want to remove.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/three-dot-menu-regular.png" alt="Volumes tab with expanded settings menu" width="80%">
 
@@ -359,7 +359,7 @@ To delete a volume:
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/delete-volume.png" alt="Dialog asking to confirm volume deletion" width="80%">
 
-The volume is removed from the Customer Portal. 
+The volume has been removed from the Gcore Customer Portal. 
 
 <alert-element type="tip" title="Tip">
  
