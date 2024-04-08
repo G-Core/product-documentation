@@ -2,6 +2,7 @@
 title: create-a-pvc-and-bind-it-to-a-pod
 displayName: Create a PVC and bind it to a pod
 published: true
+order: 10
 toc:
    --1--What are PV and PVC?: "what-are-pv-and-pvc"
    --1--Create a PVC: "create-a-pvc"
