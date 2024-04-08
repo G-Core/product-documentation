@@ -16,6 +16,7 @@ toc:
    --1--How to use results in practice: "how-to-use-results-in-practice"
 pageTitle: Guide to Gcore's AI Nudity Detection for Video Content Moderation | Gcore
 pageDescription: Learn how to use Gcore's AI nudity detection for moderating video content, ensuring it's suitable for your audience.
+customUrl: /streaming-platform/ai-video-service/ai-nudity-detection
 ---
 # AI nudity detection
 
