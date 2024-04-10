@@ -1,22 +1,107 @@
 ---
 title: specify-custom-http-status-code-for-the-content-delivered-by-the-cdn
-displayName: Custom HTTP status code
+displayName: Status code
 published: true
 order: 50
 toc:
-pageTitle: Apply Custom HTTP Codes to CDN Content | Gcore
+   --1--Set status code in Resource settings: "resource-settings"
+   --1--Set status via Rules: "rules"
+pageTitle: How to Set HTTP Status Codes for Content Hosted on the CDN | Gcore
 pageDescription: Discover how to specify custom HTTP status codes for content delivered by a CDN, either for all content or specific files.
 ---
-# Specify custom HTTP status code for the content delivered by the CDN
+# Configuring HTTP Status Codes for CDN-Hosted Content
 
-With this feature, you can apply custom HTTP code to the CDN content. For example, you can send to the end users 403 code instead of certain files. Or set up redirection to another URL. The feature is available in the CDN resource settings and in the "Rules" section.
+The “Set status code” option enables you to establish custom HTTP status codes for content hosted on a CDN, which can be applied based on a schedule. For instance, in accordance with certain laws, children under the age of 16 are not allowed to access specific content past 22:00. To comply with this regulation, the “Set status code” option can be configured to either send a 403 error code to users or redirect them to a different page when they attempt to access this restricted content. The schedule should be set such that this code is only activated after 22:00.
 
-Activate the Status code option in the Content section of resource or rule settings.
+You can configure the option in two ways:
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/_______________.jpg" alt="Content section " width="50%">
+- in the **Resource settings**—the custom code will be applied to all content of the CDN resource
+- in the **Rules**—the custom code will be applied only to certain files. 
 
-Specify any HTTP code except  408, 444, 494, 495, 496, 497, 499 codes in the "Status Code" field. You can add only one HTTP code to the field. Specify a URL for a redirect or an HTTP status code text, If you need.
+Select the appropriate method and click the desired tab to access information about the setting.
 
-**Note**: If you activate Status Code in the resource settings, it applies to all CDN content.
+<tabset-element>
 
-If you need to apply HTTP code only to certain files, use this option in the <a href="https://gcore.com/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files" target="_blank">Rules</a> section.
+## Resource settings
+
+1\. In the Gcore Customer Portal, navigate to <a href="https://portal.gcore.com/cdn/resources/list" target="_blank">CDN</a>.
+
+2\. Click the CNAME of the needed CDN resource to open **Resource settings**.
+
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/set-custom-code-10.png" alt="Open settings of the special CDN resource" width="75%">
+
+3\. Click the **Content** section to open nested options.
+
+4\. Click **Status code**.
+
+5\. Enable the **Set status code** toggle.
+
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/set-custom-code-20.png" alt="Enable the Set status code option" width="80%">
+
+6\. Specify the desired HTTP status code in the field.
+
+<alert-element type="caution" title="Caution">
+
+You can’t specify 408, 444, 494, 495, 496, 497, 499 codes. 
+
+</alert-element>
+
+7\. (Optional) Specify a URL for a redirect or an HTTP status code text if needed.
+
+8\. (Optional) Enable a schedule if it’s needed. In the expanded block, set the time from which (“Apply from” list) and to which (“Until” list) the custom status code will be applied, as well as the time zone.   
+
+9\. Save changes. 
+
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/set-custom-code-30.png" alt="Configure the Set status code option" width="80%">
+
+That’s it! The custom code will be applied to all files delivered via the CDN.
+
+## Rules
+
+1\. In the Gcore Customer Portal, navigate to <a href="https://portal.gcore.com/cdn/resources/list" target="_blank">CDN</a>.
+
+2\. Click the CNAME of the needed CDN resource to open **Resource settings**.
+
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/set-custom-code-10.png" alt="Open settings of the special CDN resource" width="80%">
+
+3\. Go to the **Rules** tab.
+
+4\. Click **Create rule**.
+
+5\. In the opened menu, click **Create blank rule**.
+
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/set-custom-code-50.png" alt="Open rules to set a custom code for specific files" width="80%">
+
+On the opened page, specify to which files the rule for custom code will be applied and other settings. We will not dwell on this in the instructions, proceed the guide: <a href="https://gcore.com/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files#create-a-rule-manually" target="_blank">Create a rule manually</a>.
+
+6\. At the end of the page, click **Add option**.  
+
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/set-custom-code-60.png" alt="Add an option in the rule to set a custom code for specific files" width="75%">
+
+7\. Find and click **Status code** in the list to add the option to the rule.
+
+8\. Click **Close**.
+
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/set-custom-code-70.png" alt="Apply the “Set custom code” option to the rule" width="75%">
+
+9\. Enable the **Set status code** toggle.
+
+10\. Specify the desired HTTP status code in the field.
+
+<alert-element type="caution" title="Caution">
+
+You can’t specify 408, 444, 494, 495, 496, 497, 499 codes. 
+
+</alert-element>
+
+11\. (Optional) Specify a URL for a redirect or an HTTP status code text if needed.
+
+12\. (Optional) Enable a schedule if it’s needed. In the expanded block, set the time from which (“Apply from” list) and to which (“Until” list) the custom status code will be applied, as well as the time zone.   
+
+13\. Save changes. 
+
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/specify-custom-http-status-code-for-the-content-delivered-by-the-cdn/set-custom-code-80.png" alt="Configure the Set status code option in the rule" width="80%">
+
+That’s it! The rule with the set custom code will be applied to specified files delivered via the CDN.
+
+</tabset-element>
