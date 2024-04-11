@@ -4,7 +4,7 @@ import { createCustomElement } from '@angular/elements';
 import { ScullyLibModule } from '@scullyio/ng-lib';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { APP_BASE_HREF } from '@angular/common';
+import { APP_BASE_HREF, LocationStrategy } from '@angular/common';
 
 import { AngularSvgIconModule } from 'angular-svg-icon';
 import { AppRoutingModule } from './app-routing.module';
@@ -28,6 +28,7 @@ import { CookiesSettingsModule } from './components/cookies-settings/cookies-set
 import { TabsetComponent } from './web-components/tabset/tabset.component';
 import { AlertElementComponent } from './web-components/alert-element/alert-element.component';
 import { DisclaimerComponent } from './components/disclaimer/disclaimer.component';
+import { BaseHrefLocationStrategy } from './base-href.location-strategy';
 
 @NgModule({
     declarations: [
@@ -58,7 +59,11 @@ import { DisclaimerComponent } from './components/disclaimer/disclaimer.componen
         AngularSvgIconModule.forRoot(),
         CookiesSettingsModule,
     ],
-    providers: [MenuService, { provide: APP_BASE_HREF, useValue: '/docs/' }],
+    providers: [
+        MenuService,
+        { provide: APP_BASE_HREF, useValue: '/docs/' },
+        { provide: LocationStrategy, useClass: BaseHrefLocationStrategy },
+    ],
     bootstrap: [AppComponent],
 })
 export class AppModule {
