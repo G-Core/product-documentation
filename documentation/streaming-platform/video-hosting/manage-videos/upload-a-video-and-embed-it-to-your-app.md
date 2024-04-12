@@ -39,7 +39,6 @@ customUrl: /streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your
 - **Name**: Change its name (it will be displayed in the control panel)
 - **Description**: Enter a description (it will be displayed in the control panel)
 - **Player**: Select custom player, if you enabled the <a href="https://gcore.com/docs/streaming-platform/extra-features/customize-appearance-of-the-built-in-player" target="_blank">Players</a> feature
-- **Ads**: Select <a href="https://gcore.com/docs/streaming-platform/extra-features/add-monetization-to-your-live-streams-and-videos" target="_blank">commercial ads videos</a>, if you added it
 - **Tags**: Select <a href="https://gcore.com/docs/streaming-platform/video-hosting/organize-uploaded-videos#how-to-use-tags" target="_blank">tags</a> for a video
 - **Subtitles**: Add <a href="https://gcore.com/docs/streaming-platform/video-hosting/subtitles-and-closed-captions-for-vod#control-panel">subtitles and choose a subtitle language</a>
 - **Screensaver**: Select a screensaver from screenshots or upload a screensaver from your computer
