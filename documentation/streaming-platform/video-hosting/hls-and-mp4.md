@@ -49,7 +49,6 @@ Video can be streamed and downloaded using the .mp4 file format when you want to
 
 - Watch videos offline on mobile devices
 - Download video files for local modification
-- Specify VAST ads as a progressive download
 - Play videos even on very outdated devices
 - Share videos on social networks and other streaming services
 

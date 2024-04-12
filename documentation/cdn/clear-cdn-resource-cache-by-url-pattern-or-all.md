@@ -246,13 +246,15 @@ If an error occurs with the request, the API will return a status code and a bod
 
 ## View Purge history
 
-“Purge history” is the section where you can check the status of your purge requests. 
-
 <alert-element type="warning" title="Warning">
 
-We've been keeping a history of purge requests for only one month. 
+This feature is temporarily unavailable.
 
 </alert-element>
+
+“Purge history” is the section where you can check the status of your purge requests. 
+
+**Note:** We've been keeping a history of purge requests for only one month. 
 
 To view the history, navigate to the <a href="https://cdn.gcore.com/purge/purge-history" target="_blank">Purge history</a> page. The page will display all existing requests.
 
