@@ -1,109 +1,59 @@
 ---
 title: manage-a-dns-zone
-displayName: Zone
+displayName: Getting started (Create a DNS zone)
 published: true
-order: 20
+order: 30
 toc:
-   --1--What is a DNS zone?: "what-is-a-dns-zone"
-   --1--Manage a DNS zone: "manage-a-dns-zone"
-   --2--Create: "create-a-dns-zone"
-   --2--Edit: "edit-a-dns-zone"
-   --2--Export in BIND: "export-a-dns-zone-in-bind-format"
-   --2--Delete: "delete-a-dns-zone"
-pageTitle: A DNS zone creation | Gcore
-pageDescription: Step-by-step instructions on how to create a DNS zone and delegate it to Gcore NS servers.
+   --1--Create DNS zones: "create-dns-zones"
+   --1--Manage DNS zones: "delete-dns-zones"
+pageTitle: Getting started with Managed DNS | Gcore
+pageDescription: Easy setup steps for DNS zones creation and management.
 ---
-# Manage a DNS zone
+# Getting started with Managed DNS
 
-## What is a DNS zone
+To use Managed DNS, create a DNS zone for your domain or subdomain in the Gcore Customer Portal or via API and specify Gcore’s NS servers for your domain. After these actions, you can use Gcore's DNS infrastructure features.
 
-The DNS zone is the domain you delegate to Gcore authoritative NS servers. The following values can be used as the DNS zone: 
+## Create DNS zones
 
-- a second-level domain (*testdomain.com*),
-- a third-level domain (*store.testdomain.com*, *blog.testdomain.com*, etc.),
-- or a higher-level domain (*sales.store.testdomain.com*).
+1\. Navigate to the <a href="https://dns.gcore.com/" target="_blank">DNS</a> section and click **Add zone**. 
 
-When the DNS zone creation is completed, you can set the DNS records of your domain in <a href="https://gcore.com/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode" target="_blank">non-advanced</a> and <a href="https://gcore.com/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing" target="_blank">advanced</a> modes.
+<img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/getting-started-dns-10.png" alt="The All zones page" width="80%">
 
-## Manage a DNS zone
+3\. Enter a domain or subdomain name for the DNS zone and click **Confirm**.
 
-### Create a DNS zone
+<alert-element type="tip" title="Tip">
 
-1\. Go to the <a href="https://dns.gcore.com" target="_blank">DNS</a> section and click the **Add zone** button. 
+You can optionally check the “Scip scanning” box to skip validation and automatic addition of domain DNS records created earlier. In this case, only step 5 (change the name servers of your domain) of this guide is left for you. 
 
-<img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/13137090774673.png" alt="All zones">
+</alert-element>
 
-2\. Enter a domain name for the DNS zone and click **Confirm**.
+<img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/getting-started-dns-20.png" alt="The specify domain page" width="80%">
 
-<img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/13137238972689.png" alt="Enter domain" width="80%">
+4\. The new page will display all previously created records, you can edit or delete them. Check and click **Confirm**.
 
-3\. Review existing DNS records, and edit, delete, or add new records if necessary. Click **Confirm**. 
+<img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/getting-started-dns-30.png" alt="The existing DNS records page" width="80%">
 
-<img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/13137695150865.png" alt="Review records" width="80%">
+5\. Go to the site where you manage your domain records (this can be your DNS provider's interface or other DNS hosting) and change your domain's current NS records to Gcore values (`ns1.gcorelabs.net` and `ns2.gcdn.services`). On the DNS zone creation page, click **Confirm**.
 
-4\. Go to your domain registrar account, replace the current name servers with the Gcore name servers (*ns1.gcorelabs.net* and *ns2.gcdn.services*), and click **Confirm**.
+<img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/getting-started-dns-40.png" alt="The change nameservers page" width="75%">
 
-<img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/13138477756689.png" alt="Change nameservers" width="80%">
+That's it! Now you can add records and manage the zone in the Gcore interface.
 
-The created DNS zone will be displayed in the <a href="https://dns.gcore.com/zones" target="_blank">All zones</a> section. 
+<alert-element type="warning" title="Warning">
 
-<img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/13138576729105.png" alt="The created DNS zone in the all zones" width="80%">
+Pay attention to the NS records change notification. It can be kept for up to 24 hours after after changing nameservers. This is the time required to update the DNS cache.
 
-### Edit a DNS zone
+<img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/getting-started-dns-50.png" alt="The change nameservers notion" width="75%">
 
-1\. In the <a href="https://dns.gcore.com/zones" target="_blank">All zones</a> section, click the three dots icon next to the desired DNS zone and select **Settings**.
+</alert-element>
 
-<img style="font-size: large;" src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/13138699078673.png" alt="Edit a DNS zone" width="80%">
+## Manage DNS zones
 
-The pop-up opens. Configure it according to the guide below and click **Save changes**. Configurations will be applied to the <a href="https://en.wikipedia.org/wiki/SOA_record#:~:text=A%20start%20of%20authority%20record,is%20specified%20in%20RFC%201035" target="_blank">SOA record</a> of this zone. 
+You can manage a zone in the <a href="https://dns.gcore.com/zones" target="_blank">All zones</a> section. In the row of the desired zone, tap the three dots icon and select the appropriate action:
 
-<img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/13138956496401.png" alt="Zone settings" width="50%">
+1. **Turn off the zone.** Here you can disable a zone. It will continue to be displayed, but the records added in your Customer Portal will not be active. 
+2. **Go to records.** Here you can go to creating, editing and deleting records.
+3. **Settings.** Here you can edit the TTL of the records in the zone.
+4. **Delete zone.** Here you can delete a zone. 
 
-- **Domain name**. This parameter cannot be edited. Create a new zone with the required domain name following the <a href="https://gcore.com/docs/dns/manage-a-dns-zone#create-a-dns-zone" target="_blank">instructions above</a>.
-- **Negative TTL**. This parameter is the time, in seconds, for which a negative response is cached. For example, a recursive DNS server requests an A-record for your domain, but that record does not exist on the authoritative NS servers. Even if you add the A record after, the DNS servers will still return a negative answer for the time specified in the "Negative TTL" field. 
-- **Primary DNS (available only for Enterprise tariff)**. In this parameter, you can specify the primary NS server that contains the information about all domain records.
-- **Contact (available starting from the Pro tariff).** In this parameter, you can specify the administrator's email address responsible for managing the DNS zone. 
-
-### Export a DNS zone in BIND format
-
-Gcore DNS API supports the BIND zone format for the DNS zone configuration. To export a zone in BIND:
-
-1\. Go to <a href="https://dns.gcore.com/zones" target="_blank">All zones</a>, click three dots, and choose **Go to records** to open the records of the needed zone. 
-
-<img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/export-bind-10.png" alt="export a zone in bind first step" width="80%">
-
-2\. Click **Export records** to download the file.  
-
-<img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/export-bind-20.png" alt="export a zone in bind second step" width="80%">
-
-The file will be downloaded to your PC as a text file with the *.zone* extension, e.g., *test.dnsexample.com.zone*.
-
-The downloaded file will contain information about the zone, including the domain name, TTL, RRset, time intervals (refresh, update, and expiry), and the authoritative NS server. For example:
-
-```
-$ORIGIN test.dnsexample.com.
-$TTL 300
-@ IN SOA ns1.gcorelabs.net. support.gcore.com. (
-  1690969313 ; serial number
-  5400 ; refresh
-  3600 ; update retry
-  1209600 ; expiry
-  300 ; minimum
-)
-$TTL 3600
-@ IN NS ns1.gcorelabs.net.
-@ IN NS ns2.gcdn.services.
-$TTL 600
-@ IN A 1.2.3.4
-@ IN A 4.5.6.7
-* IN CNAME sample.domains.com.
-* IN CNAME sample-2.domains.com.
-```
-
-### Delete a DNS zone 
-
-1\. In the <a href="https://dns.gcore.com/zones" target="_blank">All zones</a> section, click the three dots icon next to the desired DNS zone and select **Delete zone**.
-
-<img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/13141470744849.png" alt="Delete a DNS zone" width="80%">
-
-2\. Confirm the deletion in the pop-up window.
+<img src="https://assets.gcore.pro/docs/dns/manage-a-dns-zone/getting-started-dns-60.png" alt="Manage DNS zones" width="80%">
