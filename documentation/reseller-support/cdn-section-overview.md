@@ -9,11 +9,11 @@ toc:
     --1--Activity logs: "activity-logs"
     --1--Origin groups: "origin-groups"
 pageTitle: Understanding Client, Resource, and Activity Information | Gcore
-pageDescription: Explore our guide on CDN client details, resource data, activity logs, and origin groups for efficient CDN management.
+pageDescription: Explore our guide to CDN client details, resource data, activity logs, and origin groups for efficient CDN management.
 ---
 # CDN section overview
 
-The CDN section collects information about your customers who use CDN and the resources they utilize. It includes the following subsections:
+The CDN section collects information about your customers who use CDN and the resources they utilize. It includes the subsections clients, CDN resources, activity logs, and origin groups.
 
 ## Clients
 
@@ -26,12 +26,12 @@ This subsection provides details about customers who have created CDN resources.
 - The date the CDN resource was created
 - The CDN resource ID, along with custom domains and traffic data
 - The amount of incoming traffic
-A list of paid features activated for the CDN resources
+- A list of paid features activated for the CDN resources
 - The CDN resource status (e.g., “New,” “Trial,” “Trial End,” “Active,” “Paused,” “Activating,” “Deleted”) 
 
 You can apply filters to manage specific entries. By default, only CDN resources with an “Active” status are displayed. 
 
-Click the three dots on the right to edit customer settings. For further details, refer to the dedicated guide: <a href="https://gcore.com/docs/reseller-support/manuals/manage-clients#edit-an-account" target="_blank">Manage сlients</a>. Click the arrow to log in to the Customer Portal as a customer.
+Click three-dot icon on the right to edit a customer's settings. For further details, refer to the dedicated guide: <a href="https://gcore.com/docs/reseller-support/manuals/manage-clients#edit-an-account" target="_blank">Manage сlients</a>. Click the arrow to log in to the Customer Portal as a customer.
 
 <img src="https://assets.gcore.pro/docs/reseller-support/cdn-section-overview/clients-tab-10.png" alt="Clients tab in the CDN section" width="80%">
 
@@ -45,11 +45,11 @@ This subsection lists all CDN resources created by customers. Each entry include
 - The ID of the main resource (not the reserve, if an <a href="https://gcore.com/docs/cdn/add-an-origin-group" target="_blank">origin group</a> contains multiple origins)
 - The SSL ID (if applicable)
 - The shielding status (if enabled)
-Any CDN resource rules (if created)
+- Any CDN resource rules (if created)
 - The origin group ID
 - The CDN resource status (e.g., “New,” “Trial,” “Trial End,” “Active,” “Paused,” “Activating,” “Deleted”)
 - The resource type (default or technical)
-A toggle indicating whether automatic suspension is enabled for the CDN resource
+- A toggle indicating whether automatic suspension is enabled for the CDN resource
 - The date the CDN resource was created
 
 You can log in as a customer to configure specific CDN resource settings without having to navigate to the Customer Portal. 
@@ -67,7 +67,7 @@ This subsection contains activity logs that document CDN resource changes, rule 
 - The date and time of the request (in UTC)
 - The HTTP request method (GET, POST, PUT, DELETE, or PATCH)
 - The requested path
-Request data (if available)
+- Request data (if available)
 - The request status code (e.g., 200, 404, 503)
 - The customer's remote IP address
 - The requested host
