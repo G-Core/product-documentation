@@ -23,7 +23,7 @@ Here is an example of code that may be used for this purpose:
 <iframe src="https://meet.gcore.com/call/serv2testroom" allow="camera; microphone; fullscreen; display-capture; autoplay; screen-wake-lock"></iframe>
 ```
 
-- In the <span style="color:#FF5913">src</span> attribute, set the <a href="https://gcore.com/docs/streaming-platform/api/real-time-video-api-tutorial#create-room-url" target="_blank">URL with your video room ID</a>.
+- In the <span style="color:#FF5913">src</span> attribute, set the URL with your video room ID.
 - In the <span style="color:#FF5913">allow</span> attribute, set the necessary <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy#specifications" target="_blank">permission policies</a> (e.g., for the camera, microphone, fullscreen, etc.)
 
 This is how the module is displayed after implementing iframe on a website:
@@ -35,7 +35,6 @@ The process of embedding the module in various OSs is explained in the following
 - <a href="https://gcore.com/blog/add-video-call-feature-to-ios-app/" target="_blank">How to add a video call feature to your iOS app in 15 minutes</a> 
 - <a href="https://gcore.com/blog/how-to-launch-rtc-for-ios-and-android/" target="_blank">How to launch real-time communications for iOS/Android</a> 
 - <a href="https://github.com/G-Core/reactnative-demo-video-calls" target="_blank">Embed into ReacNative app</a> (GitHub code)
-- <a href="https://gcore.com/docs/streaming-platform/api/real-time-video-api-tutorial" target="_blank">Real-Time Video API tutorial</a> 
 
 ## How to embed a Gcore Real-Time Video module into your app
 
@@ -43,9 +42,9 @@ Below we will look at embedding the module in a demo page, paying attention to t
 
 ### For beginners
 
-1\. Generate a room URL for your video call according to <a href="https://gcore.com/docs/streaming-platform/api/real-time-video-api-tutorial#create-room-url" target="_blank">our guide</a>. For this example, we generated the URL ```https://meet.gcore.com/call/serv2testroom```.
+1\. Generate a room URL for your video call. For this example, we generated the URL ```https://meet.gcore.com/call/serv2testroom```.
 
-2\. Add additional attributes from the table for managing security and Gcore Real-Time Video module features, if necessary, to your URL. For example, to invite a user with the <a href="https://gcore.com/docs/streaming-platform/api/real-time-video-api-tutorial#rolerole" target="_blank">Interpreter role</a> to our call, add the following attribute to the URL from the first step:
+2\. Add additional attributes from the table for managing security and Gcore Real-Time Video module features, if necessary, to your URL. For example, to invite a user with the Interpreter role to our call, add the following attribute to the URL from the first step:
 
 
 ```
@@ -242,7 +241,7 @@ import MeetIframeBridge from "@gcorevideo/videocalls-iframe-adapter"
     })
 ```
 
-5\. Control video calls embedded in an iframe through your shell interface using <a href="https://gcore.com/docs/streaming-platform/api/real-time-video-api-tutorial#public-methods-of-real-time-video-iframe" target="_blank">API methods from the documentation</a>. The general schema is:
+5\. Control video calls embedded in an iframe through your shell interface. The general schema is:
 
 ```
 bridge.method({ name: methodName, data: methodData { } }) 
