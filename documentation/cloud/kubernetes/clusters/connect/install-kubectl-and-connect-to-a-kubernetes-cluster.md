@@ -139,7 +139,7 @@ Alternatively, there is a tool with a graphical user interface called "Lens". It
 4.  Create the ".**kube**" directory in your home directory: 
     
     ```
-    mkdir ~/.kube/config
+    mkdir ~/.kube
     ```
 
 5.  Download the configuration file.  
