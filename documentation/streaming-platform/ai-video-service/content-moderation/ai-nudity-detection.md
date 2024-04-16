@@ -14,17 +14,17 @@ toc:
    --2--3. Get the task result: "step-3-get-the-task-result"
    --1--Assessing the probability: "assessing-the-probability-of-inappropriate-content"
    --1--How to use results in practice: "how-to-use-results-in-practice"
-pageTitle: Guide to Gcore's AI Nudity Detection for Video Content Moderation | Gcore
-pageDescription: Learn how to use Gcore's AI nudity detection for moderating video content, ensuring it's suitable for your audience.
+pageTitle: Guide to Gcore's AI Video Content Moderation for Nudity Detection | Gcore
+pageDescription: Learn how to use Gcore's AI nudity detection for moderating video content to ensure it's suitable for your audience.
 customUrl: /streaming-platform/ai-video-service/ai-nudity-detection
 ---
 # AI nudity detection
 
 ## AI nudity detection overview
 
-The AI nudity detection feature is a part of the <a href="https://gcore.com/docs/streaming-platform/video-hosting/ai-video-service" target="_blank">AI Video Services</a>, designed to identify explicit content in videos. This method provided by <a href="https://api.gcore.com/docs/streaming#tag/AI/operation/post_ai_detectnudity" target="_blank">Gcore API method</a> is suitable for automatic visual content analysis, recognition, and moderation, utilizing machine learning. 
+The AI nudity detection feature identifies explicit content in videos. It's offered as part of Gcore's <a href="https://gcore.com/docs/streaming-platform/video-hosting/ai-video-service" target="_blank">AI Video Services</a>. AI nudity detection uses machine learning to provide automatic visual content analysis, recognition, and moderation. 
 
-Gcore's AI nudity detection can be used for moderating User-Generated Content (UGC). It aids in determining whether the video is suitable for all user categories without age restrictions, or if it should be prohibited.
+Gcore's AI nudity detection can be used for moderating user-generated content (UGC). It can help you to determine whether a video is suitable for all user categories without age restrictions, or if it should be restricted or prohibited, depending on the needs of your particular audience.
 
 ## Billing 
 
@@ -53,7 +53,7 @@ Gcore's AI nudity moderation can identify explicit content, involving either rea
 </tr>
 <tr>
 <td style="text-align: left"><pre>FEMALE_BREAST_EXPOSED</pre> <pre>MALE_BREAST_EXPOSED</pre></td>
-<td style="text-align: left">Nude female or male breasts with nipples</td>
+<td style="text-align: left">Nude female or male breasts including nipples</td>
 </tr>
 <tr>
 <td style="text-align: left"><pre>FEMALE_GENITALIA_EXPOSED</pre> <pre>MALE_GENITALIA_EXPOSED</pre></td>
@@ -64,11 +64,11 @@ Gcore's AI nudity moderation can identify explicit content, involving either rea
 
 ## Analyze videos for nudity
 
-Gcore's AI nudity detection is compatible with any MP4 video. This means you can upload files to <a href="https://gcore.com/streaming-platform/video-hosting" target="_blank">Gcore Video Hosting</a> or use MP4 videos from external storage sources, like AWS. Furthermore, nudity detection is not limited to videos; you can also detect explicit content in JPEG format images. For billing purposes the picture will be treated as a 1-second long-view video.
+Gcore's AI nudity detection is compatible with any MP4 video. This means you can upload files to <a href="https://gcore.com/streaming-platform/video-hosting" target="_blank">Gcore Video Hosting</a> or use MP4 videos from external storage sources. Nudity detection is not limited to videos; you can also detect explicit content in JPEG format images. For billing purposes, a picture will be treated as a one-second video.
 
 ### Step 1. Obtain an MP4 link
 
-If you're using a third-party video storage service other than Gcore, obtain an appropriate link to the MP4 video. If you're using Gcore's Video Hosting, you need to execute the following API request to obtain the MP4 link:
+If you're using a third-party video storage service other than Gcore, obtain a link to the MP4 video. If you're using Gcore's Video Hosting, execute the following API request to obtain the MP4 link:
 
 ```
 curl -L 'https://api.gcore.com/streaming/videos/{video_id}' \
@@ -76,17 +76,17 @@ curl -L 'https://api.gcore.com/streaming/videos/{video_id}' \
 -H 'Authorization: APIKey {your_api_key}' \
 ```
 
-Ensure you replace the example values `{video_id}` and `{your_api_key}` with the MP4 video URL and your actual <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">API token</a>.
+Replace the example values `{video_id}` and `{your_api_key}` with the MP4 video URL and your actual <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">API token</a>.
 
 Copy the value of the `mp4_url` field from the response.
 
 <alert-element type="warning" title="Warning">
 
-If the `mp4_url` field does not appear in the response, reach out to [technical support](mailto:support@gcore.com). It's possible that MP4 support may be disabled for your account. Technical support can enable it for you.
+If the `mp4_url` field does not appear in the response, reach out to [technical support](mailto:support@gcore.com). It's possible that MP4 support may be disabled for your account; technical support can enable it for you.
 
 </alert-element>
 
-<expandable-element title="Example of obtaining MP4 URL">
+<expandable-element title="Example of obtaining an MP4 URL">
 
 Request sample:
 
@@ -141,11 +141,11 @@ curl -L 'https://api.gcore.com/streaming/ai/detect-nudity' \
 }'
 ```
 
-Ensure you replace the example values `{your_api_key}` and `{your_video_url.mp4}` with the MP4 video URL and your actual <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">API token</a>.
+Replace the example values `{your_api_key}` and `{your_video_url.mp4}` with the MP4 video URL and your actual <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">API token</a>.
 
 In the response, you will get a unique task ID. It'll come in handy in the next step. For example: ```"task_id": "abc12345-6def…"```
 
-<expandable-element title="Example of a nudity detection task creation">
+<expandable-element title="Example of creating a nudity detection task">
 
 Request sample:
 
@@ -172,7 +172,7 @@ The required value for the next step is in the task_id field: `34d0ba5a-23f6-446
 
 ### Pause detection if a stop tag is triggered
 
-There are times when an object detected at the beginning of the video immediately indicates that further analysis of the video is unnecessary. For such instances, you can add stop tags in the body of the nudity detection creation task. 
+An object detected at the beginning of the video may immediately indicate that further analysis of the video is unnecessary. For such instances, you can add stop tags in the body of the nudity detection creation task. 
 
 Use the `stop_objects` parameter to specify stop tags, separating each one with a comma. You can also set a probability threshold value, expressed as a percentage. If this value is exceeded, the stop tag will be triggered.
 
@@ -202,11 +202,11 @@ curl -L 'https://api.gcore.com/streaming/ai/results/{your_task_id}' \
 
 <alert-element type="info" title="Info">
 
-Webhooks for AI methods will be available soon. Additionally, batch methods are currently in the early stages of development. As soon as they are ready for use, we will ensure to notify you promptly.
+Webhooks for AI methods will be available soon. Additionally, batch methods are currently in the early stages of development. As soon as they are ready for use, we will notify you.
 
 </alert-element>
 
-There are five potential statuses (PENDING, STARTED, SUCCESS, FAILURE, and REVOKE) that reflect the progression of AI video processing. You should wait for the final statuses, either SUCCESS or FAILURE. 
+There are five potential statuses (PENDING, STARTED, SUCCESS, FAILURE, and REVOKE) that reflect the progression of AI video processing. You should wait for the final statuses: SUCCESS or FAILURE. 
 
 As a result of the processing, you will receive a JSON file containing an array of entries if explicit content is detected. This final text result can be used to configure the logic of processes (for example, deciding whether to publish a video or not) on your backend. Below, we've provided an example of how this could be implemented.
 
@@ -264,13 +264,13 @@ AI evaluates all objects in the video and analyzes how well they fit the aboveme
 
 ## Assessing the probability of inappropriate content 
 
-There's no one-size-fits-all criterion or nudity score that can definitively determine whether a video is inappropriate. Different video hosting services cater to specific audiences such as adults, children, or educational groups, etc. For instance, an acceptable nudity percentage for a site dedicated to sex education would be higher than for a hosting site that uploads entertainment videos intended for children. 
+There's no one-size-fits-all criterion or nudity score that can definitively determine whether a video is inappropriate. Different video hosting services cater to specific audiences such as adults, children, educational groups, etc. For instance, an acceptable nudity percentage for a site dedicated to sex education would be higher than for a hosting site that uploads entertainment videos intended for children. 
 
 You can set a probability threshold to determine when a video is inappropriate for your specific use case. One method is to run videos for one day and analyze the resulting probability coefficient.
 
 ## How to use results in practice?
 
-Here's a procedure for utilizing Gcore's AI nudity detection when checking User-Generated Content (UGC): 
+Here's a procedure for utilizing Gcore's AI nudity detection when checking user-generated content (UGC): 
 
 1. A user uploads a video to your app. You can use a platform like Gcore Video Hosting for video storage, but other platforms are also acceptable. 
 
@@ -279,4 +279,4 @@ Here's a procedure for utilizing Gcore's AI nudity detection when checking User-
 3. The backend logic for deciding whether to publish is based on two parameters: 
 
 - The video has been transcoded and is now viewable.
-- The video has been scanned for nudity (based on the analyzed coefficient) and no explicit content has been detected
+- The video has been scanned for nudity (based on the analyzed coefficient) and no explicit content has been detected.
