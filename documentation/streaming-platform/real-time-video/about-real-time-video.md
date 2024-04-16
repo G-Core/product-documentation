@@ -78,5 +78,3 @@ All data streams are made safe using the DTLS (Datagram Transport Layer Security
 ## How to use the Real-Time Video module
 
 You can try out the video call module quickly and easily. To do this, go to the <a href="https://meet.gcore.com/new" target="_blank">Real-Time Video demo page</a> and follow the instructions there. 
-
-If you want to use our solution for video calls, please read the <a href="https://gcore.com/docs/streaming-platform/api/real-time-video-api-tutorial" target="_blank">Real-Time Video API tutorial</a> guide.
