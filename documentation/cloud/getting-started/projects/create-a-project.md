@@ -11,13 +11,13 @@ toc:
     --2--Manage project access: "manage-project-access"
     --2--Delete project: "delete-a-project"
 pageTitle: Create a project | Gcore
-pageDescription: Learn how to create and manage a Cloud project in your personal account.
+pageDescription: Learn how to create and manage an Edge Cloud project in the Gcore Customer Portal.
 ---
 # Create and manage projects
 
-Projects are goal-specific folders where you can create instances, volumes, networks, and other cloud products. Each project acts as a separate environment where its resources are isolated from the resources in any other project. You can also control access to these resources by specifying which users belong to a particular project and what permissions they have.  
+Projects are goal-specific folders where you can create Gcore Edge Cloud products including instances, volumes, and networks. Each project acts as a separate environment; its resources are isolated from the resources in any other project. You can control access to these resources by specifying user permissions on a per-project basis.  
 
-There are two ways to view projects in the Gcore Customer Portal: either from the **Project** dropdown or from the **Cloud Management** page.
+You can view projects in the Gcore Customer Portal via either the **Project** dropdown or the **Cloud Management** page.
 
 <tabset-element>
 
@@ -29,7 +29,7 @@ There are two ways to view projects in the Gcore Customer Portal: either from th
 
 <img src="https://assets.gcore.pro/docs/cloud/getting-started/projects/create-a-project/open-projects-from-dropdown.png" alt="A dropdown displaying a list of projects" width="80%">
 
-3\. The **Projects** page will open. Here you can view, search, and manage your projects.  
+3\. The **Projects** page will open. Here you can view, search for, and manage your projects.  
 
 To open the resource management panel for a particular project, click **Open project**.
 
@@ -41,7 +41,7 @@ To open the resource management panel for a particular project, click **Open pro
 
 2\. Click **Projects**. 
 
-3\. The **Projects** page will open. Here you can view, search, and manage your projects. 
+3\. The **Projects** page will open. Here you can view, search for, and manage your projects. 
 
 To open the resource management panel for a particular project, click the project name.
 
@@ -53,11 +53,11 @@ To open the resource management panel for a particular project, click the projec
 
 You can change the layout on the **Projects** page to display the information in two ways:
 
-- **List view**. Present all projects as a concise list where only the project name and description are displayed.
+- **List view**. Presents all projects as a concise list with only the project name and description displayed.
 
 <img src="https://assets.gcore.pro/docs/cloud/getting-started/projects/create-a-project/projects-page-list.png" alt="" width="80%">
 
-- **Grid view**. Present all projects as tiles with extra information displayed: project name, ID, and a list of cloud resources you can create by clicking the plus button. 
+- **Grid view**. Presents all projects as tiles with extra information displayed: project name, ID, and a list of Edge Cloud resources that you can create by clicking the plus button. 
 
 <img src="https://assets.gcore.pro/docs/cloud/getting-started/projects/create-a-project/projects-page-grid.png" alt="" width="80%">
 
@@ -69,7 +69,7 @@ You can switch between two layouts by clicking the layout icon to the right of t
 
 When you first navigate to the Cloud page, you’ll have only one **Default** project. This project is created automatically for every account and can’t be deleted. 
 
-You can create more projects to organize your cloud resources. The number of projects doesn't affect your expenses. We charge only for the used resources.
+You can create more projects to organize your cloud resources. The number of projects doesn't affect your expenses, you only pay for resources used.
 
 To create a project:
 
@@ -79,7 +79,7 @@ To create a project:
 
 <img src="https://assets.gcore.pro/docs/cloud/getting-started/projects/create-a-project/create-project.png" alt="The Projects page with the Create project button highlighted" width="80%">
 
-3\. Enter your project name. Optionally, you can add a description. 
+3\. Enter your project name. Optionally, add a description. 
 
 <alert-element type="info" title="Info">
 
@@ -103,7 +103,7 @@ If you have a large number of projects, you can also use search to find the one 
 
 1\. Navigate to the **Projects** page.
 
-2\. Click the three-dot (...) icon next to the project you want to edit.
+2\. Click the three-dot icon next to the project you want to edit.
 
 3\. Select **Settings**.
 
@@ -115,31 +115,31 @@ If you have a large number of projects, you can also use search to find the one 
 
 ### Manage project access 
 
-To view and modify user access to the project, you need to have the <a href="https://gcore.com/docs/cloud/getting-started/projects/users/user-roles-and-rights#client-administrator" target="_blank">Client Administrator</a> or <a href="https://gcore.com/docs/cloud/getting-started/projects/users/user-roles-and-rights#project-administrator" target="_blank">Project Administrator</a> access level. 
+To view and modify user access to the project, you need <a href="https://gcore.com/docs/cloud/getting-started/projects/users/user-roles-and-rights#client-administrator" target="_blank">Client Administrator</a> or <a href="https://gcore.com/docs/cloud/getting-started/projects/users/user-roles-and-rights#project-administrator" target="_blank">Project Administrator</a> access. 
 
 To change access to the project:
 
 1\. Open the **Projects** page and find the project you want to update.
 
-2\. Click the three-dot (...) icon next to the project you want to manage.
+2\. Click the three-dot icon next to the project you want to manage.
 
 3\. Select **Settings**.
 
 <img src="https://assets.gcore.pro/docs/cloud/getting-started/projects/create-a-project/annotated-project-settings.png" alt="Project settings menu with Open and Settings options" width="80%">
 
-4\. Open the **Access** tab. You’ll see the list of users who belong to the project, along with their access levels. To manage user access, follow the instructions in this guide: <a href="https://gcore.com/docs/cloud/getting-started/projects/users/manage-user-access-to-your-project" target="_blank">Manage user access to your project</a>.
+4\. Open the **Access** tab. You’ll see the list of users associated with the project and their access levels. To manage user access, follow the instructions in our guide on <a href="https://gcore.com/docs/cloud/getting-started/projects/users/manage-user-access-to-your-project" target="_blank">how to manage user access to your project</a>.
 
-To configure user access within your account, click the "Manage users via profile" link. 
+To configure user access within your account, click "Manage users via profile". 
 
 <img src="https://assets.gcore.pro/docs/cloud/getting-started/projects/create-a-project/access-project-settings.png" alt="Project access tab displaying one user added to the project" width="80%">
 
 ### Delete a project
 
-To delete a project, you need to have the <a href="https://gcore.com/docs/cloud/getting-started/projects/users/user-roles-and-rights#client-administrator" target="_blank">Client Administrator</a> or <a href="https://gcore.com/docs/cloud/getting-started/projects/users/user-roles-and-rights#project-administrator" target="_blank">Project Administrator</a> access level. 
+To delete a project, you need <a href="https://gcore.com/docs/cloud/getting-started/projects/users/user-roles-and-rights#client-administrator" target="_blank">Client Administrator</a> or <a href="https://gcore.com/docs/cloud/getting-started/projects/users/user-roles-and-rights#project-administrator" target="_blank">Project Administrator</a> access. 
 
-<alert-element type="info" title="Info">
+<alert-element type="warning" title="Warning">
 
-You can’t delete a default project. When you delete any other project, all resources inside that project will be permanently deleted and can’t be restored. 
+When you delete a project, all resources inside that project will be permanently deleted and can’t be restored. Default projects can't be deleted.
 
 </alert-element>
 
@@ -147,7 +147,7 @@ To delete a project:
 
 1\. Navigate to the **Projects** page.
 
-2\. Click the three-dot icon (...) next to the project you want to delete.
+2\. Click the three-dot icon next to the project you want to delete.
 
 <img src="https://assets.gcore.pro/docs/cloud/getting-started/projects/create-a-project/project-settings-delete.png" alt="Project settings menu with Open, Settings, and Delete options" width="80%">
 
