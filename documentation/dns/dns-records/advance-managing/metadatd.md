@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: Integrations
+displayName: Advance managing
 published: true
-order: 60
+order: 70
 ---

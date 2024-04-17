@@ -17,6 +17,7 @@ toc:
    --1--Delete: "delete-a-dns-record"
 pageTitle: Managing DNS records in advanced mode | Gcore
 pageDescription: Learn how to add, edit, and delete DNS records in the advanced interface mode with Geo Proximity and Geobalancing.
+customURL: /dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing
 ---
 # Manage DNS records (advanced interface mode with dynamic response)
     

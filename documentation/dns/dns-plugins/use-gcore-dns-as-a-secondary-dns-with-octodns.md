@@ -5,12 +5,12 @@ published: true
 order: 10
 toc:
    --1--What is a secondary DNS?: "what-is-a-secondary-dns"
-   --1--Synchronize records: "synchronize-records-of-gcore-dns-with-your-dns"
+   --1--Synchronize records: "synchronize-records-of-gcore-managed-dns-with-your-dns"
    --1--Update records: "update-records-of-our-secondary-dns"
 pageTitle: Setting Up Secondary DNS with OctoDNS | Gcore
 pageDescription: An in-depth guide to using Gcore DNS as a secondary DNS with OctoDNS.
 ---
-# Use Gcore DNS as a secondary DNS with OctoDNS  
+# Use Gcore Managed DNS as a secondary DNS with OctoDNS  
 
 ## What is a secondary DNS?
 
@@ -20,7 +20,7 @@ Before you start, check your provider against <a href="https://github.com/octod
 
 Synchronize records of Gcore DNS with your DNS
 
-## Synchronize records of Gcore DNS with your DNS
+## Synchronize records of Gcore Managed DNS with your DNS
 
 This guide will help you to install OctoDNS  — a tool for managing DNS zones of different providers. Using it, you will make records on our DNS server identical to records on yours. That's how it works:
 

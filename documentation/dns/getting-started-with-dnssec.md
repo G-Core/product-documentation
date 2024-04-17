@@ -2,7 +2,7 @@
 title: getting-started-with-dnssec
 displayName: DNSSEC
 published: true
-order: 60
+order: 50
 toc:
    --1--Overview: "dnssec-overview"
    --1--Enable: "enable-dnssec"
