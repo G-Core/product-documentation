@@ -104,7 +104,7 @@ For CNAME, here’s what each part of the record means:
 - `3600` is the Time to Live (TTL) for the DNS record in seconds, which indicates how long the record is cached by servers or resolvers.
 - `IN` is the class that stands for "internet."
 - `CNAME` is the record type.
-- `sample-test.com.` is the target domain name whose records are inherited by the domain *www.example.com.*
+- `sample-test.com.` is the target domain name whose records are inherited by the domain `www.sample-test.com`.
 
 <img src="https://assets.gcore.pro/docs/dns/dns-records/supported-dns-record-types/dns-records-50.png" alt="Example of adding an CNAME record" width="80%">
 
