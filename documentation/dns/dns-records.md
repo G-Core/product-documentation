@@ -17,7 +17,7 @@ toc:
    --1--What's next?: "whats-next"
 pageTitle: Supported DNS Record Types | Gcore
 pageDescription: Find out what types of DNS records are supported in the Gcore interface.
-customURL: /dns/dns-records/supported-dns-record-types 
+customUrl: /dns/dns-records/supported-dns-record-types 
 ---
 # Supported DNS record types
 

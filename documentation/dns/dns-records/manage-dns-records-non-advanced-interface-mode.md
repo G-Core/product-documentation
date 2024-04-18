@@ -34,7 +34,7 @@ If you want to configure balancing and dynamic response use a separate guide: <a
 
 <img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/dns-record-20.png" alt="Add a record" width="80%">
 
-You will see the interface for adding new DNS record. Perform other steps in it.
+You will see the interface for adding new DNS record. Perform the remaining steps there.
 
 <img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/dns-record-40.png" alt="DNS record configuration" width="80%">
 
@@ -84,4 +84,4 @@ That's it. The DNS record with specified parameters will be created. You can che
 
 5\. Apply the new settings by clicking **Save**.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/dns-record-50.png" alt="Edit or delete a DNS record" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/dns-record-40.png" alt="Edit or delete a DNS record" width="80%">
