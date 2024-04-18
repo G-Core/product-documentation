@@ -2,7 +2,7 @@
 title: configure-weight-balancing-and-geobalancing
 displayName: Dynamic response 
 published: true
-order: 20
+order: 10
 toc:
    --1--Overview: "How-dynamic-response-works"
    --1--Configure: "configure-dynamic-response"
@@ -10,8 +10,8 @@ toc:
    --2--Geo DNS: "geo-dns"
    --2--Geo distance: "geo-distance"
    --2--Weighted shuffle: "weighted-shuffle"
-pageTitle: Configure dynamic response for DNSSet | Gcore
-pageDescription: Learn how to configure dynamic responses, select pickers, and specify metadata with Gcore.
+pageTitle: Configure Dynamic Response for DNSSet | Gcore
+pageDescription: Learn how to configure CDN integration.
 customUrl: /dns/dns-records/configure-weight-balancing-and-geobalancing
 ---
 # Dynamic response
