@@ -28,7 +28,7 @@ To send logs to Gcore Managed Logging, configure Fluentd with the <a href="https
 <match pattern>
   @type kafka2
 
-  # list of seed brokers
+  \# list of seed brokers
   brokers <span style="color:#FF5913">laas-example.gcore.com:443</span>
   username: <span style="color:#FF5913">username</span>
   password: <span style="color:#FF5913">password</span>
@@ -36,7 +36,7 @@ To send logs to Gcore Managed Logging, configure Fluentd with the <a href="https
   default_topic: namespace_username.topic_name
   sasl_over_ssl: true
 
-  # buffer settings
+  \# buffer settings
   <buffer>
     @type memory
     ## OPTIONAL PARAMS
@@ -50,7 +50,7 @@ To send logs to Gcore Managed Logging, configure Fluentd with the <a href="https
     flush_thread_count: 12
   </buffer>
 
-  # data type settings
+  \# data type settings
   <format>
     @type json
   </format>
