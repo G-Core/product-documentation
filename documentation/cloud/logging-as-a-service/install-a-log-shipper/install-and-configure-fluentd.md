@@ -25,7 +25,8 @@ To send logs to Gcore Managed Logging, configure Fluentd with the <a href="https
 1\. Configure Fuentd with Kafka output by adding the following data to the `fluent.conf` file:
 
 <code-block>
-<match pattern>
+
+\<match pattern>
   @type kafka2
 
   \# list of seed brokers
@@ -37,7 +38,7 @@ To send logs to Gcore Managed Logging, configure Fluentd with the <a href="https
   sasl_over_ssl: true
 
   \# buffer settings
-  <buffer>
+  \<buffer>
     @type memory
     ## OPTIONAL PARAMS
     timekey: 30s
@@ -48,13 +49,14 @@ To send logs to Gcore Managed Logging, configure Fluentd with the <a href="https
     chunk_full_threshold: "0.9"
     queued_chunks_limit_size: 12
     flush_thread_count: 12
-  </buffer>
+  \</buffer>
 
   \# data type settings
-  <format>
+  \<format>
     @type json
-  </format>
-</match>
+  \</format>
+\</match>
+
 </code-block>
 
 2\. Customize the highlighted values:
