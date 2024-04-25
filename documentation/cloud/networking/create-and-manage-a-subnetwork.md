@@ -4,71 +4,125 @@ displayName: Subnetwork
 published: true
 order: 20
 toc:
-   --1--Subnetwork creation: "subnetwork-creation"
-   --1--Network routing: "network-routing"
-   --1--Setting the IP range: "setting-the-ip-range"
-   --1--Subnetwork management: "managing-subnets"
-pageTitle: Add a subnetwork | Gcore
+   --1--Create a subnetwork: "create-a-subnetwork"
+   --1--Set the IP range: "set-the-ip-range"
+   --1--Configure network routing: "configure-network-routing"
+   --1--Manage subnetworks: "manage-subnetworks"
+pageTitle: Create and manage a subnetwork | Gcore
 pageDescription: Learn how to create and manage a subnetwork in the cloud to transfer information between cloud resources and establish an Internet connection.
 ---
 # Create and manage a subnetwork
 
 A subnetwork is a range of IP addresses in a cloud network. Addresses from this range will be assigned to machines in the cloud.  
 
-## Subnetwork creation
+## Create a subnetwork
 
-There are two ways to create a subnet in the network: 
+There are two ways to create a subnework in the network: <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance" target="_blank">during the creation of a virtual machine</a> or from the **Networks** page, which is described in the following section.
 
-1. Inside the project, in the section Networking → Networks → Click on the name of the network where you want to create a subnet → Create a subnet.
+### Create a subnetwork from the Networks page 
 
-<media-gallery>
- <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/13830562453009.png" alt="Networks ">
+1\. In the Gcore Customer Portal, navigate to **Cloud** > **Networking**.
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/13830595601169.png" alt="network">
-</media-gallery>
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/networks-page.png" alt="Networks page open in the Customer Portal" width=80%>
 
-2. While creating an instance, in the Network settings section, select the Private interface type, select or create a network, and click Add a new subnetwork.
+2\. Find the network where you want to create a subnetwork and click its name to open it. 
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/13830600498321.png" alt="Network settings section">
+3\. Click **Create subnetwork**.
 
-## Setting the IP range
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/network-settings-create-subnet.png" alt="Network settings section with the highlighted Create a subnetwork button" width=80%>
 
-While creating a subnet (with any method), you need to specify the address range in the CIDR format in the drop-down window.
+4\. A new **Create subnetwork** page will open. Here you can customize subnetwork settings.
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/13830635124369.png" alt="creating a subne">
+5\. Enter the subnetwork name.
 
-The subnet size is set using the classless addressing (CIDR) method. Only private IPv4 addresses can be used in subnets. 
+6\. Set CIDR between ranges: 10.0.0.0 - 10.255.255.255, 172.16.0.0—172.31.255.255, 192.168.0.0—192.168.255.255. Set the mask between 16 and 24. You can find more information in the [Set the IP range](https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork#Set-the-ip-range) section.
 
-Acceptable CIDR ranges: 
+7\. (optional) Turn on the **Enable DHCP** toggle to automatically assign IP addresses to machines in the subnet.
+
+8\. (optional) Turn on the **Non-routable subnetwork** toggle to block access to the subnet from external networks and other subnets. If you keep the network routable, you can specify the **Gateway IP** address. Otherwise, a random IP address will be assigned.
+
+9\. (optional) Enter Custom DNS servers to add specific DNS servers.
+
+10\. (optional) Turn on **Add tags** to add metadata to the subnetwork.
+
+11\. Click **Create subnetwork**.
+
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/create-subnetwork-annotated.png" alt="Network settings section with the highlighted Create a subnetwork button" width=80%>
+
+## Set the IP range
+
+While creating a subnetwork, you need to specify the address range in the CIDR format.
+
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/create-subnetwork.png" alt="Create a subnetwork dialog" width=80%>
+
+The subnework size is set using the classless addressing (CIDR) method. You can use both private IPv6 and IPv4 addresses in subnetworks. 
+
+Acceptable CIDR ranges for IPv4 addresses: 
+
 *   10.0.0.0 - 10.255.255.255 
 *   172.16.0.0 - 172.31.255.255 
 *   192.168.0.0 - 192.168.255.255 
-Valid subnet mask range: 16-24. 
 
-## Network routing
+The valid subnet mask range is 16-29. 
 
-A routed network is a private network that is already connected to a router with a public interface. All virtual servers in such networks can access the Internet through the router and accept incoming connections. 
+## Configure network routing
 
-By default, a subnet in the cloud is created with Internet access (**routable**). 
+A routed network is a private network that's already connected to a router with a public interface. All virtual machines in such networks can access the Internet through the router and accept incoming connections. 
 
-If you need to restrict machines from external connections, you need to enable the non-routable Subnetwork option while creating a subnet. 
+By default, a subnetwork in the cloud is created with Internet access, which means that it’s  routable. If you need to restrict machines from external connections, you need to enable the **Non-routable subnetwork** option while creating a subnetwork. 
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/13830607341457.png" alt="Network routing">
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/enable-non-routable-subnetwork.png" alt="Create subnetwork dialog" width=80%>
 
-## Managing subnets
+### Set up the default gateway
 
-You can see the list of subnets in the created **network** in the section Networking → Networks. 
+If your virtual machine or bare metal server has both public and private interfaces, you need to disable the default gateway for all private subnetworks. Otherwise, there will be a conflict with the default gateway on the server, and you won’t be able to connect to the instance. 
 
-**Editing a name** 
-    
-To rename a subnet, click the selector on the right from the selected subnet and select **Edit**.
+If you need to configure a gateway in a private subnetwork, ensure that only one of your  subnetworks is routable. To do this, check out the subnetwork settings and verify that only one subnetwork has the **Enable router gatewa**y toggle active.
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/13830661431953.png" alt="Editing a name ">
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/disable-router-gateway.png" alt="Edit subnetwork dialog" width=80%>
 
-In the drop-down window, you can change the name of the created subnet.
+## Manage subnetworks
 
-**Deleting a subnet**
-    
-To delete a subnet, click the selector on the right from the selected subnet and click **Delete**.
+You can view and manage subnetworks in the Gcore Customer Portal, on the **Networking** page. 
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/13830702718097.png" alt="Deleting a subnet">
+### Rename a subnetwork 
+
+1\. In the Gcore Customer Portal, navigate to **Cloud** > **Networking**.
+
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/networks-page.png" alt="Networks page open in the Customer Portal" width=80%>
+
+2\. Find the network where you want to rename a subnetwork and click its name to open it. 
+
+3\. Click the three-dot icon next to the subnetwork you want to rename and then click **Edit**.
+
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/rename-subnetwork.png" alt="Network settings with the highlighted edit button" width=80%>
+
+4\. Update the subnetwork’s name. 
+
+5\. Click **Edit subnetwork** to save the changes. 
+
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/edit-subnetwork-menu.png" alt="Subnetwork settings" width=80%>
+
+The subnetwork has been renamed.
+
+### Delete a subnetwork
+
+You can delete a subnetwork that’s not attached to an instance. 
+
+To delete a subnetwork:
+
+1\. In the Gcore Customer Portal, navigate to **Cloud** > **Networking**.
+
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/networks-page.png" alt="Networks page open in the Customer Portal" width=80%>
+
+2\. Find the network where you want to delete a subnetwork and click its name to open it. 
+
+3\. Click the three-dot icon next to the subnetwork you want to remove and click **Delete**.
+
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/delete-subnetwork.png" alt="Network settings with the highlighted delete button" width=80%>
+
+4\. Confirm your action by clicking **Delete** again.
+
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/confirm-subnetwork-deletion.png" alt="Delete subnetwork confirmation dialog" width=80%> 
+
+The subnetwork has been successfully removed.
