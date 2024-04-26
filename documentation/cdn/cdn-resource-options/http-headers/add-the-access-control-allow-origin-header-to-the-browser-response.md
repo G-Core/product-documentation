@@ -56,7 +56,7 @@ There are three methods to configure CORS header supports: in the resource setti
 
 If you want to apply the configuration to all files sent over the CDN, use the resource settings method:
 
-1\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN</a> section in the control panel and click the custom domain of the resource for which you want to configure CORS to open the resource settings.
+1\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN</a> section in the Gcore Customer Portal and click the custom domain of the resource for which you want to configure CORS to open the resource settings.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response/13198726101521.png" alt="CDN section ">
 
@@ -101,7 +101,7 @@ The new page opens. Do the remaining steps on it.
 
 If you want to apply the configuration only to particular files, use the "Rules" method:
 
-1\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN</a> section in the control panel and click the custom domain of the resource for which you want to configure CORS to open the resource settings.
+1\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN</a> section in the Gcore Customer Portal and click the custom domain of the resource for which you want to configure CORS to open the resource settings.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/add-the-access-control-allow-origin-header-to-the-browser-response/13198726101521.png" alt="Configure CORS over the rule creation">
 

@@ -5,7 +5,7 @@ published: true
 order: 20
 toc:
    --1--What is Log Viewer?: "what-is-log-viewer"
-   --1--View logs: "view-logs-in-your-control-panel"
+   --1--View logs: "view-logs-in-the-customer-portal"
    --1--Export logs: "export-logs"
    --1--Manage via API: "manage-log-viewer-via-the-api"
 pageTitle: Analyzing CDN Resource Logs with Log Viewer | Gcore
@@ -19,13 +19,13 @@ Log Viewer is a free tool designed to view and export logs of CDN resources to y
   
 <img src="https://assets.gcore.pro/docs/cdn/logs/log-viewer-view-and-download-cdn-resource-logs/image_1330-2.png" alt="Log Viewer">
 
-## View logs in your control panel
+## View logs in the Customer Portal
 
 Log Viewer can show logs collected for a maximum of 6 hours of CDN operation. Moreover, it can only display up to 1000 log entries. If more than 1000 logs have been recorded in six hours, entries after the 1000th will not be shown.
 
 When you open the tab, you can see logs of all CDN resources for the last 6 hours.  
   
-<img src="https://assets.gcore.pro/docs/cdn/logs/log-viewer-view-and-download-cdn-resource-logs/image_1331.png" alt="logs in your control panel">
+<img src="https://assets.gcore.pro/docs/cdn/logs/log-viewer-view-and-download-cdn-resource-logs/image_1331.png" alt="logs in the Gcore Customer Portal">
 
 You can customize a log report:
 

@@ -19,13 +19,13 @@ pageDescription: Instructions on how to set the content delivery speed to end us
 
 The "Download Speed Limit" option allows you to control the content delivery speed to end users.
 
-To configure the speed limit via the Control panel:
+To configure the speed limit via the Gcore Customer Portal:
 
 1\. Go to CDN and select the CDN resource you want to configure.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/network-limits-set-the-content-delivery-speed-to-end-users/12392392470929.png" alt="CDN_resource.png">
 
-2\. In the navigation panel, under the "Network limits" section, click **Download speed limit**.
+2\. In the sidebar, under the "Network limits" section, click **Download speed limit**.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/network-limits-set-the-content-delivery-speed-to-end-users/12420512653457.png" alt="Download_Speed_Limit_option.png" width="80%">
 

@@ -15,7 +15,7 @@ Log into your SocialEngine admin panel.
 
 Go to Settings/General Settings.
 
-Enter your CNAME from the Gcore <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>.
+Enter your CNAME from the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>.
 
 Ensure that your <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">CNAME record has been configured</a> in a proper way before using it for integration.  
 
@@ -23,6 +23,6 @@ Ensure that your <a href="https://gcore.com/docs/cdn/cdn-resource-options/genera
 
 Click **Save Changes** button at the bottom of the page.  
   
-Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the control panel.
+Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
 
 To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.

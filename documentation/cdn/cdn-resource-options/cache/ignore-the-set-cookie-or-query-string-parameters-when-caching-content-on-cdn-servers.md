@@ -19,13 +19,13 @@ The "Ignore Query String" option determines how the CDN will cache URLs that hav
 http://cdn.example.com/photo.jpeg?id=6&color=blue
 ```
 
-This option is disabled by default. To enable it via the Control panel:
+This option is disabled by default. To enable it in the Gcore Customer Portal:
 
 1\. Go to CDN and select the CDN resource you want to configure.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/12414969223185.png" alt="CDN resource ">
 
-2\. In the navigation panel, under the "Cache" section, click **Query string**.
+2\. In the sidebar, under the "Cache" section, click **Query string**.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers/12420789740177.png" alt="Cache" width="80%">
 

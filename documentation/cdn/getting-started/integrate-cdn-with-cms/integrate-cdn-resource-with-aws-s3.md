@@ -58,10 +58,10 @@ Check accessibility of the file at the URL link in the browser. For example, the
 
 <img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-aws-s3/s3-endpoint-url.png" alt="Check accessibility " width="80%">
 
-Log in your Gcore <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a> and <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">create a CDN resource</a>. Use S3 Endpoint as an origin source. For example, bucket.s3-website.eu-central-1.amazonaws.com
+Log in to the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a> and <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">create a CDN resource</a>. Use S3 Endpoint as an origin source. For example, bucket.s3-website.eu-central-1.amazonaws.com
 
 As soon as you create a Resource check accessibility of the content through the CDN by opening the URL link in the browser. For example, CNAME: awss3.site.com/logo.png. Ensure that your <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">CNAME record has been configured</a> properly before using it for integration.
 
-Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the control panel.
+Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
 
 To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.

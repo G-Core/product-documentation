@@ -33,7 +33,7 @@ A new page will open.
 
 2\. Enter the following details of the certificate that you purchased from the Certificate Authority:
 
-- The SSL certificate name, which can be found in the control panel 
+- The SSL certificate name, which can be found in the Gcore Customer Portal 
 - Certificate chain (personal certificate, intermediate CA, root CA) in the <a href="https://en.wikipedia.org/wiki/Privacy-Enhanced_Mail" target="_blank">PEM format</a> 
 - Private key
 
@@ -126,7 +126,7 @@ If you haven’t yet added a certificate or want to upload a new one for this re
 
 ### SSL certificates overview
 
-The certificate will be displayed in the <a href="https://cdn.gcore.com/ssl/list" target="_blank">SSL certificates</a> section of your control panel. This page contains a table that lists your personal certificates and associated information, such as the ID, name, CDN resources connected to the certificate, and expiration date.
+The certificate will be displayed in the <a href="https://cdn.gcore.com/ssl/list" target="_blank">SSL certificates</a> section in the Gcore Customer Portal. This page contains a table that lists your personal certificates and associated information, such as the ID, name, CDN resources connected to the certificate, and expiration date.
 
 <img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-11.png" alt="Renew an SSL certificate">
 

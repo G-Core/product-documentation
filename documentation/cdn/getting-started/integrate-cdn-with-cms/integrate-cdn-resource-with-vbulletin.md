@@ -19,9 +19,9 @@ Before you take any steps please back up your files and database. The plugin wor
 
 <img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-vbulletin/vbulletin.png" alt="Integrate CDN resource with vBulletin" >
 
-Using your CNAME from the Gcore <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a> (```cdn.site.com```). Create a new replacement variable for each item in the following table. Ensure that your <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">CNAME record has been configured</a> in a proper way before using it for integration.
+Using your CNAME from the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a> (```cdn.site.com```). Create a new replacement variable for each item in the following table. Ensure that your <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">CNAME record has been configured</a> in a proper way before using it for integration.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-vbulletin/bulletin_______.png" alt="Gcore Control panel " width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-vbulletin/bulletin_______.png" alt="Gcore Customer Portal " width="80%">
 
 
 
@@ -40,6 +40,6 @@ Using your CNAME from the Gcore <a href="https://accounts.gcore.com/reports/das
 
 4\. If you have more directories for your images repeat the process for each of them.
 
-5\. Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the control panel.
+5\. Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
 
 To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.

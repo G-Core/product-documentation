@@ -100,7 +100,7 @@ Copy the code below to the file. Replace the hints in the brackets with your val
 
 <code-block>
 resource "gcore_cdn_origingroup" "<span style="color:#FF5913">make up Terraform name of the origin group; you can use any name, it will be linked to the origin in the Terraform system</span>" {  
- name = "<span style="color:#FF5913">make up a name of the origin group that will be displayed in the Gcore Control panel</span>"
+ name = "<span style="color:#FF5913">make up a name of the origin group that will be displayed in the Gcore Customer Portal</span>"
 </code-block>
 
 If you want to enable the "Use next upstream" option, add the string below: 
@@ -145,7 +145,7 @@ Add another curly bracket to a new string below. 
 Here is an example. Let's say you want to create an origin group with the following parameters: 
 
 - <span style="color:#FF5913">example_terraform</span> — name of the origin group that will be displayed in Terraform, 
-- <span style="color:#FF5913">example group</span> — the name of the origin group that will be displayed in the Gcore control panel, 
+- <span style="color:#FF5913">example group</span> — the name of the origin group that will be displayed in the Gcore Customer Portal, 
 - the "Use next upstream" option is disabled, 
 - <span style="color:#FF5913">one.com</span> and <span style="color:#FF5913">two.com</span> — the active origins, 
 -  <span style="color:#FF5913">three.com</span> — the backup origin. 
@@ -221,7 +221,7 @@ In the end, add a curly bracket to a new string below.
 Here is an example. Let's say you want to create a CDN resource with the following parameters: 
 
 - <span style="color:#FF5913">cdn_example_com</span> — name of the resource that will be displayed in Terraform,  
-- <span style="color:#FF5913">сdn.one.com</span> — custom domain of the CDN resource that will be displayed in the file paths and in the control panel,  
+- <span style="color:#FF5913">сdn.one.com</span> — custom domain of the CDN resource that will be displayed in the file paths and in the Gcore Customer Portal,  
 - <span style="color:#FF5913">example_terraform</span> — name of the origin group that will be displayed in Terraform, 
 - <span style="color:#FF5913">HTTPS</span> — protocol that will be used by the CDN to access an origin,  
 - <span style="color:#FF5913">cdn.two.com</span> and <span style="color:#FF5913">cdn.three.com</span> — additional custom domains.  
@@ -357,7 +357,7 @@ Add the code below before the following string: ```resource "gcore_cdn_resourc
 
 <code-block>
 resource "gcore_cdn_sslcert" "<span style="color:#FF5913">make up Terraform name for your certificate; you can use any name, it will be linked to the certificate inside the Terraform system</span>" {   
-name = "<span style="color:#FF5913">make up a certificate name that will be displayed in the Gcore control panel; it should not match the names of other SSL certificates in the same account</span>"   
+name = "<span style="color:#FF5913">make up a certificate name that will be displayed in the Gcore Customer Portal; it should not match the names of other SSL certificates in the same account</span>"   
 cert = "<span style="color:#FF5913">specify a public key of your certificate, including the BEGIN CERTIFICATE----- and-----END CERTIFICATE---- strings</span>"   
 private_key ="<span style="color:#FF5913">specify a private key of your SSL certificate, including the -----BEGIN RSA PRIVATE KEY----- and -----END RSA PRIVATE KEY----- string</span>"   
 }
@@ -373,7 +373,7 @@ ssl_data = gcore_cdn_sslcert.<span style="color:#FF5913">Terraform name of the c
 Here is an example of adding a certificate. Let's suppose your values are as follows: 
 
 - <span style="color:#FF5913">example_cert</span> — the name of the certificate that will be displayed in Terraform, 
-- <span style="color:#FF5913">example_certificate</span> — the name of the certificate that will be displayed in the control panel, 
+- <span style="color:#FF5913">example_certificate</span> — the name of the certificate that will be displayed in the Gcore Customer Portal, 
 - <span style="color:#FF5913">-----BEGIN CERTIFICATE-----MIIDkjCCAnqgAwIBAgIgTfqoZeTGCEvm...T7XH8IlQY0SGq2FSZKJAlrfX+UOpIMWQcOwcuDB97DXl5Bjs+QEXO203GW0C-----END CERTIFICATE-----</span> — the public key of the certificate,
 - <span style="color:#FF5913">-----BEGIN RSA PRIVATE KEY-----MIIEpAIBAAKCAQEAzzj54zBOWxBIJRFMBtG...xyf2T9RZYRpIVbkatg977nXryEZC8Sp8U76c3Oww==-----END RSA PRIVATE KEY-----</span> — the private key of the certificate.
 
@@ -404,7 +404,7 @@ Add the code below to a new string. Replace the hints in the brackets with your 
 <code-block>
 resource "gcore_cdn_rule" "<span style="color:#FF5913">make up Terraform name for the rule; you can use any name, it will be linked to the rule inside the Terraform system</span>" {   
   resource_id = gcore_cdn_resource.<span style="color:#FF5913">Terraform name of the CDN resource for which you are adding the rule</span>.id   
-  name = "<span style="color:#FF5913">make up a name for the rule that will be displayed in the Gcore control panel</span>"   
+  name = "<span style="color:#FF5913">make up a name for the rule that will be displayed in the Gcore Customer Portal</span>"   
   rule = "<span style="color:#FF5913">specify path to the files for which you are adding the rule; the path should always start with "^/" or "/"</span>"   
   rule_type   = 0 
 </code-block>
@@ -429,7 +429,7 @@ Here is an example of a configuration file. Let's say you want to add a rule wit
 
 - <span style="color:#FF5913">example_rule</span> — the name of the rule for Terraform, 
 - <span style="color:#FF5913">cdn_example_com</span> — the name of the CDN resource in Terraform,  
-- <span style="color:#FF5913">PNG images</span> — the name of the rule for the Control panel. 
+- <span style="color:#FF5913">PNG images</span> — the name of the rule from the Gcore Customer Portal. 
 - <span style="color:#FF5913">/folder/images/*.png</span> — the path to the files. 
 - The "WebP Compression" option with a final quality of 66 is required. 
 

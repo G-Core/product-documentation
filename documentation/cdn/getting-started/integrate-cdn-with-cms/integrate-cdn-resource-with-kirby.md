@@ -13,6 +13,6 @@ Before you take any steps please back up your files and database. The plugin wor
 
 There is currently no plugin available for automatic CDN integration with <a href="https://getkirby.com" target="_blank">Kirby</a>. You need to change manually the path for your CSS and JS files in the header.php but there is the Kirby GetImages plugin for your images. For more details visit <a href="https://github.com/RobBrazier/kirby-getimage" target="_blank">GitHub</a>.
 
-We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the control panel.
+We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
 
 To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.
