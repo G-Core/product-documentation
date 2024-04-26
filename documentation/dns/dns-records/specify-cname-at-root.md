@@ -14,7 +14,7 @@ pageDescription: Explore how CNAME flattening can bypass these restrictions for 
 
 ## What is the challenge with the creation of records in the root zone (zone apex)?
 
-Nowadays <a href="https://gcore.com/docs/dns/dns-records#cname-record" target="_blank">CNAME records</a> are increasingly used to integrate domains with third-party solutions such as CDNs. This is because using an A record, which specifies the concrete IP address that resolves the domain, may not be suitable in cases where the IP addresses change frequently based on the geolocation of requests.
+Nowadays <a href="https://gcore.com/docs/dns/dns-records/supported-dns-record-types#cname-record" target="_blank">CNAME records</a> are increasingly used to integrate domains with third-party solutions such as CDNs. This is because using an A record, which specifies the concrete IP address that resolves the domain, may not be suitable in cases where the IP addresses change frequently based on the geolocation of requests.
 
 According to the RFC 1034 specification, a CNAME record cannot coexist with other records. Therefore, it is impossible to specify a CNAME record for the root domain, also known as the "apex domain" (e.g., `sample-test.com`), because it has mandatory NS and SOA records.
 

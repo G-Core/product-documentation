@@ -23,7 +23,7 @@ Gcore Managed DNS is an authoritative DNS server for domain delegation. When del
 - AnycastDNS for redirecting requests to your domain to the nearest edge location.
 - <a href="https://gcore.com/docs/dns/dns-records/configure-weight-balancing-and-geobalancing" target="_blank">Flexible balancing to various IP addresses</a>, based on the geolocation of the user who requested the domain, metadata, or weight that you set.
 - <a href="https://gcore.com/docs/dns/getting-started-with-dnssec" target="_blank">DNSSEC</a> for domain protection during resolving processes.
-- <a href="https://gcore.com/docs/dns/dns-failover/about-dns-failover" target="_blank">Health Checks</a> for checking the availability of IP addresses.
+- <a href="https://gcore.com/docs/dns/dns-failover/configure-and-use-dns-failover" target="_blank">Health Checks</a> for checking the availability of IP addresses.
 - <a href="https://gcore.com/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns" target="_blank">OctoDNS</a>, <a href="https://gcore.com/docs/dns/dns-plugins/get-a-let-s-encrypt-certificate-with-certbot" target="_blank">Certbot</a>, Kubernetes, and Terraform third-party solution integrations.
 - <a href="https://gcore.com/docs/dns/dns-records/specify-cname-at-root" target="_blank">CNAME flattening</a> for using a subdomain at the root.
 - <a href="https://gcore.com/docs/dns/dns-records/what-is-an-https-record-and-how-is-it-configured" target="_blank">Support for HTTPS records</a>.
