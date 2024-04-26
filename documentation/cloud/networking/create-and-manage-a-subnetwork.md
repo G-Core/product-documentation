@@ -35,7 +35,7 @@ There are two ways to create a subnework in the network: <a href="https://gcore.
 
 5\. Enter the subnetwork name.
 
-6\. Set CIDR between ranges: 10.0.0.0 - 10.255.255.255, 172.16.0.0—172.31.255.255, 192.168.0.0—192.168.255.255. Set the mask between 16 and 24. You can find more information in the [Set the IP range](https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork#Set-the-ip-range) section.
+6\. Set CIDR between ranges: 10.0.0.0 - 10.255.255.255, 172.16.0.0—172.31.255.255, 192.168.0.0—192.168.255.255. Set the mask between 16 and 24. You can find more information in the [Set the IP range](https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork#set-the-ip-range) section.
 
 7\. (optional) Turn on the **Enable DHCP** toggle to automatically assign IP addresses to machines in the subnet.
 
@@ -61,8 +61,8 @@ Acceptable CIDR ranges for IPv4 addresses: 
 
 *   10.0.0.0 - 10.255.255.255 
 *   172.16.0.0 - 172.31.255.255 
-*   192.168.0.0 - 192.168.255.255 
-
+*   192.168.0.0 - 192.168.255.255
+  
 The valid subnet mask range is 16-29. 
 
 ## Configure network routing
