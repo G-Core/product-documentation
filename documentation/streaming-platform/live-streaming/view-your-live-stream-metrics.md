@@ -27,7 +27,7 @@ Live Stream Monitoring allows you to monitor the following metrics:
 
 To view the Live Stream Monitoring page:
 
-1\. Go to **Streaming** on the Control Panel dashboard.
+1\. Go to **Streaming** in Gcore Customer Portal.
 2\. Click **Streaming**, then open **Live streams**.
 3\. Click the three dots next to the stream whose metrics you want to view (it can be a finished or ongoing stream).
 4\. Select **Monitoring**.

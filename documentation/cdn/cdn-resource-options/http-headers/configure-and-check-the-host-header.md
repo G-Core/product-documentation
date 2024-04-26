@@ -31,7 +31,7 @@ This value will appear at the "Change Host header" option as follows:
 
 If you change the origin source after resource creation, the Host header value will not be changed automatically. You will need to manually change it. If the value is not corrected, the CDN resource will refer to the new source using the old Host header, resulting in an error for end users instead of content.
 
-1\. Open the Resource settings in the control panel.
+1\. Open the Resource settings in the Gcore Customer Portal.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header/11774871054737.png" alt="Resource settings in the control panel" width="80%">
 

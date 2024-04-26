@@ -16,7 +16,7 @@ pageDescription:  A detailed guide on configuring Secure Token with the PHP, Pyt
   
 ## Configure Secure Token
 
-Do the first three steps in your control panel in the "Secure token" tab. 
+Do the first three steps in Gcore Customer Portal on the **Secure token** tab. 
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/mceclip4.png" alt="Configure Secure Token" width="80%">
 

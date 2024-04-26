@@ -89,7 +89,7 @@ To avoid this situation:
 *Possible cause*: Not enough storage space to complete the upload.  
 *Suggested solution*: Confirm in the Storage statistics that you have used up your storage. Contact our [support team](mailto:support@gcore.com) to increase the storage space.
 
-**Upload to the control panel is interrupted by a session timeout (force logout)**
+**Upload to the Gcore Customer Portal is interrupted by a session timeout (force logout)**
 
 *Possible cause*: Video is too large to upload through UI.  
 *Suggested solution*:

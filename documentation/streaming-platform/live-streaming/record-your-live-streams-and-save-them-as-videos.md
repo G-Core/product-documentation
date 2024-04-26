@@ -7,7 +7,7 @@ toc:
    --1--What is the Record feature: "what-is-the-record-feature"
    --1--Enable the feature: "enable-the-record-feature"
    --1--Record a live stream: "how-to-record-a-live-stream"
-   --2--Via Сontrol panel: "how-to-record-your-live-stream-via-the-control-panel"
+   --2--Via Customer Portal: "how-to-record-your-live-stream-via-the-customer-portal"
    --2--Via API: "how-to-record-your-live-stream-via-api"
    --1--Where records are kept: "where-the-records-are-kept"
 pageTitle:  Overview of Live Streams Recording | Gcore
@@ -21,7 +21,7 @@ Record is a free feature that allows you to record your live streams and store t
 
 ## Enable the Record feature
 
-Please, send us the request to activate the option via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of our website. Specify your ID in the request so that we can identify your account. You can find it on the main page of your control panel.
+Please, send us the request to activate the option via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of our website. Specify your ID in the request so that we can identify your account. You can find it on the main page in the Gcore Customer Portal.
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/record-your-live-streams-and-save-them-as-videos/9612975911185.png" alt="Enable the Record feature" width="80%">
 
@@ -31,13 +31,13 @@ We will notify you when we activate the Record feature. After that, you will be 
 
 ## How to record a live stream
 
-### How to record your live stream via the Control panel
+### How to record your live stream via the Customer Portal
 
 To record a live stream manually:
 
 1\. Start a live stream in your encoder.
 
-2\. Open the settings of the desired live stream in the Control panel.
+2\. Open the settings of the desired live stream in the Gcore Customer Portal.
 
 3\. Press the **Start record** button.
 

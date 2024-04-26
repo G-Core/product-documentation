@@ -95,13 +95,13 @@ Doing it the other way around is not possible. That is, you cannot enable Gzip a
 
 ## Configuration steps
 
-To configure Gzip and Brotli options via the control panel:
+To configure Gzip and Brotli options via the Gcore Customer Portal:
 
 1\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN resources</a> list and select the CDN resource you want to configure.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/cdn-resource-list-10.png" alt="CDN resources page" width="70%">
 
-2\. In the navigation panel, under the "Content" section, click **Gzip compression** or **Brotli compression**.
+2\. In the sidebar, under the "Content" section, click **Gzip compression** or **Brotli compression**.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression/compression-settings-20.png" alt="GZip and Brotli compression" width="80%">
 

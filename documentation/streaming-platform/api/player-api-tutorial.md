@@ -23,7 +23,7 @@ Copy the iFrame code from the VOD/broadcast settings in your account:
 
 Add the ```id='gplayer'``` parameter to the iFrame and paste it into the site code.
 
-Example of the iFrame code from the control panel with the id= 'gplayer' parameter:
+Example of the iFrame code from the Gcore Customer Portal with the id= 'gplayer' parameter:
 
 ```
 <iframe width="640" height="360" src="https://12345.gvideo.io/video/dSmuIp-tNRtwACT" allow="autoplay" allowfullscreen frameborder="0" id="gplayer"></iframe>

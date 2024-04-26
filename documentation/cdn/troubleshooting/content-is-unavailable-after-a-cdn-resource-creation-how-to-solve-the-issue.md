@@ -207,7 +207,7 @@ If you see class B or chain issues as follows
 
 <img src="https://assets.gcore.pro/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue/image17.png" alt="SSL report for the domain with B grade" width="80%">
 
-the chain of the SSL certificate is incomplete or added in the wrong way. Go to the <a href="https://cdn.gcore.com/ssl/list" target="_blank">SSL certificates</a> section on the control panel. Delete the wrong certificate and add it again according to the "<a href="https://gcore.com/docs/cdn/cdn-resource-options/general/add-an-ssl-certificate-to-deliver-content-over-https" target="_blank">How to add a personal SSL certificate in the SSL certificates section</a>" guide. 
+the chain of the SSL certificate is incomplete or added in the wrong way. Go to the <a href="https://cdn.gcore.com/ssl/list" target="_blank">SSL certificates</a> section in the Gcore Customer Portal. Delete the wrong certificate and add it again according to the "<a href="https://gcore.com/docs/cdn/cdn-resource-options/general/add-an-ssl-certificate-to-deliver-content-over-https" target="_blank">How to add a personal SSL certificate in the SSL certificates section</a>" guide. 
 
 ### 5. Check the cache options
 

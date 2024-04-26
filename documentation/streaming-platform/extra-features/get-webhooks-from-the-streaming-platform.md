@@ -41,7 +41,7 @@ Whenever any of these events happens, our server will create an HTTP POST reques
 
 Customize the following values:
 
-- <span style="color:#FF5913">12345</span> is the stream ID in your Control panel,
+- <span style="color:#FF5913">12345</span> is the stream ID in the Gcore Customer Portal,
 - <span style="color:#FF5913">true</span> is the indicator that the Platform is receiving your stream,
 - <span style="color:#FF5913">false</span> is the indicator that your stream is not being recorded.
 
@@ -55,9 +55,9 @@ For example, users share videos in your app. When a user adds a new video, it is
 
 1\. Prepare your HTTP server to receive webhooks.
 
-2\. Contact us via chat or email [support@gcore.com](mailto:support@gcore.com) and ask to enable the webhook integration. Specify your ID (personal client ID) and the URL of the server that will receive webhooks. You can find your ID in your <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>.
+2\. Contact us via chat or email [support@gcore.com](mailto:support@gcore.com) and ask to enable the webhook integration. Specify your ID (personal client ID) and the URL of the server that will receive webhooks. You can find your ID in the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/get-webhooks-from-the-streaming-platform/image.png" alt="your ID in your Control panel">
+<img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/get-webhooks-from-the-streaming-platform/image.png" alt="your ID in the Gcore Customer Portal">
 
 The message template: *"Good afternoon! Please configure the Streaming Platform webhook integration for my account with ID..... The URL of my server to send webhooks to is ...."*.
 
@@ -88,7 +88,7 @@ Below are examples of all the webhooks that you can get from our service. Parame
 
 Where:
 
-- <span style="color:#FF5913">12345</span> is the stream ID in your Control panel,
+- <span style="color:#FF5913">12345</span> is the stream ID in Gcore Customer Portal,
 - <span style="color:#FF5913">true</span> is the indicator that the Platform is receiving your stream,
 - <span style="color:#FF5913">false</span> is the indicator that your stream is not being recorded.
 
@@ -109,7 +109,7 @@ Where:
 
 Where:
 
-- <span style="color:#FF5913">12345</span> is the stream ID in your Control panel,
+- <span style="color:#FF5913">12345</span> is the stream ID in the Gcore Customer Portal,
 - <span style="color:#FF5913">false</span> is the indicator the Platform is not receiving your stream,
 - <span style="color:#FF5913">false</span> is the indicator that your stream is not being recorded.
 
@@ -131,7 +131,7 @@ Where:
 
 Where:
 
-- <span style="color:#FF5913">12345</span> is the stream ID in your Control panel,
+- <span style="color:#FF5913">12345</span> is the stream ID in the Gcore Customer Portal,
 - <span style="color:#FF5913">true</span> is the indicator that the Platform is receiving your stream,
 - <span style="color:#FF5913">true</span> is the indicator that your stream is being recorded.
 
@@ -152,7 +152,7 @@ Where:
 
 Where:
 
-- <span style="color:#FF5913">12345</span> is the stream ID in your Control panel,
+- <span style="color:#FF5913">12345</span> is the stream ID in the Gcore Customer Portal,
 - <span style="color:#FF5913">true</span> is the indicator that the Platform is receiving your stream,
 - <span style="color:#FF5913">false</span> is the indicator that your stream is not being recorded.
 
@@ -193,7 +193,7 @@ Where:
 
 Where:
 
-- <span style="color:#FF5913">12345</span> is the recording ID in your Control panel,
+- <span style="color:#FF5913">12345</span> is the recording ID in the Gcore Customer Portal,
 - <span style="color:#FF5913">ZeC44gtQQ4E97N9S</span> is the video ID presented as a random set of characters, which prevents a video URL from stealing if the webhook is intercepted,
 - <span style="color:#FF5913">test</span> is your stream name,
 - <span style="color:#FF5913">19580</span> is the recording duration in seconds,
@@ -237,7 +237,7 @@ Where:
 
 Where:
 
-- <span style="color:#FF5913">12345</span> is the recording ID in your Control panel,
+- <span style="color:#FF5913">12345</span> is the recording ID in the Gcore Customer Portal,
 - <span style="color:#FF5913">ZeC44gtQQ4E97N9S</span> is the video ID presented as a random set of characters, which prevents a video URL from stealing if the webhook is intercepted,
 - <span style="color:#FF5913">test</span> is your stream name,
 - <span style="color:#FF5913">19580</span> is the recording duration in seconds,
@@ -282,7 +282,7 @@ Where:
 
 Where:
 
-- <span style="color:#FF5913">12345</span> is the recording ID in your Control panel,
+- <span style="color:#FF5913">12345</span> is the recording ID in the Gcore Customer Portal,
 - <span style="color:#FF5913">ZeC44gtQQ4E97N9S</span> is the video ID presented as a random set of characters, which prevents a video URL from stealing if the webhook is intercepted,
 - <span style="color:#FF5913">test</span> is your stream name,
 - <span style="color:#FF5913">19580</span> is the recording duration in seconds,
@@ -386,7 +386,7 @@ Where:
 
 Where:
 
-- <span style="color:#FF5913">54321</span> is the video ID in your Control panel,
+- <span style="color:#FF5913">54321</span> is the video ID in the Gcore Customer Portal,
 - <span style="color:#FF5913">Lfsq14hKvLkNsExx</span> is the video ID presented as a random set of characters, which prevents a video URL from stealing if the webhook is intercepted,
 - <span style="color:#FF5913">SampleVideo</span> is the video name,
 - <span style="color:#FF5913">170859</span> is the duration of the video in seconds,
@@ -430,7 +430,7 @@ Where:
 
 Where:
 
-- <span style="color:#FF5913">784280</span> is the video ID in your Control panel,
+- <span style="color:#FF5913">784280</span> is the video ID in the Gcore Customer Portal,
 - <span style="color:#FF5913">Lfsq14hKvLkNsExx</span> is the video ID presented as a random set of characters, which prevents a video URL from stealing if the webhook is intercepted,
 - <span style="color:#FF5913">SampleVideo</span> is the video name,
 - <span style="color:#FF5913">170859</span> is the duration of the video in seconds,
@@ -474,7 +474,7 @@ Where:
 
 Where:
 
-- <span style="color:#FF5913">784280</span> is the video ID in your Control panel,
+- <span style="color:#FF5913">784280</span> is the video ID in the Gcore Customer Portal,
 - <span style="color:#FF5913">Lfsq14hKvLkNsExx</span> is the video ID presented as a random set of characters, which prevents a video URL from stealing if the webhook is intercepted,
 - <span style="color:#FF5913">SampleVideo</span> is the video name,
 - <span style="color:#FF5913">170859</span> is the duration of the video in seconds,
@@ -519,7 +519,7 @@ Where:
 
 Where:
 
-- <span style="color:#FF5913">784280</span> is the video ID in your Control panel,
+- <span style="color:#FF5913">784280</span> is the video ID in the Gcore Customer Portal,
 - <span style="color:#FF5913">Lfsq14hKvLkNsExx</span> is the video ID presented as a random set of characters, which prevents a video URL from stealing if the webhook is intercepted,
 - <span style="color:#FF5913">SampleVideo</span> is the video name,
 - <span style="color:#FF5913">170859</span> is the duration of the video in seconds,

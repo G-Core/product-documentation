@@ -209,9 +209,9 @@ You will see similar output:
 
 <img src="https://assets.gcore.pro/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns/mceclip7.png" alt="output" width="80%">
 
-It means the changes have been made. You can see the updated list of records in <a href="https://dns.gcore.com/zones" target="_blank">your Control panel in the DNS tab</a>.
+It means the changes have been made. You can see the updated list of records in the Gcore Customer Portal on the <a href="https://dns.gcore.com/zones" target="_blank">DNS page</a>.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns/mceclip8.png" alt="Control panel in the DNS tab.">
+<img src="https://assets.gcore.pro/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns/mceclip8.png" alt="DNS page in the Gcore Customer Portal">
 
 ## Update records of our secondary DNS
 
@@ -235,4 +235,4 @@ You will see similar output:
 
 <img src="https://assets.gcore.pro/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns/mceclip9.png" alt="output" width="80%">
 
-It means the changes have been made. You can see the updated list of records in <a href="https://dns.gcore.com/zones" target="_blank">your Control panel in the DNS tab</a>.
+It means the changes have been made. You can see the updated list of records in the Gcore Customer Portal on the <a href="https://dns.gcore.com/zones" target="_blank">DNS page</a>.

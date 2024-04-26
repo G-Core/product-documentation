@@ -6,12 +6,12 @@ order: 20
 toc:
    --1--About Redirection from Origin: "about-redirection-from-origin"
    --1--Configuration: "configuration"
-   --2--via the Control panel: "via-the-control-panel"
+   --2--via the Customer Portal: "via-the-customer-portal"
    --2--via the API: "via-the-api"
    --3--Request properties: "request-properties"
    --3--Example: "example"
 pageTitle: Guide to Set Up CDN Origin Redirection | Gcore
-pageDescription: Learn how to configure CDN resources to follow origin redirects in two ways—in the control panel and via API.
+pageDescription: Learn how to configure CDN resources to follow origin redirects in two ways—in the Gcore Customer Portal and via API.
 ---
 # Set up a CDN resource to follow origin redirects
   
@@ -23,15 +23,15 @@ The Redirection from Origin option controls whether the CDN follows redirects re
 
 ## Configuration
 
-### Via the Control panel
+### Via the Customer Portal
 
-To configure origin redirection using the control panel:
+To configure origin redirection using the Gcore Customer Portal:
 
 1\. Go to **CDN** and select the CDN resource you want to configure.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/set-up-a-cdn-resource-to-follow-origin-redirects/11761445358353.png" alt="CDN resource">
 
-2\. In the navigation panel, under the **Cache** section, select **Redirection from origin**.
+2\. In the sidebar, under the **Cache** section, select **Redirection from origin**.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/set-up-a-cdn-resource-to-follow-origin-redirects/11761431909649.png" alt="Cache section">
 

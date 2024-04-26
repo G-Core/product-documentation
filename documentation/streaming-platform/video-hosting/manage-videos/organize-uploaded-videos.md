@@ -13,19 +13,19 @@ toc:
    --2--Add to a video: "add-a-tag-to-a-video"
    --2--Filter videos: "filter-videos-by-tags"
 pageTitle: Folders and Tags | Gcore
-pageDescription: Understanding of video organization in the Gcore control panel with folders and tags.
+pageDescription: Understanding of video organization in the Gcore Customer Portal with folders and tags.
 customUrl: /streaming-platform/video-hosting/organize-uploaded-videos 
 ---
 # Organize uploaded videos
 
 ## How to organize videos
 
-There are two ways to organize videos in the Control panel:
+There are two ways to organize videos in the Gcore Customer Portal:
 
 - Use folders—separate directories for the videos.
 - Use tags—grouping keywords.
 
-Let’s examine the difference between the two ways. For example, you have 100 videos in the Streaming storage. They have been divided into two folders by date: 50 videos in the "10.31.2022" folder and another 50—in the "11.01.2022". You need to group videos by other criteria: "teaser", "clip", and "short film" types. To do this, you do not need to create new folders and lose the date separation. You can add relevant tags to the appropriate videos. The tag list will appear in the control panel, and you can filter videos by them. The videos will still be in two folders.
+Let’s examine the difference between the two ways. For example, you have 100 videos in the Streaming storage. They have been divided into two folders by date: 50 videos in the "10.31.2022" folder and another 50—in the "11.01.2022". You need to group videos by other criteria: "teaser", "clip", and "short film" types. To do this, you do not need to create new folders and lose the date separation. You can add relevant tags to the appropriate videos. The tag list will appear in the Gcore Customer Portal, and you can filter videos by them. The videos will still be in two folders.
 
 ## How to use folders
 

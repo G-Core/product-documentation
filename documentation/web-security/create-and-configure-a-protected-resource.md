@@ -4,17 +4,17 @@ displayName: Create protected resource
 published: true
 order: 30
 toc:
-   --1--Control panel settings: "control-panel-settings"
+   --1--Customer Portal settings: "customer-portal-settings"
    --1--Origin settings: "origin-settings"
    --1--Additional measures: "additional-protective-measures"
 pageTitle: Resource Under Protection Creation | Gcore
-pageDescription: A guide on creating and configuring a protected resource in the control panel.
+pageDescription: A guide on creating and configuring a protected resource in the Gcore Customer Portal.
 ---
 # Create and configure a protected resource
 
-To protect your website, change your IP address to ours (you can get it once you set up a resource in the Control Panel).
+To protect your website, change your IP address to ours (you can get it once you set up a resource in the Gcore Customer Portal).
 
-## Control panel settings
+## Customer Portal settings
 
 Go to the Web Protection tab and click on the **Create DDoS resource** button.
 
@@ -52,4 +52,4 @@ On the Web Protection tab find the protected IP for your resource. Change the A-
 
 To protect your website you need to hide your real IP address. Once you finish the basic setup DNS servers will start providing our IP to the requests but that is not the only way to get the website's real IP. Follow our recommendation for <a href="https://gcore.com/docs/web-security/configure-additional-protection-settings" target="_blank">additional protective measures</a> to ensure your website security.
 
-The recommendations are also available in the Control Panel: go to the Web Protection tab -> click on the arrow near Settings button -> Setup guide.
+The recommendations are also available in the Gcore Customer Portal: go to the Web Protection tab -> click on the arrow near Settings button -> Setup guide.

@@ -36,8 +36,8 @@ customUrl: /streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your
 
 5\. Change the video settings if it's necessary. You can:
 
-- **Name**: Change its name (it will be displayed in the control panel)
-- **Description**: Enter a description (it will be displayed in the control panel)
+- **Name**: Change its name (it will be displayed in the Gcore Customer Portal)
+- **Description**: Enter a description (it will be displayed in the Gcore Customer Portal)
 - **Player**: Select custom player, if you enabled the <a href="https://gcore.com/docs/streaming-platform/extra-features/customize-appearance-of-the-built-in-player" target="_blank">Players</a> feature
 - **Tags**: Select <a href="https://gcore.com/docs/streaming-platform/video-hosting/organize-uploaded-videos#how-to-use-tags" target="_blank">tags</a> for a video
 - **Subtitles**: Add <a href="https://gcore.com/docs/streaming-platform/video-hosting/subtitles-and-closed-captions-for-vod#control-panel">subtitles and choose a subtitle language</a>

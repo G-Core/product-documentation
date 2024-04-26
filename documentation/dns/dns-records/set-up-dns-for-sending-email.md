@@ -61,7 +61,7 @@ If the IP Address of your mail server is `192.0.2.1`, you'd set up a PTR record 
 ## Step 4. Set up SPF (TXT)
 
 An SPF (Sender Policy Framework) record defines which IP addresses are allowed to send mail from your domain. Your domain’s security measures help prevent spam from being sent. An SPF record is added as a TXT record in your DNS.
-Add an SPF record in the Gcore control panel according to our guide on how to <a href="https://gcore.com/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode" target="_blank">manage DNS records</a>. An example of an SPF record is:
+Add an SPF record in the Gcore Customer Portal according to our guide on how to <a href="https://gcore.com/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode" target="_blank">manage DNS records</a>. An example of an SPF record is:
 
 ```
 sample-test.com. IN TXT "v=spf1 mx -all"

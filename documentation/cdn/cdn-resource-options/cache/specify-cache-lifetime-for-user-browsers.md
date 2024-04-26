@@ -15,7 +15,7 @@ pageDescription: A guide on how to configure the browsers cache lifetime on the 
 
 ## What is the Browser Caching option?
 
-The Browser Caching option allows you to set the period of content caching in the end users' browser. The option has two modes: Origin controlled and CDN controlled. The difference between these two modes is that in the first case, the caching time is configured in your source site's configuration, and in the second case, in the Gcore control panel.
+The Browser Caching option allows you to set the period of content caching in the end users' browser. The option has two modes: Origin controlled and CDN controlled. The difference between these two modes is that in the first case, the caching time is configured in your source site's configuration, and in the second case, in the Gcore Customer Portal.
 
 ### Origin controlled
 
@@ -27,7 +27,7 @@ If the Cache-Control header is not specified, then most browsers will consider t
 
 ### CDN controlled
 
-If you choose the CDN controlled mode, the content will be cached based on the cache duration set for this option in the control panel. You can select a value from the list or set a custom value in seconds.
+If you choose the CDN controlled mode, the content will be cached based on the cache duration set for this option in the Customer Portal. You can select a value from the list or set a custom value in seconds.
 
 **Note**: Here are the HTTP response codes that can be cached in browsers: 200, 201, 204, 206, 301, 302, 303, 304, 307, 308. Other response codes will not be cached.
 

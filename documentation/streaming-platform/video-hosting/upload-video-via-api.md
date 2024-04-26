@@ -24,7 +24,7 @@ pageDescription: Follow our step-by-step guide, including a tus standard script 
 
 Video Hosting refers to cloud storage of videos that are ready to be distributed and watched on end devices via the public internet. You can upload original video files in <a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/what-initial-parameters-of-your-live-streams-and-videos-we-can-accept" target="_blank">different formats</a>, we process the videos in various ways, and we save the result to our internal storage. As a result, you get videos in <a href="https://gcore.com/docs/streaming-platform/video-hosting/hls-and-mp4" target="_blank">HLS/MP4 format</a> with <a href="https://gcore.com/docs/streaming-platform/video-hosting/subtitles-and-closed-captions-for-vod" target="_blank">subtitles</a>, <a href="https://gcore.com/docs/streaming-platform/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices" target="_blank">timeline previews</a>, and other features available.
 
-You can upload videos to the storage via the control panel or API. Learn how to <a href="https://gcore.com/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app" target="_blank">add a video via the control panel</a>.
+You can upload videos to the storage via the Gcore Customer Portal or API. Learn how to <a href="https://gcore.com/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app" target="_blank">add a video via the Gcore Customer Portal</a>.
 
 Upload of videos via API can be done in three ways, which we describe in detail in this article. Quickly navigate to your chosen method here:  
 

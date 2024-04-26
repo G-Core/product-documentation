@@ -42,7 +42,7 @@ The new page will open. Select "Accelerate and protect entire site" and click **
 
 ### 2. Enter a site name
 
-**Note**: This step requires the creation of a DNS zone (similar to the site name) in the <a href="https://gcore.com/dns" target="_blank">Gcore DNS service</a>. In our example, a DNS zone will be *testdomain.com*. If you haven’t used the DNS service before, the Free plan will activate automatically at this step. If you have already used the DNS service, the specified DNS zone will also be created automatically, and you can view it in the <a href="https://dns.gcore.com" target="_blank">Control panel</a>.
+**Note**: This step requires the creation of a DNS zone (similar to the site name) in the <a href="https://gcore.com/dns" target="_blank">Gcore DNS service</a>. In our example, a DNS zone will be *testdomain.com*. If you haven’t used the DNS service before, the Free plan will activate automatically at this step. If you have already used the DNS service, the specified DNS zone will also be created automatically, and you can view it in the <a href="https://dns.gcore.com" target="_blank">Gcore Customer Portal</a>.
 
 Enter the domain of the site you want to create a CDN resource. You can use as a site name the following values:
 

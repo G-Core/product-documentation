@@ -5,7 +5,7 @@ published: true
 order: 80
 toc:
 pageTitle: Storage usage reports and statistics | Gcore
-pageDescription: Instructions on where to view statistics on storage resource utilization in the control panel.
+pageDescription: Instructions on where to view statistics on storage resource utilization in the Gcore Customer Portal.
 ---
 # Check storages usage reports
 
@@ -19,7 +19,7 @@ The data for all metrics is available in the Statistics section. It can be reque
 
 <img src="https://assets.gcore.pro/docs/storage/check-storages-usage-reports/Screenshot_70.png" alt="Check storages usage reports" width="80%">
 
-Statistics appear in the Control panel within a couple of hours after storage creation. For the s3 storages in the Global 2 location, it always comes a day later. 
+Statistics appear in the Gcore Customer Portal within a couple of hours after storage creation. For the s3 storages in the Global 2 location, it always comes a day later. 
 
 On the graphs we show aggregated data: used storage space gets measured every hour, the collected data is analyzed and shown as max and average usage values for a day. The longer the requested time period the more operations has to be done to represent the data so requests for long time periods (a year, for example) can take some time to get processed.
 

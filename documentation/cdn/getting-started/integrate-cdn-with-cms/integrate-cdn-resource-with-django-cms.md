@@ -11,7 +11,7 @@ pageDescription: A comprehensive guide on integrating CDN resources with Django 
 
 Before you take any steps please back up your files and database. The plugin works only with default CMS pattern. If you manually changed CMS patterns, the plugin might not help you.
 
-First, <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">create a CDN resource</a> within your Gcore control panel.
+First, <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">create a CDN resource</a> within the Gcore Customer Portal.
 
 Configure your urls.py file to point the static files to the appropriate static folder (i.e same directory as your media folder)
 
@@ -52,7 +52,7 @@ STATIC_URL and MEDIA_URL variables and modify them to reflect your CDN url or 
 STATIC_URL = 'http://cname/static/' MEDIA_URL = 'http://cname/media/'
 ```
 
-Replace CNAME with the CNAME that you specified in the Gcore <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>.
+Replace CNAME with the CNAME that you specified in the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>.
 
 Ensure that your <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">CNAME record has been configured</a> in a proper way before using it for integration      
 
@@ -76,6 +76,6 @@ Use the ```STATIC_URL``` within your template files in order to reference your 
 <link rel="stylesheet" type="text/css" href="<strong>{{ STATIC_URL }}</strong>test.css">
 ```
 
-Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the control panel.
+Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
 
 To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.

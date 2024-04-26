@@ -25,7 +25,7 @@ pageDescription: A comprehensive guide on using the CDN Raw Logs feature for exp
 
 Raw Logs is an option that enables an automatic export of CDN resource logs to your storage. Logs contain information about user requests sent to cache servers and pre-cache servers (if <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">origin shielding</a> is enabled).
 
-**Note**: The feature is paid. To activate, contact us via [support@gcore.com](mailto:support@gcore.com). After activation, enable "Raw Logs" in your control panel and configure export to S3, FTP, or SFTP storage.
+**Note**: The feature is paid. To activate, contact us via [support@gcore.com](mailto:support@gcore.com). After activation, enable "Raw Logs" in the Gcore Customer Portal and configure export to S3, FTP, or SFTP storage.
 
 <img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/13202181890193.png" alt="What is a Raw Logs feature">
 
@@ -157,7 +157,7 @@ Logs are exported at the end of each hour. If you activate Raw Logs at 00:30, th
 
 If CDN servers are not requested and the box "Do not send empty logs" is unchecked, an empty log file (± 20 bytes) will be sent to your storage.
 
-You can see the status of the Raw Logs option in your control panel:
+You can see the status of the Raw Logs option in the Gcore Customer Portal:
 
 - "Pending" is a status for the time interval between the connection to a storage and the very first log export
 - "OK" is a status showing that logs are exported from at least one CDN server

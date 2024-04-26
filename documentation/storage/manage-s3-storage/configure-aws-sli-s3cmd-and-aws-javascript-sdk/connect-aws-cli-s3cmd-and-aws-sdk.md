@@ -180,8 +180,8 @@ Where:
 
 - *test* is the name of the future bucket;
 - *https://s-ed1.cloud.gcore.lu* is the storage URL;
-- *1234* is the access key you received when creating the storage in the Control panel.
-- *5678* is the secret key you received when creating the storage in the Control panel.
+- *1234* is the access key you received when creating the storage in the Gcore Customer Portal.
+- *5678* is the secret key you received when creating the storage in the Gcore Customer Portal.
 
 #### Set CORS policy on a bucket
 
