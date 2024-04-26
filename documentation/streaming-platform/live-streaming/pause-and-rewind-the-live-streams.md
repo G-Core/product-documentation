@@ -22,7 +22,7 @@ If your live streams are usually longer, you can increase the DVR playback time 
 
 ## Enable the DVR feature
 
-To enable the feature, send us a request via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of our website. Please specify your ID in the request, so we can identify your account. You can find it on the main page of your control panel.
+To enable the feature, send us a request via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of our website. Please specify your ID in the request, so we can identify your account. You can find it on the main page in the Gcore Customer Portal.
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/pause-and-rewind-the-live-streams/9654962196625.png" alt="Live stream settings page" width="80%">
 

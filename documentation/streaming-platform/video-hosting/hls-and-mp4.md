@@ -8,7 +8,7 @@ toc:
    --1--MP4 format: "what-is-the-mp4-format-used-for"
    --1--Enable MP4: "how-to-enable-mp4-support"
    --1--Get HLS and MP4 links: "get-hls-and-mp4-links"
-   --2--Control panel: "control-panel"
+   --2--Customer Portal: "customer-portal"
    --2--API: "api"
    --1--Limit quality: "limitation-of-the-lowest-and-highest-quality-in-hls-adaptive-bitrate"
 pageTitle: Adaptive Streaming & Offline Viewing Guide with HLS & MP4 Formats | Gcore
@@ -84,16 +84,16 @@ Gcore’s Streaming Platform provides HLS by default. If you want to enable MP4 
 
 ## Get HLS and MP4 links
 
-You can get links to videos in two ways: in the control panel or via the API.
+You can get links to videos in two ways: in the Gcore Customer Portal or via the API.
 
-### Control panel
+### Customer Portal
 
 Select the video in the <a href="https://streaming.gcore.com/video/list" target="_blank">Video Hosting</a> section, open the "Export" tab, and copy the following links.
 
 - Web player: https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr 
 - HLS: https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/master.m3u8 
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/hls-and-mp4/image3526.png" alt="Control panel">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/hls-and-mp4/image3526.png" alt="Gcore Customer Portal">
 
 ### API
 

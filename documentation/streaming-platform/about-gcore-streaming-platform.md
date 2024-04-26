@@ -33,7 +33,7 @@ The formats and specifications supported by the Streaming Platform are described
 When you stream via the Streaming platform, there are two ways to send us the stream: PUSH and PULL.
 
 - To use PULL, you need a server with a stream in RTMP (or other) format. The stream is sent to our servers, which convert it into HLS.
-- Use PUSH if you stream directly from your computer, camera, or any other device using third-party <a href="https://gcore.com/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-obs" target="_blank">software</a>. In this case, there is a unique key in your Control panel that you insert into your program, and the stream is sent to us. The Streaming Platform converts it into HLS and sends it to end-users.
+- Use PUSH if you stream directly from your computer, camera, or any other device using third-party <a href="https://gcore.com/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-obs" target="_blank">software</a>. In this case, there is a unique key in the Gcore Customer Portal that you insert into your program, and the stream is sent to us. The Streaming Platform converts it into HLS and sends it to end-users.
 
 We can receive SRT streams in either PULL or PUSH format. To send us PULL-SRT, just specify a link in the required protocol in the URL field. If you want to get a PUSH link to send SRT streams to us, write to support via [support@gcore.com](mailto:support@gcore.com) or your manager. We will set up an SRT-PUSH link on your account.
 

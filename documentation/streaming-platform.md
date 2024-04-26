@@ -16,7 +16,7 @@ From the left-side menu, you can access in-depth documentation about Streaming:
 - **Live streams and video protocols and codecs** – initial parameters accepted, transcoded content parameters, adaptive streaming, low latency streaming
 - **Interaction with CDN** – how the service for streaming video content interacts with CDN
 - **Live Streaming** – manage live streams, configure additional features including restreaming, multicamera, recording, DVR
-- **Video Hosting** – upload a video in the control panel or by API, embed video to the web application, organize videos in the control panel, configure additional features including playlists, live imitation, AES-128
+- **Video Hosting** – upload a video in the Gcore Customer Portal or by API, embed video to the web application, organize videos in the Customer Portal, configure additional features including playlists, live imitation, AES-128
 - **Extra features** – additional features for live streaming and video hosting, configuration
 - **Real-Time Video** – webinar and conference product, microphone and camera configuration
 - **Troubleshooting** – solve streaming issues

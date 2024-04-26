@@ -115,7 +115,7 @@ A transcoded video stream has the following codecs by default:
 
 The values in the table are given for videos with a horizontal aspect ratio of 16:9. The values are reversed for vertical videos. For example, if a horizontal resolution is (1280 × 720), the relevant vertical resolution is (720 × 1280). 
 
-We use variable bitrate (VBR) for encoding video. The table above shows average values. The control panel shows a sum of audio and video bitrates.
+We use variable bitrate (VBR) for encoding video. The table above shows average values. The Gcore Customer Portal shows a sum of audio and video bitrates.
 
 **Note**: We don’t upscale videos. Your output will range from the lowest quality to that of your original bitrate. So, if you upload a 4K video, your output will range from the lowest quality up to 4K. Similarly, if you upload a 720p video, your output will vary from the lowest quality up to 720p only.
 

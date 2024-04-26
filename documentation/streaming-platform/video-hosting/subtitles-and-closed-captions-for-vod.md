@@ -13,7 +13,7 @@ toc:
    --2--Third-play: "third-play"
    --2--External platforms: "how-to-extract-subtitles-and-captions-from-external-platforms"
    --1--Managing: "how-to-add-and-manage-subtitles-and-captions"
-   --2--Control panel: "control-panel"
+   --2--Customer Portal: "customer-portal"
    --2--API: "api"
    --3--Add: "add-subtitles-or-captions"
    --3--Get: "get-subtitles-or-captions"
@@ -119,7 +119,7 @@ Here are some helpful guides on how to download subtitles from popular external 
 
 ## How to add and manage subtitles and captions
 
-### Control panel
+### Customer Portal
 
 1\. Go to the <a href="https://streaming.gcore.com/video/list" target="_blank">Video Hosting</a> section and open the video where you want to add subtitles or captions.
 

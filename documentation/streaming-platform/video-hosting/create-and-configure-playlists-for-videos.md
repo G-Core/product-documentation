@@ -18,7 +18,7 @@ Playlists are a free feature that allows you to merge several videos into one pl
 
 ## Enable the Playlists feature
 
-To enable the feature, send us a request via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of our website. Please specify your ID in the request, so we can identify your account. You can find it on the main page of your control panel.
+To enable the feature, send us a request via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of our website. Please specify your ID in the request, so we can identify your account. You can find it on the main page in the Gcore Customer Portal.
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/create-and-configure-playlists-for-videos/9672671990033.png" alt="Enable the Playlists feature" width="80%">
 
@@ -32,7 +32,7 @@ We will notify you when the feature is enabled. After that, you will be able to 
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/create-and-configure-playlists-for-videos/9672671990161.png" alt="Playlists tab">
 
-2. Enter the name of your playlist and click the **Create** button. The playlist’s title will be displayed in the control panel so you can quickly find it.
+2. Enter the name of your playlist and click the **Create** button. The playlist’s title will be displayed in the Gcore Customer Portal so you can quickly find it.
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/create-and-configure-playlists-for-videos/9672672040977.png" alt="Create  playlist" width="50%">
 
