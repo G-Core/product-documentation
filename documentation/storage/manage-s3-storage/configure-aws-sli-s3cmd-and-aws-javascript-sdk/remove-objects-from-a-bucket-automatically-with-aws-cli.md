@@ -145,4 +145,4 @@ Replace:
 
 ## Manage a lifecycle policy with the UI
 
-If you are using S3 storage in Luxembourg, you can manage your lifecycle policy for buckets in the control panel according to the "<a href="https://gcore.com/docs/storage/manage-s3-storage/manage-buckets-via-the-control-panel#add-lifecycle-policy-available-for-s3-in-luxembourg-only">Manage buckets via the control panel</a>" guide.
+If you are using S3 storage in Luxembourg, you can manage your lifecycle policy for buckets in the Gcore Customer Portal according to the "<a href="https://gcore.com/docs/storage/manage-s3-storage/manage-buckets-via-the-control-panel#add-lifecycle-policy-available-for-s3-in-luxembourg-only">Manage buckets via the Gcore Customer Portal</a>" guide.

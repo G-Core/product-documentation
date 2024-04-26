@@ -56,7 +56,7 @@ where:
 - *example-bucket* — the name of the bucket that hosts the file,
 - *image.jpg* — the file you want to share,
 - *60480* — link lifespan in seconds, the maximum is 7 days,
-- *s-dt2.cloud.gcore.lu* — the hostname of your storage that can be found in the "Details" of the storage in your control panel.
+- *s-dt2.cloud.gcore.lu* — the hostname of your storage that can be found in the "Details" of the storage in the Gcore Customer Portal.
 
 3\. Press "Enter". 
 

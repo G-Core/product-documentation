@@ -15,7 +15,7 @@ From the left-side menu, you can access in-depth documentation about Storage:
 - **Billing** – tariff plans, limits, billing rules
 - **Use storage with CDN** – assign storage to a CDN resource origin, how the file requesting scheme works with a CDN
 - **Manage S3 storage** – manage buckets, control file visibility
-- **Manage SFTP storage** – connect to your storage using FileZilla, manage SSH keys in the control panel
+- **Manage SFTP storage** – connect to your storage using FileZilla, manage SSH keys in the Gcore Customer Portal
 - **Request files from storage** – scheme for requesting uploaded files
 - **View statistics** – used space, number of requests, traffic
 - **Troubleshooting** – resolve any 403 and 404 storage issues
