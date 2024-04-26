@@ -15,7 +15,7 @@ pageDescription: Details on Gcore's free trial conditions for various services, 
 
 The trial period allows you to test the service for free for a limited time, regardless of the plan you choose. Not all services offer a trial period. The table below shows which services offer trials, and any related conditions or comments.
 
-To find information on specific services and tariffs, check <a href="https://gcore.com/pricing/edge-network" target="_blank">Gcore Pricing</a> or your control panel.
+To find information on specific services and tariffs, check <a href="https://gcore.com/pricing/edge-network" target="_blank">Gcore Pricing</a> or the Gcore Customer Portal.
 
 <table>
 <thead>
@@ -89,4 +89,8 @@ That’s it! We will send you an email at the beginning of the trial and two day
 
 Contact support (support@gcore.com or chat) or your manager to extend the trial duration or add GB.
 
-**Note**: The flow differs for some services (e.g., IaaS Protection). Follow the recommendations from the control panel to activate the service.
+<alert-element type="info" title="Info">
+ 
+The flow differs for some services (e.g., IaaS Protection). Follow the recommendations from the Gcore Customer Portal to activate the service.
+ 
+</alert-element>
