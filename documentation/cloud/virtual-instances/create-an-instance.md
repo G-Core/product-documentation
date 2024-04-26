@@ -149,7 +149,7 @@ If you choose to add a new network, the new window with network settings will op
 
 <alert-element type="info" title="Info">
  
-If your VM has several subnetworks, <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork#Set-up-the-default-gateway" target="_blank"> ensure that only one subnetwork is routable</a>. Otherwise, there will be a conflict with the default gateway on the server, and you might not be able to connect to the machine. 
+If your VM has several subnetworks, <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork#set-up-the-default-gateway" target="_blank"> ensure that only one subnetwork is routable</a>. Otherwise, there will be a conflict with the default gateway on the server, and you might not be able to connect to the machine. 
 
 </alert-element>
 
