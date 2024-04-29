@@ -41,7 +41,7 @@ Parameters:
 After the iframe add the following code to initialize the player:
 
 ```
-<script type="text/javascript" charset="utf-8" src="https://vplatform.gcdn.co/_players/latest/gplayerAPI.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="https://vplatform.gvideo.co/_players/latest/gplayerAPI.min.js"></script>
 
 <script>  
   window.onload = function() {  
