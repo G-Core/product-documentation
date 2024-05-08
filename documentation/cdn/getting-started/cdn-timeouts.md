@@ -23,12 +23,12 @@ The timeouts set for the servers proxied by the Gcore Edge Network vary from the
 <tbody>
 <tr>
 <td><a href="https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_read_timeout" target="_blank">proxy_read_timeout</a></td>
-<td style="text-align: left">The time limit for receiving a partial response from a proxied server.<br> If no response is received within this time, the connection will be closed.</td>
+<td style="text-align: left">The time limit for receiving a partial response from a proxied server.<br> If no response is received within this time, the connection will be closed. For instructions on how to set up the timeout, check out our <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/customize-connection-and-read-timeouts" target="_blank">dedicated guide</a>.</td>
 <td>30s</td>
 </tr>
 <tr>
 <td><a href="https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_connect_timeout" target="_blank">proxy_connect_timeout</a></td>
-<td style="text-align: left">The time limit for establishing a connection with a proxied server.</td>
+<td style="text-align: left">The time limit for establishing a connection with a proxied server. For instructions on how to set up the timeout, check out our <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/customize-connection-and-read-timeouts" target="_blank">dedicated guide</a>.</td>
 <td>5s</td>
 </tr>
 <tr>
