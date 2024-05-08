@@ -23,7 +23,7 @@ Examine the definitions for terminology commonly used throughout Gcore's DNS doc
 
 <p id="dns-record"><b>DNS record</b> is a database entry within the Domain Name System (DNS) that maps a domain name to various data types, like an IP address (an A record). They tell the DNS where to send a user when they type in a specific domain name or request a certain piece of information, like email servers for a domain. For more details refer to Supported DNS record types and Manage DNS records.</p> 
 
-<p id="dns-zone"><b>DNS zone</b>is a conceptual name used in administration to delegate control over DNS settings across various domains and subdomains. It represents a portion of the domain name space in the DNS and includes the records for the domains within that zone. Use Getting started with Managed DNS to learn how to create DNS zones in Gcore.</p>
+<p id="dns-zone"><b>DNS zone</b> is a conceptual name used in administration to delegate control over DNS settings across various domains and subdomains. It represents a portion of the domain name space in the DNS and includes the records for the domains within that zone. Use Getting started with Managed DNS to learn how to create DNS zones in Gcore.</p>
 
 <p id="dnssec"><b>DNSSEC (Domain Name System Security Extensions)</b> is a suite of IETF specifications used to add a layer of security to the DNS to protect against certain attacks, such as forging or manipulating DNS data, by verifying the authenticity and integrity of the data with digital signatures. Learn how to configure DNSSEC in Getting started with DNSSEC.</p>
 
