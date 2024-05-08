@@ -250,9 +250,9 @@ If an error occurs with the request, the API will return a status code and a bod
 
 ## View Purge history
 
-<alert-element type="warning" title="Warning">
+<alert-element type="info" title="Info">
 
-This feature is temporarily unavailable.
+This feature is currently in beta.
 
 </alert-element>
 
