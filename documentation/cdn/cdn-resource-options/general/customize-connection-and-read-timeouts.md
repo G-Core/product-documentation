@@ -2,7 +2,7 @@
 title: customize-connection-and-read-timeouts
 displayName: Connection and read timeouts
 published: true
-order: 40
+order: 70
 toc:   
 pageTitle: Customize connection and read timeouts for your origin | Gcore 
 pageDescription: Enable connection and read timeouts to set the allowable wait time for accessing your origin.
