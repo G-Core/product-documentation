@@ -7,13 +7,19 @@ pageDescription: Learn how to connect to a Gcore Virtual Machine with SSH keys
 ---
 # Connect to a Virtual Machine via SSH
 
-The SSH protocol is a method for secure remote login from one server to another. You can use SSH to connect to Gcore Virtual Machines running the Linux operating system.
+The SSH protocol is a method for secure remote login from one server to another. You can use SSH to connect to Gcore Virtual Machines running Linux.
 
-The connection can be established in two ways: by using only SSH keys or the keys and a password. The second option is available only if you set up the password during instance creation. Learn how to set up a password for Linux in our guide about <a href="https://gcore.com/docs/cloud/virtual-instances/customize-initial-setup-for-your-instance#customize-the-initial-setup-for-your-instance" target="_blank">customizing the initial setup of your VM</a>.
+The connection can be established in two ways:
+
+1\. With SSH keys 
+
+2\. With keys and a password
+
+The second option is available only if you set up a password while creating your VM. Learn how to set up a password for Linux in our guide about <a href="https://gcore.com/docs/cloud/virtual-instances/customize-initial-setup-for-your-instance#customize-the-initial-setup-for-your-instance" target="_blank">customizing the initial setup of your VM</a>.
 
 <alert-element type="info" title="Info">
 
-If you want to connect to an instance from the Gcore Customer Portal, follow the instructions from our guide on <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">connecting to a VM</a>.
+If you want to connect to your VM via the Gcore Customer Portal, follow the instructions in our guide about <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">connecting to a VM</a>.
 
 </alert-element>
 
