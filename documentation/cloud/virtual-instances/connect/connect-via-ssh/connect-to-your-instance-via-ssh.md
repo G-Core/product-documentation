@@ -6,7 +6,7 @@ published: true
 toc:
    --1--Generate SSH keys: "generate-ssh-keys"
    --2--In the Customer Portal: "generate-ssh-keys-in-the-customer-portal"
-   --3--When creating an instance: "generate-an-ssh-key-when-creating-an-instance"
+   --3--When creating an instance: "generate-an-ssh-key-when-creating-a-vm"
    --3--In the SSH Keys section: "generate-an-ssh-key-in-the-ssh-keys-section"
    --2--Via CLI tools or SSH clients: "generate-ssh-keys-via-cli-tools-or-ssh-clients"
    --3--Terminal or Command Prompt: "terminal-or-command-prompt"
@@ -16,8 +16,8 @@ toc:
    --1--Manage SSH keys in the Customer Portal: "manage-sshkeys-in-the-customer-portal"
    --2--Delete SSH keys: "delete-ssh-keys"
    --2--Stop sharing SSH keys: "stop-sharing-ssh-keys"
-pageTitle: Configure and manage SSH keys | Gcore
-pageDescription: Learn how to generate SSH keys, add them to Gcore Customer Portal, as well as delete and stop sharing the keys in the Customer Portal
+pageTitle: Configure and Manage SSH Keys | Gcore
+pageDescription: Learn how to generate SSH keys, add them to Gcore Customer Portal, delete them, and stop sharing the keys
 customUrl: /cloud/virtual-instances/connect/connect-to-your-instance-via-ssh 
 ---
 # Configure and manage SSH keys
@@ -28,56 +28,58 @@ This guide provides instructions for configuring a pair of SSH keys, adding a pu
 
 You can generate SSH keys in different ways: 
 
-- [In the Customer Portal](https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh#generate-ssh-keys-in-the-customer-portal)
+- [In the Gcore Customer Portal](https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh#generate-ssh-keys-in-the-customer-portal)
 - [Via CLI tools and SSH clients](https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh#generate-ssh-keys-via-cli-tools-or-ssh-clients)
 
 <alert-element type="warning" title="Warning">
 
-Never share your private SSH key or password with third parties. This might result in unauthorized access to your instance and compromise any sensitive information stored there. 
+Never share your private SSH key or password with third parties. Doing so may result in unauthorized access to your Virtual Machine (VM) and the compromise of any sensitive information stored there. 
 
 </alert-element>
 
 ### Generate SSH keys in the Customer Portal
 
-You can create SSH keys when creating a virtual instance or generate them separately in the [“SSH Keys”](https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh#generate-an-ssh-key-in-the-ssh-keys-section) section. 
+You can create SSH keys when creating a VM or generate them separately in the [“SSH Keys”](https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh#generate-an-ssh-key-in-the-ssh-keys-section) section. 
 
-After you generate the keys, a public key will be added to the system and appear in the “SSH Keys” section, along with the other added or created keys. A private key will be downloaded to your local storage.
+After you generate the keys, a public key will be added to the system and appear in the “SSH Keys” section, along with any other added or created keys. A private key will be downloaded to your local storage.
 
 <alert-element type="info" title="Info">
 
-When naming a public key, consider that the name can contain only Latin characters, underscores, spaces, and dots. The length must be between 3 and 63 characters.
+When naming a public key, consider that the name can contain only Latin characters, underscores, spaces, and dots. Its length must be between 3 and 63 characters.
 
 </alert-element>
 
 <tabset-element>
 
-#### Generate an SSH key when creating an instance 
+#### Generate an SSH key when creating a VM 
 
-When creating a virtual instance, in Step 8, you'll be asked to choose one of the following options in the “SSH key” section:
+When <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance" target="_blank"<creating a Virtual Machine</a>, in Step 8, you'll be asked to choose one of the following options in the “SSH key” section:
 
-- **Select SSH key**: add a key that's already stored in the Gcore Customer Portal by selecting it from the dropdown list.
-- **Add a new SSH key**: an existing key generated via CLI tools or SSH client.
-- **Generate an SSH key**: create a new key right there. 
+- **Select SSH key**: Add a key that's already stored in the Gcore Customer Portal by selecting it from the dropdown list.
+- **Add a new SSH key**: Add an existing key generated via CLI tools or SSH client.
+- **Generate an SSH key**: Create a new key. 
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh/create-instance-ssh-keys.png" alt="SSH keys section with three options: select, generate, or add a new SSH key" width="80%">
 
-To generate a key right there, select the **Generate SSH key** link:
+To generate a key
+
+1\. Select the **Generate SSH key** link.
 
 1\. In a new dialog that opens, enter the key name to identify the key in the system. 
 
-2\. Select **Create SSH key** and save its public part locally.
+2\. Select **Create SSH key** and save the public key locally.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh/autogenerate-ssh-key.png" alt="A dialog with options to name and create an SSH key" width="80%">
  
 #### Generate an SSH key in the SSH Keys section 
 
-You generate a pair of SSH keys separately and then use a public key for authentication during the instance creation.
+You can generate a pair of SSH keys separately and then use a public key for authentication during the creation of your VM.
 
 To generate the keys:
 
 1\. In the Gcore Customer Portal, go to **Cloud** > **SSH Keys**.
 
-2\. Select **Autogenerate SSH key**.
+2\. Click **Autogenerate SSH key**.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh/cloud-ssh-keys-annotated.png" alt="An SSH keys tab in the Gcore Customer Portal" width="80%">
 
@@ -85,7 +87,7 @@ To generate the keys:
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh/autogenerate-ssh-key.png" alt="A dialog with options to name and create an SSH key" width="80%">
 
-4\. The public key will be added to an instance and its private part will be saved to your local storage.
+4\. The public key will be added to a Virtual Machine and the private key will be saved to your local storage.
 
 </tabset-element>
 
@@ -113,11 +115,11 @@ You'll be asked to enter the file where the keys should be saved. You can specif
 
 6\. Confirm the password by entering it again, or leave the field empty and press **Enter**. You can find your key in the default directory or in the custom location you've specified during the key creation.
 
-7\. The public key will be saved in the .pub file. You need to add this public key to an instance as described in the [Add a public SSH key to the Customer Portal](https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh#add-a-public-ssh-key-to-the-customer-portal) section. 
+7\. The public key will be saved in the .pub file. You need to add this public key to a VM as described in the [Add a public SSH key to the Customer Portal](https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh#add-a-public-ssh-key-to-the-customer-portal) section. 
 
 ### Windows Subsystem for Linux (WSL)
 
-You can use different distributions of Linux on Windows 11 to generate SSH keys and connect to the virtual instance. To do this, you need to have WSL installed on your device.  
+You can use different distributions of Linux on Windows 11 to generate SSH keys and connect to your VM. To do this, you need to have WSL installed on your device.  
 
 <alert-element type="info" title="Info">
 
@@ -130,7 +132,7 @@ To generate SSH keys via WSL:
 1\. Open Windows Command Prompt or PowerShell.
 
 2\. Launch a default Linux distribution inside your current command line by running this command: wsl.exe. 
-There are multiple ways to run a Linux distribution, you can read more about them here: <a href="https://learn.microsoft.com/en-us/windows/wsl/install#ways-to-run-multiple-linux-distributions-with-wsl" target="_blank">Ways to run multiple Linux distributions with WSL</a>.
+There are multiple ways to run a Linux distribution, you can read more about them in the following guide: <a href="https://learn.microsoft.com/en-us/windows/wsl/install#ways-to-run-multiple-linux-distributions-with-wsl" target="_blank">Ways to run multiple Linux distributions with WSL</a>.
 
 3\. Run the following command to generate a key pair:
 
@@ -161,7 +163,7 @@ Follow these instructions to generate SSH keys on Windows 10/11 devices:
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh/puttygen-connect.png" alt="Puttygen app with two options selected: RSA type of key and 2048 number of bits" width="80%">
 
-5\. Select **Generate**. While the key is being generated, move the cursor in the “Key” field until the key appears in the field.
+5\. Click **Generate**. While the key is being generated, move the cursor in the “Key” field until the key appears in the field.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh/puttygen-generate-key.png" alt="Puttygen app with a generated public key" width="80%">
 
@@ -180,10 +182,10 @@ If you generated your SSH keys via PuTTYgen or in the Gcore Customer Portal and 
 
 ## Add a public SSH key to the Customer Portal
 
-If you didn’t generate your SSH key via the Gcore Customer Portal, you need to add a public part of your key there. 
+If you didn’t generate your SSH key via the Gcore Customer Portal, you need to add your public key there. 
 To add the key: 
 
-1\. In the Customer Portal, go to **Cloud** > **SSH keys**.
+1\. In the Gcore Customer Portal, go to **Cloud** > **SSH keys**.
 
 2\. Select **Add SSH key**.
 
@@ -209,14 +211,14 @@ You can delete a public SSH key from the Gcore Customer Portal, share the key wi
 
 ### Delete SSH keys
 
-Only a user who created an SSH key or added its public part to the Gcore Customer Portal can delete that key.
+Only the user who created an SSH key or added the public key to the Gcore Customer Portal can delete that key.
 To delete the key:
 
-1\. In the Customer Portal, go to **Cloud** > **SSH keys**.
+1\. In the Gcore Customer Portal, go to **Cloud** > **SSH keys**.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh/cloud-ssh-keys.png" alt="An SSH keys tab in the Gcore Customer Portal" width="80%">
 
-2\. Find the SSH key you want to delete and click on the three-dot menu.  
+2\. Find the SSH key you want to delete and click on the three-dot icon.  
 
 3\. Select **Delete**. 
 
@@ -224,18 +226,18 @@ To delete the key:
 
 ## Stop sharing SSH keys
 
-After you add or generate an SSH key in the Customer Portal, its public part is automatically shared with all users in the same project. 
+After you add or generate an SSH key in the Customer Portal, the public key is automatically shared with all users in the same project. 
 
 To stop sharing the key and only make it visible to you:
 
-1\. In the Customer Portal, go to **Cloud** > **SSH keys**.
+1\. In the Gcore Customer Portal, go to **Cloud** > **SSH keys**.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh/cloud-ssh-keys.png" alt="An SSH keys tab in the Gcore Customer Portal" width="80%">
 
-2\. Find the SSH key you want to delete and click on the three-dot menu.  
+2\. Find the SSH key you want to delete and click on the three-dot icon.  
 
-3\. Select **Stop sharing**. 
+3\. Click **Stop sharing**. 
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh/stop-sharing-ssh-keys.png" alt="SSH key options menu displaying the Stop sharing button" width="80%">
 
-You can always start sharing the key again by following the same steps and selecting **Share** from the three-dot menu (`...`).
+You can always start sharing the key again by following the same steps and selecting **Share** from the three-dot icon.
