@@ -10,7 +10,7 @@ customUrl: /cloud/ssh-keys/convert-an-ssh-key-from-pem-to-ppk
 ---
 # Convert an SSH key to PPK format
 
-If you generated your SSH keys via PuTTYgen or in the Gcore Customer Portal and want to use PuTTY to connect to a virtual instance, you need to convert the keys to a .ppk format. 
+If you generated your SSH keys via PuTTYgen or in the Gcore Customer Portal and want to use PuTTY to connect to a Gcore Virtual Machine, you need to convert the keys to a .ppk format. 
 
 To do this, you can use PuTTYgen:
 
@@ -24,11 +24,11 @@ To do this, you can use PuTTYgen:
 
 <alert-element type="info" title="Info">
 
-By default, Windows will display only .ppk files. To view all file types, select **All files** in the "Open file" dialog.
+By default, Windows will display only .ppk files. To view all file types, click **All files** in the "Open file" dialog.
 
 </alert-element>
 
-4\. PuTTYgen will prompt you to confirm that you want to import the key. Select **OK**.
+4\. PuTTYgen will prompt you to confirm that you want to import the key. Click **OK**.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh/puttygen-convert-key.png" alt="Puttygen confirmation that the key has been imported" width="80%">
 
