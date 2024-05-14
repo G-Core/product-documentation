@@ -51,7 +51,7 @@ We provide you with an endpoint that can be integrated with your applications. W
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/about-inference-at-the-edge/smart-routing-diagram.png" alt="Diagram depicting Smart Routing technology" width="60%">
 
-❗️We also use <a href="https://gcore.com/docs/dns/dns-failover/about-dns-failover" target="_blank">Healthchecks</a> to monitor the availability of pods. If a pod in Amsterdam is experiencing downtime, the request will be automatically sent to the next geographically close inference region, such as Amsterdam-2. 
+We also use <a href="https://gcore.com/docs/dns/dns-failover/about-dns-failover" target="_blank">Healthchecks</a> to monitor the availability of pods. If a pod in Amsterdam is experiencing downtime, the request will be automatically sent to the next geographically close inference region, such as Amsterdam-2. 
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/about-inference-at-the-edge/smart-routing-map.png" alt="<Map depicting Smart Routing across locations" width="60%">
 
