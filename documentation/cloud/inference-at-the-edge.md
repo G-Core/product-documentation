@@ -31,7 +31,7 @@ The main idea behind Inference at the Edge is to bring pre-trained models as clo
 
 ## Getting started 
 
-❗️ For instructions on how to deploy AI models with the global intelligence pipeline, check out the <a href="" target="_blank">Deploy a model</a> guide. 
+For instructions on how to deploy AI models with the global intelligence pipeline, check out the <a href="https://gcore.com/docs/cloud/inference-at-the-edge/deploy-ai-model" target="_blank">Deploy a model</a> guide. 
 
 <alert-element type="info" title="Info">
  
@@ -49,11 +49,11 @@ Inference at the Edge combines two technologies:
 
 We provide you with an endpoint that can be integrated with your applications. When your users access this endpoint, their requests are delivered to the nearest Edge nodes. This is achieved through the use of a Smart Routing technology, which redirects requests to the nearest inference region where the pre-trained model is deployed.  
 
-<img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/about-inference-at-the-edge/smart-routing-diagram.png" alt="Diagram depicting Smart Routing technology" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/about-inference-at-the-edge/smart-routing-diagram.png" alt="Diagram depicting Smart Routing technology" width="60%">
 
 ❗️We also use <a href="https://gcore.com/docs/dns/dns-failover/about-dns-failover" target="_blank">Healthchecks</a> to monitor the availability of pods. If a pod in Amsterdam is experiencing downtime, the request will be automatically sent to the next geographically close inference region, such as Amsterdam-2. 
 
-<img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/about-inference-at-the-edge/smart-routing-map.png" alt="<Map depicting Smart Routing across locations" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/about-inference-at-the-edge/smart-routing-map.png" alt="<Map depicting Smart Routing across locations" width="60%">
 
 ## Use cases 
 
