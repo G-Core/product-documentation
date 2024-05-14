@@ -17,7 +17,7 @@ customUrl: /fastedge/getting-started/create-fastedge-apps
 
 This guide describes how to create a FastEdge app. Check out our <a href="https://gcore.com/docs/fastedge/getting-started" target="_blank">FastEdge overview</a> article to learn more about the product.
 
-You can create a FastEdge app in two ways: from a custom binary file or a pre-configured template. The steps will vary slightly depending on your preferred option—Stage 1 is only required for deploying custom binary files.  
+You can create a FastEdge app in two ways: from a custom binary file or a pre-configured template. If you chose the last option, skip the Stage 1. 
 
 ## Stage 1. Create a Wasm binary file
 
@@ -73,7 +73,7 @@ fastedge = "0.1"
 ```
 ### Step 3. Create a source
 
-For illustration, we’ll create a simple app that responds with "HTTP 200" and the text “*Hello world!*” in the response’s body.
+For illustration, we’ll create a simple app that responds with "HTTP 200" and the text “Hello world!” in the response’s body.
 
 Create a main source file src/lib.rs with the following content:
 
@@ -125,9 +125,9 @@ The resulting Wasm code will be written to the ```myapp/target/wasm32-wasi/relea
 
 7\. (Optional) If you want to add metadata to the configuration, click **Add parameters** and enter metadata as key-value pairs.
 
-8\. In the top-right corner of the screen, click **Save and deploy**. 
-
 <img src="https://assets.gcore.pro/docs/fastedge/create-apps/add-name-headers-metadata.png" alt="Add raw binary dialog" width="80%">
+
+8\. In the top-right corner of the screen, click **Save and deploy**. 
 
 Your application has been successfully deployed. You can now test its configuration and adjust it as described in the following steps.
 
@@ -137,7 +137,7 @@ Your application has been successfully deployed. You can now test its configurat
 
 1\. In the Gcore Customer Portal, navigate to **FastEdge** > **Create application**.  
 
-2\. In the **Launch from a template** section, select the preferred template: GitHub artifact or Markdown renderer. 
+2\. In the **Launch from a template** section, select the preferred template.
 
 <img src="https://assets.gcore.pro/docs/fastedge/create-apps/launch-from-template.png" alt="Section with Github and Markdown templates" width="80%">
 
@@ -179,7 +179,7 @@ You can also inspect and adjust the configuration from the **Dashboards** page:
 
 <img src="https://assets.gcore.pro/docs/fastedge/create-apps/test-app-from-dasboard.png" alt="A page with a link to an app" width="80%">
 
-For example, for the application configured in the Stage 1, the response will be “*Hello world!*” 
+For example, for the application configured in the Stage 1, the response will be “Hello world!” 
 
 ## Stage 4 (Optional). Add more functionality
 
