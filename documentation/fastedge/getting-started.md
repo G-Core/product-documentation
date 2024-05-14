@@ -7,8 +7,6 @@ toc:
    --1--How it works: "how-fastedge-works"
    --1--Benefits: "key-benefits"
    --1--Use cases: "fastedge-use-cases"
-   --1--Features: "fastedge-features"
-   --1--Limits: "fastedge-limits"
 pageTitle: Accelerate Your Web Apps with Serverless Edge Computing | Gcore
 pageDescription: Explore FastEdge for low-latency, scalable edge computing, enabling quick development, enhanced security, and personalized user experiences globally.
 ---
