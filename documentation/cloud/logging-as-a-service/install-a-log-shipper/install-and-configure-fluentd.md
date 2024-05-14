@@ -10,7 +10,7 @@ pageDescription: Install and configure Fluentd, a log shipping tool, to collect 
 ---
 # Install and configure Fluentd
 
-Fluentd is a data collection and processing tool that supports multiple input sources, data formats, and output destinations. This allows you to stream and consolidate logs from different applications into one unified format and send this information to the Gcore Managed Logging.
+Fluentd is a data collection and processing tool that supports multiple input sources, data formats, and output destinations. The tool allows you to stream and consolidate logs from different applications into one unified format and send this information to the Gcore Managed Logging.
 
 ## Install Fluentd
 
@@ -61,7 +61,7 @@ To send logs to Gcore Managed Logging, configure Fluentd with the <a href="https
 
 2\. Customize the highlighted values:
 
-- <span style="color:#FF5913">brokers</span>: Kafka servers where logs will be exported to.
+- <span style="color:#FF5913">brokers</span>: Kafka servers to which logs will be exported
 
 - <span style="color:#FF5913">username</span>: Your username
 
@@ -71,18 +71,18 @@ To send logs to Gcore Managed Logging, configure Fluentd with the <a href="https
 
 <alert-element type="tip" title="Tip">
  
-You can find your username, password, and topic name information in the Gcore Customer Portal on the **Logging** page. Learn more about logging configuration in <a href="https://gcore.com/docs/cloud/logging-as-a-service/configure-logging-and-view-your-logs" target="_blank">our dedicated guide</a>.
+You can find your username, password, and topic name information in the Gcore Customer Portal on the **Logging** page. Learn more about Managed Logging configuration in <a href="https://gcore.com/docs/cloud/logging-as-a-service/configure-logging-and-view-your-logs" target="_blank">our dedicated guide</a>.
  
 </alert-element>
 
-For more settings, check out the <a href="https://docs.fluentd.org/output/kafka" target="_blank">official Fluentd documentation</a>. 
+To explore more settings, check out the <a href="https://docs.fluentd.org/output/kafka" target="_blank">official Fluentd documentation</a>. 
 
 <expandable-element title="Descriptions of the “output” parameters">
 
-- **brokers**: Kafka servers where Fluentd logs will be sent to.
-- **scram_mechanism**: Authentication mechanism that verifies a username and password entered to sign in your logs storage.
-- **default_topic**: Kafka topic where logs will be exported to.
-- **sasl_over_ssl**: When this parameter is set to “true”, the system will use  SASL for authentication and SSL for secure communication. 
+- **brokers**: Kafka servers to which Fluentd logs will be sent
+- **scram_mechanism**: Authentication mechanism that verifies a username and password entered to sign in your logs storage
+- **default_topic**: Kafka topic to which logs will be exported
+- **sasl_over_ssl**: Use SASL for authentication and SSL for secure communication when set to “true”
 
 </expandable-element> 
 
