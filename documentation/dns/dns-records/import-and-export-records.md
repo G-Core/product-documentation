@@ -13,11 +13,11 @@ pageDescription: Learn how to import and export DNS records in the non-advanced 
 
 Use import and export to gain more control over DNS records and make domain migration easier.
 
-1\. Navigate the <a href="https://dns.gcore.com/zones" target="_blank">All zones</a> tab and select the domain zone into which you want to import the records.
+1\. Navigate to the <a href="https://dns.gcore.com/zones" target="_blank">All zones</a> tab and select the domain zone into which you want to import the records.
 
 <img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/dns-record-10.png" alt="All zones" width="70%">
 
-2\. Click **Export records** or **Import records** depending on your task and follow the appropriate instructions. 
+2\. Click **Export records** or **Import records**, depending on your task, and follow the appropriate instructions below. 
 
 <img src="https://assets.gcore.pro/docs/dns/dns-records/import-and-export-records/import-export-10.png" alt="Import or export records" width="80%">
 
@@ -51,7 +51,7 @@ $TTL 600
 
 ## Import
 
-After clicking **Import records**, the new pop-up appear. Specify the content of the BIND zone file for your domain or click **Upload zone file** to import records from the file with the .zone extension. Then click **Import**.
+After clicking **Import records**, a new pop-up will appear. Specify the content of the BIND zone file for your domain or click **Upload zone file** to import records from the file with the .zone extension. Then, click **Import**.
 
 <img src="https://assets.gcore.pro/docs/dns/dns-records/import-and-export-records/import-export-20.png" alt="Import records" width="80%">
 
