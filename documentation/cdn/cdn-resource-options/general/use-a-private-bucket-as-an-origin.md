@@ -79,7 +79,7 @@ A new page will open. Complete the remaining steps of the manual in the "Origin"
 
 <alert-element type="tip" title="Tip">
 
- To determine the region of your Gcore S3 storage, use the <a href="https://gcore.com/docs/storage/manage-s3-storage/s3-service-urls-and-default-region-names" target="_blank">S3 service URLs and default region names</a> guide.
+ To determine the region of your Gcore Object Storage, use the <a href="https://gcore.com/docs/storage/manage-s3-storage/s3-service-urls-and-default-region-names" target="_blank">S3 service URLs and default region names</a> guide.
 
 </alert-element>
 
@@ -87,7 +87,7 @@ More information about where to find the keys can be found in the "<a href="http
 
 6\. Enter the **Bucket name**.
 
-In the example below, we use the private bucket ```test-private``` in S3 Gcore storage with the endpoint (service URL) ```s-ed1.cloud.gcore.lu```. Configure an origin group as follows:
+In the example below, we use the private bucket ```test-private``` in Gcore Object Storage with the endpoint (service URL) ```s-ed1.cloud.gcore.lu```. Configure an origin group as follows:
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/private-bucket-conf.png" alt="Origin section" width="70%">
 
@@ -95,7 +95,7 @@ In the example below, we use the private bucket ```test-private``` in S3 Gcore s
 
 8\. Go to the resource settings and open the Host header option in the "HTTP headers" section. Specify the URL of your storage Hostname (the URL depends on your S3 provider) in the following format: 
 
-- For Gcore S3 storage: ```{bucket-name}.s-ed1.cloud.gcore.lu```
+- For Gcore Object Storage: ```{bucket-name}.s-ed1.cloud.gcore.lu```
 - For most other storages (including Amazon): ```{bucket-name}.s3.{region-code}.{storage-hostname}```
 
 **Note**: The bucket in the "Host header" is very important to specify for the security of the storage data outside the bucket.

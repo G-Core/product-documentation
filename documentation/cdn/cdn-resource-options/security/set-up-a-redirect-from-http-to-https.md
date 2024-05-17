@@ -9,11 +9,11 @@ pageDescription: A guide on how to set up a redirect from HTTP to HTTPS.
 ---
 # Set up a redirect from HTTP to HTTPS
 
-**Note**: only one redirect option can be enabled on a CDN Resource. 
+**Note**: only one redirect option can be enabled on a CDN resource. 
 
 You can redirect HTTP traffic to HTTPS via API (more info in the <a href="https://api.gcore.com/docs/cdn#tag/SSL-Certificates" target="_blank">API documentation</a>) or in the Gcore Customer Portal. 
 
-To enable the redirect option in the Gcore Customer Portal, go to the CDN Resources settings: 
+To enable the redirect option in the Gcore Customer Portal, go to the CDN resource settings: 
 
 1\. Get a free Let’s Encrypt certificate or add your SSL certificate in the General -> SSL section and save changes. More info in the guide "<a href="https://gcore.com/docs/cdn/ssl-certificates/add-an-ssl-certificate-to-deliver-content-over-https" target="_blank">Add an SSL certificate to deliver content over HTTPS</a>".
 

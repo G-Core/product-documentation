@@ -25,9 +25,9 @@ pageDescription: Explore how to manage content access in Gcore CDN using referre
   
 ## Referrer access policy
 
-Referer access policy is a restriction to publish the links to content on your site on other sites. To enable the option navigate to CDN Resources, click Settings of the Resource, choose the Advanced Settings tab, in the Access (Security) click Add policy and find Referer access policy. 
+Referer access policy is a restriction to publish the links to content on your site on other sites. To enable the option navigate to CDN resources, click Settings of the resource, choose the Advanced Settings tab, in the Access (Security) click Add policy and find Referer access policy. 
 
-By default, there are no restrictions by referer to your CDN Resource. You can set up allow or block Policy.
+By default, there are no restrictions by referer to your CDN resource. You can set up allow or block Policy.
 
 ### Allow referrer policy
 
@@ -55,21 +55,21 @@ You can specify domains only one by one via the Gcore Customer Portal. To add th
 
 ## Country access policy
 
-You can limit access to your content for listed countries. To enable the option navigate to CDN Resources, click Settings, open the Advanced Settings, in the Access (Security) click Add policy and find Country access policy. 
+You can limit access to your content for listed countries. To enable the option navigate to CDN resources, click Settings, open the Advanced Settings, in the Access (Security) click Add policy and find Country access policy. 
 
-By default, there are no restrictions by country to your CDN Resource. You can set up allow or block policy.  
+By default, there are no restrictions by country to your CDN resource. You can set up allow or block policy.  
 
 **Note**: You can specify countries only one by one via the Gcore Customer Portal. To add the list of the countries, use <a href="https://api.gcore.com/docs/cdn" target="_blank">API</a>.  
   
 ### Allow country access policy
 
-Access to the Resource is allowed for all the countries except for the specified in the field.
+Access to the resource is allowed for all the countries except for the specified in the field.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/Screenshot-2018-1-3_G-Core_Labs_Resources_Settings_1_.png" alt="Allow country access policy" width="80%">
 
 ### Block country access policy
 
-Access to the Resource is denied for all the countries except for the specified in the field.
+Access to the resource is denied for all the countries except for the specified in the field.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/Screenshot-2018-1-3_G-Core_Labs_Resources_Settings_2_.png" alt="Block country access policy" width="80%">
 
@@ -77,9 +77,9 @@ Access to the Resource is denied for all the countries except for the specified 
 
 You can limit access to your content to IP ranges.
 
-In CDN Resource settings choose Show Advanced Settings, in the Access (Security) click Add policy and find IP access policy. 
+In CDN resource settings choose Show Advanced Settings, in the Access (Security) click Add policy and find IP access policy. 
 
-By default, there are no restrictions by IP to your CDN Resource. You can set up Allow or Block policy.
+By default, there are no restrictions by IP to your CDN resource. You can set up Allow or Block policy.
 
 The option supports IPv4 and IPv6 addresses.
 
@@ -101,9 +101,9 @@ Access to the resource is denied for all the IPs except for the specified in the
 
 You can limit access to your CDN content for User agents, for example, for certain browsers, consoles or some other devices.
 
-In CDN Resource settings choose Show Advanced Settings, find Access (Security), click Add policy and find User agents policy. 
+In CDN resource settings choose Show Advanced Settings, find Access (Security), click Add policy and find User agents policy. 
 
-By default access to the Resource is allowed for all the kinds of User Agents. You can set up the allow or block policy.   
+By default access to the resource is allowed for all the kinds of User Agents. You can set up the allow or block policy.   
 
 ### Set via the Customer Portal
 

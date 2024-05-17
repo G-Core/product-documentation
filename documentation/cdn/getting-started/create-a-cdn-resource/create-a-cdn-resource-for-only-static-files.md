@@ -37,7 +37,7 @@ Fill in the fields to configure your CDN resource on the open page.
 
 1\. (Optional) Add **Description**. Enter an internal comment about the CDN resource. This will not affect any settings but will only be displayed in the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN resources</a> section next to the resource CNAME.
 
-<p id="origin">2. Configure the <b>Origin</b>. An Origin is a source (e.g., a website, an application, a private bucket) from where the CDN resource will request the content. In the Gcore customer portal, each origin is allocated to an origins group.</p> 
+<p id="origin">2. Configure the <b>Origin</b>. An Origin is a source (e.g., a website, an application, a private bucket) from where the CDN resource will request the content. In the Gcore Customer Portal, each origin is allocated to an origins group.</p> 
 
 There are two options for the Origin:
 
@@ -52,7 +52,7 @@ You can specify multiple domains by clicking the "+" icon. In Step 5, you can co
 
 ## Step 4. Set up DNS (add CNAME)
 
-Add a <a href="https://gcore.com/docs/dns/dns-records/supported-dns-record-types#cname-record" target="_blank">CNAME record</a> for the domain specified in Step 3 as cdn.yourwebsite.com. Do so in your DNS provider's personal account. For a CNAME value, enter a subdomain shown in your Gcore customer portal as ```*.gcdn.co```.
+Add a <a href="https://gcore.com/docs/dns/dns-records/supported-dns-record-types#cname-record" target="_blank">CNAME record</a> for the domain specified in Step 3 as cdn.yourwebsite.com. Do so in your DNS provider's personal account. For a CNAME value, enter a subdomain shown in your Gcore Customer Portal as ```*.gcdn.co```.
 
 For example, in the screenshot below the subdomain is ```cl-1ab23456.gcdn```.co, so, for the cdn.yourdomain.com subdomain, you need to create a CNAME record with the value ```cl-1ab23456.gcdn.co```. 
 

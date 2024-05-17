@@ -11,7 +11,9 @@ pageDescription: Discover how to specify custom HTTP status codes for content de
 ---
 # Configuring HTTP Status Codes for CDN-Hosted Content
 
-The “Set status code” option enables you to establish custom HTTP status codes for content hosted on a CDN, which can be applied based on a schedule. For instance, in accordance with certain jurisdictions' laws, children under the age of 16 are not allowed to access specific content past 22:00. To comply with this regulation, the “Set status code” option can be configured to either send a 403 error code to users or redirect them to a different page when they attempt to access this restricted content. The schedule should be set such that this code is only activated after 22:00.
+The “Set status code” option enables you to establish custom HTTP status codes for content hosted on the Gcore CDN, which can be applied based on a schedule. 
+
+For instance, in accordance with certain jurisdictions' laws, children under the age of 16 are not allowed to access specific content past 22:00. To comply with this regulation, the “Set status code” option can be configured to either send a 403 error code to users or redirect them to a different page when they attempt to access this restricted content. The schedule should be set such that this code is only activated after 22:00.
 
 You can configure the option in two ways:
 
