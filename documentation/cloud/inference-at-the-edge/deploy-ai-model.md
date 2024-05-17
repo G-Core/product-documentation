@@ -24,7 +24,7 @@ With Gcore Inference at the Edge, you can deploy a custom AI model by uploading 
 
 1\. In the Gcore Customer Portal, navigate to **Cloud** > **AI infrastructure**. 
 
-2\. Open the **Inference at Edge** page and click **Overview**.  
+2\. Open the **Inference at the Edge** page and click **Overview**.  
 
 3\. Click **Deploy custom model**.
 

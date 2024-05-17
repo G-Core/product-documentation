@@ -19,13 +19,13 @@ You can add multiple API keys to a single deployment, and the same API key can b
 
 ## Create an API key  
 
-You can create an API key in different ways: during AI model deployment, in the settings of a deployed AI model, or on the **API keys** page. This section covers the last approach. 
+You can create an API key in different ways: <a href="https://gcore.com/docs/cloud/inference-at-the-edge/deploy-ai-model" target="_blank">during AI model deployment</a>, <a href="https://gcore.com/docs/cloud/inference-at-the-edge/manage-deployments" target="_blank">in the settings of a deployed AI model</a>, or on the **API keys** page. This section covers the last approach. 
 
 To create an API key and add it to the deployment: 
 
 1\. In the Gcore Customer Portal, navigate to **Cloud** > **AI infrastructure**. 
 
-2\. Open the **Inference at Edge** page and click **API keys**. 
+2\. Open the **Inference at the Edge** page and click **API keys**. 
 
 3\. Click **Create API key**.
 
@@ -69,7 +69,7 @@ You can view detailed information about an API key, change the deployments where
 
 1\. In the Gcore Customer Portal, navigate to **Cloud** > **AI infrastructure**. 
 
-2\. Open the **Inference at Edge** page and click **API keys**. 
+2\. Open the **Inference at the Edge** page and click **API keys**. 
 
 3\. Find the key you want to edit and click the three-dot icon to open the settings menu. 
 
@@ -101,7 +101,7 @@ If your key is close to expiring, you can modify the expiry date on this tab, en
 
 1\. In the Gcore Customer Portal, navigate to **Cloud** > **AI infrastructure**. 
 
-2\. Open the **Inference at Edge** page and click **API keys**. 
+2\. Open the **Inference at the Edge** page and click **API keys**. 
 
 3\. Find the key you want to remove and click the click the three-dot icon to open the settings menu. 
 

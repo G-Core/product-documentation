@@ -45,7 +45,7 @@ You can temporarily stop the deployment:
 
 1\. In the Gcore Customer Portal, navigate to **Cloud** > **AI infrastructure**. 
 
-2\. Open the **Inference at Edge** page and click **Deployments**.  
+2\. Open the **Inference at the Edge** page and click **Deployments**.  
 
 3\. Find the deployment you want to stop and click the three-dot icon to open the settings menu. 
 
@@ -61,7 +61,7 @@ To get comprehensive information about your deployment configuration and adjust 
 
 1\. In the Gcore Customer Portal, navigate to **Cloud** > **AI infrastructure**. 
 
-2\. Open the **Inference at Edge** page and click **Deployments**.  
+2\. Open the **Inference at the Edge** page and click **Deployments**.  
 
 3\. Find the needed deployment and click the three-dot icon next to the deployment you want to view. 
 
@@ -165,7 +165,7 @@ When you delete a deployment, you lose all its data. Deleted deployments can't b
 
 1\. In the Gcore Customer Portal, navigate to **Cloud** > **AI infrastructure**. 
 
-2\. Open the **Inference at Edge** page and click **Deployments**. 
+2\. Open the **Inference at the Edge** page and click **Deployments**. 
 
 3\. Find the deployment you want to delete and click the three-dot icon next to the deployment you want to view. 
 
