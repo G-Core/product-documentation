@@ -11,7 +11,7 @@ toc:
    --2--Add folders: "adding-folders"
    --2--Upload files: "uploading-files"
    --2--Delet folders and files: "deleting-folders-and-files"
-   --2--Copy URL or S3 URL: "copying-url-or-s3-url"
+   --2--Copy URL or S3 URL: "copying-url-or-object-storage-url"
    --1--Manage access: "managing-access"
    --1--Add lifecycle policy (for Luxembourg S3): "adding-lifecycle-policy-for-s3-in-luxembourg-only"
 pageTitle: A Comprehensive Guide on How to Manage Gcore Buckets | Gcore
@@ -21,7 +21,7 @@ pageDescription: Creating and configuring Gcore storage buckets, adding lifecycl
 
 ## Create a bucket
 
-1\. Navigate to the <a href="https://storage.gcore.com/storage/list" target="_blank">Storage</a> section. Click the relevant storage name.
+1\. Navigate to the <a href="https://storage.gcore.com/storage/list" target="_blank">Object Storage</a> section. Click the relevant storage name.
 
 <img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets-via-the-control-panel/manage-buckets-cp-10.png" alt="Open the Buckets interface" width="80%">
 
@@ -36,7 +36,7 @@ You can access the bucket interface by clicking the three dots on the right side
 - Between 3 to 63 characters in length.
 - Lowercase only.
 - No underscores, trailing dashes, consecutive dots, or a mix of dots and dashes; they conflict with DNS notation rules.
-- The bucket name must be unique within the entire Gcore S3 system, not just your account. If a name is already used, you'll receive a ```This bucket name already exists. Please use a different name``` error message.
+- The bucket name must be unique within the entire Gcore Object Storage system, not just your account. If a name is already used, you'll receive a ```This bucket name already exists. Please use a different name``` error message.
 
 Click **Create**.
 
@@ -106,7 +106,7 @@ To delete folders or files, <a href="https://gcore.com/docs/storage/manage-s3-st
 
 **Note**: Deleting a folder will also delete any nested files within it.
 
-### Copying URL or S3 URL
+### Copying URL or Object Storage URL
 
 To copy the links of certain files, <a href="https://gcore.com/docs/storage/manage-s3-storage/manage-buckets-via-the-control-panel#authorization" target="_blank">authorize access to your bucket</a>, select objects and click the relevant buttons: **Copy S3 URL** or **Copy URL**.
 
@@ -121,7 +121,7 @@ For instance, the links for the file ```image 3972.png``` will look like this:
 
 ## Managing access
 
-If you wish to <a href="https://gcore.com/docs/storage/use-storage-as-the-origin-for-your-cdn-resource" target="_blank">use S3 storage as the origin for a CDN resource</a> or to make files accessible via an S3 URL, you must allow public (HTTP) access to your bucket. To do this, go to the bucket interface, click on the three dots on the right, and click **Public access to all files**. Then, click **Apply** in the pop-up window.
+If you wish to use <a href="https://gcore.com/docs/storage/use-storage-as-the-origin-for-your-cdn-resource" target="_blank">Gcore Object Storage as the origin for a CDN resource</a> or to make files accessible via an Object Storage URL, you must allow public (HTTP) access to your bucket. To do this, go to the bucket interface, click on the three dots on the right, and click **Public access to all files**. Then, click **Apply** in the pop-up window.
 
 
 <img src="https://assets.gcore.pro/docs/storage/manage-s3-storage/manage-buckets-via-the-control-panel/http-access-s3-bucket.png" alt="Configure HTTP access to all files" width="80%">

@@ -35,7 +35,7 @@ This is how you work with the presigned URLs:
 
 A presigned URL doesn't require user's authentication. This means that everyone with a valid temporary link can access the file. For example, if you send such a link to a user who then forwards it to another person, that person will also be able to view and download files.
 
-To protect the temporary link, you can restrict access by IP in the Access Policy settings. For the appropriate code, refer to the following article: <a href="https://gcore.com/docs/storage/manage-s3-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/configure-access-control-on-s3-storage-with-aws-cli-and-s3cmd" target="_blank">Configure ACL and Policy for S3 storage</a>.
+To protect the temporary link, you can restrict access by IP in the Access Policy settings. For the appropriate code, refer to the following article: <a href="https://gcore.com/docs/storage/manage-s3-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/configure-access-control-on-s3-storage-with-aws-cli-and-s3cmd" target="_blank">Configure ACL and Policy for Object Storage</a>.
 
 ## Generate a presigned URL
 
@@ -56,7 +56,7 @@ where:
 - *example-bucket* — the name of the bucket that hosts the file,
 - *image.jpg* — the file you want to share,
 - *60480* — link lifespan in seconds, the maximum is 7 days,
-- *s-dt2.cloud.gcore.lu* — the hostname of your storage that can be found in the "Details" of the storage in the Gcore Customer Portal.
+- *s-dt2.cloud.gcore.lu* — the hostname of your storage that can be found in the "Details" of the Object Storage in the Gcore Customer Portal.
 
 3\. Press "Enter". 
 

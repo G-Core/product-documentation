@@ -28,7 +28,7 @@ With <a href="https://gcore.com/storage" target="_blank">Gcore Object Storage</a
 
 ## AWS CLI 
 
-AWS CLI, or the AWS Command Line Interface, is the software for managing AWS services and has been integrated with our Storage for managing your buckets using commands from <a href="https://docs.aws.amazon.com/cli/latest/reference" target="_blank">Amazon's official documentation</a>.
+AWS CLI, or the AWS Command Line Interface, is the software for managing AWS services and has been integrated with our Object Storage for managing your buckets using commands from <a href="https://docs.aws.amazon.com/cli/latest/reference" target="_blank">Amazon's official documentation</a>.
 
 ### Install AWS CLI 
 

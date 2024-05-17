@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: Manage S3 storage
+displayName: Manage Object Storage
 published: true
 order: 50
 ---

@@ -5,25 +5,25 @@ published: true
 order: 40
 toc:
    --1--Use as an origin: "use-as-an-origin"
-   --2--S3 storage: "use-s3-storage"
+   --2--Object Storage: "use-object-storage"
    --2--SFTP storage: "use-sftp-storage"
    --1--Request content from CDN: "request-content-from-cdn"
-   --2--S3 storage is the origin: "s3-storage-is-the-origin"
+   --2--Object Storage is the origin: "object-storage-is-the-origin"
    --2--SFTP storage is the origin: "sftp-storage-is-the-origin"
-pageTitle: CDN Resource Setup with Storage | Gcore
-pageDescription: A step-by-step guide to using S3 or SFTP storage as the origin for your CDN resource.
+pageTitle: CDN Resource Setup with Gcore Object Storage | Gcore
+pageDescription: A step-by-step guide to using Object Storage or SFTP Storage as the origin for your CDN resource.
 ---
 # Use storage as the origin for your CDN resource
 
 ## Use as an origin
 
-### Use S3 storage
+### Use Object Storage
 
 1\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN</a> tab and press **Create CDN resource**.
 
 <img src="https://assets.gcore.pro/docs/storage/use-storage-with-cdn/create-cdn-resource-10.png" alt="CDN resource">
 
-2\. Select which S3 storage you want to use as a content source: public or private - and follow the instructions.
+2\. Select which Object Storage you want to use as a content source: public or private - and follow the instructions.
 
 <expandable-element title="Public">
 
@@ -33,7 +33,7 @@ pageDescription: A step-by-step guide to using S3 or SFTP storage as the origin 
 
 2\. Select **None** in the "Type of origin authentication" option. 
 
-3\. Specify the path to your bucket in following format: ```http(s)://<bucket-name>.<location>.cloud.gcore.lu```. More details in the "<a href="https://gcore.com/docs/storage/use-storage-as-the-origin-for-your-cdn-resource#s3-storage-is-the-origin">Request content directly from the S3 storage</a>" section below. 
+3\. Specify the path to your bucket in following format: ```http(s)://<bucket-name>.<location>.cloud.gcore.lu```. More details in the "<a href="https://gcore.com/docs/storage/use-storage-as-the-origin-for-your-cdn-resource#s3-storage-is-the-origin">Request content directly from the Object Storage</a>" section below. 
 
 4\. Specify custom domain, e.g., *cdn.example.com*. Read more about the personal domain setup in the "<a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">Create and set a custom domain for the content delivery via CDN</a>" guide.
 
@@ -64,7 +64,7 @@ If your storage name is 12345-test and your hostname is *ams.origin.gcdn.co*, yo
 
 ## Request content from CDN
 
-### S3 storage is the origin
+### Object Storage is the origin
 
 An addressing scheme where you specify the bucket at the beginning ```<bucket-name>.<location>.cloud.gcore.lu``` allows you to increase the security of your CDN usage because you hide the Hostname of your repository.
 

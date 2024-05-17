@@ -9,7 +9,7 @@ pageDescription: Table of correspondence between storage locations and service U
 ---
 # S3 service URLs and default region names
 
-You can utilize any software compatible with S3 to work with S3 storage.
+You can utilize any software compatible with S3 to work with Gcore Object Storage.
 
 To connect to your storage or carry out any operation, it is recommended that you use the service URLs and default region names.
 
