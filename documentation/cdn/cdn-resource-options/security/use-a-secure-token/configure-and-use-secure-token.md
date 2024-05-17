@@ -24,7 +24,7 @@ Do the first three steps in Gcore Customer Portal on the **Secure token** tab. 
 
 2\. Enter a key that contains between 6 and 32 characters. 
 
-3\. If you want your content to be accessible from any IP address, leave the "Add a client's IP to the token" unchecked. If you want to make your content available only from one IP, check the checkbox (you will specify the whitelisted IP address later at Step 4). 
+3\. If you want your content to be accessible from any IP address, leave the "Add a client's IP to the token" unchecked. If you want to make your content available only from one IP, check the checkbox (you will specify the allowlisted IP address later at Step 4). 
 
 4\. Do this step on your origin server. Insert a script on your website which generates secure links. The generated links should look like as below:
 
@@ -33,7 +33,7 @@ Do the first three steps in Gcore Customer Portal on the **Secure token** tab. 
 Where:
 
 - ```http://cdn.example.com/photo.jpeg``` is the path to the file,
-- ```DMF1ucDxtHCxwYQ``` is the output of the "MD5(String)" hash function, where *String* is the parameter obtained by merging elements: ```<link expiry time><file path><whitelisted IP address><key from Step 2>```,
+- ```DMF1ucDxtHCxwYQ``` is the output of the "MD5(String)" hash function, where *String* is the parameter obtained by merging elements: ```<link expiry time><file path><allowlisted IP address><key from Step 2>```,
 - ```2147483647``` is the time in the UNIX timestamp format until which the link is considered valid. 
 
 We have prepared script templates for PHP, Python, and OpenSSL — just copy one of them from the "[Scripts for link generation](https://gcore.com/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token#scripts-for-link-generation)" section below. The script will start creating secure links to the content. 
@@ -46,7 +46,7 @@ Moreover, make sure our CDN can access the content on your origin server regardl
 
 ### Generate links with a secure token in PHP 
 
-Below is the script for creating temporary links with the IP-based access restriction. The files will be accessible only from a whitelisted IP address and only until the link expires. 
+Below is the script for creating temporary links with the IP-based access restriction. The files will be accessible only from an allowlisted IP address and only until the link expires. 
 
 ```
 <?php
@@ -91,7 +91,7 @@ In these scripts:
 
 ### Generate links with a secure token in Python 
 
-The script for creating temporary links with the IP-based access restriction. The files will be accessible only from a whitelisted IP address and only until the link expires. 
+The script for creating temporary links with the IP-based access restriction. The files will be accessible only from an allowlisted IP address and only until the link expires. 
 
 ```
 import base64
@@ -134,7 +134,7 @@ In these scripts: 
 
 ### Generate a secure token in OpenSSL 
 
-The script for creating a secure token that limits the link lifespan and allows access only to a whitelisted IP:
+The script for creating a secure token that limits the link lifespan and allows access only to an allowlisted IP:
 
 ```
 echo -n '2147483647/images/1.jpg1.2.3.4 secret_key' | openssl md5 -binary | openssl base64 | tr +/ -_ | tr -d =

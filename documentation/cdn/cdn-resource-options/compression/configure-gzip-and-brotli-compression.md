@@ -18,7 +18,7 @@ pageDescription: A detailed guide on configuring GZip and Brotli compression on 
 
 ## About the option
 
-Our CDN supports Gzip and Brotli edge compression, so even if your origin server does not support it, you can still serve Gzip or Brotli content to your end users through this feature. When enabled, content is requested in an uncompressed format from the origin, compressed and cached on the edge, and then served to browsers that can support compression.
+Gcore CDN supports Gzip and Brotli edge compression, so even if your origin server does not support it, you can still serve Gzip or Brotli content to your end users through this feature. When enabled, content is requested in an uncompressed format from the origin, compressed and cached on the edge, and then served to browsers that can support compression.
 
 ## Compression methods
 

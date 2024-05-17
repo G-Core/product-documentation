@@ -45,10 +45,10 @@ Or go to the CDN section of the Performance menu.
 
 <img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-w3-total-cache-plugin/08.PNG" alt="CDN section " width="80%">  
   
-Enter your CNAME (you can find it in your Gcore <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>) in Replace Site's Hostname With. Then click **Save All Settings**. Ensure that <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">CNAME record has been configured</a> in a proper way before using it for integration.
+Enter your CNAME (you can find it in your Gcore <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Customer Portal</a>) in Replace Site's Hostname With. Then click **Save All Settings**. Ensure that <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">CNAME record has been configured</a> in a proper way before using it for integration.
 
 <img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/wordpress/integrate-cdn-resource-with-wordpress-w3-total-cache-plugin/09.PNG" alt="Configurations" width="80%">
 
-Integration has been completed! We highly recommend you to check the HTML code of your webpage to ensure that URLs have been rewritten properly from your original ones to CNAME from the control panel.
+Integration has been completed! We highly recommend you to check the HTML code of your webpage to ensure that URLs have been rewritten properly from your original ones to CNAME from the Customer Portal.
 
 To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.

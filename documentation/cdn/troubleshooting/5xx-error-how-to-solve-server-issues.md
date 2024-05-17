@@ -18,10 +18,11 @@ HTTP 5xx codes can be caused by an error on an origin server or CDN 
 
 ## Check for incidents or maintenances
 
-If you have noticed a significant increase of 5xx codes or received multiple complaints from users, we recommend checking our <a href="https://status.gcore.com" target="_blank">Status Page</a> for incidents or maintenance associated with the following services: 
+If you have noticed a significant increase of 5xx codes or received multiple complaints from users, we recommend checking our <a href="https://status.gcore.com" target="_blank">Status Page</a> for incidents or maintenance associated with the following services: 
 
-- CDN service,
-- other Gcore services (if you use one of them as an origin: Storage, VPS, Dedicated Server, Cloud). 
+- CDN service
+
+- Other Gcore services (if you use one of them as an origin: Object Storage, VPS, Dedicated Server, Edge Cloud). 
 
 ## Check your origin server
 
@@ -30,7 +31,7 @@ Make sure that your origin server is available.
 If the origin is not responding, or it is returning an HTTP error, contact your hosting provider or server’s administrator to solve this issue. 
 
 - HTTP 504 error usually appears when an origin server fails to respond in time: the CDN edge servers wait for 5 seconds and, if an origin server is not responding, they return a 504 error. Change the settings of your origin to respond in time. 
-- If you restrict access to your origin by IP or use DDoS Protection service,  make sure that you’ve whitelisted the CDN edge servers. Use an API request below to receive the list of IP: 
+- If you restrict access to your origin by IP or use DDoS Protection service,  make sure that you’ve whitelisted the CDN edge servers. Use an API request below to receive the list of IP: 
 
 ```
 curl -i -X GET https://api.gcore.com/cdn/public-ip-list

@@ -147,7 +147,7 @@ Read about this type of origin in our article about <a href="https://gcore.com/d
 
 **Note**: If you selected **Amazon S3 storage** in step #1, go to the next step. If you selected **Other**, go to the resource settings and open the <a href="https://gcore.com/docs/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header" target="_blank">Host header</a> option in the "HTTP headers" section. Specify the URL of your storage Hostname (the URL depends on your S3 provider) in the following format:
 
-- For Gcore S3 storage: ```s-ed1.cloud.gcore.lu```
+- For Gcore Object Storage: ```s-ed1.cloud.gcore.lu```
 - For most other storages: ```s3.{region-code}.{storage hostname}```
 
 Don’t forget to save the changes.

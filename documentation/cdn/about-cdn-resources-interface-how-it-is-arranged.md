@@ -17,7 +17,7 @@ pageDescription: Explanation of how the CDN resources tab is arranged.
 
 ## What is the CDN resources tab?
 
-<a href="https://cdn.gcore.com/resources/list" target="_blank">CDN resources</a> is a tab where you can create a CDN resource and manage the already created resources.
+<a href="https://cdn.gcore.com/resources/list" target="_blank">CDN resources</a> is a page in the Gcore Customer Portal where you can create a CDN resource and manage the already created resources.
 
 Also, this tab displays the following:
 

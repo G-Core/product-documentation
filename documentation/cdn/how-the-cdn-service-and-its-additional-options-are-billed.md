@@ -58,7 +58,7 @@ When "Origin Shielding" is on, a traffic plan counts three types of traffic:
 
 **If on the 2nd day of a month there is not enough money in your account to pay for services**, two options are possible:
 
-- You have no unpaid costs accrued in the previous month. The system charges your account for a plan fee and additional options. But if your account payment fails, the system will charge your linked payment instrument. If it fails too, the system will charge your linked payment instrument two more times: on the 3rd and 4th day of the month. If payment fails on the 5th, _all active services associated with your account_ will be suspended. For example, if you use "CDN" and "Storage", both services will stop working.
+- You have no unpaid costs accrued in the previous month. The system charges your account for a plan fee and additional options. But if your account payment fails, the system will charge your linked payment instrument. If it fails too, the system will charge your linked payment instrument two more times: on the 3rd and 4th day of the month. If payment fails on the 5th, _all active services associated with your account_ will be suspended. For example, if you use "CDN" and "Object Storage", both services will stop working.
 - You have unpaid costs accrued in the previous month. The system charges your account first for the unpaid costs, and then for a plan fee and additional options. But if your account payment fails, the system will charge your linked payment instrument. If it fails too, _all active services associated with your account_ will be immediately suspended. For example, if you use "CDN" and "Storage", both services will stop working.
 
 ## View your charges and payment history

@@ -14,8 +14,6 @@ pageDescription: A comprehensive guide on how to protect the entire CDN resource
 ---
 # Protect CDN resources with Basic WAF
 
-## What is Basic WAF (Beta)?
-
 Basic WAF is the firewall that protects you against the most widespread cyberthreats. The feature is available in beta testing and is available for free. The volume of requests per resource that can be safeguarded by the firewall may be subject to limitations.
 
 ## How to enable Basic WAF
