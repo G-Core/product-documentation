@@ -57,7 +57,7 @@ CDN
 </tr>
 <tr>
 <td rowspan="6">
-Cloud 
+Edge Cloud 
 </td>
 <td style="text-align: left">
 <a href="https://gcore.com/docs/cloud/kubernetes/about-gcore-kubernetes" target="_blank">Managed Kubernetes</a>
@@ -86,12 +86,12 @@ Cloud
 </tr>
 <tr>
 <td style="text-align: left">
-<a href="https://gcore.com/docs/cloud/managed-database-postgresql" target="_blank">Managed Database for PostgreSQL</a> 
+<a href="https://gcore.com/docs/cloud/managed-database-postgresql" target="_blank">Managed PostgreSQL</a> 
 </td>
 </tr>
 <tr>
 <td style="text-align: left">
-Other Cloud features (including Basic VM, Virtual Instances, Bare Metal) 
+Other Edge Cloud features (including Basic VM, Virtual Machines, Bare Metal) 
 </td>
 <td>
 48 hours 
@@ -99,7 +99,7 @@ Other Cloud features (including Basic VM, Virtual Instances, Bare Metal)
 </tr>
 <tr>
 <td>
-Storage 
+Object Storage 
 </td>
 <td>&nbsp;</td>
 <td>
@@ -108,7 +108,7 @@ Storage
 </tr>
 <tr>
 <td>
-DNS 
+Managed DNS 
 </td>
 <td>&nbsp;</td>
 <td>
@@ -117,7 +117,7 @@ DNS
 </tr>
 <tr>
 <td>
-Streaming 
+Video Streaming 
 </td>
 <td>&nbsp;</td>
 <td>
@@ -126,7 +126,7 @@ Streaming
 </tr>
 <tr>
 <td>
-Web Security 
+Web Application Security 
 </td>
 <td>&nbsp;</td>
 <td>
@@ -181,7 +181,7 @@ CDN resources, SSL certificates, created rules, and origin groups
 </tr>
 <tr>
 <td rowspan="5">
-Cloud 
+Edge Cloud 
 </td>
 <td style="text-align: left">
 Managed Kubernetes 
@@ -216,7 +216,7 @@ Logs and other data
 </tr>
 <tr>
 <td style="text-align: left">
-Managed Database for PostgreSQL 
+Managed PostgreSQL 
 </td>
 <td style="text-align: left">
 Databases and other data 
@@ -224,7 +224,7 @@ Databases and other data
 </tr>
 <tr>
 <td>
-Storage
+Object Storage
 </td>
 <td>&nbsp;</td>
 <td style="text-align: left">
@@ -233,7 +233,7 @@ Storages, buckets, all files and objects
 </tr>
 <tr>
 <td>
-DNS
+Managed DNS
 </td>
 <td>&nbsp;</td>
 <td style="text-align: left">
@@ -242,7 +242,7 @@ Zones and records
 </tr>
 <tr>
 <td>
-Streaming
+Video Streaming
 </td>
 <td>&nbsp;</td>
 <td style="text-align: left">
@@ -251,7 +251,7 @@ CDN resources and added media
 </tr>
 <tr>
 <td>
-Web Security
+Web Application Security
 </td>
 <td>&nbsp;</td>
 <td style="text-align: left">Resources under protection</td>

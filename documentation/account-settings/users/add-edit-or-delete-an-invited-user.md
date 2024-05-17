@@ -44,14 +44,14 @@ You can invite both existing Gcore users and users who are not yet registered wi
 
 6\. Select the CDN service and Customer Portal (IAM) role. Learn more about <a href="https://gcore.com/docs/account-settings/users/about-users" target="_blank">which actions are available for each role</a>. 
 
-**Note**: Depending on the role selected in IAM/CDN, the role for Cloud will be automatically selected. For example, if you want to create a user with the Administrator CDN role, the user will also have the most access to the Cloud service.  
+**Note**: Depending on the role selected in IAM/CDN, the role for Edge Cloud will be automatically selected. For example, if you want to create a user with the Administrator CDN role, the user will also have the most access to the Edge Cloud service.  
 
-7\. Select the scope for the Cloud service. There are two options:
+7\. Select the scope for the Edge Cloud service. There are two options:
 
 - **Client**. The scope will be applied to all projects. You can either grant no access or assign the administrator role.
 - **Project**. You set up roles for each project. Select the project in the left part and the role on the right. Learn more about <a href="https://gcore.com/docs/cloud/getting-started/projects/users/user-roles-and-rights" target="_blank">which actions are available for each role</a>.
 
-8\. For other services (Billing, DNS, Storage, Streaming, Web security), the invited user will automatically be provided with full permissions (administrator role.)
+8\. For other services (Billing, Managed DNS, Object Storage, Video Streaming, Web Application Security), the invited user will automatically be provided with full permissions (administrator role).
 
 9\. Click **Invite user**.
 

@@ -8,7 +8,7 @@ toc:
    --1--Limitation notification: "limitation-notifications"
    --2--How does it work: "how-does-it-work"
    --2--Configure for CDN: "configure-for-cdn"
-   --2--Configure for Storage: "configure-for-storage"
+   --2--Configure for Storage: "configure-for-object-storage"
 pageTitle: Guide to Managing Service Notifications | Gcore
 pageDescription: Learn how to set up and manage your service notifications for CDN and Storage services, allowing for better control over traffic consumption and system usage.
 ---
@@ -47,7 +47,7 @@ You can choose the settings for either a single notification or an entire group.
 
 ### How does it work
 
-Limitation notifications are available for CDN and Storage (bucket) services.  
+Limitation notifications are available for CDN and Object Storage (bucket) services.  
 
 Traffic or another counting starts on the first day of each month.
 
@@ -67,7 +67,7 @@ To do it, specify the traffic limit in the Traffic consumption level field. Clic
 
 For example, there are three users in the account: User A, User B, and User C. Suppose, User A is the first to turn on this notification and sets the limit to 100 GB. User B and User C will see that the traffic consumption level has already been set by someone and is equal to 100 GB. User B agrees with the current traffic consumption level and doesn't change anything. User B believes that the traffic consumption level equal to 100 GB should be changed and set it in his personal account to 70 GB. As a result of User B's changes, the other two users will also receive notifications when the traffic consumption level reaches 70 GB.
 
-### Configure for Storage
+### Configure for Object Storage
 
 You can receive notifications about:
 
@@ -76,7 +76,7 @@ You can receive notifications about:
 - used space
 - traffic consumption.
 
-To do it go to the Storage notification section, select Storage and Bucket (optional) and specify the limit. Then click **Save**.
+To do it go to the **Storage notifications** section, select Storage and Bucket (optional) and specify the limit. Then click **Save**.
 
 <img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/storage-notifications-30.png" alt="Configure for Storage" width="70%">
 

@@ -37,32 +37,32 @@ To find information on specific services and tariffs, check <a href="https://gco
 <td style="text-align: left">14 days or 300 GB, whichever ends first</td>
 </tr>
 <tr>
-<td style="text-align: left">Cloud (AI, Basic VM, IaaS Protection)</td>
+<td style="text-align: left">Edge Cloud (AI, Basic VM, IaaS Protection)</td>
 <td style="text-align: left">-</td>
 <td style="text-align: left">-</td>
 </tr>
 <tr>
-<td style="text-align: left">Streaming Platform</td>
+<td style="text-align: left">Video Streaming</td>
 <td style="text-align: left">+</td>
 <td style="text-align: left">14 days and 10 minutes of uploaded video</td>
 </tr>
 <tr>
-<td style="text-align: left">Web Security</td>
+<td style="text-align: left">Web Application Security</td>
 <td style="text-align: left">+</td>
 <td style="text-align: left">3 days</td>
 </tr>
 <tr>
-<td style="text-align: left">DNS (Free)</td>
+<td style="text-align: left">Managed DNS (Free)</td>
 <td style="text-align: left">-</td>
 <td style="text-align: left">The free plan has no trial period or limitations</td>
 </tr>
 <tr>
-<td style="text-align: left">DNS (Pro)</td>
+<td style="text-align: left">Managed DNS (Pro)</td>
 <td style="text-align: left">+</td>
 <td style="text-align: left">14 days</td>
 </tr>
 <tr>
-<td style="text-align: left">Storage</td>
+<td style="text-align: left">Object Storage</td>
 <td style="text-align: left">-</td>
 <td style="text-align: left">-</td>
 </tr>
