@@ -5,30 +5,30 @@ published: true
 order: 20
 toc:
    --1--Create a storage: "create-a-storage"
-   --2--S3 storage: "s3"
+   --2--Object storage: "object-storage"
    --2--SFTP storage: "sftp"
    --1--Storage status indicator: "storage-status-indicator"
-pageTitle: S3 and SFTP storage creation | Gcore
-pageDescription: Step-by-step instructions on how to create S3 and SFTP storage.
+pageTitle: Gcore Object Storage and SFTP Storage creation | Gcore
+pageDescription: Step-by-step instructions on how to create Object Storage and SFTP storage.
 ---
-# Create an S3 or SFTP storage
+# Create an Object or SFTP storage
 
 ## Create a storage
 
-To create a storage, click the **Add new storage** button in the upper-right corner.
+To create a storage:
 
-Specify storage name and location.
+1\. In the Gcore Customer Portal, click the **Add new storage** button in the top-right corner of the screen.
 
-The location name has two parts: storage type (S3 or SFTP) and city/region where the data center is located. SFTP locations are added/removed from the list automatically depending on the amount of free storage space available.
+2\. Specify storage name and location. The location name has two parts: storage type (Object Storage or SFTP) and city/region where the data center is located. SFTP locations are added/removed from the list automatically depending on the amount of free storage space available.
 
-### S3
+### Object Storage
 
-**Note**: There are several limits for S3 storages:
+**Note**: There are several limits for Object Storage:
 
 1.  You can create maximum 1000 buckets. 
 2.  You can place maximum 1 mln objects in one bucket. However, we recommend placing no more than 100 thou objects, so storage performance and availability be higher. If you want to place more than 100 thou ones, it would be better to store them in different buckets. 
 
-To create an S3 storage, specify its name and location, and click the **Create** button.
+To create an Object Storage, specify its name and location, and click the **Create** button.
 
 You will see both access and secret key in the next window. Copy and save them since we show the keys only once.
 

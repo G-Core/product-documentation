@@ -14,16 +14,16 @@ toc:
    --2--Allow requests from a particular IP by policy: "allow-requests-from-a-particular-ip-by-policy"
    --2--Allow requests from a particular website by policy: "allow-requests-from-a-particular-website-by-policy"
    --2--Grant a user access to a bucket by policy: "grant-a-user-access-to-a-bucket-by-policy"
-pageTitle: ACL and Policy Configuration for S3 Storage | Gcore
-pageDescription: A detailed guide on configuring Access Control Lists (ACLs) and policies for S3 storage using AWS CLI and S3cmd.
+pageTitle: ACL and Policy Configuration for Object Storage | Gcore
+pageDescription: A detailed guide on configuring Access Control Lists (ACLs) and policies for Object Storage using AWS CLI and S3cmd.
 ---
 # Configure access control on S3 storage with AWS CLI and S3cmd
 
 ## What are ACLs?
 
-ACLs, or Access Control Lists, are sets of rules that determine who has access to objects stored in S3 and what actions they are allowed to perform on those objects. Proper configuration of ACLs helps ensure the security of stored data.
+ACLs, or Access Control Lists, are sets of rules that determine who has access to objects stored in Object Storage and what actions they are allowed to perform on those objects. Proper configuration of ACLs helps ensure the security of stored data.
 
-**Note**: The storage owner is responsible for configuring ACLs. Use the <a href="https://docs.aws.amazon.com/cli/latest/reference/s3api/index.html#cli-aws-s3api" target="_blank">AWS CLI</a> or <a href="https://s3tools.org/usage" target="_blank">S3cmd documentation commands</a> to manage ACLs for objects in Gcore S3 storage.
+**Note**: The storage owner is responsible for configuring ACLs. Use the <a href="https://docs.aws.amazon.com/cli/latest/reference/s3api/index.html#cli-aws-s3api" target="_blank">AWS CLI</a> or <a href="https://s3tools.org/usage" target="_blank">S3cmd documentation commands</a> to manage ACLs for objects in Gcore Object Storage.
 
 ACLs for objects can be configured for a variety of actions, such as:
 
@@ -42,11 +42,11 @@ Policies are JSON files that provide a more detailed way to control access to ob
 
 The maximum request size in the policy is 20 KB.
 
-**Note**: The storage owner is responsible for configuring policies. Use the <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/list_amazons3.html" target="_blank">AWS CLI documentation actions, conditions, and resource types</a> to manage policies for objects in Gcore S3 storage.
+**Note**: The storage owner is responsible for configuring policies. Use the <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/list_amazons3.html" target="_blank">AWS CLI documentation actions, conditions, and resource types</a> to manage policies for objects in Gcore Object Storage.
 
 ## Configure access via ACLs and policies
 
-We've provided examples of ACLs and policies for some common tasks in managing S3 storage.
+We've provided examples of ACLs and policies for some common tasks in managing Object Storage.
 
 In all the commands and JSON files, you need to replace the following with your values:
 
