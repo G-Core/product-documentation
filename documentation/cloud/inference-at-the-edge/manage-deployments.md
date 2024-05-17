@@ -101,11 +101,13 @@ Inference instances have many-to-many relationship. A single instance can have m
 
 To generate a key, select the **Create new API key** link: 
 
-1\. In a new dialog that opens, enter the key name to identify the key in the system. Optionally, you can also specify a description to give more context about the key and its usage. 
+1\. In a new dialog that opens, enter the key name to identify the key in the system.
 
-2\. As a security measure, you can specify the key expiration date. If you don’t want to regenerate the key and keep it indefinitely, select **Never expire**.  
+2\. (Optional) Add a description to give more context about the key and its usage. 
 
-3\. Click **Create**. 
+4\. As a security measure, you can specify the key expiration date. If you don’t want to regenerate the key and keep it indefinitely, select **Never expire**.  
+
+4\. Click **Create**. 
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/manage-deployments/create-api-key.png" alt="Create API key dialog with annotated steps" width="80%">
 
