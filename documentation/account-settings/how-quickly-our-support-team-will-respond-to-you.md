@@ -45,7 +45,7 @@ The request priority reflects the impact of service issues on your business. The
 | Low       | You have a general question concerning the infrastructure; you want to request a new function of the Gcore services or discuss an existing onen | Within 8 hours    |
 
 
-If you use CDN, Streaming platform, Cloud, Web protection, Storage, or DNS, you can set the priority of the request and manage it in the "Help center" while creating a request. For other services, priority is indicated in the chat on our website.
+If you use CDN, Video Streaming, Edge Cloud, Web Application Protection, Object Storage, or Managed DNS, you can set the priority of the request and manage it in the "Help center" while creating a request. For other services, priority is indicated in the chat on our website.
 
 To create a request, click **Help** and then **Help center**.
 
