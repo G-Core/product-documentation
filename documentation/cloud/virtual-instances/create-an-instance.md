@@ -32,10 +32,10 @@ Notice that regions are labeled either Core or Edge. This represents the region'
 
 \* Edge regions can be transformed into Core regions. Just [send us a request](mailto:support@gcore.com).
 
-3\. Configure the image. Select the type of hardware architecture on which your instance will be running:
+3\. Configure the image. Select the type of hardware architecture on which your VM will be running:
 
 - **x86-64**: This architecture is known for its broad compatibility with Linux operating systems and Windows distributions. It is commonly used in general purpose computing applications.
-- **ARM**: ARM architecture is designed for energy efficiency and low power consumption, which also supports strong performance, making it ideal for high-performance computing tasks. However, ARM instances are compatible with fewer OS distributions.
+- **ARM**: ARM architecture is designed for energy efficiency and low power consumption, which also supports strong performance, making it ideal for high-performance computing tasks. However, ARM Virtual Machines are compatible with fewer OS distributions.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/17.png" alt="Choose x86-64 or ARM architecture">
 
@@ -59,7 +59,13 @@ Choose one of the available flavors.
 
 *   **Shared**. VMs that share the core of a physical machine with other VMs. They are designed for workloads that don't require high performance.  
     Availability: Luxembourg
-**Note:** The bandwidth limit for the **Shared** flavor is up 100 Mbps. For other configurations it's up 1 Gbps.
+
+<alert-element type="info" title="Info">type="info" title="Info">
+
+ The bandwidth limit for the **Shared** flavor is up 100 Mbps. For other configurations it's up 1 Gbps.
+
+</alert-element>
+
 *   **Standard**. VMs best suited for a wide range of workloads that require predictable computing performance.  
     Availability: all regions.
 *   **vCPU**. CPU-optimized VMs. Ideal for CPU-intensive tasks that require predictable computing performance, such as batch processing of large data sets and video encoding.  
@@ -199,7 +205,7 @@ If you want to create a new firewall, refer to our article on <a href="https://g
 
 In addition to SSH keys, you can also set up a password for your Virtual Machine, as described in [step 9](#configure-user-data). Setting a password is necessary if you want to connect to a Linux VM <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel#connect-to-a-linux-instance" target="_blank">from the Customer Portal</a>. 
 
-#### Windows instance 
+#### Windows Virtual Machine 
 
 8\. Configure **Access** by setting a password for the Admin user.
 
