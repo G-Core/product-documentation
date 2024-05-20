@@ -13,7 +13,7 @@ From the left-side menu, you can access in-depth documentation about Object Stor
 
 - **Create Object Storage** – create Object Storage or SFTP storage
 - **Billing** – tariff plans, limits, billing rules
-- **Use Object Storag with CDN** – assign storage to a CDN resource origin, how the file requesting scheme works with a CDN
+- **Use Object Storage with CDN** – assign storage to a CDN resource origin, how the file requesting scheme works with a CDN
 - **Manage Object Storage** – manage buckets, control file visibility
 - **Manage SFTP storage** – connect to your storage using FileZilla, manage SSH keys in the Gcore Customer Portal
 - **Request files from Object Storage** – scheme for requesting uploaded files
