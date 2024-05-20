@@ -25,10 +25,10 @@ You can choose between multiple configurations and reservation plans that would 
 
 <table>
   <tr>
-    <th>Specification</th>
-    <th>Characteristics</th>
-    <th>Use case</th>
-    <th>Performance</th>
+    <th style="width:20%">Specification</th>
+    <th style="width:40%">Characteristics</th>
+    <th style="width:20%">Use case</th>
+    <th style="width:20%">Performance</th>
   </tr>
   <tr>
    <td style="text-align: left">H100 with Infiniband</td>
