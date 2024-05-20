@@ -26,8 +26,8 @@ You can choose between multiple configurations and reservation plans that would 
 <table>
   <tr>
     <th style="width:20%">Specification</th>
-    <th style="width:40%">Characteristics</th>
-    <th style="width:20%">Use case</th>
+    <th style="width:30%">Characteristics</th>
+    <th style="width:30%">Use case</th>
     <th style="width:20%">Performance</th>
   </tr>
   <tr>
@@ -50,6 +50,7 @@ You can choose between multiple configurations and reservation plans that would 
   <tr>
    <td style="text-align: left">A100 with Infiniband</td>
    <td style="text-align: left">
+
 - 8x Nvidia A100 80GB
 - 2 Intel Xeon 8468 
 - 2 TB RAM 
@@ -66,6 +67,7 @@ You can choose between multiple configurations and reservation plans that would 
   <tr>
    <td style="text-align: left">A100 without Infiniband</td>
    <td style="text-align: left">
+
 - 8x Nvidia A100 80GB
 - 2 Intel Xeon 8468 
 - 2 TB RAM 
@@ -83,6 +85,7 @@ You can choose between multiple configurations and reservation plans that would 
   <tr>
    <td style="text-align: left">L40</td>
    <td style="text-align: left">
+
 - 8x Nvidia L40S
 - 2x Intel Xeon 8468
 - 2TB RAM 
@@ -138,6 +141,7 @@ We provide two types of Graphcore servers: M2000 and Bow-2000. M2000 is a second
     <tr>
    <td style="text-align: left">AI compute</td>
    <td style="text-align: left">
+
 - 1.394 petaFLOPS AI (FP16.16) compute
 - 0.349 petaFLOPS FP32 compute
     </td>
@@ -145,6 +149,7 @@ We provide two types of Graphcore servers: M2000 and Bow-2000. M2000 is a second
     <tr>
    <td style="text-align: left">Memory</td>
    <td style="text-align: left">
+
 - Up to ~260 GB memory (3.6 GB In-Processor Memory™ plus up to 256 GB Streaming Memory™)
 - 261 TB/s memory bandwidth
     </td>
@@ -152,6 +157,7 @@ We provide two types of Graphcore servers: M2000 and Bow-2000. M2000 is a second
     <tr>
    <td style="text-align: left">Streaming Memory</td>
    <td style="text-align: left">
+
 - 2x DDR4-2400 DIMM 
 - DRAM options: 2x 64 GB (default SKU in Bow-2000 Founder’s Edition) or 2x 128 GB (contact sales)
     </td>
@@ -159,12 +165,14 @@ We provide two types of Graphcore servers: M2000 and Bow-2000. M2000 is a second
      <tr>
    <td style="text-align: left">IPU-Gateway</td>
    <td style="text-align: left">
+
 - 1x IPU-Gateway chip with integrated Arm Cortex quad-core A-series SoC
     </td>
     </tr>
       <tr>
    <td style="text-align: left">Internal SSD</td>
    <td style="text-align: left">
+
 - RoCEv2 NIC (1 PCIe G4 x16 FH¾L slot)
 - Standard QSFP ports
     </td>
@@ -172,6 +180,7 @@ We provide two types of Graphcore servers: M2000 and Bow-2000. M2000 is a second
     <tr>
    <td style="text-align: left">Mechanical</td>
    <td style="text-align: left">
+
 - 1U 19 inch chassis (Open Compute compliant)
 - 40 mm (width) x 728 mm (depth) x 1U (height)
 - Weight: 16.395 kg (36.14 lbs)
@@ -180,6 +189,7 @@ We provide two types of Graphcore servers: M2000 and Bow-2000. M2000 is a second
         <tr>
    <td style="text-align: left">Lights-outmanagement</td>
    <td style="text-align: left">
+
 - OpenBMC AST2520
     </td>
     </tr>
@@ -207,6 +217,7 @@ We provide two types of Graphcore servers: M2000 and Bow-2000. M2000 is a second
     <tr>
    <td style="text-align: left">AI compute</td>
    <td style="text-align: left">
+
 - 1 petaFLOPS AI compute 
 - 0.25 petaFLOPS FP32 compute
     </td>
@@ -214,6 +225,7 @@ We provide two types of Graphcore servers: M2000 and Bow-2000. M2000 is a second
     <tr>
    <td style="text-align: left">IPU-Fabric</td>
    <td style="text-align: left">
+
 - 8x IPU-Links supporting 2Tbps bi-directional bandwidth
 - 8x OSFP ports
 - Switch-less scalability
@@ -228,12 +240,14 @@ We provide two types of Graphcore servers: M2000 and Bow-2000. M2000 is a second
     <tr>
    <td style="text-align: left">IPU-Gateway</td>
    <td style="text-align: left">
+
 - 1 IPU-Gateway with integrated Arm Cortex quad-core A-series SoC
     </td>
     </tr>
      <tr>
    <td style="text-align: left">Streaming Memory</td>
    <td style="text-align: left">
+
 - 2 DDR4-2400 DIMM DRAM 
 - DRAM options: 2x 64GB (default SKU in IPU-M2000 Founder’s Edition) or 2x 128GB or 2x 256GB (contact sales)
     </td>
@@ -241,12 +255,14 @@ We provide two types of Graphcore servers: M2000 and Bow-2000. M2000 is a second
       <tr>
    <td style="text-align: left">Internal SSD</td>
    <td style="text-align: left">
+
 - 32GB eMMC 1TB M.2 SSD
     </td>
     </tr>
     <tr>
    <td style="text-align: left">Mechanical</td>
    <td style="text-align: left">
+
 - 1U 19 inch chassis (Open Compute compliant)
 - 440mm (width) x 728mm (depth) x 1U (height)
 - Weight: 16.395kg (36.14lbs)
@@ -255,6 +271,7 @@ We provide two types of Graphcore servers: M2000 and Bow-2000. M2000 is a second
         <tr>
    <td style="text-align: left">Lights-out management</td>
    <td style="text-align: left">
+   
 - OpenBMC AST2520 
 - 2x1GbE RJ45 management ports
     </td>
