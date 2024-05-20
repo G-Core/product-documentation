@@ -43,8 +43,7 @@ You can choose between multiple configurations and reservation plans that would 
 - 2x100Gbit/s Ethernet 
    </td>
    <td style="text-align: left">
-- Cost-effective solution optimized for machine learning.
-- Multi-user HPC cluster.
+- Optimized for distributed training of Large Language Models.
    </td>
    <td style="text-align: left">Ultimate performance for compute-intensive tasks that require a significant exchange of data by the network.</td> 
   </tr>
@@ -75,8 +74,9 @@ You can choose between multiple configurations and reservation plans that would 
 - 2x100Gbit/s Ethernet
    </td>
    <td style="text-align: left">
-- Inference models large models.
-- Fine-tuning and training for models
+- Training and fine-tuning of models on single nodes.
+- Inference for large models.
+- Multi-user HPC cluster.
    </td>
    <td style="text-align: left">The best solution for inference models that require more than 48GB vRAM.</td>
   </tr>
@@ -90,7 +90,7 @@ You can choose between multiple configurations and reservation plans that would 
 - 2x25Gbit/s Ethernet
    </td>
    <td style="text-align: left">
-- Inference models.
+- Model inference.
 - Fine-tuning for small and medium-size models.
    </td>
    <td style="text-align: left">The best solution for inference models that require less than 48GB vRAM.</td>
@@ -109,7 +109,7 @@ Our <a href="https://graphcore.ai/" target="_blank">Graphcore</a> infrastructure
 
 - **vIPU controller** (virtual Intelligence Processing Unit) is a service which configures M2000/Bow-2000 servers of your AI infrastructure to form a cluster. It's involved while the cluster is being created and while you’re changing its configuration (e.g. resizing partitions). You have access to vIPU controller via API and can rebuild the cluster if needed.
 
-For datasets storage, you can use Poplar server disk space, external S3 storage, or <a href="https://gcore.com/storage" target="_blank">our S3 storage</a>.
+For datasets storage, you can use Poplar server disk space, external S3 storage, or <a href="https://gcore.com/storage" target="_blank">Gcore Object Storage</a>.
 
 <img src="https://assets.gcore.pro/docs/cloud/ai-Infrustructure/about-our-ai-infrastructure/image__10_.png" alt="AI Infrastructure scheme" width="80%">
 
@@ -130,56 +130,57 @@ We provide two types of Graphcore servers: M2000 and Bow-2000. M2000 is a second
   <tr>
    <td style="text-align: left">IPU processors</td>
    <td style="text-align: left">
-   - 4x Bow IPU processors (IPU frequency 1.85 GHz)
-   - 5,888 IPU-Cores™ with independent code execution on 35,328 worker threads
+   
+- 4x Bow IPU processors (IPU frequency 1.85 GHz)
+- 5,888 IPU-Cores™ with independent code execution on 35,328 worker threads
     </td>
     </tr>
     <tr>
    <td style="text-align: left">AI compute</td>
    <td style="text-align: left">
-   - 1.394 petaFLOPS AI (FP16.16) compute
-   - 0.349 petaFLOPS FP32 compute
+- 1.394 petaFLOPS AI (FP16.16) compute
+- 0.349 petaFLOPS FP32 compute
     </td>
     </tr>
     <tr>
    <td style="text-align: left">Memory</td>
    <td style="text-align: left">
-   - Up to ~260 GB memory (3.6 GB In-Processor Memory™ plus up to 256 GB Streaming Memory™)
-   - 261 TB/s memory bandwidth
+- Up to ~260 GB memory (3.6 GB In-Processor Memory™ plus up to 256 GB Streaming Memory™)
+- 261 TB/s memory bandwidth
     </td>
     </tr>
     <tr>
    <td style="text-align: left">Streaming Memory</td>
    <td style="text-align: left">
-   - 2x DDR4-2400 DIMM 
-   - DRAM options: 2x 64 GB (default SKU in Bow-2000 Founder’s Edition) or 2x 128 GB (contact sales)
+- 2x DDR4-2400 DIMM 
+- DRAM options: 2x 64 GB (default SKU in Bow-2000 Founder’s Edition) or 2x 128 GB (contact sales)
     </td>
     </tr>
      <tr>
    <td style="text-align: left">IPU-Gateway</td>
    <td style="text-align: left">
-   - 1x IPU-Gateway chip with integrated Arm Cortex quad-core A-series SoC
+- 1x IPU-Gateway chip with integrated Arm Cortex quad-core A-series SoC
     </td>
     </tr>
       <tr>
    <td style="text-align: left">Internal SSD</td>
    <td style="text-align: left">
-   - RoCEv2 NIC (1 PCIe G4 x16 FH¾L slot)
-   - Standard QSFP ports
+- RoCEv2 NIC (1 PCIe G4 x16 FH¾L slot)
+- Standard QSFP ports
     </td>
     </tr>
     <tr>
    <td style="text-align: left">Mechanical</td>
    <td style="text-align: left">
-   - 1U 19 inch chassis (Open Compute compliant)
-   - 40 mm (width) x 728 mm (depth) x 1U (height)
-   - Weight: 16.395 kg (36.14 lbs)
+- 1U 19 inch chassis (Open Compute compliant)
+- 40 mm (width) x 728 mm (depth) x 1U (height)
+- Weight: 16.395 kg (36.14 lbs)
     </td>
     </tr>
         <tr>
    <td style="text-align: left">Lights-outmanagement</td>
    <td style="text-align: left">
-   - OpenBMC AST2520
+- OpenBMC AST2520
     </td>
     </tr>
 </thead>
@@ -198,63 +199,64 @@ We provide two types of Graphcore servers: M2000 and Bow-2000. M2000 is a second
   <tr>
    <td style="text-align: left">IPU processors</td>
    <td style="text-align: left">
-   - 4 Colossus GC200 IPU processors (IPU frequency 1.325GHz) 
-   - 5,888 IPU-Cores™ with independent code execution on 35,328 worker threads
+
+- 4 Colossus GC200 IPU processors (IPU frequency 1.325GHz) 
+- 5,888 IPU-Cores™ with independent code execution on 35,328 worker threads
     </td>
     </tr>
     <tr>
    <td style="text-align: left">AI compute</td>
    <td style="text-align: left">
-   - 1 petaFLOPS AI compute 
-   - 0.25 petaFLOPS FP32 compute
+- 1 petaFLOPS AI compute 
+- 0.25 petaFLOPS FP32 compute
     </td>
     </tr>
     <tr>
    <td style="text-align: left">IPU-Fabric</td>
    <td style="text-align: left">
-   - 8x IPU-Links supporting 2Tbps bi-directional bandwidth
-   - 8x OSFP ports
-   - Switch-less scalability
-   - Up to 8 M2000s in directly connected stacked systems
-   - Up to 16 M2000s in IPU-POD systems
-   - 2x IPU-GW-Links (IPU-Link extension over 100GbE)
-   - 2 QSFP28 ports
-   - Switch or switch-less scalability supporting 400Gbps bi-directional bandwidth
-   - Up to 1024 IPU-M2000s connected
+- 8x IPU-Links supporting 2Tbps bi-directional bandwidth
+- 8x OSFP ports
+- Switch-less scalability
+- Up to 8 M2000s in directly connected stacked systems
+- Up to 16 M2000s in IPU-POD systems
+- 2x IPU-GW-Links (IPU-Link extension over 100GbE)
+- 2 QSFP28 ports
+- Switch or switch-less scalability supporting 400Gbps bi-directional bandwidth
+- Up to 1024 IPU-M2000s connected
     </td>
     </tr>
     <tr>
    <td style="text-align: left">IPU-Gateway</td>
    <td style="text-align: left">
-   - 1 IPU-Gateway with integrated Arm Cortex quad-core A-series SoC
+- 1 IPU-Gateway with integrated Arm Cortex quad-core A-series SoC
     </td>
     </tr>
      <tr>
    <td style="text-align: left">Streaming Memory</td>
    <td style="text-align: left">
-   - 2 DDR4-2400 DIMM DRAM 
-   - DRAM options: 2x 64GB (default SKU in IPU-M2000 Founder’s Edition) or 2x 128GB or 2x 256GB (contact sales)
+- 2 DDR4-2400 DIMM DRAM 
+- DRAM options: 2x 64GB (default SKU in IPU-M2000 Founder’s Edition) or 2x 128GB or 2x 256GB (contact sales)
     </td>
     </tr>
       <tr>
    <td style="text-align: left">Internal SSD</td>
    <td style="text-align: left">
-   - 32GB eMMC 1TB M.2 SSD
+- 32GB eMMC 1TB M.2 SSD
     </td>
     </tr>
     <tr>
    <td style="text-align: left">Mechanical</td>
    <td style="text-align: left">
-   - 1U 19 inch chassis (Open Compute compliant)
-   - 440mm (width) x 728mm (depth) x 1U (height)
-   - Weight: 16.395kg (36.14lbs)
+- 1U 19 inch chassis (Open Compute compliant)
+- 440mm (width) x 728mm (depth) x 1U (height)
+- Weight: 16.395kg (36.14lbs)
     </td>
     </tr>
         <tr>
    <td style="text-align: left">Lights-out management</td>
    <td style="text-align: left">
-   - OpenBMC AST2520 
-   - 2x1GbE RJ45 management ports
+- OpenBMC AST2520 
+- 2x1GbE RJ45 management ports
     </td>
     </tr>
 </thead>
@@ -274,27 +276,27 @@ We provide two types of Graphcore servers: M2000 and Bow-2000. M2000 is a second
     <tr>
       <td style="text-align: left">Framework</td>
       <td style="text-align: left">TensorFlow, Keras, PyTorch, Paddle Paddle, ONNX, Hugging Face</td>
-      <td style="text-align: left">Your model is supposed to use one of these frameworks for correct work</td>
+      <td style="text-align: left">Your model is supposed to use one of these frameworks for correct work.</td>
     </tr>
     <tr>
       <td style="text-align: left">Data platforms</td>
       <td style="text-align: left">PostgreSQL, Hadoop, Spark, Vertika</td>
-      <td style="text-align: left">You can set up a connection between our cluster and your data platforms of these types to make them work together</td>
+      <td style="text-align: left">You can set up a connection between our cluster and your data platforms of these types to make them work together.</td>
     </tr>
     <tr>
       <td style="text-align: left">Programming languages</td>
       <td style="text-align: left">JavaScript, R, Swift, Python</td>
-      <td style="text-align: left">Your model is supposed to be written in one of these languages for correct work</td>
+      <td style="text-align: left">Your model is supposed to be written in one of these languages for correct work.</td>
     </tr>
     <tr>
       <td style="text-align: left">Resources for receiving and processing data</td>
       <td style="text-align: left">Storm, Spark, Kafka, PySpark, MS SQL, Oracle, MongoDB</td>
-      <td style="text-align: left">You can set up a connection between our cluster and your resources of these types to make them work together</td>
+      <td style="text-align: left">You can set up a connection between our cluster and your resources of these types to make them work together.</td>
     </tr>
     <tr>
       <td style="text-align: left">Exploration and visualization tools</td>
       <td style="text-align: left">Seaborn, Matplotlib, TensorBoard</td>
-      <td style="text-align: left">You can connect our cluster to these tools to visualize your model</td>
+      <td style="text-align: left">You can connect our cluster to these tools to visualize your model.</td>
     </tr>
   </tbody>
 </table> 
