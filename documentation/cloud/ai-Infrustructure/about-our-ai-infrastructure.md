@@ -25,73 +25,72 @@ You can choose between multiple configurations and reservation plans that would 
 
 <table>
   <tr>
-    <th style="width:20%">Specification</th>
-    <th style="width:30%">Characteristics</th>
-    <th style="width:30%">Use case</th>
-    <th style="width:20%">Performance</th>
+    <th>Specification</th>
+    <th>Characteristics</th>
+    <th>Use case</th>
+    <th>Performance</th>
   </tr>
   <tr>
    <td style="text-align: left">H100 with Infiniband</td>
    <td style="text-align: left">
-
-- 8x Nvidia H100 80GB
-- 2 Intel Xeon 8480+
-- 2TB RAM 
-- 2x 960GB 
-- 8x3.84 TB NVMe 
-- 3.2 Tbit/s Infiniband
-- 2x100Gbit/s Ethernet 
+   8x Nvidia H100 80GB <br> 
+   2 Intel Xeon 8480+ <br> 
+   2TB RAM <br> 
+   2x 960GB <br> 
+   8x3.84 TB NVMe <br> 
+   3.2 Tbit/s Infiniband <br> 
+   2x100Gbit/s Ethernet
    </td>
    <td style="text-align: left">
-- Optimized for distributed training of Large Language Models.
+   Optimized for distributed training of Large Language Models.
    </td>
    <td style="text-align: left">Ultimate performance for compute-intensive tasks that require a significant exchange of data by the network.</td> 
   </tr>
   <tr>
    <td style="text-align: left">A100 with Infiniband</td>
    <td style="text-align: left">
-- 8x Nvidia A100 80GB
-- 2 Intel Xeon 8468 
-- 2 TB RAM 
-- 2x 960GB SSD 
-- 8x3.84 TB NVMe 
-- 800Gbit/s Infiniband 
+   8x Nvidia A100 80GB <br> 
+   2 Intel Xeon 8468 <br> 
+   2 TB RAM <br> 
+   2x 960GB SSD <br> 
+   8x3.84 TB NVMe <br> 
+   800Gbit/s Infiniband
    </td>
    <td style="text-align: left">
-- Specifically crafted for AI and HPC tasks. 
-- Boasts fourth-generation Tensor Cores and the Transformer Engine.
+   Specifically crafted for AI and HPC tasks. <br> 
+   Boasts fourth-generation Tensor Cores and the Transformer Engine.
    </td>
    <td style="text-align: left">Well-balanced in performance and price.</td>
   </tr>
   <tr>
    <td style="text-align: left">A100 without Infiniband</td>
    <td style="text-align: left">
-- 8x Nvidia A100 80GB
-- 2 Intel Xeon 8468 
-- 2 TB RAM 
-- 2x 960GB SSD
-- 8x3.84 TB NVMe
-- 2x100Gbit/s Ethernet
+   8x Nvidia A100 80GB <br> 
+   2 Intel Xeon 8468 <br> 
+   2 TB RAM <br> 
+   2x 960GB SSD <br> 
+   8x3.84 TB NVMe <br> 
+   2x100Gbit/s Ethernet
    </td>
    <td style="text-align: left">
-- Training and fine-tuning of models on single nodes.
-- Inference for large models.
-- Multi-user HPC cluster.
+     Training and fine-tuning of models on single nodes. <br> 
+     Inference for large models. <br> 
+     Multi-user HPC cluster.
    </td>
    <td style="text-align: left">The best solution for inference models that require more than 48GB vRAM.</td>
   </tr>
   <tr>
    <td style="text-align: left">L40</td>
-   <td style="text-align: left">
-- 8x Nvidia L40S
-- 2x Intel Xeon 8468
-- 2TB RAM 
-- 4x7.68TB NVMe SSD 
-- 2x25Gbit/s Ethernet
+   <td style="text-align: left"> 
+   8x Nvidia L40S <br> 
+   2x Intel Xeon 8468 <br> 
+   2TB RAM <br> 
+   4x7.68TB NVMe SSD <br> 
+   2x25Gbit/s Ethernet
    </td>
    <td style="text-align: left">
-- Model inference.
-- Fine-tuning for small and medium-size models.
+   Model inference.<br> 
+   Fine-tuning for small and medium-size models.
    </td>
    <td style="text-align: left">The best solution for inference models that require less than 48GB vRAM.</td>
   </tr>
@@ -129,59 +128,55 @@ We provide two types of Graphcore servers: M2000 and Bow-2000. M2000 is a second
 <tbody>
   <tr>
    <td style="text-align: left">IPU processors</td>
-   <td style="text-align: left">
-   
-- 4x Bow IPU processors (IPU frequency 1.85 GHz)
-- 5,888 IPU-Cores™ with independent code execution on 35,328 worker threads
+   <td style="text-align: left"> 
+     4x Bow IPU processors (IPU frequency 1.85 GHz) <br> 
+     5,888 IPU-Cores™ with independent code execution on 35,328 worker threads
     </td>
     </tr>
     <tr>
    <td style="text-align: left">AI compute</td>
    <td style="text-align: left">
-- 1.394 petaFLOPS AI (FP16.16) compute
-- 0.349 petaFLOPS FP32 compute
+     1.394 petaFLOPS AI (FP16.16) compute <br> 
+     0.349 petaFLOPS FP32 compute
     </td>
     </tr>
     <tr>
    <td style="text-align: left">Memory</td>
    <td style="text-align: left">
-- Up to ~260 GB memory (3.6 GB In-Processor Memory™ plus up to 256 GB Streaming Memory™)
-- 261 TB/s memory bandwidth
+     Up to ~260 GB memory (3.6 GB In-Processor Memory™ plus up to 256 GB Streaming Memory™) <br> 
+     261 TB/s memory bandwidth
     </td>
     </tr>
     <tr>
    <td style="text-align: left">Streaming Memory</td>
    <td style="text-align: left">
-- 2x DDR4-2400 DIMM 
-- DRAM options: 2x 64 GB (default SKU in Bow-2000 Founder’s Edition) or 2x 128 GB (contact sales)
+     2x DDR4-2400 DIMM <br> 
+     DRAM options: 2x 64 GB (default SKU in Bow-2000 Founder’s Edition) or 2x 128 GB (contact sales)
     </td>
     </tr>
      <tr>
    <td style="text-align: left">IPU-Gateway</td>
-   <td style="text-align: left">
-- 1x IPU-Gateway chip with integrated Arm Cortex quad-core A-series SoC
+   <td style="text-align: left"> 1x IPU-Gateway chip with integrated Arm Cortex quad-core A-series SoC
     </td>
     </tr>
       <tr>
    <td style="text-align: left">Internal SSD</td>
    <td style="text-align: left">
-- RoCEv2 NIC (1 PCIe G4 x16 FH¾L slot)
-- Standard QSFP ports
+     RoCEv2 NIC (1 PCIe G4 x16 FH¾L slot) <br> 
+     Standard QSFP ports
     </td>
     </tr>
     <tr>
    <td style="text-align: left">Mechanical</td>
-   <td style="text-align: left">
-- 1U 19-inch chassis (Open Compute compliant)
-- 40 mm (width) x 728 mm (depth) x 1U (height)
-- Weight: 16.395 kg (36.14 lbs)
+   <td style="text-align: left"> 
+     1U 19-inch chassis (Open Compute compliant) <br> 
+     40 mm (width) x 728 mm (depth) x 1U (height) <br> 
+     Weight: 16.395 kg (36.14 lbs)
     </td>
     </tr>
         <tr>
    <td style="text-align: left">Lights-outmanagement</td>
-   <td style="text-align: left">
-- OpenBMC AST2520
-    </td>
+   <td style="text-align: left"> OpenBMC AST2520</td>
     </tr>
 </thead>
 </table>         
@@ -198,65 +193,59 @@ We provide two types of Graphcore servers: M2000 and Bow-2000. M2000 is a second
 <tbody>
   <tr>
    <td style="text-align: left">IPU processors</td>
-   <td style="text-align: left">
-
-- 4 Colossus GC200 IPU processors (IPU frequency 1.325GHz) 
-- 5,888 IPU-Cores™ with independent code execution on 35,328 worker threads
+   <td style="text-align: left"> 
+     4 Colossus GC200 IPU processors (IPU frequency 1.325GHz) <br> 
+     5,888 IPU-Cores™ with independent code execution on 35,328 worker threads
     </td>
     </tr>
     <tr>
    <td style="text-align: left">AI compute</td>
    <td style="text-align: left">
-- 1 petaFLOPS AI compute 
-- 0.25 petaFLOPS FP32 compute
+     1 petaFLOPS AI compute <br> 
+     0.25 petaFLOPS FP32 compute
     </td>
     </tr>
     <tr>
    <td style="text-align: left">IPU-Fabric</td>
-   <td style="text-align: left">
-- 8x IPU-Links supporting 2Tbps bi-directional bandwidth
-- 8x OSFP ports
-- Switch-less scalability
-- Up to 8 M2000s in directly connected stacked systems
-- Up to 16 M2000s in IPU-POD systems
-- 2x IPU-GW-Links (IPU-Link extension over 100GbE)
-- 2 QSFP28 ports
-- Switch or switch-less scalability supporting 400Gbps bi-directional bandwidth
-- Up to 1024 IPU-M2000s connected
+   <td style="text-align: left"> 
+     8x IPU-Links supporting 2Tbps bi-directional bandwidth <br> 
+     8x OSFP ports <br> 
+     Switch-less scalability <br> 
+     Up to 8 M2000s in directly connected stacked systems <br> 
+     Up to 16 M2000s in IPU-POD systems <br> 
+     2x IPU-GW-Links (IPU-Link extension over 100GbE) <br> 
+     2 QSFP28 ports <br> 
+     Switch or switch-less scalability supporting 400Gbps bi-directional bandwidth <br> 
+     Up to 1024 IPU-M2000s connected
     </td>
     </tr>
     <tr>
    <td style="text-align: left">IPU-Gateway</td>
-   <td style="text-align: left">
-- 1 IPU-Gateway with integrated Arm Cortex quad-core A-series SoC
-    </td>
+   <td style="text-align: left">1 IPU-Gateway with integrated Arm Cortex quad-core A-series SoC</td>
     </tr>
      <tr>
    <td style="text-align: left">Streaming Memory</td>
-   <td style="text-align: left">
-- 2 DDR4-2400 DIMM DRAM 
-- DRAM options: 2x 64GB (default SKU in IPU-M2000 Founder’s Edition) or 2x 128GB or 2x 256GB (contact sales)
+   <td style="text-align: left"> 
+     2 DDR4-2400 DIMM DRAM <br> 
+     DRAM options: 2x 64GB (default SKU in IPU-M2000 Founder’s Edition) or 2x 128GB or 2x 256GB (contact sales)
     </td>
     </tr>
       <tr>
    <td style="text-align: left">Internal SSD</td>
-   <td style="text-align: left">
-- 32GB eMMC 1TB M.2 SSD
-    </td>
+   <td style="text-align: left">32GB eMMC 1TB M.2 SSD</td>
     </tr>
     <tr>
    <td style="text-align: left">Mechanical</td>
    <td style="text-align: left">
-- 1U 19-inch chassis (Open Compute compliant)
-- 440mm (width) x 728mm (depth) x 1U (height)
-- Weight: 16.395kg (36.14lbs)
+     1U 19-inch chassis (Open Compute compliant) <br> 440mm (width) x 728mm (depth) x 1U (height) <br> 
+     Weight: 16.395kg (36.14lbs)
     </td>
     </tr>
         <tr>
    <td style="text-align: left">Lights-out management</td>
    <td style="text-align: left">
-- OpenBMC AST2520 
-- 2x1GbE RJ45 management ports
+     OpenBMC AST2520 <br> 
+     2x1GbE RJ45 management ports
     </td>
     </tr>
 </thead>
