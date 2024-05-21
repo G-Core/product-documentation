@@ -91,6 +91,8 @@ Inference at the Edge is a versatile solution for businesses that require low la
 
 * API keys  
 
-* REST API & Terraform 
+* Marketplace for models (coming soon)
 
-* RAG support 
+* REST API & Terraform (coming soon)
+
+* RAG support (coming soon)

@@ -20,6 +20,12 @@ pageDescription: Learn how to deploy an AI model by uploading your custom model 
 
 With Gcore Inference at the Edge, you can deploy a custom AI model by uploading it from your model registry.  
 
+<alert-element type="info" title="Info">
+ 
+The feature is in beta testing and available for free. To enable the product for your account, contact <a href="mailto:support@gcore.com" target="_blank">our technical support</a> or your account manager. 
+ 
+</alert-element>
+
 ## Step 1. Deploy a custom model 
 
 1\. In the Gcore Customer Portal, navigate to **Cloud** > **AI infrastructure**. 
@@ -46,15 +52,15 @@ If you need to add a new model registry, click Add registry and then configure i
 
 To save the new registry, click **Add**.
 
-5\. Enter the name of the Docker image with your model. For example, `docker.io/username/model:tag`.  
+5\. Enter the name of the image with your model. For example, `ghcr.io/namespace/image_name:tag` or `docker.io/username/model:tag`.  
 
-6\. Specify a container port.
+6\. Specify a port that a containerized model will listen to. The external port for accessing your deployment is always 443 (HTTPS).
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/deploy-ai-model/image-name-port.png" alt="Image name and port sections" width="80%">
 
 ## Step 2. Select a flavor 
 
-Choose the configuration for the Kubernetes pod (vGPU/vCPU/RAM) where your model will be deployed.  
+This configuration determines the allocated number of resources (GPU/vCPU/RAM) for running your model. Ensure that you select sufficient resources. Otherwise, the model deployment might fail.  
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/deploy-ai-model/select-flavor.png" alt="Flavor dropdown in the Pod configuration section" width="80%">
 
@@ -65,31 +71,27 @@ Recommended flavor parameters for models:
   <tr>
     <th>Recommended flavor</th>
     <th>Billion parameters</th>
-    <th>Price in $</th>
   </tr>
 </thead>
 <tbody>
   <tr>
     <td>1 × L40s 48 GB</td>
     <td>4.1–21</td>
-    <td>2.49</td>
   </tr>
     <tr>
     <td>2 × L40s 48 GB</td>
     <td>4.1–21</td>
-    <td>2.8</td>
   </tr>
       <tr>
     <td>4 × L40s 48 GB</td>
     <td>4.1–21</td>
-    <td>2.8</td>
   </tr>
 </tbody>
 </table>
 
 ## Step 3. Set up routing placement 
 
-Select Inference regions where the model will run among available worldwide locations.
+Select Inference regions where the model will run among available worldwide locations. Consider that the list of regions depends on the availability of the selected pod configuration in Step 2.
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/deploy-ai-model/routing-placement.png" alt="Regions dropdown in the Routing placement section" width="80%">
 
