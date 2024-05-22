@@ -1,17 +1,17 @@
 ---
-title: inference-at-the-edge 
-displayName: Inference at the Edge  
-order: 105 
-published: false 
-toc: 
-   --1--What is Inference at the Edge?: "what-is-inference-at-the-edge" 
-   --1--Getting started: "getting-started" 
-   --1—-How Inference at the Edge works: "how-inference-at-the-edge-works" 
-   --1--Use cases: "use-cases" 
-   --1--Key benefits: "key-benefits" 
-   --1--Supported features: "supported-features" 
-pageTitle: About Inference at the Edge | Gcore 
-pageDescription: Explore our Inference at the Edge infrastructure. Deploy custom AI models or select AI models from our model catalog. 
+title: inference-at-the-edge
+displayName: Inference at the Edge
+order: 105
+published: true
+toc:
+   --1--What is Inference at the Edge?: "what-is-inference-at-the-edge"
+   --1--Getting started: "getting-started"
+   --1—-How Inference at the Edge works: "how-inference-at-the-edge-works"
+   --1--Use cases: "use-cases"
+   --1--Key benefits: "key-benefits"
+   --1--Supported features: "supported-features"
+pageTitle: About Inference at the Edge | Gcore
+pageDescription: Explore our Inference at the Edge infrastructure. Deploy custom AI models or select AI models from our model catalog.
 ---
 # About Inference at the Edge
 
