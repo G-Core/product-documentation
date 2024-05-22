@@ -28,9 +28,9 @@ The feature is in beta testing and available for free. To enable the product for
 
 ## Step 1. Deploy a custom model 
 
-1\. In the Gcore Customer Portal, navigate to **Cloud** > **AI infrastructure**. 
+1\. In the Gcore Customer Portal, navigate to **Cloud** > **Inference at the Edge**. 
 
-2\. Open the **Inference at the Edge** page and click **Overview**.  
+2\. Click **Overview**.  
 
 3\. Click **Deploy custom model**.
 
