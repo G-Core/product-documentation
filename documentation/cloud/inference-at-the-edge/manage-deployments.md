@@ -25,11 +25,10 @@ After you <a href="https://gcore.com/docs/cloud/inference-at-the-edge/deploy-ai-
 
 * **Deployment status**: an Inference instance can have the following statuses: 
 
-    - **New**: we’re allocating resources to an instance.
-    - **Active**: the instance is up and running. 
-    - **Failed**: an error occurred when allocating resources. You need to recreate the instance.  
-    - **Succeeded**: the instance has been successfully deployed.
-    - **Disabled**: the instance is currently paused. 
+    - **New**: we’re allocating resources to a deployment.
+    - **Active**: the deployment is up and running. 
+    - **Error**: an error occurred when allocating resources. You need to recreate the deployment.  
+    - **Disabled**: the deployment is currently paused. 
 
 * **Running status**: maintenance deployment status, which shows how many pods are run in the selected regions. If you move the cursor over the amount of running models, a list of regions will appear. 
 
