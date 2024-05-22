@@ -9,7 +9,7 @@ toc:
    --1--Server specifications and performance: "server-specifications-and-performance"
    --2--Bow-2000 specifications: "bow-2000-specifications"
    --2--M2000 specifications: "m2000-specifications"
-   --1--Tools our AI Infrastructure supports: "tools-our-ai-infrastructure-supports"
+   --1--Tools our AI Infrastructure supports: "tools-supported-by-gcore-gpu-cloud"
 pageTitle: About our AI Infrastructure | Gcore
 pageDescription: Explore our AI Infrastructure. Graphcore servers, top performance, diverse tools supported. Easy deployment, per-minute billing.
 ---
@@ -26,9 +26,9 @@ You can choose between multiple configurations and reservation plans that would 
 <table>
   <tr>
     <th style="width:20%">Specification</th>
-    <th style="width:40%">Characteristics</th>
-    <th style="width:20%">Use case</th>
-    <th style="width:20%">Performance</th>
+    <th style="width:35%">Characteristics</th>
+    <th style="width:23%">Use case</th>
+    <th style="width:22%">Performance</th>
   </tr>
   <tr>
    <td style="text-align: left">H100 with Infiniband</td>
