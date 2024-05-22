@@ -1,15 +1,15 @@
---- 
+---
 title: inference-at-the-edge 
 displayName: Inference at the Edge  
 order: 105 
 published: false 
 toc: 
---1--What is Inference at the Edge?: "what-is-inference-at-the-edge" 
---1--Getting started: "getting-started" 
---1—-How Inference at the Edge works: "how-inference-at-the-edge-works" 
---1--Use cases: "use-cases" 
---1--Key benefits: "key-benefits" 
---1--Supported features: "supported-features" 
+   --1--What is Inference at the Edge?: "what-is-inference-at-the-edge" 
+   --1--Getting started: "getting-started" 
+   --1—-How Inference at the Edge works: "how-inference-at-the-edge-works" 
+   --1--Use cases: "use-cases" 
+   --1--Key benefits: "key-benefits" 
+   --1--Supported features: "supported-features" 
 pageTitle: About Inference at the Edge | Gcore 
 pageDescription: Explore our Inference at the Edge infrastructure. Deploy custom AI models or select AI models from our model catalog. 
 ---
@@ -21,7 +21,7 @@ In the first stage, an AI model is trained on big data, like an array of images,
 
 The second stage is model inference, where the model is used to make predictions from real user requests. For this stage, it’s crucial that the AI model can respond promptly to users regardless of network delays, latency, and distance from data centers. 
 
-The <a href="https://gcore.com/docs/cloud/ai-Infrustructure/about-our-ai-infrastructure" target="_blank">Gcore AI Infrastructure</a> product is designed for creating and training models. For inference, Gcore has introduced a new product—Inference at the Edge.  
+The <a href="https://gcore.com/docs/cloud/ai-Infrustructure/about-our-ai-infrastructure" target="_blank">Gcore GPU Cloud</a> product is designed for creating and training models. For inference, Gcore has introduced a new product—Inference at the Edge.  
 
 ## What is Inference at the Edge? 
 

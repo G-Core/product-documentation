@@ -1,4 +1,4 @@
---- 
+---
 title: create-and-manage-api-keys 
 displayName: Create and manage API keys 
 order: 20 
@@ -10,7 +10,7 @@ toc:
 --2--Delete API key: "delete-api-key" 
 pageTitle: Create and manage API keys | Gcore 
 pageDescription: Learn how to create API keys and attach them to Inference at the Edge deployments.  
---- 
+---
 # Create and manage API keys 
 
 Set up API keys to protect a deployed AI model from unauthorized access. 
