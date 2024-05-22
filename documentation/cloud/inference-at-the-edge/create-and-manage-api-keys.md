@@ -23,9 +23,9 @@ You can create an API key in different ways: <a href="https://gcore.com/docs/clo
 
 To create an API key and add it to the deployment: 
 
-1\. In the Gcore Customer Portal, navigate to **Cloud** > **AI infrastructure**. 
+1\. In the Gcore Customer Portal, navigate to **Cloud** > **Inference at the Edge**. 
 
-2\. Open the **Inference at the Edge** page and click **API keys**. 
+2\. Click **API keys**. 
 
 3\. Click **Create API key**.
 
@@ -67,9 +67,9 @@ You can view detailed information about an API key, change the deployments where
 
 ### Edit API key 
 
-1\. In the Gcore Customer Portal, navigate to **Cloud** > **AI infrastructure**. 
+1\. In the Gcore Customer Portal, navigate to **Cloud** > **Inference at the Edge**. 
 
-2\. Open the **Inference at the Edge** page and click **API keys**. 
+2\. Click **API keys**. 
 
 3\. Find the key you want to edit and click the three-dot icon to open the settings menu. 
 

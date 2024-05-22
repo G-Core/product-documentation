@@ -14,9 +14,9 @@ You can set up a registry <a href="https://gcore.com/docs/cloud/inference-at-the
 
 ## Add a registry 
 
-1\. In the Gcore Customer Portal, navigate to **Cloud** > **AI infrastructure**. 
+1\. In the Gcore Customer Portal, navigate to **Cloud** > **Inference at the Edge**. 
 
-2\. Open the **Inference at the Edge** page and click **Registries**. 
+2\. Click **Registries**. 
 
 3\. Click **Add registry**.
 
