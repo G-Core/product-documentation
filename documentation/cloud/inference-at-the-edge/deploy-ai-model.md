@@ -1,4 +1,4 @@
---- 
+---
 title: deploy-ai-model 
 displayName: Deploy an AI model 
 order: 10 
@@ -15,7 +15,7 @@ toc:
 --1--Step 9. Finalize deployment: "step-9-finalize-deployment" 
 pageTitle: Deploy an AI model | Gcore 
 pageDescription: Learn how to deploy an AI model by uploading your custom model or using one of the preconfigured models from the model catalog.  
---- 
+---
 # Deploy an AI model
 
 With Gcore Inference at the Edge, you can deploy a custom AI model by uploading it from your model registry.  

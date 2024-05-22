@@ -1,4 +1,4 @@
---- 
+---
 title: manage-deployments 
 displayName: Manage deployments in the Customer Portal 
 order: 30 
@@ -12,7 +12,7 @@ toc:
 --3--Settings: "settings" 
 pageTitle: Managing Deployments in the Customer Portal | Gcore 
 pageDescription: Learn how to manage Inference at the Edge instances with deployed AI models. Change instance settings, pause instances, or delete them from the Customer Portal. 
---- 
+---
 # Manage deployments in the Customer Portal 
 
 After you <a href="https://gcore.com/docs/cloud/inference-at-the-edge/deploy-ai-model" target="_blank">deploy an AI model</a>, it will appear on the **Deployments** page. There, you can find all the necessary information about the model:  
