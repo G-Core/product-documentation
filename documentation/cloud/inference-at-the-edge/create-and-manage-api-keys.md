@@ -1,15 +1,15 @@
 ---
-title: create-and-manage-api-keys 
-displayName: Create and manage API keys 
-order: 20 
-published: true 
-toc: 
---1—-Create an API key: "create-an-api-key" 
---1--Manage API keys: "manage-api-keys" 
---2--Edit API key: "edit-api-key" 
---2--Delete API key: "delete-api-key" 
-pageTitle: Create and manage API keys | Gcore 
-pageDescription: Learn how to create API keys and attach them to Inference at the Edge deployments.  
+title: create-and-manage-api-keys
+displayName: Create and manage API keys
+order: 20
+published: true
+toc:
+--1—-Create an API key: "create-an-api-key"
+--1--Manage API keys: "manage-api-keys"
+--2--Edit API key: "edit-api-key"
+--2--Delete API key: "delete-api-key"
+pageTitle: Create and manage API keys | Gcore
+pageDescription: Learn how to create API keys and attach them to Inference at the Edge deployments.
 ---
 # Create and manage API keys 
 

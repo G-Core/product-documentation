@@ -1,12 +1,12 @@
 ---
-title: create-and-configure-a-registry 
-displayName: Create and configure a registry 
-order: 20 
-published: true 
-pageTitle: Add and configure a registry | Gcore 
-pageDescription: Learn how to set up a registry with your AI model in the Customer Portal 
+title: create-and-configure-a-registry
+displayName: Create and configure a registry
+order: 20
+published: true
+pageTitle: Add and configure a registry | Gcore
+pageDescription: Learn how to set up a registry with your AI model in the Customer Portal
 ---
-# Add and configure a registry 
+# Add and configure a registry
 
 If you want to deploy a custom AI model on Gcore inference nodes, you need to provide information about the registry where your model is stored. This is necessary to ensure that we access and retrieve your model during the deployment process.  
 
