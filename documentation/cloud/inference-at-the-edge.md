@@ -6,7 +6,7 @@ published: true
 toc:
    --1--What is Inference at the Edge?: "what-is-inference-at-the-edge"
    --1--Getting started: "getting-started"
-   --1—-How Inference at the Edge works: "how-inference-at-the-edge-works"
+   --1--How Inference at the Edge works: "how-inference-at-the-edge-works"
    --1--Use cases: "use-cases"
    --1--Key benefits: "key-benefits"
    --1--Supported features: "supported-features"
