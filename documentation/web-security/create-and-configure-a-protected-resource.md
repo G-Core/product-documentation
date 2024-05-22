@@ -16,7 +16,7 @@ To protect your website, change your IP address to ours (you can get it once you
 
 ## Customer Portal settings
 
-Go to the Web Protection tab and click on the **Create DDoS resource** button.
+Go to the Web Security tab and click on the **Create resource** button.
 
 <img src="https://assets.gcore.pro/docs/web-security/create-and-configure-a-protected-resource/mceclip0.png" alt="Create DDoS resource" width="80%">
 

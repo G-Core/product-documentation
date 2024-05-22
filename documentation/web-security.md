@@ -1,19 +1,19 @@
 ---
 title: web-security
-displayName: Web security
+displayName: Web Application Security
 published: true
 ---
-# Web security
+# Web Application Security
 
-Welcome to the <a href="https://gcore.com/web-security" target="_blank">Gcore Web Security</a> documentation page! Here we explain how to use, configure, and troubleshoot Gcore’s security features.
+Welcome to the <a href="https://gcore.com/web-security" target="_blank">Gcore Web Application Security</a> documentation page! Here we explain how to use, configure, and troubleshoot Gcore’s security features.
 
-Web security protects your web applications against DDoS attacks, hacking threats, and malicious bot activities.
+Web Application Security protects your web applications against DDoS attacks, hacking threats, and malicious bot activities.
 
-From the left-side menu, you can access in-depth documentation about Web Security:
+From the left-side menu, you can access in-depth documentation about Web Application Security:
 
 - **Billing** – how the service is billed
 - **Create protected resource** – integrate your web application
-- **Use Web Security and CDN** – use Web Security with Gcore CDN
+- **Use Web Application Security and CDN** – use Web Application Security with Gcore CDN
 - **Configure protection settings** – configure additional protection settings
 - **Add an SSL certificate** – add a custom SSL certificate, purchase a Let’s Encrypt installation
 - **Rate Limiter** – configure bot protection

@@ -21,7 +21,7 @@ Good website protection requires a layered approach. We described the main setti
 
 ## Change your IP
 
-An attacker can get your real IP using DNS History and attack it directly. Get a new IP and put it in the "Original IP" field in the Control panel. Don't mention/publish the IP anywhere else.
+An attacker can get your real IP using DNS History and attack it directly. Get a new IP and put it in the "Original IP" field in the Control panel. Don't mention or publish the IP anywhere else.
 
 ## Check your DNS records
 
