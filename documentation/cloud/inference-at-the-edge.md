@@ -11,7 +11,7 @@ toc:
    --1--Key benefits: "key-benefits"
    --1--Supported features: "supported-features"
 pageTitle: About Inference at the Edge | Gcore
-pageDescription: Explore our Inference at the Edge infrastructure. Deploy custom AI models or select AI models from our model catalog.
+pageDescription: Explore Gcore Inference at the Edge infrastructure. Deploy custom AI models or select from our model catalog.
 ---
 # About Inference at the Edge
 
@@ -21,21 +21,21 @@ In the first stage, an AI model is trained on big data, like an array of images,
 
 The second stage is model inference, where the model is used to make predictions from real user requests. For this stage, it’s crucial that the AI model can respond promptly to users regardless of network delays, latency, and distance from data centers. 
 
-The <a href="https://gcore.com/docs/cloud/ai-Infrustructure/about-our-ai-infrastructure" target="_blank">Gcore GPU Cloud</a> product is designed for creating and training models. For inference, Gcore has introduced a new product—Inference at the Edge.  
+<a href="https://gcore.com/docs/cloud/ai-Infrustructure/about-our-ai-infrastructure" target="_blank">Gcore GPU Cloud</a> is designed for creating and training models. For inference, we offer Gcore Inference at the Edge.  
 
-## What is Inference at the Edge? 
+## What is Gcore Inference at the Edge? 
 
-Inference at the Edge enables customers to deploy pre-trained AI models on edge inference nodes. This technology uses anycast endpoints to direct end users’ queries to the nearest running model, ensuring low latency and optimizing response times to enhance user experience. 
+Gcore Inference at the Edge allows customers to deploy pre-trained AI models on edge PoPs. By bringing AI models closer to end users, the technology ensures ultra-fast response times and optimized performance.
 
-The main idea behind Inference at the Edge is to bring pre-trained models as close as possible to end users. This enables ultra-fast response times, automated through a single endpoint, relieving you of managing, scaling, and monitoring the underlying infrastructure.   
+Using Anycast endpoints, end users' queries are directed to the nearest running model, resulting in low latency and an enhanced user experience. This setup is automated through a single endpoint, relieving you of the need to manage, scale, and monitor the underlying infrastructure.
 
 ## Getting started 
 
-For instructions on how to deploy AI models with the global intelligence pipeline, check out the <a href="https://gcore.com/docs/cloud/inference-at-the-edge/deploy-ai-model" target="_blank">Deploy a model</a> guide. 
+For instructions on how to deploy AI models with the global intelligence pipeline, check out our guide on <a href="https://gcore.com/docs/cloud/inference-at-the-edge/deploy-ai-model" target="_blank">deploying a model</a>. 
 
 <alert-element type="info" title="Info">
  
-Inference at the Edge is currently in beta testing. To enable the product for your account, contact <a href="mailto:support@gcore.com" target="_blank">our technical support</a> or your account manager. 
+Inference at the Edge is currently in beta mode. To join the beta, contact <a href="mailto:support@gcore.com" target="_blank">Gcore technical support</a> or your account manager. 
  
 </alert-element>
 
@@ -43,43 +43,45 @@ Inference at the Edge is currently in beta testing. To enable the product for yo
 
 Inference at the Edge combines two technologies:  
 
-1\. **Edge Network** for low latency by anycast balancing and smart routing. 
+1\. **Edge Network:** Provides low latency via Anycast balancing and smart routing.
 
-2\. **Serverless flexible GPU infrastructure** for quick initiation, integration, and deployment. 
+2\. **Serverless flexible GPU infrastructure:** Enables quick initiation, integration, and deployment.
 
-We provide you with an endpoint that can be integrated with your applications. When your users access this endpoint, their requests are delivered to the nearest Edge nodes. This is achieved through the use of a Smart Routing technology, which redirects requests to the nearest inference region where the pre-trained model is deployed.  
+We provide you with an endpoint that can be seamlessly integrated into your applications. When users access this endpoint, their requests are delivered to the nearest Edge nodes. This is achieved through Smart Routing technology, which redirects requests to the closest inference region where the pre-trained model is deployed.
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/about-inference-at-the-edge/smart-routing-diagram.png" alt="Diagram depicting Smart Routing technology" width="60%">
 
-We also use <a href="https://gcore.com/docs/dns/dns-failover/about-dns-failover" target="_blank">Healthchecks</a> to monitor the availability of pods. If a pod in Amsterdam is experiencing downtime, the request will be automatically sent to the next geographically close inference region, such as Amsterdam-2. 
+We also use <a href="https://gcore.com/docs/dns/dns-failover/about-dns-failover" target="_blank">Healthchecks</a> to monitor the availability of pods. If the Amsterdam-1 pod is experiencing downtime, the request will be automatically sent to the geographically closest inference region, such as Amsterdam-2. 
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/about-inference-at-the-edge/smart-routing-map.png" alt="<Map depicting Smart Routing across locations" width="60%">
 
 ## Use cases 
 
-Inference at the Edge is a versatile solution for businesses that require low latency or real-time model responses. 
+Inference at the Edge is a versatile solution for businesses requiring low-latency or real-time model responses. It caters to various industries, including:
 
-* **Fintech and banking**. Prompt anti-fraud detection and real-time credit scoring. 
+**Fintech and banking:** Enables prompt anti-fraud detection and real-time credit scoring.
 
-* **Healthcare**. Making medical prescriptions based on data from wearable sensors and analyzing medical data 
+**Healthcare:** Facilitates medical prescriptions based on data from wearable sensors and the analysis of medical data.
 
-* **Gaming**. Automatic opponent selection in competitive games, map generation, and maintaining an open world.  
+**Gaming:** Supports automatic opponent selection in competitive games, map generation, and maintaining open worlds.
 
-* **Media**. Content analysis and automated transcribing and translating of interviews. 
+**Media:** Provides content analysis, automated transcribing, and translating of interviews.
 
-* **ISP and internet services**. AI-based traffic analysis and DDoS protection. 
+**ISP and internet services:** Offers AI-based traffic analysis and DDoS protection.
 
-* **Industrial**. Real-time defect detection and fast feedback. 
+**Industrial and manufacturing:** Ensures real-time defect detection and fast feedback.
 
 ## Key benefits  
 
-* **Low latency**. Over 160 Edge nodes worldwide enable faster request transfer to the closest Inference at the Edge POD, providing low latency for users who send requests to your model. 
+Inference at the Edge offers several key benefits:
 
-* **High performance**. Fast model inference using the latest GPU hardware is built for handling the most demanding workloads. 
+**Low latency:** With over 180 points of presence worldwide, requests are transferred quickly to the nearest Inference at the Edge pod, ensuring low latency for users.
 
-* **Cost efficiency**. Payments are based solely on the runtime of the containers, which automatically scale in and out based on the number of user requests. 
+**High performance:** Utilizing the latest, purpose-built NVIDIA GPU hardware, Inference at the Edge delivers fast model inference capable of handling the most demanding workloads.
 
-* **Easy control**. Global AI infrastructure is configured in a few clicks in the Customer Portal or by API requests.
+**Cost efficiency:** Payments are based solely on the runtime of the containers, which automatically scale in and out based on the number of user requests to keep your operations cost-effective.
+
+**Easy control:** Gcore's global AI infrastructure can be configured with just a few clicks in the Gcore Customer Portal or via API requests, simplifying management and control.
 
 ## Supported features 
 
@@ -87,7 +89,7 @@ Inference at the Edge is a versatile solution for businesses that require low la
 
 * Various flavors (vGPU/vCPU/RAM) and storage 
 
-* DDoS & Bot protection 
+* DDoS and bot protection 
 
 * API keys  
 
