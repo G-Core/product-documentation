@@ -29,9 +29,9 @@ Examine the definitions for terminology commonly used throughout Gcore's Managed
 
 <p id="dns-query"><b>DNS query</b> is a request for information sent from a client device to the DNS. The query is made to retrieve specific DNS records associated with a domain name, such as an IP address for a website. The DNS server responds to the query by providing the requested information back to the client device, enabling it to connect with the desired web server.</p>
 
-<p id="domain"><b>Domain (domain name)</b> is a name that identifies a website. It is a unique string of characters (e.g., gcore.com or google.com, etc.) that serves as an address used to access a website on the Internet.</p> 
+<p id="domain"><b>Domain (domain name)</b> is a name that identifies a website. It is a unique string of characters (e.g., gcore.com or google.com, etc.) that serves as an address used to access a website on the internet.</p> 
 
-<p id="domain-registrar">Domain registrar</b> is a company that manages the reservation of Internet domain names. They can register domain names for individuals or companies who want to own a particular website address. They also interact with the global DNS database to ensure those domain names are accessible worldwide.</p>
+<p id="domain-registrar">Domain registrar</b> is a company that manages the reservation of internet domain names. They can register domain names for individuals or companies who want to own a particular website address. They also interact with the global DNS database to ensure those domain names are accessible worldwide.</p>
 
 <p id="mx"><b>MX record</b> is a record that is used to specify the mail servers responsible for receiving email on behalf of a domain. For more details refer to Supported DNS record types.</p>
 

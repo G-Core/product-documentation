@@ -37,6 +37,12 @@ A new page will open. Perform the remaining steps there.
 
 6\. Specify the desired value in the corresponding field. You can configure either feature individually or both at once. Values should be less than default Gcore values: <5 seconds for connection timeout and <30 seconds for read timeout. Learn more in our <a href="https://gcore.com/docs/cdn/getting-started/cdn-timeouts" target="_blank">guide to CDN timeouts</a>.
 
+<alert-element type="info" title="Info">
+
+If you’re on the “Enterprise” plan, you have more flexibility in changing the default timeout values. To increase the connection timeout to over 5 seconds and read timeout to over 30 seconds, [contact our Support team](mailto:support@gcore.com). 
+
+</alert-element>
+
 7\. Save changes. 
 
 <img src="https://assets.gcore.pro/docs/cdn/getting-started/timeouts/enable-connection-read-timeouts.png" alt="A dialog with enabled custom read and connection timeouts" width="80%">  

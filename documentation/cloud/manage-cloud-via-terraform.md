@@ -1,8 +1,8 @@
 ---
 title: manage-cloud-via-terraform
 displayName: Terraform
-published: true
 order: 130
+published: true
 toc:
    --1--What is Terraform?: "what-is-terraform"
    --1--Install and configure Terraform: "install-terraform-and-integrate-it-with-our-cloud"
