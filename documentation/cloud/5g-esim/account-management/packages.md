@@ -4,12 +4,12 @@ displayName: Packages
 published: true
 order: 20
 toc:
-pageTitle: Packages of 5G eSIM| Gcore
-pageDescription: Learn more about packages of GCore 5G eSIM technology.
+pageTitle: Packages of 5G Network| Gcore
+pageDescription: Learn more about packages of GCore 5G Network technology.
 ---
 # Packages 
 
-A package is a bundle of services that you may activate for your eSIM profile. Packages help tailor your eSIM experience to your specific requirements and preferences. 
+A package is a bundle of services that you may activate for your 5G Network. Packages help tailor your 5G Network experience to your specific requirements and preferences. 
 
 Every package offers three main features:
 
