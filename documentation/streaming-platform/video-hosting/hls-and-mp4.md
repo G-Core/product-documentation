@@ -80,7 +80,7 @@ curl -v 'https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/720.mp4' -H '
 
 ## How to enable MP4 support
 
-Gcore’s Streaming Platform provides HLS by default. If you want to enable MP4 support, contact our [support team](mailto:support@gcore.com).
+Gcore Video Streaming provides HLS by default. If you want to enable MP4 support, contact our [support team](mailto:support@gcore.com).
 
 ## Get HLS and MP4 links
 

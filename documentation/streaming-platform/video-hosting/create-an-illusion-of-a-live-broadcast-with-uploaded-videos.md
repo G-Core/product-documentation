@@ -13,7 +13,7 @@ pageDescription: A step-by-step guide on creating an illusion of live mode for y
 
 ## What is Live imitation?
 
-Live imitation is a free feature for broadcasting videos uploaded to your account in live mode. For example, you are an owner of a movie streaming service. On September 1, you will premiere a new series for your viewers. One way to do it is to use the Live imitation feature. In this case, you upload episodes to our Streaming Platform as usual videos and select the start date and time (e.g., September 1 at 9 PM). So, up to this moment, videos will not be shown. Your viewers will be able to see it only at a fixed time. From their point of view, it would not look like watching a video but like a live stream.
+Live imitation is a free feature for broadcasting videos uploaded to your account in live mode. For example, you are an owner of a movie streaming service. On September 1, you will premiere a new series for your viewers. One way to do it is to use the Live imitation feature. In this case, you upload episodes to our Video Streaming as usual videos and select the start date and time (e.g., September 1 at 9 PM). So, up to this moment, videos will not be shown. Your viewers will be able to see it only at a fixed time. From their point of view, it would not look like watching a video but like a live stream.
 
 ## Configure Live imitation
 

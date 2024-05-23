@@ -28,7 +28,7 @@ Each step affects latency, so the total timespan can increase to 30–40 seconds
 
 ## How does Gcore provide low latency?
 
-The Gcore Streaming Platform receives live streams in RTMP or SRT protocols; transcodes to ABR (<a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-we-optimize-live-stream-and-video-performance-by-creating-different-bitrates" target="_blank">adaptive bitrate</a>) via CDN in LL-HLS and LL-DASH protocols.
+The Gcore Video Streaming receives live streams in RTMP or SRT protocols; transcodes to ABR (<a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-we-optimize-live-stream-and-video-performance-by-creating-different-bitrates" target="_blank">adaptive bitrate</a>) via CDN in LL-HLS and LL-DASH protocols.
 
 - LL-HLS (Low Latency HTTP Live Streaming) is an adaptive protocol developed by Apple for live streaming via the Internet. This protocol is based on HTTP, which allows it to be cached on CDN servers and distributed via CDN as static content. 
 - LL-DASH (Low Latency Dynamic Adaptive Streaming over HTTP) is a data streaming technology that optimizes media content delivery via the HTTP protocol.

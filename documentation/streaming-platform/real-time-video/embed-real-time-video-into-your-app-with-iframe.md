@@ -15,7 +15,7 @@ pageDescription: How to integrate Gcore's video call module into your applicatio
 
 ## Overview of Gcore Real-Time Video app embedding
 
-<a href="https://gcore.com/streaming-platform/realtime" target="_blank">Gcore Real-Time Video</a> is an embeddable customizable Gcore Streaming Platform module. Using the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe" target="_blank">iframe HTML element</a>, you can embed the video calls module into your app.
+<a href="https://gcore.com/streaming-platform/realtime" target="_blank">Gcore Real-Time Video</a> is an embeddable customizable Gcore Video Streaming module. Using the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe" target="_blank">iframe HTML element</a>, you can embed the video calls module into your app.
 
 Here is an example of code that may be used for this purpose:  
 

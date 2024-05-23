@@ -86,7 +86,7 @@ Example of the response if an error occurs during video processing:
 ```
 ## Copy from external storage
 
-In the section, we explain how to copy files from a third-party, external storage to the Gcore Streaming Platform. We will explain the process, offer an example API request, then explain how it works.
+In the section, we explain how to copy files from a third-party, external storage to the Gcore Video Streaming. We will explain the process, offer an example API request, then explain how it works.
 
 ### Overview
 
@@ -143,9 +143,9 @@ After setting the task for downloading, it is queued. You can queue an unlimited
 
 ### How it works
 
-Here’s how the platform works on our end. We attempt to download a file three times, expecting a 200 OK response to access your provided link. If the download fails, the video entity will stay in the “Empty” status, and details will be added to the field ```error```. You need to delete the empty video entity and try to create a new one with the correct origin URL.
+Here’s how it works on our end. We attempt to download a file three times, expecting a 200 OK response to access your provided link. If the download fails, the video entity will stay in the “Empty” status, and details will be added to the field ```error```. You need to delete the empty video entity and try to create a new one with the correct origin URL.
 
-Once successfully uploaded and processed, the video will be available on our platform. You can check the status of the video by the <a href="https://api.gcore.com/docs/streaming#tag/Videos/operation/get_api_videos_id" target="_blank">GET API request</a> or via webhook <a href="https://gcore.com/docs/streaming-platform/extra-features/get-webhooks-from-the-streaming-platform" target="_blank">notifications</a>. 
+Once successfully uploaded and processed, the video will be available in the Customer Portal. You can check the status of the video by the <a href="https://api.gcore.com/docs/streaming#tag/Videos/operation/get_api_videos_id" target="_blank">GET API request</a> or via webhook <a href="https://gcore.com/docs/streaming-platform/extra-features/get-webhooks-from-the-streaming-platform" target="_blank">notifications</a>. 
 
 ## Upload from a local device
 

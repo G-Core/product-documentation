@@ -10,11 +10,11 @@ toc:
    --2--Upload: "upload"
    --2--Player: "player"
    --1--Open a support ticket: "open-a-support-ticket"
-pageTitle: Solving Streaming Platform Issues | Gcore
-pageDescription: An explanation of common basic checks to address issues that may arise when working with a streaming platform.
+pageTitle: Solving Video Streaming Issues | Gcore
+pageDescription: An explanation of common basic checks to address issues that may arise when working with a Video Streaming.
 ---
 
-# Solve common Streaming Platform issues
+# Solve common Video Streaming issues
   
 We are covering some issues you may encounter when working with both Live and VOD streams, as well as steps you can take to troubleshoot them.
 

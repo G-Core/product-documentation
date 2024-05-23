@@ -38,7 +38,7 @@ In the example below, you can see the game score widget in the upper left corner
 
 ## Gcore supports HTML overlays
 
-Gcore Streaming Platform now supports overlays embedded into the live stream, which can be managed using the API. Contact support (via [email](maito:support@gcore.com) or chat—click the chat icon on the bottom right of our webpages) or your personal manager to enable the ability to send API requests to the overlay feature endpoints.
+Gcore Video Streaming now supports overlays embedded into the live stream, which can be managed using the API. Contact support (via [email](maito:support@gcore.com) or chat—click the chat icon on the bottom right of our webpages) or your personal manager to enable the ability to send API requests to the overlay feature endpoints.
 
 The main features of overlays via API are:
 

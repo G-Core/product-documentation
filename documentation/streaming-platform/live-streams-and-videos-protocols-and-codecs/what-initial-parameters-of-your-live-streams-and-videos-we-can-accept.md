@@ -9,13 +9,13 @@ toc:
    --1--RTMP, RTMPS, and SRT: "rtmp-rtmps-and-srt-for-live-streaming"
    --1--RTMPS troubleshooting: "rtmps-troubleshooting"
 pageTitle: Guide to Gcore Streaming Parameters | Gcore
-pageDescription: Overview of the supported and recommended parameters for optimizing live streams and videos using Gcore Streaming Platform.
+pageDescription: Overview of the supported and recommended parameters for optimizing live streams and videos using Gcore Video Streaming.
 ---
 # Accepted initial parameters of your live streams and videos
 
 ## Supported parameters
 
-Gcore Streaming Platform supports:
+Gcore Video Streaming supports:
 
 - Receiving live streams from <a href="https://gcore.com/docs/streaming-platform/live-streaming/create-a-live-stream" target="_blank">your server (PULL) or a dedicated publishing point (PUSH)</a> using numerous protocols including RTMP(S) and SRT. All supported live protocols are listed in the table below. The stream is transcoded and sent with <a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-we-optimize-live-stream-and-video-performance-by-creating-different-bitrates" target="_blank">adaptive streaming</a> via CDN in  HLS/MPEG-DASH (CMAF low latency) formats. 
 - Videos uploaded in almost any format, from standard MP4 to 4K HDR Video, are first transcoded to get videos of lower quality. Then, they're sent with adaptive streaming via CDN in HLS format. 
