@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: Virtual instances
+displayName: Virtual Machines
 published: true
 order: 30
 ---
