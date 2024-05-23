@@ -12,14 +12,15 @@ toc:
 
 ## What is the "Block" feature?
 
-The <a href="https://admin-platform.gcore.top" target="_blank">new admin panel's</a> "Block" feature allows you to block sellers, which is an effective tool for managing access to the admin portal and maintaining a secure and trustworthy community of consumers.
+The <a href="https://admin.gcore.top/" target="_blank">new admin panel's</a> "Block" feature allows you to block sellers, which is an effective tool for managing access to the admin portal and maintaining a secure and trustworthy community of consumers.
 
-The following restrictions apply to blocked sellers:
+<alert-element type="info" title="Info">
+  
+All requests to the IAM API, including authorization tokens, password recovery, and activation requests, are prohibited.
 
-- All requests to the IAM API, including authorization tokens, password recovery, and activation requests, are prohibited.
-- All active sellers' API tokens are blocked, and creating new tokens is prohibited.
+</alert-element>
 
-**Note**: The blocking restrictions will remain in effect until you cancel them with the "Activate" feature.
+The blocking restrictions will remain in effect until you cancel them with the "Activate" feature.
 
 ## Block or activate a seller
 
