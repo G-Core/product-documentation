@@ -20,7 +20,7 @@ In order to connect, you should allow all incoming connections via ICMP Protocol
 
 Also, for SSH connection, you should set up a rule to allow incoming SSH connections over TCP on a given port.
 
-In the default group, which is configured by default for all users, the above settings are initially set. You can choose this firewall group while creating a virtual machine if you have difficulties with the configuration of a custom one.
+In the default group, which is configured by default for all users, the above settings are initially set. You can choose this firewall group while creating a Virtual Machine if you have difficulties with the configuration of a custom one.
 
 ## **Incorrectly added SSH key. Errors: Connection refused.**
 
