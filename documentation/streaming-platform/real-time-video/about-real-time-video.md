@@ -16,7 +16,7 @@ pageDescription: Explanation of how the live call module works and what features
 
 ## What is Real-Time Video?
 
-Real-Time Video is a paid module of the Streaming Platform. It has an API, SDK, and free sample apps for iOS and Android. It also allows easy setup via iFrame on websites. With this module, you can integrate video calls into your apps quickly without needing to perform any complex programming. It's perfect for customers who want a simple, ready-to-use solution.
+Real-Time Video is a paid module of the Video Streaming. It has an API, SDK, and free sample apps for iOS and Android. It also allows easy setup via iFrame on websites. With this module, you can integrate video calls into your apps quickly without needing to perform any complex programming. It's perfect for customers who want a simple, ready-to-use solution.
 
 This is how Real-Time Video works with different platforms:
 

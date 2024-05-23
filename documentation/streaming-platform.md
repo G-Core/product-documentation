@@ -1,18 +1,18 @@
 ---
 title: streaming-platform
-displayName: Streaming Platform
+displayName: Video Streaming
 published: true
 ---
-# Streaming Platform
+# Video Streaming
 
-Welcome to the <a href="https://gcore.com/streaming-platform" target="_blank">Gcore Streaming Platform</a> documentation page! Here we explain how to use, configure, and troubleshoot Gcore’s Streaming Platform.
+Welcome to the <a href="https://gcore.com/streaming-platform" target="_blank">Gcore Video Streaming</a> documentation page! Here we explain how to use, configure, and troubleshoot Gcore’s Video Streaming.
 
-Streaming is a service that transcodes media content, such as videos, live streams, and group video calls, into appropriate formats for fast and reliable delivery to millions of viewers worldwide.
+Video Streaming is a service that transcodes media content, such as videos, live streams, and group video calls, into appropriate formats for fast and reliable delivery to millions of viewers worldwide.
 
-From the left-side menu, you can access in-depth documentation about Streaming:
+From the left-side menu, you can access in-depth documentation about Video Streaming:
 
 - **Overview** – streaming options, how they work
-- **Billing** – how the Streaming service and additional features are billed
+- **Billing** – how the Video Streaming and additional features are billed
 - **Live streams and video protocols and codecs** – initial parameters accepted, transcoded content parameters, adaptive streaming, low latency streaming
 - **Interaction with CDN** – how the service for streaming video content interacts with CDN
 - **Live Streaming** – manage live streams, configure additional features including restreaming, multicamera, recording, DVR
@@ -20,6 +20,6 @@ From the left-side menu, you can access in-depth documentation about Streaming:
 - **Extra features** – additional features for live streaming and video hosting, configuration
 - **Real-Time Video** – webinar and conference product, microphone and camera configuration
 - **Troubleshooting** – solve streaming issues
-- **API** – manage API integration with Streaming Platform
+- **API** – manage API integration with Video Streaming
 
 If you have any questions or if there is a streaming-related topic that you think we’re missing, please leave a comment and our content team will address it.

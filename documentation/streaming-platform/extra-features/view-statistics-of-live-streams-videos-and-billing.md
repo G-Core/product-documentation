@@ -7,7 +7,7 @@ toc:
    --1--Video and live streaming statistics: "video-and-live-streaming-statistics"
    --1--Billing statistics: "billing-statistics"
 pageTitle: Broadcast, Video and Billing Statistics | Gcore
-pageDescription: How the tab for viewing the statistics of the Streaming Platform is arranged.
+pageDescription: How the tab for viewing the statistics of the Video Streaming is arranged.
 ---
 # View statistics of live streams, videos, and billing  
   
@@ -48,7 +48,7 @@ If you want to see statistics on a specific video or live stream, navigate to it
 
 ## Billing statistics  
 
-The Billing section displays statistics on resource consumption. It determines how much you’ll pay for Streaming Platform services. Billing terms are described in <a href="https://accounts.gcore.com/billing/services" target="_blank">your plan</a>, which is located in the Streaming section.
+The Billing section displays statistics on resource consumption. It determines how much you’ll pay for Video Streaming services. Billing terms are described in <a href="https://accounts.gcore.com/billing/services" target="_blank">your plan</a>, which is located in the Streaming section.
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/view-statistics-of-live-streams-videos-and-billing/10599562362129.png" alt="Statistics tab" width="50%">
 
@@ -66,4 +66,4 @@ You can sort statistics by several metrics:
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/view-statistics-of-live-streams-videos-and-billing/10599503863057.png" alt="Billing statistics" width="80%">
 
-VoD plans calculate the total duration of all videos uploaded to the Streaming Platform. Let’s say, for example, that one day, you upload 50 minutes of video. On the next, you upload 100 minutes of video and then delete the first video. You will be billed for 150 minutes of video.
+VoD plans calculate the total duration of all videos uploaded to the Video Streaming. Let’s say, for example, that one day, you upload 50 minutes of video. On the next, you upload 100 minutes of video and then delete the first video. You will be billed for 150 minutes of video.
