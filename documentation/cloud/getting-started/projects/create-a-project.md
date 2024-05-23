@@ -15,7 +15,7 @@ pageDescription: Learn how to create and manage an Edge Cloud project in the Gco
 ---
 # Create and manage projects
 
-Projects are goal-specific folders where you can create Gcore Edge Cloud products including instances, volumes, and networks. Each project acts as a separate environment; its resources are isolated from the resources in any other project. You can control access to these resources by specifying user permissions on a per-project basis.  
+Projects are goal-specific folders where you can create Edge Cloud products including Virtual Machines, volumes, and networks. Each project acts as a separate environment; its resources are isolated from the resources in any other project. You can control access to these resources by specifying user permissions on a per-project basis.  
 
 You can view projects in the Gcore Customer Portal via either the **Project** dropdown or the **Cloud Management** page.
 

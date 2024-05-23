@@ -4,17 +4,17 @@ displayName: Manage access
 published: true
 order: 30
 toc:
-   --2--Edit user's role: "Edit-user-s-role"
-   --2--Deny access: "Deny-access-to-a-project"
-   --2--Restore access: "Restore-access-to-a-project-for-a-user"
+   --2--Edit user's role: "edit-user-roles"
+   --2--Deny access: "deny-access-to-a-project"
+   --2--Restore access: "restore-user-access-to-a-project"
 pageTitle: Manage user access | Gcore
-pageDescription: Discover how to manage user access to your Cloud project.
+pageDescription: Discover how to manage user access to your Edge Cloud project.
 ---
 # Manage user access to your project 
 
 If you want to add a new user to your project, follow this article: <a href="https://gcore.com/docs/cloud/getting-started/projects/users/add-a-new-user-to-your-project" target="_blank">Add a new user to your project</a>
 
-## Edit user's role
+## Edit user roles
 
 To learn more about user roles and rights, refer to the article: <a href="https://gcore.com/docs/cloud/getting-started/projects/users/user-roles-and-rights" target="_blank">User roles and rights</a>
 
@@ -22,7 +22,7 @@ If you have enough rights, you can regulate user rights. Click Edit to go to t
 
 ![The location of the Edit button](https://assets.gcore.pro/docs/cloud/getting-started/projects/users/manage-user-access-to-your-project/1-edit-button.png)
 
-You can change the user role in the column Role. There are available the following roles: User, Observer and Administrator. Save and confirm changes.  
+You can change the user role in the column Role. There are available the following roles: User, Observer, and Administrator. Save and confirm changes.  
 
 ![The location of the Role column](https://assets.gcore.pro/docs/cloud/getting-started/projects/users/manage-user-access-to-your-project/2-user-roles.png)
 
@@ -38,7 +38,7 @@ In the Access section of project settings, the user will be displayed with the N
 
 ![The location of the field showing non-assigned roles](https://assets.gcore.pro/docs/cloud/getting-started/projects/users/manage-user-access-to-your-project/4-non-assigned-role.png)
 
-## Restore access to a project for a user
+## Restore user access to a project
 
 To invite a user to the project again, click Edit.
 

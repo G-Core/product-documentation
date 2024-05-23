@@ -5,9 +5,10 @@ published: true
 order: 20
 toc:
 pageTitle: Add a new user | Gcore
-pageDescription: Learn how to add users to your Cloud project.
+pageDescription: Learn how to add users to your Edge Cloud project.
 ---
 # Add a new user to your project
+
 Only the user with the Administrator role can add new users to the project. To send an invitation:
 
 1.  In the Gcore Customer Portal, navigate to the [Projects](https://cloud.gcore.com/cloud/projects/list) section, click the three-dots menu next to the project, and select **Settings**.  
@@ -18,7 +19,7 @@ Only the user with the Administrator role can add new users to the project. To s
       
 ![The invite user button](https://assets.gcore.pro/docs/cloud/getting-started/projects/users/add-a-new-user-to-your-project/2-invite-users-button.png)  
 
-3.  Enter the email of a new user, select the role and click **Send Invitation**. If you want to invite several users just click **add another user,** enter his/her email and select the role. You can invite both existing and previously not registered users.  
+3.  Enter the email of a new user, select the role and click **Send Invitation**. If you want to invite several users just click **add another user,** enter their email and select the roles. You can invite both existing and previously not registered users.  
       
 ![The invite user window](https://assets.gcore.pro/docs/cloud/getting-started/projects/users/add-a-new-user-to-your-project/3-invite-users-window.png)
 
