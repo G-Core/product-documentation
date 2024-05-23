@@ -17,11 +17,12 @@ pageDescription: A detailed guide on setting up PTR records and reverse DNS zone
 A PoinTeR or PTR record is an A record in reverse: it associates server IP with a  domain name. A PTR could be used:
 
 - **As an anti-spam measure in email delivery.** The destination mail server compares the PTR record of the sender mail server IP address with the host/domain part of a sender email address. Today, there exist more convenient modes of authentication, like DKIM, DMARC, and SPF, and usually, these are used together with PTR records.
+
 - **For the convenience of tracing dedicated subnets.** This allows the naming of subnet sections with human-readable domains instead of IP addresses.
 
-<alert-element type="" title="">
+<alert-element type="info" title="Info">
 
-**Note**: A PTR record can be added only in the reverse DNS zone (RDNS) and not in a regular <a href="https://gcore.com/learning/what-is-dns-zone/" target="_blank">domain zone</a>. Therefore, in the Gcore Customer Portal, there is no PTR record in the list of <a href="https://gcore.com/docs/dns/dns-records" target="_blank">DNS records</a> that can be added for a forward domain zone.
+A PTR record can be added only in the reverse DNS zone (RDNS) and not in a regular <a href="https://gcore.com/learning/what-is-dns-zone/" target="_blank">domain zone</a>. Therefore, in the Gcore Customer Portal, there is no PTR record in the list of <a href="https://gcore.com/docs/dns/dns-records" target="_blank">DNS records</a> that can be added for a forward domain zone.
 
 </alert-element>
 
