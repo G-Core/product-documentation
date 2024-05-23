@@ -4,12 +4,12 @@ displayName: Glossary
 published: true
 order: 20
 toc: 
-pageTitle: Key Terms Explained in the Gcore DNS Glossary | Gcore
+pageTitle: Key Terms Explained in the Gcore Managed DNS Glossary | Gcore
 pageDescription: Master the language of DNS with Gcore's comprehensive DNS glossary.
 ---
-# Gcore DNS Glossary
+# Gcore Managed DNS Glossary
 
-Below, you can find definitions of terminology commonly used in Gcore's DNS documentation.
+Examine the definitions for terminology commonly used throughout Gcore's Managed DNS documentation.
 
 <p id="a-record"><b>A record</b> is a record that maps a domain name to its corresponding IPv4 address. For more details refer to Supported DNS record types.</p>
 

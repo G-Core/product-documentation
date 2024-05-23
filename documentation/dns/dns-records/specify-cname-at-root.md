@@ -18,7 +18,7 @@ Nowadays <a href="https://gcore.com/docs/dns/dns-records/supported-dns-record-ty
 
 According to the RFC 1034 specification, a CNAME record cannot coexist with other records. Therefore, it is impossible to specify a CNAME record for the root domain, also known as the "apex domain" (e.g., `sample-test.com`), because it has mandatory NS and SOA records.
 
-While using a subdomain (e.g., `cdn.sample-test.com`) for CNAME record creation can be sufficient, some website owners may want to integrate their root domain. For this situation, Gcore DNS provides the CNAME flattening feature.
+While using a subdomain (e.g., `cdn.sample-test.com`) for CNAME record creation can be sufficient, some website owners may want to integrate their root domain. For this situation, Gcore Managed DNS provides the CNAME flattening feature.
 
 ## How does CNAME flattening work?
 
@@ -28,7 +28,7 @@ By using CNAME flattening, we avoid specification violations and ensure proper D
 
 ## Configuration of CNAME flattening
 
-Gcore DNS provides CNAME flattening to customers on all plans by default. To use this feature, you must:
+Gcore Managed DNS provides CNAME flattening to customers on all plans by default. To use this feature, you must:
 
 1\. Remove the A record for the root domain before creating the CNAME record.
 

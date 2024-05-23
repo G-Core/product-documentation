@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: Advance managing
+displayName: Advanced managing
 published: true
 order: 70
 ---
