@@ -57,8 +57,7 @@ You can choose between multiple configurations and reservation plans that would 
    800Gbit/s Infiniband
    </td>
    <td style="text-align: left">
-   Specifically crafted for AI and HPC tasks. <br> 
-   Boasts fourth-generation Tensor Cores and the Transformer Engine.
+  Distributed training for ML models and a broad range of HPC workloads.
    </td>
    <td style="text-align: left">Well-balanced in performance and price.</td>
   </tr>
@@ -74,7 +73,7 @@ You can choose between multiple configurations and reservation plans that would 
    </td>
    <td style="text-align: left">
      Training and fine-tuning of models on single nodes. <br> 
-     Inference for large models. <br> 
+     <br>Inference for large models.<br> 
      Multi-user HPC cluster.
    </td>
    <td style="text-align: left">The best solution for inference models that require more than 48GB vRAM.</td>
@@ -90,7 +89,7 @@ You can choose between multiple configurations and reservation plans that would 
    </td>
    <td style="text-align: left">
    Model inference.<br> 
-   Fine-tuning for small and medium-size models.
+   <br>Fine-tuning for small and medium-size models.
    </td>
    <td style="text-align: left">The best solution for inference models that require less than 48GB vRAM.</td>
   </tr>
