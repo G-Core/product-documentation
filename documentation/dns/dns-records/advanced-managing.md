@@ -5,25 +5,25 @@ published: true
 toc:
    --1--Create: "create-a-dns-record"
    --1--Manage: "edit-a-dns-record"
-pageTitle: Manage DNS Records (Advanced Interface Mode with Dynamic Response) | Gcore
-pageDescription: Learn how to add, edit, and delete DNS records in the advanced interface mode with Geo Proximity and Geobalancing.
+pageTitle: Manage DNS Records: Advanced Interface Mode with Dynamic Response | Gcore
+pageDescription: Learn how to add, edit, and delete Gcore Managed DNS records in advanced interface mode with Geo Proximity and Geobalancing.
 customUrl: /dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing
 ---
 # Manage DNS records (advanced interface mode with dynamic response)
     
-This article explains how to create DNS record sets (RRSets) in <a href="https://gcore.com/dns" target="_blank">Gcore Managed DNS</a> advanced mode. 
+This article explains how to create DNS record sets (RRSets) in <a href="https://gcore.com/dns" target="_blank">Gcore Managed DNS</a> advanced interface mode. 
 
-To check if advanced mode is enabled, navigate to <a href="https://dns.gcore.com/" target="_blank">DNS</a> and open records page of the desired DNS zone by clicking on the domain:
+To check if advanced mode is enabled, navigate to <a href="https://dns.gcore.com/" target="_blank">DNS</a> and open the records page of the desired DNS zone by clicking on the domain name:
 
 <img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/dns-record-10.png" alt="Open a DNS zone" width="80%">
 
-Ensure the toggle is enabled/green in order to continue managing DNS records according to this guide: 
+Ensure the toggle is enabled/green in order to manage DNS records according to this guide: 
 
 <img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/advanced-mode-dns-10.png" alt="How to ensure that advanced more is enabled" width="80%">  
 
 ## Create a DNS record
 
-1\. Navigate the <a href="https://dns.gcore.com/zones" target="_blank">All zones</a> tab and select the domain zone you want to add records for. Or click three dots on the right and **Go to records**.
+1\. Navigate to the <a href="https://dns.gcore.com/zones" target="_blank">All zones</a> tab and select the domain zone for which you want to add records. Or, click three-dot icon on the right and then click **Go to records**.
 
 <img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/dns-record-10.png" alt="Open a DNS zone" width="80%">
 
@@ -43,7 +43,7 @@ A new page will open. Perform the remaining steps there.
 - Enter the name of this subdomain to add a record for a specific subdomain (for example, if you enter `one`, the record will be created for `one.sample-test.com`).
 - Enter an asterisk (*) to add a record for all subdomains at once (wildcard record).
 
-5\. In the “TTL” field, specify the TTL (Time To Live) in seconds. 
+5\. In the “TTL” field, specify the TTL (time to live) in seconds. 
 
 <expandable-element title="TTL operation">
 
@@ -55,7 +55,7 @@ The point within the 300-second interval at which you changed the record determi
 
 6\. (Optional) Configure dynamic response.
 
-<alert-element type="warning" title="Warning">
+<alert-element type="note" title="Note">
 
 The dynamic response feature is also available for the Free plan, but to create more than one dynamic RRset you'll need a paid plan.
 
@@ -124,7 +124,7 @@ ipv6hint=2001:db8:3333:4444:5555:6666:7777:8888,
 
 </expandable-element>
 
-9\. You can also specify associated metadata, which is used for dynamic response configuration. Learn more in our <a href="https://gcore.com/docs/dns/dns-records/configure-weight-balancing-and-geobalancing" target="_blank">dedicated metadata guide</a>.
+9\. (Optional) Specify associated metadata to be used for dynamic response configuration. Learn more in our <a href="https://gcore.com/docs/dns/dns-records/configure-weight-balancing-and-geobalancing" target="_blank">dedicated metadata guide</a>.
 
 10\. (Optional) Click **Add record** if you want to specify several values for one record.
 
@@ -136,7 +136,7 @@ That's it! The DNS records with the specified parameters will be created. You ca
 
 ## Manage a DNS record
 
-1\. Navigate the <a href="https://dns.gcore.com/zones" target="_blank">All zones</a> tab and select the domain zone in which you want to manage records (edit or delete). Or click three dots on the right and **Go to records**.
+1\. Navigate to the <a href="https://dns.gcore.com/zones" target="_blank">All zones</a> tab and select the domain zone in which you want to manage (edit or delete) records. Or, click the three-dot icon on the right and then click **Go to records**.
 
 <img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/dns-record-10.png" alt="Open a DNS zone" width="80%">
 
@@ -144,9 +144,8 @@ The new page will open. Perform the remaining steps there.
 
 <img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing/advanced-mode-dns-40.png" alt="Manage DNS records" width="80%">
 
-2\. Click on the three dots next to the desired resource record or on its name. 
+2\. Click on the three-dot icon next to the desired resource record, or click on its name. 
 
 3\. In the menu that appears, click **Edit record** if you want to edit the record.
 
 4\.  In the menu that appears, click **Delete** if you want to delete the record.
-
