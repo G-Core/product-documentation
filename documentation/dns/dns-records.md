@@ -16,11 +16,11 @@ toc:
    --1--PTR record: "ptr-record"  
    --1--What's next?: "whats-next"
 pageTitle: Supported DNS Record Types | Gcore
-pageDescription: Find out what types of DNS records are supported in the Gcore interface.
+pageDescription: Find out what types of DNS records are supported by Gcore Managed DNS.
 ---
 # Supported DNS record types
 
-At the time of writing (April 2024,) <a href="https://gcore.com/dns" target="_blank">Gcore Managed DNS</a> supports eleven record types. In this article, we provide brief information about each of them.
+As of Q2 2024, <a href="https://gcore.com/dns" target="_blank">Gcore Managed DNS</a> supports eleven record types. In this article, we provide introductory information about each of them.
 
 <img src="https://assets.gcore.pro/docs/dns/dns-records/supported-dns-record-types/dns-records-10.png" alt="Supported DNS record types">
 
@@ -59,7 +59,7 @@ sample-test.com. 16015 IN AAAA 2606:2800:220:1:248:1893:25c8:1946
 In this record, here is what each component means:
 
 - `sample-test.com.` is the domain name that corresponds to the server.
-- `16015` is the Time to Live (TTL) for the DNS record in seconds, which indicates how long the record is cached by servers or resolvers.
+- `16015` is the DNS record's Time to Live (TTL) in seconds, which indicates how long the record is cached by servers or resolvers.
 - `IN` is the class that stands for "internet."
 - `AAAA` is the record type.
 - `2606:2800:220:1:248:1893:25c8:1946` is the IPv6 address of the server to which the domain name corresponds.
@@ -264,4 +264,4 @@ In this case:
 
 ## What's next?
 
-Add the record you want according to the guide: <a href="https://gcore.com/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode" target="_blank">Manage DNS records</a>
+Add records using our guide on <a href="https://gcore.com/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode" target="_blank">managing DNS records</a>.
