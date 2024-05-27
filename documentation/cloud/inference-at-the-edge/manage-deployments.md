@@ -10,34 +10,34 @@ toc:
 --3--Overview: "overview"
 --3--API key authentication: "api-key-authentication"
 --3--Settings: "settings"
-pageTitle: Managing Deployments in the Customer Portal | Gcore
-pageDescription: Learn how to manage Inference at the Edge instances with deployed AI models. Change instance settings, pause instances, or delete them from the Customer Portal.
+pageTitle: Managing Deployments in the Gcore Customer Portal | Gcore
+pageDescription: Learn how to manage Inference at the Edge instances with deployed AI models. Change instance settings, pause instances, or delete them from the Gcore Customer Portal.
 ---
 # Manage deployments in the Customer Portal 
 
 After you <a href="https://gcore.com/docs/cloud/inference-at-the-edge/deploy-ai-model" target="_blank">deploy an AI model</a>, it will appear on the **Deployments** page. There, you can find all the necessary information about the model:  
 
-* **Name**: name of your AI model (you entered it in the Deployment details section). 
+* **Name:** Name of your AI model (you entered it in the Deployment details section). 
 
-* **Endpoint**: a URL for a pre-trained deployed model. 
+* **Endpoint:** A URL for the pretrained deployed model. 
 
-* **Created**: the date and time when a model was deployed. 
+* **Created:** The date and time when the model was deployed. 
 
-* **Deployment status**: an Inference instance can have the following statuses: 
+* **Deployment status:** An Inference at the Edge instance can have the following statuses: 
 
-    - **New**: we’re allocating resources to a deployment.
-    - **Succeeded**: the instance has been successfully deployed.
-    - **Active**: the deployment is up and running. 
-    - **Failed**: an error occurred when allocating resources. You need to recreate the deployment.  
-    - **Disabled**: the deployment is currently paused. 
+    - **New**: We’re in the process of allocating resources to a deployment.
+    - **Succeeded:** The instance has been successfully deployed.
+    - **Active:** The deployment is up and running. 
+    - **Failed:** An error occurred when allocating resources. Recreate the deployment.  
+    - **Disabled:** The deployment is currently paused/inactive. 
 
-* **Running status**: maintenance deployment status, which shows how many pods are run in the selected regions. If you move the cursor over the amount of running models, a list of regions will appear. 
+* **Running status:** Maintenance deployment status, showing how many pods are run in the selected regions. Move the cursor over the number of running models and a list of regions will appear. 
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/manage-deployments/deployments-tab.png" alt="Deployments page with two inference instances" width="80%">
 
 ## Manage deployments 
 
-You can view the configuration details of a deployed AI model, pause the deployment, or delete it from the Customer Portal. If you have a large number of deployments, you can also use search to find the one that you need. 
+You can view the configuration details of a deployed AI model, pause the deployment, or delete it from the Gcore Customer Portal. If you have a large number of deployments, you can also use search to find the one that you need.
 
 ## Pause deployments
 
@@ -63,39 +63,39 @@ To get comprehensive information about your deployment configuration and adjust 
 
 2\. Click **Deployments**.  
 
-3\. Find the needed deployment and click the three-dot icon next to the deployment you want to view. 
+3\. Find the required deployment and click the three-dot icon next to it. 
 
 4\. Click **Overview**.
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/manage-deployments/overview-deployment.png" alt="Overview deployment dialogs" width="80%">
 
-A new page with deployment overview will open. Navigate to the corresponding tab to check a particular functionality.   
+A new page with a deployment overview will open. Navigate to the corresponding tab to check a particular functionality.   
 
 ### Overview  
 
-On this tab, you can find all the details related to the deployment of your model. This includes the number of pods that are currently running, deployment status, price rate, endpoint, and the description (if available). 
+This tab contains all the details related to your model's deployment. This includes the number of pods currently running, deployment status, price rate, endpoint, and description (if available). 
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/manage-deployments/overview-tab.png" alt="Overview tab in the deployment overview" width="80%">
 
-You can click **Show map with running replicas** to view the regions where your models have been deployed. 
+Click **Show map with running replicas** to view the regions where your models have been deployed. 
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/manage-deployments/models-map.png" alt="Map with deployments" width="80%">
 
 ### API key authentication 
 
-On this tab, you can configure API authentication for your Inference instance. To activate the feature, **turn on the Enable API Key authentication** toggle.
+This tab allows you to configure API authentication for your Inference instance. To activate the feature, toggle the **Enable API Key authentication** toggle.
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/manage-deployments/api-key-auth-tab.png" alt="API keys section with enabled toggle" width="80%">
 
-You can choose one of the following options: 
+Choose one of the following options: 
 
-* **Select API keys**: add one or more keys that are already stored in the Gcore Customer Portal by selecting them from the dropdown list. 
+* **Select API keys:** Add one or more keys that are already stored in the Gcore Customer Portal by selecting them from the dropdown list. 
 
-* **Create new API key**: generate a new key. 
+* **Create new API key:**: Generate a new key. 
 
 <alert-element type="tip" title="Tip">
  
-Inference instances have many-to-many relationship. A single instance can have multiple API keys, and the same API key can be attached to multiple instances. 
+Inference instances have a many-to-many relationship. A single instance can have multiple API keys, and the same API key can be attached to multiple instances. 
  
 </alert-element>
 
@@ -105,7 +105,7 @@ To generate a key, select the **Create new API key** link:
 
 2\. (Optional) Add a description to give more context about the key and its usage. 
 
-4\. As a security measure, you can specify the key expiration date. If you don’t want to regenerate the key and keep it indefinitely, select **Never expire**.  
+4\. As a security measure, you can specify the key expiration date. If you don’t want to regenerate the key and want to keep it indefinitely, select **Never expire**.  
 
 4\. Click **Create**. 
 
@@ -115,7 +115,7 @@ You can now select the key from the API Keys dropdown and use it for authenticat
 
 ### Delete 
 
-On this tab, you can remove the deployment and all its data. 
+Here, you can delete a deployment and all its data. 
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/manage-deployments/delete-tab.png" alt="Delete tab in the deployment overview" width="80%">
 
@@ -129,29 +129,29 @@ To delete the deployment:
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/manage-deployments/verify-deletion.png" alt="Delete deployment confirmation dialog" width="80%">
 
-The deployed AI model has been successfully removed. 
+The deployed AI model has been successfully deleted. 
 
 ### Settings 
 
-On this tab, you can change the following settings of the deployment: 
+Here, you can change the following settings of the deployment: 
 
-* **Pod configuration**: change the parameters of a Kubernetes pod your model is deployed to.
+* **Pod configuration:** Change the parameters of a Kubernetes pod your model is deployed to.
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/manage-deployments/pod-configuration.png" alt="Pod configuration section" width="60%">
 
-* **Port**: change the pore inside the container that the model is listening on.
+* **Port:** Change the port inside the container on which the model is listening.
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/manage-deployments/port.png" alt="Port section" width="60%">
 
-* **Autoscaling**: increase or decrease the number of maximum and minimum pods during traffic changes.
+* **Autoscaling:** Increase or decrease the number of maximum and minimum pods during traffic changes.
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/manage-deployments/autoscaling.png" alt="Autoscaling section" width="60%">
 
-* **Environment variables**: add metadata.
+* **Environment variables:** Add metadata.
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/manage-deployments/env-variables.png" alt="Environment variables section" width="60%">
 
-* **Pod lifetime**: change the number of MB and vCPU allocated to the Kubernetes pod.
+* **Pod lifetime:** Change the number of MB and vCPU allocated to the Kubernetes pod.
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/manage-deployments/pod-lifetime.png" alt="Pod lifetime section" width="60%">
 
@@ -177,4 +177,4 @@ When you delete a deployment, you lose all its data. Deleted deployments can't b
 
 6\. Click **Yes, delete**. 
 
-The deployed AI model has been successfully removed. 
+The deployed AI model has been successfully deleted. 
