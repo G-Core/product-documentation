@@ -17,11 +17,11 @@ customUrl: /fastedge/getting-started/create-fastedge-apps
 
 This guide describes how to create a FastEdge app. Check out our <a href="https://gcore.com/docs/fastedge/getting-started" target="_blank">FastEdge overview</a> article to learn more about the product.
 
-You can create a FastEdge app in two ways: from a custom binary file or a pre-configured template. If you chose the last option, skip the Stage 1. 
+You can create a FastEdge app in two ways: from a custom binary file or a pre-configured template. If you chose the latter option, skip Stage 1. 
 
 ## Stage 1. Create a Wasm binary file
 
-To get started, you need to create a .wasm file that you will later upload to the Gcore Customer Portal.
+To get started, create a .wasm file that you will later upload to the Gcore Customer Portal.
 
 ### Step 1. Set up the environment 
 
@@ -73,7 +73,7 @@ fastedge = "0.1"
 ```
 ### Step 3. Create a source
 
-For illustration, we’ll create a simple app that responds with "HTTP 200" and the text “Hello world!” in the response’s body.
+In this example, we’ll create a simple app that responds with "HTTP 200" and the text “Hello world!” in the response’s body.
 
 Create a main source file src/lib.rs with the following content:
 
@@ -121,7 +121,7 @@ The resulting Wasm code will be written to the ```myapp/target/wasm32-wasi/relea
 
 5\. Enter a name for your application and provide a description if needed.  
 
-6\. (Optional) Add fixed headers to the responses. For example, you may include CORS (Cross-Origin Resource Sharing) headers in each response to ensure secure communication between origins.  
+6\. (Optional) Add fixed headers to the responses. For example, you may include CORS (cross-origin resource sharing) headers in each response to ensure secure communication between origins.  
 
 7\. (Optional) If you want to add metadata to the configuration, click **Add parameters** and enter metadata as key-value pairs.
 
@@ -141,11 +141,11 @@ Your application has been successfully deployed. You can now test its configurat
 
 <img src="https://assets.gcore.pro/docs/fastedge/create-apps/launch-from-template.png" alt="Section with Github and Markdown templates" width="80%">
 
-3\. Enter a name for your application and update a description if needed. 
+3\. Enter a name for your application and, optionally, update its description. 
 
 <img src="https://assets.gcore.pro/docs/fastedge/create-apps/github-add-name-description.png" alt="Open page with empty name and description fields" width="80%">
 
-4\. Provide required environment variables for the application: 
+4\. Provide the required environment variables for the application: 
 
 * If you selected a GitHub template, enter the repository name and add your personal access token. 
 
@@ -179,7 +179,7 @@ You can also inspect and adjust the configuration from the **Dashboards** page:
 
 <img src="https://assets.gcore.pro/docs/fastedge/create-apps/test-app-from-dasboard.png" alt="A page with a link to an app" width="80%">
 
-For example, for the application configured in the Stage 1, the response will be “Hello world!” 
+For example, the response for the application configured in Stage 1 will be “Hello world!” 
 
 ## Stage 4 (Optional). Add more functionality
 
@@ -239,7 +239,7 @@ Update the application on the edge servers:
 
 1\. Compile a new Wasm file <a href="https://gcore.com/docs/fastedge/getting-started/create-fastedge-apps#step-4-compile-a-wasm-file" target="_blank">as described in step 4</a>.
 
-2\. Upload it to the Customer Portal as a custom binary file. 
+2\. Upload it to the Gcore Customer Portal as a custom binary file. 
 
 When you open the app, you’ll see all request headers from the environment settings. It will be similar to the following output:
 
@@ -284,11 +284,11 @@ cdn-loop: nb1d2; c=11
 
 <expandable-element title="Description of the parameters">
  
-- <span style="color:#FF5913">custom-header</span>: Added custom header
+- <span style="color:#FF5913">custom-header</span>: Custom header
 - <span style="color:#FF5913">dc</span>: Data center
 - <span style="color:#FF5913">geoip-*</span>: Client GeoIP data, such as asn, latitude, longitude, region, city, continent, country name, and country code
 - <span style="color:#FF5913">server_addr</span>: PoP IP address
-- <span style="color:#FF5913">server_name</span>: Application's hostname
+- <span style="color:#FF5913">server_name</span>: Application hostname
 - <span style="color:#FF5913">x-forwarded-for</span>: Client IP address
 - <span style="color:#FF5913">pop-*</span>: PoP GeoIP data, such as asn, latitude, longitude, region, city, continent, country name, and country code
 
@@ -296,13 +296,13 @@ cdn-loop: nb1d2; c=11
 
 ## Troubleshoot an application 
 
-If you’re having issues with your FastEdge application, check out the following sections for helpful tips and troubleshooting suggestions.  
+If you’re having issues with your FastEdge application, the following sections offer helpful tips and troubleshooting suggestions.  
 
 ### HTTP status codes 
 
-If your application is correctly configured and works as expected, FastEdge will return the expected status code like "200 OK".
+If your application is correctly configured and works as expected, FastEdge will return the expected status code, such as "200 OK."
 
-However, in some exceptional situations, you might get the following status codes. Check out the description to understand the root cause and how to fix it. 
+However, in some exceptional situations, you might get the following status codes. Check the descriptions to understand the root cause. 
 
 <table>
 <thead>
