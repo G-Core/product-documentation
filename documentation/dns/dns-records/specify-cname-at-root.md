@@ -14,17 +14,17 @@ pageDescription: Explore how CNAME flattening can bypass these restrictions for 
 
 ## What is the challenge with the creation of records in the root zone (zone apex)?
 
-Nowadays <a href="https://gcore.com/docs/dns/dns-records/supported-dns-record-types#cname-record" target="_blank">CNAME records</a> are increasingly used to integrate domains with third-party solutions such as CDNs. This is because using an A record, which specifies the concrete IP address that resolves the domain, may not be suitable in cases where the IP addresses change frequently based on the geolocation of requests.
+<a href="https://gcore.com/docs/dns/dns-records/supported-dns-record-types#cname-record" target="_blank">CNAME records</a> are increasingly used to integrate domains with third-party solutions such as CDNs. Using an A record, which specifies the concrete IP address that resolves the domain, may not be suitable in cases where IP addresses change frequently based on the geolocation of requests.
 
-According to the RFC 1034 specification, a CNAME record cannot coexist with other records. Therefore, it is impossible to specify a CNAME record for the root domain, also known as the "apex domain" (e.g., `sample-test.com`), because it has mandatory NS and SOA records.
+According to the RFC 1034 specification, a CNAME record cannot coexist with other records. Therefore, it is impossible to specify a CNAME record for the root domain, also known as the "apex domain" (e.g., sample-test.com), because it has mandatory NS and SOA records.
 
-While using a subdomain (e.g., `cdn.sample-test.com`) for CNAME record creation can be sufficient, some website owners may want to integrate their root domain. For this situation, Gcore Managed DNS provides the CNAME flattening feature.
+While using a subdomain (e.g., cdn.sample-test.com) for CNAME record creation can be sufficient, some website owners may want to integrate their root domain. For this situation, Gcore Managed DNS provides the CNAME flattening feature.
 
 ## How does CNAME flattening work?
 
-CNAME flattening is a mechanism that allows specification restrictions to be bypassed and a CNAME to be specified for the root domain. It resolves the CNAME chain and uses the IP address of the final A or AAAA record. This synthetic record is then cached, respecting its TTL, and used to answer subsequent DNS queries for the apex domain on the Gcore DNS side.
+CNAME flattening is a mechanism that allows specification restrictions to be bypassed, enabling a CNAME to be specified for the root domain. It resolves the CNAME chain and uses the IP address of the final A or AAAA record. This synthetic record is then cached, respecting its TTL, and used to answer subsequent DNS queries for the apex domain on the Gcore DNS side.
 
-By using CNAME flattening, we avoid specification violations and ensure proper DNS resolution in more cases. Due to the local cache layer, the total resolution time may significantly decrease, which improves performance.
+By using CNAME flattening, we avoid specification violations and ensure proper DNS resolution in more cases. Due to the local cache layer, the total resolution time may significantly decrease, improving performance.
 
 ## Configuration of CNAME flattening
 
