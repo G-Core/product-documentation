@@ -14,7 +14,7 @@ toc:
 --1--Step 8. Enter deployment details: "step-8-enter-deployment-details"
 --1--Step 9. Finalize deployment: "step-9-finalize-deployment"
 pageTitle: Deploy an AI model | Gcore
-pageDescription: Learn how to deploy an AI model by uploading your custom model or using one of the preconfigured models from the model catalog.
+pageDescription: Learn how to deploy an AI model on Gcore Inference at the Edge: Upload your custom model or deploy from our model catalog.
 ---
 # Deploy an AI model
 
@@ -22,7 +22,7 @@ With Gcore Inference at the Edge, you can deploy a custom AI model by uploading 
 
 <alert-element type="info" title="Info">
  
-The feature is in beta testing and available for free. To enable the product for your account, contact <a href="mailto:support@gcore.com" target="_blank">our technical support</a> or your account manager. 
+Gcore Inference at the Edge is available free during beta. To use it, contact <a href="mailto:support@gcore.com" target="_blank">our technical support</a> or your account manager. 
  
 </alert-element>
 
@@ -42,19 +42,19 @@ The feature is in beta testing and available for free. To enable the product for
 
 If you need to add a new model registry, click Add registry and then configure it as follows: 
 
-* **Image registry name**: Registry name that will be displayed in the Registry dropdown. 
+* **Image registry name:** Registry name that will be displayed in the Registry dropdown. 
 
-* **Image registry URL**: Link to the location where your AI model is stored. 
+* **Image registry URL:** Link to the location where your AI model is stored. 
 
-* **Image registry username**: Username you use to access the storage location of your AI model. 
+* **Image registry username:** Username you use to access the storage location of your AI model. 
 
-* **Image registry password**: Password you use to access the storage location of your AI model. 
+* **Image registry password:** Password you use to access the storage location of your AI model. 
 
 To save the new registry, click **Add**.
 
-5\. Enter the name of the image with your model. For example, `ghcr.io/namespace/image_name:tag` or `docker.io/username/model:tag`.  
+5\. Enter the name of the image with your model. For example: `ghcr.io/namespace/image_name:tag` or `docker.io/username/model:tag`.  
 
-6\. Specify a port that a containerized model will listen to. The external port for accessing your deployment is always 443 (HTTPS).
+6\. Specify a port to which the containerized model will listen. The external port for accessing your deployment is always 443 (HTTPS).
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/deploy-ai-model/image-name-port.png" alt="Image name and port sections" width="80%">
 
@@ -64,7 +64,7 @@ This configuration determines the allocated number of resources (GPU/vCPU/RAM) f
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/deploy-ai-model/select-flavor.png" alt="Flavor dropdown in the Pod configuration section" width="80%">
 
-Recommended flavor parameters for models: 
+We recommended the following flavor parameters for models: 
 
 <table>
 <thead>
@@ -91,7 +91,7 @@ Recommended flavor parameters for models:
 
 ## Step 3. Set up routing placement 
 
-Select Inference regions where the model will run among available worldwide locations. Consider that the list of regions depends on the availability of the selected pod configuration in Step 2.
+Select the inference regions where the model will run from the list of available worldwide edge PoPs. The list of available PoPs depends on which pod configuration you selected in Step 2.
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/deploy-ai-model/routing-placement.png" alt="Regions dropdown in the Routing placement section" width="80%">
 
@@ -101,9 +101,9 @@ You can set up autoscaling for all pods (**All selected regions**) or only for p
 
 Specify the range of nodes you want to maintain: 
 
-* **Minimum pods**: the minimum number of pods that must be deployed during a low load period.  
+* **Minimum pods**: The minimum number of pods that must be deployed during low-load periods.  
 
-* **Maximum pods**: the maximum number of pods that can be added during an increased load period. 
+* **Maximum pods**: The maximum number of pods that can be added during peak-load periods. 
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/deploy-ai-model/autoscaling.png" alt="Autoscaling section" width="80%">
 
@@ -115,7 +115,7 @@ If you want to add additional information to your model deployment, create varia
 
 ## Step 6 (Optional). Configure authentication via API keys  
 
-You can configure an API authentication for your deployment. Turn on the Enable API Key authentication toggle to view the authentication settings. 
+You can configure API authentication for your deployment. Turn on the "Enable API Key Authentication" toggle to access the authentication settings.
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/deploy-ai-model/api-keys.png" alt="API keys section with enabled toggle" width="80%">
 
@@ -125,29 +125,29 @@ A single deployment can have multiple API keys, and the same API key can be atta
  
 </alert-element>
 
-You can choose one of the following options: 
+Choose one of the following options:
 
-* **Select API keys**: add one or more keys that are already stored in the Gcore Customer Portal by selecting them from the dropdown list. 
+* **Select API keys**: Add one or more keys that are already stored in the Gcore Customer Portal by selecting them from the dropdown list. 
 
-* **Create new API key**: generate a new key right there. 
+* **Create new API key**: Generate a new key. 
 
-To generate a key right there, select the **Create new API key** link: 
+To generate a new key, select the **Create new API key** link and then perform the following steps:
 
 1\. In a new dialog that opens, enter the key name to identify the key in the system. 
 
 2\. (Optional) Add a key description to give more context about the key and its usage. 
 
-3\. As a security measure, you can specify the key expiration date. If you don’t want to regenerate the key and keep it indefinitely, select **Never expire**. 
+3\. As a security measure, you can specify the key expiration date. If you don’t want to regenerate the key and instead want to keep it indefinitely, choose **Never expire**. 
 
 4\. Click **Create** to generate the key. 
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/deploy-ai-model/create-api-key.png" alt="Create API key dialog with annotated steps" width="80%">
 
-After you generate the key, it will appear in the API Keys dropdown, and you can select it to authenticate to the deployment.  
+After you generate the key, it will appear in the API Keys dropdown. You can then select it to authenticate to the deployment.  
 
 ## Step 7. Specify pod lifetime 
 
-Specify the number of seconds after which a pod will be deleted when there are no requests to your pod. For example, if you enter 600, the pod will be deleted in 600 seconds—equal to ten minutes. 
+Specify the number of seconds after which a pod will be deleted when there are no requests to your pod. For example, if you enter 600, the pod will be deleted in 600 seconds, which is equal to ten minutes. 
 
 <alert-element type="info" title="Info">
  
@@ -159,12 +159,12 @@ If you specify 0, the container will take approximately one minute to scale down
 
 ## Step 8. Enter deployment details 
 
-Enter the deployment name and additional information if needed. This information will be displayed in the settings on the **Deployments** page.   
+Enter the deployment name and additional information if needed. This information will be displayed on the Deployments page under Settings.   
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/deploy-ai-model/deployment-details.png" alt="Deployment details section" width="80%">
 
 ## Step 9. Finalize deployment 
 
-Scroll the page up and click **Deploy** in the top-right corner of the screen. 
+Scroll to the top of the page and click **Deploy** in the top-right corner of the screen. 
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/deploy-ai-model/click-deploy.png" alt="Your plan section with an active Deploy button" width="80%">  
