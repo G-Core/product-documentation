@@ -5,7 +5,7 @@ published: true
 toc:
    --1--Create: "create-a-dns-record"
    --1--Manage: "edit-a-dns-record"
-pageTitle: Manage DNS Records: Advanced Interface Mode with Dynamic Response | Gcore
+pageTitle: "Manage DNS Records: Advanced Interface Mode with Dynamic Response | Gcore"
 pageDescription: Learn how to add, edit, and delete Gcore Managed DNS records in advanced interface mode with Geo Proximity and Geobalancing.
 customUrl: /dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing
 ---
