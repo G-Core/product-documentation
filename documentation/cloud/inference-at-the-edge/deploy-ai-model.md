@@ -14,7 +14,7 @@ toc:
 --1--Step 8. Enter deployment details: "step-8-enter-deployment-details"
 --1--Step 9. Finalize deployment: "step-9-finalize-deployment"
 pageTitle: Deploy an AI model | Gcore
-pageDescription: Learn how to deploy an AI model on Gcore Inference at the Edge: Upload your custom model or deploy from our model catalog.
+pageDescription: "Learn how to deploy an AI model on Gcore Inference at the Edge: Upload your custom model or deploy from our model catalog."
 ---
 # Deploy an AI model
 

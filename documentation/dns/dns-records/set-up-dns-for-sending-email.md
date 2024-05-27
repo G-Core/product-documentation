@@ -82,7 +82,7 @@ A DKIM record is set up as a TXT record but requires a more complex setup proces
 
 ## Step 6. Set up a DMARC policy (TXT)
 
-A DMARC (Domain-based Message Authentication, Reporting and Conformance) record is used to define how to handle emails that fail SPF and DKIM checks. This helps to minimize harm from spam and security vulnerabilities. When an email is received, the recipient’s mail server checks the SPF and DKIM records of the sending domain. If they pass the checks, the email is considered authentic. If either or both checks fail, the DMARC policy is examined.
+A DMARC (Domain-based Message Authentication, Reporting, and Conformance) record defines how to handle emails that fail SPF and DKIM checks. This helps minimize harm from spam and security vulnerabilities. When an email is received, the recipient’s mail server checks the sending domain's SPF and DKIM records. If the records pass the checks, the email is considered legitimate. If either or both checks fail, the DMARC policy is examined.
 
 The DMARC policy instructs the recipient's mail server on how to handle failed authentication emails. The policy can be set to none (no action taken), quarantine (mark as spam or place in a separate folder), or reject (block the email).
 
