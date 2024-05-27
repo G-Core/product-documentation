@@ -18,7 +18,7 @@ pageDescription: "Learn how to deploy an AI model on Gcore Inference at the Edge
 ---
 # Deploy an AI model
 
-With Gcore Inference at the Edge, you can deploy a custom AI model by uploading it from your model registry.  
+With Gcore Inference at the Edge, you can deploy a custom AI model by uploading it from your model registry. In the near future, preconfigured models will also be available from Gcore's model catalog. 
 
 <alert-element type="info" title="Info">
  
