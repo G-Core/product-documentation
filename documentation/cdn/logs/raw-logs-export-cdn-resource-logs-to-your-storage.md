@@ -29,7 +29,6 @@ Raw Logs is an option that enables an automatic export of CDN resource logs to y
 <alert-element type="info" title="Info">
 
 This is a paid feature. To activate Raw Logs, [contact the Gcore support team](mailto:support@gcore.com). 
-
 After activation, enable Raw Logs in the Gcore Customer Portal and configure export to S3, FTP, or SFTP storage.
 
 </alert-element>
@@ -489,7 +488,7 @@ For example: ```examplename.s-ed1.cloud.gcore.lu```.
 
 <alert-element type="info" title="Info">
  
-If you use <a href="https://gcore.com/storage" target="_blank">Gcore Object Storage</a>, a location ID is required. You can find it in the <a href="https://gcore.com/docs/storage/request-content-directly-from-the-storage" target="_blank">Details of the storage</a>. Your location ID is a part of your hostname to the first dot.  
+If you use Gcore Object Storage, you must specify the location ID. You can find it in the <a href="https://gcore.com/docs/storage/request-content-directly-from-the-storage" target="_blank">Details of the storage</a>. Your location ID is a part of your hostname to the first dot.  
  
 </alert-element>
 
