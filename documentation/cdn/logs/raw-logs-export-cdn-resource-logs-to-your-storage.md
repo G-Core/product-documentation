@@ -27,7 +27,7 @@ Raw Logs is an option that enables an automatic export of CDN resource logs to y
 
 <alert-element type="info" title="Info">
 
-This is a paid feature. To activate Raw Logs, [contact Gcore support team](mailto:support@gcore.com). 
+This is a paid feature. To activate Raw Logs, [contact the Gcore support team](mailto:support@gcore.com). 
 
 After activation, enable Raw Logs in the Gcore Customer Portal and configure export to S3, FTP, or SFTP storage.
 
@@ -57,11 +57,11 @@ If you don’t see the Origin Shielding option on the Raw Logs page, this featur
 
 You can check the status of the Raw Logs in the Gcore Customer Portal: 
 
-* **Pending**: A status for the time interval between the connection to a storage and the very first log export. 
+* **Pending**: A status for the time interval between the connection to storage and the first log export. 
 
 * **OK**: Logs are exported from at least one CDN server. 
 
-* **Failed**: An error occurred while connecting to a storage or the service failed to export logs within 24 hours. 
+* **Failed**: An error occurred while connecting to a storage, or the service failed to export logs within 24 hours. 
 
 * **Pause**: The Raw Logs feature is paused. 
 
@@ -158,7 +158,7 @@ It’s OK if you find a field that’s not listed in the example. We occasionall
 
 ## Log fields
 
-The following table contains a full list of available log fields. Fields formatted in italics relate to our internal CDN system, so you can ignore them.  
+The following table contains a complete list of available log fields. Fields formatted in italics relate to our internal CDN system, so you can ignore them.  
 
 You can check other fields—they can be helpful for traffic analysis or statistics. 
 
@@ -260,7 +260,16 @@ You can check other fields—they can be helpful for traffic analysis or statist
   <tr>
     <td>$upstream_cache_status</td>
     <td>MISS</td>
-    <td>Status of a requested file in CDN cache:<br>- HIT is a status of a response served from CDN cache.<br>- STALE is a status of an outdated response that failed to update because an origin was not responding or responding incorrectly.<br>- UPDATING is a status of an outdated response that is still updating since a previous request.<br>- REVALIDATED is a status of a response that is identical to the one on an origin based on the proxy_cache_revalidate directive.<br>- EXPIRED is a status of a response that has expired in cache, but still matches the one on an origin. A request has been sent to an origin for re-caching.<br>- MISS is a status of a response that has been served directly from an origin, rather than from cache.<br>- BYPASS is a status of a response for the first file request after clearing the cache.<br>Note: this status appears when the file is requested by each CDN server.<br>When one CDN server requests a file for the first time, it will have the BYPASS status.<br>When the same server requests the file again, the status will be changed to HIT.<br>When another CDN server requests the file, it will again have the BYPASS status.<br></td>
+    <td>Status of a requested file in CDN cache:
+    <br> HIT is the status of a response served from the CDN cache.
+    <br> STALE is the status of an outdated response that failed to update because an origin was not responding or responding incorrectly.
+    <br>UPDATING is the status of an outdated response that is still updating since a previous request.
+    <br>REVALIDATED is the status of a response that is identical to the one on an origin based on the proxy_cache_revalidate directive.
+    <br>EXPIRED is the status of a response that has expired in cache but still matches the one on an origin. A request has been sent to an origin for re-caching.
+    <br>MISS is the status of a response that has been served directly from an origin rather than from a cache.
+    <br>BYPASS is the status of a response for the first file request after clearing the cache. This status appears when the file is requested by each CDN server.
+    <br>When one CDN server requests a file for the first time, it will have the BYPASS status.
+    <br>When the same server requests the file again, the status will be changed to HIT.<br>When another CDN server requests the file, it will again have the BYPASS status.<br></td>
   </tr>
   <tr>
     <td>$upstream_response_length</td>
@@ -400,7 +409,7 @@ You can check other fields—they can be helpful for traffic analysis or statist
   <tr>
     <td>$gcdn_tcpinfo_snd_cwnd</td>
     <td>45</td>
-    <td>Size of the TCP Congestion window, i.e. the maximum number of TCP segments that the connection can send before an acknowledgement is required.</td>
+    <td>Size of the TCP Congestion window, i.e., the maximum number of TCP segments that the connection can send before an acknowledgment is required.</td>
   </tr>
   <tr>
     <td>$tcpi_total_retrans</td>
@@ -437,7 +446,7 @@ You can check other fields—they can be helpful for traffic analysis or statist
 
 7\. Specify your access key ID. In your Amazon personal account, it's called "AWS access key ID". For details on how to find your key ID, check the <a href="https://docs.aws.amazon.com/powershell/latest/userguide/pstools-appendix-sign-up.html" target="_blank">official Amazon guide</a>. An access key ID and secret access key are required to configure log export to your storage.
 
-8\. Specify your secret access key. In your Amazon account, it's called "AWS secret access key". YFor details on how to find your access key, check the <a href="https://docs.aws.amazon.com/powershell/latest/userguide/pstools-appendix-sign-up.html" target="_blank">official Amazon guide</a>. 
+8\. Specify your secret access key. In your Amazon account, it's called "AWS secret access key". For details on how to find your access key, check the <a href="https://docs.aws.amazon.com/powershell/latest/userguide/pstools-appendix-sign-up.html" target="_blank">official Amazon guide</a>. 
 
 9\. (Optional) Enter your AWS region—the location of a server where your storage is hosted. For most storage types, the region is determined automatically, so you might leave the field empty. However, we recommend specifying the region to ensure that your logs are exported successfully. 
 
@@ -474,7 +483,7 @@ You've successfully configured Raw Logs export to Amazon S3.
 
 9\. Specify your secret access key. If you use <a href="https://gcore.com/storage" target="_blank">Gcore Object Storage</a>, you can find its secret access key in your personal account in the <a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage#s3" target="_blank">Secret key</a> field.
 
-10\. Specify a bucket hostname—a bucket ID that's used by your Object storage system in the ```{bucket_name}.{hostname}``` format. It's required to ensure that logs are exported to a correct bucket within a storage. A bucket hostname of the Gcore storage looks as follows: ```{bucket name}.{hostname from step 3}```. 
+10\. Specify a bucket hostname—a bucket ID that's used by your Object storage system in the ```{bucket_name}.{hostname}``` format. It's required to ensure that logs are exported to the correct bucket within a storage. A bucket hostname of the Gcore storage looks as follows: ```{bucket name}.{hostname from step 3}```. 
 For example: ```examplename.s-ed1.cloud.gcore.lu```. 
 
 11\. (Optional) Specify a regio—location ID of a server where your storage is hosted. For some storage types, the region is determined automatically, so you can leave the field empty. 
@@ -513,7 +522,7 @@ You've successfully configured Raw Logs export to S3 storage.
 
 <alert-element type="warning" title="Warning">
  
-DYou need to specify an FTP or SFTP storage port after the hostname. For example: ```ams.origin.gcore.co:2200```. Otherwise, you’ll get the “Wrong connection settings error” and won’t be able to connect to the storage. 
+You need to specify an FTP or SFTP storage port after the hostname. For example: ```ams.origin.gcore.co:2200```. Otherwise, you’ll get the “Wrong connection settings error” and won’t be able to connect to the storage. 
  
 </alert-element>
 
@@ -531,7 +540,7 @@ If you’re using the Gcore SFTP storage, you won’t be able to write to the ho
  
 </alert-element>
 
-10\. Choose how to organize the storage: put logs of all CDN resources into one folder or use separate folders for each CDN resource. Then specify a folder name. If you specify a non-existent folder, logs will be exported to a root folder.
+10\. Choose how to organize the storage: put logs of all CDN resources into one folder or use separate folders for each CDN resource. Then, specify a folder name. If you specify a non-existent folder, logs will be exported to a root folder.
 
 11\. (Optional) Specify the folder name where logs will be stored. If you specify a non-existent folder, logs will be exported to a root folder. For Gcore SFTP storage, you can only specify the default **htdocs** folder.  
 
