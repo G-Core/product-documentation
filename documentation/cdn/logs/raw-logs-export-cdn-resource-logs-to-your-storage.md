@@ -17,7 +17,7 @@ toc:
    --2--Amazon storage: "amazon-storage"
    --2--Non-Amazon storage: "non-amazon-storage"
    --1--Export logs to FTP or SFTP storage: "export-logs-to-ftp-or-sftp-storage"
-
+   --1--Deactivate Raw Logs: "deactivate-raw-logs"
 pageTitle: Guide on Using the CDN Raw Logs Feature | Gcore
 pageDescription: A comprehensive guide on using the CDN Raw Logs feature for exporting logs to your storage, understanding traffic calculation in log reports.
 ---
@@ -389,7 +389,7 @@ You can check other fields—they can be helpful for traffic analysis or statist
   <tr>
     <td   >$ssl_session_reused<br>(internal system variable)</td>
     <td   > r</td>
-    <td   >The filed shows whether a session was reused (“r” ) or not (“.”)</td>
+    <td   >The field shows whether a session was reused (“r” ) or not (“.”)</td>
   </tr>
   <tr>
     <td  >$sent_http_content_type</td>
