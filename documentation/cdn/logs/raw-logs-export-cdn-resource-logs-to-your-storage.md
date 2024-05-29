@@ -25,6 +25,8 @@ pageDescription: A comprehensive guide on using the CDN Raw Logs feature for exp
 
 Raw Logs is an option that enables an automatic export of CDN resource logs to your storage. Logs contain information about user requests sent to cache servers and pre-cache servers (if the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin Shielding</a> is enabled).
 
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/raw-logs-page.png" alt="Raw Logs page in Customer Portal">
+
 <alert-element type="info" title="Info">
 
 This is a paid feature. To activate Raw Logs, [contact the Gcore support team](mailto:support@gcore.com). 
@@ -32,8 +34,6 @@ This is a paid feature. To activate Raw Logs, [contact the Gcore support team](m
 After activation, enable Raw Logs in the Gcore Customer Portal and configure export to S3, FTP, or SFTP storage.
 
 </alert-element>
-
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/raw-logs-page.png" alt="Raw Logs page in Customer Portal">
 
 ## Raw Logs settings  
 
@@ -49,7 +49,7 @@ When setting up Raw Logs, select the checkbox to enable **Add logs from origin s
 
 <alert-element type="tip" title="Tip">
  
-If you don’t see the Origin Shielding option on the Raw Logs page, this feature is not activated for your account. For details on how to activate Origin Shielding, check our<a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">dedicated guide</a>. 
+If you don’t see the Origin Shielding option on the Raw Logs page, this feature is not activated for your account. For details on how to activate Origin Shielding, check our <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">dedicated guide</a>. 
  
 </alert-element>
 
@@ -112,7 +112,7 @@ Where:
  
 The final value of log data may differ slightly from the billing statistics as there may be cases where not all logs are received, such as: 
 
-* You are using the <a herf="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding"> target="_blank">Origin Shielding</a> feature but didn’t select the **Add logs from origin shieldin**g option. 
+* You are using the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin Shielding</a> feature but didn’t select the **Add logs from origin shieldin**g option. 
 
 * You have a rate limit set on your storage side, and when CDN started generating logs, some logs weren’t downloaded because of the rate limitation. 
  
@@ -490,7 +490,7 @@ For example: ```examplename.s-ed1.cloud.gcore.lu```.
 
 <alert-element type="info" title="Info">
  
-If you use <a href="https://gcore.com/storage" target="_blank">Gcore Object Storage</a>, a location ID is required. You can find it in the <a href="https://gcore.com/docs/storage/request-content-directly-from-the-storage" target="_blank>Details of the storage</a. Your location ID is a part of your hostname to the first dot.  
+If you use <a href="https://gcore.com/storage" target="_blank">Gcore Object Storage</a>, a location ID is required. You can find it in the <a href="https://gcore.com/docs/storage/request-content-directly-from-the-storage" target="_blank">Details of the storage</a>. Your location ID is a part of your hostname to the first dot.  
  
 </alert-element>
 
@@ -518,7 +518,7 @@ You've successfully configured Raw Logs export to S3 storage.
 
 <img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/export-logs-from-sftp-1.png" alt="Raw logs settings for SFTP storage" width="80%">
 
-6\. Specify a hostname—a name that’s assigned to a storage server within a network and is used instead of an IP address. If you use <a href="https://gcore.com/storage" target="_blank">Gcore SFTP Storage</a>, you can find its hostname in the <a href="https://gcore.com/docs/storage/request-content-directly-from-the-storage" target="_blank">Details of the storage</a> in the <a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage#sftp" target="_blank">Hostname field</a>. It looks as follows: ```ams.origin.gcdn.co```.
+6\. Specify a hostname—a name that’s assigned to a storage server within a network and is used instead of an IP address. If you use Gcore SFTP Storage, you can find its hostname in the <a href="https://gcore.com/docs/storage/request-content-directly-from-the-storage" target="_blank">Details of the storage</a> in the <a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage#sftp" target="_blank">Hostname field</a>. It looks as follows: ```ams.origin.gcdn.co```.
 
 <alert-element type="warning" title="Warning">
  
@@ -526,11 +526,11 @@ You need to specify an FTP or SFTP storage port after the hostname. For example:
  
 </alert-element>
 
-7\. Specify a username you use to log in to the storage. If you use <a href="https://gcore.com/storage" target="_blank">Gcore SFTP storage</a>, you can find the username in the <a href="https://gcore.com/docs/storage/request-content-directly-from-the-storage" target="_blank">Details of your storage</a> in the <a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage#sftp" target="_blank">Storage/User name</a> field.
+7\. Specify a username you use to log in to the storage. If you use Gcore SFTP storage, you can find the username in the <a href="https://gcore.com/docs/storage/request-content-directly-from-the-storage" target="_blank">Details of your storage</a> in the <a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage#sftp" target="_blank">Storage/User name</a> field.
 
 8\. Enter the password you use to authenticate to the storage. 
 
-9\. Specify a folder for export. If you use <a href="https://gcore.com/storage" target="_blank">Gcore SFTP storage</a>, specify the root (home) folder where other folders originate from. You can find its name in the <a href="https://gcore.com/docs/storage/request-content-directly-from-the-storage" target="_blank">Details of your storage</a> at the end of the **Upload path** field.
+9\. Specify a folder for export. If you use Gcore SFTP storage, specify the root (home) folder where other folders originate from. You can find its name in the <a href="https://gcore.com/docs/storage/request-content-directly-from-the-storage" target="_blank">Details of your storage</a> at the end of the **Upload path** field.
 
 If you use an SFTP storage from another provider, clarify whether a root folder that includes other folders is created by default. If not, leave the field empty. If yes, specify a folder name.
 
