@@ -25,8 +25,7 @@ pageDescription: A comprehensive guide on using the CDN Raw Logs feature for exp
 
 Raw Logs is an option that enables an automatic export of CDN resource logs to your storage. Logs contain information about user requests sent to cache servers and pre-cache servers (if the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin Shielding</a> is enabled).
 
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/raw-logs-page.png" alt="Raw Logs page in Customer Portal">
-
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/deactivate-logs.png" alt="Raw logs page in the Customer Portal" width="80%">
 <alert-element type="info" title="Info">
 
 This is a paid feature. To activate Raw Logs, [contact the Gcore support team](mailto:support@gcore.com). 
@@ -45,7 +44,7 @@ If you are using the <a href="https://gcore.com/docs/cdn/cdn-resource-options/ge
 
 When setting up Raw Logs, select the checkbox to enable **Add logs from origin shielding**.
 
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/add-logs-from-origin-shielding.png" alt="Raw Logs page with the checkbox highlighted">
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/add-logs-from-origin-shielding.png" alt="Raw Logs page with the checkbox highlighted" width="80%">
 
 <alert-element type="tip" title="Tip">
  
@@ -558,4 +557,4 @@ If you disable the logs, your settings will be saved. You can always activate th
 
 If you made any changes to the configuration, click Discard changes to cancel any changes made during the editing process.
 
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/deactivate-logs.png" alt="Raw logs settings for SFTP storage" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/deactivate-logs.png" alt="Raw logs page" width="80%">
