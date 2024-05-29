@@ -21,7 +21,7 @@ pageDescription: Learn how to create and manage a network in the cloud to transf
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-network/_____________.png" alt="_____________.png">
 
-In the drop-down window, enter the network name and click on Create network. If you want to create a network for bare metal servers, turn on the **Bare Metal Network (VLAN)** selector. 
+In the drop-down window, enter the network name and click on Create network. If you want to create a network for bare metal servers, turn on the **Bare Metal Network (VLAN)** selector. 
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-network/__________________.png" alt="__________________.png">
 
