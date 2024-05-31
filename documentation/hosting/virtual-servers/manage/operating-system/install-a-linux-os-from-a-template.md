@@ -5,7 +5,7 @@ published: true
 order: 20
 toc:
 pageTitle: Install a Linux OS from a template| Gcore
-pageDescription: Learn how to install a Linux OS from a template for virtual server.
+pageDescription: Learn how to install a Linux OS from a template for Virtual Server.
 ---
 # Install a Linux OS from a template
 

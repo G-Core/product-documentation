@@ -67,7 +67,7 @@ Considering the benefits of Bare Metal, they can be the best solution for the fo
 *   **High-performance computing (HPC)** that requires a large amount of processing power for CPU-intensive workloads such as machine learning or AI modeling.
 *   **Big data analytics** that need optimal computing resources, security, and storage.
 *   **Database servers** that can benefit you if you deploy your app on a Virtual Machine and migrate its database to a Bare Metal server.
-*   **Containers/virtualization** that are best deployed on dedicated servers and managed via an API.
+*   **Containers/virtualization** that are best deployed on Dedicated Servers and managed via an API.
 *   **E-Commerce** websites and applications.
 *   Video production/game development **rendering**.
 
@@ -104,7 +104,7 @@ The table below shows the key differences between our Bare Metal servers in <a h
 
  
 
-|                                       | Bare Metals                                                                                                                                                                                                                                            | Dedicated Servers                                                                                    |
+|                                       | Bare Metal                                                                                                                                                                                                                                            | Dedicated Servers                                                                                    |
 |---------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------|
 | Management                            | Gcore Customer Portal, API, Terraform                                                                                                                                                                                                                    | DCImanager, IPMI, SSH                                                                                |
 | Server administration                 | Automated for a user                                                                                                                                                                                                                                   | Done per user                                                                                        |

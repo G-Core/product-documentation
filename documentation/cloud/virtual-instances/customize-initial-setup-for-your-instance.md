@@ -91,7 +91,7 @@ curl 'https://api.gcore.com/cloud/v2/instances/{projectId}/{regionId}'
 
 ### From Terraform
 
-A new virtual Virtual Machine with the User Data field setup can also be created using <a href="https://registry.terraform.io/providers/G-Core/gcore/latest/docs/data-sources/instance" target="_blank">Terraform</a>. Encode your User Data field value to `base64` format first, then provide the encoded value to the `user_data` field in the Terraform definition file as below:
+A new Virtual Machine with the User Data field setup can also be created using <a href="https://registry.terraform.io/providers/G-Core/gcore/latest/docs/data-sources/instance" target="_blank">Terraform</a>. Encode your User Data field value to `base64` format first, then provide the encoded value to the `user_data` field in the Terraform definition file as below:
 
 ```
 resource "gcore_instance" "instance" {

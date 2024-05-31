@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: Virtual servers
+displayName: Virtual Servers
 published: true
 order: 30
 ---

@@ -42,7 +42,7 @@ Do Steps 5, 6, 7, 8, 9, and 10. The screenshot below highlights the fields that 
   
 6\. Select a public or private network interface.
 
-If you are planning to use the AI Infrastructure with servers hosted outside of Gcore Cloud, attach a public network interface. So, your cluster will be accessible from external networks.
+If you are planning to use the GPU Cloud with servers hosted outside of Gcore Cloud, attach a public network interface. So, your cluster will be accessible from external networks.
 
 If you want to use the service with Gcore servers only, assign a private network. Your cluster will be available only for internal networks. Select one of the existing networks or create a new one to attach it to your Poplar server.  
   

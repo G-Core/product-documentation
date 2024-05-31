@@ -266,7 +266,7 @@ If a VM is only in a private subnet, DHCP must be enabled in the settings of thi
 
 </alert-element>
 
-*   Turn on **Add tags** to add a key-value pair that forms the metadata of the virtual machine description.
+*   Turn on **Add tags** to add a key-value pair that forms the metadata of the Virtual Machine description.
 
 ![The field to add tags](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/14-add-tags.png)
 
@@ -276,13 +276,13 @@ If a VM is only in a private subnet, DHCP must be enabled in the settings of thi
 
 <expandable-element title="Types of placement groups">
 
-You can place your virtual machine in one of three types of groups:
+You can place your VM in one of three types of groups:
 
 - **Affinity** groups assemble virtual machines on the same hardware. Machines launched in one affinity group will exchange data faster because they are located on the same server.
 
-- **Anti-affinity** groups work the opposite way: All virtual machines in this group will be separated across different physical hardware. This increases fault tolerance of a cluster: Even if something goes wrong with one server, machines on the other servers will remain available.
+- **Anti-affinity** groups work the opposite way: All Virtual Machines in this group will be separated across different physical hardware. This increases fault tolerance of a cluster: Even if something goes wrong with one server, machines on the other servers will remain available.
 
-- **Soft anti-affinity** groups encourage, but don't strictly enforce, the separation of virtual machines. Unlike a strict anti-affinity policy, where machines may never be placed together, soft anti-affinity allows placement on the same hardware when it is necessary due to factors like resource constraints or high demand. It is suitable for users who want to use the anti-affinity policy by default while also avoiding machine creation failures if an unused host is not found.
+- **Soft anti-affinity** groups encourage, but don't strictly enforce, the separation of Virtual Machines. Unlike a strict anti-affinity policy, where machines may never be placed together, soft anti-affinity allows placement on the same hardware when it is necessary due to factors like resource constraints or high demand. It is suitable for users who want to use the anti-affinity policy by default while also avoiding machine creation failures if an unused host is not found.
 
 </expandable-element>
 
@@ -298,6 +298,6 @@ For names, use Latin characters, underscores, spaces, and dots.
 
 11\. Click **Create virtual machine**.
 
-Your server will be transitioned to the **Building** status. The system will allocate resources for your virtual machine.
+Your server will be transitioned to the **Building** status. The system will allocate resources for your Virtual Machine.
 
 After that, the server will be automatically moved to the **Power on** status. Your machine is ready to run!

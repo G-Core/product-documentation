@@ -137,7 +137,7 @@ You’ve successfully attached a volume to the Virtual Machine.
 
 2\. Find the Virtual Machine you want to update and click its name to open it.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/cloud-instances.png" alt="Virtual Virtual Machines tab with two created instances" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/cloud-instances.png" alt="Virtual Machines tab with two created instances" width="80%">
 
 3\. Open the **Volumes** tab.
 

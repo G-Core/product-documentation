@@ -8,7 +8,7 @@ toc:
    --1--2. Select region: "step-2-select-the-region"
    --1--3. Select version: "step-3-select-the-version"
    --1--4. Configure pool: "step-4-configure-pools"
-   --2--Vurtual Machine: "virtual-machine"
+   --2--Virtual Machine: "virtual-machine"
    --2--Bare Metal: "bare-metal"
    --1--5. Select the CNI Provider: "step-5-select-the-cni-provider" 
    --1--6. Configure Network: "step-6-configure-network-settings"
@@ -99,7 +99,7 @@ If you want to [enable an IPv6 dual-stack](https://gcore.com/docs/cloud/kubernet
 
 Choose either the *Cilium* or *Calico* network stack. These provide networking and network security solutions for containers.
 
-- Cilium uses eBPF to inject functionality into the kernel and provides a broader range of additional features (load balancing, advanced security, failure detection, etc.) than Calico. You can add additional functions as required by checking the relevant box for DSR, tunneling, load balancer acceleration, and encryption.
+- Cilium uses eBPF to inject functionality into the kernel and provides a broader range of additional features (load balancing, advanced security, failure detection, etc.) than Calico. You can add additional functions as required by checking the relevant box for DSR, tunneling, Load Balancer acceleration, and encryption.
 - Calico uses a more conservative stack based on iptables. 
 
 <alert-element type="warning" title="Warning">

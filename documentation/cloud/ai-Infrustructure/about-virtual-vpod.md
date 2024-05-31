@@ -15,7 +15,7 @@ pageDescription: Discover virtual vPODs. AI clusters with Poplar servers on virt
 
 ## What is a virtual vPOD?
 
-A virtual vPOD is a flavor of an AI cluster in which a Poplar server is deployed on a virtual machine, as opposed to a dedicated vPOD, which deploys a Poplar server on a dedicated bare metal server.
+A virtual vPOD is a flavor of an AI cluster in which a Poplar server is deployed on a Virtual Machine, as opposed to a dedicated vPOD, which deploys a Poplar server on a dedicated Bare Metal server.
 
 With virtual vPODs, you can directly access the host machines and can easily set up your own development environment on each IPU instance, install and run any code in an ultrafast connection with IPU accelerators, have better experience with deploying and developing such frameworks like TensorFlow and PyTorch on Cloud IPUs, use ephemeral storage, execute custom code in input pipelines, and integrate Cloud IPUs into research and production workflows.
 
@@ -37,7 +37,7 @@ Virtual vPODs offer two main features.
 
 Each flavor of virtual vPOD comes with:
 
-- 1 virtual machine. The configuration of a virtual machine depends on the capacity of vCPU, RAM and ephemeral storage.
+- 1 Virtual Machine. The configuration of a Virtual Machine depends on the capacity of vCPU, RAM and ephemeral storage.
 - Host server(s) with 4 IPU-processors on each. The exact number of host servers depends on the flavor you choose.
 
 For up-to-date prices and availability, refer to <a href="https://gcore.com/cloud/ai-platform" target="_blank">our website</a> or your <a href="https://cloud.gcore.com/cloud/projects/list" target="_blank">Customer Portal</a>.

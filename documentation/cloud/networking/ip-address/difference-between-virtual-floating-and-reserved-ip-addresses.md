@@ -18,17 +18,20 @@ pageDescription: Understand the differences between virtual, floating, and reser
   </tr>
   <tr>
     <td>Use cases</td>
-    <td>• Assigning to several Virtual Machines at once to create a fault-tolerant infrastructure.
+    <td style="text-align: left">
+    • Assigning to several Virtual Machines at once to create a fault-tolerant infrastructure.<br>
     • Using as a secondary address for the network interface</td>
-    <td>• Providing access from the Internet to a Virtual Machine in a private subnet. After assigning a floating IP to the machine, it will be accessible from the external network.</td>
-    <td>• Assigning to a Virtual Machine or a Load Balancer at any time. 
+     <td style="text-align: left">
+     • Providing access from the Internet to a Virtual Machine in a private subnet. After assigning a floating IP to the machine, it will be accessible from the external network.</td>
+    <td style="text-align: left">
+    • Assigning to a Virtual Machine or a Load Balancer at any time.</br>
     • Converting to a VIP.</td>
   </tr>
   <tr>
-    <td>Subnet</td>
-    <td>Public or private</td>
-    <td>Private</td>
-    <td>Public or private</td>
+    <td style="text-align: left">Subnet</td>
+    <td style="text-align: left">Public or private</td>
+    <td style="text-align: left">Private</td>
+    <td style="text-align: left">Public or private</td>
   </tr>
 </table>
 

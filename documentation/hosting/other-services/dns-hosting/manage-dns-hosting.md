@@ -1,6 +1,6 @@
 ---
 title: manage-dns-hosting
-displayName: Manage DNS Hosting
+displayName: Configure Managed DNS
 published: true
 toc:
  --1--Activate DNS Hosting: "activate-dns-hosting"

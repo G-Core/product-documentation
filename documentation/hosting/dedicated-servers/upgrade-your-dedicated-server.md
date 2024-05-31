@@ -6,12 +6,12 @@ order: 40
 toc:
    --1--Change hardware specifications: "change-hardware-specifications"
    --1--Change your Internet tariff: "change-your-internet-plan"
-pageTitle: Upgrade a dedicated server | Gcore
-pageDescription: Learn how to upgrade your dedicated server for better performance.
+pageTitle: Upgrade a Dedicated Server | Gcore
+pageDescription: Learn how to upgrade your Dedicated Server for better performance.
 ---
-# Upgrade your dedicated server
+# Upgrade your Dedicated Server
 
-You can change a particular specification of a dedicated server. Our engineers help to change the hardware, this is a paid service. You can change the parameters of the Internet tariff on your own with no charge for switching from the old tariff.
+You can change a particular specification of a Dedicated Server. Our engineers help to change the hardware, this is a paid service. You can change the parameters of the Internet tariff on your own with no charge for switching from the old tariff.
 
 ## Change hardware specifications
 
@@ -44,7 +44,7 @@ Important details:
 - When upgrading, you can only increase the characteristics — we cannot remove components from the servers or change them to weaker ones.    
 - The price of the server will increase and the date in the "End date" column (the date until which the service was paid for) will change — it will be calculated taking into account the new price. Example: 300 euros were written off from your balance for a monthly server rent on the first of the month, and you upgraded on the 10th. The server price has risen from 300 euros up to 400 euros. Previously, the date of the 1st was in the "End date" column because 300 euros were enough for a month of server rent. Now the price has risen so the system recalculates the date: it subtracts payment for 10 days of using the server at the old price from your 300 euros and calculates how many days the rest of the money is enough for, taking into account the new price. It turns out 200 euros left, which will be enough for 15 days of server rent at the new price. That is, the server rent is paid by the 26th. This date will appear in the "End date" column. Now a monthly payment of 400 euros will be written off on the 26th.  
       
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/upgrade-your-dedicated-server/image4.png" alt="Dedicated servers" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/upgrade-your-dedicated-server/image4.png" alt="Dedicated Servers" width="80%">
 
 ## Change your Internet plan
 

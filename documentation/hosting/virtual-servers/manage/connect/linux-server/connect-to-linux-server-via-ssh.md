@@ -35,4 +35,4 @@ For example, if the instructions say "user: root" and "server IP address: 185.14
 
 <img src="https://assets.gcore.pro/docs/hosting/virtual-servers/manage/connect/linux-server/connect-to-linux-server-via-ssh/mceclip0.png" alt="Type the symbols ">
 
-Once the connection is established, you can manage the virtual server remotely from your computer.
+Once the connection is established, you can manage the Virtual Server remotely from your computer.

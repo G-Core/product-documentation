@@ -27,7 +27,7 @@ Install backup and restore utilities on your virtual or local server. Below are 
 
 <expandable-element title="Ubuntu 22.04">
 
-1\. Access your virtual server.
+1\. Access your Virtual Server.
 
 2\. Download the latest available updates and upgrade ```apt```:
 
@@ -44,7 +44,7 @@ $ sudo apt install postgresql postgresql-contrib
 
 <expandable-element title="CentOS 7">
 
-1\. Access your virtual server.
+1\. Access your Virtual Server.
 
 2\. Install the PostgreSQL package:
 

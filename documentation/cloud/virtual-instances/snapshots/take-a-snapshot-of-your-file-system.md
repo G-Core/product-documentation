@@ -11,13 +11,13 @@ toc:
    --1--Snapshot management: "snapshot-management"
    --2--Create a VM from a snapshot of the system volume: "create-a-vm-from-a-snapshot-of-the-system-volume"
    --2--Delete a snapshot: "delete-a-snapshot"
-   --2--Reverte a volume to the latest snapshot: "also-you-can-revert-a-volume-to-the-latest-snapshot--open-the--volumes--section--detach-the-volume-from-your-instance-and-select-the-reverting-option-on-the-selector"
+   --2--Reverte a volume to the latest snapshot: "also-you-can-revert-a-volume-to-the-latest-snapshot--open-the--volumes--section--detach-the-volume-from-your-vm-and-select-the-reverting-option-on-the-selector"
 pageTitle: Take a snapshot of your file system | Gcore
 pageDescription: Learn how to take a snapshot of your file system to backup your data.
 ---
 # Take a snapshot of your file system
 
-**Snapshot** is the state of a system at a particular point in time. The snapshot can be used for backup and further recovery, as well as for deploying new instances from **snapshots of system volume.** 
+**Snapshot** is the state of a system at a particular point in time. The snapshot can be used for backup and further recovery, as well as for deploying new Virtual Machines from **snapshots of system volume.** 
 
 **Difference between system and regular volume snapshots** 
 
