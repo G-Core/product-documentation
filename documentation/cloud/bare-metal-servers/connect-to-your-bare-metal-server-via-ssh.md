@@ -1,6 +1,6 @@
 ---
 title: connect-to-your-bare-metal-server-via-ssh
-displayName: Connect to your bare metal server via SSH
+displayName: Connect to your Bare Metal server via SSH
 published: true
 order: 30
 toc:
@@ -20,7 +20,7 @@ pageDescription: Connect to your bare metal server using SSH keys or a password.
 ---
 # Connect to your bare metal server via SSH
 
-You can connect to an instance or a bare metal server using a pair of SSH keys or a password. We tell you in detail about each method.
+You can connect to bare metal server using a pair of SSH keys or a password. We tell you in detail about each method.
 
 The SSH protocol (also referred to as Secure Shell) is a method for secure remote login from one server to another. To connect via SSH, make sure that all the necessary rules for incoming traffic are in the firewall settings set.
 

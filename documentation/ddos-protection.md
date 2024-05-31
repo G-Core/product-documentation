@@ -7,7 +7,7 @@ published: true
 
 Welcome to the <a href="https://gcore.com/ddos-protection/servers" target="_blank">Gcore DDoS Protection</a> documentation page!
 
-DDoS Protection is a service designed to safeguard your servers and instances against DDoS attacks. With Advanced protection, during an attack, the traffic is redirected to our mitigation system, which filters attack traffic, and only allows legitimate traffic.
+DDoS Protection is a service designed to safeguard your servers and Virtual Machines against DDoS attacks. With Advanced protection, during an attack, the traffic is redirected to our mitigation system, which filters attack traffic, and only allows legitimate traffic.
 
 From the left-side menu, you can access in-depth documentation about Advanced DDoS Protection:
 

@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: Bare metal servers
+displayName: Bare Metal servers
 published: true
 order: 40
 ---

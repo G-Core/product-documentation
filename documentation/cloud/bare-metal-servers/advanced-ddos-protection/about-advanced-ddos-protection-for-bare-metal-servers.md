@@ -1,6 +1,6 @@
 ---
 title: about-advanced-ddos-protection-for-bare-metal-servers
-displayName: About Advanced DDoS Protection for bare metal servers
+displayName: About Advanced DDoS Protection for Bare Metal 
 published: true
 toc:
    --1--How it works: "how-it-works"
@@ -8,16 +8,16 @@ toc:
    --1--Additional features: "additional-key-features"
    --1--Pricing: "pricing"
    --1--Activation: "activation"
-pageTitle: DDoS Protection for bare metal servers | Gcore
-pageDescription: Advanced DDoS Protection for bare metal servers. Learn more about advantages, features and pricing.
+pageTitle: DDoS Protection for Bare Metal servers | Gcore
+pageDescription: Advanced DDoS Protection for Bare Metal servers. Learn more about advantages, features and pricing.
 ---
-# About advanced DDoS Protection for bare metal servers
+# About advanced DDoS Protection for Bare Metal
 
 ## How it works
 
 For all of our equipment, basic free protection is enabled by default. The system protects against volumetric and amplification attacks, but more sophisticated attacks may bypass the basic protection. We block the attacked IP address for a set period of time to protect the infrastructure and other servers from outages.
 
-However, you can also purchase Advanced DDoS protection. This option redirects traffic to the threat mitigation system (TMS) during an attack, which aids in traffic filtering and threat detection. This system detects an attack, filters attack traffic, and allows only legitimate traffic that does not impact the server’s operation. You can configure TMS’s ACL (access control list). The main benefit is that a server’s IP address is not blocked during an attack, and the server remains operational. Advanced DDoS protection is currently available for bare metal servers.
+However, you can also purchase Advanced DDoS protection. This option redirects traffic to the threat mitigation system (TMS) during an attack, which aids in traffic filtering and threat detection. This system detects an attack, filters attack traffic, and allows only legitimate traffic that does not impact the server’s operation. You can configure TMS’s ACL (access control list). The main benefit is that a server’s IP address is not blocked during an attack, and the server remains operational. Advanced DDoS protection is currently available for Bare Metal.
 
 ## Advanced protection advantages
 
