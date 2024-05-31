@@ -4,7 +4,7 @@ displayName: Overview
 order: 10
 published: true
 toc:
-   --1--What is Logging?: "what-is-logging"
+   --1--What is Managed Logging?: "what-is-managed-logging"
    --1--Advantages: "advantages"
    --1--Use cases: "use-cases"
    --1--Log storage: "log-storage"
@@ -16,9 +16,9 @@ pageDescription: Discover Logging for both VMs and bare metal servers. Troublesh
 
 ## What is Managed Logging?  
 
-Managed Logging, also known as LaaS (logging-as-a-service,) is a service that collects and stores logs from both virtual machines and bare metal servers. Whether you are using Gcore’s infrastructure or your own server, logging can collect logs from any system. You can work with Logging via OpenSearch Dashboards.
+Managed Logging, also known as LaaS (logging-as-a-service,) is a service that collects and stores logs from both Virtual Machines and Bare Metal servers. Whether you are using Gcore’s infrastructure or your own server, logging can collect logs from any system. You can work with Managed Logging via OpenSearch Dashboards.
 
-## How Logging works
+## How Managed Logging works
 
 1. Install and configure any log shipper that supports Kafka. You can use <a href="https://docs.fluentbit.io/manual/installation/getting-started-with-fluent-bit" target="_blank">Fluent Bit</a>, <a href="https://elastic.co/beats/filebeat" target="_blank">Filebeat</a>, <a href="https://www.elastic.co/logstash" target="_blank">Logstash</a>, or any other log source that can export logs to Kafka, such as a Python application with configured Kafka logger output.
 2. Access the logs via OpenSearch Dashboards.
@@ -31,7 +31,7 @@ Logs are still available even if their source is destroyed—for example, a serv
 
 ## Use cases  
 
-The use cases of Logging include:  
+The use cases of Managed Logging include:  
 
 1. **Error detection and troubleshooting**. Enter an error message into the OpenSearch Dashboards search bar, identify when and which server experienced an issue, and be empowered to fix it.  
 
@@ -49,7 +49,7 @@ We use Kafka servers as a buffer for better reliability. Even if an OpenSearch s
 
 ## Restrictions
 
-Please note that Logging has several restrictions that ensure that the Logging system runs effectively.  
+Please note that Managed Logging has several restrictions that ensure that the logging system runs effectively.  
 
 1. Message format: text/JSON
 2. Maximum fields in a JSON log: 225 fields 

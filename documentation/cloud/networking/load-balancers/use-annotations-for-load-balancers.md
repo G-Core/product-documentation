@@ -63,7 +63,7 @@ Below, we have compiled annotations that apply to clusters created in Gcore:
             <td style="text-align: left" id="floating-cleanup"><code>loadbalancer.gcorelabs.com/<br>floating-cleanup</code></td>
             <td style="text-align: left"><code>true</code></td>
             <td style="text-align: left">Boolean</td>
-            <td style="text-align: left">Automatically cleans up the floating IP assigned to the load balancer after deleting the service</td>
+            <td style="text-align: left">Automatically cleans up the floating IP assigned to the Load Balancer after deleting the service</td>
         </tr>
         <tr>
             <td style="text-align: left" id="logging-topic-name"><code>loadbalancer.gcorelabs.com/<br>logging-topic-name</code></td>

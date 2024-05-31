@@ -4,8 +4,8 @@ displayName: Configure
 order: 20
 published: true
 toc:
-pageTitle: Configure Logging| Gcore
-pageDescription: Configure and access Logging for centralized log collection. Set up log shippers, view logs in OpenSearch Dashboards.
+pageTitle: Configure Managed Logging| Gcore
+pageDescription: Configure and access Managed Logging for centralized log collection. Set up log shippers, view logs in OpenSearch Dashboards.
 ---
 # Configure Logging and view your logs
 
@@ -17,7 +17,7 @@ pageDescription: Configure and access Logging for centralized log collection. Se
 
 <expandable-element title="What is a namespace">
 
-Previously, when activating Logging, you could see a non-human-readable string, e.g., ```cbc25c71af8d4f7ca6cbbcdc5a4d68fe.your-topic``` as a *namespace* that is used as prefixed for topics. To make this process more user-friendly, we created the possibility of making human-readable namespaces, e.g., ```namespace123.your-topic```.
+Previously, when activating Managed Logging, you could see a non-human-readable string, e.g., ```cbc25c71af8d4f7ca6cbbcdc5a4d68fe.your-topic``` as a *namespace* that is used as prefixed for topics. To make this process more user-friendly, we created the possibility of making human-readable namespaces, e.g., ```namespace123.your-topic```.
 
 **Note**: You can only create a namespace for a new project where the default value is not set up.
 
@@ -44,7 +44,7 @@ These credentials are used to connect your log delivery systems to the topic for
 
 If you forget your credentials, click **Generate credentials** again for a new pair. Don’t forget to update your credentials in the settings of the installed log shippers.
 
-If you use Logging in multiple regions (Step 2), a new storage will be created in each region, and you will need to generate unique credentials for each one.
+If you use Managed Logging in multiple regions (Step 2), a new storage will be created in each region, and you will need to generate unique credentials for each one.
 
 5\. Select a log shipper (e.g. <a href="https://gcore.com/docs/cloud/logging-as-a-service/install-a-log-shipper/install-and-configure-fluent-bit" target="_blank">Fluent Bit</a>, <a href="https://gcore.com/docs/cloud/logging-as-a-service/install-a-log-shipper/install-and-configure-filebeat" target="_blank">Filebeat</a>, or <a href="https://gcore.com/docs/cloud/logging-as-a-service/install-a-log-shipper/install-and-configure-logstash" target="_blank">Logstash</a>) that supports Kafka output. 
 

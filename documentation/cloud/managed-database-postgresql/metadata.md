@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: Managed Database for PostgreSQL 
+displayName: Managed PostgreSQL 
 published: true
 order: 75
 ---

@@ -5,13 +5,13 @@ published: true
 order: 10
 toc:
 pageTitle: Cloud Platform | Gcore
-pageDescription: Discover more about Gcore Cloud. Multiple cloud services with on-demand delivery and pay-as-you-go. Global presence, high reliability, and elasticity.
+pageDescription: Discover more about Gcore Edge Cloud. Multiple cloud services with on-demand delivery and pay-as-you-go. Global presence, high reliability, and elasticity.
 ---
 # About Gcore Cloud
 
-Gcore Cloud is a suite of cloud computing services that includes infrastructure as a service (IaaS) and platform as a service (PaaS) environments. 
+Gcore Edge Cloud is a suite of cloud computing services that includes Infrastructure as a Service (IaaS) and Platform as a Service (PaaS) environments. 
 
-Computing power, databases, and applications are available to use on an as-needed basis with Gcore Cloud. 
+Computing power, databases, and applications are available to use on an as-needed basis with Gcore Edge Cloud. 
 
 The peculiarity of such a system is in on-demand delivery of resources over the Internet with a pay-as-you-go payment model. As for the equipment that hosts the resources, it is fully serviced by the provider.  
 

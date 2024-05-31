@@ -1,6 +1,6 @@
 ---
 title: create-and-configure-a-load-balancer
-displayName: Create load balancer
+displayName: Create Load Balancer
 published: true
 order: 10
 toc:
@@ -11,7 +11,7 @@ toc:
    --1--5. Configure listeners: "step-5-configure-listeners"
    --2--Listener: "listener"
    --2--Pool: "pool"
-   --2--Instance: "instance"
+   --2--Virtual Machine: "virtual-machine"
    --2--Health Сheck: "health-check"
    --2--Timeouts: "timeouts"
    --1--6. Enter name: "step-6-enter-the-name"
@@ -20,18 +20,18 @@ toc:
    --1--9. Finalize: "step-9-finalize-creation"
    --1--10. Check firewall: "step-10-configure-firewall"
 pageTitle: Add a Load Balancer | Gcore
-pageDescription: Learn how to create and configure a load balancer to distribute incoming requests across VMs, improving the fault tolerance of your infrastructure.
+pageDescription: Learn how to create and configure a Load Balancer to distribute incoming requests across VMs, improving the fault tolerance of your infrastructure.
 customUrl: /cloud/networking/create-and-configure-a-load-balancer
 ---
-# Create and configure a load balancer
+# Create and configure a Load Balancer
 
-A load balancer is a tool used to sort incoming requests across your virtual machines  to improve your infrastructure's fault tolerance.
+A Load Balancer is a tool used to sort incoming requests across your virtual machines  to improve your infrastructure's fault tolerance.
 
-## Step 1. Initiate load balancer creation
+## Step 1. Initiate Load Balancer creation
 
 Go to your project, navigate to the "Load Balancers" in the "Networking" section and click **Create Load Balancer**. 
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-1-lb.png" alt="Initiate the process of load balancer creation" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-1-lb.png" alt="Initiate the process of Load Balancer creation" width="80%">
 
 The new page opens. Perform the remaining steps there. 
 
@@ -47,7 +47,7 @@ You can balance traffic only within a single data center.
 
 ## Step 3. Set computing configuration
 
-Select a suitable computing configuration for your load balancer: GiB and vCPU. 
+Select a suitable computing configuration for your Load Balancer: GiB and vCPU. 
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-2-lb.png" alt="Select type" width="75%">
 
@@ -76,7 +76,7 @@ In the pop-up window, specify the needed configuration:
 
 3\. Specify the port in the range from 1 to 65535.
 
-4\. Enable "Add headers X-Forwarded-For, X-Forwarded-Port, X-Forwarded-Proto to requests" to identify the origin of the user's IP address connecting to a web server via a load balancer. 
+4\. Enable "Add headers X-Forwarded-For, X-Forwarded-Port, X-Forwarded-Proto to requests" to identify the origin of the user's IP address connecting to a web server via a Load Balancer. 
 
 5\. Specify connection limit (number of simultaneous connections).
 
@@ -104,13 +104,13 @@ Configure a pool—a list of virtual machines to which the listener will redirec
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-pool-conf-lb.png" alt="Pool configuration" width="70%">
 
-### Instance 
+### Virtual Machine 
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-instance-lb.png" alt="Add instance" width="65%">
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-instance-lb.png" alt="Add Virtual Machine" width="65%">
 
 Click **Add Instance** to add virtual machines that will participate in the traffic distribution for the configured listener. 
 
-1\. Select Custom IP, Instance or Bare Metal and appropriate configurations. 
+1\. Select Custom IP, Virtual Machine, or Bare Metal and appropriate configurations. 
 
 2\. Specify its port and weight in the distribution. 
 
@@ -136,9 +136,9 @@ Specify client data, member connect and member data timeouts in msec.
 
 ## Step 6. Enter the name
 
-Enter a name for the load balancer. It will be displayed in the Customer Portal.
+Enter a name for the Load Balancer. It will be displayed in the Customer Portal.
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-6-lb.png" alt="Enter load banalcer name" width="65%">
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-6-lb.png" alt="Enter Load Banalcer name" width="65%">
 
 ## Step 7. (Optional) Enable Logging
 
@@ -158,13 +158,13 @@ Check the settings and click **Create Load Balancer** on the right.
 
 ## Step 10. Configure firewall
 
-Configure firewalls for instances in the pool according to the <a href="https://gcore.com/docs/cloud/networking/add-and-configure-a-firewall" target="_blank">separate guide</a>.
+Configure firewalls for Virtual Machines in the pool according to the <a href="https://gcore.com/docs/cloud/networking/add-and-configure-a-firewall" target="_blank">separate guide</a>.
 
-Make sure their ports are open for the load balancer traffic:
+Make sure their ports are open for the Load Balancer traffic:
 
-- If a balancer and instances are in a **public network,** set a rule to receive and transmit traffic to the balancer's IP address (specified in the menu) in firewalls settings of the instances.
-- If a balancer and instances are in a **private subnetwork,** set a rule to receive and transmit traffic to the entire private subnetwork or to the balancer's IP address (specified in the menu).
-- If a balancer is in a **public network** and instances are in a **private subnetwork**, set a rule to receive and transmit traffic to the entire private subnetwork or to the balancer's internal IP address (send a request to the technical support).
+- If a Load Balancer and Virtual Machines are in a **public network,** set a rule to receive and transmit traffic to the balancer's IP address (specified in the menu) in firewalls settings of the Virtual Machines.
+- If a Load Balancer and Virtual Machines are in a **private subnetwork,** set a rule to receive and transmit traffic to the entire private subnetwork or to the balancer's IP address (specified in the menu).
+- If a Load Balancer is in a **public network** and Virtual Machine are in a **private subnetwork**, set a rule to receive and transmit traffic to the entire private subnetwork or to the balancer's internal IP address (send a request to the technical support).
 
 In the Load Balancers section, open the created balancer and click **Create** or **Edit** a custom security group (this is the firewall) and edit it: configure the rules for inbound and outbound traffic.
 

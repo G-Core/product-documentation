@@ -8,7 +8,7 @@ toc:
    --1--2. Select region: "step-2-select-the-region"
    --1--3. Select version: "step-3-select-the-version"
    --1--4. Configure pool: "step-4-configure-pools"
-   --2--Vurtual Instance: "virtual-instance"
+   --2--Vurtual Machine: "virtual-instance"
    --2--Bare Metal: "bare-metal-instances"
    --1--5. Select the CNI Provider: "step-5-select-the-cni-provider" 
    --1--6. Configure Network: "step-6-configure-network-settings"

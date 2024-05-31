@@ -7,9 +7,9 @@ toc:
    --1--What is Terraform?: "what-is-terraform"
    --1--Install and configure Terraform: "install-terraform-and-integrate-it-with-our-cloud"
    --1--Manage Cloud resources: "manage-cloud-resources-via-terraform"
-   --2--Create a bare metal server: "create-a-bare-metal-server"
-   --2--Create an instance: "create-an-instance"
-   --2--Create a Kubernetes cluster: "create-a-kubernetes-cluster"
+   --2--Create a Bare Metal server: "create-a-bare-metal-server"
+   --2--Create a Virtual Machine: "create-a-virtual-machine"
+   --2--Create a Managed Kubernetes cluster: "create-a-managed-kubernetes-cluster"
    --2--Create a Kubernetes pool: "create-a-kubernetes-pool"
    --2--Create a load balancer: "create-a-load-balancer"
    --2--Create a network and subnetwork: "create-a-network-and-subnetwork"
@@ -26,7 +26,7 @@ pageDescription: Learn how to manage your cloud resources using Terraform. Follo
 
 Terraform is a declarative command-line utility used to manage the infrastructure of Terraform partner providers. With this tool, you can manage our Cloud service.
 
-To work with Terraform, you create a configuration file where you specify the changes you want to make to your Cloud resources, for example, to create an instance or a Kubernetes cluster. Then you run the Terraform command to make changes. The utility reads the configuration file and sends the necessary API requests. The required Cloud settings are then applied.
+To work with Terraform, you create a configuration file where you specify the changes you want to make to your Cloud resources, for example, to create a Virtual Machine or a Managed Kubernetes cluster. Then you run the Terraform command to make changes. The utility reads the configuration file and sends the necessary API requests. The required Cloud settings are then applied.
 
 ## Install Terraform and integrate it with our Cloud
 
@@ -98,7 +98,7 @@ terraform apply
 
 You can also use our step-by-step guides below.
 
-### Create a bare metal server
+### Create a Bare Metal server
 
 1\. Open the **main.tf** file where you configured the Gcore provider for Terraform.
 
@@ -118,7 +118,7 @@ resource "gcore_baremetal" "<span style="color:#FF5913">bm</span>" {
 }
 </code-block>
 
-3\. Configure your bare metal server.
+3\. Configure your Bare Metal server.
 
 * Specify "flavor_id".
 
@@ -167,7 +167,7 @@ terraform apply
 
 Terraform will ask you to confirm the action. Enter "yes".
 
-### Create an instance
+### Create a Virtual Machine
 
 1\. Open the main.tf file where you configured the Gcore provider for Terraform.
 
@@ -211,9 +211,9 @@ resource "gcore_instance" "<span style="color:#FF5913">v</span>" {
 }
 </code-block>
 
-3\. Configure resources required for the instance: [a reserved IP address](https://gcore.com/docs/cloud/manage-cloud-via-terraform#reserve-an-ip-address), [network](https://gcore.com/docs/cloud/manage-cloud-via-terraform#create-a-network-and-subnetwork), [subnetwork](https://gcore.com/docs/cloud/manage-cloud-via-terraform#create-a-network-and-subnetwork), [volume](https://gcore.com/docs/cloud/manage-cloud-via-terraform#create-a-volume).
+3\. Configure resources required for the Virtual Machine: [a reserved IP address](https://gcore.com/docs/cloud/manage-cloud-via-terraform#reserve-an-ip-address), [network](https://gcore.com/docs/cloud/manage-cloud-via-terraform#create-a-network-and-subnetwork), [subnetwork](https://gcore.com/docs/cloud/manage-cloud-via-terraform#create-a-network-and-subnetwork), [volume](https://gcore.com/docs/cloud/manage-cloud-via-terraform#create-a-volume).
 
-4\. Configure the instance.
+4\. Configure the Virtual Machine.
 
 * Specify "flavor_id".
 
@@ -230,7 +230,7 @@ resource "gcore_instance" "<span style="color:#FF5913">v</span>" {
   - (optional) Specify the "boot_index". If "boot_index = 0", the volume cannot be detached.
   - (optional) Specify the "type_name": "standard", "ssd_hiiops", "cold", or "ultra".
 
-* (optional) Add "allow_app_ports = true" to allow application ports for instances created from marketplace templates.
+* (optional) Add "allow_app_ports = true" to allow application ports for Virtual Machines created from marketplace templates.
 
 * (optional) Specify "configuration" to set parameters for the application template from the marketplace: "key" and "value".
 
@@ -238,7 +238,7 @@ resource "gcore_instance" "<span style="color:#FF5913">v</span>" {
 
 * (optional) Specify the "metadata_map": "key" and "value".
 
-* (optional) Specify the "name" of the instance.
+* (optional) Specify the "name" of the Virtual Machine.
 
 * (optional) Specify "username" and "password".
 
@@ -266,7 +266,7 @@ terraform apply
 
 Terraform will ask you to confirm the action. Enter "yes".
 
-### Create a Kubernetes cluster
+### Create a Managed Kubernetes cluster
 
 1\. Open the main.tf file where you configured the Gcore provider for Terraform.
 
@@ -398,9 +398,9 @@ terraform apply
 
 Terraform will ask you to confirm the action. Enter “yes”.
 
-### Create a load balancer
+### Create a Load Balancer
 
-This section explains how to create a load balancer with a pool, listener, and member.
+This section explains how to create a Load Balancer with a pool, listener, and member.
 
 1\. Open the main.tf file where you configured the Gcore provider for Terraform.
 
@@ -447,9 +447,9 @@ resource "gcore_lbmember" "lbm" {
 }
 </code-block>
 
-3\. Configure the load balancer.
+3\. Configure the Load Balancer.
 
-* Specify the “name” of your load balancer.
+* Specify the “name” of your Load Balancer.
 
 * Specify “flavor”.
 

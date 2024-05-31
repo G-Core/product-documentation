@@ -21,7 +21,7 @@ pageDescription: Learn how to create and manage a network in the cloud to transf
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-network/_____________.png" alt="_____________.png">
 
-In the drop-down window, enter the network name and click on Create network. If you want to create a network for bare metal servers, turn on the **Bare Metal Network (VLAN)** selector. 
+In the drop-down window, enter the network name and click on Create network. If you want to create a network for Bare Metal servers, turn on the **Bare Metal Network (VLAN)** selector. 
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-network/__________________.png" alt="__________________.png">
 
@@ -29,9 +29,9 @@ In the drop-down window, enter the network name and click on Create network. If 
 
  <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-network/__________________.png" alt="__________________.png">
 
-In the drop-down window, enter a name for the network and click Create network. If you want to create a network for bare metal servers, activate the **Bare Metal Network** selector. 
+In the drop-down window, enter a name for the network and click Create network. If you want to create a network for Bare Metal servers, activate the **Bare Metal Network** selector. 
 
-A Bare Metal Network can also be used for virtual instances, for connectivity between bare metals and virtual machines. 
+A Bare Metal network can also be used for Virtual Machines, for connectivity between Bare Metal and Virtual Machines. 
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-network/_____2_____________________.png" alt="_____2_____________________.png">
 

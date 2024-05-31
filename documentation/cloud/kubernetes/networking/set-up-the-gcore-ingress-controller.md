@@ -16,9 +16,9 @@ slugs:
 
 ## Features of the Gcore ingress controller
 
-Gcore provides an out-of-the-box ingress controller. Once you apply an ingress manifest, the controller creates a <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer" target="_blank">Gcore load balancer</a> automatically. A load balancer is created for every single ingress object. A load balancer will serve as an entry point for all incoming traffic and then deliver it to pods based on rules specified in services and ingress objects.
+Gcore provides an out-of-the-box ingress controller. Once you apply an ingress manifest, the controller creates a <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer" target="_blank">Gcore Load Balancer</a> automatically. A Load Balancer is created for every single ingress object. A Load Balancer will serve as an entry point for all incoming traffic and then deliver it to pods based on rules specified in services and ingress objects.
 
-So, if you have an application running in a Kubernetes cluster, you first need to provide access to its pods by creating a service and then provide access from the Internet by creating an ingress object.
+So, if you have an application running in a Managed Kubernetes cluster, you first need to provide access to its pods by creating a service and then provide access from the Internet by creating an ingress object.
 
 ## Create a service
 
@@ -108,11 +108,11 @@ You’ll get the output:
 Ingress/<name of the created ingress object> created
 ```
 
-Congratulations! You’ve created and applied an ingress object for the Gcore ingress controller. Now it will automatically create a Gcore load balancer on your behalf. It will be shown in your Control panel in the <a href="https://cloud.gcore.com/cloud/project/248631/networking/load_balancers" target="_blank">Load Balancers</a> section.
+Congratulations! You’ve created and applied an ingress object for the Gcore ingress controller. Now it will automatically create a Gcore Load Balancer on your behalf. It will be shown in the Customer Portal on the <a href="https://cloud.gcore.com/cloud/project/248631/networking/load_balancers" target="_blank">Load Balancers</a> page.
 
 ## View an ingress IP address
 
-If you want to see an IP address of the load balancer through which the traffic comes, view it in the <a href="https://cloud.gcore.com/cloud/project/248631/networking/load_balancers" target="_blank">Control panel</a> or run the command:
+If you want to see an IP address of the Load Balancer through which the traffic comes, view it in the <a href="https://cloud.gcore.com/cloud/project/248631/networking/load_balancers" target="_blank">Customer Portal</a> or run the command:
 
 ```
 kubectl get ingress <ingress name>

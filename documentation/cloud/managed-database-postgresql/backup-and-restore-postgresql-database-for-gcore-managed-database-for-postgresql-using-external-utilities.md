@@ -10,14 +10,14 @@ toc:
    --2--Specific database: "back-up-a-specific-database"
    --2--All databases: "back-up-all-databases" 
    --1--4. Restore databases: "4-restore-databases"
-pageTitle: PostgreSQL Database Backup and Restore with Gcore Managed Database | Gcore
-pageDescription: Learn how to secure your data with easy PostgreSQL backup and restore on Gcore Managed Database using pg_dump and pg_restore tools.
+pageTitle: PostgreSQL Database Backup and Restore with Gcore Managed PostgreSQL | Gcore
+pageDescription: Learn how to secure your data with easy PostgreSQL backup and restore on Gcore Managed PostgreSQL using pg_dump and pg_restore tools.
 ---
-# Backup and restore PostgreSQL database for Managed Database for PostgreSQL using external utilities 
+# Backup and restore PostgreSQL database for Managed PostgreSQL using external utilities 
 
 This guide will explain how to backup and restore PostgreSQL databases with the ```pg_dump``` (```pg_dumpall```) and ```pg_restore``` tools.
 
-To protect yourself against data loss, we recommend frequently backing up the databases you manage with <a href="https://gcore.com/docs/cloud/managed-database-postgresql" target="_blank">Gcore Managed Database for PostgreSQL</a>.
+To protect yourself against data loss, we recommend frequently backing up the databases you manage with <a href="https://gcore.com/docs/cloud/managed-database-postgresql" target="_blank">Gcore Managed PostgreSQL</a>.
 
 ## 1. Install external utilities
 
