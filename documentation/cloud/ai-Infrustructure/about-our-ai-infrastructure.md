@@ -9,19 +9,19 @@ toc:
    --1--Server specifications and performance: "server-specifications-and-performance"
    --2--Bow-2000 specifications: "bow-2000-specifications"
    --2--M2000 specifications: "m2000-specifications"
-   --1--Tools our GPU Cloud supports: "tools-supported-by-gcore-gpu-cloud"
-pageTitle: About Gcore GPU Cloud Infrastructure | Gcore
-pageDescription: Explore our GPU Cloud infrastructure. Graphcore servers, top performance, diverse tools supported. Easy deployment, per-minute billing.
+   --1--Tools our AI Infrastructure supports: "tools-supported-by-gcore-gpu-cloud"
+pageTitle: About our Gcore CPU Cloud | Gcore
+pageDescription: Explore Gcore GPU Cloud for AI. NVIDIA servers, top performance, diverse tool support. Easy deployment, per-minute billing.
 ---
 # GPU Cloud infrastructure
 
-Gcore GPU Cloud infrastructure services provide high-performance compute clusters designed for machine learning tasks.
+Gcore GPU Cloud provides high-performance compute clusters designed for machine learning tasks.
 
 ## AI GPU infrastructure
 
-You can train your ML models with the latest <a href="https://www.nvidia.com/en-us/data-center/data-center-gpus/" taget="_blank">NVIDIA GPUs</a>. We offer a wide range of Bare Metal servers and Virtual Machines powered by NVIDIA A100, H100, and L40S GPUs. 
+Train your ML models with the latest <a href="https://www.nvidia.com/en-us/data-center/data-center-gpus/" taget="_blank">NVIDIA GPUs</a>. We offer a wide range of Bare Metal servers and Virtual Machines powered by NVIDIA A100, H100, and L40S GPUs. 
 
-You can choose between multiple configurations and reservation plans that would best fit your computing requirements. 
+Pick the configuration and reservation plan that best fits your computing requirements. 
 
 <table>
   <tr>
@@ -57,8 +57,7 @@ You can choose between multiple configurations and reservation plans that would 
    800Gbit/s Infiniband
    </td>
    <td style="text-align: left">
-   Specifically crafted for AI and HPC tasks. <br> 
-   Boasts fourth-generation Tensor Cores and the Transformer Engine.
+  Distributed training for ML models and a broad range of HPC workloads.
    </td>
    <td style="text-align: left">Well-balanced in performance and price.</td>
   </tr>
@@ -74,7 +73,7 @@ You can choose between multiple configurations and reservation plans that would 
    </td>
    <td style="text-align: left">
      Training and fine-tuning of models on single nodes. <br> 
-     Inference for large models. <br> 
+     <br>Inference for large models.<br> 
      Multi-user HPC cluster.
    </td>
    <td style="text-align: left">The best solution for inference models that require more than 48GB vRAM.</td>
@@ -90,23 +89,23 @@ You can choose between multiple configurations and reservation plans that would 
    </td>
    <td style="text-align: left">
    Model inference.<br> 
-   Fine-tuning for small and medium-size models.
+   <br>Fine-tuning for small and medium-size models.
    </td>
    <td style="text-align: left">The best solution for inference models that require less than 48GB vRAM.</td>
   </tr>
 </table>
 
-Check out the pricing at our official website: <a href="https://gcore.com/cloud/ai-gpu" target="_blank">AI GPU Cloud infrastructure</a>.
+Explore our competitive pricing on the <a href="https://gcore.com/cloud/ai-gpu" target="_blank">AI GPU Cloud infrastructure pricing page</a>.
 
 ## AI IPU infrastructure
 
-Our <a href="https://graphcore.ai/" target="_blank">Graphcore</a> infrastructure consists of three entities:
+Beyond our GPU offerings, we also provide IPUs. Our <a href="https://graphcore.ai/" target="_blank">Graphcore</a> infrastructure consists of three entities:
 
 - **Poplar server** manages all the other servers in the cluster. You have full access to this server via SSH and can work with it directly to manage the infrastructure and run your model.
 
-- **M2000 or Bow-2000 server** (different types are available in different regions) is used for calculations made while training your model. You don’t have access to it, and this server receives commands from the Poplar server.
+- **M2000 or Bow-2000 server** is used for calculations made while training your model.  You don’t have access to it, and this server receives commands from the Poplar server.  The available server type is location-dependent.
 
-- **vIPU controller** (virtual Intelligence Processing Unit) is a service which configures M2000/Bow-2000 servers of your AI infrastructure to form a cluster. It's involved while the cluster is being created and while you’re changing its configuration (e.g. resizing partitions). You have access to vIPU controller via API and can rebuild the cluster if needed.
+- **vIPU controller** (virtual Intelligence Processing Unit) is a service that configures M2000/Bow-2000 servers of your AI infrastructure to form a cluster. It's involved while the cluster is being created and while you’re changing its configuration (e.g., resizing partitions). You have access to vIPU controller via API and can rebuild the cluster if needed.
 
 For datasets storage, you can use Poplar server disk space, external S3 storage, or <a href="https://gcore.com/storage" target="_blank">Gcore Object Storage</a>.
 
@@ -114,7 +113,7 @@ For datasets storage, you can use Poplar server disk space, external S3 storage,
 
 ## Server specifications and performance
 
-We provide two types of Graphcore servers: M2000 and Bow-2000. M2000 is a second-generation machine and Bow-2000 is a third-generation one. 
+We provide two types of Graphcore servers: M2000 and Bow-2000. M2000 is a second-generation machine and Bow-2000 is a third-generation one. Server types are location-dependent.
 
 ### Bow-2000 specifications
 

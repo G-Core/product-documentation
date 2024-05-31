@@ -25,13 +25,13 @@ pageDescription: Explore how to manage content access in Gcore CDN using referre
   
 ## Referrer access policy
 
-Referer access policy is a restriction to publish the links to content on your site on other sites. To enable the option navigate to CDN resources, click Settings of the resource, choose the Advanced Settings tab, in the Access (Security) click Add policy and find Referer access policy. 
+Referrer access policy is a restriction to publish the links to content on your site on other sites. To enable the option navigate to CDN resources, click Settings of the resource, choose the Advanced Settings tab, in the Access (Security) click Add policy and find Referrer access policy. 
 
-By default, there are no restrictions by referer to your CDN resource. You can set up allow or block Policy.
+By default, there are no restrictions by referrer to your CDN resource. You can set up allow or block Policy.
 
 ### Allow referrer policy
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/13340190513425.png" alt="Allow referrer policy" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/allow-referrer-access-policy.png" alt="Allow referrer policy" width="80%">
 
 Specify domains to which you would like to block access.
 
@@ -42,7 +42,7 @@ When users request data from specified domains, they will get the denial of acc
 
 ### Block referrer policy
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/13340191722129.png" alt="Block referrer policy" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/block-referrer-access-policy.png" alt="Block referrer policy" width="80%">
 
 Specify the domains which you would like to allow access to.
 

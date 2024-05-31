@@ -4,172 +4,135 @@ displayName: Raw Logs (paid)
 published: true
 order: 10
 toc:
-   --1--What is a Raw Logs feature?: "what-is-a-raw-logs-feature"
-   --1--What is "Add logs from origin shielding"?: "what-is-the-add-logs-from-origin-shielding-option"
-   --1--How is traffic calculated?: "how-is-traffic-calculated-in-log-reports" 
-   --1--Export to an S3 storage: "export-logs-to-an-s3-storage"
+   --1--Raw Logs settings: "raw-logs-settings"
+   --2--Add logs from Origin Shielding: "add-logs-from-origin-shielding"
+   --2--Raw Logs statuses: "raw-logs-statuses"
+   --2--Export time intervals: "export-time-intervals"
+   --2--Log traffic calculation: "log-traffic-calculation" 
+   --2--Log path example: "log-path-example"
+   --2--Log example: "log-example"
+   --2--Log format: "log-format"
+   --2--Log fields: "log-fields"
+   --1--Export logs to S3 storage: "export-logs-to-s3-storage"
    --2--Amazon storage: "amazon-storage"
    --2--Non-Amazon storage: "non-amazon-storage"
-   --1--Export to an FTP/SFTP storage: "export-logs-to-an-ftp-sftp-storage"
-   --1--Export time intervals: "export-time-intervals"
-   --1--Log path example: "log-path-example"
-   --1--Log format: "log-format"
-   --1--Log example: "log-example"
-   --1--Log fields: "log-fields"
-pageTitle: Mastering CDN Raw Logs | Gcore
+   --1--Export logs to FTP or SFTP storage: "export-logs-to-ftp-or-sftp-storage"
+   --1--Deactivate Raw Logs: "deactivate-raw-logs"
+pageTitle: Guide on Using the CDN Raw Logs Feature | Gcore
 pageDescription: A comprehensive guide on using the CDN Raw Logs feature for exporting logs to your storage, understanding traffic calculation in log reports.
 ---
 # Raw Logs: export CDN resource logs to your storage
 
-## What is a Raw Logs feature?
+Raw Logs is an option that enables an automatic export of CDN resource logs to your storage. Logs contain information about user requests sent to cache servers and pre-cache servers (if the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin Shielding</a> is enabled).
 
-Raw Logs is an option that enables an automatic export of CDN resource logs to your storage. Logs contain information about user requests sent to cache servers and pre-cache servers (if <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">origin shielding</a> is enabled).
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/deactivate-logs.png" alt="Raw logs page in the Customer Portal" width="80%">
+<alert-element type="info" title="Info">
 
-**Note**: The feature is paid. To activate, contact us via [support@gcore.com](mailto:support@gcore.com). After activation, enable "Raw Logs" in the Gcore Customer Portal and configure export to S3, FTP, or SFTP storage.
+This is a paid feature. To activate Raw Logs, [contact the Gcore support team](mailto:support@gcore.com). 
+After activation, enable Raw Logs in the Gcore Customer Portal and configure export to S3, FTP, or SFTP storage.
 
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/13202181890193.png" alt="What is a Raw Logs feature">
+</alert-element>
 
-## What is the "Add logs from origin shielding" option? 
+## Raw Logs settings  
 
-If you are using the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin Shielding</a> feature, we recommend that you enable the "Add logs from origin shielding" option. This means that the report will include not only requests to cache services, but also those to the pre-cache server. As a result, you will receive more detailed information on resource usage.
+In this section, you can find general information about log settings, overview of log statuses, and details on how Raw Logs are exported and calculated. 
 
-**Note**: If your account does not have "Origin Shielding" switched on, this option will not be available when setting up Raw logs.  
+### Add logs from Origin Shielding 
 
-To enable "Add logs from origin shielding", tick the appropriate box when setting up Raw Logs (step #2 in the [guide below](https://gcore.com/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage#export-logs-to-an-s3-storage)).
+If you are using the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin Shielding</a> feature, you’ll see the **Add logs from origin shielding** checkbox when configuring logs. We recommend that you select this option as it ensures that the logs report will include both requests to cache services and requests to the pre-cache server. Thus, you’ll receive more detailed information on resource usage. 
 
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/15499340205969.png" alt="Add logs from origin shielding" width="50%">
+When setting up Raw Logs, select the checkbox to enable **Add logs from origin shielding**.
 
-## How is traffic calculated in log reports?
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/add-logs-from-origin-shielding.png" alt="Raw Logs page with the checkbox highlighted" width="80%">
 
-Logs can generate various types of analytics, such as traffic delivered. To understand what the totals mean, we recommend that you familiarize yourself with the formulas for calculating the logs.
+<alert-element type="tip" title="Tip">
+ 
+If you don’t see the Origin Shielding option on the Raw Logs page, this feature is not activated for your account. For details on how to activate Origin Shielding, check our <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">dedicated guide</a>. 
+ 
+</alert-element>
 
-The formula for calculating traffic depends on whether you use the "Add logs from origin shielding" option.
+### Raw Logs statuses 
 
-1. If this option is disabled, the formula will look like this:
+You can check the status of the Raw Logs in the Gcore Customer Portal: 
+
+* **Pending**: A status for the time interval between the connection to storage and the first log export. 
+
+* **OK**: Logs are exported from at least one CDN server. 
+
+* **Failed**: An error occurred while connecting to a storage, or the service failed to export logs within 24 hours. 
+
+* **Pause**: The Raw Logs feature is paused. 
+
+### Export time intervals 
+
+Logs are exported at the end of each hour. If you activate Raw Logs at 00:30, the first logs will be exported between 00:45 and 01:00 and the next ones—between 01:45 and 02:00. 
+
+If CDN servers are not requested and you didn’t select the **Do not send empty logs** checkbox when configuring Raw Logs, an empty log file (± 20 bytes) will be sent to your storage. 
+
+### Log traffic calculation 
+
+Logs can generate various types of analytics, such as delivered traffic. To understand what the totals mean, we recommend that you familiarize yourself with the formulas for calculating logs. For details about CDN reports, check out the <a href="https://gcore.com/docs/cdn/view-statistics-of-a-cdn-resource" target="_blank">View statistics on CDN resources</a> guide.  
+
+The formula for calculating traffic depends on whether you’ve selected the **Add logs from origin shielding** option for Raw Logs. 
+
+<expandable-element title="If Origin Shielding is disabled">
+If this feature is disabled, the formula will look like this: 
 
 ```
 total_bytes = upstream_bytes + sent_bytes 
 ```
 
 Where:
+
 - ```upstream_bytes``` are equal to the ```$upstream_response_length``` log field and refer to the response length from an origin in bytes
 - ```sent_bytes``` are equal to the ```$bytes_sent``` log field and refer to the number of bytes sent to a user from the edge (cache) servers
 
 For example, if ```$upstream_response_length``` is 10485760 (bytes) and ```$bytes_sent``` is 1514848 (bytes), the final value in the Raw logs report will be 12,000,608 (bytes).
+ 
+</expandable-element>
 
-2. If the "Add logs from origin shielding" option is enabled, the formula will look like this:
+<expandable-element title="If Origin Shielding is enabled">
+If this feature is enabled, the formula will look like this: 
 
 ```
 total_bytes = upstream_bytes + sent_bytes + shield_bytes
 ```
+
 Where:
 
 - ```upstream_bytes``` are equal to the ```$upstream_response_length``` log field and refer to the response length from an origin in bytes
 - ```sent_bytes``` are equal to the ```$bytes_sent``` log field and refer to the number of bytes sent to a user from the edge (cache) servers
 - ```shield_bytes``` are equal to the ```$bytes_sent``` log field and refer to the number of bytes sent to a user from the pre-cache server
+ 
+</expandable-element>
 
-**Note**: The final value of log data may differ slightly from the billing statistics, as there may be cases where not all logs are received, such as:
+<alert-element type="info" title="Info">
+ 
+The final value of log data may differ slightly from the billing statistics as there may be cases where not all logs are received, such as: 
 
-- You are using the "Origin Shielding" feature but did not check the "Add logs from origin shielding" box
-- You have a rate limit set on your storage side, and when CDN started generating logs, some logs were not downloaded because of the rate limitation
+* You are using the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin Shielding</a> feature but didn’t select the **Add logs from origin shieldin**g option. 
 
-## Export logs to an S3 storage
-
-### Amazon storage
-
-1\. Leave the box "Do not send empty logs" checked if you don't want to receive empty logs. If you want to receive empty logs, uncheck it.
-
-2\. If you use our <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">origin shielding</a> option, you can see a checkbox "Add logs from origin shielding". Check the box if you want to receive logs from both edge servers and pre-cache shielding servers.
-
-3\. For storage type, select "Amazon".
-
-4\. Specify your access key ID. In your Amazon personal account, it is called "AWS access Key ID". You can find it using the <a href="https://docs.aws.amazon.com/powershell/latest/userguide/pstools-appendix-sign-up.html" target="_blank">instruction</a>. An access key ID and secret access key are required to configure log export to your storage.
-
-5\. Specify your secret access key. In your Amazon personal account, it is called "AWS secret access Key". You can find it using the <a href="https://docs.aws.amazon.com/powershell/latest/userguide/pstools-appendix-sign-up.html" target="_blank">instruction</a>.
-
-6\. Specify your AWS region — the location of a server where your storage is hosted. This is optional: for most storages, the region is determined automatically. You can leave the field empty. But we recommend filling it out to ensure that your logs are exported successfully.
-
-7\. Choose how to organize storage: put logs of all CDN resources into one bucket or use separate buckets for each CDN resource.
-
-8\. Specify bucket(s) for log export. Make sure you indicate an existing bucket. Otherwise, your logs cannot be exported. Specify a folder name if you want to export logs to a specific folder within a bucket.
-
-9\. Click **Save changes**.
-
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/12745153936913.png" alt="Raw logs" width="80%">
-
-### Non-Amazon storage
-
-1\. Leave the box "Do not send empty logs" checked if you don't want to receive empty logs. If you want to receive empty logs, uncheck it.
-
-2\. If you use our <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">origin shielding</a> option, you can see a checkbox "Add logs from origin shielding". Check the box if you want to receive logs from both edge servers and pre-cache shielding servers.
-
-3\. For storage type, select "Other".
-
-4\. Specify a hostname — a name that is assigned to a storage server within a network and is used instead of an IP address. If you use <a href="https://gcore.com/storage" target="_blank">Gcore Object Storage</a>, you can find its access key ID in your personal account in the "<a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage#s3" target="_blank">Hostname</a>" field.
-
-5\. Specify your access key ID. Along with a secret access key, it is required to configure log export to your storage. If you use <a href="https://gcore.com/storage" target="_blank">Gcore Object Storage</a>, you can find its access key ID in your personal account in the "<a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage#s3" target="_blank">Access key</a>" field.
-
-6\. Specify your secret access key. If you use <a href="https://gcore.com/storage" target="_blank">Gcore Object Storage</a>, you can find its secret access key in your personal account in the "<a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage#s3" target="_blank">Secret key</a>" field.
-
-7\. Specify a bucket hostname — a bucket ID that is used by your Object storage system in the ```{bucket_name}.{hostname}``` format. It is required to ensure that logs are exported to a correct bucket within a storage. A bucket hostname of the Gcore storage looks as follows: ```{bucket name}.{hostname from step 3}```. For example: ```examplename.s-ed1.cloud.gcore.lu```. 
-
-8\. Specify a region — location ID of a server where your storage is hosted. This is optional: for some storages, the region is determined automatically. You can leave the field empty. If you use <a href="https://gcore.com/storage" target="_blank">Gcore Object Storage</a>, a location ID is required. You can find it in the "Details" of the storage. Your location ID is a part of your hostname to the first dot.
-
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/image_1377.png" alt="Specify a region " width="50%">  
-
-9\. Choose how to organize storage: put logs of all CDN resources into one bucket or to use separate buckets for each CDN resource.
-
-10\. Specify bucket(s) for log export. Make sure you indicate an existing bucket. Otherwise, your logs cannot be exported. If you want to export logs to a specific folder within a bucket, specify a folder name.
-
-11\. Click **Save changes**.
-
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/export-logs-to-s3-storage.png" alt="Specify a region " width="80%">
-
-## Export logs to an FTP/SFTP storage
-
-1\. Leave the box "Do not send empty logs" checked if you don't want to receive empty logs. If you want to receive empty logs, uncheck it.
-
-2\. If you use our <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">origin shielding</a> option, you can see a checkbox "Add logs from origin shielding". Check the box if you want to receive logs from both edge servers and pre-cache shielding servers.
-
-3\. Specify a hostname — a name that is assigned to a storage server within a network and is used instead of an IP address. If you use <a href="https://gcore.com/storage" target="_blank">Gcore SFTP storage</a>, you can find its hostname in the "Details" of the storage in the "<a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage#sftp" target="_blank">Hostname</a>" field. It looks as follows: ```ams.origin.gcdn.co```. Additionally, you can specify an FTP or SFTP storage port by adding a colon after the hostname. For example: ```ams.origin.gcore.co:2200```.
-
-4\. Specify a storage username. If you use <a href="https://gcore.com/storage" target="_blank">Gcore SFTP storage</a>, you can find its username in the "Details" of your storage in the "<a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage#sftp" target="_blank">Storage/User name</a>" field.
-
-5\. Enter your storage password.
-
-6\. Specify a folder for export. If you use <a href="https://gcore.com/storage" target="_blank">Gcore SFTP storage</a>, specify the root (home) folder where other folders originate from. You can find its name in the "Details" of your SFTP storage at the end of the "Upload path" field.
-
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/image_1379.png" alt="Raw logs" width="50%">
-
-If you use an SFTP storage from another provider, clarify whether a root folder that includes other folders is created by default. If not, leave the field empty. If yes, specify a folder name.
-
-7\. Choose how to organize storage: put logs of all CDN resources into one folder or to use separate folders for each CDN resource. Then specify a folder name. If you specify a non-existent folder, logs will be exported to a root folder.
-
-8\. Click **Save changes**.
-
-
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/12745350391697.png" alt="Specify a folder for export" width="80%">
-
-## Export time intervals
-
-
-Logs are exported at the end of each hour. If you activate Raw Logs at 00:30, the first logs will be exported between 00:45 and 01:00, and the next ones — between 01:45 and 02:00.
-
-If CDN servers are not requested and the box "Do not send empty logs" is unchecked, an empty log file (± 20 bytes) will be sent to your storage.
-
-You can see the status of the Raw Logs option in the Gcore Customer Portal:
-
-- "Pending" is a status for the time interval between the connection to a storage and the very first log export
-- "OK" is a status showing that logs are exported from at least one CDN server
-- "Failed" is a status indicating that an error occurred while connecting to a storage or that the service failed to export logs within 24 hours
-- "Pause" is a status showing that the option is paused
-
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/image_1381.png" alt="Raw logs" width="50%">
+* You have a rate limit set on your storage side, and when CDN started generating logs, some logs weren’t downloaded because of the rate limitation. 
+ 
+</alert-element>
 
 ## Log path example
 
 ```
 s3://log-bucket-name/2019/08/20/15/nodename_primarycname.domain.ru_access.log.gz
+```
+
+## Log example
+
+```
+"0.0.0.0" "-" "-" "[26/Apr/2019:09:47:40 +0000]" "GET /ContentCommon/images/image.png HTTP/1.1"  
+"200" "1514283" "https://example.com/videos/10" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_1)  
+AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 YaBrowser/16.10.0.2309 Safari/537.36"  
+"1514848" "[dh-up-gc18]" "https" "origin.cdn.com" "1.500" "0.445" "157" "bytes=0-1901653" "[dh]"  
+"MISS" "10485760" "0.0.0.0:80" "2510" "7399" "-" "-" "KZ" "-" "shield_no" "0.0.0.0" "80" "206" "-" "0.000"  
+"0.200" "0.0.0.0" "asnumber" "106980391" "1" "00-d5fe1dc9035165ce36952daf29686b6c-14330be33197dd1a-01" "-" "-"  
+"ECDHE-RSA-AES256-GCM-SHA384" "28a4184139cb43cdc79006cf2d1a4ac93bdc****" "r"  
+"application/json" "21" "PL" "45" "10" "100700"
 ```
 
 ## Log format
@@ -189,25 +152,15 @@ s3://log-bucket-name/2019/08/20/15/nodename_primarycname.domain.ru_access.log.gz
 "$server_country_code" "$gcdn_tcpinfo_snd_cwnd" "$gcdn_tcpinfo_total_retrans" "$gcdn_rule_id" 
 ```
 
-Please don’t be surprised if you see a field that is not listed above. We occasionally add new fields. If some fields are added to logs, you will receive an email about it. New fields are added to the end of the line.
-
-## Log example
-
-```
-"0.0.0.0" "-" "-" "[26/Apr/2019:09:47:40 +0000]" "GET /ContentCommon/images/image.png HTTP/1.1"  
-"200" "1514283" "https://example.com/videos/10" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_1)  
-AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 YaBrowser/16.10.0.2309 Safari/537.36"  
-"1514848" "[dh-up-gc18]" "https" "origin.cdn.com" "1.500" "0.445" "157" "bytes=0-1901653" "[dh]"  
-"MISS" "10485760" "0.0.0.0:80" "2510" "7399" "-" "-" "KZ" "-" "shield_no" "0.0.0.0" "80" "206" "-" "0.000"  
-"0.200" "0.0.0.0" "asnumber" "106980391" "1" "00-d5fe1dc9035165ce36952daf29686b6c-14330be33197dd1a-01" "-" "-"  
-"ECDHE-RSA-AES256-GCM-SHA384" "28a4184139cb43cdc79006cf2d1a4ac93bdc****" "r"  
-"application/json" "21" "PL" "45" "10" "100700"
-```
+It’s OK if you find a field that’s not listed in the example. We occasionally add new fields to the end of the line. If some fields are added to logs, you’ll receive an email about the update. 
 
 ## Log fields
 
-Not all fields are important. Some of them relate to our internal CDN system and are not meaningful for you. In the table below, we have highlighted such system fields in italics. Other fields can be helpful for traffic analysis or statistics.
+The following table contains a complete list of available log fields. Fields formatted in italics relate to our internal CDN system, so you can ignore them.  
 
+You can check other fields—they can be helpful for traffic analysis or statistics. 
+
+<expandable-element title="View log fields">
 <table>
 <thead>
   <tr>
@@ -305,7 +258,16 @@ Not all fields are important. Some of them relate to our internal CDN system and
   <tr>
     <td>$upstream_cache_status</td>
     <td>MISS</td>
-    <td>Status of a requested file in CDN cache:<br>- HIT is a status of a response served from CDN cache.<br>- STALE is a status of an outdated response that failed to update because an origin was not responding or responding incorrectly.<br>- UPDATING is a status of an outdated response that is still updating since a previous request.<br>- REVALIDATED is a status of a response that is identical to the one on an origin based on the proxy_cache_revalidate directive.<br>- EXPIRED is a status of a response that has expired in cache, but still matches the one on an origin. A request has been sent to an origin for re-caching.<br>- MISS is a status of a response that has been served directly from an origin, rather than from cache.<br>- BYPASS is a status of a response for the first file request after clearing the cache.<br>Note: this status appears when the file is requested by each CDN server.<br>When one CDN server requests a file for the first time, it will have the BYPASS status.<br>When the same server requests the file again, the status will be changed to HIT.<br>When another CDN server requests the file, it will again have the BYPASS status.<br></td>
+    <td>Status of a requested file in CDN cache:
+    <br> HIT is the status of a response served from the CDN cache.
+    <br> STALE is the status of an outdated response that failed to update because an origin was not responding or responding incorrectly.
+    <br>UPDATING is the status of an outdated response that is still updating since a previous request.
+    <br>REVALIDATED is the status of a response that is identical to the one on an origin based on the proxy_cache_revalidate directive.
+    <br>EXPIRED is the status of a response that has expired in cache but still matches the one on an origin. A request has been sent to an origin for re-caching.
+    <br>MISS is the status of a response that has been served directly from an origin rather than from a cache.
+    <br>BYPASS is the status of a response for the first file request after clearing the cache. This status appears when the file is requested by each CDN server.
+    <br>When one CDN server requests a file for the first time, it will have the BYPASS status.
+    <br>When the same server requests the file again, the status will be changed to HIT.<br>When another CDN server requests the file, it will again have the BYPASS status.<br></td>
   </tr>
   <tr>
     <td>$upstream_response_length</td>
@@ -425,7 +387,7 @@ Not all fields are important. Some of them relate to our internal CDN system and
   <tr>
     <td   >$ssl_session_reused<br>(internal system variable)</td>
     <td   > r</td>
-    <td   >The filed shows whether a session was reused (“r” ) or not (“.”)</td>
+    <td   >The field shows whether a session was reused (“r” ) or not (“.”)</td>
   </tr>
   <tr>
     <td  >$sent_http_content_type</td>
@@ -445,7 +407,7 @@ Not all fields are important. Some of them relate to our internal CDN system and
   <tr>
     <td>$gcdn_tcpinfo_snd_cwnd</td>
     <td>45</td>
-    <td>Size of the TCP Congestion window, i.e. the maximum number of TCP segments that the connection can send before an acknowledgement is required.</td>
+    <td>Size of the TCP Congestion window, i.e., the maximum number of TCP segments that the connection can send before an acknowledgment is required.</td>
   </tr>
   <tr>
     <td>$tcpi_total_retrans</td>
@@ -459,3 +421,139 @@ Not all fields are important. Some of them relate to our internal CDN system and
   </tr>
 </tbody>
 </table>
+
+</expandable-element>
+
+## Export logs to S3 storage
+
+### Amazon storage
+
+1\. In the Gcore Customer Portal, navigate to **CDN** > **Logs**. 
+
+2\. Enable the **Receive Raw Logs** toggle to open log settings.
+
+3\. Keep the **Do not send empty logs** option selected if you don't want to receive empty logs. Otherwise, uncheck it. 
+
+4\. If you use our <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin Shielding</a> feature, you’ll see a checkbox **Add logs from origin shielding**. Select the checkbox to receive logs from both edge servers and pre-cache shielding servers. 
+
+5\. Select to receive logs using S3.
+
+6\. Choose Amazon as the storage type. 
+
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/export-logs-from-amazon-1.png" alt="Raw logs settings for Amazon S3" width="80%">
+
+7\. Specify your access key ID. In your Amazon personal account, it's called "AWS access key ID". For details on how to find your key ID, check the <a href="https://docs.aws.amazon.com/powershell/latest/userguide/pstools-appendix-sign-up.html" target="_blank">official Amazon guide</a>. An access key ID and secret access key are required to configure log export to your storage.
+
+8\. Specify your secret access key. In your Amazon account, it's called "AWS secret access key". For details on how to find your access key, check the <a href="https://docs.aws.amazon.com/powershell/latest/userguide/pstools-appendix-sign-up.html" target="_blank">official Amazon guide</a>. 
+
+9\. (Optional) Enter your AWS region—the location of a server where your storage is hosted. For most storage types, the region is determined automatically, so you might leave the field empty. However, we recommend specifying the region to ensure that your logs are exported successfully. 
+
+10\. Choose how to organize your storage: put logs of all CDN resources into one bucket or use separate buckets for each CDN resource.
+
+11\. Specify buckets for log export. Make sure to indicate an existing bucket. Otherwise, your logs won’t be exported.  
+Enter a folder name if you want to export logs to a specific folder within a bucket.
+
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/export-logs-from-amazon-2.png" alt="Raw logs settings for Amazon S3" width="80%">
+
+12\. Click **Save changes**.
+
+You've successfully configured Raw Logs export to Amazon S3.
+
+### Non-Amazon storage
+
+1\. In the Gcore Customer Portal, navigate to **CDN** > **Logs**. 
+
+2\. Enable the **Receive Raw Logs** toggle to open log settings.  
+
+3\. Keep the **Do not send empty logs** option selected if you don't want to receive empty logs. Otherwise, uncheck it. 
+
+4\. If you use our <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin Shielding</a> feature, you’ll see a checkbox **Add logs from origin shielding**. Select the checkbox to receive logs from both edge servers and pre-cache shielding servers. 
+
+5\. Select to receive logs using S3.
+
+6\. Select Other as the storage type. 
+
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/export-logs-from-s3-other-1.png" alt="Raw logs settings for 3-rd party S3 storage" width="80%">
+
+7\. Specify a hostname—a name that's assigned to a storage server within a network and is used instead of an IP address. If you use <a href="https://gcore.com/storage" target="_blank">Gcore Object Storage</a>, you can find its access key ID in your personal account in the <a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage#s3" target="_blank">Hostname</a> field.
+
+8\. Specify your access key ID. Along with a secret access key, it's required to configure log export to your storage. If you use <a href="https://gcore.com/storage" target="_blank">Gcore Object Storage</a>, you can find its access key ID in your personal account in the <a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage#s3" target="_blank">Access key</a> field.
+
+9\. Specify your secret access key. If you use <a href="https://gcore.com/storage" target="_blank">Gcore Object Storage</a>, you can find its secret access key in your personal account in the <a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage#s3" target="_blank">Secret key</a> field.
+
+10\. Specify a bucket hostname—a bucket ID that's used by your Object storage system in the ```{bucket_name}.{hostname}``` format. It's required to ensure that logs are exported to the correct bucket within a storage. A bucket hostname of the Gcore storage looks as follows: ```{bucket name}.{hostname from step 3}```. 
+For example: ```examplename.s-ed1.cloud.gcore.lu```. 
+
+11\. (Optional) Specify a regio—location ID of a server where your storage is hosted. For some storage types, the region is determined automatically, so you can leave the field empty. 
+
+<alert-element type="info" title="Info">
+ 
+If you use Gcore Object Storage, you must specify the location ID. You can find it in the <a href="https://gcore.com/docs/storage/request-content-directly-from-the-storage" target="_blank">Details of the storage</a>. Your location ID is a part of your hostname to the first dot.  
+ 
+</alert-element>
+
+12\. Choose how to organize storage: put logs of all CDN resources into one bucket or use separate buckets for each CDN resource. 
+
+13\. Specify buckets for log export. Make sure to indicate an existing bucket. Otherwise, your logs won’t be exported. If you want to export logs to a specific folder within a bucket, specify the folder name. 
+
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/export-logs-from-s3-other-2.png" alt="Raw logs settings for 3-rd party S3 storage" width="80%">
+
+14\. Click **Save changes**. 
+
+You've successfully configured Raw Logs export to S3 storage.
+
+## Export logs to FTP or SFTP storage
+
+1\. In the Gcore Customer Portal, navigate to **CDN** > **Logs**. 
+
+2\. Enable the **Receive Raw Logs** toggle to open log settings.  
+
+3\. Keep the **Do not send empty logs** option selected if you don't want to receive empty logs. Otherwise, uncheck it. 
+
+4\. If you use our <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin Shielding</a> feature, you’ll see a checkbox **Add logs from origin shielding**. Select the checkbox to receive logs from both edge servers and pre-cache shielding servers. 
+
+5\. Select to receive logs via SFTP. 
+
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/export-logs-from-sftp-1.png" alt="Raw logs settings for SFTP storage" width="80%">
+
+6\. Specify a hostname—a name that’s assigned to a storage server within a network and is used instead of an IP address. If you use Gcore SFTP Storage, you can find its hostname in the <a href="https://gcore.com/docs/storage/request-content-directly-from-the-storage" target="_blank">Details of the storage</a> in the <a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage#sftp" target="_blank">Hostname field</a>. It looks as follows: ```ams.origin.gcdn.co```.
+
+<alert-element type="warning" title="Warning">
+ 
+You need to specify an FTP or SFTP storage port after the hostname. For example: ```ams.origin.gcore.co:2200```. Otherwise, you’ll get the “Wrong connection settings error” and won’t be able to connect to the storage. 
+ 
+</alert-element>
+
+7\. Specify a username you use to log in to the storage. If you use Gcore SFTP storage, you can find the username in the <a href="https://gcore.com/docs/storage/request-content-directly-from-the-storage" target="_blank">Details of your storage</a> in the <a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage#sftp" target="_blank">Storage/User name</a> field.
+
+8\. Enter the password you use to authenticate to the storage. 
+
+9\. Specify a folder for export. If you use Gcore SFTP storage, specify the root (home) folder where other folders originate from. You can find its name in the <a href="https://gcore.com/docs/storage/request-content-directly-from-the-storage" target="_blank">Details of your storage</a> at the end of the **Upload path** field.
+
+If you use an SFTP storage from another provider, clarify whether a root folder that includes other folders is created by default. If not, leave the field empty. If yes, specify a folder name.
+
+<alert-element type="info" title="Info">
+ 
+If you’re using the Gcore SFTP storage, you won’t be able to write to the home folder. It only receives logs and can’t be manually modified. 
+ 
+</alert-element>
+
+10\. Choose how to organize the storage: put logs of all CDN resources into one folder or use separate folders for each CDN resource. Then, specify a folder name. If you specify a non-existent folder, logs will be exported to a root folder.
+
+11\. (Optional) Specify the folder name where logs will be stored. If you specify a non-existent folder, logs will be exported to a root folder. For Gcore SFTP storage, you can only specify the default **htdocs** folder.  
+
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/export-logs-from-sftp-2.png" alt="Raw logs settings for SFTP storage" width="80%">
+
+12\. Click **Save changes**.
+
+You've successfully configured Raw Logs export to FTP or SFTP storage.
+
+## Deactivate Raw Logs 
+
+To stop Raw Logs delivery, disable the **Receive Raw Logs** toggle.  
+
+If you disable the logs, your settings will be saved. You can always activate the same configuration by enabling the Receive Raw Logs toggle again.  
+
+If you made any changes to the configuration, click Discard changes to cancel any changes made during the editing process.
+
+<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/deactivate-logs.png" alt="Raw logs page" width="80%">
