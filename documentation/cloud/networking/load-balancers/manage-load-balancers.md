@@ -56,10 +56,10 @@ In the editor, you can:
 
 | Status (UI) | Status (API)                                                                                                                              | Value                                                                           |
 |-------------|-------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------|
-| Healthy     | Online                                                                                                                                    | The balancer is working.All virtual machines in the pool accept requests. |
-| Unhealthy   | Draining                                                                                                                                  | A virtual machine from the pool does not accept new requests.                   |
+| Healthy     | Online                                                                                                                                    | The balancer is working. All Virtual Machines in the pool accept requests. |
+| Unhealthy   | Draining                                                                                                                                  | A Virtual Machine from the pool does not accept new requests.                   |
 | Degraded    | One or more balancer components have the \"Error\" status.                                                                                |
-| Error       | The balancer doesn't work.Virtual machines do not pass check requests.All virtual machines in the pool have the \"Error\" status. |
+| Error       | The balancer doesn't work. Virtual machines do not pass check requests. All Virtual Machines in the pool have the \"Error\" status. |
 
 
 ## Performance analysis

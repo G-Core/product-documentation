@@ -4,16 +4,16 @@ displayName: Upgrade
 published: true
 order: 40
 toc:
-pageTitle: Upgrade your virtual server | Gcore
-pageDescription: Learn how to upgrade the plan of your virtual server.
+pageTitle: Upgrade your Virtual Server | Gcore
+pageDescription: Learn how to upgrade the plan of your Virtual Server.
 ---
-# Upgrade your virtual server
+# Upgrade your Virtual Server
 
-You cannot change one item in the plan of your virtual server. But you can update the entire plan: choose a new one, and we will make a replacement.
+You cannot change one item in the plan of your Virtual Server. But you can update the entire plan: choose a new one, and we will make a replacement.
 
 The plan includes the location where the server is located, the number of vCPUs, the amount of RAM, the hard disk space, the OS, the limitation of the network bandwidth, and gigabytes of included traffic. They are listed in the server description.
 
-<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/upgrade-your-virtual-server/mceclip2.png" alt="Upgrade your virtual server" width="80%">
+<img src="https://assets.gcore.pro/docs/hosting/virtual-servers/upgrade-your-virtual-server/mceclip2.png" alt="Upgrade your Virtual Server" width="80%">
 
 Change your plan in two steps:
 

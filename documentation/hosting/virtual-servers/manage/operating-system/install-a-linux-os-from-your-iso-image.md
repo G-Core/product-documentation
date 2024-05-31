@@ -5,7 +5,8 @@ published: true
 order: 30
 toc:
 pageTitle: Install a Linux OS from an ISO image| Gcore
-pageDescription: Learn how to install a Linux OS from an ISO image for a virtual server.
+pageDescription: Learn how to install a Linux OS from an ISO image for a V
+irtual Server.
 ---
 # Install a Linux OS from your ISO image
 

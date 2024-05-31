@@ -9,7 +9,7 @@ pageDescription: Learn how to pay for your Gcore server, set up auto-renewal or 
 ---
 # Renew the server
 
-For renewal of a virtual server, just keep the money to pay for tariffs on your balance: it will be charged automatically, and the server will continue to work.
+For renewal of a Virtual Server, just keep the money to pay for tariffs on your balance: it will be charged automatically, and the server will continue to work.
 
 For renewal of a dedicated server, with auto-renewal (clock icon stands next to such server), just keep the money to pay for tariffs on your balance: the money will be charged automatically, the service will not stop working. To renew the server without auto-renewal, select it in the menu, click the "Renew" button at the top and transfer money.
 

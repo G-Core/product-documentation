@@ -53,7 +53,7 @@ When naming a public key, consider that the name can contain only Latin characte
 
 #### Generate an SSH key when creating a VM 
 
-When <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance" target="_blank"<creating a Virtual Machine</a>, in Step 8, you'll be asked to choose one of the following options in the “SSH key” section:
+When <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance" target="_blank">creating a Virtual Machine</a>, in Step 8, you'll be asked to choose one of the following options in the “SSH key” section:
 
 - **Select SSH key**: Add a key that's already stored in the Gcore Customer Portal by selecting it from the dropdown list.
 - **Add a new SSH key**: Add an existing key generated via CLI tools or SSH client.

@@ -4,12 +4,12 @@ displayName: Choose a configuration
 published: true
 order: 10
 toc:
-pageTitle: Choose a virtual server | Gcore
-pageDescription: Learn how to choose the right virtual server for your needs. Compare plans, specifications, and performance levels. 
+pageTitle: Choose a Virtual Server | Gcore
+pageDescription: Learn how to choose the right Virtual Server for your needs. Compare plans, specifications, and performance levels. 
 ---
-# Choose a virtual server for your needs
+# Choose a Virtual Server for your needs
 
-We offer virtual servers with different specifications in different data centers. To make it easy for you to choose the right one, we will describe the billing plans we have and the difference between them.
+We offer Virtual Servers with different specifications in different data centers. To make it easy for you to choose the right one, we will describe the billing plans we have and the difference between them.
 
 ## Available plans
 
@@ -45,6 +45,6 @@ Choose a category and plan based on your tasks and the resources they consume.
 
 **If your task requires high processor performance,** choose KVM-HIGHCPU-SSD or KVM-HIGHCPU-SAS servers. The latter ones have more disk space.
 
-**If the performance of a virtual server is not enough for your tasks,** you can order a dedicated server.
+**If the performance of a Virtual Server is not enough for your tasks,** you can order a dedicated server.
 
 If you are not sure how many resources your tasks will consume and what plan is needed, you can order any appropriate plan and check if the server is suitable for your tasks. We can  <a href="https://gcore.com/docs/hosting/virtual-servers/upgrade-your-virtual-server" target="_blank">upgrade your plan</a> if the server you have chosen doesn't have enough performance. If you want to order the upgrade, write to technical support and specify the desired configuration.

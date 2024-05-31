@@ -9,7 +9,7 @@ pageDescription: Learn how to troubleshoot blocked SMTP ports.
 ---
 # Troubleshoot blocked SMTP ports
 
-If you can't send email through SMTP ports 25, 465 and 587, most likely your virtual server is suspected of sending spam.
+If you can't send email through SMTP ports 25, 465 and 587, most likely your Virtual Server is suspected of sending spam.
 
 Go to "Support tickets" in your control panel and check if there are any messages about blocking.
 

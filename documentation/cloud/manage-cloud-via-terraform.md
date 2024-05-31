@@ -11,14 +11,14 @@ toc:
    --2--Create a Virtual Machine: "create-a-virtual-machine"
    --2--Create a Managed Kubernetes cluster: "create-a-managed-kubernetes-cluster"
    --2--Create a Kubernetes pool: "create-a-kubernetes-pool"
-   --2--Create a load balancer: "create-a-load-balancer"
+   --2--Create a Load Balancer: "create-a-load-balancer"
    --2--Create a network and subnetwork: "create-a-network-and-subnetwork"
    --2--Create a server group: "create-a-server-group"
    --2--Create a snapshot: "create-a-snapshot"
    --2--Create a volume: "create-a-volume"
    --2--Reserve an IP address: "reserve-an-ip-address"
 pageTitle: Manage Cloud via Terraform | Gcore
-pageDescription: Learn how to manage your cloud resources using Terraform. Follow the guide to install Terraform and create VMs, K8s clusters, load balancers, and more.
+pageDescription: Learn how to manage your cloud resources using Terraform. Follow the guide to install Terraform and create VMs, K8s clusters, Load Balancers, and more.
 ---
 # Manage Cloud via Terraform
 

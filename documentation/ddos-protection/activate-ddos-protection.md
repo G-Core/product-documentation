@@ -7,13 +7,13 @@ toc:
    --1--Order: "activate-the-service"
    --1--Deactivate: "deactivate-the-service"
 pageTitle: Activate DDoS Protection | Gcore
-pageDescription: Easily activate DDoS Protection for your virtual servers, Bare Metals in cloud, dedicated servers, and even third-party equipment.
+pageDescription: Easily activate DDoS Protection for your Virtual Servers, Bare Metals in cloud, dedicated servers, and even third-party equipment.
 ---
 # Activate DDoS Protection
 
 ## Activate the service
 
-DDoS Protection is provided for <a href="https://gcore.com/cloud/compute-resources" target="_blank">virtual servers</a>, <a href="https://gcore.com/cloud/bare-metal-servers" target="_blank">Cloud Bare Metals</a>, and <a href="https://gcore.com/hosting/dedicated" target="_blank">dedicated servers</a>. We can also protect your equipment that is not hosted by us.
+DDoS Protection is provided for <a href="https://gcore.com/cloud/compute-resources" target="_blank">Virtual Servers</a>, <a href="https://gcore.com/cloud/bare-metal-servers" target="_blank">Bare Metal</a>, and <a href="https://gcore.com/hosting/dedicated" target="_blank">Dedicated Servers</a>. We can also protect your equipment that is not hosted by us.
 
 **To order protection for a Gcore server**, send a request to technical support via chat in the bottom-right corner of the screen. Please note that the main IP of your server will be changed after we set up the protection. In your request, specify the following details:
 
