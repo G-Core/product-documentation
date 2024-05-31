@@ -1,6 +1,6 @@
 ---
 title: manage-load-balancers
-displayName: Manage load balancer
+displayName: Manage Load Balancer
 published: true
 order: 15
 toc:
@@ -8,11 +8,11 @@ toc:
    --1--Balancer statuses: "load-balancer-statuses"
    --1--Performance analysis: "performance-analysis"
 pageTitle: Configure a Load Balancer | Gcore
-pageDescription: Learn how to configure a load balancer to distribute incoming requests across VMs, improving the fault tolerance of your infrastructure.
+pageDescription: Learn how to configure a Load Balancer to distribute incoming requests across VMs, improving the fault tolerance of your infrastructure.
 ---
-# Manage load balancers
+# Manage Load Balancers
 
-The list of created balancers is located inside the project - > Networking - > Load balancers
+The list of created balancers is located inside the project - > Networking - > Load Balancers
 
 There you can:
 
@@ -26,7 +26,7 @@ To do it, select the necessary action on the selector on the right from the bala
 
 Go to your project - > Networking - > Load balancers -> select the Overview option on the selector on the right from the chosen balancer.
 
-In the drop-down window, you can edit existing listeners in the load balancer and also add new ones.
+In the drop-down window, you can edit existing listeners in the Load Balancer and also add new ones.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/________________________________________.png" alt="Add new Listener">
 
@@ -40,11 +40,11 @@ In the editor, you can:
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/_______________.png" alt="_______________.png">
 
-*   Parameters of connected instances (including verification address, port, and weight)
+*   Parameters of connected Virtual Machines (including verification address, port, and weight)
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/______________.png" alt="______________.png">
 
-*   Enable and disable instances from the load balancing pool
+*   Enable and disable Virtual Machines from the load balancing pool
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/__________________________.png" alt="__________________________.png">
 
@@ -64,7 +64,7 @@ In the editor, you can:
 
 ## Performance analysis
 
-We have tested our load balancers to determine the performance of different flavors. The test results show the throughput - the number of requests per second (rps) a load balancer can handle under a number of simultaneous users’ requests for worker nodes that communicate through the load balancer considering that 95 percent of requests are handled within 1 ms. 
+We have tested our Load Balancers to determine the performance of different flavors. The test results show the throughput - the number of requests per second (rps) a Load Balancer can handle under a number of simultaneous users’ requests for worker nodes that communicate through the Load Balancer considering that 95 percent of requests are handled within 1 ms. 
 
 | Flavor          | Throughput | Worker request | Percentile response time |
 |-----------------|------------|----------------|--------------------------|

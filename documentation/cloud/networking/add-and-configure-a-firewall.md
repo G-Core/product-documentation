@@ -7,7 +7,7 @@ toc:
    --1--Create a firewall: "create-a-firewall"
    --1--Use the default firewall: "use-the-default-firewall"
    --2--Add, change and delete rules: "add-change-and-delete-rules"
-   --2--Assign to an instance and detach from it: "assign-to-an-instance-and-detach-from-it"
+   --2--Assign to a Virtual Machine and detach from it: "assign-to-a-virtual-machine-and-detach-from-it"
    --2--Delete: "delete-a-firewall"
 pageTitle: Add a firewall | Gcore
 pageDescription: Learn how to add and configure a firewall to protect your servers from network threats.
@@ -16,7 +16,7 @@ pageDescription: Learn how to add and configure a firewall to protect your serve
 
 A firewall is a network security device used to protect servers from network threats. The firewall monitors incoming and outgoing network traffic and decides whether to allow or block specific traffic based on a defined set of security rules. You can set rules for all connections except port 25 for outbound traffic as it is blocked by default.
 
-If you use a load balancer and your instance is in a pool, configure its firewall by opening ports for receiving and transmitting data to the load balancer. For more information, refer to our guide <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer" target="_blank">"Create and configure a load balancer"</a>.
+If you use a Load Balancer and your instance is in a pool, configure its firewall by opening ports for receiving and transmitting data to the Load Balancer. For more information, refer to our guide <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer" target="_blank">"Create and configure a Load Balancer"</a>.
 
 ## Create a firewall
 
@@ -28,7 +28,7 @@ If you don’t create your custom firewall, the default firewall will be used.
 
  <img src="https://assets.gcore.pro/docs/cloud/networking/add-and-configure-a-firewall/13257548714001.png" alt="Firewalls " width="580" height="271">  
     
-*   When you’re creating a virtual machine, find the **Firewall settings** section, select **Add a Firewall**. 
+*   When you’re creating a Virtual Machine, find the **Firewall settings** section, select **Add a Firewall**. 
 
 2\. Give your firewall a name. 
 
@@ -55,7 +55,7 @@ Click **New rule** and select one of the template rules or choose **Custom** to 
 
 For **Sources**, set a specific IP address range in the CIDR format. Otherwise, the rule will be applied to all IP addresses. 
 
-5\. (optional) Apply a firewall to an instance by selecting it in the **Apply to Instance** drop-down list.
+5\. (optional) Apply a firewall to a Virtual Machine by selecting it in the **Apply to Instance** drop-down list.
 
 6\. (optional) Add tags by switching on the **Add tags** toggle in the **Additional options** section and specifying headers and tags. 
 
@@ -63,7 +63,7 @@ For **Sources**, set a specific IP address range in the CIDR format. Otherwise, 
 
 ## Use the default firewall
 
-If you don't specify which firewall to apply to your instance, the default firewall will be applied.
+If you don't specify which firewall to apply to your Virtual Machine, the default firewall will be applied.
 
 The default firewall allows the following traffic:
 
@@ -80,7 +80,7 @@ The default firewall allows the following traffic:
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/add-and-configure-a-firewall/13257832035729.png" alt="Firewalls">
 
-### Assign to an instance and detach from it
+### Assign to a Virtual Machine and detach from it
 
 1\. Go to the **Networking** tab > **Firewalls**.
 

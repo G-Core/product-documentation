@@ -22,11 +22,11 @@ pageDescription: Learn how to create a new pool in a Kubernetes cluster.
 
 Enter the **pool name**, set the **minimum nodes** and **maximum nodes** for <a href="https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling" target="_blank">autoscaling</a>. Autoscaling will regulate the number of nodes within the specified limits by removing unnecessary nodes during low load and deploying new ones during high loads.
 
-For **Type**, select the type of a worker node: a virtual instance or a bare metal server. 
+For **Type**, select the type of a worker node: a Virtual Machine (VM) or a Bare Metal server. 
 
-For virtual instances, you should select its flavor, disk size in GiB and the disk type.
+For VMs, you should select its flavor, disk size in GiB and the disk type.
 
-<expandable-element title="Available flavors of virtual instances">
+<expandable-element title="Available flavors of Virtual Machines">
 
 **Standard**. These are machines on which the amount of memory in GB is 2–4 times higher than that of vCPUs.
 
@@ -52,9 +52,9 @@ For virtual instances, you should select its flavor, disk size in GiB and the di
 
 </expandable-element>
 
-For bare metal servers, you also should select a flavor:
+For Bare Metal servers, you also should select a flavor:
 
-<expandable-element title="Available flavors of bare metal servers">
+<expandable-element title="Available flavors of Bare Metal servers">
 
 **High-frequency**. These servers are single-socket servers equipped with 2288G/2388 CPUs, suitable for hosting applications that require high processor frequency.
 

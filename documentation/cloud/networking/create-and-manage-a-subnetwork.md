@@ -13,7 +13,7 @@ pageDescription: Learn how to create and manage a subnetwork in the cloud to tra
 ---
 # Create and manage a subnetwork
 
-A subnetwork is a range of IP addresses in a cloud network. Addresses from this range will be assigned to VMs in the cloud.  
+A subnetwork is a range of IP addresses in a cloud network. Addresses from this range will be assigned to Virtual Machines(VMs) in the cloud.  
 
 ## Create a subnetwork
 
@@ -67,7 +67,7 @@ The valid subnet mask range is 16-29.
 
 ## Configure network routing
 
-A routed network is a private network that's already connected to a router with a public interface. All virtual machines in such networks can access the internet through the router and accept incoming connections. 
+A routed network is a private network that's already connected to a router with a public interface. All Virtual Machines in such networks can access the internet through the router and accept incoming connections. 
 
 By default, a subnetwork in the cloud is created with internet access, which means that it’s  routable. If you need to restrict machines from external connections, you need to enable the **Non-routable subnetwork** option while creating a subnetwork. 
 

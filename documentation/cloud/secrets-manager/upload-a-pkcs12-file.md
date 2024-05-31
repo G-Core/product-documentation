@@ -10,7 +10,7 @@ toc:
    --2--3. Base64 encode: "3-base64-encode"
    --1--How to create a Load Balancer with an HTTPS listener: "how-to-create-a-load-balancer-with-an-https-listener"
 pageTitle: Upload a PKCS12 file | Gcore
-pageDescription: Learn how to upload PKCS12 files (SSL/TLS certificates) to Secrets Manager for creating load balancers with HTTPS listeners. 
+pageDescription: Learn how to upload PKCS12 files (SSL/TLS certificates) to Secrets Manager for creating Load Balancers with HTTPS listeners. 
 ---
 # Upload a PKCS12 file
 
@@ -34,7 +34,7 @@ After receiving the PKCS12 file, our system will be able to open an HTTPS connec
 
 ### 1\. Prepare certificate files
 
-You need the SSL/TLS certificate for the domain, the chain of certificates, and the private key. The domain must be configured with a DNS A record with the virtual IP address of the load balancer (the IP is specified in the Load Balancers tab). If you are using our DNS zone, you can create an A record according to the <a href="https://gcore.com/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing" target="_blank">instructions</a>. Your domain will send requests to the IP of the balancer and it will distribute them among the machines.
+You need the SSL/TLS certificate for the domain, the chain of certificates, and the private key. The domain must be configured with a DNS A record with the virtual IP address of the Load Balancer (the IP is specified in the Load Balancers tab). If you are using our DNS zone, you can create an A record according to the <a href="https://gcore.com/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing" target="_blank">instructions</a>. Your domain will send requests to the IP of the balancer and it will distribute them among the machines.
 
 CA does not always send a client a chain of certificates along with the main certificate — sometimes it only sends the main one, because often it is enough for browsers to confirm the domain name. In this case, you can get the certificate chain yourself:
 

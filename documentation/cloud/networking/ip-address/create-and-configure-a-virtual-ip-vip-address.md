@@ -7,26 +7,26 @@ toc:
    --1--What is it?: "what-is-a-virtual-ip-address"
    --1--Billing: "billing"
    --1--Create a virtual IP: "create-a-virtual-ip-address"
-   --1--Use a virtual IP to create a fault-tolerant system: "assign-a-virtual-ip-address-to-multiple-instances"
+   --1--Use a virtual IP to create a fault-tolerant system: "assign-a-virtual-ip-address-to-multiple-vms"
    --1--Assign a virtual IP address as a secondary address: ""
 pageTitle: Virtual IP address| Gcore
-pageDescription: Create and configure a virtual IP address to assign to multiple instances or use as a secondary IP address for a network interface.
+pageDescription: Create and configure a virtual IP address to assign to multiple Virtual Machines or use as a secondary IP address for a network interface.
 ---
 # Create and configure a virtual IP address
 
 ## What is a virtual IP address?
 
-A virtual IP address (VIP)  is an IP address that can be assigned to multiple instances or serve as a secondary IP address for a network interface.
+A virtual IP address (VIP)  is an IP address that can be assigned to multiple Virtual Machines or serve as a secondary IP address for a network interface.
 
 ## How does it work?
 
 **To use a VIP to create a fault-tolerant system**, you’ll need to install a configure Keepalived, which is a system daemon for Linux. Keepalived uses the Virtual Router Redundancy Protocol (VRRP) to manage the VIP. This protocol allows multiple machines to share a common IP address, and Keepalived uses VRRP to pass the VIP address between the primary machine and the backup machines. When the primary machine fails, the VRRP protocol detects the failure and passes the VIP to one of the backup machines, ensuring that the network service remains available.
 
-**To** **use a VIP as a secondary address** for a network interface, you will reserve a VIP and assign it to an instance, first in the settings of our system, then in the settings of the machine. As a result, the VIP becomes the address of the instance, working in conjunction with its regular IP address, allowing the machine to receive and transmit data on behalf of both addresses.
+**To** **use a VIP as a secondary address** for a network interface, you will reserve a VIP and assign it to a Virtual Machine, first in the settings of our system, then in the settings of the machine. As a result, the VIP becomes the address of the Virtual Machine, working in conjunction with its regular IP address, allowing the machine to receive and transmit data on behalf of both addresses.
 
 ## Billing
 
-A VIP is billed from the moment you reserve it until the moment you delete it. For example, if you reserve an IP address and then delete it after an hour, you will be charged only for an hour of use, regardless of whether the address was assigned to the instance or not.
+A VIP is billed from the moment you reserve it until the moment you delete it. For example, if you reserve an IP address and then delete it after an hour, you will be charged only for an hour of use, regardless of whether the address was assigned to the Virtual Machine or not.
 
 The monthly price is displayed in the order window.
 
@@ -37,6 +37,7 @@ The monthly price is displayed in the order window.
 <img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12896827624209.png" alt="Screenshot_2023-02-07_at_14.59_1.png">
 
 2\. In the new window, select the type of an IP address depending on the required network interface: public or private.  
+
 If you select **Private**, specify the network and subnetwork. If you want to reserve a specific IP address, turn on the **Set IP address** toggle and choose an IP address from the valid CIDR. Otherwise, you will be assigned a random IP address.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12896898220817.png" alt="Screenshot_2023-02-07_at_15.28.15.png">
@@ -48,21 +49,21 @@ If you select **Private**, specify the network and subnetwork. If you want to re
 4\. In the pop-up window, turn on the **Is VIP** toggle and click **Save**.  
 You have reserved a virtual IP address. You can now assign it multiple machines to create a fault-tolerant system or to add as a secondary address for your network interface.
 
-## Assign a virtual IP address to multiple instances
+## Assign a virtual IP address to multiple VMs
 
 1\. In the Cloud menu, go to **Networking** → **Reserved IPs**, find the required virtual IP address, click **VIP** in the **Status** column.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12946840118161.png" alt="Screenshot_2023-02-13_at_11.27_1.png">
 
-2\. In the pop-up window, add the required virtual machines, specify their ports and click **Save**.
+2\. In the pop-up window, add the required Virtual Machines, specify their ports and click **Save**.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12897006107153.png" alt="Screenshot_2023-02-08_at_17.11.42.png">
 
-3\. Install and configure Keepalived on your instances using <a href="https://keepalived.readthedocs.io/en/latest/installing_keepalived.html" target="_blank">the official Keepalived documentation</a>.
+3\. Install and configure Keepalived on your Virtual Machines using <a href="https://keepalived.readthedocs.io/en/latest/installing_keepalived.html" target="_blank">the official Keepalived documentation</a>.
 
 4\. Change the Keepalived configuration file to set the "MASTER" machine and "BACKUP" machines. Additionally, set the priority to determine the order in which the VIP will be transferred between devices. If the master server fails, the IP address will be transferred to the backup machine with the highest priority. If the second machine fails, the VIP will be transferred to the backup machine with the second-highest priority.
 
-5\. Run Keepalived on your instance and add it to the autostart list. 
+5\. Run Keepalived on your Virtual Machine and add it to the autostart list. 
 
 You have configured the VIP for your machines, the fault-tolerant system will start working.
 
@@ -72,15 +73,15 @@ You have configured the VIP for your machines, the fault-tolerant system will st
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12946840118161.png" alt="Screenshot_2023-02-13_at_11.27_1.png">
 
-2\. In the pop-up window, add the required virtual machine, specify its port and click **Save**.
+2\. In the pop-up window, add the required Virtual Machine, specify its port and click **Save**.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12897006107153.png" alt="Screenshot_2023-02-08_at_17.11.42.png">
 
-Now you have to configure the VIP in the instance settings. Below are two guides for Windows and non-Windows instances.
+Now you have to configure the VIP in the Virtual Machine settings. Below are two guides for Windows and non-Windows VMs.
 
-## Configure a virtual IP address for non-Windows instances
+## Configure a virtual IP address for non-Windows Virtual Machines
 
-1\. Connect to your instance.
+1\. Connect to your Virtual Machine.
 
 2\. Run the following command as an administrator:
 
@@ -90,7 +91,7 @@ ip addr add **\[VIP\]**/**\[mask\]** dev **\[interface name\]**
 
 where:  
 \- **\[VIP\]** is the virtual IP address that you want to add to the interface.  
-\- **\[mask\]** is the subnet mask associated with the virtual IP address. You can find it in the **Networking** tab of your instance.  
+\- **\[mask\]** is the subnet mask associated with the virtual IP address. You can find it in the **Networking** tab of your Virtual Machine.  
 \- **\[interface name\]** is the name of the network interface where the IP address will be added. To find the name, run the command:  
 
 ```
@@ -105,11 +106,11 @@ For example, to add the virtual IP address _192.168.1.200_ with a subnet mask of
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12946938150161.png" alt="Screenshot_2023-02-08_at_14.04.13.png">
 
-Note: **the command assigns the VIP to your machine until it restarts**. After rebooting, run the command to assign the VIP again. To permanently assign a VIP to an instance, refer to the official documentation of your OS to add the IP address to the system network settings.
+Note: **the command assigns the VIP to your machine until it restarts**. After rebooting, run the command to assign the VIP again. To permanently assign a VIP to a Virtual Machine, refer to the official documentation of your OS to add the IP address to the system network settings.
 
-The VIP has been configured. To verify it, <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">connect to your instance via SSH</a> using your VIP. If the connection fails, there may be an error in the IP assignment command or the IP address may not have been added inside your system. Repeat the Steps again.
+The VIP has been configured. To verify it, <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">connect to your Virtual Machine via SSH</a> using your VIP. If the connection fails, there may be an error in the IP assignment command or the IP address may not have been added inside your system. Repeat the Steps again.
 
-### Configure a virtual IP address for Windows instances
+### Configure a virtual IP address for Windows Virtual Machines
 
 1\. Open the **Control Panel**.  
 2\. Go to the **Network and Sharing Center**.  
@@ -142,4 +143,4 @@ Go back to the **Control Panel**, make sure the values are correct and click **A
 
 8\. Click **OK**.
 
-The VIP has been configured. To verify it, <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">connect to your instance via SSH</a> using your VIP.If the connection fails, there may be an error in the IP assignment command or the IP address may not have been added inside your system. Repeat the Steps.
+The VIP has been configured. To verify it, <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">connect to your Virtual Machine via SSH</a> using your VIP.If the connection fails, there may be an error in the IP assignment command or the IP address may not have been added inside your system. Repeat the Steps.

@@ -13,9 +13,9 @@ pageDescription: Learn how to assign an additional IP address to your VM's inter
 
 ## What is an allowed address pair?
 
-An allowed address pair is a feature that allows you to add an extra IP address to the interface of a virtual machine.
+An allowed address pair is a feature that allows you to add an extra IP address to the interface of a Virtual Machine.
 
-By default, a virtual machine has a MAC-IP binding. It means all the traffic that comes to a given IP address will be sent to the machine that has that particular MAC address. If you want to allow traffic for another IP address, you need to add it to the allowed address pair. As such, your machine will become accessible for both IP addresses.
+By default, a Virtual Machine has a MAC-IP binding. It means all the traffic that comes to a given IP address will be sent to the machine that has that particular MAC address. If you want to allow traffic for another IP address, you need to add it to the allowed address pair. As such, your machine will become accessible for both IP addresses.
 
 In Gcore, you can add an allowed address pair via an API request.
 

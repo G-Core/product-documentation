@@ -9,7 +9,7 @@ toc:
    --1--3. Configure Logging: "step-3-configure-logging-settings"
    --1--Test results: "throughput-test-results"
 pageTitle: Load Balancer Logging for Seamless Cloud Resource Monitoring | Gcore
-pageDescription: Learn to enable logging on your load balancer and explore guaranteed throughput results across various regions with Gcore Managed Logging.
+pageDescription: Learn to enable logging on your Load Balancer and explore guaranteed throughput results across various regions with Gcore Managed Logging.
 ---
 # Logging for Load Balancers
 
@@ -72,7 +72,7 @@ Your Load Balancer will start sending logs to the topic.
 
 ## Throughput test results 
 
-Below are the test results that demonstrate the throughput for various region pairs (measured in K RPS,) where “source” is the region of a load balancer and “destination” is the location of the Managed Logging servers. 
+Below are the test results that demonstrate the throughput for various region pairs (measured in K RPS,) where “source” is the region of a Load Balancer and “destination” is the location of the Managed Logging servers. 
 
 <table>
 <tr>

@@ -62,4 +62,4 @@ You can also collect logs from other sources such as TCP, UDP, or syslog. For mo
 
 2. Save the changes in the Filebeat configuration file.
 
-3. Restart Filebeat, and it will begin sending logs to your Gcore Logging storage.  
+3. Restart Filebeat, and it will begin sending logs to the Gcore Managed Logging.  

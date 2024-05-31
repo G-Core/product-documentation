@@ -3,14 +3,14 @@ title: configure-nfs-csi-driver-for-kubernetes
 displayName: Configure NFS CSI driver for Kubernetes
 published: true
 order: 20
-pageTitle: Configure NFS CSI driver for Kubernetes | Gcore
-pageDescription: Learn how to connect a Kubernetes cluster to the NFS Container Storage Interface (CSI) driver and manage NFS volumes as persistent volumes. 
+pageTitle: Configure NFS CSI driver for Managed Kubernetes | Gcore
+pageDescription: Learn how to connect a Managed Kubernetes cluster to the NFS Container Storage Interface (CSI) driver and manage NFS volumes as persistent volumes. 
 ---
-# Configure NFS CSI driver for Kubernetes 
+# Configure NFS CSI driver for Managed Kubernetes 
 
 Data stored in a Kubernetes container’s file system is temporary and not intended for long-term retention. When you replace or terminate a container, all information within it is deleted and can’t be restored. 
 
-To prevent data loss, you can connect your Kubernetes cluster to the NFS Container Storage Interface (CSI) driver. This driver connects <a href="https://gcore.com/docs/cloud/kubernetes/about-gcore-kubernetes" target="_blank">Kubernetes</a> and <a href="https://gcore.com/docs/cloud/file-shares/about-file-shares" target="_blank">Gcore File Shares</a>, allowing Kubernetes clusters to dynamically provision, attach, and manage NFS volumes as <a href="https://gcore.com/docs/cloud/kubernetes/storage/create-a-pvc-and-bind-it-to-a-pod" target="_blank">persistent volumes</a>. 
+To prevent data loss, you can connect your Managed Kubernetes cluster to the NFS Container Storage Interface (CSI) driver. This driver connects <a href="https://gcore.com/docs/cloud/kubernetes/about-gcore-kubernetes" target="_blank">Kubernetes</a> and <a href="https://gcore.com/docs/cloud/file-shares/about-file-shares" target="_blank">Gcore File Shares</a>, allowing Kubernetes clusters to dynamically provision, attach, and manage NFS volumes as <a href="https://gcore.com/docs/cloud/kubernetes/storage/create-a-pvc-and-bind-it-to-a-pod" target="_blank">persistent volumes</a>. 
 
 ## Provision clusters with persistent NFS volumes
 
@@ -18,13 +18,13 @@ Kubernetes integration with the NFS driver is enabled by default, and the driver
 
 <alert-element type="info" title="Info">
 
-To provision persistent NFS volumes, ensure that a Kubernetes cluster and File Share are created in the same project and connected to the same network and subnetwork.
+To provision persistent NFS volumes, ensure that a Managed Kubernetes cluster and File Share are created in the same project and connected to the same network and subnetwork.
 
 </alert-element>
 
-### Step 1. Create a Kubernetes cluster
+### Step 1. Create a Managed Kubernetes cluster
 
-Create a cluster by following the instructions from our guide: <a href="https://gcore.com/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster" target="_blank">Create a Kubernetes cluster</a>. 
+Create a cluster by following the instructions from our guide: <a href="https://gcore.com/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster" target="_blank">Create a Managed Kubernetes cluster</a>. 
 
 If you already have a Kubernetes cluster created, proceed to the next step.
 

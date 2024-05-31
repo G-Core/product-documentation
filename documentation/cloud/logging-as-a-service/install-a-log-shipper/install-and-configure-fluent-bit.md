@@ -67,7 +67,7 @@ For example, if you want to gather logs from a specific file, open the <a href="
 
 2. Save the changes in the `fluent-bit.conf` file.
 
-3. Restart Fluent Bit, and it will begin sending logs to your Gcore Logging storage.
+3. Restart Fluent Bit, and it will begin sending logs to the Gcore Managed Logging.
 
 ## No timestamps  
 
