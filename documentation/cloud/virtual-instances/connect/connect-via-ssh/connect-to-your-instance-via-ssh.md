@@ -147,7 +147,7 @@ There are multiple ways to run a Linux distribution, you can read more about the
 
 7\. Confirm the password by entering it one more time or leave the field empty and press **Enter**. You can find your key in the default directory or in the custom location you've specified during the key creation.
 
-8\. The public key will be saved in the .pub file. You need to add this public key to an instance as described in the [Add a public SSH key to the Customer Portal](https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh#add-a-public-ssh-key-to-the-customer-portal) section. 
+8\. The public key will be saved in the .pub file. You need to add this public key to a Virtual Machine as described in the [Add a public SSH key to the Customer Portal](https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh#add-a-public-ssh-key-to-the-customer-portal) section. 
 
 ### PuTTY 
 
@@ -173,7 +173,7 @@ Follow these instructions to generate SSH keys on Windows 10/11 devices:
 
 <alert-element type="info" title="Info">
 
-If you generated your SSH keys via PuTTYgen or in the Gcore Customer Portal and you want to connect to your instance via PuTTY, you need to convert the keys to the .ppk format as described in this article: <a href="https://gcore.com/docs/cloud/ssh-keys/convert-an-ssh-key-from-pem-to-ppk" target="_blank"> Convert an SSH key to a PPK format</a>. 
+If you generated your SSH keys via PuTTYgen or in the Gcore Customer Portal and you want to connect to your Virtual Machine via PuTTY, you need to convert the keys to the .ppk format as described in this article: <a href="https://gcore.com/docs/cloud/ssh-keys/convert-an-ssh-key-from-pem-to-ppk" target="_blank"> Convert an SSH key to a PPK format</a>. 
 
 </alert-element>
 

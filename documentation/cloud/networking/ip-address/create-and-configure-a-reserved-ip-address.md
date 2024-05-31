@@ -73,7 +73,7 @@ Go to the Virtual Machine menu and open the "Networking" section.
 
 If the machine has already been added to the subnet you want to assign an IP to, disable that subnet. This will remove the old IP.
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-25.png" alt="Assign after instance creation">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-25.png" alt="Assign after VM creation">
 
 Add a new interface (public or private) and move the "Use reserved IP" slider. Then select the desired IP and click "Save Changes". The IP will be assigned to the Virtual Machine.
 

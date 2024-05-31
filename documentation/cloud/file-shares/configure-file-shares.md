@@ -14,11 +14,11 @@ pageDescription: Learn how to configure Gcore File Shares, mount them to virtual
 
 ## Configure file shares for Linux VMs and Bare Metal
 
-**Step 0 (for bare metal servers only)**: Make sure the network that you want to use for sharing supports bare metal servers because they require a dedicated VLAN. Otherwise, create a new dedicated VLAN by switching the **Bare Metal Network** toggle when creating a new network.
+**Step 0 (for Bare Metal only)**: Make sure the network that you want to use for sharing supports Bare Metal servers because they require a dedicated VLAN. Otherwise, create a new dedicated VLAN by switching the **Bare Metal Network** toggle when creating a new network.
 
 <img src="https://assets.gcore.pro/docs/cloud/file-shares/2-1.png" width=60% alt="Bare Metal Network toggle">
 
-**Please note**: To change the network interface of an existing bare metal server, you need to do so manually in the OS settings. 
+**Please note**: To change the network interface of an existing Bare Metal, you need to do so manually in the OS settings. 
 
 **Step 1: Create a file share.**
 

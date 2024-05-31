@@ -1,6 +1,6 @@
 ---
 title: connect-via-ssh
-displayName: Connect to an instance via SSH
+displayName: Connect to a Virtual Machine via SSH
 published: true
 pageTitle: Connect to a VM via SSH | Gcore
 pageDescription: Learn how to connect to a Gcore Virtual Machine with SSH keys 

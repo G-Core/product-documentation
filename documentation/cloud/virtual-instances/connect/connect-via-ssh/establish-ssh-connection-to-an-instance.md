@@ -1,6 +1,6 @@
 ---
 title: establish-ssh-connection-to-an-instance
-displayName: Establish SSH connection to an instance
+displayName: Establish SSH connection to a Virtual Machine
 order: 30
 published: true
 toc:
@@ -9,22 +9,22 @@ toc:
    --1--Connect via OpenSSH: "connect-via-openssh"
 ---
 
-# Establish SSH connection to an instance 
+# Establish SSH connection to a Virtual Machine 
 
 After you generate a pair of SSH keys and ensure that a public key is available in the Gcore Customer Portal, you can use these keys to connect to your instance.
 
 Before you proceed with the connection steps, make sure that:
 
-- If your instance is only connected to a private network, it has a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address" target="_blank">floating IP address</a>. 
+- If your Virtual Machine is only connected to a private network, it has a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address" target="_blank">floating IP address</a>. 
 - You have set up the <a href="https://gcore.com/docs/cloud/networking/add-and-configure-a-firewall#use-the-default-firewall" target="_blank">necessary protocols in firewall settings</a> to allow outgoing and incoming connections to an instance. 
 
 ## Connect from Terminal, Command Prompt, or WSL
 
-Follow these instructions to connect to an instance from Linux, macOS, or Windows 10/11 devices:
+Follow these instructions to connect to a Virtual Machine from Linux, macOS, or Windows 10/11 devices:
 
 1\. Open Terminal (Linux, macOS), Windows Subsystem for Linux, or Command Prompt (cmd.exe on Windows OS).
 
-2\. Connect to your instance in one of the following ways:
+2\. Connect to your Virtual Machine in one of the following ways:
 
 * To connect using a pair of SSH keys, run the following command: 
 
@@ -34,7 +34,7 @@ ssh -i ~/path/to/your/private-key username@public-ip-of-your-instance
 
 For example:  `ssh -i ~/.ssh/id_rsa ubuntu@185.188.146.129`
 
-* To connect with a password (only if you configured it during instance creation), run the following command and enter the password when prompted:
+* To connect with a password (only if you configured it during VM creation), run the following command and enter the password when prompted:
 
 ```
 ssh username@192.168.1.92. 
@@ -55,7 +55,7 @@ Typically, the login coincides with the name of the OS. For example, `ubuntu`.
 
 ## Connect with PuTTY
 
-Follow these instructions to connect to an instance from Windows 10/11 devices:
+Follow these instructions to connect to a Virtual Machine from Windows 10/11 devices:
 
 1\. Run the <a href="https://putty.org/" target="_blank">PuTTY app</a>.
 
@@ -67,7 +67,7 @@ Follow these instructions to connect to an instance from Windows 10/11 devices:
 
 <alert-element type="tip" title="Tip">
  
-You can find the IP address of your instance in the Gcore Customer Portal on the “Virtual Instances” tab. It will be displayed in the “IP Address” column.
+You can find the IP address of your Virtual Machine in the Gcore Customer Portal on the “Virtual Instances” tab. It will be displayed in the “IP Address” column.
  
 </alert-element>
 
@@ -79,11 +79,11 @@ You can find the IP address of your instance in the Gcore Customer Portal on the
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/establish-ssh-connection-to-an-instance/puttygen-session-annotated.png" alt="PuttyGen application with open Credentials tab" width="80%">
 
-7\. Load the file with the private key to the instance in the .ppk format. 
+7\. Load the file with the private key to the Virtual Machine in the .ppk format. 
 
 8\. Select **Open** to launch the PuTTY terminal window. 
 
-9\. If you connect to the instance for the first time, you’ll be asked if you want to save the host key of your instance. Select **Accept**.
+9\. If you connect to the Virtual Machine for the first time, you’ll be asked if you want to save the host key of your instance. Select **Accept**.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/establish-ssh-connection-to-an-instance/putty-cache-server.png" alt="Putty security alert that asks to cache the server's host key" width="80%">
 
@@ -125,14 +125,14 @@ Follow these steps to activate OpenSSH:
 
 4\. After the OpenSSH client is installed, restart your computer to apply the settings correctly. OpenSSH client will become available from Command Prompt (cmd.exe).
 
-5\. Open the Command Prompt and connect to an instance in one of the following ways:
+5\. Open the Command Prompt and connect to a Virtual Machine in one of the following ways:
 
 * To connect using a pair of SHH keys, run the following command: 
 
 ```
 ssh username@192.168.1.92 -i ~/path/to/your/private-key username@public-ip-of-your-instance
 ```
-* To connect with a password (only if you configured it during instance creation), run the following command and enter a password when prompted:
+* To connect with a password (only if you configured it during Virtual Machine creation), run the following command and enter a password when prompted:
 
 ```
 ssh username@192.168.1.92

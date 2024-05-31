@@ -10,7 +10,7 @@ toc:
    --1--Log storage: "log-storage"
    --1--Restrictions: "restrictions"
 pageTitle: Logging as a service| Gcore
-pageDescription: Discover Logging for both VMs and bare metal servers. Troubleshoot errors, analyze security incidents and other data using OpenSearch Dashboards.
+pageDescription: Discover Logging for both VMs and Bare Metal servers. Troubleshoot errors, analyze security incidents and other data using OpenSearch Dashboards.
 ---
 # About Managed Logging as a service
 

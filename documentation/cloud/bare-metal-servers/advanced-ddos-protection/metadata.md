@@ -1,5 +1,5 @@
 ---
 title: metadata
-displayName: Advanced DDoS protection
+displayName: Advanced DDoS Protection
 published: true
 ---

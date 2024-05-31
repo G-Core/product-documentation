@@ -5,10 +5,10 @@ order: 20
 published: true
 toc:
    --1--Create a volume: "create-a-volume"
-   --1--Attach volumes to an instance: "attach-volumes-to-an-existing-instance"
+   --1--Attach volumes to a Virtual Machine: "attach-volumes-to-an-existing-virtual-machine"
    --1--Manage volumes: "manage-volumes"
    --2--Rename a volume: "rename-a-volume"
-   --2--Detach a volume: "detach-a-volume-from-an-instance"
+   --2--Detach a volume: "detach-a-volume-from-a-virtual machine"
    --2--Resize a volume: "resize-a-volume"
    --2--Change volume type: "change-volume-type"
    --2--Take volume snapshot: "take-a-volume-snapshot"
@@ -27,23 +27,23 @@ You can view, create, and manage volumes in the Gcore Customer Portal on the **V
 
 1\. **Volumes**: View all volumes created in a project.
 
-2\. **Instance**: Check if a volume is attached to an instance.
+2\. **Instance**: Check if a volume is attached to a Virtual Machine.
 
 3\. **IOPS limit/burst**: Check the maximum number of read and write operations a volume can handle in a second and when a burst traffic occurs. 
 
 4\. **MBps limit/burst**: Check the bandwidth limit for a volume and a max bandwidth when a burst traffic occurs.
 
-5\. **Without attachments**: View all volumes that aren’t attached to an instance.
+5\. **Without attachments**: View all volumes that aren’t attached to a Virtual Machine.
 
 In the following sections, you’ll find information on how to create and manage volumes. For a general overview of volumes and available volume types, check out our <a href="https://gcore.com/docs/cloud/virtual-instances/volumes/about-volumes" target="_blank">dedicated guide</a>. 
 
 ## Create a volume
 
-You can create volumes in several ways: <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance" target="_blank">when creating a virtual instance</a>, from the **Volumes** page, or from a snapshot. The latter two approaches are described in the following sections. 
+You can create volumes in several ways: <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance" target="_blank">when creating a Virtual Machine</a>, from the **Volumes** page, or from a snapshot. The latter two approaches are described in the following sections. 
 
 <alert-element type="info" title="Info">
  
-You can only use a volume in the same region where an instance is created.
+You can only use a volume in the same region where a Virtual Machine is created.
  
 </alert-element>
 
@@ -65,7 +65,7 @@ You can only use a volume in the same region where an instance is created.
 
 5\. Select the [volume type](https://gcore.com/docs/cloud/virtual-instances/volumes/about-volumes#available-volume-types). Faster volume types are designed for latency-sensitive transactional operations and storing critical data. Slower volumes are more suitable for archived or non-critical data and for less frequent operations.
 
-6\. (Optional) Attach the volume to an instance. A volume can only be used in the same region where an instance is created.
+6\. (Optional) Attach the volume to a Virtual Machine. A volume can only be used in the same region where a VM is created.
 
 7\. Create a name for the volume. You can use Latin letters, numbers, underscores, spaces, and dots. The name should be between 3 and 63 characters long.
 
@@ -83,7 +83,7 @@ Your volume will appear on the **Volumes** page.
 
 ### From a volume snapshot
 
-If you need to quickly duplicate or back up information on your instance or provision new resources from pre-existing data, you can create a volume from a snapshot of an existing volume. 
+If you need to quickly duplicate or back up information on your Virtual Machine or provision new resources from pre-existing data, you can create a volume from a snapshot of an existing volume. 
 
 To create a volume:
 
@@ -95,21 +95,21 @@ To create a volume:
 
 3\. Click **Create volume**.
 
-4\. Select the instance to which you want to attach a new volume.
+4\. Select the Virtual Machine to which you want to attach a new volume.
 
 5\. Click **Create**.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/create-volume-from-snapshot.png" alt="Create volume dialog with options to select instance and add volume name" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/create-volume-from-snapshot.png" alt="Create volume dialog with options to select Virtual Machine and add volume name" width="80%">
 
 The volume will appear on the **Volumes** page.
 
 </tabset-element> 
 
-## Attach volumes to an existing instance
+## Attach volumes to an existing Virtual Machine
 
-If a volume is attached to an instance, you'll see the instance name on the **Volumes** page in the **Instance** column. Otherwise, you’ll see the "Attach to instance" link. You can attach more than one volume to an instance. However, volumes can only be used in the same region where the instance is created.
+If a volume is attached to a Virtual Machine, you'll see the VM name on the **Volumes** page in the **Instance** column. Otherwise, you’ll see the "Attach to instance" link. You can attach more than one volume to a Virtual Machine. However, volumes can only be used in the same region where the VM is created.
 
-You can attach volumes to an instance either from the **Volumes** page or from the instance settings.
+You can attach volumes to a Virtual Machine either from the **Volumes** page or from the VM settings.
 
 <tabset-element>
 
@@ -119,25 +119,25 @@ You can attach volumes to an instance either from the **Volumes** page or from t
 
 2\. Find the volume that you want to attach and click **Attach to instance**. 
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/attach-volume.png" alt="Volumes page with annotated attach to instance link" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/attach-volume.png" alt="Volumes page with annotated attach to Virtual Machine link" width="80%">
 
-3\. Select the instance from the **Choose instance to attach to** dropdown.
+3\. Select the Virtual Machine from the **Choose instance to attach to** dropdown.
 
 4\. (Optional) Add an attachment tag.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/attach-volume-to-instance.png" alt="Attach volume dialog with options to select instance and add a tag" width="75%">
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/attach-volume-to-instance.png" alt="Attach volume dialog with options to select Virtual Machine and add a tag" width="75%">
 
 5\. Click **Attach volume**.
 
-You’ve successfully attached a volume to the instance. 
+You’ve successfully attached a volume to the Virtual Machine. 
 
-### From instance settings
+### From Virtual Machine settings
 
 1\. In the Gcore Customer Portal, navigate to **Cloud** > **Virtual instances**.
 
-2\. Find the instance you want to update and click its name to open it.
+2\. Find the Virtual Machine you want to update and click its name to open it.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/cloud-instances.png" alt="Virtual instances tab with two created instances" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/cloud-instances.png" alt="Virtual Virtual Machines tab with two created instances" width="80%">
 
 3\. Open the **Volumes** tab.
 
@@ -145,19 +145,19 @@ You’ve successfully attached a volume to the instance.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/attach-volume-instance-settings.png" alt="Volumes tab with Add volume button highlighted" width="80%">
 
-5\. Click **Use existing** to attach an existing volume to an instance. 
+5\. Click **Use existing** to attach an existing volume to an Virtual Machine. 
 
 You can also create a new volume here. Click **Create new** and configure the settings as described under the [Create a volume](https://gcore.com/docs/cloud/virtual-instances/volumes/create-and-configure-volumes#create-a-volume) section. 
 
-6\. Select the volume that you want to attach to the instance.
+6\. Select the volume that you want to attach to the Virtual Machine.
 
 7\. (Optional). Add an attachment tag.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/add-volume-to-instance.png" alt="Add volume menu with options to add instance and tags" width="75%">
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/add-volume-to-instance.png" alt="Add volume menu with options to add Virtual Machine and tags" width="75%">
 
 8\. Click **Add volume**.
 
-You’ve successfully attached a volume to the instance. 
+You’ve successfully attached a volume to the Virtual Machine. 
 
 </tabset-element>
 
@@ -187,9 +187,9 @@ You can rename both boot and regular volumes:
 
 Your volume has been renamed. 
 
-### Detach a volume from an instance
+### Detach a volume from a Virtual Machine
 
-You can only detach regular volumes. The boot volume cannot be detached from an instance as long as the instance exists. If you want to detach a boot volume, you need to delete the instance first.
+You can only detach regular volumes. The boot volume cannot be detached from an Virtual Machine as long as the VM exists. If you want to detach a boot volume, you need to delete the VM first.
 
 To detach a volume:
 
@@ -199,17 +199,17 @@ To detach a volume:
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/three-dot-menu-attached.png" alt="Volumes tab with expanded settings menu" width="80%">
 
-3\. Choose the instance from which you want to detach a volume.
+3\. Choose the Virtual Machine from which you want to detach a volume.
 
 4\. Select **Confirm**.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/detach-volume-dialog.png" alt="Dialog asking to select an instance to detach the volume from" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/detach-volume-dialog.png" alt="Dialog asking to select a VM to detach the volume from" width="80%">
 
-You’ve detached a volume from the instance. 
+You’ve detached a volume from the Virtual Machine. 
 
 <alert-element type="warning" title="Warning">
  
-Detaching a volume will not cancel your payment unless you delete the volume. You can also add a detached volume to any instance at any time.
+Detaching a volume will not cancel your payment unless you delete the volume. You can also add a detached volume to any Virtual Machine at any time.
 
 </alert-element>
 
@@ -243,7 +243,7 @@ This option is available for regular volumes of High IOPS and Standard types. Yo
 
 <alert-element type="info" title="Info">
 
-Before proceeding with the following instructions, make sure that a volume is detached from an instance. Otherwise, the **Retype** button won’t appear in your settings list.
+Before proceeding with the following instructions, make sure that a volume is detached from a Virtual Machine. Otherwise, the **Retype** button won’t appear in your settings list.
 
 </alert-element>
 
@@ -263,11 +263,11 @@ To retype a volume:
 
 You’ve successfully changed the volume type. 
 
-If you have multiple volumes attached to one instance, you can use the `rsync` and `cp` utilities to migrate data between volumes within an operating system.
+If you have multiple volumes attached to one Virtual Machine, you can use the `rsync` and `cp` utilities to migrate data between volumes within an operating system.
 
 ### Take a volume snapshot
 
-You can create a volume snapshot and use it later for backup, further recovery, and deploying new instances from snapshots of boot volumes. 
+You can create a volume snapshot and use it later for backup, further recovery, and deploying new Virtual Machines from snapshots of boot volumes. 
 
 To take a snapshot:
 
@@ -319,7 +319,7 @@ After resizing a volume, reversion is unavailable because the latest snapshot is
 
 ### Create an image from a bootable volume
 
-You can create an image from a boot volume and use that image to create a new instance. 
+You can create an image from a boot volume and use that image to create a new Virtual Machine. 
 
 1\. In the Gcore Customer Portal, navigate to **Cloud** > **Storage**.
 
@@ -341,7 +341,7 @@ Within a few minutes, the image will be created and available on the **Images** 
 
 ### Delete volume
 
-You can delete a regular volume that’s not attached to an instance. Boot volumes can only be deleted together with the instance.
+You can delete a regular volume that’s not attached to a Virtual Machine. Boot volumes can only be deleted together with the VM.
 
 To delete a volume: 
 
@@ -363,7 +363,7 @@ The volume has been removed from the Gcore Customer Portal.
 
 <alert-element type="tip" title="Tip">
  
-You can also use the **Actions** dropdown to delete multiple volumes at once. For this option to be active, you must have at least one regular volume that is not attached to any instance.
+You can also use the **Actions** dropdown to delete multiple volumes at once. For this option to be active, you must have at least one regular volume that is not attached to any Virtual Machine.
  
 </alert-element>
 
