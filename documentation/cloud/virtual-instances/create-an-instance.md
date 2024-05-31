@@ -5,9 +5,9 @@ order: 10
 published: true
 toc:
 pageTitle: Create a VM | Gcore
-pageDescription: Learn how to create a Linux or Windows Virtual Machine in Gcore Edge Cloud. Start using your virtual machine in minutes with ease.
+pageDescription: Learn how to create a Linux or Windows Virtual Machine in Gcore Edge Cloud. Start using your Virtual Machine in minutes with ease.
 ---
-# Create a virtual machine
+# Create a Virtual Machine
 
 1\. Open **Instances** tab and click **Create Instance**.
 
@@ -141,7 +141,7 @@ If you choose to add a new network, a new window will open where you'll configur
 
 1\. Enter the network name.
 
-2\. (optional) Turn on the <b>Bare Metal network</b> toggle to connect bare metal servers to the network.
+2\. (optional) Turn on the <b>Bare Metal network</b> toggle to connect Bare Metal servers to the network.
 
 3\. (optional) Turn on the <b>Add tags</b> toggle to add metadata to the network.
 

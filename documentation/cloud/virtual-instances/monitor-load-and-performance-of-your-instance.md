@@ -5,13 +5,13 @@ published: true
 order: 60
 toc:
 pageTitle: Monitor load of a VM | Gcore
-pageDescription: Monitor your virtual machine with essential metrics. Check CPU and RAM utilization, track network traffic, and manage performance effectively.
+pageDescription: Monitor your Virtual Machine with essential metrics. Check CPU and RAM utilization, track network traffic, and manage performance effectively.
 ---
 # Monitor load on a specific node
 
-Monitoring is a tab where you can monitor the load and performance of an instance using ten metrics.
+Monitoring is a tab where you can monitor the load and performance of a Virtual Machine (VM) using ten metrics.
 
-To open the tab, select the required instance and click "Monitoring".
+To open the tab, select the required Virtual Machine and click "Monitoring".
 
 <media-gallery>
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/monitor-load-and-performance-of-your-instance/mceclip1.png" alt="mceclip1.png">
@@ -30,9 +30,9 @@ For example, if all cores are 90% loaded, you will see a value of 90%.
 
 [<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/monitor-load-and-performance-of-your-instance/mceclip3.png" alt="mceclip3.png">](https://assets.gcore.pro/docs/cloud/virtual-instances/monitor-load-and-performance-of-your-instance/mceclip3.png)
 
-CPU Utilization can exceed 100%. This means that the instance used more physical resources than provided for by the tariff at a particular moment. This usually happens during the creation of the instance. This is normal and does not affect payment.
+CPU Utilization can exceed 100%. This means that the Virtual Machine used more physical resources than provided for by the tariff at a particular moment. This usually happens during the creation of the VM. This is normal and does not affect payment.
 
-2\. RAM Utilization is the amount of RAM that the instance uses to perform tasks.  
+2\. RAM Utilization is the amount of RAM that the Virtual Machine uses to perform tasks.  
 Measured in percentages, 100% means a full load of RAM.
 
 [<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/monitor-load-and-performance-of-your-instance/mceclip4.png" alt="mceclip4.png">](https://assets.gcore.pro/docs/cloud/virtual-instances/monitor-load-and-performance-of-your-instance/mceclip4.png)

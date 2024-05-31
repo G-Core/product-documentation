@@ -13,15 +13,15 @@ pageDescription: Learn more about volume types. High IOPS SSD, Standard, Cold, U
 
 A volume is a file storage that is similar to traditional physical disks (SSD and HDD) but is located in the cloud.
 
-When you create a new instance, you may need to store data or manage information. This is where volumes come in: they provide a convenient way to maintain information within the instance. Volumes are also essential for booting instances as they store an operating system and all files necessary for machine startup.
+When you create a new Virtual Machine (VM), you may need to store data or manage information. This is where volumes come in: they provide a convenient way to maintain information within the VM. Volumes are also essential for booting Virtual Machines as they store an operating system and all files necessary for machine startup.
 
 We use a software-defined distributed file system to store data. This system comprises a cluster of easily scalable nodes that provide storage, triple data replication, and load distribution, ensuring the high availability of volumes in our cloud infrastructure. 
 
 ## Boot and regular volumes
 
-Each instance requires a volume to boot from. This volume is called a boot (or system) volume and is created based on an OS distribution image or custom image you’ve used for instance creation.
+Each Virtual Machine requires a volume to boot from. This volume is called a boot (or system) volume and is created based on an OS distribution image or custom image you’ve used for VM creation.
 
-The boot volume cannot be deleted or detached from an instance as long as the instance exists. However, after you terminate the instance, you can keep the boot volume and its data and then use it to create another instance. 
+The boot volume cannot be deleted or detached from a Virtual Machine as long as the machine exists. However, after you terminate the Virtual Machine, you can keep the boot volume and its data and then use it to create another Virtual Machine. 
 
 A regular volume is a general-purpose storage volume used to retain any non-OS data in the cloud. 
 
@@ -79,6 +79,6 @@ For **Cold**, **High IOPS SSD**, and **Standard** volumes:
 
 - Credits increase IOPS and volume throughput by 10x times for 10 minutes.
 
-For example, your instance has a 3 GB High IOPS SSD volume with base limits of 180 IOPS and 7.5 MB (60 IOPS x 3 GB and 2.5 MB/s x 3 GB). If the IOPS and throughput values ​​exceed these limits, you’ll get renewable resources: (60 IOPS x 3 GB + 2.5 MB/s x 3 GB = 180 IOPS + 7.5 MB) x 10 = 1800 IOPS + 75 MB/s.
+For example, your Virtual Machine has a 3 GB High IOPS SSD volume with base limits of 180 IOPS and 7.5 MB (60 IOPS x 3 GB and 2.5 MB/s x 3 GB). If the IOPS and throughput values ​​exceed these limits, you’ll get renewable resources: (60 IOPS x 3 GB + 2.5 MB/s x 3 GB = 180 IOPS + 7.5 MB) x 10 = 1800 IOPS + 75 MB/s.
 
 Credits are restored after peak usage and load reduction. If the base limits are exceeded again, renewed credits will also be applied.
