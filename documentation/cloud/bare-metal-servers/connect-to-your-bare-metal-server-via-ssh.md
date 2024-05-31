@@ -10,25 +10,29 @@ toc:
    --2--Generate a key in the personal account: "generate-a-key-in-the-personal-account"
    --2--Add a key to your account: "add-a-key-to-your-account"
    --2--Delete a key: "delete-a-key"
-   --2--Generate a key when creating an instance : "generate-a-key-when-creating-an-instance"
+   --2--Generate a key when creating a Bare Metal: "generate-a-key-when-creating-a-bare-meta"
    --1--Connect with a password: "connect-with-a-password"
    --1--Connect via SSH: "connect-via-ssh"
    --2--Connect from Windows 7/8: "connect-from-windows-7-8"
    --2--Connect from Windows 10, Linux OS, macOS: "connect-from-windows-10-linux-os-macos"
-pageTitle: Connect to bare metal via SSH | Gcore
-pageDescription: Connect to your bare metal server using SSH keys or a password. Generate keys, configure passwords, and access your server.
+pageTitle: Connect to Bare Metal via SSH | Gcore
+pageDescription: Connect to your Bare Metal server using SSH keys or a password. Generate keys, configure passwords, and access your server.
 ---
-# Connect to your bare metal server via SSH
+# Connect to your Bare Metal via SSH
 
-You can connect to bare metal server using a pair of SSH keys or a password. We tell you in detail about each method.
+You can connect to Bare Metal server using a pair of SSH keys or a password. 
 
 The SSH protocol (also referred to as Secure Shell) is a method for secure remote login from one server to another. To connect via SSH, make sure that all the necessary rules for incoming traffic are in the firewall settings set.
 
-Please note: you cannot connect to Windows instances via SSH. But you can connect to them via RDP protocol or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from the console in the Customer Portal</a>. Linux machines can be accessed via SSH or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from the Customer Portal</a>.
+<alert-element type="info" title="Info">
+ 
+You cannot connect to Windows machines via SSH. But you can connect to them via RDP protocol or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from the console in the Customer Portal</a>. Linux machines can be accessed via SSH or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from the Customer Portal</a>.
+ 
+</alert-element>
 	
 ## Connect with SSH keys
 
-To connect to an instance or a bare metal server, create a public key that will be stored on your machine and a private key that will be placed on your local storage.  
+To connect to a Bare Metal, create a public key that will be stored on your machine and a private key that will be placed on your local storage.  
 
 ### Generate a key (Windows 7/8) 
 
@@ -140,9 +144,9 @@ To add an already created SSH key to your personal account: 
 
 <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/ssh_delete.png" alt="ssh_delete.png">
 
-### Generate a key when creating an instance
+### Generate a key when creating a Bare Metal
 
-In your personal account, you can create and add an SSH key when creating an instance or Bare Metal server. 
+In your personal account, you can create and add an SSH key when creating a Virtual Machine or Bare Metal server. 
 
 When creating a machine, in the SSH key section, you will be asked to _add a key that is already stored in your personal account_ by selecting it from the drop-down list, _add an already generated key stored in your local storage_, or _generate a new key_ here. 
 
@@ -166,7 +170,7 @@ After adding or generating a new SSH key, the keys will appear in the SSH Keys s
 
 ## Connect with a password
 
-To connect using a password, configure it while creating an instance or a bare metal server. In Additional options click on "User data". This will open a field, where you can enter the script that will be processed by a `cloud-init` agent running on your machine. 
+To connect using a password, configure it while creating a Bare Metal. In Additional options, click on "User data". This will open a field, where you can enter the script that will be processed by a `cloud-init` agent running on your machine. 
 
 <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/13.png" alt="13.png">  
 
@@ -179,7 +183,7 @@ chpasswd: { expire: False }
 ssh_pwauth: True
 ```
 
-Using the specified password, you will be able to connect to the instance or Bare Metal server via SSH or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from the Customer Portal</a>.
+Using the specified password, you will be able to connect to the Bare Metal via SSH or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">from the Customer Portal</a>.
 
 It is not necessary to specify the password explicitly, you can enter its hash (the same password, only in a converted form; the system will be able to read it, but for a person, it looks like a random set of symbols). Then, even if someone gets into the system, he or she won’t know the password — only the hash will be stored inside. And the system will open its doors only to the user who knows the password. To generate a hash, you can use the Python script:
 
@@ -199,7 +203,7 @@ print(sha512_crypt.hash(passwd , rounds = 5000 ))
 
 ### Connect from Windows 7/8
 
-!Connecting to an instance or a bare metal server over SSH using the command line (cmd) is not available on Windows 7/8 operating systems.  
+Connecting to a Virtual Machine or Bre Metal over SSH using the command line (cmd) is not available on Windows 7/8 operating systems.  
 
 To connect, use <a href="https://putty.org" target="_blank">the PuTTY app</a>.
 
@@ -232,9 +236,9 @@ To connect, use <a href="https://putty.org" target="_blank">the PuTTY app</a>.
 
  <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/login_as.png" alt="login_as.png" width="545" height="345">
 
-9\. In the "login" field, enter the user name that was given when creating the instance or bare metal server. You can find it in the instance's tab, you will see is an inscription of the "\[login\]@\[IP of your machine\]" type. Most often, the login coincides with the name of the OS. For example, for the machine below it is "Ubuntu".
+9\. In the "login" field, enter the user name that was given when creating the Bare Metal server. You can find it on the Bare Metal overview tab, you will see is an inscription of the "\[login\]@\[IP of your machine\]" type. Most often, the login coincides with the name of the OS. For example, for the machine below it is "Ubuntu".
 
-10\. (Step for connecting using a pair of SSH keys only) enter the password you configured while creating an instance or Bare Metal server.
+10\. (Step for connecting using a pair of SSH keys only) enter the password you configured while creating a Bare Metal server.
 
 11\. Press Enter.  
 You have connected to your machine.  
@@ -273,13 +277,13 @@ If you want to connect using a pair of SHH keys, enter the command:
 
 `ssh username@192.168.1.92 -i "C:\\Users\\username\\.ssh\\id_rsa`
 
-Replace "username" with your username, which can be found on the the right-hand side of the "Access to Console" button. Additionally, replace "192.168.1.92 with the IP address of your instance, and replace "C:\\Users\\username\\.ssh\\id_rsa" with the path to your private key file in PEM format on your computer.                                                    
-Important! If you created an instance with only a private interface, create a floating IP address and use it when connecting to the instance over ssh.
+Replace "username" with your username, which can be found on the the right-hand side of the "Access to Console" button. Additionally, replace "192.168.1.92 with the IP address of your Bare Metal, and replace "C:\\Users\\username\\.ssh\\id_rsa" with the path to your private key file in PEM format on your computer.                                                    
+Important! If you created a Bare Metal with only a private interface, create a floating IP address and use it when connecting to the Bare Metal over ssh.
 
 7\. The utility will warn you that you're trying to connect to an unknown device and ask if you want to continue. Type "yes" and press Enter. 
 
 <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh/yes.png" alt="yes.png">
 
-8\. (Step for connecting using a password only) enter the password you configured while creating an instance or a bare metal server.
+8\. (Step for connecting using a password only) enter the password you configured while creating th Bare Metal.
 
 You have connected to your machine.

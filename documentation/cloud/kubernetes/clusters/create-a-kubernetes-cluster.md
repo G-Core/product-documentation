@@ -8,8 +8,8 @@ toc:
    --1--2. Select region: "step-2-select-the-region"
    --1--3. Select version: "step-3-select-the-version"
    --1--4. Configure pool: "step-4-configure-pools"
-   --2--Vurtual Machine: "virtual-instance"
-   --2--Bare Metal: "bare-metal-instances"
+   --2--Vurtual Machine: "virtual-machine"
+   --2--Bare Metal: "bare-metal"
    --1--5. Select the CNI Provider: "step-5-select-the-cni-provider" 
    --1--6. Configure Network: "step-6-configure-network-settings"
    --1--7. Add SSH key: "step-7-add-a-ssh-key"
@@ -47,16 +47,16 @@ Under the **Pools** block, configure a pool. A pool is a set of cluster nodes wi
 
 - Enter the Pool name.
 - Set the minimum nodes and maximum nodes for <a href="https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling" target="_blank">autoscaling</a>.
-- Select the type of a worker node: Virtual Instance or Bare Metal.  
+- Select the type of a worker node: Virtual Machine or Bare Metal.  
 
 
 <tabset-element>
 
-### Virtual Instance
+### Virtual Machine
 
 Select the flavor, disk size in GiB, and disk type.
 
-The following Virtual Instance flavors are available:
+The following Virtual Machine flavors are available:
 
 - **Standard.** 2–4 times the memory of vCPUs
 - **vCPU.** The number of vCPUs equals the amount of memory in GB
@@ -72,7 +72,7 @@ The following disk types are available:
 - **Ultra.** The recommended network block storage option for non-critical data and workloads that are accessed less frequently. The maximum number of IOPS is 1,000. The bandwidth limit is 100 MB/s.
 - **SSD low latency.** An SSD block storage designed for applications that require low-latency storage and real-time data processing. The IOPS performance limit is 50,00, with an average latency of 300 µs.
 
-### Bare Metal instances
+### Bare Metal
 
 The following Bare Metal flavors are available:
 
@@ -132,7 +132,7 @@ The settings offered depend on the selected template. For example, for the Basic
 
 ## Step 7. Add an SSH key
 
-Configure an SSH key to enable a remote SSH connection to all nodes. Select an existing key or create a new one. For details, consult our article on <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">how to connect to your instance via SSH</a>.
+Configure an SSH key to enable a remote SSH connection to all nodes. Select an existing key or create a new one. For details, consult our article on <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">how to connect to your VM via SSH</a>.
 
 <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/ssh-cluster.png" alt="SSH settings for Cluster" width="70%">
 

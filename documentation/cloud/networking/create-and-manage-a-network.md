@@ -25,7 +25,7 @@ In the drop-down window, enter the network name and click on Create network. If 
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-network/__________________.png" alt="__________________.png">
 
-2\. In the Instance creation menu, select the Private interface type in the network settings section, and select the Add network option 
+2\. In the Virtual Machine creation menu, select the Private interface type in the network settings section, and select the Add network option 
 
  <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-network/__________________.png" alt="__________________.png">
 

@@ -14,7 +14,7 @@ customUrl: /cloud/virtual-instances/connect/connect-to-your-instance-via-control
 
 You can connect to a Gcore Virtual Machine (VM) by using the <a href="https://en.wikipedia.org/wiki/Virtual_Network_Computing" target="_blank">VNC console</a> in the Gcore Customer Portal. This method is available for Windows and Linux VMs. The method allows you to establish a connection even if a virtual machine has no internet access, which is useful if you experience internet connectivity issues.
 
-Connecting to a Linux instance from the Gcore Customer Portal is only possible if you have <a href="https://gcore.com/docs/cloud/virtual-instances/customize-initial-setup-for-your-instance#set-a-password-for-an-instance" target="_blank">configured a password while creating a Virtual Machine</a>. If you didn't set a password, you'll need to connect to the VM using SSH keys. 
+Connecting to a Linux Virtual Machine from the Gcore Customer Portal is only possible if you have <a href="https://gcore.com/docs/cloud/virtual-instances/customize-initial-setup-for-your-instance#set-a-password-for-an-instance" target="_blank">configured a password while creating a Virtual Machine</a>. If you didn't set a password, you'll need to connect to the VM using SSH keys. 
 
 <tabset-element>
 
@@ -36,7 +36,7 @@ To connect to a virtual machine:
 
 3\. Next to your VM's IP address, select the **Access to Console** link. The VNC console will open.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel/windows-access-to-console.png" alt="Overview of a virtual instance with the Access to console link highlighted" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel/windows-access-to-console.png" alt="Overview of a Virtual Machine with the Access to console link highlighted" width="80%">
 
 4\. In the top-right corner of the screen, click **SendCtrlAltDel**. 
 
@@ -68,7 +68,7 @@ To connect to a virtual machine:
 
 3\. Next to your VM's IP address, select the **Access to Console** link. The VNC console will open.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel/linux-access-to-console.png" alt="Overview of a virtual instance with the Access to console link highlighted" width="80%"> 
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel/linux-access-to-console.png" alt="Overview of a Virtual Machine with the Access to console link highlighted" width="80%"> 
 
 4\. Log in using the following credentials:
 

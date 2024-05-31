@@ -11,7 +11,7 @@ pageDescription: Learn how to create a Linux or Windows Virtual Machine in Gcore
 
 1\. Open **Instances** tab and click **Create Instance**.
 
-![The Create Instance button](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/1-create-instancebutton.png)
+![The Create VM button](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/1-create-instancebutton.png)
 
 2\. Choose the region where you want to deploy your Virtual Machine (VM).
 
@@ -199,7 +199,7 @@ If you want to create a new firewall, refer to our article on <a href="https://g
 
 #### Linux Virtual Machine 
 
-8\. Configure an SSH key for a remote SSH connection. You can add an existing SSH key or generate a new one. For instructions on how to generate and configure the key, check out this guide: <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-via-ssh" target="_blank">Connect to an instance via SSH</a>.
+8\. Configure an SSH key for a remote SSH connection. You can add an existing SSH key or generate a new one. For instructions on how to generate and configure the key, check out this guide: <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-via-ssh" target="_blank">Connect to a VM via SSH</a>.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/11-ssh-key.png" alt="SSH keys section with three options: select, generate, or add a new SSH key" width="80%"> 
 
@@ -272,7 +272,7 @@ If a VM is only in a private subnet, DHCP must be enabled in the settings of thi
 
 *   Turn on **Add to placement group** to determine how to place multiple VMs.
 
-![The field to add the instance to a placement group](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/15-add-placement-group.png)
+![The field to add the VM to a placement group](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/15-add-placement-group.png)
 
 <expandable-element title="Types of placement groups">
 
