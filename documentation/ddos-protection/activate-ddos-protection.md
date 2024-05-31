@@ -7,7 +7,7 @@ toc:
    --1--Order: "activate-the-service"
    --1--Deactivate: "deactivate-the-service"
 pageTitle: Activate DDoS Protection | Gcore
-pageDescription: Easily activate DDoS Protection for your Virtual Servers, Bare Metals in cloud, dedicated servers, and even third-party equipment.
+pageDescription: Easily activate DDoS Protection for your Virtual Servers, Bare Metals in cloud, Dedicated Servers, and even third-party equipment.
 ---
 # Activate DDoS Protection
 
@@ -30,7 +30,7 @@ DDoS Protection is provided for <a href="https://gcore.com/cloud/compute-resourc
 *   subnet of your equipment, 
 *   IP whitelist and IP blacklist (optionally, you can specify it later).
 
-**To rent a new dedicated server with DDoS Protection**, select its configuration in the <a href="https://gcore.com/hosting/dedicated" target="_blank">Dedicated servers</a> section of our website and fill out an application at the bottom of the page. In the application, specify the following:
+**To rent a new Dedicated Server with DDoS Protection**, select its configuration in the <a href="https://gcore.com/hosting/dedicated" target="_blank">Dedicated Servers</a> section of our website and fill out an application at the bottom of the page. In the application, specify the following:
 
 *   server configuration, 
 *   OSI levels to be protected (L3-L4 or L3-L7), 

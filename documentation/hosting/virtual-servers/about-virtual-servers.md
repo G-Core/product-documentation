@@ -9,7 +9,7 @@ pageDescription: Explore the power of Virtual Servers. Learn about available ope
 ---
 # About Virtual Servers
 
-A Virtual Server is a democratic version of a dedicated server. Access by SSH gives you complete freedom: install a necessary software, run any number of sites. Our Virtual Servers can run on the following operating systems: Debian, CentOS, Ubuntu, FreeBSD, Windows Server, Solaris. 
+A Virtual Server is a democratic version of a Dedicated Server. Access by SSH gives you complete freedom: install a necessary software, run any number of sites. Our Virtual Servers can run on the following operating systems: Debian, CentOS, Ubuntu, FreeBSD, Windows Server, Solaris. 
 
 KVM-SSD tariffs are balanced in their characteristics for solving a variety of tasks facing you.
 

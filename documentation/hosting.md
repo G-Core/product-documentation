@@ -5,7 +5,7 @@ published: true
 ---
 # Hosting
 
-Welcome to the <a href="https://gcore.com/hosting" target="_blank">Gcore Hosting</a> documentation page! Here we explain how to order, configure, and troubleshoot virtual and dedicated servers and additional services.
+Welcome to the <a href="https://gcore.com/hosting" target="_blank">Gcore Hosting</a> documentation page! Here we explain how to order, configure, and troubleshoot Virtual and Dedicated Servers and additional services.
 
 With Gcore Hosting, you can rent a physical or a Virtual Server to host your website, application, or other digital content accessible over the internet.
 

@@ -45,6 +45,6 @@ Choose a category and plan based on your tasks and the resources they consume.
 
 **If your task requires high processor performance,** choose KVM-HIGHCPU-SSD or KVM-HIGHCPU-SAS servers. The latter ones have more disk space.
 
-**If the performance of a Virtual Server is not enough for your tasks,** you can order a dedicated server.
+**If the performance of a Virtual Server is not enough for your tasks,** you can order a Dedicated Server.
 
 If you are not sure how many resources your tasks will consume and what plan is needed, you can order any appropriate plan and check if the server is suitable for your tasks. We can  <a href="https://gcore.com/docs/hosting/virtual-servers/upgrade-your-virtual-server" target="_blank">upgrade your plan</a> if the server you have chosen doesn't have enough performance. If you want to order the upgrade, write to technical support and specify the desired configuration.

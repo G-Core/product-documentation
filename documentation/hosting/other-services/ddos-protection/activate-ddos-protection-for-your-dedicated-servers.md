@@ -5,9 +5,9 @@ order: 20
 published: true
 toc:
 pageTitle: Activate DDoS Protection | Gcore
-pageDescription: Learn how to activate Advanced DDoS Protection for dedicated servers.
+pageDescription: Learn how to activate Advanced DDoS Protection for Dedicated Servers.
 ---
-# Activate DDoS Protection for your dedicated servers
+# Activate DDoS Protection for your Dedicated Servers
 
 DDoS Protection is provided for a dedicated (physical) server — both rented from us and third-party. You can also rent a new server with protection.
 
@@ -28,7 +28,7 @@ DDoS Protection is provided for a dedicated (physical) server — both rented fr
 - Subnet of your equipment
 - Whitelist and blacklist of IP (optional, you can send it later)
 
-3. To rent a new server with the DDoS Protection, select the configuration of the server in the <a href="https://gcore.com/hosting/dedicated" target="_blank">Dedicated servers</a> section of our website and fill out an application at the bottom of the page. Specify in it:
+3. To rent a new server with the DDoS Protection, select the configuration of the server in the <a href="https://gcore.com/hosting/dedicated" target="_blank">Dedicated Servers</a> section of our website and fill out an application at the bottom of the page. Specify in it:
 
 - Server configuration
 - OSI layers to be protected (L3-L4 or L3-L7)

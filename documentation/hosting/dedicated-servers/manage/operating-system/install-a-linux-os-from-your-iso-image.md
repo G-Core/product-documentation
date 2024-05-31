@@ -5,7 +5,7 @@ published: true
 order: 20
 toc:
 pageTitle: Install a Linux OS from an ISO image| Gcore
-pageDescription: Learn how to install a Linux OS from an ISO image for a dedicated server.
+pageDescription: Learn how to install a Linux OS from an ISO image for a Dedicated Server.
 ---
 # Install a Linux OS from your ISO image
 

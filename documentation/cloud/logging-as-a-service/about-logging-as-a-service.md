@@ -9,10 +9,10 @@ toc:
    --1--Use cases: "use-cases"
    --1--Log storage: "log-storage"
    --1--Restrictions: "restrictions"
-pageTitle: Logging as a service| Gcore
+pageTitle: Managed Logging | Gcore
 pageDescription: Discover Logging for both VMs and Bare Metal servers. Troubleshoot errors, analyze security incidents and other data using OpenSearch Dashboards.
 ---
-# About Managed Logging as a service
+# About Managed Logging 
 
 ## What is Managed Logging?  
 
