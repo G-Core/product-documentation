@@ -9,7 +9,7 @@ toc:
    --1--Check DNS: "check-the-dns-setup-status"
    --1--Set an additional domain: "specify-additional-domain-only-for-static-cdn-recources"
 pageTitle: Create and set a custom domain for content delivery via CDN | Gcore
-pageDescription: A comprehensive guide on how to set up a custom domain (CNAME) in the Gcore Customer Portal and via DNS hosting for content delivery via CDN.
+pageDescription: A comprehensive guide on how to set up a custom domain (CNAME) in the Gcore Customer Portal and via Managed DNS for content delivery via CDN.
 ---
 # Create and set a custom domain for the content delivery via CDN
   
@@ -73,7 +73,7 @@ Our setup guide will verify that the configuration was completed successfully an
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/12865917904145.png" alt="Setup Status" width="80%">
 
-If you see the message "DNS record hasn’t been set up", check your DNS hosting settings for configuration errors.
+If you see the message "DNS record hasn’t been set up", check your Managed DNS settings for configuration errors.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/12865924935057.png" alt="check the DNS" width="50%">
 

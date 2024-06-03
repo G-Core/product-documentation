@@ -9,7 +9,7 @@ pageDescription: Learn how to allocate an IPv6 address in VMmanager 6.
 ---
 # Allocate an IPv6 address in VMmanager 6
 
-After activation, every virtual server is allocated a separate IPv6 subnet, and the first IP address of the subnet is automatically assigned to its interface.
+After activation, every Virtual Server is allocated a separate IPv6 subnet, and the first IP address of the subnet is automatically assigned to its interface.
 
 To find the IP address, go to the **Virtual machines** tab and expand the **all 2** menu in the **IP address** column.
 

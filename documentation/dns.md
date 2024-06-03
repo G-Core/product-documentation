@@ -3,7 +3,7 @@ title: dns
 displayName: Managed DNS
 published: true
 ---
-# DNS Hosting
+# Managed DNS
 
 Welcome to the <a href="https://gcore.com/dns" target="_blank">Gcore Managed DNS</a> documentation page! Here we explain how to use and configure Gcore’s Managed DNS.
 

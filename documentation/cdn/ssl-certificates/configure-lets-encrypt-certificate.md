@@ -59,7 +59,7 @@ To avoid this problem and make the process more flexible, we have added support 
 
 To use the DNS-01 challenge, you need to:
 
-1\. Activate <a href="https://gcore.com/dns" target="_blank">Gcore DNS Hosting</a> in your personal account.
+1\. Activate <a href="https://gcore.com/dns" target="_blank">Gcore Managed DNS</a> in your personal account.
 
 2\. Delegate your custom domain name to Gcore's name servers (*ns1.gcorelabs.net* and *ns2.gcdn.services*).
 
