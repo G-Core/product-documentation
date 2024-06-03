@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: Dedicated servers
+displayName: Dedicated Servers
 published: true
 order: 20
 ---

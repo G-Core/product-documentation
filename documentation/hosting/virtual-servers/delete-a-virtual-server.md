@@ -6,10 +6,10 @@ order: 60
 toc:
    --2--How to delete a server: "how-to-delete-a-server"
    --2--You received an error while deleting a server. What should you do?: "you-received-an-error-while-deleting-a-server-what-should-you-do"
-pageTitle: Delete a virtual server | Gcore
-pageDescription: Learn how to delete a virtual server.
+pageTitle: Delete a Virtual Server | Gcore
+pageDescription: Learn how to delete a Virtual Server.
 ---
-# Delete a virtual server
+# Delete a Virtual Server
 
 You can delete a server in the <a href="https://hosting.gcore.com/billmgr" target="_blank">Control Panel</a>. After deleting it will disappear from the list of servers, all data will be erased from it, and the payment will no longer be charged.
 
@@ -33,7 +33,7 @@ After clicking on "Ok" your server will be automatically deleted.
 
 ## You received an error while deleting a server. What should you do?
 
-Most likely, you are trying to delete a virtual server that you bought less than a month ago. You can’t do that because 1 month is the minimum term for ordering a service.
+Most likely, you are trying to delete a Virtual Server that you bought less than a month ago. You can’t do that because 1 month is the minimum term for ordering a service.
 
 You can get the details of the error by hovering over exclamation mark icon.
 

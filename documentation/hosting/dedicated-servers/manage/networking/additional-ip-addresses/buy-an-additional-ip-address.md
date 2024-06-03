@@ -6,11 +6,11 @@ order: 11
 toc:
    --1--Move from one server to another: "how-to-move-ips-from-one-server-to-another"
 pageTitle: Buy an additional IP address | Gcore
-pageDescription: Learn how to easily buy additional IP addresses for your dedicated server.
+pageDescription: Learn how to easily buy additional IP addresses for your Dedicated Server.
 ---
 # Buy an additional IP address
 
-Every dedicated server includes:
+Every Dedicated Server includes:
 
 - one free IPv4 address, and 
 - one free IPv6 address. 

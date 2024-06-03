@@ -8,18 +8,18 @@ toc:
 --1--Manage API keys: "manage-api-keys"
 --2--Edit API key: "edit-api-key"
 --2--Delete API key: "delete-api-key"
-pageTitle: Create and manage API keys | Gcore
-pageDescription: Learn how to create API keys and attach them to Inference at the Edge deployments.
+pageTitle: Create and Manage API Keys | Gcore
+pageDescription: Learn how to create API keys and attach them to Gcore Inference at the Edge deployments.
 ---
 # Create and manage API keys 
 
-Set up API keys to protect a deployed AI model from unauthorized access. 
+Setting up API keys protects deployed AI models from unauthorized access. 
 
 You can add multiple API keys to a single deployment, and the same API key can be attached to multiple deployments. 
 
 ## Create an API key  
 
-You can create an API key in different ways: <a href="https://gcore.com/docs/cloud/inference-at-the-edge/deploy-ai-model" target="_blank">during AI model deployment</a>, <a href="https://gcore.com/docs/cloud/inference-at-the-edge/manage-deployments" target="_blank">in the settings of a deployed AI model</a>, or on the **API keys** page. This section covers the last approach. 
+You can create an API key in different ways: <a href="https://gcore.com/docs/cloud/inference-at-the-edge/deploy-ai-model" target="_blank">during AI model deployment</a>, <a href="https://gcore.com/docs/cloud/inference-at-the-edge/manage-deployments" target="_blank">via a deployed AI model's settings</a>, or on the **API keys** page. Here, we explain the latter approach. 
 
 To create an API key and add it to the deployment: 
 
@@ -31,19 +31,19 @@ To create an API key and add it to the deployment:
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/create-and-manage-api-keys/create-api-key.png" alt="API keys page with highlighted Add api key button" width="80%">
 
-4\. In the **General** section, specify the API key name. Optionally, you can add a description.
+4\. In the **General** section, specify the API key name. Optionally, add a description.
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/create-and-manage-api-keys/general-tab-keys.png" alt="General section with key name and description" width="80%">
 
-5\. In the **Inference instances** dropdown, select one or more deployments where this key will be required for authentication.
+5\. In the **Inference instances** dropdown, select one or more deployments for which this key will be required for authentication.
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/create-and-manage-api-keys/instances-tab.png" alt="Inference instances section with instance dropdown" width="80%">
 
 6\. In the **Expiration** section, select for how long the key will be valid: 
 
-* **Never expire**: Keep the key valid indefinitely. 
+* **Never expire**: The key will remain valid indefinitely. 
 
-* **Set an expiration date**: Specify a date after which the key will no longer grant access to the attached deployments. By default, the key expires at 00:00 UTC on the specified date.
+* **Set an expiration date**: After the specified date, the key will no longer grant access to the attached deployments. By default, the key expires at 00:00 UTC on the specified date.
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/create-and-manage-api-keys/expiration-tab.png" alt="Expiration section date options" width="80%">
 
@@ -53,7 +53,7 @@ To create an API key and add it to the deployment:
 
 9\. Click **OK, I’ve copied API Key**. 
 
-The key has been sucessfully created.
+The key has been successfully created.
 
 <alert-element type="warning" title="Warning">
  
@@ -63,7 +63,7 @@ Never share your API key with third parties. This might result in unauthorized a
 
 ## Manage API keys 
 
-You can view detailed information about an API key, change the deployments where it's used for authentication, modify the expiration date, or delete the key from the Customer Portal. 
+You can view detailed information about an API key, change the deployments where it's used for authentication, modify the expiration date, or delete the key from the Gcore Customer Portal. 
 
 ### Edit API key 
 
@@ -77,23 +77,23 @@ You can view detailed information about an API key, change the deployments where
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/create-and-manage-api-keys/edit-api-key.png" alt="api key settings with highlighted edit button" width="80%">
 
-A new page with the key overview will open. Navigate to the corresponding tab to check a particular functionality.   
+A new page with the key overview will open. To check a particular functionality, navigate to the relevant tab.   
 
 #### General 
 
-On this tab, you can update the key name and description.
+In this tab, you can update the key name and description.
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/create-and-manage-api-keys/general-tab-keys.png" alt="General tab with options to edit key name and description" width="80%">
 
 #### Inference instances 
 
-On this tab, you can add or remove deployments where this API key will be required to authenticate.  
+In this tab, you can add or remove deployments where this API key will be required to authenticate.  
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/create-and-manage-api-keys/instances-tab-keys.png" alt="Instances tab with dropdpwn tp add instances" width="80%">
 
 #### Expiration 
 
-If your key is close to expiring, you can modify the expiry date on this tab, ensuring that the key remains a valid authentication method. Alternatively, you can choose the option Never expire to keep the key valid indefinitely.
+If your key is close to expiring, you can modify the expiry date on this tab, ensuring that the key remains a valid authentication method. Alternatively, you can choose the option **Never expire** to keep the key valid indefinitely.
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/create-and-manage-api-keys/expiration-tab-keys.png" alt="Expiration tab with options to change expiration date" width="80%">
 
@@ -103,7 +103,7 @@ If your key is close to expiring, you can modify the expiry date on this tab, en
 
 2\. Open the **Inference at the Edge** page and click **API keys**. 
 
-3\. Find the key you want to remove and click the click the three-dot icon to open the settings menu. 
+3\. Find the key you want to remove and click the three-dot icon to open the settings menu. 
 
 4\. Click **Delete**.
 

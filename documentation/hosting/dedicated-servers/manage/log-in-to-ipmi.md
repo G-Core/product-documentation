@@ -11,13 +11,13 @@ pageDescription: Learn how to access IPMI to control and monitor the physical st
 
 IPMI is an interface for remote monitoring and managing the physical state of the server. For example, IPMI provides a way to power on, power off, reboot server remotely or reinstall OS using ISO. 
 
-We provide IPMI access for the dedicated servers in all locations.
+We provide IPMI access for the Dedicated Server in all locations.
 
 How to get access to IPMI
 
 Go to the Dedicated server section, choose an active server and click the **To panel** button. 
 
-<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/log-in-to-ipmi/111.png" alt="Dedicated server section">
+<img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/manage/log-in-to-ipmi/111.png" alt="Dedicated Server section">
 
 In DCI manager, choose the server you need and click on the monitor button to go to IPMI.
 

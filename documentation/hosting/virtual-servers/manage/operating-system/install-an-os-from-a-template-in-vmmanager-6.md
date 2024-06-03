@@ -5,7 +5,7 @@ published: true
 order: 31
 toc:
 pageTitle: Install an OS from a template in VMmanager 6| Gcore
-pageDescription: Learn how to install an OS from a template for a virtual server in VMManager 6.
+pageDescription: Learn how to install an OS from a template for a Virtual Server in VMManager 6.
 ---
 # Install an operating system from a template in VMmanager 6
 
@@ -21,7 +21,7 @@ For more information about VMmanager 6’s features and functions, refer to <a h
 
 To proceed with the OS installation, follow these steps:
 
-1. Go to the <a href="https://bix-v6.vm.gcore.com/vm/manager/host" target="_blank">**Virtual machines** page</a> and find the desired server.
+1. Go to the <a href="https://bix-v6.vm.gcore.com/vm/manager/host" target="_blank">Virtual machines</a> page and find the desired server.
 
 2. Click the three-dot menu on the right-hand side and select Reinstall OS.
 

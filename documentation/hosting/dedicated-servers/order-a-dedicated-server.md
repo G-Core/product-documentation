@@ -8,10 +8,10 @@ toc:
    --1--Setting order parameters: "setting-order-parameters"
    --1--Payment: "payment"
    --1--Order server with other configurations: "order-server-with-configuration-not-included-in-our-tariffs"
-pageTitle: Order a dedicated server | Gcore
-pageDescription: Learn how to find an ideal dedicated server for your needs.
+pageTitle: Order a Dedicated Server | Gcore
+pageDescription: Learn how to find an ideal Dedicated Server for your needs.
 ---
-# Order a dedicated server
+# Order a Dedicated Server
 
 To order a server, do three things: select a tariff, configure order parameters and pay for the server.
 
@@ -32,7 +32,7 @@ Choose a tariff. You can see the list of tariffs on the shop window of the Contr
 <img src="https://assets.gcore.pro/docs/hosting/dedicated-servers/order-a-dedicated-server/image1.png" alt="Server configurator">
 </media-gallery>
 
-Select the data center and the tariff you are interested in. Click "Order" (when ordering through the shop window) or "Buy" (when ordering through the website). If you need a dedicated server, but none of the tariffs fit, <a href="https://gcore.com/docs/hosting/contact-our-technical-support" target="_blank">write to technical support</a>: tell us how many servers you would like to purchase and which configuration you need, and we will try to help you.
+Select the data center and the tariff you are interested in. Click "Order" (when ordering through the shop window) or "Buy" (when ordering through the website). If you need a Dedicated Server, but none of the tariffs fit, <a href="https://gcore.com/docs/hosting/contact-our-technical-support" target="_blank">write to technical support</a>: tell us how many servers you would like to purchase and which configuration you need, and we will try to help you.
 
 To order several servers in different data centers, you must create a separate order for each server.
 
@@ -46,8 +46,8 @@ At this step, you can specify additional order parameters:
 
 - To enter the domain name.
 - To select an operating system from the list of proposed ones. Later, if you wish, you can replace it with one of our template OS or on the OS from your ISO image.
-- To select the required amount of included traffic (only for dedicated servers).    
-- To order additional IPv4 and IPv6 addresses for the server. Up to 15 IPv4/IPv6 addresses can be ordered for a dedicated server, up to 10 IPv4/IPv6 — for a virtual one (there is one tariff-exception: only three additional IP of each type can be ordered for KVM-SSD-1).
+- To select the required amount of included traffic (only for Dedicated Servers).    
+- To order additional IPv4 and IPv6 addresses for the server. Up to 15 IPv4/IPv6 addresses can be ordered for a Dedicated Server, up to 10 IPv4/IPv6 — for a virtual one (there is one tariff-exception: only three additional IP of each type can be ordered for KVM-SSD-1).
 
 ## Payment
 
