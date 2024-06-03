@@ -40,7 +40,7 @@ Gcore Inference at the Edge is available free during beta. To use it, contact <a
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/deploy-ai-model/registry-dropdown.png" alt="Deploy a model dialog with highlighted registry section" width="80%">
 
-If you need to add a new model registry, click Add registry and then configure it as follows: 
+If you need to add a new model registry, click **Add registry** and then configure it as follows: 
 
 * **Image registry name:** Registry name that will be displayed in the Registry dropdown. 
 
@@ -159,7 +159,7 @@ If you specify 0, the container will take approximately one minute to scale down
 
 ## Step 8. Enter deployment details 
 
-Enter the deployment name and additional information if needed. This information will be displayed on the Deployments page under Settings.   
+Enter the deployment name and additional information if needed. This information will be displayed on the **Deployments** page under **Settings**.   
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/deploy-ai-model/deployment-details.png" alt="Deployment details section" width="80%">
 
