@@ -61,7 +61,7 @@ To allow all users to download an object, use the following command with the pub
 AWS CLI:
 
 ```
-aws s3api put-bucket-acl --bucket my_bucket --acl public-read --endpoint-url=https://s-ed1.cloud.gcore.lu 
+aws s3api put-bucket-acl --bucket my_bucket --key %filename% --acl public-read --endpoint-url=https://s-ed1.cloud.gcore.lu 
 ```
 
 S3cmd:
