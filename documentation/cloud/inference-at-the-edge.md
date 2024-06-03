@@ -31,7 +31,7 @@ Using Anycast endpoints, end users' queries are directed to the nearest running 
 
 ## Getting started 
 
-For instructions on how to deploy AI models with the global intelligence pipeline, check out our guide on <a href="https://gcore.com/docs/cloud/inference-at-the-edge/deploy-ai-model" target="_blank">deploying a model</a> guide. 
+For instructions on how to deploy AI models with the global intelligence pipeline, check out our guide on <a href="https://gcore.com/docs/cloud/inference-at-the-edge/deploy-ai-model" target="_blank">deploying a model</a>. 
 
 <alert-element type="info" title="Info">
  
