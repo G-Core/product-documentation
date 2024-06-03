@@ -23,7 +23,11 @@ pageDescription: A detailed guide on configuring Access Control Lists (ACLs) and
 
 ACLs, or Access Control Lists, are sets of rules that determine who has access to objects stored in Object Storage and what actions they are allowed to perform on those objects. Proper configuration of ACLs helps ensure the security of stored data.
 
-**Note**: The storage owner is responsible for configuring ACLs. Use the <a href="https://docs.aws.amazon.com/cli/latest/reference/s3api/index.html#cli-aws-s3api" target="_blank">AWS CLI</a> or <a href="https://s3tools.org/usage" target="_blank">S3cmd documentation commands</a> to manage ACLs for objects in Gcore Object Storage.
+<alert-element type="info" title="Info">
+ 
+The storage owner is responsible for configuring ACLs. Use the <a href="https://docs.aws.amazon.com/cli/latest/reference/s3api/index.html#cli-aws-s3api" target="_blank">AWS CLI</a> or <a href="https://s3tools.org/usage" target="_blank">S3cmd documentation commands</a> to manage ACLs for objects in Gcore Object Storage.
+ 
+</alert-element>
 
 ACLs for objects can be configured for a variety of actions, such as:
 
