@@ -15,11 +15,11 @@ export const categories: Array<Category> = [
         url: 'fastedge',
     },
     {
-        name: 'Cloud',
+        name: 'Edge Cloud',
         url: 'cloud',
     },
     {
-        name: 'DNS Hosting',
+        name: 'Managed DNS',
         url: 'dns',
     },
     {
@@ -31,15 +31,15 @@ export const categories: Array<Category> = [
         url: 'storage',
     },
     {
-        name: 'Streaming platform',
+        name: 'Video Streaming',
         url: 'streaming-platform',
     },
     {
-        name: 'DDoS protection',
+        name: 'DDoS Protection',
         url: 'ddos-protection',
     },
     {
-        name: 'Web security',
+        name: 'Web Application Security',
         url: 'web-security',
     },
     {
