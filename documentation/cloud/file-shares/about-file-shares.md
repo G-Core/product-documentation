@@ -67,7 +67,7 @@ Gcore Cloud’s File Shares service enables you to:
 
 Storage scalability is achieved through architectural features such as horizontal scaling, data distribution, and specific load balancing across storage infrastructure.
 </td>
-      <td style="text-align: left">The scalability of NFS is determined by the needs of a particular user’s cloud environment. An undeniable advantage of NFS is that it makes connecting storage to any of the most common cloud computing resources easy, whether virtual machines, physical servers, or containerized infrastructure.
+      <td style="text-align: left">The scalability of NFS is determined by the needs of a particular user’s cloud environment. An undeniable advantage of NFS is that it makes connecting storage to any of the most common cloud computing resources easy, whether Virtual Machines, physical servers, or containerized infrastructure.
 
 The performance of this type of storage is restricted only by the limitations of the underlying storage system.
 </td>

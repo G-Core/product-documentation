@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: AI Infrustructure
+displayName: AI Training
 published: true
 order: 100
 ---

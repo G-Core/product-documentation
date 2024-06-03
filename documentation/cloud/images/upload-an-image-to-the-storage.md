@@ -46,7 +46,7 @@ pageDescription: Learn how to upload images for Virtual Machines to Cloud storag
 
 Additional settings include:
 
-- **Instance quick start**: If this option is on, the instances will be deployed faster with this image mounted. However, please note that you cannot delete this image if there are active instances created from this image.
+- **VM quick start**: If this option is on, the Virtual Machines will be deployed faster with this image mounted. However, please note that you cannot delete this image if there are active Virtual Machines created from this image.
 
 Standard start vs quick start:
 

@@ -13,9 +13,9 @@ Bare Metal server in the cloud is a machine deployed on dedicated physical hardw
 
 Physical servers are being managed from the regular Cloud interface, but the virtualization software is not installed on the servers.
 
-## What is the difference between a Virtual Server and a Bare metal server?
+## What is the difference between a Virtual Server and a Bare Metal?
 
-A Virtual Server in the cloud does not interact directly with a physical computer; it uses a software layer called a hypervisor. The hypervisor allocates physical computing resources such as CPU, RAM, and Storage for each Virtual Machine (VM). The computing resources for these VMs are allocated from the shared physical hardware on which the created Virtual Server data is deployed. The hypervisor acts as a traffic cop of sorts, directing and allocating the bare metal's resources to each of the various new virtual machines, ensuring they don't disrupt each other.
+A Virtual Server in the cloud does not interact directly with a physical computer; it uses a software layer called a hypervisor. The hypervisor allocates physical computing resources such as CPU, RAM, and Storage for each Virtual Machine (VM). The computing resources for these VMs are allocated from the shared physical hardware on which the created Virtual Server data is deployed. The hypervisor acts as a traffic cop of sorts, directing and allocating the Bare Metal's resources to each of the various new virtual machines, ensuring they don't disrupt each other.
 
 The disadvantage of a Virtual Server is limited performance, which can be critical for some applications.
 
@@ -85,7 +85,7 @@ If you select Windows Server OS, you should set a password for the Admin user. I
     
 <img style="font-size: 15px;" src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/create-a-bare-metal-server/10._Admin.png" alt="10._Admin.png">
 
-6. In "Additional options", you can add metadata for processing by a `cloud-init` agent running on a virtual machine. To do it insert your script in the "User data" field.
+6. In "Additional options", you can add metadata for processing by a `cloud-init` agent running on a Virtual Machine. To do it insert your script in the "User data" field.
 
  <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/create-a-bare-metal-server/11._User_data.png" alt="11._User_data.png">
 

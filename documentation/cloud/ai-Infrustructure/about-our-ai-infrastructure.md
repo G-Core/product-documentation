@@ -9,9 +9,9 @@ toc:
    --1--Server specifications and performance: "server-specifications-and-performance"
    --2--Bow-2000 specifications: "bow-2000-specifications"
    --2--M2000 specifications: "m2000-specifications"
-   --1--Tools our AI Infrastructure supports: "tools-supported-by-gcore-gpu-cloud"
-pageTitle: About our AI Infrastructure | Gcore
-pageDescription: Explore our AI Infrastructure. Graphcore servers, top performance, diverse tools supported. Easy deployment, per-minute billing.
+   --1--Tools our GPU Cloud supports: "tools-supported-by-gcore-gpu-cloud"
+pageTitle: About Gcore GPU Cloud Infrastructure | Gcore
+pageDescription: Explore our GPU Cloud infrastructure. Graphcore servers, top performance, diverse tools supported. Easy deployment, per-minute billing.
 ---
 # GPU Cloud infrastructure
 

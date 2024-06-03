@@ -50,7 +50,7 @@ Payment is charged once a month during the reservation period. If you rent a ser
 
 *   **Created**: The request has been created, and we are preparing the equipment.
 *   **In progress**: Your server is already reserved, but not yet ready to use. Our billing department is preparing your individual rate plan and preparing to receive payment for the first month of the reservation.
-*   **Active**: The requested servers are allocated to you. Once you create your desired bare metal server, it will be counted for the reservation.
+*   **Active**: The requested servers are allocated to you. Once you create your desired Bare Metal, it will be counted for the reservation.
 *   **Expired**: The reservation period has ended.
 
 If something went wrong with your request, you might see one of the following statuses:

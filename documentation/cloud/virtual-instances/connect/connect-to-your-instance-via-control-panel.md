@@ -7,32 +7,32 @@ toc:
    --1--Connect to a Windows instance: "connect-to-a-windows-virtual-machine"
    --1--Connect to a Linux instance: "connect-to-a-linux-virtual-machine"
 pageTitle: Connect to a VM via Customer Portal | Gcore
-pageDescription: Connect to your Linux or Windows virtual machine from the Gcore Customer Portal
+pageDescription: Connect to your Linux or Windows Virtual Machine from the Gcore Customer Portal
 customUrl: /cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel
 ---
-# Connect to a virtual machine via the Gcore Customer Portal
+# Connect to a Virtual Machine via the Gcore Customer Portal
 
-You can connect to a Gcore Virtual Machine (VM) by using the <a href="https://en.wikipedia.org/wiki/Virtual_Network_Computing" target="_blank">VNC console</a> in the Gcore Customer Portal. This method is available for Windows and Linux VMs. The method allows you to establish a connection even if a virtual machine has no internet access, which is useful if you experience internet connectivity issues.
+You can connect to a Gcore Virtual Machine (VM) by using the <a href="https://en.wikipedia.org/wiki/Virtual_Network_Computing" target="_blank">VNC console</a> in the Gcore Customer Portal. This method is available for Windows and Linux VMs. The method allows you to establish a connection even if a Virtual Machine has no internet access, which is useful if you experience internet connectivity issues.
 
 Connecting to a Linux Virtual Machine from the Gcore Customer Portal is only possible if you have <a href="https://gcore.com/docs/cloud/virtual-instances/customize-initial-setup-for-your-instance#set-a-password-for-an-instance" target="_blank">configured a password while creating a Virtual Machine</a>. If you didn't set a password, you'll need to connect to the VM using SSH keys. 
 
 <tabset-element>
 
-## Connect to a Windows virtual machine
+## Connect to a Windows Virtual Machine
 
 <alert-element type="info" title="Info">
  
-On virtual machines with Windows OS, you can't use the password parameter both in the Access and “User data” fields. Since the Access field is required, configuring user data on a Windows VM is not possible. Read more about the permitted VM parameters in our <a href="https://api.gcore.com/docs/cloud#tag/Instances/operation/InstanceCreateSetV2.post" target="_blank">API docs</a>.
+On Virtual Machines with Windows OS, you can't use the password parameter both in the Access and “User data” fields. Since the Access field is required, configuring user data on a Windows VM is not possible. Read more about the permitted VM parameters in our <a href="https://api.gcore.com/docs/cloud#tag/Instances/operation/InstanceCreateSetV2.post" target="_blank">API docs</a>.
  
 </alert-element>
 
-To connect to a virtual machine:
+To connect to a Virtual Machine:
 
 1\. In the Customer Portal, navigate to **Cloud** > **Virtual Instances**.
 
 2\. Find the VM you want to access and click its name to open it.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel/cloud-instances.png" alt="A virtual instances tab in the Gcore Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel/cloud-instances.png" alt="A Virtual Machines tab in the Gcore Customer Portal" width="80%">
 
 3\. Next to your VM's IP address, select the **Access to Console** link. The VNC console will open.
 
@@ -48,7 +48,7 @@ You've successfully connected to the VM.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel/windows-connected.png" alt="Windows desktop" width="80%"> 
 
-## Connect to a Linux virtual machine
+## Connect to a Linux Virtual Machine
 
 If you <a href="https://gcore.com/docs/cloud/virtual-instances/customize-initial-setup-for-your-instance#set-a-password-for-an-instance" target="_blank">didn't set a password</a> when creating a Linux VM, you can't connect to that VM via the Gcore Customer Portal. Instead, <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-via-ssh" target="_blank">connect with SSH keys</a>.
 
@@ -58,7 +58,7 @@ If your VM is located only in a private subnet, the <a href="https://gcore.com/d
 
 </alert-element>
 
-To connect to a virtual machine:
+To connect to a Virtual Machine:
 
 1\. In the Gcore Customer Portal, navigate to **Cloud** > **Virtual Instances**.
 
@@ -80,13 +80,13 @@ To connect to a virtual machine:
 
 <alert-element type="tip" title="Tip">
  
-If you forgot your password, you can find it in the system by connecting to the virtual machine via SSH. 
+If you forgot your password, you can find it in the system by connecting to the VM via SSH. 
 
 Run the `sudo cat /var/lib/cloud/instance/user-data.txt` command and view a password in the following line: `password: [your password]`. If you entered the password as a hash, you will see the hash on the screen. In this case, you will not be able to check the password.
  
 </alert-element>
 
-You've successfully connected to the virtual machine.
+You've successfully connected to the Virtual Machine.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel/linux-connected.png" alt="Ubuntu terminal displaying successful connection to an instance" width="80%">
 

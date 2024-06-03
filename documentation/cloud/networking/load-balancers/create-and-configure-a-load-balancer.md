@@ -25,7 +25,7 @@ customUrl: /cloud/networking/create-and-configure-a-load-balancer
 ---
 # Create and configure a Load Balancer
 
-A Load Balancer is a tool used to sort incoming requests across your virtual machines  to improve your infrastructure's fault tolerance.
+A Load Balancer is a tool used to sort incoming requests across your Virtual Machines  to improve your infrastructure's fault tolerance.
 
 ## Step 1. Initiate Load Balancer creation
 
@@ -86,7 +86,7 @@ Click **Create Listener**.
 
 ### Pool
 
-Configure a pool—a list of virtual machines to which the listener will redirect incoming traffic. Click **Add new pool** in the "Listeners" block to start configuring.
+Configure a pool—a list of VMs to which the listener will redirect incoming traffic. Click **Add new pool** in the "Listeners" block to start configuring.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-pools-lb.png" alt="Add pools" width="55%">
 
@@ -108,7 +108,7 @@ Configure a pool—a list of virtual machines to which the listener will redirec
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-instance-lb.png" alt="Add Virtual Machine" width="65%">
 
-Click **Add Instance** to add virtual machines that will participate in the traffic distribution for the configured listener. 
+Click **Add Instance** to add Virtual Machines that will participate in the traffic distribution for the configured listener. 
 
 1\. Select Custom IP, Virtual Machine, or Bare Metal and appropriate configurations. 
 
@@ -124,9 +124,9 @@ Click **Add Instance** to add virtual machines that will participate in the traf
 
 3\. Specify response time (sec)—the time to wait for a response from a server.
 
-4\. Specify unhealthy threshold—the number of failed requests after which traffic will no longer be sent to the virtual machine.
+4\. Specify unhealthy threshold—the number of failed requests after which traffic will no longer be sent to the Virtual Machine.
 
-5\. Specify healthy thresholds—the number of successful requests after which the virtual machine will be considered ready to receive traffic.
+5\. Specify healthy thresholds—the number of successful requests after which the Virtual Machine will be considered ready to receive traffic.
 
 ### Timeouts
 
@@ -162,7 +162,7 @@ Configure firewalls for Virtual Machines in the pool according to the <a href="h
 
 Make sure their ports are open for the Load Balancer traffic:
 
-- If a Load Balancer and Virtual Machines are in a **public network,** set a rule to receive and transmit traffic to the balancer's IP address (specified in the menu) in firewalls settings of the Virtual Machines.
+- If a Load Balancer and Virtual Machines are in a **public network,** set a rule to receive and transmit traffic to the balancer's IP address (specified in the menu) in firewalls settings of the VM.
 - If a Load Balancer and Virtual Machines are in a **private subnetwork,** set a rule to receive and transmit traffic to the entire private subnetwork or to the balancer's IP address (specified in the menu).
 - If a Load Balancer is in a **public network** and Virtual Machine are in a **private subnetwork**, set a rule to receive and transmit traffic to the entire private subnetwork or to the balancer's internal IP address (send a request to the technical support).
 
