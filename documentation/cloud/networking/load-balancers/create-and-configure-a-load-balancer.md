@@ -19,7 +19,7 @@ toc:
    --1--8. (Optional) Add tags: "step-8-optional-add-tags"
    --1--9. Finalize: "step-9-finalize-creation"
    --1--10. Check firewall: "step-10-configure-firewall"
-pageTitle: Add a Load Balancer | Gcore
+pageTitle: How to Create and Configure a Load Balancer | Gcore
 pageDescription: Learn how to create and configure a Load Balancer to distribute incoming requests across VMs, improving the fault tolerance of your infrastructure.
 customUrl: /cloud/networking/create-and-configure-a-load-balancer
 ---
@@ -64,25 +64,43 @@ Select a network, public or private, and enable additional features:
 
 ### Listener
 
-Configure listeners—an option that checks for connection requests using the protocol and port you configure. Click **Add listener**. You can add more than one listener.
+Add listeners that will check for connection requests using the protocol and port that you specify. You can add multiple listeners to a Load Balancer. 
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-lb.png" alt="Add listener" width="65%">
+To configure a listener: 
 
-In the pop-up window, specify the needed configuration:
+1\. In the **Listeners** section, click **Add listener**.
 
-1\. Type the listener's name.
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/add-listener.png" alt="Add listener" width="65%">
 
-2\. Select a protocol (TCP, UDP, HTTP, Terminated HTTPS or Prometheus).
+2\. Enter the listener’s name.  
 
-3\. Specify the port in the range from 1 to 65535.
+3\. Select the required protocol: TCP, UDP, HTTP, Terminated HTTPS, and Prometheus. You can configure multiple TLS certificates for Terminated HTTPS and Prometheus.  
 
-4\. Enable "Add headers X-Forwarded-For, X-Forwarded-Port, X-Forwarded-Proto to requests" to identify the origin of the user's IP address connecting to a web server via a Load Balancer. 
+4\. Specify a port that the Load Balancer will listen on for incoming traffic. You can keep a default port for some protocols or specify the needed port from 1 to 65535. 
 
-5\. Specify connection limit (number of simultaneous connections).
+5\. (Optional) To identify the origin of the user's IP address connecting to a web server via a load balancer, enable the **Add headers X-Forwarded-For, X-Forwarded-Port, X-Forwarded-Proto to requests** toggle. 
 
-Click **Create Listener**.
+6\. If you select Terminated HTTPS and Prometheus protocols, you can configure TLS certificates. Follow instructions from our dedicated guide. 
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-listeners-lb.png" alt="Listener configuration" width="55%">
+7\. Set the connection limit - a maximum number of simultaneous connections that can be handled by this listener.  
+
+8\. (Optional) Add allowed CIDR ranges to define which IP addresses can access your content. All IP addresses that don’t belong to the specified range will be denied access. 
+
+9\. (Optional) For HTTP-based listeners, you can configure basic user authentication to protect your resource from unauthorized access. Click **Add users** to enable the authentication:
+
+* **Enter username**: specify a username. 
+
+* **Password**: specify a password or choose the **Encrypted password** option to store password as a hash. Check out [create an encrypted password](https://gcore.com/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer#create-an-encrypted-password) for instructions. 
+
+<alert-element type="info" title="Info">
+ 
+A password must contain at least one lowercase character, one uppercase character, at least one number, and a special character.
+ 
+</alert-element>
+
+10\. Click **Create Listener**.  
+
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/configure-listener.png" alt="Listener configuration" width="55%">
 
 ### Pool
 
