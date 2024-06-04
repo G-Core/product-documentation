@@ -1,6 +1,6 @@
 ---
 title: add-certificates-to-load-balancer
-displayName: Add multiple certificates to a Load Balancer
+displayName: Add certificates to a Load Balancer
 published: true
 order: 13
 toc:
@@ -114,6 +114,6 @@ docker run --rm yardalgedal/mkpasswd -m help
 docker run --rm yardalgedal/mkpasswd -m bcrypt mypassword 
 ```
 
-3\. Insert the into the **Encrypted password** field:
+3\. Insert the hash into the **Encrypted password** field:
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/encrypted-password-field.png" alt="Encrypted password in listener settings" width="80%">
