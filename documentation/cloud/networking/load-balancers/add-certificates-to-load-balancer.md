@@ -20,7 +20,7 @@ Instead of configuring separate Load Balancers for each website, you can configu
 
 ## How it works 
 
-Our listeners support Server Name Indication (SNI) extension to handle multiple TLS certificates. Based on the SNI information provided by the client, the listener selects the appropriate TLS certificate for encrypting the connection. Once the TLS connection is terminated at the listener, the load balancer inspects the decrypted traffic and routes it to the proper server. 
+Our listeners support Server Name Indication (SNI) extension to handle multiple TLS certificates. Based on the SNI information provided by the client, the listener selects the appropriate TLS certificate for encrypting the connection. Once the TLS connection is terminated at the listener, the Load Balancer inspects the decrypted traffic and routes it to the proper server. 
 
 Each listener can also be configured with its own TLS certificate, corresponding to a specific hostname or domain. 
 
@@ -50,7 +50,7 @@ Create a new Load Balancer <a href="https://gcore.com/docs/cloud/networking/crea
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/add-listener-name-port.png" alt="Create a listener dialog" width="80%">
 
-4\. (Optional) To identify the origin of the user's IP address connecting to a web server via a load balancer, enable the **Add headers X-Forwarded-For, X-Forwarded-Port, X-Forwarded-Proto to requests** toggle.
+4\. (Optional) To identify the origin of the user's IP address connecting to a web server via a Load balancer, enable the **Add headers X-Forwarded-For, X-Forwarded-Port, X-Forwarded-Proto to requests** toggle.
 
 5\. Choose the default TLS Certificate. It’s the main certificate that will be used when there’s no configured certificate for a domain.  
 
