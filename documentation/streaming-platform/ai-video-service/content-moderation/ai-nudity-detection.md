@@ -28,8 +28,7 @@ Gcore's AI nudity detection can be used for moderating user-generated content (U
 
 ## Billing 
 
-Billing takes into account either the duration of the analyzed video or the length of time up to the <a href="https://gcore.com/docs/streaming-platform/video-hosting/ai-video-service/ai-nudity detection#pause-detection-if-a-stop-tag-is-triggered
-">stop tag</a>, if the condition was triggered during the analysis.
+Billing takes into account either the duration of the analyzed video or the length of time up to the <a href="https://gcore.com/docs/streaming-platform/ai-video-service/ai-nudity-detection#pause-detection-if-a-stop-tag-is-triggered">stop tag</a>, if the condition was triggered during the analysis.
 
 ## What objects can be detected?
 
@@ -252,11 +251,11 @@ If there’s no nudity detected the array will be empty:
 
 The following response elements may be useful for further video moderation:
 
-- **class**—a nudity type; see more details in <a href="https://gcore.com/docs/streaming-platform/video-hosting/ai-video-service/ai-nudity-detection#what-objects-can-be-detected">What objects can be detected</a>, for example, `FEMALE_BREAST_EXPOSED`. 
+- **class**—a nudity type; see more details in <a href="https://gcore.com/docs/streaming-platform/ai-video-service/ai-nudity-detection#what-objects-can-be-detected">What objects can be detected</a>, for example, `FEMALE_BREAST_EXPOSED`. 
 - **score**—the probability that the object does relate to nudity, for example, `0.5`.  
 - **frame-no**— the video frame number where nudity was found, for example, `5`.
 
-<alert-element type="" title="">
+<alert-element type="info" title="Info">
 
 AI evaluates all objects in the video and analyzes how well they fit the abovementioned criteria. If the percentage probability is greater than or equal to 30% (0.3), the object's class will be listed in the API response and the second at which it was first encountered. 
 
