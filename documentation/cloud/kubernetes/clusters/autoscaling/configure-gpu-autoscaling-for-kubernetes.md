@@ -204,20 +204,20 @@ To collect and visualize metrics from your Kubernetes cluster, install the <a hr
 serviceMonitorSelectorNilUsesHelmValues: false 
 
 additionalScrapeConfigs: 
-/- job_name: gpu-metrics 
+- job_name: gpu-metrics 
   scrape_interval: 1s 
   metrics_path: /metrics 
   scheme: http 
   kubernetes_sd_configs: 
-  /- role: endpoints 
+  - role: endpoints 
     namespaces: 
       names: 
       - gpu-operator 
   relabel_configs: 
-  /- source_labels: [__meta_kubernetes_endpoints_name] 
+  - source_labels: [__meta_kubernetes_endpoints_name] 
     action: drop 
     regex: .*-node-feature-discovery-master 
-  /- source_labels: [__meta_kubernetes_pod_node_name] 
+  - source_labels: [__meta_kubernetes_pod_node_name] 
     action: replace 
     target_label: kubernetes_node 
 ```      
@@ -233,7 +233,7 @@ helm install prometheus-community/kube-prometheus-stack \
 
 ## Step 8. Create Autoscaling configuration 
 
-1\. Create a deployment for the test workload and define an autoscaling configuration using KEDA: 
+Create a deployment for the test workload and define an autoscaling configuration using KEDA: 
 
 ```
 apiVersion: apps/v1
@@ -258,7 +258,7 @@ spec:
           resources:
             limits:
               nvidia.com/gpu: <span style="color:#FF5913">allocated-number-of-GPUs</span>
-/---
+---
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
@@ -269,7 +269,7 @@ spec:
   minReplicaCount: <span style="color:#FF5913">number-of-replicas</span>
   maxReplicaCount: <span style="color:#FF5913">number-of-replicas</span>
   triggers:
-  /- type: prometheus
+  - type: prometheus
     metadata:
       serverAddress: http://prometheus-operated.prometheus:9090
       metricName: <span style="color:#FF5913">metrics-name</span>
@@ -305,7 +305,7 @@ Customize the highlighted values:
 
 After an application with the GPU workload is deployed, Keda creates a Horizontal Pod Autoscaler (HPA) for this workload and injects the value of GPU utilization from Prometheus as an external metric. 
 
-To get real-time information about the HPA, run `k get hpa -w`.
+1\. To get real-time information about the HPA, run `k get hpa -w`.
 
 You should get an output like this:  
 
@@ -322,7 +322,7 @@ Because there are 8 GPUs per server, the system has spun up eight pods.
 
 After scaling by the number of GPUs, you’ll notice that there are some pending pods created by the HPA. The autoscaler will trigger the addition of new nodes because the cluster is out of free GPUs. 
 
-To fetch the events, run `k get events -w`.
+2\. Fetch the events: `k get events -w`.
 
 You should get an output like this: 
 
@@ -337,7 +337,7 @@ kube-system    69s         Normal    ScaledUpGroup         configmap/cluster-aut
 
 Wait until the node is provisioned, which might take up to 20-25 minutes.  
 
-Check out all pods within your cluster: `k get pods`.
+3\. Check out all pods within your cluster: `k get pods`.
  
 You should see something like this: 
 
@@ -366,7 +366,7 @@ After provisioning nodes, it might take up to five minutes for the Nvidia GPU re
 
 </alert-element>
 
-To check the list of nodes, run `k get nodes`. 
+4\. Check the list of nodes and related information: `k get nodes`. 
 
 You'll get the list of nodes and their statuses:
 
@@ -376,7 +376,7 @@ ed-b16-78-161-160   Ready    <none>   166m   v1.28.6
 ed-b16-78-161-169   Ready    <none>   12m    v1.28.6
 ```
 
-Double-check the HPA status: `k get hpa`.
+5\. Double-check the HPA status: `k get hpa`.
 
 You should see something like this: 
 
