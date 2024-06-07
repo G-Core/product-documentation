@@ -6,14 +6,13 @@ published: true
 toc:
    --1--Step 1. Create a Kubernetes cluster: "step-1-create-a-kubernetes-cluster"
    --1--Step 2. Verify your Kubernetes configuration: "step-2-verify-your-kubernetes-configuration"
-   --1--Step 3. Install GPU Operator: "step-3-install-gpu-operator"  
+   --1--Step 3. Install GPU Operator: "step-3-install-gpu-operator"
    --1--Step 4. Verify GPU allocation: "step-4-verify-gpu-allocation"
-   --1--Step 5. Run test CUDA pod: "step-5-run-test-cuda-pod" 
+   --1--Step 5. Run test CUDA pod: "step-5-run-test-cuda-pod"
    --1--Step 6. Install KEDA: "step-6-install-keda"
    --1--Step 7. Install kube-prometheus stack: "step-7-install-kube-prometheus-stack"
    --1--Step 8. Create Autoscaling configuration: "step-8-create-autoscaling-configuration"
-   --1--Step 9. Check the results: "step-9-check-the-results"                
-   
+   --1--Step 9. Check the results: "step-9-check-the-results"   
 pageTitle: Configure GPU Autoscaling for Managed Kubernetes | Gcore
 pageDescription: Learn how to set up KEDA with Managed Kubernetes for GPU scaling.
 ---
@@ -244,20 +243,20 @@ helm inspect values prometheus-community/kube-prometheus-stack > values.yaml
 serviceMonitorSelectorNilUsesHelmValues: false 
 
 additionalScrapeConfigs: 
-- job_name: gpu-metrics 
+/- job_name: gpu-metrics 
   scrape_interval: 1s 
   metrics_path: /metrics 
   scheme: http 
   kubernetes_sd_configs: 
-  - role: endpoints 
+  /- role: endpoints 
     namespaces: 
       names: 
       - gpu-operator 
   relabel_configs: 
-  - source_labels: [__meta_kubernetes_endpoints_name] 
+  /- source_labels: [__meta_kubernetes_endpoints_name] 
     action: drop 
     regex: .*-node-feature-discovery-master 
-  - source_labels: [__meta_kubernetes_pod_node_name] 
+  /- source_labels: [__meta_kubernetes_pod_node_name] 
     action: replace 
     target_label: kubernetes_node 
 
