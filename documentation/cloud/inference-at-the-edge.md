@@ -108,8 +108,8 @@ The following are the foundational open-source models available in our AI model 
 <table>
 <thead>
   <tr>
-    <th><strong>Model</strong></th>
-    <th><strong>Description</strong></th>
+    <th style="text-align: left"><strong>Model</strong></th>
+    <th style="text-align: left"><strong>Description</strong></th>
   </tr>
 </thead>
 <tbody>
