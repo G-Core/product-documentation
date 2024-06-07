@@ -23,7 +23,7 @@ Container Registry is currently in beta mode. To join the beta, contact the [Gco
 
 Use the following steps to add a new registry. For instructions on how to manage an existing registry, check out our <a href="https://gcore.com/docs/cloud/container-registry/manage-container-registries" target="_blank">dedicated guide</a>. 
 
-To create and manage the Container Registry, you need to have the <a href="https://gcore.com/docs/cloud/getting-started/projects/users/user-roles-and-rights#project-administrator" target="_blank">Project Administrator</a> or <a href="https://gcore.com/docs/cloud/getting-started/projects/users/user-roles-and-rights#client-administrator" target="_blank">Client Administrator </a>permissions.  
+To create and manage the Container Registry, you need to have the <a href="https://gcore.com/docs/cloud/getting-started/projects/users/user-roles-and-rights#project-administrator" target="_blank">Project Administrator</a> or <a href="https://gcore.com/docs/cloud/getting-started/projects/users/user-roles-and-rights#client-administrator" target="_blank">Client Administrator</a> permissions.  
 
 ## Step 1. Add a registry to the Customer Portal
 
