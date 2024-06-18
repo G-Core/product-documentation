@@ -77,6 +77,8 @@ Inference at the Edge offers several key benefits:
 
 * **Low latency**: With over 160 points of presence worldwide, requests are transferred quickly to the nearest Inference at the Edge pod, ensuring low latency for users.
 
+* **Flexibility in model selection**. Run leading open-source models from our <a href="https://gcore.com/docs/cloud/inference-at-the-edge#ai-models" target="_blank">model catalog</a> or deploy your own custom models.  
+
 * **High performance**: Utilizing the latest, purpose-built NVIDIA GPU hardware, Inference at the Edge delivers fast model inference capable of handling the most demanding workloads.
 
 * **Cost efficiency**: Payments are based solely on the runtime of the containers, which automatically scale in and out based on the number of user requests to keep your operations cost-effective.
@@ -84,6 +86,8 @@ Inference at the Edge offers several key benefits:
 * **Easy control**: Global AI infrastructure can be configured with just a few clicks in the Gcore Customer Portal or by API requests, simplifying management and control.
 
 ## Supported features 
+
+* Model catalog
 
 * Custom model deployment 
 
@@ -93,8 +97,56 @@ Inference at the Edge offers several key benefits:
 
 * API keys  
 
-* Marketplace for models (coming soon)
-
 * REST API & Terraform (coming soon)
 
 * RAG support (coming soon)
+
+## AI models 
+
+The following are the foundational open-source models available in our AI model catalog. 
+
+<table>
+<thead>
+  <tr>
+    <th style="text-align: left"><strong>Model</strong></th>
+    <th style="text-align: left"><strong>Description</strong></th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+   <td style="text-align: left">DistilBERT</td>
+   <td style="text-align: left"> 
+   A light version of the BERT language model for generating short text extracts. 
+    </td>
+    </tr>
+    <tr>
+   <td style="text-align: left">LLaMA-Pro</td>
+   <td style="text-align: left">
+   A large language model (LLM) for understanding general language and domain-specific areas, particularly programming and mathematics. 
+    </td>
+    </tr>
+    <tr>
+   <td style="text-align: left">Mistral-7B</td>
+   <td style="text-align: left">
+    An LLM that can generate human-quality text, write code, summarize text, and answer questions.
+    </td>
+    </tr>
+    <tr>
+   <td style="text-align: left">ResNet-50</td>
+   <td style="text-align: left">
+   A deep learning neural model used in computer vision tasks and known for its ability to train networks effectively. 
+    </td>
+    </tr>
+     <tr>
+   <td style="text-align: left">Stable Diffusion XL</td>
+   <td style="text-align: left">1 model for generating images based on text descriptions.
+    </td>
+    </tr>
+      <tr>
+   <td style="text-align: left">Whisper</td>
+   <td style="text-align: left">
+   An automatic speech recognition model for converting spoken language into written text. 
+    </td>
+    </tr>
+</thead>
+</table>

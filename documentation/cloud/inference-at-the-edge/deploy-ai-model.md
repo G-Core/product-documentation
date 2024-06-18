@@ -4,7 +4,7 @@ displayName: Deploy an AI model
 order: 10
 published: true
 toc: 
---1--Step 1. Deploy a custom model: "step-1-deploy-a-custom-model"
+--1--Step 1. Select a model: "step-1-select-a-model"
 --1--Step 2. Select a flavor: "step-2-select-a-flavor"
 --1--Step 3. Set up routing placement: "step-3-set-up-routing-placement"
 --1--Step 4. Configure autoscaling: "step-4-configure-autoscaling"
@@ -18,7 +18,7 @@ pageDescription: "Learn how to deploy an AI model on Gcore Inference at the Edge
 ---
 # Deploy an AI model
 
-With Gcore Inference at the Edge, you can deploy a custom AI model by uploading it from your model registry. In the near future, preconfigured models will also be available from Gcore's model catalog. 
+With Gcore Inference at the Edge, you can use foundational open-source models from our AI model catalog or deploy a custom model by uploading a Docker container image. 
 
 <alert-element type="info" title="Info">
  
@@ -26,11 +26,35 @@ Gcore Inference at the Edge is available free during beta. To use it, contact <a
  
 </alert-element>
 
-## Step 1. Deploy a custom model 
+## Step 1. Select a model 
+
+This step will slightly differ based on whether you choose to deploy a custom model or use a model from our catalog. 
+
+<tabset-element>
+
+### Deploy model from the catalog 
 
 1\. In the Gcore Customer Portal, navigate to **Cloud** > **Inference at the Edge**. 
 
-2\. Click **Overview**.  
+2\. Open the **Overview** page.
+
+3\. Click **Browse model catalog** to view the available AI models.
+
+<img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/deploy-ai-model/overview-deploy-from-catalog.png" alt="Overview tab with model catalog and custom model sections" width="80%">
+
+4\. Hover your cursor over the model you are interested in and click on the preferred model.
+
+<img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/deploy-ai-model/model-catalog.png" alt="Model catalog tab" width="80%">
+
+5\. Ensure that the correct model is selected. If not—select another one from the dropdown menu.
+
+<img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/deploy-ai-model/select-model.png" alt="A dropdown with model versions" width="80%">
+
+### Deploy a custom model 
+
+1\. In the Gcore Customer Portal, navigate to **Cloud** > **Inference at the Edge**. 
+
+2\. Open the **Overview** page. 
 
 3\. Click **Deploy custom model**.
 
@@ -57,6 +81,8 @@ To save the new registry, click **Add**.
 6\. Specify a port to which the containerized model will listen. The external port for accessing your deployment is always 443 (HTTPS).
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/deploy-ai-model/image-name-port.png" alt="Image name and port sections" width="80%">
+
+</tabset-element>
 
 ## Step 2. Select a flavor 
 
