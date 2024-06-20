@@ -76,4 +76,4 @@ Click the profile icon in the bottom-left corner of the page, select "Billing", 
 
 A new plan will be activated only on the 1st day of a following month.
 
-If you have any questions, please contact us via chat or email [support@gcore.com](mailto:support@gcore.lu). If you are interested in the "Enterprise" plan, please write to our managers [sales@gcore.lu](mailto:sales@gcore.lu).
+If you have any questions, please contact us via chat or email [support@gcore.com](mailto:support@gcore.com). If you are interested in the "Enterprise" plan, please write to our managers [sales@gcore.com](mailto:sales@gcore.com).
