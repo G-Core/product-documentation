@@ -41,4 +41,10 @@ To switch between charts, click the tab name above the chart. 
 
 Under the graphical presentation, there is a table with a detailed report by resources consumed for the selected time period. 
 
+<alert-element type="info" title="Info">
+
+The price for each product during the selected time period is rounded down.
+ 
+</alert-element>
+
 ![Detailed customer reports](https://assets.gcore.pro/docs/cloud/getting-started/view-statistics-on-expenses/3-customer-reports-detailed.png)
