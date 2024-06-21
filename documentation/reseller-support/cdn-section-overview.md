@@ -4,18 +4,18 @@ displayName: CDN section overview
 published: true
 order: 25
 toc:
-    --1--Clients: "clients"
+    --1--Customers: "customers"
     --1--CDN resources: "cdn-resources"
     --1--Activity logs: "activity-logs"
     --1--Origin groups: "origin-groups"
-pageTitle: Understanding Client, Resource, and Activity Information | Gcore
-pageDescription: Explore our guide to CDN client details, resource data, activity logs, and origin groups for efficient CDN management.
+pageTitle: Understanding Customer, Resource, and Activity Information | Gcore
+pageDescription: Explore our guide to CDN customer details, resource data, activity logs, and origin groups for efficient CDN management.
 ---
 # CDN section overview
 
-The CDN section collects information about your customers who use CDN and the resources they utilize. It includes the subsections clients, CDN resources, activity logs, and origin groups.
+The CDN section collects information about your customers who use CDN and the resources they utilize. It includes the subsections Accounts, CDN resources, Activity Logs, and Origin Groups.
 
-## Clients
+## Customers
 
 This subsection provides details about customers who have created CDN resources. Each entry includes:
 
@@ -41,7 +41,7 @@ This subsection lists all CDN resources created by customers. Each entry include
 
 - The CDN resource ID
 - The CDN resource <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">custom domain (CNAME)</a>
-- The client's ID
+- The customer's Account ID
 - The ID of the main resource (not the reserve, if an <a href="https://gcore.com/docs/cdn/add-an-origin-group" target="_blank">origin group</a> contains multiple origins)
 - The SSL ID (if applicable)
 - The shielding status (if enabled)
@@ -62,7 +62,7 @@ You can also filter resources scheduled for automatic suspension. This feature c
 
 This subsection contains activity logs that document CDN resource changes, rule configurations, purge, and prefetch requests. Each entry includes:
 
-- The client ID
+- The Account ID
 - The user ID (customers can create multiple users per account)
 - The date and time of the request (in UTC)
 - The HTTP request method (GET, POST, PUT, DELETE, or PATCH)

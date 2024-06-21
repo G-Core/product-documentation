@@ -28,7 +28,7 @@ If the link has expired a Reseller can resend the invitation - click on the "Res
 
 ## Deleting Seller accounts
 
-Click on the "Delete Seller" button in the "Actions" сolumn of the desired Seller. Once an account is deleted the Seller loses access to the admin panel and password recovery. The user profile (name, email, phone) also becomes unavailable.
+Click on the "Delete Seller" button in the "Actions" сolumn of the desired Seller. Once an account is deleted the Seller loses access to the Admin Portal and password recovery. The user profile (name, email, phone) also becomes unavailable.
 
 <img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-sellers/delete-seller-30.png" alt="Deleting Seller accounts">
 

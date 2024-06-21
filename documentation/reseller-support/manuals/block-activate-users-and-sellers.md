@@ -12,11 +12,11 @@ toc:
 
 ## What is the "Block" feature?
 
-The <a href="https://admin.gcore.top/" target="_blank">new admin panel's</a> "Block" feature allows you to block sellers, which is an effective tool for managing access to the admin portal and maintaining a secure and trustworthy community of consumers.
+The <a href="https://admin.gcore.top/" target="_blank">new Admin Portal's</a> "Block" feature allows you to block sellers, which is an effective tool for managing access to the Admin Portal and maintaining a secure and trustworthy community of consumers.
 
 <alert-element type="info" title="Info">
   
-All requests to the IAM API, including authorization tokens, password recovery, and activation requests, are prohibited.
+All requests to the Admin Portal API, including authorization tokens, password recovery, and activation requests, are prohibited.
 
 </alert-element>
 
@@ -24,7 +24,7 @@ The blocking restrictions will remain in effect until you cancel them with the "
 
 ## Block or activate a seller
 
-1\. Go to the <a href="https://admin.gcore.top/users/sellers" target="_blank">Sellers</a> section in the admin portal.
+1\. Go to the <a href="https://admin.gcore.top/users/sellers" target="_blank">Sellers</a> section in the Admin Portal.
 
 The new page will open, and you can do the remaining steps there.
 
@@ -40,7 +40,7 @@ Click **Activate** if you need to unblock the seller in step #4.
 
 ## Check if a seller is blocked or active
 
-1\. Go to the <a href="https://admin.gcore.top/users/sellers" target="_blank">Sellers</a> section in the admin portal.
+1\. Go to the <a href="https://admin.gcore.top/users/sellers" target="_blank">Sellers</a> section in the Admin Portal.
 
 2\. Find the seller you need by using the filters.
 
@@ -48,5 +48,5 @@ Click **Activate** if you need to unblock the seller in step #4.
 
 <img src="https://assets.gcore.pro/docs/reseller-support/manuals/block-activate-users-and-sellers/blocked-status-20.png" alt="Blocked column" width="80%">
 
-- If the status is "true", the seller is blocked and cannot access the account and services.
-- If the status is "false", the seller is active and has access to the account and services.
+- If the status is "true", the seller is blocked and cannot access the account and products.
+- If the status is "false", the seller is active and has access to the account and products.
