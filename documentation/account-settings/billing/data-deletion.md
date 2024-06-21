@@ -30,7 +30,9 @@ After the product is suspended, some time passes before it will be deleted with 
 
 <alert-element type="warning" title="Warning">
 
-All periods mentioned below are applied to all Gcore accounts by default. They can differ in particular cases if a personal manager or technical support changes the number of days for your account by mutual preliminary arrangement.
+All periods mentioned below are applied to all Gcore accounts by default. They can differ in particular cases if a personal manager or technical support changes the number of days for your account by mutual preliminary arrangement. 
+
+Additionally, Gcore reserves the right to delete data (including without prior notice) to enforce its rights as specified in the Master Services Agreement, other Gcore documentation, or applicable law.
 
 </alert-element>
 
@@ -91,7 +93,7 @@ Edge Cloud
 </tr>
 <tr>
 <td style="text-align: left">
-Other Edge Cloud features (including Basic VM, Virtual Machines, Bare Metal) 
+Other Edge Cloud features (including Basic VM, Virtual Machines, Volumes, File Shares, Snapshots, and Bare Metal) 
 </td>
 <td>
 48 hours 
