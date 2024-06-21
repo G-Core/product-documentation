@@ -4,31 +4,28 @@ displayName: New interface
 published: true
 order: 10
 toc:
-    --1--What is it?: "what-is-the-new-admin-panel"
-    --1--How is it arranged?: "structure-of-the-new-admin-panel"
-    --1--What’s new: "new-features-of-the-new-admin-panel"
+    --1--How is it arranged?: "structure-of-the-new-admin-portal"
+    --1--What’s new: "new-features-of-the-new-admin-portal"
     --2--Quick filters: "quick-filters"
     --2--Presets: "search-presets"
 ---
-# New admin panel interface
+# New Admin Portal interface
 
-## What is the new admin panel
+The new Admin Portal is an improved dashboard for managing accounts and sellers, viewing reports, and configuring settings such as branding and product visibility.
 
-The new admin panel is an improved dashboard for managing clients and sellers, viewing reports, and configuring settings such as branding and service visibility.
+Compared to the previous version of the admin panel, the new one retains all essential functions while adding new features, such as quick filters and presets for better searching and filtering. The new Admin Portal also has a more user-friendly interface.
 
-Compared to the previous version of the admin panel, the new one retains all essential functions while adding new features, such as quick filters and presets for better searching and filtering. The new admin panel also has a more user-friendly interface.
+In this guide, we describe the structure and features of the Admin Portal panel.
 
-In this guide, we describe the structure and features of the new admin panel.
+## Structure of the new Admin Portal
 
-## Structure of the new admin panel
+The new Admin Portal has the following sections: 
 
-The new admin panel has the following sections: 
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/new-ap-interface-10.png" alt="Structure of the new Admin Portal">
 
-<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/new-ap-interface-10.png" alt="Structure of the new admin panel">
+**0\.** The button which collapses the left-side menu. All screenshots of the following interface are shown with the menu collapsed. 
 
-**0\.** The button which collapses the left-hand menu. All screenshots of the interface below are shown with the menu collapsed. 
-
-**1\. Accounts**: This section displays a list of clients. Here you can manage the accounts of existing clients, including logging into their Control Panel on their behalf, editing their data, deleting their accounts, or adding new clients. 
+**1\. Accounts**: This section displays a list of customers. Here you can manage the accounts of existing customers, including logging into the Customer Portal on their behalf, editing their data, deleting their accounts, or adding new accounts. 
 
 <img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/new-ap-interface-20.png" alt="Accounts">
 
@@ -36,7 +33,7 @@ The new admin panel has the following sections:
 
 <img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/new-ap-interface-30.png" alt="Users">
 
-**3\. CDN**: This section displays a list of all CDN resources created by your clients. Here you can search for a specific resource by ID or CNAME.
+**3\. CDN**: This section displays a list of all CDN resources created by your customers. Here you can search for a specific resource by ID or CNAME.
 
 <img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/new-ap-interface-40.png" alt="CDN">
 
@@ -44,11 +41,11 @@ The new admin panel has the following sections:
 
 <img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/new-ap-interface-50.png" alt="Security">
 
-**5\. Vendor settings**: This section contains several subsections, including "Branding Settings", "SMTP Provider", "DNSaaS Settings", and "Services". Here you can manage the appearance of the Control Panel, set up custom email addresses for service notification emails to your clients, change the default NS servers, and configure service visibility.
+**5\. Settings**: This section contains several subsections, including "Branding Settings", "SMTP Provider", "DNSaaS Settings", and "Products". Here you can manage the appearance of the Customer Portal, set up custom email addresses for product notification emails to your customers, change the default NS servers, and configure product visibility.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/new-ap-interface-60.png" alt="Vendor settings">
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/new-ap-interface-60.png" alt="Settings">
 
-**6\. Reports**: This section presents monthly reports, allowing you to generate monthly reports to analyze your clients' traffic consumption. Additionally, you can enable "Invoice Reports" by contacting the [support team](mailto:support@gcore.com) or your personal manager. 
+**6\. Reports**: This section presents monthly reports, allowing you to generate monthly reports to analyze your customers' traffic consumption. Additionally, you can enable "Invoice Reports" by contacting the [Gcore support team](mailto:support@gcore.com) or your personal manager. 
 
 <img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/new-ap-interface-70.png" alt="Reports">
 
@@ -56,13 +53,13 @@ The new admin panel has the following sections:
 
 **8\. Profile**: In this section, you can copy the created API token. 
 
-## New features of the new admin panel  
+## New features of the new Admin Portal  
 
-We have described all-important new features. If there is a feature you are interested in that is not mentioned, please send a request to the [support team](mailto:support@gcore.com). 
+We have described all-important new features. If there is a feature you are interested in that is not mentioned, please send a request to the [Gcore support team](mailto:support@gcore.com). 
 
 ### Quick filters
 
-We have added quick filters by ID, email, name, company name, and client status to make searching more flexible.
+We have added quick filters by Account ID, email, name, company name, and customer status to make searching more flexible.
 
 <img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/new-ap-interface-80.png" alt="Quick filters" width="80%">
 

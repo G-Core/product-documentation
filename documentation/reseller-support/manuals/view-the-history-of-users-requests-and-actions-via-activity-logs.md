@@ -7,14 +7,14 @@ toc:
    --1--Activity logs: "what-is-an-activity-logs-section-for"
    --1--View: "view-users-changes-in-the-activity-logs-section"
    --1--Use filters: "use-filters"
-   --1--Client changes: "how-to-look-for-changes-in-a-particular-client"
+   --1--Customer changes: "how-to-look-for-changes-in-a-particular-customer"
 ---
 
 # View the history of users’ requests and actions via Activity logs
 
 ## What is an Activity logs section for?
 
-The Activity logs section displays changes that users have made. Users are all the <a href="https://gcore.com/docs/reseller-support/manuals/manage-clients" target="_blank">clients</a> and <a href="https://gcore.com/docs/reseller-support/manuals/manage-sellers" target="_blank">sellers</a> that you have added. Changes they can make include requests sent via the <a href="https://api.gcore.com/docs" target="_blank">API</a> and actions in the <a href="https://auth.gcore.com/login/signin?lang=en" target="_blank">control panel</a>. 
+The Activity logs section displays changes that users have made. Users are all the <a href="https://gcore.com/docs/reseller-support/manuals/manage-clients" target="_blank">customers</a> and <a href="https://gcore.com/docs/reseller-support/manuals/manage-sellers" target="_blank">sellers</a> that you have added. Changes they can make include requests sent via the <a href="https://api.gcore.com/docs" target="_blank">API</a> and actions in the <a href="https://auth.gcore.com/login/signin?lang=en" target="_blank">Customer Portal</a>. 
 
 ## View users’ changes in the Activity logs section
 
@@ -28,8 +28,8 @@ The entities will be displayed on the right.
 
 You can sort and filter entities by the following columns:
 
-- **Client**: ID of the client that made the request
-- **User**: ID of the user that made the request
+- **Account**: ID of the customer that made the request
+- **User ID**: ID of the user that made the request
 - **Requested** at: Date and time when the request was made
 - **Method**: Request HTTP method, such as GET, POST, PUT, DELETE, or  PATCH
 - **Path**: Request URL
@@ -58,12 +58,12 @@ To filter logs by a specific parameter:
 
 That’s it. As a result, you will see only entities for the specified period (in this case, from June 27, 2023, to July 04, 2023.)
 
-## How to look for changes in a particular client
+## How to look for changes in a particular customer
 
-Clients’ accounts can be changed not only by clients themselves, but also by sellers. For example, a seller can change the service to "Trial" status. In this case, if you try to find the changes in the "Client" column by specifying the client ID, there will be no entity, because it was not the client who made the change. 
+Customers' accounts can be changed not only by customers themselves, but also by sellers. For example, a seller can change the product to "Trial" status. In this case, if you try to find the changes in the "Customer" column by specifying the Account ID, there will be no entity, because it was not the customer who made the change. 
 
-To look for all changes, you should specify the client ID in the “Path” filter as shown below.
+To look for all changes, you should specify the Account ID in the “Path” filter as shown below.
 
 <img src="https://assets.gcore.pro/docs/reseller-support/manuals/view-the-history-of-users-requests-and-actions-via-activity-logs/image3503-40.png" alt="Path filter" width="80%">
 
-With this approach, all entities that are related to the client will be filtered out, regardless of who made the change.
+With this approach, all entities that are related to the customer will be filtered out, regardless of who made the change.
