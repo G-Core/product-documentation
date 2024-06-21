@@ -2,7 +2,7 @@
 title: billing
 displayName: Billing
 published: true
-order: 140
+order: 15
 toc:
 pageTitle: Edge Cloud billing | Gcore
 pageDescription: Learn how to pay for Gcore Edge Cloud services.
