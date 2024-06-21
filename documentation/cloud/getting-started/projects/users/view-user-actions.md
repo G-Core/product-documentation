@@ -11,7 +11,7 @@ pageDescription: Explore how to view user actions in your personal account.
 
 You can view all logs of user actions in the Gcore Edge Cloud on the **User Actions** page.
 
-![User actions in the Gcore Control Panel](https://assets.gcore.pro/docs/cloud/getting-started/projects/users/view-user-actions/view-user-actions.png)
+![User actions in the Gcore Control Panel](https://assets.gcore.pro/docs/cloud/getting-started/projects/users/view-user-actions/user-actions.png)
 
  The section has filters for: 
 
