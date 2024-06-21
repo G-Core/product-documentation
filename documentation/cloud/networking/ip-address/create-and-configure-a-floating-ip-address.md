@@ -19,9 +19,13 @@ pageDescription: Configure a floating IP address for your Virtual Machine to ena
 
 ## What is a floating IP address?
 
-A Floating IP is a type of public, static IP address that can be assigned to Virtual Machines (VMs) within a private subnet. This means that the Virtual Machines don't have a public network interface. By using a Floating IP, these machines are able to receive incoming connections from the Internet
+A Floating IP is a type of public, static IP address that can be assigned to Virtual Machines (VMs), Bare Metal servers, and Load Balancers within a private subnetwork. This means that these products don't have a public network interface, but they can still receive incoming connections from the Internet. 
 
-**Please note**: The private subnet of the VM must be <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork#network-routing" target="_blank">routable</a> . Routing can be enabled in the subnet settings.
+<alert-element type="info" title="Info">
+ 
+The private subnet of the VM must be <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork#network-routing" target="_blank">routable</a>. Routing can be enabled in the subnet settings.
+ 
+</alert-element>
 
 ## What is it used for?
 
