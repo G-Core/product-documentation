@@ -27,7 +27,8 @@ Up-to-date prices for our Edge Cloud resources are available on <a href="https:/
 
 **Volumes, IP addresses (a floating IP, virtual IP, and reserved IP address), images, snapshots** are charged from the moment you create them until the moment you delete them, regardless of whether the Virtual Machine is running or not.
 
-**Bare Metal servers and AI IPUs and GPUs** are charged from the moment you create them until the moment you delete them, regardless of whether the server is running or not. Please note that Windows license and outgoing traffic are charged separately. 
+**Bare Metal servers and AI IPUs and GPUs** are charged from the moment you create them until the moment you delete them, regardless of whether the server is running or not. IP addresses (a floating IP, virtual IP, and reserved IP), images, Windows license, and outgoing traffic for Bare Metal are charged separately.
+
 
 **Managed Logging** is charged per the volume of stored logs.
 
