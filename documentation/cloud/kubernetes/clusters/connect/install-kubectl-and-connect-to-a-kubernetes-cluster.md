@@ -158,6 +158,6 @@ Alternatively, there is a tool with a graphical user interface called "Lens". It
 
 We renew kubectl access certificates every two years. To ensure you don’t lose access to your Kubernetes cluster, we inform you about the upcoming renewal date: 
 
-* In the Gcore Customer Portal. You'll get a notification like this: *“The security certificate for Cluster will expire on 10.06.20204. Please remember to go to the Cluster page and download the new Kubernetes config on that date to ensure continued access.”* 
+* **In the Gcore Customer Portal**. You'll get a notification like this: *“The security certificate for Cluster will expire on 10.06.20204. Please remember to go to the Cluster page and download the new Kubernetes config on that date to ensure continued access.”* 
 
-* Via email: two weeks before the renewal, we’ll send you an email with the information about the renewal date. After the certificate is updated, you’ll also get a confirmation email with a reminder to download a new certificate.  
+* **Via email**: two weeks before the renewal, we’ll send you an email with the information about the renewal date. After the certificate is updated, you’ll also get a confirmation email with a reminder to download a new certificate.  
