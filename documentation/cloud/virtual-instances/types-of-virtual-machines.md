@@ -21,21 +21,21 @@ Gcore Virtual Machines (VMs) offer a flexible, powerful, and scalable solution f
 
 We provide multiple types of Virtual Machines suitable to different workflows and computing tasks:
  
-* **Standard**: Suitable for a wide range of basic workloads that require predictable compute performance.
+* <a href="https://gcore.com/docs/cloud/virtual-instances/types-of-virtual-machines#standard" target="_blank">Standard</a>: Suitable for a wide range of basic workloads that require predictable compute performance.
 
-* **CPU**: Best suited for CPU-intensive tasks that require predictable computing performance, such as batch processing of large data sets and video encoding.
+* <a href="https://gcore.com/docs/cloud/virtual-instances/types-of-virtual-machines#gpu" target="_blank">GPU</a>: Virtual Machines with GPUs process certain types of tasks more efficiently than CPUs and are used for workloads that require the resources of graphics accelerators. These machines have dedicated graphics cards and are ideal for complex computations such as CAD, AI/ML, or rendering.
 
-* **Memory**: Ideal for tasks and projects that require intensive memory usage, such as databases.
+* <a href="https://gcore.com/docs/cloud/virtual-instances/types-of-virtual-machines#cpu" target="_blank">CPU</a>: Best suited for CPU-intensive tasks that require predictable computing performance, such as batch processing of large data sets and video encoding.
 
-* **GPU**: Virtual Machines with GPUs process certain types of tasks more efficiently than CPUs and are used for workloads that require the resources of graphics accelerators. These machines have dedicated graphics cards and are ideal for complex computations such as CAD, AI/ML, or rendering.
+* <a href="https://gcore.com/docs/cloud/virtual-instances/types-of-virtual-machines#memory" target="_blank">Memory</a>: Ideal for tasks and projects that require intensive memory usage, such as databases.
 
-* **Basic VM**: Machines that work with partial core use and are designed to run applications that don’t require high performance. 
+* <a href="https://gcore.com/docs/cloud/virtual-instances/types-of-virtual-machines#high-frequency" target="_blank">High-frequency</a>: Best fit for applications that require single-threaded performance.
 
-* **High-frequency**: Best fit for applications that require single-threaded performance.
+* <a href="https://gcore.com/docs/cloud/virtual-instances/types-of-virtual-machines#basic-vm" target="_blank">Basic VM</a>: Machines that work with partial core use and are designed to run applications that don’t require high performance. 
 
-* **SGX-based VMs**: Virtual Machines that support Intel SGX technology and are suitable for storing critical, sensitive data by applying confidential computing.
+* <a href="https://gcore.com/docs/cloud/virtual-instances/types-of-virtual-machines#sgx-enabled" target="_blank">SGX-enabled VMs</a>: Virtual Machines that support Intel SGX technology and are suitable for storing critical, sensitive data by applying confidential computing.
 
-* **VMs with a Trusted Platform Module (TPM)**: Suitable for a diverse array of secure workloads that demand robust hardware-based security features.
+* <a href="https://gcore.com/docs/cloud/virtual-instances/types-of-virtual-machines#tpm" target="_blank">VMs with a Trusted Platform Module (TPM)</a>: Suitable for a diverse array of secure workloads that demand robust hardware-based security features.
 
 Check out the following sections for a detailed overview of these VM types and applicable use cases. 
 
@@ -508,7 +508,7 @@ Machines powered with **Intel Xeon E3-E5 Family** processors. Designed for a wid
 
 ## GPU
 
-Production-grade instances designed for AI and compute-intensive workloads.
+Production-grade Virtual Machines designed for AI and compute-intensive workloads.
 
 **Use cases**
 
@@ -933,11 +933,11 @@ Windows license is included.
 
 ## Memory
 
-Production-grade instances designed for workloads that rely heavily on RAM for optimal performance. 
+Production-grade Virtual Machines designed for workloads that rely heavily on RAM for optimal performance. 
 
 **Use cases**
 
-Databases
+Databases, real-time analytics, and memory-intensive AI and Machine Learning tasks.
 
 <tabset-element>
 
@@ -1268,7 +1268,7 @@ File sharing or storage, backup services, web hosting of small websites, or priv
 
 Powered with **Intel Xeon E3-V5 Family** processors.
 
-### Linux-based VMs
+#### Linux-based VMs
 
 <table>
 <thead>
@@ -1315,7 +1315,7 @@ Machines powered with the following processors:
 
 * **Intel® Xeon® Scalable Processors**: Designed for scalability, performance, and versatility. These processors meet the diverse needs of data center workloads, ranging from entry-level to high-performance computing. Designed for a broader range of applications, including high-performance computing, virtualization, cloud computing, and enterprise workloads.
 
-### Linux-based VMs
+#### Linux-based VMs
 
 <table>
 <thead>
@@ -1385,7 +1385,7 @@ Application code storage, critical or sensitive data in the cloud.
 
 Powered with the **Intel Xeon E Family Processors + SGX support** (kernel).  
 
-### Linux-based VMs
+#### Linux-based VMs
 
 <table>
 <thead>
@@ -1427,7 +1427,7 @@ Machines powered with the following processors:
 
 * **Intel® Xeon® Scalable Processors**: Designed for scalability, performance, and versatility. These processors meet the diverse needs of data center workloads, ranging from entry-level to high-performance computing. Designed for a broader range of applications, including high-performance computing, virtualization, cloud computing, and enterprise workloads.
 
-### Linux-based VMs
+#### Linux-based VMs
 
 <table>
 <thead>
@@ -1466,7 +1466,7 @@ Machines powered with the following processors:
 </tbody>
 </table>
 
-### Windows-based VMs
+#### Windows-based VMs
 
 Windows license is included.
 
