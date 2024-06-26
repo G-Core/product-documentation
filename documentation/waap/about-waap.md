@@ -27,7 +27,7 @@ WAAP offers you such key features as:
 
 ## Getting started 
 
-For instructions on how to protect your domain with our WAAP, check out our guide on <a href="https://gcore.com/docs/waap/getting-started-configure-waap-for-a-domain" target="_blank">setting up WAAP for a new domain</a>. 
+For instructions on how to protect your domain with our WAAP, check out our guide on <a href="https://gcore.com/docs/waap/getting-started/configure-waap-for-a-domain" target="_blank">setting up WAAP for a new domain</a>. 
 
 ## What’s the difference between WAF and WAAP? 
 
