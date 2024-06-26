@@ -1,0 +1,1 @@
+# Configure WAAP for a domain
