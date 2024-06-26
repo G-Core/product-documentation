@@ -1,0 +1,49 @@
+---
+title: behavioral-waf
+displayName: Behavioral WAF
+published: true
+order:
+pageTitle: Set up Behavioral WAF policy for your domain | Gcore
+pageDescription: Learn how to enable and customize Behavioral WAF policy.
+---
+# Behavioral WAF (advanced threat protection)
+
+The Web Application and API Protection (WAAP) includes a Behavioral WAF ruleset that helps prevent malicious attacks on your websites. The policy contains a set of sophisticated user behavior and reputation analysis rules, which inspect the traffic and defend your website against such threats as spamming or brute force attacks. 
+
+## Configure policy rules 
+
+You can review the Advanced API protection policy and enable or disable its rules in the Gcore Customer Portal: 
+
+1\. Navigate to **WAAP** > **Domains**. 
+
+2\. Find the domain where you want to configure the policy and click the domain name to open it.  
+
+3\. In the sidebar menu, click **WAF**. 
+
+4\. On the **Policies** page that opens, click **Behavioral WAF (advanced threat protection)** to expand the section and adjust the policy rules. 
+
+<alert-element type="info" title="Info">
+
+All behavioral WAF rules are enabled by default. To disable a rule, turn on the toggle near that rule. 
+
+</alert-element>
+
+### Anti-spam 
+
+Use CAPTCHA and JavaScript validation when user activity during a session suggests aggressive use of forms to generate new accounts, post spam content, and similar. 
+
+### Probing and forced browsing 
+
+Use CAPTCHA and JavaScript validation to challenge brute-forced requests on random URLs, which might aim to discover your web application's structure and hidden directories. Requests that fail to pass the validation will be blocked.  
+
+### Obfuscated attacks and zero-day mitigation 
+
+Block clients that perform multiple injection attacks. 
+
+### Repeated violations 
+
+Present with CAPTCHA or block those clients that failed to answer a previously displayed challenge. Requests that fail to pass the validation will be blocked. 
+
+### Brute-force protection 
+
+Present users with CAPTCHA when there’s an attempt to guess usernames and passwords on web login forms. If the client fails to pass the validation after a few attempts, the request will be blocked.
