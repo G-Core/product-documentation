@@ -10,12 +10,14 @@ import { Subscription, filter } from 'rxjs';
 })
 export class DisclaimerComponent implements OnInit {
     public isResellerSupportPage = false;
+    public isWaapPage = false;
 
     constructor(private router: Router, private cd: ChangeDetectorRef) {}
 
     public ngOnInit(): void {
         this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
             this.isResellerSupportPage = this.router.url.includes('/reseller-support');
+            this.isWaapPage = this.router.url.includes('/waap');
             this.cd.detectChanges();
         });
     }

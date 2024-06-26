@@ -43,6 +43,10 @@ export const categories: Array<Category> = [
         url: 'web-security',
     },
     {
+        name: 'WAAP',
+        url: 'waap',
+    },
+    {
         name: 'Reseller Support',
         url: 'reseller-support',
     },

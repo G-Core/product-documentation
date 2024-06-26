@@ -17,6 +17,7 @@ const categories = [
     'cloud',
     'cdn',
     'account-settings',
+    'waap',
     'reseller-support',
 ];
 import { setCustomUrls } from './scully/plugins/custom-url/custom-url';
@@ -38,6 +39,7 @@ setPluginConfig(moveContentFiles, {
         'streaming-platform',
         'ddos-protection',
         'web-security',
+        'waap',
         'reseller-support',
     ],
 });
