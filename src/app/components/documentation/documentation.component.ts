@@ -51,6 +51,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
     public isEditArticleGuidePage: boolean = false;
     public activeDocument: ScullyRoute;
     public isResellerPage = false;
+    public isWaap = false;
 
     private routerSubscription: Subscription;
     private closeFullSizeModalListener: () => void;
@@ -118,6 +119,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
         });
 
         this.isResellerPage = this.router.url.includes('reseller-support');
+        this.isWaap = this.router.url.includes('waap');
 
         this.links$ = combineLatest([this.route.url, this.scully.available$]).pipe(
             map(([url, links]) => {
@@ -183,6 +185,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
                 this.isActiveLike = false;
                 this.isActiveDislike = false;
                 this.isResellerPage = this.router.url.includes('reseller-support');
+                this.isWaap = this.router.url.includes('waap');
                 this.isNewContent = true;
                 this.isTocInit = false;
                 this.changeDetectorRef.detectChanges();
@@ -364,7 +367,7 @@ export class DocumentationComponent implements OnInit, AfterViewChecked, OnDestr
             },
         ];
 
-        if (!pageUrl.includes('/reseller-support')) {
+        if (!pageUrl.includes('/reseller-support') || !pageUrl.includes('/waap')) {
             breadcrumbs.unshift({
                 name: 'Home',
                 url: '/',
