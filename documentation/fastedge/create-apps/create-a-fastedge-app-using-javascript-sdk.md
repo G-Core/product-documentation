@@ -1,19 +1,17 @@
 ---
 title: create-a-fastedge-app-using-javascript-sdk
-displayName: 'JavaScript SDK'
+displayName: JavaScript SDK
 published: false
 order: 20
 toc:
-    '--1--Overview': overview
-    '--1--Example': basic-javascript-example
-    '--1--1. Prepare Wasm': stage-1-prepare-a-wasm-binary-file
-    '--1--2. Deploy app': stage-2-deploy-an-app
-    '--1--3. Test app': stage-3-test-an-app
-    '--1--(Optional) 4. Add functions': stage-4-optional-add-more-functionality
-pageTitle: 'How to Create an JS SQK App with FastEdge | Gcore'
-pageDescription: 'How to create a Wasm binary file in JavaScript SDK and upload the app to our edge network.'
-slugs:
-    - ___UNPUBLISHED___lxvrnx0o_Cmbgf5HB6YNuMdftnLpT7TFLvYTNtCgD
+  --1--Overview: "overview"
+  --1--Example: "basic-javascript-example"
+  --1--1. Prepare Wasm: "stage-1-prepare-a-wasm-binary-file"
+  --1--2. Deploy app: "stage-2-deploy-an-app"
+  --1--3. Test app: "stage-3-test-an-app"
+  --1--(Optional) 4. Add functions: "stage-4-optional-add-more-functionality"
+pageTitle: How to Create an JS SQK App with FastEdge | Gcore
+pageDescription: How to create a Wasm binary file in JavaScript SDK and upload the app to our edge network.
 ---
 
 # Create a FastEdge app using JavaScript SDK
