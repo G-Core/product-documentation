@@ -116,7 +116,7 @@ Based on 64-bit ARM architecture that’s optimized for cloud workloads, these V
    <td>32</td>
    <td>64</td>
     </tr>                                
-</thead>
+</tbody>
 </table> 
 
 #### Windows-based VMs
@@ -182,7 +182,7 @@ Windows license is included.
    <td>32</td>
    <td>64</td>
     </tr>                                
-</thead>
+</tbody>
 </table> 
 
 ### G1 
@@ -254,7 +254,7 @@ Machines equipped with newer generations of CPU:
    <td>32</td>
    <td>64</td>
     </tr>                                
-</thead>
+</tbody>
 </table> 
 
 #### Windows-based VMs
@@ -320,7 +320,7 @@ Windows license is included.
    <td>32</td>
    <td>64</td>
     </tr>                                
-</thead>
+</tbody>
 </table> 
 
 ### G2
@@ -397,7 +397,7 @@ Machines powered with the following processors:
    <td>32</td>
    <td>128</td>
     </tr>                                    
-</thead>
+</tbody>
 </table> 
 
 #### Windows-based VMs
@@ -463,7 +463,7 @@ Windows license is included.
    <td>32</td>
    <td>64</td>
     </tr>                                   
-</thead>
+</tbody>
 </table> 
 
 ### G0
@@ -501,7 +501,7 @@ Machines powered with **Intel Xeon E3-E5 Family** processors. Designed for a wid
    <td>8</td>
    <td>16</td>
     </tr>                                 
-</thead>
+</tbody>
 </table>
 
 </tabset-element>
@@ -558,7 +558,7 @@ Well-suited for compute-intensive workloads, including dynamic programming algor
    <td>32</td>
    <td>128</td>
     </tr>                                     
-</thead>
+</tbody>
 </table>
 
 #### Windows-based VMs 
@@ -599,7 +599,7 @@ Windows license is included.
    <td>32</td>
    <td>128</td>
     </tr>                                     
-</thead>
+</tbody>
 </table>
 
 ### G2 
@@ -646,7 +646,7 @@ Machines powered with the following processors:
    <td>32</td>
    <td>128</td>
     </tr>                                     
-</thead>
+</tbody>
 </table>
 
 ### GPU-G1
@@ -691,7 +691,7 @@ Targeted at entry-level and medium applications, these VMs offer a balance of pe
    <td>32</td>
    <td>128</td>
     </tr>                                     
-</thead>
+</tbody>
 </table>
 
 </tabset-element>
@@ -748,7 +748,7 @@ Optimized for demanding workloads like high-performance computing, advanced anal
    <td>32</td>
    <td>32</td>
     </tr>                                     
-</thead>
+</tbody>
 </table>
 
 #### Windows-based VMs
@@ -789,7 +789,7 @@ Windows license is included.
    <td>32</td>
    <td>32</td>
     </tr>                                     
-</thead>
+</tbody>
 </table>
 
 ### G2
@@ -836,7 +836,7 @@ Machines powered with the following processors:
    <td>32</td>
    <td>32</td>
     </tr>                                     
-</thead>
+</tbody>
 </table>
 
 ### A1
@@ -885,7 +885,7 @@ Applications that take advantage of scale-out and elastic cloud architectures.
    <td>32</td>
    <td>32</td>
     </tr>                                     
-</thead>
+</tbody>
 </table>
 
 #### Windows-based VMs
@@ -926,7 +926,7 @@ Windows license is included.
    <td>32</td>
    <td>32</td>
     </tr>                                     
-</thead>
+</tbody>
 </table>
 
 </tabset-element>
@@ -983,7 +983,7 @@ Optimized for demanding workloads, such as high-performance computing, advanced 
    <td>32</td>
    <td>256</td>
     </tr>                                     
-</thead>
+</tbody>
 </table>
 
 #### Windows-based VMs
@@ -1024,7 +1024,7 @@ Windows license is included.
    <td>32</td>
    <td>256</td>
     </tr>                                     
-</thead>
+</tbody>
 </table>
 
 ### G2
@@ -1071,7 +1071,7 @@ Machines powered with the following processors:
    <td>32</td>
    <td>256</td>
     </tr>                                     
-</thead>
+</tbody>
 </table>
 
 #### Windows-based VMs
@@ -1112,7 +1112,7 @@ Windows license is included.
    <td>32</td>
    <td>256</td>
     </tr>                                     
-</thead>
+</tbody>
 </table>
 
 ### A1
@@ -1157,7 +1157,7 @@ Optimized for cloud workloads, these VMs deliver predictable high performance to
    <td>32</td>
    <td>256</td>
     </tr>                                     
-</thead>
+</tbody>
 </table>
 
 </tabset-element>
@@ -1213,7 +1213,7 @@ Machines powered with the following processors:
    <td>8</td>
    <td>16</td>
     </tr>                                   
-</thead>
+</tbody>
 </table>
 
 #### Windows-based VMs
@@ -1249,7 +1249,7 @@ Windows license is included.
    <td>8</td>
    <td>16</td>
     </tr>                                   
-</thead>
+</tbody>
 </table>
 
 </tabset-element>
@@ -1304,7 +1304,7 @@ Powered with **Intel Xeon E3-V5 Family** processors.
    <td>2</td>
    <td>4</td>
     </tr>                                       
-</thead>
+</tbody>
 </table>
 
 ### G2-shared
@@ -1366,7 +1366,7 @@ Machines powered with the following processors:
    <td>8</td>
    <td>16</td>
     </tr>                                                   
-</thead>
+</tbody>
 </table>
 
 </tabset-element>
@@ -1416,7 +1416,7 @@ Powered with the **Intel Xeon E Family Processors + SGX support** (kernel).
    <td>8</td>
    <td>16</td>
     </tr>                                    
-</thead>
+</tbody>
 </table>
 
 ### G2
@@ -1463,7 +1463,7 @@ Machines powered with the following processors:
    <td>16</td>
    <td>32</td>
     </tr>                                                                      
-</thead>
+</tbody>
 </table>
 
 ### Windows-based VMs
@@ -1504,7 +1504,7 @@ Windows license is included.
    <td>16</td>
    <td>32</td>
     </tr>                                                                      
-</thead>
+</tbody>
 </table>
 
 </tabset-element>
@@ -1601,7 +1601,7 @@ Machines powered with the following processors:
    <td>32</td>
    <td>128</td>
     </tr>                                                   
-</thead>
+</tbody>
 </table>
 
 </tabset-element>
