@@ -163,7 +163,7 @@ In addition, when you log in to your account during the fourteen days before cer
 
 <img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-your-own-ssl-certificate/own-ssl-13.png" alt="SSL certificates">
 
-In the certificates table, warning signs will appear next to the specific certificates that need attention.
+In the certificates , warning signs will appear next to the specific certificates that need attention.
 
 If the certificate has already expired, a red exclamation point will be shown.
 

@@ -20,11 +20,15 @@ You can review the Advanced API protection policy and enable or disable its rule
 
 1\. Navigate to **WAAP** > **Domains**. 
 
+<img src="https://assets.gcore.pro/docs/waap/waf-policies/anti-automation-bot-protection/domains-page.png" alt="Domains page in the Customer Portal" width="80%">
+
 2\. Find the domain where you want to configure the policy and click the domain name to open it.  
 
 3\. In the sidebar menu, click **WAF**. 
 
 4\. On the **Policies** page that opens, click **Anti-automation and bot protection** to expand the section and adjust the policy rules. 
+
+<img src="https://assets.gcore.pro/docs/waap/waf-policies/anti-automation-bot-protection/anti-automation.png" alt="WAF policies page with the highlighted Anti-automation and bot protection policy" width="80%">
 
 <alert-element type="info" title="Info">
 

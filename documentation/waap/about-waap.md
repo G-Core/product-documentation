@@ -59,7 +59,7 @@ The existence of nodes that run rule sets against traffic is what essentially de
 
 <alert-element type="tip" title="Tip">
  
-The <a href="https://gcore.com/docs/waap/waf-policies" target="_blank">WAF policies</a> section covers existing rule sets in detail. You can also create your own <a href="https://gcore.com/docs/waap/waf-rules/custom-rules" target="_blank">custom rules</a> to filter traffic as you see fit. 
+The <a href="https://gcore.com/docs/waap/waf-policies" target="_blank">WAF policies</a> section covers existing rule sets in detail. You can also create your own custom rules to filter traffic as you see fit. 
  
 </alert-element>
 

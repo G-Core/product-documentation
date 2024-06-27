@@ -6,7 +6,7 @@ order:
 pageTitle: Set up Behavioral WAF policy for your domain | Gcore
 pageDescription: Learn how to enable and customize Behavioral WAF policy.
 ---
-# Behavioral WAF (advanced threat protection)
+# Behavioral WAF
 
 The Web Application and API Protection (WAAP) includes a Behavioral WAF ruleset that helps prevent malicious attacks on your websites. The policy contains a set of sophisticated user behavior and reputation analysis rules, which inspect the traffic and defend your website against such threats as spamming or brute force attacks. 
 
@@ -16,11 +16,15 @@ You can review the Advanced API protection policy and enable or disable its rule
 
 1\. Navigate to **WAAP** > **Domains**. 
 
+<img src="https://assets.gcore.pro/docs/waap/waf-policies/anti-automation-bot-protection/domains-page.png" alt="Domains page in the Customer Portal" width="80%">
+
 2\. Find the domain where you want to configure the policy and click the domain name to open it.  
 
 3\. In the sidebar menu, click **WAF**. 
 
-4\. On the **Policies** page that opens, click **Behavioral WAF (advanced threat protection)** to expand the section and adjust the policy rules. 
+4\. On the **Policies** page that opens, click **Behavioral WAF** to expand the section and adjust the policy rules. 
+
+<img src="https://assets.gcore.pro/docs/waap/waf-policies/behavioral-waf/behavioral-waf.png" alt="WAF policies page with the highlighted ehavioral WAF policy" width="80%">
 
 <alert-element type="info" title="Info">
 
