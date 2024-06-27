@@ -26,11 +26,15 @@ You can review the policy and enable or disable its rules in the Gcore Customer 
 
 1\. Navigate to **WAAP** > **Domains**. 
 
+<img src="https://assets.gcore.pro/docs/waap/waf-policies/anti-automation-bot-protection/domains-page.png" alt="Domains page in the Customer Portal" width="80%">
+
 2\. Find the domain where you want to configure the policy and click the domain name to open it.  
 
 3\. In the sidebar menu, click **WAF**. 
 
 4\. On the **Policies** page that opens, click **CMS protection** to expand the section and adjust the policy rules. 
+
+<img src="https://assets.gcore.pro/docs/waap/waf-policies/cms-protection/cms-protection.png" alt="WAF policies page with the highlighted CMS protection policy" width="80%">
 
 <alert-element type="info" title="Info">
 
@@ -40,3 +44,79 @@ Most of the CMS protection rules allow traffic. Only the WordPress WAF ruleset r
 
 ❗️If you don’t see your CMS, you can allow admin access by adding your IP address to the allowlist. Contact our [Support team](mailto:support@gcore.com) for assistance.
 
+<table>
+<thead>
+<tr>
+<td>Rule</td>
+<td>Description</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WordPress WAF ruleset</td>
+<td>Block requests that are potentially a WordPress exploit.</td>
+</tr>
+<tr>
+<td>Logged-in WordPress admins </td>
+<td>Allow requests from logged-in WordPress admins.</td>
+</tr>
+<tr>
+<td>Logged-in MODX admins</td>
+<td>Allow requests from logged-in MODX admins.</td>
+</tr>
+<tr>
+<td>Logged-in Drupal admins</td>
+<td>Allow requests from logged-in Drupal admins.</td>
+</tr>
+<tr>
+<td>Logged-in Joomla admins</td>
+<td>Allow requests from logged-in Joomla admins.</td>
+</tr>
+<tr>
+<td>Logged-in allowlist Magento admins</td>
+<td>Allow requests from logged-in Magento admins.</td>
+</tr>
+<tr>
+<td>Requests from origin's IP</td>
+<td>Allow requests from the origin's IP address for updates. </td>
+</tr>
+<tr>
+<td>Logged-in Umbraco admins</td>
+<td>Allow requests from logged-in Umbraco admins.</td>
+</tr>
+<tr>
+<td>Logged-in PimCore admins</td>
+<td>Allow requests from logged-in PimCore admins.</td>
+</tr>
+</tbody>
+</table>
+
+If you enable a particular rule for your CMS, the admin CMS session will be allowlisted when that admin user logs in to the site. 
+
+<alert-element type="info" title="Tip">
+
+We recommend disabling rules for Content Management Systems that you don’t use. 
+
+</alert-element>
+
+### Allowlist a static IP address 
+
+If you don’t see your CMS in the list of rules under the CMS policy, you can allow admin access to your site as follows: 
+
+1\. In the Gcore Customer Portal, navigate to **Web Security** > **Domains**. 
+
+<img src="https://assets.gcore.pro/docs/waap/waf-policies/anti-automation-bot-protection/domains-page.png" alt="Domains page in the Customer Portal" width="80%">
+
+2\. Find the needed domain and click its name to open it.  
+
+3\. In the left-side navigation menu, click **Firewall**. 
+
+4\. In the Allowed IPs section, click **Add IP/IP Range**. 
+
+<img src="https://assets.gcore.pro/docs/waap/waf-policies/cms-protection/firewall-page.png" alt="Firewall page with the allow and block IP lists" width="80%">
+
+5\. Enter your public IP address so that all traffic from your IP will be allowed and won’t be blocked by the WAF for any type of request. 
+
+6\. (Optional). Add a description. 
+
+7\. Click **Save** to apply the changes.
