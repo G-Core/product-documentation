@@ -2,7 +2,7 @@
 title: advanced-api-protection
 displayName: Advanced API protection
 published: true
-order:
+order: 80
 pageTitle: Set up Advanced API protection WAF policy for your domain | Gcore
 pageDescription: Learn how to enable and customize Advanced API protection policy.
 ---

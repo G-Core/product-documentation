@@ -2,7 +2,7 @@
 title: cms-protection
 displayName: CMS protection
 published: true
-order:
+order: 60
 pageTitle: Set up CMS protection WAF policy for your domain | Gcore
 pageDescription: Learn how to enable and customize CMS protection policy.
 ---
@@ -26,7 +26,7 @@ You can review the policy and enable or disable its rules in the Gcore Customer 
 
 1\. Navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waf-policies/anti-automation-bot-protection/domains-page.png" alt="Domains page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/waf-policies/anti-automation-bot-protection/domains-page.png" alt="Domains page in the Customer Portal">
 
 2\. Find the domain where you want to configure the policy and click the domain name to open it.  
 
@@ -34,7 +34,7 @@ You can review the policy and enable or disable its rules in the Gcore Customer 
 
 4\. On the **Policies** page that opens, click **CMS protection** to expand the section and adjust the policy rules. 
 
-<img src="https://assets.gcore.pro/docs/waap/waf-policies/cms-protection/cms-protection.png" alt="WAF policies page with the highlighted CMS protection policy" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/waf-policies/cms-protection/cms-protection.png" alt="WAF policies page with the highlighted CMS protection policy">
 
 <alert-element type="info" title="Info">
 
@@ -42,51 +42,51 @@ Most of the CMS protection rules allow traffic. Only the WordPress WAF ruleset r
 
 </alert-element>
 
-❗️If you don’t see your CMS, you can allow admin access by adding your IP address to the allowlist. Contact our [Support team](mailto:support@gcore.com) for assistance.
+If you don’t see your CMS, you can allow admin access by adding your IP address to the allowlist. Contact our [Support team](mailto:support@gcore.com) for assistance.
 
 <table>
 <thead>
 <tr>
-<td>Rule</td>
-<td>Description</td>
+<td style="text-align: left">Rule</td>
+<td style="text-align: left">Description</td>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>WordPress WAF ruleset</td>
-<td>Block requests that are potentially a WordPress exploit.</td>
+<td style="text-align: left">WordPress WAF ruleset</td>
+<td style="text-align: left">Block requests that are potentially a WordPress exploit.</td>
 </tr>
 <tr>
-<td>Logged-in WordPress admins </td>
-<td>Allow requests from logged-in WordPress admins.</td>
+<td style="text-align: left">Logged-in WordPress admins</td>
+<td style="text-align: left">Allow requests from logged-in WordPress admins.</td>
 </tr>
 <tr>
-<td>Logged-in MODX admins</td>
-<td>Allow requests from logged-in MODX admins.</td>
+<td style="text-align: left">Logged-in MODX admins</td>
+<td style="text-align: left">Allow requests from logged-in MODX admins.</td>
 </tr>
 <tr>
-<td>Logged-in Drupal admins</td>
-<td>Allow requests from logged-in Drupal admins.</td>
+<td style="text-align: left">Logged-in Drupal admins</td>
+<td style="text-align: left">Allow requests from logged-in Drupal admins.</td>
 </tr>
 <tr>
-<td>Logged-in Joomla admins</td>
-<td>Allow requests from logged-in Joomla admins.</td>
+<td style="text-align: left">Logged-in Joomla admins</td>
+<td style="text-align: left">Allow requests from logged-in Joomla admins.</td>
 </tr>
 <tr>
-<td>Logged-in allowlist Magento admins</td>
-<td>Allow requests from logged-in Magento admins.</td>
+<td style="text-align: left">Logged-in allowlist Magento admins</td>
+<td style="text-align: left">Allow requests from logged-in Magento admins.</td>
 </tr>
 <tr>
-<td>Requests from origin's IP</td>
-<td>Allow requests from the origin's IP address for updates. </td>
+<td style="text-align: left">Requests from origin's IP</td>
+<td style="text-align: left">Allow requests from the origin's IP address for updates. </td>
 </tr>
 <tr>
-<td>Logged-in Umbraco admins</td>
-<td>Allow requests from logged-in Umbraco admins.</td>
+<td style="text-align: left">Logged-in Umbraco admins</td>
+<td style="text-align: left">Allow requests from logged-in Umbraco admins.</td>
 </tr>
 <tr>
-<td>Logged-in PimCore admins</td>
-<td>Allow requests from logged-in PimCore admins.</td>
+<td style="text-align: left">Logged-in PimCore admins</td>
+<td style="text-align: left">Allow requests from logged-in PimCore admins.</td>
 </tr>
 </tbody>
 </table>
@@ -105,7 +105,7 @@ If you don’t see your CMS in the list of rules under the CMS policy, you can a
 
 1\. In the Gcore Customer Portal, navigate to **Web Security** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waf-policies/anti-automation-bot-protection/domains-page.png" alt="Domains page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/waf-policies/anti-automation-bot-protection/domains-page.png" alt="Domains page in the Customer Portal">
 
 2\. Find the needed domain and click its name to open it.  
 
@@ -113,7 +113,7 @@ If you don’t see your CMS in the list of rules under the CMS policy, you can a
 
 4\. In the Allowed IPs section, click **Add IP/IP Range**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waf-policies/cms-protection/firewall-page.png" alt="Firewall page with the allow and block IP lists" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/waf-policies/cms-protection/firewall-page.png" alt="Firewall page with the allow and block IP lists">
 
 5\. Enter your public IP address so that all traffic from your IP will be allowed and won’t be blocked by the WAF for any type of request. 
 
