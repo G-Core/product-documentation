@@ -18,7 +18,7 @@ The CMS protection policy contains specific rules that detect when a user is log
 
 In some cases, administrative sections of a CMS-based website may be blocked. For example, for WordPress, the WAF may label a change made to the `/wp-admin` section of a CMS-based site as malicious behavior like Cross-Site Scripting or SQL injection.  
 
-❗️ As a result, the WAF will block admins from making any page edits. You can prevent this issue in two ways: enable the needed rules in the CMS protection policy or allowlist your static IP address. 
+As a result, the WAF will block admins from making any page edits. You can prevent this issue in two ways: [enable the needed rules](https://gcore.com/docs/waap/waf-policies/cms-protection#configure-policy-rules) in the CMS protection policy or [allowlist your static IP address](https://gcore.com/docs/waap/waf-policies/cms-protection#allowlist-a-static-ip-address). 
 
 ## Configure policy rules 
 
