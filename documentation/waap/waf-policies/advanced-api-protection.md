@@ -46,8 +46,6 @@ Block API responses that contain Personal Identifiable Information (PII) such as
 
 You can turn off this rule for specific API endpoints by tagging them as needed. In this case, you’ll remain protected against unknown sensitive data leakage, also allowing legitimate known resources to create a response without being interrupted by the WAF.
 
-❗️You can find more information about ignoring sensitive data exposure in our Tag generating rules guide. 
-
 ### Invalid API traffic 
 
 Block API requests that don’t conform to a JSON structure. This policy protects your APIs by inspecting the keys and values within the JSON. If they are not properly structured, the request will be blocked. 
@@ -62,12 +60,10 @@ There are three levels of API endpoint authorization:
 
 * **Non-privileged**: Users who will be blocked from all access endpoints that are privileged or admin. 
 
-To ensure that only admins and privileged users can access sensitive endpoints, you can create tags that will be applied when the defined header, token, or other identifier is present. ❗️ You can then use the API Discovery feature to control API access based on these tags. 
-
-❗️ For details about API-level authorization, check out the Tag generating rules guide. 
+To ensure that only admins and privileged users can access sensitive endpoints, you can create tags that will be applied when the defined header, token, or other identifier is present. You can then use the API Discovery feature to control API access based on these tags. 
 
 ### Non-baselined API requests 
 
-❗️Enable a positive security policy that blocks requests to endpoints that aren’t part of the API baseline—a defined version of your API where all protected endpoints are listed.  
+Enable a positive security policy that blocks requests to endpoints that aren’t part of the API baseline—a defined version of your API where all protected endpoints are listed.  
 
 You can also add endpoints to the API baseline if you don’t want to perform a network or API specification file scan.  
