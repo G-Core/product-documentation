@@ -18,7 +18,7 @@ You can review the Advanced API protection policy and enable or disable its rule
 
 1\. Navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waf-policies/advanced-api-protection/domains-page.png" alt="Domains page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/waf-policies/advanced-api-protection/domains-page.png" alt="Domains page in the Customer Portal">
 
 2\. Find the domain where you want to configure the policy and click the domain name to open it.  
 
@@ -26,7 +26,7 @@ You can review the Advanced API protection policy and enable or disable its rule
 
 4\. On the **Policies** page that opens, click **Advanced API protection** to expand the section and adjust the policy rules. 
 
-<img src="https://assets.gcore.pro/docs/waap/waf-policies/advanced-api-protection/advanced-api-protection.png" alt="WAF policies page with the highlighted advanced AIP protection policy" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/waf-policies/advanced-api-protection/advanced-api-protection.png" alt="WAF policies page with the highlighted advanced AIP protection policy">
 
 <alert-element type="info" title="Info">
 
