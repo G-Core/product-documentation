@@ -2,7 +2,7 @@
 title: anti-automation-and-bot-protection
 displayName: Anti-automation and bot protection
 published: true
-order:
+order: 50
 pageTitle: Set up Anti-automation and bot protection WAF policy for your domain | Gcore
 pageDescription: Learn how to enable and customize Anti-automation and bot protection policy.
 ---
@@ -20,7 +20,7 @@ You can review the Advanced API protection policy and enable or disable its rule
 
 1\. Navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waf-policies/anti-automation-bot-protection/domains-page.png" alt="Domains page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/waf-policies/anti-automation-bot-protection/domains-page.png" alt="Domains page in the Customer Portal">
 
 2\. Find the domain where you want to configure the policy and click the domain name to open it.  
 
@@ -28,7 +28,7 @@ You can review the Advanced API protection policy and enable or disable its rule
 
 4\. On the **Policies** page that opens, click **Anti-automation and bot protection** to expand the section and adjust the policy rules. 
 
-<img src="https://assets.gcore.pro/docs/waap/waf-policies/anti-automation-bot-protection/anti-automation.png" alt="WAF policies page with the highlighted Anti-automation and bot protection policy" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/waf-policies/anti-automation-bot-protection/anti-automation.png" alt="WAF policies page with the highlighted Anti-automation and bot protection policy">
 
 <alert-element type="info" title="Info">
 
@@ -44,7 +44,7 @@ Challenge or block requests when the user or device doesn’t maintain cookies o
 
 Challenge or block requests from automated sessions. Automated clients are usually bots looking to hack, spam, spy, or generally compromise your website. Activating this rule will detect these types of requests and force human interaction. 
 
-❗️ You can review a list of known bots and allow or block their activity within the <a href="https://gcore.com/docs/waap/waf-policies/behavioral-waf" target="_blank">common automated services</a> ruleset. Learn more about enabling and troubleshooting WAF bot protection in <a href="https://gcore.com/docs/waap/bot-protection/" target="_blank">our dedicated guide</a>. 
+You can review a list of known bots and allow or block their activity within the common automated services ruleset. Learn more about enabling and troubleshooting WAF bot protection in <a href="https://gcore.com/docs/waap/bot-protection/" target="_blank">our dedicated guide</a>. 
 
 ### Headless browsers 
 
