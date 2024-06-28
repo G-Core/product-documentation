@@ -33,7 +33,7 @@ If you need more general information about Docker and its setup for running AI m
 
 Here’s an example of a `Dockerfile` configuration: 
 
-```
+<code-block>
 # Set the base image your model is built from  
 <span style="color:#FF5913">FROM python:3.11-slim</span>  
 
@@ -42,9 +42,9 @@ Here’s an example of a `Dockerfile` configuration:
 
 
 # Set environment variables 
-<span style="color:#FF5913">ENV USE_TORCH=1  
-ENV NVIDIA_VISIBLE_DEVICES=all  
-ENV CLI_ARGS=""</span> 
+<span style="color:#FF5913">ENV USE_TORCH=1</span> 
+<span style="color:#FF5913">ENV NVIDIA_VISIBLE_DEVICES=all</span> 
+<span style="color:#FF5913">ENV CLI_ARGS=""</span> 
 
 # Install any required dependencies 
 <span style="color:#FF5913">pip install -r requirements.txt</span>
@@ -63,7 +63,7 @@ ENV CLI_ARGS=""</span>
 
 # Run the application 
 <span style="color:#FF5913">CMD ["python3", "inference.py"]</span>
-```
+</code-block>
 
 <alert-element type="tip" title="Tip">
  
