@@ -33,37 +33,36 @@ If you need more general information about Docker and its setup for running AI m
 
 Here’s an example of a `Dockerfile` configuration: 
 
-<code-block>
+```
 # Set the base image your model is built from  
-<span style="color:#FF5913">FROM python:3.11-slim</span>  
+FROM python:3.11-slim
 
 # Set the working directory inside a container 
-<span style="color:#FF5913">WORKDIR /app</span>
-
+WORKDIR /app
 
 # Set environment variables 
-<span style="color:#FF5913">ENV USE_TORCH=1</span> 
-<span style="color:#FF5913">ENV NVIDIA_VISIBLE_DEVICES=all</span> 
-<span style="color:#FF5913">ENV CLI_ARGS=""</span> 
+ENV USE_TORCH=1
+ENV NVIDIA_VISIBLE_DEVICES=all 
+ENV CLI_ARGS=""
 
 # Install any required dependencies 
-<span style="color:#FF5913">pip install -r requirements.txt</span>
+pip install -r requirements.txt
 
 # Install Python packages 
-<span style="color:#FF5913">RUN pip3 install onnxruntime flask</span> 
+RUN pip3 install onnxruntime flask 
 
 # Copy the model into the container 
-<span style="color:#FF5913">COPY my_model.onnx /app/my_model.onnx</span>
+COPY my_model.onnx /app/my_model.onnx
 
 # Copy your inference script 
-<span style="color:#FF5913">COPY inference.py /app/inference.py</span> 
+COPY inference.py /app/inference.py 
 
 # Expose the port the app runs on 
-<span style="color:#FF5913">EXPOSE 5000</span>
+EXPOSE 5000</span>
 
 # Run the application 
-<span style="color:#FF5913">CMD ["python3", "inference.py"]</span>
-</code-block>
+CMD ["python3", "inference.py"]
+```
 
 <alert-element type="tip" title="Tip">
  
