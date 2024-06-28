@@ -76,6 +76,12 @@ If you need to add a new model registry, click **Add registry** and then configu
 
 To save the new registry, click **Add**.
 
+<alert-element type="info" title="Info">
+ 
+The image with your AI model must be built for the x86-64(AMD64) architecture.
+
+</alert-element>
+
 5\. Enter the name of the image with your model. For example: `ghcr.io/namespace/image_name:tag` or `docker.io/username/model:tag`.  
 
 6\. Specify a port to which the containerized model will listen. The external port for accessing your deployment is always 443 (HTTPS).
