@@ -510,6 +510,8 @@ Machines powered with **Intel Xeon E3-E5 Family** processors. Designed for a wid
 
 Production-grade Virtual Machines designed for AI and compute-intensive workloads.
 
+For all types of GPU-powered machines, network bandwidth is up to 1Gbit/s.  
+
 **Use cases**
 
 Artificial Intelligence and Machine Learning, Computer-Aided Design (CAD), rendering.
