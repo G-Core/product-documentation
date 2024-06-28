@@ -37,6 +37,12 @@ We provide multiple types of Virtual Machines suitable to different workflows an
 
 * <a href="https://gcore.com/docs/cloud/virtual-instances/types-of-virtual-machines#tpm" target="_blank">VMs with a Trusted Platform Module (TPM)</a>: Suitable for a diverse array of secure workloads that demand robust hardware-based security features.
 
+<alert-element type="info" title="Info">
+ 
+The network bandwidth capacity for all Virtual Machines, apart from the Basic VM, is up to 1 Gbit/s. For Basic VM, the bandwidth is up to 200Mbit/s.
+ 
+</alert-element>
+
 Check out the following sections for a detailed overview of these VM types and applicable use cases. 
 
 ## Standard
@@ -509,8 +515,6 @@ Machines powered with **Intel Xeon E3-E5 Family** processors. Designed for a wid
 ## GPU
 
 Production-grade Virtual Machines designed for AI and compute-intensive workloads.
-
-For all types of GPU-powered machines, network bandwidth is up to 1Gbit/s.  
 
 **Use cases**
 
