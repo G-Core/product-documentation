@@ -3,6 +3,10 @@ title: cms-protection
 displayName: CMS protection
 published: true
 order: 60
+toc:
+   --1--Allow admin access to a domain: "allow-adminaaccess-to-your-domain"
+   --1--Configure policy rules: "configure-policy-rules"
+   --2--Allowlist a static IP address: "allowlist-a-static-ip-address"
 pageTitle: Set up CMS protection WAF policy for your domain | Gcore
 pageDescription: Learn how to enable and customize CMS protection policy.
 ---

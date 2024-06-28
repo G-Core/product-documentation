@@ -3,6 +3,13 @@ title: advanced-api-protection
 displayName: Advanced API protection
 published: true
 order: 80
+toc:
+   --1--Configure policy rules: "configure-policy-rules"
+   --2--Auth token protection: "auth-token-protection"
+   --2--Sensitive data exposure: "sensitive-data-exposure"
+   --2--Invalid API traffic: "invalid-API-traffic"
+   --2--API-level authorization: "api-level-authorization"
+   --2--Non-baselined API requests: "non-baselined-api-requests"      
 pageTitle: Set up Advanced API protection WAF policy for your domain | Gcore
 pageDescription: Learn how to enable and customize Advanced API protection policy.
 ---

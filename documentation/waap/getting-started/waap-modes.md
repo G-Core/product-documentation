@@ -2,11 +2,11 @@
 title: waap-modes
 displayName: WAAP modes
 published: true
-order:
+order: 20
 toc:
    --1--Monitor mode: "monitor-mode"
    --1--Protect mode: "protect-mode"
-   --1--How requests are processed in each mode: "how-requests-are-processed-in-each-WAAP-mode"
+   --1--How requests are processed in each mode: "how-requests-are-processed-in-each-waap-mode"
    --1--Enable a WAAP mode for your domain: "enable-a-waap-mode-for-your-domain" 
 pageTitle: Learn about WAAP monitor and protect modes | Gcore
 pageDescription: Learn how to enable monitor and protect modes for your domain.
@@ -42,7 +42,7 @@ In this mode, WAAP actively enforces all security settings, including <a href="h
 
 Protect mode ensures real-time defense against web-based attacks like SQL injection, cross-site scripting (XSS), and other common vulnerabilities. 
 
-## How requests are processed in each WAAP mode 
+## How requests are processed in each WAAP mode
 
 To demonstrate the difference between the monitor and protect modes, let’s consider an example of a cURL request with no header modification flags, which triggers the "Invalid user agent" rule. 
 

@@ -3,6 +3,12 @@ title: anti-automation-and-bot-protection
 displayName: Anti-automation and bot protection
 published: true
 order: 50
+toc:
+   --1--Configure policy rules: "configure-policy-rules"
+   --2--Traffic anomaly: "traffic-anomaly"
+   --2--Automated clients: "automated-clients"
+   --2--Headless browsers: "headless-browsers"
+   --2--Anti-scraping: "anti-scraping"
 pageTitle: Set up Anti-automation and bot protection WAF policy for your domain | Gcore
 pageDescription: Learn how to enable and customize Anti-automation and bot protection policy.
 ---
