@@ -2,5 +2,5 @@
 title: metadata
 displayName: Bot protection
 published: true
-order: 
+order: 100
 ---

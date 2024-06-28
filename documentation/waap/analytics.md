@@ -3,6 +3,21 @@ title: analytics
 displayName: Analytics
 published: true
 order:
+toc:
+   --1--Overview page: "overview"
+   --2--WAF: "waf"
+   --2--Status codes: "status-codes"
+   --1--WAF page: "waf-page"
+   --2--Web Application Firewall Requests: "web-application-firewall-requests"
+   --2--Requests table: "requests-table"
+   --2--Threats (last 24 hours): "threats-last-24-hours"
+   --2--Top threat origins: "top-threat-origins"   
+   --1--DDoS attacks: "ddos-attacks"   
+   --2--In-progress attacks: "in-progress-attacks"   
+   --2--Attacks requests: "attack-requests"   
+   --2--IPs participated: "ips-participated" 
+   --2--Clients, tools, and user agents: "clients-tools-and-user-agents" 
+   --2--URLs targeted: "urls-targeted"                     
 pageTitle: Learn about Gcore WAAP analytics | Gcore
 pageDescription: Learn about Gcore analytics.
 ---
@@ -32,9 +47,9 @@ To access analytics for your domain:
 
 The information on the **Analytics** page is displayed according to the selected period. At the top of the page, you can use the time frame dropdown to configure the displayed data. When you choose a new time frame, data on the graphs will automatically refresh. 
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/time-date-picker.png" alt="Time and date dropdown on the Analytics page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/analytics/time-date-picker.png" alt="Time and date dropdown on the Analytics page in the Customer Portal" width="80%">
 
-## Overview  
+## Overview page
 
 This page features general information about incoming requests and contains two graphs: WAF and Status codes. 
 
@@ -66,13 +81,13 @@ You can filter the graph’s data based on the origin of the request:
 
 * **Edge only**: Requests that come from the cache servers only. 
 
-* O**rigin only**: Requests that come from the origin server only. 
+* **Origin only**: Requests that come from the origin server only. 
 
 You can print the chart in pdf format or download it in the following formats: png, pdf, csv, xls.    
 
 ## WAF 
 
-This page features detailed statistics on HTTP requests and displays the Web application firewall requests graph and **Requests** table.
+This page features detailed statistics on HTTP requests and displays data in the graph format (Web application firewall requests) and as a table (Requests).
 
 ### Web Application Firewall Requests
 
@@ -88,11 +103,11 @@ You can select the following filters to view specific types of requests:
 
 * **Custom rule—blocked**: View requests that were blocked because of a triggered custom rule created in your account. 
 
-* **DDoS L7—blocked**: View requests that were blocked because of a triggered, default rule related to DDoS. To learn more about how requests can trigger this rule, check out our Configure WAF for L7 DDoS protection guide. ❗️
+* **DDoS L7—blocked**: View requests that were blocked because of a triggered default rule related to DDoS. To learn more about how requests can trigger this rule, check out our Configure WAF for <a href="https://gcore.com/docs/waap/ddos-protection" target="_blank">L7 DDoS protection</a> guide.
 
 * **Passed to origin**: View requests that successfully reached the origin. 
 
-Any changes made to the WAAP requests plot are also displayed in the Requests table below the plot: 
+Any changes made to the WAAP requests plot are also displayed in the **Requests** table below the plot: 
 
 * When you click on a particular data point on the plot, the **Requests** table is filtered accordingly. The date, time, and the corresponding traffic type are updated to show information relevant to what you’ve selected on the plot. 
 
@@ -104,7 +119,7 @@ Updating filters on the table doesn’t change the data displayed on the Web App
  
 </alert-element>
 
-### Requests 
+### Requests table
 
 This table displays incoming requests for the past 24 hours, including good and bad ones (potential threats). Request history is retained for 30 days. 
 
@@ -175,7 +190,7 @@ This section displays the most triggered actions and default rules, along with h
 
 ### Top threat origins 
 
-This map and table display the origin location of bad requests (threats) from the last 24 hours. You can view the country from which requests are coming from and the total number of requests for that country.  
+This map and table display the origin location of bad requests (threats) from the last 24 hours. You can view the country from which requests are coming and the total number of requests for that country.  
 
 <img src="https://assets.gcore.pro/docs/waap/analytics/waf-threat-origins.png" alt="WAF graph on the Analytics page in the Customer Portal">
 
@@ -187,7 +202,7 @@ We provide detailed analytics related to any DDoS attacks that were detected in 
 
 If there is an active DDoS attack, you’ll see a banner at the top of the page in the Customer Portal. 
 
-Clicking the View attack link will take you to the DDoS analytics page, where you can view more details related to that specific attack. 
+Clicking the **View attack** link will take you to the DDoS analytics page, where you can view more details related to that specific attack. 
 
 <img src="https://assets.gcore.pro/docs/waap/analytics/ddos-in-progress.png" alt="WAF graph on the Analytics page in the Customer Portal">
 
@@ -195,7 +210,7 @@ Clicking the View attack link will take you to the DDoS analytics page, where yo
 
 Requests associated with DDoS attacks are presented in a plot format.  
 
-To filter DDoS request data by the timeframe of each attack, click dropdown menu in the top-right corner of the screen and select the checkbox next to the attack you want to view. You can view up to four sets of timeframes simultaneously. 
+To filter DDoS request data by the timeframe of each attack, click the dropdown menu in the top-right corner of the screen and select the checkbox next to the attack you want to view. You can view up to four sets of timeframes simultaneously. 
 
 <img src="https://assets.gcore.pro/docs/waap/analytics/ddos-over-time.png" alt="WAF graph on the Analytics page in the Customer Portal">
 
@@ -233,11 +248,15 @@ This table displays more fine-grained information about requests associated with
 </tr>
 <tr>
 <td style="text-align: left">Result</td>
-<td style="text-align: left">The action that was taken against the request:<br><br>
-<b>Allow</b>: Display requests that were allowed to pass.<br>
-<b>Block</b>: Display requests that were blocked.<br>
-<b>CAPTCHA</b>: Display requests that were presented with a Captcha screen, regardless of whether the request passed or failed the screen.<br> 
-<b>Handshake (JavaScript validation)</b>: Display requests that were presented with a JavaScript validation screen, regardless of whether the request passed or failed the screen.</td>
+<td style="text-align: left">The action that was taken against the request:<br>
+
+* <b>Allow</b>: Display requests that were allowed to pass.
+
+* <b>Block</b>: Display requests that were blocked.
+
+* <b>CAPTCHA</b>: Display requests that were presented with a Captcha screen, regardless of whether the request passed or failed the screen.
+
+* <b>Handshake (JavaScript validation)</b>: Display requests that were presented with a JavaScript validation screen, regardless of whether the request passed or failed the screen.</td>
 </tr>
 <tr>
 <td style="text-align: left">Result</td>
