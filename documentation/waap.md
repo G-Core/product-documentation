@@ -5,7 +5,7 @@ published: true
 ---
 # WAAP
 
-Welcome to the Gcore Web Application and API Protection (WAAP) documentation page! Here, we explain how to use, configure, and troubleshoot Gcore’s Web Application and API Protection services. 
+Welcome to the <a href="https://gcore.com/web-app-and-api-protection" target="_blank">Gcore Web Application and API Protection (WAAP)</a> documentation page! Here, we explain how to use, configure, and troubleshoot Gcore’s Web Application and API Protection services. 
 
 Our WAAP combines all aspects of website security and traffic management, including Layer 7 DDoS protection, web application security, and API protection. With the help of built-in security rules, advanced behavioral analytics, and a range of available customization options, Gcore WAAP protects your domains against known vulnerabilities and common exploits.  
 
