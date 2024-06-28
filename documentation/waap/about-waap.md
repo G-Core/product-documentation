@@ -4,6 +4,11 @@ displayName: About WAAP
 published: true
 order: 10
 toc:
+   --1--Getting started: "getting-started"
+   --1--Difference between WAF and WAAP: "whats-the-difference-between-waf-and-waap"
+   --1--How WAAP works: "how-waap-works"
+   --2--WAF Edge nodes: "waf-edge-nodes"
+   --2--Behavioral component: "behavioral-component"
 pageTitle: About WAAP | Gcore
 pageDescription: Learn more about Gcore Web Application and API Protection and available security features.
 ---
@@ -53,18 +58,18 @@ WAF edge nodes and behavioral components work together to provide protection aga
 
 ### WAF Edge nodes 
 
-These nodes are responsible for running rule sets (also know as <a href="https://gcore.com/docs/waap/waf-policies" target="_blank">WAF policies</a>) against requests. They also enforce actions on requests (block, allow, or monitor) based on the recommendation provided by the second part, the behavioral component.  
+These nodes are responsible for running rulesets (also known as <a href="https://gcore.com/docs/waap/waf-policies" target="_blank">WAF policies</a>) against requests. They also enforce actions on requests (block, allow, or monitor) based on the recommendation provided by the second part, the behavioral component.  
 
-The existence of nodes that run rule sets against traffic is what essentially defines a typical first-gen WAF.  
+The existence of nodes that run rulesets against traffic is what essentially defines a typical first-gen WAF.  
 
 <alert-element type="tip" title="Tip">
  
-The <a href="https://gcore.com/docs/waap/waf-policies" target="_blank">WAF policies</a> section covers existing rule sets in detail. You can also create your own custom rules to filter traffic as you see fit. 
+The <a href="https://gcore.com/docs/waap/waf-policies" target="_blank">WAF policies</a> section covers existing rulesets in detail. You can also create your own custom rules to filter traffic as you see fit. 
  
 </alert-element>
 
 ### Behavioral component 
 
-The behavioral component is centralized and responsible for asynchronously analyzing traffic from WAF Edge nodes. This component then instructs the nodes to either block, allow, or monitor a request.  
+The behavioral component is centralized and responsible for asynchronously analyzing traffic from WAF Edge nodes. It then instructs the nodes to either block, allow, or monitor a request.  
 
 This analytical aspect of the system and independent functioning of both parts is what elevates our WAF to the next-generation level.

@@ -3,22 +3,25 @@ title: waap-modes
 displayName: WAAP modes
 published: true
 order:
+toc:
+   --1--Monitor mode: "monitor-mode"
+   --1--Protect mode: "protect-mode"
+   --1--How requests are processed in each mode: "how-requests-are-processed-in-each-WAAP-mode"
+   --1--Enable a WAAP mode for your domain: "enable-a-waap-mode-for-your-domain" 
 pageTitle: Learn about WAAP monitor and protect modes | Gcore
 pageDescription: Learn how to enable monitor and protect modes for your domain.
 ---
-# WAAP modes 
+# WAAP modes
 
-In Gcore WAAP, you can use two modes: **monitor** and **protect**.  
+In Gcore WAAP, you can use two modes: monitor and protect.  
 
-Each mode defines how the system will manage incoming traffic to your domain: log information about each request without taking action or challenge and block all malicious requests. 
+Each mode defines how the system will manage incoming traffic to your domain: log information about every request without taking action or challenge and block all malicious requests. 
 
 ## Monitor mode
 
-<alert-element type="tip" title="Tip">
+<alert-element type="info" title="Info">
  
-If you enable monitor mode, we recommend to use monitoring mode to verify that WAAP is set correctly and doesn't block legitimate traffic. 
-
-When you first add your domain to WAAP, it’s best to use the monitoring mode for several days to make sure that all security settings work properly. 
+L7 DDoS protection is always active even when the WAAP is in monitor mode.
 
 </alert-element>
 
@@ -26,23 +29,24 @@ In monitor mode, WAAP analyzes incoming traffic and logs any security violations
 
 Monitor mode is useful for observing, fine-tuning, and assessing your WAAP’s configuration before you switch to the protect mode.  
 
-<alert-element type="tip" title="Info">
+<alert-element type="tip" title="Tip">
  
-L7 DDoS protection is always active even when the WAAP is in monitor mode.
+We recommend using monitor mode before switching to protection to verify that WAAP is set correctly and doesn't block legitimate traffic.
+When you first add your domain to WAAP, it’s best to use the monitor mode for several days to make sure that all security settings work as expected. 
 
 </alert-element>
 
 ## Protect mode 
 
-In this mode, the WAAP actively enforces all security settings, including <a href="https://gcore.com/docs/waap/waf-policies" target="_blank">WAF policies</a> and <a href="https://gcore.com/docs/waap/waf-rules" target="_blank">rules</a>, and challenges or blocks incoming requests that violate these rules or pose a security risk.  
+In this mode, WAAP actively enforces all security settings, including <a href="https://gcore.com/docs/waap/waf-policies" target="_blank">WAF policies</a> and <a href="https://gcore.com/docs/waap/waf-rules" target="_blank">rules</a>, and challenges or blocks incoming requests that violate these rules or pose a security risk.  
 
 Protect mode ensures real-time defense against web-based attacks like SQL injection, cross-site scripting (XSS), and other common vulnerabilities. 
 
-## How a request is processed in each WAAP mode 
+## How requests are processed in each WAAP mode 
 
-To demonstrate the difference between the monitor and protect modes, let’s consider an example of a cURL request with no header modification flags, which triggers the Invalid user agent rule. 
+To demonstrate the difference between the monitor and protect modes, let’s consider an example of a cURL request with no header modification flags, which triggers the "Invalid user agent" rule. 
 
-If the WAAP is in monitor mode, then the request will receive the “200 OK” status code: 
+If WAAP is in monitor mode, then the request will receive the “200 OK” status code: 
 
 ```
 
@@ -53,7 +57,7 @@ curl -I https://c8k3p3x4.stackpathcdn.com
  date: Mon, 25 Mar 2019 20:40:37 GMT 
 ``` 
 
-If the WAAP is in protect mode, the request will receive the “403 Forbidden” status code: 
+If WAAP is in protect mode, the request will receive the “403 Forbidden” status code: 
 
 ```
 curl -I https://c8k3p3x4.stackpathcdn.com 
