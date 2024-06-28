@@ -12,7 +12,7 @@ toc:
    --2--Requests table: "requests-table"
    --2--Threats (last 24 hours): "threats-last-24-hours"
    --2--Top threat origins: "top-threat-origins"   
-   --1--DDoS attacks: "ddos-attacks"   
+   --1--DDoS attacks page: "ddos-attacks-page"   
    --2--In-progress attacks: "in-progress-attacks"   
    --2--Attacks requests: "attack-requests"   
    --2--IPs participated: "ips-participated" 
@@ -53,7 +53,7 @@ The information on the **Analytics** page is displayed according to the selected
 
 This page features general information about incoming requests and contains two graphs: WAF and Status codes. 
 
-### WAF
+### WAF 
 
 This graph shows the total number of incoming requests for the selected period and the number of requests that have been blocked. 
 
@@ -85,7 +85,7 @@ You can filter the graph’s data based on the origin of the request:
 
 You can print the chart in pdf format or download it in the following formats: png, pdf, csv, xls.    
 
-## WAF 
+## WAF page
 
 This page features detailed statistics on HTTP requests and displays data in the graph format (Web application firewall requests) and as a table (Requests).
 
@@ -164,7 +164,7 @@ You can select multiple filters to get a more granular view of the displayed inf
 <td style="text-align: left">The action that was taken against the request:<br><br>
 <b>Allow</b>: Display requests that were allowed to pass.<br>
 <b>Block</b>: Display requests that were blocked.<br>
-<b>CAPTCHA</b>: Display requests that were presented with a Captcha screen, regardless of whether the request passed or failed the screen.<br> 
+<b>CAPTCHA</b>: Display requests that got the CAPTCHA validation screen, regardless of whether the request passed or failed the validation.<br> 
 <b>Handshake (JavaScript validation)</b>: Display requests that were presented with a JavaScript validation screen, regardless of whether the request passed or failed the screen.</td>
 </tr>
 <tr>
@@ -194,7 +194,7 @@ This map and table display the origin location of bad requests (threats) from th
 
 <img src="https://assets.gcore.pro/docs/waap/analytics/waf-threat-origins.png" alt="WAF graph on the Analytics page in the Customer Portal">
 
-## DDoS attacks 
+## DDoS attacks page
 
 We provide detailed analytics related to any DDoS attacks that were detected in your domain. DDoS analytics is stored for 32 days. 
 
@@ -248,15 +248,12 @@ This table displays more fine-grained information about requests associated with
 </tr>
 <tr>
 <td style="text-align: left">Result</td>
-<td style="text-align: left">The action that was taken against the request:<br>
+<td style="text-align: left">The action that was taken against the request.<br><br>
 
-* <b>Allow</b>: Display requests that were allowed to pass.
-
-* <b>Block</b>: Display requests that were blocked.
-
-* <b>CAPTCHA</b>: Display requests that were presented with a Captcha screen, regardless of whether the request passed or failed the screen.
-
-* <b>Handshake (JavaScript validation)</b>: Display requests that were presented with a JavaScript validation screen, regardless of whether the request passed or failed the screen.</td>
+<b>Allow</b>: Display requests that were allowed to pass.
+<b>Block</b>: Display requests that were blocked.
+<b>CAPTCHA</b>: Display requests that got the CAPTCHA validation screen, regardless of whether the request passed or failed the validation.
+<b>Handshake (JavaScript validation)</b>: Display requests that were presented with a JavaScript validation screen, regardless of whether the request passed or failed the screen.</td>
 </tr>
 <tr>
 <td style="text-align: left">Result</td>

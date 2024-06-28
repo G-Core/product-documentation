@@ -3,6 +3,13 @@ title: behavioral-waf
 displayName: Behavioral WAF
 published: true
 order: 40
+toc:
+   --1--Configure policy rules: "configure-policy-rules"
+   --2--Anti-spam: "anti-spam"
+   --2--Probing and forced browsing: "probing-and-forced-browsing"
+   --2--Obfuscated attacks and zero-day mitigation: "obfuscated-attacks-and-zero-day-mitigation"
+   --2--Repeated violations: "repeated-violations"
+   --2--Brute-force protection: "brute-force-protection"
 pageTitle: Set up Behavioral WAF policy for your domain | Gcore
 pageDescription: Learn how to enable and customize Behavioral WAF policy.
 ---

@@ -6,4 +6,4 @@ order:
 pageTitle: Learn about Gcore L7 DDoS protection | Gcore
 pageDescription: Learn about L7 DDoS protection measures.
 ---
-# Bot protection
+# L7 DDoS protection

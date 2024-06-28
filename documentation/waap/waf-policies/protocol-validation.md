@@ -3,6 +3,12 @@ title: protocol-validation
 displayName: Protocol validation 
 published: true
 order: 10
+toc:
+   --1--Protocols overview: "protocols-overview"
+   --1--Configure policy rules: "configure-policy-rules"
+   --2--Invalid or unknown user agent: "invalid-user-agent-and-unknown-user-agent"
+   --2--Service protocol validation: "service-protocol-validation"
+   --2--Prevent malformed request methods: "prevent-malformed-request-methods"
 pageTitle: Set up Protocol validation WAF policy for your domain | Gcore
 pageDescription: Learn how to enable and customize Protocol validation policy.
 --- 

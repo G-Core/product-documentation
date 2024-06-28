@@ -3,6 +3,16 @@ title: ip-reputation
 displayName: IP reputation
 published: true
 order: 30
+toc:
+   --1--Configure policy rules: "configure-policy-rules"
+   --2--Traffic via TOR network: "traffic-via-tor-network"
+   --2--Traffic via proxy networks: "traffic-via-proxy-networks"
+   --2--Traffic from hosting services: "traffic-from-hosting-services"
+   --2--Traffic via VPNs: "traffic-via-vpns"
+   --2--Bot traffic: "bot-traffic"
+   --2--Traffic from suspicious NAT ranges: "traffic-from-suspicious-nat-ranges"
+   --2--External reputation block list: "external-reputation-block-list"
+   --2--Traffic via CDNs: "traffic-via-cdns"     
 pageTitle: Set up IP reputation WAF policy for your domain | Gcore
 pageDescription: Learn how to enable and customize IP reputation policy.
 ---
