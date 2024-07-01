@@ -483,7 +483,7 @@ resource "gcore_lbmember" "lbm" {
 
 * Select “protocol”: “HTTP”, “HTTPS”, “TCP”, or “UDP”.
 
-* Select “lb_algorithm”: “ROUND_ROBIN”, “LEAST_CONNECTIONS”, “SOURCE_IP”, or  “SOURCE_IP_PORT”.
+* Select “lb_algorithm”: “ROUND_ROBIN”, “LEAST_CONNECTIONS”, or “SOURCE_IP”.
 
 * (optional) Add “health_monitor”.
 
