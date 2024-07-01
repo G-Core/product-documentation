@@ -17,7 +17,7 @@ pageDescription: Explore Gcore Inference at the Edge infrastructure. Deploy cust
 
 The development of machine learning involves two main stages: training and inference.  
 
-In the first stage, an AI model is trained on big data, like an array of images, to recognize and label objects. This results in a pre-trained model.  
+In the first stage, an AI model is trained on big data, like an array of images, to recognize and label objects. This results in a trained model.  
 
 The second stage is model inference, where the model is used to make predictions from real user requests. For this stage, it’s crucial that the AI model can respond promptly to users regardless of network delays, latency, and distance from data centers. 
 
@@ -25,13 +25,15 @@ The second stage is model inference, where the model is used to make predictions
 
 ## What is Gcore Inference at the Edge? 
 
-Gcore Inference at the Edge allows customers to deploy pre-trained AI models on edge inference nodes. By bringing AI models closer to end users, the technology ensures ultra-fast response times and optimized performance.
+Gcore Inference at the Edge allows customers to deploy trained AI models on edge inference nodes. By bringing AI models closer to end users, the technology ensures ultra-fast response times and optimized performance.
 
 Using Anycast endpoints, end users' queries are directed to the nearest running model, resulting in low latency and an enhanced user experience. This setup is automated through a single endpoint, relieving you of the need to manage, scale, and monitor the underlying infrastructure.
 
 ## Getting started 
 
-For instructions on how to deploy AI models with the global intelligence pipeline, check out our guide on <a href="https://gcore.com/docs/cloud/inference-at-the-edge/deploy-ai-model" target="_blank">deploying a model</a>. 
+Deploy AI models with our global intelligence pipeline—a comprehensive ecosystem that supports the full AI lifecycle, from training to inference. It ensures seamless development, deployment, and operation of AI models at various scales across multiple regions. 
+
+To get started, check out our guide on <a href="https://gcore.com/docs/cloud/inference-at-the-edge/deploy-ai-model" target="_blank">deploying a model</a>. 
 
 <alert-element type="info" title="Info">
  
@@ -47,7 +49,7 @@ Inference at the Edge combines two technologies:
 
 2\. **Serverless flexible GPU infrastructure**: Enables quick initiation, integration, and deployment. 
 
-We provide you with an endpoint that can be integrated into your applications. When your users access this endpoint, their requests are delivered to the nearest Edge nodes. This is achieved through Smart Routing technology, which redirects requests to the closest inference region where the pre-trained model is deployed.  
+We provide you with an endpoint that can be integrated into your applications. When your users access this endpoint, their requests are delivered to the nearest Edge nodes. This is achieved through Smart Routing technology, which redirects requests to the closest inference region where the trained model is deployed.  
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/about-inference-at-the-edge/smart-routing-diagram.png" alt="Diagram depicting Smart Routing technology" width="60%">
 
