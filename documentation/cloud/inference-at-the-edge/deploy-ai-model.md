@@ -112,11 +112,11 @@ We recommended the following flavor parameters for models:
   </tr>
     <tr>
     <td>2 × L40s 48 GB</td>
-    <td>4.1–21</td>
+    <td>21.1–41</td>
   </tr>
       <tr>
     <td>4 × L40s 48 GB</td>
-    <td>4.1–21</td>
+    <td>21.1–41</td>
   </tr>
 </tbody>
 </table>
