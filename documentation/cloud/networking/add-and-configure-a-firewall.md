@@ -65,10 +65,15 @@ For **Sources**, set a specific IP address range in the CIDR format. Otherwise, 
 
 If you don't specify which firewall to apply to your Virtual Machine, the default firewall will be applied.
 
-The default firewall allows the following traffic:
+The default firewall contains inbound rules, which allow the following traffic for IPv6 as for IPv4 addresses: 
 
-*   Incoming connections over protocols: SSH (port 22), UDP (port 3389), ICMP (all ports), TCP (port 3389).
-*   All outgoing connections.
+* SSH connections over TCP protocol on port 22 
+
+* Remote Desktop Protocol (RDP) connections over TCP and UDP protocols on port 3389.   
+
+* Internet Control Message Protocol (ICMP) is allowed. 
+
+All outgoing connections are allowed.  
 
 ## Manage a firewall
 
