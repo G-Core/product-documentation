@@ -93,7 +93,7 @@ To push a Docker image to the registry:
 
 1\. Log in to the registry: docker login `<your-registry-endpoint>`. For example, `docker login registry.luxembourg-2./10-01-test/`. 
 
-2\. Enter the username of the user created in Step 2.  
+2\. Enter the username of the user created in <a href="https://gcore.com/docs/cloud/container-registry/create-container-registry#step-2-create-a-user" target="_blank">Step 2</a>.  
 
 3\. Enter the user password.  
 
