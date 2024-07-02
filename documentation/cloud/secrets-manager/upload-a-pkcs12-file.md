@@ -134,21 +134,28 @@ A new code64 file with the contents of the base64 encoded PKCS12 file will be cr
 
 ## How to Create a Load Balancer with an HTTPS Listener
 
+<alert-element type="info" title="Info">
+ 
+You can’t delete a secret that’s being used by a Load Balancer’s listener. This restriction is necessary to ensure that a Load Balancer can failover successfully when needed. 
+
+In such cases, you first need to delete a listener that uses the secret and then remove the secret, recreating a listener if needed. 
+ 
+</alert-element>
+
 1\. Add the base64 encoded content of the PKCS12 file as a Secret (in examples above it is the content of "code64").  
 
-<media-gallery>
-<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/secrets-manager-page.png" alt="How to Create a Load Balancer with an HTTPS Listener" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/create-secret.png" alt="How to Create a Load Balancer with an HTTPS Listener" width="80%">
+
+2\. Give your secret a name and add its content.
 
 <img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/image4.png" alt="How to Create a Load Balancer with an HTTPS Listener" width="80%">
-</media-gallery>
 
-2\. When creating or editing a Load Balancer, click "Add Listener". 
-<media-gallery>
+3\. When creating or editing a Load Balancer, click **Add Listener**. 
+
 <img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/add-listener.png" alt="Add Listener" width="80%">
 
-In the opened window, enter the name of a new listener, select the "Terminated HTTPS" protocol and select the desired secret from the SNI Certificate dropdown.  
+4\. Enter the name of a new listener, select the **Terminated HTTPS** protocol, and then select the desired secret from the **SNI Certificate** dropdown.  
 
 <img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/select-certificate-in-listener.png" alt="Add Listener" width="80%">
-</media-gallery>
-   
-The listener will be created.
+
+You've successfully created a listener with a secret.
