@@ -20,7 +20,7 @@ pageDescription: Learn how to set up and manage Container Registries, their user
 ---
 # Manage Container Registries
 
-All created Container Registries appear in the Gcore Customer Portal on the **Container Registry** page:
+All created Container Registries appear in the Gcore Customer Portal on the **Container Registries** page:
 
 <img src="https://assets.gcore.pro/docs/cloud/container-registry/manage-container-registries/container-registry-page.png" alt="Container registry page in the Customer Portal" width="80%"> 
 
@@ -38,7 +38,7 @@ You can adjust your storage limit to host more images in the container registry 
 
 To change the storage limit:  
 
-1\. In the Gcore Customer Portal, navigate to **Cloud** > **Container Registry**. 
+1\. In the Gcore Customer Portal, navigate to **Cloud** > **Container Registries**. 
 
 2\. Find the registry you want to configure and click the three-dot icon next to it. 
 
@@ -70,7 +70,7 @@ You can do the following actions with images: view and manage related artifacts,
 
 ### View and manage image artifacts
 
-To view image artifacts, click the image name to open it. On the artifacts page, you can check the artifact name, its tags, size, and the last associated push and pull operations. You can also search through the artifacts. 
+To view image artifacts, click the image name to open it. On the **Artifacts** page, you can check the artifact name, its tags, size, and the last associated push and pull operations. You can also search through the artifacts. 
 
 <img src="https://assets.gcore.pro/docs/cloud/container-registry/manage-container-registries/image-artifacts.png" alt="Images tab with the list of image artifacts" width="80%"> 
 
@@ -180,7 +180,7 @@ A user password is automatically generated during user creation. If the password
 
 ### Manage multiple users with group actions
 
-There’s an option to simultaneously delete multiple users or change their permissions using **Group action**s. To do so, select checkboxes next to the users you want to modify and then choose the needed action from the **Group actions** dropdown. 
+There’s an option to simultaneously delete multiple users or change their permissions using **Group actions**. To do so, select checkboxes next to the users you want to modify and then choose the needed action from the **Group actions** dropdown. 
 
 <img src="https://assets.gcore.pro/docs/cloud/container-registry/manage-container-registries/group-actions-users.png" alt="Users settings with the highlighted group actions dropdown" width="80%"> 
 
@@ -194,7 +194,7 @@ If you delete a Container Registry, you will lose all data stored there. This ac
 
 To delete a registry:
 
-1\. In the Gcore Customer Portal, navigate to **Cloud** > **Container Registry**. 
+1\. In the Gcore Customer Portal, navigate to **Cloud** > **Container Registries**. 
 
 2\. Find the registry you want to configure and click its name to open it.  
 
