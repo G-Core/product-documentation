@@ -36,6 +36,14 @@ To get started, you need to add the required certificates to Gcore Secrets Manag
 
 After you configure the certificates, you need to add them to the relevant listener. This can be done during Load Balancer creation or in the settings of an existing Load Balancer. 
 
+<alert-element type="info" title="Info">
+ 
+You can’t delete a secret that’s being used by a Load Balancer’s listener. This restriction is necessary to ensure that a Load Balancer can failover successfully when needed. 
+
+In such cases, you first need to delete a listener that uses the secret and then remove the secret, recreating a listener if needed. 
+ 
+</alert-element>
+
 <tabset-element>
 
 #### During Load Balancer creation 
