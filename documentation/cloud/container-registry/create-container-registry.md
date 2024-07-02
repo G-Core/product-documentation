@@ -29,7 +29,7 @@ To create and manage the Container Registry, you need to have the <a href="https
 
 Start by creating a registry to which you will push OCI-compatible artifacts: 
 
-1\. In the Gcore Customer Portal, navigate to **Cloud** > **Container Registry**. 
+1\. In the Gcore Customer Portal, navigate to **Cloud** > **Container Registries**. 
 
 2\. Click **Create Container Registry**.
 
@@ -51,7 +51,7 @@ A registry name should consist of lowercase Latin characters, which can be separ
 
 <img src="https://assets.gcore.pro/docs/cloud/container-registry/create-container-registry/create-registry.png" alt="Create Container registry dialog in the Customer Portal" width="80%"> 
 
-The registry will appear along with the other registries on the **Container Registry** page.  
+The registry will appear along with the other registries on the **Container Registries** page.  
 
 ## Step 2. Create a user
 
@@ -93,7 +93,7 @@ To push a Docker image to the registry:
 
 1\. Log in to the registry: docker login `<your-registry-endpoint>`. For example, `docker login registry.luxembourg-2./10-01-test/`. 
 
-2\. Enter the username of the user created in Step 2.  
+2\. Enter the username of the user created in <a href="https://gcore.com/docs/cloud/container-registry/create-container-registry#step-2-create-a-user" target="_blank">Step</a>.  
 
 3\. Enter the user password.  
 
