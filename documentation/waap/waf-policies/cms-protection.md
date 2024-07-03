@@ -107,7 +107,7 @@ We recommend disabling rules for Content Management Systems that you don’t use
 
 If you don’t see your CMS in the list of rules under the CMS policy, you can allow admin access to your site as follows: 
 
-1\. In the Gcore Customer Portal, navigate to **Web Security** > **Domains**. 
+1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**. 
 
 <img src="https://assets.gcore.pro/docs/waap/waf-policies/anti-automation-bot-protection/domains-page.png" alt="Domains page in the Customer Portal">
 

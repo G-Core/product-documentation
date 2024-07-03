@@ -15,7 +15,7 @@ pageDescription: Learn how to enable and customize Behavioral WAF policy.
 ---
 # Behavioral WAF
 
-The Web Application and API Protection (WAAP) includes a Behavioral WAF ruleset that helps prevent malicious attacks on your websites. The policy contains a set of sophisticated user behavior and reputation analysis rules, which inspect the traffic and defend your website against such threats as spamming or brute force attacks. 
+The Web Application and API Protection (WAAP) includes a Behavioral WAF policy that helps prevent malicious attacks on your websites. The policy contains a set of sophisticated user behavior and reputation analysis rules, which inspect the traffic and defend your website against such threats as spamming or brute force attacks. 
 
 ## Configure policy rules 
 
