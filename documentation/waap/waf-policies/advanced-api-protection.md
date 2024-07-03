@@ -45,7 +45,7 @@ All advanced API protection rules are disabled by default. To enable a rule, tur
 
 Prevent multiple authentication attempts and block access for users who repeatedly try to use invalid tokens to access the API. 
 
-Before enabling this rule, you need to define your 0Auth token endpoints to ensure they are correctly tagged. For instructions on how to do this, check out our guide Tag Generating Rules. 
+Before enabling this rule, you need to define your 0Auth token endpoints to ensure they are correctly tagged. 
 
 ### Sensitive data exposure 
 

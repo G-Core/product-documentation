@@ -14,7 +14,7 @@ pageDescription: Learn how to enable and customize Anti-automation and bot prote
 ---
 # Anti-automation and bot protection
 
-The Web Application Firewall (WAF) uses <a href="https://gcore.com/docs/waap/waf-policies/behavioral-waf" target="_blank">advanced behavioral analysis</a> to block non-human traffic from accessing your application. Such traffic includes scanners, bots, and other automated tools.  
+The Web Application Firewall (WAF) uses <a href="https://gcore.com/docs/waap/about-waap#behavioral-component" target="_blank">advanced behavioral analysis</a> to block non-human traffic from accessing your application. Such traffic includes scanners, bots, and other automated tools.  
 
 To protect your site from malicious attacks, we use JavaScript injection. This method ensures that we get all the necessary information needed to block automated traffic from reaching your origin server. At the same time, all known bots, such as search engines, can still access your app.  
 

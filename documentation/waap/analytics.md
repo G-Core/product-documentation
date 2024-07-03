@@ -51,7 +51,7 @@ The information on the **Analytics** page is displayed according to the selected
 
 ## Overview page
 
-This page features general information about incoming requests and contains two graphs: WAF and Status codes. 
+This page features general information about incoming requests and contains two graphs: **WAF** and **Status codes**. 
 
 ### WAF 
 
@@ -75,13 +75,12 @@ This graph shows all requests sorted according to the returned status codes:
 
 <img src="https://assets.gcore.pro/docs/waap/analytics/overview-status-codes.png" alt="WAF graph on the Analytics page in the Customer Portal">
 
-You can filter the graph’s data based on the origin of the request: 
+<alert-element type="info" title="Info">
+ 
+The **Status Codes** graph only displays information from the origin's backend and doesn't include status codes from WAAP, such as 403. 
+ 
+</alert-element>
 
-* **Edge + origin**: Requests that come from the Edge (cache servers) and origin. 
-
-* **Edge only**: Requests that come from the cache servers only. 
-
-* **Origin only**: Requests that come from the origin server only. 
 
 You can print the chart in pdf format or download it in the following formats: png, pdf, csv, xls.    
 
@@ -248,11 +247,11 @@ This table displays more fine-grained information about requests associated with
 </tr>
 <tr>
 <td style="text-align: left">Result</td>
-<td style="text-align: left">The action that was taken against the request.<br><br>
+<td style="text-align: left">The action that was taken against the request:<br><br>
 
-<b>Allow</b>: Display requests that were allowed to pass.
-<b>Block</b>: Display requests that were blocked.
-<b>CAPTCHA</b>: Display requests that got the CAPTCHA validation screen, regardless of whether the request passed or failed the validation.
+<b>Allow</b>: Display requests that were allowed to pass.<br>
+<b>Block</b>: Display requests that were blocked.<br>
+<b>CAPTCHA</b>: Display requests that got the CAPTCHA validation screen, regardless of whether the request passed or failed the validation.<br>
 <b>Handshake (JavaScript validation)</b>: Display requests that were presented with a JavaScript validation screen, regardless of whether the request passed or failed the screen.</td>
 </tr>
 <tr>

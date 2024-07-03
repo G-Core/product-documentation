@@ -27,7 +27,7 @@ WAAP offers you such key features as:
 * Security insights 
 * Real-time analytics 
 * API discovery and protection 
-* L7 DDoS protection 
+* L7 DDoS protection and auti-automation
 * Bot protection 
 
 ## Getting started 
@@ -52,7 +52,7 @@ Our cloud-based next-generation WAF uses a two-part system to inspect incoming t
 
 * **WAF Edge nodes** that perform actions against requests. 
 
-* **Cloud intelligence component** that runs heuristics and ML models and performs behavioral analytics. 
+* **Behavioral component** that runs heuristics and ML models and performs behavioral analytics. 
 
 WAF edge nodes and behavioral components work together to provide protection against common vulnerabilities such as L7 DDoS attacks, <a href="" target="_blank">OWASP Top 10 threats</a>, bots, and more. 
 
@@ -70,6 +70,8 @@ The <a href="https://gcore.com/docs/waap/waf-policies" target="_blank">WAF polic
 
 ### Behavioral component 
 
-The behavioral component is centralized and responsible for asynchronously analyzing traffic from WAF Edge nodes. It then instructs the nodes to either block, allow, or monitor a request.  
+The behavioral component is responsible for asynchronously analyzing traffic from WAF Edge nodes. It is centralized and built on a scalable cloud environment, ensuring that WAF always has sufficient resources for deep analysis without memory or processing limitations.   
+
+The component analyzes and detects malicious behavioral patterns, and based on this information indicates what actions should be enforced by WAF Edge nodes: block, challenge, or allow requests. As the behavioral component processes requests, it generates information tags for each request entity. These tags are sent together with instructions (actions to be enforced) to WAF Edge nodes. 
 
 This analytical aspect of the system and independent functioning of both parts is what elevates our WAF to the next-generation level.

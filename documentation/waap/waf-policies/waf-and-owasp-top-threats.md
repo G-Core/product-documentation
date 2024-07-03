@@ -34,7 +34,7 @@ Only the **Open redirect** and **Personally identifiable information** rules are
 
 </alert-element>
 
-The following table features the full list of rules that you can configure as part of the WAF & OWASP Top 10 policy. These rules correspond to the most common types of threats.  
+The following table features the full list of rules that you can configure as part of the WAF & OWASP top threats policy. These rules correspond to the most common types of threats.  
 
 <table>
 <thead>
