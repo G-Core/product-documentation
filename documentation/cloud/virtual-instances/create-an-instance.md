@@ -125,7 +125,7 @@ If you select a **private** interface, configure a network and a subnetwork acco
 
 <alert-element type="info" title="Info">
  
-If you need both a public and private interface, disable the default gateway on the private network's subnetwork and assign a floating IP to the private interface without using the public interface.
+If you need both a public and private interface, disable the default gateway on the private network's subnetwork and assign a floating IP to the private interface.
 
 </alert-element>
 
