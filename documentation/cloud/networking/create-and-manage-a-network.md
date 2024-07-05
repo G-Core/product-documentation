@@ -4,10 +4,10 @@ displayName: Network
 published: true
 order: 10
 toc:
-   --1--Network creation: "create-a-network"
-   --1--Network management: "network-management"
-   --1--Rename network: "rename"
-   --1--Delete network: "delete"
+   --1--Types of networks: "types-of-networks"
+   --1--Create and attach networks: "create-and-attach-networks-to-cloud-resources"
+   --1--Detach networks: "detach-a-network-from-a-vm-or-bare-etal"
+   --1--Manage networks: "manage-networks"
 pageTitle: Add a network | Gcore
 pageDescription: Learn how to create and manage a network in the cloud to transfer information between cloud resources and establish an Internet connection.
 ---
@@ -17,12 +17,11 @@ A Gcore Cloud network is a virtualized software-defined network that operates in
 
 You can attach networks (also known as network interfaces) for <a href="https://gcore.com/docs/cloud/virtual-instances/types-of-virtual-machines" target="_blank">Virtual Machines</a>, <a href="https://gcore.com/docs/cloud/bare-metal-servers/about-bare-metal-servers" target="_blank">Bare Metal</a>, <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer" target="_blank">Load Balancers</a>, and <a href="https://gcore.com/docs/cloud/kubernetes/about-gcore-kubernetes" target="_blank">Managed Kubernetes</a> clusters. 
 
-Types of networks 
+## Types of networks 
 
 For Cloud resources, it’s possible to configure the following types of networks: 
 
 * **Private network**. This interface is for local internal connections to the server and doesn't have access to the external network. Resources with private interfaces can only be accessed from the same network. However, it’s possible to customize their setup and establish internet connectivity.  
-
 For example, if you add a VM with a private interface to a public Load Balancer, this Virtual Machine will receive requests from the internet. You can configure a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address" target="_blank">Floating IP address</a>. 
 
 * **Public network**. This interface grants access to the external network. Instances with that interface will be available from the internet. 
@@ -38,11 +37,8 @@ There are two ways to create and attach a network: you can do this during the re
 For detailed steps on how to attach a network interface for each resource, check out the relevant guide: 
 
 * <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance" target="_blank">Attach network interface to a Virtual Machine</a>  
-
 * <a href="https://gcore.com/docs/cloud/bare-metal-servers/create-a-bare-metal-server" target="_blank">Attach network interface to a Bare Metal</a> 
-
 * <a href="https://gcore.com/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster#step-6-configure-network-settings" target="_blank">Attach network interface to a Managed Kubernetes cluster</a>  
-
 * <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer#step-4-configure-network" target="_blank">Attach network interface to a Load Balancer</a> 
 
 ### Create a network from the Networks page  
@@ -101,7 +97,7 @@ If you’ve already created a cloud resource and want to add more networks to it
 
 You’ve successfully attached a new network interface to your resource. 
 
-## Detach a network interface from a VM or Bare Metal 
+## Detach a network from a VM or Bare Metal 
 
 To remove an interface from your cloud resource, you need to detach all subnetworks within this network interface: 
 
@@ -122,8 +118,6 @@ If you have a connected Floating IP, detach it before removing subnetworks.
 5\. Confirm the action by clicking **Detach**.
 
 Repeat this step for all subnetworks within the network. 
-
-You’ve successfully detached a network interface from your cloud resource.  
 
 ## Manage networks 
 
