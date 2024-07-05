@@ -49,7 +49,6 @@ Under the **Pools** block, configure a pool. A pool is a set of cluster nodes wi
 - Set the minimum nodes and maximum nodes for <a href="https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling" target="_blank">autoscaling</a>.
 - Select the type of a worker node: Virtual Machine or Bare Metal.  
 
-
 <tabset-element>
 
 ### Virtual Machine
@@ -112,13 +111,39 @@ You cannot change the network stack after the cluster has been created.
 
 ## Step 6. Configure network settings
 
-Select an existing network and subnetwork or create new ones according to the instructions in the following guide: <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-network" target="_blank">Create and manage a network</a>.
+<tabset-element>
+
+### Configure a network 
+
+Add one or multiple network interfaces to your cluster. 
+
+If you have created private <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-network" target="_blank">networks</a> before, select the needed network from the dropdown. 
 
 <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/network-kubernetes.png" alt="Network settings for Cluster" alt="Network settings available for the Kubernetes cluster" width="80%">
 
--  <p id="enable-ipv6"> (Optional) Enable IPv6 dual-stack to assign both IPv4 and IPv6 addresses for network interfaces of worker nodes and pods. If the <b>Enable IPv6 dual-stack</b> toggle is not available, make sure that at least one pool from your cluster is in a public network. If your Kubernetes cluster is only connected to a private network, you also need to configure and add an IPv6 subnetwork. </p>
+To add a new network, click **Add a new network** radio button and configure the network as follows: 
 
-- DDoS protection. By default, your container is under Basic DDoS Protection. It can prevent certain attacks by blocking IP addresses that are used by malicious actors. But for a higher level of protection, we recommend enabling Advanced DDoS Protection.   
+1\. Enter the network name. 
+
+2\. (optional) Turn on the **Bare Metal network** toggle to connect Bare Metal servers to the network. 
+
+3\. (optional) Turn on the **Add tags** toggle to add metadata to the network. 
+
+4\. Click **Create network**. 
+
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-network-dialog.png" alt="create network dialog" alt="Network settings available for the Kubernetes cluster" width="80%">
+
+5\. <p id="enable-ipv6"> (Optional) Enable IPv6 dual-stack to assign both IPv4 and IPv6 addresses for network interfaces of worker nodes and pods. If the <b>Enable IPv6 dual-stack</b> toggle is not available, make sure that at least one pool from your cluster is in a public network. If your Kubernetes cluster is only connected to a private network, you also need to configure and add an IPv6 subnetwork. </p>
+
+### Configure a subnetwork 
+
+If you have created <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork" target="_blank">subnetworks</a> before, select the needed subnetwork from the dropdown.  
+
+To add a new subnetwork, click **Add a new subnetwork** and configure according to the following instructions: <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork#create-a-subnetwork" target="_blank">Create a subnetwork</a>. 
+
+</tabset-element>
+
+By default, your container is under Basic DDoS Protection. It can prevent certain attacks by blocking IP addresses that are used by malicious actors. But for a higher level of protection, we recommend enabling Advanced DDoS Protection.   
 
 <expandable-element title="Advanced DDoS Protection"> 
 
