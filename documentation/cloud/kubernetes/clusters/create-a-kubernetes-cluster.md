@@ -133,13 +133,13 @@ To add a new network, click **Add a new network** radio button and configure the
 
 <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/create-network-dialog.png" alt="create network dialog" alt="Network settings available for the Kubernetes cluster" width="80%">
 
-5\. <p id="enable-ipv6"> (Optional) Enable IPv6 dual-stack to assign both IPv4 and IPv6 addresses for network interfaces of worker nodes and pods. If the <b>Enable IPv6 dual-stack</b> toggle is not available, make sure that at least one pool from your cluster is in a public network. If your Kubernetes cluster is only connected to a private network, you also need to configure and add an IPv6 subnetwork. </p>
+<p id="enable-ipv6"> 5. (Optional) Enable IPv6 dual-stack to assign both IPv4 and IPv6 addresses for network interfaces of worker nodes and pods. If the <b>Enable IPv6 dual-stack</b> toggle is not available, make sure that at least one pool from your cluster is in a public network. If your Kubernetes cluster is only connected to a private network, you also need to configure and add an IPv6 subnetwork. </p>
 
 ### Configure a subnetwork 
 
 If you have created <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork" target="_blank">subnetworks</a> before, select the needed subnetwork from the dropdown.  
 
-To add a new subnetwork, click **Add a new subnetwork** and configure according to the following instructions: <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork#create-a-subnetwork" target="_blank">Create a subnetwork</a>. 
+To add a new subnetwork, click **Add a new subnetwork** and configure it according to the following instructions: <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork#create-a-subnetwork" target="_blank">Create a subnetwork</a>. 
 
 </tabset-element>
 
