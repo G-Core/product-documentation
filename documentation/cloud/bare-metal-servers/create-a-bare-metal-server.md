@@ -106,7 +106,7 @@ If you have created <a href="https://gcore.com/docs/cloud/networking/create-and-
 To add a new subnetwork, click **Add a new subnetwork** and configure according to the following instructions: <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork#create-a-subnetwork" target="_blank">Create a subnetwork</a>. 
 
 </tabset-element>
- 
+
 7\. Add an SSH key or generate a new one for a remote connection to a server. For more information about adding a key, read the article <a href="https://gcore.com/docs/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh" target="_blank">Connect to your Bare Metal via SSH</a>. You can connect via SSH to all machines except Windows servers.
     
 <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/create-a-bare-metal-server/ssh-keys.png" alt="A menu with ssh keys settings settings" width="80%"> 
@@ -153,7 +153,6 @@ To complete the configuration, click **Create server**, and then the server will
 
 <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/create-a-bare-metal-server/servers-number.png" alt="A menu with option to choose a number of servers" width="80%">
     
-
 ## Limitations of Bare Metal servers
 
 There are several important limitations for Bare Metal servers:
