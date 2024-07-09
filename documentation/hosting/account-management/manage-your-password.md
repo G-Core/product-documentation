@@ -29,7 +29,7 @@ Keep in mind that after 3 unsuccessful attempts to log into the account, it migh
 
 If you initiated a password reset but have not received an email several minutes later, check your spam folder.
 
-The message title is Password Recovery. We send them from [billing@gcore.lu](mailto:billing@gcore.lu) 
+The message title is Password Recovery. We send them from [billing@gcore.com](mailto:billing@gcore.com) 
 
 If you cannot find the email, start the reset process again on this <a href="https://hosting.gcore.com/billmgr?func=recovery" target="_blank">page</a>.
 
