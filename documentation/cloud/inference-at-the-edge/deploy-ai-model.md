@@ -139,6 +139,18 @@ Specify the range of nodes you want to maintain:
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/deploy-ai-model/autoscaling.png" alt="Autoscaling section" width="80%">
 
+To ensure more efficient use of computational resources and consistent model performance, define scaling thresholds for GPU and CPU utilization. 
+
+Click **Advanced settings** to view and modify current thresholds: 
+
+* The minimum setting is 1% of the resource capacity. 
+
+* The maximum setting is 100% of the resource capacity. 
+
+<img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/deploy-ai-model/autoscaling-parameters.png" alt="Autoscaling parameters" width="80%">
+
+By default, the autoscaling parameters are set to 80% but you can enter any percentage within the specified range. 
+
 ## Step 5 (Optional). Add environment variables 
 
 If you want to add additional information to your model deployment, create variables for your container in the format of key-value pairs. These variables will only be used in the environment of the created container. 
