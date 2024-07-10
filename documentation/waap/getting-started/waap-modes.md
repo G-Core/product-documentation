@@ -38,13 +38,13 @@ When you first add your domain to WAAP, it’s best to use the monitor mode for 
 
 ## Protect mode 
 
-In this mode, WAAP actively enforces all security settings, including <a href="https://gcore.com/docs/waap/waf-policies" target="_blank">WAF policies</a> and <a href="https://gcore.com/docs/waap/waf-rules" target="_blank">rules</a>, and challenges or blocks incoming requests that violate these rules or pose a security risk.  
+In this mode, WAAP actively enforces all security settings, including <a href="https://gcore.com/docs/waap/waf-policies" target="_blank">WAAP policies</a> and <a href="https://gcore.com/docs/waap/waap-rules" target="_blank">rules</a>, and challenges or blocks incoming requests that violate these rules or pose a security risk.  
 
 Protect mode ensures real-time defense against web-based attacks like SQL injection, cross-site scripting (XSS), and other common vulnerabilities. 
 
 ## How requests are processed in each WAAP mode
 
-To demonstrate the difference between the monitor and protect modes, let’s consider an example of a cURL request with no header modification flags, which triggers the "Invalid user agent" rule. 
+To demonstrate the difference between the monitor and protect modes, let’s consider an example of a cURL request with no header modification flags, which triggers the "Invalid user agent" policy. 
 
 If WAAP is in monitor mode, then the request will receive the “200 OK” status code: 
 
