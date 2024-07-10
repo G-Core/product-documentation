@@ -4,7 +4,7 @@ displayName: Behavioral WAF
 published: true
 order: 40
 toc:
-   --1--Configure policy rules: "configure-policy-rules"
+   --1--Configure policy group: "configure-policy-group"
    --2--Anti-spam: "anti-spam"
    --2--Probing and forced browsing: "probing-and-forced-browsing"
    --2--Obfuscated attacks and zero-day mitigation: "obfuscated-attacks-and-zero-day-mitigation"
@@ -15,11 +15,11 @@ pageDescription: Learn how to enable and customize Behavioral WAF policy.
 ---
 # Behavioral WAF
 
-The Web Application and API Protection (WAAP) includes a Behavioral WAF policy that helps prevent malicious attacks on your websites. The policy contains a set of sophisticated user behavior and reputation analysis rules, which inspect the traffic and defend your website against such threats as spamming or brute force attacks. 
+The Web Application and API Protection (WAAP) includes a Behavioral WAF policy group that helps prevent malicious attacks on your websites. The policy group contains a set of sophisticated user behavior and reputation analysis policies, which inspect the traffic and defend your website against such threats as spamming or brute force attacks. 
 
-## Configure policy rules 
+## Configure policy group 
 
-You can review the Advanced API protection policy and enable or disable its rules in the Gcore Customer Portal: 
+You can review the Advanced API protection policy group and enable or disable its policies in the Gcore Customer Portal: 
 
 1\. Navigate to **WAAP** > **Domains**. 
 
@@ -27,15 +27,15 @@ You can review the Advanced API protection policy and enable or disable its rule
 
 2\. Find the domain where you want to configure the policy and click the domain name to open it.  
 
-3\. In the sidebar menu, click **WAF**. 
+3\. In the sidebar menu, click **WAAP**. 
 
-4\. On the **Policies** page that opens, click **Behavioral WAF** to expand the section and adjust the policy rules. 
+4\. On the **Policies** page that opens, click **Behavioral WAAP** to expand the section and adjust the policies. 
 
 <img src="https://assets.gcore.pro/docs/waap/waap-policies/behavioral-waf/behavioral-waf.png" alt="WAF policies page with the highlighted ehavioral WAF policy">
 
 <alert-element type="info" title="Info">
 
-All behavioral WAF rules are enabled by default. To disable a rule, turn on the toggle near that rule. 
+All behavioral WAF policies are enabled by default. To disable a policy, turn on the toggle near that policy. 
 
 </alert-element>
 

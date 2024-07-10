@@ -98,7 +98,7 @@ You can select the following filters to view specific types of requests:
 
 * **Monitored requests**: total number of requests proceeded by WAAP. 
 
-* **Policy—blocked**: View requests that were blocked because of a triggered default rule. 
+* **Policy—blocked**: View requests that were blocked because of a triggered default policy. 
 
 * **Custom rule—blocked**: View requests that were blocked because of a triggered custom rule created in your account. 
 
@@ -176,14 +176,14 @@ You can select multiple filters to get a more granular view of the displayed inf
 </tr>
 <tr>
 <td style="text-align: left">Threats (last 24 hours)</td>
-<td style="text-align: left">This section displays the most triggered actions and default rules, along with how many times each of them was triggered.</td>
+<td style="text-align: left">This section displays the most triggered actions and default policies, along with how many times each of them was triggered.</td>
 </tr>
 </tbody>
 </table>
 
 ### Threats (last 24 hours) 
 
-This section displays the most triggered actions and default rules, along with how many times each of them was triggered.  
+This section displays the most triggered actions and default policies, along with how many times each of them was triggered.  
 
 <img src="https://assets.gcore.pro/docs/waap/analytics/waf-threats.png" alt="WAF graph on the Analytics page in the Customer Portal">
 
@@ -264,7 +264,7 @@ This table displays more fine-grained information about requests associated with
 </tr>
 <tr>
 <td style="text-align: left">Threats (last 24 hours)</td>
-<td style="text-align: left">This section displays the most triggered actions and default rules, along with how many times each of them was triggered.</td>
+<td style="text-align: left">This section displays the most triggered actions and default policies, along with how many times each of them was triggered.</td>
 </tr>
 </tbody>
 </table>

@@ -14,11 +14,11 @@ You can create the following types of custom rules: custom WAAP rules with if/th
 
 ## Create custom WAAP rules
 
-These rules can be of <a href="" target="_blank">different types</a>, and they come with great customization: you can use multiple conditions and constraints to tailor rules to a specific use case.
+These rules come with great customization: you can use multiple conditions and constraints to tailor rules to a specific use case.
 
 <alert-element type="tip" title="Tip">
  
-If you're looking for more flexibility in creating rules, check our <a href="" target="_blank">advanced rules</a>. They offer extended functionality and more customization, such as using the "OR" function that's not available in custom rules. 
+If you're looking for more flexibility in creating rules, check our <a href="https://gcore.com/docs/waap/waap-rules/advanced-rules" target="_blank">advanced rules</a>. They offer extended functionality and more customization, such as using the "OR" function that's not available in custom rules. 
  
 </alert-element>
 
@@ -418,7 +418,7 @@ The **Duration** field determines the number of requests that will be counted wi
  
 </alert-element>
 
-7\. Select the action that will be applied to each request when the rule is triggered. You can find a detailed overview of rule actions in our <a href="" target="_blank">rules overview guide</a>. Consider that actions aren’t permanent as they will continue to trigger only until the specified duration time is over. Once this time has passed, the request counter will reset and start again.  
+7\. Select the action that will be applied to each request when the rule is triggered. You can find a detailed overview of rule actions in our <a href="https://gcore.com/docs/waap/waap-rules/custom-rules" target="_blank">rules overview guide</a>. Consider that actions aren’t permanent as they will continue to trigger only until the specified duration time is over. Once this time has passed, the request counter will reset and start again.  
 
 8\. (Optional) In the **user-defined tag**, you can apply any custom tag you’ve created. 
 
@@ -459,7 +459,7 @@ You can edit the rule name and description, modify its conditions and status, an
 
 5\. Click **Edit**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/edit-rule.png" alt="Rule settings with the edit button highlighted>
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/edit-rule.png" alt="Rule settings with the edit button highlighted">
 
 6\. Adjust your rule as needed and then click **Save** to apply the changes. 
 
@@ -477,7 +477,7 @@ You can edit the rule name and description, modify its conditions and status, an
 
 5\. Click **Delete**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/delete-rule.png" alt="Rule settings with the delete button highlighted>
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/delete-rule.png" alt="Rule settings with the delete button highlighted">
 
 6\. Click **Confirm Delete** to verify your action.
 

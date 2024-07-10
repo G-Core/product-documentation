@@ -4,7 +4,7 @@ displayName: IP reputation
 published: true
 order: 30
 toc:
-   --1--Configure policy rules: "configure-policy-rules"
+   --1--Configure policy group: "configure-policy-group"
    --2--Traffic via TOR network: "traffic-via-tor-network"
    --2--Traffic via proxy networks: "traffic-via-proxy-networks"
    --2--Traffic from hosting services: "traffic-from-hosting-services"
@@ -13,7 +13,7 @@ toc:
    --2--Traffic from suspicious NAT ranges: "traffic-from-suspicious-nat-ranges"
    --2--External reputation block list: "external-reputation-block-list"
    --2--Traffic via CDNs: "traffic-via-cdns"     
-pageTitle: Set up IP reputation WAF policy for your domain | Gcore
+pageTitle: Set up IP reputation WAAP policy for your domain | Gcore
 pageDescription: Learn how to enable and customize IP reputation policy.
 ---
 # IP reputation
@@ -22,25 +22,25 @@ Gcore WAAP protects your web application by blocking traffic that comes from wel
 
 We constantly collect, update, and validate these IP addresses. The malicious IPs are added to the blocklist. With this information, you can block, challenge, or allow traffic from highly suspected entities.  
 
-## Configure policy rules 
+## Configure policy group 
 
-You can review the IP reputation policy and enable or disable its rules in the Gcore Customer Portal: 
+You can review the IP reputation policy group and enable or disable its policies in the Gcore Customer Portal: 
 
 1\. Navigate to **WAAP** > **Domains**. 
 
 <img src="https://assets.gcore.pro/docs/waap/waap-policies/ip-reputation/domains-page.png" alt="Domains page in the Customer Portal">
 
-2\. Find the domain where you want to configure the policy and click the domain name to open it.  
+2\. Find the domain where you want to configure the policy group and click the domain name to open it.  
 
-3\. In the sidebar menu, click **WAF**. 
+3\. In the sidebar menu, click **WAAP**. 
 
-4\. On the **Policies** page that opens, click **IP reputation** to expand the section and adjust the policy rules. 
+4\. On the **Policies** page that opens, click **IP reputation** to expand the section and adjust the policies. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-policies/ip-reputation/ip-reputation.png" alt="WAF policies page with the highlighted Ip reputation policy">
+<img src="https://assets.gcore.pro/docs/waap/waap-policies/ip-reputation/ip-reputation.png" alt="WAAP policies page with the highlighted Ip reputation policy">
 
 <alert-element type="info" title="Info">
 
-All IP reputation rules are enabled by default. To disable a rule, turn on the toggle near that rule. 
+All IP reputation policies are enabled by default. To disable a policy, turn on the toggle near that policy. 
 
 </alert-element>
 
