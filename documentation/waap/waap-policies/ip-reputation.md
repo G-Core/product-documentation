@@ -28,7 +28,7 @@ You can review the IP reputation policy and enable or disable its rules in the G
 
 1\. Navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waf-policies/ip-reputation/domains-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/waap-policies/ip-reputation/domains-page.png" alt="Domains page in the Customer Portal">
 
 2\. Find the domain where you want to configure the policy and click the domain name to open it.  
 
@@ -36,7 +36,7 @@ You can review the IP reputation policy and enable or disable its rules in the G
 
 4\. On the **Policies** page that opens, click **IP reputation** to expand the section and adjust the policy rules. 
 
-<img src="https://assets.gcore.pro/docs/waap/waf-policies/ip-reputation/ip-reputation.png" alt="WAF policies page with the highlighted Ip reputation policy">
+<img src="https://assets.gcore.pro/docs/waap/waap-policies/ip-reputation/ip-reputation.png" alt="WAF policies page with the highlighted Ip reputation policy">
 
 <alert-element type="info" title="Info">
 

@@ -73,7 +73,7 @@ You can review the Protocol validation policy and enable or disable its rules in
 
 1\. Navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waf-policies/protocol-validation/domains-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/waap-policies/protocol-validation/domains-page.png" alt="Domains page in the Customer Portal">
 
 2\. Find the domain where you want to configure the policy and click the domain name to open it.  
 
@@ -81,7 +81,7 @@ You can review the Protocol validation policy and enable or disable its rules in
 
 4\. On the **Policies** page that opens, click **Protocol validation** to expand the section and adjust the policy rules. 
 
-<img src="https://assets.gcore.pro/docs/waap/waf-policies/protocol-validation/protocol-validation.png" alt="WAF policies page with the highlighted ehavioral WAF policy">
+<img src="https://assets.gcore.pro/docs/waap/waap-policies/protocol-validation/protocol-validation.png" alt="WAF policies page with the highlighted ehavioral WAF policy">
 
 <alert-element type="info" title="Info">
 
