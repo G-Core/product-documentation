@@ -5,12 +5,12 @@ published: true
 order: 10
 toc:
    --1--Step 1. Create a CDN resource: "step-1-create-a-cdn-resource"
-   --1--Step 2: Enable WAAP in resource settings: "step-2-enable-waap-in-resource-settings"
-   --1--Step 3: Use WAAP in monitor mode: "step-3-use-waap-in-monitor-mode"
-   --1--Step 4: View your domain’s traffic: "step-4-view-your-domain’s-traffic"
-   --1--Step 5: Test your WAAP configuration: "step-5-test-your-waap-configuration"
-   --1--Step 6: Allow admins, bots, and CMS: "step-6-allow-admins-bots-and-cms"
-   --1--Step 7: Enable protect moden: "step-7-enable-protect-mode"
+   --1--Step 2. Enable WAAP in resource settings: "step-2-enable-waap-in-resource-settings"
+   --1--Step 3. Use WAAP in monitor mode: "step-3-use-waap-in-monitor-mode"
+   --1--Step 4. View your domain’s traffic: "step-4-view-your-domain’s-traffic"
+   --1--Step 5. Test your WAAP configuration: "step-5-test-your-waap-configuration"
+   --1--Step 6. Allow admins, bots, and CMS: "step-6-allow-admins-bots-and-cms"
+   --1--Step 7. Enable protect moden: "step-7-enable-protect-mode"
 pageTitle: Set up Gcore WAAP for your domain | Gcore
 pageDescription: Learn how to itegrate your domain with our WAAP and configure initial settings.
 ---
