@@ -8,7 +8,7 @@ pageDescription: Learn about Gcore tag rules and how to use them for filtering i
 ---
 # Tag rules
 
-s part of the <a href="https://gcore.com/docs/waap/waap-rules/custom-rules" target="_blank">WAAP custom rules</a>, you can create rules based on specific tags to filter incoming traffic. A **tag** contains information about a user and is attached to their request. Tag rules are just one component of our robust rule engine.  
+As part of the <a href="https://gcore.com/docs/waap/waap-rules/custom-rules" target="_blank">WAAP custom rules</a>, you can create rules based on specific tags to filter incoming traffic. A **tag** contains information about a user and is attached to their request. Tag rules are just one component of our robust rule engine.  
 
 ## Types of tag rules 
 
@@ -39,16 +39,9 @@ You can also create rules that will generate any tags of your choice based on th
 
 Once you create a user-defined tag, it’s automatically added to the list of pre-defined tags and becomes available for use in a tag-based rule. 
 
-The following examples demonstrate how you can apply user-defined tags. 
+For example, let's say you run an online shop that requires users to log in before checking out an order. You can create a rule that will generate a custom tag called `validuser` if the request header named `set-cookie` contains a cookie named `mycookie`, which indicates that the user is logged in. 
 
-Let's say you run an online shop that requires users to log in before checking out an order. You can create a rule that will generate a custom tag called `validuser` if the request header named `set-cookie` contains a cookie named `mycookie`, which indicates that the user is logged in. 
-
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/add-tag-generating-rule.png" alt="Example of a tag-based rule">
-
-
-In this example, `validuser` is our new user-defined tag that's now available for use in a tag-based rule.
-
-Based on this, the following screenshot depicts a rule that allows all requests that contain the user-defined tag `validuser`. We know that these users are verified because they have logged in, and don’t encounter any unwanted WAF blocks. 
+In this case, `validuser` will be your new user-defined tag that's now available for use in a tag-based rule.
 
 <alert-element type="info" title="Info">
  

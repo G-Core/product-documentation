@@ -53,7 +53,7 @@ Our cloud-based next-generation WAF uses a two-part system to inspect incoming t
 
 * **Behavioral component** that runs heuristics and ML models and performs behavioral analytics. 
 
-WAF edge nodes and behavioral components work together to provide protection against common vulnerabilities such as L7 DDoS attacks, <a href="" target="_blank">OWASP Top 10 threats</a>, bots, and more. 
+WAF edge nodes and behavioral components work together to provide protection against common vulnerabilities such as L7 DDoS attacks, OWASP Top 10 threats, bots, and more. 
 
 ### WAF Edge nodes 
 

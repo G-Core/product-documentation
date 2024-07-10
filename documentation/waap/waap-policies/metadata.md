@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: WAF policies
+displayName: WAAP policies
 published: true
 order: 20
 ---
