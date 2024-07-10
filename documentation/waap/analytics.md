@@ -172,7 +172,7 @@ You can select multiple filters to get a more granular view of the displayed inf
 </tr>
 <tr>
 <td style="text-align: left">Create rule</td>
-<td style="text-align: left">A button that you can select to create a <a href="https://gcore.com/docs/waap/waf-rules/custom-rules" target="_blank">custom rule</a> for the request.</td>
+<td style="text-align: left">A button that you can select to create a <a href="https://gcore.com/docs/waap/waap-rules/custom-rules" target="_blank">custom rule</a> for the request.</td>
 </tr>
 <tr>
 <td style="text-align: left">Threats (last 24 hours)</td>
@@ -260,7 +260,7 @@ This table displays more fine-grained information about requests associated with
 </tr>
 <tr>
 <td style="text-align: left">Create rule</td>
-<td style="text-align: left">A button that you can select to create a <a href="https://gcore.com/docs/waap/waf-rules/custom-rules" target="_blank">custom rule</a> for the request.</td>
+<td style="text-align: left">A button that you can select to create a <a href="https://gcore.com/docs/waap/waap-rules/custom-rules" target="_blank">custom rule</a> for the request.</td>
 </tr>
 <tr>
 <td style="text-align: left">Threats (last 24 hours)</td>

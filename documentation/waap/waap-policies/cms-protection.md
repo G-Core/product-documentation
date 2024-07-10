@@ -22,7 +22,7 @@ The CMS protection policy contains specific rules that detect when a user is log
 
 In some cases, administrative sections of a CMS-based website may be blocked. For example, for WordPress, the WAF may label a change made to the `/wp-admin` section of a CMS-based site as malicious behavior like Cross-Site Scripting or SQL injection.  
 
-As a result, the WAF will block admins from making any page edits. You can prevent this issue in two ways: [enable the needed rules](https://gcore.com/docs/waap/waf-policies/cms-protection#configure-policy-rules) in the CMS protection policy or [allowlist your static IP address](https://gcore.com/docs/waap/waf-policies/cms-protection#allowlist-a-static-ip-address). 
+As a result, the WAF will block admins from making any page edits. You can prevent this issue in two ways: [enable the needed rules](https://gcore.com/docs/waap/waap-policies/cms-protection#configure-policy-rules) in the CMS protection policy or [allowlist your static IP address](https://gcore.com/docs/waap/waap-policies/cms-protection#allowlist-a-static-ip-address). 
 
 ## Configure policy rules 
 
@@ -30,7 +30,7 @@ You can review the policy and enable or disable its rules in the Gcore Customer 
 
 1\. Navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waf-policies/anti-automation-bot-protection/domains-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/waap-policies/anti-automation-bot-protection/domains-page.png" alt="Domains page in the Customer Portal">
 
 2\. Find the domain where you want to configure the policy and click the domain name to open it.  
 
@@ -38,7 +38,7 @@ You can review the policy and enable or disable its rules in the Gcore Customer 
 
 4\. On the **Policies** page that opens, click **CMS protection** to expand the section and adjust the policy rules. 
 
-<img src="https://assets.gcore.pro/docs/waap/waf-policies/cms-protection/cms-protection.png" alt="WAF policies page with the highlighted CMS protection policy">
+<img src="https://assets.gcore.pro/docs/waap/waap-policies/cms-protection/cms-protection.png" alt="WAF policies page with the highlighted CMS protection policy">
 
 <alert-element type="info" title="Info">
 
@@ -109,7 +109,7 @@ If you don’t see your CMS in the list of rules under the CMS policy, you can a
 
 1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waf-policies/anti-automation-bot-protection/domains-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/waap-policies/anti-automation-bot-protection/domains-page.png" alt="Domains page in the Customer Portal">
 
 2\. Find the needed domain and click its name to open it.  
 
@@ -117,7 +117,7 @@ If you don’t see your CMS in the list of rules under the CMS policy, you can a
 
 4\. In the Allowed IPs section, click **Add IP/IP Range**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waf-policies/cms-protection/firewall-page.png" alt="Firewall page with the allow and block IP lists">
+<img src="https://assets.gcore.pro/docs/waap/waap-policies/cms-protection/firewall-page.png" alt="Firewall page with the allow and block IP lists">
 
 5\. Enter your public IP address so that all traffic from your IP will be allowed and won’t be blocked by the WAF for any type of request. 
 

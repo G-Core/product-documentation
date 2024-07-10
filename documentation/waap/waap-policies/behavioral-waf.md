@@ -23,7 +23,7 @@ You can review the Advanced API protection policy and enable or disable its rule
 
 1\. Navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waf-policies/anti-automation-bot-protection/domains-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/waap-policies/anti-automation-bot-protection/domains-page.png" alt="Domains page in the Customer Portal">
 
 2\. Find the domain where you want to configure the policy and click the domain name to open it.  
 
@@ -31,7 +31,7 @@ You can review the Advanced API protection policy and enable or disable its rule
 
 4\. On the **Policies** page that opens, click **Behavioral WAF** to expand the section and adjust the policy rules. 
 
-<img src="https://assets.gcore.pro/docs/waap/waf-policies/behavioral-waf/behavioral-waf.png" alt="WAF policies page with the highlighted ehavioral WAF policy">
+<img src="https://assets.gcore.pro/docs/waap/waap-policies/behavioral-waf/behavioral-waf.png" alt="WAF policies page with the highlighted ehavioral WAF policy">
 
 <alert-element type="info" title="Info">
 

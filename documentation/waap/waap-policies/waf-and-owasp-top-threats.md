@@ -18,7 +18,7 @@ You can review the WAF & OWASP Top 10 policy and enable or disable its rules in 
 
 1\. Navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waf-policies/waf-and-owasp-top-threats/domains-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/waap-policies/waf-and-owasp-top-threats/domains-page.png" alt="Domains page in the Customer Portal">
 
 2\. Find the domain where you want to configure the policy and click the domain name to open it.  
 
@@ -26,7 +26,7 @@ You can review the WAF & OWASP Top 10 policy and enable or disable its rules in 
 
 4\. On the **Policies** page that opens, click **WAF and OWASP top threats** to expand the section and adjust the policy rules. 
 
-<img src="https://assets.gcore.pro/docs/waap/waf-policies/waf-and-owasp-top-threats/waf-and-owasp-top-threats.png" alt="WAF policies page with the highlighted IP reputation policy">
+<img src="https://assets.gcore.pro/docs/waap/waap-policies/waf-and-owasp-top-threats/waf-and-owasp-top-threats.png" alt="WAF policies page with the highlighted IP reputation policy">
 
 <alert-element type="info" title="Info">
 

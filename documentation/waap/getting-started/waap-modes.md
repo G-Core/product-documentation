@@ -38,7 +38,7 @@ When you first add your domain to WAAP, it’s best to use the monitor mode for 
 
 ## Protect mode 
 
-In this mode, WAAP actively enforces all security settings, including <a href="https://gcore.com/docs/waap/waf-policies" target="_blank">WAAP policies</a> and <a href="https://gcore.com/docs/waap/waap-rules" target="_blank">rules</a>, and challenges or blocks incoming requests that violate these rules or pose a security risk.  
+In this mode, WAAP actively enforces all security settings, including <a href="https://gcore.com/docs/waap/waap-policies" target="_blank">WAAP policies</a> and <a href="https://gcore.com/docs/waap/waap-rules" target="_blank">rules</a>, and challenges or blocks incoming requests that violate these rules or pose a security risk.  
 
 Protect mode ensures real-time defense against web-based attacks like SQL injection, cross-site scripting (XSS), and other common vulnerabilities. 
 
@@ -87,7 +87,7 @@ Here’s an example of how to enable protect mode for your domain:
 
 2\. Find the domain for which you want to enable a WAAP mode and click the domain name to open it.
 
-3\. Open the **WAF** page.
+3\. Open the **WAAP** page.
 
 4\. In the upper-right corner of the screen, next to the WAAP mode, select **Protect** from the dropdown.
 
