@@ -11,16 +11,16 @@ Our WAAP combines all aspects of website security and traffic management, includ
 
 From the left-side menu, you can access in-depth documentation about WAAP: 
 
-* **About WAAP** - learn how WAAP works and about its key components. 
-* **Getting started** – learn how WAAP works and integrate it with your domain.
+* **About WAAP** - read how WAAP works and about its key components. 
+* **Getting started** – integrate WAAP with your domain.
 * **Billing** – check the available package options.
-* **WAF policies** – view of the list of pre-built security rulesets.
+* **WAAP policies** – view of the list of pre-configured security policies.
 * **Analytics** - get detailed statistics on web requests and the history of DDoS attacks. 
 * **Security insights** – use system-generated notifications to detect and mitigate potential risks. 
 * **IP security** – inspect IP addresses and add them to block or allow lists. 
 * **API discovery and protection** – identify potential APIs and secure API endpoints.   
-* **WAF rules** – use predefined and custom rules to manage incoming traffic.
-* **Custom Pages** – configure pages for access restrictions, block operations, and security validations. 
-* **DDoS protection** – protect your domain against L7 DDoS attacks. 
+* **WAAP rules** – use predefined and custom rules to manage incoming traffic.
+* **Custom pages** – configure pages for access restrictions, block operations, and security validations. 
+* **DDoS protection** – protect your application against L7 DDoS attacks. 
 * **Bot protection** – protect your application from unauthorized automation services.
 * **Troubleshooting** – address common issues related to WAAP. 

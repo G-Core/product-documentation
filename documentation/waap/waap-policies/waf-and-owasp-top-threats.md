@@ -45,7 +45,7 @@ The following table features the full list of rules that you can configure as pa
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left">SQL injection</td>
+<td style="text-align: left" id="sql_injection">SQL injection</td>
 <td style="text-align: left">
 In this form of attack, hackers use malicious SQL code to manipulate the backend of a database and access sensitive information like company data, user lists, or private customer details.<br><br>
 Enable the rule to detect and block any attempts to alter database queries. 
