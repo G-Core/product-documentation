@@ -85,7 +85,7 @@ The **Tag** action doesn’t challenge requests. Thus, it has no assigned priori
 
 ## Rule conditions 
 
-When <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/create-amd-manage-rules" target="_blank">creating a rule</a>, it’s important to choose a proper type of condition that defines when the rule will be triggered. The following types of custom rule conditions are available:  
+When <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/create-and-manage-custom-rules" target="_blank">creating a rule</a>, it’s important to choose a proper type of condition that defines when the rule will be triggered. The following types of custom rule conditions are available:  
 
 <table>
 <thead>
@@ -160,12 +160,12 @@ When <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/create-amd-man
     </tr>
     <tr>
    <td>Tag</td>
-   <td>Sanction requests based on specific pre-defined tags provided by Gcore. View the full list of tags, their API slugs, and their descriptions in our <a href="" target="_blank">dedicated guide</a>.</td>
+   <td>Sanction requests based on specific pre-defined tags provided by Gcore. View the full list of tags, their API slugs, and their descriptions in our <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/tag-rules/predefined-tags" target="_blank">dedicated guide</a>.</td>
     </tr>
     <tr>
    <td>User-defined tag</td>
    <td>Sanction requests based on custom-generated tags named "user-defined tags".<br>
-   You can create these tags in the Customer Portal or via API. For more details, check out the <a href="" target="_blank">Tag generating rules</a> guide.</td>
+   You can create these tags in the Customer Portal or via API. For more details, check out the <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/tag-rules" target="_blank">Tag generating rules</a> guide.</td>
     </tr>                                                          
 </tbody>
 </table>

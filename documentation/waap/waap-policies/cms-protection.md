@@ -5,7 +5,7 @@ published: true
 order: 60
 toc:
    --1--Allow admin access to a domain: "allow-admin-access-to-your-domain"
-   --1--Configure policy rules: "configure-policy-rules"
+   --1--Configure policy group: "configure-policy-group"
    --2--Allowlist a static IP address: "allowlist-a-static-ip-address"
 pageTitle: Set up CMS protection WAF policy for your domain | Gcore
 pageDescription: Learn how to enable and customize CMS protection policy.
@@ -16,17 +16,17 @@ Content Management Systems (CMS) typically send information to your website, and
 
 Gcore’s Web Application Firewall (WAF) can distinguish between traffic coming from your CMS administrators and potentially harmful requests. This ensures that administrative activities remain unblocked and your application stays protected.  
 
-The CMS protection policy contains specific rules that detect when a user is logged in to a supported CMS, and it automatically adds the user's session to allowlist. We also keep a library of known malicious attacks, which allows us to block exploits that have attacked users in the past. 
+The CMS protection policy group contains specific policies that detect when a user is logged in to a supported CMS, and it automatically adds the user's session to allowlist. We also keep a library of known malicious attacks, which allows us to block exploits that have attacked users in the past. 
 
 ## Allow admin access to your domain 
 
 In some cases, administrative sections of a CMS-based website may be blocked. For example, for WordPress, the WAF may label a change made to the `/wp-admin` section of a CMS-based site as malicious behavior like Cross-Site Scripting or SQL injection.  
 
-As a result, the WAF will block admins from making any page edits. You can prevent this issue in two ways: [enable the needed rules](https://gcore.com/docs/waap/waap-policies/cms-protection#configure-policy-rules) in the CMS protection policy or [allowlist your static IP address](https://gcore.com/docs/waap/waap-policies/cms-protection#allowlist-a-static-ip-address). 
+As a result, the WAF will block admins from making any page edits. You can prevent this issue in two ways: [enable the needed rules](https://gcore.com/docs/waap/waap-policies/cms-protection#configure-policy-group) in the CMS protection policy or [allowlist your static IP address](https://gcore.com/docs/waap/waap-policies/cms-protection#allowlist-a-static-ip-address). 
 
-## Configure policy rules 
+## Configure policy group 
 
-You can review the policy and enable or disable its rules in the Gcore Customer Portal: 
+You can review the policy group and enable or disable its policies in the Gcore Customer Portal: 
 
 1\. Navigate to **WAAP** > **Domains**. 
 
@@ -34,15 +34,15 @@ You can review the policy and enable or disable its rules in the Gcore Customer 
 
 2\. Find the domain where you want to configure the policy and click the domain name to open it.  
 
-3\. In the sidebar menu, click **WAF**. 
+3\. In the sidebar menu, click **WAAP**. 
 
-4\. On the **Policies** page that opens, click **CMS protection** to expand the section and adjust the policy rules. 
+4\. On the **Policies** page that opens, click **CMS protection** to expand the section and adjust the policies. 
 
 <img src="https://assets.gcore.pro/docs/waap/waap-policies/cms-protection/cms-protection.png" alt="WAF policies page with the highlighted CMS protection policy">
 
 <alert-element type="info" title="Info">
 
-Most of the CMS protection rules allow traffic. Only the WordPress WAF ruleset rule will block the traffic to your website. 
+Most of the CMS protection policies allow traffic. Only the WordPress WAF ruleset policy will block the traffic to your website. 
 
 </alert-element>
 
@@ -51,7 +51,7 @@ If you don’t see your CMS, you can allow admin access by adding your IP addres
 <table>
 <thead>
 <tr>
-<td style="text-align: left">Rule</td>
+<td style="text-align: left">Policy</td>
 <td style="text-align: left">Description</td>
 </tr>
 </thead>
@@ -95,17 +95,17 @@ If you don’t see your CMS, you can allow admin access by adding your IP addres
 </tbody>
 </table>
 
-If you enable a particular rule for your CMS, the admin CMS session will be allowlisted when that admin user logs in to the site. 
+If you enable a particular policy for your CMS, the admin CMS session will be allowlisted when that admin user logs in to the site. 
 
 <alert-element type="info" title="Tip">
 
-We recommend disabling rules for Content Management Systems that you don’t use. 
+We recommend disabling policies for Content Management Systems that you don’t use. 
 
 </alert-element>
 
 ### Allowlist a static IP address 
 
-If you don’t see your CMS in the list of rules under the CMS policy, you can allow admin access to your site as follows: 
+If you don’t see your CMS in the list of policies under the CMS policy group, you can allow admin access to your site as follows: 
 
 1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**. 
 

@@ -63,7 +63,7 @@ The existence of nodes that run rulesets against traffic is what essentially def
 
 <alert-element type="tip" title="Tip">
  
-The <a href="https://gcore.com/docs/waap/waap-policies" target="_blank">WAAP policies</a> section covers existing policy groups in detail. You can also create your own <a href="https://gcore.com/docs/waap/waap-rules/custom rules" target="_blank">custom rules</a> to filter traffic as you see fit. 
+The <a href="https://gcore.com/docs/waap/waap-policies" target="_blank">WAAP policies</a> section covers existing policy groups in detail. You can also create your own <a href="https://gcore.com/docs/waap/waap-rules/custom-rules" target="_blank">custom rules</a> to filter traffic as you see fit. 
  
 </alert-element>
 

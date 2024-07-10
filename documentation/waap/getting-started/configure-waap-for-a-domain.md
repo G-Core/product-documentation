@@ -7,10 +7,10 @@ toc:
    --1--Step 1. Create a CDN resource: "step-1-create-a-cdn-resource"
    --1--Step 2. Enable WAAP in resource settings: "step-2-enable-waap-in-resource-settings"
    --1--Step 3. Use WAAP in monitor mode: "step-3-use-waap-in-monitor-mode"
-   --1--Step 4. View your domain’s traffic: "step-4-view-your-domain’s-traffic"
+   --1--Step 4. View your domain’s traffic: "step-4-view-your-domain-traffic"
    --1--Step 5. Test your WAAP configuration: "step-5-test-your-waap-configuration"
    --1--Step 6. Allow admins, bots, and CMS: "step-6-allow-admins-bots-and-cms"
-   --1--Step 7. Enable protect moden: "step-7-enable-protect-mode"
+   --1--Step 7. Enable protect mode: "step-7-enable-protect-mode"
 pageTitle: Set up Gcore WAAP for your domain | Gcore
 pageDescription: Learn how to itegrate your domain with our WAAP and configure initial settings.
 ---
@@ -78,7 +78,7 @@ Instead of disabling WAAP protection for the whole resource, you can create a ru
 
 5\. Set the origin pull protocol to **Inherit from resource**.
 
-<img src="https://assets.gcore.pro/docs/waap/getting-started/rule-name-match-options.png" alt="WAAP toggle">
+<img src="https://assets.gcore.pro/docs/waap/getting-started/rule-name-match-options.png" alt="WAAP toggle" width="80%">
 
 6\. In the **Options** section, click **Add option**. 
 
@@ -94,7 +94,7 @@ After you enable WAAP, it will be automatically set to the <a href="https://gcor
 
 Completing this step is important because it allows you to analyze requests and test the WAAP behavior before you fully activate it. 
 
-## Step 4: View your domain’s traffic 
+## Step 4: View your domain traffic 
 
 While keeping WAAP in monitor mode, you can view all logged requests and check the corresponding actions that the WAAP will take once you put it in the protect mode.  
 

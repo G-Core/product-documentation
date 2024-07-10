@@ -5,16 +5,16 @@ published: true
 order: 10
 toc:
    --1--Protocols overview: "protocols-overview"
-   --1--Configure policy rules: "configure-policy-rules"
+   --1--Configure policy group: "configure-policy-group"
    --2--Invalid or unknown user agent: "invalid-user-agent-and-unknown-user-agent"
    --2--Service protocol validation: "service-protocol-validation"
    --2--Prevent malformed request methods: "prevent-malformed-request-methods"
-pageTitle: Set up Protocol validation WAF policy for your domain | Gcore
+pageTitle: Set up Protocol validation WAF policy group for your domain | Gcore
 pageDescription: Learn how to enable and customize Protocol validation policy.
 --- 
 # Protocol validation 
 
-The protocol validation policy verifies the HTTP and HTTPS protocols used by clients to request content from your website's origin server. If the request meets the protocol-specific requirements, the transaction is allowed. All non-compliant transactions are blocked. 
+The protocol validation policy group verifies the HTTP and HTTPS protocols used by clients to request content from your website's origin server. If the request meets the protocol-specific requirements, the transaction is allowed. All non-compliant transactions are blocked. 
 
 ## Protocols overview 
 
@@ -67,31 +67,31 @@ Clients use HTTP methods to communicate with the website's origin server and spe
 </tbody>
 </table>
 
-## Configure policy rules 
+## Configure policy group 
 
-You can review the Protocol validation policy and enable or disable its rules in the Gcore Customer Portal: 
+You can review the Protocol validation policy group and enable or disable its policies in the Gcore Customer Portal: 
 
 1\. Navigate to **WAAP** > **Domains**. 
 
 <img src="https://assets.gcore.pro/docs/waap/waap-policies/protocol-validation/domains-page.png" alt="Domains page in the Customer Portal">
 
-2\. Find the domain where you want to configure the policy and click the domain name to open it.  
+2\. Find the domain where you want to configure the policy group and click the domain name to open it.  
 
-3\. In the sidebar menu, click **WAF**. 
+3\. In the sidebar menu, click **WAAP**. 
 
-4\. On the **Policies** page that opens, click **Protocol validation** to expand the section and adjust the policy rules. 
+4\. On the **Policies** page that opens, click **Protocol validation** to expand the section and adjust the policies. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-policies/protocol-validation/protocol-validation.png" alt="WAF policies page with the highlighted ehavioral WAF policy">
+<img src="https://assets.gcore.pro/docs/waap/waap-policies/protocol-validation/protocol-validation.png" alt="WAAP policies page with the highlighted ehavioral WAAP policy">
 
 <alert-element type="info" title="Info">
 
-All Protocol validation rules are enabled by default. To enable or disable a rule, turn on the toggle near that rule. 
+All Protocol validation policies are enabled by default. To enable or disable a policy, turn on the toggle near that policy. 
 
 </alert-element>
 
 ### Invalid user agent and unknown user agent  
 
-These two WAF rules work together to identify and block requests that miss a standard user-agent parameter. If the agent is missing, this can indicate that an illegitimate client is being used. 
+These two WAAP policies work together to identify and block requests that miss a standard user-agent parameter. If the agent is missing, this can indicate that an illegitimate client is being used. 
 
 Most browsers provide user agent information across the network to validate a client's authenticity and purpose. user-agent strings typically follow this syntax: 
 

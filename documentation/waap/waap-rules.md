@@ -40,7 +40,7 @@ For any WAAP rule, it’s important to define the criteria that will put that ru
 
 * Strings that appear in the request. For example, values that appear in the user-agent header or text strings from the query string. 
 
-* Specific <a href="" target="_blank">tags</a>.  
+* Specific <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/tag-rules/predefined-tags" target="_blank">tags</a>.  
 
 * SQL code that’s likely to be malicious and used to extract data from your database, also known as SQL injection. 
 
