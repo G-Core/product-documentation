@@ -1,6 +1,6 @@
 ---
-title: waf-policies
-displayName: WAF policies
+title: waap-policies
+displayName: WAP policies
 published: true
 order:
 pageTitle: Learn about Gcore preconfigured policies with rulesets applied to incoming traffic | Gcore

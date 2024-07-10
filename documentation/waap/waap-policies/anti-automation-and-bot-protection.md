@@ -1,6 +1,6 @@
 ---
 title: anti-automation-and-bot-protection
-displayName: Anti-automation and bot protection
+displayName: Allow and block IP addresses
 published: true
 order: 50
 toc:
