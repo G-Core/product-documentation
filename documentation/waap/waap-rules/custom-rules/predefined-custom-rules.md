@@ -2,7 +2,7 @@
 title: predefined-custom-rules
 displayName: Predefined custom rules
 published: true
-order:
+order: 20
 pageTitle: Learn about Gcore predefined custom rules | Gcore
 pageDescription: Learn about Gcore predefined custom rules and how to use them for filtering incoming traffic and blocking malicious requests.
 ---

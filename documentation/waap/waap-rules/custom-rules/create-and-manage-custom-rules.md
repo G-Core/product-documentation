@@ -2,7 +2,29 @@
 title: create-and-manage-custom-rules
 displayName: Create and manage custom rules
 published: true
-order:
+order: 10
+toc:
+   --1--Create custom WAAP rules: "create-custom-waap-rules"
+   --1--Custom rule examples: "examples-of-custom-rule-definitions"
+   --2--IP conditions: "rules-with-ip-conditions"
+   --2--IP range conditions: "rules-with-ip-range-conditions"
+   --2--URL conditions: "rules-with-url-conditions"
+   --2--User agent conditions: "rules-with-user-agent-conditions"
+   --2--Header conditions: "rules-with-header-conditions"
+   --2--Header exists conditions: "rules-with-header-exists-conditions"
+   --2--HTTP method conditions: "rules-with-http-method-conditions"
+   --2--File extension conditions: "rules-with-file-extension-conditions"
+   --2--Content type conditions: "rules-with-content-type-conditions"
+   --2--Country conditions: "rules-with-country-conditions"
+   --2--Organization conditions: "rules-with-organization-conditions"
+   --2--Owner types conditions: "rules-with-owner-types-conditions"
+   --2--Session request count conditions: "rules-with-session-request-count-conditions"
+   --2--Tag conditions: "rules-with-tag-conditions"
+   --2--User defined tag conditions: "rules-with-user-defined-tag-conditions"
+   --1--Create rate limit rules: "create-custom-rate-limit-rules"
+   --1--Manage existing rules: "manage-existing-rules"
+   --2--Edit a rule: "edit-a-rule"
+   --2--Delete a rule: "delete-a-rule"
 pageTitle: Learn how to add new custom rules and manage the existing ones | Gcore
 pageDescription: Learn how to use WAAP custom rules for filtering incoming traffic and blocking malicious requests.
 ---
@@ -10,7 +32,7 @@ pageDescription: Learn how to use WAAP custom rules for filtering incoming traff
 
 Custom rules allow you to fine-tune WAF behavior in response to potential security threats. 
 
-You can create the following types of custom rules: custom WAAP rules with if/then conditions or custom rate limit rules that restrict the number of allowed requests for a specific period. 
+You can create the following types of custom rules: <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/create-and-manage-custom-rules#create-custom-waap-rules" target="_blank">custom WAAP rules</a> with if/then conditions or <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/create-and-manage-custom-rules#create-custom-rate-limit-rules" target="_blank">custom rate limit rules</a> that restrict the number of allowed requests for a specific period. 
 
 ## Create custom WAAP rules
 

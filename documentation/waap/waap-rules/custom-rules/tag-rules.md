@@ -2,7 +2,11 @@
 title: tag-rules
 displayName: Tag rules
 published: true
-order:
+order: 30
+toc:
+   --1--Types of tag rules: "types-of-tag-rules"
+   --1--Tag based rules: "tag-based-rules"
+   --1--Tag generating rules: "tag-generating-rules"
 pageTitle: Learn about Gcore tag rules | Gcore
 pageDescription: Learn about Gcore tag rules and how to use them for filtering incoming traffic and blocking malicious requests.
 ---

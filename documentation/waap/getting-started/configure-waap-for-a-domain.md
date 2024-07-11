@@ -5,7 +5,7 @@ published: true
 order: 10
 toc:
    --1--Step 1. Create a CDN resource: "step-1-create-a-cdn-resource"
-   --1--Step 2. Enable WAAP in resource settings: "step-2-enable-waap-in-resource-settings"
+   --1--Step 2. Enable WAAP in resource settings: "step-2-enable-waap-in-cdn-resource-settings"
    --1--Step 3. Use WAAP in monitor mode: "step-3-use-waap-in-monitor-mode"
    --1--Step 4. View your domain’s traffic: "step-4-view-your-domain-traffic"
    --1--Step 5. Test your WAAP configuration: "step-5-test-your-waap-configuration"
@@ -38,7 +38,7 @@ Update your domain’s DNS records so they point to our network. This is necessa
 
 </alert-element>
 
-## Step 2: Enable WAAP in resource settings 
+## Step 2: Enable WAAP in CDN resource settings 
 
 Once your CDN resource is set up, you can activate WAAP protection for it:
 
@@ -70,7 +70,7 @@ Instead of disabling WAAP protection for the whole resource, you can create a ru
 
 1\. In the CDN resource settings, open the Rules tab. 
 
-2\. Click Create rule > Create blank rule. 
+2\. Click **Create rule** > **Create blank rule**. 
 
 3\. Give your rule a name. 
 

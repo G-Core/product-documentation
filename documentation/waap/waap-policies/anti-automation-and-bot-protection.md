@@ -22,8 +22,6 @@ To protect your site from malicious attacks, we use JavaScript injection. This m
 
 Our WAAP includes a pre-defined Anti-automation & bot protection policy group to protect your site from automated traffic. You can review the policy group and enable or disable its policies in the Gcore Customer Portal: 
 
-You can review the Advanced API protection policy group and enable or disable its policies in the Gcore Customer Portal: 
-
 1\. Navigate to **WAAP** > **Domains**. 
 
 <img src="https://assets.gcore.pro/docs/waap/waap-policies/anti-automation-bot-protection/domains-page.png" alt="Domains page in the Customer Portal">

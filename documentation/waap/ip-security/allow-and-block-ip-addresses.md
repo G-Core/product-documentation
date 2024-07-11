@@ -3,6 +3,9 @@ title: allow-and-block-ip-addresses
 displayName: Allow and block IP addresses
 published: true
 order: 10
+toc:
+   --1--Add IPs to allowlist or blocklist: "add-ips-to-allowlist-or-blocklist"
+   --1--Manage blocked and allowed IPs: "manage-blocked-and-allowed-ips"
 pageTitle: Create firewall rules to allow or block IP addresses that can access your domain | Gcore
 pageDescription: Learn how to add IP addresses to block and allow lists.
 ---

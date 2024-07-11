@@ -2,7 +2,7 @@
 title: custom-rules
 displayName: Custom rules
 published: true
-order:
+order: 10
 pageTitle: Learn about Gcore custom rules | Gcore
 pageDescription: Learn about Gcore custom rules and how to use them for filtering incoming traffic and blocking malicious requests.
 ---
@@ -165,7 +165,7 @@ When <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/create-and-man
     <tr>
    <td>User-defined tag</td>
    <td>Sanction requests based on custom-generated tags named "user-defined tags".<br>
-   You can create these tags in the Customer Portal or via API. For more details, check out the <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/tag-rules" target="_blank">Tag generating rules</a> guide.</td>
+   You can create these tags in the Customer Portal or via API. For more details, check out the <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/tag-rules#tag-generating-rules" target="_blank">Tag generating rules</a>.</td>
     </tr>                                                          
 </tbody>
 </table>
