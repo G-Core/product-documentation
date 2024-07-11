@@ -19,7 +19,7 @@ The Web Application and API Protection (WAAP) includes a Behavioral WAF policy g
 
 ## Configure policy group 
 
-You can review the Advanced API protection policy group and enable or disable its policies in the Gcore Customer Portal: 
+You can review the Behavioral WAF policy group and enable or disable its policies in the Gcore Customer Portal: 
 
 1\. Navigate to **WAAP** > **Domains**. 
 

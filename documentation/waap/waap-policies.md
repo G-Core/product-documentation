@@ -8,7 +8,7 @@ pageDescription: Enable or disable WAAP policy groups to protect your domain.
 ---
 # WAAP policies
 
-A WAAP policy group is a set of predefined security policies that are applied to incoming web traffic. These policies play a crucial role in enhancing the security of your web applications by: 
+WAAP comes with a set of default policy groups that play a crucial role in enhancing the security of your web applications by: 
 
 - Blocking malicious traffic and common attack patterns
 - Preventing data breaches and unauthorized access to your domain

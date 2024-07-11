@@ -14,7 +14,7 @@ The WAF & OWASP Top 10 policy group contains a robust set of policies that help 
 
 ## Configure policy group 
 
-You can review the WAF & OWASP Top 10 policy group and enable or disable its policies in the Gcore Customer Portal: 
+You can review the WAF and OWASP top threats policy group and enable or disable its policies in the Gcore Customer Portal: 
 
 1\. Navigate to **WAAP** > **Domains**. 
 
