@@ -26,12 +26,6 @@ All created Container Registries appear in the Gcore Customer Portal on the **Co
 
 You can change the storage limit for a registry, configure its users and images, or delete the registry if you no longer need it. If you have a large number of registries, you can also use search to find the one that you’re looking for. 
 
-<alert-element type="info" title="Info">
- 
-The Container Registry feature is currently in beta mode. To join the beta, contact the [Gcore support team](mailto:support@gcore.com). 
- 
-</alert-element>
-
 ## Change storage limit
 
 You can adjust your storage limit to host more images in the container registry or optimize storage according to your usage and container requirements. 
