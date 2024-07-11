@@ -18,12 +18,6 @@ Create a registry to store your OCI-compatible artifacts and configure its acces
 
 For instructions on how to start using Container Registry, check out the <a href="https://gcore.com/docs/cloud/container-registry/create-container-registry" target="_blank">Create a Container Registry</a> guide. 
 
-<alert-element type="info" title="Info">
- 
-The Container Registry feature is currently in beta mode. To join the beta, contact the [Gcore support team](mailto:support@gcore.com). 
-
-</alert-element>
-
 ## Features
 
 * Store and manage OCI-compatible artifacts, such as Docker images and Helm charts
