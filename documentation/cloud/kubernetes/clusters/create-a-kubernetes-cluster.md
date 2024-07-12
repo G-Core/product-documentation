@@ -13,8 +13,8 @@ toc:
    --1--5. Select the CNI Provider: "step-5-select-the-cni-provider" 
    --1--6. Configure Network: "step-6-configure-network-settings"
    --1--7. Add SSH key: "step-7-add-a-ssh-key"
-   --1--8. Specify cluster name : "step-8-specify-a-cluster-name"
-   --1--(Optional) 9. Configure logging: "step-9-optional-configure-logging"
+   --1--8. Specify cluster name: "step-8-specify-a-cluster-name"
+   --1--9. Configure logging: "step-9-optional-configure-logging"
    --1--10. Finalize: "step-10-finalize"
 pageTitle: Create a Kubernetes cluster | Gcore
 pageDescription: Learn how to create a Kubernetes cluster on a Virtual Machine or a Bare Metal server.
@@ -117,7 +117,7 @@ You cannot change the network stack after the cluster has been created.
 
 Add one or multiple network interfaces to your cluster. 
 
-If you have created private <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-network" target="_blank">networks</a> before, select the needed network from the dropdown. 
+If you have previously <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-network" target="_blank">created networks</a>, select the correct network from the dropdown. 
 
 <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/network-kubernetes.png" alt="Network settings for Cluster" alt="Network settings available for the Kubernetes cluster" width="80%">
 
@@ -137,13 +137,13 @@ To add a new network, click **Add a new network** radio button and configure the
 
 ### Configure a subnetwork 
 
-If you have created <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork" target="_blank">subnetworks</a> before, select the needed subnetwork from the dropdown.  
+If you have previously  <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork" target="_blank">created subnetworks</a>, select the correct subnetwork from the dropdown.  
 
 To add a new subnetwork, click **Add a new subnetwork** and configure it according to the following instructions: <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork#create-a-subnetwork" target="_blank">Create a subnetwork</a>. 
 
 </tabset-element>
 
-By default, your container is under Basic DDoS Protection. It can prevent certain attacks by blocking IP addresses that are used by malicious actors. But for a higher level of protection, we recommend enabling Advanced DDoS Protection.   
+By default, your container is under Basic DDoS Protection. It can prevent certain attacks by blocking IP addresses used by malicious actors. For a higher level of protection, we recommend enabling Advanced DDoS Protection.   
 
 <expandable-element title="Advanced DDoS Protection"> 
 
