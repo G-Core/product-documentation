@@ -24,7 +24,7 @@ With such a setup, you’ll ensure optimal performance and cost efficiency of yo
 
 ## Step 1. Create a Kubernetes cluster
 
-Add a new Managed Kubernetes cluster with the Bare Metal worker pool: 
+Add a new Managed Kubernetes cluster with a Bare Metal worker pool: 
 
 1\. In the Gcore Customer Portal, navigate to **Cloud** > **Kubernetes**. 
 
@@ -38,11 +38,11 @@ Add a new Managed Kubernetes cluster with the Bare Metal worker pool:
 
 * **Pool name**: Enter a unique and descriptive name for your resource pool. 
 
-* **Minimum nodes** and **Maximum nodes**: specify how many nodes can be allocated to the pool during traffic fluctuations. The maximum number of pods must be greater than the minimum, allowing the system to scale up in response to increased demand. 
+* **Minimum nodes** and **Maximum nodes**: Specify how many nodes can be allocated to the pool during traffic fluctuations. The maximum number of pods must be greater than the minimum, allowing the system to scale up in response to increased demand. 
 
 * **Type**: Choose **Bare Metal instances**. 
 
-* **Infrastructure**: select the needed GPU-optimized flavor. You need to add at least one node with GPU support to the worker pool. 
+* **Infrastructure**: Select the needed GPU-optimized flavor. You need to add at least one node with GPU support to the worker pool. 
 
 <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/autoscaling/gpu-autoscaling/configure-pools.png" alt="Pools configuration section on the Create Kubrnetes cluster page.jpg">
 
@@ -64,7 +64,7 @@ Add a new Managed Kubernetes cluster with the Bare Metal worker pool:
 
 2\. Find the cluster you’ve created in the previous step and click its name to open it. 
 
-3\. Check the pool status—it should be **Running**. If you see **Scaling up**, wait until all resources are allocated and the cluster ready to use.  
+3\. Check the pool status—it should be **Running**. If you see **Scaling up**, wait until all resources are allocated and the cluster is ready to use.  
 
 4\. Download the .config file by clicking **Kubernetes config** in the top-right corner of the screen.
 
@@ -76,7 +76,7 @@ Add a new Managed Kubernetes cluster with the Bare Metal worker pool:
 export KUBECONFIG=/path/to/your/k8sConfig.yml 
 ```
 
-6\. Verify that the created node is ready and correctly configured: 
+6\. Verify that the created node is ready and correctly configured by running the following command: 
 
 ```
 kubectl get nodes 
@@ -103,7 +103,7 @@ helm repo add nvidia https://helm.ngc.nvidia.com/nvidia && helm repo update
 
 2\. Install the GPU Operator with the required configurations for your Kubernetes version: 
 
-* 1.28.x:   
+* For Kubernetes 1.28.x:   
 
 ```
     helm install gpu-operator nvidia/gpu-operator --version v23.9.1  --wait \ 
@@ -113,7 +113,7 @@ helm repo add nvidia https://helm.ngc.nvidia.com/nvidia && helm repo update
         --set operator.logging.level=debug 
     
 ``` 
-* 1.29.x: 
+* For Kubernetes 1.29.x: 
 
 ```
     helm install gpu-operator nvidia/gpu-operator --version v23.9.2  --wait \ 
@@ -126,7 +126,7 @@ helm repo add nvidia https://helm.ngc.nvidia.com/nvidia && helm repo update
 
 ## Step 4. Verify GPU allocation 
 
-1\. Verify that GPUs have been correctly allocated. The number of GPU nodes in `nvidia.com/gpu` should comply with the number specified in the Bare Metal flavor. 
+1\. Verify that GPUs have been allocated correctly. The number of GPU nodes in `nvidia.com/gpu` should comply with the number specified in the Bare Metal flavor. 
 
 ```
 Allocatable: 
@@ -164,7 +164,7 @@ nvidia-operator-validator-n9rpz                              1/1     Running    
 
 ## Step 5. Run test CUDA pod
 
-Run a test GPU application to verify that the GPU resources in your Kubernetes cluster are properly configured and accessible. Follow the instructions from the official Nvidia guide: <a href="https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/getting-started.html#cuda-vectoradd" target="_blank">Verification: running sample GPU application</a>. 
+Run a test GPU application to verify that the GPU resources in your Kubernetes cluster are properly configured and accessible. Follow the instructions from the official NVIDIA guide: <a href="https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/getting-started.html#cuda-vectoradd" target="_blank">Verification: running sample GPU application</a>. 
 
 ## Step 6. Install KEDA 
 
@@ -188,15 +188,15 @@ helm repo update
 helm install keda kedacore/keda --namespace keda --create-namespace 
 ``` 
 
-## Step 7. Install kube-prometheus stack 
+## Step 7. Install kube-prometheus-stack 
 
-To collect and visualize metrics from your Kubernetes cluster, install the <a href="https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack" target="_blank">kube-prometheus-stack</a> that’s integrated with Prometheus and Grafana.  
+To collect and visualize metrics from your Kubernetes cluster, install the <a href="https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack" target="_blank">kube-prometheus-stack</a> integrated with Prometheus and Grafana.  
 
 1\. Add the Prometheus Helm repository: `helm repo add prometheus-community https://prometheus-community.github.io/helm-charts`
 
 2\. Update the repository: `helm repo update`
 
-3\. Inspect the default values for the kube-stack: `helm inspect values prometheus-community/kube-prometheus-stack > values.yaml`
+3\. Inspect the default values for the kube-prometheus-stack: `helm inspect values prometheus-community/kube-prometheus-stack > values.yaml`
 
 4\. Create the values-overrides.yaml file that contains additional configurations for the GPU operator:
 
@@ -222,7 +222,7 @@ additionalScrapeConfigs:
     target_label: kubernetes_node 
 ```      
 
-5\. Install kube-stack with the specified configurations: 
+5\. Install kube-prometheus-stack with the specified configurations: 
 
 ```
 helm install prometheus-community/kube-prometheus-stack \ 
@@ -231,7 +231,7 @@ helm install prometheus-community/kube-prometheus-stack \
    -f values.yaml -f values-overrides.yaml
 ```
 
-## Step 8. Create Autoscaling configuration 
+## Step 8. Create autoscaling configuration 
 
 Create a deployment for the test workload and define an autoscaling configuration using KEDA: 
 
@@ -285,11 +285,11 @@ This autoscaling configuration is based on the `DCGM_FI_DEV_GPU_UTIL` metrics (G
 
 Customize the highlighted values: 
 
-* <span style="color:#FF5913">workload-name</span>: enter a unique name that identifies your workload. Make sure that you use the same value in all name fields.  
+* <span style="color:#FF5913">workload-name</span>: Enter a unique name that identifies your workload. Make sure that you use the same value in all name fields.  
 
-* <span style="color:#FF5913">app-URL</span>: specify the location of your application. For example, a Docker image.  
+* <span style="color:#FF5913">app-URL</span>: Specify the location of your application. For example, a Docker image.  
 
-* <span style="color:#FF5913">allocated-number-of-GPUs</span>: specify how many GPUs you need. For example, 8. 
+* <span style="color:#FF5913">allocated-number-of-GPUs</span>: Specify how many GPUs you need. For example, 8. 
 
 * <span style="color:#FF5913">["/usr/bin/sample-command"]</span>: Enter the command your container should run at startup. 
 
@@ -337,7 +337,7 @@ kube-system    69s         Normal    ScaledUpGroup         configmap/cluster-aut
 
 Wait until the node is provisioned, which might take up to 20-25 minutes.  
 
-3\. Check out all pods within your cluster: `k get pods`.
+3\. Check all pods within your cluster: `k get pods`.
  
 You should see something like this: 
 
