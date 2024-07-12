@@ -15,26 +15,26 @@ pageDescription: Learn how to create and manage a network in the cloud to transf
 
 A Gcore Cloud network is a virtualized software-defined network that operates in a cloud computing infrastructure. Cloud networks are used to transfer information between cloud resources and provide an internet connection.  
 
-You can attach networks (also known as network interfaces) for <a href="https://gcore.com/docs/cloud/virtual-instances/types-of-virtual-machines" target="_blank">Virtual Machines</a>, <a href="https://gcore.com/docs/cloud/bare-metal-servers/about-bare-metal-servers" target="_blank">Bare Metal</a>, <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer" target="_blank">Load Balancers</a>, and <a href="https://gcore.com/docs/cloud/kubernetes/about-gcore-kubernetes" target="_blank">Managed Kubernetes</a> clusters. 
+You can attach networks (also known as network interfaces) to <a href="https://gcore.com/docs/cloud/virtual-instances/types-of-virtual-machines" target="_blank">Virtual Machines</a>, <a href="https://gcore.com/docs/cloud/bare-metal-servers/about-bare-metal-servers" target="_blank">Bare Metal</a>, <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer" target="_blank">Load Balancers</a>, and <a href="https://gcore.com/docs/cloud/kubernetes/about-gcore-kubernetes" target="_blank">Managed Kubernetes</a> clusters. 
 
 ## Types of networks 
 
-For Cloud resources, it’s possible to configure the following types of networks: 
+For Cloud resources, you can configure the following types of networks: 
 
-* **Private network**. This interface is for local internal connections to the server and doesn't have access to the external network. Resources with private interfaces can only be accessed from the same network. However, it’s possible to customize their setup and establish internet connectivity.  
+* **Private network**: This interface is for local internal connections to the server and doesn't have access to the external network. Resources with private interfaces can only be accessed from the same network. However, you can customize their setup and establish internet connectivity.  
 For example, if you add a VM with a private interface to a public Load Balancer, this Virtual Machine will receive requests from the internet. You can configure a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address" target="_blank">Floating IP address</a>. 
 
-* **Public network**. This interface grants access to the external network. Instances with that interface will be available from the internet. 
+* **Public network**: This interface grants access to the external network. Instances with that interface will be available from the internet. 
 
 ## Create and attach networks to Cloud resources 
 
 You can attach both public and private networks to Virtual Machines, Bare Metal, Load Balancers, and Managed Kubernetes clusters. 
 
-There are two ways to create and attach a network: you can do this during the resource creation or add a network separately and then attach it to an already existing Cloud resource. 
+There are two ways to create and attach a network: during resource creation or by adding a network separately and then attaching it to an existing Cloud resource. 
 
 ### Attach a network when creating a new Cloud resource 
 
-For detailed steps on how to attach a network interface for each resource, check out the relevant guide: 
+For detailed steps on how to attach a network interface for each resource, refer to the relevant guide: 
 
 * <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance" target="_blank">Attach network interface to a Virtual Machine</a>  
 * <a href="https://gcore.com/docs/cloud/bare-metal-servers/create-a-bare-metal-server" target="_blank">Attach network interface to a Bare Metal</a> 
@@ -73,7 +73,7 @@ You can’t change network interfaces for created Load Balancers.
  
 </alert-element>
 
-If you’ve already created a cloud resource and want to add more networks to it, it can be done in the settings of your resource: 
+If you’ve already created a cloud resource and want to add more networks to it, you can do so in the resource settings: 
 
 1\. In the Gcore Customer Portal, navigate to **Cloud**. 
 
@@ -89,7 +89,7 @@ If you’ve already created a cloud resource and want to add more networks to it
 
 * **Public**: It’s only possible to add one public interface per VM.  Additionally, you can use a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address" target="_blank">reserved IP address</a>. 
 
-* **Private**: Choose a network from the list or create a new one, and then <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork" target="_blank">configure a subnetwork</a> according to your requirements.  
+* **Private**: Choose a network from the list or create a new one, then <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork" target="_blank">configure a subnetwork</a> according to your requirements.  
 
 6\. (Optional) If your network contains both IPv6 and IPv4 addresses, you can enable IPV6 dual-stack and simultaneously use IPv4 and IPv6 protocols on the same network infrastructure. 
 
