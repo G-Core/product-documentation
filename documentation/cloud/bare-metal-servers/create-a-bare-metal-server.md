@@ -59,7 +59,7 @@ To create a Bare Metal:
     
 6\.  Add network interfaces. You can create a public and private interface. 
 
-Consider that after creating a Bare Metal server, you won’t be able to attach an external network to it. Additionally, you can’t attach more than 6 networks to the server. 
+Note that after creating a Bare Metal server, you won’t be able to attach an external network to it. Additionally, you can’t attach more than six networks to the server. 
 
 If you select a public interface, you can also enable the Use reserved IP toggle and assign a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address" target="_blank">reserved IP address</a> to your Bare Metal. 
 
@@ -77,13 +77,13 @@ If you need both a public and private interface, disable the default gateway on 
 
 ### Configure a network 
 
-If you have created private <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-network" target="_blank">networks</a> before, select the needed network from the dropdown. To add a new network, click **Private network** radio button and configure the network as follows. 
+If you previously <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-network" target="_blank">created networks</a>, select the needed network from the dropdown. To add a new network, click **Private network** radio button and configure the network as follows. 
 
 1\. Enter the network name. 
 
-2\. Make sure that the **Bare Metal network** toggle is enabled. This is required to connect Bare Metal servers to the network. 
+2\. Ensure that the **Bare Metal network** toggle is enabled. This is required to connect Bare Metal servers to the network. 
 
-3\. (optional) Turn on the **Add tags** toggle to add metadata to the network. 
+3\. (Optional) Turn on the **Add tags** toggle to add metadata to the network. 
 
 4\. Click **Create network**. 
 
@@ -91,17 +91,17 @@ If you have created private <a href="https://gcore.com/docs/cloud/networking/cre
 
 5\. (Optional) Enable IPv6 dual-stack to assign both IPv4 and IPv6 addresses for network interfaces of worker nodes and pods. If the Enable IPv6 dual-stack toggle is not available, make sure that at least one pool from your cluster is in a public network. If your Kubernetes cluster is only connected to a private network, you also need to configure and add an IPv6 subnetwork. 
 
-Consider that to activate IPv6 dual-stack, you only need to configure a network interface. Subnetwork will be automatically selected. 
+Note that to activate IPv6 dual-stack, you only need to configure a network interface. The subnetwork will be automatically selected. 
 
 ### Configure a subnetwork 
 
 <alert-element type="info" title="Info">
 
-If your Bare Metal has several subnetworks, <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork#set-up-the-default-gateway" target="_blank">ensure that only one subnetwork is routable</a>. Otherwise, there will be a conflict with the default gateway on the server, and you might not be able to connect to the Bare Metal. 
+If your Bare Metal server has several subnetworks, <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork#set-up-the-default-gateway" target="_blank">ensure that only one subnetwork is routable</a>. Otherwise, there will be a conflict with the default gateway on the server, and you might not be able to connect to the Bare Metal. 
 
 </alert-element>
 
-If you have created <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork" target="_blank">subnetworks</a> before, select the needed subnetwork from the dropdown. If you choose **Automatic**, the system will use one of the existing subnetworks, which has the highest amount of available resources.   
+If you previously <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork" target="_blank">created subnetworks</a>, select the needed subnetwork from the dropdown. If you choose **Automatic**, the system will use one of the existing subnetworks, which has most available resources.   
 
 To add a new subnetwork, click **Add a new subnetwork** and configure according to the following instructions: <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork#create-a-subnetwork" target="_blank">Create a subnetwork</a>. 
 
