@@ -2,7 +2,7 @@
 title: create-fastedge-apps
 displayName: Create a FastEdge app
 published: true
-order: 10
+order: 30
 toc:
 --1--Stage 1. Create a Wasm binary file: "stage-1-create-a-wasm-binary-file" 
 --1--Stage 2. Deploy an application: "stage-2-deploy-an-application" 
