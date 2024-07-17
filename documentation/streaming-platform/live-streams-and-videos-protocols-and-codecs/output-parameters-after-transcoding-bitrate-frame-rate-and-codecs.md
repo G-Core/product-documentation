@@ -8,7 +8,7 @@ toc:
    --1--Audio and video codecs: "audio-and-video-codecs"
    --1--Output parameters: "output-parameters-after-transcoding"
    --1--Custom settings: "how-to-apply-custom-advanced-settings"
-   --1--HTTP resnponse codes: "http-response-codes"
+   --1--HTTP response codes: "http-response-codes-when-requesting-live-and-vod-videos"
 pageTitle: Transcoding and Output Specs for Gcore Streams | Gcore
 pageDescription: Learn about Gcore's transcoding process, including details on file bitrates, frame rates, and codecs for different video quality levels.
 ---
@@ -122,21 +122,25 @@ We use variable bitrate (VBR) for encoding video. The table above shows average 
 
 ## HTTP response codes when requesting Live and VOD videos
 
-Here are possible HTTP response codes when requesting videos and live streams for manifests (.m3u8, .mpd), as well as for chunks (.ts, mp4, etc).
+The following table includes the possible HTTP response codes returned when requesting videos and live streams for manifests (.m3u8, .mpd) and chunks (.ts, mp4, etc.).
 
 <table>
-  <th>Code</th><th>Function</th><th>Meaning</th>
+  <th>Code</th><th>Function</th><th>Description</th>
   <tr><td>200</td><td>OK</td><td>All OK</td></tr>
-  <tr><td>403</td><td>Forbidden</td><td>Access is denied. If you use any distribution restriction (i.e. geo restriction, or token, etc), then you must satisfy this condition for access.</td></tr>
-  <tr><td>404</td><td>Not Found</td><td>There is no requested video, or the live stream is temporarily not delivering chunks. Check the request link or activate your video.</td></tr>
-  <tr><td>412</td><td>Precondition Failed</td><td>Applicable for Live only: A manifest and chunks are requested from a stream that has not started yet and, accordingly, is not transcoded. Start a stream or restart transcoding.</td></tr>
-  <tr><td>422</td><td>Not Found</td><td>This is advanced functionality (i.e. custom encoding presets, etc). To enable it, contact your manager or support service.</td></tr>
-  <tr><td>500</td><td>Internal Server Error</td><td>Something bad happened on the server. This may be a local error in one specific video, then you can look at the video processing status in your personal account. If the error is global, then information about this will be on the status page.</td></tr>
-  <tr><td>503</td><td>Service Unavailable</td><td>Something bad happened on the server. This may be a local error in one specific video, then you can look at the video processing status in your personal account. If the error is global, then information about this will be on the status page.</td></tr>
+  <tr><td>403</td><td>Forbidden</td><td>Access is denied. If you use any distribution restriction such as geo restriction or token, you must satisfy this condition for access.</td></tr>
+  <tr><td>404</td><td>Not Found</td><td>There's no requested video, or the live stream is temporarily not delivering chunks. Check the request link or activate your video.</td></tr>
+  <tr><td>412</td><td>Precondition Failed</td><td>Applicable for Live only. A manifest and chunks are requested from a stream that hasn't started yet and, accordingly, is not transcoded. Start a stream or restart transcoding.</td></tr>
+  <tr><td>422</td><td>Not Found</td><td>This is advanced functionality (i.e. custom encoding presets). To enable it, contact your manager or the support team.</td></tr>
+  <tr><td>500</td><td>Internal Server Error</td><td>An unexpected issue happened on the server. This may be a local error in a specific video. In this case, check the video processing status in your personal account. If the error is global, the information will be on the status page.</td></tr>
+  <tr><td>503</td><td>Service Unavailable</td><td>An unexpected issue happened on the server. This may be a local error in a specific video. In this case, check the video processing status in your personal account. If the error is global, the information will be on the status page.</td></tr>
   <tr><td>504</td><td>Gateway Time-out</td><td>Timeout for receiving data from the source. Try checking the status of video sending/ingesting and transcoding.</td></tr>
 </table>
 
-**Note**: The system health status page is available at [https://status.gcore.com/](https://status.gcore.com/)
+<alert-element type="info" title="Info">
+ 
+The system health status page is available at [https://status.gcore.com/](https://status.gcore.com/)
+ 
+</alert-element>
 
 ## How to apply custom advanced settings
 
