@@ -77,14 +77,14 @@ The results show:
 <table>
 <tbody>
 <tr>
-    <th rowspan="2">Flavor</th>
-    <th colspan="2">HTTP</th>
-    <th colspan="2">HTTPS</th>
+    <th rowspan="2" style="width:30%">Flavor</th>
+    <th colspan="2" style="width:35%">HTTP</th>
+    <th colspan="2" style="width:35%">HTTPS</th>
   </tr>
   <tr>
-    <th>Throughput (RPS)</th>
+    <th>Throughput</th>
     <th>Latency (ms)</th>
-    <th>RPS</th>
+    <th>Throughput</th>
     <th>Latency</th>
   </tr>
   <tr>
