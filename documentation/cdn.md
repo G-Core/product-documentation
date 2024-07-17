@@ -2,6 +2,8 @@
 title: cdn
 displayName: CDN
 published: true
+pageTitle: Gcore CDN documentation page | Gcore
+pageDescription: Explore Gcore CDN functionality and learn how to configure and manage CDN resources.
 ---
 # CDN
 
