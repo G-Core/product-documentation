@@ -64,11 +64,56 @@ In the editor, you can:
 
 ## Performance analysis
 
-We have tested our Load Balancers to determine the performance of different flavors. The test results show the throughput - the number of requests per second (rps) a Load Balancer can handle under a number of simultaneous users’ requests for worker nodes that communicate through the Load Balancer considering that 95 percent of requests are handled within 1 ms. 
+We’ve tested our Load Balancers to determine the performance of different flavors.  
 
-| Flavor          | Throughput | Worker request | Percentile response time |
-|-----------------|------------|----------------|--------------------------|
-| 1 vCPU - 2 GiB  | 5k         | 1              | 95th percentile is 1 ms  |
-| 2 vCPU - 4 GiB  | 5k         | 16             | 95th percentile is 1 ms  |
-| 4 vCPU - 8 GiB  | 5k         | 512            | 95th percentile is 1 ms  |
-| 8 vCPU - 16 GiB | 5k         | 2048           | 95th percentile is 1 ms  |
+For each flavor, we’ve deployed the client in multithreading mode with 36 concurrent threads and 400 connections over the test duration of 30 seconds. 
+
+The results show: 
+
+* **Throughput**: The number of requests per second (RPS) a Load Balancer can handle under a number of simultaneous users’ requests. 
+
+* **Latency**: Response times for both HTTP and HTTPS traffic across different Load Balancer flavors. 
+
+<table>
+<tbody>
+<tr>
+    <th rowspan="2">Flavor</th>
+    <th colspan="2">HTTP</th>
+    <th colspan="2">HTTPS</th>
+  </tr>
+  <tr>
+    <th>Throughput (RPS)</th>
+    <th>Latency (ms)</th>
+    <th>RPS</th>
+    <th>Latency</th>
+  </tr>
+  <tr>
+    <td>1 vCPU - 2 GiB</td>
+    <td>21k</td>
+    <td>4</td>
+    <td>20k</td>
+    <td>20</td>
+  </tr>
+  <tr>
+    <td>2 vCPU - 2 GiB</td>
+    <td>45k</td>
+    <td>3</td>
+    <td>34k</td>
+    <td>12</td>
+  </tr>
+  <tr>
+    <td>4 vCPU - 8 GiB</td>
+    <td>91k</td>
+    <td>5</td>
+    <td>51k</td>
+    <td>8</td>
+  </tr>
+  <tr>
+    <td>8 vCPU - 16 GiB</td>
+    <td>142k</td>
+    <td>3</td>
+    <td>117k</td>
+    <td>4</td>
+  </tr>
+</tbody>
+</table>
