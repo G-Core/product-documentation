@@ -8,7 +8,8 @@ toc:
    --1--Audio and video codecs: "audio-and-video-codecs"
    --1--Output parameters: "output-parameters-after-transcoding"
    --1--Custom settings: "how-to-apply-custom-advanced-settings"
-pageTitle: Transcoding Specs for Gcore Streams | Gcore
+   --1--HTTP resnponse codes: "http-response-codes"
+pageTitle: Transcoding and Output Specs for Gcore Streams | Gcore
 pageDescription: Learn about Gcore's transcoding process, including details on file bitrates, frame rates, and codecs for different video quality levels.
 ---
 # Output parameters after transcoding: bitrate, frame rate, and codecs
@@ -118,6 +119,24 @@ The values in the table are given for videos with a horizontal aspect ratio of 1
 We use variable bitrate (VBR) for encoding video. The table above shows average values. The Gcore Customer Portal shows a sum of audio and video bitrates.
 
 **Note**: We don’t upscale videos. Your output will range from the lowest quality to that of your original bitrate. So, if you upload a 4K video, your output will range from the lowest quality up to 4K. Similarly, if you upload a 720p video, your output will vary from the lowest quality up to 720p only.
+
+## HTTP response codes when requesting Live and VOD videos
+
+Here are possible HTTP response codes when requesting videos and live streams for manifests (.m3u8, .mpd), as well as for chunks (.ts, mp4, etc).
+
+<table>
+  <th>Code</th><th>Function</th><th>Meaning</th>
+  <tr><td>200</td><td>OK</td><td>All OK</td></tr>
+  <tr><td>403</td><td>Forbidden</td><td>Access is denied. If you use any distribution restriction (i.e. geo restriction, or token, etc), then you must satisfy this condition for access.</td></tr>
+  <tr><td>404</td><td>Not Found</td><td>There is no requested video, or the live stream is temporarily not delivering chunks. Check the request link or activate your video.</td></tr>
+  <tr><td>412</td><td>Precondition Failed</td><td>Applicable for Live only: A manifest and chunks are requested from a stream that has not started yet and, accordingly, is not transcoded. Start a stream or restart transcoding.</td></tr>
+  <tr><td>422</td><td>Not Found</td><td>This is advanced functionality (i.e. custom encoding presets, etc). To enable it, contact your manager or support service.</td></tr>
+  <tr><td>500</td><td>Internal Server Error</td><td>Something bad happened on the server. This may be a local error in one specific video, then you can look at the video processing status in your personal account. If the error is global, then information about this will be on the status page.</td></tr>
+  <tr><td>503</td><td>Service Unavailable</td><td>Something bad happened on the server. This may be a local error in one specific video, then you can look at the video processing status in your personal account. If the error is global, then information about this will be on the status page.</td></tr>
+  <tr><td>504</td><td>Gateway Time-out</td><td>Timeout for receiving data from the source. Try checking the status of video sending/ingesting and transcoding.</td></tr>
+</table>
+
+**Note**: The system health status page is available at [https://status.gcore.com/](https://status.gcore.com/)
 
 ## How to apply custom advanced settings
 
