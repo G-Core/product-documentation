@@ -19,7 +19,7 @@ If you need to introduce additional functionality to Gcore CDN and customize its
 
 Such a setup allows you to extend the CDN beyond standard features and implement advanced logic for: 
 
-* Authentication checks. Deploy FastEdge apps based on the <a href="bookmark://_Deploy_from_the" target="_blank">JWT authentication template</a> or develop a custom authentication functionality.  
+* Authentication checks. Deploy FastEdge apps based on the JWT authentication template or develop a custom authentication functionality.  
 * Custom headers modification. Adjust header information on requests for personalized and more secure content delivery.  
 * Custom access rules. Use advanced geo-blocking and time-based blocking to control user access to your content and mitigate potential threats. 
 
@@ -69,7 +69,9 @@ Your application has been successfully deployed and can now be accessed through 
 
 #### Deploy a custom CDN application 
 
-To deploy a FastEdge app from your own binary:
+If you want to deploy a FastEdge app from your own binary, check the examples of custom implementation in our repository: <a href="https://github.com/G-Core/FastEdge-examples" target="_blank">FastEdge app examples</a>. 
+
+To deploy a FastEdge application from your own binary:
 
 1\. In the Gcore Customer Portal, navigate to **Cloud** > **FastEdge**. 
 
@@ -101,8 +103,6 @@ Your application has been successfully deployed and can now be accessed through 
 
 You can enable the configured Wasm functionality either to the whole CDN resource or just to some URLs.  
 
-<tabset-element>
-
 <alert-element type="info" title="Info">
  
 When integrating your app with CDN, note that the **Interrupt request processing in case of error** checkbox is enabled by default. This ensures that any errors on the FastEdge side will be returned to the browser with the relevant response code.  
@@ -110,6 +110,8 @@ When integrating your app with CDN, note that the **Interrupt request processing
 If you disable the checkbox, CDN will ignore the error and pass requests directly to the origin. For security considerations, we recommend keeping this checkbox active. 
  
 </alert-element>
+
+<tabset-element>
 
 #### For the whole CDN resource  
 
