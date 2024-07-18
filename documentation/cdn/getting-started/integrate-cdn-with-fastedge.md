@@ -69,8 +69,6 @@ Your application has been successfully deployed and can now be accessed through 
 
 #### Deploy a custom CDN application 
 
-If you want to deploy a FastEdge app from your own binary, check the examples of custom implementation in our repository: <a href="https://github.com/G-Core/FastEdge-examples" target="_blank">FastEdge app examples</a>. 
-
 To deploy a FastEdge application from your own binary:
 
 1\. In the Gcore Customer Portal, navigate to **Cloud** > **FastEdge**. 
@@ -103,14 +101,6 @@ Your application has been successfully deployed and can now be accessed through 
 
 You can enable the configured Wasm functionality either to the whole CDN resource or just to some URLs.  
 
-<alert-element type="info" title="Info">
- 
-When integrating your app with CDN, note that the **Interrupt request processing in case of error** checkbox is enabled by default. This ensures that any errors on the FastEdge side will be returned to the browser with the relevant response code.  
-
-If you disable the checkbox, CDN will ignore the error and pass requests directly to the origin. For security considerations, we recommend keeping this checkbox active. 
- 
-</alert-element>
-
 <tabset-element>
 
 #### For the whole CDN resource  
@@ -130,6 +120,14 @@ Currently, we support only one event - **On request headers**, which can be used
 4\. Choose your application from the dropdown. 
 
 5\. (Optional) **Select the Interrupt request processing in case of error** checkbox.
+
+<alert-element type="info" title="Info">
+ 
+The **Interrupt request processing in case of error** checkbox is enabled by default. This ensures that any errors on the FastEdge side will be returned to the browser with the relevant response code.  
+
+If you disable the checkbox, CDN will ignore the error and pass requests directly to the origin. For security considerations, we recommend keeping this checkbox active. 
+ 
+</alert-element>
 
 6\. Click **Save**. 
 
@@ -166,6 +164,14 @@ To enable the function for specific URLs:
 11\. (Optional) **Select the Interrupt request processing in case of error** checkbox.
 
 <img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-fastedge/rule-options-fastedge-app-enable.png" alt="Enable FastEdge apps section in rule options dialog" width="80%"> 
+
+<alert-element type="info" title="Info">
+ 
+The **Interrupt request processing in case of error** checkbox is enabled by default. This ensures that any errors on the FastEdge side will be returned to the browser with the relevant response code.  
+
+If you disable the checkbox, CDN will ignore the error and pass requests directly to the origin. For security considerations, we recommend keeping this checkbox active. 
+ 
+</alert-element>
 
 12\. Click **Create rule**. 
 
