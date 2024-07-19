@@ -24,7 +24,7 @@ Depending on your package level, you can create the following rules:
 
 <alert-element type="info" title="Info">
  
-In addition to the above-described rules that you can configure, WAAP also contains a set of  <a href="https://gcore.com/docs/waap/waap-rules/predefined-rules" target="_blank">predefined WAAP rules</a> that you can either enable or disable on the rules page. 
+In addition to the above-described rules that you can configure, WAAP also contains a set of  <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/predefined-custom-rules" target="_blank">predefined WAAP rules</a> that you can either enable or disable on the rules page. 
  
 </alert-element>
 
