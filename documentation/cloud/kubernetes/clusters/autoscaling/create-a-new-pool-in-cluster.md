@@ -18,7 +18,11 @@ You can create a pool <a href="https://gcore.com/docs/cloud/kubernetes/clusters/
 
 2\. Find the required cluster and click its name to open the settings. 
 
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/mkaas-page-existing-cluster.png" alt="Managed Kubernetes page"  width="80%">
+
 3\. Go to the **Pools** section and click **Add pool**. 
+
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/add-pool-existing-cluster.png" alt="Managed Kubernetes cluster with add pool button highlighted" width="80%">
 
 4\. Configure the pool: 
 
@@ -30,7 +34,7 @@ You can create a pool <a href="https://gcore.com/docs/cloud/kubernetes/clusters/
 
 * Choose the relevant <a href="https://gcore.com/docs/cloud/virtual-instances/placement-groups/configure-a-placement-group" target="_blank">placement policy</a>: affinity, anti-affinity soft, or anti-affinity hard. 
 
-<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/create-pool.png" alt="Pools configuration section on the Create Kubrnetes cluster page">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/create-pool.png" alt="Pools configuration section on the Create Kubrnetes cluster page" width="80%">
 
 * Adjust the optional settings: 
 
@@ -44,7 +48,7 @@ You can create a pool <a href="https://gcore.com/docs/cloud/kubernetes/clusters/
 
 * If you want to configure advanced settings, check out the **Configure advanced pool settings** section for detailed instructions. Note that you can’t adjust advanced settings for an already created pool.  
 
-<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/create-pool-toggles.png" alt="Pools configuration section on the Create Kubrnetes cluster page.jpg">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/create-pool-toggles.png" alt="Pools configuration section on the Create Kubrnetes cluster page" width="80%">
 
 5\. Click **Save** to create the pool.     
 
@@ -66,7 +70,7 @@ The advanced pool settings are divided into two parts: Kubelet configuration and
 
 Customize how Kubelet manages pod scheduling and execution on every node. You can read more about these settings in the <a href="https://kubernetes.io/docs/reference/config-api/kubelet-config.v1beta1/#kubelet-config-k8s-io-v1beta1-KubeletConfiguration" target="_blank">official Kubernetes documentation</a>. 
 
-<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/advanced-kubelet-settings.png" alt="Kubelet configuration in the advanced settings for Kubrnetes cluster">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/advanced-kubelet-settings.png" alt="Kubelet configuration in the advanced settings for Kubrnetes cluster" width="80%">
 
 #### Max container log files
 
@@ -88,7 +92,7 @@ When this threshold is reached, Kubelet will stop deleting unused images.
 
 The maximum number of pods that can be scheduled on a node to prevent overcommitting of resources. 
 
-<alert-element type="ingo" title="Info">
+<alert-element type="info" title="Info">
 
 The maximum allowed limit for **Max pods per node** is 110. 
 
@@ -158,7 +162,7 @@ Determines whether the Kubelet should start if the Linux kernel swap space is en
 
 Adjust container runtime settings and specify how containers are executed and managed within the Kubernetes environment.
 
-<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/advanced-crio-settings.png" alt="Cri-O configuration in the advanced settings for Kubrnetes cluster">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/advanced-crio-settings.png" alt="Cri-O configuration in the advanced settings for Kubrnetes cluster" width="80%">
 
 #### Container capabilities
 
