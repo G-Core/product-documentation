@@ -3,6 +3,11 @@ title: create-a-new-pool-in-cluster
 displayName: Create and configure a pool
 order: 30
 published: true
+toc:
+   --1--Create a new pool in a cluster: "create-a-new-pool-in-a-cluster"
+   --1--Configure advanced settings: "configure-advanced-pool-settings"
+   --2--Kubelet configuration: "kubelet-configuration"
+   --2--CRIO configuration: "container-runtime-interface-configuration"
 pageTitle: Create a new pool | Gcore
 pageDescription: Learn how to create a new pool in a Kubernetes cluster. 
 ---
@@ -158,11 +163,11 @@ Memory resource reservation:
 
 Determines whether the Kubelet should start if the Linux kernel swap space is enabled on the host machine.
 
-### Container runtime interface configuration (CRI-O) 
+### Container runtime interface configuration 
 
-Adjust container runtime settings and specify how containers are executed and managed within the Kubernetes environment.
+Adjust container runtime settings (CRI-O) and specify how containers are executed and managed within the Kubernetes environment.
 
-<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/advanced-crio-settings.png" alt="Cri-O configuration in the advanced settings for Kubrnetes cluster" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster/crio-settings.png" alt="Cri-O configuration in the advanced settings for Kubrnetes cluster" width="80%">
 
 #### Container capabilities
 
