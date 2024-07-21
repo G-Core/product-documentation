@@ -15,7 +15,8 @@ toc:
    --1--7. Add SSH key: "step-7-add-a-ssh-key"
    --1--8. Specify cluster name: "step-8-specify-a-cluster-name"
    --1--9. Configure logging: "step-9-optional-configure-logging"
-   --1--10. Finalize: "step-10-finalize"
+   --1--10. Configure advanced settings: "step-10-optional-configure-advanced-settings"
+   --1--11. Finalize: "step-10-finalize"   
 pageTitle: Create a Kubernetes cluster | Gcore
 pageDescription: Learn how to create a Kubernetes cluster on a Virtual Machine or a Bare Metal server.
 ---
@@ -48,6 +49,7 @@ Under the **Pools** block, configure a pool. A pool is a set of cluster nodes wi
 - Enter the Pool name.
 - Set the minimum nodes and maximum nodes for <a href="https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling" target="_blank">autoscaling</a>.
 - Select the type of a worker node: Virtual Machine or Bare Metal.  
+- (Optional) Configure advanced pool settings. For an overview of advanced settings, check out the <a herf="https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/create-a-new-pool-in-cluster" target="_blank">Create and configure a pool</a> guide. 
 
 <tabset-element>
 
@@ -96,10 +98,31 @@ If you want to [enable an IPv6 dual-stack](https://gcore.com/docs/cloud/kubernet
 
 ## Step 5. Select the CNI Provider 
 
-Choose either the *Cilium* or *Calico* network stack. These provide networking and network security solutions for containers.
+Choose either the Cilium or Calico network stack. These provide networking and network security solutions for containers.
 
 - Cilium uses eBPF to inject functionality into the kernel and provides a broader range of additional features (load balancing, advanced security, failure detection, etc.) than Calico. You can add additional functions as required by checking the relevant box for DSR, tunneling, Load Balancer acceleration, and encryption.
-- Calico uses a more conservative stack based on iptables. 
+
+- Calico uses a more conservative stack based on iptables.
+
+You can also enable <a href="https://github.com/cilium/hubble-ui" target="_blank">Hubble UI</a> for the Cilium and use the graphical interface to check your cluster's network traffic. 
+
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/cni-provider.png" alt="Enable CNI provider section" width="80%">
+
+(Optional) Set up the CIDR range for pods in a cluster. The default ranges are: 
+
+Calico:
+
+* For pods: 172.16.0.0/18  
+
+* For services: 172.24.0.0/18  
+
+Cilium:
+
+* For pods: 172.16.0.0/17  
+
+* For services: 172.24.0.0/17 
+
+Your CIRD range can't overlap with the following ranges: 10.255.255.0/24, 192.168.128.0/17. These ranges are reserved for internal usage.   
 
 <alert-element type="warning" title="Warning">
 
@@ -176,7 +199,13 @@ Managed Logging is a paid feature that allows you to collect and store Kubernete
 
 <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/create-a-kubernetes-cluster/logging-cluster.png" alt="Logging for Cluster" width="70%">
 
-## Step 10. Finalize
+## Step 10. (Optional) Configure advanced settings  
+
+Enable OIDC authentication for your cluster. Follow instructions from the <a href="https://gcore.com/docs/cloud/kubernetes/clusters/secure-cluster-with-oidc" target="_blank">Secure Kubernetes cluster with OIDC authentication</a> guide. 
+
+You can also configure cluster autoscaler settings that will apply to the entire Kubernetes cluster and affect all nodes. For detailed overview of each configuration, check out <a href="https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/advanced-cluster-autoscaler-settings" target="_blank">Advanced Cluster Autoscaler settings</a>. 
+
+## Step 11. Finalize
 
 Check the cluster settings on the right side of the screen. If everything is correct, click **Create cluster**. 
 

@@ -1,6 +1,6 @@
 ---
 title: advanced-cluster-autoscaler-settings
-displayName: Advanced settings
+displayName: Advanced autoscaler settings
 published: true
 order: 35
 toc:
