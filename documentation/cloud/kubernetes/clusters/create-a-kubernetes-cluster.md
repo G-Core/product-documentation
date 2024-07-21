@@ -16,7 +16,7 @@ toc:
    --1--8. Specify cluster name: "step-8-specify-a-cluster-name"
    --1--9. Configure logging: "step-9-optional-configure-logging"
    --1--10. Configure advanced settings: "step-10-optional-configure-advanced-settings"
-   --1--11. Finalize: "step-10-finalize"   
+   --1--11. Finalize: "step-11-finalize"   
 pageTitle: Create a Kubernetes cluster | Gcore
 pageDescription: Learn how to create a Kubernetes cluster on a Virtual Machine or a Bare Metal server.
 ---
