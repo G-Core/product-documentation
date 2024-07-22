@@ -2,6 +2,8 @@
 title: streaming-platform
 displayName: Video Streaming
 published: true
+pageTitle: Gcore Video Streaming documentation page | Gcore
+pageDescription: Explore Gcore Video Streaming functionality and learn how to transcode and deliver media content in different formats.
 ---
 # Video Streaming
 

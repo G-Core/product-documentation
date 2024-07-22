@@ -2,6 +2,8 @@
 title: ddos-protection
 displayName: DDoS Protection
 published: true
+pageTitle: Gcore DDoS Protection documentation page | Gcore
+pageDescription: Explore Gcore DDoS Protection functionality and learn how to safeguard your servers and Virtual Machines against DDoS attacks.
 ---
 # DDoS Protection
 

@@ -1,15 +1,17 @@
 ---
 title: storage
-displayName: Object Storage
+displayName: Storage
 published: true
+pageTitle: Gcore Storage documentation page | Gcore
+pageDescription: Explore Gcore Storage functionality and learn how to configure Object and SFTP storage.
 ---
-# Object Storage
+# Storage
 
-Welcome to the <a href="https://gcore.com/storage" target="_blank">Gcore Object Storage</a> documentation page! Here we explain how to use, configure, and troubleshoot Gcore Object Storage.
+Welcome to the <a href="https://gcore.com/storage" target="_blank">Gcore Storage</a> documentation page! Here we explain how to use, configure, and troubleshoot Gcore Storage.
 
-Object Storage is an S3 or SFTP service that lets you store various types of data (media files, logs, backups, etc.) on Gcore's digital data storage hardware.
+Gcore Storage is an S3 or SFTP service that lets you store various types of data (media files, logs, backups, etc.) on Gcore's digital data storage hardware.
 
-From the left-side menu, you can access in-depth documentation about Object Storage:
+From the left-side menu, you can access in-depth documentation about Gcore Storage:
 
 - **Create Object Storage** – create Object Storage or SFTP storage
 - **Billing** – tariff plans, limits, billing rules

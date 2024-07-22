@@ -2,6 +2,8 @@
 title: hosting
 displayName: Hosting
 published: true
+pageTitle: Gcore Hosting documentation page | Gcore
+pageDescription: Explore Gcore Hosting functionality and learn how to configure Virtual and Dedicated Servers.
 ---
 # Hosting
 

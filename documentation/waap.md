@@ -2,6 +2,8 @@
 title: WAAP
 displayName: WAAP
 published: true
+pageTitle: Gcore Web Application and API Protection documentation page | Gcore
+pageDescription: Explore Gcore Web Application and API Protection functionality and learn how to configure Layer 7 DDoS and bot protection, web application firewall, and API protection for your domain.
 ---
 # WAAP
 

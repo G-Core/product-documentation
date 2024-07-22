@@ -2,6 +2,8 @@
 title: account-settings
 displayName: Account Settings
 published: true
+pageTitle: Gcore Account Settings documentation page | Gcore
+pageDescription: Learn how Gcore Customer Portal is arranged and how to set up your account.
 ---
 # Account settings
 

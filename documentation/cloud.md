@@ -2,6 +2,8 @@
 title: cloud
 displayName: Edge Cloud
 published: true
+pageTitle: Gcore Edge Cloud documentation page | Gcore
+pageDescription: Explore Gcore Edge Cloud functionality and learn how to create and manage cloud resources.
 ---
 # Cloud
 
