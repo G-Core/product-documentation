@@ -2,6 +2,8 @@
 title: web-security
 displayName: Web Application Security
 published: true
+pageTitle: Gcore Web Application Security documentation page | Gcore
+pageDescription: Explore Gcore Web Application Security functionality and learn how to protect your web applications against DDoS attacks, hacking threats, and malicious bot activities.
 ---
 # Web Application Security
 

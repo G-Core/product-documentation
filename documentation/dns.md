@@ -2,6 +2,8 @@
 title: dns
 displayName: Managed DNS
 published: true
+pageTitle: Gcore Managed DNS documentation page | Gcore
+pageDescription: Explore Gcore Managed DNS functionality and learn how to manage domain DNS records.
 ---
 # Managed DNS
 
