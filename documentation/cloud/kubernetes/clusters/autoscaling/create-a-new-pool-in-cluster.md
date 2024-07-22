@@ -35,7 +35,7 @@ You can create a pool <a href="https://gcore.com/docs/cloud/kubernetes/clusters/
 
 * Set the minimum nodes and maximum nodes for <a href="https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/about-autoscaling" target="_blank">autoscaling</a>. Autoscaling will regulate the number of nodes within the specified limits by removing unnecessary nodes during low load and deploying new ones during high loads. 
 
-* Select the type of a worker node: a <a href="https://gcore.com/docs/cloud/virtual-instances/types-of-virtual-machines" target="_blank">Virtual Machine</a> (VM) or a <a href="https://gcore.com/docs/cloud/bare-metal-servers/create-a-bare-metal-servers" target="_blank">Bare Metal server</a>. For VMs, you should select a flavor, volume size in GiB, and the <a href="https://gcore.com/docs/cloud/virtual-instances/volumes/about-volumes#available-volume-types" target="_blank">volume type</a>.  
+* Select the type of a worker node: a <a href="https://gcore.com/docs/cloud/virtual-instances/types-of-virtual-machines" target="_blank">Virtual Machine</a> (VM) or a <a href="https://gcore.com/docs/cloud/bare-metal-servers/create-a-bare-metal-server" target="_blank">Bare Metal server</a>. For VMs, you should select a flavor, volume size in GiB, and the <a href="https://gcore.com/docs/cloud/virtual-instances/volumes/about-volumes#available-volume-types" target="_blank">volume type</a>.  
 
 * Choose the relevant <a href="https://gcore.com/docs/cloud/virtual-instances/placement-groups/configure-a-placement-group" target="_blank">placement policy</a>: affinity, anti-affinity soft, or anti-affinity hard. 
 
