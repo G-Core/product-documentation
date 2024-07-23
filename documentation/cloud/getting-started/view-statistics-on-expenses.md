@@ -5,7 +5,7 @@ published: true
 order: 30
 toc:
    --1--Cost Report: "cost-report"
-   --2--Download Cost Report: "download-cost-report-data "
+   --2--Download Cost Report: "download-cost-report-data"
    --1--Reservation Cost Report: "reservation-cost-report"
    --2--Download Reservation Cost Report: "download-reservation-cost-report-data"
 pageTitle: Cost reports| Gcore
