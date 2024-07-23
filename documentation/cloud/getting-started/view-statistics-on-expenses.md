@@ -4,12 +4,10 @@ displayName: Cost reports
 published: true
 order: 30
 toc:
---1--Cost Report: "cost-report"
---2--Download Cost Report: "download-cost-report-data "
---3--Detailed CSV report: "detailed-csv-report"
---3--Summary CSV report: "summary-csv-report"
---1--Reservation Cost Report: "reservation-cost-report"
---2--Download Reservation Cost Report: "download-reservation-cost-report-data"
+   --1--Cost Report: "cost-report"
+   --2--Download Cost Report: "download-cost-report-data "
+   --1--Reservation Cost Report: "reservation-cost-report"
+   --2--Download Reservation Cost Report: "download-reservation-cost-report-data"
 pageTitle: Cost reports| Gcore
 pageDescription: Learn how to how to view your expenses on Gcore Edge Cloud resources.
 ---
@@ -28,7 +26,7 @@ Consider that statistics for the last hour might contain incomplete data. For ac
 
 <alert-element type="info" title="Info">
  
-This report doesn't contain information about prepaid resources. If you have any resource reservations, check the Reservation Cost Report for accurate cost data. 
+This report doesn't contain information about prepaid resources. If you have any resource reservations, check the <a href="https://gcore.com/docs/cloud/getting-started/view-statistics-on-expenses#reservation-cost-report" target="_blank">Reservation Cost Report</a> for accurate cost data. 
 
 </alert-element>
 
@@ -98,82 +96,82 @@ The following table describes what information is included in the **Detailed** C
 <table>
 <thead>
   <tr>
-    <th>Column</th>
-    <th>Description</th>
+    <th style="text-align: left"><b>Column</b></th>
+    <th style="text-align: left"><b>Description</b></th>
   </tr>
 </thead>
 <tbody>
 <tr>
-    <td>Service</td>
-    <td>A name of the Cloud resource that you’ve used.</td>
+    <td style="text-align: left">Service</td>
+    <td style="text-align: left">A name of the Cloud resource that you’ve used.</td>
 </tr>
 <tr>
-    <td>UUID</td>
-    <td>A universally unique identifier assigned to the resource. Some resources, like IP addresses, don't have a UUID as they’re already unique.</td>
+    <td style="text-align: left">UUID</td>
+    <td style="text-align: left">A universally unique identifier assigned to the resource. Some resources, like IP addresses, don't have a UUID as they’re already unique.</td>
 </tr>
 <tr>
-    <td>Feature</td>
-    <td>If a resource has multiple configurations (flavors), such as <a href="https://gcore.com/docs/cloud/virtual-instances/volumes/about-volumes#available-volume-types" target="_blank">different volume types</a>, it’ll be specified in this column.</td>
+    <td style="text-align: left">Feature</td>
+    <td style="text-align: left">If a resource has multiple configurations (flavors), such as <a href="https://gcore.com/docs/cloud/virtual-instances/volumes/about-volumes#available-volume-types" target="_blank">different volume types</a>, it’ll be specified in this column.</td>
 </tr>
 <tr>
-    <td>Tags</td>
-    <td>If you added any tags to the resource, they’ll appear in this column. This column also presents system-generated tags.</td>
+    <td style="text-align: left">Tags</td>
+    <td style="text-align: left">If you added any tags to the resource, they’ll appear in this column. This column also presents system-generated tags.</td>
 </tr>
 <tr>
-    <td>Service_name</td>
-    <td>Name of the service, which is also displayed in the <strong>Name</strong> field in the UI. For example, name of a Virtual Machine.</td>
+    <td style="text-align: left">Service_name</td>
+    <td style="text-align: left">Name of the service, which is also displayed in the <strong>Name</strong> field in the UI. For example, name of a Virtual Machine.</td>
 </tr>
 <tr>
-    <td>Region_id</td>
-    <td>ID of a region where the resource has been created. You can check the ID via <a herf="https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionInstanceHandler.get" target="_blank">API</a>.</td>
+    <td style="text-align: left">Region_id</td>
+    <td style="text-align: left">ID of a region where the resource has been created. You can check the ID via <a herf="https://api.gcore.com/docs/cloud#tag/Regions" target="_blank">API</a>.</td>
 </tr>
 <tr>
-    <td>Region_name</td>
-    <td>Name of a geographical location of the data center where the resource has been created.</td>
+    <td style="text-align: left">Region_name</td>
+    <td style="text-align: left">Name of a geographical location of the data center where the resource has been created.</td>
 </tr>
 <tr>
-    <td>Project_id</td>
-    <td>ID of a project where the resource has been created. Your project ID is displayed on the <strong>Projects</strong> page, in the <a href="https://gcore.com/docs/cloud/getting-started/projects/create-a-project#view-projects-in-different-layouts" target="_blank">grid view</a>.</td>
+    <td style="text-align: left">Project_id</td>
+    <td style="text-align: left">ID of a project where the resource has been created. Your project ID is displayed on the <strong>Projects</strong> page, in the <a href="https://gcore.com/docs/cloud/getting-started/projects/create-a-project#view-projects-in-different-layouts" target="_blank">grid view</a>.</td>
 </tr>
 <tr>
-    <td>Project_name</td>
-    <td>Name of a project where the resource has been created.</td>
+    <td style="text-align: left">Project_name</td>
+    <td style="text-align: left">Name of a project where the resource has been created.</td>
 </tr>
 <tr>
-    <td>Period_from</td>
-    <td>The start date of the resource usage.</td>
+    <td style="text-align: left">Period_from</td>
+    <td style="text-align: left">The start date of the resource usage.</td>
 </tr>
 <tr>
-    <td>Period_to</td>
-    <td>The end date of the resource usage.</td>
+    <td style="text-align: left">Period_to</td>
+    <td style="text-align: left">The end date of the resource usage.</td>
 </tr>
 <tr>
-    <td>Units</td>
-    <td>The consumption measurement unit. It can be represented as the usage time, such as gbminutes, minutes, milliseconds (MLS), or as the number of consumed resources, measured in bytes or GBS.</td>
+    <td style="text-align: left">Units</td>
+    <td style="text-align: left">The consumption measurement unit. It can be represented as the usage time, such as gbminutes, minutes, milliseconds (MLS), or as the number of consumed resources, measured in bytes or GBS.</td>
 </tr>
 <tr>
-    <td>Value</td>
-    <td>The numerical measurement of resource usage.</td>
+    <td style="text-align: left">Value</td>
+    <td style="text-align: left">The numerical measurement of resource usage.</td>
 </tr>
 <tr>
-    <td>Error</td>
-    <td>Any errors associated with the resource usage during the specified period.</td>
+    <td style="text-align: left">Error</td>
+    <td style="text-align: left">Any errors associated with the resource usage during the specified period.</td>
 </tr>
 <tr>
-    <td>Cost</td>
-    <td>Cost of the resource for the specified period.</td>
+    <td style="text-align: left">Cost</td>
+    <td style="text-align: left">Cost of the resource for the specified period.</td>
 </tr>
 <tr>
-    <td>Currency</td>
-    <td>The type of currency in which the cost is calculated.</td>
+    <td style="text-align: left">Currency</td>
+    <td style="text-align: left">The type of currency in which the cost is calculated.</td>
 </tr>
 <tr>
-    <td>Attached_to</td>
-    <td>A Cloud product to which the resource has been connected. For instance, it can be an ID of a Virtual Machine that the volume has been attached to.</td>
+    <td style="text-align: left">Attached_to</td>
+    <td style="text-align: left">A Cloud product to which the resource has been connected. For instance, it can be an ID of a Virtual Machine that the volume has been attached to.</td>
 </tr>
 <tr>
-    <td>Port_id</td>
-    <td>A unique identifier for a network virtual port of a VM. It's used to associate IP addresses and traffic with specific network connections.</td>
+    <td style="text-align: left">Port_id</td>
+    <td style="text-align: left">A unique identifier for a network virtual port of a VM. It's used to associate IP addresses and traffic with specific network connections.</td>
 </tr>
 </tbody>
 </table>
@@ -185,58 +183,57 @@ The following table explains what information is included in the **Totals** CSV 
 <table>
 <thead>
 <tr>
-    <th>Column</th>
-    <th>Description</th>
+    <th style="text-align: left"><b>Column</b></th>
+    <th style="text-align: left"><b>Description</b></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-    <td>Type</td>
-    <td>The Cloud resource that you’ve used.</td>
+    <td style="text-align: left">Type</td>
+    <td style="text-align: left">The Cloud resource that you’ve used.</td>
 </tr>
 <tr>
-    <td>Feature</td>
-    <td>If a resource has multiple configurations (flavors), such as <a href="https://gcore.com/docs/cloud/virtual-instances/volumes/about-volumes#available-volume-types" target="_blank">different volume types</a>, it’ll be specified in this column.</td>
+    <td style="text-align: left">Feature</td>
+    <td style="text-align: left">If a resource has multiple configurations (flavors), such as <a href="https://gcore.com/docs/cloud/virtual-instances/volumes/about-volumes#available-volume-types" target="_blank">different volume types</a>, it’ll be specified in this column.</td>
 </tr>
 <tr>
-    <td>Region_id</td>
-    <td>ID of a region where the resource has been created. You can check the ID via <a herf="https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionInstanceHandler.get" target="_blank">API</a>.</td>
+    <td style="text-align: left">Region_id</td>
+    <td style="text-align: left">ID of a region where the resource has been created. You can check the ID via <a herf="https://api.gcore.com/docs/cloud#tag/Regions" target="_blank">API</a>.</td>
 </tr>
 <tr>
-    <td>Region_name</td>
-    <td>Name of a geographical location of the data center where the resource has been created.</td>
+    <td style="text-align: left">Region_name</td>
+    <td style="text-align: left">Name of a geographical location of the data center where the resource has been created.</td>
 </tr>
 <tr>
-    <td>Period_from</td>
-    <td>The start date of the resource usage.</td>
+    <td style="text-align: left">Period_from</td>
+    <td style="text-align: left">The start date of the resource usage.</td>
 </tr>
 <tr>
-    <td>Period_to</td>
+    <td style="text-align: left">Period_to</td>
     <td>The end date of the resource usage.</td>
 </tr>
 <tr>
-    <td>Units</td>
-    <td>The consumption measurement unit. It can be represented as the usage time, such as gbminutes, minutes, milliseconds (MLS), or as the number of consumed resources, measured in bytes or GBS.</td>
+    <td style="text-align: left">Units</td>
+    <td style="text-align: left">The consumption measurement unit. It can be represented as the usage time, such as gbminutes, minutes, milliseconds (MLS), or as the number of consumed resources, measured in bytes or GBS.</td>
 </tr>
 <tr>
-    <td>Value</td>
-    <td>The numerical measurement of resource usage.</td>
+    <td style="text-align: left">Value</td>
+    <td style="text-align: left">The numerical measurement of resource usage.</td>
 </tr>
 <tr>
-    <td>Error</td>
-    <td>Any errors associated with the resource usage during the specified period.</td>
+    <td style="text-align: left">Error</td>
+    <td style="text-align: left">Any errors associated with the resource usage during the specified period.</td>
 </tr>
 <tr>
-    <td>Cost</td>
-    <td>Cost of the resource during the specified period.</td>
+    <td style="text-align: left">Cost</td>
+    <td style="text-align: left">Cost of the resource during the specified period.</td>
 </tr>
 <tr>
-    <td>Currency</td>
-    <td>The type of currency in which the cost is calculated.</td>
+    <td style="text-align: left">Currency</td>
+    <td style="text-align: left">The type of currency in which the cost is calculated.</td>
 </tr>
 </tbody>
 </table>
-
 </tabset-element>
 
 ## Reservation Cost Report 
@@ -291,58 +288,58 @@ The following table explains what information is included in the **Totals** file
 <table>
 <thead>
 <tr>
-    <th>Column</th>
-    <th>Description</th>
+    <th style="text-align: left"><b>Column</b></th>
+    <th style="text-align: left"><b>Description</b></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-    <td>Type</td>
-    <td>The Cloud resource that you’ve reserved for usage.</td>
+    <td style="text-align: left">Type</td>
+    <td style="text-align: left">The Cloud resource that you’ve reserved for usage.</td>
 </tr>
 <tr>
-    <td>Feature</td>
-    <td>If a resource has multiple configurations (flavors), such as <a href="https://gcore.com/docs/cloud/virtual-instances/volumes/about-volumes#available-volume-types" target="_blank">different volume types</a>, it’ll be specified in this column.</td>
+    <td style="text-align: left">Feature</td>
+    <td style="text-align: left">If a resource has multiple configurations (flavors), such as <a href="https://gcore.com/docs/cloud/virtual-instances/volumes/about-volumes#available-volume-types" target="_blank">different volume types</a>, it’ll be specified in this column.</td>
 </tr>
 <tr>
-    <td>Region_id</td>
-    <td>ID of a region where the resource has been reserved. You can check the ID via <a herf="https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionInstanceHandler.get" target="_blank">API</a>.</td>
+    <td style="text-align: left">Region_id</td>
+    <td style="text-align: left">ID of a region where the resource has been reserved. You can check the ID via <a herf="https://api.gcore.com/docs/cloud#tag/Regions" target="_blank">API</a>.</td>
 </tr>
 <tr>
-    <td>Region_name</td>
-    <td>Name of a geographical location of the data center where the resource has been reserved.</td>
+    <td style="text-align: left">Region_name</td>
+    <td style="text-align: left">Name of a geographical location of the data center where the resource has been reserved.</td>
 </tr>
 <tr>
-    <td>Period</td>
-    <td>The timeframe for the displayed statistics.</td>
+    <td style="text-align: left">Period</td>
+    <td style="text-align: left">The timeframe for the displayed statistics.</td>
 </tr>
 <tr>
-    <td>Units</td>
-    <td>The unit in which your resources are measured. It can be represented as the usage time, such as gbminutes, minutes, milliseconds (MLS), or as the number of consumed resources, measured in bytes or GBS.</td>
+    <td style="text-align: left">Units</td>
+    <td style="text-align: left">The unit in which your resources are measured. It can be represented as the usage time, such as gbminutes, minutes, milliseconds (MLS), or as the number of consumed resources, measured in bytes or GBS.</td>
 </tr>
 <tr>
-    <td>Value</td>
-    <td>Total consumed value.</td>
+    <td style="text-align: left">Value</td>
+    <td style="text-align: left">Total consumed value.</td>
 </tr>
 <tr>
-    <td>Commit value</td>
-    <td>Total amount of resources that have been reserved.</td>
+    <td style="text-align: left">Commit value</td>
+    <td style="text-align: left">Total amount of resources that have been reserved.</td>
 </tr>
 <tr>
-    <td>Commit cost</td>
-    <td>The cost for a reserved amount of cloud resources.</td>
+    <td style="text-align: left">Commit cost</td>
+    <td style="text-align: left">The cost for a reserved amount of cloud resources.</td>
 </tr>
 <tr>
-    <td>Overcommit cost</td>
-    <td>Additional charges incurred after the resource usage exceeded the committed (reserved) amount.</td>
+    <td style="text-align: left">Overcommit cost</td>
+    <td style="text-align: left">Additional charges incurred after the resource usage exceeded the committed (reserved) amount.</td>
 </tr>
 <tr>
-    <td>Error</td>
-    <td>Any errors associated with the reserved resource during the specified period.</td>
+    <td style="text-align: left">Error</td>
+    <td style="text-align: left">Any errors associated with the reserved resource during the specified period.</td>
 </tr>
 <tr>
-    <td>Currency</td>
-    <td>The type of currency in which the cost is calculated.</td>
+    <td style="text-align: left">Currency</td>
+    <td style="text-align: left">The type of currency in which the cost is calculated.</td>
 </tr>
 </tbody>
 </table>
