@@ -7,7 +7,7 @@ toc:
    --1--Transcoding with ABR: "what-is-transcoding-with-abr"
    --1--Audio and video codecs: "audio-and-video-codecs"
    --1--Output parameters: "output-parameters-after-transcoding"
-   --1--Custom settings: "how-to-apply-custom-advanced-settings"
+   --1--4K and custom settings: "how-to-apply-custom-advanced-settings"
    --1--HTTP response codes: "http-response-codes-when-requesting-live-and-vod-videos"
 pageTitle: Transcoding and Output Specs for Gcore Streams | Gcore
 pageDescription: Learn about Gcore's transcoding process, including details on file bitrates, frame rates, and codecs for different video quality levels.
@@ -54,14 +54,14 @@ A transcoded video stream has the following codecs by default:
 <td>-</td>
 </tr>
 <tr>
-<td>UHD 4K</td>
+<td>UHD 4K<span style="color:#FF5913">*</span></td>
 <td>3840 × 2160</td>
 <td>30</td>
 <td>14,000</td>
 <td>0,196</td>
 </tr>
 <tr>
-<td>QHD 2K</td>
+<td>QHD 2K<span style="color:#FF5913">*</span></td>
 <td>2560 × 1440</td>
 <td>30</td>
 <td>7,200</td>
@@ -142,15 +142,19 @@ The system health status page is available at [https://status.gcore.com/](https:
  
 </alert-element>
 
-## How to apply custom advanced settings
+## How to apply 2K/4K+ and custom advanced settings
 
-To apply the following custom settings, contact the [support team](mailto:support@gcore.com) or your manager:
+Some settings require manual control, so please contact us if you require them. Contact the [support team](mailto:support@gcore.com) or your manager. 
 
-- Use codecs H265 HEVC, VP9, AV1, etc.
-- Add 8K quality
-- Add super-low quality 144p
-- Change preset of output ABR qualities for all or some renditions, remove low-quality renditions
-- Use 60+ FPS or use original FPS values 
-- Increase bitrate for audio; use 48KHz
-- Use Dolby Digital, Dolby Atmos
-- Transmux and “pass-through” instead of transcoding for live streams
+2K/4K+ are not included by default in the transcoding quality preset on the basic tariff plan. Please see prices for high quality video processing. To work with high-quality video, you will be provided with new quality presets and a new tariff plan.
+
+Additionally, you can ask to activate the following settings:
+- Use codecs H265 HEVC, VP9, AV1, etc.,
+- Add 8K quality,
+- Add super-low quality 144p,
+- Change preset of output ABR qualities for all or some renditions, remove low-quality renditions,
+- Use 60+ FPS or use original FPS values,
+- Increase bitrate for audio; use 48KHz,
+- Use Dolby Digital, Dolby Atmos,
+- Transmux VOD MP4 files into HLS on the fly.
+- Transmux and “pass-through” instead of transcoding for LIVE streams.
