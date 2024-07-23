@@ -1,6 +1,6 @@
 ---
 title: add-certificates-to-load-balancer
-displayName: Add certificates to a Load Balancer
+displayName: Add TLS certificates to a Load Balancer
 published: true
 order: 13
 toc:
@@ -12,7 +12,7 @@ toc:
 pageTitle: Add multiple TLS certificates to a Load Balancer | Gcore
 pageDescription: Learn how to create and configure a load balancer with multiple TLS certificates.
 ---
-# Add multiple certificates to a Load Balancer 
+# Add TLS certificates to a Load Balancer 
 
 You can configure multiple TLS (Transport Layer Security) certificates for a single Load Balancer, which allows you to host several secure websites on a single IP address. 
 
