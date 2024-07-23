@@ -7,7 +7,7 @@ toc:
    --1--Transcoding with ABR: "what-is-transcoding-with-abr"
    --1--Audio and video codecs: "audio-and-video-codecs"
    --1--Output parameters: "output-parameters-after-transcoding"
-   --1--4K and custom settings: "how-to-apply-custom-advanced-settings"
+   --1--4K and custom settings: "how-to-apply-2K-4K-and-custom-advanced-settings"
    --1--HTTP response codes: "http-response-codes-when-requesting-live-and-vod-videos"
 pageTitle: Transcoding and Output Specs for Gcore Streams | Gcore
 pageDescription: Learn about Gcore's transcoding process, including details on file bitrates, frame rates, and codecs for different video quality levels.
@@ -144,9 +144,9 @@ The system health status page is available at [https://status.gcore.com/](https:
 
 ## How to apply 2K/4K+ and custom advanced settings
 
-Some settings require manual control, so please contact us if you require them. Contact the [support team](mailto:support@gcore.com) or your manager. 
+Some settings require manual control. If you need them, contact the Gcore [support team](mailto:support@gcore.com) or your manager. 
 
-2K/4K+ are not included by default in the transcoding quality preset on the basic tariff plan. Please see prices for high quality video processing. To work with high-quality video, you will be provided with new quality presets and a new tariff plan.
+The basic tariff plan doesn't include 2K/4K+ in the transcoding quality preset. For information about high-quality video processing costs, check our <a href="https://gcore.com/pricing/streaming-platform" target="_blank">pricing page</a>. To work with high-quality video, we'll provide you with new quality presets and a new tariff plan.
 
 Additionally, you can ask to activate the following settings:
 - Use codecs H265 HEVC, VP9, AV1, etc.,
