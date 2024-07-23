@@ -1,50 +1,348 @@
 ---
 title: view-statistics-on-expenses
-displayName: Statistics
+displayName: Cost reports
 published: true
 order: 30
 toc:
-pageTitle: View Expenses| Gcore
+--1--Cost Report: "cost-report"
+--2--Download Cost Report: "download-cost-report-data "
+--3--Detailed CSV report: "detailed-csv-report"
+--3--Summary CSV report: "summary-csv-report"
+--1--Reservation Cost Report: "reservation-cost-report"
+--2--Download Reservation Cost Report: "download-reservation-cost-report-data"
+pageTitle: Cost reports| Gcore
 pageDescription: Learn how to how to view your expenses on Gcore Edge Cloud resources.
 ---
-# View statistics on expenses
+# Cost reports
 
-Customer reports contain statistics on expenses for Edge Cloud services. The statistics can be found in the Customer reports section. 
+You can check information about Cloud resource usage and associated costs on the following pages: 
 
-![Finding Customer reports in the main menu](https://assets.gcore.pro/docs/cloud/getting-started/view-statistics-on-expenses/1-customer-reports-in-the-menu.png)
+* **Cost Report**: view costs for the Cloud resources you’ve used. This report shows data based on the Pay-As-You-Go pricing model and doesn’t include any costs associated with the prepaid resources (active commit features). 
+* **Reservation Cost Report**: check monthly resource usage and costs for both consumed and pre-paid resources.
 
-The section generates a report on projects and resources that allows you to accurately forecast expenses. 
+You can also get reports via <a href="https://api.gcore.com/docs/cloud#tag/Cost-Reports/operation/BillingReportHandler.post" target="_blank">API</a>.
 
- You can configure the filter by: 
+Consider that statistics for the last hour might contain incomplete data. For accuracy, we recommend reviewing cost information that was collected more than an hour ago. 
 
-* Project 
-
-* Region 
-
-* Resource type
-
-* Consumption period
-
-![Filters in customer reports](https://assets.gcore.pro/docs/cloud/getting-started/view-statistics-on-expenses/2-filters-in-customer-reports.png)
-
-Information is displayed in graphs separated by: 
-
-* Total balance used
-
-* Resource usage in hours
-
-* In Gigabyte-minutes by resources
-
-* The total number of outbound GBs and hours of using different flavors
-
-To switch between charts, click the tab name above the chart. 
-
-Under the graphical presentation, there is a table with a detailed report by resources consumed for the selected time period. 
+## Cost Report
 
 <alert-element type="info" title="Info">
-
-The price for each product during the selected time period is rounded down.
  
+This report doesn't contain information about prepaid resources. If you have any resource reservations, check the Reservation Cost Report for accurate cost data. 
+
 </alert-element>
 
-![Detailed customer reports](https://assets.gcore.pro/docs/cloud/getting-started/view-statistics-on-expenses/3-customer-reports-detailed.png)
+This report contains data about each Cloud resource you’ve used, which also allows you to forecast pay-as-you-go expenses more accurately.  
+
+You can filter the cost data by:  
+
+* **Project**: View costs for all your projects or just the selected ones. 
+
+* **Region**: Check costs for products created in all regions or just the selected ones. 
+
+* **Resource type**: View costs for the selected resource types. 
+
+* **Consumption period**: View costs for a week, two weeks, or a custom period. Consider that the maximum period you can select is one month.  
+
+The report also contains statistics for deleted projects and regions. To include resource costs from deleted projects, select the **Show deleted projects** checkbox. 
+
+<img src="https://assets.gcore.pro/docs/cloud/getting-started/view-statistics-on-expenses/cost-report-deleted-projects-checkbox.png" alt="Show deleted projects checkbox" width="80%">
+
+You can also choose to add inactive projects and regions from the relevant dropdown menu:
+
+<img src="https://assets.gcore.pro/docs/cloud/getting-started/view-statistics-on-expenses/projects-dropdown.png" alt="Projects dropdown expanded" width="80%">
+
+Cost statistics is dispalyed in a graph and table format. In the graph view, the **Total** tab displays the cumulative costs associated with each Cloud resource. 
+
+<img src="https://assets.gcore.pro/docs/cloud/getting-started/view-statistics-on-expenses/cost-report-graph.png" alt="Cost report graph with resource usage" width="80%">
+
+You can also check more granular statistics on the following tabs:  
+
+* Total balance used 
+* Resource usage in hours 
+* In Gigabyte-minutes by resources 
+* In Gigabyte-seconds by resources 
+* Millions of pieces
+* Gigabytes of used resources  
+* The total number of outbound GBs and hours of using different flavors 
+
+Under the graphical presentation, there is a table with more detailed information about resources consumed within a selected period. The table contains the following data: 
+
+* Resource name 
+* Resource type 
+* Region 
+* Project 
+* Usage 
+* First seen date 
+* Last seen date 
+* Cost 
+
+You can also use search to find the resource you need and check its usage.
+
+### Download Cost Report data 
+
+To export billing report for the selected period, click **Export CSV** in the top-right corner of the screen. You can download two types of files: 
+
+* **Detailed report**: a detailed breakdown of each resource you are using. 
+
+* **Totals**: the total cost of resources in each location.  
+
+<img src="https://assets.gcore.pro/docs/cloud/getting-started/view-statistics-on-expenses/cost-report-export-csv.png" alt="Export CSV dropdown with Detailed and Total options" width="80%">
+
+<tabset-element>
+
+#### Detailed CSV report 
+
+The following table describes what information is included in the **Detailed** CSV report file.  
+
+<table>
+<thead>
+  <tr>
+    <th>Column</th>
+    <th>Description</th>
+  </tr>
+</thead>
+<tbody>
+<tr>
+    <td>Service</td>
+    <td>A name of the Cloud resource that you’ve used.</td>
+</tr>
+<tr>
+    <td>UUID</td>
+    <td>A universally unique identifier assigned to the resource. Some resources, like IP addresses, don't have a UUID as they’re already unique.</td>
+</tr>
+<tr>
+    <td>Feature</td>
+    <td>If a resource has multiple configurations (flavors), such as <a href="https://gcore.com/docs/cloud/virtual-instances/volumes/about-volumes#available-volume-types" target="_blank">different volume types</a>, it’ll be specified in this column.</td>
+</tr>
+<tr>
+    <td>Tags</td>
+    <td>If you added any tags to the resource, they’ll appear in this column. This column also presents system-generated tags.</td>
+</tr>
+<tr>
+    <td>Service_name</td>
+    <td>Name of the service, which is also displayed in the <strong>Name</strong> field in the UI. For example, name of a Virtual Machine.</td>
+</tr>
+<tr>
+    <td>Region_id</td>
+    <td>ID of a region where the resource has been created. You can check the ID via <a herf="https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionInstanceHandler.get" target="_blank">API</a>.</td>
+</tr>
+<tr>
+    <td>Region_name</td>
+    <td>Name of a geographical location of the data center where the resource has been created.</td>
+</tr>
+<tr>
+    <td>Project_id</td>
+    <td>ID of a project where the resource has been created. Your project ID is displayed on the <strong>Projects</strong> page, in the <a href="https://gcore.com/docs/cloud/getting-started/projects/create-a-project#view-projects-in-different-layouts" target="_blank">grid view</a>.</td>
+</tr>
+<tr>
+    <td>Project_name</td>
+    <td>Name of a project where the resource has been created.</td>
+</tr>
+<tr>
+    <td>Period_from</td>
+    <td>The start date of the resource usage.</td>
+</tr>
+<tr>
+    <td>Period_to</td>
+    <td>The end date of the resource usage.</td>
+</tr>
+<tr>
+    <td>Units</td>
+    <td>The consumption measurement unit. It can be represented as the usage time, such as gbminutes, minutes, milliseconds (MLS), or as the number of consumed resources, measured in bytes or GBS.</td>
+</tr>
+<tr>
+    <td>Value</td>
+    <td>The numerical measurement of resource usage.</td>
+</tr>
+<tr>
+    <td>Error</td>
+    <td>Any errors associated with the resource usage during the specified period.</td>
+</tr>
+<tr>
+    <td>Cost</td>
+    <td>Cost of the resource for the specified period.</td>
+</tr>
+<tr>
+    <td>Currency</td>
+    <td>The type of currency in which the cost is calculated.</td>
+</tr>
+<tr>
+    <td>Attached_to</td>
+    <td>A Cloud product to which the resource has been connected. For instance, it can be an ID of a Virtual Machine that the volume has been attached to.</td>
+</tr>
+<tr>
+    <td>Port_id</td>
+    <td>A unique identifier for a network virtual port of a VM. It's used to associate IP addresses and traffic with specific network connections.</td>
+</tr>
+</tbody>
+</table>
+
+#### Summary CSV report 
+
+The following table explains what information is included in the **Totals** CSV report file. 
+
+<table>
+<thead>
+<tr>
+    <th>Column</th>
+    <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+    <td>Type</td>
+    <td>The Cloud resource that you’ve used.</td>
+</tr>
+<tr>
+    <td>Feature</td>
+    <td>If a resource has multiple configurations (flavors), such as <a href="https://gcore.com/docs/cloud/virtual-instances/volumes/about-volumes#available-volume-types" target="_blank">different volume types</a>, it’ll be specified in this column.</td>
+</tr>
+<tr>
+    <td>Region_id</td>
+    <td>ID of a region where the resource has been created. You can check the ID via <a herf="https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionInstanceHandler.get" target="_blank">API</a>.</td>
+</tr>
+<tr>
+    <td>Region_name</td>
+    <td>Name of a geographical location of the data center where the resource has been created.</td>
+</tr>
+<tr>
+    <td>Period_from</td>
+    <td>The start date of the resource usage.</td>
+</tr>
+<tr>
+    <td>Period_to</td>
+    <td>The end date of the resource usage.</td>
+</tr>
+<tr>
+    <td>Units</td>
+    <td>The consumption measurement unit. It can be represented as the usage time, such as gbminutes, minutes, milliseconds (MLS), or as the number of consumed resources, measured in bytes or GBS.</td>
+</tr>
+<tr>
+    <td>Value</td>
+    <td>The numerical measurement of resource usage.</td>
+</tr>
+<tr>
+    <td>Error</td>
+    <td>Any errors associated with the resource usage during the specified period.</td>
+</tr>
+<tr>
+    <td>Cost</td>
+    <td>Cost of the resource during the specified period.</td>
+</tr>
+<tr>
+    <td>Currency</td>
+    <td>The type of currency in which the cost is calculated.</td>
+</tr>
+</tbody>
+</table>
+
+</tabset-element>
+
+## Reservation Cost Report 
+
+This report presents information about your prepaid and <a href="https://gcore.com/docs/cloud/getting-started/resource-reservation/about-resource-reservation" target="_blank">reserved</a> resources, active commits, and costs for pay-as-you-go services.  
+
+Contrary to the Cost Report, the Reservation Cost Report doesn't show statistics for individual resources and you can only view total data collected for each month.  
+
+You can filter cost data by:  
+
+* **Region**: Check costs for products created in all regions or just the selected ones. 
+* **Resource type**: View costs for the selected resource types. 
+* **Consumption period**: View costs for a particular month.  
+
+The report also contains statistics for deleted projects and regions. To include costs from deleted projects, select the **Show deleted projects** checkbox. Alternatively, select inactive projects and regions from the relevant dropdown menu. 
+
+<img src="https://assets.gcore.pro/docs/cloud/getting-started/view-statistics-on-expenses/projects-dropdown-reservation.png" alt="Projects dropdown" width="80%">
+
+You can view cost data both as a chart or as a table, which contains more detailed information. In the chart view, the **Total** tab displays the cumulative costs associated with reserved Cloud resources. 
+
+<img src="https://assets.gcore.pro/docs/cloud/getting-started/view-statistics-on-expenses/reservation-cost-report.png" alt="Reservation cost report graph" width="80%">
+
+Additionally, you can check more granular information on the following tabs: 
+
+* Total € 
+* Hours 
+* GB Minutes 
+* Gigabyte-seconds 
+* Millions 
+* Gigabytes 
+* Flavors, hours 
+* Commit usage 
+
+Under the chart, there is a table with a detailed report of resources consumed during the selected timeframe. 
+
+* Resource type 
+* Region 
+* Commit: the number of reserved resources (active commitments) 
+* Usage 
+* Commit cost: fixed monthly costs for resources according to your plan.  
+* Overcommit cost: costs for overuse of resources within your plan. 
+* Total cost
+
+### Download Reservation Cost Report data 
+
+To export the billing report for the selected period, click **Export totals CSV** in the top-right corner of the screen.
+
+<img src="https://assets.gcore.pro/docs/cloud/getting-started/view-statistics-on-expenses/reservation-cost-report-export-csv.png" alt="Export reservation cost report button" width="80%">
+
+The following table explains what information is included in the **Totals** file CSV report file to reserved resources. 
+
+<table>
+<thead>
+<tr>
+    <th>Column</th>
+    <th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+    <td>Type</td>
+    <td>The Cloud resource that you’ve reserved for usage.</td>
+</tr>
+<tr>
+    <td>Feature</td>
+    <td>If a resource has multiple configurations (flavors), such as <a href="https://gcore.com/docs/cloud/virtual-instances/volumes/about-volumes#available-volume-types" target="_blank">different volume types</a>, it’ll be specified in this column.</td>
+</tr>
+<tr>
+    <td>Region_id</td>
+    <td>ID of a region where the resource has been reserved. You can check the ID via <a herf="https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionInstanceHandler.get" target="_blank">API</a>.</td>
+</tr>
+<tr>
+    <td>Region_name</td>
+    <td>Name of a geographical location of the data center where the resource has been reserved.</td>
+</tr>
+<tr>
+    <td>Period</td>
+    <td>The timeframe for the displayed statistics.</td>
+</tr>
+<tr>
+    <td>Units</td>
+    <td>The unit in which your resources are measured. It can be represented as the usage time, such as gbminutes, minutes, milliseconds (MLS), or as the number of consumed resources, measured in bytes or GBS.</td>
+</tr>
+<tr>
+    <td>Value</td>
+    <td>Total consumed value.</td>
+</tr>
+<tr>
+    <td>Commit value</td>
+    <td>Total amount of resources that have been reserved.</td>
+</tr>
+<tr>
+    <td>Commit cost</td>
+    <td>The cost for a reserved amount of cloud resources.</td>
+</tr>
+<tr>
+    <td>Overcommit cost</td>
+    <td>Additional charges incurred after the resource usage exceeded the committed (reserved) amount.</td>
+</tr>
+<tr>
+    <td>Error</td>
+    <td>Any errors associated with the reserved resource during the specified period.</td>
+</tr>
+<tr>
+    <td>Currency</td>
+    <td>The type of currency in which the cost is calculated.</td>
+</tr>
+</tbody>
+</table>
