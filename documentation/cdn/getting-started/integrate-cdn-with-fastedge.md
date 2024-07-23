@@ -69,6 +69,8 @@ Your application has been successfully deployed and can now be accessed through 
 
 #### Deploy a custom CDN application 
 
+If you want to deploy a FastEdge application from your own binary, check the examples of custom implementation in our repository: <a href="https://github.com/G-Core/FastEdge-examples" target="_blank">FastEdge application examples</a>. 
+
 To deploy a FastEdge application from your own binary:
 
 1\. In the Gcore Customer Portal, navigate to **Cloud** > **FastEdge**. 
