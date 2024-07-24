@@ -33,5 +33,5 @@ We use <a href="https://openai.com/research/whisper" target="_blank">Whisper ASR
 
 You can transcribe and translate subtitles in two ways: via API or in the Customer Portal. For step-by-step instructions, check out the relevant guide: 
 
-* <a href="https://gcore.com/docs/streaming-platform/video-hosting/ai-for-video/generate-ai-subtitles-and-add-them-to-video" target="_blank">Transcribe and translate captions in the Customer Portal</a>
-* <a href="" target="_blank">Transcribe and translate captions via API</a>
+* <a href="https://gcore.com/docs/streaming-platform/ai-video-service/generate-ai-subtitles-and-add-them-to-video/generate-captions-in-customer-portal" target="_blank">Transcribe and translate captions in the Customer Portal</a>
+* <a href="https://gcore.com/docs/streaming-platform/ai-video-service/generate-ai-subtitles-and-add-them-to-video/generate-captions-via-api" target="_blank">Transcribe and translate captions via API</a>

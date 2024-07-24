@@ -6,9 +6,9 @@ order:
 toc:
    --1--Generate captions: "generate-captions-from-the-original-video"
    --2--1. Choose a video: "step-1-choose-a-video"
-   --2--2. Select the AI task: "step-2-select-the-ai-task"
-   --2--3. Select the audio language: "step-3-select-the-audio-language"
-   --2--4. Select the subtitles language: "step-4-select-the-subtitles-language"
+   --2--2. Select AI task: "step-2-select-ai-task"
+   --2--3. Select audio language: "step-3-select-audio-language"
+   --2--4. Select subtitles language: "step-4-select-subtitles-language"
    --2--5. Generate AI task: "step-5-generate-ai-task"
    --2--6. Download captions: "step-6-download-captions"               
    --1--AI task statuses: "ai-task-statuses"
@@ -35,19 +35,19 @@ You can upload any MP4 videos stored on Gcore video hosting or add links to any 
 
 * **Paste video origin URL**: If your video is stored externally, provide a URL to its location. Ensure that the video is accessible via HTTP or HTTPS protocols.
 
-To check the example of a correctly formatted URL, use the link under the field. It will autogenerate a sample URL and you can adjust your URL accordingly.
+   To check the example of a correctly formatted URL, use the link under the field. It will autogenerate a sample URL and you can adjust your URL accordingly.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/ai-video-services/generate-captions/example-url-link.png" alt="Example of the origin URL" width="80%">
+   <img src="https://assets.gcore.pro/docs/streaming-platform/ai-video-services/generate-captions/example-url-link.png" alt="Example of the origin URL" width="80%">
 
 * **Select from uploaded videos**: choose a video hosted on the Gcore platform.  
 
-### Step 2. Select the AI task 
+### Step 2. Select AI task 
 
 In the **Task type**, choose **Transcribe & Translate Captions**. 
 
 If you want to translate your video into multiple languages, create a separate task for each translation. 
 
-### Step 3. Select the audio language
+### Step 3. Select audio language
 
 In the **Audio language** dropdown, choose the video’s original language. You can keep the default **Auto-detect** option. The system will identify the language automatically. 
 

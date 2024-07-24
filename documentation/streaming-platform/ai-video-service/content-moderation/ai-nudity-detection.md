@@ -1,61 +1,51 @@
 ---
 title: ai-nudity detection
-displayName: Content moderation
+displayName: Hard nudity detection
 published: true
 order: 20
 toc:
    --1--How it works: "how-it-works"
    --1--Use cases: "use-cases"
 pageTitle: Guide to Gcore's AI video content moderation | Gcore
-pageDescription: Learn how to use Gcore's AI tasks for moderating video content to ensure it's suitable for your audience.
+pageDescription: Learn how to use Gcore's AI tasks to detect hard nudity in video content.
 customUrl: /streaming-platform/ai-video-service/ai-nudity-detection
 ---
-# Content moderation
+# Hard nudity detection
 
-Gcore AI content moderation is a powerful solution for analyzing and filtering video content. It detects inappropriate materials and ensures that delivered videos are safe and suitable for your users.  
+The hard nudity content moderation task detects explicit nudity of the human body (involving genitals) in a video. This method is often used to detect whether videos can be published to all users, or the publication should be prohibited due to offensive and inappropriate content. 
 
-You can also use content moderation to detect specific sports activities for better personalization or copyright protection.  
+This task detects fewer objects than soft-nudity detection. Hard nudity detection works faster and better when you only need to detect exposed body parts. For a full list of objects that can be detected with the soft nudity check, read our <a href="https://api.gcore.com/docs/streaming?_gl=1*1rw278g*_gcl_au*MTM0OTcwMzMxMC4xNzE3MTQ0ODk3*_ga*OTkwMzM5NjM4LjE3MDkxMDg3OTU.*_ga_Y79HRL8RPR*MTcyMTI4NzExMi4xMjIuMS4xNzIxMjg3MjMzLjYwLjAuMA..#tag/AI/operation/post_ai_contentmoderation_hardnudity" target="_blank">API documentation</a>. 
 
-Content types we detect in videos and images: 
+If hard nudity content is detected, the AI model will provide its confidence level (in percentage) of how sure it is that the content is hard nudity.  
 
-* Not safe for work (NSFW) materials 
-* Hard nudity 
-* Soft nudity 
-* Child Sexual Abuse Material (CSAM) 
-* Sport activities  
-* Weapons 
+To run the Hard nudity detection check: 
 
-## How it works 
+1\. In the Gcore Customer Portal, navigate to **Streaming** > **AI**. The **AI tasks** page will open.
 
-We run multiple AI models on our infrastructure to conduct real-time analysis of sensitive and restricted content types. After the video is processed, the original file is deleted from AI’s local storage. 
+<img src="https://assets.gcore.pro/docs/streaming-platform/ai-video-services/content-moderation/ai-tasks-page.png" alt="AI tasks page" width="80%">
 
-The content is detected by analyzing keyframes (iFrames) in a video. For example, if a keyframe is set every 2 seconds, the analyzis will occur at these intervals. Currently, we don’t detect objects between these timestamps. However, we’re working on a version to analyze more frames. 
+2\. In the **Origin URL** field, enter the link to your MP4 video. You have two options: 
 
-You can also process static images, where the duration of one picture is counted as 1 second. 
+* **Paste video origin URL**: If your video is stored externally, provide a URL to its location. Ensure that the video is accessible via HTTP or HTTPS protocols.  
 
-## Billing
+   To check the example of correctly formatted URL, use the link under the field. It will autogenerate a sample URL and you can adjust your URL accordingly. 
 
-Check out Gcore <a href="https://gcore.com/pricing/streaming-platform" target="_blank">pricing page</a> for detailed information about AI content moderation costs.
+   <img src="https://assets.gcore.pro/docs/streaming-platform/ai-video-services/content-moderation/example-url-link.png" alt="Example of the origin URL" width="80%">
 
-## Use cases 
+* **Select from uploaded videos**: choose a video hosted on the Gcore platform. 
 
-Video streaming & TV broadcasting:  
+3\. In the **Task type**, choose **Content moderation**. 
 
-* Ensure delivery of age-appropriate content and compliance with platform policies 
-* Identify illegal or potentially violent content in real-time 
+4\. In the following dropdown, select **Hard nudity detection**. 
 
-Broadcasting of sports events: 
+5\. Click **Generate task**.
 
-* Identify and tag specific sports and key moments in video content 
-* Create personalized content recommendations based on viewers' preferences 
+6\. Wait until the task is processed and has the **Sucess** status, click the task ID to view task details. 
 
-Video on demand (VOD) platforms: 
+7\. Check out the Task result field. You can have one of the following outputs: 
 
-* Block uploading of illegal materials 
-* Streamline content review process and enhance its accuracy 
+* **Hard nudity detection: not found**. This means that your video has no NSFW content. 
 
-## Assessing the probability of inappropriate content 
+* If some sensitive content is found, you’ll get the info about the detected element, relevant iFrame, and the confidence level in % of how sure AI is that this content is NSFW. For example, you can get the following output: *“FEMALE_BREAST_EXPOSED: detected at frame №2 with score 41%”address*. 
 
-There's no one-size-fits-all criterion or nudity score that can definitively determine whether a video is inappropriate. Different video hosting services cater to specific audiences such as adults, children, educational groups, etc. For instance, an acceptable nudity percentage for a site dedicated to sex education would be higher than for a hosting site that uploads entertainment videos intended for children. 
-
-You can set a probability threshold to determine when a video is inappropriate for your specific use case. One method is to run videos for one day and analyze the resulting probability coefficient.
+<img src="https://assets.gcore.pro/docs/streaming-platform/ai-video-services/content-moderation/hard-nudity-detection.png" alt="Hard nudity detection task details" width="80%">
