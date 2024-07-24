@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: Content Moderation
+displayName: Content moderation
 published: true
 order: 20
 ---
