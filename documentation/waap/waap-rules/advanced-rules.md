@@ -155,9 +155,9 @@ The advanced rule object contains the following properties:
 
 You can use our API documentation as a guide in constructing your own advanced rules. The following sections demonstrate a few examples of advanced rules created via our API using cURL. 
 
-### Rate limitation
+### Rate limiting
 
-Block IPs that hit more than 200 requests per 5 seconds (changeable) when the following cookies don't exist. You can find more examples in our Rate limitation guide. 
+Block IPs that hit more than 200 requests per 5 seconds (changeable) when the following cookies don't exist. You can find more examples in our Rate limiting guide. 
 
 ```
 curl --request POST \ 
