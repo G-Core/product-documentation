@@ -5,7 +5,9 @@ published: true
 order: 20
 toc:
    --1--How it works: "how-it-works"
+   --1--Billing: "billing"
    --1--Use cases: "use-cases"
+   --1--Probability of inappropriate content: "assessing-the-probability-of-inappropriate content"      
 pageTitle: Guide to Gcore's AI video content moderation | Gcore
 pageDescription: Learn how to use Gcore's AI tasks for moderating video content to ensure it's suitable for your audience.
 ---
@@ -17,12 +19,12 @@ You can also use content moderation to detect specific sports activities for bet
 
 Content types we detect in videos and images: 
 
-* Not safe for work (NSFW) materials 
-* Hard nudity 
-* Soft nudity 
-* Child Sexual Abuse Material (CSAM) 
-* Sport activities  
-* Weapons 
+* <a href="https://gcore.com/docs/streaming-platform/ai-video-service/content-moderation/nsfw-detection" target="_blank">Not safe for work (NSFW) materials</a>
+* <a href="https://gcore.com/docs/streaming-platform/ai-video-service/ai-nudity-detection" target="_blank">Hard nudity</a>
+* <a href="https://gcore.com/docs/streaming-platform/ai-video-service/content-moderation/soft-nudity-detection" target="_blank">Soft nudity</a>
+* <a href="https://gcore.com/docs/streaming-platform/ai-video-service/content-moderation/casm-detection" target="_blank">Child Sexual Abuse Material (CSAM)</a>
+* <a href="https://gcore.com/docs/streaming-platform/ai-video-service/content-moderation/sport-detection" target="_blank">Sport activities</a> 
+* <a href="https://gcore.com/docs/streaming-platform/ai-video-service/content-moderation/weapon-detection" target="_blank">Weapons</a>
 
 ## How it works 
 
