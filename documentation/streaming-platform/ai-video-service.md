@@ -12,9 +12,9 @@ customUrl: /streaming-platform/video-hosting/ai-video-service
 
 Gcore Video Streaming offers advanced video processing features for both video on demand (VOD) and live streaming: 
 
-* Transcription and translation of captions. Our AI Automated Speech Recognition (AI ASR) feature generates and translates subtitles to a wide range of supported languages, making your videos accessible to users around the globe. 
+* **Transcription and translation of captions**. Our AI Automated Speech Recognition (AI ASR) feature generates and translates subtitles to a wide range of supported languages, making your videos accessible to users around the globe. 
 
-* Content moderation. We analyze videos for nudity, offensive language, or violence to ensure that your audience receives safe and appropriate content. 
+* **Content moderation**. We analyze videos for nudity, offensive language, or violence to ensure that your audience receives safe and appropriate content. 
 
 Our suite of AI-powered video services is comprehensive and fully managed, ensuring seamless integration into your video streaming workflow. 
 
