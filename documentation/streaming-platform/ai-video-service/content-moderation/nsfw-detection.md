@@ -2,7 +2,7 @@
 title: nsfw-detection
 displayName: NSFW detection
 published: true
-order: 40
+order: 10
 pageTitle: Not safe for work content detection in videos | Gcore
 pageDescription: Learn how to use Gcore's AI tasks to detect not safe for work content in videos hosted on the Gcore's platform or externally.
 ---

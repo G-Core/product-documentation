@@ -2,7 +2,7 @@
 title: casm-detection
 displayName: Child sexual abuse materials
 published: true
-order: 
+order: 40
 pageTitle: Child sexual abuse materials detection in videos | Gcore
 pageDescription: Learn how to use Gcore's AI tasks to detect child sexual abuse materials in videos hosted on the Gcore's platform or externally.
 ---
