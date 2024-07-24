@@ -50,7 +50,7 @@ If WAAP is in monitor mode, then the request will receive the “200 OK” statu
 
 ```
 
-curl -I https://c8k3p3x4.stackpathcdn.com 
+curl -I https://c8k3p3x4.cdn.gcore.com 
 
  HTTP/2 200 
 
@@ -60,7 +60,7 @@ curl -I https://c8k3p3x4.stackpathcdn.com
 If WAAP is in protect mode, the request will receive the “403 Forbidden” status code: 
 
 ```
-curl -I https://c8k3p3x4.stackpathcdn.com 
+curl -I https://c8k3p3x4.cdn.gcore.com 
 
  HTTP/2 403  
 
