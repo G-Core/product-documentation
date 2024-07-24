@@ -3,11 +3,8 @@ title: ai-nudity detection
 displayName: Hard nudity detection
 published: true
 order: 20
-toc:
-   --1--How it works: "how-it-works"
-   --1--Use cases: "use-cases"
-pageTitle: Guide to Gcore's AI video content moderation | Gcore
-pageDescription: Learn how to use Gcore's AI tasks to detect hard nudity in video content.
+pageTitle: Hard nudity content detection in videos | Gcore
+pageDescription: Learn how to use Gcore's AI tasks to detect hard nudity in videos hosted on the Gcore's platform or externally.
 customUrl: /streaming-platform/ai-video-service/ai-nudity-detection
 ---
 # Hard nudity detection
@@ -42,10 +39,10 @@ To run the Hard nudity detection check:
 
 6\. Wait until the task is processed and has the **Sucess** status, click the task ID to view task details. 
 
-7\. Check out the Task result field. You can have one of the following outputs: 
+7\. Check out the **Task result** field. You can have one of the following outputs: 
 
-* **Hard nudity detection: not found**. This means that your video has no NSFW content. 
+* **Hard nudity detection: not found**. This means that your video has no hard nudity content. 
 
-* If some sensitive content is found, you’ll get the info about the detected element, relevant iFrame, and the confidence level in % of how sure AI is that this content is NSFW. For example, you can get the following output: *“FEMALE_BREAST_EXPOSED: detected at frame №2 with score 41%”address*. 
+* If some sensitive content is found, you’ll get the info about the detected element, relevant iFrame, and the confidence level in % of how sure AI is that this content is hard nudity. For example, you can get the following output: *“FEMALE_BREAST_EXPOSED: detected at frame №2 with score 41%”address*. 
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/ai-video-services/content-moderation/hard-nudity-detection.png" alt="Hard nudity detection task details" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/ai-video-services/content-moderation/hard-nudity-detection.png" alt="Hard nudity detection task details" width="70%">

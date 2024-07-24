@@ -2,7 +2,7 @@
 title: generate-captions-in-customer-portal
 displayName: In the Customer Portal
 published: true
-order:
+order: 10
 toc:
    --1--Generate captions: "generate-captions-from-the-original-video"
    --2--1. Choose a video: "step-1-choose-a-video"
