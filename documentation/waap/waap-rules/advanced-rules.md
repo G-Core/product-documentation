@@ -157,11 +157,11 @@ You can use our API documentation as a guide in constructing your own advanced r
 
 ### Rate limiting
 
-Block IPs that hit more than 200 requests per 5 seconds (changeable) when the following cookies don't exist. You can find more examples in our Rate limiting guide. 
+Block IPs that hit more than 200 requests per 5 seconds (changeable) when the following cookies don't exist. You can find more examples in our Rate limiting guide.
 
 ```
 curl --request POST \ 
---url https://gateway.stackpath.com/waf/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \ 
+--url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \ 
 --header 'accept: application/json' \ 
 --header 'content-type: application/json' \ 
 --data ' 
@@ -182,7 +182,7 @@ Will block the IPs that were detected with certain TLS fingerprint for the next 
 
 ```
 curl --request POST \ 
---url https://gateway.stackpath.com/waf/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \ 
+--url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \ 
 --header 'accept: application/json' \ 
 --header 'content-type: application/json' \ 
 --data ' 
@@ -199,7 +199,7 @@ curl --request POST \
 
 ```
 curl --request POST \ 
---url https://gateway.stackpath.com/waf/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \ 
+--url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \ 
 --header 'accept: application/json' \ 
 --header 'content-type: application/json' \ 
 --data ' 
@@ -220,7 +220,7 @@ Use JavaScript validation to challenge IPs that are coming from countries withou
 
 ```
 curl --request POST \ 
---url https://gateway.stackpath.com/waf/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \ 
+--url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \ 
 --header 'accept: application/json' \ 
 --header 'content-type: application/json' \ 
 --data ' 
@@ -239,7 +239,7 @@ curl --request POST \
 
 ```
 curl --request POST \ 
---url https://gateway.stackpath.com/waf/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \ 
+--url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \ 
 --header 'accept: application/json' \ 
 --header 'content-type: application/json' \ 
 --data ' 
@@ -258,7 +258,7 @@ Make sure that the tag value is enclosed in the double-quotes character ".
 
 ```
 curl --request POST \ 
---url https://gateway.stackpath.com/waf/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \ 
+--url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \ 
 --header 'accept: application/json' \ 
 --header 'content-type: application/json' \ 
 --data ' 
@@ -270,7 +270,7 @@ curl --request POST \
 } 
 ' 
 curl --request POST \ 
---url https://gateway.stackpath.com/waf/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \ 
+--url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \ 
 --header 'accept: application/json' \ 
 --header 'content-type: application/json' \ 
 --data ' 
@@ -287,7 +287,7 @@ curl --request POST \
 
 ```
 curl --request POST \ 
---url https://gateway.stackpath.com/waf/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \ 
+--url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \ 
 --header 'accept: application/json' \ 
 --header 'content-type: application/json' \ 
 --data ' 
