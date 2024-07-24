@@ -3,6 +3,11 @@ title: generate-captions-via-api
 displayName: Via API
 published: true
 order: 
+toc:
+   --1--1. Obtain an MP4 link: "step-1-obtain-an-mp4-link"
+   --1--2. Assign a transcription task to AI: "step-2-assign-a-transcription-task-to-ai"
+   --1--3. Get the task result: "step-3-get-the-task-result"
+   --1--4. Add subtitles to videos: "step-4-add-ai-asr-subtitles-to-videos"
 pageTitle: Generate and translate AI subtitles via the Gcore API | Gcore
 pageDescription: Learn how to create AI tasks for generating and translating AI subtitles by executing API methods.
 ---

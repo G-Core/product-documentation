@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: AI Video Services
+displayName: AI video services
 published: true
 order: 65
 ---
