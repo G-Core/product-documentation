@@ -66,6 +66,8 @@ The method returns `true` if the count of requests (4) under the granularity (8)
     <th>Required</th>
     <th>Description</th>
 </tr>
+</thead>
+<tbody>
 <tr style="text-align: left;">
     <td>1</td>
     <td>ip</td>
