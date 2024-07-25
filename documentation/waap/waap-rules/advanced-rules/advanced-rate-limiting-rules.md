@@ -113,14 +113,17 @@ The method returns `true` if the count of requests (4) under the granularity (8)
 </tr>
 <tr style="text-align: left;">
     <td>8</td>
-    <td>Scope (granularity)</td>
+    <td>scope (granularity)</td>
     <td>False<br>
-    If the granularity isn’t set to ip, the default aggregation will be set to cluster.</td>
-    <td>The cluster scope counts all the traffic of a POP:<br>
-    Interval counting is made on each POP separately.This can cause unsynchronized counting.<br>
-    IP counting can be counted separately on different POPs (each request individually, not overlapped).<br>
-    POPs could be related to certain locations, which means that some clients may never be addressed to certain POPs.<br><br>
-    The ip scope counts traffic per given IP.</td>
+    If the granularity isn’t set to <code>cluster</code>, the default aggregation will be set to <code>cluster</code>.</td>
+    <td>The <code>cluster</code> scope counts all the traffic of a POP:
+   <ul>
+   <li>Interval counting is made on each POP separately.This can cause unsynchronized counting.</li>
+  <li>IP counting can be counted separately on different POPs (each request individually, not overlapped).</li>
+  <li>POPs could be related to certain locations, which means that some clients may never be addressed to certain POPs</li>
+  <li>The <code>cluster</code> scope counts traffic per given IP.</li>
+</ul>
+   </td>
 </tr>
 <tr style="text-align: left;">
     <td>9</td>
