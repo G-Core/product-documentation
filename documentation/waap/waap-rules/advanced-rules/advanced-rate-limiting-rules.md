@@ -61,11 +61,11 @@ The method returns `true` if the count of requests (4) under the granularity (8)
 
 <table>
 <thead>
-<tr style="text-align: left;">
+<tr>
     <th></th>
-    <th>Parameter name</th>
-    <th>Required</th>
-    <th>Description</th>
+    <th style="text-align: left;">Parameter name</th>
+    <th style="text-align: left;">Required</th>
+    <th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
@@ -85,35 +85,35 @@ The method returns `true` if the count of requests (4) under the granularity (8)
     <td>3</td>
     <td>time</td>
     <td>True</td>
-    <td>The time limit, in seconds, within which we only allow n number of requests to URI matching the pattern.</td>
+    <td>The time limit, in seconds, within which we only allow <b>n</b> number of requests to URI matching the pattern.</td>
 </tr>
 <tr style="text-align: left;">
     <td>4</td>
     <td>requests</td>
     <td>True</td>
-    <td>The maximum number of requests accepted within the given period before an action is taken (minimum value is 20 requests).</td>
+    <td>The maximum number of requests <b>accepted</b> within the given period before an action is taken (minimum value is 20 requests).</td>
 </tr>
 <tr style="text-align: left;">
     <td>5</td>
-    <td>method</td>
+    <td><code>method</code></td>
     <td>False</td>
     <td>List of method types the request aggregation will be applied to.</td>
 </tr>
 <tr style="text-align: left;">
     <td>6</td>
-    <td>status_code</td>
+    <td><code>status_code</code></td>
     <td>False</td>
     <td>List of status codes the request aggregation will be applied to.</td>
 </tr>
 <tr style="text-align: left;">
     <td>7</td>
-    <td>content_type</td>
+    <td><code>content_type</code></td>
     <td>False</td>
     <td>Regex pattern to match request content_types against.</td>
 </tr>
 <tr style="text-align: left;">
     <td>8</td>
-    <td>scope (granularity)</td>
+    <td><code>scope</code> (granularity)</td>
     <td>False<br>
     If the granularity isn’t set to <code>cluster</code>, the default aggregation will be set to <code>cluster</code>.</td>
     <td>The <code>cluster</code> scope counts all the traffic of a POP:
@@ -127,7 +127,7 @@ The method returns `true` if the count of requests (4) under the granularity (8)
 </tr>
 <tr style="text-align: left;">
     <td>9</td>
-    <td>tag</td>
+    <td><code>tag</code></td>
     <td>False</td>
     <td>Aggregation of tagged (<a href="https://gcore.com/docs/waap/waap-rules/custom-rules/tag-rules#tag-generating-rules" target="_blank">user-defined tags</a>) requests will be applied for each IP.</td>
 </tr>
