@@ -12,17 +12,17 @@ pageDescription: Learn how to enable and customize CMS protection policy.
 ---
 # CMS protection
 
-Content Management Systems (CMS) typically send information to your website, and this activity can appear malicious through its automated nature.  
+Content Management Systems (CMS) typically send information to your website, and this activity can appear malicious due to its automated nature.  
 
-Gcore’s Web Application Firewall (WAF) can distinguish between traffic coming from your CMS administrators and potentially harmful requests. This ensures that administrative activities remain unblocked and your application stays protected.  
+Gcore’s Web Application and API Protection (WAAP) product can distinguish between traffic from your CMS administrators and potentially harmful requests. This ensures that administrative activities remain unblocked and your application stays protected.  
 
-The CMS protection policy group contains specific policies that detect when a user is logged in to a supported CMS, and it automatically adds the user's session to allowlist. We also keep a library of known malicious attacks, which allows us to block exploits that have attacked users in the past. 
+The CMS protection policy group contains specific policies that detect when a user is logged into a supported CMS, and automatically adds the user's session to the allowlist. We also maintain a library of known malicious attacks, which allows us to block exploits that have attacked users in the past.
 
 ## Allow admin access to your domain 
 
-In some cases, administrative sections of a CMS-based website may be blocked. For example, for WordPress, the WAF may label a change made to the `/wp-admin` section of a CMS-based site as malicious behavior like Cross-Site Scripting or SQL injection.  
+In some cases, administrative sections of a CMS-based website may be blocked. For example, for WordPress, WAAP may label a change made to the `/wp-admin` section of a CMS-based site as malicious behavior such as cross-site scripting or SQL injection.  
 
-As a result, the WAF will block admins from making any page edits. You can prevent this issue in two ways: [enable the needed rules](https://gcore.com/docs/waap/waap-policies/cms-protection#configure-policy-group) in the CMS protection policy or [allowlist your static IP address](https://gcore.com/docs/waap/waap-policies/cms-protection#allowlist-a-static-ip-address). 
+As a result, WAAP will block admins from making any page edits. You can prevent this issue in two ways: [enable the needed policies](https://gcore.com/docs/waap/waap-policies/cms-protection#configure-policy-group) in the CMS protection policy group or [allowlist your static IP address](https://gcore.com/docs/waap/waap-policies/cms-protection#allowlist-a-static-ip-address). 
 
 ## Configure policy group 
 
@@ -95,7 +95,7 @@ If you don’t see your CMS, you can allow admin access by adding your IP addres
 </tbody>
 </table>
 
-If you enable a particular policy for your CMS, the admin CMS session will be allowlisted when that admin user logs in to the site. 
+If you enable a particular policy for your CMS, the admin CMS session will be allowlisted when that admin user logs into the site. 
 
 <alert-element type="info" title="Tip">
 
@@ -119,7 +119,7 @@ If you don’t see your CMS in the list of policies under the CMS policy group, 
 
 <img src="https://assets.gcore.pro/docs/waap/waap-policies/cms-protection/firewall-page.png" alt="Firewall page with the allow and block IP lists">
 
-5\. Enter your public IP address so that all traffic from your IP will be allowed and won’t be blocked by the WAF for any type of request. 
+5\. Enter your public IP address so all traffic from your IP will be allowed and won’t be blocked by the WAF for any type of request. 
 
 6\. (Optional). Add a description. 
 

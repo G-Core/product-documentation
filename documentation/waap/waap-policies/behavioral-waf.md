@@ -15,7 +15,7 @@ pageDescription: Learn how to enable and customize Behavioral WAF policy.
 ---
 # Behavioral WAF
 
-The Web Application and API Protection (WAAP) includes a Behavioral WAF policy group that helps prevent malicious attacks on your websites. The policy group contains a set of sophisticated user behavior and reputation analysis policies, which inspect the traffic and defend your website against such threats as spamming or brute force attacks. 
+The Web Application and API Protection (WAAP) includes a Behavioral WAF policy group that helps prevent malicious attacks on your websites. The policy group contains a set of sophisticated user behavior and reputation analysis policies that inspect traffic and defend your website against threats such as spamming or brute force attacks. 
 
 ## Configure policy group 
 
@@ -41,11 +41,11 @@ All behavioral WAF policies are enabled by default. To disable a policy, turn on
 
 ### Anti-spam 
 
-Use CAPTCHA and JavaScript validation when user activity during a session suggests aggressive use of forms to generate new accounts, post spam content, and similar. 
+Use CAPTCHA and JavaScript validation when user activity during a session suggests aggressive use of forms to, for instance, generate new accounts or post spam content. 
 
 ### Probing and forced browsing 
 
-Use CAPTCHA and JavaScript validation to challenge brute-forced requests on random URLs, which might aim to discover your web application's structure and hidden directories. Requests that fail to pass the validation will be blocked.  
+Use CAPTCHA and JavaScript validation to challenge brute-forced requests on random URLs, which might aim to discover your web application’s  structure and hidden directories. Requests that fail to pass the validation will be blocked.  
 
 ### Obfuscated attacks and zero-day mitigation 
 
