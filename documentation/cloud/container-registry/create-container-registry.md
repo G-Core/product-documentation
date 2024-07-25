@@ -101,7 +101,7 @@ The image will appear in the Container Registry on the **Images** tab.
 
 <img src="https://assets.gcore.pro/docs/cloud/container-registry/create-container-registry/images-tab.png" alt="Registry overview page with highlighted images tab" width="80%"> 
 
-For instructions on how to view and manage images, check out the <a href="https://gcore.com/docs/cloud/container-registry/create-container-registry" target="_blank">Manage Container Registries</a> guide. 
+For instructions on how to view and manage images, check out the <a href="https://gcore.com/docs/cloud/container-registry/manage-container-registries" target="_blank">Manage Container Registries</a> guide. 
 
 ## Step 4 (Optional). Pull the image from the Container Registry
 
