@@ -17,7 +17,7 @@ This feature is available for the Enterprise package.
 
 </alert-element>
 
-Similarly to WAAP custom rules, you can create, edit, and manage advanced custom rules. These rules also contain “If/Then” statements, but they also support more complex conditions created with the <a href="https://github.com/google/cel-spec" target="_blank">Common Expression Language (CEL)</a> syntax. 
+Similarly to WAAP <a href="https://gcore.com/docs/waap/waap-rules/custom-rules" target="_blank">custom rules</a>, you can create, edit, and manage advanced custom rules. These rules also contain “If/Then” statements, but they also support more complex conditions created with the <a href="https://github.com/google/cel-spec" target="_blank">Common Expression Language (CEL)</a> syntax. 
 
 ## Create advanced rules
 
@@ -25,38 +25,38 @@ Due to the highly technical aspect of the advanced rules functionality, the abil
 
 Check out the following guides for details on how to create advanced rules and their key components:  
 
-* API docs: learn how to construct and manage advanced rules. 
+* API docs: Learn how to construct and manage advanced rules. 
 
-* Advanced rules - objects, attributes, and types: get the list of all available objects you can use in rule expressions along with their respective attributes and types. 
+* <a href="https://gcore.com/docs/waap/waap-rules/advanced-rules/advanced-rule-objects" target="_blank">Advanced rule objects</a>: Get the list of all available objects you can use in rule expressions along with their respective attributes and types. 
 
-* Advanced rules - source field objects: check the available source field objects you can use in your expressions along with their respective attributes and types. 
+* <a href="https://gcore.com/docs/waap/waap-rules/advanced-rules/source-field-objects" target="_blank">Source field objects</a>: Check the available source field objects you can use in your expressions along with their respective attributes and types. 
 
 ## Advanced rule properties
 
 The advanced rule object contains the following properties: 
 
 ```
-{ 
-"name": "string", 
-"source": "string", 
-"enabled": true, 
-"description": "string", 
-"phase": "EXECUTION_PHASE_UNSPECIFIED", 
-"ruleAction": { 
-"allow": {}, 
-"block": { 
-"statusCode": "STATUS_CODE_UNSPECIFIED", 
-"actionDuration": "string" 
-}, 
-"captcha": {}, 
-"handshake": {}, 
-"monitor": {}, 
-"tag": { 
-"tags": [ 
-"string" 
-] 
-} 
-} 
+{
+  "name": "string",
+  "source": "string",
+  "enabled": true,
+  "description": "string",
+  "phase": "EXECUTION_PHASE_UNSPECIFIED",
+  "ruleAction": {
+    "allow": {},
+    "block": {
+      "statusCode": "STATUS_CODE_UNSPECIFIED",
+      "actionDuration": "string"
+    },
+    "captcha": {},
+    "handshake": {},
+    "monitor": {},
+    "tag": {
+      "tags": [
+        "string"
+      ]
+    }
+  }
 }
 ```
 
@@ -160,20 +160,20 @@ You can use our API documentation as a guide in constructing your own advanced r
 Block IPs that hit more than 200 requests per 5 seconds (changeable) when the following cookies don't exist. You can find more examples in our Rate limiting guide.
 
 ```
-curl --request POST \ 
---url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \ 
---header 'accept: application/json' \ 
---header 'content-type: application/json' \ 
---data ' 
-{ 
-"ruleAction": {"block": {"statusCode": "FORBIDDEN_403"}}, 
-"phase": "ACCESS", 
-"name": "Block Scrappers", 
-"description": "Block IPs that hit more than 200 requests per 5 seconds for any `events` paths", 
-"enabled": false, 
-"source": "request.rate_limit([], '.*events', 5, 200, [], [], '', 'ip') and not ('mb-web-ui' in request.headers['Cookie'] or 'mb-mobile-ios' in request.headers['Cookie'] or 'mobile-android' in request.headers['Cookie'] or 'mb-mobile-android' in request.headers['Cookie'] or 'session-token' in request.headers['Cookie']) and not request.headers['session']" 
-} 
-' 
+curl --request POST \
+  --url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \
+  --header 'accept: application/json' \
+  --header 'content-type: application/json' \
+  --data '
+{
+  "ruleAction": {"block": {"statusCode": "FORBIDDEN_403"}},
+  "phase": "ACCESS",
+  "name": "Block Scrappers",
+  "description": "Block IPs that hit more than 200 requests per 5 seconds for any `events` paths",
+  "enabled": false,
+  "source": "request.rate_limit([], '.*events', 5, 200, [], [], '', 'ip') and not ('mb-web-ui' in request.headers['Cookie'] or 'mb-mobile-ios' in request.headers['Cookie'] or 'mobile-android' in request.headers['Cookie'] or 'mb-mobile-android' in request.headers['Cookie'] or 'session-token' in request.headers['Cookie']) and not request.headers['session']"
+}
+'
 ```
 
 ### Penalty rule 
@@ -181,36 +181,43 @@ curl --request POST \
 Will block the IPs that were detected with certain TLS fingerprint for the next 5 minutes (chained rule): 
 
 ```
-curl --request POST \ 
---url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \ 
---header 'accept: application/json' \ 
---header 'content-type: application/json' \ 
---data ' 
-{ 
-"ruleAction": {"block": {"statusCode": "FORBIDDEN_403", "actionDuration": "5m"}}, 
-"phase": "ACCESS", 
-"name": "Penalty TLS fingerprint", 
-"description": "Block and tag IPs that are detected with certain TLS fingerprint for the next 5 minutes", 
-"enabled": false, 
-"source": "request.ja3 == 'e2925c27149b0d0dc34373d55040dde1'" 
-} 
+curl --request POST \
+  --url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \
+  --header 'accept: application/json' \
+  --header 'content-type: application/json' \
+  --data '
+{
+  "ruleAction": {
+    "block": {
+      "statusCode": "FORBIDDEN_403",
+      "actionDuration": "5m"
+    }
+  },
+  "phase": "ACCESS",
+  "name": "Penalty TLS fingerprint",
+  "description": "Block and tag IPs that are detected with certain TLS fingerprint for the next 5 minutes",
+  "enabled": false,
+  "source": "request.ja3 == 'e2925c27149b0d0dc34373d55040dde1'"
+}
 '
 ```
 
 ```
-curl --request POST \ 
---url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \ 
---header 'accept: application/json' \ 
---header 'content-type: application/json' \ 
---data ' 
-{ 
-"ruleAction": {"block": {}}, 
-"phase": "ACCESS", 
-"name": "Block Penalty", 
-"description": "Block requests that are detected with `penalty` tag", 
-"enabled": false, 
-"source": "tags.exists('penalty')" 
-} 
+curl --request POST \
+  --url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \
+  --header 'accept: application/json' \
+  --header 'content-type: application/json' \
+  --data '
+{
+  "ruleAction": {
+    "block": {}
+  },
+  "phase": "ACCESS",
+  "name": "Block Penalty",
+  "description": "Block requests that are detected with `penalty` tag",
+  "enabled": false,
+  "source": "tags.exists('penalty')"
+}
 ' 
 ```
 
@@ -219,37 +226,41 @@ curl --request POST \
 Use JavaScript validation to challenge IPs that are coming from countries without certain cookies: 
 
 ```
-curl --request POST \ 
---url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \ 
---header 'accept: application/json' \ 
---header 'content-type: application/json' \ 
---data ' 
-{ 
-"ruleAction": {"handshake": {}}, 
-"phase": "ACCESS", 
-"name": "Validate set of countries", 
-"description": "Validate with JavaScript challenge IPs that are coming from the following countries", 
-"enabled": false, 
-"source": "whois.country in ['BR', 'VN', 'ID', 'TH', 'ME', 'XK', 'LK'] and not ('mb-web-ui' in request.headers['Cookie'] or 'mb-mobile-ios' in request.headers['Cookie'] or 'mobile-android' in request.headers['Cookie'] or 'mb-mobile-android' in request.headers['Cookie'])" 
-} 
-' 
+curl --request POST \
+  --url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \
+  --header 'accept: application/json' \
+  --header 'content-type: application/json' \
+  --data '
+{
+  "ruleAction": {
+    "handshake": {}
+  },
+  "phase": "ACCESS",
+  "name": "Validate set of countries",
+  "description": "Validate with JavaScript challenge IPs that are coming from the following countries",
+  "enabled": false,
+  "source": "whois.country in ['BR', 'VN', 'ID', 'TH', 'ME', 'XK', 'LK'] and not ('mb-web-ui' in request.headers['Cookie'] or 'mb-mobile-ios' in request.headers['Cookie'] or 'mobile-android' in request.headers['Cookie'] or 'mb-mobile-android' in request.headers['Cookie'])"
+}
+'
 ```
 
 ### Add clients to allow list 
 
 ```
-curl --request POST \ 
---url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \ 
---header 'accept: application/json' \ 
---header 'content-type: application/json' \ 
---data ' 
-{ 
-"ruleAction": {"allow": {}}, 
-"name": "Whitlist knowen IPs", 
-"enabled": false, 
-"source": "request.ip == '117.20.32.5' or request.ip == '117.20.32.4' or request.ip_in_range('72.21.217.0', '72.21.217.255')" 
-} 
-' 
+curl --request POST \
+  --url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \
+  --header 'accept: application/json' \
+  --header 'content-type: application/json' \
+  --data '
+{
+  "ruleAction": {
+    "allow": {}
+  },
+  "name": "Whitelist known IPs",
+  "enabled": false,
+  "source": "request.ip == '117.20.32.5' or request.ip == '117.20.32.4' or request.ip_in_range('72.21.217.0', '72.21.217.255')"
+}
+'
 ```
 
 ### Tag and allow registered clients 
@@ -257,46 +268,57 @@ curl --request POST \
 Make sure that the tag value is enclosed in the double-quotes character ". 
 
 ```
-curl --request POST \ 
---url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \ 
---header 'accept: application/json' \ 
---header 'content-type: application/json' \ 
---data ' 
-{ 
-"name": "Tag registered clients", 
-"description": "Detect and tag registered clients by cookie", 
-"source": "'mb-mobile-android' in request.headers['Cookie']", 
-"ruleAction": {"tag": {"tags": ["registered"]}} 
-} 
-' 
-curl --request POST \ 
---url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \ 
---header 'accept: application/json' \ 
---header 'content-type: application/json' \ 
---data ' 
-{ 
-"name": "Allow registered clients", 
-"description": "Allow registered clients", 
-"source": "tags.exists('registered')", 
-"ruleAction": {"allow": {}} 
-} 
-' 
+curl --request POST \
+  --url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \
+  --header 'accept: application/json' \
+  --header 'content-type: application/json' \
+  --data '
+{
+  "name": "Tag registered clients",
+  "description": "Detect and tag registered clients by cookie",
+  "source": "'mb-mobile-android\' in request.headers['Cookie']",
+  "ruleAction": {
+    "tag": {
+      "tags": ["registered"]
+    }
+  }
+}
+'
+
+curl --request POST \
+  --url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \
+  --header 'accept: application/json' \
+  --header 'content-type: application/json' \
+  --data '
+{
+  "name": "Allow registered clients",
+  "description": "Allow registered clients",
+  "source": "tags.exists('registered')",
+  "ruleAction": {
+    "allow": {}
+  }
+}
+'
 ```
 
 ### Define login pages 
 
 ```
-curl --request POST \ 
---url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \ 
---header 'accept: application/json' \ 
---header 'content-type: application/json' \ 
---data ' 
-{ 
-"name": "Detect and Tag Login Pages", 
-"source": "['url1/login','url2/signup'] in request.uri", 
-"ruleAction": {"tag": {"tags": ["login page"]}} 
-} 
-' 
+curl --request POST \
+  --url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \
+  --header 'accept: application/json' \
+  --header 'content-type: application/json' \
+  --data '
+{
+  "name": "Detect and Tag Login Pages",
+  "source": "['url1/login','url2/signup'] in request.uri",
+  "ruleAction": {
+    "tag": {
+      "tags": ["login page"]
+    }
+  }
+}
+'
 ```
 
 ## Review existing rules 
