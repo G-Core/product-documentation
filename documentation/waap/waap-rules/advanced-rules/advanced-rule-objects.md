@@ -12,12 +12,12 @@ The following table contains all available objects and attributes you can use in
 
 <table>
 <thead>
-<tr style="text-align: left;">
-    <th>Object</th>
-    <th>Attribute</th>
-    <th>Arguments</th>
-    <th>Type</th>
-    <th>Description</th>
+<tr>
+    <th style="text-align: left;">Object</th>
+    <th style="text-align: left;">Attribute</th>
+    <th style="text-align: left;">Arguments</th>
+    <th style="text-align: left;">Type</th>
+    <th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
@@ -68,7 +68,7 @@ The following table contains all available objects and attributes you can use in
     <td>rate_limit</td>
     <td></td>
     <td>Function</td>
-    <td>Returns true if the rate limit is exceeded</td>
+    <td>Returns <code>true</code> if the rate limit is exceeded</td>
 </tr>
 <tr style="text-align: left;">
     <td></td>
@@ -82,7 +82,7 @@ The following table contains all available objects and attributes you can use in
     <td></td>
     <td>interval</td>
     <td>Integer</td>
-    <td>An Integer between 1 and +inf</td>
+    <td>An integer between 1 and +inf</td>
 </tr>
 <tr style="text-align: left;">
     <td></td>
@@ -103,7 +103,7 @@ The following table contains all available objects and attributes you can use in
     <td></td>
     <td>requests</td>
     <td>Integer</td>
-    <td>An Integer between 20 and +inf</td>
+    <td>An integer between 20 and +inf</td>
 </tr>
 <tr style="text-align: left;">
     <td></td>
@@ -285,63 +285,63 @@ The following table contains all available objects and attributes you can use in
     <td>client</td>
     <td></td>
     <td>Var</td>
-    <td>Client name (e.g., chrome, firefox)</td>
+    <td>Client name. For example, Chrome, Firefox.</td>
 </tr>
 <tr style="text-align: left;">
     <td></td>
     <td>client_type</td>
     <td></td>
     <td>Var</td>
-    <td>Client type (e.g., major, lib)</td>
+    <td>Client type. For example, major, lib.</td>
 </tr>
 <tr style="text-align: left;">
     <td></td>
     <td>client_version</td>
     <td></td>
     <td>Var</td>
-    <td>Client version (e.g., 47.1.23)</td>
+    <td>Client version. For example, 47.1.23.</td>
 </tr>
 <tr style="text-align: left;">
     <td></td>
     <td>client_version_float</td>
     <td></td>
     <td>Var</td>
-    <td>Client version, Major.minor part (e.g., 47.1)</td>
+    <td>Client version, major.minor part. For example, 47.1.</td>
 </tr>
 <tr style="text-align: left;">
     <td></td>
     <td>cpu</td>
     <td></td>
     <td>Var</td>
-    <td>CPU brand (e.g., intel, amd)</td>
+    <td>CPU brand. For example, Intel.</td>
 </tr>
 <tr style="text-align: left;">
     <td></td>
     <td>device</td>
     <td></td>
     <td>Var</td>
-    <td>Device brand (e.g., iPhone, playstation)</td>
+    <td>Device brand. For example, iPhone, PlayStation.</td>
 </tr>
 <tr style="text-align: left;">
     <td></td>
     <td>device_type</td>
     <td></td>
     <td>Var</td>
-    <td>Device type (e.g., mobile, console)</td>
+    <td>Device type. For example, mobile, console.</td>
 </tr>
 <tr style="text-align: left;">
     <td></td>
     <td>engine</td>
     <td></td>
     <td>Var</td>
-    <td>Engine type (e.g., gecko, applewebkit)</td>
+    <td>Engine type. For example, Gecko, AppleWebKit.</td>
 </tr>
 <tr style="text-align: left;">
     <td></td>
     <td>os</td>
     <td></td>
     <td>Var</td>
-    <td>Client's OS (e.g., linux, windows 7)</td>
+    <td>Client's OS. For example, Linux, Windows 8.</td>
 </tr>
 <tr style="text-align: left;">
     <td>whois</td>
@@ -355,14 +355,14 @@ The following table contains all available objects and attributes you can use in
     <td>country</td>
     <td></td>
     <td>Var</td>
-    <td>Country Code (uppercase)</td>
+    <td>Country code (uppercase)</td>
 </tr>
 <tr style="text-align: left;">
     <td></td>
     <td>org</td>
     <td></td>
     <td>Var</td>
-    <td>organization name</td>
+    <td>Organization name</td>
 </tr>
 <tr style="text-align: left;">
     <td></td>

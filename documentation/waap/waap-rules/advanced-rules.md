@@ -150,7 +150,7 @@ The advanced rule object contains the following properties:
     <td style="text-align: left">String<br>
     Tags with spaces will be converted to underscore line <code>_</code> and will be presented in lowercase. For instance, Ignore Automation will become ignore_automation.</td>
     <td style="text-align: left">Tag-based rules are informative rules.<br>
-    Tag value should be enclosed in double quotation marks <code>'</code> and <strong>not<strong> in single quotation marks <code>"</code>.</td>
+    Tag value should be enclosed in double quotation marks <code>'</code> and <strong>not</strong> in single quotation marks <code>"</code>.</td>
 </tr>
 </tbody>
 </table> 

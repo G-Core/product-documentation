@@ -71,7 +71,7 @@ The method returns `true` if the count of requests (4) under the granularity (8)
 <tbody>
 <tr style="text-align: left;">
     <td>1</td>
-    <td>ip</td>
+    <td><code>ip</code></td>
     <td>False</td>
     <td>List of IP addresses that the rule applies to. If there are no IPs in the list, counting will be done for all IPs.</td>
 </tr>
@@ -83,13 +83,13 @@ The method returns `true` if the count of requests (4) under the granularity (8)
 </tr>
 <tr style="text-align: left;">
     <td>3</td>
-    <td>time</td>
+    <td><code>time</code></td>
     <td>True</td>
     <td>The time limit, in seconds, within which we only allow <b>n</b> number of requests to URI matching the pattern.</td>
 </tr>
 <tr style="text-align: left;">
     <td>4</td>
-    <td>requests</td>
+    <td><code>requests</code></td>
     <td>True</td>
     <td>The maximum number of requests <b>accepted</b> within the given period before an action is taken (minimum value is 20 requests).</td>
 </tr>

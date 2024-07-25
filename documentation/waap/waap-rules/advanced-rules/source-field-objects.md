@@ -18,12 +18,11 @@ For the `request`, `Whois`, `session`, and `user-agent` objects, every string va
 
 <table>
 <thead>
-<tr style="text-align: left;">
-  <tr>
-    <th>Attribute</th>
-    <th>Type</th>
-    <th>Description</th>
-    <th>Compiled <code>source</code> field</th>
+<tr>
+    <th style="text-align: left;">Attribute</th>
+    <th style="text-align: left;">Type</th>
+    <th style="text-align: left;">Description</th>
+    <th style="text-align: left;">Compiled <code>source</code> field</th>
   </tr>
   </thead>
 <tbody>
@@ -98,13 +97,13 @@ For the `request`, `Whois`, `session`, and `user-agent` objects, every string va
 <tr style="text-align: left;">
     <td>is_static()</td>
     <td>function</td>
-    <td>Returns true if the request is static.</td>
+    <td>Returns <code>true</code> if the request is static.</td>
     <td>request.is_static()</td>
   </tr>
 <tr style="text-align: left;">
     <td>ip_in_range</td>
     <td>function</td>
-    <td>Returns true if client ip is within the specified range.</td>
+    <td>Returns <code>true</code> if client ip is within the specified range.</td>
     <td>request.ip_in_range(<string>, <string>)<br>
     request.ip_in_range('72.21.217.0', '72.21.217.255')  
 or request.ip_in_range('2409:4072:6c8c:e228:ecaf:ce2c:fd7d:0000', '2409:4072:6c8c:e228:ecaf:ce2c:fd7d:4780')</td>
@@ -112,7 +111,7 @@ or request.ip_in_range('2409:4072:6c8c:e228:ecaf:ce2c:fd7d:0000', '2409:4072:6c8
 <tr style="text-align: left;">
     <td>rate_limit</td>
     <td>function</td>
-    <td>Returns true if the rate limit exceeded for these parameters (the scope is 'ip'/'cluster').<br>For parameter descriptions, check out the rate limitation guide.</td>
+    <td>Returns true if the rate limit exceeded for these parameters (the scope is 'ip'/'cluster').<br>For parameter descriptions, check out the <a href="" target="_blank">Rate limitation</a> guide.</td>
     <td>rate_limit(<br>
 [ip <string>, ...],<br>
 url <string>,<br>
@@ -133,12 +132,11 @@ request.rate_limit([], '/', 5, 200, ['GET', 'HEAD'], [], 'text/html; charset=', 
 
 <table>
 <thead>
-<tr style="text-align: left;">
   <tr>
-    <th>Attribute</th>
-    <th>Type</th>
-    <th>Description</th>
-    <th>Compiled <code>source</code> field</th>
+    <th style="text-align: left;">Attribute</th>
+    <th style="text-align: left;">Type</th>
+    <th style="text-align: left;">Description</th>
+    <th style="text-align: left;">Compiled <code>source</code> field</th>
   </tr>
   </thead>
 <tbody>
@@ -152,7 +150,7 @@ request.rate_limit([], '/', 5, 200, ['GET', 'HEAD'], [], 'text/html; charset=', 
   <tr style="text-align: left;">
     <td>org</td>
     <td>string</td>
-    <td>Organization name from the whois database.</td>
+    <td>Organization name from the WHOIS database.</td>
     <td>whois.org<br>
     whois.org in ['Google Inc', 'Google Inc.', 'Google LLC', 'Google Incorporated']</td>
   </tr>
@@ -170,12 +168,11 @@ request.rate_limit([], '/', 5, 200, ['GET', 'HEAD'], [], 'text/html; charset=', 
 
 <table>
 <thead>
-<tr style="text-align: left;">
   <tr>
-    <th>Attribute</th>
-    <th>Type</th>
-    <th>Description</th>
-    <th>Compiled <code>source</code> field</th>
+    <th style="text-align: left;">Attribute</th>
+    <th style="text-align: left;">Type</th>
+    <th style="text-align: left;">Description</th>
+    <th style="text-align: left;">Compiled <code>source</code> field</th>
   </tr>
   </thead>
 <tbody>
@@ -190,12 +187,14 @@ request.rate_limit([], '/', 5, 200, ['GET', 'HEAD'], [], 'text/html; charset=', 
     <td>profiling_status</td>
     <td>string</td>
     <td>Client’s fingerprint profiling status.<br><br>
-    Possible values follow:<br><br>
-    initiated: JavaScript execution was initiated (sent to the client as an injection into the response).<br>
-    executed once: JavaScript was executed, and preliminary results were received by WAAP.<br>
-    profiling error: An error occurred during profiling.<br>
-    profiling completed: Profiling complete without error.<br>
-    idle: All JavaScript tests and finger printing process completed.</td>
+    Possible values:
+    <ul>
+    <li>initiated: JavaScript execution was initiated (sent to the client as an injection into the response).</li>
+    <li>executed once: JavaScript was executed, and preliminary results were received by WAAP.</li>
+    <li>profiling error: An error occurred during profiling.</li>
+    <li>profiling completed: Profiling complete without error.</li>
+   <li>idle: All JavaScript tests and finger printing process completed.</li>
+   </ul>
     <td>session.profiling_status<br>
     wsession.profiling_status == 'idle'</td>
   </tr>
@@ -206,12 +205,11 @@ request.rate_limit([], '/', 5, 200, ['GET', 'HEAD'], [], 'text/html; charset=', 
 
 <table>
 <thead>
-<tr style="text-align: left;">
   <tr>
-    <th>Attribute</th>
-    <th>Type</th>
-    <th>Description</th>
-    <th>Compiled <code>source</code> field</th>
+    <th style="text-align: left;">Attribute</th>
+    <th style="text-align: left;">Type</th>
+    <th style="text-align: left;">Description</th>
+    <th style="text-align: left;">Compiled <code>source</code> field</th>
   </tr>
   </thead>
 <tbody>
@@ -234,19 +232,18 @@ request.rate_limit([], '/', 5, 200, ['GET', 'HEAD'], [], 'text/html; charset=', 
 
 <table>
 <thead>
-<tr style="text-align: left;">
   <tr>
-    <th>Attribute</th>
-    <th>Type</th>
-    <th>Description</th>
-    <th>Compiled <code>source</code> field</th>
+    <th style="text-align: left;">Attribute</th>
+    <th style="text-align: left;">Type</th>
+    <th style="text-align: left;">Description</th>
+    <th style="text-align: left;">Compiled <code>source</code> field</th>
   </tr>
   </thead>
 <tbody>
 <tr style="text-align: left;">
     <td>exists(tag <string>)</td>
     <td>function</td>
-    <td>Returns true if the tag exists.</td>
+    <td>Returns <code>true</code> if the tag exists.</td>
     <td>tags.exists(<string>)<br>
     tags.any([<string>, <string>…., <string>]) up to 10 tags<br>
     tags.all([<string>, <string>…., <string>]) up to 10 tags<br>
@@ -256,13 +253,13 @@ request.rate_limit([], '/', 5, 200, ['GET', 'HEAD'], [], 'text/html; charset=', 
   <tr style="text-align: left;">
     <td>any([tag <string>, ...])</td>
     <td>function</td>
-    <td>Returns true if any of the tags exists.</td>
+    <td>Returns <code>true</code> if any of the tags exists.</td>
     <td></td>
   </tr>
     <tr style="text-align: left;">
     <td>all([tag <string>, ...])</td>
     <td>function</td>
-    <td>Returns true if all tags exist.</td>
+    <td>Returns <code>true</code> if all tags exist.</td>
     <td></td>
   </tr>
   </tbody>
@@ -274,12 +271,11 @@ The **ua_parsed** table contains user agent information collected by WAAP from t
 
 <table>
 <thead>
-<tr style="text-align: left;">
   <tr>
-    <th>Attribute</th>
-    <th>Type</th>
-    <th>Description</th>
-    <th>Compiled <code>source</code> field</th>
+    <th style="text-align: left;">Attribute</th>
+    <th style="text-align: left;">Type</th>
+    <th style="text-align: left;">Description</th>
+    <th style="text-align: left;">Compiled <code>source</code> field</th>
   </tr>
   </thead>
   <tbody>
@@ -335,30 +331,30 @@ The **ua_parsed** table contains user agent information collected by WAAP from t
 <tr style="text-align: left;">
     <td>device_type</td>
     <td>string</td>
-    <td>Additional information about the client device. Optional values:<br><br>
-    Web Search Engine Bots<br>
-    mobile<br>
-    NA<br>
-    SEO<br>
-    Analytics or Marketing Bots<br>
-    Preview Bot<br>
-    Media or Entertainment Search Bots<br>
-    Social Media or Blog Bots<br>
-    RSS Feed Reader Bots<br>
-    Site Monitoring and Web Development Bots<br>
-    Web Archiver Bots<br>
-    console<br>
-    Job Search Engine Bots<br>
-    Online Advertising Bots<br>
-    News Aggregator Bots<br>
-    Academic or Research Bots<br>
-    Desktop<br>
-    Business Intelligence Bots<br>
-    Automated Shopping Cart and Sniper Bots<br>
-    Enterprise Data Aggregator Bots<br>
-    Media Player</td>
+    <td>Additional information about the client device. Optional values: <ul>
+    <li>Web Search Engine Bots</li>
+    <li>mobile</li>
+   <li> NA</li>
+    <li>SEO</li>
+   <li>Analytics or Marketing Bots</li>
+   <li>Preview Bot</li>
+    <li>Media or Entertainment Search Bots</li>
+    <li>Social Media or Blog Bots</li>
+    <li>RSS Feed Reader Bots</li>
+    <li>Site Monitoring and Web Development Bots</li>
+   <li> Web Archiver Bots</li>
+    <li>console</li>
+   <li>Job Search Engine Bots</li>
+   <li> Online Advertising Bots</li>
+    <li>News Aggregator Bots</li>
+   <li>Academic or Research Bots</li>
+   <li>Desktop</li>
+   <li>Business Intelligence Bots</li>
+   <li>Automated Shopping Cart and Sniper Bots</li>
+    <li>Enterprise Data Aggregator Bots</li>
+    <li>Media Player</li></td>
     <td>user_agent.device_type<br>
-    user_agent.device_type == 'na'</td>
+    user_agent.device_type == 'na' </ul></td>
   </tr>
     </tbody>
 </table
@@ -367,24 +363,24 @@ The **ua_parsed** table contains user agent information collected by WAAP from t
 
 <table>
 <thead>
-<tr style="text-align: left;">
   <tr>
-    <th>Attribute</th>
-    <th>Type</th>
-    <th>Description</th>
-    <th>Compiled <code>source</code> field</th>
+    <th style="text-align: left;">Attribute</th>
+    <th style="text-align: left;">Type</th>
+    <th style="text-align: left;">Description</th>
+    <th style="text-align: left;">Compiled <code>source</code> field</th>
   </tr>
   </thead>
 <tbody>
 <tr style="text-align: left;">
     <td>fingerprint['hash']</td>
     <td>dict</td>
-      <td rowspan="4">A table that contains fingerprint information about the request (the information is collected by WAAP with injected JavaScript):<br><br>
-        - fp__hash of the client<br>
-        - fp__js of the client<br>
-        - fp__flash of the client<br>
-        - fp__header of the client<br>
-        client_data.fingerprint == 'kvd8oxizrdl-41-37zpvwqrr-5tzoaavgfr7-v2osmr4iefe-noieo-90.3095389639745667'
+      <td rowspan="4">A table that contains fingerprint information about the request (the information is collected by WAAP with injected JavaScript):
+      <ul>
+      <li>fp__hash of the client</li>
+      <li>fp__js of the client</li>
+      <li>fp__flash of the client</li>
+      <li>fp__header of the client</li></ul>
+       client_data.fingerprint == 'kvd8oxizrdl-41-37zpvwqrr-5tzoaavgfr7-v2osmr4iefe-noieo-90.3095389639745667'
       </td>
     <td>client_data.fingerprint['hash']client_data.fingerprint['hash'] == '9be394dca715eca8e42783397a507d2e'</td>
   </tr>
