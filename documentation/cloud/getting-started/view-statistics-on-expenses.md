@@ -119,11 +119,11 @@ The following table describes what information is included in the **Detailed** C
 </tr>
 <tr>
     <td style="text-align: left">Service_name</td>
-    <td style="text-align: left">Name of the service, which is also displayed in the <strong>Name</strong> field in the UI. For example, name of a Virtual Machine.</td>
+    <td style="text-align: left">Name of the service, which is also displayed in the <strong>Name</strong> field in the UI. For example, the name of a Virtual Machine.</td>
 </tr>
 <tr>
     <td style="text-align: left">Region_id</td>
-    <td style="text-align: left">ID of a region where the resource has been created. You can check the ID via <a herf="https://api.gcore.com/docs/cloud#tag/Regions" target="_blank">API</a>.</td>
+    <td style="text-align: left">ID of a region where the resource has been created. You can check the ID via <a href="https://api.gcore.com/docs/cloud#tag/Regions" target="_blank">API</a>.</td>
 </tr>
 <tr>
     <td style="text-align: left">Region_name</td>
@@ -198,7 +198,7 @@ The following table explains what information is included in the **Totals** CSV 
 </tr>
 <tr>
     <td style="text-align: left">Region_id</td>
-    <td style="text-align: left">ID of a region where the resource has been created. You can check the ID via <a herf="https://api.gcore.com/docs/cloud#tag/Regions" target="_blank">API</a>.</td>
+    <td style="text-align: left">ID of a region where the resource has been created. You can check the ID via <a href="https://api.gcore.com/docs/cloud#tag/Regions" target="_blank">API</a>.</td>
 </tr>
 <tr>
     <td style="text-align: left">Region_name</td>
@@ -303,7 +303,7 @@ The following table explains what information is included in the **Totals** file
 </tr>
 <tr>
     <td style="text-align: left">Region_id</td>
-    <td style="text-align: left">ID of a region where the resource has been reserved. You can check the ID via <a herf="https://api.gcore.com/docs/cloud#tag/Regions" target="_blank">API</a>.</td>
+    <td style="text-align: left">ID of a region where the resource has been reserved. You can check the ID via <a href="https://api.gcore.com/docs/cloud#tag/Regions" target="_blank">API</a>.</td>
 </tr>
 <tr>
     <td style="text-align: left">Region_name</td>
