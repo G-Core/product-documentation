@@ -140,7 +140,7 @@ The method returns `true` if the count of requests (4) under the granularity (8)
 
 ```
 curl --request POST \
---url https://api.gcore.com/waap/v1alpha/stacks/STACK_ID/sites/SITE_ID/advanced_rules \
+--url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
@@ -163,7 +163,7 @@ Another IP address, such as 1.2.3.5, will only be blocked if it exceeds the allo
 
 ```
 curl --request POST \
---url https://api.gcore.com/waap/v1alpha/stacks/STACK_ID/sites/SITE_ID/advanced_rules \
+--url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
@@ -180,7 +180,7 @@ curl --request POST \
 
 ```
 curl --request POST \
---url https://api.gcore.com/waap/v1alpha/stacks/STACK_ID/sites/SITE_ID/advanced_rules \
+--url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
@@ -200,7 +200,7 @@ This behavior is linked to the rule you are creating, not the rate limit conditi
 
 ```
 curl --request POST \
---url https://api.gcore.com/waap/v1alpha/stacks/STACK_ID/sites/SITE_ID/advanced_rules \
+--url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
@@ -217,7 +217,7 @@ curl --request POST \
 
 ```
 curl --request POST \
---url https://api.gcore.com/waap/v1alpha/stacks/STACK_ID/sites/SITE_ID/advanced_rules \
+--url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
@@ -236,7 +236,7 @@ Rate limit all GET or HEAD redirected (302) requests with specific content type:
 
 ```
 curl --request POST \
---url https://api.gcore.com/waap/v1alpha/stacks/STACK_ID/sites/SITE_ID/advanced_rules \
+--url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
@@ -257,7 +257,7 @@ Note that my tag is a <a href="https://gcore.com/docs/waap/waap-rules/custom-rul
 
 ```
 curl --request POST \
---url https://api.gcore.com/waap/v1alpha/stacks/STACK_ID/sites/SITE_ID/advanced_rules \
+--url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{

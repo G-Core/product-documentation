@@ -166,7 +166,7 @@ Block IPs that hit more than 200 requests per 5 seconds (changeable) when the fo
 
 ```
 curl --request POST \
---url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \
+--url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
@@ -188,7 +188,7 @@ Will block the IPs that were detected with certain TLS fingerprint for the next 
 
 ```
 curl --request POST \ 
---url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \ 
+--url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \ 
 --header 'accept: application/json' \ 
 --header 'content-type: application/json' \ 
 --data ' 
@@ -205,7 +205,7 @@ curl --request POST \
 
 ```
 curl --request POST \
---url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \
+--url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
@@ -226,7 +226,7 @@ Use JavaScript validation to challenge IPs that are coming from countries withou
 
 ```
 curl --request POST \
---url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \
+--url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
@@ -245,7 +245,7 @@ curl --request POST \
 
 ```
 curl --request POST \
---url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \
+--url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
@@ -264,7 +264,7 @@ Make sure that the tag value is enclosed in the double-quotes character ".
 
 ```
 curl --request POST \
---url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \
+--url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
@@ -281,7 +281,7 @@ curl --request POST \
 
 ```
 curl --request POST \
---url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \
+--url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
@@ -298,7 +298,7 @@ curl --request POST \
 
 ```
 curl --request POST \
---url https://api.gcore.com/waap/v1alpha/stacks/test_stack_id/sites/test_site_id/advanced_rules \
+--url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
