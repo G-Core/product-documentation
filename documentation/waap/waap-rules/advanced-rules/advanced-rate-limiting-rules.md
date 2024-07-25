@@ -28,32 +28,33 @@ We have a unique implementation of rate limiting: it’s set as a conditioning s
 Use the `request.rate_limit()` method to implement rate limiting: 
 
 ```
-request.rate_limit( 
-ip = [<string>, ...],  
-url = <string>,  
-time = <int>,  
-requests = <int>,  
-method = [<string>, ...],  
-status_code = [<int>, ...],  
-content_type = <string>,  
-scope = <string> 
-) 
+request.rate_limit(
+    ip = [<string>, ...],
+    url = <string>,
+    time = <int>,
+    requests = <int>,
+    method = [<string>, ...],
+    status_code = [<int>, ...],
+    content_type = <string>,
+    scope = <string>
+)
 ```
 
 For <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/tag-rules#tag-based-rules" target="_blank">tag-based</a> rate limiting rules, use `request.limit_rate` instead: 
 
 ```
-request.limit_rate( 
-ip = [<string>, ...],  
-url = <string>,  
-time = <int>,  
-requests = <int>,  
-method = [<string>, ...],  
-status_code = [<int>, ...],  
-content_type = <string>,  
-scope = <string>, 
-tag = <string> 
+request.limit_rate(
+    ip = [<string>, ...],
+    url = <string>,
+    time = <int>,
+    requests = <int>,
+    method = [<string>, ...],
+    status_code = [<int>, ...],
+    content_type = <string>,
+    scope = <string>,
+    tag = <string>
 )
+
 ```
 
 The method returns `true` if the count of requests (4) under the granularity (8) with the filters (1, 2, 5, 6, 7, 9) exceeds the limit for a given time (3). 
@@ -135,20 +136,18 @@ The method returns `true` if the count of requests (4) under the granularity (8)
 ### Advanced rules via API 
 
 ```
-curl --request POST \ 
---url https://api.gcore.com/waap/v1alpha/stacks/STACK_ID/sites/SITE_ID/advanced_rules \ 
---header 'accept: application/json' \ 
---header 'content-type: application/json' \ 
---data ' 
-{ 
-"ruleAction": {"block": {"statusCode": "FORBIDDEN_403"}}, 
-"phase": "ACCESS", 
-"name": "Block Scrappers", 
-"description": "Block IPs that hit more than 200 requests per 5 seconds for any `events` paths", 
-"enabled": false, 
-"source": "request.rate_limit([], '.*events', 5, 200, [], [], '', 'ip') and not ('mb-web-ui' in request.headers['Cookie'] or 'mb-mobile-ios' in request.headers['Cookie'] or 'mobile-android' in request.headers['Cookie'] or 'mb-mobile-android' in request.headers['Cookie'] or 'session-token' in request.headers['Cookie']) and not request.headers['session']" 
-} 
-' 
+curl --request POST \
+--url https://api.gcore.com/waap/v1alpha/stacks/STACK_ID/sites/SITE_ID/advanced_rules \
+--header 'accept: application/json' \
+--header 'content-type: application/json' \
+--data '{
+    "ruleAction": {"block": {"statusCode": "FORBIDDEN_403"}},
+    "phase": "ACCESS",
+    "name": "Block Scrappers",
+    "description": "Block IPs that hit more than 200 requests per 5 seconds for any `events` paths",
+    "enabled": false,
+    "source": "request.rate_limit([], '.*events', 5, 200, [], [], '', 'ip') and not ('mb-web-ui' in request.headers['Cookie'] or 'mb-mobile-ios' in request.headers['Cookie'] or 'mobile-android' in request.headers['Cookie'] or 'mb-mobile-android' in request.headers['Cookie'] or 'session-token' in request.headers['Cookie']) and not request.headers['session']" 
+}'
 ```
 
 ### Best practices 
@@ -160,41 +159,36 @@ Each request will be counted individually for each IP. For example, if the IP ad
 Another IP address, such as 1.2.3.5, will only be blocked if it exceeds the allowed threshold of 200 requests in the same time interval.
 
 ```
-curl --request POST \ 
---url https://api.gcore.com/waap/v1alpha/stacks/STACK_ID/sites/SITE_ID/advanced_rules \ 
---header 'accept: application/json' \ 
---header 'content-type: application/json' \ 
---data ' 
-{ 
-"ruleAction": {"block": {"statusCode": "FORBIDDEN_403"}}, 
-"phase": "ACCESS", 
-"name": "Limit Certain IPs", 
-"description": "Limit Certain IPs", 
-"enabled": false, 
-"source": "request.rate_limit(['1.2.3.4', '1.2.3.5'], '.*events', 5, 200, [], [], '', 'ip')" 
-} 
-'
+curl --request POST \
+--url https://api.gcore.com/waap/v1alpha/stacks/STACK_ID/sites/SITE_ID/advanced_rules \
+--header 'accept: application/json' \
+--header 'content-type: application/json' \
+--data '{
+    "ruleAction": {"block": {"statusCode": "FORBIDDEN_403"}},
+    "phase": "ACCESS",
+    "name": "Limit Certain IPs",
+    "description": "Limit Certain IPs",
+    "enabled": false,
+    "source": "request.rate_limit(['1.2.3.4', '1.2.3.5'], '.*events', 5, 200, [], [], '', 'ip')"
+}'
 ```
 
 #### Embed additional conditions
 
 ```
-curl --request POST \ 
---url https://api.gcore.com/waap/v1alpha/stacks/STACK_ID/sites/SITE_ID/advanced_rules \ 
---header 'accept: application/json' \ 
---header 'content-type: application/json' \ 
---data ' 
-{ 
-"ruleAction": {"block": {"statusCode": "FORBIDDEN_403"}}, 
-"phase": "ACCESS", 
-"name": "Embedding additional condition to rate limit feature", 
-"description": "Embedding additional condition to rate limit feature", 
-"enabled": false, 
-"source": "request.headers['User-Agent'] == 'Firefox' AND request.rate_limit(['1.2.3.4', '1.2.3.5'], '.*events', 5, 200, [], [], '', 'ip')" 
-} 
-' 
+curl --request POST \
+--url https://api.gcore.com/waap/v1alpha/stacks/STACK_ID/sites/SITE_ID/advanced_rules \
+--header 'accept: application/json' \
+--header 'content-type: application/json' \
+--data '{
+    "ruleAction": {"block": {"statusCode": "FORBIDDEN_403"}},
+    "phase": "ACCESS",
+    "name": "Embedding additional condition to rate limit feature",
+    "description": "Embedding additional condition to rate limit feature",
+    "enabled": false,
+    "source": "request.headers['User-Agent'] == 'Firefox' AND request.rate_limit(['1.2.3.4', '1.2.3.5'], '.*events', 5, 200, [], [], '', 'ip')"
+}'
 ```
-
 Note that using an additional condition, such as an IP, is considered a bad practice. For example, if you use `request.ip in ['1.2.3.4']` and `request.rate_limit([], '', 5, 200, [], [], '', 'ip')`, the rate limit will count requests per interval for every IP. However, it will set an action only when 1.2.3.4 exceeds the number of requests. 
 
 This behavior is linked to the rule you are creating, not the rate limit condition. Thus, even with a blank IP list and an embedded IP condition, the rate limit will still count requests for all IPs.
@@ -202,60 +196,54 @@ This behavior is linked to the rule you are creating, not the rate limit conditi
 #### Rate limit complex URL regex
 
 ```
-curl --request POST \ 
---url https://api.gcore.com/waap/v1alpha/stacks/STACK_ID/sites/SITE_ID/advanced_rules \ 
---header 'accept: application/json' \ 
---header 'content-type: application/json' \ 
---data ' 
-{ 
-"ruleAction": {"block": {"statusCode": "FORBIDDEN_403"}}, 
-"phase": "ACCESS", 
-"name": "Rate limit complexed URL regex", 
-"description": "Rate limit complexed URL regex", 
-"enabled": false, 
-"source": "request.rate_limit([], '.*(?<!aif|aiff|au|avi|bin|bmp|cab|carb|cct|cdf|class|css|doc|dor|dtd|exe|flv|gcf|gff|gif|grv hdmt hqx|ico|ini|jpeg|jpg|js|mov|mp3|nc|pct|pdf|png|ppc|pws|svg|swa|swf|txt|vbs|w32|wav|wbmp|wml|wmlc|wmls|wmlsc|xsd|zip|webp|jxr|hdp|wdp|webm|ogv|mp4|tif|woff|wot|woff)$', 120, 20, [], [], '', 'ip')" 
-} 
-'
+curl --request POST \
+--url https://api.gcore.com/waap/v1alpha/stacks/STACK_ID/sites/SITE_ID/advanced_rules \
+--header 'accept: application/json' \
+--header 'content-type: application/json' \
+--data '{
+    "ruleAction": {"block": {"statusCode": "FORBIDDEN_403"}},
+    "phase": "ACCESS",
+    "name": "Rate limit complexed URL regex",
+    "description": "Rate limit complexed URL regex",
+    "enabled": false,
+    "source": "request.rate_limit([], '.*(?<!aif|aiff|au|avi|bin|bmp|cab|carb|cct|cdf|class|css|doc|dor|dtd|exe|flv|gcf|gff|gif|grv hdmt hqx|ico|ini|jpeg|jpg|js|mov|mp3|nc|pct|pdf|png|ppc|pws|svg|swa|swf|txt|vbs|w32|wav|wbmp|wml|wmlc|wmls|wmlsc|xsd|zip|webp|jxr|hdp|wdp|webm|ogv|mp4|tif|woff|wot|woff)$', 120, 20, [], [], '', 'ip')"
+}'
 ```
 
 #### Embed IP range to the condition 
 
 ```
-curl --request POST \ 
---url https://api.gcore.com/waap/v1alpha/stacks/STACK_ID/sites/SITE_ID/advanced_rules \ 
---header 'accept: application/json' \ 
---header 'content-type: application/json' \ 
---data ' 
-{ 
-"ruleAction": {"block": {"statusCode": "FORBIDDEN_403"}}, 
-"phase": "ACCESS", 
-"name": "Embedding IP range to the condition", 
-"description": "Embedding IP range to the condition", 
-"enabled": false, 
-"source": "request.ip_in_range('10.0.0.0', '10.255.255.255') and request.rate_limit([], '.*[.]jpg', 120, 20, [], [], '', 'ip')" 
-} 
-' 
+curl --request POST \
+--url https://api.gcore.com/waap/v1alpha/stacks/STACK_ID/sites/SITE_ID/advanced_rules \
+--header 'accept: application/json' \
+--header 'content-type: application/json' \
+--data '{
+    "ruleAction": {"block": {"statusCode": "FORBIDDEN_403"}},
+    "phase": "ACCESS",
+    "name": "Embedding IP range to the condition",
+    "description": "Embedding IP range to the condition",
+    "enabled": false,
+    "source": "request.ip_in_range('10.0.0.0', '10.255.255.255') and request.rate_limit([], '.*[.]jpg', 120, 20, [], [], '', 'ip')"
+}'
 ```
 
 #### Cluster (PoP) granularity 
 
 Rate limit all GET or HEAD redirected (302) requests with specific content type: 
- 
-``` 
-curl --request POST \ 
---url https://api.gcore.com/waap/v1alpha/stacks/STACK_ID/sites/SITE_ID/advanced_rules \ 
---header 'accept: application/json' \ 
---header 'content-type: application/json' \ 
---data ' 
-{ 
-"ruleAction": {"block": {"statusCode": "FORBIDDEN_403"}}, 
-"phase": "ACCESS", 
-"name": "Embedding IP range to the condition", 
-"description": "Embedding IP range to the condition", 
-"enabled": false, 
-"source": "request.rate_limit([], '.*url', 120, 20, ['GET', 'HEAD'], [302], 'text/html; charset=[uU][tT][fF]-8', 'cluster')" 
-} 
-' 
+
+```
+curl --request POST \
+--url https://api.gcore.com/waap/v1alpha/stacks/STACK_ID/sites/SITE_ID/advanced_rules \
+--header 'accept: application/json' \
+--header 'content-type: application/json' \
+--data '{
+    "ruleAction": {"block": {"statusCode": "FORBIDDEN_403"}},
+    "phase": "ACCESS",
+    "name": "Embedding IP range to the condition",
+    "description": "Embedding IP range to the condition",
+    "enabled": false,
+    "source": "request.rate_limit([], '.*url', 120, 20, ['GET', 'HEAD'], [302], 'text/html; charset=[uU][tT][fF]-8', 'cluster')"
+}'
 ```
 
 #### Rate limit by tag filter 
@@ -264,18 +252,16 @@ This functionality allows embedding <a href="https://gcore.com/docs/waap/waap-ru
 
 Note that my tag is a <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/tag-rules#tag-generating-rules" target="_blank">user-defined tag</a> that should be defined in a separate rule. 
 
-``` 
-curl --request POST \ 
---url https://api.gcore.com/waap/v1alpha/stacks/STACK_ID/sites/SITE_ID/advanced_rules \ 
---header 'accept: application/json' \ 
---header 'content-type: application/json' \ 
---data ' 
-{ 
-"ruleAction": {"block": {"statusCode": "FORBIDDEN_403"}}, 
-"phase": "ACCESS", 
-"name": "Embedding tag to the condition", 
-"enabled": false, 
-"source": "request.limit_rate(tag="my tag",ips=["2.3.4.5"], url="/my_url/.*", time=10, requests=120, scope="ip")" 
-} 
-'
-``` 
+```
+curl --request POST \
+--url https://api.gcore.com/waap/v1alpha/stacks/STACK_ID/sites/SITE_ID/advanced_rules \
+--header 'accept: application/json' \
+--header 'content-type: application/json' \
+--data '{
+    "ruleAction": {"block": {"statusCode": "FORBIDDEN_403"}},
+    "phase": "ACCESS",
+    "name": "Embedding tag to the condition",
+    "enabled": false,
+    "source": "request.limit_rate(tag="my tag",ips=["2.3.4.5"], url="/my_url/.*", time=10, requests=120, scope="ip")"
+}'
+```
