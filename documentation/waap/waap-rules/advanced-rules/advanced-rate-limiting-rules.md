@@ -5,7 +5,7 @@ published: true
 order: 20
 toc:
    --1--Rate limiting method: "rate-limiting-method"
-   --1--Implementation: "implementation-methods"
+   --1--Implementation: "implementation"
    --2--Advanced rules via API: "advanced-rules-via-api"
    --2--Best practices: "best-practices"
    --3--Block IPs that exceed request limit: "block-ips-that-exceed-request-limit-for-any-url"
@@ -69,54 +69,54 @@ The method returns `true` if the count of requests (4) under the granularity (8)
 </tr>
 </thead>
 <tbody>
-<tr style="text-align: left;">
+<tr style="text-align: left;"> 
     <td>1</td>
     <td><code>ip</code></td>
     <td>False</td>
-    <td>List of IP addresses that the rule applies to. If there are no IPs in the list, counting will be done for all IPs.</td>
+    <td style="text-align: left">List of IP addresses that the rule applies to. If there are no IPs in the list, counting will be done for all IPs.</td>
 </tr>
 <tr style="text-align: left;">
     <td>2</td>
     <td>url</td>
     <td>True</td>
-    <td>A regex pattern used to match the request's URI (URL + query_params).</td>
+    <td style="text-align: left">A regex pattern used to match the request's URI (URL + query_params).</td>
 </tr>
 <tr style="text-align: left;">
     <td>3</td>
     <td><code>time</code></td>
     <td>True</td>
-    <td>The time limit, in seconds, within which we only allow <b>n</b> number of requests to URI matching the pattern.</td>
+    <td style="text-align: left">The time limit, in seconds, within which we only allow <b>n</b> number of requests to URI matching the pattern.</td>
 </tr>
 <tr style="text-align: left;">
     <td>4</td>
     <td><code>requests</code></td>
     <td>True</td>
-    <td>The maximum number of requests <b>accepted</b> within the given period before an action is taken (minimum value is 20 requests).</td>
+    <td style="text-align: left">The maximum number of requests <b>accepted</b> within the given period before an action is taken (minimum value is 20 requests).</td>
 </tr>
 <tr style="text-align: left;">
     <td>5</td>
     <td><code>method</code></td>
     <td>False</td>
-    <td>List of method types the request aggregation will be applied to.</td>
+    <td style="text-align: left">List of method types the request aggregation will be applied to.</td>
 </tr>
 <tr style="text-align: left;">
     <td>6</td>
     <td><code>status_code</code></td>
     <td>False</td>
-    <td>List of status codes the request aggregation will be applied to.</td>
+    <td style="text-align: left">List of status codes the request aggregation will be applied to.</td>
 </tr>
 <tr style="text-align: left;">
     <td>7</td>
     <td><code>content_type</code></td>
     <td>False</td>
-    <td>Regex pattern to match request content_types against.</td>
+    <td style="text-align: left">Regex pattern to match request content_types against.</td>
 </tr>
 <tr style="text-align: left;">
     <td>8</td>
     <td><code>scope</code> (granularity)</td>
-    <td>False<br>
+    <td style="text-align: left">False<br>
     If the granularity isn’t set to <code>cluster</code>, the default aggregation will be set to <code>cluster</code>.</td>
-    <td>The <code>cluster</code> scope counts all the traffic of a POP:
+    <td style="text-align: left">The <code>cluster</code> scope counts all the traffic of a POP:
    <ul>
    <li>Interval counting is made on each POP separately.This can cause unsynchronized counting.</li>
   <li>IP counting can be counted separately on different POPs (each request individually, not overlapped).</li>
@@ -129,7 +129,7 @@ The method returns `true` if the count of requests (4) under the granularity (8)
     <td>9</td>
     <td><code>tag</code></td>
     <td>False</td>
-    <td>Aggregation of tagged (<a href="https://gcore.com/docs/waap/waap-rules/custom-rules/tag-rules#tag-generating-rules" target="_blank">user-defined tags</a>) requests will be applied for each IP.</td>
+    <td style="text-align: left">Aggregation of tagged (<a href="https://gcore.com/docs/waap/waap-rules/custom-rules/tag-rules#tag-generating-rules" target="_blank">user-defined tags</a>) requests will be applied for each IP.</td>
 </tr>
 </tbody>
 </table>

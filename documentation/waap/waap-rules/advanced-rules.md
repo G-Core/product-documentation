@@ -17,7 +17,7 @@ This feature is available for the Enterprise package.
 
 </alert-element>
 
-Similarly to WAAP <a href="https://gcore.com/docs/waap/waap-rules/custom-rules" target="_blank">custom rules</a>, you can create, edit, and manage advanced custom rules. These rules also contain “If/Then” statements, but they also support more complex conditions created with the <a href="https://github.com/google/cel-spec" target="_blank">Common Expression Language (CEL)</a> syntax. 
+Similarly to WAAP <a href="https://gcore.com/docs/waap/waap-rules/custom-rules" target="_blank">custom rules</a>, you can create, edit, and manage advanced custom rules. These rules also contain “If/Then” statements, but they support more complex conditions created with the <a href="https://github.com/google/cel-spec" target="_blank">Common Expression Language (CEL)</a> syntax. 
 
 ## Create advanced rules
 
@@ -94,7 +94,7 @@ The advanced rule object contains the following properties:
 <tr>
     <td style="text-align: left"><code>source</code></td>
     <td style="text-align: left">The condition part of the rule.</td>
-    <td style="text-align: left">Can reference namespace objects: request, whois, session, response, tags, user_agent, client_data, as well as use data and functions.<br> 
+    <td style="text-align: left">Can reference namespace objects: request, whois, session, response, tags, user_agent, client_data, as well as use data and functions.<br><br>
     Supported Python operand syntax: and, or, in, not, ==, !=, >, <, etc.<br>
     Supported CEL operand syntax: ||, && <br></td>
     <td style="text-align: left">Every string value should be enclosed in single quotation marks <code>'</code> and <strong>not</strong> in double quotation marks <code>"</code>.</td>
@@ -103,14 +103,14 @@ The advanced rule object contains the following properties:
     <td style="text-align: left"><code>enabled</code></td>
     <td style="text-align: left">Whether or not the rule is enabled.</td>
     <td style="text-align: left">Boolean: <code>true</code> or <code>false</code></td>
-    <td style="text-align: left">Default value: <code>false</code>.</td>
+    <td style="text-align: left">Default value: <code>false</code></td>
 </tr>
 <tr>
     <td style="text-align: left"><code>description</code></td>
     <td style="text-align: left">A string to describe the purpose of the rule.</td>
     <td style="text-align: left">Any string.<br>
     The character limit for the description field is 100 characters.</td>
-    <td style="text-align: left">Default value: <code>false</code>.</td>
+    <td style="text-align: left">Default value: <code>false</code></td>
 </tr>
 <tr>
     <td style="text-align: left"><code>phase</code></td>
@@ -122,7 +122,7 @@ The advanced rule object contains the following properties:
     <li><code>HEADER_FILTER</code>: The advanced rule applies to the response headers phase.</li>
     <li><code>BODY_FILTER</code>: The advanced rule applies to the response body phase.</li>
     </ul></td>
-    <td style="text-align: left">Default value: <code>ACCESS</code>.</td>
+    <td style="text-align: left">Default value: <code>ACCESS</code></td>
 </tr>
 <tr>
     <td style="text-align: left"><code>statusCode</code></td>
@@ -141,7 +141,7 @@ The advanced rule object contains the following properties:
     <li>d - days</li>
     </ul>
     For instance, 5m will generate an action with a life span of 5 minutes.</td>
-    <td style="text-align: left"><code>actionDuration</code> can be defined only when the ruleAction is set to <code>BLOCK</code>.<br><br>
+    <td style="text-align: left"><code>actionDuration</code> can be defined only when the <code>ruleAction</code> is set to <code>BLOCK</code>.<br><br>
     When setting <code>actionDuration</code>, the tag name penalty will be produced on the client IP for the period duration that has been set.</td>
 </tr>
 <tr>
@@ -162,7 +162,7 @@ You can use our API documentation as a guide in constructing your own advanced r
 
 ### Rate limiting
 
-Block IPs that hit more than 200 requests per 5 seconds (changeable) when the following cookies don't exist. You can find more examples in our Rate limiting guide.
+Block IPs that hit more than 200 requests per 5 seconds (changeable) when the following cookies don't exist. You can find more examples in our <a href="https://gcore.com/docs/waap/waap-rules/advanced-rules/advanced-rate-limiting-rules" target="_blank">Rate limiting</a> guide.
 
 ```
 curl --request POST \
