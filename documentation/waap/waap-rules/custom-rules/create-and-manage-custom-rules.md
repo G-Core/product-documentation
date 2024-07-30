@@ -90,7 +90,7 @@ This section provides examples of custom rules that are configured with differen
 
 Be cautious when creating rules with **NOT Exact** conditions and **Block** actions for IPs and IP ranges. Such rules will block traffic from any IP address that doesn't exactly match the one specified in the rule. 
 
-For example, if you create the rule "IP is NOT Exact 1.1.1.1", it will block any traffic to your domain except for the one coming from 1.1.11.
+For example, if you create the rule "IP is NOT Exact 1.1.1.1", it will block any traffic to your domain except for the one coming from 1.1.1.1.
 
 </alert-element>
 
