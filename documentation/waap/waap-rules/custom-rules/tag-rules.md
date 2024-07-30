@@ -39,13 +39,19 @@ For example, check the following tag-based rule that blocks traffic if the tag a
 
 ## Tag generating rules 
 
-You can also create rules that will generate any tags of your choice based on the conditions you define. These generated tags are known as user-defined tags.  
+You can also create rules that will generate any tags of your choice based on the conditions you define. These generated tags are known as **user-defined** tags.  
 
 Once you create a user-defined tag, it’s automatically added to the list of pre-defined tags and becomes available for use in a tag-based rule. 
 
-For example, let's say you run an online shop that requires users to log in before checking out an order. You can create a rule that will generate a custom tag called `validuser` if the request header named `set-cookie` contains a cookie named `mycookie`, which indicates that the user is logged in. 
+The following examples demonstrate how you can apply user-defined tags. 
+
+Let's say you run an online shop that requires users to log in before checking out an order. You can create a rule that will generate a custom tag called `validuser` if the request header named `set-cookie` contains a cookie named `mycookie`, which indicates that the user is logged in. 
+
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/user-defined-tag.png" alt="Example of a tag-based rule">
 
 In this case, `validuser` will be your new user-defined tag that's now available for use in a tag-based rule.
+
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/user-defined-tag-use-created-tag.png" alt="Example of a tag-based rule">
 
 <alert-element type="info" title="Info">
  
@@ -53,3 +59,4 @@ Consider that rules with user-defined tags run before the rules, which use our p
  
 </alert-element>
 
+For more examples of tag generating rules, check out the following guides: <a href="" target="_blank">Reserved tags</a> (user-defined) and <a href="" target="_blank">API protection smart tags</a>. 
