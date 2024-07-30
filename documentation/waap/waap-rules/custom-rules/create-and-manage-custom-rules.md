@@ -96,7 +96,7 @@ For example, if you create the rule "IP is NOT Exact 1.1.1.1", it will block any
 
 ### Rules with IP conditions
 
-Rules that contain the IP condition allow you to enforce security controls on incoming traffic based on the IP address of a request.  
+Rules that contain the IP condition allow you to enforce security controls on incoming traffic based on the IP address of a request. You can create rules to manage traffic for both IPv4 and IPv6 addresses.
 
 To create a rule: 
 
@@ -116,7 +116,7 @@ To create a rule:
 
 ### Rules with IP range conditions 
 
-Rules that contain the IP range condition allow you to enforce security controls on incoming traffic based on the specified IP address range. 
+Rules that contain the IP range condition allow you to enforce security controls on incoming traffic based on the specified IP address range. You can create rules to manage traffic for both IPv4 and IPv6 addresses.
 
 To create a rule: 
 
@@ -124,7 +124,7 @@ To create a rule:
 
 2\. In the following dropdown, select **Not** to apply the rule to every IP range except for the specified one. To apply the rule only to the specified range, select **--**.  
 
-3\. In the text fields, enter the first and the last addresses of the IP range.  
+3\. In the text fields, enter the first and the last addresses of the IP range. You can specify up to 30 networks in a single range. Subnet masks are not supported.
 
 4\. (Optional) Select another condition in the **AND** section.  
 
@@ -382,7 +382,7 @@ To create a rule:
 
 1\. In the **IF** section, select **Tag** from the dropdown. 
 
-2\. In the following dropdown, select Not to apply the rule to every tag except for the specified one. To apply the rule only to the specified tag, select **--**. 
+2\. In the following dropdown, select **Not** to apply the rule to every tag except for the specified one. To apply the rule only to the specified tag, select **--**. 
 
 3\. Enter the tag. 
 
