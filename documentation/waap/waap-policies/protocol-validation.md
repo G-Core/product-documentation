@@ -14,11 +14,11 @@ pageDescription: Learn how to enable and customize Protocol validation policy.
 --- 
 # Protocol validation 
 
-The protocol validation policy group verifies the HTTP and HTTPS protocols used by clients to request content from your website's origin server. If the request meets the protocol-specific requirements, the transaction is allowed. All non-compliant transactions are blocked. 
+The protocol validation policy group verifies the HTTP and HTTPS protocols used by clients to request content from your website's origin server. If the request meets the protocol-specific requirements, the transaction is allowed, while all non-compliant transactions are blocked. 
 
 ## Protocols overview 
 
-Clients use HTTP methods to communicate with the website's origin server and specify what action should be performed on the requested resource. The following are nine standard HTTP methods that the Gcore WAAP looks for when validating traffic. 
+Clients use HTTP methods to communicate with the website's origin server and specify what action should be performed on the requested resource. The following are nine standard HTTP methods that Gcore WAAP looks for when validating traffic. 
 
 <table>
 <thead>
@@ -91,9 +91,9 @@ All Protocol validation policies are enabled by default. To enable or disable a 
 
 ### Invalid user agent and unknown user agent  
 
-These two WAAP policies work together to identify and block requests that miss a standard user-agent parameter. If the agent is missing, this can indicate that an illegitimate client is being used. 
+These two WAAP policies work together to identify and block requests that lack a standard user-agent parameter. If the agent is missing, this can indicate that an illegitimate client is being used. 
 
-Most browsers provide user agent information across the network to validate a client's authenticity and purpose. user-agent strings typically follow this syntax: 
+Most browsers provide user agent information across the network to validate a client's authenticity and purpose. User agent strings typically follow this syntax: 
 
 `User-Agent: <product> / <product-version> <comment>`
 
@@ -129,4 +129,4 @@ Block clients that try to interfere with the service's internal calls, such as t
 
 ### Prevent malformed request methods 
 
-Enforce HTTP RFC requirements that define how the client is supposed to interact with the server. If the requests don’t meet the RFC standards, a client will be challenged with CAPTCHA or JavaScript validation. Clients that fail to pass the validation will be blocked.  
+Enforce HTTP RFC requirements that define how the client is supposed to interact with the server. If the requests don’t meet the RFC standards, the client will be challenged with CAPTCHA or JavaScript validation. Clients that fail to pass the validation will be blocked.  

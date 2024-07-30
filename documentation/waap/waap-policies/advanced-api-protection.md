@@ -43,13 +43,12 @@ All advanced API protection policies are disabled by default. To enable a policy
 
 Prevent multiple authentication attempts and block access for users who repeatedly try to use invalid tokens to access the API. 
 
-Before enabling this policy, you need to define your 0Auth token endpoints to ensure they are correctly tagged. 
-
+Before enabling this policy, you need to define your 0Auth token endpoints to ensure they are correctly tagged. Learn  instructions on how to do this, check out the <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/tag-rules#tag-generating-rules" target="_blank">Tag Generating Rules</a> guide. 
 ### Sensitive data exposure 
 
-Block API responses that contain Personal Identifiable Information (PII) such as phone numbers, SSNs, email addresses, or credit card numbers. 
+Block API responses that contain personally identifiable information (PII) such as phone numbers, SSNs, email addresses, or credit card numbers. 
 
-You can turn off this policy for specific API endpoints by tagging them as needed. In this case, you’ll remain protected against unknown sensitive data leakage, also allowing legitimate known resources to create a response without being interrupted by the WAF.
+You can turn off this policy for specific API endpoints by tagging them as needed. In this case, you’ll remain protected against unknown sensitive data leakage, while allowing legitimate known resources to create a response without being interrupted by the WAF.
 
 ### Invalid API traffic 
 
@@ -65,7 +64,7 @@ There are three levels of API endpoint authorization:
 
 * **Non-privileged**: Users who will be blocked from all access endpoints that are privileged or admin. 
 
-To ensure that only admins and privileged users can access sensitive endpoints, you can create tags that will be applied when the defined header, token, or other identifier is present. You can then use the API Discovery feature to control API access based on these tags. 
+To ensure only admins and privileged users can access sensitive endpoints, you can create tags that will be applied when the defined header, token, or other identifier is present. You can then use the API Discovery feature to control API access based on these tags. 
 
 ### Non-baselined API requests 
 
