@@ -86,6 +86,14 @@ You’ve successfully created the rule.
 
 This section provides examples of custom rules that are configured with different types of conditions. 
 
+<alert-element type="warning" title="Warning">
+
+Be cautious when creating rules with **NOT Exact** conditions and **Block** actions for IPs and IP ranges. Such rules will block traffic from any IP address that doesn't exactly match the one specified in the rule. 
+
+For example, if you create the rule "IP is NOT Exact 1.1.1.1", it will block any traffic to your domain except for the one coming from 1.1.11.
+
+</alert-element>
+
 ### Rules with IP conditions
 
 Rules that contain the IP condition allow you to enforce security controls on incoming traffic based on the IP address of a request.  
