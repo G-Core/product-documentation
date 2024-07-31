@@ -171,8 +171,8 @@ request.rate_limit([], '/', 5, 200, ['GET', 'HEAD'], [], 'text/html; charset=', 
 <thead>
   <tr>
     <th style="text-align: left; width:15%">Attribute</th>
-    <th style="text-align: left; width:15%">Type</th>
-    <th style="text-align: left; width:30%">Description</th>
+    <th style="text-align: left; width:10%">Type</th>
+    <th style="text-align: left; width:35%">Description</th>
     <th style="text-align: left; width:30%">Compiled <code>source</code> field</th>
   </tr>
   </thead>
@@ -188,16 +188,16 @@ request.rate_limit([], '/', 5, 200, ['GET', 'HEAD'], [], 'text/html; charset=', 
     <td>profiling_status</td>
     <td>string</td>
     <td style="text-align: left;">Client’s fingerprint profiling status.<br><br>
-    Possible values:
+    Values:
     <ul style="text-align: left;">
-    <li>initiated: JavaScript execution was initiated (sent to the client as an injection into the response).</li>
-    <li>executed once: JavaScript was executed, and preliminary results were received by WAAP.</li>
-    <li>profiling error: An error occurred during profiling.</li>
-    <li>profiling completed: Profiling complete without error.</li>
-   <li>idle: All JavaScript tests and finger printing process completed.</li>
+    <li><strong>Initiated</strong>: JavaScript was injected in the response and sent to the client for execution.</li>
+    <li><strong>Executed once</strong>: JavaScript was executed, and WAAP received preliminary results.</li>
+    <li><strong>Profiling error</strong>: An error occurred during profiling.</li>
+    <li><strong>Profiling completed</strong>: Profiling completed without error.</li>
+   <li><strong>Idle</strong>: All JavaScript tests and fingerprinting process completed.</li>
    </ul>
     <td style="text-align: left;">session.profiling_status<br>
-    wsession.profiling_status == 'idle'</td>
+    session.profiling_status == 'idle'</td>
   </tr>
   </tbody>
 </table>
@@ -217,13 +217,13 @@ request.rate_limit([], '/', 5, 200, ['GET', 'HEAD'], [], 'text/html; charset=', 
 <tr style="text-align: left;">
     <td>status</td>
     <td>int</td>
-    <td>HTTP status code</td>
+    <td style="text-align: left;">HTTP status code</td>
     <td style="text-align: left;">response.status</td>
   </tr>
   <tr style="text-align: left;">
     <td>headers</td>
     <td>dict</td>
-    <td>Response headers</td>
+    <td style="text-align: left;">Response headers</td>
     <td style="text-align: left;">response.headers['Access-Control-Allow-Credentials'] == 'true'</td>
   </tr>
   </tbody>
@@ -332,30 +332,30 @@ The **ua_parsed** table contains user agent information collected by WAAP from t
 <tr style="text-align: left;">
     <td>device_type</td>
     <td>string</td>
-    <td>Additional information about the client device. Optional values: <ul style="text-align: left;">
-    <li>Web Search Engine Bots</li>
+    <td style="text-align: left;">Additional information about the client device.<br><br> Optional values: <ul style="text-align: left;">
+    <li>Web search engine bots</li>
     <li>mobile</li>
    <li> NA</li>
     <li>SEO</li>
-   <li>Analytics or Marketing Bots</li>
-   <li>Preview Bot</li>
-    <li>Media or Entertainment Search Bots</li>
-    <li>Social Media or Blog Bots</li>
-    <li>RSS Feed Reader Bots</li>
-    <li>Site Monitoring and Web Development Bots</li>
-   <li> Web Archiver Bots</li>
+   <li>Analytics or marketing bots</li>
+   <li>Preview bot</li>
+    <li>Media or entertainment search bots</li>
+    <li>Social media or blog bots</li>
+    <li>RSS seed reader bots</li>
+    <li>Site monitoring and web development bots</li>
+   <li> Web archiver bots</li>
     <li>console</li>
-   <li>Job Search Engine Bots</li>
-   <li> Online Advertising Bots</li>
-    <li>News Aggregator Bots</li>
-   <li>Academic or Research Bots</li>
+   <li>Job search engine bots</li>
+   <li> Online advertising bots</li>
+    <li>News aggregator bots</li>
+   <li>Academic or research bots</li>
    <li>Desktop</li>
-   <li>Business Intelligence Bots</li>
-   <li>Automated Shopping Cart and Sniper Bots</li>
-    <li>Enterprise Data Aggregator Bots</li>
-    <li>Media Player</li></td>
-    <td>user_agent.device_type<br>
-    user_agent.device_type == 'na' </ul></td>
+   <li>Business intelligence bots</li>
+   <li>Automated shopping cart and sniper bots</li>
+    <li>Enterprise data aggregator bots</li>
+    <li>Media player</li></td>
+    <td style="text-align: left;">user_agent.device_type<br>
+    user_agent.device_type == 'na'</ul></td>
   </tr>
     </tbody>
 </table>
@@ -375,7 +375,7 @@ The **ua_parsed** table contains user agent information collected by WAAP from t
 <tr style="text-align: left;">
     <td>fingerprint['hash']</td>
     <td>dict</td>
-      <td rowspan="4">A table that contains fingerprint information about the request (the information is collected by WAAP with injected JavaScript):
+      <td rowspan="4" style="text-align: left;">A table that contains fingerprint information about the request (the information is collected by WAAP with injected JavaScript):<br>
       <ul style="text-align: left;">
       <li>fp__hash of the client</li>
       <li>fp__js of the client</li>
