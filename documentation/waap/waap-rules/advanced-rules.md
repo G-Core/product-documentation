@@ -25,7 +25,7 @@ Due to the highly technical aspect of the advanced rules functionality, the abil
 
 Check out the following guides for details on how to create advanced rules and their key components:  
 
-* API docs: Learn how to construct and manage advanced rules. 
+* <a href="https://api.gcore.com/docs/waap" target="_blank">API docs</a>: Learn how to construct and manage advanced rules. 
 
 * <a href="https://gcore.com/docs/waap/waap-rules/advanced-rules/advanced-rule-objects" target="_blank">Advanced rule objects</a>: Get the list of all available objects you can use in rule expressions along with their respective attributes and types. 
 
