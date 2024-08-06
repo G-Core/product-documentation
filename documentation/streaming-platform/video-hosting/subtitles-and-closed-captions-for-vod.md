@@ -61,12 +61,12 @@ SRT (SubRip file format) is a simple text file saved in the SubRip file format w
 
 ```
 1
-00:00:19,570 --> 00:00:24,592
-Oh, you cute little corny little spursome. Latin name, bonus points.
+00:00:00,009 --> 00:00:03,689
+Come on team, we mustn't dilly dally when there's so much nature to see!
 
 2
-00:00:44,014 --> 00:00:52,156
-...Come on, team. We must not have dilly-dally when there's so much nature to see. I was thinking we should call our class project Fun Guys in the Forest...
+00:00:04,129 --> 00:00:08,169
+I was thinking, we should call our class project, Fungi in a Forest!
 ```
 
 ### WebVTT
@@ -78,14 +78,13 @@ WebVTT (Web Video Text Tracks) is a text file with the .vtt extension. It is bas
 **Example**:
 
 ```
-1
-00:00:19,570 --> 00:00:24,592 position:10%,line-left align:left size:35%
-Oh, you cute little corny little spursome. 
-Latin name, bonus points.NOTE I’m not sure the timing is right on the following cue.
+WEBVTT
 
-2
-00:00:44,014 --> 00:00:52,156 position:90% align:right size:35%
-...Come on, team. We must not have dilly-dally when there's so much nature to see. I was thinking we should call our class project Fun Guys in the Forest...
+00:00:00.009 --> 00:00:03.689
+Come on team, we mustn't dilly dally when there's so much nature to see!
+
+00:00:04.129 --> 00:00:08.169
+I was thinking, we should call our class project, Fungi in a Forest!
 ```
 
 ## How to get subtitles and captions
@@ -152,7 +151,7 @@ curl -L 'https://api.gcore.com/streaming/videos/2474732/subtitles' \
 -d '{
     "name": "German (AI-generated)",
     "language": "ger",
-    "vtt": "WebVTT\n\n1\n00:00:18,350 --> 00:00:24,350\nOh, du süßes, kühles, schmuckiges Schmuck. Latin Name, Bonus-Punkte.\n\n2\n00:00:44,014 --> 00:00:52,156\nKomm schon, Team. Wir müssen nicht auf Dilly Dally, Ich dachte..."         
+    "vtt": "WEBVTT\n\n1\n00:00:00.031 --> 00:00:03.711\nKomm, Team, wir dürfen nicht zögern,\nwenn es so viel Natur zu sehen gibt!\n\n2\n00:00:04.111 --> 00:00:08.171\nIch dachte, wir sollten unser Klassenergebnis\n"Pilze im Wald" nennen!"         
 }'
 ```
 
@@ -163,7 +162,7 @@ In response, you will get all original data and the “id” field of a new enti
     "id": 5850,
     "name": "German (AI-generated)",
     "language": "ger",
-    "vtt": "WebVTT\n\n1\n00:00:18,350 --> 00:00:24,350\nOh, du süßes, kühles, schmuckiges Schmuck. Latin Name, Bonus-Punkte.\n\n2\n00:00:44,014 --> 00:00:52,156\nKomm schon, Team. Wir müssen nicht auf Dilly Dally, Ich dachte..."         
+    "vtt": "WEBVTT\n\n1\n00:00:00.031 --> 00:00:03.711\nKomm, Team, wir dürfen nicht zögern,\nwenn es so viel Natur zu sehen gibt!\n\n2\n00:00:04.111 --> 00:00:08.171\nIch dachte, wir sollten unser Klassenergebnis\n"Pilze im Wald" nennen!"         
 }'
 ```
 
@@ -186,14 +185,13 @@ Example of the response:
         "id": 5823,
         "name": "English (AI-generated)",
         "language": "eng",
-        "vtt": "WebVTT\n\n1\n00:00:19,570 --> 00:00:24,592\nOh, you cute little corny little spursome. Latin name, bonus points.
-\n\n2\n00:00:44,014 --> 00:00:52,156\nCome on, team. We must not have dilly-dally when \nthere's so much nature to see..."
+        "vtt": "WEBVTT\n\n1\n00:00:00.009 --> 00:00:03.689\nCome on team, we mustn't dilly dally when there's so much nature to see!\n\n2\n00:00:04.129 --> 00:00:08.169\nI was thinking, we should call our class project, Fungi in a Forest!"
     },
     {
         "id": 5850,
         "name": "German (AI-generated)",
         "language": "ger",
-        "vtt": "WebVTT\n\n1\n00:00:18,350 --> 00:00:24,350\nOh, du süßes, kühles, schmuckiges Schmuck. Latin Name, Bonus-Punkte.\n\n2\n00:00:44,014 --> 00:00:52,156\nKomm schon, Team. Wir müssen nicht auf Dilly Dally, Ich dachte..."
+        "vtt": "WEBVTT\n\n1\n00:00:00.031 --> 00:00:03.711\nKomm, Team, wir dürfen nicht zögern,\nwenn es so viel Natur zu sehen gibt!\n\n2\n00:00:04.111 --> 00:00:08.171\nIch dachte, wir sollten unser Klassenergebnis\n"Pilze im Wald" nennen!"
     }
 ]
 ```
@@ -231,7 +229,7 @@ curl -L -X DELETE 'https://api.gcore.com/streaming/videos/2474732/subtitles/5850
 
 Captions are integrated into Gcore's Player. Just click the icon located to the left of the volume indicator in the bottom panel of the Player to get captions.
 
-<iframe width="720" height="360" src="https://demo-public.gvideo.io/videos/2675_QtN3sYHVPy3KF2n" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+<iframe width="720" height="360" src="https://player.gvideo.co/videos/2675_QtN3sYHVPy3KF2n?&sub_lang=en" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
 ### Custom playback via API
 
