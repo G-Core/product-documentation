@@ -80,7 +80,6 @@ export class AppComponent implements OnInit {
 
     public ngOnInit(): void {
         if (!isScullyRunning()) {
-            this.setUTMCookie();
             addAnalyticsScripts();
         }
 
@@ -120,12 +119,6 @@ export class AppComponent implements OnInit {
             }
         }
         return snapshot;
-    }
-
-    private setUTMCookie(): void {
-        sourcebuster.init({
-            domain: defineDomain(),
-        });
     }
 
     public closeCookiesModal(): void {
