@@ -250,11 +250,27 @@ client_id = {client_id}
 - The larger the size of a chunk, the faster each chunk will be uploaded using the maximum bandwidth. But in the case of failure to upload, TUS will only start uploading from the last successful chunk, which may have been some time ago. So with large sizes, the speed will be faster, but if it fails, the additional reupload time will be significant.
 - With small sizes, the risk of uploading errors decreases. However, due to the features of HTTP (handshakes, etc.) for each chunk’s request, the upload speed will significantly reduce. So small chunk sizes mean a slow but reliable upload speed.
 
+<alert-element type="info" title="Info">
+
+Transmitted data must comply with the <a href="https://tus.io/protocols/resumable-upload#upload-metadata" target="_blank">rules for the Upload-Metadata header</a>, including:
+
+* Header fields must be comma-separated.
+* All values are encoded using the Base64 scheme.
+* All keys are unique.
+
+</alert-element>
+
+**Example of bash script:** 
+
+```
+DEBUG=1 tusc -H "https://vod-uploader-ed-2.gvideo.co" -f "file_to_upload.mp4" -b "/upload/" -- -H "'Upload-Metadata: client_id $(echo <client_id> | base64 -w0),filename $(echo <filename> | base64 -w0),token $(echo <token> | base64 -w0),video_id $(echo <video_id> | base64 -w0)'"
+```
+
+**Example of JS code:** 
+
 Try the <a href="https://codepen.io/apih9000/pen/wvQmNEW?editors=1011" target="_blank">CodePen template</a> by copying your ```token```, ```video_id```, and ```client_id``` to find out the upload functionality of the TUS protocol:  
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/upload-video-via-api/codepen-example.png" alt="CodePen template">
-
-Example of JS code: 
 
 ```
 const options = { 
@@ -305,8 +321,8 @@ Most common TUS errors:
 - **HTTP 405 Method Not Allowed**. Unexpected response while creating upload session; check parameters of the request.
 - **HTTP 429 Too Many Requests**. Try to send a request later.
 - **HTTP 500 Internal Server Error**:
-    - Error: token invalid (null)
-    - Error: token invalid (eyJhbGciOi...)
+    - Error: token invalid (null) – check the format of parameters, encoding in base64, separation of parameters and key-value pairs.
+    - Error: token invalid (eyJhbGciOi...) – the same as above.
     - Error: token video (12345) does not match this video (23456)
     - Error: token client (123) does not match this client (234)
 
