@@ -10,7 +10,7 @@ toc:
    --1--Get HLS, DASH, and MP4 links: "get-hls-dash-and-mp4-links"
    --2--Customer Portal: "customer-portal"
    --2--API: "api"
-   --1--Limit quality: "limit-the-lowest-and-highest-quality-in-adaptive-bitrate"
+   --1--Limit quality: "limit-the-lowest-and-highest-quality-in-hls-adaptive-bitrate"
 pageTitle: Adaptive Streaming & Offline Viewing Guide with HLS, MPEG-DASH & MP4 Formats | Gcore
 pageDescription: Explore the uses and benefits of HLS, MPEG-DASH, and MP4 formats for video streaming, from adaptive bitrate streaming to offline viewing.
 ---
@@ -21,7 +21,7 @@ Gcore Video Streaming allows you to deliver video-on-demand (VOD) content optimi
 
 We offer the following formats for playback: 
 
-* **HLS TS**: A default VOD delivery to all devices. Has codecs limitations. For instance, it supports H264 video codec up to High Profile <a href="http://level/" target="_blank">level 4.1</a> but using newer codecs like H265 and AV1 isn't possible.  
+* **HLS TS**: A default VOD delivery to all devices. Has codecs limitations. For instance, it supports H264 video codec up to High Profile <a href="https://en.wikipedia.org/wiki/Advanced_Video_Coding#Levels" target="_blank">level 4.1</a> but using newer codecs like H265 and AV1 isn't possible.  
 
 * **HLS CMAF**: A common format supported by all modern devices (e.g., iOS 10 and later). Supports a fragmented MP4 (fMP4) format of video chunks that allows using a wide range of modern technologies such as new H265 and AV1 codecs.  
 
@@ -65,9 +65,9 @@ Where:
 - <span style="color:#FF5913">{client_id}</span>: Your account ID.
 - <span style="color:#FF5913">{video_slug}</span>: Slug identifier of the video.
 - <span style="color:#FF5913">[-cmaf]</span>: The HLS CMAF version of the manifest. For details, check the hls_cmaf_url field description in our <a href="https://api.gcore.com/docs/streaming#tag/Videos/operation/get_api_videos" target="_blank">API docs</a>. 
-- <span style="color:#FF5913">-min-N</span>: Special suffix that specifies the lowest video quality limit available in an Adaptive Bitrate (ABR) streaming. Learn more about the setting in the <a href="https://gcore.com/docs/streaming-platform/video-hosting/hls-and-mp4#limit-the-lowest-and-highest-quality-in-adaptive-bitrate" target="_blank">Limit quality</a> section.
-- <span style="color:#FF5913">-max-N</span>: Special suffix that specifies the highest video quality limit available in the ABR streaming. Learn more about the setting in the <a href="https://gcore.com/docs/streaming-platform/video-hosting/hls-and-mp4#limit-the-lowest-and-highest-quality-in-adaptive-bitrate" target="_blank">Limit quality</a> section.
-- <span style="color:#FF5913">-img</span>: The trick play feature for Roku devices allows thumbnail images to be embedded directly into the manifest. Read more in the article <a href="https://gcore.com/docs/streaming-platform/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices#roku-trick-play" target="_blank">Timeline hover previews: use with players and Roku devices</a>.
+- <span style="color:#FF5913">[-min-N]</span>: Special suffix that specifies the lowest video quality limit available in an Adaptive Bitrate (ABR) streaming. Learn more about the setting in the <a href="https://gcore.com/docs/streaming-platform/video-hosting/hls-and-mp4#limit-the-lowest-and-highest-quality-in-hls-adaptive-bitrate" target="_blank">Limit quality</a> section.
+- <span style="color:#FF5913">[-max-N]</span>: Special suffix that specifies the highest video quality limit available in the ABR streaming. Learn more about the setting in the <a href="https://gcore.com/docs/streaming-platform/video-hosting/hls-and-mp4#limit-the-lowest-and-highest-quality-in-hls-adaptive-bitrate" target="_blank">Limit quality</a> section.
+- <span style="color:#FF5913">[-img]</span>: The trick play feature for Roku devices allows thumbnail images to be embedded directly into the manifest. Read more in the article <a href="https://gcore.com/docs/streaming-platform/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices#roku-trick-play" target="_blank">Timeline hover previews: use with players and Roku devices</a>.
 - <span style="color:#FF5913">[-(h264|hevc|av1)]</span>: Video codec soft limitation. Applicable if the video was simultaneously transcoded into multiple codecs (264, H265, and AV1) and you want to return just one video codec in a manifest.  
 
 For example, check out the following manifest links for a master playlist:  
@@ -263,7 +263,7 @@ Where:
 - ```dash_url``` contains the MPEG-DASH link 
 - ```mp4_url``` contains the MP4 link
 
-## Limitation of the lowest and highest quality in HLS adaptive bitrate
+## Limit the lowest and highest quality in HLS adaptive bitrate
 
 The manifest file (.m3u8) for HLS and HLS CMAF streaming contains all possible video qualities by default. If you want to limit the quality for old devices, non-paying users, or a quick view, you can specify a suffix indicating the minimum and/or maximum allowed resolution:
 
