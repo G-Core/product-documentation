@@ -202,10 +202,12 @@ If the recommended parameters do not suit your stream, write to us in the chat o
 
 ## RTMP, RTMPS, and SRT for live streaming
 
-- RTMP(S) and SRT are supported protocols for income live streams. 
 - RTMP (Real-Time Messaging Protocol) is a protocol for transmitting audio, video, and data over the Internet between a player and a server, supporting low-latency communication for real-time streaming.
-RTMPS is a variation of RTMP but incorporates SSL usage. 
+- RTMPS is a variation of RTMP but incorporates SSL usage. 
+- RTSP (Real Time Streaming Protocol) is a communication protocol used to control servers that stream media content. RTSP uses the Real-time Transport Protocol (RTP) with Real-time Control Protocol (RTCP) to deliver media streams.
 - SRT (Secure Reliable Transport) is an open-source video transport protocol for delivering high-quality, secure, low-latency video across unreliable networks.
+
+You can use Push or Pull methods where applicable.
 
 ## RTMP(S) troubleshooting
 
