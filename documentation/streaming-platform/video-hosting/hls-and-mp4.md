@@ -11,8 +11,8 @@ toc:
    --2--Customer Portal: "customer-portal"
    --2--API: "api"
    --1--Limit quality: "limit-the-lowest-and-highest-quality-in-hls-adaptive-bitrate"
-pageTitle: Adaptive Streaming & Offline Viewing Guide with HLS, MPEG-DASH & MP4 Formats | Gcore
-pageDescription: Explore the uses and benefits of HLS, MPEG-DASH, and MP4 formats for video streaming, from adaptive bitrate streaming to offline viewing.
+pageTitle: Guide to HLS, DASH, and MP4 Video Streaming Formats | Gcore
+pageDescription: Explore the uses, benefits, and how to optimize HLS, MPEG-DASH, and MP4 formats for video streaming, from adaptive bitrate streaming to offline viewing.
 ---
 
 # HLS, MPEG-DASH, and MP4
