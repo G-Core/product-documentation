@@ -30,7 +30,7 @@ Upload of videos via API can be done in three ways, which we describe in detail 
 
 - Copy from external storage  
 - Upload from a local device 
-- Batch upload to migrate a vast number of videos from other services (available soon)
+- Batch upload to migrate a vast number of videos from other services
 
 ## Video upload and processing statuses
 
