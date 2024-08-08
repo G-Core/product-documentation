@@ -86,15 +86,16 @@ Example of the response if an error occurs during video processing:
 ```
 ## Copy from external storage
 
-In the section, we explain how to copy and/or migrate files from a third-party, external storage to the Gcore Video Streaming. We will explain the process, offer an example API request, then explain how it works.
+In the section, we explain how to copy and migrate files from a third-party, external storage to the Gcore Video Streaming. We will explain the process, offer an example API request, then explain how it works.
 
 ### Overview
 
 If your videos are available by public HTTPS URL, this is the best option to copy video files directly from external storage.
 
 Available protocols for migration:
-- HTTP/S public access from external video histings (i.e. vimeo, mux, etc)
-- HTTP/S public access from S3-like storages (i.e. AWS, Azure, etc)
+
+- HTTP/HTTPS public access from external video hosting services, such as Vimeo or Mux
+- HTTP/HTTPS public access from S3-like storages, such as AWS or Azure
 - SFTP protocol
 
 **Note**: The original file must be in MP4 format or one of the following formats: 3g2, 3gp, asf, avi, dif, dv, flv, f4v, m4v, mov, mp4, mpeg, mpg, mts, m2t, m2ts, qt, wmv, vob, mkv, ogv, webm, vob, ogg, mxf, quicktime, x-ms-wmv, mpeg-tts, vnd.dlna.mpeg-tts.
