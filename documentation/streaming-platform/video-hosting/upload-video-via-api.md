@@ -86,11 +86,17 @@ Example of the response if an error occurs during video processing:
 ```
 ## Copy from external storage
 
-In the section, we explain how to copy files from a third-party, external storage to the Gcore Video Streaming. We will explain the process, offer an example API request, then explain how it works.
+In the section, we explain how to copy and migrate files from a third-party, external storage to the Gcore Video Streaming. We will explain the process, offer an example API request, then explain how it works.
 
 ### Overview
 
 If your videos are available by public HTTPS URL, this is the best option to copy video files directly from external storage.
+
+Available protocols for migration:
+
+- HTTP/HTTPS public access from external video hosting services, such as Vimeo or Mux
+- HTTP/HTTPS public access from S3-like storages, such as AWS or Azure
+- SFTP protocol
 
 **Note**: The original file must be in MP4 format or one of the following formats: 3g2, 3gp, asf, avi, dif, dv, flv, f4v, m4v, mov, mp4, mpeg, mpg, mts, m2t, m2ts, qt, wmv, vob, mkv, ogv, webm, vob, ogg, mxf, quicktime, x-ms-wmv, mpeg-tts, vnd.dlna.mpeg-tts.
 
@@ -98,10 +104,11 @@ Streaming formats like HLS (.m3u8/.ts) and DASH (.mpd/.m4v) are intended for the
 
 Examples of good and bad links to video files from external storage:  
 
-- **Good link**: ```https://demo-files.gvideo.io/gcore.mp4``` (13,8MB) 
+- **Good link**: ```https://demo-files.gvideo.io/gcore.mp4``` (13,8MB from S3 storage)
+- **Good SFTP template**: ```sftp://login:password@domain.com/path/file.mp4```
 - **Bad link** (because of chunked HLS format): ```https://demo-files.gvideo.io/hls/master.m3u8```  
 
-Below, we explain how to <a href="https://gcore.com/docs/streaming-platform/video-hosting/upload-video-via-api#batch-upload-to-migrate-a-vast-number-of-videos-from-other-services">get HTTP public access links</a> in different external storages. 
+Below, we explain how to <a href="https://gcore.com/docs/streaming-platform/video-hosting/upload-video-via-api#batch-upload-to-migrate-a-vast-number-of-videos-from-other-services">get HTTP public access links</a> in some popular external storages. 
 
 To copy a video from another server, specify the attribute ```origin_url``` in the <a href="https://api.gcore.com/docs/streaming#tag/Videos/operation/post_api_videos" target="_blank">POST API request</a>. The original video will be downloaded for Video Hosting on our server side. 
 
