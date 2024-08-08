@@ -127,11 +127,12 @@ The following table includes the possible HTTP response codes returned when requ
 <table>
   <th>Code</th><th>Function</th><th>Description</th>
   <tr><td>200</td><td>OK</td><td>All OK</td></tr>
-  <tr><td>403</td><td>Forbidden</td><td>Access is denied. If you use any distribution restriction such as geo restriction or token, you must satisfy this condition for access.</td></tr>
+  <tr><td>403</td><td>Forbidden</td><td>Access is denied. If you use any distribution restriction such as geo-restriction or token, you must satisfy this condition for access.</td></tr>
   <tr><td>404</td><td>Not Found</td><td>There's no requested video, or the live stream is temporarily not delivering chunks. Check the request link or activate your video.</td></tr>
   <tr><td>412</td><td>Precondition Failed</td><td>Applicable for Live only. A manifest and chunks are requested from a stream that hasn't started yet and, accordingly, is not transcoded. Start a stream or restart transcoding.</td></tr>
   <tr><td>422</td><td>Not Found</td><td>This is advanced functionality (i.e. custom encoding presets). To enable it, contact your manager or the support team.</td></tr>
   <tr><td>500</td><td>Internal Server Error</td><td>An unexpected issue happened on the server. This may be a local error in a specific video. In this case, check the video processing status in your personal account. If the error is global, the information will be on the status page.</td></tr>
+  <tr><td>502</td><td>Bad Gateway</td><td>An unexpected issue happened on the server. This may happen when VOD or Live can't be delivered over CDN because an incorrect response was received from an origin (storage or live transcoder). In this case, check the video processing status or live stream transcoding in your personal account. If the error is global, the information will appear on the status page.</td></tr>
   <tr><td>503</td><td>Service Unavailable</td><td>An unexpected issue happened on the server. This may be a local error in a specific video. In this case, check the video processing status in your personal account. If the error is global, the information will be on the status page.</td></tr>
   <tr><td>504</td><td>Gateway Time-out</td><td>Timeout for receiving data from the source. Try checking the status of video sending/ingesting and transcoding.</td></tr>
 </table>
