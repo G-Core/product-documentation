@@ -17,13 +17,17 @@ customUrl: /fastedge/getting-started/create-fastedge-apps
 
 This guide describes how to create a FastEdge app. Check out our <a href="https://gcore.com/docs/fastedge/getting-started" target="_blank">FastEdge overview</a> article to learn more about the product.
 
-You can create a FastEdge app in two ways: from a custom binary file or a pre-configured template. If you chose the latter option, skip Stage 1. 
+You can create a FastEdge app in two ways: from a custom binary file using <a href="https://github.com/G-Core/FastEdge-sdk-js" target="_blank">JavaScript SDK</a> or <a href="https://github.com/rust-lang/rust" target="_blank">Rust</a> as well as from a pre-configured template. If you chose the latter option, skip Stage 1. 
 
 ## Stage 1. Create a Wasm binary file
 
 To get started, create a .wasm file that you will later upload to the Gcore Customer Portal.
 
-### Step 1. Set up the environment 
+<tabset-element>
+
+### Via Rust 
+
+#### Step 1. Set up the environment 
 
 1\. Install the Rust compiler and cargo (package manager):
 
@@ -37,7 +41,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 rustup target add wasm32-wasi
 ```
 
-### Step 2. Prepare directory structure and a configuration file
+#### Step 2. Prepare directory structure and a configuration file
 
 1\. Initialize the directory structure:
 
@@ -71,7 +75,7 @@ crate-type = ["cdylib"]
 [dependencies]
 fastedge = "0.1"
 ```
-### Step 3. Create a source
+#### Step 3. Create a source
 
 In this example, we’ll create a simple app that responds with "HTTP 200" and the text “Hello world!” in the response’s body.
 
@@ -91,7 +95,7 @@ fn main(_req: Request<Body>) -> Result<Response<Body>, Error> {
 }
 ```
 
-### Step 4. Compile a Wasm file
+#### Step 4. Compile a Wasm file
 
 Produce the Wasm binary:
 
@@ -101,11 +105,45 @@ cargo build --release
 
 The resulting Wasm code will be written to the ```myapp/target/wasm32-wasi/release/myapp.wasm``` file.
 
+### Via JavaScript SDK
+
+A JavaScript code pattern closely resembles <a href="https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API" target="_blank">Service Worker API</a>. You can also find multiple examples in the <a href="https://github.com/G-Core/FastEdge-sdk-js/tree/main/docs/examples" target="_blank">Gcore repository</a>. 
+
+The key aspect of the Wasm configuration is to set up the `addEventListener` that has to synchronously call `event.respondWith` with a callback. This callback can be asynchronous and this is where you’d usually include any custom code to generate a response.
+
+Here’s the sample configuration: 
+
+```
+async function app(event) {
+   const request = event.request;
+   return new Response(`You made a request to ${request.url}`);
+}
+addEventListener('fetch', (event) => {
+   event.respondWith(app(event));
+});
+```
+
+To create a binary via JavaScript: 
+
+1\. Install FastEdge Javascript SDK by running `npm install --save-dev @gcoredev/fastedge-sdk-js`
+
+2\. Taking the sample configuration as an input `/src/input.js`, create a Wasm binary as output `/dist/main.wasm`. To do so, use the following command: `npx fastedge-build  ./src/input.js dist/main.wasm`
+
+</tabset-element>
+
 ## Stage 2. Deploy an application
+
+For detailed steps on how to deploy a FastEdge app, refer to the relevant section: 
+
+* In the Customer Portal. Follow the instructions if you created a custom Wasm file using Rust or want to create a FastEdge app from a preconfigured template. 
+
+* Via JavaScript SDK: Follow the instructions if you want to deploy a JavaScript-packaged Wasm. 
+
+### In the Customer Portal
 
 <tabset-element>
 
-### Deploy an app from a binary
+#### Deploy an app from a binary
 
 1\. In the Gcore Customer Portal, navigate to **FastEdge** > **Create application**.  
 
@@ -133,7 +171,7 @@ Your application has been successfully deployed. You can now test its configurat
 
 <img src="https://assets.gcore.pro/docs/fastedge/create-apps/deployed-successfully-custom-binary.png" alt="A page with a link to an app and its configuration" width="80%">
 
-### Deploy an app from a template
+#### Deploy an app from a template
 
 1\. In the Gcore Customer Portal, navigate to **FastEdge** > **Create application**.  
 
@@ -161,13 +199,59 @@ Your application has been successfully deployed. You can now test its configurat
 
 </tabset-element>
 
+### Via JavaScript SDK
+
+1\. Upload the Wasm binary to our edge servers by running the following <a href="https://api.gcore.com/docs/fastedge#tag/Binaries/operation/storeBinary" target="_blank">API request</a> from the repo’s root directory. Insert your <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">permanent API token</a> instead of the `<api_key>`: 
+
+```
+curl -X 'POST' \
+  'https://api.gcore.com/fastedge/v1/binaries/raw' \
+  -H 'accept: application/json' \
+  -H 'Authorization: APIKey <api_key>' \
+  -H 'Content-Type: application/octet-stream' \
+  --data-binary '@./dist/main.wasm'
+```
+
+In the response, you will receive the ID of the uploaded binary (`<binary_id>`). Make sure to save it, as it will be used in the following step.
+
+2\. Create the app by running the following <a href="https://api.gcore.com/docs/fastedge#tag/Apps/operation/addApp" target="_blank">API request</a>: 
+
+```
+curl -X 'POST' \
+  'https://api.gcore.com/fastedge/v1/apps' \
+  -H 'name: <app_name>' \
+  -H 'accept: application/json' \
+  -H 'client_id: 0' \
+  -H 'Authorization: APIKey <api_key>' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "binary": <binary_id>,
+    "plan": "beta",
+    "status": 1
+}'
+```
+
+Where: 
+
+* `<app_name>` is the unique name of your app. 
+* `<api_key>` is your permanent API token. 
+* `<binary_id>` is the ID of your uploaded Wasm binary.
+
 ## Stage 3. Test an application
 
 You can test the application after its deployment by clicking the application link on the deployment confirmation screen: 
 
 <img src="https://assets.gcore.pro/docs/fastedge/create-apps/test-custom-deployment.png" alt="A page with a link to an app and its configuration" width="80%">
 
-You can also inspect and adjust the configuration from the **Dashboards** page:  
+<alert-element type="info" title="Info">
+ 
+To test the app with cURL, run the following request: `curl https://<app_name_assigned_at_the_previous_stage>.fastedge.gcore.dev/`.  
+
+If everything is set up correctly, the response will be: “You made a request to /” 
+ 
+</alert-element>
+
+Additionally, you can inspect and adjust the configuration from the **Dashboards** page:  
 
 1\. In the Gcore Customer Portal, navigate to **FastEdge** > **Dashboard**. 
 
@@ -183,9 +267,13 @@ For example, the response for the application configured in Stage 1 will be “H
 
 ## Stage 4 (Optional). Add more functionality
 
-You can add more functionality to your app. For example, instead of printing “Hello world!”, the app can print all request headers and set a custom response header from the environment settings. Let’s see how to do that. 
+You can add more functionality to your app. For example, instead of printing “Hello world!”, the app can print all request headers and set a custom response header from the environment settings. Let’s see how to do that.
 
-### Step 1. Change the source
+<tabset-element>
+
+### Via Rust
+
+#### Step 1. Change the source
 
 To print all request headers and develop a custom response header, replace the current content of the ```myapp/src/lib.rs``` file with the following:
 
@@ -233,7 +321,7 @@ The headers listed in the following step are passed to the FastEdge application,
 </alert-element>
 
 
-### Step 2. Compile and upload the binary file
+#### Step 2. Compile and upload the binary file
 
 Update the application on the edge servers:
 
@@ -293,6 +381,134 @@ cdn-loop: nb1d2; c=11
 - <span style="color:#FF5913">pop-*</span>: PoP GeoIP data, such as asn, latitude, longitude, region, city, continent, country name, and country code
 
 </expandable-element>
+
+### Via JavaScript SDK 
+
+You can add more functionality to your app. For example, instead of printing “You made a request to /”, the app can print all request headers and set a custom response header from the environment settings. 
+
+#### Step 1. Print request headers and add custom response header
+
+Replace the sample configuration in the `src/input.js` with the following code: 
+
+```
+import { getEnv } from 'fastedge::getenv';
+
+async function eventHandler(event) {
+  const request = event.request;
+  const customEnvVariable = getEnv('MY_CUSTOM_ENV_VAR');
+  const headersStr = JSON.stringify(Object.fromEntries(request.headers.entries()), null, 2);
+
+  return new Response(`Headers: ${headersStr}\n`, {
+    headers: {
+      'Custom-Header': customEnvVariable,
+    },
+  });
+}
+
+addEventListener('fetch', (event) => {
+  event.respondWith(eventHandler(event));
+});
+```
+
+The application logic (e.g., location-aware redirection) assumes the use of the headers listed in the following steps. The headers may change in the future.
+
+#### Step 2. Compile a new Wasm binary
+
+Run the command you used in the Stage 1: `npx fastegde-build ./src/input.js ./dist/main.wasm`
+
+#### Step 3. Compile a new Wasm binary
+
+Upload the new Wasm file to the edge servers with the same API request you executed in Stage 2: 
+
+```
+curl -X 'POST' \
+  'https://api.gcore.com/fastedge/v1/binaries/raw' \
+  -H 'accept: application/json' \
+  -H 'Authorization: APIKey <api_key>' \
+  -H 'Content-Type: application/octet-stream' \
+  --data-binary '@./dist/main.wasm'
+```  
+Don’t forget to save the ID of the new Wasm binary, as you’ll need to use it in the following step. 
+
+#### Step 3. Update the app
+
+Run the following API request: 
+
+```
+curl -X 'PUT' \
+  'https://api.gcore.com/fastedge/v1/apps/<app_id>' \
+  -H 'accept: application/json' \
+  -H 'Authorization: APIKey <api_key>' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "binary": <new_binary_id>,
+    "plan": "beta",
+    "status": 1,
+    "name": <app_name>,
+    "env": {
+      "MY_CUSTOM_ENV_VAR": "Custom-Header-Value"
+    }
+  }'
+```
+
+Where: 
+
+* `<app_name>` is the unique name of your app.
+* `<app_id>` is the app ID.
+* `<api_key>` is your <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">permanent API token</a>.
+* `<binary_id>` is the ID of your uploaded Wasm binary.
+
+#### Step 4. Test the app
+
+Run the following curl request: `curl https://<app_name>.fastedge.gcore.dev/`, where `<app_name>` is the name of your application indicated in the previous step.  
+
+If everything is updated correctly, the response will be:  
+
+{
+  "Headers": {
+    "dc": "ed",
+    "my-custom-header": "Custom-Header-Value",
+    "geoip-asn": "199524",
+    "geoip-lat": "49.61130",
+    "geoip-long": "6.12940",
+    "geoip-reg": "LU",
+    "geoip-city": "Luxembourg",
+    "geoip-continent": "EU",
+    "geoip-country-name": "Luxembourg",
+    "geoip-country-code": "LU",
+    "server_addr": "192.2.3.4",
+    "server_name": "bear-wiggle-4732724.fastedge.gcore.dev",
+    "connection": "upgrade",
+    "x-real-ip": "1.2.3.4",
+    "x-cdn-requestor": "ed-hw-edge-preprod-gc39",
+    "x-forwarded-for": "1.2.3.4",
+    "host": "fastedge.gcore.dev",
+    "x-forwarded-proto": "https",
+    "user-agent": "curl/7.81.0",
+    "cdn-loop": "nb1d2; c=11",
+    "pop-country-code": "LU",
+    "pop-reg": "LU",
+    "pop-country-name": "Luxembourg",
+    "pop-lat": "49.6113",
+    "pop-long": "6.1294",
+    "pop-continent": "EU",
+    "pop-city": "Luxembourg"
+  }
+}
+
+<expandable-element title="Description of the parameters">
+ 
+- <span style="color:#FF5913">my-custom-header</span>: Added custom header
+- <span style="color:#FF5913">dc</span>: Data center
+- <span style="color:#FF5913">geoip-*</span>: Client GeoIP data, such as asn, latitude, longitude, region, city, continent, country name, and country code
+- <span style="color:#FF5913">server_addr</span>: PoP IP address
+- <span style="color:#FF5913">server_name</span>: Application hostname
+- <span style="color:#FF5913">x-forwarded-for</span>: Client IP address
+- <span style="color:#FF5913">pop-*</span>: PoP GeoIP data, such as asn, latitude, longitude, region, city, continent, country name, and country code
+
+</expandable-element>
+
+</tabset-element>
 
 ## Troubleshoot an application 
 
