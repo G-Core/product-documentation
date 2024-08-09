@@ -137,9 +137,9 @@ Taking the sample configuration as an input `/src/input.js`, create a Wasm binar
 
 For detailed steps on how to deploy a FastEdge app, refer to the relevant sections below: 
 
-* <a href="https://gcore.com/docs/fastedge/getting-started/create-fastedge-apps#in-the-customer-portal" target="_blank">In the Customer Portal</a>. Follow the instructions if you created a custom Wasm file using Rust or want to create a FastEdge app from a preconfigured template. 
+* <a href="https://gcore.com/docs/fastedge/getting-started/create-fastedge-apps#in-the-customer-portal" target="_blank">In the Customer Portal</a>. Follow the instructions if you created a custom Wasm using either the Rust or Javascript SDK, or if you want to create a FastEdge app from a preconfigured template.
 
-* <a href="https://gcore.com/docs/fastedge/getting-started/create-fastedge-apps#via-javascript-sdk-1" target="_blank">Via JavaScript SDK</a>: Follow the instructions if you want to deploy a JavaScript-packaged Wasm. 
+* <a href="https://gcore.com/docs/fastedge/getting-started/create-fastedge-apps#via-javascript-sdk-1" target="_blank">Via command line</a>: Follow the instructions if you want to deploy a custom Wasm using cURL and our API.
 
 ### In the Customer Portal
 
@@ -201,18 +201,20 @@ Your application has been successfully deployed. You can now test its configurat
 
 </tabset-element>
 
-### Via JavaScript SDK
+### Via command line
 
-1\. Upload the Wasm binary to our edge servers by running the following <a href="https://api.gcore.com/docs/fastedge#tag/Binaries/operation/storeBinary" target="_blank">API request</a> from the repo’s root directory. Insert your <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">permanent API token</a> instead of the `<api_key>`: 
+1\. Upload the Wasm binary to our edge servers by running the following <a href="https://api.gcore.com/docs/fastedge#tag/Binaries/operation/storeBinary" target="_blank">API request</a> from the repo’s root directory. Insert your <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">permanent API token</a> instead of the `<api_key>`:
 
-```
+<code-block>
+
 curl -X 'POST' \
   'https://api.gcore.com/fastedge/v1/binaries/raw' \
   -H 'accept: application/json' \
-  -H 'Authorization: APIKey <api_key>' \
+  -H 'Authorization: APIKey <span style="color:#FF5913"><api_key></span>' \
   -H 'Content-Type: application/octet-stream' \
   --data-binary '@./dist/main.wasm'
-```
+
+</code-block>
 
 In the response, you will receive the ID of the uploaded binary (`<binary_id>`). Make sure to save it, as it will be used in the following step.
 
@@ -224,7 +226,7 @@ curl -X 'POST' \
   -H 'name: <app_name>' \
   -H 'accept: application/json' \
   -H 'client_id: 0' \
-  -H 'Authorization: APIKey <api_key>' \
+  -H 'Authorization: APIKey <span style="color:#FF5913"><api_key></span>' \
   -H 'Content-Type: application/json' \
   -d '{
     "binary": <binary_id>,
@@ -235,9 +237,9 @@ curl -X 'POST' \
 
 Where: 
 
-* `<app_name>` is the unique name of your app. 
-* `<api_key>` is your permanent API token. 
-* `<binary_id>` is the ID of your uploaded Wasm binary.
+* <span style="color:#FF5913"><app_name></span> is the unique name of your app. 
+* <span style="color:#FF5913"><api_key></span> is your permanent API token. 
+* <span style="color:#FF5913"><binary_id></span> is the ID of your uploaded Wasm binary.
 
 ## Stage 3. Test an application
 
@@ -426,25 +428,29 @@ Run the command you used in the Stage 1: `npx fastegde-build ./src/input.js ./di
 
 Upload the new Wasm file to the edge servers with the same API request you executed in Stage 2: 
 
-```
+<code-block>
+
 curl -X 'POST' \
   'https://api.gcore.com/fastedge/v1/binaries/raw' \
   -H 'accept: application/json' \
-  -H 'Authorization: APIKey <api_key>' \
+  -H 'Authorization: APIKey <span style="color:#FF5913"><api_key></span>' \
   -H 'Content-Type: application/octet-stream' \
   --data-binary '@./dist/main.wasm'
-```  
+
+</code-block>
+
 Don’t forget to save the ID of the new Wasm binary, as you’ll need to use it in the following step. 
 
 #### Step 3. Update the app
 
 Run the following API request: 
 
-```
+<code-block>
+
 curl -X 'PUT' \
   'https://api.gcore.com/fastedge/v1/apps/<app_id>' \
   -H 'accept: application/json' \
-  -H 'Authorization: APIKey <api_key>' \
+  -H 'Authorization: APIKey <span style="color:#FF5913"><api_key></span>' \
   -H 'Content-Type: application/json' \
   -d '{
     "binary": <new_binary_id>,
@@ -455,14 +461,15 @@ curl -X 'PUT' \
       "MY_CUSTOM_ENV_VAR": "Custom-Header-Value"
     }
   }'
-```
+
+</code-block>
 
 Where: 
 
-* `<app_name>` is the unique name of your app.
-* `<app_id>` is the app ID.
-* `<api_key>` is your <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">permanent API token</a>.
-* `<binary_id>` is the ID of your uploaded Wasm binary.
+* <span style="color:#FF5913"><app_name></span> is the unique name of your app. 
+* <span style="color:#FF5913"><app_id></span> is the app ID.
+* <span style="color:#FF5913"><api_key></span> is your <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">permanent API token</a>.
+* <span style="color:#FF5913"><binary_id></span> is the ID of your uploaded Wasm binary.
 
 #### Step 4. Test the app
 
@@ -470,39 +477,39 @@ Run the following curl request: `curl https://<app_name>.fastedge.gcore.dev/`, w
 
 If everything is updated correctly, the response will be: 
 
-```
+<code-block>
 {
   "Headers": {
-    "dc": "ed",
-    "my-custom-header": "Custom-Header-Value",
-    "geoip-asn": "199524",
-    "geoip-lat": "49.61130",
-    "geoip-long": "6.12940",
-    "geoip-reg": "LU",
-    "geoip-city": "Luxembourg",
-    "geoip-continent": "EU",
-    "geoip-country-name": "Luxembourg",
-    "geoip-country-code": "LU",
-    "server_addr": "192.2.3.4",
-    "server_name": "bear-wiggle-4732724.fastedge.gcore.dev",
+    "<span style="color:#FF5913">dc</span>": "ed",
+    "<span style="color:#FF5913">my-custom-header</span>": "Custom-Header-Value",
+    "<span style="color:#FF5913">geoip-</span>asn": "199524",
+    "<span style="color:#FF5913">geoip-</span>lat": "49.61130",
+    "<span style="color:#FF5913">geoip-</span>long": "6.12940",
+    "<span style="color:#FF5913">geoip-</span>reg": "LU",
+    "<span style="color:#FF5913">geoip-</span>city": "Luxembourg",
+    "<span style="color:#FF5913">geoip-</span>continent": "EU",
+    "<span style="color:#FF5913">geoip-</span>country-name": "Luxembourg",
+    "<span style="color:#FF5913">geoip-</span>country-code": "LU",
+    "<span style="color:#FF5913">server_addr</span>": "192.2.3.4",
+    "<span style="color:#FF5913">server_addr</span>server_name</span>": "bear-wiggle-4732724.fastedge.gcore.dev",
     "connection": "upgrade",
     "x-real-ip": "1.2.3.4",
     "x-cdn-requestor": "ed-hw-edge-preprod-gc39",
-    "x-forwarded-for": "1.2.3.4",
+    "<span style="color:#FF5913">server_addr</span>x-forwarded-for</span>": "1.2.3.4",
     "host": "fastedge.gcore.dev",
     "x-forwarded-proto": "https",
     "user-agent": "curl/7.81.0",
     "cdn-loop": "nb1d2; c=11",
-    "pop-country-code": "LU",
-    "pop-reg": "LU",
-    "pop-country-name": "Luxembourg",
-    "pop-lat": "49.6113",
-    "pop-long": "6.1294",
-    "pop-continent": "EU",
-    "pop-city": "Luxembourg"
+    "<span style="color:#FF5913">server_addr</span>pop-</span>country-code": "LU",
+    "<span style="color:#FF5913">server_addr</span>pop-</span>reg": "LU",
+    "<span style="color:#FF5913">server_addr</span>pop-</span>country-name": "Luxembourg",
+    "<span style="color:#FF5913">server_addr</span>pop-</span>lat": "49.6113",
+    "<span style="color:#FF5913">server_addr</span>pop-</span>long": "6.1294",
+    "<span style="color:#FF5913">server_addr</span>pop-</span>continent": "EU",
+    "<span style="color:#FF5913">server_addr</span>pop-</span>city": "Luxembourg"
   }
 }
-```
+</code-block>
 
 <expandable-element title="Description of the parameters">
  
