@@ -17,7 +17,7 @@ customUrl: /fastedge/getting-started/create-fastedge-apps
 
 This guide describes how to create a FastEdge app. Check out our <a href="https://gcore.com/docs/fastedge/getting-started" target="_blank">FastEdge overview</a> article to learn more about the product.
 
-You can create a FastEdge app in two ways: from a custom binary file using <a href="https://github.com/G-Core/FastEdge-sdk-js" target="_blank">JavaScript SDK</a> or <a href="https://github.com/rust-lang/rust" target="_blank">Rust</a> as well as from a pre-configured template. If you chose the latter option, skip Stage 1. 
+You can create a FastEdge app in two ways: from a custom binary file using <a href="https://github.com/G-Core/FastEdge-sdk-js" target="_blank">JavaScript SDK</a> or <a href="https://github.com/rust-lang/rust" target="_blank">Rust</a> as well as from a preconfigured template. If you chose the latter option, skip Stage 1. 
 
 ## Stage 1. Create a Wasm binary file
 
@@ -123,21 +123,23 @@ addEventListener('fetch', (event) => {
 });
 ```
 
-To create a binary via JavaScript: 
+#### Step 1. Install FastEdge Javascript SDK
 
-1\. Install FastEdge Javascript SDK by running `npm install --save-dev @gcoredev/fastedge-sdk-js`
+Run the following command `npm install --save-dev @gcoredev/fastedge-sdk-js`
 
-2\. Taking the sample configuration as an input `/src/input.js`, create a Wasm binary as output `/dist/main.wasm`. To do so, use the following command: `npx fastedge-build  ./src/input.js dist/main.wasm`
+#### Step 2. Create a file
+
+Taking the sample configuration as an input `/src/input.js`, create a Wasm binary as output `/dist/main.wasm`. To do so, use the following command: `npx fastedge-build  ./src/input.js dist/main.wasm`
 
 </tabset-element>
 
 ## Stage 2. Deploy an application
 
-For detailed steps on how to deploy a FastEdge app, refer to the relevant section: 
+For detailed steps on how to deploy a FastEdge app, refer to the relevant sections below: 
 
-* In the Customer Portal. Follow the instructions if you created a custom Wasm file using Rust or want to create a FastEdge app from a preconfigured template. 
+* <a href="https://gcore.com/docs/fastedge/getting-started/create-fastedge-apps#in-the-customer-portal" target="_blank">In the Customer Portal</a>. Follow the instructions if you created a custom Wasm file using Rust or want to create a FastEdge app from a preconfigured template. 
 
-* Via JavaScript SDK: Follow the instructions if you want to deploy a JavaScript-packaged Wasm. 
+* <a href="https://gcore.com/docs/fastedge/getting-started/create-fastedge-apps#via-javascript-sdk-1" target="_blank">Via JavaScript SDK</a>: Follow the instructions if you want to deploy a JavaScript-packaged Wasm. 
 
 ### In the Customer Portal
 
@@ -239,19 +241,15 @@ Where:
 
 ## Stage 3. Test an application
 
-You can test the application after its deployment by clicking the application link on the deployment confirmation screen: 
+<tabset-element>
+
+### In the Customer Portal
+
+You can test the application after its deployment by clicking the application link on the deployment confirmation screen:
 
 <img src="https://assets.gcore.pro/docs/fastedge/create-apps/test-custom-deployment.png" alt="A page with a link to an app and its configuration" width="80%">
 
-<alert-element type="info" title="Info">
- 
-To test the app with cURL, run the following request: `curl https://<app_name_assigned_at_the_previous_stage>.fastedge.gcore.dev/`.  
-
-If everything is set up correctly, the response will be: “You made a request to /” 
- 
-</alert-element>
-
-Additionally, you can inspect and adjust the configuration from the **Dashboards** page:  
+Additionally, you can inspect and adjust the configuration in the Customer Portal on the **Dashboards** page:  
 
 1\. In the Gcore Customer Portal, navigate to **FastEdge** > **Dashboard**. 
 
@@ -264,6 +262,14 @@ Additionally, you can inspect and adjust the configuration from the **Dashboards
 <img src="https://assets.gcore.pro/docs/fastedge/create-apps/test-app-from-dasboard.png" alt="A page with a link to an app" width="80%">
 
 For example, the response for the application configured in Stage 1 will be “Hello world!” 
+
+### Via cURL
+
+To test the app with cURL, run the following request: `curl https://<app_name_assigned_at_the_previous_stage>.fastedge.gcore.dev/`.  
+
+If everything is set up correctly, the response will be: “You made a request to /” 
+
+</tabset-element>
 
 ## Stage 4 (Optional). Add more functionality
 
@@ -462,8 +468,9 @@ Where:
 
 Run the following curl request: `curl https://<app_name>.fastedge.gcore.dev/`, where `<app_name>` is the name of your application indicated in the previous step.  
 
-If everything is updated correctly, the response will be:  
+If everything is updated correctly, the response will be: 
 
+```
 {
   "Headers": {
     "dc": "ed",
@@ -495,6 +502,7 @@ If everything is updated correctly, the response will be:
     "pop-city": "Luxembourg"
   }
 }
+```
 
 <expandable-element title="Description of the parameters">
  
