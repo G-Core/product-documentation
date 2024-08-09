@@ -139,7 +139,7 @@ For detailed steps on how to deploy a FastEdge app, refer to the relevant sectio
 
 * <a href="https://gcore.com/docs/fastedge/getting-started/create-fastedge-apps#in-the-customer-portal" target="_blank">In the Customer Portal</a>. Follow the instructions if you created a custom Wasm using either the Rust or Javascript SDK, or if you want to create a FastEdge app from a preconfigured template.
 
-* <a href="https://gcore.com/docs/fastedge/getting-started/create-fastedge-apps#via-javascript-sdk-1" target="_blank">Via command line</a>: Follow the instructions if you want to deploy a custom Wasm using cURL and our API.
+* <a href="https://gcore.com/docs/fastedge/getting-started/create-fastedge-apps#via-command-line" target="_blank">Via command line</a>: Follow the instructions if you want to deploy a custom Wasm using cURL and our API.
 
 ### In the Customer Portal
 
@@ -220,7 +220,8 @@ In the response, you will receive the ID of the uploaded binary (`<binary_id>`).
 
 2\. Create the app by running the following <a href="https://api.gcore.com/docs/fastedge#tag/Apps/operation/addApp" target="_blank">API request</a>: 
 
-```
+<code-block>
+
 curl -X 'POST' \
   'https://api.gcore.com/fastedge/v1/apps' \
   -H 'name: <app_name>' \
@@ -233,7 +234,7 @@ curl -X 'POST' \
     "plan": "beta",
     "status": 1
 }'
-```
+</code-block>
 
 Where: 
 
