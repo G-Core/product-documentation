@@ -234,6 +234,7 @@ curl -X 'POST' \
     "plan": "beta",
     "status": 1
 }'
+
 </code-block>
 
 Where: 
