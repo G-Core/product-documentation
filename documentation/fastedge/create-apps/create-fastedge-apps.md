@@ -203,14 +203,14 @@ Your application has been successfully deployed. You can now test its configurat
 
 ### Via command line
 
-1\. Upload the Wasm binary to our edge servers by running the following <a href="https://api.gcore.com/docs/fastedge#tag/Binaries/operation/storeBinary" target="_blank">API request</a> from the repo’s root directory. Insert your <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">permanent API token</a> instead of the `<api_key>`:
+1\. Upload the Wasm binary to our edge servers by running the following <a href="https://api.gcore.com/docs/fastedge#tag/Binaries/operation/storeBinary" target="_blank">API request</a> from the repo’s root directory. Insert your <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">permanent API token</a> instead of the <span style="color:#FF5913">api_key</span>:
 
 <code-block>
 
 curl -X 'POST' \
   'https://api.gcore.com/fastedge/v1/binaries/raw' \
   -H 'accept: application/json' \
-  -H 'Authorization: APIKey <span style="color:#FF5913"><api_key></span>' \
+  -H 'Authorization: APIKey <span style="color:#FF5913">api_key</span>' \
   -H 'Content-Type: application/octet-stream' \
   --data-binary '@./dist/main.wasm'
 
@@ -224,13 +224,13 @@ In the response, you will receive the ID of the uploaded binary (`<binary_id>`).
 
 curl -X 'POST' \
   'https://api.gcore.com/fastedge/v1/apps' \
-  -H 'name: <app_name>' \
+  -H 'name: <span style="color:#FF5913">app_name</span>' \
   -H 'accept: application/json' \
   -H 'client_id: 0' \
-  -H 'Authorization: APIKey <span style="color:#FF5913"><api_key></span>' \
+  -H 'Authorization: APIKey <span style="color:#FF5913">api_key</span>' \
   -H 'Content-Type: application/json' \
   -d '{
-    "binary": <binary_id>,
+    "binary": <span style="color:#FF5913">binary_id</span>,
     "plan": "beta",
     "status": 1
 }'
@@ -238,9 +238,9 @@ curl -X 'POST' \
 
 Where: 
 
-* <span style="color:#FF5913"><app_name></span> is the unique name of your app. 
-* <span style="color:#FF5913"><api_key></span> is your permanent API token. 
-* <span style="color:#FF5913"><binary_id></span> is the ID of your uploaded Wasm binary.
+* <span style="color:#FF5913">app_name</span> is the unique name of your app. 
+* <span style="color:#FF5913">api_key</span> is your permanent API token. 
+* <span style="color:#FF5913">binary_id</span> is the ID of your uploaded Wasm binary.
 
 ## Stage 3. Test an application
 
@@ -434,7 +434,7 @@ Upload the new Wasm file to the edge servers with the same API request you execu
 curl -X 'POST' \
   'https://api.gcore.com/fastedge/v1/binaries/raw' \
   -H 'accept: application/json' \
-  -H 'Authorization: APIKey <span style="color:#FF5913"><api_key></span>' \
+  -H 'Authorization: APIKey <span style="color:#FF5913">api_key</span>' \
   -H 'Content-Type: application/octet-stream' \
   --data-binary '@./dist/main.wasm'
 
@@ -449,15 +449,15 @@ Run the following API request:
 <code-block>
 
 curl -X 'PUT' \
-  'https://api.gcore.com/fastedge/v1/apps/<app_id>' \
+  'https://api.gcore.com/fastedge/v1/apps/<span style="color:#FF5913">app_id</span>' \
   -H 'accept: application/json' \
-  -H 'Authorization: APIKey <span style="color:#FF5913"><api_key></span>' \
+  -H 'Authorization: APIKey <span style="color:#FF5913">api_key</span>' \
   -H 'Content-Type: application/json' \
   -d '{
-    "binary": <new_binary_id>,
+    "binary": <span style="color:#FF5913">new_binary_id</span>,
     "plan": "beta",
     "status": 1,
-    "name": <app_name>,
+    "name": <span style="color:#FF5913">app_name</span>,
     "env": {
       "MY_CUSTOM_ENV_VAR": "Custom-Header-Value"
     }
@@ -467,10 +467,10 @@ curl -X 'PUT' \
 
 Where: 
 
-* <span style="color:#FF5913"><app_name></span> is the unique name of your app. 
-* <span style="color:#FF5913"><app_id></span> is the app ID.
-* <span style="color:#FF5913"><api_key></span> is your <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">permanent API token</a>.
-* <span style="color:#FF5913"><binary_id></span> is the ID of your uploaded Wasm binary.
+* <span style="color:#FF5913">app_name</span> is the unique name of your app. 
+* <span style="color:#FF5913">app_id</span> is the app ID.
+* <span style="color:#FF5913">api_key</span> is your <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">permanent API token</a>.
+* <span style="color:#FF5913">binary_id</span> is the ID of your uploaded Wasm binary.
 
 #### Step 4. Test the app
 
