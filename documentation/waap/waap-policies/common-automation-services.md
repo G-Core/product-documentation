@@ -3,14 +3,8 @@ title: common-automation-services
 displayName: Common automation services
 published: true
 order: 80
-toc:
-   --1--Configure policy group: "configure-policy-group"
-   --2--Traffic anomaly: "traffic-anomaly"
-   --2--Automated clients: "automated-clients"
-   --2--Headless browsers: "headless-browsers"
-   --2--Anti-scraping: "anti-scraping"
-pageTitle: Set up Anti-automation and bot protection WAAP policy group for your domain | Gcore
-pageDescription: Learn how to enable and customize Anti-automation and bot protection policy.
+pageTitle: Set up Common automation services WAAP policy group for your domain | Gcore
+pageDescription: Learn how to enable and customize Common automation services policy.
 ---
 # Common automation services
 
