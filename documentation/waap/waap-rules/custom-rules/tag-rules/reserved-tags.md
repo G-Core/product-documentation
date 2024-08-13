@@ -8,11 +8,11 @@ pageDescription: Check the list of Gcore reserved tags and learn how use them in
 ---
 # Reserved tags
 
-Reserved tags are predefined tags that trigger specific actions in custom rules. They play a key role in <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/tag-rules#tag-generating-rules" target="_blank">tag-generating rules</a>—each rule contains a reserved tag in its <a href="https://gcore.com/docs/waap/waap-rules/custom-rules#rule-conditions" target="_blank">condition</a>.  
+Reserved tags are preconfigured tags that trigger specific actions in custom rules. They play a key role in <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/tag-rules#tag-generating-rules" target="_blank">tag-generating rules</a>—each rule contains a reserved tag in its <a href="https://gcore.com/docs/waap/waap-rules/custom-rules#rule-conditions" target="_blank">condition</a>.  
 
 ## Available reserved tags 
 
-Reserved tags can be divided into two categories: general tags that are used in custom rules with various conditions and API protection tags that are specifically designed to protect your APIs. API protection tags are used with the URL <a href="https://gcore.com/docs/waap/waap-rules/custom-rules#rule-conditions" target="_blank">rule condition</a>.  
+Reserved tags can be divided into two categories: general tags that are used in custom rules with various conditions and API protection tags that are specifically designed to protect your APIs. API protection tags contain the URL <a href="https://gcore.com/docs/waap/waap-rules/custom-rules#rule-conditions" target="_blank">rule condition</a>.  
 
 General tags: 
 
@@ -147,7 +147,7 @@ Gcore WAAP has preconfigured thresholds that identify and tag requests as malici
 
 For example, if the threshold for declined orders is set to three, and the threshold for successful orders is set to two, then a client would be considered a legitimate actor if it made two successful orders after being wrong twice. 
 
-it made two successful orders after being wrong twice. 
+### Sample rule with the Legitimate and Malicious activity tags
 
 Using the **Legitimate Activity** and **Malicious Activity** tags, you can categorize particular requests based on the behavior they exhibit. To do so, create the following custom rule: 
 
@@ -169,7 +169,7 @@ Using the **Legitimate Activity** and **Malicious Activity** tags, you can categ
 
 After you create the rule, requests from paid users will be treated as safe and the ones demonstrating legitimate activity. 
 
-<alert-element type="tip" title="Tip">
+<alert-element type="info" title="Info">
  
 Contact our [support team](mailto:support@gcore.com) to get additional configuration for the **Malicious Activity** and **Legitimate Activity** tags.
 
