@@ -41,13 +41,13 @@ API protection tags:
 
 Unlike <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/tag-rules#tag-generating-rules" target="_blank">user-defined tags</a> that are automatically generated based on specific request conditions, reserved tags aren’t customizable. However, you can use them to create a variety of rules, each adjusted to a specific scenario as documented in the following sections.
 
-## Tag requests from logWeged-in, registered, or paid users
+## Tag requests from logged-in, registered, or paid users
 
 The **Registered**, **Logged In**, and **Paid** tags allow you to identify requests from users who have created accounts on your domain, are authenticated, or have paid subscriptions.  
 
 When creating a rule, make sure that you specify a secure condition. For example, explicitly define the IP address from which the requests will be coming (e.g., IP=1.2.3.4). Don't use the conditions that are easy to spoof, such as the User Agent header. 
 
-You can also use a server signal that will serve as a unique identifier and can be used to verify the client. For instance, apply a tag based on a session cookie or a specific HTTP response header.  
+You can also use a server signal that will serve as a unique identifier and can verify the client. For instance, apply a tag based on a session cookie or a specific HTTP response header.  
 
 For example, you can create the rule that looks for the X-Registered header, which designates registered users: 
 
@@ -59,7 +59,7 @@ Alternatively, you can inject a header for logged-in users. WAAP will use this h
 
 ## Inspect WAAP traffic 
 
-If you want to track certain traffic on the <a href="https://gcore.com/docs/waap/analytics#web-application-firewall-requests" target="_blank">WAAP analytics</a> page, use the reserved **Monitor** tag. Each request marked with this tag will appear: 
+If you want to track certain traffic on the <a href="https://gcore.com/docs/waap/analytics#web-application-firewall-requests" target="_blank">WAAP analytics</a> page, use the reserved **monitor** tag. Each request marked with this tag will appear: 
 
 * On the **Web Application Firewall Requests** graph. Enable the **Monitored Requests** checkbox to view all tagged requests.  
 
@@ -67,13 +67,13 @@ If you want to track certain traffic on the <a href="https://gcore.com/docs/waap
 
 <img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/monitored-tag-analytics-page.png" alt="WAAP requests graph on the Analytics page">
 
-Requests affected by the **Monitor** action will also appear in the graph and table. 
+Requests affected by the **monitor** action will also appear in the graph and table. 
 
-### The difference between the Monitor tag and Monitor action 
+### The difference between the monitor tag and monitor action 
 
 The **monitor tag** significantly differs from the **monitor action** in custom rules. 
 
-When you add the monitor tag to a request, it won't affect WAAP's behavior. If the request is potentially dangerous, it will be blocked. The monitor tag only ensures that such requests are visible via the Monitored Requests filter on the  
+When you add the monitor tag to a request, it won't affect WAAP's behavior. If the request is potentially dangerous, it will be blocked. The monitor tag only ensures that such requests are visible via the **Monitored Requests** filter on the <a href="https://gcore.com/docs/waap/analytics#waap-page" target="_blank">WAAP</a> analytics page.
 
 However, if you apply the monitor action to a custom rule, it will determine how WAAP handles requests. Specifically, it will monitor and allow any requests to your domain, even if those requests aren't safe. 
 
@@ -83,7 +83,7 @@ As an example, create a rule that will allow you to view analytics on monitored 
 
 1\. In the **IF** section, select **Country** from the dropdown. 
 
-2\. In the following dropdown, select **-**  to apply the rule to every request that comes from the relevant country. 
+2\. In the following dropdown, select **-** to apply the rule to every request that comes from the relevant country. 
 
 3\. Select **Equals** to trigger the rule only when the request comes from the specified country. 
 
@@ -99,13 +99,13 @@ All monitored requests will now be displayed on the <a href="https://gcore.com/d
 
 ## Ignore automation services 
 
-This functionality will notify WAAP of legitimate automation behavior and exclude requests from being affected by our Anti-automation and bot protection policies. This means that you stay protected from unknown automation services while allowing known bots to access your domain.  
+This functionality will notify WAAP of legitimate automation behavior and exclude requests from being affected by our <a href="https://gcore.com/docs/waap/waap-policies/anti-automation-and-bot-protection" target="_blank">Anti-automation and bot protection</a> policy group. This means that you stay protected from unknown automation services while allowing known bots to access your domain.  
 
 To allow the activity of some automation services, create a custom rule with the **Ignored Automation** tag: 
 
 1\. In the **IF** section, select **User Agent** from the dropdown. 
 
-2\. In the following dropdown, select **-**  to apply the rule to every request that comes from the relevant bot. In this example, "mybot".
+2\. In the following dropdown, select **-** to apply the rule to every request that comes from the relevant bot. In this example, "mybot".
 
 3\. Enter the bot in the **User Agent** field. 
 
@@ -125,7 +125,7 @@ To identify login pages for the WAAP, create the following custom rule:
 
 1\. In the **IF** section, select **URL** from the dropdown. 
 
-2\. In the following dropdown, select **-**  to apply the rule to the exact endpoint. 
+2\. In the following dropdown, select **-** to apply the rule to the exact endpoint. 
 
 3\. Provide the login page endpoint. 
 
@@ -147,9 +147,9 @@ Gcore WAAP has preconfigured thresholds that identify and tag requests as malici
 
 For example, if the threshold for declined orders is set to three, and the threshold for successful orders is set to two, then a client would be considered a legitimate actor if it made two successful orders after being wrong twice. 
 
-### Sample rule with the Legitimate and Malicious activity tags
+### Sample rule with the legitimate and malicious activity tags
 
-Using the **Legitimate Activity** and **Malicious Activity** tags, you can categorize particular requests based on the behavior they exhibit. To do so, create the following custom rule: 
+Using the **legitimate activity** and **malicious activity** tags, you can categorize particular requests based on the behavior they exhibit. To do so, create the following custom rule: 
 
 1\. In the **IF** section, select **Header** from the dropdown. 
 
@@ -171,7 +171,7 @@ After you create the rule, requests from paid users will be treated as safe and 
 
 <alert-element type="info" title="Info">
  
-Contact our [support team](mailto:support@gcore.com) to get additional configuration for the **Malicious Activity** and **Legitimate Activity** tags.
+Contact our [support team](mailto:support@gcore.com) to get additional configuration for the malicious activity and legitimate activity tags.
 
 </alert-element>
 
@@ -228,4 +228,4 @@ There’s a range of tags that you can use to manage access to API endpoints. Th
 * Ignore Email Address Detection 
 * Ignore Phone Number Detection 
 
-Check our <a href="https://gcore.com/docs/waap/about-waap/api-discovery-and-protection" target="_blank">API protection with reserved tags</a> guide for information on how to use these tags and applicable scenarios. 
+Check our <a href="https://gcore.com/docs/waap/api-discovery-and-protection/configure-api-access-with-reserved-tags" target="_blank">API protection with reserved tags</a> guide for information on how to use these tags and applicable scenarios. 
