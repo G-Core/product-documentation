@@ -2,7 +2,7 @@
 title: predefined-tags
 displayName: Predefined tags
 published: true
-order: 10
+order: 20
 pageTitle: Check the list of Gcore predefined tags | Gcore
 pageDescription: View all available predefined tags and use them in custom rules.
 ---
