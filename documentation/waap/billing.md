@@ -30,7 +30,7 @@ You can test the Web Application and API Protection for 30 days. The following t
   </tr>
   </thead>
 <tr>
-    <td rowspan="10">WAF</td>
+    <td rowspan="10">WAAP</td>
     <td>Domains</td>
     <td>1 domain</td>
   </tr>
@@ -127,7 +127,7 @@ The base price is 55.00 € per month.
   </tr>
   </thead>
 <tr>
-    <td rowspan="5">WAF</td>
+    <td rowspan="5">WAAP</td>
     <td>Domains</td>
     <td>4 domains</td>
   </tr>
@@ -180,7 +180,7 @@ The base price is 250.00 € per month.
   </tr>
   </thead>
 <tr>
-    <td rowspan="7">WAF</td>
+    <td rowspan="7">WAAP</td>
     <td>Domains</td>
     <td>10 domains</td>
   </tr>
@@ -253,7 +253,7 @@ The base price is tailored to your workflows and security requirements. To estim
   </tr>
   </thead>
 <tr>
-    <td rowspan="10">WAF</td>
+    <td rowspan="10">WAAP</td>
     <td>Domains</td>
     <td>Custom</td>
   </tr>

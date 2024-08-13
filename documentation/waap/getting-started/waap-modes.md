@@ -27,7 +27,9 @@ L7 DDoS protection is always active even when the WAAP is in monitor mode.
 
 In monitor mode, WAAP analyzes incoming traffic and logs any security violations or suspicious activity without blocking or modifying requests. Basically, WAAP works exactly like in protection mode, but it doesn't enforce any actions on requests.  
 
-Monitor mode is useful for observing, fine-tuning, and assessing your WAAP’s configuration before you switch to the protect mode.  
+Monitor mode is useful for observing, fine-tuning, and assessing your WAAP’s configuration before you switch to the protect mode. While the system only monitors incoming requests, you can observe WAAP’s behavior, understand traffic patterns, and check for any false positives, opmitizing your security settings accordingly.  
+
+This gives you confidence that WAAP will work correctly and efficiently in the protect mode.  
 
 <alert-element type="tip" title="Tip">
  

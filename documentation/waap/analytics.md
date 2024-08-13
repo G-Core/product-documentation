@@ -25,7 +25,7 @@ pageDescription: Learn about Gcore analytics.
 
 WAAP analytics provides comprehensive information about incoming traffic to your domain. It features detailed statistics about recent requests, potential threats, and frequently triggered rules, allowing you to fine-tune your WAAP settings based on the analyzed data. 
 
-Analytics is available on the following pages:  
+The data is displayed in Coordinated Universal Time (UTC) and available on the following pages:  
 
 * **Overview**: Get a consolidated view of all incoming requests that have been inspected by WAAP. 
 
@@ -48,6 +48,18 @@ To access analytics for your domain:
 The information on the **Analytics** page is displayed according to the selected period. At the top of the page, you can use the time frame dropdown to configure the displayed data. When you choose a new time frame, data on the graphs will automatically refresh. 
 
 <img src="https://assets.gcore.pro/docs/waap/analytics/time-date-picker.png" alt="Time and date dropdown on the Analytics page in the Customer Portal" width="80%">
+
+<alert-element type="tip" title="Tip">
+ 
+If you want to view analytics for a different domain, use the dropdown in the top-right corner of the screen and select the needed domain.
+ 
+</alert-element>
+
+The information on the Analytics page is displayed according to the selected period. At the top of the page, you can use the time frame dropdown to configure the displayed data.  
+
+To automatically refresh data, enable the **Auto-Refresh** toggle. 
+
+<img src="https://assets.gcore.pro/docs/waap/analytics/auto-refresh-toggle.png" alt="Auto-refresh toggle on the Analytics page" width="80%">
 
 ## Overview page
 
@@ -80,7 +92,6 @@ This graph shows all requests sorted according to the returned status codes:
 The **Status Codes** graph only displays information from the origin's backend and doesn't include status codes from WAAP, such as 403. 
  
 </alert-element>
-
 
 You can print the chart in pdf format or download it in the following formats: png, pdf, csv, xls.    
 
