@@ -104,7 +104,7 @@ For instance, you can find information about incoming web requests on the **WAF*
 
 1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**.
 
-<img src="https://assets.gcore.pro/docs/waap/getting-started/domains-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/getting-started/domains-waap-page.png" alt="Domains page in the Customer Portal">
 
 2\. Find the needed domain and click its name to open it. 
 
@@ -162,7 +162,7 @@ If your domain doesn’t use a CMS, we highly recommend allow listing the site a
 
 1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**.
 
-<img src="https://assets.gcore.pro/docs/waap/getting-started/domains-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/getting-started/domains-waap-page.png" alt="Domains page in the Customer Portal">
 
 2\. Find the needed domain and click its name to open it. 
 

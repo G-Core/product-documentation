@@ -48,7 +48,7 @@ To create a new WAF rule:
 
 1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/domains-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/domains-waap-page.png" alt="Domains page in the Customer Portal">
 
 2\. Find the needed domain and click its name to open it.  
 
@@ -422,7 +422,7 @@ To create a rule:
 
 1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/domains-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/domains-waap-page.png" alt="Domains page in the Customer Portal">
 
 2\. Find the needed domain and click its name to open it.  
 
@@ -479,7 +479,7 @@ You can edit the rule name and description, modify its conditions and status, an
 
 1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/domains-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/domains-waap-page.png" alt="Domains page in the Customer Portal">
 
 2\. Find the needed domain and click its name to open it.  
 
@@ -497,7 +497,7 @@ You can edit the rule name and description, modify its conditions and status, an
 
 1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/domains-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/domains-waap-page.png" alt="Domains page in the Customer Portal">
 
 2\. Find the needed domain and click its name to open it.  
 

@@ -37,7 +37,7 @@ To access analytics for your domain:
 
 1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/domains-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/analytics/domains-waap-page.png" alt="Domains page in the Customer Portal">
 
 2\. Find the domain where you want to check analytics and click the domain name to open it. 
 

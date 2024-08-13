@@ -24,7 +24,7 @@ Our WAAP includes a pre-defined anti-automation & bot protection policy group to
 
 1\. Navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-policies/anti-automation-bot-protection/domains-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/waap-policies/domains-waap-page.png" alt="Domains page in the Customer Portal">
 
 2\. Find the domain where you want to configure the policy and click the domain name to open it.  
 
