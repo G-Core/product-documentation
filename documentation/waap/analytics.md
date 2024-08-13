@@ -5,9 +5,9 @@ published: true
 order:
 toc:
    --1--Overview page: "overview-page"
-   --2--WAF: "waf"
+   --2--WAAP: "waap"
    --2--Status codes: "status-codes"
-   --1--WAF page: "waf-page"
+   --1--WAAP page: "waap-page"
    --2--Web Application Firewall Requests: "web-application-firewall-requests"
    --2--Requests table: "requests-table"
    --2--Threats (last 24 hours): "threats-last-24-hours"
@@ -29,7 +29,7 @@ Analytics is available on the following pages:
 
 * **Overview**: Get a consolidated view of all incoming requests that have been inspected by WAAP. 
 
-* **WAF**: View detailed statistics on the incoming requests and the actions enforced for those requests. 
+* **WAAP**: View detailed statistics on the incoming requests and the actions enforced for those requests. 
 
 * **DDoS attacks**: Check for recent attacks and get detailed information about each of them. 
 
@@ -37,7 +37,7 @@ To access analytics for your domain:
 
 1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/domains-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/analytics/domains-waap-page.png" alt="Domains page in the Customer Portal">
 
 2\. Find the domain where you want to check analytics and click the domain name to open it. 
 
@@ -51,9 +51,9 @@ The information on the **Analytics** page is displayed according to the selected
 
 ## Overview page
 
-This page features general information about incoming requests and contains two graphs: **WAF** and **Status codes**. 
+This page features general information about incoming requests and contains two graphs: **WAAP** and **Status codes**. 
 
-### WAF 
+### WAAP 
 
 This graph shows the total number of incoming requests for the selected period and the number of requests that have been blocked. 
 
@@ -84,7 +84,7 @@ The **Status Codes** graph only displays information from the origin's backend a
 
 You can print the chart in pdf format or download it in the following formats: png, pdf, csv, xls.    
 
-## WAF page
+## WAAP page
 
 This page features detailed statistics on HTTP requests and displays data in the graph format (Web application firewall requests) and as a table (Requests).
 
@@ -102,7 +102,7 @@ You can select the following filters to view specific types of requests:
 
 * **Custom rule—blocked**: View requests that were blocked because of a triggered custom rule created in your account. 
 
-* **DDoS L7—blocked**: View requests that were blocked because of a triggered default rule related to DDoS. To learn more about how requests can trigger this rule, check out our Configure WAF for <a href="https://gcore.com/docs/waap/ddos-protection" target="_blank">L7 DDoS protection</a> guide.
+* **DDoS L7—blocked**: View requests that were blocked because of a triggered default rule related to DDoS. To learn more about how requests can trigger this rule, check out our Configure WAAP for <a href="https://gcore.com/docs/waap/ddos-protection" target="_blank">L7 DDoS protection</a> guide.
 
 * **Passed to origin**: View requests that successfully reached the origin. 
 

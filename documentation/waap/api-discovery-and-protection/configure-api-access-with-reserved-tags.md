@@ -42,11 +42,11 @@ The Advanced API protection feature is available in the Enterprise package.
 
 The following steps will guide you through the process of protecting your endpoints from unauthorized access.  
 
-After you complete the steps, it’s important to enable the relevant policies within the <a href="https://gcore.com/docs/waap/waap-policies/advanced-api-protection" target="_blank">API-level authorization</a> policy group to make sure everything is set up correctly. 
+After you complete the steps, it’s important to enable the relevant policies within the <a href="https://gcore.com/docs/waap/waap-policies/advanced-api-protection" target="_blank">Advanced API protection</a> policy group to make sure everything is set up correctly. 
 
 <alert-element type="info" title="Info">
  
-The Advanced API protection feature is available in the Enterprise package. 
+The Advanced API protection feature is available in the <a href="https://gcore.com/docs/waap/billing#enterprise" target="_blank">Enterprise </a>package. 
 
 </alert-element>
 
@@ -66,7 +66,7 @@ To create the rule:
 
 1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**.
 
-<img src="https://assets.gcore.pro/docs/waap/getting-started/domains-page-figma.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/getting-started/domains-waap-page.png" alt="Domains page in the Customer Portal">
 
 2\. Find the needed domain and click its name to open it. You'll be directed to the **Policies** page.
 

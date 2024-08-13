@@ -8,9 +8,13 @@ pageDescription: Review avaiable WAAP packages and their features.
 ---
 # Billing
 
-We offer three levels of packages to suit your needs: Start, Pro, and Enterprise. Built with scalability in mind, these packages provide you with enhanced security measures powered by next-gen algorithms to block any attack. Consider that If you cancel your WAAP subscription, all WAAP settings will be removed.  
+We offer three levels of packages to suit your needs: **Start**, **Pro**, and **Enterprise**. Built with scalability in mind, these packages provide you with enhanced security measures powered by next-gen algorithms to block any attack.  The comprehensive package information is available on the <a href="https://gcore.com/pricing/edge-network" target="_blank">Gcore pricing</a> page. 
 
-The comprehensive package information is available on the <a href="https://gcore.com/pricing/cloud" target="_blank">Gcore pricing</a> page. 
+<alert-element type="info" title="Info">
+ 
+If you cancel your WAAP subscription, all your WAAP settings will be removed.
+
+</alert-element>
 
 ## Trial 
 
@@ -20,80 +24,80 @@ You can test the Web Application and API Protection for 30 days. The following t
 <tbody> 
 <thead>
 <tr>
-    <th style="text-align: left; width:20%">Feature</th>
-    <th style="text-align: left; width:40%">Functionality</th>
-    <th style="text-align: left; width:40%">Availability/Quotas</th>
+    <th style="width:20%">Feature</th>
+    <th style="width:40%">Functionality</th>
+    <th style="width:40%">Availability/Quotas</th>
   </tr>
   </thead>
-<tr style="text-align: left;">
+<tr>
     <td rowspan="10">WAF</td>
     <td>Domains</td>
     <td>1 domain</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td>Protocol validation</td>
     <td>Included</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td>Core WAF & OWASP top threats</td>
     <td>Included</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td>CMS protection</td>
     <td>Included</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td>IP reputation</td>
     <td>Included</td>
 </tr>
-<tr style="text-align: left;">
+<tr>
     <td>Firewall</td>
     <td>2 IP addresses</td>
 </tr>
-<tr style="text-align: left;">
-    <td>IP spotlight</td>
+<tr>
+    <td>IP Spotlight</td>
     <td>Included</td>
 </tr>
-<tr style="text-align: left;">
-    <td>Security insights</td>
+<tr>
+    <td>Security Insights</td>
     <td>Included</td>
 </tr>
-<tr style="text-align: left;">
+<tr>
     <td>Custom rules</td>
     <td>2 rules</td>
 </tr>
-<tr style="text-align: left;">
-    <td>Advanced WAAP rules</td>
+<tr>
+    <td>Advanced rules</td>
     <td>5 rules</td>
 </tr>
-<tr style="text-align: left;">
+<tr>
     <td>L7 DDoS</td>
     <td>All</td>
     <td>Included</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td rowspan="3">Bot protection</td>
     <td>Anti-automation & bot protection</td>
     <td>Included</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td>Behavioral WAF</td>
     <td>Included</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td>Common automated services</td>
     <td>Included</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td rowspan="2">API security</td>
     <td>Advanced API protection</td>
     <td>Included</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td>API Discovery</td>
     <td>Included</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
  <td>Traffic</td>
     <td>Allocated in package</td>
     <td>1 million requests per month</td>
@@ -117,43 +121,43 @@ The base price is 55.00 € per month.
 <tbody> 
 <thead>
   <tr>
-    <th style="text-align: left; width:20%">Feature</th>
-    <th style="text-align: left; width:40%">Functionality</th>
-    <th style="text-align: left; width:40%">Availability/Quotas</th>
+    <th style="width:20%">Feature</th>
+    <th style="width:40%">Functionality</th>
+    <th style="width:40%">Availability/Quotas</th>
   </tr>
   </thead>
-<tr style="text-align: left;">
+<tr>
     <td rowspan="5">WAF</td>
     <td>Domains</td>
     <td>4 domains</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td>Protocol validation</td>
     <td>Included</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td>Core WAF & OWASP top threats</td>
     <td>Included</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td>Firewall</td>
     <td>10 IP addresses</td>
 </tr>
-<tr style="text-align: left;">
+<tr>
     <td>Custom rules</td>
     <td>5 rules</td>
 </tr>
-<tr style="text-align: left;">
+<tr>
     <td>L7 DDoS</td>
     <td>All</td>
     <td>Included</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
  <td rowspan="2">Traffic</td>
     <td>Included monthly traffic</td>
     <td>1 million requests per month</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td>Overage fee</td>
     <td>60.00 € for another million requests</td>
   </tr>
@@ -162,7 +166,7 @@ The base price is 55.00 € per month.
 
 ## Pro
 
-This package includes everything that’s available in the Start package along with extra features and increased quotas.  
+This package includes everything that’s available in the <a href="https://gcore.com/docs/waap/billing#start" target="_blank">Start package</a> along with extra features and increased quotas.  
 
 The base price is 250.00 € per month. 
 
@@ -170,63 +174,63 @@ The base price is 250.00 € per month.
 <tbody> 
 <thead>
   <tr>
-    <th style="text-align: left; width:20%">Feature</th>
-    <th style="text-align: left; width:40%">Functionality</th>
-    <th style="text-align: left; width:40%">Availability/Quotas</th>
+    <th style="width:20%">Feature</th>
+    <th style="width:40%">Functionality</th>
+    <th style="width:40%">Availability/Quotas</th>
   </tr>
   </thead>
-<tr style="text-align: left;">
+<tr>
     <td rowspan="7">WAF</td>
     <td>Domains</td>
     <td>10 domains</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td>Protocol validation</td>
     <td>Included</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td>Core WAF & OWASP top threats</td>
     <td>Included</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td>CMS protection</td>
     <td>Included</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td>IP reputation</td>
     <td>Included</td>
 </tr>
-<tr style="text-align: left;">
+<tr>
     <td>Firewall</td>
     <td>50 IP addresses</td>
 </tr>
-<tr style="text-align: left;">
+<tr>
     <td>Custom rules</td>
     <td>50 rules</td>
 </tr>
-<tr style="text-align: left;">
+<tr>
     <td>L7 DDoS</td>
     <td>All</td>
     <td>Included</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td rowspan="3">Bot protection</td>
     <td>Anti-automation & bot protection</td>
     <td>Included</td>
-<tr style="text-align: left;">
+<tr>
     <td>Behavioral WAF</td>
     <td>Included</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td>Common automated services</td>
     <td>Included</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
  <td rowspan="2">Traffic</td>
     <td>Included monthly traffic</td>
     <td>10 million requests per month</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td>Overage fee</td>
     <td>150.00 € for another 10 million requests</td>
   </tr>
@@ -235,7 +239,7 @@ The base price is 250.00 € per month.
 
 ## Enterprise 
 
-This package is built with our most advanced security features. It combines everything from the Start and Pro packages along with additional features and increased quotas for comprehensive protection. 
+This package is built with our most advanced security features. It combines everything from the <a href="https://gcore.com/docs/waap/billing#start" target="_blank">Start</a> and <a href="https://gcore.com/docs/waap/billing#pro" target="_blank">Pro</a> packages along with additional features and increased quotas for comprehensive protection. 
 
 The base price is tailored to your workflows and security requirements. To estimate costs for your organization, contact the <a href="mailto:sales@gcore.com" target="_blank">Gcore Sales team</a>. 
 
@@ -243,85 +247,85 @@ The base price is tailored to your workflows and security requirements. To estim
 <tbody> 
 <thead>
   <tr>
-    <th style="text-align: left; width:20%">Feature</th>
-    <th style="text-align: left; width:40%">Functionality</th>
-    <th style="text-align: left; width:40%">Availability/Quotas</th>
+    <th style="width:20%">Feature</th>
+    <th style="width:40%">Functionality</th>
+    <th style="width:40%">Availability/Quotas</th>
   </tr>
   </thead>
-<tr style="text-align: left;">
+<tr>
     <td rowspan="10">WAF</td>
     <td>Domains</td>
     <td>Custom</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td>Protocol validation</td>
     <td>Included</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td>Core WAF & OWASP top threats</td>
     <td>Included</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td>CMS protection</td>
     <td>Included</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td>IP reputation</td>
     <td>Included</td>
 </tr>
-<tr style="text-align: left;">
+<tr>
     <td>Firewall</td>
     <td>50 IP addresses</td>
 </tr>
-<tr style="text-align: left;">
-    <td>IP spotlight</td>
+<tr>
+    <td>IP Spotlight</td>
     <td>Included</td>
 </tr>
-<tr style="text-align: left;">
-    <td>Security insights</td>
+<tr>
+    <td>Security Insights</td>
     <td>Included</td>
 </tr>
-<tr style="text-align: left;">
+<tr>
     <td>Custom rules</td>
     <td>100 rules</td>
 </tr>
-<tr style="text-align: left;">
+<tr>
     <td>Advanced rules</td>
     <td>100 rules</td>
 </tr>
-<tr style="text-align: left;">
+<tr>
     <td>L7 DDoS</td>
     <td>All</td>
     <td>Included</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td rowspan="3">Bot protection</td>
     <td>Anti-automation & bot protection</td>
     <td>Included</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td>Behavioral WAF</td>
     <td>Included</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td>Common automated services</td>
     <td>Included</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
  <td rowspan="2">API security</td>
     <td>Advanced API protection</td>
     <td>Custom</td>
   </tr>
-<tr style="text-align: left;">
-    <td>API discovery</td>
+<tr>
+    <td>API Discovery</td>
     <td>Custom</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
  <td rowspan="2">Traffic</td>
     <td>Included monthly traffic</td>
     <td><a href="mailto:sales@gcore.com" target="_blank">Contact us</a> for traffic calculation</td>
   </tr>
-<tr style="text-align: left;">
+<tr>
     <td>Overage fee</td>
     <td><a href="mailto:sales@gcore.com" target="_blank">Contact us</a> for overage calculation</td>
   </tr>

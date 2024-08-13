@@ -30,7 +30,7 @@ You can review the policy group and enable or disable its policies in the Gcore 
 
 1\. Navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-policies/anti-automation-bot-protection/domains-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/waap-policies/domains-waap-page.png" alt="Domains page in the Customer Portal">
 
 2\. Find the domain where you want to configure the policy and click the domain name to open it.  
 
@@ -109,7 +109,7 @@ If you don’t see your CMS in the list of policies under the CMS policy group, 
 
 1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-policies/anti-automation-bot-protection/domains-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/waap-policies/domains-waap-page.png" alt="Domains page in the Customer Portal">
 
 2\. Find the needed domain and click its name to open it.  
 

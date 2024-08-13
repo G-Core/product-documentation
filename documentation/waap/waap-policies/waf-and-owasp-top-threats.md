@@ -18,7 +18,7 @@ You can review the WAF and OWASP top threats policy group and enable or disable 
 
 1\. Navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-policies/waf-and-owasp-top-threats/domains-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/waap-policies/domains-waap-page.png" alt="Domains page in the Customer Portal">
 
 2\. Find the domain where you want to configure the policy group and click the domain name to open it.  
 

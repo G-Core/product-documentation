@@ -13,7 +13,7 @@ pageDescription: Learn about Gcore advanced rules and how to use them for filter
 
 <alert-element type="info" title="Info">
 
-This feature is available for the Enterprise package. 
+This feature is available for the <a href="https://gcore.com/docs/waap/billing#enterprise" target="_blank">Enterprise</a>package. 
 
 </alert-element>
 

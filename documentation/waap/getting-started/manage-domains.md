@@ -15,7 +15,7 @@ pageDescription: Learn how manage, delete, and deactivate domains in Gcore WAAP 
 
 After you <a href="https://gcore.com/docs/waap/getting-started/configure-waap-for-a-domain#step-2-enable-waap-in-cdn-resource-settings" target="_blank">activate WAAP for your domain in CDN</a>, it will appear on the **Domains** page in the Gcore Customer Portal. Here, you can view all domains and their statuses, navigate to the CDN settings, and delete inactive domains. 
 
-<img src="https://assets.gcore.pro/docs/waap/getting-started/domains-page-figma.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/getting-started/domains-waap-page.png" alt="Domains page in the Customer Portal">
 
 A domain in WAAP can have the following statuses:  
 
@@ -69,7 +69,7 @@ To delete an inactive domain:
 
 1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**.
 
-<img src="https://assets.gcore.pro/docs/waap/getting-started/domains-page-figma.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/getting-started/domains-waap-page.png" alt="Domains page in the Customer Portal">
 
 2\. Click the three-dot icon next to the domain that you want to remove. 
 

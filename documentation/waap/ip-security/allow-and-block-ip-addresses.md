@@ -29,7 +29,7 @@ You can allow and block traffic for both IPv4 and IPv6 addresses. For each addre
 
 1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/ip-security/domains-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/ip-security/domains-waap-page.png" alt="Domains page in the Customer Portal">
 
 2\. Find the needed domain and click its name to open it. You'll be directed to the **Policies** page.
 
@@ -86,7 +86,7 @@ To update or remove an IP or IP range:
 
 1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/ip-security/domains-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/ip-security/domains-waap-page.png" alt="Domains page in the Customer Portal">
 
 2\. Find the needed domain and click its name to open it. You'll be directed to the **Policies** page.
 
