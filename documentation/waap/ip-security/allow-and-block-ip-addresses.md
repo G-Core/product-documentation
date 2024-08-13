@@ -17,7 +17,7 @@ All rules for allowing or blocking IPs are also displayed on the  **WAAP Rules**
 
 <alert-element type="tip" title="Tip">
 
-If you want to add a rule for verified bots and crawlers, check our common automated services WAAP policy group to see if a similar policy already exists. 
+If you want to add a rule for verified bots and crawlers, check our <a href="https://gcore.com/docs/waap/waap-policies/common-automation-services" target="_blank">common automated services</a> policy group to see if a similar policy already exists. 
 
 Enabling predefined policies gives you immediate protection without further testing and manual adjustments. They are created and optimized to accurately distinguish between legitimate and harmful automated traffic, which reduces the risk of false positives or negatives.
 
