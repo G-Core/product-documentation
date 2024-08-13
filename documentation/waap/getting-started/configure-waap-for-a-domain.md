@@ -212,7 +212,7 @@ Follow these steps to allow crawlers, scanners, monitoring bots, and similar too
 
 <img src="https://assets.gcore.pro/docs/waap/getting-started/common-automated-services.png" alt="WAAP policies page with the highlighted common automated bots policy">
 
-There are a few trusted bots in this section that are allowed by default, which is why we recommend reviewing this list before enabling the protect mode.
+The <a href="https://gcore.com/docs/waap/waap-policies/common-automation-services" target="_blank">common automated services</a> policy group allows a few trusted bots by default, which is why we recommend reviewing this list before enabling the protect mode.
 
 ## Step 7: Enable protect mode 
 

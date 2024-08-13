@@ -2,7 +2,7 @@
 title: advanced-api-protection
 displayName: Advanced API protection
 published: true
-order: 80
+order: 90
 toc:
    --1--Configure policy group: "configure-policy-group"
    --2--Auth token protection: "auth-token-protection"
