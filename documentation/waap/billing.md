@@ -18,11 +18,13 @@ You can test the Web Application and API Protection for 30 days. The following t
 
 <table>
 <tbody> 
-  <tr>
+<thead>
+<tr>
     <th style="text-align: left; width:20%">Feature</th>
     <th style="text-align: left; width:40%">Functionality</th>
     <th style="text-align: left; width:40%">Availability/Quotas</th>
   </tr>
+  </thead>
 <tr style="text-align: left;">
     <td rowspan="10">WAF</td>
     <td>Domains</td>
@@ -113,11 +115,13 @@ The base price is 55.00 € per month.
 
 <table>
 <tbody> 
+<thead>
   <tr>
     <th style="text-align: left; width:20%">Feature</th>
     <th style="text-align: left; width:40%">Functionality</th>
     <th style="text-align: left; width:40%">Availability/Quotas</th>
   </tr>
+  </thead>
 <tr style="text-align: left;">
     <td rowspan="5">WAF</td>
     <td>Domains</td>
@@ -164,12 +168,13 @@ The base price is 250.00 € per month.
 
 <table>
 <tbody> 
-  <tr>
+<thead>
   <tr>
     <th style="text-align: left; width:20%">Feature</th>
     <th style="text-align: left; width:40%">Functionality</th>
     <th style="text-align: left; width:40%">Availability/Quotas</th>
   </tr>
+  </thead>
 <tr style="text-align: left;">
     <td rowspan="7">WAF</td>
     <td>Domains</td>
@@ -236,11 +241,13 @@ The base price is tailored to your workflows and security requirements. To estim
 
 <table>
 <tbody> 
+<thead>
   <tr>
     <th style="text-align: left; width:20%">Feature</th>
     <th style="text-align: left; width:40%">Functionality</th>
     <th style="text-align: left; width:40%">Availability/Quotas</th>
   </tr>
+  </thead>
 <tr style="text-align: left;">
     <td rowspan="10">WAF</td>
     <td>Domains</td>
@@ -312,7 +319,7 @@ The base price is tailored to your workflows and security requirements. To estim
 <tr style="text-align: left;">
  <td rowspan="2">Traffic</td>
     <td>Included monthly traffic</td>
-    <td>[Contact us](mailto: sales@gcore.com) for traffic calculation</td>
+    <td><a href="mailto:sales@gcore.com" target="_blank">Contact us</a> for traffic calculation</td>
   </tr>
 <tr style="text-align: left;">
     <td>Overage fee</td>
