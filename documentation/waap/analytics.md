@@ -25,6 +25,12 @@ pageDescription: Learn about Gcore analytics.
 
 WAAP analytics provides comprehensive information about incoming traffic to your domain. It features detailed statistics about recent requests, potential threats, and frequently triggered rules, allowing you to fine-tune your WAAP settings based on the analyzed data. 
 
+<alert-element type="info" title="Info">
+ 
+After you enable WAAP protection for your CDN resource, it might take up to 20 minutes to populate your domain with real data and apply all system-wide settings.
+ 
+</alert-element> 
+
 The data is displayed in Coordinated Universal Time (UTC) and available on the following pages:  
 
 * **Overview**: Get a consolidated view of all incoming requests that have been inspected by WAAP. 

@@ -47,11 +47,9 @@ To disable WAAP protection for a domain:
 
 * If you enabled WAAP for a particular rule, open the **Rules** tab, find the relevant rule, and disable the WAAP toggle in the Options section. 
 
-4\. Save the changes. 
+4\. Save the changes. Note that deactivating a domain can take some time as this step ensures that all changes are correctly and consistently applied across our system.
 
-After you deactivate WAAP protection for your domain, all traffic from the CDN will go directly to the origin with no security checks.  
-
-The domain status on the Domains page in WAAP will change to **inactive**. All WAAP settings and configured rules will remain intact and can be modified. However, it’ll take no effect while WAAP is disabled.  
+After you deactivate WAAP protection for your domain, all traffic from the CDN will go directly to the origin with no security checks. The domain status on the Domains page in WAAP will change to **inactive**. All WAAP settings and configured rules will remain intact and can be modified. However, it’ll take no effect while WAAP is disabled.  
 
 To activate WAAP protection again, <a href="https://gcore.com/docs/waap/getting-started/configure-waap-for-a-domain#step-2-enable-waap-in-cdn-resource-settings" target="_blank">enable the WAAP toggle</a> in the CDN settings. 
 

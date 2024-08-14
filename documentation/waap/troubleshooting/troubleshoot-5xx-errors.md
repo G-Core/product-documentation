@@ -18,4 +18,4 @@ You may encounter several types of 500s errors that are commonly caused by incor
 
 When this happens, you’ll see the following message:
 
-<img src="https://assets.gcore.pro/docs/waap/troubleshooting/543-error.png" alt="543 error message in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/troubleshooting/543-error.png" alt="543 error message in the Customer Portal" width="70%">
