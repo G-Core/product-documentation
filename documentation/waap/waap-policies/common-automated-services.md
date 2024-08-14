@@ -1,18 +1,18 @@
 ---
-title: common-automation-services
-displayName: Common automation services
+title: common-automated-services
+displayName: Common automated services
 published: true
 order: 80
-pageTitle: Set up Common automation services WAAP policy group for your domain | Gcore
-pageDescription: Learn how to enable and customize Common automation services policy.
+pageTitle: Set up Common automated services WAAP policy group for your domain | Gcore
+pageDescription: Learn how to enable and customize Common automated services policy.
 ---
-# Common automation services
+# Common automated services
 
 Legitimate automation services such as web crawlers, security scanners, or SEO tools can often access your domain to gather some information. Such services operate without triggering any security measures as they're considered beneficial or necessary for normal web activities. 
 
 However, sometimes you may want to restrict which automation tools can access your domain. For instance, if you need to enforce specific data protection requirements on a domain, protect it from potentially harmful services, or restrict paid content from unauthorized use.  
 
-You can do so by enabling or disabling particular bots in the Common automation services policy group. 
+You can do so by enabling or disabling particular bots in the Common automated services policy group. 
 
 ## Configure policy group
 

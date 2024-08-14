@@ -48,7 +48,7 @@ Challenge or block requests when the user or device doesn’t maintain cookies o
 
 Challenge or block requests from automated sessions. Automated clients are usually bots looking to hack, spam, spy, or generally compromise your website. Activating this policy will detect these requests and force human interaction. 
 
-You can review a list of known bots and allow or block their activity within the <a href="https://gcore.com/docs/waap/waap-policies/common-automation-services" target="_blank">common automated services</a> policy group. Learn more about enabling and troubleshooting bot protection in <a href="https://gcore.com/docs/waap/bot-protection/" target="_blank">our dedicated guide</a>. 
+You can review a list of known bots and allow or block their activity within the <a href="https://gcore.com/docs/waap/waap-policies/common-automated-services" target="_blank">common automated services</a> policy group. Learn more about enabling and troubleshooting bot protection in <a href="https://gcore.com/docs/waap/bot-protection/" target="_blank">our dedicated guide</a>. 
 
 ### Headless browsers 
 
