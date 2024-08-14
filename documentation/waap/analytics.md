@@ -55,7 +55,7 @@ The information on the Analytics page is displayed according to the selected per
 
 To automatically refresh data without reloading the page, enable the **Auto-Refresh** toggle. 
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/auto-refresh-toggle.png" alt="Auto-refresh toggle on the Analytics page" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/auto-refresh.png" alt="Auto-refresh toggle on the Analytics page" width="80%">
 
 ## Overview page
 
@@ -195,19 +195,19 @@ This page provides an in-depth information about a particular request made to yo
 
 * **Overview**: Provides a high-level summary of the request, including relevant rules and applicable actions, response code, and client details. 
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/request-details-overview.png" alt="Overview section on the request details page" width="80%">
+ <img src="https://assets.gcore.pro/docs/waap/analytics/request-details-overview.png" alt="Overview section on the request details page" width="80%">
 
 * **Additional information**: Includes a detailed overview of the client, associated organization, and device (if available).
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/request-details-extra-info.png" alt="Additional information section on the request details page" width="80%">
+ <img src="https://assets.gcore.pro/docs/waap/analytics/request-details-extra-info.png" alt="Additional information section on the request details page" width="80%">
 
 * **Headers**: Contains a complete list of HTTP headers included in the client request and response from the server.
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/request-details-headers.png" alt="Headers section on the request details page" width="80%">
+ <img src="https://assets.gcore.pro/docs/waap/analytics/request-details-headers.png" alt="Headers section on the request details page" width="80%">
 
 * **Tags**: Lists any tags associated with the request, helping you quickly identify malicious activities related to that request.
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/request-details-tags.png" alt="Tags section on the request details page" width="80%">
+ <img src="https://assets.gcore.pro/docs/waap/analytics/request-details-tags.png" alt="Tags section on the request details page" width="80%">
 
 
 ### Threats (last 24 hours) 

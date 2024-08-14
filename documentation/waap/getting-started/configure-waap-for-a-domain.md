@@ -128,9 +128,9 @@ For instance, you can find information about incoming web requests on the **WAF*
  
 </alert-element>
 
-To view more information about a request, click the request ID and inspect the **Request Details** page.
+To view more information about a request, click the request ID and inspect the <a href="https://gcore.com/docs/waap/analytics#request-details" target="_blank">Request Details</a> page.
 
-<img src="https://assets.gcore.pro/docs/waap/getting-started/request-details.png" alt="Request details section open from the Analytics page">
+<img src="https://assets.gcore.pro/docs/waap/getting-started/request-details-page.png" alt="Request details section open from the Analytics page">
 
 The screenshot above depicts a request that was blocked because of the <a href="https://gcore.com/docs/waap/waap-policies/waf-and-owasp-top-threats#sql_injection" target="_blank">SQL injection</a> policy. It blocks requests if there is evidence that the request contains malicious SQL code.
 
@@ -210,7 +210,7 @@ Follow these steps to allow crawlers, scanners, monitoring bots, and similar too
 
 4\. On the **Policies** page, click the **Common automated services** to expand the section and enable the desired bot.
 
-<img src="https://assets.gcore.pro/docs/waap/getting-started/common-automated-services.png" alt="WAAP policies page with the highlighted common automated bots policy">
+<img src="https://assets.gcore.pro/docs/waap/getting-started/automated-services.png" alt="WAAP policies page with the highlighted common automated bots policy">
 
 The <a href="https://gcore.com/docs/waap/waap-policies/common-automated-services" target="_blank">common automated services</a> policy group allows a few trusted bots by default, which is why we recommend reviewing this list before enabling the protect mode.
 
