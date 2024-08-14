@@ -12,7 +12,7 @@ Reserved tags are preconfigured tags that trigger specific actions in custom rul
 
 ## Available reserved tags 
 
-Reserved tags can be divided into two categories: general tags that are used in custom rules with various conditions and API protection tags that are specifically designed to protect your APIs. API protection tags contain the URL <a href="https://gcore.com/docs/waap/waap-rules/custom-rules#rule-conditions" target="_blank">rule condition</a>.  
+Reserved tags can be divided into two categories: general tags that are used in custom rules with various conditions and API protection tags that are specifically designed to protect your APIs. <a href="https://gcore.com/docs/waap/api-discovery-and-protection/configure-api-access-with-reserved-tags" target="_blank">API protection</a> tags contain the URL rule condition.  
 
 General tags: 
 
@@ -43,7 +43,7 @@ Unlike <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/tag-rules#ta
 
 ## Tag requests from logged-in, registered, or paid users
 
-The **Registered**, **Logged In**, and **Paid** tags allow you to identify requests from users who have created accounts on your domain, are authenticated, or have paid subscriptions.  
+The **registered**, **logged-in**, and **paid** tags allow you to identify requests from users who have created accounts on your domain, are authenticated, or have paid subscriptions.  
 
 When creating a rule, make sure that you specify a secure condition. For example, explicitly define the IP address from which the requests will be coming (e.g., IP=1.2.3.4). Don't use the conditions that are easy to spoof, such as the User Agent header. 
 
@@ -67,13 +67,13 @@ If you want to track certain traffic on the <a href="https://gcore.com/docs/waap
 
 <img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/monitored-tag-analytics-page.png" alt="WAAP requests graph on the Analytics page">
 
-Requests affected by the **monitor** action will also appear in the graph and table. 
+Requests affected by the <a href="https://gcore.com/docs/waap/waap-rules/custom-rules#actions-in-custom-rules" target="_blank">monitor action</a> will also appear in the graph and table. 
 
 ### The difference between the monitor tag and monitor action 
 
 The **monitor tag** significantly differs from the **monitor action** in custom rules. 
 
-When you add the monitor tag to a request, it won't affect WAAP's behavior. If the request is potentially dangerous, it will be blocked. The monitor tag only ensures that such requests are visible via the **Monitored Requests** filter on the <a href="https://gcore.com/docs/waap/analytics#waap-page" target="_blank">WAAP</a> analytics page.
+When you add the monitor tag to a request, it won't affect WAAP's behavior. If the request is potentially dangerous, it will be blocked. The monitor tag only ensures that such requests are visible on the <a href="https://gcore.com/docs/waap/analytics#waap-page" target="_blank">WAAP</a> analytics page.
 
 However, if you apply the monitor action to a custom rule, it will determine how WAAP handles requests. Specifically, it will monitor and allow any requests to your domain, even if those requests aren't safe. 
 
@@ -171,7 +171,7 @@ After you create the rule, requests from paid users will be treated as safe and 
 
 <alert-element type="info" title="Info">
  
-Contact our [support team](mailto:support@gcore.com) to get additional configuration for the malicious activity and legitimate activity tags.
+Contact our [support team](mailto:support@gcore.com) to get additional configuration for the **malicious activity** and **legitimate activity** tags.
 
 </alert-element>
 
