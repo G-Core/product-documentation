@@ -45,7 +45,7 @@ Currently, you can use a predefined template to enable authentication in your ap
 
 To deploy an application from the template: 
 
-1\. In the Gcore Customer Portal, navigate to **Cloud** > **FastEdge**. 
+1\. In the Gcore Customer Portal, navigate to **FastEdge**. 
 
 2\. Open the **CDN Applications** page and click **Create new application**.
 
@@ -73,7 +73,7 @@ If you want to deploy a FastEdge application from your own binary, check the exa
 
 To deploy a FastEdge application from your own binary:
 
-1\. In the Gcore Customer Portal, navigate to **Cloud** > **FastEdge**. 
+1\. In the Gcore Customer Portal, navigate to **FastEdge**. 
 
 2\. Open the **CDN Applications** page and click **Create new application**.
 
@@ -191,7 +191,7 @@ The steps will slightly differ based on whether you choose to remove FastEdge fr
 
 <img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-resource-three-dot-icon.png" alt="CDN resources page with resource settings context menu" width="80%"> 
 
-3\. If you enabled FastEdge for the whole resource, disable the toggle **On request headers**. If you enabled Fast Edge just for particular paths, open the **Rules** page and 	disable the toggle for the required rule. 
+3\. If you enabled FastEdge for the whole resource, disable the toggle **On request headers**. If you enabled Fast Edge just for particular paths, open the **Rules** page and disable the toggle for the required rule. 
 
 4\. Click **Save changes**. 
 
@@ -207,7 +207,7 @@ You can’t delete a Fastedge application that is enabled for a CDN resource. To
 
 To delete an application: 
 
-1\. In the Gcore Customer Portal, navigate to **Cloud** > **FastEdge**. 
+1\. In the Gcore Customer Portal, navigate to **FastEdge**. 
 
 2\. Open the **CDN Applications** page and click the three-dot icon next to the application that you want to remove.
 
