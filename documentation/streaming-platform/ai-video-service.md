@@ -26,7 +26,7 @@ Using a unified infrastructure facilitates the integration of your project with 
 
 ## Activate AI video services
 
-To activate the AI video services for your account, send a request to the [Gcore support](mailto:support@gcore.com). While the general usage of the AI video service is free, certain features, like translation, may incur charges. For more details, refer to our <a href="https://gcore.com/pricing/streaming-platform" target="_blank">pricing page</a>. 
+AI services are available to all customers of Video Streaming in their personal account and API. If for some reason there is no access to AI, please contact the support the [Gcore support](mailto:support@gcore.com). While the general usage of the AI video service is free, certain features, like translation, may incur charges. For more details, refer to our <a href="https://gcore.com/pricing/streaming-platform" target="_blank">pricing page</a>. 
 
 ## Available features
 
