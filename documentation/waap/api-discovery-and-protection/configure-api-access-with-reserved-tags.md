@@ -30,11 +30,11 @@ Here’s the list of reserved tags applicable only for the API protection:
 * Ignore CCN Detection
 * Ignore SSN Detection
 
-These tags can be added to your API endpoints either via the API Discovery feature or by using custom rules.  
+These tags can be added to your API endpoints by using custom rules.
 
-<alert-element type="info" title="Info">
- 
-The Advanced API protection feature is available in the Enterprise package. 
+<alert-element type="tip" title="Tip">
+
+It’s a good practice to add multiple conditions to custom rules. Complex rules are harder to bypass and more nuanced, which reduces the probability of false positives. 
 
 </alert-element>
 
@@ -58,7 +58,9 @@ The first step in API protection is to categorize your endpoints based on their 
 * **Privileged**: Endpoints that can be accessed by privileged users and admins.
 * **Non-privileged**: Endpoints accessible to users with no permissions.
 
-You can add tags to control access to endpoints by creating custom rules that will automatically mark endpoints with relevant tags. When creating a rule, make sure that you specify secure conditions, such as client IP or specific HTTP response header. Avoid conditions that are easy to spoof, like the User Agent header. 
+You can control access to endpoints by creating custom rules that will automatically mark endpoints with tags, like **API Admin Access** or **API Privileged Access**.
+
+When creating a rule, make sure that you specify secure conditions, such as client IP or specific HTTP response header. Avoid conditions that are easy to spoof, like the User Agent header. 
 
 For example, you can create a rule that restrics access to admin endpoints. Only users with a valid bearer token in the authorization header will be able to interact with admin APIs. 
 
@@ -78,13 +80,13 @@ To create the rule:
 
 6\. In the **IF** section, select **Header**. 
 
-7\. In the **Header key** field, enter **Authorization**. This means that a privileged user has to be authenticated to access the endpoint.  
+7\. In the **Header key** field, enter **Authorization**. This means that an admin user has to be authenticated to access the endpoint.  
 
 8\. In the next dropdown, select **-** to apply the rule only to the specified condition. 
 
 9\. Define match criteria. Select **Contains** to apply the rule even when a request header partly matches the specified one. 
 
-10\. Provide header value. Enter **Bearer** to require an authorization token on each request that attempts to access privileged API endpoints. 
+10\. Provide header value. Enter **Bearer** to require an authorization token on each request that attempts to access admin API endpoints. 
 
 11\. In the **THEN** section, select the **Tag** action to apply a relevant tag to each request that matches the specified criteria.  
 
@@ -92,19 +94,17 @@ To create the rule:
 
  * **API Privileged Access**: This tag grants permission to reach any privileged API endpoint. 
 
- * **API Admin Access**: This tag allows interaction with all API endpoints.
+ * **API Admin Access**: This tag allows interaction with all API endpoints. In the current rule example, choose this tag.
 
 <img src="https://assets.gcore.pro/docs/waap/api-discovery-and-protection/api-access-with-reserved-tags/privileged-access-APIs.png" alt="A custom rule to set up privileged API access">
 
  13\. Click **Save** to create the rule.  
 
-All requests from authorized users with relevant permissions can now reach the admin and privileged API endpoints. 
+All requests from authorized users with relevant permissions can now reach the admin API endpoints. 
 
 ### Step 2. Define user roles that can access endpoints 
 
 After you define access levels for API endpoints, you need to configure which users can interact with those endpoints. To do so, create a new custom rule for each user type.  
-
-It’s a good practice to add multiple conditions to custom rules. Complex rules are harder to bypass and more nuanced, which reduces the probability of false positives. 
 
 For example, create a rule that identifies a request as coming from an admin user if the request contains a valid bearer token in the authorization header. 
 
@@ -124,21 +124,21 @@ To create the rule:
 
 7\. Define match criteria. Select **Contains** to apply the rule even when a request header partly matches the specified one. 
 
-8\. Provide header value. Enter **Bearer** to require an authorization token on each request that attempts to access privileged or admin API endpoints. 
+8\. Provide header value. Enter **Bearer** to require an authorization token on each request that attempts to access admin API endpoints. 
 
 9\. Select another condition in the **AND** section: 
 
  * In the **IF** section, select **Header**. 
- * In the **Header key** field, enter the relevant value: **X-Admin-User ** 
+ * In the **Header key** field, enter the relevant value: **X-Admin-User** 
  * Select **Contains** as a match criteria. 
  * Provide **Token** as a header value. 
 
-10\. In the **THEN** section, select the **Tag** action to apply a relevant tag to each request that matches the specified criteria. 
+10\. In the **THEN** section, select the **Tag** action.
 
 11\. In the next dropdown, select the relevant reserved tag: 
 
- * **API Admin User**: Requests from these users will reach any API endpoint. 
- * **API Privileged User**: Requests from these users will reach privileged endpoints.
+ * **Indicate API Admin User**: Requests from these users will reach any API endpoint. In the current rule example, choose this tag.
+ * **Indicate API Privileged User**: Requests from these users will reach privileged endpoints.
 
 <img src="https://assets.gcore.pro/docs/waap/api-discovery-and-protection/api-access-with-reserved-tags/privileged-users.png" alt="A custom rule to create privileged users">
 
@@ -208,7 +208,7 @@ For instance, create the following rule to ignore data collection during the che
 
 8\. In the **THEN** section, select the **Tag** action to apply a relevant tag to each request that matches the specified criteria. 
 
-9\. In the next dropdown, select the **Ignore Phone Number Detectio**n and **Ignore Email Address Detection** tags. 
+9\. In the next dropdown, select the **Ignore Phone Number Detection** and **Ignore Email Address Detection** tags. 
 
 <img src="https://assets.gcore.pro/docs/waap/api-discovery-and-protection/api-access-with-reserved-tags/ignore-sde-detection.png" alt="A custom rule to ignore SDE detection">
 
