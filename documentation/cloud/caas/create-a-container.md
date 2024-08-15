@@ -9,8 +9,8 @@ toc:
    --1--Step 3. Choose container configuration: "step-3-choose-container-configuration"
    --1--Step 4. Configure autoscaling: "step-4-configure-autoscaling"
    --1--Step 5. Specify container lifetime: "step-5-specify-container-lifetime"
-   --1--Step 6 (optional). Add variables: "step-6-add-environment-variables"
-   --1--Step 7 (optional). Configure API keys: "step-7-configure-authentication-via-API"
+   --1--Step 6 (optional). Add variables: "step-6-optional-add-environment-variables"
+   --1--Step 7 (optional). Configure API keys: "step-7-optional-configure-authentication-via-API"
    --1--Step 8. Finalize configuration: "step-8-finalize-container-configuration"  
 pageTitle: Create Containers in the Customer Portal | Gcore
 pageDescription: A comprehensive step-by-step guide on how to create containers.
@@ -35,7 +35,7 @@ If you don’t have sufficient resources to a create a Container, request <a hre
 
 3\. In the **Container image** section, select the image type: **public** or **private**. The difference between them is that a private image is secured with credentials. 
 
-4\. Enter your image URL. For example, nginx:latest. For a private image, enter the URL in the format https://registry.mysite.com. 
+4\. Enter your image URL. For example, nginx:latest. For a private image, enter the URL in the format `https://registry.mysite.com`. 
 
 5\. (Optional) Specify registry credentials. If you selected private image in the previous step, enter credentials for accessing that image. If you’ve already added createntials to the Customer Portal, choose them from the Credentials dropdown.
 
