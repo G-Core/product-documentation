@@ -107,7 +107,7 @@ This graph shows information about actions that were applied to incoming request
 
 You can select the following filters to view specific types of requests: 
 
-* **Monitored requests**: total number of requests proceeded by WAAP. 
+* **Monitored requests**: View requests that were triggered either by <a href="https://gcore.com/docs/waap/waap-rules/custom-rules#actions-in-custom-rules" target="_blank">monitor action</a> or <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/tag-rules/reserved-tags#inspect-waap-traffic" target="_blank">monitor reserved tag</a>. 
 
 * **Policy—blocked**: View requests that were blocked because of a triggered default policy. 
 
