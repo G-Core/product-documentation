@@ -12,7 +12,7 @@ toc:
    --1--Step 6. Allow admins, bots, and CMS: "step-6-allow-admins-bots-and-cms"
    --1--Step 7. Enable protect mode: "step-7-enable-protect-mode"
 pageTitle: Set up Gcore WAAP for your domain | Gcore
-pageDescription: Learn how to itegrate your domain with our WAAP and configure initial settings.
+pageDescription: Learn how to integrate your domain with our WAAP and configure initial settings.
 ---
 # Configure WAAP for a domain
 
@@ -56,7 +56,7 @@ Once your CDN resource is set up, you can activate WAAP protection for it:
 
 5\. Click **Save** to apply the changes.  
 
-Consider that it might take up to 30 minutes for the HTTP traffic to start passing through our WAAP after the activation. 
+Consider that it might take up to 20 minutes for the HTTP traffic to start passing through our WAAP after the activation. 
 
 ### What to do if WAAP blocks content that shouldn’t be blocked? 
 
