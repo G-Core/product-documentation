@@ -2,7 +2,7 @@
 title: order-an-ssl-certificate
 displayName: Order
 order: 20
-published: true
+published: false
 toc:
     --1--Certificate settings: "certificate-settings"
     --2--Request: "request"
