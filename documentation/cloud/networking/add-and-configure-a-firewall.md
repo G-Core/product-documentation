@@ -95,6 +95,12 @@ All outgoing connections are allowed.
 
 ### Delete a firewall
 
+<alert-element type="warning" title="Warning">
+ 
+You can’t delete a default firewall. 
+ 
+</alert-element>
+
 1\. Go to the **Networking** tab > **Firewalls**.
 
 2\. Find the required firewall, click the ⋯ menu on the right and select **Delete**.
