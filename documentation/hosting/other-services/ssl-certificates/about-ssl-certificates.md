@@ -33,9 +33,3 @@ On average, DV certificates are issued within five minutes. But if your domain i
 ## Company Validated Certificate (OV)
 
 A company validated certificate is similar to a domain validated certificate; however, additional documentation must be provided to certify your company's identity. The biggest advantage of a WHOIS company validated SSL certificate is the way your site is displayed in a browser. More validation means more trust, and your visitors will have more confidence in the security of your site.
-
-We provide:
-
-- Thawte SSL Web Server
-
-This certificate is a company validated certificate and requires documents. It's issue process takes up to5 working days.
