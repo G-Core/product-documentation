@@ -7,7 +7,7 @@ toc:
    --1--Transcoding with ABR: "what-is-transcoding-with-abr"
    --1--Audio and video codecs: "audio-and-video-codecs"
    --1--Output parameters: "output-parameters-after-transcoding"
-   --1--4K and custom settings: "how-to-apply-2K-4K-and-custom-advanced-settings"
+   --1--4K and custom settings: "how-to-apply-2k4k-and-custom-advanced-settings"
    --1--HTTP response codes: "http-response-codes-when-requesting-live-and-vod-videos"
 pageTitle: Transcoding and Output Specs for Gcore Streams | Gcore
 pageDescription: Learn about Gcore's transcoding process, including details on file bitrates, frame rates, and codecs for different video quality levels.
