@@ -25,7 +25,7 @@ customUrl: /cloud/networking/create-and-configure-a-load-balancer
 ---
 # Create and configure a Load Balancer
 
-A Load Balancer is a tool used to sort incoming requests across your Virtual Machines  to improve your infrastructure's fault tolerance.
+A Load Balancer is a tool used to sort incoming requests across your Virtual Machines to improve your infrastructure's fault tolerance.
 
 ## Step 1. Initiate Load Balancer creation
 
@@ -80,7 +80,7 @@ To configure a listener:
 
 5\. (Optional) To identify the origin of the user's IP address connecting to a web server via a load balancer, enable the **Add headers X-Forwarded-For, X-Forwarded-Port, X-Forwarded-Proto to requests** toggle. 
 
-6\. If you select Terminated HTTPS and Prometheus protocols, you can configure TLS certificates. Follow instructions from our dedicated guide. 
+6\. If you select Terminated HTTPS and Prometheus protocols, you can configure TLS certificates. Follow instructions from our <a href="https://gcore.com/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer" target="_blank">dedicated guide</a>. 
 
 7\. Set the connection limit - a maximum number of simultaneous connections that can be handled by this listener.  
 
