@@ -13,7 +13,7 @@ toc:
    --1--Step 7 (optional). Configure API keys: "step-7-optional-configure-authentication-via-API"
    --1--Step 8. Finalize configuration: "step-8-finalize-container-configuration"  
 pageTitle: Create Containers in the Customer Portal | Gcore
-pageDescription: A comprehensive step-by-step guide on how to create containers.
+pageDescription: A comprehensive step-by-step guide on how to create containers in the Customer Portal.
 ---
 # Create a container
 
