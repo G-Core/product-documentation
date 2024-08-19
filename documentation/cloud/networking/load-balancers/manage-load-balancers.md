@@ -96,7 +96,7 @@ The Load Balancer settings are organized into tabs, each dedicated to a specific
 
 This tab features a summary of the load balancer's configuration and its resources. 
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/load-balancers/manage-a-load-balancer/flavour-tab.png" alt="Flavor tab in Load Balancer settings" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/networking/load-balancers/manage-a-load-balancer/flavor-tab.png" alt="Flavor tab in Load Balancer settings" width="80%">
 
 * **Flavor**: A name for the specific configuration that defines the combination of vCPU and RAM resources allocated for the Load Balancer. 
 * **vCPU**: The number of allocated virtual CPU cores.  
