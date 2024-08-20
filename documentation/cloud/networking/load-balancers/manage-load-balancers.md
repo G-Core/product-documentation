@@ -1,11 +1,24 @@
 ---
 title: manage-load-balancers
-displayName: Manage Load Balancer
+displayName: Manage Load Balancers
 published: true
 order: 15
 toc:
-   --1--Load Balancer statuses: " "
-   --1--Settings overview: "p "
+   --1--Load Balancer statuses: "statuses-of-a-load-balancer-and-its-components"
+   --1--Load Balancer settings: "load-balancer-settings"
+   --2--Flavor: "flavor"
+   --2--Monitoring: "monitoring"
+   --2--Listeners: "listeners"
+   --3--Pool settings: "pool-settings"
+   --3--L7 policies: "l7-policies"
+   --3--Listener statistics: "listener-statistics"
+   --2--Configuration: "configuration"
+   --2--Logging: "logging"
+   --2--Custom tags: "custom-tags"
+   --1--Initiate a failover: "initiate-a-failover" 
+   --1--Rename a Load Balancer: "rename-a-load-balancer" 
+   --1--Edit tags: "edit-tags" 
+   --1--Delete a Load Balancer: "delete-a-load-balancer"                                    
 pageTitle: Configure a Load Balancer | Gcore
 pageDescription: Learn how to configure a Load Balancer to distribute incoming requests across VMs, improving the fault tolerance of your infrastructure.
 ---
@@ -62,7 +75,7 @@ During the resource’s lifetime, its **provisioning** status can signal the fol
 * **Deleting**: It’s currently being deleted.  
 * **Error**: The system failed to create a balancer. If error occurs during the update or deletion of a balancer, initiate a failover. Load Balancers that fail to be created will be automatically deleted.  
 
-## Settings overview
+## Load Balancer settings
 
 You can inspect the configuration details of a created Load Balancer, view and copy its routing scheme, add and remove listeners, or enable logging on the **Overview** page. To open the page:
 
@@ -78,7 +91,7 @@ The **Overview** page features the following information:
 * **Type**: Network distribution by a Load Balancer—external (public) or private. 
 * **VIPs**: Virtual IP address of a Load Balancer. 
 * **Floating IP**: If you added a Floating IP while creating a Load Balancer, it will appear in this column. 
-* **Custom security group**: Firewall that defines rules for inbound and outbound traffic. By default, the Load Balancer uses the project's <a href="https://gcore.com/docs/cloud/networking/add-and-configure-a-firewall#use-the-default-firewall" target="_blank">default firewall</a> (also known as “security group”). If you want to customize firewall settings, <a href="https://gcore.com/docs/cloud/networking/add-and-configure-a-firewall#create-a-firewall" target="_blan"k">create a custom security group</a>. 
+* **Custom security group**: Firewall that defines rules for inbound and outbound traffic. By default, the Load Balancer uses the project's <a href="https://gcore.com/docs/cloud/networking/add-and-configure-a-firewall#use-the-default-firewall" target="_blank">default firewall</a> (also known as “security group”). If you want to customize firewall settings, <a href="https://gcore.com/docs/cloud/networking/add-and-configure-a-firewall#create-a-firewall" target="_blank">create a custom security group</a>. 
 
  <alert-element type="info" title="Info">
  
@@ -135,8 +148,6 @@ You can also specify the auto-refresh cadence: in minutes (1, 5, 15, or 30) or f
 
 Listener is a process that checks for connection requests using the configured protocol and port. A listener contains a pool—a list of virtual machines or Bare Metal servers that will receive traffic from the listener. 
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/load-balancers/manage-a-load-balancer/listeners-tab.png" alt="Listeners tab in Load Balancer settings" width="80%">
-
 Listener configuration: 
 
 * **Name**: Name of the listener. 
@@ -146,6 +157,8 @@ Listener configuration:
 **Operating status**: The current operational state of the listener. "Online" means it is functioning and can receive traffic. 
 * **Provisioning status**: The status of the configuration process for the listener. "Active" suggests that it has been fully configured and is operational. 
 
+<img src="https://assets.gcore.pro/docs/cloud/networking/load-balancers/manage-a-load-balancer/listeners-tab.png" alt="Listeners tab in Load Balancer settings" width="80%">
+
 <alert-element type="info" title="Info">
  
 You can't add multiple listeners with the same L4 type and port number. For example, you can create a listener with TCP 80 and UDP 80 but not a listener with TCP 80 and TCP 80.  
@@ -154,11 +167,9 @@ It's also not possible to use both TCP 80 and HTTP 80. The reason is that HTTP i
  
 </alert-element>
 
-#### Pool configuration
+#### Pool settings
 
 A pool is the list of VMs or Bare Metal to which the listener will redirect incoming traffic. 
-
-<img src="https://assets.gcore.pro/docs/cloud/networking/load-balancers/manage-a-load-balancer/listeners-tab-pool.png" alt="Listeners tab with pool settings" width="80%">
 
 Each pool in the listener has the following configuration:
 
@@ -176,6 +187,8 @@ Each pool in the listener has the following configuration:
 
 * **Protocol**: The network protocol that the pool uses to communicate with instances and members. 
 
+<img src="https://assets.gcore.pro/docs/cloud/networking/load-balancers/manage-a-load-balancer/listeners-tab-pool.png" alt="Listeners tab with pool settings" width="80%">
+
 Instances:
 
 * **State**: Whether the instance is enabled or disabled within the pool. "Enabled" means that the instance is active and can receive traffic from the Load Balancer. 
@@ -185,7 +198,7 @@ Instances:
 * **Port**: The network port on which the instance listens.  
 * **Weight**: Distribution of traffic among Virtual Machines or Bare Metal servers in the pool. A weight can be assigned to each VM or Bare Metal to influence how much traffic it should handle compared to other instances. A higher weight means that more traffic will be directed to that particular resource. 
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/load-balancers/manage-a-load-balancer/listeners-tab-instances.png" alt="Listeners tab with instance settings" width="80%">
+ <img src="https://assets.gcore.pro/docs/cloud/networking/load-balancers/manage-a-load-balancer/listeners-tab-instances.png" alt="Listeners tab with instance settings" width="80%">
 
 Health check: 
 
@@ -195,7 +208,7 @@ Health check:
 * **Unhealthy thresholds**: This is the number of consecutive failed health checks required before a server is considered unhealthy and removed from the pool for traffic distribution.  
 * **Healthy thresholds**: The number of consecutive successful health checks required for a server to be considered healthy and added back to the pool. 
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/load-balancers/manage-a-load-balancer/listeners-tab-health-check.png" alt="Listeners tab with health check settings" width="80%">
+ <img src="https://assets.gcore.pro/docs/cloud/networking/load-balancers/manage-a-load-balancer/listeners-tab-health-check.png" alt="Listeners tab with health check settings" width="80%">
 
 Timeouts: 
 
@@ -203,9 +216,13 @@ Timeouts:
 * **Member Connect**: The maximum amount of time a Load Balancer will wait to establish a connection with a pool member. If the connection is not established within that timeframe, it’s considered a failed attempt.  
 * **Member Data**: The maximum amount of time a Load Balancer will wait for a pool member to send data once a connection has been established. If no data is sent within this timeframe, the connection times out.  
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/load-balancers/manage-a-load-balancer/listeners-tab-timeouts.png" alt="Listeners tab with timeouts settings" width="80%">
+ <img src="https://assets.gcore.pro/docs/cloud/networking/load-balancers/manage-a-load-balancer/listeners-tab-timeouts.png" alt="Listeners tab with timeouts settings" width="80%">
 
-Listener statistics:
+#### L7 policies 
+
+L7 policy specifies how to manage and route incoming traffic at the application layer (Layer 7 of the <a href="https://osi-model.com/application-layer/" target="_blank">OSI model</a>).
+
+#### Listener statistics
 
 * **Name**: Name of each listener. 
 * **Active connections**: Number of ongoing connections to each listener. 
@@ -214,11 +231,7 @@ Listener statistics:
 * **Request errors**: Total number of request errors encountered by the listener. 
 * **Total connections**: The cumulative number of connections handled by the listener since it was started. 
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/load-balancers/manage-a-load-balancer/listener-stats.png" alt="Listeners tab with listener statistics" width="80%">
-
-#### L7 policies 
-
-L7 policy specifies how to manage and route incoming traffic at the application layer (Layer 7 of the <a href="https://osi-model.com/application-layer/" target="_blank">OSI model</a>).
+ <img src="https://assets.gcore.pro/docs/cloud/networking/load-balancers/manage-a-load-balancer/listener-stats.png" alt="Listeners tab with listener statistics" width="80%">
 
 ### Configuration 
 
@@ -296,7 +309,7 @@ During failover or resize operations, all current connections will be terminated
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/load-balancers/manage-a-load-balancer/rename-confirmation.png" alt="Rename dialog in the Load Balancer settings" width="80%">
 
-## ## Rename a Load Balancer 
+## Edit tags 
 
 1\. Navigate to **Cloud** > **Networking**. 
 
