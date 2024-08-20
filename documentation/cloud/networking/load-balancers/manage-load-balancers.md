@@ -38,9 +38,9 @@ On this page, you can find all the necessary information about the created resou
 * **IP Address**: Address assigned to the Load Balancer. 
 * **Listeners**: The number of configured listening ports that define how incoming network traffic is received and distributed. 
 * **Region**: The geographical location of a data center where the Load Balancer is deployed. 
-* **Tags**: Metadata used to label and categorize Load Balancer within a cloud environment. 
+* **Tags**: <a href="https://gcore.com/docs/cloud/networking/load-balancers/manage-load-balancers#custom-tags" target="_blank">Metadata</a> used to label and categorize Load Balancer within a cloud environment. 
 * **Created**: The date and time when it was deployed. 
-* **Operating status**, **Provisioning status**: check statuses of Load Balancer and its components for a detailed overview of each one. 
+* **Operating status**, **Provisioning status**: Check the <a href="https://gcore.com/docs/cloud/networking/load-balancers/manage-load-balancers#statuses-of-a-load-balancer-and-its-components" target="_blank">statuses of Load Balancer and its components</a> for a detailed overview of each one. 
 
 You can explore these settings in more detail, monitor Load Balancer's performance and health metrics, and adjust configurations as needed. Refer to the following sections for instructions. 
 
@@ -73,7 +73,7 @@ During the resource’s lifetime, its **provisioning** status can signal the fol
 * **Deleted**: It’s been successfully deleted. 
 * **Updating**: It’s currently being updated. 
 * **Deleting**: It’s currently being deleted.  
-* **Error**: The system failed to create a balancer. If error occurs during the update or deletion of a balancer, initiate a failover. Load Balancers that fail to be created will be automatically deleted.  
+* **Error**: The system failed to create a balancer. If error occurs during the update or deletion of a balancer, <a href="https://gcore.com/docs/cloud/networking/load-balancers/manage-load-balancers#initiate-a-failover" target="_blank">initiate a failover</a>. Load Balancers that fail to be created will be automatically deleted.  
 
 ## Load Balancer settings
 
@@ -101,7 +101,7 @@ The **Overview** page features the following information:
 
  </alert-element>
 
-* **Operating status**, **Provisioning status**: check statuses of Load Balancer and its components for a detailed overview of each one. 
+* **Operating status**, **Provisioning status**: Check the <a href="https://gcore.com/docs/cloud/networking/load-balancers/manage-load-balancers#statuses-of-a-load-balancer-and-its-components" target="_blank">statuses of Load Balancer and its components</a> for a detailed overview of each one. 
 
 The Load Balancer settings are organized into tabs, each dedicated to a specific functionality. The following sections provide a detailed description of these settings. 
 
@@ -175,7 +175,7 @@ Each pool in the listener has the following configuration:
 
 * **Name**: The name of the pool. 
 
-* **Algorithm**: The load-balancing method used to distribute traffic among instances in the pool. Check available algorithms in pool settings. 
+* **Algorithm**: The load-balancing method used to distribute traffic among instances in the pool. Check available algorithms in <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer#pool" target="_blank">pool settings</a>. 
 
 * **Instance count**: The number of Virtual Machines whose traffic is managed by a Load Balancer. 
 
@@ -310,6 +310,8 @@ During failover or resize operations, all current connections will be terminated
 <img src="https://assets.gcore.pro/docs/cloud/networking/load-balancers/manage-a-load-balancer/rename-confirmation.png" alt="Rename dialog in the Load Balancer settings" width="80%">
 
 ## Edit tags 
+
+To update <a href="https://gcore.com/docs/cloud/networking/load-balancers/manage-load-balancers#custom-tags" target="_blank">metadata</a> assigned to a Load Balancer: 
 
 1\. Navigate to **Cloud** > **Networking**. 
 
