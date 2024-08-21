@@ -82,11 +82,11 @@ A transcoded video stream has the following codecs by default:
 <td>0,128</td>
 </tr>
 <tr>
-<td>SD 480p</td>
-<td>854 × 480</td>
+<td>SD 468p</td>
+<td>832 × 468</td>
 <td>30</td>
 <td>0,800</td>
-<td>0,128</td>
+<td>0,096</td>
 </tr>
 <tr>
 <td>360p</td>
@@ -107,14 +107,22 @@ A transcoded video stream has the following codecs by default:
 <td>254 × 144</td>
 <td>30</td>
 <td>0,072</td>
-<td>0,064 (1ch)</td>
+<td>0,064</td>
+</tr>
+<tr>
+<td>Audio only<span style="color:#FF5913">*</span></td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>0,128</td>
 </tr>
 </tbody>
 </table>
 
 <span style="color:#FF5913">*</span>To enable these qualities, contact the [support team](mailto:support@gcore.com).
 
-The values in the table are given for videos with a horizontal aspect ratio of 16:9. The values are reversed for vertical videos. For example, if a horizontal resolution is (1280 × 720), the relevant vertical resolution is (720 × 1280). 
+The values in the table are given for videos with a horizontal aspect ratio of 16:9. 
+The values must be reversed for vertical videos. For example, if a horizontal resolution is (1280 × 720), the relevant vertical resolution is (720 × 1280). 
 
 We use variable bitrate (VBR) for encoding video. The table above shows average values. The Gcore Customer Portal shows a sum of audio and video bitrates.
 
