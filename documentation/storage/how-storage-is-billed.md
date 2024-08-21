@@ -10,7 +10,7 @@ toc:
 pageTitle: Overview of Gcore's Object Storage Billing and Limits | Gcore
 pageDescription: Explanation of billing rules, subscription plans, how to change your plan, and Object Storage limits for optimal performance and availability.
 ---
-# How Object Storage is billed  
+# How Storage is billed  
 
 ## Plans and billing rules 
 
@@ -32,5 +32,5 @@ If you have any questions, please, contact us via chat or email ([support@gcore.
 
 ## Object Storage limits
 
-1.  You can create maximum 1000 buckets. 
-2.  You can place maximum 1 million objects in one bucket. However, we recommend placing no more than 100 thou objects, so storage performance and availability be higher. If you want to place more than 100 thou ones, it would be better to store them in different buckets.
+1\.  You can create maximum 1000 buckets. 
+2\.  You can place a maximum of 10 million objects in one bucket.   
