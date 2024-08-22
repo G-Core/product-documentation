@@ -18,9 +18,11 @@ pageDescription: A step-by-step tutorial on how to create live streams using Gco
 
 ## Step 1. Initiate the process
 
-1\. Navigate to <a href="https://streaming.gcore.com/streaming/list">Live Streaming</a> section and select **Create Live stream**.
+1\. In the Gcore Customer Portal, navigate to <a href="https://streaming.gcore.com/streaming">Streaming</a> > **Live Streaming**.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/13542247871633.png" alt="Live streaming section" width="80%">
+2\. Click **Create Live stream**.
+
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/live-streaming-annotated.png" alt="Live stream button on the life streaming page" width="80%">
 
 <expandable-element title="The Create… button is unavailable">
 

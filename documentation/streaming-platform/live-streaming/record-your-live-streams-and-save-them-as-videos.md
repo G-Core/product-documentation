@@ -41,7 +41,7 @@ To record a live stream manually:
 
 3\. Press the **Start record** button.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/record-your-live-streams-and-save-them-as-videos/9612975915665.png" alt="Start record button" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/record-your-live-streams-and-save-them-as-videos/live-streaming-record.png" alt="Start record button" width="80%">
 
 After 5–10 seconds, the recording will start. You will see the timer and the **Stop record** button.
 
@@ -67,12 +67,14 @@ The recording will be saved in the Streaming Storage.
 
 ## Where the records are kept
 
-After you record a stream, the recording is saved in the Streaming’s storage. To get it:
+After you record a stream, the recording is saved on the **Live Streaming** page. To view the recorded stream:
 
-1. Open the **Videos** tab.
+1\. In the Gcore Customer Portal, navigate to <a href="https://streaming.gcore.com/streaming">Streaming</a> > **Live Streaming**. 
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/record-your-live-streams-and-save-them-as-videos/9612975963921.png" alt="Videos tab" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/record-your-live-streams-and-save-them-as-videos/live-stream-storage.png" alt="Videos tab" width="80%">
 
-2. Go to the recording settings to the **Export** tab. Here you can copy the iFrame code to embed the recording on your website and download the recording of the quality you want.
+2\. Click the stream name to open its settings.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/record-your-live-streams-and-save-them-as-videos/9612950210193.png" alt="Export tab" width="80%">
+3\. Navigate to the **Links for the export** section. Here you can copy the iFrame code to embed the recording on your website and download the recording of the quality you want.
+
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/record-your-live-streams-and-save-them-as-videos/live-streams-export-iframe.png" alt="Export tab" width="80%">

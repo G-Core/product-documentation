@@ -1,65 +1,70 @@
 ---
 title: organize-uploaded-videos
-displayName: Folders and tags
+displayName: Directories and tags
 published: true
 order: 20
 toc:
-   --1--How to organize videos: "how-to-organize-videos"
-   --1--Use folders: "how-to-use-folders"
-   --2--Create a folder: "create-a-folder-and-upload-videos"
-   --2--Move videos to a folder: "move-videos-to-a-folder"
-   --2--Delete a folder: "delete-a-folder"
+   --1--Use directories: "how-to-use-directories"
+   --2--Create a directory: "create-a-directory-and-upload-videos"
+   --2--Move videos to a directory: "move-videos-to-a-directory"
+   --2--Delete a directory: "delete-a-directory"
    --1--Use tags: "how-to-use-tags"
    --2--Add to a video: "add-a-tag-to-a-video"
    --2--Filter videos: "filter-videos-by-tags"
-pageTitle: Folders and Tags | Gcore
-pageDescription: Understanding of video organization in the Gcore Customer Portal with folders and tags.
+pageTitle: Directories and Tags | Gcore
+pageDescription: Understanding of video organization in the Gcore Customer Portal with directories  and tags.
 customUrl: /streaming-platform/video-hosting/organize-uploaded-videos 
 ---
 # Organize uploaded videos
 
-## How to organize videos
-
 There are two ways to organize videos in the Gcore Customer Portal:
 
-- Use folders—separate directories for the videos.
-- Use tags—grouping keywords.
+- Use separate directories for videos
+- Use tags—grouping keywords
 
-Let’s examine the difference between the two ways. For example, you have 100 videos in the Streaming storage. They have been divided into two folders by date: 50 videos in the "10.31.2022" folder and another 50—in the "11.01.2022". You need to group videos by other criteria: "teaser", "clip", and "short film" types. To do this, you do not need to create new folders and lose the date separation. You can add relevant tags to the appropriate videos. The tag list will appear in the Gcore Customer Portal, and you can filter videos by them. The videos will still be in two folders.
+Let’s examine the difference between the two ways. Imagine you have 100 videos in the Streaming storage. They have been divided into two directories by date: 50 videos in the "10.31.2022" folder and another 50—in the "11.01.2022". 
 
-## How to use folders
+You need to group videos by other criteria: "teaser", "clip", and "short film" types. To do so, you don't need to create new directories and lose the date separation. You can add relevant tags to the appropriate videos. The tag list will appear in the Gcore Customer Portal, and you can filter videos by them. The videos will still be in two directories.
 
-### Create a folder and upload videos
+## How to use directories
 
-1\. Go to the **Videos** tab, press the **Add** button, and select **Create a folder**.
+### Create a directory and upload videos
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/Create_a_folder.png" alt="Videos tab,">
+1\. In the Gcore Customer Portal, navigate to **Streaming**.
 
-2\. Enter the folder name in the pop-up and click **Create**.
+2\. On the **All videos** page, click **Create a directory**.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/Create.png" alt="pop-up" width="50%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/create-directory-button.png" alt="All videos page" width="80%">
 
-3\. The created folder will open. Press the **Add** button and select **Upload video** to upload a video or videos from your PC or the originating site to this folder.
+2\. Enter a directory name and click **Create**.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/Upload_video.png" alt="Upload video" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/create-directory-dialog.png" alt="pop-up" width="50%">
 
-### Move videos to a folder
+3\. The created directory will open. To upload a video, use the **Click to upload** button and select one or more videos from your device.
 
-1\. Open the **Videos** tab and check the boxes to the left of the videos you want to move.
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/new-directory.png" alt="Upload video" width="80%">
 
-2\. Click **Move** in the line that appears on top.
+### Move videos to a directory
 
-3\. Select the target folder and confirm the actions.
+1\. Open the **All videos** page and select checkboxes near the videos you want to move.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/move-files-to-folder-optimized.gif" alt="Videos tab" width="80%">
+2\. Click **Move**.
 
-### Delete a folder
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/move-videos-panel.png" alt="Videos tab" width="80%">
 
-**Note**: Videos from the folder will be permanently deleted, and you won’t be able to restore them. If you want to delete only the folder, don’t forget to move the videos to another one prior to deleting it.
+3\. Choose the target directory and confirm your action.
 
-To delete a folder with content, click the ```···``` icon opposite the relevant folder, select **Remove directory**, and confirm the actions.
+### Delete a directory
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/Remove_directory.png" alt="Delete a folder" width="80%">
+<alert-element type="warning" title="Warning">
+
+Videos from the directory will be permanently deleted, and you won’t be able to restore them. If you want to delete only the directory, move the videos to another one prior to deleting it.
+
+</alert-element>
+
+To delete a directory with videos, click the three-dot icon next to the relevant directory, select **Remove directory**, and confirm the action.
+
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/remove-directory.png" alt="Delete a directory" width="80%">
 
 ## How to use tags
 
@@ -67,16 +72,16 @@ To delete a folder with content, click the ```···``` icon opposite the releva
 
 1\. Go to the <a href="https://streaming.gcore.com/video/list" target="_blank">Video</a> tab and open the settings of the desired video.
 
-2\. To add a new tag, specify its name into the *Tags* field and press **Enter**. To add an existing tag, select it from the drop-down list below.
+2\. To add a new tag, specify its name in the **Tags** field and click **Enter**. To add an existing tag, select it from the **Tags** dropdown.
 
 You can add as many tags as you want.
 
 3\. Save the changes.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/9799464687505.png" alt="Add a tag to a video" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/add-tags.png" alt="Add a tag to a video" width="80%">
 
 ### Filter videos by tags
 
-You will see the list of created tags on the left in the <a href="https://streaming.gcore.com/video/list" target="_blank">Video</a> tab. To filter videos by tag, click on the tag’s name.
+To view the list of created tags, open the **All videos** page and expand the **Tags** dropdown. To filter videos by tag, click on the tag’s name.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/9799475309329.png" alt="Filter videos by tags" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/organize-uploaded-videos/tag-list.png" alt="Filter videos by tags" width="80%">

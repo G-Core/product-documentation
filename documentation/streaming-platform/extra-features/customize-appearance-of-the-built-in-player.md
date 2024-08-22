@@ -28,7 +28,7 @@ Let’s compare the default and custom player. To show you the customization opt
 
 1\. Go to the <a href="https://streaming.gcore.com/players/list" target="">Players</a> tab and click **Create a player**.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/customize-appearance-of-the-built-in-player/mceclip1.png" alt="Players tab">
+<img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/customize-appearance-of-the-built-in-player/create-player.png" alt="Players tab" width="80%">
 
 2\. Enter the name of your player (it will be displayed in the Gcore Customer Portal) and click **Create**.
 

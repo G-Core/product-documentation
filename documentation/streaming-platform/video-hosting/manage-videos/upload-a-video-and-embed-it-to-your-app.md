@@ -24,15 +24,15 @@ customUrl: /streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your
 - click **Select a file** and choose a video from a folder on your computer, 
 - click **Upload from the origin** and specify the video URL.  
           
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app/upload-video-20.png" alt="Upload a video" width="50%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app/upload-video-20.png" alt="Upload a video" width="80%">
 
 3\. Wait until your video is uploaded and processed. Waiting time varies depending on video size and Internet speed.  
   
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app/upload-video-30.png" alt="Wait until your video is uploaded">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app/video-uploading-process.png" alt="Wait until your video is uploaded">
 
 4\. Click either the name of the video or three dots on the right and "Settings" in the drop-down menu to go to the settings of the uploaded video.  
   
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app/upload-video-40.png" alt="settings of the uploaded video" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app/video-settings.png" alt="settings of the uploaded video" width="80%">
 
 5\. Change the video settings if it's necessary. You can:
 
