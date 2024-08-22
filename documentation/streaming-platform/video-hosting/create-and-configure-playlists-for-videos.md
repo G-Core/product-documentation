@@ -28,9 +28,11 @@ We will notify you when the feature is enabled. After that, you will be able to 
 
 ## Create and configure playlists
 
-1. Go to the <a href="https://streaming.gcore.com/playlists/list" target="_blank">Playlists</a> tab and click the **Create a playlist** button.
+1\. In the Gcore Customer Portal, navigate to <a href="https://streaming.gcore.com/playlists/list" target="_blank">Streaming</a> > **Playlists**.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/create-and-configure-playlists-for-videos/9672671990161.png" alt="Playlists tab">
+2\. Click **Create a playlist**.
+
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/create-and-configure-playlists-for-videos/playlists-annotated.png" alt="Playlists tab" width="80%">
 
 2. Enter the name of your playlist and click the **Create** button. The playlist’s title will be displayed in the Gcore Customer Portal so you can quickly find it.
 
