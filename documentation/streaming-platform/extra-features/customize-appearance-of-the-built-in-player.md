@@ -4,15 +4,13 @@ displayName: Players
 published: true
 order: 10
 toc:
-   --1--Players: "what-are-players"
-   --1--Configure custom player: "configure-your-custom-player"
-pageTitle: Overview of the Custom Players Feature | Gcore
+   --1--Configure player in the Customer Portal: "configure-custom-player-in-the-customer-portal"
+   --1--Customize player behavior via query string: "customize-player-behavior-using-query-string"
+pageTitle: Guide to Customizing Players Features | Gcore
 pageDescription: A step-by-step guide on configuring custom players with your branding and additional features.
 ---
 # Customize appearance of the built-in player 
   
-## What are Players?
-
 Player is a free feature that allows customizing the default player.
 
 Let’s compare the default and custom player. To show you the customization options:
@@ -24,7 +22,7 @@ Let’s compare the default and custom player. To show you the customization opt
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/customize-appearance-of-the-built-in-player/mceclip0.png" alt="customization options" width="80%">
 
-## Configure your custom player
+## Configure custom player in the Customer Portal
 
 1\. Go to the <a href="https://streaming.gcore.com/players/list" target="">Players</a> tab and click **Create a player**.
 
@@ -74,3 +72,71 @@ If both Autoplay and Mute options are active, only one option will work. It depe
 9\.  Select the logo position. 
 
 10\.  Save changes.
+
+## Customize player behavior using query string
+
+You can make real-time adjustments to the player's functionality by adding the following parameters to the player's URL: 
+
+* `?no_low_latency`
+* `?t=(format)`
+* `?sub_lang=(language)`
+
+### ?no_low_latency 
+
+Use this parameter to ensure that the player uses non-low-latency streams HLS MPEG T instead of MPEG-DASH CMAF or LL-HLS CMAF. This parameter takes no arguments. 
+
+Example: `https://player.gvideo.co/broadcasts/2675_21606?no_low_latency`
+
+### ?t=(format) 
+
+Set time to rewind from the beginning of play. It only applies to video on demand (VOD). 
+
+This parameter takes two arguments:  
+
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left"><code>t = (integer)</code></td>
+<td style="text-align: left">Number of seconds to start playing from.</td>
+<td style="text-align: left">t=15<br><br>
+<code>https://player.gvideo.co/videos/2675_zH5vyOfkNqoxzei?t=15</code>
+</td>
+</tr>
+<tr>
+<td style="text-align: left"><code>t = [(integer)h][(integer)m][(integer)s]</code></td>
+<td style="text-align: left">Set start time point in HMS format, where h = hours, m = minutes, s = seconds.</td>
+<td style="text-align: left">t=1h30m, 34m, 2m30s<br><br>
+<code>https://player.gvideo.co/videos/2675_zH5vyOfkNqoxzei?t=1m2s</code>
+</tr>
+</tbody>
+</table>
+
+### ?sub_lang=(language) 
+
+Display subtitles in a specific language. This parameter takes the following argument: 
+
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left"><code>sub_lang = (ISO language code, 2 letters)</code></td>
+<td style="text-align: left">Use two letters that correspond to the <a href="https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes" target="_blank">ISO 639 language codes</a>.</td>
+<td style="text-align: left">sub_lang=de <br><br>
+<code>https://player.gvideo.co/videos/2675_QtN3sYHVPy3KF2n?&sub_lang=de</code>
+</td>
+</tr>
+</tbody>
+</table>
