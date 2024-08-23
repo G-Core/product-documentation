@@ -31,8 +31,6 @@ We offer the following formats for playback:
 
 You can also find a description of supported video formats and relevant use cases in our <a href="https://api.gcore.com/docs/streaming#tag/Videos/operation/get_api_videos_id" target="_blank">API documentation</a>.  
 
-We provide HLS TS, HLS CMAF, and DASH by default. If you want to enable MP4 support, contact our [support team](mailto:support@gcore.com). 
-
 ## HLS TS and CMAF formats
 
 The HTTP Live Streaming (HLS) format is the most common format for delivering videos online. This format allows you to:
@@ -154,13 +152,6 @@ Video can be streamed and downloaded using the .mp4 file format when you want to
 - Play videos even on very outdated devices
 - Share videos on social networks and other streaming services
 - Content can be protected with <a href="https://gcore.com/docs/streaming-platform/extra-features/protect-your-content-with-temporary-links-and-secure-tokens#how-to-enable-the-secure-token-feature" target="_blank">Secure Token</a>. DRM protection isn’t supported.
-
-
-<alert-element type="info" title="Info">
- 
-If you want to enable MP4 support, contact our [support team](mailto:support@gcore.com). 
- 
-</alert-element>
 
 When using the MP4 format, users can work with each available video resolution separately. For example, select the video quality version (720p) and download only that version: https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/720.mp4 
 
