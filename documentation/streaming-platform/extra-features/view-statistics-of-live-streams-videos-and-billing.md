@@ -32,19 +32,15 @@ You can check reports for all videos and live streams or only for a single one. 
 ### Parameters overview
 
 * **Viewers**: The number of viewers. We collect the following information about their behavior:  
-
- - **Uploads**: Shows how many times users opened a video or live stream page.
- - **Starts**: Indicates how many times users clicked the **Play** button.
- - **Viewers**: Specifies how many viewers have watched a video or a live stream for at least 5 seconds.
- - **Unique viewers**: Represents the number of unique viewers (we distinguish viewers using several parameters at once: an IP address, screen size, browser, and cookie). 
+   * **Uploads**: Shows how many times users opened a video or live stream page.
+   * **Starts**: Indicates how many times users clicked the **Play** button.
+   * **Viewers**: Specifies how many viewers have watched a video or a live stream for at least 5 seconds.
+   * **Unique viewers**: Represents the number of unique viewers (we distinguish viewers using several parameters at once: an IP address, screen size, browser, and cookie). 
 
 * **Popular videos** (available only for videos): A list of the most viewed videos. We consider only views that are longer than five seconds. 
-
-* **Browsers**: Statistics on browsers that your viewers use to watch your video/live stream.  
+* **Browsers**: Statistics on browsers that your viewers use to watch your video/live stream.
 * **OS**: Statistics on users' operating systems. 
-
 * **Hosts**: Static data on the URL of requested pages. We consider only views that are longer than five seconds. The ```"streaming.gcore.com"```. URL means a video was watched from a personal account.  
-
 * **Geography**: A world map that highlights countries where your viewers watch videos/live streams for at least 5 seconds. A user's IP address determines a country. 
 
 If you want to see reports for a specific video or live stream, open its settings and navigate to the **Statistics** tab. 
