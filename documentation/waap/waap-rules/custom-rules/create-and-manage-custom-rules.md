@@ -440,6 +440,12 @@ To create a rule:
 
 5\. Under **Number of requests**, specify how many requests are required to trigger the rule. 
 
+<alert-element type="info" title="Info">
+ 
+The minimum number of requests required to trigger a request rate condition is 21.
+ 
+</alert-element>
+
 6\. In the **Duration** field, set the time frame for how long the requests will be counted. After this period, the requests will be blocked. We recommend selecting a short time frame (30 seconds or a minute). 
 
 <alert-element type="info" title="Info">
