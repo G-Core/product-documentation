@@ -14,7 +14,7 @@ toc:
    --2--IP allow policy: "allow-ip-policy"
    --2--IP block policy: "block-ip-policy"
    --1--User agent access policy: "user-agent-access-policy"
-   --2--Set via the control panel: "set-via-the-control-panel"
+   --2--Set via the Customer Portal: "set-via-the-customer-portal"
    --2--Set via the API: "set-via-the-api"
    --3--Request properties: "request-properties"
    --3--Example: "example"
@@ -25,13 +25,13 @@ pageDescription: Explore how to manage content access in Gcore CDN using referre
   
 ## Referrer access policy
 
-Referer access policy is a restriction to publish the links to content on your site on other sites. To enable the option navigate to CDN Resources, click Settings of the Resource, choose the Advanced Settings tab, in the Access (Security) click Add policy and find Referer access policy. 
+Referrer access policy is a restriction to publish the links to content on your site on other sites. To enable the option navigate to CDN resources, click Settings of the resource, choose the Advanced Settings tab, in the Access (Security) click Add policy and find Referrer access policy. 
 
-By default, there are no restrictions by referer to your CDN Resource. You can set up allow or block Policy.
+By default, there are no restrictions by referrer to your CDN resource. You can set up allow or block Policy.
 
 ### Allow referrer policy
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/13340190513425.png" alt="Allow referrer policy" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/allow-referrer-access-policy.png" alt="Allow referrer policy" width="80%">
 
 Specify domains to which you would like to block access.
 
@@ -42,7 +42,7 @@ When users request data from specified domains, they will get the denial of acc
 
 ### Block referrer policy
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/13340191722129.png" alt="Block referrer policy" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/block-referrer-access-policy.png" alt="Block referrer policy" width="80%">
 
 Specify the domains which you would like to allow access to.
 
@@ -51,25 +51,25 @@ Specify the domains which you would like to allow access to.
 
 When a user requests data from other domains, they will get the denial of access.
 
-You can specify domains only one by one via control panel. To add the list of the domains use <a href="https://api.gcore.com/docs/cdn" target="_blank">API</a>.
+You can specify domains only one by one via the Gcore Customer Portal. To add the list of the domains use <a href="https://api.gcore.com/docs/cdn" target="_blank">API</a>.
 
 ## Country access policy
 
-You can limit access to your content for listed countries. To enable the option navigate to CDN Resources, click Settings, open the Advanced Settings, in the Access (Security) click Add policy and find Country access policy. 
+You can limit access to your content for listed countries. To enable the option navigate to CDN resources, click Settings, open the Advanced Settings, in the Access (Security) click Add policy and find Country access policy. 
 
-By default, there are no restrictions by country to your CDN Resource. You can set up allow or block policy.  
+By default, there are no restrictions by country to your CDN resource. You can set up allow or block policy.  
 
-**Note**: You can specify countries only one by one via control panel. To add the list of the countries, use <a href="https://api.gcore.com/docs/cdn" target="_blank">API</a>.  
+**Note**: You can specify countries only one by one via the Gcore Customer Portal. To add the list of the countries, use <a href="https://api.gcore.com/docs/cdn" target="_blank">API</a>.  
   
 ### Allow country access policy
 
-Access to the Resource is allowed for all the countries except for the specified in the field.
+Access to the resource is allowed for all the countries except for the specified in the field.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/Screenshot-2018-1-3_G-Core_Labs_Resources_Settings_1_.png" alt="Allow country access policy" width="80%">
 
 ### Block country access policy
 
-Access to the Resource is denied for all the countries except for the specified in the field.
+Access to the resource is denied for all the countries except for the specified in the field.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/Screenshot-2018-1-3_G-Core_Labs_Resources_Settings_2_.png" alt="Block country access policy" width="80%">
 
@@ -77,13 +77,13 @@ Access to the Resource is denied for all the countries except for the specified 
 
 You can limit access to your content to IP ranges.
 
-In CDN Resource settings choose Show Advanced Settings, in the Access (Security) click Add policy and find IP access policy. 
+In CDN resource settings choose Show Advanced Settings, in the Access (Security) click Add policy and find IP access policy. 
 
-By default, there are no restrictions by IP to your CDN Resource. You can set up Allow or Block policy.
+By default, there are no restrictions by IP to your CDN resource. You can set up Allow or Block policy.
 
 The option supports IPv4 and IPv6 addresses.
 
-You can specify IPs only one by one via Control Panel. To add the list of the IPs use <a href="https://api.gcore.com/docs/cdn" target="_blank">API</a>.
+You can specify IPs only one by one via the Gcore Customer Portal. To add the list of the IPs use <a href="https://api.gcore.com/docs/cdn" target="_blank">API</a>.
 
 ### Allow IP policy
 
@@ -101,19 +101,19 @@ Access to the resource is denied for all the IPs except for the specified in the
 
 You can limit access to your CDN content for User agents, for example, for certain browsers, consoles or some other devices.
 
-In CDN Resource settings choose Show Advanced Settings, find Access (Security), click Add policy and find User agents policy. 
+In CDN resource settings choose Show Advanced Settings, find Access (Security), click Add policy and find User agents policy. 
 
-By default access to the Resource is allowed for all the kinds of User Agents. You can set up the allow or block policy.   
+By default access to the resource is allowed for all the kinds of User Agents. You can set up the allow or block policy.   
 
-### Set via the control panel
+### Set via the Customer Portal
 
-To set the user agents using the control panel:
+To set the user agents using the Gcore Customer Portal:
 
 1\. Go to CDN and select the CDN resource you want to configure.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/11759524174225.png" alt="Set via the control panel">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/11759524174225.png" alt="Set via the Gcore Customer Portal">
 
-2\. In the navigation panel, under the "Access" section, select **User agents policy**.
+2\. In the sidebar, under the "Access" section, select **User agents policy**.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies/11759524173201.png" alt="Access">
 

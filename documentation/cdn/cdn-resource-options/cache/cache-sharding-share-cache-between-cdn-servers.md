@@ -48,4 +48,4 @@ Cache Sharding optimizes content storage and distribution. Here are some of its 
 
 <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">Newly created CDN resources</a> have Cache Sharding enabled automatically. If you’re a long-term user unsure whether the feature is activated, please contact our [support team](mailto:support@gcore.com) to request activation.
 
-**Note**: The Cache Sharding option is not used for <a href="https://gcore.com/docs/streaming-platform/how-the-streaming-platform-interact-with-the-cdn" target="_blank">Streaming Platform CDN resources</a>.
+**Note**: The Cache Sharding option is not used for <a href="https://gcore.com/docs/streaming-platform/how-the-streaming-platform-interact-with-the-cdn" target="_blank">Streaming CDN resources</a>.

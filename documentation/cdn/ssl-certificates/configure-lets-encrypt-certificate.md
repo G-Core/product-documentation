@@ -14,7 +14,7 @@ toc:
    --1--Statuses: "lets-encrypt-issuing-statuses"
    --2--Pre-validation failed: "pre-validation-failed"
    --2--Processing: "processing"
-   --2--Active: "active"
+   --2--Success: "success"
    --2--Failed: "failed"
 pageTitle: Adding Let's Encrypt Certificates | Gcore
 pageDescription: Learn how to issue Let's Encrypt certificate to the CDN resource.
@@ -59,7 +59,7 @@ To avoid this problem and make the process more flexible, we have added support 
 
 To use the DNS-01 challenge, you need to:
 
-1\. Activate <a href="https://gcore.com/dns" target="_blank">Gcore DNS Hosting</a> in your personal account.
+1\. Activate <a href="https://gcore.com/dns" target="_blank">Gcore Managed DNS</a> in your personal account.
 
 2\. Delegate your custom domain name to Gcore's name servers (*ns1.gcorelabs.net* and *ns2.gcdn.services*).
 
@@ -127,14 +127,18 @@ However, if some issues get in the way of the ACME challenge, you will see the f
 
 <img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/force-retry-30.png" alt="Processing with issue status" width="75%">
 
-### Active
+### Success
 
-If the challenge verification is successful, the certificate will be issued, and you will see the status “Active.” The certificate will also be renewed automatically after three months.
+If the challenge verification is successful, the certificate will be issued, and you will see the status “Success.” The certificate will also be renewed automatically after three months.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/active-40.png" alt="Active status" width="75%">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/success-40.png" alt="Success status" width="75%">
 
 ### Failed
 
-After five unsuccessful attempts, the certificate status will be “Failed.” You can fix the error(s) causing failure using <a href="" target="_blank">our dedicated guide</a>. Click **Retry issue** to attempt issuance again. 
+After five unsuccessful attempts, the certificate status will be “Failed.” You can fix the error(s) causing failure using <a href="https://gcore.com/docs/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue#free-lets-encrypt-certificate" target="_blank">our dedicated guide</a>. Click **Retry issue** to attempt issuance again. 
 
 <img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/failed-50.png" alt="Failed status" width="75%">
+
+The “Failed” status can also occur when the Let's Encrypt certificate isn't renewed automatically. Correct the error (for example, change the domain’s DNS records) and click **Renew certificate** to issue a new certificate and attach it to your CDN resource.
+
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/failed-reissuing.png" alt="Failed status (reissuing)" width="75%">

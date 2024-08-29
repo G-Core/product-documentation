@@ -30,7 +30,7 @@ our website</a> and click the **Get started for free** button.
 
 <img src="https://assets.gcore.pro/docs/account-settings/account/confirm-email-40.jpg" alt="Confirm email" width="50%">
 
-5. Once you have confirmed your registration, you will be able to access your Gcore dashboard.
+5. Once you have confirmed your registration, you will be able to access your Gcore dashboard in the Gcore Customer Portal.
 
 <img src="https://assets.gcore.pro/docs/account-settings/account/gcore-dashboard-50.png" alt="Gcore dashboard">
 

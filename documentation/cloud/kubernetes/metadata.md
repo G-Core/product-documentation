@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: Kubernetes
+displayName: Managed Kubernetes
 published: true
 order: 70
 ---

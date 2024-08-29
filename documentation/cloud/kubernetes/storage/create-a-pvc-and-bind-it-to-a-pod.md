@@ -2,18 +2,19 @@
 title: create-a-pvc-and-bind-it-to-a-pod
 displayName: Create a PVC and bind it to a pod
 published: true
+order: 10
 toc:
    --1--What are PV and PVC?: "what-are-pv-and-pvc"
    --1--Create a PVC: "create-a-pvc"
    --1--Bind a PVC to a pod: "bind-your-pvc-to-a-pod"
 pageTitle: Understand and manage PVC | Gcore
-pageDescription: Learn how to create a Persistent Volume Claim (PVC) for different disk types in Kubernetes to request storage and bind it to a pod.
+pageDescription: Learn how to create a Persistent Volume Claim (PVC) for different disk types in Managed Kubernetes to request storage and bind it to a pod.
 ---
 # Create a PVC and bind to a pod
   
 ## What are PV and PVC?
 
-A PV (PersistentVolume) in Kubernetes is a resource used to store data. It is attached to pods but has a separate lifecycle, specified by its reclaim policy. This policy determines if a PV will continue to exist or will be deleted when a pod attached to it gets destroyed.
+A PV (PersistentVolume) in Managed Kubernetes is a resource used to store data. It is attached to pods but has a separate lifecycle, specified by its reclaim policy. This policy determines if a PV will continue to exist or will be deleted when a pod attached to it gets destroyed.
 
 A PV represents a piece of available storage. To use a PV, a user needs to create a PersistentVolumeClaim (PVC,) which is a request for storage. Kubernetes passes this request to a storage class, which creates PVs automatically in response to the PVC.
 
@@ -50,13 +51,13 @@ SSD block storage, designed for applications that require low-latency storage an
 
 To proceed with a PVC, follow the steps:
 
-1. Make sure the required disk type is available in your region. To do so, go to the **Kubernetes** tab, select the required region and click **Create new cluster**. Click the **Volume type** field and check which options are available on the drop-down list. 
+1\. Make sure the required disk type is available in your region. To do so, go to the **Kubernetes** tab, select the required region and click **Create new cluster**. Click the **Volume type** field and check which options are available on the drop-down list. 
 
 <img src="https://assets.gcore.pro/docs/cloud/kubernetes/storage/create-a-pvc-and-bind-it-to-a-pod/1-available-volumes.jpg" alt="Create new cluster">
 
 If you create a storage class with a volume type that is not available in your region, the PV won’t work.
 
-2. Create a YAML file to create a storage class with the required disk type:
+2\. Create a YAML file to create a storage class with the required disk type:
 
 <code-block>
 apiVersion: storage.k8s.io/v1  

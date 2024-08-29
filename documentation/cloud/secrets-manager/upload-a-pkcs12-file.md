@@ -10,13 +10,21 @@ toc:
    --2--3. Base64 encode: "3-base64-encode"
    --1--How to create a Load Balancer with an HTTPS listener: "how-to-create-a-load-balancer-with-an-https-listener"
 pageTitle: Upload a PKCS12 file | Gcore
-pageDescription: Learn how to upload PKCS12 files (SSL/TLS certificates) to Secrets Manager for creating load balancers with HTTPS listeners. 
+pageDescription: Learn how to upload PKCS12 files (SSL/TLS certificates) to Secrets Manager for creating Load Balancers with HTTPS listeners. 
 ---
 # Upload a PKCS12 file
 
 Secrets Manager is a tab where you can upload PKCS12 files (called secrets in the system) to. They are needed to create Load Balancers with HTTPS listeners.
 
-<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/mceclip0.png" alt="Upload a PKCS12 file" width="80%">
+To add a secret to the Secrets Manager:
+
+1\. In the Gcore Customer Portal, navigate to **Cloud**.
+
+2\. Open the **Secrets Manager** page.
+
+3\. Click **Create Secret**.
+
+<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/secrets-manager-page.png" alt="Upload a PKCS12 file" width="80%">
 
 ## What PKCS12 file is 
 
@@ -34,7 +42,7 @@ After receiving the PKCS12 file, our system will be able to open an HTTPS connec
 
 ### 1\. Prepare certificate files
 
-You need the SSL/TLS certificate for the domain, the chain of certificates, and the private key. The domain must be configured with a DNS A record with the virtual IP address of the load balancer (the IP is specified in the Load Balancers tab). If you are using our DNS zone, you can create an A record according to the <a href="https://gcore.com/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing" target="_blank">instructions</a>. Your domain will send requests to the IP of the balancer and it will distribute them among the machines.
+You need the SSL/TLS certificate for the domain, the chain of certificates, and the private key. The domain must be configured with a DNS A record with the virtual IP address of the Load Balancer (the IP is specified in the Load Balancers tab). If you are using our DNS zone, you can create an A record according to the <a href="https://gcore.com/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing" target="_blank">instructions</a>. Your domain will send requests to the IP of the balancer and it will distribute them among the machines.
 
 CA does not always send a client a chain of certificates along with the main certificate — sometimes it only sends the main one, because often it is enough for browsers to confirm the domain name. In this case, you can get the certificate chain yourself:
 
@@ -126,20 +134,28 @@ A new code64 file with the contents of the base64 encoded PKCS12 file will be cr
 
 ## How to Create a Load Balancer with an HTTPS Listener
 
+<alert-element type="info" title="Info">
+ 
+You can’t delete a secret that’s being used by a Load Balancer’s listener. This restriction is necessary to ensure that a Load Balancer can failover successfully when needed. 
+
+In such cases, you first need to delete a listener that uses the secret and then remove the secret, recreating a listener if needed. 
+ 
+</alert-element>
+
 1\. Add the base64 encoded content of the PKCS12 file as a Secret (in examples above it is the content of "code64").  
 
-<media-gallery>
-<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/mceclip0.png" alt="How to Create a Load Balancer with an HTTPS Listener" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/create-secret.png" alt="How to Create a Load Balancer with an HTTPS Listener" width="80%">
+
+2\. Give your secret a name and add its content.
 
 <img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/image4.png" alt="How to Create a Load Balancer with an HTTPS Listener" width="80%">
-</media-gallery>
 
-2\. When creating or editing a Load Balancer, click "Add Listener". In the opened window, enter the name of a new listener, select the "Terminated HTTPS" protocol and specify the desired secret below.  
+3\. When creating or editing a Load Balancer, click **Add Listener**. 
 
-<media-gallery>
-<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/image2.png" alt="Add Listener" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/add-listener.png" alt="Add Listener" width="80%">
 
-<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/image1.png" alt="Add Listener" width="80%">
-</media-gallery>
-   
-The listener will be created.
+4\. Enter the name of a new listener, select the **Terminated HTTPS** protocol, and then select the desired secret from the **SNI Certificate** dropdown.  
+
+<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/select-certificate-in-listener.png" alt="Add Listener" width="80%">
+
+You've successfully created a listener with a secret.

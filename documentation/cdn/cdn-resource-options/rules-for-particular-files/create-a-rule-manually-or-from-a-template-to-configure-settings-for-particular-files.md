@@ -5,7 +5,7 @@ published: true
 order: 10
 toc:
    --1--What is the Rules section?: "what-is-the-rules-section"
-   --1--Create rules: "add-rules-in-the-control-panel"
+   --1--Create rules: "add-rules-in-the-customer-portal"
    --2--manually: "create-a-rule-manually"
    --2--from a template: "create-a-rule-from-a-template"
    --1--Examples of rules: "examples-of-rules"
@@ -27,7 +27,7 @@ There is one limitation for the Rules feature: You can add only five custom rule
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files/11774615568017.png" alt="What is the Rules section" width="80%">
 
-## Add rules in the control panel
+## Add rules in the Customer Portal
 
 ### Create a rule manually
 

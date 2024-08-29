@@ -7,7 +7,7 @@ toc:
    --1--About Compression: "about-the-compression-feature"
    --1--Enable: "enable-compression"
    --1--Configure: "use-compression"
-   --2--in the Control panel: "use-compression-in-the-control-panel"
+   --2--in the Customer Portal: "use-compression-in-the-customer-portal"
    --2--via query parameters: "use-compression-via-query-parameters"
    --1--Check HTTP headers: "check-http-headers"
 pageTitle: Guide to converting image format to WebP and AVIF using CDN | Gcore
@@ -30,7 +30,7 @@ Below is a painting by Wassily Kandinsky in PNG, JPG, WebP, and AVIF formats. Sh
 
 WebP and AVIF images give you a smaller web page and shorter load time. The more images a website hosts, the greater the difference in download time will be.
 
-**How it works.** To convert an image to WebP or AVIF, you need to set the desired option in the control panel or add the necessary query string to the image URL in your website source. The configuration is described in the Use Compression section. When a user requests an image from the site, the CDN will change the image format (not extension) and deliver the modified image to the user.
+**How it works.** To convert an image to WebP or AVIF, you need to set the desired option in the Gcore Customer Portal or add the necessary query string to the image URL in your website source. The configuration is described in the Use Compression section. When a user requests an image from the site, the CDN will change the image format (not extension) and deliver the modified image to the user.
 
 ## Enable Compression
 
@@ -38,9 +38,9 @@ Compression is included in the paid Image Stack option. This option helps optimi
 
 ## Use Compression
 
-There are two ways to use the compression feature: in the Control panel and by query strings. If you want to apply WebP and AVIF compression to all images, use the first method. If you want to apply the compression to individual images for those you’ve added the necessary query strings, use the second one.
+There are two ways to use the compression feature: in the Gcore Customer Portal and by query strings. If you want to apply WebP and AVIF compression to all images, use the first method. If you want to apply the compression to individual images for those you’ve added the necessary query strings, use the second one.
 
-### Use Compression in the Control panel
+### Use Compression in the Customer Portal
 
 1\. Go to the "Rules" section in the settings of that CDN resource you want to compress and open the **Image optimization** rule.
 

@@ -1,15 +1,17 @@
 ---
 title: dns
-displayName: DNS Hosting
+displayName: Managed DNS
 published: true
+pageTitle: Gcore Managed DNS documentation page | Gcore
+pageDescription: Explore Gcore Managed DNS functionality and learn how to manage domain DNS records.
 ---
-# DNS Hosting
+# Managed DNS
 
-Welcome to the <a href="https://gcore.com/dns" target="_blank">Gcore DNS Hosting</a> documentation page! Here we explain how to use and configure Gcore’s DNS Hosting.
+Welcome to the <a href="https://gcore.com/dns" target="_blank">Gcore Managed DNS</a> documentation page! Here we explain how to use and configure Gcore’s Managed DNS.
 
-DNS Hosting is a service that allows you to manage domain DNS records by specifying Gcore name servers. You can balance your users on different servers depending on their location and configure network settings.
+Managed DNS is a service that allows you to manage domain DNS records by specifying Gcore name servers. You can balance your users on different servers depending on their location and configure network settings.
 
-From the left-side menu, you can access in-depth documentation about DNS:
+From the left-side menu, you can access in-depth documentation about Managed DNS:
 
 - **Overview** – how it works, non-advanced and advanced interface modes
 - **Zone** – create, edit, and delete a DNS zone for the domain whose DNS records you wish to manage

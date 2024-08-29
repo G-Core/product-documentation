@@ -2,12 +2,14 @@
 title: account-settings
 displayName: Account Settings
 published: true
+pageTitle: Gcore Account Settings documentation page | Gcore
+pageDescription: Learn how Gcore Customer Portal is arranged and how to set up your account.
 ---
 # Account settings
 
-Welcome to the <a href="https://accounts.gcore.com" target="_blank">Gcore account settings</a> documentation page! Here we explain how the control panel is arranged and how to configure functions.
+Welcome to the <a href="https://accounts.gcore.com" target="_blank">Gcore account settings</a> documentation page! Here we explain how the Gcore Customer Portal is arranged and how to configure functions.
 
-From the left-side menu, you can access in-depth documentation about your account and control panel:
+From the left-side menu, you can access in-depth documentation about your account and Customer Portal:
 
 - **Account** – create an account for individuals or legal entities
 - **Additional account** – manage multiple accounts without re-authorization

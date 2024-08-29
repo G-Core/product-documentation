@@ -11,7 +11,7 @@ pageDescription: A step-by-step guide to configure HTTP headers that a CDN will 
 
 The Request Headers option allows you to specify HTTP headers that CDN will include when making requests to the origin.
 
-To configure request headers via the control panel:
+To configure request headers via the Gcore Customer Portal:
 
 1\. Go to CDN and select the CDN resource you want to configure.
 

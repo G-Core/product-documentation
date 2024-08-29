@@ -2,21 +2,23 @@
 title: storage
 displayName: Storage
 published: true
+pageTitle: Gcore Storage documentation page | Gcore
+pageDescription: Explore Gcore Storage functionality and learn how to configure Object and SFTP storage.
 ---
 # Storage
 
-Welcome to the <a href="https://gcore.com/storage" target="_blank">Gcore Storage</a> documentation page! Here we explain how to use, configure, and troubleshoot Gcore’s Storage.
+Welcome to the <a href="https://gcore.com/storage" target="_blank">Gcore Storage</a> documentation page! Here we explain how to use, configure, and troubleshoot Gcore Storage.
 
-Storage is an S3 or SFTP service that lets you store various types of data (media files, logs, backups, etc.) on Gcore's digital data storage hardware.
+Gcore Storage is an S3 or SFTP service that lets you store various types of data (media files, logs, backups, etc.) on Gcore's digital data storage hardware.
 
-From the left-side menu, you can access in-depth documentation about Storage:
+From the left-side menu, you can access in-depth documentation about Gcore Storage:
 
-- **Create storage** – create S3 or SFTP storage
+- **Create Object Storage** – create Object Storage or SFTP storage
 - **Billing** – tariff plans, limits, billing rules
-- **Use storage with CDN** – assign storage to a CDN resource origin, how the file requesting scheme works with a CDN
-- **Manage S3 storage** – manage buckets, control file visibility
-- **Manage SFTP storage** – connect to your storage using FileZilla, manage SSH keys in the control panel
-- **Request files from storage** – scheme for requesting uploaded files
+- **Use Object Storage with CDN** – assign storage to a CDN resource origin, how the file requesting scheme works with a CDN
+- **Manage Object Storage** – manage buckets, control file visibility
+- **Manage SFTP storage** – connect to your storage using FileZilla, manage SSH keys in the Gcore Customer Portal
+- **Request files from Object Storage** – scheme for requesting uploaded files
 - **View statistics** – used space, number of requests, traffic
 - **Troubleshooting** – resolve any 403 and 404 storage issues
 

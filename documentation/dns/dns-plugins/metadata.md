@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: Plugins
+displayName: Integrations
 published: true
-order: 40
+order: 60
 ---

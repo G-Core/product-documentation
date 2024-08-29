@@ -4,8 +4,8 @@ displayName: Billing
 published: true
 order: 30
 toc:
-   --1--Understand CDN billing: "understand-cdn-billing"
-   --1--Understand additional options billing: "understand-additional-options-billing"
+   --1--Understanding CDN billing: "understanding-cdn-billing"
+   --1--Understanding additional options billing: "understanding-additional-options-billing"
    --1--Service suspension for non-payment: "service-suspension-for-non-payment"
    --1--View charges and payment history: "view-your-charges-and-payment-history"
    --1--Change your billing plan: "change-your-billing-plan"
@@ -16,7 +16,7 @@ pageDescription: Understand how CDN services are billed, including monthly traff
 
 You can view the current CDN pricing on <a href="https://gcore.com/pricing" target="_blank">our website</a>. 
 
-## Understand CDN billing
+## Understanding CDN billing
 
 Each plan description shows prices for traffic within a month limit and for overage. There is also a request limit. When the number of requests exceeds your plan's limit, you are charged additionally.
 
@@ -35,7 +35,7 @@ For example, you use the Pro 5 TB plan for €100/month, the credit limit is €
 
 The credit limit may differ from the one that is given in this article. You can always check the current limit in your account Dashboard.
 
-## Understand additional options billing
+## Understanding additional options billing
 
 <img src="https://assets.gcore.pro/docs/cdn/how-the-cdn-service-and-its-additional-options-are-billed/image-7.png" alt="Understand additional options billing" width="80%">
 
@@ -58,7 +58,7 @@ When "Origin Shielding" is on, a traffic plan counts three types of traffic:
 
 **If on the 2nd day of a month there is not enough money in your account to pay for services**, two options are possible:
 
-- You have no unpaid costs accrued in the previous month. The system charges your account for a plan fee and additional options. But if your account payment fails, the system will charge your linked payment instrument. If it fails too, the system will charge your linked payment instrument two more times: on the 3rd and 4th day of the month. If payment fails on the 5th, _all active services associated with your account_ will be suspended. For example, if you use "CDN" and "Storage", both services will stop working.
+- You have no unpaid costs accrued in the previous month. The system charges your account for a plan fee and additional options. But if your account payment fails, the system will charge your linked payment instrument. If it fails too, the system will charge your linked payment instrument two more times: on the 3rd and 4th day of the month. If payment fails on the 5th, _all active services associated with your account_ will be suspended. For example, if you use "CDN" and "Object Storage", both services will stop working.
 - You have unpaid costs accrued in the previous month. The system charges your account first for the unpaid costs, and then for a plan fee and additional options. But if your account payment fails, the system will charge your linked payment instrument. If it fails too, _all active services associated with your account_ will be immediately suspended. For example, if you use "CDN" and "Storage", both services will stop working.
 
 ## View your charges and payment history
@@ -76,4 +76,4 @@ Click the profile icon in the bottom-left corner of the page, select "Billing", 
 
 A new plan will be activated only on the 1st day of a following month.
 
-If you have any questions, please contact us via chat or email [support@gcore.com](mailto:support@gcore.lu). If you are interested in the "Enterprise" plan, please write to our managers [sales@gcore.lu](mailto:sales@gcore.lu).
+If you have any questions, please contact us via chat or email [support@gcore.com](mailto:support@gcore.com). If you are interested in the "Enterprise" plan, please write to our managers [sales@gcore.com](mailto:sales@gcore.com).

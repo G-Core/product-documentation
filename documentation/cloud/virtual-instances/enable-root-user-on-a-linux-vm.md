@@ -5,11 +5,11 @@ order: 22
 published: true
 toc:
 pageTitle: Enable root user on a Linux VM | Gcore
-pageDescription: Learn how to enable root user on a Linux VM using "sudo" or "sudo su" commands. Understand the differences and alternative methods.
+pageDescription: How to enable root user on a Linux VM using "sudo" or "sudo su" commands. Understand the differences and alternative methods.
 ---
 # Enable root user on a Linux VM
 
-Once you have connected to your virtual machine via <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">Control Panel</a> or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">SSH</a>, you can perform commands with root user rights. To do this, you can use one of the two options: the `sudo` command or the `sudo su` superuser (root user) shell.
+Once you have connected to your Virtual Machine via <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">Customer Portal</a> or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-via-ssh" target="_blank">SSH</a>, you can perform commands with root user rights. To do this, you can use one of the two options: the `sudo` command or the `sudo su` superuser (root user) shell.
 
 ## sudo vs sudo su
 
@@ -43,6 +43,24 @@ sudo su
 ```
 Having now logged in with the `sudo su` command, you are in the superuser (root) shell. All further commands will be performed with root user rights.
 To exit superuser mode and return to your user account, simply run the command `exit`.
+
+## Enable root user via Terminal
+
+1\. Run the following command to open your `cloud-init` configuration: 
+
+```
+sudo nano /etc/cloud/cloud.cfg
+```
+
+2\. Change the line `'disable_root: true'` to `'disable_root: false'`.
+
+3\. Save the changes and close the file. 
+
+4\. Update the `cloud-init` configuration by running the following command:
+
+```
+sudo cloud-init clean -r
+```
 
 ## Alternative ways to enable root user
 

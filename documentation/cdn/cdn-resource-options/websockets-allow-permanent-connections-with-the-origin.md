@@ -32,7 +32,7 @@ By default, the WebSocket feature is enabled for <a href="https://gcore.com/docs
 
 To manage the WebSocket feature:
 
-1\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN</a> section in the control panel and open the settings of the resource for which you want to manage WebSockets by clicking its custom domain.
+1\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN</a> section in the Gcore Customer Portal and open the settings of the resource for which you want to manage WebSockets by clicking its custom domain.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/websockets-allow-permanent-connections-with-the-origin/13167645190929.png" alt="Manage the WebSockets feature">
 

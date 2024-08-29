@@ -4,20 +4,18 @@ displayName: Purge
 published: true
 order: 80
 toc:
-   --1--About Purge: "about-purge"
-   --1--Configure in the Control Panel: "configure-the-purge-option"
+   --1--Configure in the Customer Portal: "configure-purge-in-the-customer-portal"
    --2--Purge by URL: "purge-by-url"
    --2--Purge all: "purge-all"
    --2--Purge by pattern: "purge-by-pattern"
    --1--Configure via API: "configure-purge-via-api"
-pageTitle: Understanding of the Purge option for cache clearance | Gcore
+   --1--Purge history: "view-purge-history"
+pageTitle: How to Clear CDN Resource Cache by URL, Pattern, or All and Check Purge History | Gcore
 pageDescription: A guide on how to clear the cache in one of three ways—for the whole CDN resource, by pattern, or by URL.
 ---
-# Clear CDN resource cache by URL, pattern or all 
+# Clear CDN resource cache by URL, pattern, or all and check Purge history 
 
-## About Purge 
-
-<a href="https://cdn.gcore.com/purge" target="_blank">Purge</a> is an option that allows clearing the CDN resource cache. Using Purge is helpful if you update the content on your origin and don’t want to wait until the content is updated on CDN servers naturally because it takes time. After Purge is applied, the outdated CDN server’s cache will disappear. Additionally, the option assists if your end-users receive incorrect content of your website data from CDN servers.
+<a href="https://cdn.gcore.com/purge/purge-request" target="_blank">Purge</a> is an option that allows clearing the CDN resource cache. Using Purge is helpful if you update the content on your origin and don’t want to wait until the content is updated on CDN servers naturally because it takes time. After Purge is applied, the outdated CDN server’s cache will disappear. Additionally, the option assists if your end-users receive incorrect content of your website data from CDN servers.
 
 We provide three options for cache clearing:
 
@@ -25,40 +23,46 @@ We provide three options for cache clearing:
 2. **Purge all** to remove all data from the cache.  
 3. **Purge by pattern** to remove content selectively by specifying path patterns with the operator that can replace any number of symbols.  
 
-There are two ways to clear the cache: via API (use the <a href="https://api.gcore.com/docs/cdn#tag/Tools/paths/~1cdn~1resources~1%7Bid%7D~1purge/post" target="_blank">API documentation</a> to get more information about the request) and in the Control Panel.
+There are two ways to clear the cache: via API (use the <a href="https://api.gcore.com/docs/cdn#tag/Tools/paths/~1cdn~1resources~1%7Bid%7D~1purge/post" target="_blank">API documentation</a> to get more information about the request) and in the Customer Portal.
 
-## Configure the Purge option
+## Configure Purge in the Customer Portal
 
-1\. Go to the <a href="https://cdn.gcore.com/purge" target="_blank">Purge</a> section.
+1\. Go to the <a href="https://cdn.gcore.com/purge/purge-request" target="_blank">Purge request</a> section.
 
-A new page opens. Do the remaining steps there.
+A new page will open. Perform the remaining steps there.
 
-<img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/14339545400209.png" alt="Configure the Purge option" width="80%">
+2\. Select the relevant CDN resource from the dropdown menu.
 
-2\. Select the CDN resource from the dropdown menu to which the content to purge belongs.
-
-3\. Select the purging type and follow the appropriate instructions below (by URL, all, or by pattern) to manage purge.
+3\. Select the desired purge type and follow the instructions below (by URL, all, or by pattern).
 
 4\. Click the **Purge** button.
 
+<img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/purge-section-overview.png" alt="Purge section overview" width="80%">
+
+<tabset-element>
+
 ### Purge by URL
 
-**Note**: You can make two purge requests for a resource per minute. One purge request is limited to 100 URLs. It means you can remove only 200 files from the cache in a minute.
+<alert-element type="warning" title="Warning">
 
-In the text area, specify one or more content URLs to purge, entering one URL per line. Make sure to follow the URL requirements. Links must:
+You can make two purge requests per resource per minute. One purge request is limited to 100 URLs. Therefore, you can remove up to 200 files from the cache per minute.
+
+</alert-element>
+
+In the text area, specify one or more content URLs to purge, entering one URL per line. Links must:
 
 - Start with a slash (/).
 - Not include a protocol, domain name, or wildcard (*).
 - Include query strings if the CDN resource cache is configured to consider the query string.
 
-For example, to purge the file ```https://www.example.com/pictures/icon.jpg?size=small```, specify the following: */pictures/icon.jpg?size=small*.
+For example, to purge the file ```https://www.example.com/pictures/icon.jpg?size=small```, specify ```/pictures/icon.jpg?size=small```.
 
 <img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/14339546960145.png" alt="Purge by URL" width="80%">
 
-We recommend using other types of Purge in the following cases:
+We recommend avoiding this method and instead using other types of Purge in the following cases:
 
-- **If your origin contains a Vary HTTP response header**. When you use Purge by URL, it will delete only one version of the file.
-- **If Large file delivery optimization is enabled**. When you update several files in origin without clearing the CDN cache, Purge by URL will delete only the first slice (with bytes=0…).
+- **Your origin contains a Vary HTTP response header**. When you use Purge by URL, it will delete only one version of the file.
+- **Large file delivery optimization is enabled**. When you update several files in origin without clearing the CDN cache, Purge by URL will delete only the first slice (with bytes=0…).
 
 The configuration of Purge by URL also depends on the settings in the Ignore Query string option:
 
@@ -68,19 +72,31 @@ The configuration of Purge by URL also depends on the settings in the Ignore Que
 
 ### Purge all
 
-**Note**: You can make one purge request for a resource per minute.
+<alert-element type="warning" title="Warning">
+
+You can make one purge request per resource per minute.
+
+</alert-element>
+
+<alert-element type="warning" title="Warning">
+
+Purging all files from the cache will cause a significant load on your server as CDN servers will pull all files from the origin. Therefore, if you have a large amount of content, we recommend using Purge by URL or pattern.
+
+</alert-element>
 
 To purge all files from the cache, select the "Purge All" option and click the **Purge** button.
 
 <img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/14339549617041.png" alt="Purge all" width="80%">
 
-Please note that purging all files from the cache will cause a significant load on your server as CDN servers will pull all files from the origin. Therefore, if you have a large amount of content, we recommend using Purge by URL or pattern.
-
 ### Purge by pattern
 
-**Note**: You can make one purge request for a resource per minute. One purge request is limited to 10 patterns.
+<alert-element type="warning" title="Warning">
 
-To purge files by pattern, specify the path to the file you want to purge or a path pattern without a domain name in the input line. Use the * operator, which replaces any number of symbols in your path (you can use several * operators in one request). A path must start with the / or the * symbols and each path must be on a separate line. 
+You can make one purge request per resource per minute. One purge request is limited to 10 patterns.
+
+</alert-element>
+
+To purge files by pattern, specify the path to the file you want to purge or a path pattern without a domain name in the input line. Use the * operator, which replaces any number of symbols in your path. You can use several * operators in one request. A path must start with / or * and each path must be on a separate line. 
 
 <img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/14339551969425.png" alt="Purge by pattern" width="80%">
 
@@ -98,17 +114,17 @@ Several types of patterns are available:
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left"><b>1. Purge the selected file</b><br><br>Specify a file path without a domain name.<br> As a result, all files at <i>cdn.site/static/image.jpg</i><br>will be purged,<br> including files with query string <i>.jpg?VERSION</i><br><br>If you want to purge only a selected file with a query string, specify it in the file path: <i>/static/image.jpg?VERSION</i></td>
+<td style="text-align: left"><b>1. Purge the selected file</b><br><br>Specify a file path without a domain name.<br> As a result, all files at cdn.site/static/image.jpg<br>will be purged, including files with query string <i>.jpg?VERSION</i><br><br>If you only want to purge a selected file with a query string, specify it in the file path: /static/image.jpg?VERSION</td>
 <td style="text-align: left">cdn.site/static/image.jpg</td>
 <td style="text-align: left">/static/image.jpg</td>
 </tr>
 <tr>
-<td style="text-align: left"><b>2. Purge the group of files from one folder</b><br><br>Input pattern without a domain name and <i>*</i> operator: <i>/statiс/*</i> </td>
+<td style="text-align: left"><b>2. Purge the group of files from one folder</b><br><br>Input pattern without a domain name and * operator: /statiс/* </td>
 <td style="text-align: left">cdn.site/static</td>
 <td style="text-align: left">/statiс/*</td>
 </tr>
 <tr>
-<td style="text-align: left"><b>3. Purge the group of files with a certain type</b><br><br>Input the <i>*</i> operator and the file name extension <i>.jpg</i><br>As a result, all the jpg files will be purged,<br> including files with the query string <i>.jpg?VERSION</i></td>
+<td style="text-align: left"><b>3. Purge the group of files with a certain type</b><br><br>Input the * operator and the file name extension .jpg<br>As a result, all the jpg files will be purged, including files with the query string <i>.jpg?VERSION</i></td>
 <td style="text-align: left">cdn.site/*.jpg</td>
 <td style="text-align: left">*.jpg</td>
 </tr>
@@ -125,9 +141,13 @@ Several types of patterns are available:
 </tbody>
 </table>
 
+</tabset-element>
+
 ## Configure Purge via API
 
 We will explain in detail how to do "Purge by URL" via API calls. Examples of other Purge types (all and by pattern) can be found in the <a href="https://api.gcore.com/docs/cdn#tag/Tools/paths/~1cdn~1resources~1%7Bid%7D~1purge/post" target="_blank">API documentation</a>. 
+
+<expandable-element title="API request details">
 
 <table>
 <tbody>
@@ -186,6 +206,7 @@ We will explain in detail how to do "Purge by URL" via API calls. Examples of ot
 </tbody>
 </table>
 
+</expandable-element>
 
 To access the API and make authenticated requests, <a href="https://api.gcore.com/docs/account" target="_blank">generate an access token</a>. You can use a REST tool like cURL or Postman to send the requests. For this guide, we used Postman.
 
@@ -226,3 +247,28 @@ If the purge is successful, you will receive an HTTP 201 and a response message 
 If an error occurs with the request, the API will return a status code and a body that contains a description of what caused the error. Here is an example: 
 
 <img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/14339878706961.png" alt="error occurs" width="80%">
+
+## View Purge history
+
+<alert-element type="info" title="Info">
+
+This feature is currently in beta.
+
+</alert-element>
+
+“Purge history” is the section where you can check the status of your purge requests. 
+
+**Note:** We've been keeping a history of purge requests for only one month. 
+
+To view the history, navigate to the <a href="https://cdn.gcore.com/purge/purge-history" target="_blank">Purge history</a> page. The page will display all existing requests.
+
+<img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/purge-history.png" alt="Purge history section" width="80%">
+
+You can use filters to display individual reports: 
+
+- **Search by CNAME.** Specify the CNAME of the desired CDN resource.
+- **Type.** Select the needed type of Purge (Purge by URL, Purge all, or Purge by pattern).
+- **Status.** Select the desired status (In progress, Success, Failed).
+- **Date.** Set the time period for the queries to be displayed (up to one month).
+
+<img src="https://assets.gcore.pro/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all/purge-history-overview.png" alt="Purge history section explanation" width="80%">

@@ -1,0 +1,49 @@
+---
+title: soft-nudity-detection
+displayName: Soft nudity detection
+published: true
+order: 30
+pageTitle: Soft nudity content detection in videos | Gcore
+pageDescription: Learn how to use Gcore's AI tasks to detect soft nudity content in videos hosted on the Gcore's platform or externally.
+---
+# Soft nudity detection
+
+The soft nudity content moderation task detects both explicit and partial nudity. This includes the presence of male and female faces and other uncovered body parts in a video.  
+
+It's often used to determine whether videos can be published to all users or the publication should be prohibited due to offensive and inappropriate content. For a full list of objects that can be detected with the soft nudity check, read our <a href="https://api.gcore.com/docs/streaming?_gl=1*1rw278g*_gcl_au*MTM0OTcwMzMxMC4xNzE3MTQ0ODk3*_ga*OTkwMzM5NjM4LjE3MDkxMDg3OTU.*_ga_Y79HRL8RPR*MTcyMTI4NzExMi4xMjIuMS4xNzIxMjg3MjMzLjYwLjAuMA..#tag/AI/operation/post_ai_contentmoderation_softnudity" target="_blank">API documentation</a>.  
+
+This task allows you to identify faces and other body parts, and it detects more objects than hard nudity detection. For this reason, it takes more time to analyze video for soft nudity. 
+
+The check returns information about the object identified, video frame number where it was found, and probability of the detected object. Objects with a probability of at least 30% are included in the response. 
+
+To run the soft nudity detection check: 
+
+1\. In the Gcore Customer Portal, navigate to **Streaming** > **AI**. The **AI tasks** page will open.
+
+<img src="https://assets.gcore.pro/docs/streaming-platform/ai-video-services/content-moderation/ai-tasks-page.png" alt="AI tasks page" width="80%">
+
+2\. In the **Origin URL** field, enter the link to your MP4 video. You have two options: 
+
+* **Paste video origin URL**: If your video is stored externally, provide a URL to its location. Ensure that the video is accessible via HTTP or HTTPS protocols.  
+
+   To check the example of correctly formatted URL, use the link under the field. It will autogenerate a sample URL and you can adjust your URL accordingly. 
+
+   <img src="https://assets.gcore.pro/docs/streaming-platform/ai-video-services/content-moderation/example-url-link.png" alt="Example of the origin URL" width="80%">
+
+* **Select from uploaded videos**: choose a video hosted on the Gcore platform. 
+
+3\. In the **Task type**, choose **Content moderation**. 
+
+4\. In the following dropdown, select **Soft nudity detection**. 
+
+5\. Click **Generate task**.
+
+6\. Wait until the task is processed and has the **Sucess** status, click the task ID to view task details. 
+
+7\. Check out the **Task result** field. You can have one of the following outputs: 
+
+* **Soft nudity detection: not found**. This means that your video has no soft nudity content. 
+
+* If some sensitive content is found, you’ll get the info about the detected element, relevant iFrame, and the confidence level in % of how sure AI is that this content is soft nudity. For example, you can get the following output: *“BELLY_EXPOSED: detected at frame №2 with score 41%”*. 
+
+<img src="https://assets.gcore.pro/docs/streaming-platform/ai-video-services/content-moderation/soft-nudity-detection.png" alt="Soft nudity detection task details" width="70%">

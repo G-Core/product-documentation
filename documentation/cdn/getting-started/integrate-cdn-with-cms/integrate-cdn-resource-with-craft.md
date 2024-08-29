@@ -23,7 +23,7 @@ Click **+New Source** to create a new folder for your static files.
 
 <img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-craft/3.JPG" alt="Source " width="80%">
 
-In the URL field type in the CNAME that you specified in the Gcore <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>. Ensure that your <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">CNAME record has been configured</a> in a proper way before using it for integration (e.g., ```http://cdn.site.com/path/to/your/assets```).
+In the URL field type in the CNAME that you specified in the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>. Ensure that your <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn" target="_blank">CNAME record has been configured</a> in a proper way before using it for integration (e.g., ```http://cdn.site.com/path/to/your/assets```).
 
 <img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-craft/4.JPG" alt="Create a new assets source" width="80%">
 
@@ -33,12 +33,12 @@ Go to the "Assets" tab, find previously created asset source and download your f
 
 Now you can use your asset at the website.
 
-If you have already had created assets, edit them replacing URL with CNAME that you specified in the Gcore <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>.  
+If you have already had created assets, edit them replacing URL with CNAME that you specified in the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>.  
 
 <img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-cms/integrate-cdn-resource-with-craft/6.JPG" alt="Site assets" width="80%">
 
 Save changes.
 
-Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the control panel.
+Integration has been completed! We highly recommend you to check the HTML code of your web page to ensure that URLs have been rewritten properly from your original ones to CNAME from the Gcore Customer Portal.
 
 To do that press **F12** or open Developers Tools in your browser, choose the Network tab and refresh the page. All static files should have your CNAME in URLs.

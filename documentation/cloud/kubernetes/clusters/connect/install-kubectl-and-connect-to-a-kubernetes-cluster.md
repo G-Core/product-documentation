@@ -3,16 +3,14 @@ title: install-kubectl-and-connect-to-a-kubernetes-cluster
 displayName: kubectl
 published: true
 toc:
-   --1--What is kubectl?: "what-is-kubectl"
-   --1--For Windows: "install-kubectl-on-windows-and-connect-to-a-cluster"
-   --1--For Ubuntu and Linux: "install-kubectl-on-ubuntu-linux-and-connect-to-a-cluster"
-   --1--For macOS: "install-kubectl-on-macos-and-connect-to-a-cluster"
+   --1--From Windows: "install-kubectl-and-connect-from-windows"
+   --1--From Ubuntu and Linux: "install-kubectl-and-connect-from-ubuntu-or-linux"
+   --1--From macOS: "install-kubectl-and-connect-from-macos"
+   --1--Renewal of kubectl certificates: "renewal-of-kubectl-certificates"
 pageTitle: Connect to Kubernetes nodes via kubectl | Gcore
 pageDescription: Discover how to install kubectl, a command-line tool used to manage Kubernetes clusters and connect to them.
 ---
 # Install kubectl and connect to a Kubernetes cluster
-  
-## What is kubectl?
 
 Kubectl is a command-line tool which allows you to control Kubernetes clusters. With kubectl, you can create and configure resources, manage pods and perform other operations. 
 
@@ -20,9 +18,9 @@ The utility runs as follows: you enter a command, kubeclt accesses the cluster a
 
 Alternatively, there is a tool with a graphical user interface called "Lens". It lets you manage the cluster not from the command line, but from the application window. You can download it on <a href="https://k8slens.dev" target="_blank">k8slens.dev</a>. The guide below applies only to kubectl.
 
-## Install kubectl on Windows and connect to a cluster
+## Install kubectl and connect from Windows
 
-1.  Send a CURL request. For version v1.23.0, use the request below: 
+1\.  Send a CURL request. For version v1.23.0, use the request below: 
     
     ```
     curl -LO [https://storage.googleapis.com/kubernetes-release/release/v1.23.0/bin/windows/amd64/kubectl.exe](https://storage.googleapis.com/kubernetes-release/release/v1.23.0/bin/windows/amd64/kubectl.exe)
@@ -30,7 +28,7 @@ Alternatively, there is a tool with a graphical user interface called "Lens". It
 
     Instead of a CURL request, you can use a link to download the installation file. Find the link and CURL request for the latest Kubernetes version in <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl-windows/#install-kubectl-binary-with-curl-on-windows" target="_blank">Kubernetes official documentation</a>.  
     
-2.  Add the directory containing the **kubectl.exe** file to the **PATH** variable (so the system can access this file when executing kubectl commands). To do this, first copy the path from the command line (this is the directory where kubectl.exe has been downloaded):  
+2\.  Add the directory containing the **kubectl.exe** file to the **PATH** variable (so the system can access this file when executing kubectl commands). To do this, first copy the path from the command line (this is the directory where kubectl.exe has been downloaded):  
       
     <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster/image_28.png" alt="image_28.png"> 
 
@@ -42,19 +40,19 @@ Alternatively, there is a tool with a graphical user interface called "Lens". It
     <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster/image_62.png" alt="image_62.png" width="418" height="363">
     </media-gallery>
 
-3.  In **C:\\Users\\\[username\]** create the **.kube** directory (to store the cluster configuration file).  
+3\.  In **C:\\Users\\\[username\]** create the **.kube** directory (to store the cluster configuration file).  
 
     <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster/image_46.png" alt="image_46.png" width="556" height="143">
 
-4.  Download the configuration file.  
+4\.  Download the configuration file.  
 
     <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster/13323281147921.png" alt="Screenshot_2023-02-27_at_18.50_1.jpg">
 
-5.  Rename the configuration file to "**config"** (without an extension) and add it to the **.kube** folder. Kubectl can now access it and manage your cluster.  
+5\.  Rename the configuration file to "**config"** (without an extension) and add it to the **.kube** folder. Kubectl can now access it and manage your cluster.  
       
     <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster/image_45.png" alt="image_45.png" width="548" height="107">  
     
-6.  Verify the kubectl configuration. Type the command in the command line:
+6\.  Verify the kubectl configuration. Type the command in the command line:
     
     ```
     kubectl get pod
@@ -62,41 +60,41 @@ Alternatively, there is a tool with a graphical user interface called "Lens". It
 
     The system is supposed to output either "No resources found in default namespace" (when there are no pods in the cluster), or data of the pods. Either result mean that kubectl is correctly configured and you can access your cluster.
 
-## Install kubectl on Ubuntu, Linux and connect to a cluster
+## Install kubectl and connect from Ubuntu or Linux 
 
-1.  Download the latest version of the kubectl binary file with the CURL request. 
+1\.  Download the latest version of the kubectl binary file with the CURL request. 
 
     ```
     curl -LO https://storage.googleapis.com/kubernetes-release/release/\`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt\`/bin/linux/amd64/kubectl 
     ```
 
-2.  Make the kubectl binary file executable.  
+2\.  Make the kubectl binary file executable.  
     
     ```
     chmod +x ./kubectl
     ```
 
-3.  Move the binary file into the directory from the **PATH** variable.
+3\.  Move the binary file into the directory from the **PATH** variable.
     
     ```
     sudo mv ./kubectl /usr/local/bin/kubectl
     ```
 
-4.  Create the "**.kube**" directory in your home directory:
+4\.  Create the "**.kube**" directory in your home directory:
     
     ```
     mkdir ~/.kube
     ```
 
-5.  Download the configuration file.  
+5\.  Download the configuration file.  
       
     <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster/13323281147921.png" alt="Screenshot_2023-02-27_at_18.50_1.jpg">  
     
-6.  Rename the configuration file to "**config**" (without an extension) and add it to the **.kube** folder. Kubectl can now access it and manage your cluster.  
+6\.  Rename the configuration file to "**config**" (without an extension) and add it to the **.kube** folder. Kubectl can now access it and manage your cluster.  
       
     <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster/image_47.png" alt="image_47.png" width="555" height="342">
 
-7.  Verify kubectl configuration with the command below: 
+7\.  Verify kubectl configuration with the command below: 
     
     ```
     kubectl get pod
@@ -104,21 +102,21 @@ Alternatively, there is a tool with a graphical user interface called "Lens". It
     
     The system is supposed to output either "No resources found in default namespace" (when there are no pods in the cluster), or data of the pods. Either result mean that kubectl is correctly configured and you can access your cluster.
 
-## Install kubectl on macOS and connect to a cluster
+## Install kubectl and connect from macOS
 
-1.  Download the latest version of the kubectl binary file with the CURL request. 
+1\.  Download the latest version of the kubectl binary file with the CURL request. 
     
     ```
     curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/darwin/amd64/kubectl"
     ```
 
-2.  Make the kubectl binary file executable: 
+2\.  Make the kubectl binary file executable: 
 
     ```
     chmod +x ./kubectl
     ```
 
-3.  Move the kubectl binary file into the directory from the **PATH** variable. To do this, first check which directories correspond to the variable:
+3\.  Move the kubectl binary file into the directory from the **PATH** variable. To do this, first check which directories correspond to the variable:
     
     ```
     echo $PATH
@@ -136,22 +134,30 @@ Alternatively, there is a tool with a graphical user interface called "Lens". It
     sudo mv ./kubectl /usr/local/bin/kubectl
     ```
 
-4.  Create the ".**kube**" directory in your home directory: 
+4\.  Create the ".**kube**" directory in your home directory: 
     
     ```
-    mkdir ~/.kube/config
+    mkdir ~/.kube
     ```
 
-5.  Download the configuration file.  
+5\.  Download the configuration file.  
       
     <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster/13323281147921.png" alt="Screenshot_2023-02-27_at_18.50_1.jpg">
 
-6.  Rename the configuration file to "**config**" (file should not have an extension) and add it to the **.kube** folder. Kubectl can now access it and manage your cluster.
+6\.  Rename the configuration file to "**config**" (file should not have an extension) and add it to the **.kube** folder. Kubectl can now access it and manage your cluster.
 
-7.  Verify kubectl configuration with the command below: 
+7\.  Verify kubectl configuration with the command below: 
     
     ```
     kubectl get pod
     ```
     
     The system is supposed to output either "No resources found in default namespace" (when there are no pods in the cluster), or data of the pods. Either result mean that kubectl is correctly configured and you can access your cluster.
+
+## Renewal of kubectl certificates 
+
+We renew kubectl access certificates every two years. To ensure you don’t lose access to your Kubernetes cluster, we inform you about the upcoming renewal date: 
+
+* **In the Gcore Customer Portal**. You'll get a notification like this: *“The security certificate for Cluster will expire on 10.06.20204. Please remember to go to the Cluster page and download the new Kubernetes config on that date to ensure continued access.”* 
+
+* **Via email**: two weeks before the renewal, we’ll send you an email with the information about the renewal date. After the certificate is updated, you’ll also get a confirmation email with a reminder to download a new certificate.  

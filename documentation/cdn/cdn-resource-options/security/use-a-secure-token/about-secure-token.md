@@ -19,7 +19,7 @@ pageDescription: A detailed guide on Secure Token in Gcore CDN—how it protects
 
 ## What is Secure Token?
 
-Secure Token is a feature of the <a href="https://gcore.com/cdn" target="_blank">Gcore CDN</a> that protects your files from unwanted downloading. It helps to make a link to your content temporary or restrict the access to the content by an IP address. If a fraud uses an expired URL or sends a request from not a whitelisted IP, no files will be downloaded. 
+Secure Token is a feature of the <a href="https://gcore.com/cdn" target="_blank">Gcore CDN</a> that protects your files from unwanted downloading. It helps to make a link to your content temporary or restrict the access to the content by an IP address. If a fraud uses an expired URL or sends a request from not an allowlisted IP, no files will be downloaded. 
 
 ## What Secure Token is used for
 
@@ -43,7 +43,7 @@ You set a link lifespan. If it expires while the content is downloading, the CDN
 
 ### What secures a link 
 
-URLs are secured by a special character set — it is added to every link. This set is a code that stores a directive on how long a link can be available and what IP address may access the content. The code is known as a secure token. When a user follows the link our <a href="https://gcore.com/cdn" target="_blank">CDN</a> processes this request and decrypts a secure token. It doesn’t send content if a link is expired, or an IP address is not whitelisted. 
+URLs are secured by a special character set — it is added to every link. This set is a code that stores a directive on how long a link can be available and what IP address may access the content. The code is known as a secure token. When a user follows the link our <a href="https://gcore.com/cdn" target="_blank">CDN</a> processes this request and decrypts a secure token. It doesn’t send content if a link is expired, or an IP address is not allowlisted. 
 
 Secure tokens are created and added to links by your site. To configure the site is easy — you just need to add a necessary script. You can use our script templates. For PHP, generate secure tokens using <a href="https://gcore.com/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token#generate-links-with-a-secure-token-in-php" target="_blank">this template</a>; for Python, use <a href="https://gcore.com/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token#generate-links-with-a-secure-token-in-python" target="_blank">this one</a>; for OpenSSL, use <a href="https://gcore.com/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token#generate-a-secure-token-in-openssl" target="_blank">this one</a>. The script will create secure tokens and add them to URLs. 
 
@@ -57,7 +57,7 @@ Here is how a link with a secure token looks:
 
 1\. When enabling Secure Token in the <a href="https://gcore.com/cdn" target="_blank">CDN</a> resource options, you specify a key (any character set).
 
-2\. You add a script for secured URLs generation to your site. In the script, you specify four variables: a link lifespan, a whitelisted IP, a path to your file, and the key from Step 1.
+2\. You add a script for secured URLs generation to your site. In the script, you specify four variables: a link lifespan, an allowlisted IP, a path to your file, and the key from Step 1.
 
 3\. Using the key, the script encodes other variables turning them into a string such as ```DMF1ucDxtHCxwYQ```.
 
@@ -65,9 +65,9 @@ Here is how a link with a secure token looks:
 
 5\. The user tries to request content using this secured URL.
 
-6\. Our <a href="https://gcore.com/cdn" target="_blank">CDN</a> processes the request. It knows the key used by the script to encrypt variables, and therefore it can decrypt ```DMF1ucDxtHCxwYQ```. The CDN sees three variables: the link expiration time, the whitelisted IP and the path to your file.
+6\. Our <a href="https://gcore.com/cdn" target="_blank">CDN</a> processes the request. It knows the key used by the script to encrypt variables, and therefore it can decrypt ```DMF1ucDxtHCxwYQ```. The CDN sees three variables: the link expiration time, the allowlisted IP and the path to your file.
 
-7\. If a link is not yet expired, the request comes from a whitelisted IP address, and a file's path is correct, the <a href="https://gcore.com/cdn" target="_blank">CDN</a> sends the content. If something doesn’t match, the CDN returns an error.
+7\. If a link is not yet expired, the request comes from an allowlisted IP address, and a file's path is correct, the <a href="https://gcore.com/cdn" target="_blank">CDN</a> sends the content. If something doesn’t match, the CDN returns an error.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/use-a-secure-token/about-secure-token/mceclip0.png" alt="How content is requested via a secured link " width="80%">
 

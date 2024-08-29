@@ -8,10 +8,10 @@ toc:
    --1--Choose a plan for your purposes: "choose-a-plan-for-your-needs"
    --1--Rent a server: "rent-a-server"
    --1--Renew your server rent: "renew-your-server-rent"
-pageTitle: Order a virtual server | Gcore
-pageDescription: Learn how to find an ideal virtual server for your needs.
+pageTitle: Order a Virtual Server | Gcore
+pageDescription: Learn how to find an ideal Virtual Server for your needs.
 ---
-# Order a virtual server
+# Order a Virtual Server
 
 ## Rent a server
 

@@ -2,5 +2,5 @@
 title: metadata
 displayName: Managed Logging
 published: true
-order: 120
+order: 125
 ---

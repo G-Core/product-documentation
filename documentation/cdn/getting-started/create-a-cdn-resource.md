@@ -12,7 +12,7 @@ The CDN resource is the proxy between Gcore caching edge servers and your websit
 
 There are two types of CDN resources available to use with the unique creation wizard:
 
-- **For the entire site**. Integrate your entire website with our CDN and DNS products. Consult our guide on <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site" target="_blank">configuring a CDN resource for the entire site</a>.
+- **For the entire site**. Integrate your entire website with our CDN and Managed DNS products. Consult our guide on <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site" target="_blank">configuring a CDN resource for the entire site</a>.
 
 - **For static assets only**. Integrate only static content delivery, such as images and CSS styles. Consult our guide on <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">configuring a CDN resource for static assets only</a>.
 

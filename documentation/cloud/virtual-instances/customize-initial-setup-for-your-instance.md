@@ -5,12 +5,13 @@ order: 15
 published: true
 toc:
     --1--Why automate the initial setup?: "why-automate-the-initial-setup"
-    --2--From the UI panel: "from-the-ui-panel"
+    --2--From the Customer Portal: "from-the-customer-portal"
     --2--From Gcore’s API: "from-gcores-api"
     --2--From Terraform: "from-terraform"
     --1--What is cloud-init?: what-is-cloud-init
-    --1--Set a password: "set-a-password-for-an-instance"
+    --1--Set a password: "set-a-password-for-a-virtual-machine"
     --1--Create a user: "create-a-user"
+    --1--Enable root user: "enable-root-user"
     --1--Configure groups: "configure-user-groups"
     --1--Add an SSH key: "add-an-ssh-key"
     --1--Add repositories and install packages: "add-repositories-and-install-packages"
@@ -20,11 +21,11 @@ pageTitle: Initial setup of a VM | Gcore
 pageDescription: Learn how to customize the initial setup for your VM using cloud-init.
 ---
 
-# Customize the initial setup for your instance
+# Customize the initial setup for your Virtual Machine
 
 ## Why automate the initial setup?
 
-Automating the initial setup saves time and effort, eliminates manual tasks, reduces errors, ensures consistency, enables scalability, and allows you to focus on more valuable tasks. This is where the **User Data** field in the virtual instance setup page can assist you. By using the **User Data** field, you can:
+Automating the initial setup saves time and effort, eliminates manual tasks, reduces errors, ensures consistency, enables scalability, and allows you to focus on more valuable tasks. This is where the **User Data** field in the Virtual Machine setup page can assist you. By using the **User Data** field, you can:
 
 - Set a password for a VM 
 - Create a user
@@ -36,15 +37,15 @@ Automating the initial setup saves time and effort, eliminates manual tasks, red
 
 You can access and use the User Data field in three ways:
 
-### From the UI Panel
+### From the Customer Portal
 
-By default, the **User Data** field is disabled for new instances. Enable it by switching on the toggle and adding your User Data content in the textbox.
+By default, the **User Data** field is disabled for new Virtual Machines (VMs). Enable it by switching on the toggle and adding your User Data content in the textbox.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/customize-initial-setup-for-your-instance/user-data-from-ui.png" alt="User Data conten" width="80%">
 
 ### From Gcore’s API
 
-To add the User Data field when creating a new instance via <a href="https://api.gcore.com/docs/cloud#tag/Instances/operation/InstanceCreateSetV2.post" target="_blank">Gcore API</a>, provide your User Data content in `base64` format via `user_data` in the payload request.
+To add the User Data field when creating a new VM via <a href="https://api.gcore.com/docs/cloud#tag/Instances/operation/InstanceCreateSetV2.post" target="_blank">Gcore API</a>, provide your User Data content in `base64` format via `user_data` in the payload request.
 
 Let’s say you want to add the User Data field as below:
 
@@ -78,7 +79,7 @@ The encoded `base64` result should look similar to this:
 I2Nsb3VkLWNvbmZpZwpwYXNzd29yZDogeW91cl9wYXNzd29yZApjaHBhc3N3ZDogeyBleHBpcmU6RmFsc2UgfQpzc2hfcHdhdXRoOiBUcnVlCnBvd2VyX3N0YXRlOgogIG1vZGU6IHJlYm9vdAogIHRpbWVvdXQ6IDMwCiAgY29uZGl0aW9uOiBUcnVl
 ```
 
-Then, make an API request with the `user_data` field provided in the payload to create a new instance:
+Then, make an API request with the `user_data` field provided in the payload to create a new VM:
 
 ```
 curl 'https://api.gcore.com/cloud/v2/instances/{projectId}/{regionId}' 
@@ -90,7 +91,7 @@ curl 'https://api.gcore.com/cloud/v2/instances/{projectId}/{regionId}'
 
 ### From Terraform
 
-A new virtual instance with the User Data field setup can also be created using <a href="https://registry.terraform.io/providers/G-Core/gcore/latest/docs/data-sources/instance" target="_blank">Terraform</a>. Encode your User Data field value to `base64` format first, then provide the encoded value to the `user_data` field in the Terraform definition file as below:
+A new Virtual Machine with the User Data field setup can also be created using <a href="https://registry.terraform.io/providers/G-Core/gcore/latest/docs/data-sources/instance" target="_blank">Terraform</a>. Encode your User Data field value to `base64` format first, then provide the encoded value to the `user_data` field in the Terraform definition file as below:
 
 ```
 resource "gcore_instance" "instance" {
@@ -107,13 +108,13 @@ resource "gcore_instance" "instance" {
 }
 ```
 
-The User Data field features were built based on cloud-init, an industry-standard multi-distribution method for cross-platform cloud instance initialization. 
+The User Data field features were built based on `cloud-init`, an industry-standard multi-distribution method for cross-platform cloud VM initialization. 
 
 ## What is cloud-init?
 
-Cloud-init is an industry-standard software for automating the initialization of cloud instances. You can use cloud-init to perform a number of initial tasks when your instance is booted for the first time, such as installing packages, running a shell script, or configuring the network interfaces.
+`Cloud-init` is an industry-standard software for automating the initialization of cloud Virtual Machines. You can use `cloud-init` to perform a number of initial tasks when your VM is booted for the first time, such as installing packages, running a shell script, or configuring the network interfaces.
 
-Cloud-init supports all major Linux distributions:
+`Cloud-init` supports all major Linux distributions:
 
 - Alpine Linux
 - ArchLinux
@@ -131,11 +132,11 @@ Cloud-init supports all major Linux distributions:
 
 It uses a YAML-based syntax, allowing the desired setup to be easily represented. 
 
-## Set a password for an instance
+## Set a password for a Virtual Machine
 
-By default, Gcore virtual instance does not allow SSH authentication using username and password alone; only machines with a matching SSH key are allowed to access the instance. 
+By default, Gcore Virtual Machine does not allow SSH authentication using username and password alone; only machines with a matching SSH key are allowed to access the VM. 
 
-To override this default configuration, set `ssh_pwauth: True` in the **User Data** field. Below is an example configuration of how to set your instance to be accessible using a default username and password.
+To override this default configuration, set `ssh_pwauth: True` in the **User Data** field. Below is an example configuration of how to set your Virtual Machine to be accessible using a default username and password.
 
 ```
 #cloud-config  
@@ -148,27 +149,27 @@ power_state:
   condition: True
 ```
 
-- The `password` field sets the password value for your instance default username. Depending on the instance image, the username may vary. For example, if you create a virtual instance using the Ubuntu distro, your default username will be `ubuntu`
+- The `password` field sets the password value for your Virtual Machine's default username. Depending on the VM image, the username may vary. For example, if you create a Virtual Machine using the Ubuntu distro, your default username will be `ubuntu`
 
-- With the `chpasswd: { expire: False }` configuration, you do not need to change the password of your default user after you access the instance
+- With the `chpasswd: { expire: False }` configuration, you do not need to change the password of your default user after you access the VM
 
-- `ssh_pwauth: True` allows your instance to be accessible using a username and password
+- `ssh_pwauth: True` allows your Virtual Machine to be accessible using a username and password
 
-- The `power_state` block option tells cloud-init to wait 30 seconds for the cloud-init process to finish before shutting down the system
+- The `power_state` block option tells `cloud-init` to wait 30 seconds for the `cloud-init` process to finish before shutting down the system
 
-After the virtual instance is up and running, you can access the instance using the ssh command below:
+After the Virtual Machine is up and running, you can access the VM using the ssh command below:
 
 ```
 ssh your_default_username@your_instance_ip_address
 ```
 
-Provide your password value; you should now be able to access the virtual instance.
+Provide your password value; you should now be able to access the Virtual Machine.
 
 ## Create a user
 
-Using the User Data field, you can create a new user in the virtual instance. Let’s say you want to create a user name, guest, with the same password. 
+With the **User data** field, you can create a new user in the Virtual Machine. 
 
-Below is an example of a cloud-init script for creating the `guest` user.
+Let’s say you want to create a user called `guest` with the same password as the first user. Here’s the example of a `cloud-init` script for creating this `guest` user:
 
 ```
 #cloud-config
@@ -186,36 +187,46 @@ power_state:
   condition: True
 ```
 
-- The `sudo` option with the value `ALL=(ALL) NOPASSWD:ALL` adds sudo rights to this `guest` user
+Description of configuration parameters:
 
-- You need to provide the encrypted value of your password in the `passwd` field using the SHA-512 encryption method. To generate the SHA-512 encrypted value for your password, you can use the `mkpasswd` command line tool
+- `sudo`: Gives superuser rights to the guest user by setting the value `ALL=(ALL) NOPASSWD:ALL`. 
+
+- `passwd`: Provides an encrypted value of your password according to the SHA-512 encryption method. To generate the SHA-512 encrypted value, you can use the `mkpasswd` command line tool: 
 
 ```
 mkpasswd -m sha512crypt guest
 ```
 
-- The `guest` user will be added automatically to the users and admin groups. If you want to add the user to other groups, check they exist first
+- `groups`: Lists all groups the `guest` user will belong to. In this configuration, the user will be automatically added to the `users` and `admin` groups. If you want to add the user to other groups, first <a href="https://gcore.com/docs/cloud/virtual-instances/customize-initial-setup-for-your-instance#check-user-groups">make sure that these groups exist</a>. 
 
-- The `lock_passwd` option with the value *false* allows you to access the virtual instance using a username and password
+- `lock_passwd`: When set to `false`, this value allows you to access the Virtual Machine with a username and password.
 
-- The `shell` option with the value `bin/bash` sets the default shell as `bash` for the `guest` user.
+- `shell`: When set to `bin/bash`, this value defines the default shell as `bash` for the `guest` user.
 
-Wait a few minutes for your virtual instance to launch, then try to use the guest user to access the instance by running the following command:
+After you configure user data, wait a few minutes for your Virtual Machine to launch and use the `guest` user to access the VM:
 
+1\. Run the following command: `ssh guest@your_instance_ip`.
+
+2\. Type `guest` and press **Enter**.
+
+You should now be able to log in to your guest user account.
+
+<alert-element type="info" title="Info" id="check-user-groups">
+
+To check for the groups that the `guest` user belongs to, run the command `groups`. You should see the `users` and `admin` groups listed, indicating that the `guest` user belongs to the `users` and `admin` groups.
+
+</alert-element>
+
+## Enable root user 
+
+When creating a Virtual Machine, you can enable user access to the root by adding the following line to the **User data** field:
 
 ```
-ssh guest@your_instance_ip
+#cloud-config
+disable_root: false 
 ```
 
-Type in `guest` and press **Enter**. You should be able to log in to your guest user account.
-
-To check for the user groups that guest belongs to, run the following command:
-
-```
-groups
-```
-
-You should see the `users` and `admin` groups listed, indicating that the `guest` user belongs to the `users` and `admin` groups.
+For details on how to enable user access to root after creating a Virtual Machine, <a href="https://gcore.com/docs/cloud/virtual-instances/enable-root-user-on-a-linux-vm#enable-root-user-via-terminal" target="_blank">read our guide</a>. 
 
 ## Configure user groups
 
@@ -233,7 +244,7 @@ power_state:
   condition: True
 ```
 
-After your instance is ready, access it via ssh and run the following command to list all user groups in the system:
+After your VM is ready, access it via ssh and run the following command to list all user groups in the system:
 
 ```
 compgen -g
@@ -243,9 +254,9 @@ The `regular-users` group should be displayed at the bottom of the result.
 
 ## Add an SSH key
 
-There are times when you want your new instance to be accessible from other machines. For example, some of your colleagues may also want to use your instance, or you might want to set up a cluster of virtual instances to create an Apache Hadoop or Apache Spark cluster. To do so, you need to add the public SSH keys of other machines to the **User Data** field. 
+There are times when you want your new Virtual Machine to be accessible from other machines. For example, some of your colleagues may also want to use your VM, or you might want to set up a cluster of Virtual Machines to create an Apache Hadoop or Apache Spark cluster. To do so, you need to add the public SSH keys of other machines to the **User Data** field. 
 
-Below is an example of how to add a public SSH key of another machine to the new instance:
+Below is an example of how to add a public SSH key of another machine to the new Virtual Machine:
 
 ```
 #cloud-config
@@ -254,19 +265,19 @@ ssh_authorized_keys:
   - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDLoSbgtCDju1vmEOws3cBpU5BDZJ3iwuHb0HnNaxJDDU72TYp4DZRxhkSy7KAGCnGl1x1et3i8TR9HeYLzF4B6+lBkHL3cfxuKqrTr7bYUNmmhxMj1THdH5lyS5ezYQGsd/QUryPNw9mbl1WrWu7sbyihF+B9+tHDoJ7owUehgHEG90XNJRFFe/ZHU+wHzJIRpQxFtdfZghwSBfRGJLTL6/nJtO39P7nAen48vH4iSzJYwsNtrWLG7Sr4kU6q8UJD+lCJ2IIumr6p66W9wh7IwgPED5ABQziSFCRXbeZIraaFvAhsV0r90u9t8cR8Yf2hU1rKcEaPRxYFC3IrrY94GnjTnzSE9p9a8DnF4G28/DHSMiTQd5yJKlED/n0piHMEMiJUpAruz3eHTqBz4T8taSZGuoqG4S6qrow6zigfesrWTmqegGUcQDdkTxj6DA5xtK2IIQSTsatQ9+7ggUIOFKGjoSKFxj2rJfxBjFS4pYFjOQBTdzz6ZCJjaMkhTXK8= account-name@hostname
 ```
 
-Once the instance is up and running, you can view the content of `authorized_keys` by running the below command:
+Once the Virtual Machine is up and running, you can view the content of `authorized_keys` by running the below command:
 
 ```
 cat ~/.ssh/authorized_keys
 ```
 
-You should see the configured ssh-rsa key listed in the result. The other machines should also be able to access this instance via SSH.
+You should see the configured ssh-rsa key listed in the result. The other machines should also be able to access this Virtual Machine via SSH.
 
 ## Add repositories and install packages
 
-When using the virtual instance, the default installed packages are usually not sufficient for you to perform your tasks. For example, if you’re a software engineer, you need to use docker to build the application image, or use `nmap` and `traceroute` to debug your application network. 
+When using the Virtual Machine, the default installed packages are usually not sufficient for you to perform your tasks. For example, if you’re a software engineer, you need to use docker to build the application image, or use `nmap` and `traceroute` to debug your application network. 
 
-Adding the below configuration into your **User Data** field helps you install the `docker`, `nmap`, and `traceroute` tools when the instance boots up.
+Adding the below configuration into your **User Data** field helps you install the `docker`, `nmap`, and `traceroute` tools when the VM boots up.
 
 ```
 #cloud-config
@@ -294,13 +305,13 @@ power_state:
   condition: True
 ```
 
-With packages that are available in the default instance repository like `nmap` and `traceroute`, you only need to include them in the `packages` block. However, with packages that are **not** available in the default instance repository— like `docker-ce` and `docker-ce-cli`—you need to add the Docker repository first using `apt sources`.
+With packages that are available in the default VM repository like `nmap` and `traceroute`, you only need to include them in the `packages` block. However, with packages that are **not** available in the default instance repository— like `docker-ce` and `docker-ce-cli`—you need to add the Docker repository first using `apt sources`.
 
-After installing, restart the instance so that these packages are added to the system path. Including the `power_state` block at the end of the **User Data** field is helpful because it allows you to use these tools as soon as the instance is ready.
+After installing, restart the Virtual Machine so that these packages are added to the system path. Including the `power_state` block at the end of the **User Data** field is helpful because it allows you to use these tools as soon as the Virtual Machine is ready.
 
 ## Write files
 
-Sometimes it may be helpful to have existing files for usage after the virtual instance is ready. For example, you could have a YAML file that contains example scripts for working with Docker. Using the feature below, you can create a file named `useful-docker-script.yaml` in the `/root` directory.
+Sometimes it may be helpful to have existing files for usage after the Virtual Machine is ready. For example, you could have a YAML file that contains example scripts for working with Docker. Using the feature below, you can create a file named `useful-docker-script.yaml` in the `/root` directory.
 
 ```
 #cloud-config
@@ -319,7 +330,7 @@ docker build -t dockerhub-username/docker-image-name .
       docker push dockerhub-username/docker-image-name
 ```
 
-Access the instance once it is available, and run the following command to check whether the new file `useful-docker-script.yaml` has been created:
+Access the Virtual Machine once it is available, and run the following command to check whether the new file `useful-docker-script.yaml` has been created:
 
 ```
 cd /root
@@ -353,12 +364,12 @@ You should see a similar output to this:
 
 ## Configure network interfaces
 
-You can also configure network interfaces using the **User Data** field. For example, you can add a static IP address to your instance network interface. Having a static IP address offers benefits such as:
+You can also configure network interfaces using the **User Data** field. For example, you can add a static IP address to your Virtual Machine network interface. Having a static IP address offers benefits such as:
 
 - Allowing you to host a web server using the static IP
-- Allowing other instances access to your instance reliably using the static IP
+- Allowing other Virtual Machines access to your VM reliably using the static IP
 
-When your virtual instance is created, cloud-init will generate a new file named `50-cloud-init.yaml` in the `/etc/netplan` directory and create a new network interface based on that file. To add a static IP address to the network interface, you need to create another file in the `/etc/netplan` other than `50-cloud-init.yaml`. When cloud-init creates the network interface, it will try to merge the content of these two configuration files. As a result, the static IP address will be added to the network interface. Below is an example content of the `50-cloud-init.yaml` file.
+When your Virtual Machine is created, `cloud-init` will generate a new file named `50-cloud-init.yaml` in the `/etc/netplan` directory and create a new network interface based on that file. To add a static IP address to the network interface, you need to create another file in the `/etc/netplan` other than `50-cloud-init.yaml`. When `cloud-init` creates the network interface, it will try to merge the content of these two configuration files. As a result, the static IP address will be added to the network interface. Below is an example content of the `50-cloud-init.yaml` file.
 
 ```
 network:
@@ -400,13 +411,13 @@ power_state:
   condition: True
 ```
 
-Cloud-init will execute two steps based on this configuration.
+`Cloud-init` will execute two steps based on this configuration.
 
-- First, cloud-init will create a new file named `00-add-static-ip.yaml` in `/etc/netplan` with instructions to add static IP addresses for both IPv4 (192.170.1.25) and IPv6 (2020:1::1.) The permission of the file is 0644, which means it is readable by any user and writable by cloud-init.
+- First, `cloud-init` will create a new file named `00-add-static-ip.yaml` in `/etc/netplan` with instructions to add static IP addresses for both IPv4 (192.170.1.25) and IPv6 (2020:1::1.) The permission of the file is 0644, which means it is readable by any user and writable by `cloud-init`.
 
-- When the instance is rebooted (using the `power_state` block configuration), cloud-init will try to merge the network configuration for both `00-add-static-ip.yaml` and `50-cloud-init.yaml` files so that you can add static IP addresses to the `enp3s0` network interface.
+- When the Virtual Machine is rebooted (using the `power_state` block configuration), `cloud-init` will try to merge the network configuration for both `00-add-static-ip.yaml` and `50-cloud-init.yaml` files so that you can add static IP addresses to the `enp3s0` network interface.
 
-Access the instance once it is ready, and run the following command:
+Access the Virtual Machine once it is ready, and run the following command:
 
 ```
 ip a

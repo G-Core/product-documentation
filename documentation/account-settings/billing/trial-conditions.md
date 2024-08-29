@@ -15,7 +15,7 @@ pageDescription: Details on Gcore's free trial conditions for various services, 
 
 The trial period allows you to test the service for free for a limited time, regardless of the plan you choose. Not all services offer a trial period. The table below shows which services offer trials, and any related conditions or comments.
 
-To find information on specific services and tariffs, check <a href="https://gcore.com/pricing/edge-network" target="_blank">Gcore Pricing</a> or your control panel.
+To find information on specific services and tariffs, check <a href="https://gcore.com/pricing/edge-network" target="_blank">Gcore Pricing</a> or the Gcore Customer Portal.
 
 <table>
 <thead>
@@ -37,32 +37,32 @@ To find information on specific services and tariffs, check <a href="https://gco
 <td style="text-align: left">14 days or 300 GB, whichever ends first</td>
 </tr>
 <tr>
-<td style="text-align: left">Cloud (AI, Basic VM, IaaS Protection)</td>
+<td style="text-align: left">Edge Cloud (AI, Basic VM, IaaS Protection)</td>
 <td style="text-align: left">-</td>
 <td style="text-align: left">-</td>
 </tr>
 <tr>
-<td style="text-align: left">Streaming Platform</td>
+<td style="text-align: left">Video Streaming</td>
 <td style="text-align: left">+</td>
 <td style="text-align: left">14 days and 10 minutes of uploaded video</td>
 </tr>
 <tr>
-<td style="text-align: left">Web Security</td>
+<td style="text-align: left">Web Application Security</td>
 <td style="text-align: left">+</td>
 <td style="text-align: left">3 days</td>
 </tr>
 <tr>
-<td style="text-align: left">DNS (Free)</td>
+<td style="text-align: left">Managed DNS (Free)</td>
 <td style="text-align: left">-</td>
 <td style="text-align: left">The free plan has no trial period or limitations</td>
 </tr>
 <tr>
-<td style="text-align: left">DNS (Pro)</td>
+<td style="text-align: left">Managed DNS (Pro)</td>
 <td style="text-align: left">+</td>
 <td style="text-align: left">14 days</td>
 </tr>
 <tr>
-<td style="text-align: left">Storage</td>
+<td style="text-align: left">Object Storage</td>
 <td style="text-align: left">-</td>
 <td style="text-align: left">-</td>
 </tr>
@@ -89,4 +89,8 @@ That’s it! We will send you an email at the beginning of the trial and two day
 
 Contact support (support@gcore.com or chat) or your manager to extend the trial duration or add GB.
 
-**Note**: The flow differs for some services (e.g., IaaS Protection). Follow the recommendations from the control panel to activate the service.
+<alert-element type="info" title="Info">
+ 
+The flow differs for some services (e.g., IaaS Protection). Follow the recommendations from the Gcore Customer Portal to activate the service.
+ 
+</alert-element>

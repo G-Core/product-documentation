@@ -57,7 +57,7 @@ server {
 } 
 ```
 
-2\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN</a> section in the control panel and click the custom domain of the resource on which origin you configured the Cache-Control header.
+2\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN</a> section in the Gcore Customer Portal and click the custom domain of the resource on which origin you configured the Cache-Control header.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/13249373793809.png" alt="CDN section">
 
@@ -75,7 +75,7 @@ The new page opens. Do the remaining steps on it.
 
 ### CDN controlled
 
-1\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN</a> section in the control panel and click the custom domain of the resource for which you want to configure the CDN caching feature.
+1\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN</a> section in the Gcore Customer Portal and click the custom domain of the resource for which you want to configure the CDN caching feature.
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/13249311265809.png" alt="CDN controlled">
 

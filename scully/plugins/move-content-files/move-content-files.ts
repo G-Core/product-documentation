@@ -23,6 +23,7 @@ const defaultOptions: Required<MoveContentFilesPluginOptions> = {
         'ddos-protection',
         'web-security',
         'reseller-support',
+        'waap',
         'edit-article-guide',
     ],
 };

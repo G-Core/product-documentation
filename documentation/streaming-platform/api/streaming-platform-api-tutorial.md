@@ -34,16 +34,16 @@ toc:
    --2--Interruption during streaming: "interruption-during-streaming"
    --2--Stream deletion: "stream-deletion"
    --1--Other API methods: "other-api-methods"
-pageTitle: Mastering Streaming Platform API | Gcore 
-pageDescription: A guide in which we’ll take you through the API and webhook operations involved in integrating with the Streaming Platform.
+pageTitle: Mastering Video Streaming API | Gcore 
+pageDescription: A guide in which we’ll take you through the API and webhook operations involved in integrating with the Video Streaming.
 ---
-# Streaming Platform API tutorial
+# Video Streaming API tutorial
 
-You can integrate your product to use the Streaming Platform for unlimited video streaming and hosting services. In this guide, we’ll take you through the API and webhook operations involved in integrating with the Streaming Platform.
+You can integrate your product to use the Video Streaming for unlimited video streaming and hosting services. In this guide, we’ll take you through the API and webhook operations involved in integrating with the Video Streaming.
 
 ## How integration works
 
-Typically, your app presents users with an interface through which they can create and manage a stream. Each user action represents a request to an endpoint in the Streaming Platform API and a webhook. The following diagram shows the typical high-level sequence of the operations grouped into stages:
+Typically, your app presents users with an interface through which they can create and manage a stream. Each user action represents a request to an endpoint in the Video Streaming API and a webhook. The following diagram shows the typical high-level sequence of the operations grouped into stages:
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/api/streaming-platform-api-tutorial/12876274382481.png" alt="How integration works">
 
@@ -60,7 +60,7 @@ You’ll need to have:
 
 #### Step 1. Create a stream
 
-Use the <a href="https://api.gcore.com/docs/streaming" target="_blank">post_streams_id</a> method to create a stream object in the Streaming Platform.
+Use the <a href="https://api.gcore.com/docs/streaming" target="_blank">post_streams_id</a> method to create a stream object in the Video Streaming.
 
 Sample request payload:
 
@@ -161,7 +161,7 @@ Sample response payload:
 
 #### Step 4. Send a webhook when the stream has started
 
-The Streaming Platform sends a webhook that contains **"live": true** to your subscribed endpoint.
+The Video Streaming sends a webhook that contains **"live": true** to your subscribed endpoint.
 
 Sample webhook payload:
 
@@ -208,7 +208,7 @@ Sample response payload:
 
 #### Step 6. Send a webhook when the broadcast has transitioned to Live status
 
-The Streaming Platform sends a webhook that contains **"status": live** to your subscribed endpoint.
+The Video Streaming sends a webhook that contains **"status": live** to your subscribed endpoint.
 
 Sample webhook payload:
 
@@ -236,7 +236,7 @@ If the returned HTTP status code is 204, the request is successful.
 
 #### Step 8. Send a webhook when stream recording has started
 
-The Streaming Platform sends a webhook that contains **"recording": true** to your subscribed endpoint.
+The Video Streaming sends a webhook that contains **"recording": true** to your subscribed endpoint.
 
 Sample webhook payload:
 
@@ -276,7 +276,7 @@ Sample response payload:
 ```
 #### Step 10. Send a webhook when stream recording has stopped
 
-The Streaming Platform sends a webhook that contains **"recording": false** to your subscribed endpoint.
+The Video Streaming sends a webhook that contains **"recording": false** to your subscribed endpoint.
 
 Sample webhook payload:
 
@@ -294,7 +294,7 @@ Sample webhook payload:
 ```
 #### Step 11. Send a webhook when the recorded video is being processed
 
-The Streaming Platform sends a webhook that contains **"status": "pending"** to your subscribed endpoint.
+The Video Streaming sends a webhook that contains **"status": "pending"** to your subscribed endpoint.
 
 Sample webhook payload:
 
@@ -338,7 +338,7 @@ Sample response payload:
 ```
 #### Step 13. Send a webhook when the broadcast has transitioned to Finished status
 
-The Streaming Platform sends a webhook that contains **"status": "finished"** to your subscribed endpoint.
+The Video Streaming sends a webhook that contains **"status": "finished"** to your subscribed endpoint.
 
 Sample webhook payload:
 
@@ -387,7 +387,7 @@ Sample response payload:
 ```
 #### Step 15. Send a webhook when the stream has ended
 
-The Streaming Platform sends a webhook that contains **"live": false** to your subscribed endpoint.
+The Video Streaming sends a webhook that contains **"live": false** to your subscribed endpoint.
 
 Sample webhook payload:
 
@@ -413,7 +413,7 @@ If the returned HTTP status code is 204, the request is successful.
 
 This indicates that one quality version of the video currently being processed is ready for the viewers to watch.
 
-The Streaming Platform sends a webhook that contains **"status": "viewable"** to your subscribed endpoint.
+The Video Streaming sends a webhook that contains **"status": "viewable"** to your subscribed endpoint.
 
 Sample webhook payload:
 
@@ -453,7 +453,7 @@ Sample webhook payload:
 
 This indicates that all quality versions of the video are ready for viewers to watch.
 
-The Streaming Platform sends a webhook that contains **"status": "ready"** to your subscribed endpoint.
+The Video Streaming sends a webhook that contains **"status": "ready"** to your subscribed endpoint.
 
 Sample webhook payload:
 
@@ -543,7 +543,7 @@ Sample response payload:
 
 ### Interruption during streaming
 
-- The Streaming Platform sends a webhook when the stream is briefly interrupted.
+- The Video Streaming sends a webhook when the stream is briefly interrupted.
 
 Sample webhook payload:
 
@@ -584,7 +584,7 @@ Sample response payload:
 
 -  You can also <a href="https://api.gcore.com/docs/streaming" target="_blank">stop the recording</a> when the user has an interruption (even for a couple of minutes) during streaming. Your app can prompt the user to start the stream again. The stream recording will be broken into two files: data recorded up to the interruption and data recorded when the user renews streaming.
 
-The Streaming Platform can’t currently reconnect without interrupting the recording if the stream gets temporary disruption. But we plan to implement this in the future.
+The Video Streaming can’t currently reconnect without interrupting the recording if the stream gets temporary disruption. But we plan to implement this in the future.
 
 ### Stream deletion
 
@@ -594,4 +594,4 @@ If the returned HTTP status code is 204, the request is successful.
 
 ## Other API methods
 
-Check out our Streaming Platform API <a href="https://api.gcore.com/docs/streaming" target="_blank">documentation</a> for more methods that might come in handy for other use cases.
+Check out our Video Streaming API <a href="https://api.gcore.com/docs/streaming" target="_blank">documentation</a> for more methods that might come in handy for other use cases.

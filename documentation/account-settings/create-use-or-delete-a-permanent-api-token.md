@@ -38,7 +38,7 @@ There is currently a limit of 50 API tokens per account.
 
 <img src="https://assets.gcore.pro/docs/account-settings/api-tokens/create-token-10.png" alt="Create a permanent API token">
 
-1\. In your Personal Account, go to Profile.
+1\. In the Gcore Customer Portal, go to Profile.
 
 2\. Open the API tokens section.
 

@@ -90,7 +90,8 @@ export const updateAlgoliaIndex = async (routes: Array<HandledRoute>): Promise<v
                         route.data?.title !== 'metadata' &&
                         route.data?.published &&
                         !route.data?.redirect &&
-                        !route.route.startsWith('/reseller-support')
+                        !route.route.startsWith('/reseller-support') &&
+                        !route.route.startsWith('/waap')
                     ) {
                         return [...acc, buildPayload(route)];
                     }

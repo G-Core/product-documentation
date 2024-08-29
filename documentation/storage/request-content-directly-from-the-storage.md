@@ -4,14 +4,14 @@ displayName: Request files from storage
 published: true
 order: 70
 toc:
-   --1--S3: "request-content-directly-from-the-s3-storage"
+   --1--Object Storage: "request-content-directly-from-the-object-storage"
    --1--SFTP: "request-content-directly-from-the-sftp-storage"
-pageTitle: Schemes for requesting files in S3 and SFTP storages | Gcore
-pageDescription: Instructions on how to request content directly from the S3 and SFTP storage.
+pageTitle: Schemes for requesting files in Object Storage and SFTP Storage | Gcore
+pageDescription: Instructions on how to request content directly from the Object Storage and SFTP Storage.
 ---
 # Request content directly from the storage
 
-## Request content directly from the S3 storage
+## Request content directly from the Object Storage
 
 Use the following schema to request uploaded files:
 
@@ -41,7 +41,7 @@ URL to request the file from the storage is:
 http://mybucket.s-ed1.cloud.gcore.lu/picture.png
 ```
 
-S3 storages support both HTTP and HTTPS protocols.
+Object storages support both HTTP and HTTPS protocols.
 
 ## Request content directly from the SFTP storage
 

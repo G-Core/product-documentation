@@ -24,7 +24,7 @@ This feature is useful when you need to stream the event simultaneously from sev
 
 ## Enable the Multicamera feature
 
-Please, send us the request to activate the option via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of our website. Specify your ID in the request so that we can identify your account. You can find it on the main page of your control panel.
+Please, send us the request to activate the option via [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of our website. Specify your ID in the request so that we can identify your account. You can find it on the main page in the Gcore Customer Portal.
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/record-your-live-streams-and-save-them-as-videos/9612975911185.png" alt="Enable the Record feature" width="80%">
 
@@ -37,7 +37,7 @@ We will notify you when we activate the Multicamera feature. After that, you wil
 
 Create at least two live streams before you configure the Multicamera. To do this, you can use our guide: <a href="https://gcore.com/docs/streaming-platform/live-streaming/create-a-live-stream" target="_blank">Create a live stream</a>. 
 
-1\. Click **Create a multicamera**, enter the name (it will be displayed only in your control panel and will be invisible to viewers), and select the live streams you want to combine. Click **Create**.
+1\. Click **Create a multicamera**, enter the name (it will be displayed only in the Gcore Customer Portal and will be invisible to viewers), and select the live streams you want to combine. Click **Create**.
 
 You can also select only one stream. 
 

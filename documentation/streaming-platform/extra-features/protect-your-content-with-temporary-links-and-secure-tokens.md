@@ -68,7 +68,7 @@ X-ID-FE: ed-hw-edge-gc38
 
 ## CDN resources and scope of restrictions
 
-Video content hosted via the Streaming Platform is viewed and delivered through our CDN, so by default your account has only one hidden CDN resource in the format *\*\*\*\*\*\*.gvideo.io*.
+Video content hosted via the Video Streaming is viewed and delivered through our CDN, so by default your account has only one hidden CDN resource in the format *\*\*\*\*\*\*.gvideo.io*.
 
 The restriction policies, such as the Secure Token for links protection, apply specifically to CDN resources because a CDN resource covers all video content at once. This means you don’t need to create rules and make permissions for each video separately—it is enough to create and apply permissions only once to the CDN resource.
 

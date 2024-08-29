@@ -4,8 +4,8 @@ displayName: Configure
 order: 20
 published: true
 toc:
-pageTitle: Configure Logging| Gcore
-pageDescription: Configure and access Logging for centralized log collection. Set up log shippers, view logs in OpenSearch Dashboards.
+pageTitle: Configure Managed Logging| Gcore
+pageDescription: Configure and access Managed Logging for centralized log collection. Set up log shippers, view logs in OpenSearch Dashboards.
 ---
 # Configure Logging and view your logs
 
@@ -13,7 +13,24 @@ pageDescription: Configure and access Logging for centralized log collection. Se
 
 **Note**: Logging may be unavailable in some regions. In this case, choose the region that is geographically closest to your equipment.
 
-2\. In the **Cloud** menu, go to the **Logging** tab, click **Set up Logging**. The pop up will appear. Type the namespace in the field and click **Create**.
+2\. In the **Cloud** menu, go to the **Logging** tab, click **Set up Logging**. The pop up will appear. 
+
+<expandable-element title="What is a namespace">
+
+Previously, when activating Managed Logging, you could see a non-human-readable string, e.g., ```cbc25c71af8d4f7ca6cbbcdc5a4d68fe.your-topic``` as a *namespace* that is used as prefixed for topics. To make this process more user-friendly, we created the possibility of making human-readable namespaces, e.g., ```namespace123.your-topic```.
+
+**Note**: You can only create a namespace for a new project where the default value is not set up.
+
+</expandable-element>
+
+To create a namespace, input the namespace name according to the following restrictions:
+
+- Lowercase Latin letters and digits can be used
+- Underscore and spaces are prohibited
+- Length is between 2–32
+- The name should be unique for the destination region. If it’s already used, the system will suggest inputting another name. 
+
+Click **Create**.
 
 <img src="https://assets.gcore.pro/docs/cloud/laas/configure-logging-and-view-your-logs/logging-create-namespace.png" alt="Create namespace" width="70%">
  
@@ -27,9 +44,9 @@ These credentials are used to connect your log delivery systems to the topic for
 
 If you forget your credentials, click **Generate credentials** again for a new pair. Don’t forget to update your credentials in the settings of the installed log shippers.
 
-If you use Logging in multiple regions (Step 2), a new storage will be created in each region, and you will need to generate unique credentials for each one.
+If you use Managed Logging in multiple regions (Step 2), a new storage will be created in each region, and you will need to generate unique credentials for each one.
 
-5\. Select a log shipper (e.g., <a href="https://docs.fluentbit.io/manual/installation/getting-started-with-fluent-bit" target="_blank">Fluent Bit</a> or <a href="https://elastic.co/beats/filebeat" target="_blank">Filebeat</a>) which supports Kafka output. 
+5\. Select a log shipper (e.g. <a href="https://gcore.com/docs/cloud/logging-as-a-service/install-a-log-shipper/install-and-configure-fluent-bit" target="_blank">Fluent Bit</a>, <a href="https://gcore.com/docs/cloud/logging-as-a-service/install-a-log-shipper/install-and-configure-filebeat" target="_blank">Filebeat</a>, or <a href="https://gcore.com/docs/cloud/logging-as-a-service/install-a-log-shipper/install-and-configure-logstash" target="_blank">Logstash</a>) that supports Kafka output. 
 
 Configure the log shipper with our Kafka endpoints, credentials generated at Step 4, and target topic name “yourusername.topicname”. We recommend using “@timestamp” as the default time field in your log shipper. If you prefer to use another time field, you should delete the pre-created index pattern and create a new one with a desired time field.
 

@@ -13,9 +13,9 @@ This article outlines basic steps for setting up a mail server using popular com
 
 **Please note**: The use of email sending services must not violate <a href="https://gcore.com/legal" target="_blank">our terms of use</a>. Suspicious requests will be rejected and, if necessary, accounts will be blocked.
 
-1. Create an instance.
+1. Create an Virtual Machine.
 
-Install Cloud VM using <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance" target="_blank">our guide</a>. The minimum available configuration—1vCPU and 2 GB RAM—will be enough to install and run a mail server on your instance.
+Install Cloud VM using <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance" target="_blank">our guide</a>. The minimum available configuration—1vCPU and 2 GB RAM—will be enough to install and run a mail server on your VM.
 
 2. Check internet access.
 
@@ -29,7 +29,7 @@ However, if you first chose the option private method, then you need to get a <a
 
 <img src="https://assets.gcore.pro/docs/cloud/use-cases/2.png" alt="Create Ticket">
 
-3. Connect to your Gcore Cloud VM via either <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">SSH</a> or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">the VNC concole</a> in your control panel.
+3. Connect to your Gcore Cloud VM via either <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">SSH</a> or <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel" target="_blank">the VNC concole</a> in the Customer Portal.
 
 4. Install Postfix.
 
@@ -60,7 +60,7 @@ mydestination = your_server_domain.com, localhost.localdomain, localhost
 mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
 ```
 
-- **myhostname**: Specify the fully qualified domain name of the virtual server on which Postfix is running.
+- **myhostname**: Specify the fully qualified domain name of the Virtual Server on which Postfix is running.
 
 - **mydestination**: Specify the domains for which mail will be delivered locally instead of being forwarded to another host.
 

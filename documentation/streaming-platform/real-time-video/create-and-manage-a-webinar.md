@@ -9,7 +9,7 @@ toc:
    --1--How to invite viewers to a webinar room: "how-to-invite-viewers-to-a-webinar-room"
    --1--Available options screen sharing.: "available-options-screen-sharing"
    --2--Screen sharing: "screen-sharing"
-pageTitle: Webinar Creation | Gcpre
+pageTitle: Webinar Creation | Gcore
 pageDescription: A step-by-step guide on how to create and manage a webinar via the Real-Time Video module. 
 ---
 # Create and manage a webinar

@@ -4,22 +4,22 @@ displayName: Overview
 order: 10
 published: true
 toc:
-   --1--What is eSIM?: "what-is-the-gcore-5g-esim-solution"
-   --1--How does it work?: "how-does-gcore-5g-esim-work?"
+   --1--What is 5G Network?: "what-is-the-gcore-5g-network-solution"
+   --1--How does it work?: "how-does-gcore-5g-network-work?"
    --1--Advantages: "advantages-of-5G"
-   --1--Use cases: "use-cases-of-5g-esim"
-pageTitle: About 5G eSIM| Gcore
-pageDescription: Experience the power of Gcore 5G eSIM solution for secure Cloud connectivity. Benefit from ultra-low latency and global coverage.
+   --1--Use cases: "use-cases-of-5g-network"
+pageTitle: About 5G Network| Gcore
+pageDescription: Experience the power of Gcore 5G Network solution for secure Cloud connectivity. Benefit from ultra-low latency and global coverage.
 ---
-# About 5G eSIM
+# About 5G Network
 
-## What is the Gcore 5G eSIM solution?
+## What is the Gcore 5G Network solution?
 
-The Gcore 5G eSIM solution is a technology that combines the power of 5G networks and eSIM technology, enabling businesses and organizations to connect their devices and applications securely to the Gcore Cloud through 5G networks. 
+The Gcore 5G Network solution is a technology that combines the power of 5G networks and eSIM technology, enabling businesses and organizations to connect their devices and applications securely to the Gcore Cloud through 5G networks. 
 
-## How does Gcore 5G eSIM work?
+## How does Gcore 5G Network work?
 
-The user activates their eSIM card and then connects to their mobile 5G network. Once the 5G connection is established, the user can access and manage resources in their dedicated region within the Gcore Cloud platform. This could involve real-time data processing, analytics, running AI models, or using other Cloud services. The combination of 5G eSIM technology and Cloud connectivity ensures a seamless experience and brings a wealth of benefits.
+The user activates their eSIM card and then connects to their mobile 5G network. Once the 5G connection is established, the user can access and manage resources in their dedicated region within the Gcore Cloud platform. This could involve real-time data processing, analytics, running AI models, or using other Cloud services. The combination of 5G Network technology and Cloud connectivity ensures a seamless experience and brings a wealth of benefits.
 
 <img src="https://assets.gcore.pro/docs/cloud/5g-esim/about-5g-esim/how-it-works-1.png" alt="how 5G works with the Gcore Cloud Platform"> 
 
@@ -29,15 +29,15 @@ The user activates their eSIM card and then connects to their mobile 5G network.
 
 1\. **Ultra-low latency**. 5G technology offers ultra-low latency, which translates into minimal delay in data transmission. This powers real-time applications, like video streaming or online gaming, to run with near-instantaneous response times.
 
-2\. **Local network**. With the 5G eSIM technology, you can access the Gcore Cloud resources via the local network on a mobile device. 
+2\. **Local network**. With the 5G Network technology, you can access the Gcore Cloud resources via the local network on a mobile device. 
 
-3\. **Global presence with unlimited internet**. Our 5G network covers 183 countries, eliminating the need for additional roaming packages, unpredictable fees, and switching between SIM cards.
+3\. **Global presence with unlimited internet**. Our 5G Network covers 183 countries, eliminating the need for additional roaming packages, unpredictable fees, and switching between SIM cards.
 
-4\. **Secure and encrypted data transmission**. The Gcore 5G Cloud solution guarantees secure data transmission through advanced encryption algorithms and security protocols, allowing for controlling and managing the access of each individual SIM card.
+4\. **Secure and encrypted data transmission**. The Gcore 5G Network solution guarantees secure data transmission through advanced encryption algorithms and security protocols, allowing for controlling and managing the access of each individual SIM card.
 
-## Use cases of 5G eSIM
+## Use cases of 5G Network
 
-The use cases for 5G eSIM span across industries, making 5G eSIM a smart choice for diverse use cases.
+The use cases for 5G Network span across industries, making 5G Network a smart choice for diverse use cases.
 
 1\. **ML diagnostics**. Healthcare providers can leverage 5G technology with the Cloud AI platform to monitor real-time patient health data. The Cloud AI platform processes medical images and then returns them to the device for further use.
 

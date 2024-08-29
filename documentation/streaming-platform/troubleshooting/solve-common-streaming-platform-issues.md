@@ -10,11 +10,11 @@ toc:
    --2--Upload: "upload"
    --2--Player: "player"
    --1--Open a support ticket: "open-a-support-ticket"
-pageTitle: Solving Streaming Platform Issues | Gcore
-pageDescription: An explanation of common basic checks to address issues that may arise when working with a streaming platform.
+pageTitle: Solving Video Streaming Issues | Gcore
+pageDescription: An explanation of common basic checks to address issues that may arise when working with a Video Streaming.
 ---
 
-# Solve common Streaming Platform issues
+# Solve common Video Streaming issues
   
 We are covering some issues you may encounter when working with both Live and VOD streams, as well as steps you can take to troubleshoot them.
 
@@ -50,7 +50,7 @@ Other things to try:
 *Possible cause*: Transcoding is in progress.  
 *Suggested solution*: Each video chunk may take several seconds to transcode. Allow 10 to 15 seconds for this to happen. Once the chunks have been transcoded, the stream should be ready to play.
 
-*Possible cause*: Low Latency is enabled on the admin panel, but not on the control panel.  
+*Possible cause*: Low Latency is not enabled in the Customer Portal.  
 *Suggested solution*: Contact our [support team](mailto:support@gcore.com) to activate this option.
 
 **Stream returns an HTTP 502 error**
@@ -89,7 +89,7 @@ To avoid this situation:
 *Possible cause*: Not enough storage space to complete the upload.  
 *Suggested solution*: Confirm in the Storage statistics that you have used up your storage. Contact our [support team](mailto:support@gcore.com) to increase the storage space.
 
-**Upload to the control panel is interrupted by a session timeout (force logout)**
+**Upload to the Gcore Customer Portal is interrupted by a session timeout (force logout)**
 
 *Possible cause*: Video is too large to upload through UI.  
 *Suggested solution*:

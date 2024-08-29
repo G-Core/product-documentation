@@ -16,7 +16,7 @@ Use the "Users" section, "Sellers" tab to add, edit or delete users with Sellers
 
 To add a Seller go the "Sellers" tab and click on the "Add Seller" button. 
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-sellers/add-sellers-10.png" alt="Creating Seller accounts" width="50%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-sellers/manage-sellers.png" alt="Creating Seller accounts" width="80%">
 
 In a new window specify the Seller's name, email and phone number then click on the Send Invite button. An email with the password set up link will be sent to the specified email. The link will be active for 24 hours. 
 
@@ -28,7 +28,7 @@ If the link has expired a Reseller can resend the invitation - click on the "Res
 
 ## Deleting Seller accounts
 
-Click on the "Delete Seller" button in the "Actions" сolumn of the desired Seller. Once an account is deleted the Seller loses access to the admin panel and password recovery. The user profile (name, email, phone) also becomes unavailable.
+Click on the "Delete Seller" button in the "Actions" сolumn of the desired Seller. Once an account is deleted the Seller loses access to the Admin Portal and password recovery. The user profile (name, email, phone) also becomes unavailable.
 
 <img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-sellers/delete-seller-30.png" alt="Deleting Seller accounts">
 

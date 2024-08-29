@@ -3,15 +3,12 @@ title: install-and-configure-filebeat
 displayName: Filebeat
 published: true
 toc:
-   --1--What is Filebeat?: "what-is-filebeat"
-   --1--Install: "install"
-   --1--Configure: "configure"
+   --1--Install Filebeat: "install"
+   --1--Configure Filebeat: "configure"
 pageTitle: Install and configure Filebeat| Gcore
 pageDescription: Easily install and configure Filebeat, a log shipping tool, to collect and send logs to Gcore's Logging servers.
 ---
 # Install and configure Filebeat
-
-## What is Filebeat?  
 
 Filebeat is a log shipping tool. It collects logs from a device and sends them to an external storage.
 
@@ -51,7 +48,7 @@ Customize the highlighted values:
 
 You can also collect logs from other sources such as TCP, UDP, or syslog. For more details, refer to the <a href="https://elastic.co/guide/en/beats/filebeat/current/configuration-filebeat-options.html" target="_blank">"Configure inputs" section of the Filebeat documentation</a>: Click the log source you need, and configure the `inputs` section following the provided guide.
 
-<expandable-element title="Descriptions of the OUTPUT strings">
+<expandable-element title="Descriptions of the OUTPUT parameters">
 
 - **output.kafka**: Servers for log export (Kafka servers). 
 - **hosts**: Address of server(s) where logs will be exported to.  
@@ -65,4 +62,4 @@ You can also collect logs from other sources such as TCP, UDP, or syslog. For mo
 
 2. Save the changes in the Filebeat configuration file.
 
-3. Restart Filebeat, and it will begin sending logs to your Gcore Logging storage.  
+3. Restart Filebeat, and it will begin sending logs to the Gcore Managed Logging.  

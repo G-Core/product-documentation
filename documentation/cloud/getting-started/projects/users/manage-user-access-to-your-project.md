@@ -4,52 +4,56 @@ displayName: Manage access
 published: true
 order: 30
 toc:
-   --2--Edit user's role: "Edit-user-s-role"
-   --2--Deny access: "Deny-access-to-a-project"
-   --2--Restore access: "Restore-access-to-a-project-for-a-user"
+   --2--Edit user's role: "edit-user-roles"
+   --2--Deny access: "deny-access-to-a-project"
+   --2--Restore access: "restore-user-access-to-a-project"
 pageTitle: Manage user access | Gcore
-pageDescription: Discover how to manage user access to your Cloud project.
+pageDescription: Discover how to manage user access to your Edge Cloud project.
 ---
 # Manage user access to your project 
 
 If you want to add a new user to your project, follow this article: <a href="https://gcore.com/docs/cloud/getting-started/projects/users/add-a-new-user-to-your-project" target="_blank">Add a new user to your project</a>
 
-## Edit user's role
+## Edit user roles
 
 To learn more about user roles and rights, refer to the article: <a href="https://gcore.com/docs/cloud/getting-started/projects/users/user-roles-and-rights" target="_blank">User roles and rights</a>
 
-If you have enough rights, you can regulate user rights. Click Edit to go to the user settings. 
+If you have enough rights, you can change user rights:
 
-![The location of the Edit button](https://assets.gcore.pro/docs/cloud/getting-started/projects/users/manage-user-access-to-your-project/1-edit-button.png)
+1\. Click **Edit** to go to the user settings. 
 
-You can change the user role in the column Role. There are available the following roles: User, Observer and Administrator. Save and confirm changes.  
+![The location of the Edit button](https://assets.gcore.pro/docs/cloud/getting-started/projects/users/manage-user-access-to-your-project/edit-users.png)
 
-![The location of the Role column](https://assets.gcore.pro/docs/cloud/getting-started/projects/users/manage-user-access-to-your-project/2-user-roles.png)
+2\. Change the user role in the column **Role**. There are available the following roles: User, Observer, and Administrator. 
+
+![The location of the Role column](https://assets.gcore.pro/docs/cloud/getting-started/projects/users/manage-user-access-to-your-project/edit-user-actions.png)
+
+3\. Save and confirm changes.  
 
 ## Deny access to a project
 
-To deny access to a project, click the Delete role button in the user settings. 
+To deny access to a project:
 
-![The location of the Delete role button](https://assets.gcore.pro/docs/cloud/getting-started/projects/users/manage-user-access-to-your-project/3-delete-role-button.png)
+1\. Click the **Delete role** button in the user settings. 
 
- After confirming the deletion, a user will not be allowed to access the project. 
+![The location of the Delete role button](https://assets.gcore.pro/docs/cloud/getting-started/projects/users/manage-user-access-to-your-project/delete-user-actions.png)
 
-In the Access section of project settings, the user will be displayed with the Non-assigned role. 
+2\. After confirming the deletion, a user will not be allowed to access the project. In the **Access** section of project settings, the user will be displayed with the No-access role. 
 
-![The location of the field showing non-assigned roles](https://assets.gcore.pro/docs/cloud/getting-started/projects/users/manage-user-access-to-your-project/4-non-assigned-role.png)
+![The location of the field showing non-assigned roles](https://assets.gcore.pro/docs/cloud/getting-started/projects/users/manage-user-access-to-your-project/user-no-access.png)
 
-## Restore access to a project for a user
+## Restore user access to a project
 
-To invite a user to the project again, click Edit.
+To invite a user to the project again:
 
-![The location of the Edit button](https://assets.gcore.pro/docs/cloud/getting-started/projects/users/manage-user-access-to-your-project/5-edit-non-assigned-role-button.png)
+1\. Click **Edit** in the user settings.
 
-Change the user role to the required one and save the settings. 
+![The location of the Edit button](https://assets.gcore.pro/docs/cloud/getting-started/projects/users/manage-user-access-to-your-project/user-no-access-edit.png)
 
-![The location of the Role column](https://assets.gcore.pro/docs/cloud/getting-started/projects/users/manage-user-access-to-your-project/6-user-roles.png)
+2\. Change the user role to the required one and save the settings.
 
-Confirm the role reassigning.
+3\. Confirm the role reassigning.
 
-![The window appearing to reassign a user role](https://assets.gcore.pro/docs/cloud/getting-started/projects/users/manage-user-access-to-your-project/7-reassign-role-window.png)
+![The window appearing to reassign a user role](https://assets.gcore.pro/docs/cloud/getting-started/projects/users/manage-user-access-to-your-project/reassign-role.png)
 
 After the changes, the user will again have access to a project via the personal account. 

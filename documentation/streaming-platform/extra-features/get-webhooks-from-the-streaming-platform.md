@@ -5,23 +5,23 @@ published: true
 order: 40
 toc:
    --1--What is a webhook?: "what-is-a-webhook"
-   --1--What is it used for?: "what-are-the-streaming-platform-webhooks-used-for"
+   --1--What is it used for?: "what-are-the-video-streaming-webhooks-used-for"
    --1--Configure the webhook integration: "configure-the-webhook-integration"
-   --1--Examples of available webhooks: "webhook-examples-of-all-streaming-platform-events"
+   --1--Examples of available webhooks: "webhook-examples-of-all-video-streaming-events"
 pageTitle: Understanding Webhooks With Examples | Gcore
-pageDescription: What automatic notifications of the Streaming Platform events you may receive.
+pageDescription: What automatic notifications of the Video Streaming events you may receive.
 ---
-# Get webhooks from the Streaming Platform 
+# Get webhooks from the Video Streaming 
   
 ## What is a webhook?
 
-A webhook is a free automated notification about an event in our service. You can receive notifications about the following events of our Streaming Platform:
+A webhook is a free automated notification about an event in our service. You can receive notifications about the following events of our Video Streaming:
 
 - A live stream has started or finished.
 - Recording of a live stream has started or paused.
 - Updates on processing of a live stream recording: a recording has started processing, partially processed, or completely processed.
 - Updates on broadcast statuses: pending, live, paused, or finished.
-- A video is uploaded to the Platform.
+- A video is uploaded to the Gcore Customer Portal.
 - Updates on video processing: a video has started processing, partially processed, or completely processed.
 
 Whenever any of these events happens, our server will create an HTTP POST request and notify you about it. You will receive the information in JSON format. Below is an example of a webhook triggered when a live stream starts.
@@ -41,25 +41,25 @@ Whenever any of these events happens, our server will create an HTTP POST reques
 
 Customize the following values:
 
-- <span style="color:#FF5913">12345</span> is the stream ID in your Control panel,
-- <span style="color:#FF5913">true</span> is the indicator that the Platform is receiving your stream,
+- <span style="color:#FF5913">12345</span> is the stream ID in the Gcore Customer Portal,
+- <span style="color:#FF5913">true</span> is the indicator that the Video Streaming is receiving your stream,
 - <span style="color:#FF5913">false</span> is the indicator that your stream is not being recorded.
 
-## What are the Streaming Platform webhooks used for?
+## What are the Video Streaming webhooks used for?
 
-Webhooks are used by apps integrated with the Streaming Platform. You can configure your app so that it will activate automatic workflows whenever it receives a webhook.
+Webhooks are used by apps integrated with the Video Streaming. You can configure your app so that it will activate automatic workflows whenever it receives a webhook.
 
-For example, users share videos in your app. When a user adds a new video, it is uploaded and processed through our Streaming Platform. Then you need to embed the video in your application. You set up the auto-posting: as soon as the video is processed, the Streaming Platform will send a webhook, and your app will post the video.
+For example, users share videos in your app. When a user adds a new video, it is uploaded and processed through our Video Streaming. Then you need to embed the video in your application. You set up the auto-posting: as soon as the video is processed, the Video Streaming will send a webhook, and your app will post the video.
 
 ## Configure the webhook integration
 
 1\. Prepare your HTTP server to receive webhooks.
 
-2\. Contact us via chat or email [support@gcore.com](mailto:support@gcore.com) and ask to enable the webhook integration. Specify your ID (personal client ID) and the URL of the server that will receive webhooks. You can find your ID in your <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Control panel</a>.
+2\. Contact us via chat or email [support@gcore.com](mailto:support@gcore.com) and ask to enable the webhook integration. Specify your ID (personal client ID) and the URL of the server that will receive webhooks. You can find your ID in the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/get-webhooks-from-the-streaming-platform/image.png" alt="your ID in your Control panel">
+<img src="https://assets.gcore.pro/docs/streaming-platform/extra-features/get-webhooks-from-the-streaming-platform/image.png" alt="your ID in the Gcore Customer Portal">
 
-The message template: *"Good afternoon! Please configure the Streaming Platform webhook integration for my account with ID..... The URL of my server to send webhooks to is ...."*.
+The message template: *"Good afternoon! Please configure the Video Streaming webhook integration for my account with ID..... The URL of my server to send webhooks to is ...."*.
 
 3\. We will notify you when we configure the webhook integration.
 
@@ -67,7 +67,7 @@ We deliver webhooks for free from the IP range *92.223.123.0/24*.
 
 We can send webhooks of one account only to one server. If your server is unavailable, undelivered webhooks won't be sent again. You will only receive a webhook of the next event.
 
-## Webhook examples of all Streaming Platform events 
+## Webhook examples of all Video Streaming events 
 
 Below are examples of all the webhooks that you can get from our service. Parameters are explained in round brackets.
 
@@ -88,8 +88,8 @@ Below are examples of all the webhooks that you can get from our service. Parame
 
 Where:
 
-- <span style="color:#FF5913">12345</span> is the stream ID in your Control panel,
-- <span style="color:#FF5913">true</span> is the indicator that the Platform is receiving your stream,
+- <span style="color:#FF5913">12345</span> is the stream ID in Gcore Customer Portal,
+- <span style="color:#FF5913">true</span> is the indicator that the Video Streaming is receiving your stream,
 - <span style="color:#FF5913">false</span> is the indicator that your stream is not being recorded.
 
 **A live stream is paused**
@@ -109,8 +109,8 @@ Where:
 
 Where:
 
-- <span style="color:#FF5913">12345</span> is the stream ID in your Control panel,
-- <span style="color:#FF5913">false</span> is the indicator the Platform is not receiving your stream,
+- <span style="color:#FF5913">12345</span> is the stream ID in the Gcore Customer Portal,
+- <span style="color:#FF5913">false</span> is the indicator the Video Streaming is not receiving your stream,
 - <span style="color:#FF5913">false</span> is the indicator that your stream is not being recorded.
 
 
@@ -131,8 +131,8 @@ Where:
 
 Where:
 
-- <span style="color:#FF5913">12345</span> is the stream ID in your Control panel,
-- <span style="color:#FF5913">true</span> is the indicator that the Platform is receiving your stream,
+- <span style="color:#FF5913">12345</span> is the stream ID in the Gcore Customer Portal,
+- <span style="color:#FF5913">true</span> is the indicator that the Video Streaming is receiving your stream,
 - <span style="color:#FF5913">true</span> is the indicator that your stream is being recorded.
 
 **Recording has finished**
@@ -152,8 +152,8 @@ Where:
 
 Where:
 
-- <span style="color:#FF5913">12345</span> is the stream ID in your Control panel,
-- <span style="color:#FF5913">true</span> is the indicator that the Platform is receiving your stream,
+- <span style="color:#FF5913">12345</span> is the stream ID in the Gcore Customer Portal,
+- <span style="color:#FF5913">true</span> is the indicator that the Video Streaming is receiving your stream,
 - <span style="color:#FF5913">false</span> is the indicator that your stream is not being recorded.
 
 **A recording has started processing**
@@ -193,7 +193,7 @@ Where:
 
 Where:
 
-- <span style="color:#FF5913">12345</span> is the recording ID in your Control panel,
+- <span style="color:#FF5913">12345</span> is the recording ID in the Gcore Customer Portal,
 - <span style="color:#FF5913">ZeC44gtQQ4E97N9S</span> is the video ID presented as a random set of characters, which prevents a video URL from stealing if the webhook is intercepted,
 - <span style="color:#FF5913">test</span> is your stream name,
 - <span style="color:#FF5913">19580</span> is the recording duration in seconds,
@@ -237,7 +237,7 @@ Where:
 
 Where:
 
-- <span style="color:#FF5913">12345</span> is the recording ID in your Control panel,
+- <span style="color:#FF5913">12345</span> is the recording ID in the Gcore Customer Portal,
 - <span style="color:#FF5913">ZeC44gtQQ4E97N9S</span> is the video ID presented as a random set of characters, which prevents a video URL from stealing if the webhook is intercepted,
 - <span style="color:#FF5913">test</span> is your stream name,
 - <span style="color:#FF5913">19580</span> is the recording duration in seconds,
@@ -282,7 +282,7 @@ Where:
 
 Where:
 
-- <span style="color:#FF5913">12345</span> is the recording ID in your Control panel,
+- <span style="color:#FF5913">12345</span> is the recording ID in the Gcore Customer Portal,
 - <span style="color:#FF5913">ZeC44gtQQ4E97N9S</span> is the video ID presented as a random set of characters, which prevents a video URL from stealing if the webhook is intercepted,
 - <span style="color:#FF5913">test</span> is your stream name,
 - <span style="color:#FF5913">19580</span> is the recording duration in seconds,
@@ -366,7 +366,7 @@ Where:
 - <span style="color:#FF5913">12345</span> is the broadcast ID in your personal account,
 - <span style="color:#FF5913">paused</span> is the status which means "Paused".
 
-**A video is uploaded to the Platform**
+**A video is uploaded to the Video Streaming**
 
 <code-block>
 {   
@@ -386,7 +386,7 @@ Where:
 
 Where:
 
-- <span style="color:#FF5913">54321</span> is the video ID in your Control panel,
+- <span style="color:#FF5913">54321</span> is the video ID in the Gcore Customer Portal,
 - <span style="color:#FF5913">Lfsq14hKvLkNsExx</span> is the video ID presented as a random set of characters, which prevents a video URL from stealing if the webhook is intercepted,
 - <span style="color:#FF5913">SampleVideo</span> is the video name,
 - <span style="color:#FF5913">170859</span> is the duration of the video in seconds,
@@ -430,7 +430,7 @@ Where:
 
 Where:
 
-- <span style="color:#FF5913">784280</span> is the video ID in your Control panel,
+- <span style="color:#FF5913">784280</span> is the video ID in the Gcore Customer Portal,
 - <span style="color:#FF5913">Lfsq14hKvLkNsExx</span> is the video ID presented as a random set of characters, which prevents a video URL from stealing if the webhook is intercepted,
 - <span style="color:#FF5913">SampleVideo</span> is the video name,
 - <span style="color:#FF5913">170859</span> is the duration of the video in seconds,
@@ -474,7 +474,7 @@ Where:
 
 Where:
 
-- <span style="color:#FF5913">784280</span> is the video ID in your Control panel,
+- <span style="color:#FF5913">784280</span> is the video ID in the Gcore Customer Portal,
 - <span style="color:#FF5913">Lfsq14hKvLkNsExx</span> is the video ID presented as a random set of characters, which prevents a video URL from stealing if the webhook is intercepted,
 - <span style="color:#FF5913">SampleVideo</span> is the video name,
 - <span style="color:#FF5913">170859</span> is the duration of the video in seconds,
@@ -519,7 +519,7 @@ Where:
 
 Where:
 
-- <span style="color:#FF5913">784280</span> is the video ID in your Control panel,
+- <span style="color:#FF5913">784280</span> is the video ID in the Gcore Customer Portal,
 - <span style="color:#FF5913">Lfsq14hKvLkNsExx</span> is the video ID presented as a random set of characters, which prevents a video URL from stealing if the webhook is intercepted,
 - <span style="color:#FF5913">SampleVideo</span> is the video name,
 - <span style="color:#FF5913">170859</span> is the duration of the video in seconds,

@@ -11,7 +11,7 @@ pageDescription: A step-by-step guide on how to use Prefetch to upload content t
 
 Use Prefetch to upload the content to CDN cache before users request it. 
 
-1\. Go to the <a href="https://cdn.gcore.com/" target="_blank">CDN</a> section on left in the control panel find **Prefetch**.  
+1\. Go to the <a href="https://cdn.gcore.com/" target="_blank">CDN</a> section in the Gcore Customer Portal and find **Prefetch**.  
   
 2\. Choose the desired CDN Resource.
 

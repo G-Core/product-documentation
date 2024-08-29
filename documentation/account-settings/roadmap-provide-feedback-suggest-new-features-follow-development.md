@@ -20,7 +20,8 @@ pageDescription: Detailed overview of Gcore's Roadmap—a platform for submittin
 ## What is Roadmap?
 
 <a href="https://roadmap.gcore.com" target="_blank">Roadmap</a> is a platform where you can submit requests for missing features and follow the development process of new features proposed by other community members. You can also leave feedback on new feature development and outcomes. 
-The following Gcore are featured in Roadmap: <a href="https://roadmap.gcore.com/roadmap/b/cdn" target="_blank">CDN</a>, <a href="https://roadmap.gcore.com/roadmap/b/dns" target="_blank">DNS</a>, <a href="https://roadmap.gcore.com/roadmap/b/cloud" target="_blank">Cloud</a>, <a href="https://roadmap.gcore.com/roadmap/b/streaming" target="_blank">Streaming Platform</a>, and <a href="https://roadmap.gcore.com/roadmap/b/web-protection" target="_blank">Web Security</a>. 
+
+The following Gcore are featured in Roadmap: <a href="https://roadmap.gcore.com/roadmap/b/cdn" target="_blank">CDN</a>, <a href="https://roadmap.gcore.com/roadmap/b/dns" target="_blank">Managed DNS</a>, <a href="https://roadmap.gcore.com/roadmap/b/cloud" target="_blank">Edge Cloud</a>, <a href="https://roadmap.gcore.com/roadmap/b/streaming" target="_blank">Video Streaming</a>, and <a href="https://roadmap.gcore.com/roadmap/b/web-protection" target="_blank">Web Application Security</a>. 
 
 ## Navigating Roadmap
 
@@ -28,7 +29,7 @@ Roadmap has three tabs: main page, products, and changelog.
 
 ### Main page
 
-When opening the main <a href="https://roadmap.gcore.com" target="_blank">Roadmap</a> page, you will see all created posts (or requests) for all products. You can view requests for a specific product only—e.g., Cloud—by clicking on the name of that product at the top of the page. 
+When opening the main <a href="https://roadmap.gcore.com" target="_blank">Roadmap</a> page, you will see all created posts (or requests) for all products. You can view requests for a specific product only—e.g., Edge Cloud—by clicking on the name of that product at the top of the page. 
 
 Requests are divided into four columns:
 

@@ -74,7 +74,7 @@ For TCP, the maximum segment size (MSS) value is 40 bytes less than the MTU size
 
 **Step 4: Configure BGP.** Open a BGP peering session, configure your BGP neighbor by specifying their IP address and number of remote AS, set BGP policies that will determine the best path for routing, and advertise network prefixes.
 
-For example, imagine Side A (AS 10) and Side B (AS 20) on the two ends of the tunnel. Side A provides DDoS protection, so it accepts specific routes from clients, denies the default for the routing security purposes, and does not advertise anything. On the other hand, Side B advertises only its own routes.
+For example, imagine Side A (AS 10) and Side B (AS 20) on the two ends of the tunnel. Side A provides DDoS Protection, so it accepts specific routes from clients, denies the default for the routing security purposes, and does not advertise anything. On the other hand, Side B advertises only its own routes.
 
 Let’s start with the Side A configuration. 
 

@@ -9,7 +9,7 @@ pageDescription: Learn how to install nginx Ingress Controller to effectively ma
 ---
 # Install nginx Ingress Controller
 
-When you install the nginx Ingress Controller, our system automatically creates a <a href="https://gcore.com/cloud/load-balancers" target="_blank">load balancer</a>. This load balancer acts as an entry point for incoming traffic. When traffic arrives, the load balancer forwards it to the Ingress Controller. The Ingress Controller is responsible for routing the traffic to the appropriate services within your Kubernetes cluster based on the rules defined in the Ingress manifests.
+When you install the nginx Ingress Controller, our system automatically creates a <a href="https://gcore.com/cloud/load-balancers" target="_blank">Load Balancer</a>. This Load Balancer acts as an entry point for incoming traffic. When traffic arrives, the Load Balancer forwards it to the Ingress Controller. The Ingress Controller is responsible for routing the traffic to the appropriate services within your Managed Kubernetes cluster based on the rules defined in the Ingress manifests.
 
 1\. Run the kubectl command to create a namespace:
 
@@ -37,7 +37,7 @@ helm install ingress-nginx ingress-nginx/ingress-nginx  \
 --set controller.ingressClassResource.name=nginx
 ```
 
-You have installed the nginx Ingress Controller. It will now automatically create a load balancer on your behalf.
+You have installed the nginx Ingress Controller. It will now automatically create a Load Balancer on your behalf.
 
 5\. Use this command to get the IP address:
 
@@ -46,4 +46,4 @@ watch kubectl -n ingress get svc
 ```
 Wait until the `<pending> state` of the `EXTERNAL-IP` column changes to the IP address.
 
-The load balancer will be shown in your control panel in the **Load Balancers** section. The traffic will reach the nginx Ingress Controller via this balancer.
+The Load Balancer will be shown in the Gcore Customer Portal on the **Load Balancers** page. The traffic will reach the nginx Ingress Controller via this balancer.

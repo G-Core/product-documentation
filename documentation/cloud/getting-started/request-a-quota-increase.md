@@ -7,15 +7,19 @@ toc:
    --1--Overview: "overview"
    --1--Send requests: "how-to-send-a-request"
 pageTitle: Request a quota increase | Gcore
-pageDescription: Explore how to increase your qoutas for Cloud resources.
+pageDescription: Explore how to increase your qoutas for Gcore Edge Cloud resources.
 ---
 # Request a quota increase
 
 ## Overview
 
-In the "Quotas Viewer" section, you can find how much of the available resources (such as Virtual Instances Shared Count, vCPUs Count, RAM Size, etc.) you're currently using and its limits. Also, on this page, you can request more resources. We will consider your request for up to two business days (usually faster).
+On the **Quotas Viewer** page, you can find how much of the available resources (Virtual Machines shared count, vCPUs count, RAM size, etc.) you're currently using, check resource limits, and request more resources. We'll review your request for up to two business days.
 
-**Note**: Limit changes don't affect your payments. We charge only for the used resources.
+<alert-element type="info" title="Info">
+
+Limit changes don't affect your payments. We charge only for the used resources.
+
+</alert-element>
 
 Categories group the resources for which there are quotas:
 
@@ -31,15 +35,23 @@ Categories group the resources for which there are quotas:
 
 ## How to send a request
 
-1\. Go to **Quotas Viewer** in the Cloud Management section and select the region where you want to request a quota increase.
+1\. In the Gcore Customer Portal, navigate to **Quotas Viewer** in the Cloud Management section and select the region where you want to request a quota increase.
 
-**Note**: Some resources may only be available in some regions.
+<alert-element type="tip" title="Tip">
+ 
+Some resources may only be available in some regions.
+
+</alert-element>
 
 <img src="https://assets.gcore.pro/docs/cloud/getting-started/request-a-quota-increase/request-quotas-10.png" alt="Region selection">
 
-2\. Select the desired quota category below to open the list of included resources or type the name in the search bar. Set the desired amount of resources requested by clicking plus or minus on the right, or write the number manually. An orange circle appears next to the line where you changed the number of resources.
+2\. Select the desired quota category to open the list of included resources or type the name in the search bar. Set the desired amount of resources requested by clicking plus or minus on the right, or write the number manually. An orange circle appears next to the line where you changed the number of resources.
 
-**Note**: You can increase the number of resources in several categories per request. If you want to request an increase in the quota in several regions at once, specify the number of resources in one region (e.g., Amsterdam) and then choose another region (e.g., Frankfurt) and identify resources there.
+<alert-element type="info" title="Info">
+
+You can increase the number of resources in several categories per request. If you want to request an increase in the quota in several regions at once, specify the number of resources in one region (e.g., Amsterdam) and then choose another region (e.g., Frankfurt) and identify resources there.
+
+</alert-element>
 
 <img src="https://assets.gcore.pro/docs/cloud/getting-started/request-a-quota-increase/request-quotas-20.png" alt="Category selection" width="75%">
 
@@ -51,4 +63,4 @@ Categories group the resources for which there are quotas:
 
 <img src="https://assets.gcore.pro/docs/cloud/getting-started/request-a-quota-increase/request-quotas-40.png" alt="The field for the explanation comment" width="50%">
 
-**Note**: You can send only ten quota requests not processed by the support team. Not processed requests mean that requests are in progress: not approved or rejected. You will see an error if there are more than ten quota requests. In this case, please get in touch with the support team.
+Note that you can send only ten quota requests not processed by the support team. Not processed requests mean that requests are in progress: not approved or rejected. You will see an error if there are more than ten quota requests. In this case, please get in touch with the support team.

@@ -16,7 +16,7 @@ pageDescription: Explanation of how the live call module works and what features
 
 ## What is Real-Time Video?
 
-Real-Time Video is a paid module of the Streaming Platform. It has an API, SDK, and free sample apps for iOS and Android. It also allows easy setup via iFrame on websites. With this module, you can integrate video calls into your apps quickly without needing to perform any complex programming. It's perfect for customers who want a simple, ready-to-use solution.
+Real-Time Video is a paid module of the Video Streaming. It has an API, SDK, and free sample apps for iOS and Android. It also allows easy setup via iFrame on websites. With this module, you can integrate video calls into your apps quickly without needing to perform any complex programming. It's perfect for customers who want a simple, ready-to-use solution.
 
 This is how Real-Time Video works with different platforms:
 
@@ -25,7 +25,7 @@ This is how Real-Time Video works with different platforms:
 - <a href="https://github.com/G-Core/android-demo-video-calls" target="_blank">Android</a>
 - <a href="https://github.com/G-Core/ios-demo-video-calls" target="_blank">iOS</a>
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/mobile-video-calls-module-10.gif" alt="Real-Time Video">
+<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/mobile-video-calls-module-10.gif" loading="lazy" width="602" height="350" alt="Real-Time Video">
 
 ## Use cases for Real-Time Video module
 
@@ -35,7 +35,7 @@ Our video call feature can be used for diverse purposes and group sizes:
 - Video meetings with 2–300+ people, ideal for small and medium businesses, online education, and online events.
 - Webinars with 1–25 speakers and 10M+ viewers, like major online events.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/one-to-one-call-20.gif" alt="Real-Time Video">
+<video width="400px" controls autoplay loop><source src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/one-to-one-call-20.mp4" type="video/mp4"></video>
 
 ## What features does Real-Time Video have?
 
@@ -56,7 +56,7 @@ Here are the Real-Time Video features:
 - Screen sharing and presentation
 - Works on any device and modern browsers, supporting WebRTC protocol
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/web-video-calls-module-30.gif" alt="Real-Time Video">
+<img loading="lazy" src="https://assets.gcore.pro/docs/streaming-platform/real-time-video/about-real-time-video/web-video-calls-module-30.gif" width="602" height="350" alt="Real-Time Video">
 
 ## How does Real-Time Video work?
 
@@ -78,5 +78,3 @@ All data streams are made safe using the DTLS (Datagram Transport Layer Security
 ## How to use the Real-Time Video module
 
 You can try out the video call module quickly and easily. To do this, go to the <a href="https://meet.gcore.com/new" target="_blank">Real-Time Video demo page</a> and follow the instructions there. 
-
-If you want to use our solution for video calls, please read the <a href="https://gcore.com/docs/streaming-platform/api/real-time-video-api-tutorial" target="_blank">Real-Time Video API tutorial</a> guide.

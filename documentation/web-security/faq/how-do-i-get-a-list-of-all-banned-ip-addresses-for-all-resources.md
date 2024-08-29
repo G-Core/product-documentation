@@ -9,7 +9,7 @@ pageDescription: How to get a list of all banned IP addresses for all resources 
 ---
 #  How do I get a list of all banned IP addresses for all resources?
 
-You can get a list of all banned IP addresses for all Web Security product resources using an API request:
+You can get a list of all banned IP addresses for all Web Application Security product resources using an API request:
 
 ```
 // @name Get protected ip addresses

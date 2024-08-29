@@ -84,7 +84,7 @@ Status codes 403 and 404 have multiple meanings. Explanations of each scenario t
 <td style="text-align: left">The CDN can’t reach the origin if the access is restricted, and can’t deliver content to users.
 <br><br>
 <b>Note</b>: This case may also result in the 504 status code.</td>
-<td style="text-align: left">Whitelist the IP addresses of Gcore servers using this <a href="https://gcore.com/docs/cdn/getting-started/configure-an-origin/add-cdn-servers-to-the-origin-acl-whitelist" target="_blank">guide</a>.<br> If the IP addresses are already whitelisted, Gcore subnets may be excluded from the ACL.<br> In such a case, configure the ACL using an HTTP header instead of an IP list using the <a href="https://gcore.com/docs/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin" target="_blank">Request headers option</a> in the CDN resource settings.</td>
+<td style="text-align: left">Allowlist the IP addresses of Gcore servers using this <a href="https://gcore.com/docs/cdn/getting-started/configure-an-origin/add-cdn-servers-to-the-origin-acl-whitelist" target="_blank">guide</a>.<br> If the IP addresses are already allowlisted, Gcore subnets may be excluded from the ACL.<br> In such a case, configure the ACL using an HTTP header instead of an IP list using the <a href="https://gcore.com/docs/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin" target="_blank">Request headers option</a> in the CDN resource settings.</td>
 </tr>
 </tbody>
 </table>
@@ -121,7 +121,7 @@ Status codes 403 and 404 have multiple meanings. Explanations of each scenario t
 <td style="text-align: left">The CDN can’t reach the origin if the access is restricted, and can’t deliver content to users.
 <br><br>
 <b>Note</b>: This case may also result in the 404 status code.</td>
-<td style="text-align: left">Whitelist the IP addresses of Gcore servers using this <a href="https://gcore.com/docs/cdn/getting-started/configure-an-origin/add-cdn-servers-to-the-origin-acl-whitelist" target="_blank">guide</a>.<br> If the IP addresses are already whitelisted, Gcore subnets may be excluded from the ACL.<br> In such a case, configure the ACL using an HTTP header instead of an IP list using the <a href="https://gcore.com/docs/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin" target="_blank">Request headers option</a> in the CDN resource settings.</td>
+<td style="text-align: left">Allowlist the IP addresses of Gcore servers using this <a href="https://gcore.com/docs/cdn/getting-started/configure-an-origin/add-cdn-servers-to-the-origin-acl-whitelist" target="_blank">guide</a>.<br> If the IP addresses are already allowlisted, Gcore subnets may be excluded from the ACL.<br> In such a case, configure the ACL using an HTTP header instead of an IP list using the <a href="https://gcore.com/docs/cdn/cdn-resource-options/http-headers/specify-http-headers-that-cdn-adds-to-requests-to-the-origin" target="_blank">Request headers option</a> in the CDN resource settings.</td>
 </tr>
 <tr>
 <td style="text-align: left">508</td>

@@ -4,7 +4,6 @@ import { ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, Router } from '@
 import { isScullyRunning, ScullyRoute, ScullyRoutesService } from '@scullyio/ng-lib';
 import { Observable, filter, map, switchMap } from 'rxjs';
 import config from '../config';
-import { sourcebuster } from './utils/sourcebuster';
 import { AnalyticsService } from './services/analitycs.service';
 
 declare const addAnalyticsScripts: any;
@@ -80,7 +79,6 @@ export class AppComponent implements OnInit {
 
     public ngOnInit(): void {
         if (!isScullyRunning()) {
-            this.setUTMCookie();
             addAnalyticsScripts();
         }
 
@@ -120,12 +118,6 @@ export class AppComponent implements OnInit {
             }
         }
         return snapshot;
-    }
-
-    private setUTMCookie(): void {
-        sourcebuster.init({
-            domain: defineDomain(),
-        });
     }
 
     public closeCookiesModal(): void {

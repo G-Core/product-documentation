@@ -13,9 +13,9 @@ pageDescription: Learn how to assign an additional IP address to your VM's inter
 
 ## What is an allowed address pair?
 
-An allowed address pair is a feature that allows you to add an extra IP address to the interface of a virtual machine.
+An allowed address pair is a feature that allows you to add an extra IP address to the interface of a Virtual Machine.
 
-By default, a virtual machine has a MAC-IP binding. It means all the traffic that comes to a given IP address will be sent to the machine that has that particular MAC address. If you want to allow traffic for another IP address, you need to add it to the allowed address pair. As such, your machine will become accessible for both IP addresses.
+By default, a Virtual Machine has a MAC-IP binding. It means all the traffic that comes to a given IP address will be sent to the machine that has that particular MAC address. If you want to allow traffic for another IP address, you need to add it to the allowed address pair. As such, your machine will become accessible for both IP addresses.
 
 In Gcore, you can add an allowed address pair via an API request.
 
@@ -23,7 +23,7 @@ In Gcore, you can add an allowed address pair via an API request.
 
 1. Generate an authorization token or use a <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">permanent API token</a>.
 
-2. Make sure you know the project ID, region ID, instance ID, instance port ID, network ID, and MAC address. Otherwise, send API requests to get the project ID, region ID, instance ID, port ID, network ID, and then find your MAC address from the command line.
+2. Make sure you know the project ID, region ID, Virtual Machine ID, Virtual Machine port ID, network ID, and MAC address. Otherwise, send API requests to get the project ID, region ID, Virtual Machine ID, port ID, network ID, and then find your MAC address from the command line.
 
 3. Send the following API request:
 

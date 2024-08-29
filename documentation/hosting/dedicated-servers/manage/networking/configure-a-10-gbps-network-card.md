@@ -11,7 +11,7 @@ pageDescription: Learn how to configure a 10 Gbps network card on your Ubuntu, D
 ---
 # Configure a 10 Gbps network card
 
-Each dedicated server has multiple network cards connected to separate network switches. By default, the installed OS is configured to use a 1 Gbps network card. To use a faster 10 Gbps network card, you should configure the 10 Gbps interface manually.
+Each Dedicated Server has multiple network cards connected to separate network switches. By default, the installed OS is configured to use a 1 Gbps network card. To use a faster 10 Gbps network card, you should configure the 10 Gbps interface manually.
 
 If you want to avoid failover, we recommend using Link Aggregation Control Protocol (LACP).
 

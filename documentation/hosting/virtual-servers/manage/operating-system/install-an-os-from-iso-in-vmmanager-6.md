@@ -5,11 +5,11 @@ published: true
 order: 32
 toc:
 pageTitle: Install an OS from ISO in VMmanager 6| Gcore
-pageDescription: Learn how to install an OS from an ISO image for a virtual server in VMManager 6.
+pageDescription: Learn how to install an OS from an ISO image for a Virtual Server in VMManager 6.
 ---
 # Install OS from ISO on in VMmanager 6
 
-An ISO image is a disk file image that contains an exact copy of the data and file structure from a specific optical disc such as a CD, DVD or Blu-ray. Files in an ISO image may include operating systems, programs, games, or any other data that can be written to an optical disc. This guide will describe how an ISO image can be mounted to your virtual server.
+An ISO image is a disk file image that contains an exact copy of the data and file structure from a specific optical disc such as a CD, DVD or Blu-ray. Files in an ISO image may include operating systems, programs, games, or any other data that can be written to an optical disc. This guide will describe how an ISO image can be mounted to your Virtual Server.
 
 ## ISO requirements
 

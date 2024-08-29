@@ -24,9 +24,9 @@ import { SearchComponent } from './components/search/search.component';
 import { MenuService } from './services/menu.service';
 import { ModalLoginModule } from './components/modal-login';
 import { EditGithubButtonComponent } from './web-components/edit-github-button/edit-github-button.component';
+import { AlertElementComponent } from './web-components/alert-element/alert-element.component';
 import { CookiesSettingsModule } from './components/cookies-settings/cookies-settings.module';
 import { TabsetComponent } from './web-components/tabset/tabset.component';
-import { AlertElementComponent } from './web-components/alert-element/alert-element.component';
 import { DisclaimerComponent } from './components/disclaimer/disclaimer.component';
 import { BaseHrefLocationStrategy } from './base-href.location-strategy';
 

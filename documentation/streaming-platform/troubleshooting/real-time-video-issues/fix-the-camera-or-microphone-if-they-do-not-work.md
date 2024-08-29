@@ -76,7 +76,7 @@ To check the camera and microphone settings in Opera:
 
 1\. Go to the browser Settings, select the "Privacy & security" section, and navigate to **Site settings**.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/troubleshooting/real-time-video-issues/fix-the-camera-or-microphone-if-they-do-not-work/13081222474513.png" alt="Settings" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/troubleshooting/real-time-video-issues/fix-the-camera-or-microphone-if-they-do-not-work/13081222474513.png" alt="Opera browser settings" width="80%">
 
 2\. In the "Permissions" section, open the **Camera** and **Microphone** settings and ensure that ```meet.gcore.com``` is not on the block list.
 
@@ -86,7 +86,7 @@ To check the camera and microphone settings in Opera:
 
 To set browser permissions, reload the page with Real-Time Video opened and click **Allow** in the pop-up.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/troubleshooting/real-time-video-issues/fix-the-camera-or-microphone-if-they-do-not-work/13081307372817.png" alt="Safari">
+<img src="https://assets.gcore.pro/docs/streaming-platform/troubleshooting/real-time-video-issues/fix-the-camera-or-microphone-if-they-do-not-work/13081307372817.png" alt="Safari broswer settings">
 
 To check the camera and microphone settings in Safari, open the application settings, select "Camera" or "Microphone," and ensure that ```meet.gcore.com``` is not on the block list.
 
@@ -114,11 +114,11 @@ Your browser may have been mistakenly blocked from accessing the camera or micro
 
 1\. Open **System Preferences** and go to the "Security & Privacy" section. 
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/troubleshooting/real-time-video-issues/fix-the-camera-or-microphone-if-they-do-not-work/13081820659857.png" alt="System Preferences" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/troubleshooting/real-time-video-issues/fix-the-camera-or-microphone-if-they-do-not-work/13081820659857.png" alt="System Preferences iOS" width="80%">
 
 2\. Select "Camera" or "Microphone" from the list of options, then go to the **Privacy** section and check the boxes next to your browser to allow access.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/troubleshooting/real-time-video-issues/fix-the-camera-or-microphone-if-they-do-not-work/13081892456593.png" alt="Privacy section" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/troubleshooting/real-time-video-issues/fix-the-camera-or-microphone-if-they-do-not-work/13081892456593.png" alt="Privacy iOS section" width="80%">
 
 Finally, restart the browser for the changes to take effect.
 
@@ -128,8 +128,8 @@ If you're using Windows 11, you can set the default microphone at the system lev
 
 To set up the default microphone, go to the "System" settings and select the **Sound** section. In the Input settings section, choose the desired input device.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/troubleshooting/real-time-video-issues/fix-the-camera-or-microphone-if-they-do-not-work/13081899519505.png" alt="Sound section">
+<img src="https://assets.gcore.pro/docs/streaming-platform/troubleshooting/real-time-video-issues/fix-the-camera-or-microphone-if-they-do-not-work/13081899519505.png" alt="Sound section Windows">
 
 To check and configure access to your microphone and camera, go to the "Privacy & Security" settings and select the **Camera** or **Microphone** sections. Ensure that your browser has permission to use the camera or microphone.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/troubleshooting/real-time-video-issues/fix-the-camera-or-microphone-if-they-do-not-work/13081924169617.png" alt=" Camera or Microphone sections">
+<img src="https://assets.gcore.pro/docs/streaming-platform/troubleshooting/real-time-video-issues/fix-the-camera-or-microphone-if-they-do-not-work/13081924169617.png" alt=" Camera or Microphone Windows sections">

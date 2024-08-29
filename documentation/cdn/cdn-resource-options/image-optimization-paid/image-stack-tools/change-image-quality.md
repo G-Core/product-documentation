@@ -7,11 +7,11 @@ toc:
    --1--About Quality: "about-the-quality-feature"
    --1--Enable: "enable-quality"
    --1--Use: "use-quality"
-   --2--in the Control panel: "use-quality-in-the-control-panel"
+   --2--in the Customer Portal: "use-quality-in-the-customer-portal"
    --2--via query parameters: "use-quality-via-query-parameters"
    --1--Check HTTP headers: "check-http-headers"
 pageTitle: Guide to altering image quality using CDN | Gcore
-pageDescription: A guide on manipulating image quality using the Quality feature, including enabling and operating in the control panel and via query parameters.
+pageDescription: A guide on manipulating image quality using the Quality feature, including enabling and operating in the Gcore Customer Portal and via query parameters.
 ---
 # Change image quality
   
@@ -43,7 +43,7 @@ quality"></th>
 
 The final appearance of the image depends on its granularity and color scheme. So, if the image has a monolithic figure standing out against a contrasting background (e.g., a brown bird on a green background), the changes in quality will be more noticeable. If the image is detailed and non-contrasted, the changes will be less obvious.
 
-**How it works**. To change image quality, you need to set the required option in the control panel or add the appropriate query string to the image URL in your website source. The configuration is described in the Use Quality section. When a user requests an image from the site, the CDN will change the image quality and deliver the modified image to the user.
+**How it works**. To change image quality, you need to set the required option in the Gcore Customer Portal or add the appropriate query string to the image URL in your website source. The configuration is described in the Use Quality section. When a user requests an image from the site, the CDN will change the image quality and deliver the modified image to the user.
 
 For example: An origin server hosts a JPG image with its original quality, but you set the quality to Low (65%). When the image gets to the CDN cache, our CDN automatically reduces its quality. The origin still has the high-resolution image, but end users receive its low-resolution version.
 
@@ -53,13 +53,13 @@ Quality is included in the paid Image Stack option. This option helps optimize i
 
 ## Use Quality
 
-There are two ways to use the Quality feature: in the Control panel and by query strings. If you want to reduce the quality of all images, use the first method. If you want to reduce the quality of individual images you’ve added in query strings, use the second one.
+There are two ways to use the Quality feature: in the Gcore Customer Portal and by query strings. If you want to reduce the quality of all images, use the first method. If you want to reduce the quality of individual images you’ve added in query strings, use the second one.
 
-### Use Quality in the Control panel
+### Use Quality in the Customer Portal
 
 1\. Go to the **Rules** section in the settings of the CDN resource you want to apply Quality to and open the **Image optimization** rule.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11774830851473.png" alt="Control panel" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/image-optimization-paid/image-stack-tools/change-image-quality/11774830851473.png" alt="Gcore Customer Portal" width="80%">
 
 2\. Select one of the built-in presets: High (95%), Medium (80%), Low (65%), or set a Custom Value. By default, after enabling the Image Stack option, the quality will be High (95%).
 

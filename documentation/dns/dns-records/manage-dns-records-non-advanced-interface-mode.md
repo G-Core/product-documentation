@@ -1,59 +1,56 @@
 ---
 title: manage-dns-records-non-advanced-interface-mode
-displayName: Manage DNS records (non-advanced)
+displayName: Manage DNS records
 published: true
-order: 20
+order: 10
 toc:
-   --1--Create: "create-a-dns-record"
-   --2--Step 1. Records settings: "1-go-to-records-settings"
-   --2--Step 2. Record type: "2-select-record-type"
-   --2--Step 3. Domain or subdomain the record belongs to: "3-specify-subdomain-record-belongs-to"
-   --2--Step 4. Content of the record: "4-specify-content-of-record"
-   --2--Step 5. TTL: "5-specify-ttl"
-   --2--Step 6. Completing the configuration: "6-complete-configuration-and-create-resource-record"
-   --1--Edit: "edit-a-dns-record"
+   --1--Create a DNS record: "create-a-dns-record"
+   --1--Manage a DNS record: "manage-a-dns-record"
    --1--Delete: "delete-a-dns-record"
-pageTitle: Managing DNS records in non-advanced mode | Gcore
+pageTitle: How to manage DNS records in non-advanced mode | Gcore
 pageDescription: Learn how to add, edit and delete DNS records in the non-advanced interface mode.
 ---
-  
-# Manage DNS records (non-advanced interface mode)
-    
-This article describes operations in the non-advanced mode of the "DNS" product interface. Differences in interfaces modes are described in the article "<a href="https://gcore.com/docs/dns/about-gcore-dns" target="_blank">About Gcore DNS</a>".
+# Manage DNS records
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/image_21__1_.png" alt="All zones" width="50%">
+Discover how to create and manage DNS records in the Gcore Customer Portal.
+
+<alert-element type="info" title="Info">
+
+Please note that the article refers to the non-advanced mode. First, make sure that the advanced mode toggle switch is set to "off":
+
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/image_21__1_.png" alt="All zones" width="70%">
+
+If you want to configure balancing and dynamic response, use our guide on <a href="https://gcore.com/docs/dns/dns-records/manage-dns-records-advanced-interface-mode-with-balancing" target="_blank">advanced balancing</a>.
+
+</alert-element>
 
 ## Create a DNS record
 
-### 1. Go to records settings
+1\. Navigate to <a href="https://dns.gcore.com/zones" target="_blank">All zones</a> and select the domain zone for which you want to add records. Or, click the three-dot icon on the right and then click **Go to records**.
 
-Open the “All zones” tab and select the domain zone you want to add records for. Click it or the **Go to records** button next to it.
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/dns-record-10.png" alt="Open a DNS zone" width="80%">
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/mceclip0.png" alt="All zones" width="80%">
+2\. Click **Add record**.
 
-Click **Add record**.
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/dns-record-20.png" alt="Add a record" width="80%">
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/image_14__2_.png" alt="Add record" width="80%">
+A new window will appear. Perform the remaining steps there.
 
-You will see the interface for adding new DNS record. Perform other steps in it.
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/dns-record-40.png" alt="DNS record configuration" width="80%">
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/mceclip1.png" alt="DNS record" width="80%">
+3\. In the “Type” section, select the type of DNS record you want to create: A, AAAA, NS, CNAME, MX, SRV, HTTPS, TXT, or CAA. Learn more in our article on <a href="https://gcore.com/docs/dns/dns-records/supported-dns-record-types" target="_blank">supported DNS record types</a>.
 
-### 2. Select record type
+4\. In the “Name” field, specify the subdomain to which the record belongs. Choose from the following options:
 
-In the "Type" section, select the type of DNS record you want to create: A, AAAA, NS, CNAME, MX, SRV, HTTPS, TXT, or CAA. Learn more about them in the article <a href="https://gcore.com/docs/dns/dns-records/supported-dns-record-types" target="_blank">Supported DNS record types</a>.
+- Leave the field blank to add a record for the main domain (apex/naked domain; in the picture above it is `sample-test.com`).
+- Enter the name of this subdomain to add a record for a specific subdomain (for example, if you enter `one`, the record will be created for `one.sample-test.com`).
+- Enter an asterisk (*) to add a record for all subdomains at once (wildcard record).
 
-### 3. Specify subdomain record belongs to
+5\. In the “TTL” field, specify the TTL (time to live) in seconds. For example, an A record has a TTL of 300. You have changed the value of this record from `1.2.3.4` to `5.6.7.8`. Within 5 minutes, when requesting your domain, users will still be sent to a server with IP `1.2.3.4` (this value will be stored in the cache of recursive DNS servers). But after 5 minutes, the DNS server will check the settings and see the new value of the A record and the DNS server will send users to the server with IP `5.6.7.8`.
 
-In the “Name” field, specify the subdomain the record belongs to. To add a record for:
+6\. In the field, enter a value appropriate for your record type.
 
-- main domain (apex/naked domain; in the picture above it is examplesite.co) — leave the field blank;
-- apecific subdomain — enter the name of this subdomain (for example, if you enter "one", the record will be created for *one.example.com*);
-- all subdomains at once (wildcard record) — enter an asterisk (*).
-
-### 4. Specify content of record
-
-Fill in the "Content" field. Enter a value appropriate for your record type.
+<expandable-element title="Examples of values for different record types">
 
 | Record type | Value                                                                                                               |  
 |-------------|---------------------------------------------------------------------------------------------------------------------|
@@ -63,46 +60,28 @@ Fill in the "Content" field. Enter a value appropriate for your record type.
 | CNAME       | The domain or domain zone name that your domain should refer to. Example: *uuuuu8.cdn.co*                             |   
 | MX          | The name of the mail server that receives mail for your domain. Example: *ASPMX.L.GOOGLE.COM* If you are using multiple mail servers, fill in the “Priority” field for each server. The lower the value in this field, the higher the priority.                                       |   
 | SRV         | The canonical name of the machine providing the service.  Example: *sip.example.com*                                  | 
-| HTTPS       | HTTPS is a resource record that provides information and parameters for how to access a web service available via HTTTS. <br>Example: *example.com. 1800 IN HTTPS 1 . alpn=h3,h3-29,h2 ipv4hint=1.2.3.4,9.8.7.6<br> ipv6hint=2001:db8:3333:4444:5555:6666:7777:8888,<br>2001:db8:3333:4444:CCCC:DDDD:EEEE:FFFF*                                                                         |  
+| HTTPS       | HTTPS is a resource record that provides information and parameters for how to access a web service available via HTTPS. <br>Example: *example.com. 1800 IN HTTPS 1 . alpn=h3,h3-29,h2 ipv4hint=1.2.3.4,9.8.7.6<br> ipv6hint=2001:db8:3333:4444:5555:6666:7777:8888,<br>2001:db8:3333:4444:CCCC:DDDD:EEEE:FFFF*                                                                         |  
 | TXT         | Text information the record should contain. Example: *logmein-verification-code=976afe6f-8039-40e4-95a5-261b462*      | 
-| CAA         | Defines the certificate authorities who are allowed to issue an SSL/TLS-certificate for the domain name. The recording consists of three parts which are separated by a space. CAA [flags] [tag] "[value]" The "value" must be enclosed in double-quotes (""). Example: _0 issue "comodo.com"_ |  
+| CAA         | Defines the certificate authorities who are allowed to issue an SSL/TLS-certificate for the domain name. The recording consists of three parts which are separated by a space. CAA [flags] [tag] "[value]" The "value" must be enclosed in double quotes ("). Example: _0 issue "comodo.com"_ |  
 
-### 5. Specify TTL
+</expandable-element>
 
-TTL (time to live) is the interval in seconds used by servers on the Internet to check if the DNS records for your domain have changed.
+7\. Click the **Add** button. 
 
-Example: A-record has a TTL of 300. You have changed the value of this record from “128.0.0.8” to “127.0.0.7”. Within 5 minutes, when requesting your domain, users will be sent to a server with IP 128.0.0.8 (this value will be stored in the cache of recursive DNS servers). But after 5 minutes, the DNS server will check the settings and see the new value of the A-record. Now, when your domain is requested, the DNS server will send users to the server with IP 127.0.0.7.
+That's it. The DNS record with specified parameters will be created. You can check if the created record has been added correctly using the <a href="https://gcore.com/dev-tools/dns-lookup" target="_blank">Gcore DNS Lookup</a> tool.
 
-### 6. Complete configuration and create resource record
+## Manage a DNS record
 
-After completing the configuration, click the **Add** button. The DNS record with specified parameters will be created.
+1\. Navigate the <a href="https://dns.gcore.com/zones" target="_blank">All zones</a> tab and select the domain zone for which you want to manage records (edit or delete). Or, click the three-dot icon on the right and **Go to records**.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/image_20__1_.png" alt="All zones" width="80%">
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/dns-record-10.png" alt="Open a DNS zone" width="80%">
 
-You can check if the created record has been added correctly using the <a href="https://gcore.com/dev-tools/dns-lookup" target="_blank">Gcore DNS Lookup</a> tool.
+2\. To edit the record, click the pencil icon next to the desired record. 
 
-## Edit a DNS record
+3\. Make necessary changes in TTL or/and value in the expandable block.
 
-1\. Go to records of the required DNS zone by clicking the zone name or the "Go to records" button. 
+4\. To delete the record, click the corresponding button. 
 
-<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/mceclip0.png" alt="Add record" width="80%">
+5\. Apply the new settings by clicking **Save**.
 
-2\. Click on the pencil icon next to the desired resource record.
-
-<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/image_15.png" alt="DNS record" width="80%">
-
-3\. Make changes. 
-
-4\. Apply the new settings by clicking **Save**.
-
-##  Delete a DNS record
-
-1\. Go to records of the required DNS zone by clicking the zone name or the **Go to records** button. 
-
-<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/mceclip0.png" alt="DNS zone " width="80%">
-
-2\. Click the wastebasket icon next to the desired resource record.
-
-<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/image_17.png" alt="record" width="80%">
-
-3\. Confirm deletion.
+<img src="https://assets.gcore.pro/docs/dns/dns-records/manage-dns-records-non-advanced-interface-mode/dns-record-40.png" alt="Edit or delete a DNS record" width="80%">

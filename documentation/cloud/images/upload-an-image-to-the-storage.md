@@ -7,7 +7,7 @@ toc:
    --1--Image requirements: "image-requirements"
    --1--Upload: "upload-an-image"
 pageTitle: Upload an image | Gcore
-pageDescription: Learn how to upload images for virtual machines to Cloud storage.
+pageDescription: Learn how to upload images for Virtual Machines to Cloud storage.
 ---
 # Upload an image to the storage
 
@@ -17,7 +17,6 @@ pageDescription: Learn how to upload images for virtual machines to Cloud storag
 - raw
 - vhd
 - vhdx
-- vmdk
 - vdi
 - ploop
 - qcow2
@@ -47,7 +46,7 @@ pageDescription: Learn how to upload images for virtual machines to Cloud storag
 
 Additional settings include:
 
-- **Instance quick start**: If this option is on, the instances will be deployed faster with this image mounted. However, please note that you cannot delete this image if there are active instances created from this image.
+- **VM quick start**: If this option is on, the Virtual Machines will be deployed faster with this image mounted. However, please note that you cannot delete this image if there are active Virtual Machines created from this image.
 
 Standard start vs quick start:
 
@@ -79,18 +78,18 @@ Standard start vs quick start:
    </tr>
    <tr>
       <td>Image deletion</td>
-      <td>The image can be deleted without affecting an instance operation</td>
-      <td>The image can be deleted only when there are NO active instances created from this image</td>
+      <td>The image can be deleted without affecting a Virtual Machine's operation</td>
+      <td>The image can be deleted only when there are NO active Virtual Machines created from this image</td>
    </tr>
 </table>
 
-- **Permission to use an SSH key in instances** (for Linux images): We recommend using SSH-key authorization for security reasons.
+- **Permission to use an SSH key in Virtual Machines** (for Linux images): We recommend using SSH-key authorization for security reasons.
 
-- **Image will be used for bare metal instances** Turn on this toggle, if you want to use the image for bare metal servers. This ensures that necessary properties are added to the image for the use in a bare metal environment, as the deep looping process for physical servers is different from that of virtual servers.
+- **Image will be used for Bare Metal servers** Turn on this toggle, if you want to use the image for Bare Metal. This ensures that necessary properties are added to the image for the use in a Bare Metal environment, as the deep looping process for physical servers is different from that of Virtual Machines.
 
 - **Operating system installed on the image**. Choose between Linux or Windows.
 
-- **Type of firmware with which to boot the guest.** Select either BIOS or UEFI. For bare metal servers, UEFI is recommended for proper functionality. For virtual machines, the choice depends on your personal preference.
+- **Type of firmware with which to boot the guest.** Select either BIOS or UEFI. For Bare Metal servers, UEFI is recommended for proper functionality. For Virtual Machines, the choice depends on your personal preference.
 
 - **Virtual Chipset type.** Choose between q35 and i440 virtual chipsets based on the OS version, required functionality, and supported virtual devices.
 

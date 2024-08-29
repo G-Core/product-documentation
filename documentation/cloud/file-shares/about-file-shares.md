@@ -8,11 +8,11 @@ pageDescription: Learn about Gcore’s NFS service for seamless collaboration & 
 ---
 # About Files Shares
 
-File Shares is Gcore’s Network File System (NFS) as a service. It allows you to create, manage and share file systems across various Virtual Instances, Bare Metal servers, and Kubernetes pods within your cloud infrastructure. The service supports the NFS protocol and works with both Linux and Windows instances. 
+File Shares is Gcore’s Network File System (NFS) as a service. It allows you to create, manage and share file systems across various Virtual Machines (VMs), Bare Metal, and Managed Kubernetes pods within your cloud infrastructure. The service supports the NFS protocol and works with both Linux and Windows VMs. 
 
 ## How does File Shares work?
 
-You create a file share and configure the access rules. Once your file share is created, we allocate a NFS server with the standard disk type to host your shared files. The file share becomes available to Virtual Instances, Bare Metal servers and Kubernetes pods within the private network it is connected to.
+You create a file share and configure the access rules. Once your file share is created, we allocate a NFS server with the standard disk type to host your shared files. The file share becomes available to Virtual Machines, Bare Metal servers and Kubernetes pods within the private network it is connected to.
 
 To access the file share, first mount it to the local file systems of your servers. Once mounted, you can access and interact with the file share as if it is an integral part of your own local file system. The NFS protocol allows servers within a subnetwork to simultaneously read, write, and modify files on the file share, providing data consistency and facilitating team collaborations.
 
@@ -67,7 +67,7 @@ Gcore Cloud’s File Shares service enables you to:
 
 Storage scalability is achieved through architectural features such as horizontal scaling, data distribution, and specific load balancing across storage infrastructure.
 </td>
-      <td style="text-align: left">The scalability of NFS is determined by the needs of a particular user’s cloud environment. An undeniable advantage of NFS is that it makes connecting storage to any of the most common cloud computing resources easy, whether virtual machines, physical servers, or containerized infrastructure.
+      <td style="text-align: left">The scalability of NFS is determined by the needs of a particular user’s cloud environment. An undeniable advantage of NFS is that it makes connecting storage to any of the most common cloud computing resources easy, whether Virtual Machines, physical servers, or containerized infrastructure.
 
 The performance of this type of storage is restricted only by the limitations of the underlying storage system.
 </td>

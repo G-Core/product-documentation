@@ -1,26 +1,20 @@
 ---
 title: getting-started
-displayName: FastEdge (beta)
+displayName: FastEdge
 published: true
 toc:
    --1--FastEdge: "what-is-fastedge"
    --1--How it works: "how-fastedge-works"
    --1--Benefits: "key-benefits"
    --1--Use cases: "fastedge-use-cases"
-   --1--Features: "fastedge-features"
-   --1--Enable: "how-to-enable-fastedge"
 pageTitle: Accelerate Your Web Apps with Serverless Edge Computing | Gcore
-pageDescription: Explore FastEdge Beta for low-latency, scalable edge computing, enabling quick development, enhanced security, and personalized user experiences globally.
+pageDescription: Explore FastEdge for low-latency, scalable edge computing, enabling quick development, enhanced security, and personalized user experiences globally.
 ---
 # FastEdge overview
 
-## What is FastEdge?
+FastEdge is a Gcore product for serverless execution of your apps at the edge. FastEdge lets you launch your apps compiled to WebAssembly on the Gcore scalable CDN network worldwide for quick deployment. There’s no need for any environment configuration or infrastructure maintenance. 
 
-FastEdge is a new Gcore product, currently in beta, for serverlessly executing your apps at the edge. FastEdge lets you launch your apps compiled to WebAssembly on the Gcore scalable CDN network worldwide for quick deployment. There’s no need for any environment configuration or infrastructure maintanence. 
-
-FastEdge can be used for CDN request modification, frontend serving, image conversion, custom DNS resolving, etc. See the <a href="https://gcore.com/docs/fastedge/getting-started#fastedge-use-cases" target="_blank">use cases</a> section for more details.
-
-FastEdge is currently in early beta, so it’s available free but has some restrictions. Read about this in the <a href="https://gcore.com/docs/fastedge/getting-started#fastedge-features" target="_blank">FastEdge features</a> section.
+FastEdge can be used for CDN tasks like request modification, frontend serving, image conversion, and custom DNS resolving. See the <a href="https://gcore.com/docs/fastedge/getting-started#fastedge-use-cases" target="_blank">use cases</a> section for more details.
 
 ## How FastEdge works
 
@@ -30,8 +24,8 @@ There are two approaches to using FastEdge:
 - **With HTTP request and response modification**. A FastEdge node will modify HTTP requests according to your functions’ logic. Then, the modified request is sent to the application’s web server. A FastEdge node gets the web server’s HTTP response. It modifies the HTTP response according to your functions’ logic and sends it to the end user. 
 
 For both approaches, the overall concept works in broadly similar ways: 
-1. You add your code to our platform. In early beta, you can do so via API. GUI is under development. 
-2. We deploy your code on the edge servers worldwide. After that, all traffic to your app is automatically routed and loadbalanced across our numerous nodes.
+1. You add your code to our platform. 
+2. We deploy your code on the edge servers worldwide. After that, all traffic to your app is automatically routed and load-balanced across our numerous nodes.
 3. When a request is received from a user, the runtime environment executes the code and sends an HTTP response to the user.
 4. FastEdge’s nodes act as origins to terminate HTTP requests, or as proxies to modify them along the way.
 
@@ -53,17 +47,3 @@ For both approaches, the overall concept works in broadly similar ways:
 **Image manipulation**. If you run a pay-per-load picture stock, FastEdge’s functions allow you to perform any image conversion you need, including mass converts to WebP, resizing in low resolution, and watermarks to avoid unauthorized use.
 
 **Improved user experience**. Suppose your application uses a CMS that generates non-human-readable URLs for site sections. This can cause negative feedback from users. FastEdge allows you to convert URLs to a user-friendly option in the response upon user request. You can also cut off some undesirable custom HTTP headers in the responses. 
-
-## FastEdge features
-
-FastEdge is in the early beta now. It means:
-
-- Right now, code for FastEdge can be written only in JS and Rust. Support for Go is in development.
-- Configuration and usage statistics are available only <a href="https://api.gcore.com/docs/fast_edge" target="_blank">via API</a>. The UI is in development.
-- During the early beta period, access is completely free. Pricing will be released at a later date.
-
-**Note**: Wait to use this product for mission-critical tasks and prod environments until the early beta ends.
-
-## How to enable FastEdge?
-
-Request access to FastEdge from your personal manager or by contacting the [support team](mailto:support@gcore.com).

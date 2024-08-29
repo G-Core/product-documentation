@@ -5,12 +5,12 @@ published: true
 order: 10
 toc:
    --1--What is a secondary DNS?: "what-is-a-secondary-dns"
-   --1--Synchronize records: "synchronize-records-of-gcore-dns-with-your-dns"
+   --1--Synchronize records: "synchronize-records-of-gcore-managed-dns-with-your-dns"
    --1--Update records: "update-records-of-our-secondary-dns"
 pageTitle: Setting Up Secondary DNS with OctoDNS | Gcore
 pageDescription: An in-depth guide to using Gcore DNS as a secondary DNS with OctoDNS.
 ---
-# Use Gcore DNS as a secondary DNS with OctoDNS  
+# Use Gcore Managed DNS as a secondary DNS with OctoDNS  
 
 ## What is a secondary DNS?
 
@@ -20,7 +20,7 @@ Before you start, check your provider against <a href="https://github.com/octod
 
 Synchronize records of Gcore DNS with your DNS
 
-## Synchronize records of Gcore DNS with your DNS
+## Synchronize records of Gcore Managed DNS with your DNS
 
 This guide will help you to install OctoDNS  — a tool for managing DNS zones of different providers. Using it, you will make records on our DNS server identical to records on yours. That's how it works:
 
@@ -209,9 +209,9 @@ You will see similar output:
 
 <img src="https://assets.gcore.pro/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns/mceclip7.png" alt="output" width="80%">
 
-It means the changes have been made. You can see the updated list of records in <a href="https://dns.gcore.com/zones" target="_blank">your Control panel in the DNS tab</a>.
+It means the changes have been made. You can see the updated list of records in the Gcore Customer Portal on the <a href="https://dns.gcore.com/zones" target="_blank">DNS page</a>.
 
-<img src="https://assets.gcore.pro/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns/mceclip8.png" alt="Control panel in the DNS tab.">
+<img src="https://assets.gcore.pro/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns/mceclip8.png" alt="DNS page in the Gcore Customer Portal">
 
 ## Update records of our secondary DNS
 
@@ -235,4 +235,4 @@ You will see similar output:
 
 <img src="https://assets.gcore.pro/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns/mceclip9.png" alt="output" width="80%">
 
-It means the changes have been made. You can see the updated list of records in <a href="https://dns.gcore.com/zones" target="_blank">your Control panel in the DNS tab</a>.
+It means the changes have been made. You can see the updated list of records in the Gcore Customer Portal on the <a href="https://dns.gcore.com/zones" target="_blank">DNS page</a>.

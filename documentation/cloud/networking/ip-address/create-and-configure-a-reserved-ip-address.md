@@ -8,16 +8,16 @@ toc:
    --1--How it works: "how-it-works"
    --1--Billing: "how-it-is-charged"
    --1--Reserve: "reserve-an-ip-address"
-   --1--Assign to an instance: "assign-a-reserved-ip-to-an-instance-and-detach-it-from-the-machine"
-   --1--Assign to a load balancer: "assign-a-reserved-ip-to-a-load-balancer-and-detach-it"
+   --1--Assign to a Virtual Machine: "assign-a-reserved-ip-to-a-vm-and-detach-it-from-the-machine"
+   --1--Assign to a Load Balancer: "assign-a-reserved-ip-to-a-load-balancer-and-detach-it"
    --1--Determine which server the reserved IP is assigned to: "determine-which-server-the-specific-reserved-ip-is-assigned-to"
    --1--Delete: "delete-a-reserved-ip-address"
 pageTitle: Reserved IP address| Gcore
-pageDescription: Create and configure a reserved IP address to assign to instances or load balancers. Learn how to reserve, assign, detach, and delete a reserved IP.
+pageDescription: Create and configure a reserved IP address to assign to Virtual Machines or Load Balancers. Learn how to reserve, assign, detach, and delete a reserved IP.
 ---
 # Create and configure a reserved IP address
 
-Reserved IP is an IP that you reserved for yourself and can be assigned to an <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance" target="_blank">instance</a> or <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer" target="_blank">a load balancer</a> at any time.
+Reserved IP is an IP that you reserved for yourself and can be assigned to an <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance" target="_blank">Virtual Machine</a> or <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer" target="_blank">a Load Balancer</a> at any time.
 
 ## What it is used for
 
@@ -31,7 +31,7 @@ After you created a reserved IP, this address becomes yours inside our system. N
 
 ## How it is charged
 
-The IP price per month is displayed in the order window. You pay only for the time from creating an IP to deleting it: for example, if you had reserved an IP and then deleted it after an hour, you will be charged only for an hour of use. The price doesn’t depend on whether the address is assigned to the instance or not.
+The IP price per month is displayed in the order window. You pay only for the time from creating an IP to deleting it: for example, if you had reserved an IP and then deleted it after an hour, you will be charged only for an hour of use. The price doesn’t depend on whether the address is assigned to the Virtual Machine or not.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-17.png" alt="How it is charged" width="380" height="168">
 
@@ -53,52 +53,52 @@ Select the IP type — public (for external network) or private (for internal ne
 <img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-21.png" alt="Select the IP type " width="359" height="334">
 </media-gallery>
 
-## Assign a reserved IP to an instance and detach it from the machine
+## Assign a reserved IP to a VM and detach it from the machine
 
-### Assign during instance creation
+### Assign during VM creation
 
-When creating an instance, in the "Network settings" section click the arrow next to the network you want to assign an IP to. Then move the "Use reserved IP" slider and select the desired IP from the list. Save the settings and this address will be assigned to the instance.
+When creating an Virtual Machine, in the "Network settings" section click the arrow next to the network you want to assign an IP to. Then move the "Use reserved IP" slider and select the desired IP from the list. Save the settings and this address will be assigned to the Virtual Machine.
 
 <media-gallery>
-<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-22.png" alt="Assign during instance creation" width="417" height="152">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-22.png" alt="Assign during Virtual Machine creation" width="417" height="152">
    
-<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-23.png" alt="Assign during instance creation" width="411" height="156">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-23.png" alt="Assign during Virtual Machine creation" width="411" height="156">
    
-<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-24.png" alt="Assign during instance creation" width="415" height="263">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-24.png" alt="Assign during Virtual Machine creation" width="415" height="263">
 </media-gallery>
 
-### Assign after instance creation
+### Assign after VM creation
 
-Go to the instance menu and open the "Networking" section.
+Go to the Virtual Machine menu and open the "Networking" section.
 
 If the machine has already been added to the subnet you want to assign an IP to, disable that subnet. This will remove the old IP.
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-25.png" alt="Assign after instance creation">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-25.png" alt="Assign after VM creation">
 
-Add a new interface (public or private) and move the "Use reserved IP" slider. Then select the desired IP and click "Save Changes". The IP will be assigned to the instance.
+Add a new interface (public or private) and move the "Use reserved IP" slider. Then select the desired IP and click "Save Changes". The IP will be assigned to the Virtual Machine.
 
 <media-gallery>
-<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-26.png" alt="Assign after instance creation">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-26.png" alt="Assign after Virtual Machine creation">
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-27.png" alt="Assign after instance creation">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-27.png" alt="Assign after Virtual Machine creation">
    
-<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-28.png" alt="Assign after instance creation">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-28.png" alt="Assign after Virtual Machine creation">
 </media-gallery>
 
-### Detach from the instance
+### Detach from the VM
 
-Detach the subnet the reserved IP is assigned to. This address will be detached from the instance automatically.
+Detach the subnet the reserved IP is assigned to. This address will be detached from the Virtual Machine automatically.
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-29.png" alt="Detach from the instance">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-29.png" alt="Detach from the Virtual Machine">
 
-## Assign a reserved IP to a load balancer and how to detach it
+## Assign a reserved IP to a Load Balancer and how to detach it
 
-You can assign the reserved IP only during the balancer creation. In the "Network" section, select the network (public or private) to which you want to bind the address, move the "Use reserved IP" slider, and select the required IP. It will be assigned to the balancer.
+You can assign the reserved IP only during the Load Balancer creation. In the "Network" section, select the network (public or private) to which you want to bind the address, move the "Use reserved IP" slider, and select the required IP. It will be assigned to the Load Balancer.
 
 <media-gallery>
-<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-30.png" alt="Assign a reserved IP to a load balancer and how to detach it" width="441" height="102">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-30.png" alt="Assign a reserved IP to a Load Balancer and how to detach it" width="441" height="102">
    
-<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-31.png" alt="Assign a reserved IP to a load balancer and how to detach it" width="438" height="216">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-31.png" alt="Assign a reserved IP to a Load Balancer and how to detach it" width="438" height="216">
 </media-gallery>
 
 ## Determine which server the specific reserved IP is assigned to
@@ -109,6 +109,6 @@ Open the "Networking" → "Reserved IPs" section. In the "Status" column, you wi
 
 ## Delete a reserved IP address
 
-Detach it from the instance or load balancer. Then go to the "Networking" → "Reserved IPs" section, click the selector next to the IP and select "Delete". The address will be deleted and no longer charged.
+Detach it from the Virtual Machine or Load Balancer. Then go to the "Networking" → "Reserved IPs" section, click the selector next to the IP and select "Delete". The address will be deleted and no longer charged.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/mceclip3.png" alt="mceclip3.png">

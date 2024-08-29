@@ -18,7 +18,7 @@ pageDescription: A comprehensive guide on how to view statistics of your CDN res
 
 ## Reports overview
 
-Reports is a section of your control panel that displays statistics on your CDN resources. There are two tabs in the section:
+Reports is a section in the Gcore Customer Portal that displays statistics on your CDN resources. There are two tabs in the section:
 
 - Statistics: Basic reports are available on all tariffs
 - Advanced analytics: Paid option

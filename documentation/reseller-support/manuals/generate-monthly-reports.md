@@ -7,27 +7,27 @@ toc:
    --1--Generating report: "generating-report"
    --2--CDN: "cdn"
    --2--Storage: "storage"
-   --2--Streaming: "streaming"
+   --2--Video Streaming: "video-streaming"
    --1--Reading report: "reading-report"
    --1--Deleting report: "deleting-report"
 ---
 # Generate monthly reports
 
-Generate monthly reports to analyze your clients' traffic consumption.
+Generate monthly reports to analyze your customers' traffic consumption.
 
 ## Generating report
 
-Go to the "Reports" section in the Admin panel and click on the Create new report button in the upper-right corner.
+Go to the "Reports" section in the Admin Portal and click on the Create new report button in the upper-right corner.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/generate-monthly-reports/create-report-10.png" alt="Reports section ">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/generate-monthly-reports/resellers-reports-10.png" alt="Reports section" width="80%">
 
 Choose the report parameters in the pop-up window.
 
 <img src="https://assets.gcore.pro/docs/reseller-support/manuals/generate-monthly-reports/report-page-20.png" alt="report parameters " width="50%">
 
-In the "Product" field choose a service.
+In the "Product" field choose a product.
 
-In the "Features" field choose components of statistics. Based on these components, you can calculate the cost of services for your customers.
+In the "Features" field choose components of statistics. Based on these components, you can calculate the cost of products for your customers.
 
 ### CDN
 
@@ -47,7 +47,7 @@ In the "Features" field choose components of statistics. Based on these componen
 3. Data Transfer - total traffic.
 4. Requests - the number of requests.
 
-### Streaming
+### Video Streaming
 
 1. Live stream transcoding - Minutes - total time of live stream transcoding.
 2. Live stream transcoding - Sream - number of active simultaneous streams
@@ -55,8 +55,8 @@ In the "Features" field choose components of statistics. Based on these componen
 
 Choose one or more grouping parameters:
 
-- by client — groups data by client ID,
-- by resource — groups data by CDN-Resource ID or Storage name,
+- by account — groups data by account ID,
+- by product — groups data by CDN-Resource ID or Storage name,
 - by regions — groups data by traffic geographical region.
 
 Specify a month and a year for which the report should be generated. 
@@ -75,30 +75,30 @@ Once the report is ready you can download it in CVS format.
 
 The report represents data for a specified month, it uses commas to separate values.
 
-There is a report example below grouped by client and region parameters.
+There is a report example below grouped by customer and region parameters.
 
 <img src="https://assets.gcore.pro/docs/reseller-support/manuals/generate-monthly-reports/example-of-report-30.png" alt="report" width="80%">
 
 Report's first line has the reseller's ID and company name (marked as1).
 
-Below (marked as 2) — blocks with data for reseller's clients:
+Below (marked as 2) — blocks with data for reseller's customers:
 
-- There is a separate data block for each client in the report.
-- Only those clients who have generated some traffic (or other statistical data) get included in the report.
+- There is a separate data block for each customer in the report.
+- Only those customers who have generated some traffic (or other statistical data) get included in the report.
 
 The first line in the block is the list of headers. Others — the report data.
 
-At the beginning of the line, there is some data about the client (Client ID, Company name). Then — about the service (Service ID, Service name), the region (Region ID, Region name), and usage (Usage, Unit).
+At the beginning of the line, there is some data about the customer (Account ID, Company name). Then — about the product (Product ID, Product name), the region (Region ID, Region name), and usage (Usage, Unit).
 
-Client ID and Company name are mentioned only in the second line. Then they are not shown.
+Account ID and Company name are mentioned only in the second line. Then they are not shown.
 
-Example of the line mentioning Client ID and Company name:
+Example of the line mentioning Account ID and Company name:
 
 ```
 234,Client_one,92,CDN - HTTP/HTTPS Delivery (per GB),7,Latin America,0.0000,GB
 ```
 
-Example of the line without Client ID and Company name:
+Example of the line without Account ID and Company name:
 
 ```
 ,,92,CDN - HTTP/HTTPS Delivery (per GB),8,Middle East,0.0023,GB

@@ -5,12 +5,11 @@ published: true
 order: 30
 toc:
    --1--What are triggers?: "what-are-triggers"
-   --1--Create a trigger: "create-a-trigger"
-   --2--1. Triggers: "1-go-to-triggers"
-   --2--2. Сondition: "2-choose-a-condition"
-   --2--3. Filters: "3-add-a-filter-optional"
-   --2--4. Reactions: "4-add-a-reaction"
-   --2--5. Name and description: "5-enter-the-name-and-description"
+   --1--Create triggers: "create-triggers"
+   --2--Step 1. Сondition: "step-1-choose-a-condition"
+   --2--Step 2. Filters: "step-2-add-a-filter"
+   --2--Step 3. Reactions: "step-3-add-reactions"
+   --2--Step 4. Saving : "step-4-save-the-trigger"
    --1--Disable and delete: "disable-or-delete-a-trigger"
 pageTitle: Managing WAF Triggers | Gcore
 pageDescription: A guide on managing WAF triggers to tailor your security alerts and responses with condition, filter, and reaction options.
@@ -19,7 +18,15 @@ pageDescription: A guide on managing WAF triggers to tailor your security alerts
   
 ## What are triggers?
 
-Triggers are tools that allow you to receive notifications and set how WAF should react to some events that it doesn't respond to by default (e.g., behavior attacks).
+Triggers are tools that allow you to receive notifications and set how WAF should react to some events that it doesn't respond to by default (e.g., behavior attacks.)
+
+With triggers, you can:
+
+- Get notified about significant events through your daily workflow tools, like corporate messengers or incident management systems
+- Block IP addresses that have sent a certain number of requests or attack vectors
+- Detect behavioral attacks based on the number of requests made to specific API endpoints
+- Streamline the event list by grouping hits from the same IP address into a single attack
+- Monitor a rise in malicious requests detected by WAF nodes, which could suggest an ongoing attack, allowing for timely actions, such as manually blocking the attacker's IP addresses, to mitigate the threat
 
 Each trigger consists of three components:
 
@@ -27,111 +34,96 @@ Each trigger consists of three components:
 2.  **Filters** are additional criteria that detail the conditions.
 3.  **Reaction** is the action the WAF will perform if the event meets the added condition and filter.
 
-Let's say, for example, that you want to receive alerts about XSS attacks (if there are more than 2,000 per hour) via e-mail. In this case, you should create a trigger with the following components:
+Let's say, for example, that you want to receive alerts about XSS attacks (if there are more than 2,000 per hour) via email. In this case, you should create a trigger with the following components:
 
-*   Condition. The number of attacks and the value of 2,000 per hour for it.
-*   Filter. XSS attack type.
-*   Reaction. A message and the e-mail address for integration.
+*   **Condition:** The number of attacks and the value of 2,000 per hour for it.
+*   **Filter:** XSS attack type.
+*   **Reaction:** A message and the e-mail address for integration.
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/10592570751633.png" alt="Triggers " width="80%">
+Triggers are managed and collected in the <a href="https://web-protect.gcore.com/waf/triggers/list" target="_blank">Triggers</a> tab.
 
-This is what a tab looks like with two triggers that add IP addresses that meet the conditions to the denylist:
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/triggers-waf-10.png" alt="Triggers" width="80%">
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/10592555347729.png" alt="tab " width="80%">
+## Create triggers
 
-## Create a trigger
+1. Click **Create trigger**.
+2. Choose conditions.
+3. Add filters.
+4. Add reactions.
+5. Save the trigger.
 
-### 1. Go to Triggers
+Now let's explore how steps 2-5 work.
 
-Go to the <a href="https://web-protect.gcore.com/waf/triggers/list" target="_blank">Triggers</a> tab and click **Create trigger**.
+### Step 2. Choose a condition
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/11773688591889.png" alt="Triggers" width="80%">
+A condition refers to a system event that you would like to be alerted about. The following conditions are available for notification:
 
-A new window opens.
+- **Brute force:** Brute force attacks include brute-forcing passwords, session IDs, and account data spoofing. Signs of brute forcing include sending many requests to the same endpoint during the defined time interval.
+- **Forced browsing:** Forced browsing is a behavioral attack in which an attacker tries to find directories and files with information about an application's configuration and components. Signs of forced browsing include sending many requests to different endpoints, to which the application responds with a 404 code.
+- **BOLA:** BOLA (broken object-level authorization) is a behavioral attack in which an attacker can retrieve or modify an application component by identity through an API, thus bypassing authorization. This attack exploits a vulnerability related to the lack of, or insufficient verification of, access rights.
+- **Weak JWT:**
+  Dash please add an explanation about Weak JWT on the line above
+- **Number of attack vectors (malicious payloads):** A malicious payload is the part of a request that contains instructions about what actions should be performed in an attacked application. With a trigger, you can specify how many requests with payloads WAF should react to.
+- **Number of attacks, hits, incidents:** With conditions 5–7, you'll set the number of attacks, hits, or incidents about which the WAF should send you an e-mail notification.
+- **Denylisted IP:** Specify blocked IPs.
+- **Changes in API inventory:**
+  As above, please add a basic explanation
+- **Hits from the same IP:** Using a condition, you can specify the threshold from which hits sent from the same IP should be grouped into a single attack in the <a href="https://web-protect.gcore.com/waf/events/incidents" target="_blank">Events</a> section.
 
-### 2. Choose a condition
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/triggers-waf-20.png" alt="Conditions WAF" width="80%">
 
-Click the appropriate condition from the list to the right.
+Choose a condition and set the lower threshold for the reaction, if the setting is available.
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/10592570864017.png" alt="condition" width="80%">
+### Step 3. Add a filter 
 
-There are ten conditions available for triggers:
+Filters are used for condition detailing. For example, you can set up reactions to attacks of certain types, such as brute-force attacks and SQL injections.
 
-1. **Brute force.** Brute force attacks include brute-forcing passwords, session IDs, and account data spoofing. Signs of brute forcing include sending many requests to the same endpoint during the defined time interval.
-
-2. **Forced browsing.** Forced browsing is a behavioral attack in which an attacker tries to find directories and files with information about an application's configuration and components. Signs of forced browsing include sending many requests to different endpoints, to which the application responds with a 404 code.
-
-3. **BOLA.** BOLA (Broken Object Level Authorization) is a behavioral attack in which an attacker can retrieve or modify an application component by identity through an API, thus bypassing authorization. This attack exploits a vulnerability related to the lack of or insufficient verification of access rights.
-
-4. By default, WAF doesn't protect applications from brute-force attacks, forced browsing, or BOLA, so with condition 1, 2, or 3 triggers, you would point WAF to the attack signs and then configure how the firewall should react to them.
-
-**Number of malicious payloads.** A malicious payload is the part of a request which contains instructions about what actions should be performed in an attacked application. With a trigger, you can specify how many requests with payloads WAF should react to.
-
-5–7. **Number of attacks, hits, incidents.** With conditions 5–7, you'll set the number of attacks, hits, or incidents about which the WAF should send you an e-mail notification.
-
-8. **Denylisted IP.** This will allow you to specify blocked IPs to WAF.
-
-9. **Hits from the same IP.** Using a condition, you can specify the threshold from which hits sent from the same IP should be grouped into a single attack in the <a href="https://web-protect.gcore.com/waf/events/incidents" target="_blank">Events</a> section.
-
-10.  **User added.** Using a condition, you'll command WAF to send an e-mail notification when the user is added to the WAF account.
-
-### 3. Add a filter (optional)
-
-Filters detail the chosen condition. The set of available filters depends on the selected condition. In the example below, there are available filters for the 'Number of attacks' condition to the right.
-
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/10592570987281.png" alt="Add a filter" width="80%">
-
-Click the needed filters from the list to add them to the condition. After that, the filter will display on the left, and you can specify its values.
-
-For example, we added the 'Type' filter and selected 'xss', 'sqli', and 'rce' types to determine only those types of attack we want to be notified about.
-
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/10592570995985.png" alt="Type filter" width="80%">
-
-To add other filters, click the one you need on the right.
-
-We list all available filters below.
+The following filters are available:
 
 - **URI (only for Brute force, Forced browsing, and BOLA)** is the endpoint to which the requests were sent.
-- **Type** is the type of attack in the request or the application vulnerability that an attempt to exploit was made on.
+- **Type** is the type of attack in the request or the application vulnerability where an exploit attempt occurred.
 - **Application** is the application that received the request or in which the request was found.
 - **IP** is the IP address from which the request was sent.
 - **Domain** is the domain of the application to which the request was sent or where the incident was found.
 - **Response status** is the code with which the application responded to the request.
 - **Target** is part of the application ('Database', 'Server', or 'Client') that was attacked or in which part of the application the vulnerability was found.
-- **User's role** is the role of the user who was added to the WAF account. Available roles: deploy, analytic, admin, superadmin, auditor, partner_admin, partner_auditor, partner_analytic.
 
-### 4. Add a reaction
+Choose one or more filters and set values for them.
+
+
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/triggers-waf-30.png" alt="Type filter WAF" width="80%">
+
+### Step 4. Add reactions
 
 The reaction determines what WAF should do if a request fits the condition and filters (if they were set). The set of available reactions also depends on the selected condition.
 
-The example below shows two available reactions for the 'Brute force' (requests from the same IP) condition to the right.
-
-Click **Add a reaction** to add the suitable response and set it up if necessary.
-
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/10592571105937.png" alt="Add a reaction" width="80%">
-
 We list all available reactions below.
 
-- **Mark as brute force/forced browsing/BOLA.** WAF shows all attacks with the type brute force, forced browsing, or BOLA in the <a href="https://web-protect.gcore.com/waf/events/incidents" target="_blank">Events</a> section and doesn't block them.
-- **Denylist IP address.** WAF blocks the attack by adding the IP address to a denylist.
-- **Send e-mail.** WAF sends a notification with the appropriate type of conditions to the specified e-mail address. To set this reaction, you should add the e-mail for integration in the <a href="https://web-protect.gcore.com/waf/settings/integrations" target="_blank">Settings</a> tab ahead of time.
-- **Group next hits into one attack.** Group hits according to filters configured in the <a href="https://web-protect.gcore.com/waf/events/incidents" target="_blank">Events</a> section of the WAF in one attack.
+- Mark the requests as brute-force or forced browsing attacks. Requests will be marked as attacks in the events list but will not be blocked. To block requests, you can add an additional reaction: denylist IP address.
+- Mark the requests as BOLA attacks. Requests will be marked as attacks in the events list but will not be blocked. To block requests, you can add an additional reaction: denylist IP address.
+- Record the JWT vulnerability.
+- Add IP to the denylist.
+- Add IP to the graylist.
+- Send a notification to the SIEM system or Webhook URL configured in the (should be preconfigured by technical support).
+- Send a notification to the messenger (should be preconfigured by technical support).
+  Dash plz check lines 107 and 108 endings in brackets, looks weird and maybe needs fixing.
 
-### 5. Enter the name and description
+Select one or more reactions. The reactions applicable to the condition are found under the **Number of attacks** section:
 
-Check the trigger components, then enter a name and description if necessary. If no name or description is specified, the trigger will be created with a default name in the format.
+<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/triggers-waf-40.png" alt="Add a reaction WAF" width="80%">
 
-New trigger by ```<username>```, ```<creation_date>```, and an empty description.
+### Step 5. Save the trigger
 
-Click **Create**.
+1\. Click **Create** in the trigger creation modal dialog.
 
-<img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/10592571112721.png" alt="name and description" width="80%">
+2\. Specify the trigger's name and description (if required) and click **Done**.
 
 ## Disable or delete a trigger
 
-Go to the <a href="https://web-protect.gcore.com/waf/triggers/list" target="_blank">Triggers</a> tab, click the three dots next to the trigger you want to disable or delete, select the needed option, and confirm the action.
+Go to the <a href="https://web-protect.gcore.com/waf/triggers/list" target="_blank">Triggers</a> tab, click the three dots next to the trigger you want to disable or delete, click the relevant option, and confirm the action when prompted.
 
 <img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/10592589376529.png" alt="Disable or delete a trigger" width="80%">
 
-- If you disable a trigger, reactions for the trigger will be stopped until the trigger is enabled again. The disabled triggers are displayed in the list. To re-enable, use the Enable option.
+**Note:**
+- If you disable a trigger, reactions for the trigger will be stopped until the trigger is enabled again. The disabled triggers are displayed in the list. To re-enable, use the **Enable** option.
 - If you delete a trigger, it'll be permanently stopped and removed from the general list forever.

@@ -17,7 +17,7 @@ Authorize in the Control Panel using login and password which you have chosen du
 
 Go to "Client" - "Profile".
 
-<img class="confluence-embedded-image confluence-external-resource" src="https://assets.gcore.pro/docs/hosting/account-managemnt/manage-your-password/MmuwNQz.png" data-image-src="https://assets.gcore.pro/docs/hosting/account-managemnt/manage-your-password/MmuwNQz.png">
+<img src="https://assets.gcore.pro/docs/hosting/account-managemnt/manage-your-password/MmuwNQz.png" alt="Profile section in the control panel">
 
 Type your new password in the appropriate field. The password must contain 8 or more characters, including at least one uppercase letter and a number.
 
@@ -29,7 +29,7 @@ Keep in mind that after 3 unsuccessful attempts to log into the account, it migh
 
 If you initiated a password reset but have not received an email several minutes later, check your spam folder.
 
-The message title is Password Recovery. We send them from [billing@gcore.lu](mailto:billing@gcore.lu) 
+The message title is Password Recovery. We send them from [billing@gcore.com](mailto:billing@gcore.com) 
 
 If you cannot find the email, start the reset process again on this <a href="https://hosting.gcore.com/billmgr?func=recovery" target="_blank">page</a>.
 

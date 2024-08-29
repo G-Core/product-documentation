@@ -174,7 +174,7 @@ You can change your subscription from any notification sent by the system to the
 
 ## Components 
 
-Components are grouped by services (the Cloud service is grouped by the option+location). 
+Components are grouped by services (the Edge Cloud service is grouped by the option+location). 
 
 Each service (or service+location) can also be divided by a geographical or functional basis. 
 

@@ -16,7 +16,6 @@ toc:
    --1--Customer Support Tools: "customer-support-tools"
    --2--Support phone number: "support-phone-number"
    --2--Support email: "support-email"
-   --2--Email for deletion requests: "email-for-deletion-requests"
    --2--Link to User Agreement: "link-to-user-agreement"
    --2--Link to company website: "link-to-company-website"
    --2--Show API documentation: "show-api-documentation"
@@ -24,29 +23,34 @@ toc:
    --2--Show Status Page: "show-status-page"
    --2--Show online chat: "show-online-chat"
    --2--Show Create new account: "show-create-new-account"
+   --1--Email alerts: "email-alerts"
    --1--SMTP Provider Settings: "smtp-provider-settings" 
    --1--DNSaaS settings: "dnsaas-settings"
    --1--Services: "services"
 ---
 # Vendor settings
 
-Here you can add your trademark, corporate identity, symbols and contact info when reselling our products. Your company branding will be displayed in the client control panels instead of the Gcore one.  
+Here you can add your trademark, corporate identity, symbols and contact info when reselling our products. Your company branding will be displayed in the customer's Customer Portal instead of the Gcore one.  
 
 To set up branding, go to the "Branding settings" tab in the "Vendor settings" section.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/branding-settings-10.png" alt="Branding settings" width="50%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/vendor-settings-overview.png" alt="Branding settings" width="80%">
 
 ## Base control panel domain
 
-Enter the top level domain into the "Base control panel domain" field. It will be used to generate the service subdomains.
+Enter the top level domain into the "Base  Customer Portal domain" field. It will be used to generate the product subdomains.
 
-For example, if you specify "mycompany.com", your services will be available at "auth.mycompany.com", "cdn.mycompany.com", "accounts.mycompany.com".
+For example, if you specify "mycompany.com", your products will be available at "auth.mycompany.com", "cdn.mycompany.com", "accounts.mycompany.com".
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/base-control-panel-domain-20.png" alt="Base control panel domain" width="80%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/base-control-panel-domain-20.png" alt="Base Customer Portal domain" width="80%">
 
-**Important!** To avoid issues with the control panel, we don't recommend making changes in the field.
+<alert-element type="caution" title="Caution">
 
-For more details about the "Base control panel domain" field, refer to <a href="https://gcore.com/docs/reseller-support/manuals/set-up-control-panel-services-urls" target="_blank">How to set up control panel services URLs</a>.
+To avoid issues with the Customer Portal, we don't recommend making changes in the field.
+
+</alert-element>
+
+For more details about the "Base Customer Portal domain" field, refer to <a href="https://gcore.com/docs/reseller-support/manuals/set-up-control-panel-services-urls" target="_blank">How to set up Customer Portal product URLs</a>.
 
 ## Colors and logo
 
@@ -56,7 +60,7 @@ Enter your brand name. It will be displayed in the title tag of the page’s tab
 
 ### Languages
 
-Configure the languages that will be available for your clients in the control panel
+Configure the languages that will be available for your customers in the Customer Portal.
 
 ### Logo at the sign-in page
 
@@ -66,15 +70,23 @@ This option configures the logo on the user sign-in page: https://auth.gcore.com
 
 ### Header logo
 
-The setting configures the logo in the service column and on the user sign-in page: https://auth.gcore.com/login/signin 
+The setting configures the logo in the product column and on the user sign-in page: https://auth.gcore.com/login/signin 
 
 <img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/header-logo-40.png" alt="Header logo">
 
-**Please note**: Your image must be: smaller than 4 MB, SVG (recommended)/PNG/JPG file. The maximum allowed resolution is 75 x 40px.
+<alert-element type="warning" title="Warning">
+
+Your image must be: 
+
+- Smaller than 4 MB.
+- SVG (recommended)/PNG/JPG file.
+- 75 x 40 px resolution.
+
+</alert-element>
 
 ### Header text color
 
-The setting configures the color of icons and service names in the navigation menu in the control panel.
+The setting configures the color of icons and product names in the navigation menu in the Customer Portal.
 
 ### Favicon
 
@@ -82,11 +94,18 @@ This configures the favicon.
 
 <img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/favicon-50.png" alt="Favicon" width="50%">
 
-**Please note**: Your image must be: ICO file, 16 x 16 pixels.
+<alert-element type="warning" title="Warning">
+
+Your image must be: 
+
+- ICO file.
+- 16 x 16 px.
+
+</alert-element>  
 
 ### Brand color
 
-This configures the color of hovered menu items and links in the control panel and on the sign-in page.
+This configures the color of hovered menu items and links in the Customer Portal and on the sign-in page.
 
 <img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/brand-color-60.png" alt="Brand color" width="50%">
 
@@ -94,11 +113,11 @@ This configures the color of hovered menu items and links in the control panel a
 
 Customer support tools include the phone number and email address of technical support, as well as links to the Status Page that informs about incidents and maintenance, the company's website, Knowledge Base and API documentation, and chat with the Gcore technical support.
 
-All tools, except for the chat, are available in the client control panel in the "Help" section.
+All tools, except for the chat, are available in the customer's Customer Portal in the "Help" section.
 
-If the chat option is activated, it is shown as a pop-up widget in the client control panel.
+If the chat option is activated, it is shown as a pop-up widget in the customer's Customer Portal.
 
-By default, when the "Branding settings" are not activated, the client control panel shows links, email address, and phone number of the Gcore technical support.
+By default, when the "Branding settings" are not activated, the customer's Customer Portal shows links, email address, and phone number of the Gcore technical support.
 
 ### Support phone number
 
@@ -108,15 +127,7 @@ This setting allows displaying the phone number of your technical support.
 
 The setting allows displaying the email address of your technical support.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/support-email-70.png" alt="Support email" width="50%">
-
-### Email for deletion requests
-
-Here you can enter an email address to receive notifications about status updates of deletion requests. We will automatically send you emails about three events: a client sends the request, the request is canceled, and the account is deleted. 
-
-To receive emails, turn on the "Email for deletion request" toggle and enter your email address into the field. If you want the emails to be sent to multiple email addresses, add them with the "+" button. Don't forget to save the changes at the bottom of the page. 
-
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/email-for-deletion-requests-80.png" alt="Email for deletion request" width="80%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/contact-reseller.png" alt="Support email" width="50%">
 
 ### Link to User Agreement
 
@@ -132,60 +143,75 @@ The setting allows displaying links to your API documentation.
 
 ### Show Knowledge Base
 
-The setting allows displaying a link to your Knowledge Base
+The setting allows displaying a link to your Knowledge Base.
 
 ### Show Status Page
 
 The setting allows displaying a link to your Status Page.
 
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/links-info.png" alt="Useful links for customers" width="50%">
+
 ### Show online chat
 
-The setting allows your clients to contact Gcore technical support via a chat in their control panel. If the chat option is activated, it is shown as a pop-up widget in the client control panel.
+The setting allows your customers to contact Gcore technical support via a chat in their Customer Portal. If the chat option is activated, it is shown as a pop-up widget in the customer's Customer Portal.
 
 ### Show Create new account
 
-The setting allows your clients to create additional accounts.
+The setting allows your customers to create additional accounts.
 
-If it is activated, your clients can create additional accounts from their control panels.
+If it is activated, your customers can create additional accounts from their Customer Portals.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/create-new-account-150.png" alt="Show Create new account" width="50%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/create-new-acc-reseller.png" alt="Show Create new account" width="50%">
+
+## Email alerts
+
+This setting allows you to specify email addresses that will receive notifications about your customers' actions: account deletion requests and failed authorization attempts.
+
+**Email for deletion requests.** Here you can enter an email address to receive notifications about status updates of deletion requests. We will automatically send you emails about three events: a customer sends the request, the request is canceled, and the account is deleted. 
+
+**Email for unsuccessful login attempts.** Here you can add an email address to receive notifications about unsuccessful login attempts. This will help you promptly respond to any suspicious activity in the accounts of all admin and Customer Portal users.
+
+To receive emails, turn on the needed toggle and enter your email address into the field. If you want the emails to be sent to multiple email addresses, add them with the "+" button. Don't forget to save the changes.
+
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/email-alerts-settings.png" alt="Email alerts settings" width="75%">
 
 ## SMTP Provider Settings 
 
-This setting allows your clients to receive automatic event notifications about the service they use. For example:  
+This setting allows your customers to receive automatic event notifications about the product they use. For example:  
 
 - the trial period has started, 
 - the trial period will end soon, 
 - a password has been changed, 
 - a new user has been added to the account. 
 
-By default, your clients receive emails sent via a Gcore mail provider from support@gcore.com. If it is ok for you, you do not need to configure anything.  
+By default, your customers receive emails sent via a Gcore mail provider from support@gcore.com. If it is ok for you, you do not need to configure anything.  
 
 If you want to send automatic emails from another email address, specify your SMTP server and the address from which the emails should be sent. To do this: 
 
-1\. Open "Branding settings" and make sure the "Base control panel domain" field is filled in. If not, emails will not be sent.
+1\. Open "Branding settings" and make sure the "Base Customer Portal domain" field is filled in. If not, emails will not be sent.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/smtp-settings-160.png" alt="Branding settings">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/vendor-settings-20.png" alt="Branding settings">
 
-2\. Go to the "SMTP Provider Settings" tab and enable the "Email for service emails" option.
+2\. Go to the "SMTP Provider Settings" tab and enable the "Email for service emails" option. You will see the page with SMTP settings that need to be configured.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/smtp-settings-170.png" alt="SMTP Provider Settings">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/vendor-settings-30.png" alt="SMTP settings that need to be configured">
 
-You will see the page with SMTP settings that need to be configured.
+3\. Configure the following settings:
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/smtp-settings-180.png" alt="SMTP settings that need to be configured">
+- Enter the email address that you want to use to send automatic emails to your customers. It will be displayed in the "From" field in emails.   
+- Enter the domain of your SMTP server such as smtp.serveraddress.com, or specify its IP address.  
+- Enter the port that your SMTP server uses. 
 
-3\. Enter the email address that you want to use to send automatic emails to your clients. It will be displayed in the "From" field in emails.   
+<alert-element type="tip" title="Tip">
 
-4\. Enter the domain of your SMTP server such as smtp.serveraddress.com, or specify its IP address.  
+Port 25 is commonly abused to send spam, so some ISPs block this port. If so, some customers may not get your emails via port 25. We recommend using port 465 or 587. 
 
-5\. Enter the port that your SMTP server uses. Please note: port 25 is commonly abused to send spam, so some ISPs block this port. If so, some clients may not get your emails via port 25. We recommend using port 465 or 587. 
+</alert-element>
 
-6\. Check the "TLS" box if this security protocol for email encryption is enabled on your SMTP server. 
+- Check the "TLS" box if this security protocol for email encryption is enabled on your SMTP server. 
+- Enter your username and password of your SMTP server. 
 
-7\. Enter your username and password of your SMTP server. 
-
-8\. Save the changes.  
+4\. Save changes.  
 
 To make sure that everything is configured properly, send yourself a test email by clicking the "Send test email" button. The email will be sent to your account's primary email address.
 
@@ -193,21 +219,21 @@ To make sure that everything is configured properly, send yourself a test email 
 
 <img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/dnsaas-settings-190.png" alt="DNSaaS settings" width="80%">
 
-If the DNS service is available for your clients, you can set the values of your primary name server, secondary name server, and email address that will be used to generate SOA records.
-This information will be displayed in the client's control panel when they add a domain name for the DNS zone.
+If the DNS service is available for your customers, you can set the values of your primary name server, secondary name server, and email address that will be used to generate SOA records.
+This information will be displayed in the customer's Customer Portal when they add a domain name for the DNS zone.
 
 By default, we show Gcore primary and secondary name servers and Gcore email address.
 
 ## Services
 
-In your admin panel it is possible to set which products available to you are also visible to your clients. 
+In your Admin Portal it is possible to set which products available to you are also visible to your customers. 
 
 There are two levels of visibility: global (or default) and personal. 
 
-In the settings of <a href="https://gcore.com/docs/reseller-support/manuals/configure-global-visibility" target="_blank">global visibility</a> is set the visibility of services for all your clients.
+In the settings of <a href="https://gcore.com/docs/reseller-support/manuals/configure-global-visibility" target="_blank">global visibility</a> is set the visibility of products for all your customers.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/services-200.png" alt="Services" width="80%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/vendor-settings-40.png" alt="Global products" width="70%">
 
-In the settings of <a href="https://gcore.com/docs/reseller-support/manuals/configure-personal-visibility" target="_blank">personal visibility</a> you can enable or disable the visibility of services for a particular client. The visibility statuses of personally configured products will not be available for changes from the global visibility settings. 
+In the settings of <a href="https://gcore.com/docs/reseller-support/manuals/configure-personal-visibility" target="_blank">personal visibility</a> you can enable or disable the visibility of products for a particular customer. The visibility statuses of personally configured products will not be available for changes from the global visibility settings. 
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/services-210.png" alt="Services" width="80%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/vendor-settings-50.png" alt="Concrete account products" width="70%">

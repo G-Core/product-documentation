@@ -24,13 +24,13 @@ pageDescription: Follow our step-by-step guide, including a tus standard script 
 
 Video Hosting refers to cloud storage of videos that are ready to be distributed and watched on end devices via the public internet. You can upload original video files in <a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/what-initial-parameters-of-your-live-streams-and-videos-we-can-accept" target="_blank">different formats</a>, we process the videos in various ways, and we save the result to our internal storage. As a result, you get videos in <a href="https://gcore.com/docs/streaming-platform/video-hosting/hls-and-mp4" target="_blank">HLS/MP4 format</a> with <a href="https://gcore.com/docs/streaming-platform/video-hosting/subtitles-and-closed-captions-for-vod" target="_blank">subtitles</a>, <a href="https://gcore.com/docs/streaming-platform/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices" target="_blank">timeline previews</a>, and other features available.
 
-You can upload videos to the storage via the control panel or API. Learn how to <a href="https://gcore.com/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app" target="_blank">add a video via the control panel</a>.
+You can upload videos to the storage via the Gcore Customer Portal or API. Learn how to <a href="https://gcore.com/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app" target="_blank">add a video via the Gcore Customer Portal</a>.
 
 Upload of videos via API can be done in three ways, which we describe in detail in this article. Quickly navigate to your chosen method here:  
 
 - Copy from external storage  
 - Upload from a local device 
-- Batch upload to migrate a vast number of videos from other services (available soon)
+- Batch upload to migrate a vast number of videos from other services
 
 ## Video upload and processing statuses
 
@@ -86,11 +86,17 @@ Example of the response if an error occurs during video processing:
 ```
 ## Copy from external storage
 
-In the section, we explain how to copy files from a third-party, external storage to the Gcore Streaming Platform. We will explain the process, offer an example API request, then explain how it works.
+In the section, we explain how to copy and migrate files from a third-party, external storage to the Gcore Video Streaming. We will explain the process, offer an example API request, then explain how it works.
 
 ### Overview
 
 If your videos are available by public HTTPS URL, this is the best option to copy video files directly from external storage.
+
+Available protocols for migration:
+
+- HTTP/HTTPS public access from external video hosting services, such as Vimeo or Mux
+- HTTP/HTTPS public access from S3-like storages, such as AWS or Azure
+- SFTP protocol
 
 **Note**: The original file must be in MP4 format or one of the following formats: 3g2, 3gp, asf, avi, dif, dv, flv, f4v, m4v, mov, mp4, mpeg, mpg, mts, m2t, m2ts, qt, wmv, vob, mkv, ogv, webm, vob, ogg, mxf, quicktime, x-ms-wmv, mpeg-tts, vnd.dlna.mpeg-tts.
 
@@ -98,10 +104,11 @@ Streaming formats like HLS (.m3u8/.ts) and DASH (.mpd/.m4v) are intended for the
 
 Examples of good and bad links to video files from external storage:  
 
-- **Good link**: ```https://demo-files.gvideo.io/gcore.mp4``` (13,8MB) 
+- **Good link**: ```https://demo-files.gvideo.io/gcore.mp4``` (13,8MB from S3 storage)
+- **Good SFTP template**: ```sftp://login:password@domain.com/path/file.mp4```
 - **Bad link** (because of chunked HLS format): ```https://demo-files.gvideo.io/hls/master.m3u8```  
 
-Below, we explain how to <a href="https://gcore.com/docs/streaming-platform/video-hosting/upload-video-via-api#batch-upload-to-migrate-a-vast-number-of-videos-from-other-services">get HTTP public access links</a> in different external storages. 
+Below, we explain how to <a href="https://gcore.com/docs/streaming-platform/video-hosting/upload-video-via-api#batch-upload-to-migrate-a-vast-number-of-videos-from-other-services">get HTTP public access links</a> in some popular external storages. 
 
 To copy a video from another server, specify the attribute ```origin_url``` in the <a href="https://api.gcore.com/docs/streaming#tag/Videos/operation/post_api_videos" target="_blank">POST API request</a>. The original video will be downloaded for Video Hosting on our server side. 
 
@@ -143,9 +150,9 @@ After setting the task for downloading, it is queued. You can queue an unlimited
 
 ### How it works
 
-Here’s how the platform works on our end. We attempt to download a file three times, expecting a 200 OK response to access your provided link. If the download fails, the video entity will stay in the “Empty” status, and details will be added to the field ```error```. You need to delete the empty video entity and try to create a new one with the correct origin URL.
+Here’s how it works on our end. We attempt to download a file three times, expecting a 200 OK response to access your provided link. If the download fails, the video entity will stay in the “Empty” status, and details will be added to the field ```error```. You need to delete the empty video entity and try to create a new one with the correct origin URL.
 
-Once successfully uploaded and processed, the video will be available on our platform. You can check the status of the video by the <a href="https://api.gcore.com/docs/streaming#tag/Videos/operation/get_api_videos_id" target="_blank">GET API request</a> or via webhook <a href="https://gcore.com/docs/streaming-platform/extra-features/get-webhooks-from-the-streaming-platform" target="_blank">notifications</a>. 
+Once successfully uploaded and processed, the video will be available in the Customer Portal. You can check the status of the video by the <a href="https://api.gcore.com/docs/streaming#tag/Videos/operation/get_api_videos_id" target="_blank">GET API request</a> or via webhook <a href="https://gcore.com/docs/streaming-platform/extra-features/get-webhooks-from-the-streaming-platform" target="_blank">notifications</a>. 
 
 ## Upload from a local device
 
@@ -250,11 +257,27 @@ client_id = {client_id}
 - The larger the size of a chunk, the faster each chunk will be uploaded using the maximum bandwidth. But in the case of failure to upload, TUS will only start uploading from the last successful chunk, which may have been some time ago. So with large sizes, the speed will be faster, but if it fails, the additional reupload time will be significant.
 - With small sizes, the risk of uploading errors decreases. However, due to the features of HTTP (handshakes, etc.) for each chunk’s request, the upload speed will significantly reduce. So small chunk sizes mean a slow but reliable upload speed.
 
+<alert-element type="info" title="Info">
+
+Transmitted data must comply with the <a href="https://tus.io/protocols/resumable-upload#upload-metadata" target="_blank">rules for the Upload-Metadata header</a>, including:
+
+* Header fields must be comma-separated.
+* All values are encoded using the Base64 scheme.
+* All keys are unique.
+
+</alert-element>
+
+**Example of bash script:** 
+
+```
+DEBUG=1 tusc -H "https://vod-uploader-ed-2.gvideo.co" -f "file_to_upload.mp4" -b "/upload/" -- -H "'Upload-Metadata: client_id $(echo <client_id> | base64 -w0),filename $(echo <filename> | base64 -w0),token $(echo <token> | base64 -w0),video_id $(echo <video_id> | base64 -w0)'"
+```
+
+**Example of JS code:** 
+
 Try the <a href="https://codepen.io/apih9000/pen/wvQmNEW?editors=1011" target="_blank">CodePen template</a> by copying your ```token```, ```video_id```, and ```client_id``` to find out the upload functionality of the TUS protocol:  
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/upload-video-via-api/codepen-example.png" alt="CodePen template">
-
-Example of JS code: 
 
 ```
 const options = { 
@@ -305,8 +328,8 @@ Most common TUS errors:
 - **HTTP 405 Method Not Allowed**. Unexpected response while creating upload session; check parameters of the request.
 - **HTTP 429 Too Many Requests**. Try to send a request later.
 - **HTTP 500 Internal Server Error**:
-    - Error: token invalid (null)
-    - Error: token invalid (eyJhbGciOi...)
+    - Error: token invalid (null) – check the format of parameters, encoding in base64, separation of parameters and key-value pairs.
+    - Error: token invalid (eyJhbGciOi...) – the same as above.
     - Error: token video (12345) does not match this video (23456)
     - Error: token client (123) does not match this client (234)
 
