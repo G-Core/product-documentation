@@ -1,7 +1,7 @@
 ---
 title: fastedge
 displayName: FastEdge
-published true
+:published true
 pageTitle: Gcore FastEdge documentation page | Gcore
 pageDescription: Explore Gcore FastEdge functionality and learn how to configure and manage FastEdge applications.
 ---
