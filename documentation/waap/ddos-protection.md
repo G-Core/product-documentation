@@ -3,8 +3,8 @@ title: ddos-protection
 displayName: L7 DDoS protection
 published: true
 order:
-pageTitle: Learn about Gcore L7 DDoS protection | Gcore
-pageDescription: Learn about L7 DDoS protection measures.
+pageTitle: A guide on Gcore L7 DDoS protection | Gcore
+pageDescription: Learn about L7 DDoS protection measures, when DDoS protection mode gets activated, and how it works.
 ---
 # L7 DDoS protection
 
