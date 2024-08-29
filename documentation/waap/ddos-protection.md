@@ -87,6 +87,6 @@ If you’re using WAAP <a href="https://gcore.com/docs/waap/billing#pro" target=
 
 * WAAP’s bot-detection technology will block bots that share IP addresses with human users or frequently change their IP addresses. 
 
-* WAAP DDoS protection includes the IP filtering profiler that helps isolate typical traffic coming from known users from the traffic that might be part of a DDoS attack. 
+* WAAP DDoS protection uses an AI-driven IP filtering profiler that analyzes daily traffic patterns from known users. This helps the system distinguish normal traffic from traffic that might be part of a DDoS attack.
 
-As an additional protection measure, we recommend adding your API endpoints to the API Baseline. This will enhance the system's ability to protect your endpoints and reduce the likelihood of false positives. 
+As an additional protection measure, we recommend manually adding your API endpoints to the <a href="" target="_blank">API base path</a>. This will enhance the system's ability to protect your endpoints and reduce the likelihood of false positives. 
