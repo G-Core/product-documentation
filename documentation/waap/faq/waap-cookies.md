@@ -1,17 +1,15 @@
 ---
 title: waap-cookies
-displayName: WAAP cookies and storage variables
+displayName: What cookies are used by WAAP?
 published: true
 order: 10
 toc:
-pageTitle: A guide with required WAAP cookies and storage variables | Gcore
-pageDescription: View the list of required WAAP cookies and storage variables, along with their descriptions and sample values.
+pageTitle: A guide with required WAAP cookies | Gcore
+pageDescription: View the list of required WAAP cookies, along with their descriptions and sample values.
 ---
-# WAAP cookies and storage variables
+# What are the required cookies used by WAAP?
 
 Gcore WAAP uses different cookies to analyze user and browsing behavior. These cookies are required for the correct functioning of the Web Application and API Protection product. 
-
-## Required cookies
 
 <table>
 <thead>
@@ -184,42 +182,6 @@ zECQ/lhv7rOBsNCJFCBRlnJ+qgFuWQHOg==</td>
     <td>/</td>
     <td>V</td>    
     <td>Strict</td>
-</tr>
-</tbody>
-</table>
-
-## Storage variables 
-
-The following table contains a list of local storage variables that are used to save key/value pairs in a web browser. These variables are not cookies. 
-
-<table>
-<thead>
-<tr>
-    <th style="text-align: left;">Variable</th>
-    <th style="text-align: left;">Description</th>
-    <th style="text-align: left;">Sample value</th>
-</tr>
-</thead>
-<tbody>
-<tr style="text-align: left;">
-    <td>cnv</td>
-    <td>CAPTCHA-related local storage data.</td>
-    <td>51507208066</td>
-</tr>
-<tr style="text-align: left;">
-    <td>csr</td>
-    <td>CAPTCHA-related local storage data.</td>
-    <td>RSNBLPNDACD</td>
-</tr>
-<tr style="text-align: left;">
-    <td>otr</td>
-    <td>Shell mouse script-related local storage data.</td>
-    <td>cfc3f5050e9</td>
-</tr>
-<tr style="text-align: left;">
-    <td>altutgv2 </td>
-    <td>A variable related to the user tag token. Contains local storage data.</td>
-    <td>h4d73db3157e44edb918eea80571a69f2776</td>
 </tr>
 </tbody>
 </table>
