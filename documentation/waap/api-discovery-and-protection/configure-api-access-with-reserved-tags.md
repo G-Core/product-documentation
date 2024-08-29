@@ -46,7 +46,7 @@ After you complete the steps, it’s important to enable the relevant policies w
 
 <alert-element type="info" title="Info">
  
-The Advanced API protection feature is available in the <a href="https://gcore.com/docs/waap/billing#enterprise" target="_blank">Enterprise </a>package. 
+The Advanced API protection feature is available in the <a href="https://gcore.com/docs/waap/billing#enterprise" target="_blank">Enterprise</a> package. 
 
 </alert-element>
 
