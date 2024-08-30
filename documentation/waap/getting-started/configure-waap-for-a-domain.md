@@ -56,6 +56,12 @@ Once your CDN resource is set up, you can activate WAAP protection for it:
 
 5\. Click **Save** to apply the changes.  
 
+<alert-element type="warning" title="Warning">
+
+After enabling WAAP in CDN, you need to invalidate the cache. This is necessary to ensure that WAAP settings are properly applied. 
+
+</alert-element>
+
 Consider that it might take up to 20 minutes for the HTTP traffic to start passing through our WAAP after the activation. 
 
 ### What to do if WAAP blocks content that shouldn’t be blocked? 
@@ -106,9 +112,9 @@ For instance, you can find information about incoming web requests on the **WAF*
 
 <img src="https://assets.gcore.pro/docs/waap/getting-started/domains-waap-page.png" alt="Domains page in the Customer Portal">
 
-2\. Find the needed domain and click its name to open it. 
+2\. Find the needed domain and click its name to open it. You'll be directed to the **Policies** page.
 
-3\. In the sidebar, click **Analytics** > **WAF**. 
+3\. In the sidebar, click **Analytics** > **WAAP**. 
 
 4\. Review the information under **Requests**.
 
@@ -164,7 +170,7 @@ If your domain doesn’t use a CMS, we highly recommend allow listing the site a
 
 <img src="https://assets.gcore.pro/docs/waap/getting-started/domains-waap-page.png" alt="Domains page in the Customer Portal">
 
-2\. Find the needed domain and click its name to open it. 
+2\. Find the needed domain and click its name to open it. You'll be directed to the **Policies** page.
 
 3\. In the sidebar, click **Firewall**. 
 
@@ -184,7 +190,7 @@ If you use content management systems, such as WordPress, allow traffic for CMS 
 
 1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**.
 
-2\. Find the needed domain and click its name to open it. 
+2\. Find the needed domain and click its name to open it. You'll be directed to the **Policies** page.
 
 3\. In the sidebar, click **WAAP**. 
 
@@ -204,7 +210,7 @@ Follow these steps to allow crawlers, scanners, monitoring bots, and similar too
 
 1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**.
 
-2\. Find the needed domain and click its name to open it. 
+2\. Find the needed domain and click its name to open it. You'll be directed to the **Policies** page.
 
 3\. In the sidebar, click **WAAP**. 
 
@@ -214,11 +220,17 @@ Follow these steps to allow crawlers, scanners, monitoring bots, and similar too
 
 The <a href="https://gcore.com/docs/waap/waap-policies/common-automated-services" target="_blank">common automated services</a> policy group allows a few trusted bots by default, which is why we recommend reviewing this list before enabling the protect mode.
 
-## Step 7: Enable protect mode 
+## Step 7. Configure your APIs
+
+If you plan to serve JSON requests through an API on your domain, you can disable the JavaScript injection and CAPTCHA functionalities for specified API endpoints.
+
+Follow instructions from the <a href="https://gcore.com/docs/waap/api-discovery-and-protection/configure-api-base-path" target="_blank">Manually add endpoints to API base path</a> guide.
+
+## Step 8: Enable protect mode 
 
 1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**.
 
-2\. Find the needed domain and click its name to open it. 
+2\. Find the needed domain and click its name to open it. You'll be directed to the **Policies** page.
 
 3\. In the sidebar, click **WAAP**. 
 
