@@ -16,7 +16,7 @@ customUrl: /streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your
   
 1\. Go to the <a href="https://streaming.gcore.com/video/list" target="_blank">Video Hosting</a> tab, click the **Add** button and select **Upload video**.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app/upload-video-10.png" alt="Video Hosting tab">
+<img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app/hosting-page-upload.png" alt="Video Hosting tab" width="80%">
 
 2\. Upload a video using one of the following actions:  
 
