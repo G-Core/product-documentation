@@ -81,6 +81,12 @@ You can also see the difference on the **Analytics** page in the **Requests** ta
 
 You can switch between monitor and protect modes depending on your security requirements and the level of risk tolerance for your web applications. 
 
+<alert-element type="warning" title="Warning">
+
+If your domain is in monitor mode, all traffic is allowed to your domain, regardless of configured security rules and policy groups. This mode is only recommended for testing WAAP settings. 
+
+</alert-element>
+
 Here’s an example of how to enable protect mode for your domain:  
 
 1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**. 
