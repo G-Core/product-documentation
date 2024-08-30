@@ -22,7 +22,7 @@ Rate Limiter is an additional feature of Bot Protection that allows you to confi
 
 ## Configure Rate Limiter
 
-1\. Go to the <a href="https://control.gcore.com/resources/all" target="_blank">Web Application Security</a> section and open the settings of the desired resource.
+1\. Go to the Web Application Security section and open the settings of the desired resource.
 
 <img src="https://assets.gcore.pro/docs/web-security/configure-rate-limiter-to-limit-the-number-of-requests/rate-limiter-10.png" alt="Web security section">
 
@@ -44,7 +44,7 @@ The testcookie function is displayed as the slider in the “High” column in t
  
 </expandable-element>
 
-4\. Enter the number of allowed requests to your <a href="https://gcore.com/docs/web-security/create-and-configure-a-protected-resource" target="_blank">protected resource</a> between 1 and 100,000 per second.
+4\. Enter the number of allowed requests to your protected resource between 1 and 100,000 per second.
 
 5\. Enter the number of allowed requests to the URI of your web application between 1 and 100,000 per second.
 

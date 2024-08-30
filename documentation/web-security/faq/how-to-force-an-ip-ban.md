@@ -19,7 +19,7 @@ You can set an IP ban in two ways: in the customer portal or via the API.
 
 ## Force an IP ban in the customer portal
 
-1\. Go to your <a href="https://control.gcore.com/resources/all" target="_blank">list of resources under protection</a>.
+1\. Go to your list of resources under protection.
 
 2\. Click three dots on the line of the relevant resource and click **Access Policy**.
 

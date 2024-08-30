@@ -14,7 +14,7 @@ pageDescription: A step-by-step guide on how to connect protection for a CDN res
 
 ## What is the challenge in using Web Application Security and CDN together?
 
-Previously, it was challenging to connect <a href="https://gcore.com/web-security" target="_blank">Web Application Security</a> and <a href="https://gcore.com/cdn" target="_blank">CDN</a> services for the same domain. The issue was that when using a CDN, the edge servers that cache content sent numerous requests to your application from a few IP addresses of our internal subnets. This made it difficult for Web Application Security to effectively apply the Bot protection mechanism since it couldn't distinguish between requests from legitimate users from an internal network IP and malicious requests from bots.
+Previously, it was challenging to connect Web Application Security and CDN services for the same domain. The issue was that when using a CDN, the edge servers that cache content sent numerous requests to your application from a few IP addresses of our internal subnets. This made it difficult for Web Application Security to effectively apply the Bot protection mechanism since it couldn't distinguish between requests from legitimate users from an internal network IP and malicious requests from bots.
 
 To avoid blocking legitimate requests, we recommended connecting CDNs and Web Protection to separate subdomains. However, it was not convenient for customers.
 
@@ -24,17 +24,17 @@ We changed the bot-identifying process, thereby resolving the connectivity confl
 
 ## Configure Web Secure and CDN for your application
 
-1\. Create a resource under the protection according to the "<a href="https://gcore.com/docs/web-security/create-and-configure-a-protected-resource" target="_blank">Create and configure a protected resource</a>" guide.
+1\. Create a resource under the protection according to the Create and configure a protected resource guide.
 
 
-2\. Go to the <a href="https://control.gcore.com/resources/all" target="_blank">Resources</a> tab and copy the IP address from the "Protected IP" column.
+2\. Go to the Resources tab and copy the IP address from the "Protected IP" column.
 
 **Note**: The IP from the example (*5.188.189.82*) will be different from yours.
 
 <img src="https://assets.gcore.pro/docs/web-security/connect-web-security-and-cdn-for-the-same-domain/13997686949649.png" alt="Web protection">
 
 
-3\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN resources</a> tab and create a CDN resource according to the appropriate guide: Create a CDN resource <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">for only static files</a> or <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site" target="_blank">an entire site</a>.
+3\. Go to the CDN resources tab and create a CDN resource according to the appropriate guide: Create a CDN resource for only static files or an entire site.
 
 **3.1.** If you want to use Web Application Security with the CDN resource **for only static files**, specify the following values during creation:
 

@@ -16,7 +16,7 @@ You can choose to receive PDF reports daily, weekly, or monthly; they provide co
 
 ## Set up integration
 
-1\. Open the <a href="https://web-protect.gcore.com/waf/settings/integrations" target="_blank">Settings</a> section and navigate to the **Integration** tab.
+1\. Open the Settings section and navigate to the **Integration** tab.
 
 2\. Click **Add integration**.
 

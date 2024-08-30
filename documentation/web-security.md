@@ -7,7 +7,7 @@ pageDescription: Explore Gcore Web Application Security functionality and learn 
 ---
 # Web Application Security
 
-Welcome to the <a href="https://gcore.com/web-security" target="_blank">Gcore Web Application Security</a> documentation page! Here we explain how to use, configure, and troubleshoot Gcore’s security features.
+Welcome to the Gcore Web Application Security documentation page! Here we explain how to use, configure, and troubleshoot Gcore’s security features.
 
 Web Application Security protects your web applications against DDoS attacks, hacking threats, and malicious bot activities.
 
