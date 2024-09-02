@@ -2,7 +2,7 @@
 title: api-discovery
 displayName: API discovery
 published: true
-order:
+order: 20
 pageTitle: Learn about Gcore API discovery | Gcore
 pageDescription: Learn about Gcore API discovery measures.
 ---

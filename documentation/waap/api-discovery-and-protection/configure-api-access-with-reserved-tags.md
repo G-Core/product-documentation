@@ -2,7 +2,7 @@
 title: configure-api-access-with-reserved-tags
 displayName: Configure API access with reserved tags
 published: true
-order: 10
+order: 30
 toc:
    --1--Configure API protection: "configure-api-protection"
    --2--Step 1. Group endpoints: "step-1-group-endpoints-based-on-their-access-levels"
