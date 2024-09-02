@@ -40,7 +40,7 @@ To run the compiled CLI tool, use the following command:
 
 <code-block>
 
-./target/release/cli <span style="color:#FF5913">command</span>
+./target/release/cli <span style="color:#FF5913">[command]</span>
 
 </code-block>
 
