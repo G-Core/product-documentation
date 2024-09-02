@@ -25,9 +25,9 @@ DDoS mode is activated if any of the following conditions is met.
 <table>
 <thead>
 <tr>
-    <th style="text-align: left;">Condition</th>
-    <th style="text-align: left;">Description</th>
-    <th style="text-align: left;">Threshold values</th>
+    <th style="text-align: left; width:20%">Condition</th>
+    <th style="text-align: left; width:35%">Description</th>
+    <th style="text-align: left; width:45%">Threshold values</th>
 </tr>
 </thead>
 <tbody>
