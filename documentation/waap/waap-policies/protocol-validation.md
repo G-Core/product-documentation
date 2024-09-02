@@ -69,7 +69,7 @@ Clients use HTTP methods to communicate with the website's origin server and spe
 
 ## Configure policy group 
 
-You can review the Protocol validation policy group and enable or disable its policies in the Gcore Customer Portal: 
+You can review the Protocol validation policy group and enable or disable its policies in the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>: 
 
 1\. Navigate to **WAAP** > **Domains**. 
 
@@ -77,15 +77,13 @@ You can review the Protocol validation policy group and enable or disable its po
 
 2\. Find the domain where you want to configure the policy group and click the domain name to open it.  
 
-3\. In the sidebar menu, click **WAAP**. 
-
-4\. On the **Policies** page that opens, click **Protocol validation** to expand the section and adjust the policies. 
+3\. On the **Policies** page that opens, click **Protocol validation** to expand the section and adjust the policies. 
 
 <img src="https://assets.gcore.pro/docs/waap/waap-policies/protocol-validation/protocol-validation.png" alt="WAAP policies page with the highlighted ehavioral WAAP policy">
 
 <alert-element type="info" title="Info">
 
-All Protocol validation policies are enabled by default. To enable or disable a policy, turn on the toggle near that policy. 
+All protocol validation policies are enabled by default. To enable or disable a policy, turn on the toggle near that policy. 
 
 </alert-element>
 

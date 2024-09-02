@@ -19,7 +19,7 @@ The Web Application and API Protection (WAAP) includes a Behavioral WAF policy g
 
 ## Configure policy group 
 
-You can review the Behavioral WAF policy group and enable or disable its policies in the Gcore Customer Portal: 
+You can review the Behavioral WAF policy group and enable or disable its policies in the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>: 
 
 1\. Navigate to **WAAP** > **Domains**. 
 
@@ -27,9 +27,7 @@ You can review the Behavioral WAF policy group and enable or disable its policie
 
 2\. Find the domain where you want to configure the policy and click the domain name to open it.  
 
-3\. In the sidebar menu, click **WAAP**. 
-
-4\. On the **Policies** page that opens, click **Behavioral WAAP** to expand the section and adjust the policies. 
+3\. On the **Policies** page that opens, click **Behavioral WAAP** to expand the section and adjust the policies. 
 
 <img src="https://assets.gcore.pro/docs/waap/waap-policies/behavioral-waf/behavioral-waf.png" alt="WAF policies page with the highlighted ehavioral WAF policy">
 

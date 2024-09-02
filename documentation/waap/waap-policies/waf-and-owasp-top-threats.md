@@ -14,7 +14,7 @@ The WAF & OWASP Top 10 policy group contains a robust set of policies that prote
 
 ## Configure policy group 
 
-You can review the WAF and OWASP top threats policy group and enable or disable its policies in the Gcore Customer Portal: 
+You can review the WAF and OWASP top threats policy group and enable or disable its policies in the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>: 
 
 1\. Navigate to **WAAP** > **Domains**. 
 
@@ -22,9 +22,7 @@ You can review the WAF and OWASP top threats policy group and enable or disable 
 
 2\. Find the domain where you want to configure the policy group and click the domain name to open it.  
 
-3\. In the sidebar menu, click **WAAP**. 
-
-4\. On the **Policies** page that opens, click **WAF and OWASP top threats** to expand the section and adjust the policies. 
+3\. On the **Policies** page that opens, click **WAF and OWASP top threats** to expand the section and adjust the policies. 
 
 <img src="https://assets.gcore.pro/docs/waap/waap-policies/waf-and-owasp-top-threats/waf-and-owasp-top-threats.png" alt="WAAP policies page with the highlighted IP reputation policy">
 
