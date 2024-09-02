@@ -208,7 +208,7 @@ Your application has been successfully deployed. You can now test its configurat
 <code-block>
 
 curl -X 'POST' \
-  'https://api\.gcore\.com/fastedge/v1/binaries/raw' \
+  'https://api[dot]gcore[dot]com/fastedge/v1/binaries/raw' \ 
   -H 'accept: application/json' \
   -H 'Authorization: APIKey <span style="color:#FF5913">api_key</span>' \
   -H 'Content-Type: application/octet-stream' \
