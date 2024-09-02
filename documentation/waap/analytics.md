@@ -41,13 +41,13 @@ The data is displayed in Coordinated Universal Time (UTC) and available on the f
 
 To access analytics for your domain: 
 
-1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**. 
+1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, navigate to **WAAP** > **Domains**. 
 
 <img src="https://assets.gcore.pro/docs/waap/analytics/domains-waap-page.png" alt="Domains page in the Customer Portal" width="80%">
 
-2\. Find the domain where you want to check analytics and click the domain name to open it. 
+2\. Find the domain where you want to check analytics and click the domain name to open it. You'll be directed to the **Policies** page.
 
-3\. In the sidebar menu, click **Analytics**. 
+3\. In the sidebar, click **Analytics**. 
 
 <img src="https://assets.gcore.pro/docs/waap/analytics/waap-analytics-page.png" alt="Analytics page in the Customer Portal" width="80%">
 
@@ -97,11 +97,11 @@ You can print the chart in pdf format or download it in the following formats: p
 
 ## WAAP page
 
-This page features detailed statistics on HTTP requests and displays data in the graph format (Web application firewall requests) and as a table (Requests).
+This page features detailed statistics on HTTP requests and displays data in the graph format (**Web Application Firewall Requests**) and as a table (**Requests**).
 
 ### Web Application Firewall Requests
 
-This graph shows information about actions that were applied to incoming requests. The data is displayed in a plot chart format that gives a comprehensive overview of both good and bad requests–potential security threats detected based on a triggered rule.  
+This graph shows information about actions that were applied to incoming requests. The data is displayed in a plot chart format that gives a comprehensive overview of both good and bad requests—potential security threats detected based on a triggered rule.  
 
 <img src="https://assets.gcore.pro/docs/waap/analytics/waap-requests.png" alt="WAF graph on the Analytics page in the Customer Portal" width="80%">
 
@@ -113,7 +113,7 @@ You can select the following filters to view specific types of requests:
 
 * **Custom rule—blocked**: View requests that were blocked because of a triggered custom rule created in your account. 
 
-* **DDoS L7—blocked**: View requests that were blocked because of a triggered default rule related to DDoS. To learn more about how requests can trigger this rule, check out our Configure WAAP for <a href="https://gcore.com/docs/waap/ddos-protection" target="_blank">L7 DDoS protection</a> guide.
+* **DDoS L7—blocked**: View requests that were blocked because of a triggered default rule related to DDoS. To learn more about how requests can trigger this rule, refer to our <a href="https://gcore.com/docs/waap/ddos-protection" target="_blank">L7 DDoS protection</a> guide.
 
 * **Passed to origin**: View requests that successfully reached the origin. 
 
@@ -172,10 +172,10 @@ You can select multiple filters to get a more granular view of the displayed inf
 <tr>
 <td style="text-align: left">Security action</td>
 <td style="text-align: left">The action that was taken against the request:<br><br>
-<b>Allow</b>: Display requests that were allowed to pass.<br>
-<b>Block</b>: Display requests that were blocked.<br>
-<b>CAPTCHA</b>: Display requests that got the CAPTCHA validation screen, regardless of whether the request passed or failed the validation.<br> 
-<b>Handshake (JavaScript validation)</b>: Display requests that were presented with a JavaScript validation screen, regardless of whether the request passed or failed the screen.</td>
+<ul><li>Allow: Display requests that were allowed to pass.</li>
+<li>Block: Display requests that were blocked.</li>
+<li>CAPTCHA: Display requests that got the Captcha validation screen, regardless of whether the request passed or failed the validation.</li> 
+<li>Handshake (JavaScript validation): Display requests that were presented with a JavaScript validation screen, regardless of whether the request passed or failed the screen.</li></ul></td>
 </tr>
 <tr>
 <td style="text-align: left">Result</td>
@@ -194,26 +194,25 @@ You can select multiple filters to get a more granular view of the displayed inf
 
 You can download the table data in the CSV format. 
 
-
 #### Request details
 
 This page provides an in-depth information about a particular request made to your domain. It’s structured into three sections, each focusing on a specific aspect of the request: 
 
 * **Overview**: Provides a high-level summary of the request, including relevant rules and applicable actions, response code, and client details. 
 
- <img src="https://assets.gcore.pro/docs/waap/analytics/request-details-overview.png" alt="Overview section on the request details page" width="80%">
+   <img src="https://assets.gcore.pro/docs/waap/analytics/request-details-overview-section.png" alt="Overview section on the request details page" width="80%">
 
 * **Additional information**: Includes a detailed overview of the client, associated organization, and device (if available).
 
- <img src="https://assets.gcore.pro/docs/waap/analytics/request-details-extra-info.png" alt="Additional information section on the request details page" width="80%">
+   <img src="https://assets.gcore.pro/docs/waap/analytics/request-details-extra-info.png" alt="Additional information section on the request details page" width="80%">
 
 * **Headers**: Contains a complete list of HTTP headers included in the client request and response from the server.
 
- <img src="https://assets.gcore.pro/docs/waap/analytics/request-details-headers.png" alt="Headers section on the request details page" width="80%">
+   <img src="https://assets.gcore.pro/docs/waap/analytics/request-details-headers.png" alt="Headers section on the request details page" width="80%">
 
 * **Tags**: Lists any tags associated with the request, helping you quickly identify malicious activities related to that request.
 
- <img src="https://assets.gcore.pro/docs/waap/analytics/request-details-tags.png" alt="Tags section on the request details page" width="80%">
+   <img src="https://assets.gcore.pro/docs/waap/analytics/request-details-tags.png" alt="Tags section on the request details page" width="80%">
 
 
 ### Threats (last 24 hours) 
@@ -248,9 +247,27 @@ To filter DDoS request data by the timeframe of each attack, click the dropdown 
 
 <img src="https://assets.gcore.pro/docs/waap/analytics/ddos-over-time.png" alt="WAF graph on the Analytics page in the Customer Portal" width="80%">
 
+### IPs participated 
+
+This table displays a list of the top IP addresses associated with the selected DDoS attack, along with the total number of times each IP has made a request to your domain. 
+
+<img src="https://assets.gcore.pro/docs/waap/analytics/ips-participated.png" alt="WAF graph on the Analytics page in the Customer Portal" width="80%">
+
+### URLs targeted 
+
+This table displays a list of the top URLs that were requested during a DDoS attack, along with the number of times each URL was requested. 
+
+<img src="https://assets.gcore.pro/docs/waap/analytics/urls-targeted.png" alt="WAF graph on the Analytics page in the Customer Portal" width="80%">
+
+### User agents 
+
+This table displays a list of the top clients, tools, and user agents associated with the selected DDoS attack. It also shows the total number of times each of them has made a request to your site. 
+
+<img src="https://assets.gcore.pro/docs/waap/analytics/user-agents.png" alt="WAF graph on the Analytics page in the Customer Portal" width="80%">
+
 ### Attack requests 
 
-This table displays more fine-grained information about requests associated with attacks. You can search for specific attacks by clicking the Select field dropdown and entering an IP or response code. 
+This table displays more fine-grained information about requests associated with attacks. You can search for specific attacks by clicking the **Select field** dropdown and entering an IP or response code. 
 
 <table>
 <thead>
@@ -262,7 +279,7 @@ This table displays more fine-grained information about requests associated with
 <tbody>
 <tr>
 <td style="text-align: left">Request ID</td>
-<td style="text-align: left">A unique identifier assigned to each HTTP request.</td>
+<td style="text-align: left">A unique identifier assigned to each HTTP request. Click the ID to open the <a href="https://gcore.com/docs/waap/analytics#request-details" target="_blank">Request Details</a> page, which provides comprehensive information about the request.</td>
 </tr>
 <tr>
 <td style="text-align: left">Date</td>
@@ -287,7 +304,7 @@ This table displays more fine-grained information about requests associated with
 <li>Allow: Display requests that were allowed to pass.</li>
 <li>Block: Display requests that were blocked.</li>
 <li>CAPTCHA: Display requests that got the CAPTCHA validation screen, regardless of whether the request passed or failed the validation.</li>
-<li>Handshake (JavaScript validation: Display requests that were presented with a JavaScript validation screen, regardless of whether the request passed or failed the screen.</li></ul></td>
+<li>Handshake (JavaScript validation): Display requests that were presented with a JavaScript validation screen, regardless of whether the request passed or failed the screen.</li></ul></td>
 </tr>
 <tr>
 <td style="text-align: left">Result</td>
@@ -303,23 +320,3 @@ This table displays more fine-grained information about requests associated with
 </tr>
 </tbody>
 </table>
-
-To view more details about a specific request listed in this table, click on the **Request ID**. 
-
-### IPs participated 
-
-This table displays a list of the top IP addresses associated with the selected DDoS attack, along with the total number of times each IP has made a request to your domain. 
-
-<img src="https://assets.gcore.pro/docs/waap/analytics/ips-participated.png" alt="WAF graph on the Analytics page in the Customer Portal" width="80%">
-
-### URLs targeted 
-
-This table displays a list of the top URLs that were requested during a DDoS attack, along with the number of times each URL was requested. 
-
-<img src="https://assets.gcore.pro/docs/waap/analytics/urls-targeted.png" alt="WAF graph on the Analytics page in the Customer Portal" width="80%">
-
-### User agents 
-
-This table displays a list of the top clients, tools, and user agents associated with the selected DDoS attack. It also shows the total number of times each of them has made a request to your site. 
-
-<img src="https://assets.gcore.pro/docs/waap/analytics/user-agents.png" alt="WAF graph on the Analytics page in the Customer Portal" width="80%">
