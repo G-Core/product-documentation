@@ -36,7 +36,7 @@ You can review the policy group and enable or disable its policies in the <a hre
 
 3\. On the **Policies** page that opens, click **CMS protection** to expand the section and adjust the policies. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-policies/cms-protection/cms-protection.png" alt="WAF policies page with the highlighted CMS protection policy">
+<img src="https://assets.gcore.pro/docs/waap/waap-policies/cms-protection/cms-protection.png" alt="WAAP policies page with the highlighted CMS protection policy">
 
 <alert-element type="info" title="Info">
 
@@ -117,7 +117,7 @@ If you don’t see your CMS in the list of policies under the CMS policy group, 
 
 <img src="https://assets.gcore.pro/docs/waap/waap-policies/cms-protection/firewall-page.png" alt="Firewall page with the allow and block IP lists">
 
-5\. Enter your public IP address so all traffic from your IP will be allowed and won’t be blocked by the WAF for any type of request. 
+5\. Enter your public IP address so all traffic from your IP will be allowed and won’t be blocked by the WAAP for any type of request. 
 
 6\. (Optional). Add a description. 
 

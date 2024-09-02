@@ -71,7 +71,7 @@ This page features general information about incoming requests and contains two 
 
 This graph shows the total number of incoming requests for the selected period and the number of requests that have been blocked. 
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/overview-waap.png" alt="WAF graph on the Analytics page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/overview-waap.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
 
 ### Status codes
 
@@ -85,7 +85,7 @@ This graph shows all requests sorted according to the returned status codes:
 
 * 5xx: Server errors  
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/overview-status-codes-graph.png" alt="WAF graph on the Analytics page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/overview-status-codes-graph.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
 
 <alert-element type="info" title="Info">
  
@@ -103,7 +103,7 @@ This page features detailed statistics on HTTP requests and displays data in the
 
 This graph shows information about actions that were applied to incoming requests. The data is displayed in a plot chart format that gives a comprehensive overview of both good and bad requests—potential security threats detected based on a triggered rule.  
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/waap-requests.png" alt="WAF graph on the Analytics page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/waap-requests.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
 
 You can select the following filters to view specific types of requests: 
 
@@ -133,7 +133,7 @@ Updating filters on the table doesn’t change the data displayed on the Web App
 
 This table displays incoming requests for the past 24 hours, including good and bad ones (potential threats). Request history is retained for 30 days. 
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/waf-requests.png" alt="WAF graph on the Analytics page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/waf-requests.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
 
 You can select multiple filters to get a more granular view of the displayed information in the table.
 
@@ -219,13 +219,13 @@ This page provides an in-depth information about a particular request made to yo
 
 This section displays the most triggered actions and default policies, along with how many times each of them was triggered.  
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/waf-threats.png" alt="WAF graph on the Analytics page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/waf-threats.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
 
 ### Top threat origins 
 
 This map and table display the origin location of bad requests (threats) from the last 24 hours. You can view the country from which requests are coming and the total number of requests for that country.  
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/waf-threat-origins.png" alt="WAF graph on the Analytics page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/waf-threat-origins.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
 
 ## DDoS attacks page
 
@@ -237,7 +237,7 @@ If there is an active DDoS attack, you’ll see a banner at the top of the page 
 
 Clicking the **View attack** link will take you to the DDoS analytics page, where you can view more details related to that specific attack. 
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/ddos-in-progress.png" alt="WAF graph on the Analytics page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/ddos-in-progress.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
 
 ### Attacks over time 
 
@@ -245,25 +245,25 @@ Requests associated with DDoS attacks are presented in a plot format.
 
 To filter DDoS request data by the timeframe of each attack, click the dropdown menu in the top-right corner of the screen and select the checkbox next to the attack you want to view. You can view up to four sets of timeframes simultaneously. 
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/ddos-over-time.png" alt="WAF graph on the Analytics page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/ddos-over-time.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
 
 ### IPs participated 
 
 This table displays a list of the top IP addresses associated with the selected DDoS attack, along with the total number of times each IP has made a request to your domain. 
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/ips-participated.png" alt="WAF graph on the Analytics page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/ips-participated.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
 
 ### URLs targeted 
 
 This table displays a list of the top URLs that were requested during a DDoS attack, along with the number of times each URL was requested. 
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/urls-targeted.png" alt="WAF graph on the Analytics page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/urls-targeted.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
 
 ### User agents 
 
 This table displays a list of the top clients, tools, and user agents associated with the selected DDoS attack. It also shows the total number of times each of them has made a request to your site. 
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/user-agents.png" alt="WAF graph on the Analytics page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/user-agents.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
 
 ### Attack requests 
 

@@ -107,7 +107,7 @@ While keeping WAAP in monitor mode, you can view all logged requests and check t
 
 Go through the <a href="https://gcore.com/docs/waap/analytics" target="_blank">analytics pages</a> to detect common traffic patterns and understand if the current configuration requires any adjustments.  
 
-For instance, you can find information about incoming web requests on the **WAF** analytics page in the **Requests** table: 
+For instance, you can find information about incoming web requests on the **WAAP** analytics page in the **Requests** table: 
 
 1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, navigate to **WAAP** > **Domains**.
 
