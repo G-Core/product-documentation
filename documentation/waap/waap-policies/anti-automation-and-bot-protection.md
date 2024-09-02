@@ -14,9 +14,9 @@ pageDescription: Learn how to enable and customize Anti-automation and bot prote
 ---
 # Anti-automation and bot protection
 
-WAAP uses <a href="https://gcore.com/docs/waap/about-waap#behavioral-component" target="_blank">advanced behavioral analysis</a> to block non-human traffic from accessing your application, including scanners, bots, and other automated tools.  
+WAAP uses <a href="https://gcore.com/docs/waap/waap-policies/behavioral-waf" target="_blank">behavioral WAF</a> to block non-human traffic from accessing your application, including scanners, bots, and other automated tools.  
 
-To protect your site from malicious attacks, we use JavaScript injection. This method ensures that we get all necessary information to block automated traffic from reaching your origin server. Meanwhile, all known bots, such as search engines, can still access your app.  
+To protect your site from malicious attacks, we use <a href="https://gcore.com/docs/waap/faq/javascript-injection" target="_blank">JavaScript injection</a>. This method ensures that we get all necessary information to block automated traffic from reaching your origin server. Meanwhile, all known bots, such as search engines, can still access your app.  
 
 ## Configure policy group
 
