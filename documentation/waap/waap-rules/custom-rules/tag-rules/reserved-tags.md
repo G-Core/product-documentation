@@ -12,7 +12,7 @@ Reserved tags are preconfigured tags that trigger specific actions in custom rul
 
 ## Available reserved tags 
 
-Reserved tags can be divided into two categories: general tags that are used in custom rules with various conditions and API protection tags that are specifically designed to protect your APIs. <a href="https://gcore.com/docs/waap/api-discovery-and-protection/configure-api-access-with-reserved-tags" target="_blank">API protection</a> tags contain the URL rule condition.  
+Reserved tags can be divided into two categories: **general** tags that are used in custom rules with various conditions and **API protection** tags that are specifically designed to protect your APIs. <a href="https://gcore.com/docs/waap/api-discovery-and-protection/configure-api-access-with-reserved-tags" target="_blank">API protection</a> tags contain the URL rule condition.  
 
 General tags: 
 
