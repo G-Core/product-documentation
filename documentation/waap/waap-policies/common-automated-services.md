@@ -16,7 +16,7 @@ You can do so by enabling or disabling particular bots in the Common automated s
 
 ## Configure policy group
 
-You can review and enable relevant policies in the Gcore Customer Portal:
+You can review and enable relevant policies in the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>:
 
 1\. Navigate to **WAAP** > **Domains**. 
 
@@ -24,9 +24,7 @@ You can review and enable relevant policies in the Gcore Customer Portal:
 
 2\. Find the domain where you want to configure the policy and click the domain name to open it.  
 
-3\. In the sidebar menu, click **WAAP**. 
-
-4\. On the **Policies** page that opens, click **Common automated services** to expand the section and adjust the policies. 
+3\. On the **Policies** page that opens, click **Common automated services** to expand the section and adjust the policies. 
 
 <img src="https://assets.gcore.pro/docs/waap/waap-policies/common-automated-services/common-automated-services.png" alt="Domains page in the Customer Portal">
 

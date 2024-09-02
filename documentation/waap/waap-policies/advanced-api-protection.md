@@ -7,7 +7,7 @@ toc:
    --1--Configure policy group: "configure-policy-group"
    --2--Auth token protection: "auth-token-protection"
    --2--Sensitive data exposure: "sensitive-data-exposure"
-   --2--Invalid API traffic: "invalid-API-traffic"
+   --2--Invalid API traffic: "invalid-api-traffic"
    --2--API-level authorization: "api-level-authorization"
    --2--Non-baselined API requests: "non-baselined-api-requests"      
 pageTitle: Set up Advanced API protection WAAP policy for your domain | Gcore
@@ -25,7 +25,7 @@ Before you enable the Advanced API protection policies, you need to <a href="htt
 
 ## Configure policy group 
 
-You can review the Advanced API protection policy group and enable or disable its policies in the Gcore Customer Portal: 
+You can review the Advanced API protection policy group and enable or disable its policies in the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>: 
 
 1\. Navigate to **WAAP** > **Domains**. 
 
@@ -33,9 +33,7 @@ You can review the Advanced API protection policy group and enable or disable it
 
 2\. Find the domain where you want to configure the policy and click the domain name to open it.  
 
-3\. In the sidebar menu, click **WAAP**. 
-
-4\. On the **Policies** page that opens, click **Advanced API protection** to expand the section and adjust the policies. 
+3\. On the **Policies** page that opens, click **Advanced API protection** to expand the section and adjust the policies. 
 
 <img src="https://assets.gcore.pro/docs/waap/waap-policies/advanced-api-protection/advanced-api-protection.png" alt="WAAP policies page with the highlighted advanced AIP protection policy">
 
@@ -55,7 +53,7 @@ Before enabling this policy, you need to define your 0Auth token endpoints to en
 
 Block API responses that contain personally identifiable information (PII) such as phone numbers, SSNs, email addresses, or credit card numbers. 
 
-You can turn off this policy for specific API endpoints by tagging them as needed. In this case, you’ll remain protected against unknown sensitive data leakage, while allowing legitimate known resources to create a response without being interrupted by the WAF.
+You can turn off this policy for specific API endpoints by tagging them as needed. In this case, you’ll remain protected against unknown sensitive data leakage, while allowing legitimate known resources to create a response without being interrupted by the WAAP.
 
 ### Invalid API traffic 
 

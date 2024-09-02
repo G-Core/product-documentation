@@ -20,7 +20,7 @@ To protect your site from malicious attacks, we use <a href="https://gcore.com/d
 
 ## Configure policy group
 
-Our WAAP includes a pre-defined anti-automation & bot protection policy group to protect your site from automated traffic. You can review the policy group and enable or disable its policies in the Gcore Customer Portal: 
+Our WAAP includes a pre-defined anti-automation & bot protection policy group to protect your site from automated traffic. You can review the policy group and enable or disable its policies in the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>: 
 
 1\. Navigate to **WAAP** > **Domains**. 
 
@@ -28,9 +28,7 @@ Our WAAP includes a pre-defined anti-automation & bot protection policy group to
 
 2\. Find the domain where you want to configure the policy and click the domain name to open it.  
 
-3\. In the sidebar menu, click **WAAP**. 
-
-4\. On the **Policies** page that opens, click **Anti-automation and bot protection** to expand the section and adjust the policies. 
+3\. On the **Policies** page that opens, click **Anti-automation and bot protection** to expand the section and adjust the policies. 
 
 <img src="https://assets.gcore.pro/docs/waap/waap-policies/anti-automation-bot-protection/anti-automation.png" alt="WAAP policies page with the highlighted Anti-automation and bot protection policy">
 
@@ -48,7 +46,7 @@ Challenge or block requests when the user or device doesn’t maintain cookies o
 
 Challenge or block requests from automated sessions. Automated clients are usually bots looking to hack, spam, spy, or generally compromise your website. Activating this policy will detect these requests and force human interaction. 
 
-You can review a list of known bots and allow or block their activity within the <a href="https://gcore.com/docs/waap/waap-policies/common-automated-services" target="_blank">common automated services</a> policy group. Learn more about enabling and troubleshooting bot protection in <a href="https://gcore.com/docs/waap/bot-protection/" target="_blank">our dedicated guide</a>. 
+You can review a list of known bots and allow or block their activity within the <a href="https://gcore.com/docs/waap/waap-policies/common-automated-services" target="_blank">common automated services</a> policy group. Learn more about enabling and troubleshooting bot protection in <a href="https://gcore.com/docs/waap/troubleshooting/enable-troubleshoot-bot-protection" target="_blank">our dedicated guide</a>. 
 
 ### Headless browsers 
 
