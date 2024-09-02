@@ -32,11 +32,11 @@ DDoS mode is activated if any of the following conditions is met.
 </thead>
 <tbody>
 <tr style="text-align: left;">
-    <td>Global threshold</td>
-    <td>This mechanism identifies DDoS attacks whose traffic patterns consist of a slow rise in traffic over a set period of time.<br><br>
+    <td style="text-align: left;">Global threshold</td>
+    <td style="text-align: left;">This mechanism identifies DDoS attacks whose traffic patterns consist of a slow rise in traffic over a set period of time.<br><br>
     <strong>DDoS mode is activated</strong> when the customizable threshold value is met, AND the current number of requests is at least two times (2X) the previous 10-second window. 
     </td>
-    <td><ul><strong>Default</strong>:
+    <td style="text-align: left;"><ul><strong>Default</strong>:
     <li>This mechanism has a default DDoS threshold of 5000 requests per 10 seconds.</li></ul>
     <ul><strong>Minimum</strong>:
     <li>This mechanism has a minimum DDoS threshold of 250 requests per 10 seconds.</li></ul>
@@ -45,11 +45,11 @@ DDoS mode is activated if any of the following conditions is met.
     </td>
 </tr>
 <tr style="text-align: left;">
-    <td>Burst threshold</td>
-    <td>This mechanism identifies sudden bursts in traffic.<br><br>
+    <td style="text-align: left;">Burst threshold</td>
+    <td style="text-align: left;">This mechanism identifies sudden bursts in traffic.<br><br>
     <strong>DDoS mode is activated</strong> when the customizable threshold value is met, AND the number of requests is at least five times (5X) the last 2-second interval.
     </td>
-    <td><ul><strong>Default</strong>:
+    <td style="text-align: left;"><ul><strong>Default</strong>:
     <li>This mechanism has a default value of 500 requests per 2 seconds.</li></ul>
     <ul><strong>Minimum</strong>:
     <li>This mechanism has a minimum DDoS threshold of 30 requests per 2 seconds.</li></ul>
@@ -58,11 +58,11 @@ DDoS mode is activated if any of the following conditions is met.
     </td>
 </tr>
 <tr style="text-align: left;">
-    <td>Sub-second threshold</td>
-    <td>This threshold protects WAAP servers against attacks from traffic bursts.<br><br>
+    <td style="text-align: left;">Sub-second threshold</td>
+    <td style="text-align: left;">This threshold protects WAAP servers against attacks from traffic bursts.<br><br>
    When this threshold is reached, the DDoS mode will activate on the affected WAAP server (not the WAAP cluster).
     </td>
-    <td><ul><strong>Default</strong>:
+    <td style="text-align: left;"><ul><strong>Default</strong>:
     <li>This mechanism has a default value of 50 seconds.</li>
     <li>By default, StackPath maintains this threshold.</li>
  </ul>
