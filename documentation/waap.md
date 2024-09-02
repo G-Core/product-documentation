@@ -21,8 +21,7 @@ From the left-side menu, you can access in-depth documentation about WAAP:
 * **Security insights** – use system-generated notifications to detect and mitigate potential risks. 
 * **IP security** – inspect IP addresses and add them to block or allow lists. 
 * **API discovery and protection** – identify potential APIs and secure API endpoints.   
-* **WAAP rules** – use predefined and custom rules to manage incoming traffic.
+* **WAAP rules** – use custom and advanced rules to manage incoming traffic.
 * **Custom pages** – configure pages for access restrictions, block operations, and security validations. 
 * **DDoS protection** – protect your application against L7 DDoS attacks. 
-* **Bot protection** – protect your application from unauthorized automation services.
 * **Troubleshooting** – address common issues related to WAAP. 
