@@ -2,7 +2,7 @@
 title: troubleshooting
 displayName: Troubleshooting
 published: true
-order: 
+order: 120
 pageTitle: A guide to Gcore WAAP’s troubleshooting | Gcore
 pageDescription: Discover common WAAP-related issues, their root causes, and resolution steps.
 ---
