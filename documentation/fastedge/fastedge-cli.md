@@ -40,7 +40,7 @@ To run the compiled CLI tool, use the following command:
 
 <code-block>
 
-./target/release/cli <span style="color:#FF5913"><command></span>
+./target/release/cli <span style="color:#FF5913">command</span>
 
 </code-block>
 
@@ -56,7 +56,7 @@ Execute the following command:
 
 <code-block>
 
-./target/release/cli http –w <span style="color:#FF5913"><path-to-your-application></span> –-port <span style="color:#FF5913"><port></span>
+./target/release/cli http –w <span style="color:#FF5913">[path-to-your-application]</span> –-port <span style="color:#FF5913">[port number]</span>
 
 </code-block>
 
@@ -70,7 +70,7 @@ Execute the following command:
 
 <code-block>
 
-./target/release/cli http –w <span style="color:#FF5913"><path-to-your-application></span> –-env <span style="color:#FF5913"><variables></span> --port <span style="color:#FF5913"><port></span> 
+./target/release/cli http –w <span style="color:#FF5913">[path-to-your-application]</span> –-env <span style="color:#FF5913">[variables]</span> --port <span style="color:#FF5913">[port number]</span> 
 
 </code-block>
 
@@ -86,7 +86,7 @@ FastEdge CLI can add sample geo headers to your application without using a real
 
 <code-block>
 
-./target/release/cli http -w <span style="color:#FF5913"><path-to-your-application></span> –geo –port <span style="color:#FF5913"><port></span> 
+./target/release/cli http -w <span style="color:#FF5913">[path-to-your-application]</span> –geo –port <span style="color:#FF5913">[port number]</span> 
 
 </code-block>
 
