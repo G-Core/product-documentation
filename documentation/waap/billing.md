@@ -51,8 +51,8 @@ You can test the Web Application and API Protection for 30 days. The following t
     <td>Included</td>
 </tr>
 <tr>
-    <td>Firewall</td>
-    <td>2 IP addresses</td>
+    <td>Firewall rules</td>
+    <td>2</td>
 </tr>
 <tr>
     <td>IP Spotlight</td>
@@ -64,14 +64,14 @@ You can test the Web Application and API Protection for 30 days. The following t
 </tr>
 <tr>
     <td>Custom rules</td>
-    <td>2 rules</td>
+    <td>2</td>
 </tr>
 <tr>
     <td>Advanced rules</td>
-    <td>5 rules</td>
+    <td>5</td>
 </tr>
 <tr>
-    <td>L7 DDoS</td>
+    <td>L7 DDoS protection</td>
     <td>All</td>
     <td>Included</td>
   </tr>
@@ -140,15 +140,15 @@ The base price is 55.00 € per month.
     <td>Included</td>
   </tr>
 <tr>
-    <td>Firewall</td>
-    <td>10 IP addresses</td>
+    <td>Firewall rules</td>
+    <td>10</td>
 </tr>
 <tr>
     <td>Custom rules</td>
-    <td>5 rules</td>
+    <td>5</td>
 </tr>
 <tr>
-    <td>L7 DDoS</td>
+    <td>L7 DDoS protection</td>
     <td>All</td>
     <td>Included</td>
   </tr>
@@ -201,15 +201,15 @@ The base price is 250.00 € per month.
     <td>Included</td>
 </tr>
 <tr>
-    <td>Firewall</td>
-    <td>50 IP addresses</td>
+    <td>Firewall rules</td>
+    <td>50</td>
 </tr>
 <tr>
     <td>Custom rules</td>
-    <td>50 rules</td>
+    <td>50</td>
 </tr>
 <tr>
-    <td>L7 DDoS</td>
+    <td>L7 DDoS protection</td>
     <td>All</td>
     <td>Included</td>
   </tr>
@@ -241,7 +241,7 @@ The base price is 250.00 € per month.
 
 This package is built with our most advanced security features. It combines everything from the <a href="https://gcore.com/docs/waap/billing#start" target="_blank">Start</a> and <a href="https://gcore.com/docs/waap/billing#pro" target="_blank">Pro</a> packages along with additional features and increased quotas for comprehensive protection. 
 
-The base price is tailored to your workflows and security requirements. To estimate costs for your organization, contact the <a href="mailto:sales@gcore.com" target="_blank">Gcore Sales team</a>. 
+The base price is tailored to your workflows and security requirements. To estimate costs for your organization, contact the <a href="mailto:support@gcore.com" target="_blank">Gcore Sales team</a>. 
 
 <table>
 <tbody> 
@@ -274,8 +274,8 @@ The base price is tailored to your workflows and security requirements. To estim
     <td>Included</td>
 </tr>
 <tr>
-    <td>Firewall</td>
-    <td>50 IP addresses</td>
+    <td>Firewall rules</td>
+    <td>50</td>
 </tr>
 <tr>
     <td>IP Spotlight</td>
@@ -287,14 +287,14 @@ The base price is tailored to your workflows and security requirements. To estim
 </tr>
 <tr>
     <td>Custom rules</td>
-    <td>100 rules</td>
+    <td>100</td>
 </tr>
 <tr>
     <td>Advanced rules</td>
-    <td>100 rules</td>
+    <td>100</td>
 </tr>
 <tr>
-    <td>L7 DDoS</td>
+    <td>L7 DDoS protection</td>
     <td>All</td>
     <td>Included</td>
   </tr>
@@ -323,11 +323,11 @@ The base price is tailored to your workflows and security requirements. To estim
 <tr>
  <td rowspan="2">Traffic</td>
     <td>Included monthly traffic</td>
-    <td><a href="mailto:sales@gcore.com" target="_blank">Contact us</a> for traffic calculation</td>
+    <td><a href="mailto:support@gcore.com" target="_blank">Contact us</a> for traffic calculation</td>
   </tr>
 <tr>
     <td>Overage fee</td>
-    <td><a href="mailto:sales@gcore.com" target="_blank">Contact us</a> for overage calculation</td>
+    <td><a href="mailto:support@gcore.com" target="_blank">Contact us</a> for overage calculation</td>
   </tr>
 </body> 
 </table>

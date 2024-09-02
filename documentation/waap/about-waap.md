@@ -16,14 +16,14 @@ pageDescription: Learn more about Gcore Web Application and API Protection and a
 
 Gcore’s WAAP protects your websites, web applications, and APIs from known vulnerabilities and common exploits by applying predefined security policies, built-in rules, and behavioral analysis to incoming requests. 
 
-WAAP is designed to work out of the box, but it’s also highly customizable: you can create and setup your own rules, adjust policies, and customize WAF behavior as needed. 
-You can further analyze the traffic through our built-in reporting system, which helps you better understand how to fine-tune WAAP's protection and adjust rules. 
+WAAP is designed to work out of the box, but it’s also highly customizable: you can create and setup your own rules, adjust policies, and customize WAAP behavior as needed. 
+You can further analyze the traffic through our built-in reporting system, which helps you better understand how to fine-tune WAAP's protection and adjust custom rules. 
 
 WAAP offers you such key features as: 
 
 * Next-gen WAF 
 * OWASP Top 10 protection and a set of robust security policies  
-* Security insights 
+* Security Insights 
 * Real-time analytics 
 * API discovery and protection 
 * L7 DDoS protection and auti-automation
@@ -31,7 +31,7 @@ WAAP offers you such key features as:
 
 ## Getting started 
 
-For instructions on how to protect your domain with our WAAP, check out our guide <a href="https://gcore.com/docs/waap/getting-started/configure-waap-for-a-domain" target="_blank">Configure WAAP for a domain</a>. 
+For instructions on how to protect your domain with our WAAP, refer to our guide <a href="https://gcore.com/docs/waap/getting-started/configure-waap-for-a-domain" target="_blank">Configure WAAP for a domain</a>. 
 
 ## What’s the difference between WAF and WAAP? 
 
@@ -59,7 +59,7 @@ WAF edge nodes and behavioral components work together to provide protection aga
 
 These nodes are responsible for running <a href="https://gcore.com/docs/waap/waap-policies" target="_blank">WAAP policies</a> against requests. They also enforce actions on requests (block, allow, or monitor) based on the recommendation provided by the second part, the behavioral component.  
 
-The existence of nodes that run rulesets against traffic is what essentially defines a typical first-gen WAF.  
+The existence of nodes that run policies against traffic is what essentially defines a typical first-gen WAF.  
 
 <alert-element type="tip" title="Tip">
  

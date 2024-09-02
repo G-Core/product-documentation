@@ -35,7 +35,7 @@ Inactive domains still incur charges as we retain all configured settings and da
 
 To disable WAAP protection for a domain:  
 
-1\. In the Gcore Customer Portal, navigate to **CDN** > **CDN resources**. 
+1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, navigate to **CDN** > **CDN resources**. 
 
 2\. Next to the resource that you want to protect with WAAP, click the three-dot icon and select **Settings**.
 
@@ -43,9 +43,9 @@ To disable WAAP protection for a domain:
 
 3\. Navigate to the relevant section: 
 
-* If you enabled WAAP in the resource settings, scroll down the page to the **Security** section and disable the WAAP toggle. 
+* If you enabled WAAP in the resource settings, scroll down the page to the **Security** section and disable the **WAAP** toggle. 
 
-* If you enabled WAAP for a particular rule, open the **Rules** tab, find the relevant rule, and disable the WAAP toggle in the Options section. 
+* If you enabled WAAP for a particular rule, open the **Rules** tab, find the relevant rule, and disable the **WAAP** toggle in the **Options** section. 
 
 4\. Save the changes. Note that deactivating a domain can take up to 20 minutes as this step ensures that all changes are correctly and consistently applied across our system.
 
@@ -65,7 +65,7 @@ You can’t delete a domain that has enabled WAAP protection. To delete the doma
 
 To delete an inactive domain: 
 
-1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**.
+1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, navigate to **WAAP** > **Domains**.
 
 <img src="https://assets.gcore.pro/docs/waap/getting-started/domains-waap-page.png" alt="Domains page in the Customer Portal">
 
