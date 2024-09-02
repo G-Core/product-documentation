@@ -18,7 +18,7 @@ If you only want to create Access control lists (ACL), check our <a href="https:
 
 You can create the following types of custom rules:  
 
-*  WAF rules. Consist of two key elements: rule type that defines the conditions for matching a rule and an action that will be enforced when the rule is triggered.   
+* WAAP rules. Consist of two key elements: rule type that defines the conditions for matching a rule and an action that will be enforced when the rule is triggered.   
 
 *  Rate limit rules. Allow you to set the limit for the number of requests allowed within a particular time range.  
 

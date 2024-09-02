@@ -25,7 +25,7 @@ These generated tags are also known as "user-defined tags" and they can be used 
 
 <alert-element type="info" title="Info">
  
-We recommend <a href="https://gcore.com/docs/waap/analytics#requests-table" target="_blank">inspecting the details</a> of your WAF requests before creating tag-based rules. These details contain information about user activity, which can clarify which tags should be used for filtering traffic. 
+We recommend <a href="https://gcore.com/docs/waap/analytics#requests-table" target="_blank">inspecting the details</a> of your WAAP requests before creating tag-based rules. These details contain information about user activity, which can clarify which tags should be used for filtering traffic. 
  
 </alert-element>
 

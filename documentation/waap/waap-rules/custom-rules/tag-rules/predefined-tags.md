@@ -142,7 +142,7 @@ Check the following table for a full list of predefined tags, their API slugs, a
   <tr>
     <td>Confirmed Automation</td>
     <td>confirmedautomation</td>
-    <td>This client has been confirmed as being automated, based on the client's behavior and the inability to pass WAF sanction screens.</td>
+    <td>This client has been confirmed as being automated, based on the client's behavior and the inability to pass WAAP response pages.</td>
   </tr>
   <tr>
     <td>Multiple Repeated Requests</td>

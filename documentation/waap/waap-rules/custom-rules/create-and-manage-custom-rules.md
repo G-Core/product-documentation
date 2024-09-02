@@ -30,7 +30,7 @@ pageDescription: Learn how to use WAAP custom rules for filtering incoming traff
 ---
 # Create and manage custom rules
 
-Custom rules allow you to fine-tune WAF behavior in response to potential security threats. 
+Custom rules allow you to fine-tune WAAP behavior in response to potential security threats. 
 
 You can create the following types of custom rules: <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/create-and-manage-custom-rules#create-custom-waap-rules" target="_blank">custom WAAP rules</a> with if/then conditions or <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/create-and-manage-custom-rules#create-custom-rate-limit-rules" target="_blank">custom rate limit rules</a> that restrict the number of allowed requests for a specific period. 
 
@@ -44,7 +44,7 @@ If you're looking for more flexibility in creating rules, check our <a href="htt
  
 </alert-element>
 
-To create a new WAF rule:  
+To create a new WAAP rule:  
 
 1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**. 
 
@@ -60,7 +60,7 @@ To create a new WAF rule:
 
 * **Rule status**: enable this toggle if you want to activate the rule after creation. Otherwise, the rule will be disabled, and you’ll need to enable it later.  
 
-* **Rule type**: choose WAF rule. 
+* **Rule type**: choose WAAP rule. 
 
 * **Description** (optional): provide more context about your rule. 
 

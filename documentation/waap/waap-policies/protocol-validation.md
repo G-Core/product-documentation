@@ -9,7 +9,7 @@ toc:
    --2--Invalid or unknown user agent: "invalid-user-agent-and-unknown-user-agent"
    --2--Service protocol validation: "service-protocol-validation"
    --2--Prevent malformed request methods: "prevent-malformed-request-methods"
-pageTitle: Set up Protocol validation WAF policy group for your domain | Gcore
+pageTitle: Set up Protocol validation WAAP policy group for your domain | Gcore
 pageDescription: Learn how to enable and customize Protocol validation policy.
 --- 
 # Protocol validation 

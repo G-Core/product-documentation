@@ -3,13 +3,13 @@ title: configure-api-base-path
 displayName: Manually add endpoints to API base path
 published: true
 order: 
-toc:
+toc: 10
 pageTitle: A guide on how to configure API base path in Gcore WAAP | Gcore
 pageDescription: Learn how to manually add endpoints to API base path so they are protected by WAAP.
 ---
 # Manually add endpoints to API base path
 
-If your domain uses APIs hosted on the same domain, add endpoints to the API base path. This is necessary to define the communication path WAAP will use to expect API requests and protect the endpoints.  
+If your domain uses APIs hosted on the same domain and you don't have enabled <a href="https://gcore.com/docs/waap/api-discovery-and-protection/api-discovery" target="_blank">API Discovery</a>, you can manually add endpoints to the API base path. This will define a communication path for WAAP to expect API requests and protect your endpoints.  
 
 <alert-element type="info" title="Info">
  
@@ -23,7 +23,7 @@ When you enter a path, note that:
 
 * Regex/wildcard input is not accepted. Use `api/` instead of `api/*`.  
 
-* Don't enter the protocol or domain. Use api/ instead of `https://example.foobar.com/api/`. The domain is automatically added.  
+* Don't enter the protocol or domain. Use `api/` instead of `https://example.foobar.com/api/`. The domain is automatically added.  
 
 * Paths are not case-sensitive. `API/` and `api/` are interchangeable.  
 
@@ -31,7 +31,7 @@ When you enter a path, note that:
 
 ## Add endpoints to the base path
 
-1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**.
+1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, navigate to **WAAP** > **Domains**.
 
 <img src="https://assets.gcore.pro/docs/waap/api-discovery-and-protection/domains-page.png" alt="Domains page in the Customer Portal">
 
