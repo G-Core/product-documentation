@@ -145,9 +145,9 @@ Check the following table for a full list of predefined tags, their API slugs, a
     <td>This client has been confirmed as being automated, based on the client's behavior and the inability to pass WAF sanction screens.</td>
   </tr>
   <tr>
-    <td>Content Scraper</td>
-    <td>contentscraper</td>
-    <td>This IP scrapped the content of this site.</td>
+    <td>Multiple Repeated Requests</td>
+    <td>multiplerepeatedrequests</td>
+    <td> The IP address is making multiple repeated requests to a domain.</td>
   </tr>
   <tr>
     <td>Cross Site Request Forgery</td>

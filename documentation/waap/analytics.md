@@ -59,7 +59,7 @@ If you want to view analytics for a different domain, use the dropdown in the to
 
 The information on the Analytics page is displayed according to the selected period. At the top of the page, you can use the time frame dropdown to configure the displayed data.  
 
-To automatically refresh data without reloading the page, enable the **Auto-Refresh** toggle. 
+To automatically refresh data every 30 seconds without reloading the page, enable the **Auto-Refresh** toggle. 
 
 <img src="https://assets.gcore.pro/docs/waap/analytics/auto-refresh.png" alt="Auto-refresh toggle on the Analytics page" width="80%">
 
