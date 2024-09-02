@@ -46,7 +46,7 @@ If you're looking for more flexibility in creating rules, check our <a href="htt
 
 To create a new WAAP rule:  
 
-1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**. 
+1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, navigate to **WAAP** > **Domains**. 
 
 <img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/domains-waap-page.png" alt="Domains page in the Customer Portal">
 
@@ -64,7 +64,7 @@ To create a new WAAP rule:
 
 * **Description** (optional): provide more context about your rule. 
 
-5\. Define the rule by setting up a condition (IF). The rule structure will differ depending on the rule type. Check out the following sections for guidelines on how to create rules for different use cases.  
+5\. Define the rule by setting up a condition (**IF**). The rule structure will differ depending on the rule type. Check out the following sections for guidelines on how to create rules for different use cases.  
 
 6\. (Optional) Next to **AND**, create a second condition to complement the first condition.
 
@@ -146,11 +146,11 @@ To create a rule:
 
 3\. Define match criteria: 
 
-* Select **Equals** to apply the rule only when the requested URL exactly matches the specified one. For example, if the specified URL is /blog, then when a request is made to /blog, the rule will trigger. If a request is made to /blogarticle, the rule won’t work. 
+* Select **Equals** to apply the rule only when the requested URL exactly matches the specified one. For example, if the specified URL is <code>/blog</code>, then when a request is made to <code>/blog</code>, the rule will trigger. If a request is made to <code>/blogarticle</code>, the rule won’t work. 
 
-* Select **Contains** to apply the rule when the requested URL partly matches the specified one. For example, if the specified URL is /blog, then when a request is made to /blog, the rule will trigger. If a request is made to /blogarticle, the rule will work as well. 
+* Select **Contains** to apply the rule when the requested URL partly matches the specified one. For example, if the specified URL is <code>/blog</code>, then when a request is made to <code>/blog</code>, the rule will trigger. If a request is made to <code>/blogarticle</code>, the rule will work as well. 
 
-4\. In the text field, enter your URL. If you selected Equals in the previous step, you must start the URL with a slash ( / ). 
+4\. In the text field, enter your URL. If you selected Equals in the previous step, you must start the URL with a slash (<code>/</code>). 
 
 5\. (Optional) Select another condition in the **AND** section.  
 
@@ -188,7 +188,7 @@ To create a rule:
 
 ### Rules with header conditions 
 
-Rules that contain the Header condition allow you to enforce security controls on incoming traffic based on request headers. In contrast to "header exists" conditions, the “header” ones also validate the value of the header. 
+Rules that contain the Header condition allow you to enforce security controls on incoming traffic based on request headers. In contrast to Hheader exists conditions, the Header ones also validate the value of the header. 
 
 To create a rule: 
 
@@ -336,7 +336,7 @@ To create a rule:
 
 ### Rules with owner types conditions  
 
-Rules that contain the Owner types condition allow you to enforce security controls on incoming traffic based on a specific category associated with a related IP range. Such categories can be Commercial, Educational, or Government. The information about these owner-type categories is pulled from the <a href="https://who.is/" target="_blank">global WHOIS database</a>. 
+Rules that contain the Owner types condition allow you to enforce security controls on incoming traffic based on a specific category associated with a related IP range. Such categories can be commercial, educational, or government. The information about these owner-type categories is pulled from the <a href="https://who.is/" target="_blank">global WHOIS database</a>. 
 
 To create a rule: 
 
@@ -376,7 +376,7 @@ To create a rule:
 
 ### Rules with tag conditions 
 
-Rules that contain the Tag condition allow you to enforce security controls on incoming traffic based on a specific tag within the request. For more details on how to create and manage tags, check out Tag generating rules.  
+Rules that contain the Tag condition allow you to enforce security controls on incoming traffic based on a specific tag within the request. For more details on how to create and manage tags, check out <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/tag-rules#tag-generating-rules" target="_blank">Tag generating rules</a>.  
 
 To create a rule: 
 
@@ -420,7 +420,7 @@ You can create a rate limit rule to limit the number of requests users are allow
 
 To create a rule: 
 
-1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**. 
+1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, navigate to **WAAP** > **Domains**. 
 
 <img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/domains-waap-page.png" alt="Domains page in the Customer Portal">
 
@@ -456,13 +456,13 @@ The **Duration** field determines the number of requests that will be counted wi
 
 7\. Select the action that will be applied to each request when the rule is triggered. You can find a detailed overview of rule actions in our <a href="https://gcore.com/docs/waap/waap-rules/custom-rules" target="_blank">rules overview guide</a>. Consider that actions aren’t permanent as they will continue to trigger only until the specified duration time is over. Once this time has passed, the request counter will reset and start again.  
 
-8\. (Optional) In the **user-defined tag**, you can apply any custom tag you’ve created. 
+8\. (Optional) In the **User-defined tag**, you can apply any custom tag you’ve created. 
 
 9\. (Optional) In **Path regex**, specify the regular expression with a page path or URL: 
 
-* To protect all application pages, leave the field blank or enter a slash ( / ). 
+* To protect all application pages, leave the field blank or enter a slash ( <code>/</code> ). 
 
-* To protect a specific page, enter a URL, such as /login. 
+* To protect a specific page, enter a URL, such as <code>/login</code>. 
 
 10\. (Optional) In **HTTP methods**, select one or more methods that will be included in the rule. In this case, the rule will only be triggered if the customer has specified certain request methods. If no specific methods were chosen by the customer, the rule will apply to all request methods. 
 By default, the rule will include all HTTP methods. 
@@ -483,7 +483,7 @@ You can edit the rule name and description, modify its conditions and status, an
 
 ### Edit a rule 
 
-1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**. 
+1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, navigate to **WAAP** > **Domains**. 
 
 <img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/domains-waap-page.png" alt="Domains page in the Customer Portal">
 
@@ -501,7 +501,7 @@ You can edit the rule name and description, modify its conditions and status, an
 
 ### Delete a rule 
 
-1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**. 
+1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, navigate to **WAAP** > **Domains**. 
 
 <img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/domains-waap-page.png" alt="Domains page in the Customer Portal">
 

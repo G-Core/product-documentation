@@ -20,12 +20,12 @@ You can use two types of tag rules:
 
 * Tag-based rules. Create rules using our <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/tag-rules/predefined-tags" target="_blank">predefined set of tags</a>. 
 
-* Tag-generating rules. You can create rules that will generate tags based on specific conditions. For example, if the request contains a certain header, tag such request as "tagname".
-These generated tags are also known as "user-defined tags" and they can be used to modify custom rules and create more complex ones. 
+* Tag-generating rules. You can create rules that will generate tags based on specific conditions. For example, if the request contains a certain header, tag such request with <code>tagname</code>.
+These generated tags are also known as <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/tag-rules#tag-generating-rules" target="_blank">user-defined tags</a> and they can be used to modify custom rules and create more complex ones. 
 
 <alert-element type="info" title="Info">
  
-We recommend <a href="https://gcore.com/docs/waap/analytics#requests-table" target="_blank">inspecting the details</a> of your WAAP requests before creating tag-based rules. These details contain information about user activity, which can clarify which tags should be used for filtering traffic. 
+We recommend <a href="https://gcore.com/docs/waap/analytics#request-details" target="_blank">inspecting the details</a> of your WAAP requests before creating tag-based rules. These details contain information about user activity, which can clarify which tags should be used for filtering traffic. 
  
 </alert-element>
 
