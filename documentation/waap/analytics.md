@@ -205,6 +205,10 @@ For each logged request, you can perform the following actions:
 
 This page provides an in-depth information about a particular request made to your domain. It’s structured into three sections, each focusing on a specific aspect of the request: 
 
+* **Reference ID**: This ID is unique to each chain of requests that triggered a particular policy or custom rule. By using reference ID, you can search through your requests and determine why a block <a href="https://gcore.com/docs/waap/response-pages" target="_blank">response page</a> was displayed to that user. 
+
+   <img src="https://assets.gcore.pro/docs/waap/analytics/request-details-reference-id.png" alt="Reference ID on the request details page" width="80%">
+
 * **Overview**: Provides a high-level summary of the request, including relevant rules and applicable actions, response code, and client details. 
 
    <img src="https://assets.gcore.pro/docs/waap/analytics/request-details-overview-section.png" alt="Overview section on the request details page" width="80%">
