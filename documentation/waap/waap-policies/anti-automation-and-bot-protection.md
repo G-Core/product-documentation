@@ -16,7 +16,7 @@ pageDescription: Learn how to enable and customize Anti-automation and bot prote
 
 WAAP uses <a href="https://gcore.com/docs/waap/waap-policies/behavioral-waf" target="_blank">behavioral WAF</a> to block non-human traffic from accessing your application, including scanners, bots, and other automated tools.  
 
-To protect your site from malicious attacks, we use <a href="https://gcore.com/docs/waap/faq/javascript-injection" target="_blank">JavaScript injection</a>. This method ensures that we get all necessary information to block automated traffic from reaching your origin server. Meanwhile, all known bots, such as search engines, can still access your app.  
+To protect your site from malicious attacks, we use <a href="https://gcore.com/docs/waap/frequently-asked-questions/javascript-injection" target="_blank">JavaScript injection</a>. This method ensures that we get all necessary information to block automated traffic from reaching your origin server. Meanwhile, all known bots, such as search engines, can still access your app.  
 
 <alert-element type="info" title="Info">
  
