@@ -59,7 +59,7 @@ If you want to view analytics for a different domain, use the dropdown in the to
 
 The information on the Analytics page is displayed according to the selected period. At the top of the page, you can use the time frame dropdown to configure the displayed data.  
 
-To automatically refresh data every 30 seconds without reloading the page, enable the **Auto-Refresh** toggle. 
+To automatically refresh data and graphs every 30 seconds without reloading the page, enable the **Auto-Refresh** toggle. 
 
 <img src="https://assets.gcore.pro/docs/waap/analytics/auto-refresh.png" alt="Auto-refresh toggle on the Analytics page" width="80%">
 
@@ -132,7 +132,6 @@ Updating filters on the table doesn’t change the data displayed on the Web App
 ### Requests table
 
 This table displays incoming requests for the past 24 hours, including good and bad ones (potential threats). Request history is retained for 30 days. 
-
 <img src="https://assets.gcore.pro/docs/waap/analytics/waf-requests.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
 
 You can select multiple filters to get a more granular view of the displayed information in the table.
@@ -194,6 +193,14 @@ You can select multiple filters to get a more granular view of the displayed inf
 
 You can download the table data in the CSV format. 
 
+For each logged request, you can perform the following actions: 
+
+* Inspect request details 
+
+* Create a new <a href="https://gcore.com/docs/waap/ip-security/allow-and-block-ip-addresses" target="_blank">firewall rule</a> to add the IP address to the block or allow list. 
+
+<img src="https://assets.gcore.pro/docs/waap/analytics/manage-requests-in-table.png" alt="Requests table with request management options" width="80%">
+
 #### Request details
 
 This page provides an in-depth information about a particular request made to your domain. It’s structured into three sections, each focusing on a specific aspect of the request: 
@@ -214,6 +221,21 @@ This page provides an in-depth information about a particular request made to yo
 
    <img src="https://assets.gcore.pro/docs/waap/analytics/request-details-tags.png" alt="Tags section on the request details page" width="80%">
 
+You can also create a rule for the IP address from which the request originates: 
+
+1\. In the top-right corner of the screen, click **Create rule for IP**. 
+
+<img src="https://assets.gcore.pro/docs/waap/analytics/request-details-add-rule.png" alt="Create rule button on the request details page" width="80%">
+
+2\. Choose the relevant action:  
+   * Allow a requests from this IP 
+   * Block requests from this IP 
+   * Challenge requests with CAPTCHA  
+   * Challenge request with JavaScript validation
+
+3\. Click **Create rule**. 
+
+The rule will appear on the Firewall page where you can update or remove it if necessary.   
 
 ### Threats (last 24 hours) 
 
