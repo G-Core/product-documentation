@@ -33,6 +33,12 @@ WAAP offers you such key features as:
 
 For instructions on how to protect your domain with our WAAP, refer to our guide <a href="https://gcore.com/docs/waap/getting-started/configure-waap-for-a-domain" target="_blank">Configure WAAP for a domain</a>. 
 
+<alert-element type="info" title="Info">
+
+WAAP is currently in beta mode. To join the beta, contact the [Gcore support team](mailto:support@gcore.com).
+ 
+</alert-element>
+
 ## What’s the difference between WAF and WAAP? 
 
 Traditional firewalls typically serve as the first line of defense against malicious visitors and focus on the layer 3 (Network) and layer 4 (Transport) in the <a href="https://osi-model.com/" target="_blank">OSI model</a>. This means that they can’t interpret and process HTTP and HTTPS traffic, which is the type of traffic making requests to your web applications. 
