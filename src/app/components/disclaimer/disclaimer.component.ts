@@ -11,6 +11,7 @@ import { Subscription, filter } from 'rxjs';
 export class DisclaimerComponent implements OnInit {
     public isResellerSupportPage = false;
     public isWaapPage = false;
+    public isWebSecurity = false;
 
     constructor(private router: Router, private cd: ChangeDetectorRef) {}
 
@@ -18,6 +19,7 @@ export class DisclaimerComponent implements OnInit {
         this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
             this.isResellerSupportPage = this.router.url.includes('/reseller-support');
             this.isWaapPage = this.router.url.includes('/waap');
+            this.isWebSecurity = this.router.url.includes('/web-security');
             this.cd.detectChanges();
         });
     }
