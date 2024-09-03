@@ -18,6 +18,12 @@ WAAP uses <a href="https://gcore.com/docs/waap/waap-policies/behavioral-waf" tar
 
 To protect your site from malicious attacks, we use <a href="https://gcore.com/docs/waap/faq/javascript-injection" target="_blank">JavaScript injection</a>. This method ensures that we get all necessary information to block automated traffic from reaching your origin server. Meanwhile, all known bots, such as search engines, can still access your app.  
 
+<alert-element type="info" title="Info">
+ 
+This policy group is available in the <a href="https://gcore.com/docs/waap/billing#pro" target="_blank">Pro</a> and <a href="https://gcore.com/docs/waap/billing#enterprise" target="_blank">Enterprise</a> plans.
+ 
+</alert-element> 
+
 ## Configure policy group
 
 Our WAAP includes a pre-defined anti-automation & bot protection policy group to protect your site from automated traffic. You can review the policy group and enable or disable its policies in the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>: 

@@ -20,7 +20,13 @@ pageDescription: Learn how to enable and customize IP reputation policy.
 
 Gcore WAAP protects your web application by blocking traffic from well-known malicious IP addresses.  
 
-We constantly collect, update, and validate these IP addresses, adding malicious IPs to the blocklist. This allows you to block, challenge, or allow traffic from highly suspected entities.  
+We constantly collect, update, and validate these IP addresses, adding malicious IPs to the blocklist. This allows you to block, challenge, or allow traffic from highly suspected entities. 
+
+<alert-element type="info" title="Info">
+ 
+This policy group is available in the <a href="https://gcore.com/docs/waap/billing#pro" target="_blank">Pro</a> and <a href="https://gcore.com/docs/waap/billing#enterprise" target="_blank">Enterprise</a> plans.
+ 
+</alert-element> 
 
 ## Configure policy group 
 

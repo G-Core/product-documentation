@@ -19,7 +19,7 @@ Our WAAP includes a pre-defined Advanced API protection policy group with multip
 
 <alert-element type="info" title="Info">
  
-The <a href="https://gcore.com/docs/waap/waap-policies/advanced-api-protection" target="_blank">Advanced API protection</a> policy group is available in the Enterprise package.
+This policy group is available in the <a href="https://gcore.com/docs/waap/billing#enterprise" target="_blank">Enterprise plan</a>.
  
 </alert-element> 
 
