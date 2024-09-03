@@ -372,7 +372,7 @@ To create a rule:
 
 6\. Click **Save**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/session-request-count-rule-definition.png" alt="A sample definition of a rule with session request count condition">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/session-request-count-rule-definition.png" alt="A sample definition of a rule with session request count condition" width="80%">
 
 ### Rules with tag conditions 
 
