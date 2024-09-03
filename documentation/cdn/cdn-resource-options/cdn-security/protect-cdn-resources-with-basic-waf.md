@@ -1,46 +1,61 @@
 ---
 title: protect-cdn-resources-with-basic-waf
-displayName: Basic WAF (Beta)
+displayName: Gcore WAAP (Beta)
 published: true
 order: 10
-toc:
-   --1--Basic WAF: "what-is-basic-waf-beta"
-   --1--Enable: "how-to-enable-basic-waf"
-   --2--CDN resource: "cdn-resource"
-   --2--Specific URLs: "specific-urls"
-   --1--Basic WAF blocks some unwanted content: "what-to-do-if-basic-waf-blocks-some-content-that-should-not-be-blocked"
-pageTitle: Protection from cyberthreads with Gcore Basic WAF | Gcore
+pageTitle: Protection from cyberthreads with Gcore WAAP | Gcore
 pageDescription: A comprehensive guide on how to protect the entire CDN resource or specific urls.
 ---
-# Protect CDN resources with Basic WAF
+# Protect CDN resources with Gcore WAAP
 
-Basic WAF is the firewall that protects you against the most widespread cyberthreats. The feature is available in beta testing and is available for free. The volume of requests per resource that can be safeguarded by the firewall may be subject to limitations.
+<a href="https://gcore.com/docs/waap/about-waap" target="_blank">Gcore Web Application and API Protection</a> (WAAP) combines all aspects of website security and traffic management, including Layer 7 DDoS protection, web app security, and API protection. 
 
-## How to enable Basic WAF
+With built-in security rules, advanced behavioral analytics, and a range of available customization options, Gcore WAAP protects your domains against known vulnerabilities and common exploits. 
 
-You can activate the firewall for the entire CDN resource or specific URLs. 
+## Enable WAAP for a resource
 
-### CDN resource
+1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, navigate to **CDN** > **CDN resources**.
 
-To enable Basic WAF for an entire CDN resource:
+2\. Next to the resource that you want to protect with WAAP, click the three-dot icon and select **Settings**.
 
-1. Go to the **Security** section in the Resource settings.
-2. Toggle on the **Enable Basic WAF** feature.
-3. Save changes.
+<img src="https://assets.gcore.pro/docs/waap/getting-started/cdn-resources-page.png" alt="CDN resource settings page in the Customer Portal">
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cdn-security/protect-cdn-resources-with-basic-waf/basic-waf-10.png" alt="Enabling Basic WAF for the entire CDN resource">
+3\. Scroll down the page and find the **Security** section. 
 
-### Specific URLs
+4\. Enable the **WAAP** toggle to activate Web Application and API Protection for your CDN resource.
 
-To apply Basic WAF to particular files, in the CDN resource settings (“Rules” tab), create a rule where you specify URLs or regular expressions and enable the Basic WAF feature for them. To do that, <a href="https://gcore.com/docs/cdn/cdn-resource-options/rules-for-particular-files/create-a-rule-manually-or-from-a-template-to-configure-settings-for-particular-files" target="_blank">consult our dedicated guide</a>. 
+<img src="https://assets.gcore.pro/docs/waap/getting-started/security-section-waap-enabled.png" alt="WAAP toggle">
 
-## What to do if Basic WAF blocks some content that should not be blocked?
+5\. Click **Save** to apply the changes.  
 
-If Basic WAF blocks content that you want to be allowed, you can set an exception with a rule rather than disabling the feature for the entire resource. To do so: 
+<alert-element type="warning" title="Warning">
 
-1. In the CDN resource settings (“Rules” tab), create a rule with the URLs or regular expression of files blocked by Basic WAF.
-2. Add the Basic WAF option to the rule by clicking **Add option** and turn it off.
+After enabling WAAP in CDN, you need to invalidate the cache. This is necessary to ensure that WAAP settings are properly applied. 
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cdn-security/protect-cdn-resources-with-basic-waf/basic-waf-20.png" alt="disable WAF for specific URLs via rules" width="70%">
+</alert-element>
 
-If you need more flexible settings, use <a href="https://gcore.com/web-security" target="_blank">Web Application Security</a>. It’s a paid product that allows you to install WAF, protect it from hacking, install protection against bots and DDoS attacks, and define blacklist and whitelists. 
+Consider that it might take up to 20 minutes for the HTTP traffic to start passing through our WAAP after the activation. 
+
+### What to do if WAAP blocks content that shouldn’t be blocked? 
+
+Instead of disabling WAAP protection for the whole resource, you can create a rule with an exception: 
+
+1\. In the CDN resource settings, open the **Rules** tab. 
+
+2\. Click **Create rule** > **Create blank rule**. 
+
+3\. Give your rule a name. 
+
+4\. In the **Match criteria** section, specify the URLs or a regular expression of files blocked by WAAP. 
+
+5\. Set the origin pull protocol to **Inherit from resource**.
+
+<img src="https://assets.gcore.pro/docs/waap/getting-started/rule-name-match-options.png" alt="WAAP toggle" width="80%">
+
+6\. In the **Options** section, click **Add option**. 
+
+7\. Find WAAP and then turn it off for the selected URL rule pattern. 
+
+8\. Click **Create rule**. 
+
+Your content should no longer be blocked by WAAP. 
