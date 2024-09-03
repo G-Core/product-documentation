@@ -19,11 +19,13 @@ Our WAAP includes a pre-defined Advanced API protection policy group with multip
 
 <alert-element type="info" title="Info">
  
-Before you enable the Advanced API protection policies, you need to <a href="https://gcore.com/docs/waap/api-discovery-and-protection/configure-api-access-with-reserved-tags" target="_blank">configure access to APIs by using reserved tags</a>. Without this configuration, the policies will not affect your API traffic. 
+This policy group is available in the <a href="https://gcore.com/docs/waap/billing#enterprise" target="_blank">Enterprise plan</a>.
  
-</alert-element>
+</alert-element> 
 
 ## Configure policy group 
+
+Before you enable the Advanced API protection policies, you need to <a href="https://gcore.com/docs/waap/api-discovery-and-protection/configure-api-access-with-reserved-tags" target="_blank">configure access to APIs by using reserved tags</a>. Without this configuration, the policies will not affect your API traffic. 
 
 You can review the Advanced API protection policy group and enable or disable its policies in the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>: 
 

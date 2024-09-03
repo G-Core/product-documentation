@@ -18,6 +18,12 @@ Gcore’s Web Application and API Protection (WAAP) product can distinguish betw
 
 The CMS protection policy group contains specific policies that detect when a user is logged into a supported CMS, and automatically adds the user's session to the allowlist. We also maintain a library of known malicious attacks, which allows us to block exploits that have attacked users in the past.
 
+<alert-element type="info" title="Info">
+ 
+This policy group is available in the <a href="https://gcore.com/docs/waap/billing#pro" target="_blank">Pro</a> and <a href="https://gcore.com/docs/waap/billing#enterprise" target="_blank">Enterprise</a> plans.
+ 
+</alert-element> 
+
 ## Allow admin access to your domain 
 
 In some cases, administrative sections of a CMS-based website may be blocked. For example, for WordPress, WAAP may label a change made to the `/wp-admin` section of a CMS-based site as malicious behavior such as cross-site scripting or SQL injection.  

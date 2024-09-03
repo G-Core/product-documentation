@@ -14,6 +14,12 @@ However, sometimes you may want to restrict which automation tools can access yo
 
 You can do so by enabling or disabling particular bots in the Common automated services policy group. 
 
+<alert-element type="info" title="Info">
+ 
+This policy group is available in the <a href="https://gcore.com/docs/waap/billing#pro" target="_blank">Pro</a> and <a href="https://gcore.com/docs/waap/billing#enterprise" target="_blank">Enterprise</a> plans.
+ 
+</alert-element> 
+
 ## Configure policy group
 
 You can review and enable relevant policies in the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>:

@@ -378,6 +378,12 @@ To create a rule:
 
 Rules that contain the Tag condition allow you to enforce security controls on incoming traffic based on a specific tag within the request. For more details on how to create and manage tags, check out <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/tag-rules#tag-generating-rules" target="_blank">Tag generating rules</a>.  
 
+<alert-element type="info" title="Info">
+ 
+You can't add more than 5 tags to the Tag condition.
+ 
+</alert-element>
+
 To create a rule: 
 
 1\. In the **IF** section, select **Tag** from the dropdown. 
@@ -446,7 +452,7 @@ The minimum number of requests required to trigger a request rate condition is 2
  
 </alert-element>
 
-6\. In the **Duration** field, set the time frame for how long the requests will be counted. After this period, the requests will be blocked. We recommend selecting a short time frame (30 seconds or a minute). 
+6\. In the **Duration** field, set the time frame for how long the requests will be counted. After this period, the requests will be blocked. We recommend selecting a short time frame (30 seconds or a minute). The maximum duration value is 60 minutes.
 
 <alert-element type="info" title="Info">
  

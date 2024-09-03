@@ -17,6 +17,12 @@ pageDescription: Learn how to enable and customize Behavioral WAF policy.
 
 The Web Application and API Protection (WAAP) includes a Behavioral WAF policy group that helps prevent malicious attacks on your websites. The policy group contains a set of sophisticated user behavior and reputation analysis policies that inspect traffic and defend your website against threats such as spamming or brute force attacks. 
 
+<alert-element type="info" title="Info">
+ 
+This policy group is available in the <a href="https://gcore.com/docs/waap/billing#pro" target="_blank">Pro</a> and <a href="https://gcore.com/docs/waap/billing#enterprise" target="_blank">Enterprise</a> plans.
+ 
+</alert-element> 
+
 ## Configure policy group 
 
 You can review the Behavioral WAF policy group and enable or disable its policies in the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>: 
