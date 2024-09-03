@@ -10,8 +10,8 @@ toc:
    --1--Step 4. View your domain’s traffic: "step-4-view-your-domain-traffic"
    --1--Step 5. Test your WAAP configuration: "step-5-test-your-waap-configuration"
    --1--Step 6. Allow admins, bots, and CMS: "step-6-allow-admins-bots-and-cms"
-   --1--Step 7.  Configure your APIse: "step-7-configure-your-apis"   
-   --1--Step 8. Enable protect mode: "step-7-enable-protect-mode"
+   --1--Step 7. Configure your APIs: "step-7-configure-your-apis"   
+   --1--Step 8. Enable protect mode: "step-8-enable-protect-mode"
 pageTitle: Set up Gcore WAAP for your domain | Gcore
 pageDescription: Learn how to integrate your domain with our WAAP and configure initial settings.
 ---

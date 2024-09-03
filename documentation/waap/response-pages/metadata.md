@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: Response Pages
+displayName: Response pages
 published: true
 order: 90
 ---
