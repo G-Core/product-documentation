@@ -25,7 +25,7 @@ The following pages can be displayed to users who demonstrate suspicious activit
 * Block 
 * Block CSRF 
 
-You can customize these pages by adding extra information or applying your corporate branding. To do so, follow the instructions for <a href="" target="_blank">creating and updating response pages</a>. 
+You can customize these pages by adding extra information or applying your corporate branding. To do so, follow the instructions for <a href="https://gcore.com/docs/waap/response-pages/create-custom-response-pages" target="_blank">creating response pages</a>. 
 
 <alert-element type="tip" title="Tip">
  
@@ -47,31 +47,31 @@ WAAP serves the relevant challenge or block pages according to their priority—
 </thead>
 <tbody>
 <tr style="text-align: left;"> 
-    <td>Block</td>
-    <td>First</td>
-    <td>It has the highest priority due to the high risk associated with a request.<br><br>When a block rule is triggered, the request is immediately blocked, and a block page is displayed. 
+    <td style="text-align: left;">Block</td>
+    <td style="text-align: left;">First</td>
+    <td style="text-align: left;">It has the highest priority due to the high risk associated with a request.<br><br>When a block rule is triggered, the request is immediately blocked, and a block page is displayed. 
     </td>
 </tr>
 <tr style="text-align: left;"> 
-    <td>Block CSRF</td>
-    <td>First</td>
-    <td>This page has the same priority as the block page. The only difference is that it’s tailored specifically to Cross-Site Request Forgery (CSRF) attacks.</td>
+    <td style="text-align: left;">Block CSRF</td>
+    <td style="text-align: left;">First</td>
+    <td style="text-align: left;">This page has the same priority as the block page. The only difference is that it’s tailored specifically to Cross-Site Request Forgery (CSRF) attacks.</td>
 </tr>
 <tr style="text-align: left;"> 
-    <td>Captcha</td>
-    <td>Second</td>
-    <td>If the system suspects that the traffic comes from an automated user, it presents a CAPTCHA challenge. If the user passes the challenge, they are allowed to access the domain.<br><br>
+    <td style="text-align: left;">Captcha</td>
+    <td style="text-align: left;">Second</td>
+    <td style="text-align: left;">If the system suspects that the traffic comes from an automated user, it presents a CAPTCHA challenge. If the user passes the challenge, they are allowed to access the domain.<br><br>
     Typically, the system does browser validation before presenting users with the captcha page.</td>
 </tr>
 <tr style="text-align: left;"> 
-    <td>Browser validation</td>
-    <td>Third</td>
-    <td>Typically, this page is not visible to users and appears for less than a second. It is used to validate browser JavaScript and cookies support.</td>
+    <td style="text-align: left;">Browser validation</td>
+    <td style="text-align: left;">Third</td>
+    <td style="text-align: left;">Typically, this page is not visible to users and appears for less than a second. It is used to validate browser JavaScript and cookies support.</td>
 </tr>
 <tr style="text-align: left;"> 
-    <td>Enable Cookies<br><br>Enable JavaScript</td>
-    <td>N/A</td>
-    <td>These pages appear as part of the browser validation mechanism.<br><br>
+    <td style="text-align: left;">Enable Cookies<br><br>Enable JavaScript</td>
+    <td style="text-align: left;">N/A</td>
+    <td style="text-align: left;">These pages appear as part of the browser validation mechanism.<br><br>
     If cookies or JavaScript are disabled in a user’s browser, the corresponding page will appear to inform the user how to enable the required functionality.</td>
 </tr>
 </tbody>

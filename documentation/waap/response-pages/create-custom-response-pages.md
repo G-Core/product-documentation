@@ -2,19 +2,27 @@
 title: create-custom-response-pages
 displayName: Create custom response pages
 published: true
-order: 
+order: 10
+toc:
+   --1--Step 1. Add a new page set for your account: "step-1-add-a-new-page-set-for-your-account"
+   --1--Step 2. Give your page set a name: "step-2-give-your-page-set-a-name"
+   --1--Step 3. Choose a page type you want to create: "step-3-choose-a-page-type-you-want-to-create"
+   --1--Step 4. Configure the selected response page: "step-4-configure-the-selected-response-page"
+   --1--Step 5. Configure page status: "step-5-configure-page-status"
+   --1--Step 6. Finalize page setup: "step-6-finalize-page-setup"
+   --1--Step 7. Associate the page with domains: "step-7-associate-the-page-with-domains"   
 pageTitle: A guide on custom response pages | Gcore
 pageDescription: Learn more about Gcore custom response pages.
 ---
 # Create custom response pages
 
-In some cases, you might need to personalize the <a href="" target="_blank">response page</a> displayed to users when a particular custom rule or WAAP policy is triggered. For instance, to add contact information, adjust the message according to your brand’s voice and tone, or provide additional validation instructions. 
+In some cases, you might need to personalize the <a href="https://gcore.com/docs/waap/response-pages" target="_blank">response page</a> displayed to users when a particular custom rule or WAAP policy is triggered. For instance, to add contact information, adjust the message according to your brand’s voice and tone, or provide additional validation instructions. 
 
 To do so, you need to create a new custom response page, as described in the following instructions.  
 
 <alert-element type="tip" title="Tip">
  
-For guidelines on how to modify or delete custom response pages, as well as change domains where those pages appear, check out the Manage custom response pages guide. 
+For guidelines on how to modify or delete custom response pages, as well as change domains where those pages appear, check out the <a href="https://gcore.com/docs/waap/response-pages/manage-custom-response-pages" target="_blank">Manage custom response pages</a> guide. 
  
 </alert-element>
 
@@ -22,7 +30,7 @@ For guidelines on how to modify or delete custom response pages, as well as chan
 
 Creating custom response pages allows you to display different messages to your users based on which domains they are navigating to. You can create up to 6 page sets. 
 
-Note that creating custom response pages is only available <a href="" target="_blank">at the account level</a>. You can’t add and modify pages in domain settings.  
+Note that creating custom response pages is only available <a href="https://gcore.com/docs/waap/response-pages/manage-custom-response-pages#manage-custom-response-pages-at-the-account-level" target="_blank">at the account level</a>. You can’t add and modify pages in domain settings.  
 
 ### Step 1. Add a new page set for your account 
 
@@ -40,7 +48,7 @@ Note that creating custom response pages is only available <a href="" target="_b
 
 <img src="https://assets.gcore.pro/docs/waap/response-pages/continue-to-pages.png" alt="Create response page set dialog" width="80%">
 
-### Step 3. Choose a page type you want to configure 
+### Step 3. Configure the selected response page 
 
 1\. In the **Create pages** section, click **Add page**. 
 
@@ -127,6 +135,6 @@ Your page will be created with the **Unpublished** state. It’ll change to **Pu
 
 <alert-element type="info" title="Info">
  
-For instructions on how to edit and delete custom response pages, as well as change associated domains, check out the <a href="" target="_blank">Manage custom response pages</a> guide.
+For instructions on how to edit and delete custom response pages, as well as change associated domains, check out the <a href="https://gcore.com/docs/waap/response-pages/manage-custom-response-pages" target="_blank">Manage custom response pages</a> guide.
  
 </alert-element>

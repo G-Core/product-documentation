@@ -10,8 +10,8 @@ toc:
    --1--Step 4. View your domain’s traffic: "step-4-view-your-domain-traffic"
    --1--Step 5. Test your WAAP configuration: "step-5-test-your-waap-configuration"
    --1--Step 6. Allow admins, bots, and CMS: "step-6-allow-admins-bots-and-cms"
-   --1--Step 7.  Configure your APIse: "step-7-configure-your-apis"   
-   --1--Step 8. Enable protect mode: "step-7-enable-protect-mode"
+   --1--Step 7. Configure your APIs: "step-7-configure-your-apis"   
+   --1--Step 8. Enable protect mode: "step-8-enable-protect-mode"
 pageTitle: Set up Gcore WAAP for your domain | Gcore
 pageDescription: Learn how to integrate your domain with our WAAP and configure initial settings.
 ---
@@ -19,9 +19,15 @@ pageDescription: Learn how to integrate your domain with our WAAP and configure 
 
 Web Application and API Protection (WAAP) is a single SaaS tool that combines all aspects of website security and traffic management, including Layer 7 DDoS protection, and web application security.  
 
+<alert-element type="info" title="Info">
+
+WAAP is currently in beta mode. To join the beta, contact the [Gcore support team](mailto:support@gcore.com).
+ 
+</alert-element>
+
 To secure your application with WAAP, you need to create a Gcore CDN resource for your domain, enable WAAP protection in the resource settings, and then verify that everything works as expected and you don’t block legitimate traffic. The following steps will guide you through this process and help you configure WAAP according to your requirements.
 
-<alert-element type="info" title="Info">
+<alert-element type="tip" title="Tip">
  
 After you enable WAAP, all traffic will be diverted to our network, and it may cause a temporary disruption for your users. We recommend setting up Gcore WAAP during a low-traffic period to minimize the impact. 
 

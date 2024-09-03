@@ -2,7 +2,7 @@
 title: manage-custom-response-pages
 displayName: Manage custom response pages
 published: true
-order: 
+order: 20
 pageTitle: A guide on custom response pages | Gcore
 pageDescription: Learn more about Gcore custom response pages.
 ---
@@ -12,7 +12,7 @@ There are two ways to access custom response pages: at the **domain** level and 
 
 <alert-element type="info" title="Info">
 
-For guidelines on how to create custom response pages, check out <a href="" target="_blank">Create custom response pages</a> guide. 
+For guidelines on how to create custom response pages, check out <a href="https://gcore.com/docs/waap/response-pages/create-custom-response-pages" target="_blank">Create custom response pages</a> guide. 
  
 </alert-element>
 
@@ -24,7 +24,7 @@ To view page sets, open the **WAAP** page and navigate to **Features**. You'll b
 
 <img src="https://assets.gcore.pro/docs/waap/response-pages/response-pages-account-level.png" alt="Response pages page in the Customer Portal" width="80%">
 
-Here you can view <a href="" target="_blank">default response pages</a> as well as add, customize, or delete your own custom page sets, which are based on the default ones.  
+Here you can view <a href="https://gcore.com/docs/waap/response-pages#types-of-response-pages" target="_blank">default response pages</a> as well as add, customize, or delete your own custom page sets, which are based on the default ones.  
 
 Each custom response page can have one of the following statuses: 
 
@@ -52,7 +52,7 @@ To view or change page sets:
 
 <alert-element type="info" title="Info">
 
-If your domain has no active page sets, the <a href="" target="_blank">default response pages</a> will be used instead. 
+If your domain has no active page sets, the <a href="https://gcore.com/docs/waap/response-pages#types-of-response-pages" target="_blank">default response pages</a> will be used instead. 
  
 </alert-element>
 
@@ -66,17 +66,15 @@ Updating custom response pages is only possible on the account level.
 
 The process of adding, editing, and removing pages in an existing set are the same as for individual pages: 
 
-* <a href="" target="_blank">Create custom response pages</a>
+* <a href="https://gcore.com/docs/waap/response-pages/create-custom-response-pages" target="_blank">Create custom response pages</a>
 
-* <a href="" target="_blank">Update  custom response pages</a>
-
-* <a href="" target="_blank">Manage custom response pages</a>
+* <a href="https://gcore.com/docs/waap/response-pages/manage-custom-response-pages#update-custom-response-pages" target="_blank">Update  custom response pages</a>
 
 ### Add a page set to domains
 
 <alert-element type="info" title="Info">
  
-If you don’t add customized pages to a domain, one of the <a href="" target="_blank">default response pages</a> will be used instead.
+If you don’t add customized pages to a domain, one of the <a href="https://gcore.com/docs/waap/response-pages#types-of-response-pages" target="_blank">default response pages</a> will be used instead.
  
 </alert-element>
 

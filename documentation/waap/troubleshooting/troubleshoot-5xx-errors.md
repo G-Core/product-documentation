@@ -2,7 +2,7 @@
 title: roubleshoot-5xx-errors
 displayName: Troubleshoot 5xx errors
 published: true
-order: 
+order: 30
 pageTitle: A guide on how to fix 5xx errors | Gcore
 pageDescription: Discover common causes of 5xx errors and how to fix them.
 ---
