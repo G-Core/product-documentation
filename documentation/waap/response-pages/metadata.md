@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: Custom Pages
+displayName: Response Pages
 published: true
 order: 90
 ---
