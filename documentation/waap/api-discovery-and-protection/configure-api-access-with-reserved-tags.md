@@ -30,13 +30,7 @@ Here’s the list of reserved tags applicable only for the API protection:
 * Ignore CCN Detection
 * Ignore SSN Detection
 
-These tags can be added to your API endpoints by using custom rules.
-
-<alert-element type="tip" title="Tip">
-
-It’s a good practice to add multiple conditions to custom rules. Complex rules are harder to bypass and more nuanced, which reduces the probability of false positives. 
-
-</alert-element>
+These tags can be added to your API endpoints either via the <a href="https://gcore.com/docs/waap/api-discovery-and-protection/api-discovery" target="_blank">API Discovery</a> feature by using <a href="https://gcore.com/docs/waap/waap-rules/custom-rules" target="_blank">custom rules</a>.
 
 ## Configure API protection 
 
@@ -45,8 +39,8 @@ The following steps will guide you through the process of protecting your endpoi
 After you complete the steps, it’s important to enable the relevant policies within the <a href="https://gcore.com/docs/waap/waap-policies/advanced-api-protection" target="_blank">Advanced API protection</a> policy group to make sure everything is set up correctly. 
 
 <alert-element type="info" title="Info">
- 
-The Advanced API protection feature is available in the <a href="https://gcore.com/docs/waap/billing#enterprise" target="_blank">Enterprise</a> package. 
+
+To ensure that your APIs are fully protected, enable the <a href="https://gcore.com/docs/waap/api-discovery-and-protection/api-discovery" target="_blank">API Discovery</a> feature or manually add your endpoints to the <a href="https://gcore.com/docs/waap/api-discovery-and-protection/configure-api-base-path" target="_blank">API base path</a> so that WAAP correctly recognizes these endpoints as associated with your domain.
 
 </alert-element>
 
@@ -107,6 +101,12 @@ All requests from authorized users with relevant permissions can now reach the a
 After you define access levels for API endpoints, you need to configure which users can interact with those endpoints. To do so, create a new custom rule for each user type.  
 
 For example, create a rule that identifies a request as coming from an admin user if the request contains a valid bearer token in the authorization header. 
+
+<alert-element type="tip" title="Tip">
+
+It’s a good practice to add multiple conditions to custom rules. Complex rules are harder to bypass and more nuanced, which reduces the probability of false positives. 
+
+</alert-element>
 
 To create the rule:  
 
@@ -184,7 +184,9 @@ To tag the endpoints, create the following custom rule:
 
 #### Ignore sensitive data exposure detection 
 
-You can notify the WAAP of legitimate personally identifiable information (PII) exposure in a request’s response and exclude it from our <a href="https://gcore.com/docs/waap/waap-policies/waf-and-owasp-top-threats" target="_blank">Sensitive data exposure</a> policy. Such information includes phone numbers, social security numbers (SSN), email addresses, or credit card numbers (CCN). 
+You can notify the WAAP of any legitimate exposure of personally identifiable information (PII) in a request's response, such as social security numbers, credit card numbers, emails, and phone numbers. You can also exclude the request from being affected by the sensitive data exposure policy, which encompasses broader sensitive data exposures like confidential organizational data or code leaks.
+
+Check our <a href="https://gcore.com/docs/waap/waap-policies/waf-and-owasp-top-threats" target="_blank">WAF and OWASP top threats</a> policy group for details.
 
 This means that you can still benefit from the protection of sensitive data leakage while allowing legitimate resources to collect user information without being interrupted by WAAP. 
 
