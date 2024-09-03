@@ -36,9 +36,7 @@ To access the feature:
 
 2\. Find the needed domain and click its name to open it. You'll be directed to the **Policies** page. 
 
-3\. In the sidebar, click **API Discovery**.
-
-You can protect and manage APIs on the following pages: 
+3\. In the sidebar, click **API Discovery**. You can protect and manage APIs on the following pages: 
 
 * **API Baseline**: Contains all API endpoints protected by WAAP. On this page you can add, edit, and view your APIs. 
 
@@ -62,13 +60,15 @@ Each API endpoint can have a specific status. This status reflects the results o
 
 * **Delisted**: The endpoint was originally detected in the Swagger file, but it’s subsequently missing after a later Swagger scan. 
 
-## API Baseline 
+## API Baseline
 
 All your protected API endpoints are listed on this page. Here, you can do the following: 
 
 * Manually add endpoints that should be protected by WAAP 
 
 * Group endpoint using tags to manage access to your APIs 
+
+<img src="https://assets.gcore.pro/docs/waap/api-discovery-and-protection/api-baseline.png" alt="API Baseline page in the Customer Portal" width="80%">
 
 ### Add endpoints to API Baseline 
 
@@ -133,6 +133,8 @@ When editing a path, you can use curly braces to signify query string parameters
 
 When the API Discovery feature performs a network scan, all detected endpoints appear on this page. Here, you can manage their status and determine whether or not they are confirmed APIs. 
 
+<img src="https://assets.gcore.pro/docs/waap/api-discovery-and-protection/potential-apis.png" alt="Potential APIs page in the Customer Portal" width="80%">
+
 ### Verify detected endpoints
 
 After you identify the endpoint as a confirmed API, it will be moved to the API Baseline page. All rejected APIs will be removed from the system.
@@ -145,11 +147,15 @@ This page lists all endpoints identified by the system:
 
 * From the uploaded Swagger file (if you added it to the Settings page).
 
+<img src="https://assets.gcore.pro/docs/waap/api-discovery-and-protection/scan-history.png" alt="Settings page in the Customer Portal" width="80%">
+
 The scan history also displays information about the scan time, analyzed source, and whether a scan was successful or resulted in errors. You’ll see information about the scan process and any related errors in the **Message** column. 
 
 ## Settings
 
 On this page, you can choose the preferred ways of detecting potential API endpoints, configure network scan intervals, and manually add APIs to the base path.
+
+<img src="https://assets.gcore.pro/docs/waap/api-discovery-and-protection/settings.png" alt="Settings page in the Customer Portal" width="80%">
 
 ### Configure base path 
 
