@@ -111,7 +111,7 @@ You can enable the configured Wasm functionality either to the whole CDN resourc
 
 2\. Find the resource you want to integrate with FastEdge and open the resource settings.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-resource-three-dot-icon.png" alt="CDN resources page with resource settings context menu" width="80%"> 
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-resource-settings-button.png" alt="CDN resources page with resource settings context menu" width="80%"> 
 
 3\. Scroll the page down to the **FastEdge apps** section and enable the toggle **On request headers**. 
 
@@ -189,7 +189,7 @@ The steps will slightly differ based on whether you choose to remove FastEdge fr
 
 2\. Find the resource integrated with FastEdge and open the resource settings.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-resource-three-dot-icon.png" alt="CDN resources page with resource settings context menu" width="80%"> 
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-resource-settings-button.png" alt="CDN resources page with resource settings context menu" width="80%"> 
 
 3\. If you enabled FastEdge for the whole resource, disable the toggle **On request headers**. If you enabled Fast Edge just for particular paths, open the **Rules** page and disable the toggle for the required rule. 
 

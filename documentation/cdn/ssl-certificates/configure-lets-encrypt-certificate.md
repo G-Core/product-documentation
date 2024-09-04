@@ -41,7 +41,7 @@ The certificate issuance may take up to 30 minutes after the resource is created
 
 1\. Go to CDN and select the **CDN** resource you want to configure.
 
-<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-2.png" alt="CDN resource" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/cdn-resource-name.png" alt="CDN resource" width="80%">
 
 2\. In the navigation panel, under the **General** section, click **SSL**.
 

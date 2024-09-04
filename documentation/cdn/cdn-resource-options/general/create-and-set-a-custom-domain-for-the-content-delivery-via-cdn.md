@@ -87,7 +87,7 @@ To check the frontend of your integrated website, right-click on any static file
 
 1\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN resource list</a> and click on the custom domain of the resource you want to configure.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/12866059375761.png" alt="CDN resource list " width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn/cdn-resource-name.png" alt="CDN resource list " width="80%">
 
 2\. In the "Custom domain" section, click the plus sign (+) next to the "Domain" field and enter your desired domain name(s).
 
