@@ -125,7 +125,7 @@ For instance, you can find information about incoming web requests on the **WAAP
 
 4\. Review the information under **Requests**.
 
-<img src="https://assets.gcore.pro/docs/waap/getting-started/waf-requests.png" alt="Analytics page in the Customer Portal showing Requests table">
+<img src="https://assets.gcore.pro/docs/waap/getting-started/waap-requests-table.png" alt="Analytics page in the Customer Portal showing Requests table">
 
 5\. You can also filter requests to get more granular information about your traffic:  
 
@@ -143,7 +143,7 @@ For instance, you can find information about incoming web requests on the **WAAP
 
 To view more information about a request, click the request ID and inspect the <a href="https://gcore.com/docs/waap/analytics#request-details" target="_blank">Request Details</a> page.
 
-<img src="https://assets.gcore.pro/docs/waap/getting-started/request-details-analytics.png" alt="Request details section open from the Analytics page">
+<img src="https://assets.gcore.pro/docs/waap/getting-started/request-details-overview.png" alt="Request details section open from the Analytics page">
 
 The screenshot above depicts a request that was blocked because of the <a href="https://gcore.com/docs/waap/waap-policies/waf-and-owasp-top-threats#sql_injection" target="_blank">SQL injection</a> policy. It blocks requests if there is evidence that the request contains malicious SQL code.
 

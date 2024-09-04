@@ -26,8 +26,8 @@ WAAP offers you such key features as:
 * Security Insights 
 * Real-time analytics 
 * API discovery and protection 
-* L7 DDoS protection and auti-automation
-* Bot protection 
+* L7 DDoS protection
+* Bot protection and auti-automation
 
 ## Getting started 
 

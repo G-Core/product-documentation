@@ -75,7 +75,7 @@ You can also see the difference on the **Analytics** page in the <a href="https:
 
 * In protect mode, the cURL request will be marked as **Blocked**. 
 
-<img src="https://assets.gcore.pro/docs/waap/getting-started/waf-requests.png" alt="WAAP graph on the Analytics page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/getting-started/waap-requests-blocked.png" alt="WAAP graph on the Analytics page in the Customer Portal">
 
 ## Enable a WAAP mode for your domain 
 
