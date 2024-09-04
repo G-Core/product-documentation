@@ -1,12 +1,12 @@
 ---
 title: troubleshoot-blocked-users
-displayName: Troubleshooting blocked users
+displayName: Troubleshoot blocked users
 published: true
 order: 20
 pageTitle: A guide on troubleshooting blocked users  | Gcore
 pageDescription: Learn how to troubleshoot blocked users.
 ---
-# Troubleshooting blocked users
+# Troubleshoot blocked users
 
 Use this guide to troubleshoot cases when WAAP displays a block or challenge <a href="https://gcore.com/docs/waap/response-pages" target="_blank">response page</a> to your users. 
 

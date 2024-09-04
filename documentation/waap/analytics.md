@@ -18,8 +18,8 @@ toc:
    --2--IPs participated: "ips-participated" 
    --2--User agents: "user-agents" 
    --2--URLs targeted: "urls-targeted"                     
-pageTitle: Learn about Gcore WAAP analytics | Gcore
-pageDescription: Learn about Gcore analytics.
+pageTitle: Explore Gcore WAAP analytics | Gcore
+pageDescription: Learn how to view and interpret Gcore WAAP analytics to better understand incoming traffic to your domain.
 ---
 # Analytics
 

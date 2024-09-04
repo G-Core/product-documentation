@@ -13,7 +13,7 @@ toc:
    --1--Step 7. Configure your APIs: "step-7-configure-your-apis"   
    --1--Step 8. Enable protect mode: "step-8-enable-protect-mode"
 pageTitle: Set up Gcore WAAP for your domain | Gcore
-pageDescription: Learn how to integrate your domain with our WAAP and configure initial settings.
+pageDescription: Learn how to integrate your domain with our WAAP and configure the initial settings.
 ---
 # Configure WAAP for a domain
 
