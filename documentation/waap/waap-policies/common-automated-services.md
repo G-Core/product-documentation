@@ -4,7 +4,7 @@ displayName: Common automated services
 published: true
 order: 80
 pageTitle: Set up Common automated services WAAP policy group for your domain | Gcore
-pageDescription: Learn how to enable and customize Common automated services policy.
+pageDescription: Learn how to enable and customize common automated services policy.
 ---
 # Common automated services
 
