@@ -103,7 +103,7 @@ This page features detailed statistics on HTTP requests and displays data in the
 
 This graph shows information about actions that were applied to incoming requests. The data is displayed in a plot chart format that gives a comprehensive overview of both good and bad requests—potential security threats detected based on a triggered rule.  
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/waap-requests.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/waap-requests-chart.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
 
 You can select the following filters to view specific types of requests: 
 
@@ -132,7 +132,7 @@ Updating filters on the table doesn’t change the data displayed on the Web App
 ### Requests table
 
 This table displays incoming requests for the past 24 hours, including good and bad ones (potential threats). Request history is retained for 30 days. 
-<img src="https://assets.gcore.pro/docs/waap/analytics/waf-requests.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/waap-requests-table.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
 
 You can select multiple filters to get a more granular view of the displayed information in the table.
 
@@ -207,11 +207,11 @@ This page provides an in-depth information about a particular request made to yo
 
 * **Reference ID**: This ID is unique to each chain of requests that triggered a particular policy or custom rule. By using reference ID, you can search through your requests and determine why a block <a href="https://gcore.com/docs/waap/response-pages" target="_blank">response page</a> was displayed to that user. 
 
-   <img src="https://assets.gcore.pro/docs/waap/analytics/request-details-reference-id.png" alt="Reference ID on the request details page" width="80%">
+   <img src="https://assets.gcore.pro/docs/waap/analytics/request-details-id-reference.png" alt="Reference ID on the request details page" width="80%">
 
-* **Overview**: Provides a high-level summary of the request, including relevant rules and applicable actions, response code, and client details. 
+* **Overview**: Provides a high-level summary of the request, including relevant rules and applicable actions, response code, and client details. Click **Filter by** to view all requets coming from the filtered IP.
 
-   <img src="https://assets.gcore.pro/docs/waap/analytics/request-details-overview-section.png" alt="Overview section on the request details page" width="80%">
+   <img src="https://assets.gcore.pro/docs/waap/analytics/request-details-overview.png" alt="Overview section on the request details page" width="80%">
 
 * **Additional information**: Includes a detailed overview of the client, associated organization, and device (if available).
 
@@ -229,7 +229,7 @@ You can also create a rule for the IP address from which the request originates:
 
 1\. In the top-right corner of the screen, click **Create rule for IP**. 
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/request-details-add-rule.png" alt="Create rule button on the request details page" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/request-details-create-rule.png" alt="Create rule button on the request details page" width="80%">
 
 2\. Choose the relevant action:  
    * Allow a requests from this IP 
