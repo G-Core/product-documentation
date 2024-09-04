@@ -244,7 +244,7 @@ The base price is 250.00 € per month.
 
 This package is built with our most advanced security features. It combines everything from the <a href="https://gcore.com/docs/waap/billing#start" target="_blank">Start</a> and <a href="https://gcore.com/docs/waap/billing#pro" target="_blank">Pro</a> packages along with additional features and increased quotas for comprehensive protection. 
 
-The base price is tailored to your workflows and security requirements. To estimate costs for your organization, contact the <a href="mailto:support@gcore.com" target="_blank">Gcore Sales team</a>. 
+The base price is tailored to your workflows and security requirements. To estimate costs for your organization, contact the <a href="mailto:sales@gcore.com" target="_blank">Gcore Sales team</a>. 
 
 <table>
 <tbody> 
@@ -326,11 +326,11 @@ The base price is tailored to your workflows and security requirements. To estim
 <tr>
  <td rowspan="2">Traffic</td>
     <td>Included monthly traffic</td>
-    <td><a href="mailto:support@gcore.com" target="_blank">Contact us</a> for traffic calculation</td>
+    <td><a href="mailto:sales@gcore.com" target="_blank">Contact us</a> for traffic calculation</td>
   </tr>
 <tr>
     <td>Overage fee</td>
-    <td><a href="mailto:support@gcore.com" target="_blank">Contact us</a> for overage calculation</td>
+    <td><a href="mailto:sales@gcore.com" target="_blank">Contact us</a> for overage calculation</td>
   </tr>
 </body> 
 </table>
