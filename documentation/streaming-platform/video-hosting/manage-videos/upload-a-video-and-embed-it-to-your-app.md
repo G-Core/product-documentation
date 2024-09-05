@@ -13,7 +13,7 @@ customUrl: /streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your
 
  * **Upload the video**. On this tab, you can add locally stored videos. Either click the **Click to upload** button or drag and drop your files to the designated upload area.
 
-   <img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app/upload-video.png" alt="Video Hosting tab">
+   <img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app/upload-video-tab.png" alt="Video Hosting tab">
 
  * **Download from the source**. Here you can upload a video from the origin by specifying the video title and video origin URL.
 
