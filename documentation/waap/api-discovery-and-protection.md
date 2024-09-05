@@ -1,7 +1,7 @@
 ---
 title: api-discovery-and-protection
 displayName: API discovery and protection
-published: false
+published: true
 order: 
 pageTitle: Learn about Gcore API discovery and protection | Gcore
 pageDescription: Learn about Gcore API discovery and protection measures.

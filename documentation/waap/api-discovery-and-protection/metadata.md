@@ -1,6 +1,6 @@
 ---
 title: metadata
 displayName: API discovery and protection
-published: false
+published: true
 order: 70
 ---
