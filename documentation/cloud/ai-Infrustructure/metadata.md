@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: AI Training
+displayName: GPU Cloud
 published: true
 order: 100
 ---
