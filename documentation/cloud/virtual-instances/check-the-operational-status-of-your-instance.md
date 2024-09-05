@@ -9,7 +9,7 @@ pageDescription: Understand the operational status of your Virtual Machine - Bui
 ---
 # Check the operational status of your Virtual Machine
 
-You can find the Virtual Machine (VM) statuses inside the project, in the "Instances" section, in the "Status" column 
+You can find the statuses of Virtual Machine (VM) inside a project, on the **Virtual Instances** page. Check the **Status** column:
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/check-the-operational-status-of-your-instance/1.__________.png" alt="1.__________.png">
 
