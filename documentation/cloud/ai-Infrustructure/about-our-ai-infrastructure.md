@@ -15,7 +15,7 @@ pageDescription: Explore Gcore GPU Cloud for AI. NVIDIA servers, top performance
 ---
 # GPU Cloud infrastructure
 
-Gcore GPU Cloud provides high-performance compute clusters designed for machine learning tasks.
+Gcore <a href="https://gcore.com/cloud/ai-gpu" target="_blank">GPU Cloud</a> provides high-performance compute clusters designed for machine learning tasks.
 
 ## AI GPU infrastructure
 
