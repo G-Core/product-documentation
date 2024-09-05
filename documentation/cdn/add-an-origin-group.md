@@ -69,9 +69,9 @@ You can choose AWS signature V4 origin authentication or select none for the pub
 
 ### With S3 authentication
 
-<tabset-element>
-
 If you want to use AWS signature authentication, choose your storage type and proceed with the relevant instructions. 
+
+<tabset-element>
 
 #### Amazon S3 storage 
 
@@ -194,19 +194,17 @@ At first glance, the interaction between the active/backup origins and the **Use
 
 </expandable-element>
 
-## Step 5. Save changes
+## Step 4. Save changes
 
 Click **Add group** to save changes.
 
-## Step 6. Connect the origin group to the CDN resource
+## Step 5. Connect the origin group to the CDN resource
 
 <alert-element type="info" title="Info">
  
-If you change an origin group for a CDN resource, the Host header will not automatically change. You’ll have to update it manually.
+If you change an origin group for a CDN resource, the Host header will not automatically change. You’ll have to <a href="https://gcore.com/docs/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header#how-to-manage-the-host-header" target="_blank">update it manually</a>.
  
 </alert-element>
-
-If you change an origin group for a CDN resource, the Host header will not automatically change. You’ll have to update it manually.
 
 To add a created group to the CDN resource: 
 
@@ -216,6 +214,8 @@ To add a created group to the CDN resource:
 
 3\. Navigate to the **Origin** section. 
 
-4\. Choose the relevant group from the Origin group dropdown and click **Add group**. 
+4\. Choose the relevant group from the Origin group dropdown and click **Add group**.
+
+<img src="https://assets.gcore.pro/docs/cdn/add-an-origin-group/add-group-resource-settings.png" alt="Amazon S3 authentication for a new origin" width="80%">
 
 5\. Click **Save changes**.

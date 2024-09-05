@@ -75,7 +75,7 @@ If you specified additional domain names in <a href="https://gcore.com/docs/cdn/
 
 ## Step 5. Integrate the CDN resource with your website
 
-1\. Go to the admin panel of your origin website and change the URLs of static files. Replace the origin source domain with a <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files#custom-domain">custom domain of the CDN resource</a> either by script or manually. 
+1\. Go to the admin panel of your origin website and change the URLs of static files. Replace the origin source domain with a custom domain of the CDN resource either by script or manually. 
 
 For example, if a file path used to be `yourwebsite.com/images/image.jpg`, change it to `cdn.yourwebsite.com/images/image.jpg`. As a result, users will get static files from the CDN cache, and only the requests to the files that haven't yet been cached will be forwarded to your origin server.
 
@@ -85,7 +85,7 @@ If your site is built on a CMS (such as WordPress, Joomla, or Drupal) you can re
 
 <img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/cdn-resource-50.png" alt="Integration" width="65%">  
 
-That’s it! The CDN resource creation is completed. Click **Open resource setting**s to view the resources and set up advanced settings.
+That’s it! The CDN resource creation is completed. Click **Open resource settings** to view the resources and set up advanced settings.
 
 If there is no text **... steps left** box in the upper-right corner of the screen, this means that the resource is correctly created and everything is working. If there are still some unfinished steps, check out the following section.
 
@@ -105,11 +105,11 @@ To find out exactly where an error occurred:
 
 - If a CNAME record is configured correctly, it will be shown in the UI:
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/image_1468.png" alt="Configured correctly" width="50%">  
+   <img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/image_1468.png" alt="Configured correctly" width="50%">  
 
 - If an error occurs, a corresponding message will appear.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/cdn-resource-90.png" alt="Error message" width="50%">  
+   <img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/cdn-resource-90.png" alt="Error message" width="50%">  
 
 3\. Click **Next** in the **Setup your DNS section**. Click **Check your integration**.
 
