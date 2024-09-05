@@ -139,8 +139,8 @@ Status codes 403 and 404 have multiple meanings. Explanations of each scenario t
 </tr>
 <tr>
 <td style="text-align: left">557</td>
-<td style="text-align: left">The number of requests to the server has exceeded the limit of 5,000 requests per server.</td>
-<td style="text-align: left">If you have only one server in a specific location and there has been a high volume of requests from that location, the server will reject some requests with a 557 response code.</td>
+<td style="text-align: left">The number of connections to the resource has exceeded the limit of 10,000 simultaneous connections.</td>
+<td style="text-align: left">If you have only one resource in a specific location and there has been a high volume of connection attempts in that location, the resource will reject any connection attempts with a 557 response code once the limit of 10,000 simultaneous connections is reached. </td>
 <td style="text-align: left"><a href="https://gcore.com/docs/cdn/add-an-origin-group" target="_blank">Add more origins</a> from the relevant location to the origins group.</td>
 </tr>
 </tbody>
