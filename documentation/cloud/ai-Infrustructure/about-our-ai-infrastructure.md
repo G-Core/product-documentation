@@ -1,6 +1,6 @@
 ---
 title: about-our-ai-infrastructure
-displayName: GPU Cloud
+displayName: About GPU Cloud
 order: 10
 published: true
 toc:
