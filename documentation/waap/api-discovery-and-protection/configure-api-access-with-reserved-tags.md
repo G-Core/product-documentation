@@ -30,19 +30,13 @@ Here’s the list of reserved tags applicable only for the API protection:
 * Ignore CCN Detection
 * Ignore SSN Detection
 
-These tags can be added to your API endpoints either via the <a href="https://gcore.com/docs/waap/api-discovery-and-protection/api-discovery" target="_blank">API Discovery</a> feature by using <a href="https://gcore.com/docs/waap/waap-rules/custom-rules" target="_blank">custom rules</a>.
+These tags can be added to your API endpoints using <a href="https://gcore.com/docs/waap/waap-rules/custom-rules" target="_blank">custom rules</a>.
 
 ## Configure API protection 
 
 The following steps will guide you through the process of protecting your endpoints from unauthorized access.  
 
 After you complete the steps, it’s important to enable the relevant policies within the <a href="https://gcore.com/docs/waap/waap-policies/advanced-api-protection" target="_blank">Advanced API protection</a> policy group to make sure everything is set up correctly. 
-
-<alert-element type="info" title="Info">
-
-To ensure that your APIs are fully protected, enable the <a href="https://gcore.com/docs/waap/api-discovery-and-protection/api-discovery" target="_blank">API Discovery</a> feature or manually add your endpoints to the <a href="https://gcore.com/docs/waap/api-discovery-and-protection/configure-api-base-path" target="_blank">API base path</a> so that WAAP correctly recognizes these endpoints as associated with your domain.
-
-</alert-element>
 
 ### Step 1. Group endpoints based on their access levels 
 

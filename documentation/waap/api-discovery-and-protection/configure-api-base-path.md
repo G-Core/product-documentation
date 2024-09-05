@@ -1,7 +1,7 @@
 ---
 title: configure-api-base-path 
 displayName: Manually add endpoints to API base path
-published: true
+published: false
 order: 
 toc: 10
 pageTitle: A guide on how to configure API base path in Gcore WAAP | Gcore

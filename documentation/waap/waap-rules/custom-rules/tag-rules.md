@@ -59,4 +59,4 @@ Consider that rules with user-defined tags run before the rules, which use our p
  
 </alert-element>
 
-For more examples of tag generating rules, check out the following guides: <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/tag-rules/reserved-tags" target="_blank">Reserved tags</a> (user-defined) and <a href="https://gcore.com/docs/waap/api-discovery-and-protection/configure-api-access-with-reserved-tags" target="_blank">Configure API access with reserved tags</a>. 
+For more examples of tag generating rules, check out the <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/tag-rules/reserved-tags" target="_blank">Reserved tags (user-defined)</a> guide.
