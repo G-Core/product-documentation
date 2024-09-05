@@ -10,7 +10,7 @@ toc:
    --1--Step 3. Configure the origin group: "step-3-configure-the-origin-group"
    --1--Step 4. Save changes: "step-4-save-changes"
    --1--Step 5. Connect the origin group to the CDN resource: "step-5-connect-the-origin-group-to-the-cdn-resource"
-pageTitle: Guide to Adding an Origin Group to CDN | Gcore
+pageTitle: Guide to adding an origin group to CDN | Gcore
 pageDescription: A detailed guide on how to add an origin group to your CDN resource, covering group configuration, origin authentication, and binding process.
 ---
 # Add an origin group to a CDN resource
