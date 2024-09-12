@@ -77,7 +77,7 @@ Inference at the Edge is a versatile solution for businesses that require low-la
 
 Inference at the Edge offers several key benefits:
 
-* **Low latency**: With over 160 points of presence worldwide, requests are transferred quickly to the nearest Inference at the Edge pod, ensuring low latency for users.
+* **Low latency**: With over 180 points of presence worldwide, requests are transferred quickly to the nearest Inference at the Edge pod, ensuring low latency for users.
 
 * **Flexibility in model selection**. Run leading open-source models from our <a href="https://gcore.com/docs/cloud/inference-at-the-edge#ai-models" target="_blank">model catalog</a> or deploy your own custom models.  
 
