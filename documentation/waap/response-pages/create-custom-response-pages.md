@@ -38,7 +38,7 @@ Note that creating custom response pages is only available <a href="https://gcor
 
 2\. In the upper-right corner of the screen, click **Create Custom Page Set**.
 
-<img src="https://assets.gcore.pro/docs/waap/response-pages/create-page-set-button.png" alt="Crete response page set button in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/response-pages/create-page-set-button.png" alt="Highlighted button for creating response page in the Customer Portal" width="80%">
 
 ### Step 2. Give your page set a name
 

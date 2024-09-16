@@ -22,7 +22,7 @@ Custom response pages that are available at the account level relate to all doma
 
 To view page sets, open the **WAAP** page and navigate to **Features**. You'll be directed to the page with all relevant settings. 
 
-<img src="https://assets.gcore.pro/docs/waap/response-pages/response-pages-account-level.png" alt="Response pages page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/response-pages/response-pages-account-level.png" alt="Response pages functionality in the Customer Portal" width="80%">
 
 Here you can view <a href="https://gcore.com/docs/waap/response-pages#types-of-response-pages" target="_blank">default response pages</a> as well as add, customize, or delete your own custom page sets, which are based on the default ones.  
 
