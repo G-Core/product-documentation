@@ -59,12 +59,11 @@ DDoS mode is activated if any of the following conditions is met.
 </tr>
 <tr style="text-align: left;">
     <td style="text-align: left;">Sub-second threshold</td>
-    <td style="text-align: left;">This threshold protects WAAP servers against attacks from traffic bursts.<br><br>
-   When this threshold is reached, the DDoS mode will activate on the affected WAAP server (not the WAAP cluster).
+    <td style="text-align: left;">This threshold protects the origin servers against attacks from traffic bursts.<br><br>
+   When this threshold is reached, the DDoS mode will activate on the affected origin server (not the WAAP cluster).
     </td>
     <td style="text-align: left;"><ul><strong>Default</strong>:
     <li>This mechanism has a default value of 50 seconds.</li>
-    <li>By default, StackPath maintains this threshold.</li>
  </ul>
     </td>
 </tr>
@@ -88,5 +87,3 @@ If you’re using WAAP <a href="https://gcore.com/docs/waap/billing#pro" target=
 * WAAP’s bot-detection technology will block bots that share IP addresses with human users or frequently change their IP addresses. 
 
 * WAAP DDoS protection uses an AI-driven IP filtering profiler that analyzes daily traffic patterns from known users. This helps the system distinguish normal traffic from traffic that might be part of a DDoS attack.
-
-As an additional protection measure, we recommend manually adding your API endpoints to the <a href="" target="_blank">API base path</a>. This will enhance the system's ability to protect your endpoints and reduce the likelihood of false positives. 
