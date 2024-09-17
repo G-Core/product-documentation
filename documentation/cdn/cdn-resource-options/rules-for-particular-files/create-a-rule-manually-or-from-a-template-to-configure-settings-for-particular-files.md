@@ -105,7 +105,7 @@ To set up the Access-Control-Allow-Origin HTTP header only for files with the .t
 
 ## Disable or enable a rule
 
-For some purposes (e.g., testing), you may want to disable rules you’ve created. In this case, the rule will not apply to the specified files, but will still count toward the rule limit.
+In some cases, you might want to disable the rules you’ve created. For instance, you can do it for testing purposes or if you want to delete a rule. When disabled, the rule will not apply to the specified files but will still count toward the rule limit. 
 
 To disable or enable a rule:
 

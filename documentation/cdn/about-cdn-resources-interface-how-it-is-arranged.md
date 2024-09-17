@@ -56,7 +56,7 @@ For custom search use:
 - Search bar. Enter the main or additional CNAME of the needful resource or its ID.
 - Status section. Select the needful status or the "Select all" option.  
 
-<img src="https://assets.gcore.pro/docs/cdn/about-cdn-resources-interface-how-it-is-arranged/10274072513937.png" alt="Manage CDN resources" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/about-cdn-resources-interface-how-it-is-arranged/resources-page-overview.png" alt="Search bar and resource statuses" width="80%">
 
 ### Manage options
 
@@ -77,11 +77,37 @@ A list of possible options opens:
 
 ### Delete a resource
 
-Users with the Administrator's or Engineer's rights can delete resources.
+<alert-element type="info" title="Info">
+ 
+To delete a resource, you need to have the Administrator or Engineer <a href="https://gcore.com/docs/account-settings/users/about-users#about-users" target="_blank">user role</a>. 
+ 
+</alert-element>
 
-To delete a resource, click on the three dots sign on the left, select **Delete resource**, and confirm the action.
+Active resources cannot be deleted. To remove an active CDN resource, you need to suspend it first. 
 
-**Note**: The resources used for the Streaming service cannot be deleted.
+To delete a resource:  
+
+1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, navigate to **CDN**. 
+
+2\. Find the resource you want to remove and click the three-dot icon next to it. 
+
+3\. Select **Delete resource**.
+
+<img src="https://assets.gcore.pro/docs/cdn/about-cdn-resources-interface-how-it-is-arranged/delete-resource-menu.png" alt="CDN resource settings with delete button highlighted" width="80%">
+
+4\. If the resource is active, you’ll need to suspend it first. Click **Yes, suspend**. 
+
+After the resource is <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/suspend-a-cdn-resource-automatically-or-manually" target="_blank">suspended</a>, it won't deliver any traffic to users. We retain all settings for suspended resources and you can activate a resource back within 90 days after suspension. After this period, the resource is deleted.
+
+<img src="https://assets.gcore.pro/docs/cdn/about-cdn-resources-interface-how-it-is-arranged/confirm-suspension.png" alt="CDN resource deletion confirmation dialog" width="80%">
+
+5\. Proceed with the resource deletion by clicking **Yes, delete**. 
+
+<alert-element type="info" title="Info">
+ 
+CDN resources used for the <a href="https://gcore.com/docs/streaming-platform" target="_blank">Streaming service</a> cannot be deleted.
+ 
+</alert-element>
 
 By default, deleted resources are not displayed in the list of resources. Use [the filter](https://gcore.com/docs/cdn/about-cdn-resources-interface-how-it-is-arranged#filter-and-search) to display them. Deleted resources are shown in the list of all CDN resources for three months. Statistics for deleted resources are also available in the <a href="https://gcore.com/docs/cdn/view-statistics-of-a-cdn-resource" target="_blank">Reports</a> section during this time.
 
