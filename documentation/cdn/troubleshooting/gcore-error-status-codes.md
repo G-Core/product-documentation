@@ -111,7 +111,7 @@ Status codes 403 and 404 have multiple meanings. Explanations of each scenario t
 <td style="text-align: left">458</td>
 <td style="text-align: left">The maximum number of requests from the client's IP address has been exceeded.</td>
 <td style="text-align: left">This restriction is set with the Rate Limiter option, designed to restrict a maximum number of requests from a single IP.</td>
-<td style="text-align: left">Increase the permitted requests from a single IP within the <a href="https://gcore.com/docs/web-security/configure-rate-limiter-to-limit-the-number-of-requests#configure-rate-limiter" target="_blank">Rate Limiter settings</a>. 
+<td style="text-align: left">Increase the permitted requests from a single IP within the rate Limiter settings. 
 <br><br>
 <b>Note</b>: Rate limiter settings always apply to every user viewing your content.</td>
 </tr>
