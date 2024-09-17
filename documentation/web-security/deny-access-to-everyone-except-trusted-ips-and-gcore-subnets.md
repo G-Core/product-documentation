@@ -17,11 +17,11 @@ To minimize your website vulnerability, deny access to it for all but Gcore's su
   
 ## Network Firewall
 
-Different hosting providers offer different firewalls (often for additional cost) so there is no one-for-all manual. The goal is to limit access for non-Gcore subnets. Contact us via chat or email to [support@gcore.com](mailto:support@gcore.com) to get an up-to-date list of subnets.  
+Different hosting providers offer different firewalls (often for additional cost) so there is no one-for-all manual. The goal is to limit access for non-Gcore subnets. Contact us via chat or email to get an up-to-date list of subnets.  
   
 ## Web server
 
-Don't use this method if you have set the <a href="https://gcore.com/docs/web-security/get-an-actual-ip-addresses-of-visitors-from-the-x-forward-for-header" target="_blank">X-Forwarded-For header</a>: the requests will be blocked.
+Don't use this method if you have set the X-Forwarded-For header: the requests will be blocked.
 
 ### Apache
 
@@ -39,7 +39,7 @@ allow from 13x.2xx.xxx.xxx/24
 
 ### Nginx
 
-Nginx comes with a module called <a href="https://nginx.org/en/docs/http/ngx_http_access_module.html" target="_blank">ngx_http_access_module</a> to allow or deny access to an IP address. Below are example strings that should be added to your server configuration (static trusted IP addresses can also be added):
+Nginx comes with a module called ngx_http_access_module to allow or deny access to an IP address. Below are example strings that should be added to your server configuration (static trusted IP addresses can also be added):
 
 ```
 location / {

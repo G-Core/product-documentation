@@ -13,7 +13,7 @@ Depending on the type of SSL certificate selected for the resource under protect
 
 1. If you have **Let's Encrypt**, it will be renewed automatically.
 
-2. If you have a **Custom** certificate, you must reissue it yourself via the certificate authority, delete the current certificate in your resource settings, and add the reissued certificate in the Customer portal according to the <a href="https://gcore.com/docs/web-security/add-an-ssl-certificate-to-your-resource#add-custom-certificate-to-your-resource" target="_blank">Add Custom certificate</a> to your resource guide. You can also add a reissued custom certificate via the API request: 
+2. If you have a **Custom** certificate, you must reissue it yourself via the certificate authority, delete the current certificate in your resource settings, and add the reissued certificate in the Customer portal according to the Add Custom certificate to your resource guide. You can also add a reissued custom certificate via the API request: 
 
 ```
 // @name Get client ddos resource

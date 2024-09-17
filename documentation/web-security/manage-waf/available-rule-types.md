@@ -78,7 +78,7 @@ This rule can impact the visibility of attacks, the verification of active threa
 
 ### Masking of a cookie value
 
-Here's an illustration of such rule creation. First, use the <a href="https://gcore.com/docs/web-security/manage-waf/available-rule-types#create-and-apply-rules" target="_blank">instructions above</a>. The rule applies if the following conditions are specified in the **If** section:
+Here's an illustration of such rule creation. First, use the instructions above. The rule applies if the following conditions are specified in the **If** section:
 
 - The application is accessible at the domain ```example.com```
 - The application uses a ```PHPSESSID``` cookie for user authentication
@@ -106,7 +106,7 @@ In certain situations, it's beneficial to add a signature for attack detection m
 
 **Click the Create regexp-based attack indicator** rule and fill in the fields:
 
-- **Regular expression:** This is the signature used. If the value of the subsequent parameter aligns with the expression, the request is identified as an attack. The syntax and specifics of regular expressions are detailed in the <a href="https://gcore.com/docs/web-security/manage-waf/add-custom-rules-for-processing-requests#uri-constructor" target="_blank">instructions for adding rules</a>.
+- **Regular expression:** This is the signature used. If the value of the subsequent parameter aligns with the expression, the request is identified as an attack. The syntax and specifics of regular expressions are detailed in the instructions for adding rules.
 
 - **Changing the regular expression specified in the rule:** If you alter the regular expression in an existing **Create regexp-based attack indicator** rule, any **Disable regexp-based attack detection** rules using the previous expression will be deleted automatically.
 
@@ -151,7 +151,7 @@ By default, if the WAF node detects signs of any type of attack in any element o
 
 If the WAF node mistakenly identifies a standard request payload as malicious, a false positive is registered. To avoid such false positives, customize standard attack detection rules by adding custom rules. The **Ignore certain attack types** rule is an example of such a custom rule.
 
-Here's an illustration of such rule creation. First, use the <a href="https://gcore.com/docs/web-security/manage-waf/available-rule-types#create-and-apply-rules" target="_blank">instructions above</a>. 
+Here's an illustration of such rule creation. First, use the instructions above. 
 
 Let's consider an example where a user confirms the publication of a post on a database administrator forum. The client sends a POST request to the endpoint ```https://example.com/posts/```. This request has specific properties:
 

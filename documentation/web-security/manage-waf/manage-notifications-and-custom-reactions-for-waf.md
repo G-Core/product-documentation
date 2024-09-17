@@ -40,7 +40,7 @@ Let's say, for example, that you want to receive alerts about XSS attacks (if th
 *   **Filter:** XSS attack type.
 *   **Reaction:** A message and the e-mail address for integration.
 
-Triggers are managed and collected in the <a href="https://web-protect.gcore.com/waf/triggers/list" target="_blank">Triggers</a> tab.
+Triggers are managed and collected in the Triggers tab.
 
 <img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/triggers-waf-10.png" alt="Triggers" width="80%">
 
@@ -68,7 +68,7 @@ A condition refers to a system event that you would like to be alerted about. Th
 - **Denylisted IP:** Specify blocked IPs.
 - **Changes in API inventory:**
   As above, please add a basic explanation
-- **Hits from the same IP:** Using a condition, you can specify the threshold from which hits sent from the same IP should be grouped into a single attack in the <a href="https://web-protect.gcore.com/waf/events/incidents" target="_blank">Events</a> section.
+- **Hits from the same IP:** Using a condition, you can specify the threshold from which hits sent from the same IP should be grouped into a single attack in the Events section.
 
 <img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/triggers-waf-20.png" alt="Conditions WAF" width="80%">
 
@@ -120,7 +120,7 @@ Select one or more reactions. The reactions applicable to the condition are foun
 
 ## Disable or delete a trigger
 
-Go to the <a href="https://web-protect.gcore.com/waf/triggers/list" target="_blank">Triggers</a> tab, click the three dots next to the trigger you want to disable or delete, click the relevant option, and confirm the action when prompted.
+Go to the Triggers tab, click the three dots next to the trigger you want to disable or delete, click the relevant option, and confirm the action when prompted.
 
 <img src="https://assets.gcore.pro/docs/web-security/manage-waf/manage-notifications-and-custom-reactions-for-waf/10592589376529.png" alt="Disable or delete a trigger" width="80%">
 

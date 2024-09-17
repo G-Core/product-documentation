@@ -23,7 +23,7 @@ pageDescription: Identify cyber attacks, find vulnerabilities, block IPs, and ga
    
 ## About Events
 
-Events is a log store containing all malicious requests for your resources that have been repelled by <a href="https://gcore.com/web-security" target="_blank">Web Application Firewall (WAF)</a>. Entries in the log section are categorized into <a href="https://gcore.com/docs/web-security/manage-waf/view-the-history-of-attacks-on-your-application#attacks" target="_blank">Attacks</a> and <a href="https://gcore.com/docs/web-security/manage-waf/view-the-history-of-attacks-on-your-application#incidents" target="_blank">Incidents</a>. Attacks are all malicious requests, even if they do not pose a security threat. Unlike attacks, incidents are malicious requests that target a security weakness.
+Events is a log store containing all malicious requests for your resources that have been repelled by Web Application Firewall (WAF). Entries in the log section are categorized into Attacks and Incidents. Attacks are all malicious requests, even if they do not pose a security threat. Unlike attacks, incidents are malicious requests that target a security weakness.
 
 Here's how the log section looks:
 
@@ -63,7 +63,7 @@ Events provide detailed insights into malicious requests directed at your applic
 
 **Identify and resolve vulnerabilities**. By examining “incident”-type events, you can determine which parts of your application are susceptible and which types of attacks. This allows you to address these vulnerabilities.
 
-**Prevent specific attacks**. The event log lets you see if your application is frequently targeted from a particular region or IP address. While these attacks are innocuous (since WAF blocks them,)  they still require processing by your server, thus reducing performance for end users. To conserve server resources, you can opt to block the offending IP addresses or regions in the “Access Settings” as per the <a href="https://gcore.com/docs/web-security/set-the-access-policy-for-a-protected-resource" target="_blank">Access Policy guide</a>.
+**Prevent specific attacks**. The event log lets you see if your application is frequently targeted from a particular region or IP address. While these attacks are innocuous (since WAF blocks them,)  they still require processing by your server, thus reducing performance for end users. To conserve server resources, you can opt to block the offending IP addresses or regions in the “Access Settings” as per the Access Policy guide.
 
 **Gather analytical data to secure the private sections of your application**. By analyzing the logs of malicious requests, you can ascertain the most common attack techniques and the IP addresses frequently used. Using this information, you can better protect internal resources not covered by WAF (like an application administration panel or a private platform for employees) against common attacks. Additionally, you can block the IP addresses of frequent offenders.
 
@@ -113,7 +113,7 @@ Incidents refer to a malicious request that aims at an application's weak spot. 
 
 ### Check Incidents
 
-WAF detects <a href="https://gcore.com/docs/web-security/manage-waf/view-the-history-of-attacks-on-your-application#how-waf-identifies-vulnerabilities" target="_blank">vulnerabilities</a> and creates security incidents.
+WAF detects vulnerabilities and creates security incidents.
 
 You can check detected incidents in the **Incidents** section. To find the required data, use the search field described here or manually set the required filters.
 

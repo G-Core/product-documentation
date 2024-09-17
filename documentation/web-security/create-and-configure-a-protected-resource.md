@@ -42,7 +42,7 @@ There are three options:
 - Let's Encrypt (we order and automatically renew a free SSL certificate from Let's Encrypt. **Works only if you have already pointed your domain name to the protected IP address in your DNS** **settings**)
 - Custom (add your SSL certificate by uploading the certificate in PEM format and your private key).
 
-More information on SSL certificates can be found in the <a href="https://gcore.com/docs/web-security/add-an-ssl-certificate-to-your-resource" target="_blank">Add an SSL certificate to your resource</a> article.
+More information on SSL certificates can be found in the Add an SSL certificate to your resource article.
 
 ## Origin Settings
 
@@ -50,6 +50,6 @@ On the Web Protection tab find the protected IP for your resource. Change the A-
 
 ## Additional Protective Measures
 
-To protect your website you need to hide your real IP address. Once you finish the basic setup DNS servers will start providing our IP to the requests but that is not the only way to get the website's real IP. Follow our recommendation for <a href="https://gcore.com/docs/web-security/configure-additional-protection-settings" target="_blank">additional protective measures</a> to ensure your website security.
+To protect your website you need to hide your real IP address. Once you finish the basic setup DNS servers will start providing our IP to the requests but that is not the only way to get the website's real IP. Follow our recommendation for additional protective measures to ensure your website security.
 
 The recommendations are also available in the Gcore Customer Portal: go to the Web Protection tab -> click on the arrow near Settings button -> Setup guide.

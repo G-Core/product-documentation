@@ -13,7 +13,7 @@ pageDescription: Explanation of billing and plan change rules.
 
 ## Plans and billing rules 
 
-Prices and plans are described on the <a href="https://gcore.com/pricing/security" target="_blank">website</a>.
+Prices and plans are described on the website.
 
 The plan subscription fee and the traffic overcommitment fee are charged on the 2nd day of each month. If the payment fails, the service will be stopped.
 
@@ -23,10 +23,10 @@ Additional features are charged at the beginning of the month.
 
 ## Change your plan
 
-Navigate to the "Profile" icon in the lower-left corner of the page, choose <a href="https://accounts.gcore.com/billing" target="_blank">Billing</a>, and change the plan you need. 
+Navigate to the "Profile" icon in the lower-left corner of the page, choose Billing, and change the plan you need. 
 
 The new plan will be applied on the 1st day of the next month.
 
 <img src="https://assets.gcore.pro/docs/web-security/how-web-security-service-is-billed/mceclip0.png" alt="Change your plan">
 
-If you have any questions, please contact us via chat or email ([support@gcore.com](mailto:support@gcoreы.com)).
+If you have any questions, please contact us via chat or email.

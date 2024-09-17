@@ -27,7 +27,7 @@ There is no SSL certificate, the content is delivered via HTTP.
 
 ### Add Let's Encrypt certificate
 
-It is a paid option, to activate it, please, contact the [support team](mailto:support@gcore.com). 
+It is a paid option, to activate it, please, contact the support team.
 
 If you choose this option, we will request an SSL certificate for your domain name and will be regularly renewing it automatically. To obtain the certificate we have to show to the certificate authority that our server controls your domain. One of the ways to do that is an A-record. So for us to have a certificate issued for your domain, you have to change an A-record in your DNS settings and point your domain name to the protected IP address. Keep in mind that once the A-record has been changed, it takes time for the DNS servers to renew their cache (depends on the TTL setting). 
 
