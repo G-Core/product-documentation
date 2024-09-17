@@ -1,12 +1,15 @@
 ---
-title: configure-api-base-path 
-displayName: Manually add endpoints to API base path
+title: configure-api-base-path
+displayName: 'Manually add endpoints to API base path'
 published: false
-order: 
+order: null
 toc: 10
-pageTitle: A guide on how to configure API base path in Gcore WAAP | Gcore
-pageDescription: Learn how to manually add endpoints to API base path so they are protected by WAAP.
+pageTitle: 'A guide on how to configure API base path in Gcore WAAP | Gcore'
+pageDescription: 'Learn how to manually add endpoints to API base path so they are protected by WAAP.'
+slugs:
+    - ___UNPUBLISHED___m1663g1v_e6crujp11CQUB8w9Izs19CBCO7NDOq3r
 ---
+
 # Manually add endpoints to API base path
 
 If your domain uses APIs hosted on the same domain and you don't have enabled <a href="https://gcore.com/docs/waap/api-discovery-and-protection/api-discovery" target="_blank">API Discovery</a>, you can manually add endpoints to the API base path. This will define a communication path for WAAP to expect API requests and protect your endpoints.  

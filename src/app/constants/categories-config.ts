@@ -39,10 +39,6 @@ export const categories: Array<Category> = [
         url: 'ddos-protection',
     },
     {
-        name: 'Web Application Security',
-        url: 'web-security',
-    },
-    {
         name: 'WAAP',
         url: 'waap',
     },

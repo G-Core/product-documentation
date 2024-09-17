@@ -25,7 +25,6 @@ export class LeftBarMenuComponent implements OnInit, OnDestroy {
     @Input() public menuItems: any;
     @Input() public isHomePage: boolean = false;
     @HostBinding('class.with-disclaimer') public isNotResellerPage: boolean = false;
-    @HostBinding('class.with-disclaimer') public isNotWaapPage: boolean = false;
 
     private destroy$: Subject<void> = new Subject();
 
@@ -38,7 +37,6 @@ export class LeftBarMenuComponent implements OnInit, OnDestroy {
         this.menuService.isHosting$.pipe(takeUntil(this.destroy$)).subscribe((isHosting) => {
             this.isHosting = isHosting;
             this.isNotResellerPage = !this.router.url.includes('reseller-support');
-            this.isNotWaapPage = !this.router.url.includes('waap');
             this.cd.detectChanges();
         });
     }
