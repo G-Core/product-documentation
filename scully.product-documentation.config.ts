@@ -8,7 +8,6 @@ import 'prismjs/components/prism-ruby.min.js';
 import { getSitemapPlugin } from './scully/plugins/sitemap';
 
 const categories = [
-    'web-security',
     'streaming',
     'server-protection',
     'storage',
@@ -38,7 +37,6 @@ setPluginConfig(moveContentFiles, {
         'storage',
         'streaming-platform',
         'ddos-protection',
-        'web-security',
         'waap',
         'reseller-support',
     ],

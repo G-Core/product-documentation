@@ -19,7 +19,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     private matchingTextLength = 100;
 
     public searchResult$: Observable<SearchResponse<ProductDocumentationIndex>>;
-    public categories = categories.filter((category) => category.url !== 'reseller-support' && category.url !== 'waap');
+    public categories = categories.filter((category) => category.url !== 'reseller-support');
     public categoriesMap = this.categories.reduce((map, category) => {
         map[category.url] = category.name;
         return map;

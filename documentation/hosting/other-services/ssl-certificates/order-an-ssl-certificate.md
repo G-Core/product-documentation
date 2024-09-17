@@ -4,15 +4,18 @@ displayName: Order
 order: 20
 published: false
 toc:
-    --1--Certificate settings: "certificate-settings"
-    --2--Request: "request"
-    --2--Information: "information"
-    --1--Generating a key: "generating-a-key"
-    --1--Enter the contact information: "enter-the-contact-information"
-    --1--Confirm domain ownership: "confirm-domain-ownership"
-pageTitle: Activate an SSL certificate | Gcore
-pageDescription: Learn how to buy an SSL certificate.
+    '--1--Certificate settings': certificate-settings
+    '--2--Request': request
+    '--2--Information': information
+    '--1--Generating a key': generating-a-key
+    '--1--Enter the contact information': enter-the-contact-information
+    '--1--Confirm domain ownership': confirm-domain-ownership
+pageTitle: 'Activate an SSL certificate | Gcore'
+pageDescription: 'Learn how to buy an SSL certificate.'
+slugs:
+    - ___UNPUBLISHED___m1663ftz_rePehx489fg7SHJ6bJ4VJVWmjdRsF8wt
 ---
+
 # Order an SSL certificate
 
 In the hosting control panel, go to the Products / Services section, then select the SSL certificates tab.
