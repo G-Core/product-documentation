@@ -34,7 +34,7 @@ To create a CDN resource for the entire site:
 
 Go to the <a href="https://cdn.gcore.com" target="_blank">CDN resources</a> tab and click **Create CDN resource**.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/13050309991441.png" alt="Choose the acceleration type">
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/add-cdn-resource.png" alt="Choose the acceleration type">
 
 The new page will open. Select "Accelerate and protect entire site" and click **Confirm**.
 

@@ -66,7 +66,7 @@ To do this, click on the three dots sign next to the required resource.
 
 A list of possible options opens:
 
-<img src="https://assets.gcore.pro/docs/cdn/about-cdn-resources-interface-how-it-is-arranged/10274251831185.png" alt="Manage options" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/about-cdn-resources-interface-how-it-is-arranged/cdn-resource-settings-button.png" alt="Manage options" width="80%">
 
 - "Settings" opens the resource settings. You can also go to the resource settings by clicking on the CNAME of the resource.
 - "Prefetch" opens the <a href="https://gcore.com/docs/cdn/load-the-content-to-cdn-before-users-request-it" target="_blank">Prefetch</a> section to upload the content to CDN before users request it.
