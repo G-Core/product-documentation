@@ -8,7 +8,7 @@ pageDescription: Review avaiable WAAP packages and their features.
 ---
 # Billing
 
-We offer three levels of packages to suit your needs: **Start**, **Pro**, and **Enterprise**. Built with scalability in mind, these packages provide you with enhanced security measures powered by <a href="https://gcore.com/docs/waap/about-waap#how-waap-works" target="_blank">next-generation algorithms</a> to block any attack.  The comprehensive package information is available on the <a href="https://gcore.com/pricing/edge-network" target="_blank">Gcore pricing</a> page. 
+We offer three levels of packages to suit your needs: **Start**, **Pro**, and **Enterprise**. Built with scalability in mind, these packages provide you with enhanced security measures powered by <a href="https://gcore.com/docs/waap/about-waap#how-waap-works" target="_blank">next-generation algorithms</a> to block any attack.  The comprehensive package information is available on the <a href="https://gcore.com/pricing/edge-network#waap" target="_blank">Gcore pricing</a> page. 
 
 Note that if you cancel your WAAP subscription, all your WAAP settings will be removed.
 
