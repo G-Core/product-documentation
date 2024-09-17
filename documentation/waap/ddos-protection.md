@@ -61,6 +61,8 @@ DDoS mode is activated if any of the following conditions is met.
     <td style="text-align: left;">Sub-second threshold</td>
     <td style="text-align: left;">This threshold protects the origin servers against attacks from traffic bursts.<br><br>
    When this threshold is reached, the DDoS mode will activate on the affected origin server (not the WAAP cluster).
+   <br><br>
+      This mechanism can mitigate bursts of requests without activating DDoS mode when other threshold conditions aren't met. Mitigated requests are counted as <strong>DDoS L7 - Blocked</strong> on the <a href="https://gcore.com/docs/waap/analytics#web-application-firewall-requests" target="_blank">Web Application Firewall Requests</a> analytics graph, and they won't appear on the <a href="https://gcore.com/docs/waap/analytics#attacks-over-time" target="_blank">DDoS attacks over time</a> graph.
     </td>
     <td style="text-align: left;"><ul><strong>Default</strong>:
     <li>This mechanism has a default value of 50 seconds.</li>
