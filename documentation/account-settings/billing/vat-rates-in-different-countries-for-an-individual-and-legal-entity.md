@@ -117,7 +117,7 @@ All EU countries and their VAT rate (%) are listed below.
   <tr>
     <td class="tg-twlz">Finland</td>
     <td class="tg-twlz">FI</td>
-    <td class="tg-twlz">24</td>
+    <td class="tg-twlz">25,5</td>
   </tr>
   <tr>
     <td class="tg-twlz">France</td>
