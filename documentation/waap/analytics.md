@@ -182,7 +182,7 @@ You can select multiple filters to get a more granular view of the displayed inf
 </tr>
 <tr>
 <td style="text-align: left">Create rule</td>
-<td style="text-align: left">A button that you can select to create a <a href="https://gcore.com/docs/waap/waap-rules/custom-rules" target="_blank">custom rule</a> for the request.</td>
+<td style="text-align: left">A button that you can select to create a rule for the IP address.</td>
 </tr>
 <tr>
 <td style="text-align: left">Threats (last 24 hours)</td>
@@ -197,7 +197,7 @@ For each logged request, you can perform the following actions:
 
 * Inspect request details 
 
-* Create a new <a href="https://gcore.com/docs/waap/ip-security/allow-and-block-ip-addresses" target="_blank">firewall rule</a> to add the IP address to the block or allow list. 
+* Create a new rule for the IP address that will challenge requests with JavaScript or CAPTCHA validation or add it to the block or allow list. 
 
 <img src="https://assets.gcore.pro/docs/waap/analytics/manage-requests-in-table.png" alt="Requests table with request management options" width="80%">
 
@@ -225,7 +225,7 @@ This page provides an in-depth information about a particular request made to yo
 
    <img src="https://assets.gcore.pro/docs/waap/analytics/request-details-tags.png" alt="Tags section on the request details page" width="80%">
 
-You can also create a rule for the IP address from which the request originates: 
+<p id="create-rule-for-ip">You can also create a rule for the IP address from which the request originates:</p> 
 
 1\. In the top-right corner of the screen, click **Create rule for IP**. 
 
@@ -239,7 +239,7 @@ You can also create a rule for the IP address from which the request originates:
 
 3\. Click **Create rule**. 
 
-The rule will appear on the Firewall page where you can update or remove it if necessary.   
+The rules to block or allow requests will appear on the <a href="https://gcore.com/docs/waap/ip-security/allow-and-block-ip-addresses" target="_blank">Firewall</a> page. The rules to challenge requests with JavaScript or CAPTCHA validation will appear on the <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/create-and-manage-custom-rules" target="_blank">WAAP rules</a> page.   
 
 ### Threats (last 24 hours) 
 
@@ -338,7 +338,7 @@ This table displays more fine-grained information about requests associated with
 </tr>
 <tr>
 <td style="text-align: left">Create rule</td>
-<td style="text-align: left">A button that you can select to create a <a href="https://gcore.com/docs/waap/waap-rules/custom-rules" target="_blank">custom rule</a> for the request.</td>
+<td style="text-align: left">A button that you can select to create a rule for the IP address.</td>
 </tr>
 <tr>
 <td style="text-align: left">Threats (last 24 hours)</td>

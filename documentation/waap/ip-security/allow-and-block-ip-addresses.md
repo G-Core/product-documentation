@@ -11,9 +11,17 @@ pageDescription: Learn how to add IP addresses to block and allow lists.
 ---
 # Allow and block IP addresses in firewall
 
-Our firewall is your first line of protection to block or allow specific IP addresses or IP ranges from reaching your domain. Firewall rules contain a single condition—either "block" or "allow" an IP. They are quick to implement and easy to adjust as compared to the custom or advanced WAAP rules.
+Our firewall is your first line of protection to block or allow specific IP addresses or IP ranges from reaching your domain. Our firewall rules contain a single condition—either "block" or "allow" an IP. They are quick to implement and easy to adjust as compared to the custom or advanced WAAP rules.
 
-All rules for allowing or blocking IPs are also displayed on the  **WAAP Rules** page. There, you can also create more robust <a href="https://gcore.com/docs/waap/waap-rules/custom-rules" target="_blank">custom rules</a> to sanction IP addresses. 
+All rules with allowed or blocked IPs appear on the **Firewall** page. 
+
+<img src="https://assets.gcore.pro/docs/waap/ip-security/firewall-page.png" alt="Firewall page in the Customer Portal">
+
+A rule can appear on this page through one of following ways: 
+
+* You manually added an IP address to the allow or block list on the **Firewall** page. 
+
+* You’ve created a new rule for the IP address on the <a href="https://gcore.com/docs/waap/analytics#create-rule-for-ip" target="_blank">Analytics</a> page. 
 
 <alert-element type="tip" title="Tip">
 
@@ -21,7 +29,7 @@ If you want to add a rule for verified bots and crawlers, check our <a href="htt
 
 Enabling predefined policies gives you immediate protection without further testing and manual adjustments. They are created and optimized to accurately distinguish between legitimate and harmful automated traffic, which reduces the risk of false positives or negatives.
 
-</alert-element>
+</alert-element> 
 
 ## Add IPs to allowlist or blocklist 
 
@@ -61,7 +69,7 @@ You can’t add a subnetwork to the IP or IP range.
 
 Depending on the applied action, the traffic from this IP address will be either allowed or blocked on your domain. 
 
-This rule will appear both on the **Firewall** and **WAAP Rules** pages (in the **Custom rules** section). On the **WAAP Rules** page, the rule will be displayed as an If/Then condition.
+This rule will appear both on the **Firewall** and **WAAP Rules** pages (in the **Custom rules** section). On the **WAAP Rules** page, the rule will be displayed as an If/Then condition. There, you can also create more robust <a href="https://gcore.com/docs/waap/waap-rules/custom-rules" target="_blank">custom rules</a> to sanction IP addresses.
 
 ## Manage blocked and allowed IPs 
 
@@ -74,7 +82,6 @@ Additionally, all blocked and allowed IPs are displayed on the **WAAP Rules** pa
 If you disable a firewall rule on the **WAAP Rules** page, it will no longer be visible on the **Firewall** page. Once re-enabled, the rule will appear on the **Firewall** page automatically.
 
 </alert-element>
-
 
 ### Update an IP or IP range 
 
