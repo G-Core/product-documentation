@@ -71,7 +71,7 @@ This page features general information about incoming requests and contains two 
 
 This graph shows the total number of incoming requests for the selected period and the number of requests that have been blocked. 
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/overview-waap.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/overview-waap.png" alt="WAAP graph on the analytics page in the Customer Portal" width="80%">
 
 ### Status codes
 
@@ -85,7 +85,7 @@ This graph shows all requests sorted according to the returned status codes:
 
 * 5xx: Server errors  
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/overview-status-codes-graph.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/overview-status-codes.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
 
 <alert-element type="info" title="Info">
  
@@ -271,7 +271,7 @@ Requests associated with DDoS attacks are presented in a plot format.
 
 To filter DDoS request data by the timeframe of each attack, click the dropdown menu in the top-right corner of the screen and select the checkbox next to the attack you want to view. You can view up to four sets of timeframes simultaneously. 
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/ddos-over-time.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/ddos-over-time.png" alt="DDoS attacks graph on the Analytics page in the Customer Portal" width="80%">
 
 ### IPs participated 
 
