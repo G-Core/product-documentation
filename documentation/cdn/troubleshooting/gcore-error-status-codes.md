@@ -9,7 +9,7 @@ toc:
    --2--403 errors: "403-errors"
    --2--404 errors: "404-errors"
    --2--Other errors (402, 458, 504, 508, 556, 557): "other-errors-402-458-504-508-556-557"
-pageTitle: Explore Gcore Error Status Codes | Gcore
+pageTitle: Explore Gcore CDN Error Status Codes | Gcore
 pageDescription: A comprehensive guide on how to troubleshoot special errors with the codes 402, 403, 404, 458, 504, 508, 556, 557.
 ---
 # Resolve errors by status code for Gcore CDN
