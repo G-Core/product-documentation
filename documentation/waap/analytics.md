@@ -1,6 +1,6 @@
 ---
 title: analytics
-displayName: Analytics
+displayName: WAAP analytics
 published: true
 order:
 toc:
@@ -21,7 +21,7 @@ toc:
 pageTitle: Explore Gcore WAAP analytics | Gcore
 pageDescription: Learn how to view and interpret Gcore WAAP analytics to better understand incoming traffic to your domain.
 ---
-# Analytics
+# WAAP analytics
 
 WAAP analytics provides comprehensive information about incoming traffic to your domain. It features detailed statistics about recent requests, potential threats, and frequently triggered rules, allowing you to fine-tune your WAAP settings based on the analyzed data. 
 

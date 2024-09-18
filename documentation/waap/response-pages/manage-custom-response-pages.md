@@ -3,8 +3,8 @@ title: manage-custom-response-pages
 displayName: Manage custom response pages
 published: true
 order: 20
-pageTitle: A guide on custom response pages | Gcore
-pageDescription: Learn more about Gcore custom response pages.
+pageTitle: A guide on managing custom response pages | Gcore
+pageDescription: Learn how to manage Gcore custom response pages in the domain settings and at the account level.
 ---
 # Manage custom response pages
 

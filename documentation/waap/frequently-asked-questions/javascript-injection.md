@@ -1,12 +1,12 @@
 ---
 title: javascript-injection
-displayName: How does JavaScript injection work?
+displayName: How does WAAP JavaScript injection work?
 published: true
 order: 10
 pageTitle: A guide on WAAP JavaScript injection | Gcore
 pageDescription: Learn how JavaScript injesction is implemented, and how it's used to protect your domains.
 ---
-# How does JavaScript injection work?
+# How does WAAP JavaScript injection work?
 
 Gcore WAAP performs various checks to determine whether a valid user is behind each request to your domain, and not automated traffic.  
 

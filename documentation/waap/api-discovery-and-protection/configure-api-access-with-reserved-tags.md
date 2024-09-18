@@ -12,7 +12,7 @@ toc:
 pageTitle: A guide on how to configure API security in Gcore WAAP and CDN | Gcore
 pageDescription: Learn how create admin and privileged users, set up their access to endpoints, and activate Advanced API protection policy.
 ---
-# Configure API access with reserved tags
+# Configure API access and protection with reserved tags
 
 API protection tags are used to flag and categorize API requests based on different conditions and parameters, which allows you to manage API traffic more efficiently. 
 
