@@ -4,7 +4,7 @@ displayName: Predefined tags
 published: true
 order: 20
 pageTitle: Check the list of Gcore predefined tags | Gcore
-pageDescription: View all available predefined tags and use them in custom rules.
+pageDescription: View all available Gcore predefined tags, their API slugs, descriptions and use them in custom rules.
 ---
 # Predefined tags and their descriptions
 

@@ -3,8 +3,8 @@ title: frequently-asked-questions
 displayName: FAQs
 published: true
 order: 
-pageTitle: Authenticate to functions with API keys | Gcore
-pageDescription: Learn how to create and manage API keys to protect your function endpoints from unauthorized access.
+pageTitle: Get answers to common questions related to Web Application and API Protection | Gcore
+pageDescription: Check answers to the commonly asked questions about Gcore WAAP product.
 ---
 # Frequently asked questions
 

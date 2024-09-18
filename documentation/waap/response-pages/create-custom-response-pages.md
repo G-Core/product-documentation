@@ -11,7 +11,7 @@ toc:
    --1--Step 5. Configure page status: "step-5-configure-page-status"
    --1--Step 6. Finalize page setup: "step-6-finalize-page-setup"
    --1--Step 7. Associate the page with domains: "step-7-associate-the-page-with-domains"   
-pageTitle: A guide on custom response pages | Gcore
+pageTitle: A guide on creating custom response pages | Gcore
 pageDescription: Learn more about Gcore custom response pages.
 ---
 # Create custom response pages

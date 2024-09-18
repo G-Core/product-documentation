@@ -14,8 +14,8 @@ toc:
    --3--Embed IP range to the condition: "embed-ip-range-to-the-condition"
    --3--Cluster (PoP) granularity: "cluster-pop-granularity"
    --3--Rate limit by tag filter: "rate-limit-by-tag-filter"               
-pageTitle: Learn about Gcore advanced rules | Gcore
-pageDescription: Learn about Gcore advanced rules and how to use them for filtering incoming traffic and blocking malicious requests.
+pageTitle: Learn about Gcore advanced rate limiting rules | Gcore
+pageDescription: Learn to configure advanced rate limiting in Gcore WAAP, manage API requests, set custom limits, and embed conditions for enhanced security.
 ---
 # Advanced rate limiting rules
 
