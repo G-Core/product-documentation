@@ -39,6 +39,12 @@ There are two ways to create a subnetwork in the network: <a href="https://gcore
 
 7\. (optional) Turn on the **Enable DHCP** toggle to assign IP addresses to machines in the subnet automatically.
 
+<alert-element type="warning" title="Warning">
+ 
+For IPv6 networks, you can only enable or disable DHCP when creating a subnetwork. Changing this setting later is only possible via recreating the IPv6 subnetwork.
+ 
+</alert-element>
+
 8\. (optional) Turn on the **Non-routable subnetwork** toggle to block access to the subnet from external networks and other subnets. If you keep the network routable, you can specify the **Gateway IP** address. Otherwise, a random IP address will be assigned.
 
 9\. (optional) Enter server addresses in the "Custom DNS" field to add specific DNS servers.
