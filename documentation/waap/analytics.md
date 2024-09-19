@@ -71,7 +71,7 @@ This page features general information about incoming requests and contains two 
 
 This graph shows the total number of incoming requests for the selected period and the number of requests that have been blocked. 
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/overview-waap.png" alt="WAAP graph on the analytics page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/waap-overview.png" alt="WAAP graph on the analytics page in the Customer Portal" width="80%">
 
 ### Status codes
 
