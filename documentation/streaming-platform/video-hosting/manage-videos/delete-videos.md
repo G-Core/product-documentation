@@ -6,6 +6,7 @@ order: 30
 toc:
 pageTitle: Delete videos uploaded to Customer Portal | Gcore
 pageDescription: Learn how to remove videos uploaded to the Gcore Customer Portal via Video Hosting feature.
+customUrl: /streaming-platform/video-hosting/delete-videos
 ---
 # Delete uploaded videos
 
