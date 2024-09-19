@@ -17,7 +17,7 @@ All rules with allowed or blocked IPs appear on the **Firewall** page.
 
 <img src="https://assets.gcore.pro/docs/waap/ip-security/firewall-page.png" alt="Firewall page in the Customer Portal">
 
-A rule can appear on this page through one of following ways: 
+A rule can appear on this page in one of the following ways: 
 
 * You manually added an IP address to the allow or block list on the **Firewall** page. 
 
@@ -68,8 +68,6 @@ You can’t add a subnetwork to the IP or IP range.
 7\. Click **Save** to add the IP to the list.
 
 Depending on the applied action, the traffic from this IP address will be either allowed or blocked on your domain. 
-
-This rule will appear both on the **Firewall** and **WAAP Rules** pages (in the **Custom rules** section). On the **WAAP Rules** page, the rule will be displayed as an If/Then condition. There, you can also create more robust <a href="https://gcore.com/docs/waap/waap-rules/custom-rules" target="_blank">custom rules</a> to sanction IP addresses.
 
 ## Manage blocked and allowed IPs 
 
