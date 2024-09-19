@@ -73,7 +73,13 @@ During the resource’s lifetime, its **provisioning** status can signal the fol
 * **Deleted**: It’s been successfully deleted. 
 * **Updating**: It’s currently being updated. 
 * **Deleting**: It’s currently being deleted.  
-* **Error**: The system failed to create a balancer. If error occurs during the update or deletion of a balancer, <a href="https://gcore.com/docs/cloud/networking/load-balancers/manage-load-balancers#initiate-a-failover" target="_blank">initiate a failover</a>. Load Balancers that fail to be created will be automatically deleted.  
+* **Error**: The system failed to create a balancer. If an error occurs during the update or deletion of a balancer, <a href="https://gcore.com/docs/cloud/networking/load-balancers/manage-load-balancers#initiate-a-failover" target="_blank">initiate a failover</a>. Load Balancers that fail to be created will be automatically deleted.
+
+<alert-element type="info" title="Info">
+ 
+Updating the name, description, or tags of a Load Balancer won't cause any connection interruptions or downtime.
+ 
+</alert-element>
 
 ## Load Balancer settings
 
