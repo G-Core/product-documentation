@@ -602,7 +602,7 @@ resource "gcore_subnet" "<span style="color:#FF5913">subnet</span>" {
   - Specify the “destination”, the CIDR of the target subnetwork.
   - Specify the “nexthop”, the IPv4 address to forward traffic to if its destination IP matches the “destination” CIDR.
 
-* (optional) Add “enable_dhcp = false” to disable DHCP. Otherwise, DHCP will be enabled by default.
+* (optional) Add “enable_dhcp = false” to disable DHCP. Otherwise, DHCP will be enabled by default. For IPv6 networks, you can only enable or disable DHCP when creating a subnetwork. Changing this setting later is only possible via recreating the IPv6 subnetwork. 
 
 * (optional) Specify the “region_id” and “region_name”.
 
