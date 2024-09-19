@@ -173,11 +173,9 @@ It's also not possible to use both TCP 80 and HTTP 80. The reason is that HTTP i
  
 For optimized performance, we recommend making batch updates of pool settings. To perform comprehensive simultaneous updates, use the <a href="https://api.gcore.com/docs/cloud#tag/Load-Balancers/operation/LoadBalancerPoolInstanceViewSet.patch" target="_blank">Gcore API</a>.
 
-A pool is the list of VMs or Bare Metal to which the listener will redirect incoming traffic. 
- 
 </alert-element>
 
-Each pool in the listener has the following configuration:
+A pool is the list of VMs or Bare Metal to which the listener will redirect incoming traffic. Each pool in the listener has the following configuration:
 
 * **Name**: The name of the pool. 
 
