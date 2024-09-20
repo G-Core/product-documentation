@@ -53,13 +53,38 @@ The **Billing** page displays statistics on resource consumption. It determines 
 
 You can sort statistics by several metrics:
 
-| Metric            | Explanation                                                                                                                 | Paid or free                           |
-|-------------------|-----------------------------------------------------------------------------------------------------------------------------|----------------------------------------|
-| Transcoding       | The time used to process streams/videos and prepare an adaptive bitrate                                                     | Free                                   |
-| VOD uploaded mins | The duration of the uploaded videos                                                                                         | Paid This metric is calculated for VoD |
-| Computer vision   | The duration of videos and streams for which Computer Vision works (our service for recognizing objects from video content) | Paid                                   |
-| Real-Time Video              | Call duration per person in Real-Time Video (our service for video calls, video conferences, and webinars in real-time)                | Paid                                   |
-
+<table>
+<tbody> 
+<thead>
+  <tr>
+    <th style="width:30%">Metric</th>
+    <th style="width:45%">Explanation</th>
+    <th style="width:25%">Paid or free</th>
+  </tr>
+  </thead>
+<tr>
+    <td>Transcoding</td>
+    <td>The time used to process streams and videos and prepare an adaptive bitrate</td>
+    <td>Free basic encoding for up to 1080 full HD<br><br>    Check video transcoding prices on our <a href="https://gcore.com/pricing/streaming-platform" target="_blank">Pricing page</a></td>
+  </tr>
+<tr>
+    <td>VoD uploaded mins</td>
+    <td>The duration of the uploaded videos</td>
+    <td>Paidree basic encoding for up to 1080 FullHD
+    This metric is calculated for VoD</td>
+  </tr>
+<tr>
+    <td>Computer vision and AI</td>
+    <td>The duration of videos and streams for which AI and computer vision work (our service for recognizing objects from video content)</td>
+    <td>Paid</td>
+  </tr>
+<tr>
+    <td>Real-Time Video</td>
+    <td>Call duration per person in Real-Time Video (our service for video calls, video conferences, and webinars in real-time)</td>
+    <td>Paid</td>
+</tr>
+</body> 
+</table>
 
 *All metrics are calculated in minutes.
 
