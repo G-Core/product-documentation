@@ -51,7 +51,7 @@ Along with the Reseller account, we create a customer account with the same emai
 
 All our products are available for reselling: CDN, Web Application Security, Video Streaming, Edge Cloud, Managed DNS, and Storage. When signing the contract, you discuss with your manager what products you want to resell. By default, the selected products will be displayed in the Customer Portal. You can adjust the visibility of products to all customers in the "Setting" section, "Products" subsection of the Admin Portal:
 
-<img src="https://assets.gcore.pro/docs/reseller-support/getting-started/getting-started-10.png" alt="Service management">
+<img src="https://assets.gcore.pro/docs/reseller-support/getting-started/vendor-settings-products.png" alt="Service management" width="80%">
 
 You can also override the General settings from the "Services" section in the customer settings. Go to the customer settings, open the list of customers, in the "Accounts" section, click on the Account ID of the desired customer, or click on the "Edit" button in the "Actions" сolumn. If you click on the "Log in" button you'll log in the Customer Portal under customer's admin user
 
@@ -63,7 +63,7 @@ On the "Products" tab, choose products that you want to display in the customer'
 - If you enable a product, it will be displayed in the customer's Customer Portal.
 - If you disable a product, it will not be displayed in the customer's Customer Portal.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/getting-started/client-services-30.jpg" alt="Services">
+<img src="https://assets.gcore.pro/docs/reseller-support/getting-started/accounts-products.png" alt="Services" width="80%">
 
 **Please note**: Displaying a Product in the Customer Portal does not allow the customer to manage it by default. If the product is displayed but not configured (see the product management articles below), the customer will see the product activation request window:
 

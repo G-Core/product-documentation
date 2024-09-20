@@ -21,37 +21,43 @@ In this guide, we describe the structure and features of the Admin Portal panel.
 
 The new Admin Portal has the following sections: 
 
-<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/new-ap-interface-10.png" alt="Structure of the new Admin Portal">
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/general-overview.png" alt="Structure of the new Admin Panel" width="80%">
 
 **0\.** The button which collapses the left-side menu. All screenshots of the following interface are shown with the menu collapsed. 
 
 **1\. Accounts**: This section displays a list of customers. Here you can manage the accounts of existing customers, including logging into the Customer Portal on their behalf, editing their data, deleting their accounts, or adding new accounts. 
 
-<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/new-ap-interface-20.png" alt="Accounts">
-
 **2\. Users**: This section contains two subsections, "Sellers" and "All users", where you can search for and manage users in these categories' accounts. 
 
-<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/new-ap-interface-30.png" alt="Users">
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/users-page.png" alt="Users" width="80%">
 
 **3\. CDN**: This section displays a list of all CDN resources created by your customers. Here you can search for a specific resource by ID or CNAME.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/new-ap-interface-40.png" alt="CDN">
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/cdn-page.png" alt="CDN" width="80%">
 
-**4\. Security**: This section contains the "Authorization" subsection. Here you can configure SSO. You can also enable the "Activity Logs" feature by contacting the [support team](mailto:support@gcore.com) or your personal manager. 
+**4\. Streaming**: This section displays all accounts of your customers and their streaming statuses. 
 
-<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/new-ap-interface-50.png" alt="Security">
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/streaming-page.png" alt="Streaming" width="80%">
 
-**5\. Settings**: This section contains several subsections, including "Branding Settings", "SMTP Provider", "DNSaaS Settings", and "Products". Here you can manage the appearance of the Customer Portal, set up custom email addresses for product notification emails to your customers, change the default NS servers, and configure product visibility.
+**5\. FastEdge**:  This section displays a list of all FastEdge applications created by your customers. Here you can manage FastEdge apps and templates.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/new-ap-interface-60.png" alt="Settings">
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/fastedge-page.png" alt="FastEdge" width="80%">
 
-**6\. Reports**: This section presents monthly reports, allowing you to generate monthly reports to analyze your customers' traffic consumption. Additionally, you can enable "Invoice Reports" by contacting the [Gcore support team](mailto:support@gcore.com) or your personal manager. 
+**6\. Security**: This section contains the "Authorization" subsection. Here you can configure SSO. You can also enable the "Activity Logs" feature by contacting the [support team](mailto:support@gcore.com) or your personal manager. 
 
-<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/new-ap-interface-70.png" alt="Reports">
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/security-page.png" alt="Security" width="80%">
 
-**7\. Help**: This section contains links to the Knowledge Base, API documentation, and Legal documents. 
+**7\. Vendor settings**: This section contains several subsections, including "Branding Settings", "SMTP Provider", "DNSaaS Settings", and "Products". Here you can manage the appearance of the Customer Portal, set up custom email addresses for product notification emails to your customers, change the default NS servers, and configure product visibility.
 
-**8\. Profile**: In this section, you can copy the created API token. 
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/vendor-settings-page.png" alt="Settings" width="80%">
+
+**8\. Billing**: This section presents monthly reports, allowing you to generate monthly reports to analyze your customers' traffic consumption. Additionally, you can enable "Invoice Reports" by contacting the [Gcore support team](mailto:support@gcore.com) or your personal manager. 
+
+<img src="https://assets.gcore.pro/docs/reseller-support/new-admin-panel-interface/billing-page.png" alt="Reports" width="80%">
+
+**9\. Help**: This section contains links to the Knowledge Base, API documentation, and Legal documents. 
+
+**10\. Profile**: In this section, you can copy the created API token. 
 
 ## New features of the new Admin Portal  
 
