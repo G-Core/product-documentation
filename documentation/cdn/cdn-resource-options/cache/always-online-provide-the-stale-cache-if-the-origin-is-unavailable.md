@@ -15,6 +15,6 @@ HTTP response for the stale content will contain the header X-Cache: Stale. CDN 
 
 Please, note that when the site is unavailable, the CDN cache may have not enough content for a correct page display. Situations, when a user will not be able to see some images, style sheets, or other static content, are possible.
 
-To manage this option go to your Resource Advanced Settings, find the Cache section, click **Add Option** and choose "Always Online". You can enable the option and choose error codes for which a CDN serves stale content. 
+To manage this option go to your Resource Advanced Settings, find the **Cache** section and click **Always online**. You can enable the toggle and choose error codes for which a CDN serves stale content. 
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/always-online-provide-the-stale-cache-if-the-origin-is-unavailable/Screenshot-2018-1-3_G-Core_Labs_Resources_Settings.png" alt="Always Online" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/always-online-provide-the-stale-cache-if-the-origin-is-unavailable/cdn-always-online-enabled.png" alt="Always Online toggle enabled" width="80%">
