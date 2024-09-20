@@ -65,7 +65,7 @@ You can sort statistics by several metrics:
 <tr>
     <td>Transcoding</td>
     <td>The time used to process streams and videos and prepare an adaptive bitrate</td>
-    <td>Free basic encoding for up to 1080 full HD<br><br>    Check video transcoding prices on our <a href="https://gcore.com/pricing/streaming-platform" target="_blank">Pricing page</a></td>
+    <td>Free basic encoding for up to 1080 Full HD<br><br>    Check video transcoding prices on our <a href="https://gcore.com/pricing/streaming-platform" target="_blank">Pricing page</a></td>
   </tr>
 <tr>
     <td>VoD uploaded mins</td>
