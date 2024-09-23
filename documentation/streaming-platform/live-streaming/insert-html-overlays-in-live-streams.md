@@ -46,7 +46,6 @@ The main features of overlays via API are:
 - Size options: small overlays or overlays stretched over a full frame
 - Transparent areas in overlays
 - 1 FPS frequency update
-- Automatic size scaling for <a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-we-optimize-live-stream-and-video-performance-by-creating-different-bitrates" target="_blank">adaptive bitrate</a> qualities
 - Place overlays in any area of the screen
 
 ## Comparison of Gcore overlays and OBS studio overlays
