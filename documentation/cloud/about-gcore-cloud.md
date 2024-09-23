@@ -22,16 +22,6 @@ The peculiarity of such a system is in on-demand delivery of resources over the 
 3.  **World presence**. With the technology behind Cloud it is possible to deploy fast the needed resources in different geographical regions. 
 4.  **Elasticity**. Cloud provides the ability to scale the resources at any time, depending on the current load on your business. 
 
-**Gcore Cloud is available in the following regions:** 
-
-*   Luxembourg
-*   Manassas
-*   Singapore
-*   Amsterdam
-*   Tokyo
-*   Santa Clara
-*   Etc
-
 _**In Manassas,**_ _**Amsterdam, and Singapore**_ the cloud platform is located in **_TIER III_** Data Centers (DCs), which are characterized by the ability to perform scheduled operations without closing the DC, as well as by round-the-clock monitoring. 
 
 **_In Luxembourg_**, computing services are implemented at the **_TIER IV_** security level. This type of a Data Center remains functional when any infrastructure node fails.
