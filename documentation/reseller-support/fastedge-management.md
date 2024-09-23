@@ -1,5 +1,5 @@
 ---
-title: fastedge-management
+title: fastedge-management 
 displayName: FastEdge management
 published: true
 order: 45
@@ -15,6 +15,8 @@ toc:
     --2--Configure columns: "configure-columns-in-the-templates-table"
     --2--Share or unshare a template: "share-or-unshare-a-template"
     --2--Delete a template: "delete-a-template"
+pageTitle: Understanding how to manage FastEdge apps in the Admin Panel | Gcore
+pageDescription: Explore our guide to FastEdge applications and templates management.
 ---
 # FastEdge management
 
@@ -218,4 +220,4 @@ To delete a template:
 
 4\. Confirm your action by clicking **Yes, delete**. 
 
-The template has been successfully removed. 
+The template has been successfully removed.
