@@ -37,7 +37,7 @@ To find information on specific services and tariffs, check <a href="https://gco
 <td style="text-align: left">14 days or 300 GB, whichever ends first</td>
 </tr>
 <tr>
-<td style="text-align: left">Edge Cloud (AI, Basic VM, IaaS Protection)</td>
+<td style="text-align: left">Edge Cloud (AI, Basic VM, DDoS Protection)</td>
 <td style="text-align: left">-</td>
 <td style="text-align: left">-</td>
 </tr>
@@ -91,6 +91,6 @@ Contact support (support@gcore.com or chat) or your manager to extend the trial 
 
 <alert-element type="info" title="Info">
  
-The flow differs for some services (e.g., IaaS Protection). Follow the recommendations from the Gcore Customer Portal to activate the service.
+The flow differs for some services (e.g., DDoS Protection). Follow the recommendations from the Gcore Customer Portal to activate the service.
  
 </alert-element>
