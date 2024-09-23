@@ -20,12 +20,6 @@ pageDescription: "Learn how to deploy an AI model on Gcore Inference at the Edge
 
 With Gcore Inference at the Edge, you can use foundational open-source models from our AI model catalog or deploy a custom model by uploading a Docker container image. 
 
-<alert-element type="info" title="Info">
- 
-Gcore Inference at the Edge is available free during beta. To use it, contact <a href="mailto:support@gcore.com" target="_blank">our technical support</a> or your account manager. 
- 
-</alert-element>
-
 ## Step 1. Select a model 
 
 This step will slightly differ based on whether you choose to deploy a custom model or use a model from our catalog. 
