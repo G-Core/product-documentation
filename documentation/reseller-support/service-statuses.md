@@ -1,5 +1,5 @@
 ---
-title: service-statuses 
+title: service-statuses
 displayName: Product statuses
 published: true
 order: 50
