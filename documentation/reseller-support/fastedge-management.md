@@ -1,5 +1,5 @@
 ---
-title: fastedge-management 
+title: fastedge-management
 displayName: FastEdge management
 published: true
 order: 45
