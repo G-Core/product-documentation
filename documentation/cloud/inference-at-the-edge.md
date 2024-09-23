@@ -35,12 +35,6 @@ Deploy AI models with our global intelligence pipeline—a comprehensive ecosyst
 
 To get started, check out our guide on <a href="https://gcore.com/docs/cloud/inference-at-the-edge/deploy-ai-model" target="_blank">deploying a model</a>. 
 
-<alert-element type="info" title="Info">
- 
-Inference at the Edge is currently in beta mode. To join the beta, contact <a href="mailto:support@gcore.com" target="_blank">Gcore technical support</a> or your account manager. 
- 
-</alert-element>
-
 ## How Inference at the Edge works 
 
 Inference at the Edge combines two technologies:  
