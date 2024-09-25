@@ -1,7 +1,7 @@
 ---
 title: create-and-configure-a-registry
 displayName: Create and configure a registry
-order: 20
+order: 40
 published: true
 pageTitle: Add and configure a registry | Gcore
 pageDescription: Learn how to set up a registry with your AI model in the Gcore Customer Portal for Gcore Inference at the EDge

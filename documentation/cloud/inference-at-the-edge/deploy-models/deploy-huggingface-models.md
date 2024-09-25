@@ -1,7 +1,7 @@
 ---
 title: deploy-ai-model
-displayName: Deploy an AI model
-order: 10
+displayName: Deploy Hugging Face models
+order: 20
 published: true
 toc: 
 --1--Step 1. Set up a Hugging Face Space: "step-1-set-up-a-hugging-face-space"

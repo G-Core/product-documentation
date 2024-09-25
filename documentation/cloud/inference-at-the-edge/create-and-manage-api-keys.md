@@ -1,7 +1,7 @@
 ---
 title: create-and-manage-api-keys
 displayName: Create and manage API keys
-order: 20
+order: 30
 published: true
 toc:
 --1—-Create an API key: "create-an-api-key"
