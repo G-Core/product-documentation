@@ -46,9 +46,9 @@ You can filter application data based on the following criteria:
 
 * **Status**. The current state of the application: 
 
- * **Active**: The application is up and running.
+  * **Active**: The application is up and running.
 
- * **Disabled**: The application is stopped.
+  * **Disabled**: The application is stopped.
 
 * **Template ID**. A unique identifier for the template used to create the application. If this column is empty, it indicates that the application was created without a template. 
 
