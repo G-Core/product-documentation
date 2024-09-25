@@ -13,7 +13,7 @@ pageDescription: Learn about Gcore advanced rules and how to use them for filter
 
 <alert-element type="info" title="Info">
 
-This feature is available for the <a href="https://gcore.com/docs/waap/billing#enterprise" target="_blank">Enterprise</a>package. 
+This feature is available for the <a href="https://gcore.com/docs/waap/billing#enterprise" target="_blank">Enterprise</a> package. 
 
 </alert-element>
 
@@ -27,7 +27,7 @@ Check out the following guides for details on how to create advanced rules and t
 
 * <a href="https://api.gcore.com/docs/waap" target="_blank">API docs</a>: Learn how to construct and manage advanced rules. 
 
-* <a href="https://gcore.com/docs/waap/waap-rules/advanced-rules/advanced-rule-objects" target="_blank">Advanced rule objects</a>: Get the list of all available objects you can use in rule expressions along with their respective attributes and types. 
+* <a href="https://gcore.com/docs/waap/waap-rules/advanced-rules/advanced-rule-objects" target="_blank">Advanced rule objects and attributes</a>: Get the list of all available objects you can use in rule expressions along with their respective attributes and types. 
 
 * <a href="https://gcore.com/docs/waap/waap-rules/advanced-rules/source-field-objects" target="_blank">Source field objects</a>: Check the available source field objects you can use in your expressions along with their respective attributes and types. 
 
@@ -62,7 +62,7 @@ The advanced rule object contains the following properties:
 
 <alert-element type="info" title="Info">
  
-Each rule can contain only one action—`allow`, `block`, `captcha`, `handshake`, `monitor`, or `tag`. If you use multiple actions in a single rule, the API will return an error.
+Each rule can contain only one action—`block`, `allow`, `captcha`, `handshake`, `monitor`, or `tag`. If you use multiple actions in a single rule, the API will return an error.
  
 </alert-element>
 
@@ -162,7 +162,7 @@ curl --request POST \
 ```
 ### Penalty rule 
 
-Will block the IPs that were detected with certain TLS fingerprint for the next 5 minutes (chained rule): 
+Block the IPs that were detected with certain TLS fingerprint for the next 5 minutes (chained rule): 
 
 ```
 curl --request POST \ 
