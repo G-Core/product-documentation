@@ -37,26 +37,34 @@ The advanced rule object contains the following properties:
 
 ```
 {
-    "name": "string",
-    "source": "string",
-    "enabled": true,
-    "description": "string",
-    "phase": "access",
-    "action": {
-        "allow": {},
-        "block": {
-            "statusCode": "STATUS_CODE_UNSPECIFIED",
-            "actionDuration": "string"
-        },
-        "captcha": {},
-        "handshake": {},
-        "monitor": {},
-        "tag": {
-            "tags": ["string"]
-        }
+  "name": "string",
+  "description": "",
+  "enabled": true,
+  "action": {
+    "allow": {},
+    "block": {
+      "status_code": 403,
+      "action_duration": "string"
+    },
+    "captcha": {},
+    "handshake": {},
+    "monitor": {},
+    "tag": {
+      "tags": [
+        "string"
+      ]
     }
+  },
+  "source": "string",
+  "phase": "access"
 }
 ```
+
+<alert-element type="info" title="Info">
+ 
+Each rule can contain only one action—`allow`, `block`, `captcha`, `handshake`, `monitor`, or `tag`. If you use multiple actions in a single rule, the API will return an error.
+ 
+</alert-element>
 
 <expandable-element title="Description of the properties">
 
@@ -80,16 +88,15 @@ The advanced rule object contains the following properties:
     <td style="text-align: left"><code>action</code></td>
     <td style="text-align: left">The action to execute when a condition is true.</td>
     <td style="text-align: left"><ul>
-    <li><code>ACTION_UNSPECIFIED</code>: The action is undetermined.</li>     
-    <li><code>BLOCK</code>: WAAP blocked the request. </li>
-    <li><code>ALLOW</code>: WAAP allowed the request.</li>
-    <li><code>CAPTCHA</code>: WAAP presented the user with a CAPTCHA</li>
-    <li><code>HANDSHAKE</code>: WAAP. performed automatic browser validation.</li>
-    <li><code>MONITOR</code>: WAAP monitored and allowed the request.</li>
-    <li><code>TAG</code>: WAAP will generate a tag with no action.</li>
+    <li><code>block</code>: WAAP blocked the request.</li>
+    <li><code>allow</code>: WAAP allowed the request.</li>
+    <li><code>captcha</code>: WAAP presented the user with a CAPTCHA</li>
+    <li><code>handshake</code>: WAAP. performed automatic browser validation.</li>
+    <li><code>monitor</code>: WAAP monitored and allowed the request.</li>
+    <li><code>tag</code>: WAAP will generate a tag with no action.</li>
     </ul>
     <td style="text-align: left">On tag <a href="https://gcore.com/docs/waap/waap-rules/custom-rules#actions-in-custom-rules" target="_blank">action</a>, the tag field should be provided.<br><br>
-    For the block <a href="https://gcore.com/docs/waap/waap-rules/custom-rules#actions-in-custom-rules" target="_blank">action</a>, setting up the <code>statusCode</code> (integer) and <code>actionDuration</code> (time in seconds) is optional. By default, the status is set to <code>"status_code": 403</code>, and duration equals to <code>0s</code>.</td>
+    For the block <a href="https://gcore.com/docs/waap/waap-rules/custom-rules#actions-in-custom-rules" target="_blank">action</a>, setting up the <code>status_code</code> (integer) and <code>action_duration</code> (time in seconds) is optional. By default, the status is set to <code>"status_code": 403</code>, and duration equals to <code>0s</code>.</td>
 </tr>
 <tr>
     <td style="text-align: left"><code>source</code></td>
@@ -121,35 +128,7 @@ The advanced rule object contains the following properties:
     <li><code>header_filter</code>: The advanced rule applies to the response headers phase.</li>
     <li><code>body_filter</code>: The advanced rule applies to the response body phase.</li>
     </ul></td>
-    <td style="text-align: left">Default value: <code>ACCESS</code></td>
-</tr>
-<tr>
-    <td style="text-align: left"><code>statusCode</code></td>
-    <td style="text-align: left">A custom HTTP status code returned by WAAP if a rule blocks a request.</td>
-    <td style="text-align: left">None (default: 403), 405, 403, 429, 418</td>
-    <td style="text-align: left">Status code can be defined only when the <code>action</code> is set to <code>BLOCK</code>.</td>
-</tr>
-<tr>
-    <td style="text-align: left"><code>actionDuration</code></td>
-    <td style="text-align: left">The duration of an action.</td>
-    <td style="text-align: left">A string with a number followed by:
-    <ul>
-    <li>m - minutes</li>
-    <li>s - seconds</li>
-    <li>h - hours</li>
-    <li>d - days</li>
-    </ul>
-    For instance, 5m will generate an action with a life span of 5 minutes.</td>
-    <td style="text-align: left"><code>actionDuration</code> can be defined only when the <code>action</code> is set to <code>BLOCK</code>.<br><br>
-    When setting <code>actionDuration</code>, the tag name penalty will be produced on the client IP for the period duration that has been set.</td>
-</tr>
-<tr>
-    <td style="text-align: left"><code>tag</code></td>
-    <td style="text-align: left">A user-defined tag that will be attached to the request.</td>
-    <td style="text-align: left">String<br>
-    Tags with spaces will be converted to underscore line <code>_</code> and will be presented in lowercase. For instance, Ignore Automation will become ignore_automation.</td>
-    <td style="text-align: left">Tag-based rules are informative rules.<br>
-    Tag value should be enclosed in double quotation marks <code>'</code> and <strong>not</strong> in single quotation marks <code>"</code>.</td>
+    <td style="text-align: left">Default value: <code>access</code></td>
 </tr>
 </tbody>
 </table> 
@@ -171,7 +150,7 @@ curl --request POST \
 --data '{
     "action": {
         "block": {
-            "statusCode": "FORBIDDEN_403"
+            "status_code": 403
         }
     },
     "phase": "access",
@@ -192,7 +171,7 @@ curl --request POST \
 --header 'content-type: application/json' \ 
 --data ' 
 { 
-"action": {"block": {"statusCode": "FORBIDDEN_403", "actionDuration": "5m"}}, 
+"action": {"block": {"status_code": 403,   "action_duration": "5m"}}, 
 "phase": "access", 
 "name": "Penalty TLS fingerprint", 
 "description": "Block and tag IPs that are detected with certain TLS fingerprint for the next 5 minutes", 
