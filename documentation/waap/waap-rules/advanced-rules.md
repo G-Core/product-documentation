@@ -41,8 +41,8 @@ The advanced rule object contains the following properties:
     "source": "string",
     "enabled": true,
     "description": "string",
-    "phase": "EXECUTION_PHASE_UNSPECIFIED",
-    "ruleAction": {
+    "phase": "access",
+    "action": {
         "allow": {},
         "block": {
             "statusCode": "STATUS_CODE_UNSPECIFIED",
@@ -77,19 +77,19 @@ The advanced rule object contains the following properties:
     <td style="text-align: left"></td>
 </tr>
 <tr>
-    <td style="text-align: left"><code>ruleAction</code></td>
+    <td style="text-align: left"><code>action</code></td>
     <td style="text-align: left">The action to execute when a condition is true.</td>
     <td style="text-align: left"><ul>
     <li><code>ACTION_UNSPECIFIED</code>: The action is undetermined.</li>     
-    <li><code>BLOCK</code>: WAAP blocked the request.</li>
+    <li><code>BLOCK</code>: WAAP blocked the request. </li>
     <li><code>ALLOW</code>: WAAP allowed the request.</li>
     <li><code>CAPTCHA</code>: WAAP presented the user with a CAPTCHA</li>
     <li><code>HANDSHAKE</code>: WAAP. performed automatic browser validation.</li>
     <li><code>MONITOR</code>: WAAP monitored and allowed the request.</li>
     <li><code>TAG</code>: WAAP will generate a tag with no action.</li>
     </ul>
-    <td style="text-align: left">On tag <a href="https://gcore.com/docs/waap/waap-rules/custom-rules#actions-in-custom-rules" target="_blank">action</a>, the tag field should be provided.<br>
-    On block <a href="https://gcore.com/docs/waap/waap-rules/custom-rules#actions-in-custom-rules" target="_blank">action</a>, setting up the <code>statusCode</code> and <code>actionDuration</code> is optional. The default value will be 403 and 0s (seconds). </td>
+    <td style="text-align: left">On tag <a href="https://gcore.com/docs/waap/waap-rules/custom-rules#actions-in-custom-rules" target="_blank">action</a>, the tag field should be provided.<br><br>
+    For the block <a href="https://gcore.com/docs/waap/waap-rules/custom-rules#actions-in-custom-rules" target="_blank">action</a>, setting up the <code>statusCode</code> (integer) and <code>actionDuration</code> (time in seconds) is optional. By default, the status is set to <code>"status_code": 403</code>, and duration equals to <code>0s</code>.</td>
 </tr>
 <tr>
     <td style="text-align: left"><code>source</code></td>
@@ -117,10 +117,9 @@ The advanced rule object contains the following properties:
     <td style="text-align: left">The request processing phase.</td>
     <td style="text-align: left">
     <ul>
-    <li><code>EXECUTION_PHASE_UNSPECIFIED</code>: The phase for applying the advanced rule is not specified.</li>
-    <li><code>ACCESS</code>: The advanced rule applies to the request phase (request headers and body available).</li>
-    <li><code>HEADER_FILTER</code>: The advanced rule applies to the response headers phase.</li>
-    <li><code>BODY_FILTER</code>: The advanced rule applies to the response body phase.</li>
+    <li><code>access</code>: The advanced rule applies to the request phase (request headers and body available).</li>
+    <li><code>header_filter</code>: The advanced rule applies to the response headers phase.</li>
+    <li><code>body_filter</code>: The advanced rule applies to the response body phase.</li>
     </ul></td>
     <td style="text-align: left">Default value: <code>ACCESS</code></td>
 </tr>
@@ -128,7 +127,7 @@ The advanced rule object contains the following properties:
     <td style="text-align: left"><code>statusCode</code></td>
     <td style="text-align: left">A custom HTTP status code returned by WAAP if a rule blocks a request.</td>
     <td style="text-align: left">None (default: 403), 405, 403, 429, 418</td>
-    <td style="text-align: left">Status code can be defined only when the <code>ruleAction</code> is set to <code>BLOCK</code>.</td>
+    <td style="text-align: left">Status code can be defined only when the <code>action</code> is set to <code>BLOCK</code>.</td>
 </tr>
 <tr>
     <td style="text-align: left"><code>actionDuration</code></td>
@@ -141,7 +140,7 @@ The advanced rule object contains the following properties:
     <li>d - days</li>
     </ul>
     For instance, 5m will generate an action with a life span of 5 minutes.</td>
-    <td style="text-align: left"><code>actionDuration</code> can be defined only when the <code>ruleAction</code> is set to <code>BLOCK</code>.<br><br>
+    <td style="text-align: left"><code>actionDuration</code> can be defined only when the <code>action</code> is set to <code>BLOCK</code>.<br><br>
     When setting <code>actionDuration</code>, the tag name penalty will be produced on the client IP for the period duration that has been set.</td>
 </tr>
 <tr>
@@ -170,12 +169,12 @@ curl --request POST \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
-    "ruleAction": {
+    "action": {
         "block": {
             "statusCode": "FORBIDDEN_403"
         }
     },
-    "phase": "ACCESS",
+    "phase": "access",
     "name": "Block Scrappers",
     "description": "Block IPs that hit more than 200 requests per 5 seconds for any `events` paths",
     "enabled": false,
@@ -193,8 +192,8 @@ curl --request POST \
 --header 'content-type: application/json' \ 
 --data ' 
 { 
-"ruleAction": {"block": {"statusCode": "FORBIDDEN_403", "actionDuration": "5m"}}, 
-"phase": "ACCESS", 
+"action": {"block": {"statusCode": "FORBIDDEN_403", "actionDuration": "5m"}}, 
+"phase": "access", 
 "name": "Penalty TLS fingerprint", 
 "description": "Block and tag IPs that are detected with certain TLS fingerprint for the next 5 minutes", 
 "enabled": false, 
@@ -209,10 +208,10 @@ curl --request POST \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
-    "ruleAction": {
+    "action": {
         "block": {}
     },
-    "phase": "ACCESS",
+    "phase": "access",
     "name": "Block Penalty",
     "description": "Block requests that are detected with `penalty` tag",
     "enabled": false,
@@ -230,10 +229,10 @@ curl --request POST \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
-    "ruleAction": {
+    "action": {
         "handshake": {}
     },
-    "phase": "ACCESS",
+    "phase": "access",
     "name": "Validate set of countries",
     "description": "Validate with JavaScript challenge IPs that are coming from the following countries",
     "enabled": false,
@@ -249,7 +248,7 @@ curl --request POST \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
-    "ruleAction": {
+    "action": {
         "allow": {}
     },
     "name": "Whitelist known IPs",
@@ -271,7 +270,7 @@ curl --request POST \
     "name": "Tag registered clients",
     "description": "Detect and tag registered clients by cookie",
     "source": "'mb-mobile-android' in request.headers['Cookie']",
-    "ruleAction": {
+    "action": {
         "tag": {
             "tags": ["registered"]
         }
@@ -288,7 +287,7 @@ curl --request POST \
     "name": "Allow registered clients",
     "description": "Allow registered clients",
     "source": "tags.exists('registered')",
-    "ruleAction": {
+    "action": {
         "allow": {}
     }
 }'
@@ -304,7 +303,7 @@ curl --request POST \
 --data '{
     "name": "Detect and Tag Login Pages",
     "source": "['url1/login','url2/signup'] in request.uri",
-    "ruleAction": {
+    "action": {
         "tag": {
             "tags": ["login page"]
         }
