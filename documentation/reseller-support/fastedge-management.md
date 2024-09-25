@@ -5,13 +5,13 @@ published: true
 order: 45
 toc:
     --1--Manage FastEdge applications: "manage-fastedge-applications"
-    --2--Filter table data: "filter-data-in-the-applications-table"
+    --2--Filter data in applications table: "filter-data-in-the-applications-table"
     --2--Adjust columns in the applications table: "configure-columns-in-the-applications-table"
     --2--Stop or activate an application: "stop-or-activate-an-application"
     --2--Upgrade a binary version: "upgrade-a-binary-version"
     --2--Delete an application: "delete-an-application"
     --1--Manage application templates: "manage-application-templates"
-    --2--Filter table data: "filter-data-in-the-templates-table"
+    --2--Filter data in templates table: "filter-data-in-the-templates-table"
     --2--Adjust columns in templates table: "configure-columns-in-the-templates-table"
     --2--Share or unshare a template: "share-or-unshare-a-template"
     --2--Delete a template: "delete-a-template"
