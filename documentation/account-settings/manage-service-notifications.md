@@ -5,85 +5,96 @@ published: true
 order: 70
 toc:
    --1--Manage notifications: "manage-notifications"
-   --1--Limitation notification: "limitation-notifications"
-   --2--How does it work: "how-does-it-work"
-   --2--Configure for CDN: "configure-for-cdn"
-   --2--Configure for Storage: "configure-for-object-storage"
-pageTitle: Guide to Managing Service Notifications | Gcore
-pageDescription: Learn how to set up and manage your service notifications for CDN and Storage services, allowing for better control over traffic consumption and system usage.
+   --1--Limitation notifications: "limitation-notifications"
+   --2--Configure CDN traffic consumption: "configure-cdn-traffic-consumption"
+   --2--Configure limits for Object Storage: "configure-limits-for-object-storage"
+pageTitle: Guide to managing product notifications | Gcore
+pageDescription: Learn how to set up and manage your product notifications for CDN and Storage services, allowing for better control over traffic consumption and system usage.
 ---
 # Manage service notifications and promotional emails
 
-You have the ability to customize notification settings for users invited to your client account. Important notifications are customized per user, whereas general notifications are common to all users.
+You can customize notification settings for users invited to your account. Important notifications are customized per user, while general notifications are common to all users.
+
+In addition to the product notifications, you might also receive: 
+
+* Technical notifications: We automatically subscribe all users to technical notifications. 
+
+* Promotional emails: If get these notifications if you checked the box to receive promotional emails during the registration process. 
 
 ## Manage notifications
 
-Here’s how to manage service notifications and promotional emails:
+To view and configure product notifications and promotional emails:
 
-<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/image3.png" alt="Manage notifications">
+1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, navigate to the account settings in the top-right corner of the screen, and click **Profile**.
 
-1\. Click on the profile icon in the lower-left corner.
+<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/dashboard-account-menu.png" alt="Profile section in the Customer Portal" width="80%">
 
-2\. Select **Profile**.
+2\. Open the **Notifications** page.
 
-3\. Go to the Notifications section.
+<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/notifications-section.png" alt="Notifications page in account settings" width="80%">
 
-4\. Use toggle switches to configure notifications and/or promotional emails.
-
-<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/image1.png" alt="Notifications">
+3\. Enable or disable relevant toggles to configure notifications and promotional emails. 
 
 All notifications are divided into groups: 
 
-1. **Important notifications** about service availability and promotions. Each user with access to the client account has individual settings for important notifications.
-2. **General notifications** about changes to your services. General notification settings are shared for all account users.
+* **Important notifications** about product availability and promotions. Each user in the account has individual settings for important notifications.
+
+* **General notifications** about changes to your products. General notification settings are shared for all account users.
 
 <img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/image4.png" alt="Notifications groups">
 
 You can choose the settings for either a single notification or an entire group.
 
-**Note**: We advise that you leave *Service emails* turned on, in order to stay up-to-date about any changes that could affect your services’ performance.
+<alert-element type="tip" title="Tip">
+
+We recommend keeping the **Service emails** toggle enabled to stay updated on any changes that could affect the performance of your products.
+ 
+</alert-element>
 
 ## Limitation notifications
 
-### How does it work
-
 Limitation notifications are available for CDN and Object Storage (bucket) services.  
 
-Traffic or another counting starts on the first day of each month.
-
-The traffic volume is checked once an hour at 00 minutes (±3 minutes).
+Traffic or another counting starts on the first day of each month. The traffic volume is checked once an hour at 00 minutes (±3 minutes).
 
 If you set a traffic consumption level that has already been exceeded, then after the next check all the account users will receive a notification. For example, you have already used 2TB of traffic, at 12:21 you turned on the traffic control option and set the traffic consumption level equal to 1TB, at 13:00 all the account users will get the notification.
 
-### Сonfigure for CDN
+### Сonfigure CDN traffic consumption
 
-Each user of the personal account can configure this notification.
+You can configure this notification in the user account settings: 
 
-To do it, specify the traffic limit in the Traffic consumption level field. Click **Save** to apply the settings.
+1\. Specify the traffic limit in the **Traffic consumption level** field.
 
-<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/set-limit-20.png" alt="Manage service notifications" width="50%">
+<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/cdn-notifications.png" alt="CDN traffic consumption level set to 200" width="80%">
 
-**Note**: Traffic consumption level is _not configured_ individually, it is the same for all users of the account who use this notification.
+2\. Click **Save** to apply the settings. 
 
-For example, there are three users in the account: User A, User B, and User C. Suppose, User A is the first to turn on this notification and sets the limit to 100 GB. User B and User C will see that the traffic consumption level has already been set by someone and is equal to 100 GB. User B agrees with the current traffic consumption level and doesn't change anything. User B believes that the traffic consumption level equal to 100 GB should be changed and set it in his personal account to 70 GB. As a result of User B's changes, the other two users will also receive notifications when the traffic consumption level reaches 70 GB.
+<alert-element type="info" title="Info">
 
-### Configure for Object Storage
+Traffic consumption level is not configured individually, it is the same for all users of the account who use this notification. 
+ 
+</alert-element>
 
-You can receive notifications about:
+For example, there are three users in the account: User A, User B, and User C. 
 
-- objects,
-- requests,
-- used space
-- traffic consumption.
+Suppose that User A is the first to turn on this notification and sets the limit to 100 GB. User B and User C will see that the traffic consumption level has already been set by someone and is equal to 100 GB.  
+
+User B agrees with the current traffic consumption level and doesn't change anything. User C believes that the traffic consumption should be changed to 70 GB. After User C makes the changes, the other two users will also receive notifications when the traffic consumption level reaches 70 GB. 
+
+### Configure limits for Object Storage
+
+You can receive notifications about objects, requests, used space, and traffic consumption.  
+
+To manage the notification settings: 
+
+1\. Navigate to the **Object Storage notifications** section. 
+
+2\. Click **Add limit** button next to the setting you want to modify. 
+
+3\. Enter the required limit. 
+
+4\. Click **Save** to apply the changes. 
 
 To do it go to the **Storage notifications** section, select Storage and Bucket (optional) and specify the limit. Then click **Save**.
 
-<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/storage-notifications-30.png" alt="Configure for Storage" width="70%">
-
-<expandable-element title="Why am I subscribed to certain notifications?">
-
-Technical notifications: We automatically subscribe all users to technical notifications.
-
-Promotional emails: You checked the box to receive promotional emails during the registration process.
- 
-</expandable-element>
+<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/storage-notifications.png" alt="Configure notifications for Storage" width="70%">
