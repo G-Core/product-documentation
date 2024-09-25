@@ -6,7 +6,7 @@ order: 45
 toc:
     --1--Manage FastEdge applications: "manage-fastedge-applications"
     --2--Filter table data: "filter-data-in-the-applications-table"
-    --2--Adjust columns in applications table: "configure-columns-in-the-applications-table"
+    --2--Adjust columns in the applications table: "configure-columns-in-the-applications-table"
     --2--Stop or activate an application: "stop-or-activate-an-application"
     --2--Upgrade a binary version: "upgrade-a-binary-version"
     --2--Delete an application: "delete-an-application"
