@@ -5,14 +5,14 @@ published: true
 order: 45
 toc:
     --1--Manage FastEdge applications: "manage-fastedge-applications"
-    --2--Filter data in applications table: "filter-data-in-the-applications-table"
+    --2--Filter data in the applications table: "filter-data-in-the-applications-table"
     --2--Adjust columns in the applications table: "configure-columns-in-the-applications-table"
     --2--Stop or activate an application: "stop-or-activate-an-application"
     --2--Upgrade a binary version: "upgrade-a-binary-version"
     --2--Delete an application: "delete-an-application"
     --1--Manage application templates: "manage-application-templates"
     --2--Filter data in templates table: "filter-data-in-the-templates-table"
-    --2--Adjust columns in templates table: "configure-columns-in-the-templates-table"
+    --2--Adjust columns in the templates table: "configure-columns-in-the-templates-table"
     --2--Share or unshare a template: "share-or-unshare-a-template"
     --2--Delete a template: "delete-a-template"
 pageTitle: Understanding how to manage FastEdge apps in the Admin Panel | Gcore
@@ -46,9 +46,9 @@ You can filter application data based on the following criteria:
 
 * **Status**. The current state of the application: 
 
- * **Active**: the application is up and running 
+ * **Active**: The application is up and running.
 
- * **Disabled**: the application is stopped 
+ * **Disabled**: The application is stopped.
 
 * **Template ID**. A unique identifier for the template used to create the application. If this column is empty, it indicates that the application was created without a template. 
 
@@ -102,7 +102,7 @@ The applications table displays the following information about FastEdge apps:
 
 <img src="https://assets.gcore.pro/docs/reseller-support/fastedge-management/stop-app.png" alt="Application settings menu with stop button highlighted" width="80%">
 
-The application status will be changed respectively and the changes will be also reflected in the Customer Portal, where your customers can also stop or start the application. 
+The application status will be changed respectively, and the changes will also be reflected in the Customer Portal, where your customers can also stop or start the application. 
 
 ### Upgrade a binary version 
 
@@ -184,7 +184,7 @@ The templates table displays the following information:
 
 * **Group ID**: A unique identifier for the group that includes all reseller’s customers. 
 
-* **Description**: If your customer provided a desciption when creating the template in the Customer Portal, the description will appear in this column. 
+* **Description**: If your customer provided a description when creating the template in the Customer Portal, the description will appear in this column. 
 
 * **Instructions**: Guidelines for using the template (if those were provided in the Customer Portal). 
 
