@@ -4,9 +4,9 @@ displayName: Deploy an AI model
 order: 10
 published: true
 toc: 
---1--Step 1. Select a model: "step-1-select-a-model"
---1--Step 2. Select a flavor: "step-2-select-a-flavor"
---1--Step 3. Set up routing placement: "step-3-set-up-routing-placement"
+--1--Step 1. Set up a Hugging Face Space: "step-1-set-up-a-hugging-face-space"
+--1--Step 2. Deploy a Hugging Face model: "step-2-deploy-the-hugging-face-model-on-edge-inference"
+--1--Step 3. Interact with the model: "step-3-interact-with-the-model"
 pageTitle: Deploy Hugging Face AI models on the Gcore platform | Gcore
 pageDescription: "Learn how to set up Hugging Face Spaces and run AI models on the Gcore edge inference nodes"
 ---
@@ -26,7 +26,7 @@ Whether you're working on natural language processing, computer vision, or other
 
 3\. Copy the Docker image link and startup command according to the instructions from the <a href="https://huggingface.co/docs/hub/en/spaces-run-with-docker" target="_blank">official Hugging Face guide</a>. 
 
-## Step 2. Deploy the Hugging Space model on edge inference
+## Step 2. Deploy the Hugging Face model on edge inference
 
 1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, click **Inference at the Edge**.
 
@@ -60,6 +60,6 @@ Whether you're working on natural language processing, computer vision, or other
 
 8\. Click **Deploy**. 
 
-## Step 3: Interact with your model
+## Step 3: Interact with the model
 
 Once the model is up and running, you’ll get a link to the endpoint. You can interact with the model via this endpoint to test and use your deployed inference model at the edge. 
