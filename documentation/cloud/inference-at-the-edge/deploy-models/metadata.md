@@ -2,5 +2,5 @@
 title: metadata
 displayName: Deploy AI models
 published: true
-order: 
+order: 10
 ---

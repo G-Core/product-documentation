@@ -1,6 +1,6 @@
 ---
 title: deploy-ai-model
-displayName: Deploy an AI model
+displayName: Deploy AI models in the Customer Portal
 order: 10
 published: true
 toc: 
@@ -16,7 +16,7 @@ toc:
 pageTitle: Deploy an AI model | Gcore
 pageDescription: "Learn how to deploy an AI model on Gcore Inference at the Edge: Upload your custom model or deploy from our model catalog."
 ---
-# Deploy an AI model
+# Deploy AI models in the Customer Portal
 
 With Gcore Inference at the Edge, you can use foundational open-source models from our AI model catalog or deploy a custom model by uploading a Docker container image. 
 

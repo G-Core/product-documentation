@@ -1,7 +1,7 @@
 ---
 title: manage-deployments
 displayName: Manage deployments in the Customer Portal 
-order: 30
+order: 20
 published: true
 toc:
 --1--Manage deployments: "manage-deployments"
