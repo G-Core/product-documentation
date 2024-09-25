@@ -294,4 +294,4 @@ curl --request POST \
 
 After you create advanced rules, they will appear on the **WAAP rules** page in the Gcore Customer Portal. You can enable or disable the rules by clicking the relevant toggles.
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/advanced-rules/advanced-rules-section-empty.png" alt="Advanced rules section with empty table in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/advanced-rules/advanced-rules-sample.png" alt="Advanced rules section with a sample penaly fingerprint rule" width="80%">
