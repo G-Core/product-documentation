@@ -94,7 +94,7 @@ To configure a listener:
 
 <alert-element type="info" title="Info">
  
-A password must contain at least one lowercase character, one uppercase character, at least one number, and a special character.
+A password must contain at least one lowercase character, one uppercase character, at least one number, and a special character. The maximum password length is 128 symbols.
  
 </alert-element>
 
