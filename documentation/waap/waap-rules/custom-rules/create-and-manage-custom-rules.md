@@ -76,7 +76,7 @@ If you create multiple conditions, the rule will only trigger when all condition
 
 7\. Next to **THEN**, select an action type: Monitor, Allow, Block, Captcha, JavaScript Validation, Tag. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/add-custom-rule.png" alt="Add custom rule page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/add-custom-waap-rule.png" alt="Add custom rule page in the Customer Portal">
 
 8\. Click **Save**.  
 
@@ -501,7 +501,7 @@ You can edit the rule name and description, modify its conditions and status, an
 
 5\. Click **Edit**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/edit-rule.png" alt="Rule settings with the edit button highlighted">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/edit-waap-rule.png" alt="Rule settings with the edit button highlighted">
 
 6\. Adjust your rule as needed and then click **Save** to apply the changes. 
 
@@ -519,7 +519,7 @@ You can edit the rule name and description, modify its conditions and status, an
 
 5\. Click **Delete**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/delete-rule.png" alt="Rule settings with the delete button highlighted">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/delete-waap-rule.png" alt="Rule settings with the delete button highlighted">
 
 6\. Click **Confirm Delete** to verify your action.
 
