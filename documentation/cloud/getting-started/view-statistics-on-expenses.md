@@ -64,7 +64,7 @@ You can also check more granular statistics on the following tabs:
 * Gigabytes of used resources  
 * The total number of outbound GBs and hours of using different flavors 
 
-Under the graphical presentation, there is a table with more detailed information about resources consumed within a selected period. The table contains the following data: 
+Under the graph, there is a table with more detailed information about resources consumed within a selected period. The table features the following resource properties: 
 
 * Resource name 
 * Resource type 
@@ -75,7 +75,33 @@ Under the graphical presentation, there is a table with more detailed informatio
 * Last seen date 
 * Cost 
 
-You can also use search to find the resource you need and check its usage.
+<img src="https://assets.gcore.pro/docs/cloud/getting-started/view-statistics-on-expenses/cost-report-search-table.png" alt="A table with resources overview" width="80%">
+
+You can refine resource-related information by filtering it according to resource type and attributes, and narrow down the table results via search.
+
+<alert-element type="info" title="Info">
+ 
+Currently, we only support full-text search.  
+
+Consider that your search results will not include resources that contain spaces in their names. We’re actively working to resolve this issue. 
+ 
+</alert-element>
+
+To filter table data:
+
+1\. In the **Type** field, choose the resource for which you want to check cost information. For example, **External IP**.
+
+<img src="https://assets.gcore.pro/docs/cloud/getting-started/view-statistics-on-expenses/table-filter-type-example.png" alt="Resource type dropdown with External IP selected" width="80%">
+
+2\. In the following dropdown, select the relevant resource attribute. For example, to view cost report data for a particular IP address, choose **IP Address**.
+
+<img src="https://assets.gcore.pro/docs/cloud/getting-started/view-statistics-on-expenses/table-filter-attribute-example.png" alt="Resource attribute dropdown with IP Address selected" width="80%">
+
+3\. In the search field, enter the IP address for which you want to check the cost information. 
+
+The table data and graph above the table will be updated accordingly.
+
+<img src="https://assets.gcore.pro/docs/cloud/getting-started/view-statistics-on-expenses/table-filter-attribute-example-graph.png" alt="Example of table and graph updated for External IP address" width="80%">
 
 ### Download Cost Report data 
 
