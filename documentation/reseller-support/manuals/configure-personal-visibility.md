@@ -9,7 +9,7 @@ toc:
 
 You can configure personal visibility in the customer's settings: Accounts > Account ID > Products. 
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/personal-visibility-10.png" alt="Configure personal visibility of products" width="80%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-personal-visibility/personal-product-visibility.png" alt="Configure personal visibility of products" width="80%">
 
 To change the product visibility from OFF to ON, confirm and save settings. 
 
@@ -26,7 +26,7 @@ For example, "CDN", "Video Streaming", "Edge Cloud", "Storage", "Web Application
 
 "CDN", "Video Streaming", and "Edge Cloud" are enabled by default for all customers.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-personal-visibility/personal-visibility-20.png" alt="Enabled by default " width="80%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-personal-visibility/vendor-settings-default-products.png" alt="Enabled by default " width="80%">
 
 And the "Storage" product is enabled only for one customer, i.e. all three products ("CDN", "Video Streaming", "Edge Cloud", and "Storage") are visible in the personal visibility settings.
 

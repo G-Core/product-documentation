@@ -17,7 +17,7 @@ toc:
 
 You can configure the product statuses on the "Products" page in the settings of the desired customer.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/service-statuses/client-services-10.png" alt="Product statuses">
+<img src="https://assets.gcore.pro/docs/reseller-support/service-statuses/product-statuses.png" alt="Product statuses" width="80%">
 
 ## Activate product 
 

@@ -9,7 +9,7 @@ toc:
 
 You can configure global visibility in the "Settings" section, "Products" tab of the Admin Portal.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-global-visibility/global-visibility-10.png" alt="Services tab" width="80%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-global-visibility/vendor-settings-products.png" alt="Products page" width="80%">
 
 **As the result of switching the global product visibility from OFF to ON** a product is activated for all customers, except customers with individual settings for this product.  
 

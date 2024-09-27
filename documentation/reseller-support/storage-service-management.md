@@ -18,7 +18,7 @@ To open the product management page:
 
 2\. Click on the Account ID of the desired customer, or click on the "Edit" button in the "Actions" сolumn.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/storage-service-management/storage-management-10.png" alt="Storage product management">
+<img src="https://assets.gcore.pro/docs/reseller-support/storage-service-management/edit-account.png" alt="Edit account option in actions menu" width="80%">
 
 3\. Click on the "Products" tab.
 
