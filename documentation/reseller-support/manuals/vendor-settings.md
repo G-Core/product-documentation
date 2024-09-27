@@ -26,7 +26,7 @@ toc:
    --1--Email alerts: "email-alerts"
    --1--SMTP Provider Settings: "smtp-provider-settings" 
    --1--DNSaaS settings: "dnsaas-settings"
-   --1--Services: "services"
+   --1--Products: "products"
 ---
 # Vendor settings
 
@@ -34,7 +34,7 @@ Here you can add your trademark, corporate identity, symbols and contact info wh
 
 To set up branding, go to the "Branding settings" tab in the "Vendor settings" section.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/vendor-settings-overview.png" alt="Branding settings" width="80%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/vendor-settings.png" alt="Branding settings" width="80%">
 
 ## Base control panel domain
 
@@ -219,12 +219,12 @@ To make sure that everything is configured properly, send yourself a test email 
 
 <img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/dnsaas-settings-190.png" alt="DNSaaS settings" width="80%">
 
-If the DNS service is available for your customers, you can set the values of your primary name server, secondary name server, and email address that will be used to generate SOA records.
+If the DNS product is available for your customers, you can set the values of your primary name server, secondary name server, and email address that will be used to generate SOA records.
 This information will be displayed in the customer's Customer Portal when they add a domain name for the DNS zone.
 
 By default, we show Gcore primary and secondary name servers and Gcore email address.
 
-## Services
+## Products
 
 In your Admin Portal it is possible to set which products available to you are also visible to your customers. 
 
@@ -236,4 +236,4 @@ In the settings of <a href="https://gcore.com/docs/reseller-support/manuals/conf
 
 In the settings of <a href="https://gcore.com/docs/reseller-support/manuals/configure-personal-visibility" target="_blank">personal visibility</a> you can enable or disable the visibility of products for a particular customer. The visibility statuses of personally configured products will not be available for changes from the global visibility settings. 
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/vendor-settings-50.png" alt="Concrete account products" width="70%">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/vendor-settings-product-visibility.png" alt="List of account products" width="80%">

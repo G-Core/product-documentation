@@ -17,7 +17,7 @@ To implement the technology, our systems use the SAML 2.0 XML protocol which is 
 
 ## Configuring SSO in the Admin Portal
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-sso-via-saml/reseller-sso-10.png" alt="SSO in the Admin Portall">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-sso-via-saml/security-authorization-page.png" alt="SSO in the Admin Portal" width="80%">
 
 To allow your users to log in using SSO, in the Admin Portal:
 

@@ -36,7 +36,7 @@ You can reconfigure customized product visibility in the account settings after 
 
 Enabling a product in the "Products" section **creates a tab of a given product** in the account settings and the customer's Customer Portal, **but does not activate the product**. To activate a product, go to a account settings, check "Activate product" and set the product status. To learn how to set up a product, refer to our guide on <a href="https://gcore.com/docs/reseller-support/cdn-service-management" target="_blank">CDN configuration</a>.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/cdn-settings-30.png" alt=" CDN configuration">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/product-statuses.png" alt="Product statuses" width="80%">
 
 ## Edit an account
 
@@ -53,7 +53,7 @@ For set-up guides, refer to the following product docs:
 
 To edit the personal data and manage user rights, click on the ID of the desired customer, or click on the "Edit" button in the "Actions" сolumn. If you click on the "Log in" button you'll log in the customer's Customer Portal panel under customer's admin user. 
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/edit-account-40.png" alt="Edit an account">
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/manage-clients/edit-account.png" alt="Edit an account" width="80%">
 
 ### Edit account tab
 
