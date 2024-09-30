@@ -82,8 +82,6 @@ You can refine resource-related information by filtering it according to resourc
 <alert-element type="info" title="Info">
  
 Currently, we only support full-text search.  
-
-Consider that your search results will not include resources that contain spaces in their names. We’re actively working to resolve this issue. 
  
 </alert-element>
 
