@@ -41,8 +41,6 @@ All notifications are divided into groups:
 
 * **General notifications** about changes to your products. General notification settings are shared for all account users.
 
-<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/image4.png" alt="Notifications groups">
-
 You can choose the settings for either a single notification or an entire group.
 
 <alert-element type="tip" title="Tip">
