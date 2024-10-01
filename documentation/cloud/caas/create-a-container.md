@@ -110,9 +110,14 @@ If you specify 0, the container will take approximately one minute to scale down
 
 ## Step 6 (optional). Add environment variables 
 
-(Optional) If you want to add metadata to your container, create variables in a form of key-value pairs. These variables will only be used in the environment of the created container.
+(Optional) If you want to add metadata to your container, create variables in a form of key-value pairs. These variables will only be used in the environment of the created container. 
 
 <img src="https://assets.gcore.pro/docs/cloud/caas/add-a-container/variables.png" alt="Enviroment variables settings" width="80%">
+
+For example, if your container supports it, you can configure where an application should write its log files within the container by setting an environment variable for the log file path: 
+
+* Key: `LOG_FILE_PATH`
+* Value: `/var/log/myapp.log`
 
 ## Step 7 (optional). Configure authentication via API 
 
