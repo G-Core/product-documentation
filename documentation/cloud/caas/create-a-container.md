@@ -76,9 +76,11 @@ In the **Limits of autoscaling section**, enter the range for the number of node
 
 <img src="https://assets.gcore.pro/docs/cloud/caas/add-a-container/autoscaling-limits.png" alt="Container autoscaling limits" width="80%">
 
-To ensure more efficient use of computational resources and consistent model performance, define scaling thresholds for CPU, RAM, GPU, GPU RAM, and HTTP requests resource utilization. 
+In the **Cooldown period** field, set the interval (in seconds) between the trigger executions. This helps to prevent frequent and unnecessary scaling changes. You can enter a value between 1 and 3600 seconds. 
 
-Click **Add trigger** to view and modify current thresholds: 
+To ensure more efficient use of computational resources and consistent model performance, define scaling thresholds for CPU, RAM, and HTTP requests resource utilization. You can combine any triggers or use a single one.
+
+In the **Autoscaling triggers**, click **Add trigger** to view and modify current thresholds: 
 
 * The minimum setting is 1% of the resource capacity. Only **HTTP requests** trigger can scale pods to and from 0. 
 
@@ -88,11 +90,13 @@ Click **Add trigger** to view and modify current thresholds:
 
 By default, the autoscaling parameters are set to 80% but you can enter any percentage within the specified range.  
 
-You can combine any triggers or use a single one. 
+Note that the waiting times specified for the **Cooldown period** and **HTTP requests** trigger are combined, and they determine the total time the system waits before initiating another scaling action. 
 
 <alert-element type="warning" title="Warning">
  
-When setting up HTTP scaling, use small values with caution as it might affect the scale window—the time (in seconds) it takes to aggregate HTTP request rates for making scaling decisions. Low scaling value might cause unexpected scale triggers. 
+When setting up the cooldown period or HTTP scaling, use small values with caution because they may affect the scale window.  
+
+For the cooldown period, small values can lead to random unexpected scale triggers. For HTTP scaling, small values might affect the time it takes to aggregate HTTP request rates for making scaling decisions. 
  
 </alert-element>
 
