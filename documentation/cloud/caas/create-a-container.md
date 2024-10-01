@@ -119,6 +119,8 @@ For example, if your container supports it, you can configure where an applicati
 * Key: `LOG_FILE_PATH`
 * Value: `/var/log/myapp.log`
 
+This variable directs the application to write logs to the specified path inside the container. 
+
 ## Step 7 (optional). Configure authentication via API 
 
 To protect your container endpoints from unauthorized access, enable the API Key authentication feature. Either select an existing API key or create a new one.
