@@ -11,6 +11,8 @@ A Load Balancer is a tool used to sort incoming requests across Virtual Machines
 
 Gcore Load Balancers come with various configuration options to fit different network requirements. We’ve also conducted multiple performance tests on available flavors to help you make an informed decision and select the most effective solution for your infrastructure. 
 
+Our Load Balancers also support long (keepalive) connections through Server-Sent Events (SSE), Long polling, and WebSockets. To keep the connections consistently stable, you need to adjust the data timeout to the appropriate values based on your application's requirements. 
+
 ## Performance analysis
 
 We’ve tested our Load Balancers to determine the performance of different flavors.  
