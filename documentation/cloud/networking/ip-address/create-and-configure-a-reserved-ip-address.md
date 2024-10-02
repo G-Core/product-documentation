@@ -23,7 +23,7 @@ Reserved IP is an IP that you reserved for yourself and can be assigned to an <a
 
 Since you know the IP of the future equipment, you can pre-configure your services for it — for example, create a DNS record for this IP or configure the server to connect to it.
 
-Also, a reserved IP can be used as a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address" target="_blank">virtual IP address</a> .
+A reserved IP can also be used as a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address" target="_blank">virtual IP address</a>.
 
 ## How it works
 
@@ -31,27 +31,40 @@ After you created a reserved IP, this address becomes yours inside our system. N
 
 ## How it is charged
 
-The IP price per month is displayed in the order window. You pay only for the time from creating an IP to deleting it: for example, if you had reserved an IP and then deleted it after an hour, you will be charged only for an hour of use. The price doesn’t depend on whether the address is assigned to the Virtual Machine or not.
+The IP price per month is displayed in the order window. You pay only for the time from creating an IP to deleting it. 
+
+For example, if you had reserved an IP and then deleted it after an hour, you will be charged only for an hour of use. The price doesn’t depend on whether the address is assigned to the Virtual Machine or not.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-17.png" alt="How it is charged" width="380" height="168">
 
 ## Reserve an IP address
 
-Open the tab "Reserved IPs" in the "Networking" section.
+1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, navigate to **Cloud** > **Networking**.
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/mceclip0.png" alt="mceclip0.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/networks-page.png" alt="Networks page in the Customer Portal" width="80%">
 
-Click the "Reserve new IP" button
+2\. Open the **Reserved IPs** page.
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/mceclip1.png" alt="mceclip1.png">
+3\. Click **Reserve new IP**.
 
-Select the IP type — public (for external network) or private (for internal network). A public one can be created immediately. For private, select the network and subnet in which the address will be created. Please note: reserved private IP can only be used in the specified subnet. If you wish, you can order a specific address by entering it in the "IP address" section (it must belong to the subnet). Then click "Create".
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/reserved-ips-page.png" alt="Reserved IPs page in the Customer Portal" width="80%">
 
-<media-gallery>
-<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-20.png" alt="Select the IP type " width="367" height="164">
+4\. Select the IP type:
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-21.png" alt="Select the IP type " width="359" height="334">
-</media-gallery>
+ * Public (for external network). A public IP address one can be created immediately.
+ * Private (for internal network). If you selected this option, choose the network and subnetwork in which the address will be created.
+
+<alert-element type="info" title="Info">
+ 
+A reserved private IP can only be used in the specified subnetwork. To order a specific address, enable the **Set IP address** toggle and enter the IP that belongs to that subnetwork.
+ 
+</alert-element>
+
+5\. (Optional) If you want to use IPv6 addresses, turn on the <b>Enable IPv6 dual-stack</b> toggle.
+
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/reserve-ip-dialog.png" alt="Reserved IPs page in the Customer Portal" width="80%">
+
+6\. Click **Create**. 
 
 ## Assign a reserved IP to a VM and detach it from the machine
 
