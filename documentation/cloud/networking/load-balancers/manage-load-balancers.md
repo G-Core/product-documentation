@@ -2,7 +2,7 @@
 title: manage-load-balancers
 displayName: Manage Load Balancers
 published: true
-order: 15
+order: 40
 toc:
    --1--Load Balancer statuses: "statuses-of-a-load-balancer-and-its-components"
    --1--Load Balancer settings: "load-balancer-settings"
