@@ -60,7 +60,7 @@ Choose one of the available flavors.
 *   **Shared**. VMs that share the core of a physical machine with other VMs. They are designed for workloads that don't require high performance.  
     Availability: Luxembourg
 
-<alert-element type="info" title="Info">type="info" title="Info">
+<alert-element type="info" title="Info">
 
  The bandwidth limit for the **Shared** flavor is up 100 Mbps. For other configurations it's up 1 Gbps.
 
@@ -117,7 +117,7 @@ Availability: Amsterdam-2, Frankfurt, Hong Kong, Luxembourg-2, Manassas, Tokyo
 
 6\. Add one or multiple interfaces in the **Network** settings.
 
-If you select a **public** interface, you can turn on the **Use reserved IP** toggle and assign a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address" target="_blank">reserved IP address</a> to your VM.
+If you select a **public** interface, you can turn on the **Use reserved IP** toggle and assign a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address" target="_blank">reserved IP address</a> to your VM. Enable the **IPv6 dual-stack** toggle to use IPv6 addresses. 
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/use-reserved-ip.png" alt="Network settings with highlighted Reserved IP toggle" width=60%>
 
@@ -141,11 +141,13 @@ If you choose to add a new network, a new window will open where you'll configur
 
 1\. Enter the network name.
 
-2\. (optional) Turn on the <b>Bare Metal network</b> toggle to connect Bare Metal servers to the network.
+2\. (optional) Turn on the <b>Use reserved IP</b> toggle if you want to assign a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address" target="_blank">reserved IP address</a> to the Virtual Machine.
 
-3\. (optional) Turn on the <b>Add tags</b> toggle to add metadata to the network.
+3\. (optional) Turn on the <b>Use floating IP</b> toggle if you want to assign a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address" target="_blank">floating IP address</a> and receive incoming connections to the VM.
 
-4\. Click <b>Create network</b>.
+4\. (optional) Turn on the <b>Enable IPv6 dual-stack</b> toggle to use IPv6 addresses. 
+
+5\. Click <b>Create network</b>.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/create-network.png" alt="Add a new network" width=60%>
 
