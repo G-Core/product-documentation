@@ -2,7 +2,7 @@
 title: logging-for-load-balancers
 displayName: Logging
 published: true
-order: 20
+order: 50
 toc:
    --1--1. Open settings: "step-1-open-load-balancers-settings"
    --1--2. Enable Logging: "step-2-enable-logging"

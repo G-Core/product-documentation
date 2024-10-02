@@ -2,7 +2,7 @@
 title: use-annotations-for-load-balancers
 displayName: Annotations
 published: true
-order: 40
+order: 60
 toc:
    --1--Add DDoS profile: "ddos-profile"
    --1--Name flavor: "flavor"

@@ -2,7 +2,7 @@
 title: add-certificates-to-load-balancer
 displayName: Add TLS certificates to a Load Balancer
 published: true
-order: 13
+order: 20
 toc:
 --1—-How it works: "how-it-works"
 --1—-Add multiple certificates: "add-multiple-certificates"
