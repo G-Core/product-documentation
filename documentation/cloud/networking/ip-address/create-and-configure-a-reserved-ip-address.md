@@ -18,7 +18,7 @@ pageDescription: Create and configure a reserved IP address to assign to Virtual
 ---
 # Create and configure a reserved IP address
 
-Reserved IP is an IP that you reserved for yourself and can be assigned to an <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance" target="_blank">Virtual Machine</a> or <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer" target="_blank">a Load Balancer</a> at any time.
+Reserved IP is an IP that you reserved for yourself and can be assigned to an <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance" target="_blank">Virtual Machine</a> or a <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer" target="_blank">Load Balancer</a> at any time.
 
 ## What reserved IP is used for
 
@@ -36,7 +36,7 @@ The IP price per month is displayed in the order window. You pay only for the ti
 
 For example, if you had reserved an IP and then deleted it after an hour, you will be charged only for an hour of use. The price doesn’t depend on whether the address is assigned to the Virtual Machine or not.
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/create-reserved-ip-dialog.png" alt="How it is charged" width="380" height="168">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/create-reserved-ip-dialog.png" alt="How it is charged" width="80%">
 
 ## Reserve an IP address
 
