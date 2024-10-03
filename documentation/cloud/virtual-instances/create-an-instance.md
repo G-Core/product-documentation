@@ -4,12 +4,26 @@ displayName: Create
 order: 10
 published: true
 toc:
+   --1--Step 1. Select a region: "step-1-select-a-region"
+   --1--Step 2. Configure the image: "step-2-configure-the-image"
+   --1--Step 3. Choose the VM type: "step-3-choose-the-vm-type"
+   --1--Step 4. Set up volumes: "step-4-set-up-volumes"
+   --1--Step 5. Add network interfaces: "step-5-add-network-interfaces"
+   --1--Step 6. Configure firewall settings: "step-6-configure-firewall-settings"
+   --1--Step 7. Set up authentication: "step-7-set-up-authentication"
+   --1--Step 8 (Optional). Configure additional options: "step-8-optional-configure-additional-options"
+   --1--Step 9. Specify the number of VMs: "step-9-specify-the-number-of-vms"
+   --1--Step 10. Create a VM: "step-10-create-a-vm" 
 pageTitle: Create a VM | Gcore
 pageDescription: Learn how to create a Linux or Windows Virtual Machine in Gcore Edge Cloud. Start using your Virtual Machine in minutes with ease.
 ---
 # Create a Virtual Machine
 
-1\. Open **Instances** tab and click **Create Instance**.
+Create Linux or Windows Virtual Machines in Gcore Cloud.
+
+## Step 1. Select a region
+
+1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, open **Instances** tab and click **Create Instance**.
 
 ![The Create VM button](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/1-create-instancebutton.png)
 
@@ -18,8 +32,6 @@ pageDescription: Learn how to create a Linux or Windows Virtual Machine in Gcore
 ![Region selection](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/2-region-selection.png)
 
 Notice that regions are labeled either Core or Edge. This represents the region's equipment specifications.
-
- 
 
 |                                          | Core                        | Edge*                               |
 |------------------------------------------|-----------------------------|-------------------------------------|
@@ -32,35 +44,36 @@ Notice that regions are labeled either Core or Edge. This represents the region'
 
 \* Edge regions can be transformed into Core regions. Just [send us a request](mailto:support@gcore.com).
 
-3\. Configure the image. Select the type of hardware architecture on which your VM will be running:
+## Step 2. Configure the image
+
+Select the type of hardware architecture on which your VM will be running:
 
 - **x86-64**: This architecture is known for its broad compatibility with Linux operating systems and Windows distributions. It is commonly used in general purpose computing applications.
+
 - **ARM**: ARM architecture is designed for energy efficiency and low power consumption, which also supports strong performance, making it ideal for high-performance computing tasks. However, ARM Virtual Machines are compatible with fewer OS distributions.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/17.png" alt="Choose x86-64 or ARM architecture">
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/configure-image.png" alt="Choose x86-64 or ARM architecture" width="80%">
 
 Your choice of hardware architecture will affect the available OS options and VM flavors. Choose an OS distribution, a volume, a snapshot, a custom image, or a template from the marketplace.
 
-4\. Configure the VM type.
+## Step 3. Choose the VM type
 
 Select the appropriate CPU generation:
 
 - **Intel® Xeon® Scalable, 3rd Gen or 2nd Gen** if you’ve selected x-86-64 architecture at the previous step.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/18.png" alt="VM based on Intel® Xeon® Scalable, 3rd Gen or 2nd Gen">
-
 - **ARM Ampere® Altra® Max Family** if you selected ARM architecture in the previous step.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/19.png" alt="VM based on Ampere® Altra® Max Family">
-
 Choose one of the available flavors.
+
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/vm-type.png" alt="VM types and flavors" width="80%">
 
 <expandable-element title="Description of flavors">
 
 *   **Shared**. VMs that share the core of a physical machine with other VMs. They are designed for workloads that don't require high performance.  
     Availability: Luxembourg
 
-<alert-element type="info" title="Info">type="info" title="Info">
+<alert-element type="info" title="Info">
 
  The bandwidth limit for the **Shared** flavor is up 100 Mbps. For other configurations it's up 1 Gbps.
 
@@ -83,11 +96,11 @@ Choose one of the available flavors.
 
 </expandable-element>
 
-5\. Configure **Volumes**.
+## Step 4. Set up volumes
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/5-volume-selection.png" alt="Configure Volumes" width=80%>
+Enter a volume name, choose its type, and set its size in GiB.
 
-Enter a volume name, choose its type, and set its size in GiB
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/add-volume.png" alt="Configure Volumes" width="80%">
 
 <expandable-element title="Available volume types">
 
@@ -115,11 +128,11 @@ Availability: Amsterdam-2, Frankfurt, Hong Kong, Luxembourg-2, Manassas, Tokyo
 
 (optional) Add an **Attachment Tag**.
 
-6\. Add one or multiple interfaces in the **Network** settings.
+## Step 5. Add network interfaces
 
-If you select a **public** interface, you can turn on the **Use reserved IP** toggle and assign a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address" target="_blank">reserved IP address</a> to your VM.
+If you select a **public** interface, you can turn on the **Use reserved IP** toggle and assign a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address" target="_blank">reserved IP address</a> to your VM. Enable the **IPv6 dual-stack** toggle to use IPv6 addresses. 
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/use-reserved-ip.png" alt="Network settings with highlighted Reserved IP toggle" width=60%>
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/use-reserved-ip.png" alt="Network settings with highlighted Reserved IP toggle" width="60%">
 
 If you select a **private** interface, configure a network and a subnetwork according to the following steps. 
 
@@ -135,19 +148,21 @@ If you need both a public and private interface, disable the default gateway on 
 
 Select an existing network from the dropdown list or create a new one by clicking **Add a new network**.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/add-new-network.png" alt="Private interface with highlighted Add a new network link" width=60%>
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/add-new-network.png" alt="Private interface with highlighted Add a new network link" width="60%">
 
 If you choose to add a new network, a new window will open where you'll configure the network settings:
 
 1\. Enter the network name.
 
-2\. (optional) Turn on the <b>Bare Metal network</b> toggle to connect Bare Metal servers to the network.
+2\. (optional) Turn on the <b>Use reserved IP</b> toggle if you want to assign a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address" target="_blank">reserved IP address</a> to the Virtual Machine. Select the desired IP from the list.
 
-3\. (optional) Turn on the <b>Add tags</b> toggle to add metadata to the network.
+3\. (optional) Turn on the <b>Use floating IP</b> toggle if you want to assign a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address" target="_blank">floating IP address</a> and receive incoming connections to the VM.
 
-4\. Click <b>Create network</b>.
+4\. (optional) Turn on the <b>Enable IPv6 dual-stack</b> toggle to use IPv6 addresses. 
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/create-network.png" alt="Add a new network" width=60%>
+5\. Click <b>Create network</b>.
+
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/create-network.png" alt="Add a new network" width="60%">
 
 ### Configure a subnetwork
 
@@ -159,7 +174,7 @@ If your VM has several subnetworks, <a href="https://gcore.com/docs/cloud/networ
 
 Select an existing subnetwork from the dropdown list or create a new one by clicking **Add a new subnetwork**. 
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/add-new-subnetwork.png" alt="Add a new subnetwork" width=60%>
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/add-new-subnetwork.png" alt="Add a new subnetwork" width="60%">
 
 If you choose to add a new subnetwork,  a new window will open where you'll configure the subnetwork settings:
 
@@ -177,7 +192,7 @@ If you choose to add a new subnetwork,  a new window will open where you'll conf
 
 7\. Click **Create subnetwork**.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/create-subnetwork-annotated.png" alt="Add a new subnetwork dialog" width=60%>
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/create-subnetwork-annotated.png" alt="Add a new subnetwork dialog" width="60%">
 
 <alert-element type="tip" title="Tip">
 
@@ -187,7 +202,9 @@ Optionally, you can turn on the **Use Reserved IP** toggle to assign a <a href="
 
 </tabset-element>
 
-7\. For **Firewall settings**, select the default firewall or create a new one by clicking **Add firewall**.
+## Step 6. Configure firewall settings
+
+For **Firewall settings**, select the default firewall or create a new one by clicking **Add firewall**.
 
 ![The Firewall settings](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/10-firewall-settings.png)
 
@@ -195,19 +212,21 @@ If you keep the default firewall, the incoming traffic will be allowed over ICMP
 
 If you want to create a new firewall, refer to our article on <a href="https://gcore.com/docs/cloud/networking/add-and-configure-a-firewall" target="_blank">adding and configuring a firewall</a>.
 
+## Step 7. Set up authentication
+
 <tabset-element>
 
-#### Linux Virtual Machine 
+### Linux Virtual Machine 
 
-8\. Configure an SSH key for a remote SSH connection. You can add an existing SSH key or generate a new one. For instructions on how to generate and configure the key, check out this guide: <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-via-ssh" target="_blank">Connect to a VM via SSH</a>.
+Configure an SSH key for a remote SSH connection. You can add an existing SSH key or generate a new one. For instructions on how to generate and configure the key, check out this guide: <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-via-ssh" target="_blank">Connect to a VM via SSH</a>.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/11-ssh-key.png" alt="SSH keys section with three options: select, generate, or add a new SSH key" width="80%"> 
 
 In addition to SSH keys, you can also set up a password for your Virtual Machine, as described in [step 9](#configure-user-data). Setting a password is necessary if you want to connect to a Linux VM <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel#connect-to-a-linux-instance" target="_blank">from the Customer Portal</a>. 
 
-#### Windows Virtual Machine 
+### Windows Virtual Machine 
 
-8\. Configure **Access** by setting a password for the Admin user.
+Configure **Access** by setting a password for the Admin user.
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/12-access-for-windows-instance.png" alt="Access field with a password" width="80%"> 
 
@@ -221,9 +240,9 @@ You can use the password to connect to a Windows VM from the <a href="https://gc
 
 </tabset-element> 
 
-<p id="configure-user-data"> 9. (optional) Configure <b>Additional options</b>.</p>
+## Step 8 (optional). Configure additional options
 
-*   Enable the **User data** toggle to customize your VM during the initial boot by a `cloud-init` agent.
+<p id="configure-user-data">Enable the <strong>User data</strong> toggle to customize your VM during the initial boot by a <code>cloud-init</code> agent.</p>
 
 <img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/13-add-user-data.png" alt="User data field with password configuration" width="80%"> 
 
@@ -288,7 +307,9 @@ You can place your VM in one of three types of groups:
 
 You can add the VM to an existing placement group or create a new one by clicking **Add placement group**.
 
-10\. Specify the number of machines with the same configuration you need and give them names.
+## Step 9. Specify the number of VMs 
+
+Indicate how many machines with the same configuration you need and name the VMs.
 
 ![The field to set the number of instances](https://assets.gcore.pro/docs/cloud/virtual-instances/create-an-instance/16-number-of-instances.png)
 
@@ -296,7 +317,9 @@ The maximum number is limited by your quotas.
 
 For names, use Latin characters, underscores, spaces, and dots.
 
-11\. Click **Create virtual machine**.
+## Step 10. Create a VM 
+
+Click **Create virtual machine**.
 
 Your server will be transitioned to the **Building** status. The system will allocate resources for your Virtual Machine.
 
