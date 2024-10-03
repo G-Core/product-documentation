@@ -36,7 +36,7 @@ The IP price per month is displayed in the order window. You pay only for the ti
 
 For example, if you had reserved an IP and then deleted it after an hour, you will be charged only for an hour of use. The price doesn’t depend on whether the address is assigned to the Virtual Machine or not.
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-17.png" alt="How it is charged" width="380" height="168">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/create-reserved-ip-dialog.png" alt="How it is charged" width="380" height="168">
 
 ## Reserve an IP address
 
@@ -63,7 +63,7 @@ A reserved private IP can only be used in the specified subnetwork. To order a s
 
 5\. (Optional) If you want to use IPv6 addresses, turn on the <b>Enable IPv6 dual-stack</b> toggle.
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/reserve-ip-dialog.png" alt="Reserved IPs page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/create-reserved-ip-dialog.png" alt="Reserved IPs page in the Customer Portal" width="80%">
 
 6\. Click **Create**. 
 
@@ -97,7 +97,7 @@ The IP will be assigned to the Virtual Machine.
 
 Detach the subnetwork the reserved IP is assigned to. This address will be detached from the Virtual Machine automatically.
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/image-29.png" alt="Detach from the Virtual Machine">
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/detach-subnetwork.png" alt="Detach from the Virtual Machine">
 
 ## Assign a reserved IP to a Load Balancer
 
@@ -115,6 +115,18 @@ You click the resource name to view and update its settings.
 
 ## Delete a reserved IP
 
-Detach it from the Virtual Machine or Load Balancer. Then go to the "Networking" → "Reserved IPs" section, click the selector next to the IP and select "Delete". The address will be deleted and no longer charged.
+If reserved IP is attached to the Virtual Machine or Load Balancer, you need to detach it first. Otherwise, you won't be able to delete the IP.
+
+To delete a reserved IP address:
+
+1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, navigate to **Cloud** > **Networking**.
+
+<img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/networks-page.png" alt="Networks page in the Customer Portal" width="80%">
+
+2\. Open the **Reserved IPs** page.
+
+3\. Click a three-dot icon next to the IP you want to delete.
+
+4\. Select **Delete**.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/delete-reserved-ip.png" alt="Delete a reserved IP button" width="80%">
