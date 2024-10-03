@@ -33,7 +33,6 @@ Create Linux or Windows Virtual Machines in Gcore Cloud.
 
 Notice that regions are labeled either Core or Edge. This represents the region's equipment specifications.
 
- 
 |                                          | Core                        | Edge*                               |
 |------------------------------------------|-----------------------------|-------------------------------------|
 | Equipment generation                     | The latest                  | Different                           |
@@ -50,10 +49,10 @@ Notice that regions are labeled either Core or Edge. This represents the region'
 Select the type of hardware architecture on which your VM will be running:
 
 - **x86-64**: This architecture is known for its broad compatibility with Linux operating systems and Windows distributions. It is commonly used in general purpose computing applications.
-- 
+
 - **ARM**: ARM architecture is designed for energy efficiency and low power consumption, which also supports strong performance, making it ideal for high-performance computing tasks. However, ARM Virtual Machines are compatible with fewer OS distributions.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/17.png" alt="Choose x86-64 or ARM architecture">
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/configure-image.png" alt="Choose x86-64 or ARM architecture" width="80%">
 
 Your choice of hardware architecture will affect the available OS options and VM flavors. Choose an OS distribution, a volume, a snapshot, a custom image, or a template from the marketplace.
 
@@ -63,13 +62,11 @@ Select the appropriate CPU generation:
 
 - **Intel® Xeon® Scalable, 3rd Gen or 2nd Gen** if you’ve selected x-86-64 architecture at the previous step.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/18.png" alt="VM based on Intel® Xeon® Scalable, 3rd Gen or 2nd Gen">
-
 - **ARM Ampere® Altra® Max Family** if you selected ARM architecture in the previous step.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/19.png" alt="VM based on Ampere® Altra® Max Family">
-
 Choose one of the available flavors.
+
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/vm-type.png" alt="VM types and flavors" width="80%">
 
 <expandable-element title="Description of flavors">
 
@@ -103,7 +100,7 @@ Choose one of the available flavors.
 
 Enter a volume name, choose its type, and set its size in GiB.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/5-volume-selection.png" alt="Configure Volumes" width=80%>
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/add-volume.png" alt="Configure Volumes" width="80%">
 
 <expandable-element title="Available volume types">
 
@@ -135,7 +132,7 @@ Availability: Amsterdam-2, Frankfurt, Hong Kong, Luxembourg-2, Manassas, Tokyo
 
 If you select a **public** interface, you can turn on the **Use reserved IP** toggle and assign a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address" target="_blank">reserved IP address</a> to your VM. Enable the **IPv6 dual-stack** toggle to use IPv6 addresses. 
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/use-reserved-ip.png" alt="Network settings with highlighted Reserved IP toggle" width=60%>
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/use-reserved-ip.png" alt="Network settings with highlighted Reserved IP toggle" width="60%">
 
 If you select a **private** interface, configure a network and a subnetwork according to the following steps. 
 
@@ -151,7 +148,7 @@ If you need both a public and private interface, disable the default gateway on 
 
 Select an existing network from the dropdown list or create a new one by clicking **Add a new network**.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/add-new-network.png" alt="Private interface with highlighted Add a new network link" width=60%>
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/add-new-network.png" alt="Private interface with highlighted Add a new network link" width="60%">
 
 If you choose to add a new network, a new window will open where you'll configure the network settings:
 
@@ -165,7 +162,7 @@ If you choose to add a new network, a new window will open where you'll configur
 
 5\. Click <b>Create network</b>.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/create-network.png" alt="Add a new network" width=60%>
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/create-network.png" alt="Add a new network" width="60%">
 
 ### Configure a subnetwork
 
@@ -177,7 +174,7 @@ If your VM has several subnetworks, <a href="https://gcore.com/docs/cloud/networ
 
 Select an existing subnetwork from the dropdown list or create a new one by clicking **Add a new subnetwork**. 
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/add-new-subnetwork.png" alt="Add a new subnetwork" width=60%>
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/add-new-subnetwork.png" alt="Add a new subnetwork" width="60%">
 
 If you choose to add a new subnetwork,  a new window will open where you'll configure the subnetwork settings:
 
@@ -195,7 +192,7 @@ If you choose to add a new subnetwork,  a new window will open where you'll conf
 
 7\. Click **Create subnetwork**.
 
-<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/create-subnetwork-annotated.png" alt="Add a new subnetwork dialog" width=60%>
+<img src="https://assets.gcore.pro/docs/cloud/virtual-instances/create/create-subnetwork-annotated.png" alt="Add a new subnetwork dialog" width="60%">
 
 <alert-element type="tip" title="Tip">
 
