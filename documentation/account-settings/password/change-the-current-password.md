@@ -1,11 +1,11 @@
 ---
 title: change-the-current-password
-displayName: Change
+displayName: Change or reset
 published: true
 order: 10
 toc:
-pageTitle: How to change the password for you account | Gcore
-pageDescription: A step-by-step guide on how to change the password. 
+pageTitle: How to change or reset a password for your account | Gcore
+pageDescription: A step-by-step guide on how to change or reset a password. 
 ---
 # Change or reset a password
 
