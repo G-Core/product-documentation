@@ -28,7 +28,7 @@ A reserved IP can also be used as a <a href="https://gcore.com/docs/cloud/networ
 
 ## How it works
 
-After you created a reserved IP, this address becomes yours inside our system. No one can use it except you.
+After you create a reserved IP, this address becomes yours inside our system. No one can use it except you.
 
 ## How it is charged
 
@@ -73,7 +73,7 @@ A reserved private IP can only be used in the specified subnetwork. To order a s
 
 ### During VM creation
 
-For instructions on how to add a Reserved IP when creating a Virual Machine, refer to the <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance" target="_blank">VM creation</a> guide. 
+For instructions on how to add a Reserved IP when creating a Virtual Machine, refer to the <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance#step-5-add-network-interfaces" target="_blank">VM creation</a> guide. 
 
 ### After VM creation
 
@@ -107,7 +107,7 @@ For instructions on how to add a Reserved IP when creating a Load Balancer, refe
 
 ## Find a resource with reserved IP
 
-If a reserved IP addresses is attached to a particular resource, you'll see this information on the **Reserved IPs** page, in the **Status** column:
+If a reserved IP address is attached to a particular resource, you'll see this information on the **Reserved IPs** page, in the **Status** column:
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/attached-to-instance.png" alt="Reserved IPs page in the Customer Portal" width="80%">
 
@@ -115,7 +115,7 @@ You click the resource name to view and update its settings.
 
 ## Delete a reserved IP
 
-If reserved IP is attached to the Virtual Machine or Load Balancer, you need to detach it first. Otherwise, you won't be able to delete the IP.
+If the reserved IP is attached to the Virtual Machine or Load Balancer, you need to detach it first. Otherwise, you won't be able to delete the IP.
 
 To delete a reserved IP address:
 
