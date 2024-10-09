@@ -1,6 +1,6 @@
 ---
 title: upload-a-video-and-embed-it-to-your-app
-displayName: All videos
+displayName: Upload videos
 published: true
 order: 10
 toc:
@@ -8,13 +8,13 @@ toc:
    --1--Step 2. Update video settings: "step-2-update-video-settings"
    --1--Step 3. Choose a player UI customization: "step-3-choose-a-player-ui-customization-and-video-projection"
    --1--Step 4. Export video: "step-4-export-video"
-   --1--Step 5. Check video statistics: "step-5-check-video-sstatistics"
+   --1--Step 5. Check video statistics: "step-5-check-video-statistics"
    --1--Step 6. Check player metrics: "step-6-check-player-metrics "              
 pageTitle: Video Upload and Embedding Guide | Gcore
 pageDescription: Step-by-step instructions on uploading, customizing, and embedding videos in your application for a seamless viewing experience and statistics tracking.
 customUrl: /streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app
 ---
-# Upload a video and embed it to your app
+# Upload a video and embed it into your app
 
 Upload videos to <a href="https://gcore.com/streaming-platform/video-hosting" target="_blank">Gcore Video Hosting</a> for secure storage and seamless broadcasting to your audiences. You can share videos in different formats and resolutions, optimizing content for various devices and network conditions.
 
