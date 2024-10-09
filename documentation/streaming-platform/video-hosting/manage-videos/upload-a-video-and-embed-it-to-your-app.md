@@ -119,7 +119,7 @@ All data displayed on the Player metrics tab reflects only the statistics collec
 
 Player statistics are available in Coordinated Universal Time (UTC) or in your local time zone format.  
 
-By default, the date is presented for the last 24 hours. However, you can adjust the displayed information based on the date and time filters. To keep the data up to date without refreshing the page manually, you can choose the preferred **Auto refresh **interval in the dropdown. 
+By default, the date is presented for the last 24 hours. However, you can adjust the displayed information based on the date and time filters. To keep the data up to date without refreshing the page manually, you can choose the preferred auto refresh interval in the dropdown. 
 
 ### Average view duration 
 
