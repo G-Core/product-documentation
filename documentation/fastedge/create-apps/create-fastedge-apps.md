@@ -1,6 +1,6 @@
 ---
 title: create-fastedge-apps
-displayName: Create a FastEdge app
+displayName: HTTP applications
 published: true
 order: 30
 toc:
@@ -13,7 +13,7 @@ pageTitle: How to Create an Application with FastEdge | Gcore
 pageDescription: Learn how to deploy a FastEdge application from a custom binary file or from a preconfigured template.
 customUrl: /fastedge/getting-started/create-fastedge-apps
 ---
-# Create a FastEdge app 
+# Create FastEdge HTTP applications
 
 This guide describes how to create a FastEdge app. Check out our <a href="https://gcore.com/docs/fastedge/getting-started" target="_blank">FastEdge overview</a> article to learn more about the product.
 
@@ -147,57 +147,65 @@ For detailed steps on how to deploy a FastEdge app, refer to the relevant sectio
 
 #### Deploy an app from a binary
 
-1\. In the Gcore Customer Portal, navigate to **FastEdge** > **Create application**.  
+1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, navigate to **FastEdge** > **HTTP Applications**.  
 
-2\. Click **Upload binary**.
+2\. In the top-right corner of the screen, click **Create new application**.
 
-<img src="https://assets.gcore.pro/docs/fastedge/create-apps/create-custom-app.png" alt="Create an app page with highlighted Upload binary section" width="80%">
+<img src="https://assets.gcore.pro/docs/fastedge/create-http-apps/http-apps-create-app.png" alt="Create an HTTP app button highlighted" width="80%">
 
-3\. Choose your custom binary file.
+3\. Click **Upload binary**.
 
-4\. Click **Save binary** to upload it.
+<img src="https://assets.gcore.pro/docs/fastedge/create-http-apps/http-apps-upload-binary.png" alt="Add raw binary dialog" width="80%">
 
-<img src="https://assets.gcore.pro/docs/fastedge/create-apps/upload-binary.png" alt="Add raw binary dialog" width="80%">
+4\. Choose your custom binary file.
 
-5\. Enter a name for your application and provide a description if needed.  
+<img src="https://assets.gcore.pro/docs/fastedge/create-http-apps/upload-binary-dialog.png" alt="Add raw binary dialog" width="80%">
 
-6\. (Optional) Add fixed headers to the responses. For example, you may include CORS (cross-origin resource sharing) headers in each response to ensure secure communication between origins.  
+5\. If you add multiple files, click **Save binary** to confirm and upload the selected files.
 
-7\. (Optional) If you want to add metadata to the configuration, click **Add parameters** and enter metadata as key-value pairs.
+6\. Enter a name for your application and provide a description if needed.  
 
-<img src="https://assets.gcore.pro/docs/fastedge/create-apps/add-name-headers-metadata.png" alt="Add raw binary dialog" width="80%">
+7\. (Optional) Click **+ Add response headers** to add fixed headers to the responses. For example, you may include CORS (cross-origin resource sharing) headers in each response to ensure secure communication between origins. 
 
-8\. In the top-right corner of the screen, click **Save and deploy**. 
+8\. (Optional) If you want to add metadata to the configuration, click **+ Add environment variables** and enter metadata as key-value pairs.
 
-Your application has been successfully deployed. You can now test its configuration and adjust it as described in the following steps.
+<img src="https://assets.gcore.pro/docs/fastedge/create-http-apps/http-app-setup.png" alt="HTTP setup dialog" width="80%">
 
-<img src="https://assets.gcore.pro/docs/fastedge/create-apps/deployed-successfully-custom-binary.png" alt="A page with a link to an app and its configuration" width="80%">
+9\. In the top-right corner of the screen, click **Save and deploy**. 
+
+Your application has been successfully deployed.
+
+<img src="https://assets.gcore.pro/docs/fastedge/create-http-apps/http-app-created.png" alt="A page with a link to an app and its configuration" width="80%">
+
+You can now test its configuration and adjust it as described in the following steps.
 
 #### Deploy an app from a template
 
-1\. In the Gcore Customer Portal, navigate to **FastEdge** > **Create application**.  
+1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, navigate to **FastEdge** > **HTTP Applications**.  
 
-2\. In the **Launch from a template** section, select the preferred template.
+2\. In the top-right corner of the screen, click **Create new application**.
 
-<img src="https://assets.gcore.pro/docs/fastedge/create-apps/launch-from-template.png" alt="Section with Github and Markdown templates" width="80%">
+<img src="https://assets.gcore.pro/docs/fastedge/create-http-apps/http-apps-create-app.png" alt="Section with Github and Markdown templates" width="80%">
+
+3\. In the **Create from a template** section, select the preferred template.
+
+<img src="https://assets.gcore.pro/docs/fastedge/create-http-apps/http-apps-create-from-template.png" alt="Section with Github and Markdown templates" width="80%">
 
 3\. Enter a name for your application and, optionally, update its description. 
 
-<img src="https://assets.gcore.pro/docs/fastedge/create-apps/github-add-name-description.png" alt="Open page with empty name and description fields" width="80%">
+4\. Provide environment variables or any required configuration for your app. Note that the list of setup options depends on the selected template. For example, if you create a FastEdge app from a Markdown template, you need to add response headers, enter the base part of the origin URL, and add content from the `<head>` section of an HTML document. 
 
-4\. Provide the required environment variables for the application: 
+5\. (Optional) If you want to add metadata to the configuration, click **+ Add environment variables** and enter metadata as key-value pairs.
 
-* If you selected a GitHub template, enter the repository name and add your personal access token. 
-
-* If you selected a Markdown template, enter the base part of the origin URL and add content from the `<head>` section of an HTML document. 
-
-5\. (Optional) Add metadata as key-value pairs. 
+<img src="https://assets.gcore.pro/docs/fastedge/create-http-apps/http-app-from-template-setup.png" alt="A page with a link to an app and its configuration" width="80%">
 
 6\. Click **Save and deploy**.  
 
-<img src="https://assets.gcore.pro/docs/fastedge/create-apps/deployed-successfully-github.png" alt="A page with a link to an app and its configuration" width="80%">
+Your application has been successfully deployed. 
 
-Your application has been successfully deployed. You can now test its configuration and adjust it as described in the following steps. 
+<img src="https://assets.gcore.pro/docs/fastedge/create-http-apps/http-app-created-from-template.png" alt="A page with a link to an app and its configuration" width="80%">
+
+You can now test its configuration and adjust it as described in the following steps. 
 
 </tabset-element>
 
@@ -251,19 +259,19 @@ Where:
 
 You can test the application after its deployment by clicking the application link on the deployment confirmation screen:
 
-<img src="https://assets.gcore.pro/docs/fastedge/create-apps/test-custom-deployment.png" alt="A page with a link to an app and its configuration" width="80%">
+<img src="https://assets.gcore.pro/docs/fastedge/create-http-apps/test-http-app.png" alt="A page with a link to an app and its configuration" width="80%">
 
 Additionally, you can inspect and adjust the configuration in the Customer Portal on the **Dashboards** page:  
 
 1\. In the Gcore Customer Portal, navigate to **FastEdge** > **Dashboard**. 
 
-<img src="https://assets.gcore.pro/docs/fastedge/create-apps/open-app-from-dasboard.png" alt="Metrics tab with the list of FastEdge apps" width="80%">
+<img src="https://assets.gcore.pro/docs/fastedge/create-http-apps/open-app-from-dasboard.png" alt="Metrics tab with the list of FastEdge apps" width="80%">
 
 2\. Find the app you want to test and click its name to open it.
 
 3\. Click the app link next to the app status to view the response. 
 
-<img src="https://assets.gcore.pro/docs/fastedge/create-apps/test-app-from-dasboard.png" alt="A page with a link to an app" width="80%">
+<img src="https://assets.gcore.pro/docs/fastedge/create-http-apps/test-http-app.png" alt="A page with a link to an app and its configuration" width="80%">
 
 For example, the response for the application configured in Stage 1 will be “Hello world!” 
 
