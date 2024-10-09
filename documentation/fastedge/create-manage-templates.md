@@ -2,7 +2,14 @@
 title: create-manage-templates
 displayName: Create and manage templates
 published: true
+order: 40
 toc:
+   --1--Create a template: "create-a-template"
+   --1--Edit a template: "edit-a-template"
+   --1--Delete a template: "delete-a-template"
+   --1--Edit a template: "edit-a-template"
+   --1--Update template binary: "update-template-binary"
+   --1--Create an app from a template: "create-an-app-from-a-template"  
 pageTitle: A guide on creating and managing FastEdge templates | Gcore
 pageDescription: A short overview of FastEdge application templates, how they can be created and used for creating applications.
 ---
@@ -134,5 +141,5 @@ You can deploy a FastEdge application directly from the Templates page:
 
 4\. Proceed with the application configuration as described in the relevant guide: 
 
- * <a href="" target="_blank">Create an HTTP app from a template</a>
- * <a href="" target="_blank">Create a CDN app from a template</a>
+ * <a href="https://gcore.com/docs/fastedge/getting-started/create-fastedge-apps#stage-2-deploy-an-application" target="_blank">Create an HTTP app from a template</a>
+ * <a href="https://gcore.com/docs/cdn/getting-started/integrate-cdn-with-fastedge#step-1-create-a-fastedge-application" target="_blank">Create a CDN app from a template</a>
