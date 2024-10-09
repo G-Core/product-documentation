@@ -45,11 +45,11 @@ Currently, you can use a predefined template to enable authentication in your ap
 
 To deploy an application from the template: 
 
-1\. In the Gcore Customer Portal, navigate to **FastEdge**. 
+1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a> , navigate to **FastEdge**. 
 
 2\. Open the **CDN Applications** page and click **Create new application**.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-applications.png" alt="Create FastEdge application button" width="80%">  
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-apps-page-create-app.png" alt="Create FastEdge application button" width="80%">  
 
 3\. In the **Create from a template** section, choose **Validate JWT in Authorization header**. 
 
@@ -59,13 +59,17 @@ To deploy an application from the template:
 
 5\. Add required environment variables—a token signing key that will be used for authentication checks.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-fastedge/configure-jwt-template.png" alt="JWT template configuration menu" width="80%">  
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-app-from-template-setup.png" alt="JWT template configuration menu" width="80%">  
 
 6\. Click **Save and deploy**. 
 
-Your application has been successfully deployed and can now be accessed through the CDN. If you need to adjust the configuration, click **Configure app**.  
+Your application has been successfully deployed and can now be accessed through the CDN.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-fastedge/app-deployed-cdn.png" alt="A page with app deployment confirmation" width="80%"> 
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-app-created.png" alt="A page with app deployment confirmation" width="80%"> 
+
+If you need to adjust the configuration, click **Actions** > **Edit application**. 
+
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-fastedge/actions-edit-app-from-template.png" alt="A page with app deployment confirmation" width="80%"> 
 
 #### Deploy a custom CDN application 
 
@@ -73,29 +77,29 @@ If you want to deploy a FastEdge application from your own binary, check the exa
 
 To deploy a FastEdge application from your own binary:
 
-1\. In the Gcore Customer Portal, navigate to **FastEdge**. 
+1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a> , navigate to **FastEdge**. 
 
 2\. Open the **CDN Applications** page and click **Create new application**.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-applications.png" alt="Create FastEdge application button" width="80%">  
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-apps-page-create-app.png" alt="Create FastEdge application button" width="80%">  
 
 3\. Click **Upload binary**.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-fastedge/create-custom-app.png" alt="Create custom application section" width="80%">  
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-apps-upload-binary.png" alt="Create custom application section" width="80%">  
 
-4\. Choose your custom binary file. 
+4\. Choose your custom binary file. If you add multiple files, click **Save binary** to confirm and upload the selected files.
 
 5\. Enter a name for your application and, optionally, add a description. 
 
 6\. Add required environment variables that will be used for authentication checks. Enter the data as key-value pairs.
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-fastedge/configure-custom-binary.png" alt="Custom app configuration menu" width="80%"> 
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-app-setup.png" alt="Custom app configuration menu" width="80%"> 
 
 7\. Click **Save and deploy**. 
 
-Your application has been successfully deployed and can now be accessed through the CDN. If you need to adjust the configuration, click **Configure app**. 
+Your application has been successfully deployed and can now be referenced from CDN resource settings. If you need to adjust the configuration, click **Actions** > **Edit application**. 
 
-<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-fastedge/app-deployed-cdn-custom.png" alt="A page with app deployment confirmation" width="80%"> 
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-fastedge/actions-edit-app.png" alt="A page with app deployment confirmation" width="80%"> 
 
 </tabset-element>
 
