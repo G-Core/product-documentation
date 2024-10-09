@@ -2,6 +2,7 @@
 title: fastedge-cli
 displayName: FastEdge CLI
 published: true
+order: 50
 toc:
    --1--Install and set up FastEdge CLI: "install-and-set-up-fastedge-cli"
    --1--Run FastEdge CLI: "run-fastedge-cli"

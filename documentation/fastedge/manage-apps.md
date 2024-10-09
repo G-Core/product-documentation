@@ -2,6 +2,7 @@
 title: manage-apps
 displayName: Manage FastEdge apps
 published: true
+order: 30
 toc:
    --1--Stop or start an application: "stop-or-start-an-application"
    --1--View and enable logging: "view-and-enable-logging"
