@@ -32,9 +32,11 @@ Each custom response page can have one of the following statuses:
 
 * **Inactive**: A page is created but not publicly available.  
 
-* **Unpublished**: A page can get this status after creation. After a short period, it should change to **Published**. 
+A page set statuses can be:
 
-* **Published**: A page is set up and ready to use. A page can have a published status if all pages inside it are in **Active** status.  
+* **Unpublished**: A page set can get this status after creation. After a short period, it should change to **Published**. 
+
+* **Published**: A page set is ready to use. This means that all pages inside it are in the **Active** status.  
 
 ## Manage custom response pages at the domain level 
 
