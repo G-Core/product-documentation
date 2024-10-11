@@ -290,11 +290,11 @@ The base price is tailored to your workflows and security requirements. To estim
 </tr>
 <tr>
     <td>Custom rules</td>
-    <td>100</td>
+    <td>1000</td>
 </tr>
 <tr>
     <td>Advanced rules</td>
-    <td>100</td>
+    <td>1000</td>
 </tr>
 <tr>
     <td>L7 DDoS protection</td>
