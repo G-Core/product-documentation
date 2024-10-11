@@ -10,7 +10,7 @@ toc:
    --1--Step 4. Configure autoscaling: "step-4-configure-autoscaling"
    --1--Step 5. Specify container lifetime: "step-5-specify-container-lifetime"
    --1--Step 6 (optional). Add variables: "step-6-optional-add-environment-variables"
-   --1--Step 7 (optional). Configure API keys: "step-7-optional-configure-authentication-via-API"
+   --1--Step 7 (optional). Configure API keys: "step-7-optional-configure-authentication-via-api"
    --1--Step 8. Finalize configuration: "step-8-finalize-container-configuration"  
 pageTitle: Create Containers in the Customer Portal | Gcore
 pageDescription: A comprehensive step-by-step guide on how to create containers in the Customer Portal.
