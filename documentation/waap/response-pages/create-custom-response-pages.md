@@ -53,13 +53,13 @@ Note that creating custom response pages is only available <a href="https://gcor
 1\. In the **Create pages** section, click **Add page**. 
 
 2\. In the sidebar menu that opens, choose the default page type that you want to customize: 
-
-* Browser validation  
-* Enable cookies  
-* Enable JavaScript   
-* Captcha  
+  
 * Block  
 * Block CSRF 
+* Captcha
+* Enable cookies
+* Browser validation 
+* Enable JavaScript  
 
 <img src="https://assets.gcore.pro/docs/waap/response-pages/choose-page-type.png" alt="Crete response page set dialog" width="80%">
 
@@ -69,7 +69,7 @@ Configure the default response page you’ve selected in the previous step. Note
 
 #### Browser title 
 
-Add the text that will appear as the title in your web browser's tab where the custom response page is open. The title can be up to 60 characters.  
+Add the text that will appear as the title in your web browser's tab where the custom response page is open. The title can be up to 62 characters.  
 
 You can add browser title to the following response pages: Browser validation, Captcha, Block, Block CSRF. 
 
@@ -97,7 +97,7 @@ Provide a message that will be displayed when a client fails to pass the validat
 
 #### Upload image (optional) 
 
-Add an image that’ll appear on the page. The image should be in png, svg, or jpg format and have the following dimensions: 460px *130 px, 24KB maximum size.  If you don’t upload an image, then the default image will be applied. 
+Add an image that’ll appear on the page. The image should be in jpeg, png, or jpg format and have the following dimensions: 450px *130 px, 24KB maximum size.  If you don’t upload an image, then the default image will be applied. 
 
 You can add images to the following response pages: Browser validation, Captcha, Block, Block CSRF. 
 
@@ -131,7 +131,7 @@ If you don’t enable the toggle, the page won’t be available for use on any d
 
 2\. Click **Save** to add the page to the selected domains.
 
-Your page will be created with the **Unpublished** state. It’ll change to **Published** after a few moments. 
+The page set will be created with the **Unpublished** state. It’ll change to **Published** after a few moments. 
 
 <alert-element type="info" title="Info">
  
