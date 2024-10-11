@@ -58,10 +58,10 @@ Note that creating custom response pages is only available <a href="https://gcor
 * Block CSRF 
 * Captcha
 * Enable cookies
-* Browser validation 
-* Enable JavaScript  
+* Browser validation
+* Enable javascript  
 
-<img src="https://assets.gcore.pro/docs/waap/response-pages/choose-page-type.png" alt="Crete response page set dialog" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/response-pages/choose-default-page-type.png" alt="Crete response page set dialog" width="80%">
 
 ### Step 4. Configure the selected response page 
 
@@ -99,7 +99,7 @@ Provide a message that will be displayed when a client fails to pass the validat
 
 Add an image that’ll appear on the page. The image should be in jpeg, png, or jpg format and have the following dimensions: 450px *130 px, 24KB maximum size.  If you don’t upload an image, then the default image will be applied. 
 
-You can add images to the following response pages: Browser validation, Captcha, Block, Block CSRF. 
+You can add images to the following response pages: Browser validation, Captcha, Block, Block CSRF.  
 
 Here’s an example of a Block CSRF page with the default Gcore image: 
 
