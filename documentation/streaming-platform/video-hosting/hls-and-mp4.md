@@ -131,6 +131,8 @@ Where:
 
 - <span style="color:#FF5913">{client_id}</span>: Your account ID.
 - <span style="color:#FF5913">{video_slug}</span>: Slug identifier of the video.
+- <span style="color:#FF5913">[-min-N]</span>: Special suffix that specifies the lowest video quality limit available in an Adaptive Bitrate (ABR) streaming (same behaviour as for HLS). Learn more about the setting in the <a href="#limit-the-lowest-and-highest-quality-in-hls-adaptive-bitrate">Limit quality</a> section.
+- <span style="color:#FF5913">[-max-N]</span>: Special suffix that specifies the highest video quality limit available in the ABR streaming (same behaviour as for HLS). Learn more about the setting in the <a href="#limit-the-lowest-and-highest-quality-in-hls-adaptive-bitrate">Limit quality</a> section.
 - <span style="color:#FF5913">[-(h264|hevc|av1)]</span>: Video codec soft limitation. Applicable if the video was simultaneously transcoded into multiple codecs (264, H265, and AV1) and you want to return just one video codec in a manifest. 
 
 <alert-element type="info" title="Info">
