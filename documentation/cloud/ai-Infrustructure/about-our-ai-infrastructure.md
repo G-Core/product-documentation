@@ -10,7 +10,7 @@ toc:
    --2--Bow-2000 specifications: "bow-2000-specifications"
    --2--M2000 specifications: "m2000-specifications"
    --1--Tools our AI Infrastructure supports: "tools-supported-by-gcore-gpu-cloud"
-pageTitle: About our Gcore CPU Cloud | Gcore
+pageTitle: About our Gcore GPU Cloud | Gcore
 pageDescription: Explore Gcore GPU Cloud for AI. NVIDIA servers, top performance, diverse tool support. Easy deployment, per-minute billing.
 ---
 # GPU Cloud infrastructure
