@@ -256,17 +256,17 @@ Where:
 
 ## Limit the lowest and highest quality in HLS adaptive bitrate
 
-The manifest file (.m3u8) for HLS and HLS CMAF streaming contains all possible video qualities by default. If you want to limit the quality for old devices, non-paying users, or a quick view, you can specify a suffix indicating the minimum and/or maximum allowed resolution:
+The manifest file (.m3u8) for HLS and HLS CMAF, and manifest (.mpd) for MPEG-DASH streaming contains all possible video qualities by default. If you want to limit the quality for old devices, non-paying users, or a quick view, you can specify a suffix indicating the minimum and/or maximum allowed resolution:
 
 - ```-min-N```: minimum resolution not less than specified
 - ```-max-N```: maximum resolution not exceeding than specified
 
 ```N``` is a resolution (height or width) from 240 to 9999. If the video is horizontally oriented, the resolution is its height. If it's vertically oriented, it should be width. 
 
-Here’s an example of how to get two qualities only—360 and 480—instead of the full set: 
+Here’s an example of how to get two qualities only—360 and 480—instead of the full set for HLS (the same can be done for MPEG-DASH manifest .mpd): 
 
 ```
-curl https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/master-min-360-max-719-img.m3u8 
+curl https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/master-min-360-max-480-img.m3u8 
 ```
 The response is: 
 
