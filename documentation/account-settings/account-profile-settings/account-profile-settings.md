@@ -4,7 +4,7 @@ displayName: Account profile settings
 published: true
 order: 40
 pageTitle: Guide to Gcore account profile settings | Gcore
-pageDescription: A guide on how to configure an account profile settings in the Gcore Customer Portal. 
+pageDescription: A guide on how to configure an account profile settings in the Gcore Customer Portal.
 ---
 # Account profile settings
 
