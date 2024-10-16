@@ -13,7 +13,7 @@ To change the password for your account:
 
 1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, navigate to the account settings in the top-right corner of the screen, and click **Profile**.
 
-<img src="https://assets.gcore.pro/docs/account-settings/password/change-the-current-password/dashboard-account-menu.png" alt="Profile settings in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/password/change-the-current-password/dashboard-account-dialog.png" alt="Profile settings in the Customer Portal" width="80%">
 
 2\. Open the **Change password** page.
 
