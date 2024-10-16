@@ -6,7 +6,7 @@ published: true
 toc:
    --1--AI GPU infrastructure: "ai-gpu-infrastructure"
    --1--Tools our AI Infrastructure supports: "tools-supported-by-gcore-gpu-cloud"
-pageTitle: About our Gcore GPU Cloud | Gcore
+pageTitle: About Gcore GPU Cloud | Gcore
 pageDescription: Explore Gcore GPU Cloud for AI. NVIDIA servers, top performance, diverse tool support. Easy deployment, per-minute billing.
 ---
 # GPU Cloud infrastructure
