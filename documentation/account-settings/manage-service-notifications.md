@@ -27,7 +27,7 @@ To view and configure product notifications and promotional emails:
 
 1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, navigate to the account settings in the top-right corner of the screen, and click **Profile**.
 
-<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/dashboard-account-menu.png" alt="Profile section in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/manage-service-notifications/dashboard-account-dialog.png" alt="Profile section in the Customer Portal" width="80%">
 
 2\. Open the **Notifications** page.
 
