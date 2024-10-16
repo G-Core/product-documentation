@@ -6,16 +6,16 @@ order: 20
 toc:
    --1--Monitor mode: "monitor-mode"
    --1--Protect mode: "protect-mode"
-   --1--How requests are processed in each mode: "how-requests-are-processed-in-each-mode"
-   --1--Enable a WAAP mode for your domain: "enable-a-waap-mode-for-your-domain" 
-pageTitle: Learn about WAAP monitor and protect modes | Gcore
-pageDescription: Learn how to enable monitor and protect modes for your domain.
+   --1--Inactive mode: "inactive-mode"
+   --1--Stopped mode: "stopped-mode"
+   --1--How requests are processed in monitor and protect modes: "how-requests-are-processed-in-monitor-and-protect-modes"
+   --1--Enable monitor and protect modes: "enable-monitor-and-protect-modes-for-your-domain"
+pageTitle: Learn about WAAP modes | Gcore
+pageDescription: Learn how WAAP behaves in monitor, protect, inactive, and stopped modes. Enable monitor and protect modes for a domain.
 ---
 # WAAP modes
 
-In Gcore WAAP, you can use two modes: monitor and protect.  
-
-Each mode defines how the system will manage incoming traffic to your domain: log information about every request without taking action or challenge and block all malicious requests. 
+Gcore WAAP has four modes: monitor, protect, inactive, and stopped. Each mode defines how the system will manage incoming traffic to your domain.
 
 ## Monitor mode
 
@@ -44,7 +44,31 @@ In this mode, WAAP actively enforces all security settings, including <a href="h
 
 Protect mode ensures real-time defense against web-based attacks like SQL injection, cross-site scripting (XSS), and other common vulnerabilities. 
 
-## How requests are processed in each mode
+## Inactive mode 
+
+In inactive mode, WAAP protection for the domain is disabled, and traffic is not inspected as in monitor mode. All web requests **bypass CDN and WAAP**, going directly to the origin. However, you can still update the domain configuration and security settings. 
+
+<alert-element type="info" title="Info">
+ 
+Inactive domains still incur charges as we retain all configured settings and data. If you want to discontinue billing for WAAP protection, delete a domain. 
+ 
+</alert-element>
+
+If you want to delete a domain, it has to be inactive. To change WAAP mode to inactive, <a href="https://gcore.com/docs/waap/getting-started/manage-domains#disable-waap-protection-for-a-domain" target="_blank">disable WAAP protection for a relevant CDN resource</a>. You can always <a href="https://gcore.com/docs/waap/getting-started/configure-waap-for-a-domain#step-2-enable-waap-in-cdn-resource-settings" target="_blank">enable WAAP</a> again in the resource settings. 
+
+## Stopped mode 
+
+In this mode, traffic is not inspected and WAAP protection for the domain is disabled. Domains in stopped mode aren’t billable. 
+
+WAAP mode can change to **Stopped** for the following reasons: 
+
+* The trial period has ended. 
+
+* Payment for the product was unsuccessful. In this case, you cannot activate any other WAAP mode until payment is completed. 
+
+When the product is in the stopped mode, you can’t create, modify, or edit any WAAP settings.
+
+## How requests are processed in monitor and protect modes
 
 To demonstrate the difference between the monitor and protect modes, let’s consider an example of a cURL request with no header modification flags, which triggers the <a href="https://gcore.com/docs/waap/waap-policies/protocol-validation#invalid-user-agent-and-unknown-user-agent" target="_blank">Invalid user agent</a> policy. 
 
@@ -77,7 +101,7 @@ You can also see the difference on the **Analytics** page in the <a href="https:
 
 <img src="https://assets.gcore.pro/docs/waap/getting-started/waap-requests-blocked.png" alt="WAAP graph on the Analytics page in the Customer Portal">
 
-## Enable a WAAP mode for your domain 
+## Enable monitor and protect modes for your domain 
 
 You can switch between monitor and protect modes depending on your security requirements and the level of risk tolerance for your web applications. 
 
