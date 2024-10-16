@@ -2,7 +2,7 @@
 title: how-quickly-our-support-team-will-respond-to-you
 displayName: Technical support
 published: true
-order: 90
+order: 110
 toc:
    --1--Your billing plan: "billing-plan"
    --1--The request priority: "the-request-priority"

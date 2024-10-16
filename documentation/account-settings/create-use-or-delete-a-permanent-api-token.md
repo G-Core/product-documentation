@@ -2,7 +2,7 @@
 title: create-use-or-delete-a-permanent-api-token
 displayName: API tokens
 published: true
-order: 60
+order: 80
 toc:
    --1--What is a permanent API token: "what-is-a-permanent-api-token-and-when-can-it-be-used"
    --1--Create: "create-a-permanent-api-token"

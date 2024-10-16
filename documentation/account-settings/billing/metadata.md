@@ -2,5 +2,5 @@
 title: metadata
 displayName: Billing
 published: true
-order: 80
+order: 100
 ---

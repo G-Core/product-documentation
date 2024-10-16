@@ -2,7 +2,7 @@
 title: Billing
 displayName: Billing
 published: true
-toc:
+toc: 100
 pageTitle: Understanding Gcore's Billing | Gcore
 pageDescription: Understand two approaches of the Gcore's billing system—monthly billing and PaYG. 
 ---

@@ -2,7 +2,7 @@
 title: propose-changes-to-articles-on-github
 displayName: Change articles on GitHub
 published: true
-order: 95
+order: 140
 toc:
 pageTitle: A guide on how to change articles on GitHub | Gcore
 pageDescription: A comprehensive guide on how to propose changes to articles of the Gcore Product Documentation on GitHub.
