@@ -2,7 +2,7 @@
 title: roadmap-provide-feedback-suggest-new-features-follow-development
 displayName: Roadmap
 published: true
-order: 110
+order: 130
 toc:
    --1--Roadmap: "what-is-roadmap"
    --1--Navigation: "navigating-roadmap"

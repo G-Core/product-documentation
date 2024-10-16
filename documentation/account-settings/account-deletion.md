@@ -2,7 +2,7 @@
 title: account-deletion
 displayName: Delete account
 published: true
-order: 120
+order: 150
 toc:
    --1--Deletion overview: "deletion-overview"
    --1--Deletion request: "how-to-delete-your-account"

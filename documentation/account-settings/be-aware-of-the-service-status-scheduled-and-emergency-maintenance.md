@@ -2,7 +2,7 @@
 title: be-aware-of-the-service-status-scheduled-and-emergency-maintenance
 displayName: Status Page
 published: true
-order: 100
+order: 120
 toc:
    --1--Subscription methods: "subscription-methods"
    --2--Email: "email"

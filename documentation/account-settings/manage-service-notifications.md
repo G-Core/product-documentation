@@ -2,7 +2,7 @@
 title: manage-service-notifications
 displayName: Notifications
 published: true
-order: 70
+order: 90
 toc:
    --1--Manage notifications: "manage-notifications"
    --1--Limitation notifications: "limitation-notifications"

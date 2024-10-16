@@ -2,5 +2,5 @@
 title: metadata
 displayName: Users
 published: true
-order: 30
+order: 50
 ---

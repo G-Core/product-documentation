@@ -2,7 +2,7 @@
 title: set-up-two-factor-authentication
 displayName: Two-factor authentication
 published: true
-order: 50
+order: 70
 toc:
    --1--Overview: "two-factor-authentication-overview"
    --1--Configure: "configure-two-factor-authentication"
