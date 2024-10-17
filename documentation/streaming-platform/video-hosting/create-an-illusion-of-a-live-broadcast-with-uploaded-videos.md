@@ -17,7 +17,7 @@ Live imitation is a free feature for broadcasting videos uploaded to your accoun
 
 ## Configure Live imitation
 
-1\. Upload videos that you want to broadcast in live mode as a live stream according to 1–4 steps in the <a href="https://gcore.com/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app" target="_blank">Upload a video and embed it to your app</a> guide.
+1\. Upload videos that you want to broadcast in live mode as a live stream according to 1–4 steps in the <a href="https://gcore.com/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app" target="_blank">Upload a video and embed it to your app</a> guide. You can upload up to 512 videos to a playlist.
 
 2\. Go to the <a href="" target="_blank">Live imitation</a> section.
 
