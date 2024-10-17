@@ -86,7 +86,7 @@ You will have thirty seconds to copy and save five codes in a way convenient to 
 
 3\. Enter a verification code from your authenticator app or use a <a href="https://gcore.com/docs/account-settings/set-up-two-factor-authentication#generate-backup-verification-codes" target="_blank">backup code</a>.
 
-<img src="https://assets.gcore.pro/docs/account-settings/set-up-two-factor-authentication/enter-code-authe.png" alt="A field to enter verification code" width="80%">
+<img src="https://assets.gcore.pro/docs/account-settings/set-up-two-factor-authentication/enter-code-auth.png" alt="A field to enter verification code" width="80%">
 
 4\. Click **Log in**. 
 
