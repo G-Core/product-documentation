@@ -33,7 +33,7 @@ Click the **Create CDN Resource** button.
 
 <img src="https://assets.gcore.pro/docs/cdn/about-cdn-resources-interface-how-it-is-arranged/10272561190417.png" alt="Create a CDN resource">
 
-See the "<a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">Create and integrate CDN resource for only static files</a>" guide for detailed instructions on creating a CDN resource. 
+Refer to the following guide for detailed instructions on creating a CDN resource: <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">Create and integrate CDN resource for static assets only</a>. 
 
 ## Manage CDN resources
 

@@ -28,7 +28,7 @@ WebSocket is suitable for services that require constant data exchange, such as 
 
 ## Manage the WebSockets feature
 
-By default, the WebSocket feature is enabled for <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site" target="_blank">CDN resources created for the entire site</a> and disabled for <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">CDN resources created for only static assets</a>. You can manage this feature depending on your concerns: disable it for the CDN resources with full integration or enable it for resources with partial integration.
+By default, the WebSocket feature is enabled for <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site" target="_blank">CDN resources created for the entire site</a> and disabled for <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">CDN resources created for static assets only</a>. You can manage this feature depending on your concerns: disable it for the CDN resources with full integration or enable it for resources with partial integration.
 
 To manage the WebSocket feature:
 

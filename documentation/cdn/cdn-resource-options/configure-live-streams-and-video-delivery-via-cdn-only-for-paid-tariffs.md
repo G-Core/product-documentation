@@ -49,7 +49,7 @@ We’ll notify you when we activate the workflow. After that, you’ll be able t
 
 ### 2. Create a CDN resource
 
-Create a CDN resource according to the "<a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">Create a CDN resource for only static files</a>" guide.
+Create a CDN resource according to the "<a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">Create a CDN resource for static assets only</a>" guide.
 
 ### 3. Set cache settings
 
