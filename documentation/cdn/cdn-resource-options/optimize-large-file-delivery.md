@@ -4,15 +4,12 @@ displayName: Large files delivery
 published: true
 order: 60
 toc:
-   --1--About the option: "about-the-option"
    --1--Configuration guidelines: "configuration-guidelines"
    --1--Configuration steps: "configuration-steps"
 pageTitle: Optimizing Large File Delivery via CDN | Gcore
 pageDescription: Guide on efficiently serving large files (>10MB) using Gcore CDN Large File Delivery Optimization feature.
 ---
 # Optimize large file delivery
-
-## About the option
 
 We recommend using the Large File Delivery Optimization feature if you are serving content larger than 10 MB. With this option enabled, Gcore CDN will make range requests to the origin to retrieve 10 MB chunks of content. These chunks are then collected in the cache, and once the CDN has the necessary portions of the requested content, the response is assembled and returned to the end user.
 
@@ -28,7 +25,7 @@ Large File Delivery Optimization can be configured in the Resource Settings and 
 - The *Content-Length* and *Etag* headers must be consistent across the origin.
 - Large File Delivery Optimization will be applied to all contents in the CDN resource, which could lead to an increased load on the origin. Therefore, consider activating <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin Shielding</a> before using this feature, or make any updates during off-peak hours.
 - Remember to <a href="https://gcore.com/docs/cdn/clear-cdn-resource-cache-by-url-pattern-or-all" target="_blank">purge the resource cache</a> after enabling Large File Delivery Optimization.
-- TLarge File Delivery Optimization cannot be used in conjunction with <a href="https://gcore.com/docs/cdn/cdn-resource-options/compression/configure-fetch-compression" target="_blank">Fetch Compressed</a>, <a href="https://gcore.com/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression#gzip" target="_blank">Gzip Compression</a>, and <a href="https://gcore.com/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression#brotli" target="_blank">Brotli Compression</a> within the Resource Settings or within the same rule.
+- Large File Delivery Optimization cannot be used in conjunction with <a href="https://gcore.com/docs/cdn/cdn-resource-options/compression/configure-fetch-compression" target="_blank">Fetch Compressed</a>, <a href="https://gcore.com/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression#gzip" target="_blank">Gzip Compression</a>, and <a href="https://gcore.com/docs/cdn/cdn-resource-options/compression/configure-gzip-and-brotli-compression#brotli" target="_blank">Brotli Compression</a> within the Resource Settings or within the same rule.
 
 ## Configuration steps
 
