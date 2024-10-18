@@ -4,7 +4,6 @@ displayName: Protected temporary link
 published: true
 order: 50
 toc:
-   --1--Why protect?: "why-protect-video-content"
    --1--How Gcore protects: "how-does-gcore-protec-video-content"
    --1--Temporary links: "what-are-protected-temporary-links"
    --1--Restrictions: "cdn-resources-and-scope-of-restrictions"
@@ -18,8 +17,6 @@ pageTitle: Protected Temporary Links | Gcore
 pageDescription: A guide on how to restrict access to your video content using the Secure Token feature.
 ---
 # Protect your content with temporary links and secure tokens
-
-## Why protect video content?
 
 By default, videos are available by their links with no restrictions and can be placed on any website or in any mobile application. But in some cases, platform owners or rights holders need to ensure that video content does *not* offer public access, such as when a video is only for paid access, private access, access by country, temporary access, or access on a specific site.
 
@@ -124,7 +121,9 @@ expires = 1861919999   # Sunday, December 31, 2028 23:59:59 GMT
 
 ## How to create protected links with the secure token
 
-**Note**: Generating a Secure Token requires the same process for both VOD and Live Streaming. 
+Note that generating a Secure Token requires the same process for both VOD and Live Streaming. 
+
+<tabset-element>
 
 ### Python
 
@@ -204,3 +203,5 @@ func main() {
 }
 
 ```
+
+</tabset-element>
