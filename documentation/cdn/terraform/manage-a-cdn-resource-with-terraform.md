@@ -48,19 +48,19 @@ Open the *main.tf* file where you <a href="https://gcore.com/docs/cdn/terraform
 
 At this step, you need to write the code that creates an origin group — the CDN resource will pull content from those origins. An origin group has three features: 
 
-- **You choose which origin will be active and which origin will be backup**. An active origin is accessed whenever the CDN requests content. A backup origin is accessed only when active origins return 4xx or 5xx error. A group must have at least one active origin.   
-- **You can enable or disable the "Use next upstream" option**. It defines the order in which the CDN will access remaining origins if the first origin returns a 4xx or 5xx error. If this option is on, the CDN will access active origins one by one, and then request backup origins. If it is off, the CDN will ignore remaining active origins and will immediately request a backup origin. 
+- **You choose which origin will be active and which origin will be backup**. An active origin is accessed whenever the CDN requests content. A backup origin is accessed only when active origins return 4xx or 5xx error. A group must have at least one active origin.
+
+- **You can enable or disable the "Use next upstream" option**. It defines the order in which the CDN will access the remaining origins if the first origin returns a 4xx or 5xx error. If this option is on, the CDN will access active origins one by one, and then request backup origins. If it is off, the CDN will ignore the remaining active origins and will immediately request a backup origin.
+
 - **You can create a group from a single origin.** It must consist of an active origin. The "Use next upstream" option should be disabled. 
 
 To create an origin group via Terraform:
 
 1\. Copy the following code to the *main.tf* file. Replace the information in brackets with your values, and then remove the brackets.   
-
   <code-block>
   resource "gcore_cdn_origingroup" "<span style="color:#FF5913">make up Terraform name of the origin group; you can use any name, it will be linked to the origin in the Terraform system</span>" {  
    name = "<span style="color:#FF5913">make up a name of the origin group that will be displayed in the Gcore Customer Portal</span>"
   </code-block>
-
 2\. Add the appropriate strings and code snippets to the file:
 
  * To enable the <a href="https://gcore.com/docs/cdn/add-an-origin-group#use-next-upstream" target="_blank">Use next upstream</a> option: `use_next = true` 
