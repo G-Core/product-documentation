@@ -91,11 +91,11 @@ These settings can be set up independently—you can set CDN caching to **Do not
 
 2\. Find the resource for which you want to configure the CDN caching feature. Click the CNAME to open the resource settings.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/cdn-resources-cname.png" alt="CDN resources page" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/cdn-resource-name.png" alt="CDN resources page" width="80%">
 
 3\. Open the **Cache** settings.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/cdn-resources-cname.png" alt="CDN cache settings" width="80%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/cdn-cache-settings.png" alt="CDN cache settings" width="80%">
 
 4\. Make sure that the CDN caching is enabled. If not, click the **Enable CDN caching** toggle. 
 
