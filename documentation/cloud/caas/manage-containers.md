@@ -19,7 +19,7 @@ pageDescription: A comprehensive step-by-step guide on how to create and manage 
 ---
 # Manage containers
 
-After <a href="https://gcore.com/docs/cloud/caas/manage-containers" target="_blank">creating the container</a>, you can view and update its configuration in the Customer Portal on the <a href="https://portal.gcore.com/cloud/project/510960/region/80/caas/containers" target="_blank">Containers</a> page:
+After <a href="https://gcore.com/docs/cloud/caas/create-a-container" target="_blank">creating the container</a>, you can view and update its configuration in the Customer Portal on the <a href="https://portal.gcore.com/cloud/project/510960/region/80/caas/containers" target="_blank">Containers</a> page:
 
 <img src="https://assets.gcore.pro/docs/cloud/caas/manage-containers/containers-page.png" alt="Containers page" width="80%">
 
@@ -55,7 +55,7 @@ On the **Image & Port** tab, you can add a container startup command, as well as
 
 ### Container configuration
 
-View and adjust the number of MiB of memory, allocated mCPU, as well as autoscaling limits and triggers. For detailed overview of these settings, check out the the relevant steps in the <a href="https://gcore.com/docs/cloud/caas/create-a-container#step-4-configure-autoscaling" target="_blank">Create a container</a> guide. 
+View and adjust the number of MiB of memory, allocated mCPU, as well as autoscaling limits and triggers. For a detailed overview of these settings, check out the the relevant steps in the <a href="https://gcore.com/docs/cloud/caas/create-a-container#step-4-configure-autoscaling" target="_blank">Create a container</a> guide. 
 
 <img src="https://assets.gcore.pro/docs/cloud/caas/manage-containers/container-configuration.png" alt="Container configuration tab" width="80%">
 
