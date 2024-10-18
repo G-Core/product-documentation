@@ -42,7 +42,7 @@ variable "cdn_resource_cname" {
 
 ## Step 2: Configure environment variables 
 
-Create **.tfvars* file for each environment to set the variable values. For example, for preproduction:
+Create *.tfvars* file for each environment to set the variable values. For example, for preproduction:
 
 <code-block>
 // preprod.tfvars
