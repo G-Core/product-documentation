@@ -1,5 +1,5 @@
 ---
-title: copy-cdn-resources-via-terraform.md
+title: copy-cdn-resources-via-terraform
 displayName: Copy CDN resources via Terraform
 published: true
 order: 30
