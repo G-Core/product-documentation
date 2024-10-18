@@ -34,10 +34,8 @@ To proceed with the following steps, you need to configure <a href="https://gcor
 Start setting up version control by initializing a Git repository in your Terraform project directory. To do so, run the following command: 
 
 <code-block>
-
 cd your-terraform-project-directory
 git init
-
 </code-block>
 
 ### Step 2: Organize Terraform files 
@@ -45,31 +43,25 @@ git init
 Create a *.gitignore* file to ensure sensitive data and other unnecessary files are not committed to version control: 
 
 <code-block>
-
 \# .gitignore
 *.tfvars
 *.tfstate
 *.tfstate.backup
 .terraform/
-
 </code-block>
 
 After you create the file, stage your Terraform files for the initial commit: 
 
 <code-block>
-
 git add .
 git commit -m "Initial commit of Terraform configuration for CDN resources"
-
 </code-block>
 
 Set an initial tag for versioning and push the changes to your main branch: 
 
 <code-block>
-
 git tag -a v1.0.0 -m "Initial release"
 git push origin main --tags
-
 </code-block>
 
 ### Step 3. Update Terraform configuration 
@@ -77,10 +69,8 @@ git push origin main --tags
 Modify your Terraform configuration as needed. After making changes, commit them to your Git repository: 
 
 <code-block>
-
 git add .
 git commit -m "Updated CDN resource config"
-
 </code-block>
 
 ### Step 4. Add tags 
@@ -88,10 +78,8 @@ git commit -m "Updated CDN resource config"
 Tag significant versions of your configuration:
 
 <code-block>
-
 git tag -a v1.0.1 -m "Release version 1.0.1 with updated CDN resource config"
 git push origin main --tags
-
 </code-block>
 
 ### Step 5. Apply the configuration 
