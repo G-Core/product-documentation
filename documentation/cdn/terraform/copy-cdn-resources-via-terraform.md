@@ -42,7 +42,7 @@ variable "cdn_resource_cname" {
 
 ## Step 2: Configure environment variables 
 
-Create **.tfvars* file for each environment to set the variable values. For example, for preproduction:
+Create *.tfvars* file for each environment to set the variable values. For example, for preproduction:
 
 <code-block>
 // preprod.tfvars
@@ -92,7 +92,7 @@ Initialize Terraform and create workspaces for preproduction and production:
 
 <code-block>
 terraform init
- 
+  
 terraform workspace new preprod
 terraform workspace new production
 </code-block>
