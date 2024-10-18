@@ -18,14 +18,9 @@ To work with Terraform, you need to create a configuration file where you specif
 
 For detailed instructions on how to install Terraform and configure it for managing CDN infrastructure, check out the following guides: 
 
-* Install Terraform and integrate it with Gcore CDN 
-
-* Create and manage CDN resources via Terraform 
-
-* Copy a CDN resource
-
-* Create a rule  
-
-* Add an SSL certificate 
-
-* Set up version control and roll back to previous configurations 
+* <a href="https://gcore.com/docs/cdn/terraform/install-and-configure-terraform" target="_blank">Install Terraform and integrate it with Gcore CDN</a>
+* <a href="https://gcore.com/docs/cdn/terraform/manage-a-cdn-resource-with-terraform" target="_blank">Create and manage CDN resources via Terraform</a>
+* <a href="https://gcore.com/docs/cdn/terraform/copy-cdn-resources-via-terraform" target="_blank">Copy a CDN resource</a>
+* <a href="https://gcore.com/docs/cdn/terraform/create-cdn-rule-via-terraform" target="_blank">Create a rule</a>
+* <a href="https://gcore.com/docs/cdn/terraform/add-ssl-certificate-to-cdn-via-terraform" target="_blank">Add an SSL certificate</a>
+* <a href="https://gcore.com/docs/cdn/terraform/version-control-and-rollback-via-terraform" target="_blank">Set up version control and roll back to previous configurations</a>
