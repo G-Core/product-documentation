@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: Grafana, Terraform
+displayName: Grafana
 published: true
 order: 120
 ---

@@ -294,7 +294,7 @@ If a CDN resource was created via Terraform, you can change its options via Terr
 
 1\. Open the *main.tf* file. 
 
-2\. The file is supposed to contain the code for the creation of your CDN resource. If it is missing, add the code according to the "[Create a new CDN resource"](https://gcore.com/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform#create-a-new-cdn-resource) section.  
+2\. The file is supposed to contain the code for the creation of your CDN resource. If it is missing, add the code according to the "[Create a new CDN resource"](https://gcore.com/docs/cdn/terraform/manage-a-cdn-resource-with-terraform#create-a-new-cdn-resource) section.  
 
 Don't worry, Terraform won't duplicate a resource. Terraform requires the code used for the creation of the resource only to identify a resource that should be changed. 
 
@@ -346,7 +346,7 @@ If a CDN resource was created via Terraform, you can add an SSL certificate via 
 
 1\. Open the *main.tf* file. 
 
-2_._ The file is supposed to contain the code for the creation of your CDN resource. If it is missing, add the code according to the [Create a new CDN resource](https://gcore.com/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform#create-a-new-cdn-resource) section.  
+2_._ The file is supposed to contain the code for the creation of your CDN resource. If it is missing, add the code according to the [Create a new CDN resource](https://gcore.com/docs/cdn/terraform/manage-a-cdn-resource-with-terraform#create-a-new-cdn-resource) section.  
 
 Don't worry, Terraform won't duplicate a resource. Terraform requires the code used for the creation of the resource only to identify a resource that should be changed. 
 
