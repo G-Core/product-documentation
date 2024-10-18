@@ -4,7 +4,6 @@ displayName: Configure CDN caching
 published: true
 order: 10
 toc:
-   --1--What is CDN caching?: "what-is-the-cdn-caching-feature"
    --1--Configure: "configure-cdn-caching"
    --2--Origin controlled: "origin-controlled"
    --2--CDN controlled: "cdn-controlled"
@@ -16,8 +15,6 @@ pageTitle: Setting CDN Cache Lifetime on Origin or CDN Side | Gcore
 pageDescription: A guide on how to configure the CDN resource cache lifetime on the origin or CDN side.
 ---
 # Specify cache lifetime on a CDN resource or origin
-
-## What is the CDN caching feature?
 
 Files cannot be stored in the CDN servers' cache indefinitely. The CDN caching feature allows setting how long requested files from your origin server will be stored in the CDN server's cache. If end-users request these files, they will be loaded from the cache without additional requests to the origin server, reducing delivery time, financial spending, and the origin server load.  
 
@@ -111,7 +108,7 @@ If you select Do not cache option, caching will be disabled even if the Enable C
 
 6\. (Optional) Set advanced caching rules if you want to set different caching times for specific responses. Check out the following section for instructions. 
 
-#### Enable CDN caching via advanced rules 
+#### Enable CDN caching via advanced caching rules 
 
 1\. In the CDN resource settings, navigate to the **Cache** section. 
 
@@ -137,6 +134,8 @@ For instance, if you set a cache expiry of 4 days and add two rules in the "Adva
 - Requests with response codes 4xx (except 404) and 5xx will not be cached.
 
 6\. Save changes. 
+
+</tabset-element>
 
 ## Check CDN caching settings
 
