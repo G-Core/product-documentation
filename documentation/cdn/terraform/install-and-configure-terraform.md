@@ -2,7 +2,7 @@
 title: install-and-configure-terraform
 displayName: Install and integrate with CDN
 published: true
-order: 20
+order: 10
 toc:
 pageTitle: A guide on how to install Terraform and integrate it with Gcore CDN  | Gcore
 pageDescription: Learn how to install and configure Terraform.
