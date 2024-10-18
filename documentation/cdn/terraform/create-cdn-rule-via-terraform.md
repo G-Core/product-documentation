@@ -2,15 +2,7 @@
 title: create-cdn-rule-via-terraform
 displayName: Create a CDN rule via Terraform
 published: true
-order: 10
-toc:
-   --1--What is Terraform?: "what-is-terraform"
-   --1--Install and configure Terraform: "install-terraform-and-integrate-it-with-our-cdn"
-   --1--Manage CDN: "manage-the-cdn-infrastructure-via-terraform"
-   --2--Create a CDN resource: "create-a-new-cdn-resource"
-   --2--Configure options: "configure-cdn-resource-options"
-   --2--Add an SSL certificate: "add-an-ssl-certificate"
-   --2--Create a rule: "create-a-rule"
+order: 30
 pageTitle: A guide on how to create a CDN rule with Terraform | Gcore
 pageDescription: Learn how to add a new CDN rule to the resource and configure the needed settings via Terraform.
 ---
