@@ -1,6 +1,6 @@
 ---
 title: copy-cdn-resources-via-terraform
-displayName: Copy CDN resources via Terraform
+displayName: Copy CDN resources
 published: true
 order: 30
 toc:

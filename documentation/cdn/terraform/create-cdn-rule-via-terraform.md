@@ -1,6 +1,6 @@
 ---
 title: create-cdn-rule-via-terraform
-displayName: Create a CDN rule via Terraform
+displayName: Create a CDN rule
 published: true
 order: 40
 pageTitle: A guide on how to create a CDN rule with Terraform | Gcore
