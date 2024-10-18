@@ -92,7 +92,7 @@ Initialize Terraform and create workspaces for preproduction and production:
 
 <code-block>
 terraform init
- 
+  
 terraform workspace new preprod
 terraform workspace new production
 </code-block>
