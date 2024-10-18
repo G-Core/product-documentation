@@ -1,6 +1,6 @@
 ---
 title: add-ssl-certificate-to-cdn-via-terraform
-displayName: Add an SSL certificate via Terraform
+displayName: Add an SSL certificate
 published: true
 order: 50
 toc:

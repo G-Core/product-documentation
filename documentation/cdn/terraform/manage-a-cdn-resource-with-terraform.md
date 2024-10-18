@@ -1,6 +1,6 @@
 ---
 title: manage-a-cdn-resource-with-terraform
-displayName: Create and manage CDN resources with Terraform
+displayName: Create and manage CDN resources
 published: true
 order: 20
 toc:

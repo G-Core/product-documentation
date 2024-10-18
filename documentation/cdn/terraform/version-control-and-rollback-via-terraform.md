@@ -1,6 +1,6 @@
 ---
 title: version-control-and-rollback-via-terraform
-displayName: Copy CDN resources via Terraform
+displayName: Set up version control and perform rollback
 published: true
 order: 60
 toc:
