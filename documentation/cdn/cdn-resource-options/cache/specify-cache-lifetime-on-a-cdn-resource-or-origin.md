@@ -4,7 +4,6 @@ displayName: Configure CDN caching
 published: true
 order: 10
 toc:
-   --1--What is CDN caching?: "what-is-the-cdn-caching-feature"
    --1--Configure: "configure-cdn-caching"
    --2--Origin controlled: "origin-controlled"
    --2--CDN controlled: "cdn-controlled"
@@ -16,8 +15,6 @@ pageTitle: Setting CDN Cache Lifetime on Origin or CDN Side | Gcore
 pageDescription: A guide on how to configure the CDN resource cache lifetime on the origin or CDN side.
 ---
 # Specify cache lifetime on a CDN resource or origin
-
-## What is the CDN caching feature?
 
 Files cannot be stored in the CDN servers' cache indefinitely. The CDN caching feature allows setting how long requested files from your origin server will be stored in the CDN server's cache. If end-users request these files, they will be loaded from the cache without additional requests to the origin server, reducing delivery time, financial spending, and the origin server load.  
 
@@ -75,27 +72,61 @@ The new page opens. Do the remaining steps on it.
 
 ### CDN controlled
 
-1\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN</a> section in the Gcore Customer Portal and click the custom domain of the resource for which you want to configure the CDN caching feature.
+You can configure CDN caching at two levels: 
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/13249311265809.png" alt="CDN controlled">
+* For the whole resource 
 
-The new page opens. Do the remaining steps on it.
+* At the advanced caching rule level in the resource 
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/13249271726353.png" alt="The new page opens" width="80%">
+These settings can be set up independently—you can set CDN caching to **Do not cache** in the main settings, but have it enabled in a rule, and vice versa. 
 
-2\. Go to the "Cache" section and click **CDN caching**.
+<tabset-element>
 
-3\. Enable the "CDN controlled" option.
+#### Enable CDN caching for the whole resource 
 
-4\. Specify the timespan in the "Cache expiry" field. You can select the defined values from the list or choose **Custom value** and enter the time in seconds. If you specify "Do not cache", caching will be disabled.
+1\. In the Gcore Customer Portal, navigate to <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN</a>. 
 
-**Note**: This caching time will be applied for response codes 200, 206, 301, and 302. Responses with 4xx and 5xx will not be cached.
+2\. Find the resource for which you want to configure the CDN caching feature. Click the CNAME to open the resource settings.
 
-5\. (Optional) Set advanced caching rules if you want to set different caching times for specific responses. Click **Add rule**, type the response code and select the caching time.
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/cdn-resource-name.png" alt="CDN resources page" width="80%">
 
-**Note**: "Advanced caching rules" values have a higher priority than the "Cache expiry" values.
+3\. Open the **Cache** settings.
 
-For instance, if we set a cache expiry of 4 days and add two rules in the "Advanced caching rules" section: one for 200 response code configured for 10 minutes and the other for 404 response code for 1 minute - the requests will be cached as follows:
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/cdn-cache-settings.png" alt="CDN cache settings" width="80%">
+
+4\. Make sure that the CDN caching is enabled. If not, click the **Enable CDN caching** toggle. 
+
+5\. Specify the caching timespan in the **Cache expiry** field. You can select the defined values from the list or choose **Custom value** and enter the preferred time in seconds. 
+
+Note that this caching time will be applied for response codes 200, 206, 301, and 302. Responses with 4xx and 5xx will not be cached. 
+
+<alert-element type="warning" title="Warning">
+
+If you select Do not cache option, caching will be disabled even if the Enable CDN caching toggle is enabled. 
+
+</alert-element>
+
+6\. (Optional) Set advanced caching rules if you want to set different caching times for specific responses. Check out the following section for instructions. 
+
+#### Enable CDN caching via advanced caching rules 
+
+1\. In the CDN resource settings, navigate to the **Cache** section. 
+
+2\. Make sure that the CDN caching is enabled. If not, click the **Enable CDN caching** toggle. 
+
+3\. Click **Add rule** and configure it as follows: 
+
+ * **Response code**: select the HTTP response code for which you want to configure caching. 
+
+ * **Caching time**: specify how long the data will be stored in the cache before it expires.
+
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/add-caching-rule.png" alt="Advanced caching rules" width="80%">
+
+4\. Click **Save changes** to apply the settings. 
+
+Note that the Caching time in advanced rules has a higher priority than general Cache expiry. 
+
+For instance, if you set a cache expiry of 4 days and add two rules in the "Advanced caching rules" section: one for 200 response code configured for 10 minutes and the other for 404 response code for 1 minute - the requests will be cached as follows:
 
 - Requests with response code 200 will be cached for 10 minutes.
 - Requests with response code 404 will be cached for 1 minute.
@@ -103,6 +134,8 @@ For instance, if we set a cache expiry of 4 days and add two rules in the "Advan
 - Requests with response codes 4xx (except 404) and 5xx will not be cached.
 
 6\. Save changes. 
+
+</tabset-element>
 
 ## Check CDN caching settings
 
