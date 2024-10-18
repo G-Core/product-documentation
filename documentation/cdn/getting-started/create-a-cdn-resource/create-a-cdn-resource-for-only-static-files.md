@@ -23,7 +23,7 @@ Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN</a>
 
 ## Step 2. Choose acceleration type
 
-Select **Accelerate and protect only static files** and then click **Confirm**.
+Select **Accelerate and protect static assets only** and then click **Confirm**.
 
 <img src="https://assets.gcore.pro/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/cdn-resource-20.png" alt="Acceleration and protection type" width="50%">  
 

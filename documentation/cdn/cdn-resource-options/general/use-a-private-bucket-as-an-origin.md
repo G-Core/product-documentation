@@ -33,9 +33,9 @@ To locate all the essential keys, refer to the <a href="https://docs.aws.amazon.
 
 ### Gcore
 
-You can find the Hostname and Region in the “Details” section under the <a href="https://storage.gcore.com/storage/list" target="_blank">Storages</a> tab.
+You can find the Hostname and Region in the **Details** section under the <a href="https://storage.gcore.com/storage/list" target="_blank">Storages</a> tab.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15353064572561.png" alt="Gcore S3 storage">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/object-storages-context-menu.png" alt="Gcore S3 storage">
 
 <alert-element type="caution" title="Caution">
 
@@ -60,9 +60,9 @@ The instructions below are relevant to the first option. The process for the sec
 
 To configure a private origin: 
 
-1\. Go to the <a href="https://cdn.gcore.com/resources/create/wizard" target="_blank">CDN resource creation page</a>, select "Accelerate and protect only static assets", and click **Confirm**.
+1\. Go to the <a href="https://cdn.gcore.com/resources/create/wizard" target="_blank">CDN resource creation page</a>, select **Accelerate and protect static assets only**, and click **Confirm**.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/image_1460.png" alt="CDN resource creation page" width="50%">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/protect-static-assets-only.png" alt="CDN resource creation page" width="50%">
 
 A new page will open. Complete the remaining steps of the manual in the "Origin" section on this page.
 
@@ -91,7 +91,7 @@ In the example below, we use the private bucket ```test-private``` in Gcore Obje
 
 <img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/private-bucket-conf.png" alt="Origin section" width="70%">
 
-7\. Continue the CDN resource creation according to the "<a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">Create CDN resource for only static files</a>" guide.
+7\. Continue the CDN resource creation according to the <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files" target="_blank">Create CDN resource for static assets only</a> guide.
 
 8\. Go to the resource settings and open the Host header option in the "HTTP headers" section. Specify the URL of your storage Hostname (the URL depends on your S3 provider) in the following format: 
 
