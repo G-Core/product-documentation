@@ -2,7 +2,7 @@
 title: add-ssl-certificate-to-cdn-via-terraform
 displayName: Add an SSL certificate via Terraform
 published: true
-order:
+order: 50
 toc:
 pageTitle: A guide on how to add an SSL certificate via Terraform | Gcore
 pageDescription: Learn how to add an SSL certificate to a CDN resource via Terraform.

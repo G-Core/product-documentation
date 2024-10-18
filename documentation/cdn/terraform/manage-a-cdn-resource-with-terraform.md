@@ -2,7 +2,7 @@
 title: manage-a-cdn-resource-with-terraform
 displayName: Create and manage CDN resources with Terraform
 published: true
-order: 10
+order: 20
 toc:
    --1--Create a new CDN resource: "create-a-new-cdn-resource"
    --2--Step 1. Open the configuration file: "step-1-open-the-configuration-file"
@@ -11,7 +11,7 @@ toc:
    --2--Step 4. Verify the configuration: "step-4-verify-the-configuration"
    --2--Step 5. Preview your changes: "step-5-preview-your-changes"
    --2--Step 6. Apply the configuration: "step-6-apply-the-configuration"
-   --2--Step 7. Configure the resource in the Customer Portal: "step-7-configure-cdn-resource-in-the-customer-portal"      
+   --2--Step 7. Configure the resource in the Customer Portal: "step-7-configure-cdn-resource-in-the-customer-portal"
    --1--Configure CDN resource options: "configure-cdn-resource-options"
    --2--Step 1. Update the configuration file: "step-1-open-the-configuration-file"
    --2--Step 2. Provide required options: "step-2-provide-the-required-options-for-gcore-resources"
