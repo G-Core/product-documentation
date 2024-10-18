@@ -46,11 +46,11 @@ If you don't need options, do not add the _options_ code segment. 
 
 Here is an example of a configuration file. Let's say you want to add a rule with the following characteristics: 
 
-- <span style="color:#FF5913">example_rule</span> — the name of the rule for Terraform, 
-- <span style="color:#FF5913">cdn_example_com</span> — the name of the CDN resource in Terraform,  
-- <span style="color:#FF5913">PNG images</span> — the name of the rule from the Gcore Customer Portal. 
-- <span style="color:#FF5913">/folder/images/*.png</span> — the path to the files. 
-- The "WebP Compression" option with a final quality of 66 is required. 
+- <span style="color:#FF5913">example_rule</span> — the name of the rule for Terraform
+- <span style="color:#FF5913">cdn_example_com</span> — the name of the CDN resource in Terraform
+- <span style="color:#FF5913">PNG images</span> — the name of the rule from the Gcore Customer Portal
+- <span style="color:#FF5913">/folder/images/*.png</span> — the path to the files
+- The "WebP Compression" option with a final quality of 66 is required
 
 The final code in the configuration file will look as follows:
 
@@ -61,4 +61,3 @@ The final code in the configuration file will look as follows:
 7\. Access the "Terraform" folder in the command-line interface unless you are already in it, and run the ```terraform plan``` command — it will show what changes Terraform is going to make. If the code contains an error, the output will give a brief description of it.  
 
 8\. Run the ```terraform apply``` command — it will make changes to the CDN. Terraform will ask you to confirm the action — enter "yes".
-
