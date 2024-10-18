@@ -155,7 +155,7 @@ Backup origins are taken out of balance by default. The CDN requests content fro
 
 </expandable-element>
 
-<expandable-element title="Use next upstream">
+<expandable-element title="Use next upstream" id="use-next-upstream">
 
 This option only works if each origin has the same content. When enabled, the CDN will call the following origins on the list if the previous one is unavailable and respond with any 4xx or 5xx series response code. 
 
