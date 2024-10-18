@@ -56,11 +56,13 @@ At this step, you need to write the code that creates an origin group — the CD
 
 To create an origin group via Terraform:
 
-1\. Copy the following code to the *main.tf* file. Replace the information in brackets with your values, and then remove the brackets.   
-  <code-block>
-  resource "gcore_cdn_origingroup" "<span style="color:#FF5913">make up Terraform name of the origin group; you can use any name, it will be linked to the origin in the Terraform system</span>" {  
-   name = "<span style="color:#FF5913">make up a name of the origin group that will be displayed in the Gcore Customer Portal</span>"
-  </code-block>
+1\. Copy the following code to the *main.tf* file. Replace the information in brackets with your values, and then remove the brackets.
+
+<code-block>
+resource "gcore_cdn_origingroup" "<span style="color:#FF5913">make up Terraform name of the origin group; you can use any name, it will be linked to the origin in the Terraform system</span>" {  
+name = "<span style="color:#FF5913">make up a name of the origin group that will be displayed in the Gcore Customer Portal</span>"
+</code-block>
+
 2\. Add the appropriate strings and code snippets to the file:
 
  * To enable the <a href="https://gcore.com/docs/cdn/add-an-origin-group#use-next-upstream" target="_blank">Use next upstream</a> option: `use_next = true` 
@@ -69,30 +71,30 @@ To create an origin group via Terraform:
   
  * To add an active origin, add the following code. Specify your website domain and remove the brackets. 
 
-  <code-block>
-  origin {          
-  source  = "<span style="color:#FF5913">domain of your origin website</span>"   
+<code-block>
+origin {          
+  source = "<span style="color:#FF5913">domain of your origin website</span>"   
   enabled = true      
-  } 
-  </code-block>
+} 
+</code-block>
 
  * To add a backup origin, add the following code. Specify your website domain and remove the brackets. 
 
-  <code-block>
-  origin {   
-   source  = "<span style="color:#FF5913">domain of your origin website</span>"   
+<code-block>
+origin {  
+  source = "<span style="color:#FF5913">domain of your origin website</span>"   
   enabled = true   
   backup = true   
-  } 
-  </code-block>
+}
+</code-block>
 
  You can add up to ten origins to a CDN resource.
 
 3\. Add another curly bracket to a new string below.  
 
-  ```
-  } 
-  ```
+```
+} 
+```
 
 Here is an example. Let's say you want to create an origin group with the following parameters: 
 
@@ -146,21 +148,21 @@ At this step, you will write the code that adds a CDN resource to your origin gr
 
  * To deliver different types of content from two separate custom domains: 
 
-  <code-block>
-  secondary_hostnames = ["<span style="color:#FF5913">additional custom domain</span>"] 
-  </code-block>
+<code-block>
+secondary_hostnames = ["<span style="color:#FF5913">additional custom domain</span>"] 
+</code-block>
 
  *  To deliver different types of content from more than two separate custom domains: 
 
-  <code-block>
-  secondary_hostnames = ["<span style="color:#FF5913">additional custom domain 1</span>","<span style="color:#FF5913">additional custom domain 2, continue adding up to 10 domains in quotation marks and separating them by commas</span>"] 
-  </code-block>
+ <code-block>
+ secondary_hostnames = ["<span style="color:#FF5913">additional custom domain 1</span>","<span style="color:#FF5913">additional custom domain 2, continue adding up to 10 domains in quotation marks and separating them by commas</span>"] 
+ </code-block>
 
 3\. At the end, add a curly bracket to a new string below.
 
-  ```
-  } 
-  ```
+```
+} 
+```
 
 Here is an example. Let's say you want to create a CDN resource with the following parameters: 
 
