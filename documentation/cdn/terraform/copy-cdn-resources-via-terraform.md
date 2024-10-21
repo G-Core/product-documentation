@@ -88,11 +88,11 @@ resource "gcore_cdn_resource" "example" {
 
 Terraform workspaces allow you to manage multiple environments using the same configuration. 
 
-Initialize Terraform and create workspaces for preproduction and production: 
+Initialize Terraform: `terraform init`
+
+Then create workspaces for preproduction and production: 
 
 <code-block>
-terraform init
-  
 terraform workspace new preprod
 terraform workspace new production
 </code-block>
