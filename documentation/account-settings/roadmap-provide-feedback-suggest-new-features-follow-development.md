@@ -62,7 +62,7 @@ Under the “Changelog” tab, you can view all the latest Gcore releases, tag p
 
 ## What features do authorized and unauthorized users have?
 
-Authorized and unauthorized users have different rights. Roadmap uses the <a href="https://gcore.com/docs/account-settings/create-an-account-for-an-individual-or-legal-entity" target="_blank">same account as Gcore</a>. You can sign in or sign up with email, SSO, Google, Apple, GitHub, and Microsoft.
+Authorized and unauthorized users have different rights. Roadmap uses the <a href="https://gcore.com/docs/account-settings/create-account/create-an-account-for-an-individual-or-legal-entity" target="_blank">same account as Gcore</a>. You can sign in or sign up with email, SSO, Google, Apple, GitHub, and Microsoft.
 
 <table>
 <tr>
