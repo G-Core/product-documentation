@@ -2,7 +2,7 @@
 title: billing-address
 displayName: Billing address
 published: true
-order: 37 
+order: 37
 pageTitle: A guide on how to view and update your billing address | Gcore
 pageDescription: Learn how to check and modify billing address in the account settings.
 ---
