@@ -43,7 +43,7 @@ If you click the info icon next to the Sum column, you can view a detailed break
 * **Expense before tax (€)**: The total amount charged before taxes are applied.  
 * **Discount percentage (%)**: The percentage of discount applied to your payment before taxation.  
 * **Discount amount (€)**: The actual amount of the discount. 
-* **Tax rate (%)**: The percentage of tax applied to your expense. This rate is based on local tax laws or regulations. <a href="https://gcore.com/docs/account-settings/billing/vat-rates-in-different-countries-for-an-individual-and-legal-entity" target="_blank">Check VAT rates in different countries</a>.
+* **Tax rate (%)**: The percentage of tax applied to your expense. This rate is based on local tax laws or regulations. <a href="https://gcore.com/docs/account-settings/billing/vat-rates-in-different-countries-for-an-individual-and-legal-entity" target="_blank">Check VAT rates in different countries</a>
 * **Tax amount (€)**: The total amount of tax you’ll pay.
 
 <img src="https://assets.gcore.pro/docs/account-settings/billing/expenses/tax-calculation.png" alt="Tax calculation dialog" width="80%">
