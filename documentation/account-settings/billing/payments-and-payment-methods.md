@@ -26,7 +26,7 @@ The Payments page in your profile settings shows payment operations that have be
 * **Date**: The date when the transaction occurred. 
 * **Payment method**: How the payment was made (credit card, debit card, or PayPal). 
 * **Sum**: The total paid amount.
-* **Status**: The current processing state of the transaction. Check the <a href="https://gcore.com/docs/account-settings/billing/payments-and-payment-methods#payment-statuses" target="_blank">Payment statuse</a> section for details.
+* **Status**: The current processing state of the transaction. Check the <a href="https://gcore.com/docs/account-settings/billing/payments-and-payment-methods#payment-statuses" target="_blank">Payment statuses</a> section for details.
 
 <img src="https://assets.gcore.pro/docs/account-settings/billing/payments-and-payment-methods/payments-page.png" alt="Payments page in the account settings" width="80%"> 
 
@@ -64,7 +64,7 @@ You can add new payment methods and update existing ones on the Payment methods 
 
 <alert-element type="info" title="Info">
  
-The payment method address is separate from your <a href="" target="_blank">billing address</a>. This means that any changes made on one page won’t impact the other. 
+The payment method address is separate from your <a href="https://gcore.com/docs/account-settings/billing/billing-address" target="_blank">billing address</a>. This means that any changes made on one page won’t impact the other. 
  
 </alert-element>
 
