@@ -41,11 +41,6 @@ The following table features all rule actions along with their priority levels.
   </tr>
 </thead>
 <tbody>
-  <tr>
-   <td style="text-align: left">Monitor</td>
-   <td style="text-align: left">Logs any request that meets the condition of the rule. This action type doesn’t present any challenge to the user.</td>
-   <td style="text-align: left">First</td>
-    </tr>
     <tr>
    <td style="text-align: left">Allow</td>
    <td style="text-align: left">Allows specified traffic to view the application's content and exclude the user from any security checks.</td>

@@ -63,7 +63,7 @@ WAF edge nodes and behavioral components work together to provide protection aga
 
 ### WAF Edge nodes 
 
-These nodes are responsible for running <a href="https://gcore.com/docs/waap/waap-policies" target="_blank">WAAP policies</a> against requests. They also enforce actions on requests (block, allow, or monitor) based on the recommendation provided by the second part, the behavioral component.  
+These nodes are responsible for running <a href="https://gcore.com/docs/waap/waap-policies" target="_blank">WAAP policies</a> against requests. They also enforce actions on requests (block, allow, Captcha, JavaScript validation, or tag) based on the recommendation provided by the second part, the behavioral component.  
 
 The existence of nodes that run policies against traffic is what essentially defines a typical first-gen WAF.  
 
