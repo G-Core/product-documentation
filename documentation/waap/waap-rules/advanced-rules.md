@@ -48,7 +48,6 @@ The advanced rule object contains the following properties:
     },
     "captcha": {},
     "handshake": {},
-    "monitor": {},
     "tag": {
       "tags": [
         "string"
@@ -62,7 +61,7 @@ The advanced rule object contains the following properties:
 
 <alert-element type="info" title="Info">
  
-Each rule can contain only one action—`block`, `allow`, `captcha`, `handshake`, `monitor`, or `tag`. If you use multiple actions in a single rule, the API will return an error.
+Each rule can contain only one action—`block`, `allow`, `captcha`, `handshake`, or `tag`. If you use multiple actions in a single rule, the API will return an error.
  
 </alert-element>
 
@@ -92,7 +91,6 @@ Each rule can contain only one action—`block`, `allow`, `captcha`, `handshake`
     <li><code>allow</code>: WAAP allowed the request.</li>
     <li><code>captcha</code>: WAAP presented the user with a CAPTCHA</li>
     <li><code>handshake</code>: WAAP. performed automatic browser validation.</li>
-    <li><code>monitor</code>: WAAP monitored and allowed the request.</li>
     <li><code>tag</code>: WAAP will generate a tag with no action.</li>
     </ul>
     <td style="text-align: left">On tag <a href="https://gcore.com/docs/waap/waap-rules/custom-rules#actions-in-custom-rules" target="_blank">action</a>, the tag field should be provided.<br><br>
