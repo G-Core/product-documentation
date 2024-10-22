@@ -50,7 +50,7 @@ Typically, your app presents users with an interface through which they can crea
 You’ll need to have:
 
 - Your own video streaming interface created
-- A Gcore account with an active <a href="https://gcore.com/docs/account-settings/create-an-account-for-an-individual-or-legal-entity" target="_blank">Streaming</a> subscription
+- A Gcore account with an active <a href="https://gcore.com/docs/account-settings/create-account/create-an-account-for-an-individual-or-legal-entity" target="_blank">Streaming</a> subscription
 - An <a href="https://api.gcore.com/docs/streaming" target="_blank">authentication</a> set up using the user credentials
 - A <a href="https://gcore.com/docs/streaming-platform/extra-features/get-webhooks-from-the-streaming-platform" target="_blank">webhook</a> set up
 
