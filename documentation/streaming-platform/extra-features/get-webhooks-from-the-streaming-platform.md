@@ -4,7 +4,6 @@ displayName: Webhooks
 published: true
 order: 40
 toc:
-   --1--What is a webhook?: "what-is-a-webhook"
    --1--What is it used for?: "what-are-the-video-streaming-webhooks-used-for"
    --1--Configure the webhook integration: "configure-the-webhook-integration"
    --1--Examples of available webhooks: "webhook-examples-of-all-video-streaming-events"
@@ -12,8 +11,6 @@ pageTitle: Understanding Webhooks With Examples | Gcore
 pageDescription: What automatic notifications of the Video Streaming events you may receive.
 ---
 # Get webhooks from the Video Streaming 
-  
-## What is a webhook?
 
 A webhook is a free automated notification about an event in our service. You can receive notifications about the following events of our Video Streaming:
 
@@ -23,6 +20,7 @@ A webhook is a free automated notification about an event in our service. You c
 - Updates on broadcast statuses: pending, live, paused, or finished.
 - A video is uploaded to the Gcore Customer Portal.
 - Updates on video processing: a video has started processing, partially processed, or completely processed.
+- Updates to a restream: it was created, is live, or was stopped.
 
 Whenever any of these events happens, our server will create an HTTP POST request and notify you about it. You will receive the information in JSON format. Below is an example of a webhook triggered when a live stream starts.
 
@@ -525,3 +523,74 @@ Where:
 - <span style="color:#FF5913">170859</span> is the duration of the video in seconds,
 - <span style="color:#FF5913">complete, ready</span> is the status which means that the video was processed.
 - <span style="color:#FF5913">vod720n, vod480n, vod360n, vod240n</span> are the different qualities of the video. 
+
+**A restream was created**
+
+<code-block>
+{ 
+  "type": "restream", 
+  "message": { 
+    "restream": { 
+      "id": <span style="color:#FF5913">228237<span>, 
+      "name": "<span style="color:#FF5913">restream 1</span>", 
+      "stream_id": <span style="color:#FF5913">1665243</span>, 
+      "live": <span style="color:#FF5913">true</span> 
+      "active": <span style="color:#FF5913">false</span> 
+    } 
+  }
+}
+</code-block>  
+
+Where:
+
+- <span style="color:#FF5913">228237</span> is the restream ID in Gcore Customer Portal
+- <span style="color:#FF5913"> restream 1</span> is the name of your restream
+- <span style="color:#FF5913">1665243</span> is the stream ID in Gcore Customer Portal
+- <span style="color:#FF5913">true</span> is the indicator that the Video Streaming is receiving your restream
+- <span style="color:#FF5913">false</span> is the indicator that your stream is not being broadcasted
+
+**A restream is live**
+
+<code-block>
+{ 
+  "type": "restream", 
+  "message": { 
+    "restream": { 
+      "id": 228237, 
+      "name": "restream 1", 
+      "stream_id": 1665243, 
+      "live": true 
+    } 
+  } 
+} 
+</code-block>  
+
+Where:
+
+- <span style="color:#FF5913">228237</span> is the restream ID in Gcore Customer Portal
+- <span style="color:#FF5913"> restream 1</span> is the name of your restream
+- <span style="color:#FF5913">1665243</span> is the stream ID in Gcore Customer Portal
+- <span style="color:#FF5913">true</span> is the indicator that the Video Streaming is receiving your restream
+
+**A restream was stopped**
+
+<code-block>
+{ 
+  "type": "restream", 
+  "message": { 
+    "restream": { 
+      "id": 228237, 
+      "name": "restream 1", 
+      "stream_id": 1665243, 
+      "active": false 
+    } 
+  } 
+} 
+</code-block>
+
+Where:
+
+- <span style="color:#FF5913">228237</span> is the restream ID in Gcore Customer Portal
+- <span style="color:#FF5913"> restream 1</span> is the name of your restream
+- <span style="color:#FF5913">1665243</span> is the stream ID in Gcore Customer Portal
+- <span style="color:#FF5913">false</span> is the indicator that your stream is not being broadcasted
