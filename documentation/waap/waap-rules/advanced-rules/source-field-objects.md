@@ -295,7 +295,7 @@ The **ua_parsed** table contains user agent information collected by WAAP from t
 <tr style="text-align: left;">
     <td>client_type</td>
     <td>string</td>
-    <td style="text-align: left;">The type of client. Optional values: Major Browser, NA, Lib, Crawler, Custom Browser, mobile app, Headless Browser, Bot, Application, mail client, Site Monitoring, RSS Reader, Game Console, Text Browser, Network Diagnostics, certificate authority, paying service.</td>
+    <td style="text-align: left;">The type of client. Optional values: Major browser, NA, Lib, Crawler, Custom browser, mobile app, Headless browser, Bot, Application, mail client, Site monitoring, RSS reader, Game console, Text browser, Network diagnostics, certificate authority, paying service.</td>
     <td style="text-align: left;">user_agent.client_type<br>
     'major browser' in user_agent.client_type</td>
   </tr>
