@@ -37,13 +37,13 @@ To modify the cache key:
 
 2\. Find the resource where you want to modify the cache key and click the CNAME to open its settings.
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/modify-cache-key/cdn-resource-name.png" alt="CDN resource">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/modify-cache-key/cdn-resource-name.png" alt="CDN resource" width="80%">
 
 3\. In the **Cache** section, click **Cache key modification**.
 
 4\. Turn on the **Enable cache key modification** toggle and add the relevant <a href="https://gcore.com/docs/cdn/cdn-resource-options/cache/modify-cache-key#supported-variables" target="_blank">supported variables</a>, which are listed in the following section. 
 
-<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/modify-cache-key/cache-key-modification-section.png" alt="Cache key modification settings">
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/cache/modify-cache-key/cache-key-modification-section.png" alt="Cache key modification settings" width="80%">
 
 5\. Click **Save changes** to apply the updates. 
 
