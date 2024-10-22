@@ -1,6 +1,6 @@
 ---
 title: disable-and-resume-a-service
-displayName: Disable or resume
+displayName: Disable or resume products
 published: true
 order: 20
 toc:

@@ -1,6 +1,6 @@
 ---
 title: trial-conditions
-displayName: Trial
+displayName: Trial conditions
 published: true
 order: 10
 toc:
