@@ -104,7 +104,7 @@ For the `request`, `Whois`, `session`, and `user-agent` objects, every string va
 <tr style="text-align: left;">
     <td>ip_in_range</td>
     <td>function</td>
-    <td>Returns <code>true</code> if client ip is within the specified range</td>
+    <td>Returns <code>true</code> if client IP is within the specified range</td>
     <td>request.ip_in_range(<string>, <string>)<br>
     request.ip_in_range('72.21.217.0', '72.21.217.255')  
 or request.ip_in_range('2409:4072:6c8c:e228:ecaf:ce2c:fd7d:0000', '2409:4072:6c8c:e228:ecaf:ce2c:fd7d:4780')</td>
@@ -112,7 +112,7 @@ or request.ip_in_range('2409:4072:6c8c:e228:ecaf:ce2c:fd7d:0000', '2409:4072:6c8
 <tr style="text-align: left;">
     <td>rate_limit</td>
     <td>function</td>
-    <td>Returns true if the rate limit exceeded for these parameters (the scope is 'ip'/'cluster').<br>For parameter descriptions, check out the <a href="https://gcore.com/docs/waap/waap-rules/advanced-rules/advanced-rate-limiting-rules" target="_blank">Rate limiting</a> guide.</td>
+    <td>Returns true if the rate limit is exceeded for these parameters (the scope is 'ip'/'cluster').<br>For parameter descriptions, check out the <a href="https://gcore.com/docs/waap/waap-rules/advanced-rules/advanced-rate-limiting-rules" target="_blank">Rate limiting</a> guide.</td>
     <td>rate_limit(<br>
 [ip <string>, ...],<br>
 url <string>,<br>
@@ -295,7 +295,7 @@ The **ua_parsed** table contains user agent information collected by WAAP from t
 <tr style="text-align: left;">
     <td>client_type</td>
     <td>string</td>
-    <td style="text-align: left;">The type of client. Optional values: Major Browser, NA, Lib, Crawler, Custom Browser, mobile app, Headless Browser, Bot, Application, mail client, Site Monitoring, RSS Reader, Game Console, Text Browser, Network Diagnostics, certificate authority, paying service.</td>
+    <td style="text-align: left;">The type of client. Optional values: Major browser, NA, Lib, Crawler, Custom browser, mobile app, Headless browser, Bot, Application, mail client, Site monitoring, RSS reader, Game console, Text browser, Network diagnostics, certificate authority, paying service.</td>
     <td style="text-align: left;">user_agent.client_type<br>
     'major browser' in user_agent.client_type</td>
   </tr>
