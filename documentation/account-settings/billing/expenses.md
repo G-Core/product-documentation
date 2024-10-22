@@ -2,11 +2,11 @@
 title: expenses
 displayName: Expenses
 published: true
-order: 35
+order: 25
 toc:
    --1--Pricing rules overview: "pricing-rules-overview"
    --1--Tax rates and discounts: "tax-rates-and-discounts"
-   --1--Filter expense data: "filter-expense-data-in-the-table"   
+   --1--Filter expense data: "filter-expense-data-in-the-table"  
 pageTitle: A guide on how to view information about expenses | Gcore
 pageDescription: Learn how to check and filter expense data in the account settings.
 ---
