@@ -67,15 +67,7 @@ If you want to track certain traffic on the <a href="https://gcore.com/docs/waap
 
 <img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/monitored-tag-analytics-page.png" alt="WAAP requests graph on the Analytics page">
 
-Requests affected by the <a href="https://gcore.com/docs/waap/waap-rules/custom-rules#actions-in-custom-rules" target="_blank">monitor action</a> will also appear in the graph and table. 
-
-### The difference between the monitor tag and monitor action 
-
-The **monitor tag** significantly differs from the **monitor action** in custom rules. 
-
 When you add the monitor tag to a request, it won't affect WAAP's behavior. If the request is potentially dangerous, it will be blocked. The monitor tag only ensures that such requests are visible on the <a href="https://gcore.com/docs/waap/analytics#waap-page" target="_blank">WAAP</a> analytics page.
-
-However, if you apply the monitor action to a custom rule, it will determine how WAAP handles requests. Specifically, it will monitor and allow any requests to your domain, even if those requests aren't safe. 
 
 ### Sample rule with the monitor tag 
 

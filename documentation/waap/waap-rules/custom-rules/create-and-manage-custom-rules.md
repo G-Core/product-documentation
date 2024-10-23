@@ -74,7 +74,7 @@ If you create multiple conditions, the rule will only trigger when all condition
  
 </alert-element>
 
-7\. Next to **THEN**, select an action type: Monitor, Allow, Block, Captcha, JavaScript Validation, Tag. 
+7\. Next to **THEN**, select an action type: Allow, Block, Captcha, JavaScript Validation, Tag. 
 
 <img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/add-custom-waap-rule.png" alt="Add custom rule page in the Customer Portal">
 
@@ -112,7 +112,7 @@ To create a rule:
 
 6\. Click **Save**.  
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/ip-rule-definition.png" alt="A sample definition of a rule with IP condition">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/rule-ip-condition.png" alt="A sample definition of a rule with IP condition">
 
 ### Rules with IP range conditions 
 
