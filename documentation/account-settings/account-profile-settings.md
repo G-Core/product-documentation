@@ -14,7 +14,7 @@ All setttings under **Account profile** pages apply to the whole Gcore account, 
 
 <alert-element type="tip" title="Tip">
  
-To check the settings related to your individual user account, check <a href="https://gcore.com/docs/account-settings/your-profile-setting" target="_blank">Yout profile</a> settings. 
+To check the settings related to your individual user account, check <a href="https://gcore.com/docs/account-settings/your-profile-settings" target="_blank">Your profile</a> settings. 
  
 </alert-element>
 
