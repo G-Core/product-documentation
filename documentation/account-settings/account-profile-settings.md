@@ -8,19 +8,19 @@ pageDescription: A guide on how to configure an account profile settings in the 
 ---
 # Account profile settings
 
-All setttings under **Account profile** pages apply to the whole Gcore account, not just a profile of a particular user. 
+All settings under the **Account profile** pages apply to the whole Gcore account, not just the profile of a particular user. 
 
 <img src="https://assets.gcore.pro/docs/account-settings/account-profile-settings/account-profile-general-page.png" alt="Account profile settings in the Customer Portal" width="80%">
 
 <alert-element type="tip" title="Tip">
  
-To check the settings related to your individual user account, check <a href="https://gcore.com/docs/account-settings/your-profile-setting" target="_blank">Yout profile</a> settings. 
+To check the settings related to your individual user account, check <a href="https://gcore.com/docs/account-settings/your-profile-settings" target="_blank">Your profile</a> settings. 
  
 </alert-element>
 
 The General page features the high-level information about your account:  
 
-* **Client ID**: A unique identifier of you account in the system.  
+* **Client ID**: A unique identifier of your account in the system.  
 
 * **Account name**, **Company email**: Correspond to the email address you entered during the registration. 
 
