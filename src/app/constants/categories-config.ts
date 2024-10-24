@@ -50,4 +50,8 @@ export const categories: Array<Category> = [
         name: 'Edit article guide',
         url: 'edit-article-guide',
     },
+    {
+        name: 'Edge AI',
+        url: 'edge-ai',
+    },
 ];
