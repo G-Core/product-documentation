@@ -167,39 +167,34 @@ import (
 	"crypto/md5"
 	"encoding/base64"
 	"fmt"
-	"strings"
 	"time"
 )
 
-func gethash(client_id string, video_id string, secret string, expires int64) string {
-	hash_body := fmt.Sprintf("%s_%s_%s_%d_", client_id, video_id, secret, expires)   // set of unique parameters of video
+func gethash(clientId string, videoId string, secret string, expires int64) string {
+	hashBody := fmt.Sprintf("%s_%s_%s_%d_", clientId, videoId, secret, expires) // set of unique parameters of video
 
-	md5sum := md5.Sum([]byte(hash_body))                   // get MD5 hash from parameters of video
-	hash_md5 := base64.StdEncoding.EncodeToString(md5sum[:])
-
-	hash_md5 = strings.Replace(hash_md5, "+", "-", -1)     // preparation for use in URL
-	hash_md5 = strings.Replace(hash_md5, "/", "_", -1)
-	hash_md5 = strings.Replace(hash_md5, "=", "", -1)
-	return hash_md5
+	md5sum := md5.Sum([]byte(hashBody)) // get MD5 hash from parameters of video
+	hashMd5 := base64.RawURLEncoding.EncodeToString(md5sum[:])
+	return hashMd5
 }
 
 func main() {
-	client_id := "2675"        // enter your account ID here
-	secret := ""               // enter your secret key from CDN-resource here
+	clientId := "2675" // enter your account ID here
+	secret := ""       // enter your secret key from CDN-resource here
 
 	//VOD
-	video_slug := "3dk4NsRt6vWsffEr"		// enter your video's slug here
-	expires := time.Now().Unix() + 24*60*60		// now + 24 hours, unixtime in seconds
+	videoSlug := "3dk4NsRt6vWsffEr"         // enter your video's slug here
+	expires := time.Now().Unix() + 24*60*60 // now + 24 hours, unixtime in seconds
 
-	token := gethash(client_id, video_slug, secret, expires)
-	fmt.Printf("https://demo-protected.gvideo.io/videos/%s_%s/%s/%d/master.m3u8 \n", client_id, video_slug, token, expires)
+	token := gethash(clientId, videoSlug, secret, expires)
+	fmt.Printf("https://demo-protected.gvideo.io/videos/%s_%s/%s/%d/master.m3u8 \n", clientId, videoSlug, token, expires)
 
 	//LIVE
-	stream_id := "201693"				// enter your live stream id here
-	expires = time.Now().Unix() + 24*60*60		// now + 24 hours, unixtime in seconds
+	streamId := "201693"                   // enter your live stream id here
+	expires = time.Now().Unix() + 24*60*60 // now + 24 hours, unixtime in seconds
 
-	token = gethash(client_id, stream_id, secret, expires)
-	fmt.Printf("https://demo-protected.gvideo.io/cmaf/%s_%s/%s/%d/master.m3u8 \n", client_id, stream_id, token, expires)
+	token = gethash(clientId, streamId, secret, expires)
+	fmt.Printf("https://demo-protected.gvideo.io/cmaf/%s_%s/%s/%d/master.m3u8 \n", clientId, streamId, token, expires)
 }
 
 ```
