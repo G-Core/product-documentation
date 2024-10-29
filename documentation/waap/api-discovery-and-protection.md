@@ -12,4 +12,8 @@ API endpoints may expose sensitive data or functionality that's not accessible t
 
 To ensure that your domain is fully protected with Gcore WAAP, extend your web security with advanced API protection settings: 
 
+* **API Discovery**: set up automated detection of potential APIs; add and manage existing endpoints. 
+
+* **API base path**: configure API protection by manually specifying the base paths of your API endpoints.
+
 * **Configure API access with reserved tags**: group APIs by access level and determine which user roles are permitted to access each group. 
