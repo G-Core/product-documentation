@@ -10,7 +10,8 @@ toc:
    --1--Step 4. View your domain’s traffic: "step-4-view-your-domain-traffic"
    --1--Step 5. Test your WAAP configuration: "step-5-test-your-waap-configuration"
    --1--Step 6. Allow admins, bots, and CMS: "step-6-allow-admins-bots-and-cms"  
-   --1--Step 7. Enable protect mode: "step-8-enable-protect-mode"
+   --1--Step 7. Configure your APIs: "step-7-configure-your-apis"
+   --1--Step 8. Enable protect mode: "step-8-enable-protect-mode"
 pageTitle: Set up Gcore WAAP for your domain | Gcore
 pageDescription: Learn how to integrate your domain with our WAAP and configure the initial settings.
 ---
@@ -178,7 +179,13 @@ Follow these steps to allow crawlers, scanners, monitoring bots, and similar too
 
 The <a href="https://gcore.com/docs/waap/waap-policies/common-automated-services" target="_blank">common automated services</a> policy group allows a few trusted bots by default, which is why we recommend reviewing this list before enabling the protect mode.
 
-## Step 7: Enable protect mode 
+## Step 7: Configure your APIs
+
+If you plan to serve JSON requests through an API on your domain, you can disable the JavaScript injection and CAPTCHA functionalities for specified API endpoints.
+
+You can <a href="https://gcore.com/docs/waap/api-discovery-and-protection/configure-api-base-path" target="_blank">manually add endpoints to API base path</a> or <a href="https://gcore.com/docs/waap/api-discovery-and-protection/api-discovery" target="_blank">configure the API Discovery feature</a> to automatically detect and protect your APIs.
+
+## Step 8: Enable protect mode 
 
 1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, navigate to **WAAP** > **Domains**.
 

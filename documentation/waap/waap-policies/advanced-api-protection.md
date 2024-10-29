@@ -71,8 +71,10 @@ There are three levels of API endpoint authorization:
 
 * **Non-privileged**: Users who will be blocked from all access endpoints that are privileged or admin. 
 
-To ensure only admins and privileged users can access sensitive endpoints, you can create tags that will be applied when the defined header, token, or other identifier is present. You can then create <a href="https://gcore.com/docs/waap/api-discovery-and-protection/configure-api-access-with-reserved-tags" target="_blank">WAAP rules</a> to control API access based on these tags. 
+To ensure only admins and privileged users can access sensitive endpoints, you can create tags that will be applied when the defined header, token, or other identifier is present. You can then use the <a href="https://gcore.com/docs/waap/api-discovery-and-protection/api-discovery" target="_blank">API Discovery</a> feature and create <a href="https://gcore.com/docs/waap/api-discovery-and-protection/configure-api-access-with-reserved-tags" target="_blank">WAAP rules</a> to control API access based on these tags. 
 
 ### Non-baselined API requests 
 
 Enable a positive security policy that blocks requests to endpoints that aren’t part of the API baseline—a defined version of your API where all protected endpoints are listed. 
+
+You can also add endpoints to the <a href="https://gcore.com/docs/waap/api-discovery-and-protection/api-discovery#api-baseline" target="_blank">API baseline</a> if you don’t want to perform a network or API specification file scan.
