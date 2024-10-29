@@ -6,9 +6,7 @@ order: 20
 pageTitle: 'Learn about Gcore API discovery | Gcore'
 pageDescription: 'Learn about Gcore API discovery measures.'
 slugs:
-    - ___UNPUBLISHED___m1663g1q_k8LlVjcotPCZ71RYqKKOppfPoOmJnySA
 ---
-
 # API discovery
 
 API Discovery allows you to manage and protect REST API endpoints associated with your domain, including legacy and shadow APIs.  
