@@ -1,7 +1,7 @@
 ---
 title: inference-at-the-edge
 displayName: Inference at the Edge
-order: 105
+order: 10
 published: true
 toc:
    --1--What is Inference at the Edge?: "what-is-gcore-inference-at-the-edge"
