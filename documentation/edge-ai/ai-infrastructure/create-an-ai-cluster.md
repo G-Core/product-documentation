@@ -6,7 +6,7 @@ order: 20
 pageTitle: Create an AI Cluster | Gcore
 pageDescription: Learn how to create an AI cluster using Gcore's Cloud GPU infrastructure. Follow the step-by-step guide to set up your cluster and start using it.
 ---
-# Create an AI Cluster
+# Create an AI cluster
 
 1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, open the **GPU cloud** page. You'll be taken to the page for AI cluster creation.
 
@@ -42,7 +42,7 @@ pageDescription: Learn how to create an AI cluster using Gcore's Cloud GPU infra
 
 <img src="https://assets.gcore.pro/docs/gpu-cloud/network-settings.png" alt="Create an AI Cluster network settings" width="80%">
 
-8\. (Optional) If you need several network interfaces, click **Add Interface** and repeat the instructions from to Step 5.
+8\. (Optional) If you need several network interfaces, click **Add Interface** and repeat the instructions from Step 5.
 
 9\. Select one of your SSH keys from the list, add a new key, or generate a key pair. You'll use this SSH key to connect to your cluster.
 
