@@ -24,6 +24,7 @@ const defaultOptions: Required<MoveContentFilesPluginOptions> = {
         'web-security',
         'reseller-support',
         'waap',
+        'edge-ai',
         'edit-article-guide',
     ],
 };

@@ -17,8 +17,8 @@ const categories = [
     'cdn',
     'account-settings',
     'waap',
-    'reseller-support',
     'edge-ai',
+    'reseller-support',
 ];
 import { setCustomUrls } from './scully/plugins/custom-url/custom-url';
 import { moveContentFiles, updateAlgolia } from './scully/plugins/registerPlugins';
@@ -39,8 +39,8 @@ setPluginConfig(moveContentFiles, {
         'streaming-platform',
         'ddos-protection',
         'waap',
-        'reseller-support',
         'edge-ai',
+        'reseller-support',
     ],
 });
 setPluginConfig(SitemapPlugin, {
