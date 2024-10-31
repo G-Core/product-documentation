@@ -14,7 +14,7 @@ export class HomeComponent implements OnInit {
     public categories: Array<Category> = categories;
     public baseHref: string = environment.baseHref;
     public isMenuExpanded: boolean = false;
-    public hideCategory = ['Reseller Support', 'Edit article guide', 'Web Application Security', 'Edge AI'];
+    public hideCategory = ['Reseller Support', 'Edit article guide', 'Web Application Security'];
 
     constructor(private changeDetectorRef: ChangeDetectorRef, private data: MenuService) {}
 
