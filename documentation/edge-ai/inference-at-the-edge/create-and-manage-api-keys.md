@@ -101,7 +101,6 @@ from typing import override
 
 from openai import OpenAI
 
-
 class GcoreCompatibleOpenAI(OpenAI):
 
     @property
