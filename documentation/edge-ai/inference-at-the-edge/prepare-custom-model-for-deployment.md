@@ -4,10 +4,10 @@ displayName: Prepare a custom model for deployment
 order: 5
 published: true
 toc:
---1-- Ensure a model is trained and optimized: "step-1-ensure-your-model-is-trained-and-optimized-for-inference"
---1--Step 2. Containerize a model: "step-2-containerize-a-model"
---1--Step 3. Build, tag, and push: "step-3-build-tag-and-push-an-image"
---1--Step 4. Deploy the model: "step-4-deploy-the-model"
+  --1-- Ensure a model is trained and optimized: "step-1-ensure-your-model-is-trained-and-optimized-for-inference"
+  --1--Step 2. Containerize a model: "step-2-containerize-a-model"
+  --1--Step 3. Build, tag, and push: "step-3-build-tag-and-push-an-image"
+  --1--Step 4. Deploy the model: "step-4-deploy-the-model"
 pageTitle: Prepare a custom AI model for deployment in the Gcore Customer Portal | Gcore
 pageDescription: Learn how to prepare and build an image with a custom AI model for deployment on inference nodes.
 ---
