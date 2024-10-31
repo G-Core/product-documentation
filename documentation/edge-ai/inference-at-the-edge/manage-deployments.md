@@ -4,12 +4,12 @@ displayName: Manage deployments in the Customer Portal
 order: 20
 published: true
 toc:
---1--Manage deployments: "manage-deployments"
---2--Pause deployments: "pause-deployments"
---2--View deployment details: "view-deployment-details"
---3--Overview: "overview"
---3--API key authentication: "api-key-authentication"
---3--Settings: "settings"
+  --1--Manage deployments: "manage-deployments"
+  --2--Pause deployments: "pause-deployments"
+  --2--View deployment details: "view-deployment-details"
+  --3--Overview: "overview"
+  --3--API key authentication: "api-key-authentication"
+  --3--Settings: "settings"
 pageTitle: Managing Deployments in the Gcore Customer Portal | Gcore
 pageDescription: Learn how to manage Inference at the Edge instances with deployed AI models. Change instance settings, pause instances, or delete them from the Gcore Customer Portal.
 ---

@@ -4,9 +4,9 @@ displayName: Deploy Hugging Face models
 order: 20
 published: true
 toc: 
---1--Step 1. Set up a Hugging Face Space: "step-1-set-up-a-hugging-face-space"
---1--Step 2. Deploy a Hugging Face model: "step-2-deploy-the-hugging-face-model-on-edge-inference"
---1--Step 3. Interact with the model: "step-3-interact-with-the-model"
+  --1--Step 1. Set up a Hugging Face Space: "step-1-set-up-a-hugging-face-space"
+  --1--Step 2. Deploy a Hugging Face model: "step-2-deploy-the-hugging-face-model-on-edge-inference"
+  --1--Step 3. Interact with the model: "step-3-interact-with-the-model"
 pageTitle: Deploy Hugging Face AI models on the Gcore platform | Gcore
 pageDescription: "Learn how to set up Hugging Face Spaces and run AI models on the Gcore edge inference nodes"
 ---

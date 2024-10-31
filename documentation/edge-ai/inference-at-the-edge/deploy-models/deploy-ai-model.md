@@ -4,15 +4,15 @@ displayName: Deploy AI models in the Customer Portal
 order: 10
 published: true
 toc: 
---1--Step 1. Select a model: "step-1-select-a-model"
---1--Step 2. Select a flavor: "step-2-select-a-flavor"
---1--Step 3. Set up routing placement: "step-3-set-up-routing-placement"
---1--Step 4. Configure autoscaling: "step-4-configure-autoscaling"
---1--Step 5 (Optional). Add environment variables: "step-5-optional-add-environment-variables"
---1--Step 6 (Optional). Configure authentication via API keys: "step-6-optional-configure-authentication-via-api-keys"
---1--Step 7. Specify pod lifetime: "step-7-specify-pod-lifetime"
---1--Step 8. Enter deployment details: "step-8-enter-deployment-details"
---1--Step 9. Finalize deployment: "step-9-finalize-deployment"
+    --1--Step 1. Select a model: "step-1-select-a-model"
+    --1--Step 2. Select a flavor: "step-2-select-a-flavor"
+    --1--Step 3. Set up routing placement: "step-3-set-up-routing-placement"
+    --1--Step 4. Configure autoscaling: "step-4-configure-autoscaling"
+    --1--Step 5 (Optional). Add environment variables: "step-5-optional-add-environment-variables"
+    --1--Step 6 (Optional). Configure authentication via API keys: "step-6-optional-configure-authentication-via-api-keys"
+    --1--Step 7. Specify pod lifetime: "step-7-specify-pod-lifetime"
+    --1--Step 8. Enter deployment details: "step-8-enter-deployment-details"
+    --1--Step 9. Finalize deployment: "step-9-finalize-deployment"
 pageTitle: Deploy an AI model | Gcore
 pageDescription: "Learn how to deploy an AI model on Gcore Inference at the Edge: Upload your custom model or deploy from our model catalog."
 ---
