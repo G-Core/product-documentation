@@ -41,7 +41,7 @@ WAAP is currently in beta mode. To join the beta, contact the [Gcore support tea
 
 ## What’s the difference between WAF and WAAP? 
 
-Traditional firewalls typically serve as the first line of defense against malicious visitors and focus on the layer 3 (Network) and layer 4 (Transport) in the <a href="https://osi-model.com/" target="_blank">OSI model</a>. This means that they can’t interpret and process HTTP and HTTPS traffic, which is the type of traffic making requests to your web applications. 
+Traditional firewalls typically serve as the first line of defense against malicious visitors and focus on layer 3 (Network) and layer 4 (Transport) in the <a href="https://en.wikipedia.org/wiki/OSI_model" target="_blank">OSI model</a>. This means that they can’t interpret and process HTTP and HTTPS traffic, which is the type of traffic making requests to your web applications. 
 
 To protect your web applications and APIs, you need to use a web application firewall (WAF). It’s designed to filter out the "good" and "bad" HTTP and HTTPS traffic at the Application layer (Layer 7) in the OSI model. 
 
@@ -79,6 +79,6 @@ You can also create your own <a href="https://gcore.com/docs/waap/waap-rules/cus
 
 The behavioral component is responsible for asynchronously analyzing traffic from WAF Edge nodes. It is centralized and built on a scalable cloud environment, ensuring that WAF always has sufficient resources for deep analysis without memory or processing limitations.   
 
-The component analyzes and detects malicious behavioral patterns, and based on this information indicates what actions should be enforced by WAF Edge nodes: block, challenge, or allow requests. As the behavioral component processes requests, it generates information tags for each request entity. These tags are sent together with instructions (actions to be enforced) to WAF Edge nodes. 
+The component analyzes and detects malicious behavioral patterns and, based on this information, indicates what actions should be enforced by WAF Edge nodes: block, challenge, or allow requests. As the behavioral component processes requests, it generates information tags for each request entity. These tags are sent together with instructions (actions to be enforced) to WAF Edge nodes. 
 
 This analytical aspect of the system and independent functioning of both parts is what elevates our WAF to the next-generation level.
