@@ -4,7 +4,7 @@ displayName: Create an AI Cluster
 published: true
 order: 20
 pageTitle: Create an AI Cluster | Gcore
-pageDescription: Learn how to create an AI cluster using Gcore's Cloug GPU infrastructure. Follow the step-by-step guide to set up your cluster and start using it.
+pageDescription: Learn how to create an AI cluster using Gcore's Cloud GPU infrastructure. Follow the step-by-step guide to set up your cluster and start using it.
 ---
 # Create an AI Cluster
 
