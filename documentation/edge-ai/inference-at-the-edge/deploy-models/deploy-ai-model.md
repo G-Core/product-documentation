@@ -181,7 +181,7 @@ To generate a new key, select the **Create new API key** link and then perform t
 
 <img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/deploy-ai-model/create-api-key.png" alt="Create API key dialog with annotated steps" width="80%">
 
-After you generate the key, it will appear in the API Keys dropdown. You can then select it to authenticate to the deployment.
+After you generate the key, it will appear in the API Keys dropdown. You can then select it to authenticate to the deployment. For instructions on how to authenticate with the API key, check out the <a href="https://gcore.com/docs/edge-ai/inference-at-the-edge/create-and-manage-api-keys#access-a-model-using-api-key" target="_blank">Access a model using API key</a> section.
 
 ## Step 7. Specify pod lifetime
 
