@@ -19,6 +19,10 @@ export const categories: Array<Category> = [
         url: 'cloud',
     },
     {
+        name: 'Edge AI',
+        url: 'edge-ai',
+    },
+    {
         name: 'Managed DNS',
         url: 'dns',
     },
@@ -41,10 +45,6 @@ export const categories: Array<Category> = [
     {
         name: 'WAAP',
         url: 'waap',
-    },
-    {
-        name: 'Edge AI',
-        url: 'edge-ai',
     },
     {
         name: 'Reseller Support',
