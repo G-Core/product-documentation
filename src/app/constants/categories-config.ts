@@ -43,15 +43,15 @@ export const categories: Array<Category> = [
         url: 'waap',
     },
     {
+        name: 'Edge AI',
+        url: 'edge-ai',
+    },
+    {
         name: 'Reseller Support',
         url: 'reseller-support',
     },
     {
         name: 'Edit article guide',
         url: 'edit-article-guide',
-    },
-    {
-        name: 'Edge AI',
-        url: 'edge-ai',
     },
 ];

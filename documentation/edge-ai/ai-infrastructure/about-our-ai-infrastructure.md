@@ -15,7 +15,7 @@ Gcore <a href="https://gcore.com/cloud/ai-gpu" target="_blank">GPU Cloud</a> pro
 
 ## AI GPU infrastructure
 
-Train your ML models with the latest <a href="https://www.nvidia.com/en-us/data-center/data-center-gpus/" taget="_blank">NVIDIA GPUs</a>. We offer a wide range of Bare Metal servers and Virtual Machines powered by NVIDIA A100, H100, and L40S GPUs.
+Train your ML models with the latest <a href="https://www.nvidia.com/en-us/data-center/data-center-gpus/" target="_blank">NVIDIA GPUs</a>. We offer a wide range of Bare Metal servers and Virtual Machines powered by NVIDIA A100, H100, and L40S GPUs.
 
 Pick the configuration and reservation plan that best fits your computing requirements.
 
