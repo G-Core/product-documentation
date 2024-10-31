@@ -230,7 +230,7 @@ Timeouts:
 
 #### L7 policies 
 
-L7 policy specifies how to manage and route incoming traffic at the application layer (Layer 7 of the <a href="https://osi-model.com/application-layer/" target="_blank">OSI model</a>).
+L7 policy specifies how to manage and route incoming traffic at the application layer (Layer 7 of the <a href="https://en.wikipedia.org/wiki/OSI_model" target="_blank">OSI model</a>).
 
 #### Listener statistics
 
