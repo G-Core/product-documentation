@@ -5,6 +5,7 @@ published: true
 order: 30
 toc:
     --1—-Create an API key: "create-an-api-key"
+    --1--Access a model using API key: "access-a-model-using-api-key"
     --1--Manage API keys: "manage-api-keys"
     --2--Edit API key: "edit-api-key"
     --2--Delete API key: "delete-api-key"
@@ -60,6 +61,68 @@ The key has been successfully created.
 Never share your API key with third parties. This might result in unauthorized access to your deployments.
 
 </alert-element>
+
+## Access a model using API key
+
+To access an AI model where an API key was added as an authorization method, you must include that API key in your cURL request.  
+
+Add your API key to the request header: 
+
+<code-block> 
+curl --location 'YOUR_MODEL_ENDPOINT' \ 
+--header 'x-api-key: <span style="color:#FF5913">YOUR_API_KEY</span>' 
+</code-block>
+
+The following examples demonstrate how to authenticate to an OpenAI model deployed on inference nodes with the API key.
+
+**Example 1** 
+
+<code-block> 
+client = OpenAI( 
+    base_url="<Inference Endpoint>/v1", 
+    api_key="notused", 
+    default_headers={ 
+        "x-api-Key": "<APIKEY>", 
+    } 
+) 
+completion = client.chat.completions.create( 
+  model="<ModelName>", 
+  messages=[ 
+    {"role": "user", "content": "Hello!"} 
+  ] 
+) 
+print(completion.choices[0].message)
+</code-block> 
+
+**Example 2**
+
+<code-block> 
+from typing import override
+
+from openai import OpenAI
+
+
+class GcoreCompatibleOpenAI(OpenAI):
+
+    @property
+    @override
+    def auth_headers(self) -> dict[str, str]:
+        api_key = self.api_key
+        return {"x-api-Key": api_key}
+
+
+client = GcoreCompatibleOpenAI(
+    base_url="<Inference Endpoint>/v1",
+    api_key="<APIKEY>",
+)
+completion = client.chat.completions.create(
+  model="<ModelName>",
+  messages=[
+    {"role": "user", "content": "Hello!"}
+  ]
+)
+print(completion.choices[0].message)
+</code-block> 
 
 ## Manage API keys
 
