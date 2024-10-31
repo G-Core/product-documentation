@@ -98,11 +98,10 @@ print(completion.choices[0].message)
 
 <code-block> 
 from typing import override
-
+  
 from openai import OpenAI
 
 class GcoreCompatibleOpenAI(OpenAI):
-
     @property
     @override
     def auth_headers(self) -> dict[str, str]:
