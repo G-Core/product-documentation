@@ -4,7 +4,7 @@ displayName: Create and manage API keys
 published: true
 order: 30
 toc:
-    --1—-Create an API key: "create-an-api-key"
+    --1--Create an API key: "create-an-api-key"
     --1--Access a model using API key: "access-a-model-using-api-key"
     --1--Manage API keys: "manage-api-keys"
     --2--Edit API key: "edit-api-key"
@@ -107,8 +107,6 @@ class GcoreCompatibleOpenAI(OpenAI):
     def auth_headers(self) -> dict[str, str]:
         api_key = self.api_key
         return {"x-api-Key": api_key}
-
-
 client = GcoreCompatibleOpenAI(
     base_url="<Inference Endpoint>/v1",
     api_key="<APIKEY>",
