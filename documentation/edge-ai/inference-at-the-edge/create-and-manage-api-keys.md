@@ -96,7 +96,7 @@ print(completion.choices[0].message)
 
 **Example 2**
 
-<code-block> 
+``` 
 from typing import override
   
 from openai import OpenAI
@@ -118,7 +118,7 @@ completion = client.chat.completions.create(
   ]
 )
 print(completion.choices[0].message)
-</code-block> 
+``` 
 
 ## Manage API keys
 
