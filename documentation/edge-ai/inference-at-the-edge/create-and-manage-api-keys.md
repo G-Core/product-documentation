@@ -77,7 +77,7 @@ The following examples demonstrate how to authenticate to an OpenAI model deploy
 
 **Example 1** 
 
-<code-block> 
+```
 client = OpenAI( 
     base_url="<Inference Endpoint>/v1", 
     api_key="notused", 
@@ -92,7 +92,7 @@ completion = client.chat.completions.create( 
   ] 
 ) 
 print(completion.choices[0].message)
-</code-block> 
+```
 
 **Example 2**
 
