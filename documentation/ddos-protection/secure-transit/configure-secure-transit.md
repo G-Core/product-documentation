@@ -4,12 +4,8 @@ displayName: Configure infrastructure for Secure Transit
 published: true
 order: 10
 toc:
-   --1--How does it work?: "how-does-ddos-protection-work"
-   --1--Advanced protection modes: "advanced-protection-modes"
-   --1--DDoS attack statistics: ddos-attack-statistics
-   --1--Pricing: "pricing"
-pageTitle: About DDoS Protection | Gcore
-pageDescription: Learn how DDoS Protection safeguards your servers, explore use cases for different protection modes and select the best option for your needs.
+pageTitle: Set up infrastructure for Secure Transit | Gcore
+pageDescription: Learn how prepare and set up your network infrastructure for using the Secure Transit feature.
 ---
 # Configure your infrastructure for Secure Transit 
 
