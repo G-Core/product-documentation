@@ -10,7 +10,7 @@ toc:
    --1--Rent a dedicated server with DDoS protection: "rent-a-new-dedicated-server-with-ddos-protection"
    --1--Deactivate DDoS protection: "deactivate-ddos-protection"
 pageTitle: Activate DDoS Protection | Gcore
-pageDescription: Easily activate DDoS protection for you Bare Metal servers in cloud, Dedicated Servers, and third-party equipment.
+pageDescription: Easily activate DDoS protection for your Bare Metal servers in cloud, Dedicated Servers, and third-party equipment.
 ---
 # Activate DDoS protection
 
@@ -31,7 +31,7 @@ There are two options for setting up DDoS protection services:
 
 The predefined profiles are available on the **Network** tab in your server settings. For example, the following screenshot depicts the profile settings for Bare Metal: 
 
-<img src="https://assets.gcore.pro/docs/ddos-protection/activate-ddos-protection/baremetal-ddos-profile.png" alt="DDoS profile for Bare Metal">
+<img src="https://assets.gcore.pro/docs/ddos-protection/activate-ddos-protection/baremetal-ddos-profile.png" alt="DDoS profile for Bare Metal" width=80%>
 
 If no predefined protection profile aligns with your requirements, contact the <a href="mailto:support@gcore.com" target="_blank">Gcore support team</a> to request a custom configuration.
 
@@ -102,8 +102,8 @@ For each destination that you want to protect, list the IP, port, and protocol.
 <table>
 <thead>
 <tr>
-<td style="text-align: left"><b>Question</b></td>
-<td style="text-align: left"><b>Your information</b></td>
+<td style="text-align: left" "width:60%"><b>Question</b></td>
+<td style="text-align: left" "width:40%"><b>Your information</b></td>
 </tr>
 </thead>
 <tbody>
