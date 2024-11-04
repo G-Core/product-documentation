@@ -5,7 +5,7 @@ published: true
 order: 40
 toc:
 pageTitle: About Secure Transit | Gcore
-pageDescription: Learn about the Secure Transit feature that provides DDoS protection and helps to optimize your data flow.
+pageDescription: Learn about the Secure Transit feature that provides DDoS protection and helps optimize your data flow.
 ---
 # Secure Transit
 
@@ -24,4 +24,4 @@ As we receive your original data packets, we process these packets, encapsulate 
 
 ## Getting started 
 
-Check the <a href="https://gcore.com/docs/ddos-protection/activate-ddos-protection/configure-secure-transit" target="_blank">Configure your infrastructure for Secure Transit</a> guide for details instructions on how to use the feature. 
+Check the <a href="https://gcore.com/docs/ddos-protection/secure-transit/configure-secure-transit" target="_blank">Configure your infrastructure for Secure Transit</a> guide for details instructions on how to use the feature. 
