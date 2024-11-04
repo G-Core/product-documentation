@@ -31,6 +31,7 @@ There are two options for setting up DDoS protection services:
 
 The predefined profiles are available on the **Network** tab in your server settings. For example, the following screenshot depicts the profile settings for Bare Metal: 
 
+<img src="https://assets.gcore.pro/docs/ddos-protection/activate-ddos-protection/baremetal-ddos-profile.png" alt="DDoS profile for Bare Metal">
 
 If no predefined protection profile aligns with your requirements, contact the <a href="mailto:support@gcore.com" target="_blank">Gcore support team</a> to request a custom configuration.
 
