@@ -1,6 +1,6 @@
 ---
 title: gcore-radar-reports-methodologies
-order: 40
+order: 50
 displayName: Gcore Radar
 published: true
 toc:
