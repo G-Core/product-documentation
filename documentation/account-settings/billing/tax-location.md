@@ -33,3 +33,9 @@ If you have set your account details correctly, but your account’s tax locatio
 ## How can I add a VAT number? 
 
 If your business has a registered VAT ID and you want to remove tax charges from your invoice, please contact us via chat or email at [support@gcore.com](mailto:support@gcore.com).
+
+## What if I change my tax location in the mid-month? 
+
+If your tax rate changes during the billing month, we recalculate the expenses to reflect the new rate consistently across the entire invoice. We don’t adjust your invoice if the tax rate remains the same. 
+
+We delete and re-create all overcommit expenses for daily billed customers, even if the tax rate remains unchanged. This process ensures consistency between your expenses and expense statistics. As a result, your old expenses can be marked as Deleted both in the Customer Portal and API. 

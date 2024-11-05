@@ -48,6 +48,10 @@ If you click the info icon next to the Sum column, you can view a detailed break
 
 <img src="https://assets.gcore.pro/docs/account-settings/billing/expenses/tax-calculation.png" alt="Tax calculation dialog" width="80%">
 
+If your tax rate changes during the billing month, we recalculate the expenses to reflect the new rate consistently across the entire invoice. We don’t adjust your invoice if the tax rate remains the same. 
+
+We delete and re-create all overcommit expenses for daily billed customers, even if the tax rate remains unchanged. This process ensures consistency between your expenses and expense statistics. As a result, your old expenses can be marked as Deleted both in the Customer Portal and API. 
+
 ## Filter expense data in the table 
 
 You can filter expenses by the consumption date or by a particular service type. The consumption perdiod is set to month by default, but you can choose a custom period as well. 
