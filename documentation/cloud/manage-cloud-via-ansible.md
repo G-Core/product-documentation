@@ -4,8 +4,12 @@ displayName: Ansible
 order: 140
 published: true
 toc:
+   --1--Install and configure Ansible: "install-and-configure-ansible"
+   --1--Add Gcore collection from Galaxy: "add-gcore-collection-from-galaxy"
+   --1--Validate Ansible configuration: "validate-ansible-configuration"
+   --1--Manage Cloud resources: "manage-cloud-resources"   
 pageTitle: Manage Gcore Edge Cloud via Ansible | Gcore
-pageDescription: Learn how to manage your cloud resources using Ansible. Follow the guide to install Ansible and create VMs.
+pageDescription: Learn how to manage your cloud resources using Ansible. Follow the guide to install Ansible and create VMs and manage cloud resources.
 ---
 # Manage cloud resources via Ansible
 
