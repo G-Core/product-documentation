@@ -199,6 +199,11 @@ Check the following table for a full list of predefined tags, their API slugs, a
     <td>fakeuseragent</td> 
     <td>This client has been identified with a user agent that’s not compatible with browser properties.</td>
   </tr>
+    <tr>
+    <td>Fast Form Submission</td>
+    <td>fastformsubmission</td> 
+    <td>The duration between POST and GET requests is noticeably higher than the average duration for this domain.</td>
+</tr>
   <tr>
     <td>Glove Extension</td>
     <td>gloveextension</td> 
