@@ -18,9 +18,9 @@ We delete a service, its settings, and associated customer data after the servic
 
 Products can be suspended in three cases:
 
-1. If you <a href="https://gcore.com/docs/account-settings/billing/disable-and-resume-a-service#disable-services" target="_blank">disabled the product</a> manually.
-2. At the end of a <a href="https://gcore.com/docs/account-settings/billing/trial-conditions" target="_blank">Base Trial</a>, if you didn't enable a plan.
-3. After an unsuccessful payment charge attempt. If one of your products is suspended because of an unsuccessful payment attempt, all other products in your account are also suspended.
+1\. If you <a href="https://gcore.com/docs/account-settings/billing/disable-and-resume-a-service#disable-services" target="_blank">disabled the product</a> manually.
+2\. At the end of a <a href="https://gcore.com/docs/account-settings/billing/trial-conditions" target="_blank">Base Trial</a>, if you didn't enable a plan.
+3\. After an unsuccessful payment charge attempt. If one of your products is suspended because of an unsuccessful payment attempt, all other products in your account are also suspended.
 
 ## When are services and data deleted after suspension?
 
@@ -138,6 +138,15 @@ Web Application Security
 <tr>
 <td>
 DDoS Protection 
+</td>
+<td>&nbsp;</td>
+<td>
+90 days 
+</td>
+</tr>
+<tr>
+<td>
+WAAP 
 </td>
 <td>&nbsp;</td>
 <td>
@@ -265,6 +274,15 @@ DDoS Protection
 <td>&nbsp;</td>
 <td style="text-align: left">
 DDoS profile 
+</td>
+</tr>
+<tr>
+<td>
+WAAP
+</td>
+<td>&nbsp;</td>
+<td style="text-align: left">
+Resources under WAAP protection 
 </td>
 </tr>
 </tbody>
