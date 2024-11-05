@@ -15,7 +15,7 @@ pageDescription: Learn how to manage your cloud resources using Ansible. Follow 
 
 <a href="https://www.ansible.com/" target="_blank">Ansible</a> is a configuration management tool used for provisioning, deploying, and orchestrating IT resources. Similarly to <a href="https://gcore.com/docs/cloud/manage-cloud-via-terraform" target="_blank">using Terraform</a>, you can use Ansible to create and set up Gcore Cloud services. 
 
-You can find all Ansible modules and plugins required to interact with the Gcore Cloud in the following collection: <a href="https://galaxy.ansible.com/ui/repo/published/gcore/cloud/docs/" target="_blank">Ansible Galaxy Collection for Gcore Cloud</a>. 
+You can find all Ansible modules and plugins required to interact with the Gcore Cloud in the <a href="https://galaxy.ansible.com/ui/repo/published/gcore/cloud/docs/" target="_blank">Ansible Galaxy Collection for Gcore Cloud</a> and in our official <a href="https://github.com/G-Core/ansible-collection-gcore" target="_blank">ansible-collection-gcore</a> repository. 
 
 ## Install and configure Ansible
 
