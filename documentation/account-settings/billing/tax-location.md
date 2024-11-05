@@ -7,7 +7,8 @@ toc:
     --1--Why is it important to specify the correct tax location?: "why-is-it-important-to-specify-the-correct-tax-location"
     --1--How is my tax location determined?: "how-is-my-tax-location-determined"
     --1--How can I change my tax location?: "how-can-i-change-my-tax-location"
-    --1--How can I add a VAT number?: "how-can-I-add-a-vat-number"
+    --1--How can I add a VAT number?: "how-can-i-add-a-vat-number"
+    --1--What if I change my tax location: "what-if-i-change-my-tax-location"
 pageTitle: Guide to managing your tax location | Gcore
 pageDescription: Setting your tax location in Gсore, how it affects billing, and how to add a VAT number for accurate tax application.
 ---
@@ -34,7 +35,7 @@ If you have set your account details correctly, but your account’s tax locatio
 
 If your business has a registered VAT ID and you want to remove tax charges from your invoice, please contact us via chat or email at [support@gcore.com](mailto:support@gcore.com).
 
-## What if I change my tax location in the mid-month? 
+## What if I change my tax location? 
 
 If your tax rate changes during the billing month, we recalculate the expenses to reflect the new rate consistently across the entire invoice. We don’t adjust your invoice if the tax rate remains the same. 
 
