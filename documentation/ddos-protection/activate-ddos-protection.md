@@ -64,35 +64,35 @@ For each destination that you want to protect, list the IP, port, and protocol.
 <tbody>
 <tr>
 <td style="text-align: left">Specify IP addresses that should be added to the allowlist</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">&nbsp;</td>
 </tr>
 <tr>
 <td style="text-align: left">Do you want to configure the access control list?</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">&nbsp;</td>
 </tr>
 <tr>
 <td style="text-align: left">Do you want to set up game protection?</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">&nbsp;</td>
 </tr>
 <tr>
 <td style="text-align: left">Do you need to configure the GEO filter?</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">&nbsp;</td>
 </tr>
 <tr>
 <td style="text-align: left">Do you want to configure DNS protection?</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">&nbsp;</td>
 </tr>
 <tr>
 <td style="text-align: left">Do you want to configure RegEx-based filtering?</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">&nbsp;</td>
 </tr>
 <tr>
 <td style="text-align: left">Is your traffic encrypted by TLS protocol?</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">&nbsp;</td>
 </tr>
 <tr>
 <td style="text-align: left">Do you want to configure rate limiting for incoming traffic from your own IP range?</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">&nbsp;</td>
 </tr>
 </tbody>
 </table>
@@ -109,7 +109,7 @@ For each destination that you want to protect, list the IP, port, and protocol.
 <tbody>
 <tr>
 <td style="text-align: left">Clean traffic bandwidth in Mbps</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">&nbsp;</td>
 </tr>
 </tbody>
 </table>
@@ -126,15 +126,15 @@ For each destination that you want to protect, list the IP, port, and protocol.
 <tbody>
 <tr>
 <td style="text-align: left">What is your autonomous system number (ASN)?</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">&nbsp;</td>
 </tr>
 <tr>
 <td style="text-align: left">What IP prefixes do you want to announce /24?</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">&nbsp;</td>
 </tr>
 <tr>
 <td style="text-align: left">What’s your GRE tunnel endpoint?</td>
-<td style="text-align: left"></td>
+<td style="text-align: left">&nbsp;</td>
 </tr>
 </tbody>
 </table>
@@ -152,22 +152,22 @@ For each destination that you want to protect, list the IP, port, and protocol.
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left"></td>
-<td style="text-align: left"></td>
-<td style="text-align: left"></td>
-<td style="text-align: left"></td>
+<td style="text-align: left">&nbsp;</td>
+<td style="text-align: left">&nbsp;</td>
+<td style="text-align: left">&nbsp;</td>
+<td style="text-align: left">&nbsp;</td>
 </tr>
 <tr>
-<td style="text-align: left"></td>
-<td style="text-align: left"></td>
-<td style="text-align: left"></td>
-<td style="text-align: left"></td>
+<td style="text-align: left">&nbsp;</td>
+<td style="text-align: left">&nbsp;</td>
+<td style="text-align: left">&nbsp;</td>
+<td style="text-align: left">&nbsp;</td>
 </tr>
 <tr>
-<td style="text-align: left"></td>
-<td style="text-align: left"></td>
-<td style="text-align: left"></td>
-<td style="text-align: left"></td>
+<td style="text-align: left">&nbsp;</td>
+<td style="text-align: left">&nbsp;</td>
+<td style="text-align: left">&nbsp;</td>
+<td style="text-align: left">&nbsp;</td>
 </tr>
 </tbody>
 </table>
@@ -189,28 +189,28 @@ Specify services whose traffic should always be approved and never blocked.
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left"></td>
-<td style="text-align: left"></td>
-<td style="text-align: left"></td>
-<td style="text-align: left"></td>
-<td style="text-align: left"></td>
-<td style="text-align: left"></td>
+<td style="text-align: left">&nbsp;</td>
+<td style="text-align: left">&nbsp;</td>
+<td style="text-align: left">&nbsp;</td>
+<td style="text-align: left">&nbsp;</td>
+<td style="text-align: left">&nbsp;</td>
+<td style="text-align: left">&nbsp;</td>
 </tr>
 <tr>
-<td style="text-align: left"></td>
-<td style="text-align: left"></td>
-<td style="text-align: left"></td>
-<td style="text-align: left"></td>
-<td style="text-align: left"></td>
-<td style="text-align: left"></td>
+<td style="text-align: left">&nbsp;</td>
+<td style="text-align: left">&nbsp;</td>
+<td style="text-align: left">&nbsp;</td>
+<td style="text-align: left">&nbsp;</td>
+<td style="text-align: left">&nbsp;</td>
+<td style="text-align: left">&nbsp;</td>
 </tr>
 <tr>
-<td style="text-align: left"></td>
-<td style="text-align: left"></td>
-<td style="text-align: left"></td>
-<td style="text-align: left"></td>
-<td style="text-align: left"></td>
-<td style="text-align: left"></td>
+<td style="text-align: left">&nbsp;</td>
+<td style="text-align: left">&nbsp;</td>
+<td style="text-align: left">&nbsp;</td>
+<td style="text-align: left">&nbsp;</td>
+<td style="text-align: left">&nbsp;</td>
+<td style="text-align: left">&nbsp;</td>
 </tr>
 </tbody>
 </table>
