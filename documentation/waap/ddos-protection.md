@@ -8,7 +8,7 @@ pageDescription: Learn about L7 DDoS protection measures, when DDoS protection m
 ---
 # L7 DDoS protection
 
-We offer protection for your web applications, websites, and APIs from DDoS attacks at the <a href="https://osi-model.com/application-layer/" target="_blank">application layer</a> (layer 7) in the OSI model. These attacks are often performed in bursts and aren’t always volumetric in nature.  
+We offer protection for your web applications, websites, and APIs from DDoS attacks at the <a href="https://en.wikipedia.org/wiki/OSI_model" target="_blank">application layer</a> (layer 7) in the OSI model. These attacks are often performed in bursts and aren’t always volumetric in nature.  
 
 DDoS protection is always enabled, even if WAAP is in <a href="https://gcore.com/docs/waap/getting-started/waap-modes#monitor-mode" target="_blank">monitor mode</a>. Once a DDoS attack is identified, the system activates a DDoS mode. 
 
@@ -20,7 +20,7 @@ The DDoS attack statistics and other related data are available on the <a href="
 
 ## When DDoS mode is activated 
 
-DDoS mode is activated if any of the following conditions is met.  
+DDoS mode is activated if any of the following conditions are met.  
 
 <table>
 <thead>
