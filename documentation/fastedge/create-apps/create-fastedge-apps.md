@@ -170,11 +170,11 @@ For detailed steps on how to deploy a FastEdge app, refer to the relevant sectio
 8\. (Optional) If you want to customize the behavior of your application, click **+ Add environment variables** and enter your data as key-value pairs. 
 If you're adding sensitive information or want to ensure that any data in the app's configuration remains secure, encrypt the variables. Click **Encrypt** next to the value you want to secure:
 
-<img src="https://assets.gcore.pro/docs/fastedge/create-http-apps/encrypt-variable.png" alt="HTTP setup dialog" width="80%">
+<img src="https://assets.gcore.pro/docs/fastedge/create-http-apps/encrypt-variable-button.png" alt="Encrypt variable button highlighted" width="80%">
 
 The provided value will be replaced with the **Encrypted Value** text, and the **Revert** button will appear next to encrypted value. This button allows you to restore the original version if needed. Note that once you save the configuration, you won’t be able to view the original unencrypted value. 
 
-<img src="https://assets.gcore.pro/docs/fastedge/create-http-apps/encrypted-variable.png" alt="HTTP setup dialog" width="80%">
+<img src="https://assets.gcore.pro/docs/fastedge/create-http-apps/encrypted-variable-revert-button.png" alt="Encrypted variable" width="80%">
 
 We store all encrypted variables in a separate table in the database to protect your information from potential security breaches or unauthorized access.  
 

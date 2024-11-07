@@ -95,6 +95,25 @@ To deploy a FastEdge application from your own binary:
 
 <img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-app-setup.png" alt="Custom app configuration menu" width="80%"> 
 
+If you're adding sensitive information or want to ensure that any data in the app's configuration remains secure, encrypt the variables. Click **Encrypt** next to the value you want to secure:
+
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-fastedge/encrypt-variable-button.png" alt="Encrypt variable button highlighted" width="80%"> 
+
+The provided value will be replaced with the **Encrypted Value** text, and the **Revert** button will appear next to encrypted value. This button allows you to restore the original version if needed.  
+<img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-fastedge/encrypted-variable-revert-button.png" alt="Encrypted variable" width="80%">
+
+We store all encrypted variables in a separate table in the database to protect your information from potential security breaches or unauthorized access.  
+
+<alert-element type="warning" title="Warning">
+ 
+You won’t be able to update the encrypted variable after creating the application.  
+
+To change the value, delete the existing variable and add a new encrypted variable with the updated value. 
+
+</alert-element>
+
+Note that once you save the configuration, you won’t be able to view the original unencrypted value. 
+
 7\. Click **Save and deploy**. 
 
 Your application has been successfully deployed and can now be referenced from CDN resource settings. If you need to adjust the configuration, click **Actions** > **Edit application**. 
