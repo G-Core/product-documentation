@@ -42,9 +42,13 @@ To add a template to the Customer Portal:
 
 6\. (Optional) Add instructions for using the template. Include any critical information that’s important to know when creating an app, such as required variables, headers, and any configuration tips. 
 
-7\. Specify any required parameters.
+7\. Specify any parameters. To add a required parameter, select the **Mandatory parameter** checkbox. If you need to add encrypted environment variables to applications created from this template, add a new parameter with the type **Secret**. 
 
-<img src="https://assets.gcore.pro/docs/fastedge/create-manage-templates/create-template-setup.png" alt="Add raw binary dialog" width="80%">
+<img src="https://assets.gcore.pro/docs/fastedge/create-manage-templates/add-secret-parameter.png" alt="Secret parameter marked as required" width="80%">
+
+When creating an application based on this template, this parameter will appear as an environment variable that you can encrypt. Check detailed instructions on how to add environment variables for <a href="https://gcore.com/docs/fastedge/getting-started/create-fastedge-apps#secure-variables-http-apps" target="_blank">HTTP apps</a> and <a href="https://gcore.com/docs/cdn/getting-started/integrate-cdn-with-fastedge#secure-variables-cdn-apps" target="_blank">CDN apps</a>.
+
+<img src="https://assets.gcore.pro/docs/fastedge/create-manage-templates/example-variable-encrypt.png" alt="Example of a secret parameter in an app" width="80%">
 
 8\. Click **Save template**. 
 

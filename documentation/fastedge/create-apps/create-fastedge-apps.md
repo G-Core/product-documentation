@@ -167,7 +167,8 @@ For detailed steps on how to deploy a FastEdge app, refer to the relevant sectio
 
 7\. (Optional) Click **+ Add response headers** to add fixed headers to the responses. For example, you may include CORS (cross-origin resource sharing) headers in each response to ensure secure communication between origins. 
 
-8\. (Optional) If you want to customize the behavior of your application, click **+ Add environment variables** and enter your data as key-value pairs. 
+<p id="secure-variables-http-apps"> 8. (Optional) If you want to customize the behavior of your application, click <strong>+ Add environment variables</strong> and enter your data as key-value pairs.</p>
+
 If you're adding sensitive information or want to ensure that any data in the app's configuration remains secure, encrypt the variables. Click **Encrypt** next to the value you want to secure:
 
 <img src="https://assets.gcore.pro/docs/fastedge/create-http-apps/encrypt-variable-button.png" alt="Encrypt variable button highlighted" width="80%">

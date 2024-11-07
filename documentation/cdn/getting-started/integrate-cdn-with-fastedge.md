@@ -91,7 +91,7 @@ To deploy a FastEdge application from your own binary:
 
 5\. Enter a name for your application and, optionally, add a description. 
 
-6\. Add required environment variables that will be used for authentication checks. Enter the data as key-value pairs.
+<p id="secure-variables-cdn-apps"> 6. Add required environment variables that will be used for authentication checks. Enter the data as key-value pairs.</p>
 
 <img src="https://assets.gcore.pro/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-app-setup.png" alt="Custom app configuration menu" width="80%"> 
 
