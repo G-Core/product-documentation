@@ -167,11 +167,26 @@ For detailed steps on how to deploy a FastEdge app, refer to the relevant sectio
 
 7\. (Optional) Click **+ Add response headers** to add fixed headers to the responses. For example, you may include CORS (cross-origin resource sharing) headers in each response to ensure secure communication between origins. 
 
-8\. (Optional) If you want to add metadata to the configuration, click **+ Add environment variables** and enter metadata as key-value pairs.
+8\. (Optional) If you want to customize the behavior of your application, click **+ Add environment variables** and enter your data as key-value pairs. 
+If you're adding sensitive information or want to ensure that any data in the app's configuration remains secure, encrypt the variables. Click **Encrypt** next to the value you want to secure:
 
-<img src="https://assets.gcore.pro/docs/fastedge/create-http-apps/http-app-setup.png" alt="HTTP setup dialog" width="80%">
+<img src="https://assets.gcore.pro/docs/fastedge/create-http-apps/encrypt-variable.png" alt="HTTP setup dialog" width="80%">
 
-9\. In the top-right corner of the screen, click **Save and deploy**. 
+The provided value will be replaced with the **Encrypted Value** text, and the **Revert** button will appear next to encrypted value. This button allows you to restore the original version if needed. Note that once you save the configuration, you won’t be able to view the original unencrypted value. 
+
+<img src="https://assets.gcore.pro/docs/fastedge/create-http-apps/encrypted-variable.png" alt="HTTP setup dialog" width="80%">
+
+We store all encrypted variables in a separate table in the database to protect your information from potential security breaches or unauthorized access.  
+
+<alert-element type="warning" title="Warning">
+ 
+You won’t be able to update the encrypted variable after creating the application.  
+
+To change the value, delete the existing variable and add a new encrypted variable with the updated value. 
+
+</alert-element>
+
+9\. Check all the settings. If everything is configured correctly, click **Save and deploy**. 
 
 Your application has been successfully deployed.
 
