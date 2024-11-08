@@ -6,6 +6,7 @@ order: 20
 toc:
    --1--What is it for: "what-is-this-option-for"
    --1--How does it work: "how-does-it-work"
+   --1--Get an SSL certificate: "get-an-ssl-certificate"
    --1--Enable via API: "enable-ssl-validation-via-api"
 pageTitle: Boost CDN Security with Origin SSL Validation | Gcore
 pageDescription: Enhance your CDN security through Origin SSL Validation—an effective way to safeguard the connection between CDN and the origin server.
@@ -16,18 +17,31 @@ pageDescription: Enhance your CDN security through Origin SSL Validation—an ef
 
 Note: This option is only accessible via <a href="https://api.gcore.com/docs/iam" target="_blank">API</a>.  
 
-In the Origin Pull Protocol option, you are to set the protocol which CDN servers will use to pull content from an origin server: HTTP, HTTPS or HTTP and HTTPS. It allows you to control whether the connection between the CDN and the origin server is encrypted or not. 
+In the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol#origin-pull-protocol" target="_blank">Origin pull protocol</a> setting, you need to choose the protocol which CDN servers will use to pull content from an origin server: 
+
+* HTTP
+* HTTPS
+* HTTP and HTTPS
+  
+Choosing the protocol allows you to control whether the connection between the CDN and the origin server is encrypted or not. 
 
 If you choose the HTTPS protocol, CDN servers will send a request for the content via HTTPS protocol, such a content transfer process is encrypted, but still do not save the connection from the attack called <a href="https://en.wikipedia.org/wiki/Man-in-the-middle_attack" target="_blank">Man In The Middle</a>. 
 
 This is because the CDN servers by default do not check whether the SSL certificate on the origin is valid and certified by a Certificate Authority and whether the answered server is the client's server.  
 
-To increase the connection security level, activate the Origin SSL Validation option.  
+To increase the connection security level, activate the **SSL** option.  
+
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/general/enable-origin-ssl-validation/enable-ssl.png" alt="Enable SSL setting" width="70%">
 
 With the active origin validation option, the CDN server will ensure the validity of your origin certificate before completing any connection. This includes ensuring the identity of your server with your signing CA. 
 
-## How does it work?
+## Get an SSL certificate
 
+You can either purchase a certificate from a Certification Authority or use a self-signed certificate, which can be obtained from a source like this one.
+
+Note that Gcore's **Let’s Encrypt** certificate is not compatible with the **SSL** option.
+
+## How does it work?
 
 1\. You set the part of the public key of the X.509 certificate in the system (using an API request) in the PEM format. The other part of the key you will store on your origin server. The certificates you added will receive a unique ID. We will store all the certificate information on CDN servers. At any moment, you can get a request for the certificate information or change their names.  
 
