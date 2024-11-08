@@ -53,7 +53,6 @@ You’ve successfully modified the cache key for your resource.
 
 You can use the following variable to modify your resource’s cache key: 
 
-* `$http_host`: The value of the Host header passed in the request header, which comes from the user. 
 * `$request_uri`: The full original request URI. If used with the <a href="https://gcore.com/docs/cdn/cdn-resource-options/rewrite-redirect-requests-from-the-cdn-to-the-origin" target="_blank">rewrite feature</a> in conjunction with this option, this variable retains the value of the original URI, not the rewritten one. 
 * `$scheme`: The protocol used in the request. 
 * `$uri`: The current normalized URI in the request. The value of this variable may change during request processing. For example, it’ll change during internal redirects or when using index files. 
