@@ -89,7 +89,13 @@ If you previously <a href="https://gcore.com/docs/cloud/networking/create-and-ma
 
 <img src="https://assets.gcore.pro/docs/cloud/bare-metal-servers/create-a-bare-metal-server/create-network-dialog.png" alt="A menu with available network settings and highlighed reserved ip toggle" width="80%">
 
-5\. (Optional) Enable IPv6 dual-stack to assign both IPv4 and IPv6 addresses for network interfaces of worker nodes and pods. If the Enable IPv6 dual-stack toggle is not available, make sure that at least one pool from your cluster is in a public network. If your Kubernetes cluster is only connected to a private network, you also need to configure and add an IPv6 subnetwork. 
+5\. (Optional) Enable IPv6 dual-stack to assign both IPv4 and IPv6 addresses for network interfaces. If the **Enable IPv6 dual-stack** toggle is not available, check the following settings: 
+
+* **Public network**. Ensure that the region where you’re creating a Bare Metal supports IPv6.  
+
+* **Private network**. If your Bare Metal server is only connected to a private network, you need to configure and add both IPv4 and IPv6 private subnets. 
+
+If you don’t meet these prerequisites, the IPv6 dual-stack option won’t appear in the network settings. 
 
 Note that to activate IPv6 dual-stack, you only need to configure a network interface. The subnetwork will be automatically selected. 
 
