@@ -15,13 +15,13 @@ pageDescription: Enhance your CDN security through Origin SSL Validation—an ef
 In the Origin Pull Protocol option, you are to set the protocol which CDN servers will use to pull content from an origin server: HTTP, HTTPS or HTTP and HTTPS. It allows you to control whether the connection between the CDN and the origin server is encrypted or not. 
 <alert-element type="info" title="Info">
  
-This option is only accessible via <a href="https://api.gcore.com/docs/iam" target="_blank">API</a>.  
+This option is only accessible via <a href=" https://api.gcore.com/docs/cdn#tag/SSL-certificates" target="_blank">API</a>.  
  
 </alert-element>
 
 If you choose the HTTPS protocol, CDN servers will send a request for the content via HTTPS protocol, such a content transfer process is encrypted, but still do not save the connection from the attack called <a href="https://en.wikipedia.org/wiki/Man-in-the-middle_attack" target="_blank">Man In The Middle</a>. 
 
-This is because the CDN servers by default do not check whether the SSL certificate on the origin is valid and certified by a Certificate Authority and whether the answered server is the client's server.  
+This is because the CDN servers, by default, do not check whether the SSL certificate on the origin is valid and certified by a Certificate Authority and whether the answered server is the client's server.  
 
 To increase the connection security level, activate the Origin SSL Validation option.  
 
