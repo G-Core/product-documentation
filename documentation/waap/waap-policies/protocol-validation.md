@@ -4,7 +4,6 @@ displayName: Protocol validation
 published: true
 order: 10
 toc:
-   --1--Protocols overview: "protocols-overview"
    --1--Configure policy group: "configure-policy-group"
    --2--Invalid or unknown user agent: "invalid-user-agent-and-unknown-user-agent"
    --2--Service protocol validation: "service-protocol-validation"
@@ -15,57 +14,6 @@ pageDescription: Learn how to enable and customize Protocol validation policy.
 # Protocol validation 
 
 The protocol validation policy group verifies the HTTP and HTTPS protocols used by clients to request content from your website's origin server. If the request meets the protocol-specific requirements, the transaction is allowed, while all non-compliant transactions are blocked. 
-
-## Protocols overview 
-
-Clients use HTTP methods to communicate with the website's origin server and specify what action should be performed on the requested resource. The following are nine standard HTTP methods that Gcore WAAP looks for when validating traffic. 
-
-<table>
-<thead>
-<tr>
-<td style="text-align: left">Name</td>
-<td style="text-align: left">Description</td>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left">GET</td>
-<td style="text-align: left">Retrieve a URI.</td>
-</tr>
-<tr>
-<td style="text-align: left">HEAD</td>
-<td style="text-align: left">Retrieve a URI without the response body.</td>
-</tr>
-<tr>
-<td style="text-align: left">POST</td>
-<td style="text-align: left">Submit data to a resource and create a new entity.</td>
-</tr>
-<tr>
-<td style="text-align: left">PUT</td>
-<td style="text-align: left">Update all data in a resource entity.</td>
-</tr>
-<tr>
-<td style="text-align: left">DELETE</td>
-<td style="text-align: left">Remove a resource.</td>
-</tr>
-<tr>
-<td style="text-align: left">CONNECT</td>
-<td style="text-align: left">Establish a connection with a resource.</td>
-</tr>
-<tr>
-<td style="text-align: left">OPTIONS</td>
-<td style="text-align: left">Request information on the communication options associated with a resource.</td>
-</tr>
-<tr>
-<td style="text-align: left">TRACE</td>
-<td style="text-align: left">Echo a request back to the client (mainly for debugging purposes).</td>
-</tr>
-<tr>
-<td style="text-align: left">PATCH</td>
-<td style="text-align: left">Update data in a resource entity.</td>
-</tr>
-</tbody>
-</table>
 
 ## Configure policy group 
 
