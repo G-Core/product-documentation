@@ -7,7 +7,7 @@ toc: 10
 pageTitle: 'A guide on how to configure API base path in Gcore WAAP | Gcore'
 pageDescription: 'Learn how to manually add endpoints to API base path so they are protected by WAAP.'
 ---
-# Manually add endpoints to API base path
+# Manually add endpoints to the API base path
 
 If your domain uses APIs hosted on the same domain and you don't have enabled <a href="https://gcore.com/docs/waap/api-discovery-and-protection/api-discovery" target="_blank">API Discovery</a>, you can manually add endpoints to the API base path. This will define a communication path for WAAP to expect API requests and protect your endpoints.  
 
@@ -53,4 +53,4 @@ When you enter a path, note that:
 
 After you configure the API base path, CAPTCHA and JavaScript validation will be disabled for added endpoints.  
 
-The <a href="https://gcore.com/docs/waap/ddos-protection" target="_blank">DDoS protection</a>, <a href="https://gcore.com/docs/waap/waap-policies/ip-reputation" target="_blank">IP reputation</a>, and rate limitation features will continue to protect those endpoints. Custom <a href="https://gcore.com/docs/waap/ip-security/allow-and-block-ip-addresses" target="_blank">firewall rules</a> can also impact content delivery via API and potentially block users.
+The <a href="https://gcore.com/docs/waap/ddos-protection" target="_blank">DDoS protection</a>, <a href="https://gcore.com/docs/waap/waap-policies/ip-reputation" target="_blank">IP reputation</a>, and rate limitation features will continue to protect those endpoints. Custom <a href="https://gcore.com/docs/waap/waap-rules/custom-rules" target="_blank">WAAP rules</a> and <a href="https://gcore.com/docs/waap/ip-security/allow-and-block-ip-addresses" target="_blank">firewall rules</a> can also impact content delivery via API and potentially block users.
