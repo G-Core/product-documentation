@@ -342,7 +342,7 @@ Terraform will ask you to confirm the action. Enter “yes”.
 
 This configuration allows for high-throughput, low-latency applications where preserving the client's source IP is important for logging, security, or other purposes. 
 
-<code-block>
+```
 terraform {
   required_version = ">= 0.13.0"
   required_providers {
@@ -353,12 +353,12 @@ terraform {
   }
 }
 provider gcore {
-   permanent_api_token = "<span style="color:#FF5913">your_api_token</span>"
+   permanent_api_token = "your_api_token"
 }
 data "gcore_project" "pr" {
   name = "default"
 }
-variable "<span style="color:#FF5913">region_id</span>" {
+variable "region_id" {
   type = string
   default = "4"
 }
@@ -380,7 +380,7 @@ resource "gcore_subnet" "subnet_k8sv4" {
 }
 resource "gcore_keypair" "kp2" {
   project_id = data.gcore_project.pr.id
-  public_key  = "<span style="color:#FF5913">your_public_key</span>"
+  public_key  = "your_public_key"
   sshkey_name = "k8s-nodes3"
 }
 resource "gcore_k8sv2" "cl2" {
@@ -414,7 +414,7 @@ data "gcore_k8sv2_kubeconfig" "config" {
 output "kubeconfig" {
   value = data.gcore_k8sv2_kubeconfig.config.kubeconfig
 }
-</code-block>
+```
 
 Where: 
 
