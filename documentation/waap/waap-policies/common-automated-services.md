@@ -8,11 +8,18 @@ pageDescription: Learn how to enable and customize common automated services pol
 ---
 # Common automated services
 
-Legitimate automation services such as web crawlers, security scanners, or SEO tools can often access your domain to gather some information. Such services operate without triggering any security measures as they're considered beneficial or necessary for normal web activities. 
+This policy group functions uniquely in WAAP. Instead of challenging or blocking incoming traffic like other policy groups, it’s designed to recognize and allow traffic from legitimate automated services.  
 
-However, sometimes you may want to restrict which automation tools can access your domain. For instance, if you need to enforce specific data protection requirements on a domain, protect it from potentially harmful services, or restrict paid content from unauthorized use.  
+These services include: 
 
-You can do so by enabling or disabling particular bots in the Common automated services policy group. 
+* Common web crawlers like Google and Microsoft bots
+* Preview fetch bots like Slack, Facebook, or Twitter
+* SEO and monitoring tools
+* Other tools like Instant Payment Notification (IPN) requests from PayPal or HiPay 
+
+All these automation services often access your domain to gather some information and are considered beneficial or necessary for normal web activities. Note that some policies are disabled by default, and you need to enable them to permit traffic from the relevant services. 
+
+In some cases, you might want to do the opposite and restrict automation tools from accessing your domain. For instance, you can do so to enforce specific data protection requirements on a domain, protect it from potentially harmful services, or restrict paid content from unauthorized use. In this case, disable particular bots in the Common automated services policy group. 
 
 <alert-element type="info" title="Info">
  
