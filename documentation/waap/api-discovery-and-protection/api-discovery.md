@@ -154,19 +154,25 @@ The scan history also displays information about the scan time, analyzed source,
 
 ## Settings
 
-On this page, you can choose the preferred ways of detecting potential API endpoints, configure network scan intervals, and manually add APIs to the base path.
+On this page, you can choose the preferred ways of detecting potential API endpoints, configure network scan intervals, and <a href="https://gcore.com/docs/waap/api-discovery-and-protection/configure-api-base-path" target="_blank">manually add APIs to the base path</a>.
 
 <img src="https://assets.gcore.pro/docs/waap/api-discovery-and-protection/settings.png" alt="Settings page in the Customer Portal" width="80%">
 
+<alert-element type="warning" title="Warning">
+  
+Manually adding endpoints to the base path is only necessary if you don't have the API discovery feature enabled. If you're using API discovery, manage all your APIs on the **API Baseline** page.
+
+</alert-element>
+
 ### Configure base path 
 
-For guidelines on how to configure API base path in Gcore WAAP, check out the <a href="https://gcore.com/docs/waap/api-discovery-and-protection/configure-api-base-path" target="_blank">Manually add endpoints to API base path</a> guide. 
+For guidelines on how to configure the API base path in Gcore WAAP, check out the <a href="https://gcore.com/docs/waap/api-discovery-and-protection/configure-api-base-path" target="_blank">Manually add endpoints to API base path</a> guide. 
 
 ### Specify API specification files 
 
-One of the ways to add APIs to API Discovery feature is to parse an uploaded JSON or YAML Swagger file. Detected API endpoints will appear on thewa page with the **Confirmed** status. 
+One of the ways to add APIs to the API Discovery feature is to parse an uploaded JSON or YAML Swagger file. Detected API endpoints will appear on the page with the **Confirmed** status. 
 
-Uploading a Swagger file can significantly reduce the work needed for categorizing of potential APIs, as this will automatically classify most of the endpoints that comprise the API Baseline. 
+Uploading a Swagger file can significantly reduce the work needed for categorizing potential APIs, as this will automatically classify most of the endpoints that comprise the API Baseline. 
 
 This is how you can do it: 
 
