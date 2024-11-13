@@ -12,6 +12,8 @@ pageDescription: Learn how to enable and customize WAF and OWASP top threats pol
 
 The WAF & OWASP Top 10 policy group contains a robust set of policies that protect your application against the most critical security risks standardized by the <a href="https://owasp.org/" target="_blank">Open Web Application Security Project (OWASP)</a>. 
 
+Some policies in this policy group also block the response phase of a request to prevent data leakage. For example, the Personally identifiable information (PII) policy can block a response if personal or private information is detected. In such cases, the request will return a status code **200 OK**, but the response will be blocked. 
+
 ## Configure policy group 
 
 You can review the WAF and OWASP top threats policy group and enable or disable its policies in the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>: 
@@ -28,7 +30,7 @@ You can review the WAF and OWASP top threats policy group and enable or disable 
 
 <alert-element type="info" title="Info">
 
-Only the **Open redirect** and **Personally identifiable information** policies are enabled by default. To enable a policy, turn on the toggle near that policy. 
+Only the **Open redirect** and **Personally identifiable information** policies are disabled by default. To enable a policy, turn on the toggle near that policy. 
 
 </alert-element>
 
