@@ -10,6 +10,7 @@ toc:
    --2--Create a Bare Metal server: "create-a-bare-metal-server"
    --2--Create a Virtual Machine: "create-a-virtual-machine"
    --2--Create a Managed Kubernetes cluster: "create-a-managed-kubernetes-cluster"
+   --2--Create a cluster with Cilium Load Balancer and DSR: "create-a-kubernetes-cluster-with-cilium-load-balancer-and-dsr"
    --2--Create a Kubernetes pool: "create-a-kubernetes-pool"
    --2--Create a Load Balancer: "create-a-load-balancer"
    --2--Create a network and subnetwork: "create-a-network-and-subnetwork"
@@ -336,6 +337,106 @@ terraform apply
 ```
 
 Terraform will ask you to confirm the action. Enter “yes”.
+
+### Create a Kubernetes cluster with Cilium Load Balancer and DSR
+
+This configuration allows for high-throughput, low-latency applications where preserving the client's source IP is important for logging, security, or other purposes. 
+
+<code-block>
+terraform {
+  required_version = ">= 0.13.0"
+  required_providers {
+    gcore = {
+      source  = "G-Core/gcore"
+      version = "~>0.9.1"
+    }
+  }
+}
+
+provider gcore {
+   permanent_api_token = "<span style="color:#FF5913">your_api_token</span>"
+}
+
+data "gcore_project" "pr" {
+  name = "default"
+}
+
+variable "<span style="color:#FF5913">region_id</span>" {
+  type = string
+  default = "4"
+}
+
+resource "gcore_network" "network_k8s" {
+  name = "network_k8s_ds"
+  type = "vxlan"
+  region_id = var.region_id
+  project_id = data.gcore_project.pr.id
+  create_router = true
+}
+
+resource "gcore_subnet" "subnet_k8sv4" {
+  name = "subnet_ipv4_k8s"
+  cidr = "192.168.56.0/24"
+  network_id = gcore_network.network_k8s.id
+  enable_dhcp = true
+  connect_to_network_router = true
+  region_id = var.region_id
+  project_id = data.gcore_project.pr.id
+}
+
+resource "gcore_keypair" "kp2" {
+  project_id = data.gcore_project.pr.id
+  public_key  = "<span style="color:#FF5913">your_public_key</span>"
+  sshkey_name = "k8s-nodes3"
+}
+
+resource "gcore_k8sv2" "cl2" {
+  region_id = var.region_id
+  project_id = data.gcore_project.pr.id
+  name          = "somename"
+  keypair       = "k8s-nodes3"
+  version       = "v1.30.4"
+  fixed_network = gcore_network.network_k8s.id
+  fixed_subnet  = gcore_subnet.subnet_k8sv4.id
+
+  cni {
+    provider = "cilium"
+  }
+
+  pool {
+    name             = "pool1"
+    flavor_id        = "g1-standard-2-4"
+    min_node_count   = 2
+    max_node_count   = 2
+    boot_volume_size = 10
+    boot_volume_type = "standard"
+    servergroup_policy = "soft-anti-affinity"
+  }
+
+}
+
+data "gcore_k8sv2_kubeconfig" "config" {
+  cluster_name       = gcore_k8sv2.cl2.name
+  region_id          = var.region_id
+  project_id         = data.gcore_project.pr.id
+}
+
+// to store kubeconfig in a file pls use
+// terraform output -raw kubeconfig > config.yaml
+output "kubeconfig" {
+  value = data.gcore_k8sv2_kubeconfig.config.kubeconfig
+}
+</code-block>
+
+Where: 
+
+* **region_id**: A location of the Data Center where the cluster has been created.  
+* **project_id**: A unique identifier of the project in which the cluster has been created. 
+* **name**: A name of the relevant resource within the Gcore infrastructure.
+* **keypair**: A pair of SSH keys that will be used for SSH access to the cluster nodes. 
+* **fixed_network**: ID of an existing network where the Kubernetes cluster will be connected.
+* **fixed_subnet**: ID of a subnetwork within the fixed network. 
+* **pool**: A node pool for the Kubernetes cluster.  
 
 ### Create a Kubernetes pool
 
