@@ -352,20 +352,16 @@ terraform {
     }
   }
 }
-
 provider gcore {
    permanent_api_token = "<span style="color:#FF5913">your_api_token</span>"
 }
-
 data "gcore_project" "pr" {
   name = "default"
 }
-
 variable "<span style="color:#FF5913">region_id</span>" {
   type = string
   default = "4"
 }
-
 resource "gcore_network" "network_k8s" {
   name = "network_k8s_ds"
   type = "vxlan"
@@ -373,7 +369,6 @@ resource "gcore_network" "network_k8s" {
   project_id = data.gcore_project.pr.id
   create_router = true
 }
-
 resource "gcore_subnet" "subnet_k8sv4" {
   name = "subnet_ipv4_k8s"
   cidr = "192.168.56.0/24"
@@ -383,13 +378,11 @@ resource "gcore_subnet" "subnet_k8sv4" {
   region_id = var.region_id
   project_id = data.gcore_project.pr.id
 }
-
 resource "gcore_keypair" "kp2" {
   project_id = data.gcore_project.pr.id
   public_key  = "<span style="color:#FF5913">your_public_key</span>"
   sshkey_name = "k8s-nodes3"
 }
-
 resource "gcore_k8sv2" "cl2" {
   region_id = var.region_id
   project_id = data.gcore_project.pr.id
@@ -398,11 +391,9 @@ resource "gcore_k8sv2" "cl2" {
   version       = "v1.30.4"
   fixed_network = gcore_network.network_k8s.id
   fixed_subnet  = gcore_subnet.subnet_k8sv4.id
-
   cni {
     provider = "cilium"
   }
-
   pool {
     name             = "pool1"
     flavor_id        = "g1-standard-2-4"
@@ -412,15 +403,12 @@ resource "gcore_k8sv2" "cl2" {
     boot_volume_type = "standard"
     servergroup_policy = "soft-anti-affinity"
   }
-
 }
-
 data "gcore_k8sv2_kubeconfig" "config" {
   cluster_name       = gcore_k8sv2.cl2.name
   region_id          = var.region_id
   project_id         = data.gcore_project.pr.id
 }
-
 // to store kubeconfig in a file pls use
 // terraform output -raw kubeconfig > config.yaml
 output "kubeconfig" {
