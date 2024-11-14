@@ -411,4 +411,4 @@ Follow these instructions to export logs to <a href="https://gcore.com/storage" 
 
 ## How near real-time log exporting works
 
-Logs are achived and exported to your storage every five minutes. If CDN servers are not requested and you didn’t select the **Do not send empty logs** checkbox when configuring Raw Logs, an empty log file (± 20 bytes) will be sent to your storage.
+Logs are achived and exported to your endpoint every five minutes. If CDN servers are not requested and you didn’t select the **Do not send empty logs** checkbox when configuring Logs uploader, an empty log file (± 20 bytes) will be sent to your storage.
