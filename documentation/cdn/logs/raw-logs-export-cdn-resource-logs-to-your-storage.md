@@ -1,6 +1,6 @@
 ---
 title: raw-logs-export-cdn-resource-logs-to-your-storage
-displayName: Export CDN logs 
+displayName: Raw logs 
 published: true
 order: 10
 toc:
@@ -18,20 +18,15 @@ toc:
    --2--Non-Amazon storage: "non-amazon-storage"
    --1--Export logs to FTP or SFTP storage: "export-logs-to-ftp-or-sftp-storage"
    --1--Deactivate Raw Logs: "deactivate-raw-logs"
-   --1--Logs uploader settings: "logs-uploader-configuration"
-   --1--Export logs with Logs uploader: "export-logs-with-logs-uploader"
 pageTitle: Guide on Using the CDN Raw Logs Feature | Gcore
 pageDescription: A comprehensive guide on using the CDN Raw Logs feature for exporting logs to your storage, understanding traffic calculation in log reports.
 ---
-# Export CDN resource logs to a storage
+# Raw logs: export CDN resource logs to a storage
 
-Configure automatic export of CDN resource logs to the storage of your choice using either <a href="https://gcore.com/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage#raw-logs" target="_blank">Raw logs</a> or <a href="https://gcore.com/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage#logs-uploader" target="_blank">Logs uploader</a> feature. 
-
-## Raw Logs
-
-Logs contain information about user requests sent to cache servers and pre-cache servers (if the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin Shielding</a> is enabled).
+Raw Logs is an option that enables an automatic export of CDN resource logs to your storage. Logs contain information about user requests sent to cache servers and pre-cache servers (if the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin Shielding</a> is enabled).
 
 <img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/deactivate-logs.png" alt="Raw logs page in the Customer Portal" width="80%">
+
 <alert-element type="info" title="Info">
 
 This is a paid feature. To activate Raw Logs, [contact the Gcore support team](mailto:support@gcore.com). 
@@ -39,11 +34,11 @@ After activation, enable Raw Logs in the Gcore Customer Portal and configure exp
 
 </alert-element>
 
-### Raw Logs settings  
+## Raw Logs settings  
 
 In this section, you can find general information about log settings, overview of log statuses, and details on how Raw Logs are exported and calculated. 
 
-#### Add logs from Origin Shielding 
+### Add logs from Origin Shielding 
 
 If you are using the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin Shielding</a> feature, you’ll see the **Add logs from origin shielding** checkbox when configuring logs. We recommend that you select this option as it ensures that the logs report will include both requests to cache services and requests to the pre-cache server. Thus, you’ll receive more detailed information on resource usage. 
 
@@ -57,7 +52,7 @@ If you don’t see the Origin Shielding option on the Raw Logs page, this featur
  
 </alert-element>
 
-#### Raw Logs statuses 
+### Raw Logs statuses 
 
 You can check the status of the Raw Logs in the Gcore Customer Portal: 
 
@@ -69,13 +64,13 @@ You can check the status of the Raw Logs in the Gcore Customer Portal:
 
 * **Pause**: The Raw Logs feature is paused. 
 
-#### Export time intervals 
+### Export time intervals 
 
 Logs are exported at the end of each hour. If you activate Raw Logs at 00:30, the first logs will be exported between 00:45 and 01:00 and the next ones—between 01:45 and 02:00. 
 
 If CDN servers are not requested and you didn’t select the **Do not send empty logs** checkbox when configuring Raw Logs, an empty log file (± 20 bytes) will be sent to your storage. 
 
-#### Log traffic calculation 
+### Log traffic calculation 
 
 Logs can generate various types of analytics, such as delivered traffic. To understand what the totals mean, we recommend that you familiarize yourself with the formulas for calculating logs. For details about CDN reports, check out the <a href="https://gcore.com/docs/cdn/view-statistics-of-a-cdn-resource" target="_blank">View statistics on CDN resources</a> guide.  
 
@@ -122,13 +117,13 @@ The final value of log data may differ slightly from the billing statistics as t
  
 </alert-element>
 
-#### Log path example
+### Log path example
 
 ```
 s3://log-bucket-name/2019/08/20/15/nodename_primarycname.domain.ru_access.log.gz
 ```
 
-#### Log example
+### Log example
 
 ```
 "0.0.0.0" "-" "-" "[26/Apr/2019:09:47:40 +0000]" "GET /ContentCommon/images/image.png HTTP/1.1"  
@@ -141,7 +136,7 @@ AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 YaBrowser/16.10.0.23
 "application/json" "21" "PL" "45" "10" "100700"
 ```
 
-#### Log format
+### Log format
 
 ```
 "$remote_addr" "-" "$remote_user" "[$time_local]" "$request" "$status"  
@@ -160,7 +155,7 @@ AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 YaBrowser/16.10.0.23
 
 It’s OK if you find a field that’s not listed in the example. We occasionally add new fields to the end of the line. If some fields are added to logs, you’ll receive an email about the update. 
 
-#### Log fields
+### Log fields
 
 The following table contains a complete list of available log fields. Fields formatted in italics relate to our internal CDN system, so you can ignore them.  
 
@@ -430,11 +425,11 @@ You can check other fields—they can be helpful for traffic analysis or statist
 
 </expandable-element>
 
-### Export logs to S3 storage
+## Export logs to S3 storage
 
 <tabset-element>
 
-#### Amazon storage
+### Amazon storage
 
 1\. In the Gcore Customer Portal, navigate to **CDN** > **Logs**. 
 
@@ -467,7 +462,7 @@ Enter a folder name if you want to export logs to a specific folder within a buc
 
 You've successfully configured Raw Logs export to Amazon S3.
 
-#### Non-Amazon storage
+### Non-Amazon storage
 
 1\. In the Gcore Customer Portal, navigate to **CDN** > **Logs**. 
 
@@ -512,7 +507,7 @@ You've successfully configured Raw Logs export to S3 storage.
 
 </tabset-element>
 
-### Export logs to FTP or SFTP storage
+## Export logs to FTP or SFTP storage
 
 1\. In the Gcore Customer Portal, navigate to **CDN** > **Logs**. 
 
@@ -558,7 +553,7 @@ If you’re using the Gcore SFTP storage, you won’t be able to write to the ho
 
 You've successfully configured Raw Logs export to FTP or SFTP storage.
 
-### Deactivate Raw Logs 
+## Deactivate Raw Logs 
 
 To stop Raw Logs delivery, disable the **Receive Raw Logs** toggle.  
 
@@ -567,81 +562,3 @@ If you disable the logs, your settings will be saved. You can always activate th
 If you made any changes to the configuration, click Discard changes to cancel any changes made during the editing process.
 
 <img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/deactivate-logs.png" alt="Raw logs page" width="80%">
-
-## Logs uploader
-
-Upload CDN logs to multiple storages in near real time (archives are exported every 5 minutes.
-
-### Logs uploader configuration
-
-The configuration of both **Raw logs** and **Logs uploader** features is almost identical. Refer to <a href="https://gcore.com/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage#raw-logs-settings" target="_blank">Raw logs settings</a> for a comprehensive overview.  
-
-The only difference is that the Logs uploader allows you to choose log fields from a prepopulated list, making it easier to customize what logs you want to upload. 
-
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/logs-uploader.png" alt="Logs uploader settings" width="80%">
-
-### Export logs with Logs uploader 
-
-<tabset-element>
-
-#### Amazon
-
-Follow these instructions to export logs to AWS storage: 
-
-1\. Open the <a href="https://gcore.com/cdn" target="_blank">Gcore CDN page</a> and navigate to **Logs** > **Logs uploader**. 
-
-2\. Enable the feature and configure its settings as described above in the <a href="https://gcore.com/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage#logs-uploader-configuration" target="_blank">Logs uploader configuration</a> section. 
-
-3\. In the **Storage provider**, select **Amazon**. 
-
-4\. Provide your access key ID and secret access key, which together form <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html" target="_blank">long-term AWS credentials</a>. 
-
-5\. (Optional). Choose a storage region. While the region is often determined automatically, we recommend specifying it to ensure that your logs are exported successfully. 
-
-6\. Specify the name of a bucket where you want to export CDN logs. 
-
-7\. (Optional). Enter a folder name if you want to export logs to a specific folder within a bucket. 
-
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/logs-uploader-aws.png" alt="Receive logs to AWS" width="80%">
-
-#### OSS
-
-Follow these instructions to export logs to configure logs for Alibaba Cloud <a href="https://www.alibabacloud.com/en/product/object-storage-service?_p_lc=1" target="_blank">Object Storage Service</a> (OSS): 
-
-1\. Open the <a href="https://gcore.com/cdn" target="_blank">Gcore CDN page</a> and navigate to **Logs** > **Logs uploader**. 
-
-2\. Enable the feature and configure its settings as described above in the <a href="https://gcore.com/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage#logs-uploader-configuration" target="_blank">Logs uploader configuration</a> section. 
-
-3\. In the **Storage provider**, select **OSS**. 
-
-4\. Provide your access key ID and secret access key. Check the <a href="https://www.alibabacloud.com/help/en/oss/developer-reference/access-control/?spm=a2c63.p38356.0.0.439d43celIzLks" target="_blank">official OSS documentation</a> for details. 
-
-5\. (Optional). Choose a storage region. While the region is often determined automatically, we recommend specifying it to ensure that your logs are exported successfully. 
-
-6\. Specify the name of a bucket where you want to export CDN logs. 
-
-7\. (Optional). Enter a folder name if you want to export logs to a specific folder within a bucket. 
-
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/logs-uploader-oss.png" alt="Receive logs to AWS" width="80%">
-
-#### Gcore\Other
-
-Follow these instructions to export logs to <a href="https://gcore.com/storage" target="_blank">Gcore Object Storage</a> or any S3 storage of your choice: 
-
-1\. Open the <a href="https://gcore.com/cdn" target="_blank">Gcore CDN page</a> and navigate to **Logs** > **Logs uploader**. 
-
-2\. Enable the feature and configure its settings as described above in the <a href="https://gcore.com/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage#logs-uploader-configuration" target="_blank">Logs uploader configuration</a> section. 
-
-3\. In the **Storage provider**, select **Gcore** or **Other**. 
-
-4\. Specify a hostname—a name that’s assigned to a storage server within a network and is used instead of an IP address. In you’re using Gcore Storage, you can find your hostname in the <a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage#object-storage" target="_blank">storage details section</a>. 
-
-5\. Provide your access key ID and secret access key. You can find this information in the <a href="https://gcore.com/docs/storage/request-content-directly-from-the-storage" target="_blank">Details of the storage</a>. 
-
-6\. Specify the name of a bucket where you want to export CDN logs. 
-
-7\. (Optional). Enter a folder name if you want to export logs to a specific folder within a bucket. 
-
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/logs-uploader-gcore-other.png" alt="Receive logs to AWS" width="80%">
-
-</tabset-element>

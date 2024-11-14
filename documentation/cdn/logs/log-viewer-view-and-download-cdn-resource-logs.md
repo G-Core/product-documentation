@@ -2,7 +2,7 @@
 title: log-viewer-view-and-download-cdn-resource-logs
 displayName: Log Viewer (free)
 published: true
-order: 20
+order: 30
 toc:
    --1--What is Log Viewer?: "what-is-log-viewer"
    --1--View logs: "view-logs-in-the-customer-portal"
