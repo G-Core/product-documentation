@@ -39,7 +39,7 @@ To access the feature:
 
 3\. In the sidebar, click **API Discovery**. You can protect and manage APIs on the following pages: 
 
-* **API Baseline**: Contains all API endpoints protected by WAAP. On this page you can add, edit, and view your APIs. 
+* **API Baseline**: Contains all API endpoints protected by WAAP. On this page, you can add, edit, and view your APIs. 
 
 * **Potential APIs**: Endpoints that have been auto-detected by the system and require verification. This is where you can reject or approve endpoints as valid APIs. 
 
