@@ -9,7 +9,7 @@ toc:
    --1--Suspend a CDN resource: "suspend-a-cdn-resource-with-waap-protection"
    --1--Delete a CDN resource: "delete-a-cdn-resource-with-waap-protection"
 pageTitle: A guide on how to manage domains in Gcore WAAP and CDN | Gcore
-pageDescription: Learn how manage, delete, and deactivate domains in Gcore WAAP and CDN settings.
+pageDescription: Learn how to manage, delete, and deactivate domains in Gcore WAAP and CDN settings.
 ---
 # Manage domains protected with WAAP
 
