@@ -2,7 +2,7 @@
 title: connect-to-your-bare-metal-server-via-ssh
 displayName: Connect to your Bare Metal server via SSH
 published: true
-order: 30
+order: 40
 toc:
    --1--Connect with SSH keys: "connect-with-ssh-keys"
    --2--Generate a key (Windows 7/8): "generate-a-key-windows-7-8"
