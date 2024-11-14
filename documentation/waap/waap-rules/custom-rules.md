@@ -8,7 +8,7 @@ pageDescription: Learn about Gcore custom rules and how to use them for filterin
 ---
 # Custom rules
 
-Using custom rules is a great way to ensure a thorough assessment and filtering of web requests. You can control access to specific URLs, limit access to your application, allow or block countries or organizations, and adjust WAAP behavior to a variety use cases.  
+Using custom rules is a great way to ensure a thorough assessment and filtering of web requests. You can control access to specific URLs, limit access to your application, allow or block countries or organizations, and adjust WAAP behavior to a variety of use cases.  
 
 <alert-element type="tip" title="Tip">
  
@@ -18,11 +18,11 @@ If you only want to create Access control lists (ACL), check our <a href="https:
 
 You can create the following types of custom rules:  
 
-* <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/create-and-manage-custom-rules#create-custom-waap-rules" target="_blank">WAAP rules</a>. Consist of two key elements: rule type that defines the conditions for matching a rule and an action that will be enforced when the rule is triggered.   
+* <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/create-and-manage-custom-rules#create-custom-waap-rules" target="_blank">WAAP rules</a> consist of two key elements: rule type that defines the conditions for matching a rule and an action that will be enforced when the rule is triggered.   
 
-*  <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/create-and-manage-custom-rules#create-custom-rate-limit-rules" target="_blank">Rate limit rules</a>. Allow you to set the limit for the number of requests allowed within a particular time range.  
+*  <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/create-and-manage-custom-rules#create-custom-rate-limit-rules" target="_blank">Rate limit rules</a> allow you to set the limit for the number of requests allowed within a particular time range.  
 
-*  <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/tag-rules" target="_blank">Tag rules</a>. Tags are added to existing rules and function as identifiers for monitoring and analytics purposes. You can also create custom rules based on tags. 
+*  <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/tag-rules" target="_blank">Tag rules</a> contain tags, which are added to existing rules and function as identifiers for monitoring and analytics purposes. You can also create custom rules based on tags. 
 
 ## Actions in custom rules 
 
