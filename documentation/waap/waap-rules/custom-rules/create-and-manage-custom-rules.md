@@ -162,7 +162,7 @@ To create a rule:
 
 ### Rules with user agent conditions 
 
-Rules that contain the User agent condition allow you to enforce security controls on incoming traffic based on the specified user agent in a request. 
+Rules that contain the User-agent condition allow you to enforce security controls on incoming traffic based on the specified user agent in a request. 
 
 To create a rule: 
 
@@ -188,7 +188,7 @@ To create a rule:
 
 ### Rules with header conditions 
 
-Rules that contain the Header condition allow you to enforce security controls on incoming traffic based on request headers. In contrast to Hheader exists conditions, the Header ones also validate the value of the header. 
+Rules that contain the Header condition allow you to enforce security controls on incoming traffic based on request headers. In contrast to Header exists conditions, the Header ones also validate the value of the header. 
 
 To create a rule: 
 
@@ -252,7 +252,7 @@ To create a rule:
 
 6\. Click **Save**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/http-method-rule-definition.png" alt="A sample definition of a rule with httm method condition">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/http-method-rule-definition.png" alt="A sample definition of a rule with http method condition">
 
 ### Rules with file extension conditions  
 
@@ -296,7 +296,7 @@ To create a rule:
 
 ### Rules with country conditions  
 
-Rules that contain the Country condition allow you to enforce security controls on incoming traffic based on a country that the request comes from. 
+Rules that contain the Country condition allow you to enforce security controls on incoming traffic based on the country that the request comes from. 
 
 To create a rule: 
 
@@ -316,7 +316,7 @@ To create a rule:
 
 ### Rules with organization conditions  
 
-Rules that contain the Organization condition allow you to enforce security controls on incoming traffic based on a specific organization that the request comes from. 
+Rules that contain the Organization condition allow you to enforce security controls on incoming traffic based on the specific organization that the request comes from. 
 
 To create a rule: 
 
@@ -356,7 +356,7 @@ To create a rule:
 
 ### Rules with session request count conditions 
 
-Rules that contain the Sesion request count condition allow you to enforce security controls on incoming traffic based on the number of requests made in a session (per session ID). 
+Rules that contain the Session request count condition allow you to enforce security controls on incoming traffic based on the number of requests made in a session (per session ID). 
 
 To create a rule: 
 
@@ -402,7 +402,7 @@ To create a rule:
 
 ### Rules with user-defined tag conditions 
 
-Rules that contain the User defined tag condition allow you to enforce security controls on incoming traffic based on a specific user-defined tag within the request. 
+Rules that contain the User-defined tag condition allow you to enforce security controls on incoming traffic based on a specific user-defined tag within the request. 
 
 To create a rule: 
 
