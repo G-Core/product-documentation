@@ -1,24 +1,24 @@
 ---
 title: logs-uploader
-displayName: Logs uploader (near-realtime)
+displayName: Logs uploader (near real-time)
 published: true
 order: 20
 toc:
    --1--Logs uploader settings: "logs-uploader-settings"
-   --2--Logs uploader statuses: "logs-uploader-statuses"
-   --2--Log format: "log-format"
+   --2--Log format example: "log-format-example"
    --2--Log fields: "log-fields"
    --1--Configure logs for export: "configure-logs-for-export"
    --2--Step 1. Include empty logs: "step-1-optional-include-empty-logs"
    --2--Step 2. Enable origin shielding: "step-2-optional-enable-origin-shielding"
    --2--Step 3. Select log fields: "step-3-select-log-fields"
    --2--Step 4. Configure a storage provider: "step-4-configure-a-storage-provider"
+   --1--How near real-time log exporting works: "how-near-real-time-log-exporting-works"
 pageTitle: Guide on Using the CDN Logs Uploader Feature | Gcore
 pageDescription: A comprehensive guide on using the CDN Logs Uploader feature for exporting logs to your storage in near-realtime.
 ---
-# Logs uploader (near-realtime)
+# Logs uploader (near real-time)
 
-Logs Uploader is a feature that enables an automatic export of CDN resource logs to your storage in near-realtime. 
+Logs Uploader is a feature that enables an automatic export of CDN resource logs to your storage in near real-time. 
 
 Exported logs contain information about user requests sent to cache servers and pre-cache servers (if you have the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">Origin shielding</a> feature enabled).
 
@@ -32,19 +32,7 @@ This is a paid feature. To activate Logs Uploader, [contact the Gcore support te
 
 In this section, you can find general information about log settings, statuses, and how to configure logs exporting for different storage types.
 
-### Logs uploader statuses 
-
-You can check the status of the Logs uploader in the Gcore Customer Portal: 
-
-* **Pending**: A status for the time interval between the connection to storage and the first log export. 
-
-* **OK**: Logs are exported from at least one CDN server. 
-
-* **Failed**: An error occurred while connecting to a storage, or the service failed to export logs within 24 hours. 
-
-* **Pause**: The Logs uploader feature is paused. 
-
-### Log format
+### Log format example
 
 ```
 "$remote_addr" "-" "$remote_user" "[$time_local]" "$request" "$status"  
@@ -420,3 +408,7 @@ Follow these instructions to export logs to <a href="https://gcore.com/storage" 
 6\. Click **Save changes** to apply the updates.
 
 </tabset-element>
+
+## How near real-time log exporting works
+
+Logs are achived and exported to your storage every five minutes. If CDN servers are not requested and you didn’t select the **Do not send empty logs** checkbox when configuring Raw Logs, an empty log file (± 20 bytes) will be sent to your storage.
