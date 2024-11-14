@@ -150,7 +150,7 @@ You can select multiple filters to get a more granular view of the displayed inf
 </tr>
 <tr>
 <td style="text-align: left">Date</td>
-<td style="text-align: left">The date and time when a rule was triggered or request occurred.</td>
+<td style="text-align: left">The date and time when a rule was triggered or a request occurred.</td>
 </tr>
 <tr>
 <td style="text-align: left">IP</td>
@@ -203,7 +203,7 @@ For each logged request, you can perform the following actions:
 
 #### Request details
 
-This page provides an in-depth information about a particular request made to your domain. It’s structured into three sections, each focusing on a specific aspect of the request: 
+This page provides in-depth information about a particular request made to your domain. It’s structured into three sections, each focusing on a specific aspect of the request: 
 
 * **Reference ID**: This ID is unique to each chain of requests that triggered a particular policy or custom rule. By using reference ID, you can search through your requests and determine why a block <a href="https://gcore.com/docs/waap/response-pages" target="_blank">response page</a> was displayed to that user. 
 
@@ -232,7 +232,7 @@ This page provides an in-depth information about a particular request made to yo
 <img src="https://assets.gcore.pro/docs/waap/analytics/request-details-create-rule.png" alt="Create rule button on the request details page" width="80%">
 
 2\. Choose the relevant action:  
-   * Allow a requests from this IP 
+   * Allow requests from this IP 
    * Block requests from this IP 
    * Challenge requests with CAPTCHA  
    * Challenge request with JavaScript validation
@@ -309,7 +309,7 @@ This table displays more fine-grained information about requests associated with
 </tr>
 <tr>
 <td style="text-align: left">Date</td>
-<td style="text-align: left">The date and time when a rule was triggered or request occurred.</td>
+<td style="text-align: left">The date and time when a rule was triggered or a request occurred.</td>
 </tr>
 <tr>
 <td style="text-align: left">IP</td>
