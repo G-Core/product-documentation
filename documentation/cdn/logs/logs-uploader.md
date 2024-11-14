@@ -9,8 +9,8 @@ toc:
    --2--Log format: "log-format"
    --2--Log fields: "log-fields"
    --1--Configure logs for export: "configure-logs-for-export"
-   --2--Step 1. Enable origin shielding: "step-1-optional-enable-origin-shielding"
-   --2--Step 2. Include empty logs: "step-2-optional-include-empty-logs"
+   --2--Step 1. Include empty logs: "step-1-optional-include-empty-logs"
+   --2--Step 2. Enable origin shielding: "step-2-optional-enable-origin-shielding"
    --2--Step 3. Select log fields: "step-3-select-log-fields"
    --2--Step 4. Configure a storage provider: "step-4-configure-a-storage-provider"
 pageTitle: Guide on Using the CDN Logs Uploader Feature | Gcore
@@ -335,9 +335,15 @@ You can check other fields—they can be helpful for traffic analysis or statist
 
 ## Configure logs for export
 
-You can enable Logs uploader feature in the Gcore Customer Portal on the <a href="https://gcore.com/cdn" target="_blank">Gcore CDN page</a>. To open log settings, navigate to  **Logs** > **Logs uploader** and configure the feature as described above in the following steps.
+You can enable and set up the **Logs uploader** feature in the Gcore Customer Portal on the <a href="https://gcore.com/cdn" target="_blank">Gcore CDN page</a>. 
 
-### Step 1 (optional). Enable origin shielding
+To access log settings, navigate to **Logs** > **Logs uploader** and configure the feature as described in the following steps.
+
+### Step 1 (optional). Include empty logs
+
+Keep the **Do not send empty logs** option selected if you don't want to receive empty logs. Otherwise, uncheck it. 
+
+### Step 2 (optional). Enable origin shielding
 
 If you are using the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">origin shielding</a> feature, you’ll see the **Add logs from origin shielding** checkbox when configuring Logs uploader. 
 
@@ -351,10 +357,6 @@ If you don’t see the origin shielding option on the **Logs uploader** page, th
  
 </alert-element>
 
-### Step 2 (optional). Include empty logs
-
-Keep the **Do not send empty logs** option selected if you don't want to receive empty logs. Otherwise, uncheck it. 
-
 ### Step 3. Select log fields
 
 Choose which <a href="https://gcore.com/docs/cdn/logs/logs-uploader#log-fields" target="_blank">log fields</a> you want to include in the exported report. By default, all fields are selected. 
@@ -367,56 +369,54 @@ Choose which <a href="https://gcore.com/docs/cdn/logs/logs-uploader#log-fields" 
 
 Follow these instructions to export logs to AWS storage: 
 
-3\. In the **Storage provider**, select **Amazon**. 
+1\. In the **Storage provider**, select **Amazon**. 
 
-4\. Provide your access key ID and secret access key, which together form <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html" target="_blank">long-term AWS credentials</a>. 
+2\. Provide your access key ID and secret access key, which together form <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html" target="_blank">long-term AWS credentials</a>. 
 
-5\. (Optional). Choose a storage region. While the region is often determined automatically, we recommend specifying it to ensure that your logs are exported successfully. 
+3\. (Optional). Choose a storage region. While the region is often determined automatically, we recommend specifying it to ensure that your logs are exported successfully. 
 
-6\. Specify the name of a bucket where you want to export CDN logs. 
+4\. Specify the name of a bucket where you want to export CDN logs. 
 
-7\. (Optional). Enter a folder name if you want to export logs to a specific folder within a bucket. 
+5\. (Optional). Enter a folder name if you want to export logs to a specific folder within a bucket. 
 
 <img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/logs-uploader-aws.png" alt="Receive logs to AWS" width="80%">
+
+6\. Click **Save changes** to apply the updates.
 
 ### OSS
 
 Follow these instructions to export logs to configure logs for Alibaba Cloud <a href="https://www.alibabacloud.com/en/product/object-storage-service?_p_lc=1" target="_blank">Object Storage Service</a> (OSS): 
 
-1\. Open the <a href="https://gcore.com/cdn" target="_blank">Gcore CDN page</a> and navigate to **Logs** > **Logs uploader**. 
+1\. In the **Storage provider**, select **OSS**. 
 
-2\. Enable the feature and configure its settings as described above in the <a href="https://gcore.com/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage#logs-uploader-configuration" target="_blank">Logs uploader configuration</a> section. 
+2\. Provide your access key ID and secret access key. Check the <a href="https://www.alibabacloud.com/help/en/oss/developer-reference/access-control/?spm=a2c63.p38356.0.0.439d43celIzLks" target="_blank">official OSS documentation</a> for details. 
 
-3\. In the **Storage provider**, select **OSS**. 
+3\. (Optional). Choose a storage region. While the region is often determined automatically, we recommend specifying it to ensure that your logs are exported successfully. 
 
-4\. Provide your access key ID and secret access key. Check the <a href="https://www.alibabacloud.com/help/en/oss/developer-reference/access-control/?spm=a2c63.p38356.0.0.439d43celIzLks" target="_blank">official OSS documentation</a> for details. 
+4\. Specify the name of a bucket where you want to export CDN logs. 
 
-5\. (Optional). Choose a storage region. While the region is often determined automatically, we recommend specifying it to ensure that your logs are exported successfully. 
+5\. (Optional). Enter a folder name if you want to export logs to a specific folder within a bucket. 
 
-6\. Specify the name of a bucket where you want to export CDN logs. 
+<img src="https://assets.gcore.pro/docs/cdn/logs/logs-uploader/logs-uploader-oss.png" alt="Receive logs to OSS" width="80%">
 
-7\. (Optional). Enter a folder name if you want to export logs to a specific folder within a bucket. 
-
-<img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/logs-uploader-oss.png" alt="Receive logs to AWS" width="80%">
+6\. Click **Save changes** to apply the updates.
 
 ### Gcore\Other
 
 Follow these instructions to export logs to <a href="https://gcore.com/storage" target="_blank">Gcore Object Storage</a> or any S3 storage of your choice: 
 
-1\. Open the <a href="https://gcore.com/cdn" target="_blank">Gcore CDN page</a> and navigate to **Logs** > **Logs uploader**. 
+1\.In the **Storage provider**, select **Gcore** or **Other**. 
 
-2\. Enable the feature and configure its settings as described above in the <a href="https://gcore.com/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage#logs-uploader-configuration" target="_blank">Logs uploader configuration</a> section. 
+2\. Specify a hostname—a name that’s assigned to a storage server within a network and is used instead of an IP address. In you’re using Gcore Storage, you can find your hostname in the <a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage#object-storage" target="_blank">storage details section</a>. 
 
-3\. In the **Storage provider**, select **Gcore** or **Other**. 
+3\. Provide your access key ID and secret access key. You can find this information in the <a href="https://gcore.com/docs/storage/request-content-directly-from-the-storage" target="_blank">Details of the storage</a>. 
 
-4\. Specify a hostname—a name that’s assigned to a storage server within a network and is used instead of an IP address. In you’re using Gcore Storage, you can find your hostname in the <a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage#object-storage" target="_blank">storage details section</a>. 
+4\. Specify the name of a bucket where you want to export CDN logs. 
 
-5\. Provide your access key ID and secret access key. You can find this information in the <a href="https://gcore.com/docs/storage/request-content-directly-from-the-storage" target="_blank">Details of the storage</a>. 
-
-6\. Specify the name of a bucket where you want to export CDN logs. 
-
-7\. (Optional). Enter a folder name if you want to export logs to a specific folder within a bucket. 
+5\. (Optional). Enter a folder name if you want to export logs to a specific folder within a bucket. 
 
 <img src="https://assets.gcore.pro/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/logs-uploader-gcore-other.png" alt="Receive logs to AWS" width="80%">
+
+6\. Click **Save changes** to apply the updates.
 
 </tabset-element>
