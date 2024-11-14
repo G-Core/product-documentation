@@ -18,7 +18,7 @@ Depending on your <a href="https://gcore.com/docs/waap/billing" target="_blank">
 
 * <a href="https://gcore.com/docs/waap/ip-security/allow-and-block-ip-addresses" target="_blank">Firewall rules</a> (allow and block IP addresses): Easy to configure and designed for use cases when you need a straightforward, simple tool to manage IP access to your domain. These rules form access control lists (ACLs) and are free for any plan that includes our WAAP product.  
 
-* <a href="https://gcore.com/docs/waap/waap-rules/custom-rules" target="_blank">Custom rules</a>: These rules compose of “if/then” statements and cover more complicated scenarios, such as filtering requests from specified countries or organizations.
+* <a href="https://gcore.com/docs/waap/waap-rules/custom-rules" target="_blank">Custom rules</a>: These rules contain “if/then” statements and cover more complicated scenarios, such as filtering requests from specified countries or organizations.
 
 * <a href="https://gcore.com/docs/waap/waap-rules/advanced-rules" target="_blank">Advanced rules</a>: Designed for technical users who need even more control over rule creation. Can be configured via API and are available within the WAAP <a href="https://gcore.com/docs/waap/billing#enterprise" target="_blank">Enterprise plan</a>. 
 
