@@ -10,7 +10,7 @@ toc:
    --2--Step 3 (optional). Configure additional settings: "step-3-optional-configure-additional-api-protection-settings"
    --2--Step 4. Enable Advanced API protection: "step-4-enable-advanced-api-protection"
 pageTitle: A guide on how to configure API security in Gcore WAAP and CDN | Gcore
-pageDescription: Learn how create admin and privileged users, set up their access to endpoints, and activate Advanced API protection policy.
+pageDescription: Learn how to create admin and privileged users, set up their access to endpoints, and activate the Advanced API protection policy.
 ---
 # Configure API access and protection with reserved tags
 
@@ -54,7 +54,7 @@ The first step in API protection is to categorize your endpoints based on their 
 
 You can control access to endpoints by creating custom rules that will automatically mark endpoints with tags, like **API Admin Access** or **API Privileged Access**.
 
-When creating a rule, make sure that you specify secure conditions, such as client IP or specific HTTP response header. Avoid conditions that are easy to spoof, like the User Agent header. 
+When creating a rule, make sure that you specify secure conditions, such as client IP or specific HTTP response header. Avoid conditions that are easy to spoof, like the User-agent header. 
 
 For example, you can create a rule that restrics access to admin endpoints. Only users with a valid bearer token in the authorization header will be able to interact with admin APIs. 
 
