@@ -336,7 +336,7 @@ To create a rule:
 
 ### Rules with owner types conditions  
 
-Rules that contain the Owner types condition allow you to enforce security controls on incoming traffic based on a specific category associated with a related IP range. Such categories can be commercial, educational, or government. The information about these owner-type categories is pulled from the <a href="https://who.is/" target="_blank">global WHOIS database</a>. 
+Rules that contain the Owner types condition allow you to enforce security controls on incoming traffic based on a specific category associated with a related IP range. Such categories can be commercial, educational, or government. The information about these owner-type categories is pulled from the global WHOIS database. 
 
 To create a rule: 
 
