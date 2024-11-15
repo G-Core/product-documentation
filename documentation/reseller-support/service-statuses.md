@@ -6,12 +6,12 @@ order: 50
 toc:
     --1--Activate product: "activate-product"
     --1--Product status: "product-status"
-    --2--New: "new" 
-    --2--Trial: "trial" 
-    --2--TrialEnd: "trialend" 
-    --2--Active: "active" 
-    --2--Paused: "paused" 
-    --2--Deleted: "deleted" 
+    --2--New: "new"
+    --2--Trial: "trial"
+    --2--TrialEnd: "trialend"
+    --2--Active: "active"
+    --2--Paused: "paused"
+    --2--Deleted: "deleted"
 ---
 # Product statuses
 
