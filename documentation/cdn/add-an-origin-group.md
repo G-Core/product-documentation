@@ -65,11 +65,13 @@ Enter a unique name of a group.
 
 ## Step 3. Configure the origin group
 
-You can choose AWS signature V4 origin authentication or select none for the public origins without authentication. 
+You can choose the **AWS signature V4** origin authentication or select **None** for the public origins without authentication. 
 
 ### With S3 authentication
 
-If you want to use AWS signature authentication, choose your storage type and proceed with the relevant instructions. 
+If you selected AWS signature authentication, choose your storage type and proceed with the relevant instructions.  
+
+You can configure any S3-compatible storage, such as Google Cloud Platform, DigitalOcean Spaces, or Azure Blob Storage. 
 
 <tabset-element>
 
@@ -85,7 +87,7 @@ If you want to use AWS signature authentication, choose your storage type and pr
 
 <img src="https://assets.gcore.pro/docs/cdn/add-an-origin-group/aws-authentication.png" alt="Amazon S3 authentication for a new origin" width="80%">
 
-#### Other storage
+#### Other S3 storage
 
 1\. Specify a hostname—a name that's assigned to a storage server within a network and is used instead of an IP address. 
 
