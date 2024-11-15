@@ -47,7 +47,7 @@ You can balance traffic only within a single data center.
 
 ## Step 3. Set computing configuration
 
-Select a suitable computing configuration for your Load Balancer: GiB and vCPU. 
+Select a suitable computing configuration for your Load Balancer: GiB and vCPU. We create all Load Balancers in high availability mode with active-standby instances. Upon failure of the active instance, the standby one will seamlessly take over the load-balancing functions.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-2-lb.png" alt="Select type" width="75%">
 
