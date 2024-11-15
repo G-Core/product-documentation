@@ -21,9 +21,15 @@ You can configure the product statuses on the "Products" page in the settings of
 
 ## Activate product 
 
-If the "Activate product" checkbox is enabled, a customer can use the product. You can deactivate the product by unchecking the checkbox.
+If you enable the **Activate product** checkbox, a customer can use that product. You can deactivate the product by unchecking the checkbox. 
 
-**Note**: Keep in mind that deactivating the "Activate product" checkbox may suspend the work of active resources.
+Keep in mind that deactivating the **Activate product** checkbox may suspend the work of active resources.
+
+<alert-element type="tip" title="Tip">
+ 
+If you have activated **Video Streaming** product for your customers, note that each customer on the trial plan will automatically get access to one live stream.  
+ 
+</alert-element>
 
 ## Product status
 

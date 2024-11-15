@@ -226,14 +226,17 @@ By default, we show Gcore primary and secondary name servers and Gcore email add
 
 ## Products
 
-In your Admin Portal it is possible to set which products available to you are also visible to your customers. 
+In the Admin Portal, you can set products that are available to you and also visible to your customers. There are two levels of visibility: global (or default) and personal. 
+In the <a href="https://gcore.com/docs/reseller-support/manuals/configure-global-visibility" target="_blank">global visibility</a> settings, you can set the visibility of products for all your customers.
 
-There are two levels of visibility: global (or default) and personal. 
+<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/vendor-settings-products.png" alt="Global products in vendor settings" width="80%">
 
-In the settings of <a href="https://gcore.com/docs/reseller-support/manuals/configure-global-visibility" target="_blank">global visibility</a> is set the visibility of products for all your customers.
+In the <a href="https://gcore.com/docs/reseller-support/manuals/configure-personal-visibility" target="_blank">personal visibility</a> settings, you can enable or disable the visibility of products for a particular customer. The visibility statuses of personally configured products will not be available for changes from the global visibility settings. 
 
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/vendor-settings-40.png" alt="Global products" width="70%">
-
-In the settings of <a href="https://gcore.com/docs/reseller-support/manuals/configure-personal-visibility" target="_blank">personal visibility</a> you can enable or disable the visibility of products for a particular customer. The visibility statuses of personally configured products will not be available for changes from the global visibility settings. 
+<alert-element type="tip" title="Tip">
+ 
+If you have activated **Video Streaming** product for your customers, note that each customer on the trial plan will automatically get access to one live stream.  
+ 
+</alert-element>
 
 <img src="https://assets.gcore.pro/docs/reseller-support/manuals/vendor-settings/vendor-settings-product-visibility.png" alt="List of account products" width="80%">

@@ -49,21 +49,41 @@ Along with the Reseller account, we create a customer account with the same emai
 
 ## Product management
 
-All our products are available for reselling: CDN, Web Application Security, Video Streaming, Edge Cloud, Managed DNS, and Storage. When signing the contract, you discuss with your manager what products you want to resell. By default, the selected products will be displayed in the Customer Portal. You can adjust the visibility of products to all customers in the "Setting" section, "Products" subsection of the Admin Portal:
+All our products are available for reselling: CDN, Web Application and API protection, Video Streaming, Edge Cloud, Managed DNS, and Storage.  
+
+When signing the contract, you discuss with your manager what products you want to resell. By default, the selected products will be displayed in the Customer Portal. You can adjust the visibility of products to all customers in the Admin Portal: 
+
+1\. Navigate to the **Vendor settings** section.
+
+2\. Open the **Products** page. 
+
+3\. Enable or disable toggles near the preferred products to manage their visibility in the Customer Portal.
 
 <img src="https://assets.gcore.pro/docs/reseller-support/getting-started/vendor-settings-products.png" alt="Service management" width="80%">
 
-You can also override the General settings from the "Services" section in the customer settings. Go to the customer settings, open the list of customers, in the "Accounts" section, click on the Account ID of the desired customer, or click on the "Edit" button in the "Actions" сolumn. If you click on the "Log in" button you'll log in the Customer Portal under customer's admin user
+<alert-element type="tip" title="Tip">
+ 
+If you have activated **Video Streaming** product for your customers, note that each customer on the trial plan will automatically get access to one live stream.  
+ 
+</alert-element>
 
-<img src="https://assets.gcore.pro/docs/reseller-support/getting-started/getting-started-20.png" alt="Clients">
+You can also override the **General settings** in the customer settings. To do so: 
 
-On the "Products" tab, choose products that you want to display in the customer's Customer Portal.
+1\. In the sidebar, select **Accounts**. 
 
-- You can not disable the product whose switch is marked in light gray color because the product is "Active" or "Trial" status.  Click the "Show more" button to change the status to "Trialend" or "Paused" before disabling the product.
-- If you enable a product, it will be displayed in the customer's Customer Portal.
-- If you disable a product, it will not be displayed in the customer's Customer Portal.
+2\. Find the needed customer and click its account ID open the settings. Alternatively, you can click the three-dot icon and select **Edit**.
 
-<img src="https://assets.gcore.pro/docs/reseller-support/getting-started/accounts-products.png" alt="Services" width="80%">
+<img src="https://assets.gcore.pro/docs/reseller-support/getting-started/edit-account.png" alt="Edit account button">
+
+3\. On the **Products** page, choose the products that you want to activate or disable for the user. Note that you can’t disable the product with an **Active** or **Trial** status. Click the **Show more** button and change the status to **Trialend** or **Paused** before disabling the product.
+
+<img src="https://assets.gcore.pro/docs/reseller-support/getting-started/accounts-products.png" alt="Products page" width="80%">
+
+If you enable a product, it will be displayed in the customer's Customer Portal. Disabled products will disappear from the customer's Customer Portal.
+
+If you want to log into that account as the customer's admin user, click the **Log in** button that’s displayed next to the three-dot icon. 
+
+<img src="https://assets.gcore.pro/docs/reseller-support/getting-started/log-in-as-a-user.png" alt="Log in as a user button" width="80%">
 
 **Please note**: Displaying a Product in the Customer Portal does not allow the customer to manage it by default. If the product is displayed but not configured (see the product management articles below), the customer will see the product activation request window:
 
