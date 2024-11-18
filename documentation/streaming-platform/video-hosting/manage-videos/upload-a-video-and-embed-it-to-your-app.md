@@ -57,7 +57,9 @@ If you need to adjust some video configuration, get links to export the video or
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app/video-main-settings-update.png" alt="Video settings" width="80%"> 
 
-3\. Select one of the automatically created video posters or upload a new one from your local storage.
+3\. (Optional) After you upload the video, it’ll be transсoded with different qualities and bitrates. Click the **Video transcoding data** link under the video to check the transcoding details.
+
+4\. Select one of the automatically created video posters or upload a new one from your local storage.
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/video-hosting/upload-a-video-and-embed-it-to-your-app/choose-video-poster.png" alt="Video poster settings" width="80%"> 
 
