@@ -29,13 +29,13 @@ You can review the Behavioral WAF policy group and enable or disable its policie
 
 1\. Navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-policies/domains-waap-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/waap-policies/domains-waap-page.png" alt="Domains page in the Customer Portal" width="80%">
 
 2\. Find the domain where you want to configure the policy and click the domain name to open it.  
 
 3\. On the **Policies** page that opens, click **Behavioral WAAP** to expand the section and adjust the policies. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-policies/behavioral-waf/behavioral-waf.png" alt="WAF policies page with the highlighted ehavioral WAF policy">
+<img src="https://assets.gcore.pro/docs/waap/waap-policies/behavioral-waf/behavioral-waf.png" alt="WAF policies page with the highlighted ehavioral WAF policy" width="80%">
 
 <alert-element type="info" title="Info">
 

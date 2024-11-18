@@ -142,11 +142,11 @@ After you identify the endpoint as a confirmed API, it will be moved to the API 
 
 ## Scan history 
 
-This page lists all endpoints identified by the system: 
+This page the history of scans performed by the system: 
 
-* Via automated network scan. The default scan frequency is set to 24 hours, but you can adjust it on the **Settings** page.  
+* Automated network scans. The default scan frequency is set to 24 hours, but you can adjust it on the **Settings** page.  
 
-* From the uploaded Swagger file (if you added it to the Settings page).
+* Scans of the uploaded Swagger file (if you added it to the **Settings** page).
 
 <img src="https://assets.gcore.pro/docs/waap/api-discovery-and-protection/scan-history.png" alt="Settings page in the Customer Portal" width="80%">
 
