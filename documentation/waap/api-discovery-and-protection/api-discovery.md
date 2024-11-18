@@ -43,7 +43,7 @@ To access the feature:
 
 * **Potential APIs**: Endpoints that have been auto-detected by the system and require verification. This is where you can reject or approve endpoints as valid APIs. 
 
-* **Scan History**: A list of all endpoints that have been discovered by the system or detected in the uploaded Swagger file. Here you can view detailed scan results. 
+* **Scan History**: A history of network scans run by the system. 
 
 * **Settings**: A page with available configuration and customization options where you can set up scan settings, configure <a href="https://gcore.com/docs/waap/api-discovery-and-protection/configure-api-base-path" target="_blank">API base URL</a>, and upload a Swagger file. 
 
