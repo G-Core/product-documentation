@@ -15,7 +15,7 @@ Our firewall is your first line of protection to block or allow specific IP addr
 
 All rules with allowed or blocked IPs appear on the **Firewall** page. 
 
-<img src="https://assets.gcore.pro/docs/waap/ip-security/firewall-page.png" alt="Firewall page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/ip-security/firewall-page.png" alt="Firewall page in the Customer Portal" width="80%">
 
 A rule can appear on this page in one of the following ways: 
 
@@ -37,13 +37,13 @@ You can allow and block traffic for both IPv4 and IPv6 addresses. For each addre
 
 1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/ip-security/domains-waap-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/ip-security/domains-waap-page.png" alt="Domains page in the Customer Portal" width="80%">
 
 2\. Find the needed domain and click its name to open it. You'll be directed to the **Policies** page.
 
 3\. In the sidebar, click **Firewall**.
 
-<img src="https://assets.gcore.pro/docs/waap/ip-security/policies-page-firewall-tab.png" alt="Policies page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/ip-security/policies-page-firewall-tab.png" alt="Policies page in the Customer Portal" width="80%">
 
 4\. Navigate to the needed section:
 
@@ -51,7 +51,7 @@ You can allow and block traffic for both IPv4 and IPv6 addresses. For each addre
 
 * **Block IPs**: Deny IPs or IP ranges access to your domain.
 
-<img src="https://assets.gcore.pro/docs/waap/ip-security/firewall-page.png" alt="Firewall page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/ip-security/firewall-page.png" alt="Firewall page in the Customer Portal" width="80%">
 
 5\. Click **Add IP/IP Range**. To allow or block traffic for an IP range, enter its first and last IP address. 
 
@@ -91,13 +91,13 @@ To update or remove an IP or IP range:
 
 1\. In the Gcore Customer Portal, navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/ip-security/domains-waap-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/ip-security/domains-waap-page.png" alt="Domains page in the Customer Portal" width="80%">
 
 2\. Find the needed domain and click its name to open it. You'll be directed to the **Policies** page.
 
 3\. In the sidebar, click **Firewall**.
 
-<img src="https://assets.gcore.pro/docs/waap/ip-security/policies-page-firewall-tab.png" alt="Policies page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/ip-security/policies-page-firewall-tab.png" alt="Policies page in the Customer Portal" width="80%">
 
 4\. Navigate to the needed section with the configured IP address—**Allow IPs** or **Block IPs**. 
 
@@ -105,10 +105,10 @@ To update or remove an IP or IP range:
 
 6\. Select the relevant action from the dropdown—**Edit** or **Delete**—and follow the instructions.
 
-<img src="https://assets.gcore.pro/docs/waap/ip-security/edit-delete-ip.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/ip-security/edit-delete-ip.png" alt="Allowed IPs table with IP management options" width="80%">
 
 ## Delete multiple rules with group actions
 
 You can simultaneously delete multiple rules that allow or block particular IPs or IP ranges. To do so, select checkboxes next to the firewall rules you want to delete and then choose the **Delete** action from the **Actions** dropdown.
 
-<img src="https://assets.gcore.pro/docs/waap/ip-security/actions-dropdown.png" alt="Actions dropdown on the Firewall page">
+<img src="https://assets.gcore.pro/docs/waap/ip-security/actions-dropdown.png" alt="Actions dropdown on the Firewall page" width="80%">

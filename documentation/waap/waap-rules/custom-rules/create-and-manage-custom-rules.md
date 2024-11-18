@@ -48,7 +48,7 @@ To create a new WAAP rule:
 
 1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/domains-waap-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/domains-waap-page.png" alt="Domains page in the Customer Portal" width="80%">
 
 2\. Find the needed domain and click its name to open it.  
 
@@ -76,7 +76,7 @@ If you create multiple conditions, the rule will only trigger when all condition
 
 7\. Next to **THEN**, select an action type: Allow, Block, Captcha, JavaScript Validation, Tag. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/add-custom-waap-rule.png" alt="Add custom rule page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/add-custom-waap-rule.png" alt="Add custom rule page in the Customer Portal" width="80%">
 
 8\. Click **Save**.  
 
@@ -112,7 +112,7 @@ To create a rule:
 
 6\. Click **Save**.  
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/rule-ip-condition.png" alt="A sample definition of a rule with IP condition">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/rule-ip-condition.png" alt="A sample definition of a rule with IP condition" width="80%">
 
 ### Rules with IP range conditions 
 
@@ -132,7 +132,7 @@ To create a rule:
 
 6\. Click **Save**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/ip-range-rule-definition.png" alt="A sample definition of a rule with IP range condition">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/ip-range-rule-definition.png" alt="A sample definition of a rule with IP range condition" width="80%">
 
 ### Rules with URL conditions
 
@@ -158,7 +158,7 @@ To create a rule:
 
 7\. Click **Save**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/url-rule-definition.png" alt="A sample definition of a rule with URL condition">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/url-rule-definition.png" alt="A sample definition of a rule with URL condition" width="80%">
 
 ### Rules with user agent conditions 
 
@@ -184,7 +184,7 @@ To create a rule:
 
 7\. Click **Save**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/user-agent-rule-definition.png" alt="A sample definition of a rule with user agent condition">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/user-agent-rule-definition.png" alt="A sample definition of a rule with user agent condition" width="80%">
 
 ### Rules with header conditions 
 
@@ -212,7 +212,7 @@ To create a rule:
 
 8\. Click **Save**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/header-rule-definition.png" alt="A sample definition of a rule with header condition">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/header-rule-definition.png" alt="A sample definition of a rule with header condition" width="80%">
 
 ### Rules with header exists conditions 
 
@@ -232,7 +232,7 @@ To create a rule:
 
 8\. Click **Save**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/header-exists-rule-definition.png" alt="A sample definition of a rule with header exists condition">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/header-exists-rule-definition.png" alt="A sample definition of a rule with header exists condition" width="80%">
 
 ### Rules with HTTP method conditions 
 
@@ -252,7 +252,7 @@ To create a rule:
 
 6\. Click **Save**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/http-method-rule-definition.png" alt="A sample definition of a rule with http method condition">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/http-method-rule-definition.png" alt="A sample definition of a rule with http method condition" width="80%">
 
 ### Rules with file extension conditions  
 
@@ -272,7 +272,7 @@ To create a rule:
 
 6\. Click **Save**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/file-extension-rule-definition.png" alt="A sample definition of a rule with file extension condition">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/file-extension-rule-definition.png" alt="A sample definition of a rule with file extension condition" width="80%">
 
 ### Rules with content type conditions  
 
@@ -292,7 +292,7 @@ To create a rule:
 
 6\. Click **Save**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/content-type-rule-definition.png" alt="A sample definition of a rule with content type condition">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/content-type-rule-definition.png" alt="A sample definition of a rule with content type condition" width="80%">
 
 ### Rules with country conditions  
 
@@ -312,7 +312,7 @@ To create a rule:
 
 6\. Click **Save**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/country-rule-definition.png" alt="A sample definition of a rule with country condition">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/country-rule-definition.png" alt="A sample definition of a rule with country condition" width="80%">
 
 ### Rules with organization conditions  
 
@@ -332,7 +332,7 @@ To create a rule:
 
 6\. Click **Save**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/organization-rule-definition.png" alt="A sample definition of a rule with organization condition">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/organization-rule-definition.png" alt="A sample definition of a rule with organization condition" width="80%">
 
 ### Rules with owner types conditions  
 
@@ -352,7 +352,7 @@ To create a rule:
 
 6\. Click **Save**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/owner-types-rule-definition.png" alt="A sample definition of a rule with owner types condition">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/owner-types-rule-definition.png" alt="A sample definition of a rule with owner types condition" width="80%">
 
 ### Rules with session request count conditions 
 
@@ -372,7 +372,7 @@ To create a rule:
 
 6\. Click **Save**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/session-request-count-rule-definition.png" alt="A sample definition of a rule with session request count condition" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/session-request-count-rule-definition.png" alt="A sample definition of a rule with session request count condition" width="80%" width="80%">
 
 ### Rules with tag conditions 
 
@@ -398,7 +398,7 @@ To create a rule:
 
 6\. Click **Save**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/tag-rule-definition.png" alt="A sample definition of a rule with tag condition">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/tag-rule-definition.png" alt="A sample definition of a rule with tag condition" width="80%">
 
 ### Rules with user-defined tag conditions 
 
@@ -418,7 +418,7 @@ To create a rule:
 
 6\. Click **Save**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/user-defined-tag-rule-definition.png" alt="A sample definition of a rule with user-defined tag condition">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/user-defined-tag-rule-definition.png" alt="A sample definition of a rule with user-defined tag condition" width="80%">
 
 ## Create custom rate limit rules 
 
@@ -428,7 +428,7 @@ To create a rule:
 
 1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/domains-waap-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/domains-waap-page.png" alt="Domains page in the Customer Portal" width="80%">
 
 2\. Find the needed domain and click its name to open it.  
 
@@ -491,7 +491,7 @@ You can edit the rule name and description, modify its conditions and status, an
 
 1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/domains-waap-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/domains-waap-page.png" alt="Domains page in the Customer Portal" width="80%">
 
 2\. Find the needed domain and click its name to open it.  
 
@@ -501,7 +501,7 @@ You can edit the rule name and description, modify its conditions and status, an
 
 5\. Click **Edit**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/edit-waap-rule.png" alt="Rule settings with the edit button highlighted">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/edit-waap-rule.png" alt="Rule settings with the edit button highlighted" width="80%">
 
 6\. Adjust your rule as needed and then click **Save** to apply the changes. 
 
@@ -509,7 +509,7 @@ You can edit the rule name and description, modify its conditions and status, an
 
 1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/domains-waap-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/domains-waap-page.png" alt="Domains page in the Customer Portal" width="80%">
 
 2\. Find the needed domain and click its name to open it.  
 
@@ -519,7 +519,7 @@ You can edit the rule name and description, modify its conditions and status, an
 
 5\. Click **Delete**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/delete-waap-rule.png" alt="Rule settings with the delete button highlighted">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/create-and-manage-custom-rules/delete-waap-rule.png" alt="Rule settings with the delete button highlighted" width="80%">
 
 6\. Click **Confirm Delete** to verify your action.
 

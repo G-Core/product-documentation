@@ -35,7 +35,7 @@ We offer a <a href="https://gcore.com/docs/waap/waap-rules/custom-rules/tag-rule
 
 For example, check the following tag-based rule that blocks traffic if the tag associated with the request contains Hosting Services. You might want to prevent such traffic from reaching your domain because these IPs are more likely to belong to automated users rather than humans. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/add-tag-based-rule.png" alt="Example of a tag-based rule">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/add-tag-based-rule.png" alt="Example of a tag-based rule" width="80%">
 
 ## Tag generating rules 
 
@@ -47,11 +47,11 @@ The following examples demonstrate how you can apply user-defined tags.
 
 Let's say you run an online shop that requires users to log in before checking out an order. You can create a rule that will generate a custom tag called `validuser` if the request header named `set-cookie` contains a cookie named `mycookie`, which indicates that the user is logged in. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/user-defined-tag.png" alt="Example of a tag-based rule">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/user-defined-tag.png" alt="Example of a tag-based rule" width="80%">
 
 In this case, `validuser` will be your new user-defined tag that's now available for use in a tag-based rule.
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/user-defined-tag-use-created-tag.png" alt="Example of a tag-based rule">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/user-defined-tag-use-created-tag.png" alt="Example of a tag-based rule" width="80%">
 
 <alert-element type="info" title="Info">
  

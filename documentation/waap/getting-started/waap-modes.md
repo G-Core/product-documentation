@@ -99,7 +99,7 @@ You can also see the difference on the **Analytics** page in the <a href="https:
 
 * In protect mode, the cURL request will be marked as **Blocked**. 
 
-<img src="https://assets.gcore.pro/docs/waap/getting-started/waap-requests-blocked.png" alt="WAAP graph on the Analytics page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/getting-started/waap-requests-blocked.png" alt="Requests table on the Analytics page" width="80%">
 
 ## Enable monitor and protect modes for your domain 
 
@@ -115,10 +115,10 @@ Here’s an example of how to enable protect mode for your domain:
 
 1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/getting-started/domains-waap-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/getting-started/domains-waap-page.png" alt="Domains page in the Customer Portal" width="80%">
 
 2\. Find the domain for which you want to enable a WAAP mode and click the domain name to open it. You'll be directed to the **Policies** page.
 
 3\. In the upper-right corner of the screen, next to the WAAP mode, select **Protect** from the dropdown.
 
-<img src="https://assets.gcore.pro/docs/waap/getting-started/protect-mode.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/getting-started/protect-mode.png" alt="WAAP mode dropdown" width="80%">

@@ -129,7 +129,7 @@ If your domain doesn’t use a CMS, we highly recommend allowlisting the site ad
 
 1\. In the <a href="https://accounts.gcore.com/reports/dashboard" target="_blank">Gcore Customer Portal</a>, navigate to **WAAP** > **Domains**.
 
-<img src="https://assets.gcore.pro/docs/waap/getting-started/domains-waap-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/getting-started/domains-waap-page.png" alt="Domains page in the Customer Portal" width="80%">
 
 2\. Find the needed domain and click its name to open it. You'll be directed to the **Policies** page.
 
@@ -137,7 +137,7 @@ If your domain doesn’t use a CMS, we highly recommend allowlisting the site ad
 
 4\. In the **Allowed IPs** section, click **Add IP/IP Range**.
 
-<img src="https://assets.gcore.pro/docs/waap/getting-started/firewall-add-rules.png" alt="Firewall page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/getting-started/firewall-add-rules.png" alt="Firewall page in the Customer Portal" width="80%">
 
 5\. Enter any admin user's public IP address. 
 
@@ -157,7 +157,7 @@ If you use content management systems, such as WordPress, allow traffic for CMS 
 
 4\. On the **Policies** page, find CMS protection, and then allow traffic for a desired content management system by enabling a toggle next to it.
 
-<img src="https://assets.gcore.pro/docs/waap/getting-started/cms-protection.png" alt="WAAP policies page with the highlighted CMS protection policy">
+<img src="https://assets.gcore.pro/docs/waap/getting-started/cms-protection.png" alt="WAAP policies page with the highlighted CMS protection policy" width="80%">
 
 <alert-element type="tip" title="Tip">
  
@@ -175,7 +175,7 @@ Follow these steps to allow crawlers, scanners, monitoring bots, and similar too
 
 3\. Click the **Common automated services** to expand the section and enable the desired bot.
 
-<img src="https://assets.gcore.pro/docs/waap/getting-started/automated-services.png" alt="WAAP policies page with the highlighted common automated bots policy">
+<img src="https://assets.gcore.pro/docs/waap/getting-started/automated-services.png" alt="WAAP policies page with the highlighted common automated bots policy" width="80%">
 
 The <a href="https://gcore.com/docs/waap/waap-policies/common-automated-services" target="_blank">common automated services</a> policy group allows a few trusted bots by default, which is why we recommend reviewing this list before enabling the protect mode.
 
@@ -195,4 +195,4 @@ You can <a href="https://gcore.com/docs/waap/api-discovery-and-protection/config
 
 4\. In the upper-right corner of the screen next to WAAP mode, select **Protect**. The WAAP will begin to inspect and act upon incoming requests.
 
-<img src="https://assets.gcore.pro/docs/waap/getting-started/protect-mode.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/getting-started/protect-mode.png" alt="WAAP modes dropdown" width="80%">

@@ -126,7 +126,7 @@ To delete a page:
 
 3\. Select **Delete**. 
 
-<img src="https://assets.gcore.pro/docs/waap/response-pages/delete-page.png" alt="Edit page button in the page set settings" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/response-pages/delete-page.png" alt="Delete page button in the page set settings" width="80%">
 
 4\. Click **Delete**.
 

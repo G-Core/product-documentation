@@ -31,13 +31,13 @@ You can review the Advanced API protection policy group and enable or disable it
 
 1\. Navigate to **WAAP** > **Domains**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-policies/domains-waap-page.png" alt="Domains page in the Customer Portal">
+<img src="https://assets.gcore.pro/docs/waap/waap-policies/domains-waap-page.png" alt="Domains page in the Customer Portal" width="80%">
 
 2\. Find the domain where you want to configure the policy and click the domain name to open it.  
 
 3\. On the **Policies** page that opens, click **Advanced API protection** to expand the section and adjust the policies. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-policies/advanced-api-protection/advanced-api-protection.png" alt="WAAP policies page with the highlighted advanced AIP protection policy">
+<img src="https://assets.gcore.pro/docs/waap/waap-policies/advanced-api-protection/advanced-api-protection.png" alt="WAAP policies page with the highlighted advanced AIP protection policy" width="80%">
 
 <alert-element type="info" title="Info">
 

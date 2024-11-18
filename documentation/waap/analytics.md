@@ -132,7 +132,7 @@ Updating filters on the table doesn’t change the data displayed on the Web App
 ### Requests table
 
 This table displays incoming requests for the past 24 hours, including good and bad ones (potential threats). Request history is retained for 30 days. 
-<img src="https://assets.gcore.pro/docs/waap/analytics/waap-requests-table.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/waap-requests-table.png" alt="Requests graph on the Analytics page" width="80%">
 
 You can select multiple filters to get a more granular view of the displayed information in the table.
 
@@ -229,7 +229,7 @@ This page provides in-depth information about a particular request made to your 
 
 1\. In the top-right corner of the screen, click **Create rule for IP**. 
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/request-details-create-rule.png" alt="Create rule button on the request details page" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/request-details-create-rule.png" alt="Highlighted create rule button on the request details page" width="80%">
 
 2\. Choose the relevant action:  
    * Allow requests from this IP 
@@ -245,13 +245,13 @@ The rules to block or allow requests will appear on the <a href="https://gcore.c
 
 This section displays the most triggered actions and default policies, along with how many times each of them was triggered.  
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/waf-threats.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/waf-threats.png" alt="Threats section on the Analytics page" width="80%">
 
 ### Top threat origins 
 
 This map and table display the origin location of bad requests (threats) from the last 24 hours. You can view the country from which requests are coming and the total number of requests for that country.  
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/waf-threat-origins.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/waf-threat-origins.png" alt="Top threat origins map on the Analytics page" width="80%">
 
 ## DDoS attacks page
 
@@ -263,7 +263,7 @@ If there is an active DDoS attack, you’ll see a banner at the top of the page 
 
 Clicking the **View attack** link will take you to the DDoS analytics page, where you can view more details related to that specific attack. 
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/ddos-in-progress.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/ddos-in-progress.png" alt="DDoS attack warning" width="80%">
 
 ### Attacks over time 
 
@@ -271,25 +271,25 @@ Requests associated with DDoS attacks are presented in a plot format.
 
 To filter DDoS request data by the timeframe of each attack, click the dropdown menu in the top-right corner of the screen and select the checkbox next to the attack you want to view. You can view up to four sets of timeframes simultaneously. 
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/ddos-over-time.png" alt="DDoS attacks graph on the Analytics page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/ddos-over-time.png" alt="DDoS attacks graph on the Analytics page" width="80%">
 
 ### IPs participated 
 
 This table displays a list of the top IP addresses associated with the selected DDoS attack, along with the total number of times each IP has made a request to your domain. 
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/ips-participated.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/ips-participated.png" alt="IPs participated section on the Analytics page" width="80%">
 
 ### URLs targeted 
 
 This table displays a list of the top URLs that were requested during a DDoS attack, along with the number of times each URL was requested. 
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/urls-targeted.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/urls-targeted.png" alt="URLs targeted section on the Analytics page" width="80%">
 
 ### User agents 
 
 This table displays a list of the top clients, tools, and user agents associated with the selected DDoS attack. It also shows the total number of times each of them has made a request to your site. 
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/user-agents.png" alt="WAAP graph on the Analytics page in the Customer Portal" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/analytics/user-agents.png" alt="User agents section on the Analytics page" width="80%">
 
 ### Attack requests 
 

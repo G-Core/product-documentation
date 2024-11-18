@@ -51,11 +51,11 @@ You can also use a server signal that will serve as a unique identifier and can 
 
 For example, you can create the rule that looks for the X-Registered header, which designates registered users: 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/tag-registered-client.png" alt="A custom rule for tagging a registered client">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/tag-registered-client.png" alt="A custom rule for tagging a registered client" width="80%">
 
 Alternatively, you can inject a header for logged-in users. WAAP will use this header to tag the request. After the WAAP generates such tags, they will be integrated with our security cloud and associated with the user session. All tags that indicate harmful behavior will be cleaned for the user.
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/tag-logged-in-client.png" alt="A custom rule for tagging a logged-in client">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/tag-logged-in-client.png" alt="A custom rule for tagging a logged-in client" width="80%">
 
 ## Inspect WAAP traffic 
 
@@ -65,7 +65,7 @@ If you want to track certain traffic on the <a href="https://gcore.com/docs/waap
 
 * In the **Requests** table. Select the **Monitored** traffic type to view the tagged requests.  
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/monitored-tag-analytics-page.png" alt="WAAP requests graph on the Analytics page">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/monitored-tag-analytics-page.png" alt="WAAP requests graph on the Analytics page" width="80%">
 
 When you add the monitor tag to a request, it won't affect WAAP's behavior. If the request is potentially dangerous, it will be blocked. The monitor tag only ensures that such requests are visible on the <a href="https://gcore.com/docs/waap/analytics#waap-page" target="_blank">WAAP</a> analytics page.
 
@@ -85,7 +85,7 @@ As an example, create a rule that will allow you to view analytics on monitored 
 
 6\. Click **Save** to create the rule. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/monitored-tag-certain-countries.png" alt="A custom rule for tagging requests from certain countries">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/monitored-tag-certain-countries.png" alt="A custom rule for tagging requests from certain countries" width="80%">
 
 All monitored requests will now be displayed on the <a href="https://gcore.com/docs/waap/analytics#web-application-firewall-requests" target="_blank">WAAP analytics</a> page.
 
@@ -103,7 +103,7 @@ To allow the activity of some automation services, create a custom rule with the
 
 4\. In the **THEN** section, select the **Tag** action and choose **Ignored Automation**.
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/monitored-tag-ignored-automation.png" alt="A custom rule for tagging requests with ignored bot activity">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/monitored-tag-ignored-automation.png" alt="A custom rule for tagging requests with ignored bot activity" width="80%">
 
 5\. Click **Save** to create the rule. 
 
@@ -123,7 +123,7 @@ To identify login pages for the WAAP, create the following custom rule:
 
 4\. In the **THEN** section, select the **Tag** action and choose **Login Page**. 
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/tag-login-page-activity.png" alt="A custom rule for tagging requests to login pages">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/tag-login-page-activity.png" alt="A custom rule for tagging requests to login pages" width="80%">
 
 5\. Click **Save** to create the rule. 
 
@@ -155,7 +155,7 @@ Using the **legitimate activity** and **malicious activity** tags, you can categ
 
 6\. In the **THEN** section, select the **Tag** action and choose **Legitimate Activity**.
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/tag-paid-users-activity.png" alt="A custom rule for tagging requests from paid users">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/tag-paid-users-activity.png" alt="A custom rule for tagging requests from paid users" width="80%">
 
 7\. Click **Save**.  
 
@@ -187,7 +187,7 @@ To detect denial of inventory, create the following rule:
 
 5\. In the **THEN** section, select the **Tag** action and choose the **Cart Checkout** tag.
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/tag-cart-checkout.png" alt="A custom rule to detect denial of inventory attacks">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/tag-cart-checkout.png" alt="A custom rule to detect denial of inventory attacks" width="80%">
 
 6\. Click **Save** to create the rule.
 
@@ -203,7 +203,7 @@ Similarly, create a rule that will check for the number of items added to the ca
 
 5\. In the **THEN** section, select the **Tag** action and apply the **Item Added to Cart** tag to each request that matches the specified criteria.
 
-<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/tag-items-added-to-cart.png" alt="A custom rule to detect item added to cart">
+<img src="https://assets.gcore.pro/docs/waap/waap-rules/tag-rules/tag-items-added-to-cart.png" alt="A custom rule to detect item added to cart" width="80%">
 
 6\. Click **Save** to create the rule.
 

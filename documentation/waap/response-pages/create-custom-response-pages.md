@@ -61,7 +61,7 @@ Note that creating custom response pages is only available <a href="https://gcor
 * Browser validation
 * Enable javascript  
 
-<img src="https://assets.gcore.pro/docs/waap/response-pages/choose-default-page-type.png" alt="Crete response page set dialog" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/response-pages/choose-default-page-type.png" alt="Crete response page dialog" width="80%">
 
 ### Step 4. Configure the selected response page 
 
@@ -127,7 +127,7 @@ If you don’t enable the toggle, the page won’t be available for use on any d
 
 1\. Select the domains where the new custom response page will appear.
 
-<img src="https://assets.gcore.pro/docs/waap/response-pages/add-domains-to-new-set.png" alt="Preview page button" width="80%">
+<img src="https://assets.gcore.pro/docs/waap/response-pages/add-domains-to-new-set.png" alt="List of domains to select" width="80%">
 
 2\. Click **Save** to add the page to the selected domains.
 
