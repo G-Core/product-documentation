@@ -108,43 +108,43 @@ The system is supposed to output either "No resources found in default namespace
 
 1\.  Download the latest version of the kubectl binary file with the CURL request. 
     
-    ```
-    curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/darwin/amd64/kubectl"
-    ```
+```
+curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/darwin/amd64/kubectl"
+```
 
 2\.  Make the kubectl binary file executable: 
 
-    ```
-    chmod +x ./kubectl
-    ```
+```
+chmod +x ./kubectl
+```
 
 3\.  Move the kubectl binary file into the directory from the **PATH** variable. To do this, first check which directories correspond to the variable:
     
-    ```
-    echo $PATH
-    ```
+```
+echo $PATH
+```
 
-    The system returns a list of directories. Select one of them and move the kubectl file there using the command below:
+The system returns a list of directories. Select one of them and move the kubectl file there using the command below:
     
-    ```
-    sudo mv ./kubectl \[one of the directories that has been returned by the "echo $PATH" command\]
-    ```
+```
+sudo mv ./kubectl \[one of the directories that has been returned by the "echo $PATH" command\]
+```
 
-    For example, for the directory "/usr/local/bin/kubectl" the command looks like this: 
+For example, for the directory "/usr/local/bin/kubectl" the command looks like this: 
     
-    ```
-    sudo mv ./kubectl /usr/local/bin/kubectl
-    ```
+```
+sudo mv ./kubectl /usr/local/bin/kubectl
+```
 
 4\.  Create the ".**kube**" directory in your home directory: 
     
-    ```
-    mkdir ~/.kube
-    ```
+```
+mkdir ~/.kube
+```
 
 5\.  Download the configuration file.  
       
-    <img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster/13323281147921.png" alt="Screenshot_2023-02-27_at_18.50_1.jpg">
+<img src="https://assets.gcore.pro/docs/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster/13323281147921.png" alt="Screenshot_2023-02-27_at_18.50_1.jpg">
 
 6\.  Rename the configuration file to "**config**" (file should not have an extension) and add it to the **.kube** folder. Kubectl can now access it and manage your cluster.
 
