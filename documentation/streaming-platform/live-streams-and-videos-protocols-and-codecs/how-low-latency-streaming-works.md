@@ -16,7 +16,9 @@ pageDescription: A guide explains streaming latency, how Gcore reduces it with L
 Streaming latency is the timespan between the moment a frame is captured and when that frame is displayed on the viewers' screens. Latency occurs because each stream is processed several times during broadcasting to be delivered worldwide:
 
 1\.  **Encoding (or packaging).** In this step, the streaming service retrieves your stream in any format, converts it into the format for delivery through CDN, and divides it into small fragments.
+
 2\.  **Transferring.** In this step, CDN servers pull the processed stream, cache it, and send it to the end-users.
+
 3\.  **Receipt by players.** In this step, end-user players load the fragments and buffer them.
 
 Each step affects latency, so the total timespan can increase to 30–40 seconds, especially if the streaming processing isn't optimized. For some companies (such as sports or metaverse events, or news releases), such latency is too large, and it's crucial to reduce it.
