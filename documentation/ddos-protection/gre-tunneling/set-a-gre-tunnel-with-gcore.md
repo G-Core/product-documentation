@@ -14,9 +14,9 @@ toc:
    --2--Step 2. Configure a tunnel: "step-2-configure-the-gre-tunnel"
    --2--Step 3. Enable IP forwarding: "step-3-enable-ip-forwarding"
    --2--Step 4. Adjust MTU and MSS settings: "step-4-adjust-mtu-and-mss-settings"
-   --2--Step 5. Verify tunnel connectivity: "step-5-verify-tunnel-connectivity" 
+   --2--Step 5. Verify tunnel connectivity: "step-5-verify-tunnel-connectivity"
    --2--Step 6. Configure routing (optional): "step-6-configure-routing-optional"
-   --2--Step 7. Make the configuration persistent: "step-7-make-the-configuration-persistent"      
+   --2--Step 7. Make the configuration persistent: "step-7-make-the-configuration-persistent"
 pageTitle: Set a GRE tunnel | Gcore
 pageDescription: Discover how to set up a GRE tunnel with Gcore on Cisco routers and Linux-based servers, set MTU and MSS limits, and implement BGP policies for robust DDoS protection.
 ---
