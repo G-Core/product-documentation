@@ -27,7 +27,7 @@ The following sections contain instructions for installing Helm on Windows, Ubun
 curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 ```
 
-This command will download and install the latest version of Helm and place the Helm binary in /usr/local/bin/helm (or another location based on your system's configuration). 
+This command will download and install the latest version of Helm and place the Helm binary in `/usr/local/bin/helm` (or another location based on your system's configuration). 
 
 2\. Verify that Helm was installed successfully by checking its version: `helm version`. You should get the installed version of Helm.
 
@@ -41,25 +41,23 @@ If you don’t have Brew on your macOS, follow the installation steps for Linux.
 
 ### On Windows
 
-1\. Download the latest Helm release from the <a href="https://github.com/helm/helm/releases" target="_blank">Helm GitHub releases</a> page. 
+Download the latest Helm release from the <a href="https://github.com/helm/helm/releases" target="_blank">Helm GitHub releases</a> page and extract the contents of the downloaded ZIP file to a directory of your choice. For instance, `C:\Program Files\Helm`. 
 
-2\. Extract the contents of the downloaded ZIP file to a directory of your choice. For instance, `C:\Program Files\Helm`. 
+Add Helm binary to the `PATH`: 
 
-3\. Add Helm binary to the `PATH`: 
+1\. Open the **Start** menu and search for **Environment Variables**. 
 
- a. Open the **Start** menu and search for **Environment Variables**. 
+2\. Click **Edit** the system environment variables. 
 
- b. Click **Edit** the system environment variables. 
+3\. In the **System properties** window, click **Environment variables**. 
 
- c. In the **System properties** window, click **Evironment variables**. 
+4\. In the **System variables** section, click **New**.  
 
- d. In the **System variables** section, click **New**.  
+5\. Provide a variable name and add the full path to the directory where you moved `helm.exe` (e.g., `C:\Program Files\Helm`). 
 
- e. Provide a variable name and add the full path to the directory where you moved `helm.exe` (e.g., `C:\Program Files\Helm`). 
+6\. Click **OK** to save the changes. 
 
- f. Click **OK** to save the changes. 
-
- g. Verify the installation. In the Terminal, run `helm version`. You should get the latest release version downloaded from the GitHub repositoty in step 1. 
+7\. Verify the installation. In the Terminal, run `helm version`. You should get the latest release version downloaded from the GitHub repository in step 1. 
 
 </tabset-element>
 
