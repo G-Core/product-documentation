@@ -29,13 +29,13 @@ curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
 This command will download and install the latest version of Helm and place the Helm binary in /usr/local/bin/helm (or another location based on your system's configuration). 
 
-2\. Verify that Helm was installed successfully by checking its version: `helm version`. You should get the version of Helm that has been installed.
+2\. Verify that Helm was installed successfully by checking its version: `helm version`. You should get the installed version of Helm.
 
 ### On macOS 
 
 If you have <a href="https://brew.sh/" target="_blank">Homebrew</a> installed, run `brew install helm`. 
 
-Verify installation by running `helm version`. This command should return the installed version of Helm. 
+Verify installation by running `helm version`.This command should return the Helm version that was installed. 
 
 If you don’t have Brew on your macOS, follow the installation steps for Linux.
 
@@ -43,7 +43,7 @@ If you don’t have Brew on your macOS, follow the installation steps for Linux.
 
 1\. Download the latest Helm release from the <a href="https://github.com/helm/helm/releases" target="_blank">Helm GitHub releases</a> page. 
 
-2\. Extract the contents of downloaded ZIP file to a directory of your choice. For instance, `C:\Program Files\Helm`. 
+2\. Extract the contents of the downloaded ZIP file to a directory of your choice. For instance, `C:\Program Files\Helm`. 
 
 3\. Add Helm binary to the `PATH`: 
 
