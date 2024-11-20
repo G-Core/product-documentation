@@ -4,14 +4,33 @@ displayName: Set a GRE tunnel
 published: true
 order: 20
 toc:
+   --1--Configure a tunnel on Cisco routers: "configure-a-gre-tunnel-on-cisco-routers"
+   --2--Step 1. Check network availability: "step-1-check-network-availability-between-routers"
+   --2--Step 2. Configure a tunnel: "step-2-configure-a-tunnel"
+   --2--Step 3. Set MTU and MSS limits: "step-3-set-the-mtu-and-mss-limits"
+   --2--Step 4. Configure BGP: "step-4-configure-bgp"
+   --1--Set a GRE tunnel on Ubuntu: "set-a-gre-tunnel-on-ubuntu"
+   --2--Step 1. Install required tools: "step-1-install-required-tools"
+   --2--Step 2. Configure a tunnel: "step-2-configure-the-gre-tunnel"
+   --2--Step 3. Enable IP forwarding: "step-3-enable-ip-forwarding"
+   --2--Step 4. Adjust MTU and MSS settings: "step-4-adjust-mtu-and-mss-settings"
+   --2--Step 5. Verify tunnel connectivity: "step-5-verify-tunnel-connectivity"
+   --2--Step 6. Configure routing (optional): "step-6-configure-routing-optional"
+   --2--Step 7. Make the configuration persistent: "step-7-make-the-configuration-persistent"
 pageTitle: Set a GRE tunnel | Gcore
-pageDescription: Discover how to set up a GRE tunnel with Gcore on Cisco routers, set MTU and MSS limits, and implement BGP policies for robust DDoS protection.
+pageDescription: Discover how to set up a GRE tunnel with Gcore on Cisco routers and Linux-based servers, set MTU and MSS limits, and implement BGP policies for robust DDoS protection.
 ---
 # Set a GRE tunnel with Gcore
 
-The configuration pieces in the guide below are specific to Cisco routers. For information on configuring GRE tunnels and BGP sessions on other devices, refer to the respective documentation provided by the manufacturer.
+Use the following instructions to set up the GRE (Generic Routing Encapsulation) tunnel using Gcore infrastructure.  
 
-**Step 1: Check the network availability between two routers that will participate in the tunnel**. Both routers must have routable interfaces connected to the internet, and their routes must be mutually visible and reachable. To verify the connectivity, run either of the following commands on a router platform:
+## Configure a GRE tunnel on Cisco routers
+
+These configuration steps are specific to Cisco routers. For information on configuring GRE tunnels and BGP sessions on other devices, refer to the respective documentation provided by the manufacturer.
+
+### Step 1. Check network availability between routers
+
+Both routers in a tunnel must have routable interfaces connected to the internet, and their routes must be mutually visible and reachable. To verify the connectivity, run either of the following commands on a router platform:
 
 ```
 show ip route
@@ -25,21 +44,23 @@ show route
 
 These commands will display the routing table of the router, showing the IP addresses of their interfaces that will be used as tunnel sources.
 
-**Step 2: Configure a GRE tunnel.** Follow these steps and use the configuration snippets below as a guideline.
+### Step 2. Configure a tunnel
 
-1. Set the tunnel ID:
+Follow these steps and use the configuration snippets below as a guideline.
+
+1\. Set the tunnel ID:
 
 ```
 interface Tunnel10
 ```
 
-2. Set the tunnel IP address and subnet mask:
+2\. Set the tunnel IP address and subnet mask:
 
 ```
 ip address 10.20.30.1 255.255.255.0
 ```
 
-3. Specify the source and destination IP addresses.
+3\. Specify the source and destination IP addresses.
 
 ```
 tunnel source 40.0.0.1
@@ -57,7 +78,9 @@ interface Tunnel 10
 
 When you configure both ends of the tunnel with matching parameters, the GRE tunnel between two routers will be established.
 
-**Step 3: Set the MTU and MSS limits.** Tunneling adds an extra header to the original IP packet, resulting in overhead. If you don’t adjust MTU and MSS limits, it may lead to packet delivery issues. Set the following MTU and MSS limits:
+### Step 3. Set the MTU and MSS limits
+
+Tunneling adds an extra header to the original IP packet, resulting in overhead. If you don’t adjust MTU and MSS limits, it may lead to packet delivery issues. Set the following MTU and MSS limits:
 
 ```
 interface Tunnel10
@@ -72,13 +95,15 @@ For TCP, the maximum segment size (MSS) value is 40 bytes less than the MTU size
 
 </expandable-element>
 
-**Step 4: Configure BGP.** Open a BGP peering session, configure your BGP neighbor by specifying their IP address and number of remote AS, set BGP policies that will determine the best path for routing, and advertise network prefixes.
+### Step 4. Configure BGP
+
+Open a BGP peering session, configure your BGP neighbor by specifying their IP address and number of remote AS, set BGP policies that will determine the best path for routing, and advertise network prefixes.
 
 For example, imagine Side A (AS 10) and Side B (AS 20) on the two ends of the tunnel. Side A provides DDoS Protection, so it accepts specific routes from clients, denies the default for the routing security purposes, and does not advertise anything. On the other hand, Side B advertises only its own routes.
 
 Let’s start with the Side A configuration. 
 
-1. Define the neighbor routes:
+1\. Define the neighbor routes:
 
 ```
 ip prefix DEFAULT_ROUTE seq permit 5 0.0.0.0/0
@@ -89,7 +114,7 @@ ip prefix CLIENT_ROUTES seq 10 permit 50.50.2.0/24
 
 Prefix-list lines are responsible for defining routes.
 
-2. Define the inbound route policy: 
+2\. Define the inbound route policy: 
 
 ```
 route-map SIDE_A_POLICY_INBOUND deny 10
@@ -100,7 +125,7 @@ route-map SIDE_A_POLICY_INBOUND permit 20
 
 The `SIDE_A_POLICY_INBOUND` route policy processes incoming routes. The first line denies the default route, while the second line permits the client routes.
 
-3. Define the outbound route policy:
+3\. Define the outbound route policy:
 
 ```
 route-map SIDE_A_POLICY_OUTBOUND deny 10
@@ -121,7 +146,7 @@ route-map SIDE_B_POLICY_OUTBOUND deny 10
 route-map SIDE_B_POLICY_OUTBOUND permit 20
   match ip address prefix-list CLIENT_ROUTES
 
-route-map SIDE_A_POLICY_INBOUND deny 10
+route-map SIDE_B_POLICY_INBOUND deny 10
 ```
 
 The `SIDE_B_POLICY_INBOUND` and `SIDE_B_POLICY_OUTBOUND` route policies describe the routes coming in and going out of the Side B’s router, respectively. Side B doesn’t accept any routes from Side A, and advertises its own routes to Side A without the default route.
@@ -149,3 +174,100 @@ router bgp 20
 ```
 
 The configuration lines provided above enable you to establish BGP sessions with Gcore over GRE tunnels to protect your applications and servers from DDoS attacks and other types of malicious traffic.
+
+## Set a GRE tunnel on Ubuntu 
+
+Establish a tunnel on Linux-based servers functioning as endpoints in your network. 
+
+### Step 1. Install required tools 
+
+Install the iproute2 package for managing GRE tunnels: 
+
+```
+sudo apt update 
+sudo apt install iproute2
+```
+
+### Step 2. Configure the GRE tunnel
+
+Configure the tunnel on the first endpoint with the example address 40.0.0.1:  
+
+1\. Create the GRE tunnel: 
+
+```
+sudo ip tunnel add gre1 mode gre local 40.0.0.1 remote 	50.0.0.1 ttl 255
+``` 
+
+Replace `40.0.0.1` with this system's public IP and `50.0.0.1` with the remote system's public IP.  
+
+2\. Assign an IP address to the tunnel interface: `sudo ip addr add 10.20.30.1/24 dev gre1`.
+
+3\. Bring up the GRE interface: `sudo ip link set gre1 up`.
+
+Configure the tunnel on the second endpoint with the example address 50.0.0.1: 
+
+1\. Create the GRE tunnel: 
+
+```
+sudo ip tunnel add gre1 mode gre local 50.0.0.1 remote 40.0.0.1 ttl 	255 
+```
+
+2\. Assign an IP address to the tunnel interface: `sudo ip addr add 10.20.30.2/24 dev gre1`.
+
+3\. Bring up the GRE interface: `sudo ip link set gre1 up`.
+
+### Step 3. Enable IP forwarding 
+
+If the GRE tunnel is being used for routing, ensure that IP forwarding is enabled on both endpoints. Run the following command: 
+
+```
+sudo sysctl -w net.ipv4.ip_forward=1 
+```
+
+To make this setting persistent, add the following to the configuration file /etc/sysctl.conf: `net.ipv4.ip_forward=1`. 
+
+Apply the changes by running `sudo sysctl -p`.
+
+### Step 4. Adjust MTU and MSS settings 
+
+To handle the additional GRE header, set the MTU and MSS limits on both endpoints: 
+
+```
+sudo ip link set gre1 mtu 1476 
+sudo iptables -t mangle -A POSTROUTING -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu 
+```
+
+### Step 5. Verify tunnel connectivity 
+
+On each endpoint, test the connectivity by pinging the opposite end of the GRE tunnel: 
+
+```
+ping 10.20.30.2  # From endpoint 40.0.0.1 
+ping 10.20.30.1  # From endpoint 50.0.0.1
+```
+
+### Step 6. Configure routing (optional)
+
+If you need to route specific traffic through the GRE tunnel, add routing rules. For example: 
+
+```
+sudo ip route add <destination-network> via 10.20.30.2 dev gre1
+```
+
+### Step 7. Make the configuration persistent 
+
+To make the GRE tunnel configuration persistent across reboots, add the setup commands to `/etc/network/interfaces` or use systemd service files. 
+
+To update the setup in `/etc/network/interfaces`, add the following information to the file:
+
+```
+auto gre1 
+iface gre1 inet static 
+    address 10.20.30.1 
+    netmask 255.255.255.0 
+    mtu 1476 
+    pre-up ip tunnel add gre1 mode gre local 40.0.0.1 remote 50.0.0.1 ttl 255 
+    post-down ip tunnel del gre1 
+```
+
+Alternatively, create a custom `systemd` service to set up the tunnel at boot. 
