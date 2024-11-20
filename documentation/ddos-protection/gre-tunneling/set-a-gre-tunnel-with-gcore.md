@@ -11,7 +11,7 @@ toc:
    --2--Step 4. Configure BGP: "step-4-configure-bgp"
    --1--Set a GRE tunnel on Ubuntu: "set-a-gre-tunnel-on-ubuntu"
    --2--Step 1. Install required tools: "step-1-install-required-tools"
-   --2--Step 2. Configure a tunnel: "step-2-configure-the-gre-tunnel"
+   --2--Step 2. Configure a GRE tunnel: "step-2-configure-the-gre-tunnel"
    --2--Step 3. Enable IP forwarding: "step-3-enable-ip-forwarding"
    --2--Step 4. Adjust MTU and MSS settings: "step-4-adjust-mtu-and-mss-settings"
    --2--Step 5. Verify tunnel connectivity: "step-5-verify-tunnel-connectivity"
