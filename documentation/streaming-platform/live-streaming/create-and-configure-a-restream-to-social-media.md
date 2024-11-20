@@ -13,6 +13,8 @@ pageDescription: A step-by-step guide on how to push your broadcasts to social m
   
 ## About Restreams
 
+This is the change 
+
 Restreams is a feature that helps to broadcast your <a href="https://gcore.com/docs/streaming-platform/live-streaming/create-a-live-stream">live stream</a> or playlists to external video platforms like YouTube, Facebook, Twitch, and any other platforms with RTMP/RTMPS access.
 
 Example: you use our Video Streaming for an educational site where you hold webinars. One day, you decide to expand your audience and start to broadcast on several more platforms (e.g., Facebook and YouTube). In this case, you must push a total of three live streams: the first one for your site through our Video Streaming, the second one for Facebook, and the third one for YouTube. This requires a powerful device for streaming because when you push three separate streams at the same time, it’s a high load on the processor. To optimize this process, we recommend using Restreams. In this case, you push only one stream into our Video Streaming and then route it to the necessary platforms.
