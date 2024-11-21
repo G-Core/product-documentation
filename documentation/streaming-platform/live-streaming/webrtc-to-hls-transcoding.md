@@ -32,7 +32,7 @@ At the same time, WebRTC protocol works in any browser, but it’s not as flexib
 
 Gcore <a href="https://gcore.com/streaming-platform" target="_blank">Video Streaming</a> supports both WebRTC HTTP Ingest Protocol (WHIP) and WebRTC to HLS/DASH converter, giving you the advantages of these protocols. 
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/.png" alt="A diagram depicting WebRTC converting to LL-HLS/DASH" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/diagram-whip-hls-protocols-supported.png" alt="A diagram depicting WebRTC converting to LL-HLS/DASH" width="80%">
 
 ## Advantages of WebRTC and conversion to HLS/DASH
 
@@ -47,7 +47,7 @@ By using WebRTC WHIP for ingest, you can convert  WebRTC to HLS/DASH playback, w
 * Fast ingest via WebRTC from a browser. 
 * Optimal stream distribution using HLS/DASH with <a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/output-parameters-after-transcoding-bitrate-frame-rate-and-codecs#what-is-transcoding-with-abr" target="_blank">adaptive bitrate streaming</a> (ABR) through the CDN. 
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/.png" alt="A diagram depicting WebRTC transcoding and distribution via HLS/DASH" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/diagram-how-transcoding-is-configured.png" alt="A diagram depicting WebRTC transcoding and distribution via HLS/DASH" width="80%">
 
 ## How it works 
 
@@ -81,7 +81,7 @@ If you use <a href="https://obsproject.com/" target="_blank">OBS</a> or your own
 
 For example, you might have the following settings in OBS:
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/.png" alt="Example of listed OBS settings" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/example-obs-settings.png" alt="Example of listed OBS settings" width="80%">
 
 ### Supported WHIP clients
 
@@ -125,13 +125,13 @@ For instructions on how to convert a stream via API, refer to the <a href="https
 
 4\. In the **Quick start in browser** section, click **Go Live**. The broadcast will start automatically.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/.png" alt="Example of live broadcast" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/go-live-button.png" alt="Example of live broadcast" width="80%">
 
 5\. Allow Gcore to access your camera and microphone. In several seconds the HLS/DASH stream will appear in an HTML video player.  
 
 You’ll see the result under the **Video preview** instead of a black area with the “No active streams found” message. This large window of an HTML video player is the transcoded version of the stream in HLS/DASH protocols using adaptive bitrate.  
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/.png" alt="Example of a fully launched stream" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/started-live-stream.png" alt="Example of a fully launched stream" width="80%">
 
 A small window in the top-right corner is from your camera. It shows the stream taken from the webcam. 
 
@@ -147,7 +147,7 @@ Camera and mic wrapper.
 
 Monitoring WebRTC events and calling appropriate handlers in your code. 
 
-The latest library version, 0.72.0, is available at https://rtckit.gvideo.io/0.72.0/index.esm.js. For more information, refer to <a href="" target="_blank">Tech details of JS WebRTC WHIP library</a>. 
+The latest library version, 0.72.0, is available at https://rtckit.gvideo.io/0.72.0/index.esm.js.
 
 ### Start a stream with the Gcore WebRTC WHIP library
 
@@ -159,13 +159,13 @@ Using our library, you can start the conversion with a few lines of code. To go 
 
 2\. Open the stream settings and copy a WHIP URL from the **WebRTC => HLS parameters** section.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/.png" alt="WebRTC => HLS parameters section in the Customer Portal" width="80%">
+3\. Open <a href="https://stackblitz.com/edit/stackblitz-starters-j2r9ar?file=index.html" target="_blank">WHIP demo app</a> and paste the WHIP URL into the `WHIP_ENDPOINT const`.  
 
-3\. Open <a href="" target="_blank">WHIP demo app</a> and paste the WHIP URL into the `WHIP_ENDPOINT const`.  
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/copy-paste-whip-endpoint-in-demo-app.png" alt="WHIP endpoint where to paste the info" width="80%">
 
 4\. Click the **Start** button. The steam will be started in Customer Portal. 
 
-You can find the technical reference manual on data types, interfaces, methods, and other components in the <a href="" target="_blank">gcorevideo/rtckit</a> repository. 
+You can find the technical reference manual on data types, interfaces, methods, and other components in the <a href="https://github.com/G-Core/gcore-webrtc-sdk-js/blob/main/packages/rtckit/docs/api/rtckit.md" target="_blank">gcorevideo/rtckit</a> repository. 
 
 ### Start a stream with your own backend or frontend
 
@@ -300,7 +300,7 @@ Example command to close the stream: `webrtc.close()`
 
 You can find a detailed description of this version above. To view the full code, inspect the https://stackblitz.com/edit/stackblitz-starters-j2r9ar?file=index.html. 
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/.png" alt="Example of demo project 1" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/demo-1-example.png" alt="Example of demo project 1" width="80%">
 
 #### Demo 2. Comprehensive full-stack implementation on Nuxt
 
@@ -321,7 +321,7 @@ To start streaming:
 
 3\. Click the **Watch** link.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/.png" alt="Example of demo project 2" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/demo-2-example.png" alt="Example of demo project 2" width="80%">
 
 </tabset-element>
 
@@ -438,7 +438,7 @@ The new algorithm ensures uninterrupted broadcasting by prompting the browser to
 
 When such a situation occurs, you will know which device was disconnected and which one was connected instead. This will allow you to visualize (if necessary) the new connected device in your interface. 
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/.png" alt="A list of available devices with USB audio selected" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/microphone-options.png" alt="A list of available devices with USB audio selected" width="70%">
 
 ### Debugging with Chrome WebRTC internals tool
 
@@ -454,7 +454,7 @@ One of the parameters you can monitor in Stats graphs for candiate-pair:
 
 * **AvailableOutgoingBitrate** 
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/.png" alt="AvailableOutgoingBitrate graph in Chrome WebRTC internals" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/available-outgoing-bitrate-graph.png" alt="AvailableOutgoingBitrate graph in Chrome WebRTC internals" width="80%">
 
 You can also follow the following parameters from the **Stats graphs for outbound-rtp**: 
 
@@ -466,7 +466,7 @@ You can also follow the following parameters from the **Stats graphs for outboun
 
 For example, consider how unevenly frames are sent from the browser in the following screenshot:
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/.png" alt="frameWidth and frameHeight graphs in Chrome WebRTC internals" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/frame-graphs.png" alt="frameWidth and frameHeight graphs in Chrome WebRTC internals" width="80%">
 
 ### Network troubleshooting
 
@@ -492,7 +492,7 @@ However, sometimes the connection is even worse when packets are lost. In this c
 
 More and more data start to be resent, which leads to increased latency or gaps in frames. In this case, the transcoder doesn’t receive frames on time, causing the video to interrupt or stop altogether. You can monitor and debug this issue in Chrome’s webrtc-internals tool: 
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/.png" alt="Example graphs in Chrome WebRTC internals tool" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/sample-graphs-network-troubleshooting.png" alt="Example graphs in Chrome WebRTC internals tool" width="80%">
 
 What to do in such situations: 
 
@@ -508,7 +508,7 @@ ICE servers used by the WHIP client can be configured explicitly using the iceSe
 
 In the case of the latter, check what the server returns in the `Link` headers. For example: 
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/.png" alt="Example data in Link headers" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/link-headers.png" alt="Example data in Link headers" width="80%">
 
 <code-block>
 Link: <stun:ed-c16-95-128-175.fe.gc.onl:3478>; rel="ice-server" 
@@ -518,7 +518,7 @@ Link: ...
 
 You can also inspect the servers using chrome://webrtc-internals or an alternative tool: 
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/.png" alt="Example of servers check in Chome WebRTC internals" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/check-sever-config.png" alt="Example of servers check in Chome WebRTC internals" width="80%">
 
 After you verify your server configuration, use the <a href="https://webrtc.github.io/samples/src/content/peerconnection/trickle-ice/" target="_blank">Trickle ICE</a> app to test the servers.  
 
