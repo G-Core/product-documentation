@@ -67,17 +67,15 @@ The stream must include at least one video track and one audio track:
 If you use <a href="https://obsproject.com/" target="_blank">OBS</a> or your own WHIP library, use the following video encoding parameters: 
 
 * Codec H.264 with no B-frames and fast encoding: 
-
- * **Encoder**: x264, or any of H.264 
- * **CPU usage**: veryfast
- * **Keyframe interval**: 1 sec
- * **Profile**: baseline
- * **Tune**: zerolatency 
- * **x264 options**: bframes=0 scenecut=0 
+  * **Encoder**: x264, or any of H.264 
+  * **CPU usage**: veryfast
+  * **Keyframe interval**: 1 sec
+  * **Profile**: baseline
+  * **Tune**: zerolatency 
+  * **x264 options**: bframes=0 scenecut=0 
 
 * Bitrate:  
-
- * The lower the bitrate, the faster the data will be transmitted to the server. Choose the optimal one for your video. For example, 1-2 Mbps is usually enough for video broadcasts of online training format or online broadcasts with a presenter. 
+  * The lower the bitrate, the faster the data will be transmitted to the server. Choose the optimal one for your video. For example, 1-2 Mbps is usually enough for video broadcasts of online training format or online broadcasts with a presenter. 
 
 For example, you might have the following settings in OBS:
 
@@ -141,11 +139,9 @@ There are also settings for selecting a camera and microphone if you have more t
 
 We provide a <a href="https://rtckit.gvideo.io/0.72.0/index.esm.js" target="_blank">WebRTC WHIP library</a> for working in browsers. It implements the basic system calls and simplifies working with WebRTC: 
 
-Wrapper for initializing WebRTC stream and connecting to the server. 
-
-Camera and mic wrapper. 
-
-Monitoring WebRTC events and calling appropriate handlers in your code. 
+* Wrapper for initializing WebRTC stream and connecting to the server. 
+* Camera and mic wrapper. 
+* Monitoring WebRTC events and calling appropriate handlers in your code. 
 
 The latest library version, 0.72.0, is available at https://rtckit.gvideo.io/0.72.0/index.esm.js.
 
@@ -438,7 +434,7 @@ The new algorithm ensures uninterrupted broadcasting by prompting the browser to
 
 When such a situation occurs, you will know which device was disconnected and which one was connected instead. This will allow you to visualize (if necessary) the new connected device in your interface. 
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/microphone-options.png" alt="A list of available devices with USB audio selected" width="70%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/microphone-options.png" alt="A list of available devices with USB audio selected" width="60%">
 
 ### Debugging with Chrome WebRTC internals tool
 
