@@ -55,7 +55,7 @@ To add a new network:
 
 3\. Enter the network name. 
 
-4\. (Optional) If you want to create a network for Bare Metal servers, turn on the **Bare Metal Network (VLAN)** toggle. 
+4\. (Optional) If you want to create a network for Bare Metal servers, turn on the **Bare Metal Network** toggle. 
 
 5\. (Optional) Add tags if you want to include metadata. 
 
