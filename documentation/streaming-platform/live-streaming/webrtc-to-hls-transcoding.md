@@ -21,8 +21,8 @@ toc:
    --2--Sudden disconnection of camera or microphone: "sudden-disconnection-of-camera-or-microphone"
    --2--Debugging with Chrome WebRTC internals: "debugging-with-chrome-webrtc-internals-tool"
    --2--Network troubleshooting: "network-troubleshooting"
-pageTitle: Guide to Creating Live Streams | Gcore
-pageDescription: A step-by-step tutorial on how to create live streams using Gcore's interface. Learn about stream types, encoder settings, and embedding options.
+pageTitle: Guide to WebRTC ingest and transcoding to HLS/DASH  | Gcore
+pageDescription: A step-by-step tutorial on how to create and stop live streams using Gcore's interface or customer's environment. 
 ---
 # WebRTC ingest and transcoding to HLS/DASH
 
@@ -68,10 +68,10 @@ If you use <a href="https://obsproject.com/" target="_blank">OBS</a> or your own
 
 * Codec H.264 with no B-frames and fast encoding: 
   * **Encoder**: x264, or any of H.264 
-  * **CPU usage**: veryfast
+  * **CPU usage**: very fast
   * **Keyframe interval**: 1 sec
   * **Profile**: baseline
-  * **Tune**: zerolatency 
+  * **Tune**: zero latency 
   * **x264 options**: bframes=0 scenecut=0 
 
 * Bitrate:  
@@ -93,7 +93,7 @@ You can use any libraries to send data via the WebRTC WHIP protocol.
 
 ### LL-HLS and LL-DASH outputs
 
-Streams sent via WebRTC are transcoded in the way as other streams received via RTMP and SRT.  
+Streams sent via WebRTC are transcoded in the same way as other streams received via RTMP and SRT.  
 
 At the output, you can view the streams using any available protocols: 
 
@@ -116,7 +116,7 @@ For more details about low-latency streaming, check out <a href="https://gcore.c
 For instructions on how to convert a stream via API, refer to the <a href="https://api.gcore.com/docs/streaming#tag/Streams/operation/get_streams_id" target="_blank">API documentation</a>.  
 
 1\. In the Gcore Customer Portal, navigate to **Streaming**. 
-**
+
 2\. Open the Live Streaming** page and find a needed live stream. If you don’t have one, create a stream first. 
 
 3\. Click the stream name to open its settings.  
@@ -159,7 +159,7 @@ Using our library, you can start the conversion with a few lines of code. To go 
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/copy-paste-whip-endpoint-in-demo-app.png" alt="WHIP endpoint where to paste the info" width="80%">
 
-4\. Click the **Start** button. The steam will be started in Customer Portal. 
+4\. Click the **Start** button. The steam will be started in the Customer Portal. 
 
 You can find the technical reference manual on data types, interfaces, methods, and other components in the <a href="https://github.com/G-Core/gcore-webrtc-sdk-js/blob/main/packages/rtckit/docs/api/rtckit.md" target="_blank">gcorevideo/rtckit</a> repository. 
 
@@ -258,9 +258,9 @@ Example response:
 
 <tabset-element>
 
-#### Stop stream on backend
+#### Stop a stream on the backend
 
-Update the stream sending a PATCH request to the following endpoint: `https://api.gcore.com/streaming/streams/{id}`.
+Update the stream by sending a PATCH request to the following endpoint: `https://api.gcore.com/streaming/streams/{id}`.
 
 Example request: 
 
@@ -358,7 +358,7 @@ The ingestion server returned an error, which can be identified by inspecting th
     A special case to note is when multiple clients attempt to stream to the same endpoint simultaneously. Check the example for details.</td>
     <td><strong>err.message</strong>: Server request failed with status 400<br>
     <strong>err.status</strong>: 400<br>
-    <strong>err.detail</strong>: {“error”: “someone is already publishing to path '1960197_XXX'”}</td>
+    <strong>err.detail</strong>: {“error”: “someone is already publishing to the path '1960197_XXX'”}</td>
   </tr>
 <tr>
     <td>403</td>
@@ -414,7 +414,7 @@ Some operation has timed out.
 
 </expandable-element>
 
-Other types of errors are described in the our <a href="https://github.com/G-Core/gcore-webrtc-sdk-js/blob/main/packages/rtckit/docs/api/rtckit.md" target="_blank">SDK docs</a>. End-users should not encounter these errors, and there is no way to handle them in a real application apart from reporting the error occurrence.  
+Other types of errors are described in our <a href="https://github.com/G-Core/gcore-webrtc-sdk-js/blob/main/packages/rtckit/docs/api/rtckit.md" target="_blank">SDK docs</a>. End-users should not encounter these errors, and there is no way to handle them in a real application apart from reporting the error occurrence.  
 
 Some SDK methods might also throw browser’s native exceptions, such as <a href="https://github.com/G-Core/gcore-webrtc-sdk-js/blob/main/packages/rtckit/docs/api/rtckit.webrtcstreaming.opensourcestream.md" target="_blank">WebrtcStreaming.openSourceStream</a> and the methods of the <a href="https://github.com/G-Core/gcore-webrtc-sdk-js/blob/main/packages/rtckit/docs/api/rtckit.mediadeviceshelper.md" target="_blank">MediaDevicesHelper</a> throw <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#exceptions" target="_blank">getUserMedia-originated exceptions</a>. The application should handle them accordingly. 
 
@@ -434,11 +434,11 @@ The new algorithm ensures uninterrupted broadcasting by prompting the browser to
 
 When such a situation occurs, you will know which device was disconnected and which one was connected instead. This will allow you to visualize (if necessary) the new connected device in your interface. 
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/microphone-options.png" alt="A list of available devices with USB audio selected" width="60%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/webrtc-to-hls-transcoding/microphone-options.png" alt="A list of available devices with USB audio selected" width="30%">
 
 ### Debugging with Chrome WebRTC internals tool
 
-Chrome is really good at working with WebRTC because it has built-in tool to help developers see how things are working.  
+Chrome is really good at working with WebRTC because it has a built-in tool to help developers see how things are working.  
 
 Chrome v87+ has a special page called chrome://webrtc-internals where you can check your WebRTC calls: 
 
@@ -446,7 +446,7 @@ Chrome v87+ has a special page called chrome://webrtc-internals where you ca
 
 2\. Use the provided information to find potential problems. For instance, when videos won't play, calls won't connect, or videos are slow. 
 
-One of the parameters you can monitor in Stats graphs for candiate-pair: 
+One of the parameters you can monitor in Stats graphs for candidate-pair: 
 
 * **AvailableOutgoingBitrate** 
 
@@ -482,7 +482,7 @@ Network congestion, occurring when resource demand surpasses capacity, leads to 
 
 The available bitrate is calculated in the **availableOutgoingBitrate** parameter, which indicates the available outbound capacity of the network connection. The higher the value, the more bandwidth you can assume is available for outgoing data. The value is reported in bits per second and is computed over a 1-second interval. 
 
-The most likely scenario for quality degradation occurs here, when the channel width becomes insufficient to send good resolution. 
+The most likely scenario for quality degradation occurs here when the channel width becomes insufficient to send good resolution. 
 
 However, sometimes the connection is even worse when packets are lost. In this case, the server starts sending NACK (Negative Acknowledgement) packets. You can read more about this issue in the <a href="https://bloggeek.me/webrtcglossary/nack/" target="_blank">NACK overview article</a>. 
 
