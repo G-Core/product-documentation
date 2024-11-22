@@ -225,7 +225,7 @@ If the recommendations below do not help, please contact your administ
 			<td>
          <p>Apple allows video calling on iOS only in the Safari browser.</p>
          <p>1. Please open the link in iOS Safari browser.</p>
-         <p> 2. Check <a href="https://gcore.com/docs/streaming-platform/real-time-video/view-technical-requirements-for-users" target="_blank">if your browser is compatible with Real-Time Video</a>.</p>
+         <p> 2. Check if your browser is compatible with Real-Time Video.</p>
          </td>
 		</tr>
 		<tr>
