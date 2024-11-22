@@ -182,6 +182,7 @@ curl -L 'https://api.gcore.com/streaming/streams' \
     "active": true 
 }' 
 </code-block>
+
 Example response: 
 
 <code-block>
