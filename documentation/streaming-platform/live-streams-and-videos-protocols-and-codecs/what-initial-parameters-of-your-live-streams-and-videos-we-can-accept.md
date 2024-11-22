@@ -131,36 +131,36 @@ We recommend the following parameters for streams:
 <p><span data-contrast="none">Video codec</span></p>
 </td>
 <td class="wysiwyg-text-align-center" colspan="3" data-celllook="0">
-<p><span data-contrast="none">H.264, H.265</span></p>
+<p><span data-contrast="none">H.264, H.265, AV1</span></p>
 </td>
 </tr>
 <tr>
 <td class="wysiwyg-text-align-center" data-celllook="0">
-<p><span data-contrast="none">Max original file size <strong>(Video Hosting)</strong></span></p>
+<p><span data-contrast="none">Max original file size <strong>(VOD)</strong></span></p>
 <p>&nbsp;</p>
 </td>
 <td class="wysiwyg-text-align-center" colspan="3" data-celllook="0">
-<p>30 GB</p>
+<p>up to 30 GB</p>
 </td>
 </tr>
 <tr>
 <td>
-<p class="wysiwyg-text-align-center"><span data-contrast="none">Container<strong>&nbsp;(Video Hosting)</strong></span></p>
+<p class="wysiwyg-text-align-center"><span data-contrast="none">Container<strong>&nbsp;(VOD)</strong></span></p>
 </td>
 <td colspan="3">
 <p class="wysiwyg-text-align-center"><span data-contrast="none">3g2, 3gp,&nbsp;asf,&nbsp;avi,&nbsp;dif, dv,&nbsp;flv, f4v, m4v, mov, mp4, mpeg, mpg,&nbsp;mts, m2t, m2ts, qt,&nbsp;wmv,&nbsp;vob,&nbsp;mkv,&nbsp;ogv,&nbsp;webm,&nbsp;vob,&nbsp;ogg,&nbsp;mxf,&nbsp;quicktime, x-ms-wmv, mpeg-tts, vnd.dlna.mpeg-tts</span></p>
 </td>
 </tr>
 <tr>
-<td>Live protocols <strong>(Live Streaming)</strong></td>
-<td colspan="3">RTMP, RTMPS, SRT, RTSP, HLS</td>
+<td>Live protocols <strong>(Live)</strong></td>
+<td colspan="3">RTMP, RTMPS, SRT, RTSP, HLS, WebRTC</td>
 </tr>
 <tr>
 <td class="wysiwyg-text-align-center" data-celllook="0">
-<p><span data-contrast="none">Keyframe frequency&nbsp;<strong>(Live Streaming)</strong></span></p>
+<p><span data-contrast="none">Keyframe frequency&nbsp;<strong>(Live)</strong></span></p>
 </td>
 <td class="wysiwyg-text-align-center" colspan="3" data-celllook="0">
-<p><span data-contrast="none">2s (max&nbsp;4s)</span></p>
+<p><span data-contrast="none">1-2s</span></p>
 </td>
 </tr>
 <tr>
@@ -181,6 +181,13 @@ We recommend the following parameters for streams:
 </tr>
 <tr>
 <td class="wysiwyg-text-align-center" data-celllook="0">
+<p><span data-contrast="none">Chroma subsampling</span></p>
+</td>
+<td class="wysiwyg-text-align-center" colspan="3" data-celllook="0">
+<p><span data-contrast="none">[4:2:0](https://en.wikipedia.org/wiki/Chroma_subsampling)</span></p>
+</td>
+</tr><tr>
+<td class="wysiwyg-text-align-center" data-celllook="0">
 <p><span data-contrast="none">Audio sample rate</span></p>
 </td>
 <td class="wysiwyg-text-align-center" colspan="3" data-celllook="0">
@@ -198,7 +205,7 @@ We recommend the following parameters for streams:
 </tbody>
 </table>
 
-If the recommended parameters do not suit your stream, write to us in the chat or via [support@gcore.com](mailto:support@gcore.com), or contact your manager to find the solution.
+If the recommended parameters do not suit your stream (codecs, custom FPS, ProRes, High 4:4:4, Enhanced RTMP, etc.), write to us in the chat, send an email to [support@gcore.com](mailto:support@gcore.com), or contact your manager to find the solution.
 
 ## RTMP, RTMPS, and SRT for live streaming
 
