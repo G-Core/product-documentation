@@ -52,7 +52,7 @@ Example of the response of a video under processing:
   "description": "Video copied from an external S3 Storage", 
   "status": "pending", 
   "screenshots": [], 
-  "origin_url": "https://s-ed1.cloud.gcore.lu/demo-video/gcore.mp4", 
+  "origin_url": "https://demo-files.gvideo.io/gcore.mp4", 
   ... 
   "converted_videos": [ 
     { 
@@ -79,7 +79,7 @@ Example of the response if an error occurs during video processing:
   "description": "Video copied from an external S3 Storage", 
   "status": "empty", 
   "error": "File Invalid", 
-  "origin_url": "https://s-ed1.cloud.gcore.lu/demo-video/master.m3u8", 
+  "origin_url": "https://demo-files.gvideo.io/hls/master.m3u8", 
   ... 
   "converted_videos": [] 
 } 
@@ -126,7 +126,7 @@ curl -L 'https://api.gcore.com/streaming/videos/' \
   "video": { 
     "name": "Gcore Demo", 
     "description": "Video copied from an external S3 Storage", 
-    "origin_url": "https://s-ed1.cloud.gcore.lu/demo-video/gcore.mp4" 
+    "origin_url": "https://demo-files.gvideo.io/gcore.mp4"
   } 
 }
 ```
