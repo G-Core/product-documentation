@@ -205,7 +205,7 @@ We recommend the following parameters for streams:
 </tbody>
 </table>
 
-If the recommended parameters do not suit your stream (codecs, custom FPS, ProRes, High 4:4:4, Enhanced RTMP, etc), write to us in the chat or via [support@gcore.com](mailto:support@gcore.com), or contact your manager to find the solution.
+If the recommended parameters do not suit your stream (codecs, custom FPS, ProRes, High 4:4:4, Enhanced RTMP, etc.), write to us in the chat, send an email to [support@gcore.com](mailto:support@gcore.com), or contact your manager to find the solution.
 
 ## RTMP, RTMPS, and SRT for live streaming
 
