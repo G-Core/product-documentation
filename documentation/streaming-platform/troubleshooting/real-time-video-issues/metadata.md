@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: Real-Time Video issues
+displayName: WebRTC common issues
 published: true
 order: 20
 ---
