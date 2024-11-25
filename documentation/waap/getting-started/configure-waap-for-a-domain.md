@@ -12,6 +12,7 @@ toc:
    --1--Step 6. Allow admins, bots, and CMS: "step-6-allow-admins-bots-and-cms"  
    --1--Step 7. Configure your APIs: "step-7-configure-your-apis"
    --1--Step 8. Enable protect mode: "step-8-enable-protect-mode"
+   --1--Step 9. Block non-Gcore traffic: "step-9-block-non-gcore-traffic"
 pageTitle: Set up Gcore WAAP for your domain | Gcore
 pageDescription: Learn how to integrate your domain with our WAAP and configure the initial settings.
 ---
@@ -35,15 +36,79 @@ After you enable WAAP, all traffic will be diverted to our network, and it may c
 
 ## Step 1. Create a CDN resource  
 
-To secure your web application and APIs with Gcore WAAP, it’s necessary to create a CDN resource associated with your website’s origin.  
-
-If you don’t have Gcore CDN configured, follow the instructions from this guide: <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource" target="_blank">Create a CDN resource</a>. To add an SSL certificate, check out the <a href="https://gcore.com/docs/cdn/ssl-certificates/add-an-ssl-certificate-to-deliver-content-over-https" target="_blank">Add an SSL certificate to deliver content over HTTPS</a> guide. 
+To secure your web application and APIs with Gcore WAAP, it’s necessary to create a CDN resource associated with your website’s origin. If you also need to add an SSL certificate, check out the <a href="https://gcore.com/docs/cdn/ssl-certificates/add-an-ssl-certificate-to-deliver-content-over-https" target="_blank">Add an SSL certificate to deliver content over HTTPS</a> guide. 
 
 <alert-element type="info" title="Info">
  
-Update your domain’s DNS records so they point to our network. This is necessary to allow all traffic to pass through WAAP.
+When configuring a resource, you need to update your domain’s DNS records so they point to our network. This is necessary to allow all traffic to pass through WAAP.
 
 </alert-element>
+
+<tabset-element>
+
+### Create a resource with Gcore Managed DNS
+
+If you don’t have Gcore CDN configured, follow the instructions from this guide: <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site" target="_blank">Create a CDN resource for the entire site</a>. 
+
+### Create a resource with your DNS provider
+
+If you want to use a custom DNS provider, configure the resource according to the following steps. 
+
+#### Step 1. Choose acceleration and protection type
+
+1\. Go to the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN page</a> and click **Create CDN resource**.
+
+<img src="https://assets.gcore.pro/docs/waap/getting-started/create-cdn-resource-button.png" alt="CDN page in the Customer Portal" width="80%">
+
+2\. Select **Accelerate and protect static assets only**. This option lets you configure a CNAME for your static assets, also ensuring that your domain is fully protected from any harmful traffic. 
+
+<img src="https://assets.gcore.pro/docs/waap/getting-started/protect-static-assets-option.png" alt="Protect static assets option enabled" width="80%">
+
+3\. Click **Confirm** to proceed with the next steps.
+
+#### Step 2. Set up initial configuration for a domain 
+
+1\. Provide a CNAME record. For example, `waap.mydomain.yt`. 
+
+<img src="https://assets.gcore.pro/docs/waap/getting-started/cname-example.png" alt="CNAME example" width="80%">
+
+2\. Specify the content origin and add an origin group. If you haven't previously created an origin group, refer to <a href="https://gcore.com/docs/cdn/add-an-origin-group#step-2-enter-the-origin-group-name" target="_blank">add an origin group (step 2)</a>. 
+
+3\. To use the default port 80, keep the **Use default checkbox** selected. If you need to specify a custom port, deselect the checkbox and enter the needed port in the relevant field.
+
+<img src="https://assets.gcore.pro/docs/waap/getting-started/origin-config-example.png" alt="Example of origin configuration" width="80%">
+
+4\. Add a description (optional). It won’t affect your resource settings and will only be displayed in the <a href="https://cdn.gcore.com/resources/list" target="_blank">CDN resources</a> section next to the resource CNAME. 
+
+#### Step 3. Set up your DNS
+
+1\. Copy the generated CNAME and add it to your DNS configuration. 
+
+2\. In the Gcore Customer Portal, click **Confirm** to finish the DNS configuration and proceed with the next steps.
+
+<img src="https://assets.gcore.pro/docs/waap/getting-started/dns-setup.png" alt="Example of DNS configuration" width="80%">
+
+#### Step 4. Set up a content management system 
+
+1\. Select **I don’t have CMS**. Replace the origin domain with the CNAME that points to your static files, if necessary.  
+
+2\. Click **Confirm** to complete the configuration.
+
+<img src="https://assets.gcore.pro/docs/waap/getting-started/cms-setup.png" alt="Example of CMS configuration" width="80%">
+
+#### Step 5. Finalize the settings 
+
+1\. Once you’ve completed all the resource creation steps, access the resource settings by clicking the corresponding button. 
+
+2\. Navigate to the **Cache** settings and disable the **Always online** option.
+
+<img src="https://assets.gcore.pro/docs/waap/getting-started/always-online-disabled.png" alt="Always online option disabled" width="80%">
+
+3\. Make sure that the **Host header** is set to the **Forward Host header** option.
+
+<img src="https://assets.gcore.pro/docs/waap/getting-started/host-header-config.png" alt="Host header configuration" width="80%">
+
+</tabset-element>
 
 ## Step 2: Enable WAAP in CDN resource settings 
 
@@ -196,3 +261,10 @@ You can <a href="https://gcore.com/docs/waap/api-discovery-and-protection/config
 4\. In the upper-right corner of the screen next to WAAP mode, select **Protect**. The WAAP will begin to inspect and act upon incoming requests.
 
 <img src="https://assets.gcore.pro/docs/waap/getting-started/protect-mode.png" alt="WAAP modes dropdown" width="80%">
+
+## Step 9. Block non-Gcore traffic 
+
+After successful DNS propagation and verifying that domain-based traffic is being handled by WAAP, ensure that all requests to your domain are routed through Gcore servers. This is necessary to prevent unauthorized traffic from bypassing WAAP and directly reaching your domain.
+
+* <a href="https://gcore.com/docs/cdn/getting-started/configure-an-origin/add-cdn-servers-to-the-origin-acl-whitelist" target="_blank">Add our CDN servers to the allowlist</a>. 
+* Block other incoming requests that don’t match our allowlist. 
