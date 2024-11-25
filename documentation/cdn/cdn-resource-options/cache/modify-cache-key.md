@@ -6,6 +6,7 @@ order: 70
 toc:
    --1--Update cache key in CDN resource settings: "update-cache-key-in-CDN-resource-settings"
    --1--Supported variables: "supported-variables"
+   --1--Best practices and considerations: "best-practices-and-considerations"
 pageTitle: Guide to modify a cache key in CDN resource | Gcore
 pageDescription: Learn how to customize a cache key in CDN resource settings to improve website performance and speed up content delivery.
 ---
@@ -56,3 +57,17 @@ You can use the following variable to modify your resource’s cache key:
 * `$request_uri`: The full original request URI. If used with the <a href="https://gcore.com/docs/cdn/cdn-resource-options/rewrite-redirect-requests-from-the-cdn-to-the-origin" target="_blank">rewrite feature</a> in conjunction with this option, this variable retains the value of the original URI, not the rewritten one. 
 * `$scheme`: The protocol used in the request. 
 * `$uri`: The current normalized URI in the request. The value of this variable may change during request processing. For example, it’ll change during internal redirects or when using index files. 
+  
+## Best practices and considerations
+
+When configuring a cache key, take into account the following aspects to ensure optimal cache behavior: 
+
+* Using both `$uri` and `$request_uri` cache keys simultaneously will result in the cache following the `$request_uri` key—query strings won't be ignored because `$request_uri` includes the query string. 
+
+* The `$scheme` cache key does not work correctly when the Redirect HTTP to HTTPS option is enabled. All requests will be redirected to HTTPS, with no cache under the `$scheme` key. 
+
+* Using the `$uri` cache key overrides the <a href="https://gcore.com/docs/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers" target="_blank">Ignore query string</a> option. 
+
+* Cache keys restricted or added by administrators can’t be modified by the client. You can only select from the available options or <a href="mailto:support@gcore.com" target="_blank">contact support</a> to request changes to such keys. 
+
+* When you use modified cache keys, prefetch may not cover all possible cache cases. For instance, if your cache key includes both the `$request_method` and `$uri`, prefetching will result in warm-only HEAD requests. GET requests won't be preloaded into the cache. 
