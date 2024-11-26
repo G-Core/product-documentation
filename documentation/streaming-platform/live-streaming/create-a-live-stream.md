@@ -39,7 +39,7 @@ A new page will appear. Perform the remaining steps there.
 
 ## Step 2. Set the stream type and additional features 
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/live-stream-settings.png" alt="Live stream page" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/live-stream-settings-push.png" alt="Live stream page" width="80%">
 
 1\. Make sure that the **Enable live stream** toggle is on.
 
@@ -74,7 +74,7 @@ By default, we offer live streams with low latency (a 4–5 second delay.) Low l
 - RTMPS is a variation of RTMP that incorporates SSL usage.
 - SRT is a protocol designed to transmit data reliably with protection against packet loss.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/push-ingest-type-encoder-urls.png" alt="URLs for encoder configuration" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/pull-ingest-encoder-urls.png" alt="URLs for encoder configuration" width="80%">
 
 2\. Copy the relevant data to insert into your encoder.
 
@@ -109,7 +109,7 @@ We provide backup links, which you can specify in the encoder interface. In case
 
 In the **URL** field, insert a link to the stream from your media server. Check the full list of supported protocols in our <a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/what-initial-parameters-of-your-live-streams-and-videos-we-can-accept" target="_blank">Input parameters</a> guide.
 
-<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/pull-ingest-type.png" alt="Live streaming section" width="80%">
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/pull-ingest-type-url.png" alt="Live streaming section" width="80%">
 
 <alert-element type="tip" title="Tip">
 
