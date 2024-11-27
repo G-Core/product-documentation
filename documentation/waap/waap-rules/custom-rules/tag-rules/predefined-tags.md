@@ -232,12 +232,12 @@ Check the following table for a full list of predefined tags, their API slugs, a
   <tr>
     <td>Injection Attack</td>
     <td>injectionattack</td> 
-    <td>Multiple injection attempts were detected.</td>
+    <td>This client has been identified as a confirmed perpetrator of injection attacks.</td>
 </tr>
 <tr>
     <td>Injection Attempt</td>
     <td>injectionattempt</td> 
-    <td>Multiple injection attempts were suspected.</td>
+    <td>Multiple injection attempts were detected.</td>
 </tr>
 <tr>
     <td>Intensive Traffic from Fingerprint</td>
