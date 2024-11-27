@@ -4,83 +4,78 @@ displayName: Router
 published: true
 order: 30
 toc:
-    --1--Router creation: "router-creation"
-    --1--Managing routers: "managing-routers"
 pageTitle: Add a router | Gcore
 pageDescription: Learn how to create and manage a router in the cloud to dynamically exchange routes between networks.
 ---
 # Create and manage a router
 
-**Cloud Router** enables you to dynamically exchange routes between networks. 
+Cloud Router enables you to dynamically exchange routes between networks. You can find the list of routers in networking settings, on the **Routers** page.
 
-The list of routers is located inside the project, section Networking → Routers 
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/routers-page.png" alt="Routers page in the Customer Portal" width="80%">
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/1._______________.png" alt="1._______________.png">
+## Create a router
 
-## Router creation
+A router can be created in two ways:  
 
-There are two ways to create a router: 
+* Manually on the **Routers** page as documented in the following section. 
 
-**1\. Manually from the routers section** 
+* After you create a <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-network" target="_blank">network</a>, a new router is automatically created in the cloud to enable traffic routing. You can configure automatically created routers using the same settings available for manually created routers. 
 
-Go to the project, section Networking → Routers and click on Create router. 
+### Create a router manually 
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/2.______________________.png" alt="2.______________________.png">
+1\. In the Gcore Customer Portal, navigate to **Cloud** > **Networking**. 
 
-In the appeared window configure a new router: 
+2\. Go to the **Routers** page and click **Create router**.
 
-1.1. Select the network and subnet to configure routing. If necessary, you can add multiple subnets by clicking on Add subnet. For more information about creating and configuring a network and subnet, see the article <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-network" target="_blank">Networking</a>. 
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/create-router-button.png" alt="Create router button highlighted" width="80%">
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/3._________.png" alt="3._________.png">
+3\. Select the network and subnetwork to configure routing. If necessary, you can add multiple subnetworks by clicking on **Add Subnet**. For more information about creating and configuring a network and subnetwork, refer to our <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-network" target="_blank">Networking</a> guide.
 
-1.2. Activate the Enable SNAT selector if you need access to the external network. 
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/create-router-add-interfaces.png" alt="Create router menu" width="80%">
 
-A separate public IP address is announced for a router with access to an external network. 
+4\. (Optional) Turn on the **Enable SNAT** toggle if you need access to the external network. A separate public IP address is announced for a router with access to an external network. 
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/4._SNAT.png" alt="4._SNAT.png">
+5\. In the **Static Routes** section, you can specify the routing scheme. Provide the destination prefix and the address of the next hop. To add the next route, click the **Add Route** button. 
 
-1.3. In the Static routes section, you can specify the routing scheme 
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/create-router-snat-static-routes.png" alt="Create router menu" width="80%">
 
-Specify the destination prefix and the address of the next hop. To add the next route, click the Add route button. 
+6\. Give your router a name and save the configuration by clicking **Create Router**.
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/5.______.png" alt="5.______.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/create-router-name.png" alt="Create router menu" width="80%">
 
-1.4. Enter a name for the router and click Create router. 
+## Manage routers 
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/6.______________.png" alt="6.______________.png">
+To manage routers: 
 
-**2\. Automatically after creating a network** 
+1\. Open the **Routers** page in the Gcore Customer Portal.  
 
-After creating a network, a new router is being automatically created in the cloud to allow further routing of traffic.  
+2\. Click the router name to access its settings. Alternatively, click the three-dot icon next to the router you want to manage and then select **Overview**.
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/7.____________.png" alt="7.____________.png">
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/router-name-highlighted.png" alt="Routers page with example router" width="80%">
 
-For more information about creating and configuring a network and subnet, see the article <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-network" target="_blank">Networking</a>.
+3\. On the router overview page, you can find general information such as router ID, whether there is a SNAT for accessing the external network, creation dates, and external IPs. Here you can also configure and add new subnetworks as well as update static routes.
 
-For automatically created routers, you can make the same settings as for manually created routers. 
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/router-settings.png" alt="Routers overview page" width="80%">
 
-## Managing routers
+### Configure a subnetwork  
 
-To manage routers, open the list of routers: inside the project, section Networking → Routers 
+In the **Subnets** section, you can manage the list of subnets added to the router, add new subnets, and delete the existing ones. 
 
-To make changes with an existing router, click the selector on the right from the selected router and select the Overview option. 
+When creating a subnetwork, pay attention to the supported CIDR ranges: 
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/8._Overview.png" alt="8._Overview.png">
+* 10.0.0.0/8 
+* 172.16.0.0/12 
+* 192.168.0.0/16
+* fc00::/7 
 
-In the appearing window, you can find general information about the router: the router ID, whether there is a SNAT for accessing the external network, and the creation date. 
+<alert-element type="warning" title="Warning">
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/9._ID_SNAT_Time.png" alt="9._ID_SNAT_Time.png">
+The specified CIDR ranges must align with the destinations configured in your static routes. 
 
-In the Subnets section, you can manage the list of subnets added to the router: add new subnets and delete old ones. 
+</alert-element>
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/10._Subnet_______.png" alt="10._Subnet_______.png">
+## Configure static routes 
 
-To edit routes, go to the Static routes tab and click Edit static routes. 
+In the **Static Routes** section, you can update the destination and nexthop of your routes, add new ones, or remove static routes from the router. 
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/11._Edit_static_routes.png" alt="11._Edit_static_routes.png">
-
-To add a new route, click Add Route and specify the destination prefix and address of the nexthop, or delete an unnecessary route by clicking the Delete button on the right of the route. 
-
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/12._Add_and_delete_route.png" alt="12._Add_and_delete_route.png">
-
-To save settings, click Save static routes.
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/configure-static-routes.png" alt="Static routes settings" width="80%">

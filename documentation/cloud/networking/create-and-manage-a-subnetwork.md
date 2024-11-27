@@ -35,7 +35,13 @@ There are two ways to create a subnetwork in the network: <a href="https://gcore
 
 5\. Enter the subnetwork name.
 
-6\. Set CIDR between ranges: 10.0.0.0 - 10.255.255.255, 172.16.0.0—172.31.255.255, 192.168.0.0—192.168.255.255. Set the mask between 16 and 24. You can find more information in the [Set the IP range](https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork#set-the-ip-range) section.
+6\. Set CIDR between ranges: 
+ * 10.0.0.0/8
+ * 172.16.0.0/12
+ * 192.168.0.0/16
+ * fc00::/7
+
+ Set the mask between 16 and 24. You can find more information in the [Set the IP range](https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork#set-the-ip-range) section.
 
 7\. (optional) Turn on the **Enable DHCP** toggle to assign IP addresses to machines in the subnet automatically.
 
@@ -47,13 +53,23 @@ For IPv6 networks, you can only enable or disable DHCP when creating a subnetwor
 
 8\. (optional) Turn on the **Non-routable subnetwork** toggle to block access to the subnet from external networks and other subnets. If you keep the network routable, you can specify the **Gateway IP** address. Otherwise, a random IP address will be assigned.
 
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/create-subnetwork-name-cidr-dhcp.png" alt="Network configuration example" width=80%>
+
 9\. (optional) Enter server addresses in the "Custom DNS" field to add specific DNS servers.
 
-10\. (optional) Turn on **Add tags** to add metadata to the subnetwork.
+10\. (optional) Specify custom DNS servers for the subnetwork. If you don’t need custom DNS settings, leave the field blank. 
 
-11\. Click **Create subnetwork**.
+11\. Define how your traffic will be distributed within a network: 
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/create-subnetwork-annotated.png" alt="Network settings section with the highlighted Create a subnetwork button" width=80%>
+ * **Destination**: Specify the network or host where the traffic is intended to go.  
+
+ * **Next hop**: Choose the intermediate device (e.g., a router or gateway) that traffic should pass to reach the destination. 
+
+12\. (optional) Turn on **Add tags** to add metadata to the subnetwork.
+
+13\. Click **Create subnetwork**.
+
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/create-subnetwork-dns-config.png" alt="Network configuration example" width=80%>
 
 ## Set the IP range
 
