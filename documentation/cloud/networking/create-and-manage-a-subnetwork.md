@@ -47,13 +47,23 @@ For IPv6 networks, you can only enable or disable DHCP when creating a subnetwor
 
 8\. (optional) Turn on the **Non-routable subnetwork** toggle to block access to the subnet from external networks and other subnets. If you keep the network routable, you can specify the **Gateway IP** address. Otherwise, a random IP address will be assigned.
 
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/create-subnetwork-name-cidr-dhcp.png" alt="Network configuration example" width=80%>
+
 9\. (optional) Enter server addresses in the "Custom DNS" field to add specific DNS servers.
 
-10\. (optional) Turn on **Add tags** to add metadata to the subnetwork.
+10\. (optional) Specify custom DNS servers for the subnetwork. If you don’t need custom DNS settings, leave the field blank. 
 
-11\. Click **Create subnetwork**.
+11\. Define how your traffic will be distributed within a network: 
 
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/create-subnetwork-annotated.png" alt="Network settings section with the highlighted Create a subnetwork button" width=80%>
+ * **Destination**: Specify the network or host where the traffic is intended to go.  
+
+ * **Next hop**: Choose the intermediate device (e.g., a router or gateway) that traffic should pass to reach the destination. 
+
+12\. (optional) Turn on **Add tags** to add metadata to the subnetwork.
+
+13\. Click **Create subnetwork**.
+
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/create-subnetwork-dns-config.png" alt="Network configuration example" width=80%>
 
 ## Set the IP range
 
