@@ -222,9 +222,9 @@ Health check:
 
 Timeouts: 
 
-* **Client Data**: The maximum amount of time a Load Balancer will wait for a client to send data. After that, the connection will be closed.  
-* **Member Connect**: The maximum amount of time a Load Balancer will wait to establish a connection with a pool member. If the connection is not established within that timeframe, it’s considered a failed attempt.  
-* **Member Data**: The maximum amount of time a Load Balancer will wait for a pool member to send data once a connection has been established. If no data is sent within this timeframe, the connection times out.  
+* **Client Data (timeout client)**: The maximum amount of time a Load Balancer will wait for a client to send data. After that, the connection will be closed.  
+* **Member Connect (timeout connect)**: The maximum amount of time a Load Balancer will wait to establish a connection with a pool member. If the connection is not established within that timeframe, it’s considered a failed attempt.  
+* **Member Data (timeout server)**: The maximum amount of time a Load Balancer will wait for a pool member to send data once a connection has been established. If no data is sent within this timeframe, the connection times out.  
 
  <img src="https://assets.gcore.pro/docs/cloud/networking/load-balancers/manage-a-load-balancer/listeners-tab-timeouts.png" alt="Listeners tab with timeouts settings" width="80%">
 
