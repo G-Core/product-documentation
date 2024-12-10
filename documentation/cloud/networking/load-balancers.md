@@ -36,7 +36,7 @@ The results show:
     <th>Throughput</th>
     <th>Latency (ms)</th>
     <th>Throughput</th>
-    <th>Latency</th>
+    <th>Latency (ms)</th>
   </tr>
   <tr>
     <td>1 vCPU - 2 GiB</td>
@@ -46,7 +46,7 @@ The results show:
     <td>20</td>
   </tr>
   <tr>
-    <td>2 vCPU - 2 GiB</td>
+    <td>2 vCPU - 4 GiB</td>
     <td>45k</td>
     <td>3</td>
     <td>34k</td>
