@@ -71,7 +71,7 @@ You can check volume availability for a specific region on our website in the <a
 </tbody>
 </table>
 
-Snapshots and volume resize are not supported for **SSD Low-Latency** volumes.
+Snapshots and volume resizing are not supported for **SSD Low-Latency** volumes.
 
 For **High IOPS SSD**, and **Standard** volumes:
 
