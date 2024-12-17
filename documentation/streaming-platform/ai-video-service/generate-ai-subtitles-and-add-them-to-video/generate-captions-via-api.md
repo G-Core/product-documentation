@@ -13,9 +13,9 @@ pageDescription: Learn how to create AI tasks for generating and translating AI 
 ---
 # Generate and translate AI captions for a new VOD
 
-You can upload video and generate captions automatically during process of uploading new videos to the Video Streaming platform. https://api.gcore.com/docs/streaming#tag/Videos/operation/post_api_videos 
+You can upload videos and generate captions automatically during the process of uploading new videos to Gcire Video Streaming at https://api.gcore.com/docs/streaming#tag/Videos/operation/post_api_videos 
 
-In the process of uploading a video, it is necessary to add one new attribute "auto_transcribe_audio_language". Thanks to it, the system will automatically create a task for transcribing the video, and the finished result will be added to the video as a subtitle.
+When uploading a video, add one new attribute: "auto_transcribe_audio_language." The system will automatically create a task for transcribing the video, and the finished result will be added to the video as a subtitle.
 
 ```
 POST https://api.gcore.com/streaming/videos
@@ -27,11 +27,9 @@ POST https://api.gcore.com/streaming/videos
 }
 ```
 
-# Generate and translate AI captions for an exist VOD
+# Generate and translate AI captions for an existing VOD
 
-For existing videos, the process of creating AI subtitles is as simple as when uploading a new video.
-
-To do this, run the add subtitle method, but instead of specifying the subtitle text, specify the "auto_transcribe_audio_language" parameter, and the system will also run the AI ​​task to generate and attach the subtitle to the video. https://api.gcore.com/docs/streaming#tag/Subtitles/operation/post_api_videos_video_id_subtitles 
+To create AI subtitles for an existing video, run the add subtitle method, but instead of specifying the subtitle text, specify the "auto_transcribe_audio_language" parameter. Subtitles will be generated and attached to the video: https://api.gcore.com/docs/streaming#tag/Subtitles/operation/post_api_videos_video_id_subtitles 
 
 ```
 POST hhttps://api.gcore.com/streaming/videos/{video_id}/subtitles
@@ -44,11 +42,11 @@ POST hhttps://api.gcore.com/streaming/videos/{video_id}/subtitles
 # Extended use of AI API for any video inside or outside the Video Streaming platform
 
 AI ​​system can process any video stored in an MP4 container and available via a direct download link. 
-Please note that links to YouTube and Vimeo, etc. are not links to a video file, so they cannot be used for processing.
+Please note that links to YouTube, Vimeo, etc., are not links to a video file, so they cannot be used for processing.
 
 ### Step 1. Obtain an MP4 link 
 
-If the video is on an external source, get a link to this video. The link must be HTTP/S and the file must be available for downloading without authorization.
+If the video is from an external source, get a link to it. The link must be in HTTPS format and the file must be available for downloading without authorization.
 
 Let's look at an example of getting a link from our video storage.
 
