@@ -11,16 +11,49 @@ toc:
 pageTitle: Generate and translate AI subtitles via the Gcore API | Gcore
 pageDescription: Learn how to create AI tasks for generating and translating AI subtitles by executing API methods.
 ---
-# Generate and translate AI captions via API
+# Generate and translate AI captions for a new VOD
 
-You can use any MP4 videos uploaded to our video hosting or add links to any external MP4 file with HTTP or HTTPS access. 
+You can upload videos and generate captions automatically during the process of uploading new videos to Gcire Video Streaming at https://api.gcore.com/docs/streaming#tag/Videos/operation/post_api_videos 
+
+When uploading a video, add one new attribute: "auto_transcribe_audio_language." The system will automatically create a task for transcribing the video, and the finished result will be added to the video as a subtitle.
+
+```
+POST https://api.gcore.com/streaming/videos
+{
+    "name": "Spritefright Blender",
+    "description": "Video copied from an external S3 Storage",
+    "origin_url": "https://demo-files.gvideo.io/apidocs/spritefright-blender-cut30sec.mp4",
+    "auto_transcribe_audio_language": "auto"
+}
+```
+
+# Generate and translate AI captions for an existing VOD
+
+To create AI subtitles for an existing video, run the add subtitle method, but instead of specifying the subtitle text, specify the "auto_transcribe_audio_language" parameter. Subtitles will be generated and attached to the video: https://api.gcore.com/docs/streaming#tag/Subtitles/operation/post_api_videos_video_id_subtitles 
+
+```
+POST hhttps://api.gcore.com/streaming/videos/{video_id}/subtitles
+{
+    "auto_transcribe_audio_language": "auto"
+}
+```
+
+
+# Extended use of AI API for any video inside or outside the Video Streaming platform
+
+AI ​​system can process any video stored in an MP4 container and available via a direct download link. 
+Please note that links to YouTube, Vimeo, etc., are not links to a video file, so they cannot be used for processing.
 
 ### Step 1. Obtain an MP4 link 
 
-Obtain an MP4 link to your video with 480p quality. This quality is necessary because this version contains an <a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/output-parameters-after-transcoding-bitrate-frame-rate-and-codecs#output-parameters-after-transcoding" target="_blank">128kbps audio track</a> suitable for AI ASR. To get your MP4 link, execute the following API request: 
+If the video is from an external source, get a link to it. The link must be in HTTPS format and the file must be available for downloading without authorization.
+
+Let's look at an example of getting a link from our video storage.
+
+To obtain an MP4 link to your video with 240p, 360p, or 468p quality. That quality is sufficient because it contains an <a href="https://gcore.com/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/output-parameters-after-transcoding-bitrate-frame-rate-and-codecs#output-parameters-after-transcoding" target="_blank">64Kbps audio track</a> suitable for AI automatic speech recognition and transcription. To get your MP4 link, execute the following API request https://api.gcore.com/streaming#tag/Videos/operation/get_api_videos_id : 
 
 ```
-GET https://api.gcore.com/docs/streaming#tag/Videos/operation/get_api_videos_id
+GET https://api.gcore.com/streaming/videos/{id}
 ```
 
 From the response, copy the value of the ```mp4_url``` field.
@@ -44,30 +77,22 @@ Response sample:
 ```
 {
     "id": 4428031,
-    "name": "Sprite Fright, Blender (cut 30 seconds version for AI subtitles generation demo in API docs)",
+    "name": "Sprite Fright, Blender",
     ...
     "hls_url": "https://demo-public.gvideo.io/videos/2675_G8EuYJFTsvIyWmKt/master.m3u8",
     "iframe_url": "https://player.gvideo.co/videos/2675_G8EuYJFTsvIyW",
-    "iframe_embed_code": "<iframe width="560" height="315" src="https://player.gvideo.co/videos/2675_G8EuYJFTsvIyWmKt" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>",
+    "iframe_embed_code": "<iframe src="https://player.gvideo.co/videos/2675_G8EuYJFTsvIyWmKt" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>",
     "converted_videos": [
         {
-            "name": "vod720n",
-            "width": 1720,
-            "height": 720,
-            "mp4_url": "https://demo-public.gvideo.io/videos/2675_G8EuYJFTsvIyWmKt/720.mp4"
-        },
-        {
-            "name": "vod480n",
-            "width": 1146,
-            "height": 480,
-            "mp4_url": "https://demo-public.gvideo.io/videos/2675_G8EuYJFTsvIyWmKt/480.mp4"
+            "name": "vod240n",
+            "mp4_url": "https://demo-public.gvideo.io/videos/2675_G8EuYJFTsvIyWmKt/qid96v1_200_240.mp4"
         },
        ...
     ]
 }
 ```
 
-The value required for the next step is in the mp4_url field: ```https://demo-public.gvideo.io/videos/2675_G8EuYJFTsvIyWmKt/480.mp4```.
+The value required for the next step is in the mp4_url field: ```https://demo-public.gvideo.io/videos/2675_G8EuYJFTsvIyWmKt/qid96v1_200_240.mp4```.
 
 </expandable-element>
 
@@ -80,11 +105,11 @@ curl -L 'https://api.gcore.com/streaming/ai/transcribe' \
 -H 'Content-Type: application/json' \
 -H 'Authorization: APIKey {your_api_key}' \
 -d '{
-    "url": "https://demo-files.gvideo.io/{your_video_url/480.mp4}" 
+    "url": "https://demo-files.gvideo.io/{your_video_url/{quality}.mp4" 
 }'
 ```
 
-Ensure you replace the example values ```{your_api_key}``` and ```{your_video_url/480.mp4}``` with your actual <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">API token</a> and MP4 video URL.
+Ensure you replace the example values ```{your_api_key}``` and ```{your_video_url}/{quality}.mp4``` with your actual <a href="https://gcore.com/docs/account-settings/create-use-or-delete-a-permanent-api-token" target="_blank">API token</a> and MP4 video URL.
 
 In the response, you will get a task ID. It'll come in handy in the next step. For example: ```"task_id": "abc12345-6def…"```
 
@@ -93,11 +118,12 @@ In the response, you will get a task ID. It'll come in handy in the next step. F
 Request sample:
 
 ```
-curl -L 'https://api.gcore.com/streaming/ai/transcribe' \
+curl -L 'https://api.gcore.com/streaming/ai/tasks' \
 -H 'Content-Type: application/json' \
 -H 'Authorization: APIKey 1234$abcd...' \
 -d '{
-    "url": "https://demo-files.gvideo.io/apidocs/spritefright-blender-cut30sec.mp4" 
+    "url": "https://demo-files.gvideo.io/apidocs/spritefright-blender-cut30sec.mp4",
+    "task_name": "transcription"
 }'
 ```
 
@@ -124,13 +150,13 @@ However, if the language of the video differs from the desired subtitle language
 So, this is how the request body will look like if the original language is _not_ English, and subtitles are desired in English:
 
 ```
-curl -L 'https://api.gcore.com/streaming/ai/transcribe' \
+curl -L 'https://api.gcore.com/streaming/ai/tasks' \
 -H 'Content-Type: application/json' \
 -H 'Authorization: APIKey {your_api_key}' \
 -d '{
-    "url": "https://demo-files.gvideo.io/{your_video_url.mp4}"
-    "audio_language": 'bre'   
-    "subtitles_language": 'eng'  
+    "url": "https://demo-files.gvideo.io/{your_video_url.mp4}",
+    "task_name": "transcription",
+    "subtitles_language": "ger"
 }'
 ```
 
@@ -143,7 +169,7 @@ For the "code-switching" feature mentioned above, ```audio_language``` must be s
 Wait a few minutes for the AI to complete the transcription and translation. To get the task result, execute the following API request: 
 
 ```
-GET https://api.gcore.com/streaming/ai/results/{your_task_id}
+GET https://api.gcore.com/streaming/ai/tasks/{your_task_id}
 ```
 
 You will receive a response containing the transcribed and translated (if set) text. 
@@ -160,7 +186,7 @@ The following response elements may be useful for further video processing:
 Request sample:
 
 ```
-GET https://api.gcore.com/streaming/ai/results/34d0ba5a-23f6-4462-85ff-fe343b0cdb2d
+GET https://api.gcore.com/streaming/ai/tasks/34d0ba5a-23f6-4462-85ff-fe343b0cdb2d
 ```
 
 Response sample:
@@ -168,7 +194,7 @@ Response sample:
 ```
 {
     "task_data": {
-        "url": "https://demo-public.gvideo.io/videos/2675_G8EuYJFTsvIyWmKt/480.mp4"
+        "url": "https://demo-public.gvideo.io/videos/2675_G8EuYJFTsvIyWmKt/qid96v1_200_240.mp4"
     },
     "task_id": "34d0ba5a-23f6-4462-85ff-fe343b0cdb2d",
     "processing_time": {
