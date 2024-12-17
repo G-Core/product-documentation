@@ -31,6 +31,9 @@ With built-in security rules, advanced behavioral analytics, and a range of avai
 <alert-element type="warning" title="Warning">
 
 After enabling WAAP in CDN, you need to invalidate the cache. This is necessary to ensure that WAAP settings are properly applied. 
+When "Secure Token" and/or "Referrer access policy" CDN options are enabled in conjunction with WAAP, the CDN may block WAAP requests.
+
+These limitations will be removed soon.
 
 </alert-element>
 
