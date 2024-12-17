@@ -54,12 +54,12 @@ You can check volume availability for a specific region on our website in the <a
 <td style="text-align: left">This is a network SSD disk that provides stable and high random I/O performance, as well as high data reliability (6 IOPS per 1 GB; 0.4 MB/s per 1 GiB). The IOPS performance limit is 4,500. The bandwidth limit is 300 MB/s.</td>
 </tr>
 <tr>
-<td style="text-align: left">Cold</td>
+<td style="text-align: left">Cold (deprecated)</td>
 <td style="text-align: left">This is a network HDD disk suitable for less frequently accessed workloads. The maximum number of IOPS is 1,000. The bandwidth limit is 100 MB/s.
 </td>
 </tr>
 <tr>
-<td style="text-align: left">Ultra</td>
+<td style="text-align: left">Ultra (deprecated)</td>
 <td style="text-align: left">This is the network block storage option recommended for non-critical data and workloads that are accessed less frequently. The maximum number of IOPS is 1,000. The bandwidth limit is 100 MB/s.
 </td>
 </tr>
@@ -71,7 +71,9 @@ You can check volume availability for a specific region on our website in the <a
 </tbody>
 </table>
 
-For **Cold**, **High IOPS SSD**, and **Standard** volumes:
+Snapshots and volume resizing are not supported for **SSD Low-Latency** volumes.
+
+For **High IOPS SSD**, and **Standard** volumes:
 
 - Both volume IO (Input/Output) burst and volume throughput burst are supported.
 
