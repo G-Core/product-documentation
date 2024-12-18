@@ -113,6 +113,12 @@ The Load Balancer settings are organized into tabs, each dedicated to a specific
 
 ### Flavor
 
+<alert-element type="warning" title="Warning">
+ 
+During resize or failover operations, all current connections will be terminated, causing temporary disconnects. 
+ 
+</alert-element>
+
 This tab features a summary of the load balancer's configuration and its resources. 
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/load-balancers/manage-a-load-balancer/flavor-tab.png" alt="Flavor tab in Load Balancer settings" width="80%">
@@ -175,7 +181,7 @@ It's also not possible to use both TCP 80 and HTTP 80. The reason is that HTTP i
 
 #### Pool settings
 
-<alert-element type="tip" title="Tip">
+<alert-element type="Tip" title="Tip">
  
 For optimized performance, we recommend making batch updates of pool settings. To perform comprehensive simultaneous updates, use the <a href="https://api.gcore.com/docs/cloud#tag/Load-Balancers/operation/LoadBalancerPoolInstanceViewSet.patch" target="_blank">Gcore API</a>.
 
@@ -269,6 +275,12 @@ When you add the “test” custom tag to your Load Balancer, you essentially la
 
 ## Initiate a failover 
 
+<alert-element type="warning" title="Warning">
+ 
+During failover or resize operations, all current connections will be terminated, causing temporary disconnects. 
+ 
+</alert-element>
+
 The failover mechanism automatically detects Load Balancers that have failed or demonstrate degraded performance.  
 
 When you initiate a failover, the traffic is redirected to an alternate Load Balancer within your network infrastructure. The second balancer immediately takes over the duties of the failed one without interrupting the availability of your application. 
@@ -294,12 +306,6 @@ To initiate a failover:
 <img src="https://assets.gcore.pro/docs/cloud/networking/load-balancers/manage-a-load-balancer/initiating-failover.png" alt="Initiate failover dialog asking whether to procceed with failover" width="80%">
 
 The failover might take a few minutes to complete. During this time, the Load Balancer provisioning status will change to **Updating**. 
-
-<alert-element type="warning" title="Warning">
- 
-During failover or resize operations, all current connections will be terminated, causing temporary disconnects. 
- 
-</alert-element>
 
 ## Rename a Load Balancer 
 
