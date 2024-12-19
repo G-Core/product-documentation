@@ -52,7 +52,7 @@ All IP reputation policies are enabled by default. To disable a policy, turn on 
 
 TOR nodes are commonly used for web anonymity, but can also be used by hackers, scrapers, and spammers to crawl and hack web applications. 
 
-Block traffic from IP addresses associated with the TOR network.
+Enabling this policy will block traffic from IP addresses associated with the TOR network.
 
 ### Traffic via proxy networks 
 
