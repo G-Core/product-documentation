@@ -52,7 +52,7 @@ All IP reputation policies are enabled by default. To disable a policy, turn on 
 
 TOR nodes are commonly used for web anonymity, but can also be used by hackers, scrapers, and spammers to crawl and hack web applications. 
 
-Use JavaScript validation to verify traffic originating from the TOR network. This helps prevent potential anonymity and security risks associated with TOR usage within web applications. 
+Enabling this policy will block traffic from IP addresses associated with the TOR network.
 
 ### Traffic via proxy networks 
 
