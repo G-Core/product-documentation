@@ -18,7 +18,7 @@ You can check information about Cloud resource usage and associated costs on the
 * **Cost Report**: view costs for the Cloud resources you’ve used. This report shows data based on the Pay-As-You-Go pricing model and doesn’t include any costs associated with the prepaid resources (active commit features). 
 * **Reservation Cost Report**: check monthly resource usage and costs for both consumed and pre-paid resources.
 
-You can also get reports via <a href="https://api.gcore.com/docs/cloud#tag/Cost-Reports/operation/BillingReportHandler.post" target="_blank">API</a>.
+You can also get reports via <a href="https://api.gcore.com/docs/cloud#tag/Cost-Reports/operation/CostReportResourcesHandler.post" target="_blank">API</a>.
 
 Consider that statistics for the last hour might contain incomplete data. For accuracy, we recommend reviewing cost information that was collected more than an hour ago. 
 
