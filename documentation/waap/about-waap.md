@@ -32,23 +32,18 @@ WAAP offers the following key features:
 
 ## Getting started 
 
-For instructions on how to protect your domain with our WAAP, refer to our guide <a href="https://gcore.com/docs/waap/getting-started/configure-waap-for-a-domain" target="_blank">Configure WAAP for a domain</a>. 
-
-<alert-element type="info" title="Info">
-
-WAAP is currently in beta mode. To join the beta, contact the [Gcore support team](mailto:support@gcore.com).
- 
-</alert-element>
+For instructions on how to protect your domain with our WAAP, refer to our guide on <a href="https://gcore.com/docs/waap/getting-started/configure-waap-for-a-domain" target="_blank">how to configure WAAP for a domain</a>. 
 
 ## What’s the difference between WAF and WAAP? 
 
-Traditional firewalls typically serve as the first line of defense against malicious visitors and focus on layer 3 (Network) and layer 4 (Transport) in the <a href="https://en.wikipedia.org/wiki/OSI_model" target="_blank">OSI model</a>. This means that they can’t interpret and process HTTP and HTTPS traffic, which is the type of traffic making requests to your web applications. To protect your web applications and APIs, you need to use a web application firewall (WAF). It’s designed to filter out the "good" and "bad" HTTP and HTTPS traffic at the Application layer (Layer 7) in the OSI model. 
+Web application firewalls (WAFs) filter HTTP traffic to shield web applications from common threats like SQL injection and cross-site scripting. However, as applications increasingly depend on APIs and face sophisticated threats like bot attacks and Layer 7 DDoS, traditional WAFs fall short in providing comprehensive protection. Read more about why WAF isn't enough for today's security landscape in [our dedicated article](https://gcore.com/blog/cybersecurity-beyond-waf/).
+
+
+A web application and API protection (WAAP) solution expands on WAF functionality, integrating advanced defenses such as API-specific security, behavioral analysis, and Layer 7 mitigation to safeguard modern applications and APIs against evolving cyber threats.
 
 A **WAF** sits between the client and the origin server, meaning that any request a client makes passes through the WAF for an "inspection" before arriving at its destination, the website's origin server. 
 
-A **WAAP** (Web Application and API Protection) is a security tool that offers basic WAF protection along with more advanced measures to protect web applications and APIs from cyberattacks. 
-
-Read more about why WAF isn't enough for today's security landscape in [our dedicated article](https://gcore.com/blog/cybersecurity-beyond-waf/).
+A **WAAP** (Web Application and API Protection) is a security tool that offers WAF protection along with more advanced measures to protect web applications and APIs from cyberattacks. 
 
 ## How WAAP works 
 
@@ -80,4 +75,4 @@ The behavioral component is responsible for asynchronously analyzing traffic fro
 
 The component analyzes and detects malicious behavioral patterns and, based on this information, indicates what actions should be enforced by WAF edge nodes: block, challenge, or allow requests. As the behavioral component processes requests, it generates information tags for each request entity. These tags are sent together with instructions (actions to be enforced) to WAF Edge nodes. 
 
-This analytical aspect of the system and the independent functioning of both parts elevate our WAF to the next-generation level.
+This system's advanced analytical capabilities, combined with the independent yet collaborative operation of its two components, transform our WAF into a next-generation solution.
