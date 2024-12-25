@@ -4,20 +4,11 @@ displayName: Billing
 published: true
 order: 15
 pageTitle: How WAAP services are billed | Gcore
-pageDescription: Review avaiable WAAP packages and their features.
+pageDescription: Explore available WAAP packages and their features.
 ---
 # Billing
 
 We offer three levels of packages to suit your needs: **Start**, **Pro**, and **Enterprise**. Built with scalability in mind, these packages provide you with enhanced security measures powered by <a href="https://gcore.com/docs/waap/about-waap#how-waap-works" target="_blank">next-generation algorithms</a> to block any attack.  The comprehensive package information is available on the <a href="https://gcore.com/pricing/edge-network#waap" target="_blank">Gcore pricing</a> page. 
-
-Note that if you cancel your WAAP subscription, all your WAAP settings will be removed.
-
-<alert-element type="info" title="Info">
-
-WAAP is currently in beta mode. To join the beta, contact the [Gcore support team](mailto:support@gcore.com).
- 
-</alert-element>
-
 
 ## Trial 
 
