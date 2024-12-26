@@ -11,23 +11,20 @@ You can configure personal visibility in the customer's settings: Accounts > Acc
 
 <img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-personal-visibility/personal-product-visibility.png" alt="Configure personal visibility of products" width="80%">
 
-To change the product visibility from OFF to ON, confirm and save settings. 
+# Changing Product Visibility
 
-It is allowed to change the product visibility from ON to OFF if a product is in the "New", "Trialend", "Paused", or "Deleted" statuses. As a result:
+To enable a product, change the product visibility from OFF to ON, confirm the changes, and save the settings.
 
-- All settings for this product become inactive
-- Disabled products are not displayed in the customers's personal account
+To disable a product, change the product visibility from ON to OFF. The product must be in one of the following statuses:
+- New
+- Trialend
+- Paused
+- Deleted
 
-If a product is in "Trial" or "Active" statuses, you will see an error. Switch its status to "Trialend" or "Paused" before disabling the product, and then try again.
+When you disable a product, all settings for the product will become inactive. Disabled products will no longer appear in the customer's personal account.
 
-**Note**: If you make changes in the customer's personal visibility settings at least once, the visibility statuses of the personalized products will not be available for further changes from the global visibility settings. 
+Important: If a product is in the Trial or Active status, you will encounter an error. To proceed, first switch the product’s status to Trialend or Paused, and then disable it.
 
-For example, "CDN", "Video Streaming", "Edge Cloud", "Storage", "Web Application Security", and "Managed DNS" products are available for you. 
+# Interaction with Global Visibility Settings
 
-"CDN", "Video Streaming", and "Edge Cloud" are enabled by default for all customers.
-
-<img src="https://assets.gcore.pro/docs/reseller-support/manuals/configure-personal-visibility/vendor-settings-default-products.png" alt="Enabled by default " width="80%">
-
-And the "Storage" product is enabled only for one customer, i.e. all three products ("CDN", "Video Streaming", "Edge Cloud", and "Storage") are visible in the personal visibility settings.
-
-By these settings the "Storage" product is considered as the product with individual settings, **all further actions with this product in the global visibility will not affect the "Storage" visibility settings in the personal visibility of this customer**. 
+Once changes are made to a customer's personal visibility settings, the affected products will no longer be influenced by global visibility settings. This ensures that personalized product visibility configurations are retained independently.
