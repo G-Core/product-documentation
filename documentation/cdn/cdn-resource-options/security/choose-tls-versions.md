@@ -29,3 +29,4 @@ To manage TLS versions option:
 
 3\. Scroll down to the **TLS versions** section and click the **Change TLS versions** toggle to specify the necessary versions. The other versions you haven't specified will be blocked. 
 
+<img src="https://assets.gcore.pro/docs/cdn/cdn-resource-options/security/choose-tls-versions/screenshot-1.png" alt="TLS versions in resource settings" width="80%">
