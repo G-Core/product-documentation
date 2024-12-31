@@ -96,18 +96,16 @@ Enter the corporate domain for which SSO authorization is connected and click "S
 
 ## Supporting IDP-Initiated Login
 
-In cases where the identity provider (IdP) initiates the login, specific configurations are required to ensure the redirection flow works correctly. Our implementation primarily supports Service Provider (SP)-initiated login. However, with certain adjustments, IdP-initiated login can also be facilitated as follows:
+In cases where the identity provider (IdP) initiates the login, specific configurations are necessary to ensure the redirection flow functions correctly. While our implementation primarily supports service provider (SP)-initiated login, IdP-initiated login can also be accommodated with the following adjustments:
 
-1\. Redirect to SP Login Endpoint: Configure the IdP to redirect login requests to the Gcore Service Provider endpoint: `auth.gcore.com` or if you have a custom domain, use the custom domain URL: `auth.example.com`.
+1. Redirect to SP login endpoint: Configure the IdP to redirect login requests to the Gcore Service Provider endpoint: `auth.gcore.com`. If you have a custom domain, use the custom domain URL: `auth.example.com`.
 
-2\. Update Gcore Portal Settings: In the Admin Portal, ensure that the "SSO Login" authorization method is active and correctly configured to handle the incoming requests from the IdP, also if you want you can force redirect to the Identity provider by enabling the option.
+2\. Update Gcore Customer Portal settings: Ensure the "SSO Login" authorization method is active and properly configured to process incoming requests from the identity provider (IdP). If desired, you can enable the option to force redirects to the IdP for seamless authentication.
 
-3\. Modify IdP Settings: Adjust the IdP settings to require SP-initiated login. When users attempt to log in from the IdP, they should be redirected to the Gcore portal login URL (`auth.gcore.com` or `auth.example.com`) before being authenticated by the IdP.
+3\. Modify IdP settings: Configure the IdP to require SP-initiated login. This ensures that when users attempt to log in from the IdP, they are redirected to the Gcore portal login URL (e.g., auth.gcore.com or auth.example.com) before the IdP completes authentication.
 
-4\. Verify Redirect Flow: Ensure the redirect flow proceeds as follows:
-   - User clicks "Login to Gcore Portal" on the IdP.
-   - The request is redirected to `auth.gcore.com` or `auth.example.com`.
-   - The user is then redirected back to the IdP for authentication.
-   - Upon successful authentication, the user is logged into the Gcore portal with the correct domain settings.
-
-By implementing these steps, the IdP-initiated login scenario can be handled seamlessly while maintaining the security and integrity of the SSO process.
+4\. Verify redirect flow: Confirm that the login process follows these steps:
+- The user clicks "Login to Gcore Customer Customer Portal" on the IdP.
+- The request is redirected to auth.gcore.com or auth.example.com.
+- The user is then redirected back to the IdP for authentication.
+- After successful authentication, the user is logged into the Gcore Customer Portal with the appropriate domain settings applied.
