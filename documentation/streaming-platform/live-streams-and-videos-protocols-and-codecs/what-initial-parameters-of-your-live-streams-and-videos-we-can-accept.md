@@ -191,7 +191,7 @@ We recommend the following parameters for streams:
 <p><span data-contrast="none">Audio sample rate</span></p>
 </td>
 <td class="wysiwyg-text-align-center" colspan="3" data-celllook="0">
-<p><span data-contrast="none">44.1 kHz</span>&nbsp;</p>
+<p><span data-contrast="none">44.1/48 kHz</span>&nbsp;</p>
 </td>
 </tr>
 <tr>
