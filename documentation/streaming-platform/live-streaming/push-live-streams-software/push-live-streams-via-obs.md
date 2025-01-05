@@ -56,28 +56,28 @@ That’s it. The stream from OBS will be broadcast to your website.
 
 ## Manage the stream parameters
 
-It’s recommended to configure the stream parameters you’ll send to our server. You can do this in the Output, Audio, and Video OBS tabs.
+To ensure optimal streaming performance, we recommend configuring the stream parameters you will send to our server. You can adjust these settings in the Output, Audio, and Video tabs within OBS.
 
 ### Output parameters
 
-1\. Open OBS Settings and go to the Output tab. Select ‘Simple’ mode.
+1\. Open OBS Settings and go to the **Output** tab. Select **Simple** mode.
 
-2\. Set the parameters:
+2\. Set the parameters as follows:
 
-- **Video Bitrate:** The higher the resolution is, the higher the bitrate should be set. If you’re going to stream at 720p resolution, set it at 2000—2500 Kbps. If you’re broadcasting at 1080p, set it to 6000 Kbps
-- **Audio Bitrate:** 128
-- **Encoder:** Software (x264)
+- **Video Bitrate:** The resolution of your stream determines the required bitrate: The higher the resolution, the higher the bitrate. To stream at 720p resolution, set the bitrate to 2000Kbps. If you’re broadcasting at 1080p, set the bitrate to 4000Kbps.
+- **Audio Bitrate:** 128.
+- **Encoder:** Software (x264), or any other H264 codec.
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-obs/10807571524241.png" alt="Manage the stream parameters" width="80%">
 
-3\. Select ‘Advanced’ mode.
+3\. Click **Advanced** mode.
 
-4\. Set the parameters:
+4\. Set the parameters as follows:
 
 - **Rate control:** CRF (the default value is 23)
-- **Keyframe Interval (0=auto):** 2 s
+- **Keyframe Interval (0=auto):** 2s
 - **CPU Usage Preset:** veryfast
-- **Profile:** high
+- **Profile:** baseline
 
 5\. Click **Apply** to save the configuration.
 
@@ -89,13 +89,15 @@ It’s recommended to configure the stream parameters you’ll send to our serve
 
 1\. Open OBS Settings and go to the Audio tab.
 
-2\. Set the Sample Rate to 48 kHz and Stereo.
+2\. Set the Sample Rate to 44.1 kHz (default) or 48 kHz. Select **Stereo** for the best sound quality.
 
 3\. Click **Apply**.
 
 ### Video parameters
 
-1\. Open OBS Settings and go to the Video tab.
+If you need to reduce the original resolution (downscale), follow the instructions in this section. If no resolution change is required, you can skip this step.
+
+1\. Open OBS Settings and go to the **Video** tab.
 
 2\. Set the following parameters:
 
@@ -107,6 +109,4 @@ It’s recommended to configure the stream parameters you’ll send to our serve
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-obs/10807613445521.png" alt="Video parameters Apply" width="80%">
 
-**Hints.** If you want to use 1920×1080 resolution, it’s better to set the Video Bitrate parameter at 4000 Kbps (instead of 2000 Kbps) in the [Output](https://gcore.com/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-obs#output-parameters) tab. If you need to increase FPS to 60, set the Video Bitrate to 8000 Kbps.
-
-For Base (Canvas) Resolution, 1920×1080 stream will be transcoded in 3 qualities: 720p, 480p, and 240p.
+**Hints.** You can see the stream's [output parameters here](https://gcore.com/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-obs#output-parameters). If you need to increase the FPS to 60, make sure to also increase the bitrate accordingly for optimal stream quality.
