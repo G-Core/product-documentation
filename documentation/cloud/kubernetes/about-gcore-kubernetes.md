@@ -4,12 +4,12 @@ displayName: Overview
 order: 10
 published: true
 toc:
-pageTitle: Understand and manage PVC | Gcore
+pageTitle: Learn to use Gcore Managed Kubernetes | Gcore
 pageDescription: Explore Gcore Managed Kubernetes. Powerful features, Bare Metal support, autoscaling, data storage, and high availability for seamless container orchestration.
 ---
 # About Gcore Managed Kubernetes
 
-Kubernetes is a container management system that can be deployed and used on our servers. Features of our Managed Kubernetes service include:
+Kubernetes is a container management system that can be deployed and used on our servers. Features of our Managed Kubernetes service include the following:
 
 - **Bare Metal support**. With Gcore, you can deploy the cluster nodes not only on <a href="https://gcore.com/cloud/compute-resources" target="_blank">Virtual Machines (VMs)</a>, but also directly on our <a href="https://gcore.com/cloud/bare-metal-servers" target="_blank">Bare Metal servers</a>. This allows you to improve performance and latency even further and avoid the noisy neighbors of VMs. For more information, refer to <a href="https://gcore.com/docs/cloud/kubernetes/bare-metal-kubernetes" target="_blank">our article</a>.
 - **Secure master node management**. You have access to your worker nodes, and our administrators alone manage the master nodes where the control planes are located. We restrict access to master nodes to guarantee security and stability, meaning that nobody unwanted can make changes and we can guarantee the stability of the service.
