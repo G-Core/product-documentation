@@ -10,7 +10,6 @@ toc:
     --1--Memory: "memory"
     --1--High-frequency: "high-frequency"
     --1--Basic VM: "basic-vm"
-    --1--SGX-enabled: "sgx-enabled"
     --1--TPM: "tpm"
 pageTitle: Types of Virtual Machines | Gcore
 pageDescription: Discover the available types of Gcore Virtual Machines, their technical specifications, and use cases.
@@ -32,8 +31,6 @@ We provide multiple types of Virtual Machines suitable to different workflows an
 * <a href="https://gcore.com/docs/cloud/virtual-instances/types-of-virtual-machines#high-frequency" target="_blank">High-frequency</a>: Best fit for applications that require single-threaded performance.
 
 * <a href="https://gcore.com/docs/cloud/virtual-instances/types-of-virtual-machines#basic-vm" target="_blank">Basic VM</a>: Machines that work with partial core use and are designed to run applications that don’t require high performance. 
-
-* <a href="https://gcore.com/docs/cloud/virtual-instances/types-of-virtual-machines#sgx-enabled" target="_blank">SGX-enabled VMs</a>: Virtual Machines that support Intel SGX technology and are suitable for storing critical, sensitive data by applying confidential computing.
 
 * <a href="https://gcore.com/docs/cloud/virtual-instances/types-of-virtual-machines#tpm" target="_blank">VMs with a Trusted Platform Module (TPM)</a>: Suitable for a diverse array of secure workloads that demand robust hardware-based security features.
 
@@ -1311,143 +1308,6 @@ Machines powered with the following processors:
 
 </tabset-element>
 
-## SGX-enabled 
-
-Machines designed to build secure enclave-based applications. Allow isolating private areas of your code and data in enclaves to ensure protection against disclosure or modification.
-
-**Use cases**
-
-Application code storage, critical or sensitive data in the cloud.
-
-<tabset-element>
-
-### G1
-
-Powered with the **Intel Xeon E Family Processors + SGX support** (kernel).  
-
-#### Linux-based VMs
-
-<table>
-<thead>
-  <tr>
-    <th style="width:50%"><strong>VM type</strong></th>
-    <th style="width:25%"><strong>vCPU</strong></th>
-    <th style="width:25%"><strong>RAM/memory (GB)</strong></th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-   <td>g1-sgx-1-2-5</td>
-   <td>1</td>
-   <td>2</td>
-    </tr>
-    <tr>
-   <td>g1-sgx-2-4-11</td>
-   <td>2</td>
-   <td>4</td>
-    </tr>
-    <tr>
-   <td>g1-sgx-4-8-22</td>
-   <td>4</td>
-   <td>8</td>
-    </tr>
-    <tr>    
-   <td>g1-sgx-8-16-45</td>
-   <td>8</td>
-   <td>16</td>
-    </tr>                                    
-</tbody>
-</table>
-
-### G2
-
-Machines powered with the following processors:
-
-* **Intel® Xeon® Ice-Lake 3rd Generation**: new processors with built-in acceleration, increased RAM (up to 4 TB RAM expansion per processor), enhanced security (Integrated Intel <a href="https://www.intel.com/content/www/us/en/products/docs/accelerator-engines/software-guard-extensions.html" target="_blank">SGX</a> and <a href="https://www.intel.com/content/www/us/en/products/docs/processors/xeon-accelerated/crypto-acceleration-solution-brief.html" target="_blank">Crypto Acceleration</a> technologies). Suitable for a wide range of applications, including cloud computing, AI/ML workloads, high-performance computing (HPC), virtualization, and enterprise applications.
-
-* **Intel® Xeon® Scalable Processors**: Designed for scalability, performance, and versatility. These processors meet the diverse needs of data center workloads, ranging from entry-level to high-performance computing. Designed for a broader range of applications, including high-performance computing, virtualization, cloud computing, and enterprise workloads.
-
-#### Linux-based VMs
-
-<table>
-<thead>
-  <tr>
-    <th style="width:50%"><strong>VM type</strong></th>
-    <th style="width:25%"><strong>vCPU</strong></th>
-    <th style="width:25%"><strong>RAM/memory (GB)</strong></th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-   <td>g2-sgx-1-2-1</td>
-   <td>1</td>
-   <td>2</td>
-    </tr>
-    <tr>
-   <td>g2-sgx-2-4-2</td>
-   <td>2</td>
-   <td>4</td>
-    </tr>
-    <tr>
-   <td>g2-sgx-4-8-4</td>
-   <td>4</td>
-   <td>8</td>
-    </tr>
-    <tr>    
-   <td>g2-sgx-8-16-8</td>
-   <td>8</td>
-   <td>16</td>
-    </tr>  
-    <tr>    
-   <td>g2-sgx-16-32-16</td>
-   <td>16</td>
-   <td>32</td>
-    </tr>                                                                      
-</tbody>
-</table>
-
-#### Windows-based VMs
-
-Windows license is included.
-
-<table>
-<thead>
-  <tr>
-    <th style="width:50%"><strong>VM type</strong></th>
-    <th style="width:25%"><strong>vCPU</strong></th>
-    <th style="width:25%"><strong>RAM/memory (GB)</strong></th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-   <td>g2w-sgx-1-2-1</td>
-   <td>1</td>
-   <td>2</td>
-    </tr>
-    <tr>
-   <td>g2w-sgx-2-4-2</td>
-   <td>2</td>
-   <td>4</td>
-    </tr>
-    <tr>
-   <td>g2w-sgx-4-8-4</td>
-   <td>4</td>
-   <td>8</td>
-    </tr>
-    <tr>    
-   <td>g2w-sgx-8-16-8</td>
-   <td>8</td>
-   <td>16</td>
-    </tr>  
-    <tr>    
-   <td>g2w-sgx-16-32-16</td>
-   <td>16</td>
-   <td>32</td>
-    </tr>                                                                      
-</tbody>
-</table>
-
-</tabset-element>
 
 ## TPM
 
