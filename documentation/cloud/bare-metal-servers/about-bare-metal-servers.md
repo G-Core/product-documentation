@@ -113,3 +113,21 @@ The table below shows the key differences between our Bare Metal servers in <a h
 | Interaction with other Cloud services | Yes                                                                                                                                                                                                                                                    | No                                                                                                   |
 | Interaction with other Gcore services | Yes                                                                                                                                                                                                                                                    | No                                                                                                   |
 | Usability                             | Complex infrastructure, intensive workloads, possible traffic spikes, networks between Virtual and Bare Metal servers, interaction with other Cloud services (Load Balancers, Managed Kubernetes), internal virtualization and containers | Small- and medium-sized projects, simple web applications, predictable workloads, low budget |
+
+## Firewall Feature Not Supported for Bare Metal Servers
+
+Please note that the Firewall feature is not supported for Bare Metal servers. Unlike Virtual Machines or other cloud services that can easily integrate with cloud-native firewalls, Bare Metal servers operate directly on physical hardware and are not subject to the same level of firewall management.
+For network security, Bare Metal servers can use the following alternatives:
+*   You can manually configure network security using solutions like **iptables** or **nftables** (recommended) to protect your server at the network level. Other similar solutions can also be used to set up necessary firewall rules based on your security needs.
+
+```
+sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+sudo iptables -A INPUT -i lo -j ACCEPT
+sudo iptables -P INPUT DROP
+```
+
+*   For an additional layer of protection, you can opt for advanced DDoS protection to ensure your server remains available during attacks by redirecting traffic to the Threat Mitigation System (TMS), which performs filtering and threat detection, preventing service disruptions with its always-on mode.
+
+For more information, please reach out to our support team for tailored DDoS protection plans.
