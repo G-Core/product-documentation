@@ -106,3 +106,23 @@ You can’t delete a default firewall.
 2\. Find the required firewall, click the ⋯ menu on the right and select **Delete**.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/add-and-configure-a-firewall/13258132640145.png" alt="Delete a firewall">
+
+
+## Firewall feature not supported for Bare Metal servers
+
+Please note that the Firewall feature is not supported for Bare Metal servers. Unlike Virtual Machines or other cloud services that can easily integrate with cloud-native firewalls, Bare Metal servers operate directly on physical hardware and are not subject to the same level of firewall management.
+
+For network security, Bare Metal servers can use the following alternatives:
+*   You can manually configure network security using solutions like **iptables** or **nftables** (recommended) to protect your server at the network level. Other similar solutions can also be used to set up necessary firewall rules based on your security needs.
+
+```
+sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+sudo iptables -A INPUT -i lo -j ACCEPT
+sudo iptables -P INPUT DROP
+```
+
+*   For an additional layer of protection, opt for [Gcore DDoS Protection]([url](https://gcore.com/ddos-protection)) to keep your server available during attacks. DDoS Protection redirects traffic to the Threat Mitigation System (TMS), which performs filtering and threat detection, preventing service disruptions with its always-on mode.
+
+For more information, please [reach out to our support team]([url](https://gcore.com/contact-us)) for tailored DDoS Protection plans.
