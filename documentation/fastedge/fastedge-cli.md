@@ -61,7 +61,7 @@ Execute the following command:
 
 </code-block>
 
-For example:  `./target/release/cli http -w ../FastEdge-examples/rust/target/wasm32-wasi/release/print.wasm –-port 8080`
+For example:  `./target/release/cli http -w ../FastEdge-examples/rust/target/wasm32-wasip1/release/print.wasm –-port 8080`
 
 To view the list of all printed headers, run `curl http://localhost:8080`
 
@@ -77,7 +77,7 @@ Execute the following command:
 
 For example, to set the BASE variable to the URL of the repository’s README:  
 
-`./target/release/cli http -w ../FastEdge-examples/rust/target/wasm32-wasi/release/markdown.wasm env BASE=https://raw.githubusercontent.com/G-Core/FastEdge-lib/main --port 8080`
+`./target/release/cli http -w ../FastEdge-examples/rust/target/wasm32-wasip1/release/markdown.wasm env BASE=https://raw.githubusercontent.com/G-Core/FastEdge-lib/main --port 8080`
 
 After executing the command, you can run the FastEdge application, which will output the contents of the README: `http://localhost:8080/README.md`
 
@@ -91,7 +91,7 @@ FastEdge CLI can add sample geo headers to your application without using a real
 
 </code-block>
 
-For example:  `./target/release/cli http -w ../FastEdge-examples/rust/target/wasm32-wasi/release/print.wasm –-geo --port 8081` 
+For example:  `./target/release/cli http -w ../FastEdge-examples/rust/target/wasm32-wasip1/release/print.wasm –-geo --port 8081` 
 
 To view the list of sample geo headers, run `curl http://localhost:8081`. You should see an output similar to the following: 
 
