@@ -115,7 +115,7 @@ The table below shows the key differences between our Bare Metal servers in <a h
 | Usability                             | Complex infrastructure, intensive workloads, possible traffic spikes, networks between Virtual and Bare Metal servers, interaction with other Cloud services (Load Balancers, Managed Kubernetes), internal virtualization and containers | Small- and medium-sized projects, simple web applications, predictable workloads, low budget |
 
 
-## ## Firewall feature not supported for Bare Metal servers
+## Firewall feature not supported for Bare Metal servers
 
 Please note that the Firewall feature is not supported for Bare Metal servers. Unlike Virtual Machines or other cloud services that can easily integrate with cloud-native firewalls, Bare Metal servers operate directly on physical hardware and are not subject to the same level of firewall management.
 
