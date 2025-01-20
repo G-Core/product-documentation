@@ -18,7 +18,7 @@ pageDescription: Explore Bare Metal servers for gaming, HPC, and big data. High 
 
 Bare Metal is a form of cloud service in which the user rents a physical machine from a provider. This machine is dedicated to the user and not shared with any other tenants.
 
-You can rent one or multiple Bare Metal servers in one of <a href="https://gcore.com/cloud/bare-metal-servers" target="_blank">15+ locations</a>. You can find all the locations on <a href="https://gcore.com/cloud/bare-metal-servers" target="_blank">our website</a>.
+You can rent one or multiple Bare Metal servers in one of <a href="https://gcore.com/cloud/bare-metal-servers" target="_blank">25 locations</a>. You can find all the locations on <a href="https://gcore.com/cloud/bare-metal-servers" target="_blank">our website</a>.
 
 ## How does Bare Metal work?
 
