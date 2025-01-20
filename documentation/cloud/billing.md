@@ -13,8 +13,7 @@ All clients are subscribed to the PAYG (pay-as-you-go) billing plan, which means
 
 <alert-element type="warning" title="Warning">
 
-To start using Edge Cloud services, we recommend you to add at least €4/$4 to your balance. 
-To utilize the monthly payments approach, please gather your company information and reach out to our support team.
+To start using Edge Cloud services, we recommend that you add at least €4/$4 to your balance. To pay monthly, please reach out to our support team.
 
 </alert-element>
 
