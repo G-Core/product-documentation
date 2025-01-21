@@ -87,6 +87,17 @@ Acceptable CIDR ranges for IPv4 addresses are as follows:
   
 The valid subnet mask range is 16-29. 
 
+### Gateway IP Validation
+
+The gateway IP address must belong to the defined CIDR range of the subnetwork. 
+
+For example, if the CIDR is 192.168.0.0/24, the gateway IP must be within the 192.168.0.0 - 192.168.0.255 range. 
+
+Validation ensures proper configuration and prevents errors during creation or updates.
+
+<img src='Picture_Validation_Error.png' alt="Gateway ip validation error">
+
+
 ## Configure network routing
 
 A routed network is a private network that's already connected to a router with a public interface. All Virtual Machines in such networks can access the internet through the router and accept incoming connections. 
