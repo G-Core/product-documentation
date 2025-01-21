@@ -9,7 +9,7 @@ toc:
    --2--Add, change and delete rules: "add-change-and-delete-rules"
    --2--Assign to a Virtual Machine and detach from it: "assign-to-a-virtual-machine-and-detach-from-it"
    --2--Delete: "delete-a-firewall"
-   --1--Firewall feature not supported for Bare Metal servers: "firewall-feature-not-supported-for-bare-metal-servers"
+   --2--Firewall feature not supported for Bare Metal servers: "firewall-feature-not-supported-for-bare-metal-servers"
 pageTitle: Add a firewall | Gcore
 pageDescription: Learn how to add and configure a firewall to protect your servers from network threats.
 ---
