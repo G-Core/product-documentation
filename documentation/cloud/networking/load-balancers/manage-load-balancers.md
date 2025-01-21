@@ -141,7 +141,7 @@ The Load Balancer settings are organized into tabs, each dedicated to a specific
 </tr>
 <tr>
 <td style="text-align: left">Members*</td>
-<td style="text-align: left">2,500</td>
+<td style="text-align: left">2500</td>
 </tr>
 </tbody>
 </table>
@@ -150,7 +150,7 @@ The Load Balancer settings are organized into tabs, each dedicated to a specific
 
 **Note:**
 
-* Large pools are supported, allowing configurations such as a single pool with 1,000–2,000 members, provided the total number of members does not exceed 2,500.
+* Large pools are supported, allowing configurations such as a single pool with 1000–2000 members. The total number of members cannot exceed 2500.
 
 * Pools must be directly attached to either a listener or a Load Balancer, with a maximum of one pool directly connected to each listener.
 
