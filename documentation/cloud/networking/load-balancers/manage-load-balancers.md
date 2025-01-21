@@ -6,6 +6,7 @@ order: 40
 toc:
    --1--Load Balancer statuses: "statuses-of-a-load-balancer-and-its-components"
    --1--Load Balancer settings: "load-balancer-settings"
+   --2--Limits: "limits"
    --2--Flavor: "flavor"
    --2--Monitoring: "monitoring"
    --2--Listeners: "listeners"
@@ -110,6 +111,49 @@ The **Overview** page features the following information:
 * **Operating status**, **Provisioning status**: Check the <a href="https://gcore.com/docs/cloud/networking/load-balancers/manage-load-balancers#statuses-of-a-load-balancer-and-its-components" target="_blank">statuses of Load Balancer and its components</a> for a detailed overview of each one. 
 
 The Load Balancer settings are organized into tabs, each dedicated to a specific functionality. The following sections provide a detailed description of these settings. 
+
+
+### Limits
+
+<table>
+<thead>
+<tr style="background-color: #555555; color: white;">
+<th style="text-align: left">Component</th>
+<th style="text-align: left">Limit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left">Load Balancers</td>
+<td style="text-align: left">Managed by Quotas</td>
+</tr>
+<tr>
+<td style="text-align: left">Listeners*</td>
+<td style="text-align: left">50 (excluding Prometheus)</td>
+</tr>
+<tr>
+<td style="text-align: left">Prometheus Listener*</td>
+<td style="text-align: left">1</td>
+</tr>
+<tr>
+<td style="text-align: left">Pools*</td>
+<td style="text-align: left">50</td>
+</tr>
+<tr>
+<td style="text-align: left">Members*</td>
+<td style="text-align: left">2500</td>
+</tr>
+</tbody>
+</table>
+
+\* - per Load Balancer
+
+**Note:**
+
+* Large pools are supported, allowing configurations such as a single pool with 1000–2000 members. The total number of members cannot exceed 2500.
+
+* Pools must be directly attached to either a listener or a Load Balancer, with a maximum of one pool directly connected to each listener.
+
 
 ### Flavor
 
