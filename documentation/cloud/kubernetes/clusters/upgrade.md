@@ -18,11 +18,11 @@ pageDescription: You can perform a Kubernetes cluster version upgrade to get the
 
 You can perform a Kubernetes cluster version upgrade to get the latest Kubernetes features and make sure that your cluster is secure and stable.
 
-## [Implications for cluster APIs](#implications-for-cluster-apis)
+## Implications for cluster APIs
 
 Kubernetes version upgrades might change the Kubernetes API and features. Please check the official Kubernetes documentation to find the latest changes.
 
-## [Implications for applications](#implications-for-applications)
+## Implications for applications
 
 We use a rolling update approach, where the update procedure terminates the existing worker nodes one by one and creates new worker nodes. While rolling upgrades won’t stop all nodes at once, they can still have performance implications for your users if you don't have any spare capacity.
 
