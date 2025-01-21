@@ -11,6 +11,7 @@ toc:
    --1--Pricing: "pricing"
    --1--Bare metal vs. Virtual Machines: "bare-metal-vs-virtual-machines"
    --1--Bare metal vs. Dedicated Servers in Hosting: "bare-metal-vs-dedicated-servers-in-hosting"
+   --1--Firewall feature not supported for Bare Metal servers: "firewall-feature-not-supported-for-bare-metal-servers"
 pageTitle: Bare Metal servers | Gcore
 pageDescription: Explore Bare Metal servers for gaming, HPC, and big data. High performance, fault-tolerance, data security. Compare Virtual Machines & Bare Metal.
 ---
