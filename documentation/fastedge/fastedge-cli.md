@@ -12,7 +12,7 @@ pageDescription: Explore FastEdge CLI tool and learn how to install, build, and 
 ---
 # FastEdge CLI  
 
-Run and test your FastEdge applications locally with the Gcore <a href="https://github.com/G-Core/FastEdge-lib" target="_blank">FastEdge CLI tool</a>. The following instructions will help you install, build, and execute some basic commands with FastEdge CLI. 
+Run and test your FastEdge HTTP applications locally with the Gcore <a href="https://github.com/G-Core/FastEdge-lib" target="_blank">FastEdge CLI tool</a>. The following instructions will help you install, build, and execute some basic commands with FastEdge CLI. 
 
 <alert-element type="tip" title="Tip">
 
@@ -41,11 +41,11 @@ To run the compiled CLI tool, use the following command:
 
 <code-block>
 
-./target/release/cli <span style="color:#FF5913">[command]</span>
+./target/release/fastedge-run <span style="color:#FF5913">[command]</span>
 
 </code-block>
 
-For example, if you want to open help and view the list of supported commands, run: `./target/release/cli http --help`.
+For example, if you want to open help and view the list of supported commands, run: `./target/release/fastedge-run http --help`.
 
 ## Example commands
 
@@ -57,11 +57,11 @@ Execute the following command:
 
 <code-block>
 
-./target/release/cli http –w <span style="color:#FF5913">[path-to-your-application]</span> –-port <span style="color:#FF5913">[port number]</span>
+./target/release/fastedge-run http –w <span style="color:#FF5913">[path-to-your-application]</span> –-port <span style="color:#FF5913">[port number]</span>
 
 </code-block>
 
-For example:  `./target/release/cli http -w ../FastEdge-examples/rust/target/wasm32-wasip1/release/print.wasm –-port 8080`
+For example:  `./target/release/fastedge-run http -w ../FastEdge-examples/rust/target/wasm32-wasip1/release/print.wasm –-port 8080`
 
 To view the list of all printed headers, run `curl http://localhost:8080`
 
@@ -71,13 +71,13 @@ Execute the following command:
 
 <code-block>
 
-./target/release/cli http –w <span style="color:#FF5913">[path-to-your-application]</span> –-env <span style="color:#FF5913">[variables]</span> --port <span style="color:#FF5913">[port number]</span> 
+./target/release/fastedge-run http –w <span style="color:#FF5913">[path-to-your-application]</span> –-env <span style="color:#FF5913">[variables]</span> --port <span style="color:#FF5913">[port number]</span> 
 
 </code-block>
 
 For example, to set the BASE variable to the URL of the repository’s README:  
 
-`./target/release/cli http -w ../FastEdge-examples/rust/target/wasm32-wasip1/release/markdown.wasm env BASE=https://raw.githubusercontent.com/G-Core/FastEdge-lib/main --port 8080`
+`./target/release/fastedge-run http -w ../FastEdge-examples/rust/target/wasm32-wasip1/release/markdown.wasm env BASE=https://raw.githubusercontent.com/G-Core/FastEdge-lib/main --port 8080`
 
 After executing the command, you can run the FastEdge application, which will output the contents of the README: `http://localhost:8080/README.md`
 
@@ -87,11 +87,11 @@ FastEdge CLI can add sample geo headers to your application without using a real
 
 <code-block>
 
-./target/release/cli http -w <span style="color:#FF5913">[path-to-your-application]</span> –geo –port <span style="color:#FF5913">[port number]</span> 
+./target/release/fastedge-run http -w <span style="color:#FF5913">[path-to-your-application]</span> –geo –port <span style="color:#FF5913">[port number]</span> 
 
 </code-block>
 
-For example:  `./target/release/cli http -w ../FastEdge-examples/rust/target/wasm32-wasip1/release/print.wasm –-geo --port 8081` 
+For example:  `./target/release/fastedge-run http -w ../FastEdge-examples/rust/target/wasm32-wasip1/release/print.wasm –-geo --port 8081` 
 
 To view the list of sample geo headers, run `curl http://localhost:8081`. You should see an output similar to the following: 
 
