@@ -38,7 +38,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 2\. Add the Wasm compilation target to Rust compiler:
 
 ```
-rustup target add wasm32-wasi
+rustup target add wasm32-wasip1
 ```
 
 #### Step 2. Prepare directory structure and a configuration file
@@ -58,7 +58,7 @@ mkdir myapp/.cargo
 
 ```
 [build]
-target = "wasm32-wasi"
+target = "wasm32-wasip1"
 ```
 
 4\. Create the project manifest file ```myapp/Cargo.toml``` with the following content:
@@ -73,7 +73,7 @@ edition = "2021"
 crate-type = ["cdylib"]
  
 [dependencies]
-fastedge = "0.1"
+fastedge = "0.2"
 ```
 #### Step 3. Create a source
 
@@ -103,7 +103,7 @@ Produce the Wasm binary:
 cargo build --release
 ```
 
-The resulting Wasm code will be written to the ```myapp/target/wasm32-wasi/release/myapp.wasm``` file.
+The resulting Wasm code will be written to the ```myapp/target/wasm32-wasip1/release/myapp.wasm``` file.
 
 ### Via JavaScript SDK
 
