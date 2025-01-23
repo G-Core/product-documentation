@@ -86,6 +86,24 @@ To configure a listener:
 
 8\. (Optional) Add allowed CIDR ranges to define which IP addresses can access your content. All IP addresses that don’t belong to the specified range will be denied access. 
 
+To ensure correct operation and avoid misconfigurations, the IP version of Allowed CIDRs must match the IP version of the Load Balancer's Virtual IPs (VIPs).
+
+**Basic Rules:**
+
+* VIPs with both IPv4 and IPv6 support CIDRs of both versions.
+  
+     VIPs: 62.112.222.52 (IPv4), 2a03:90c0:4d6:1::2e8 (IPv6)
+  
+     Allowed CIDRs: 10.0.0.0/8, fe00::/7
+
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-8-edit-listener.png" alt="step 8 cidr validation" width="80%">
+
+* VIPs with only IPv4 → Allow only IPv4 CIDRs.
+
+* VIPs with only IPv6 → Allow only IPv6 CIDRs.
+
+If the provided CIDRs do not match the IP version of the VIP, the API returns a validation error.
+
 9\. (Optional) For HTTP-based listeners, you can configure basic user authentication to protect your resource from unauthorized access. Click **Add users** to enable the authentication:
 
 * **Enter username**: specify a username. 
