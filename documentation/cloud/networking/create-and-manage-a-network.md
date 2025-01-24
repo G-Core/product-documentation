@@ -24,13 +24,18 @@ For Cloud resources, you can configure the following types of networks:
 * **Private network**: This interface is for local internal connections to the server and doesn't have access to the external network. Resources with private interfaces can only be accessed from the same network. However, you can customize their setup and establish internet connectivity.  
 For example, if you add a VM with a private interface to a public Load Balancer, this Virtual Machine will receive requests from the internet. You can configure a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address" target="_blank">Floating IP address</a>. 
 
-* **Public network**: This interface grants access to the external network. Instances with that interface will be available from the internet. 
+* **Public network**: This interface grants access to the external network. Instances with that interface will be available from the internet.
+
+* **Dedicated network**: This network type is designed for individual usage, providing an exclusive pool of addresses for each client. It works with Bare Metal servers and supports assigning multiple public IP addresses to a single server, making it ideal for advanced use cases such as virtualization and traffic balancing. These networks rely on dedicated public subnets, and the number of supported public IPs depending on the size of the assigned subnet. Other customisations are available upon request to meet specific needs. 
 
 ## Create and attach networks to Cloud resources 
 
 You can attach both public and private networks to Virtual Machines, Bare Metal, Load Balancers, and Managed Kubernetes clusters. 
 
 There are two ways to create and attach a network: during resource creation or by adding a network separately and then attaching it to an existing Cloud resource. 
+
+For a Dedicated network, it must first be configured by the support team before it can be selected or used. This network type allows the assignment of multiple public IP addresses to a single server, with the total number of IPs determined by the size of the assigned subnet. Public IPs in a Dedicated Network must be explicitly assigned to the server to function. Unassigned IPs within the subnet will not be operational.
+
 
 ### Attach a network when creating a new Cloud resource 
 
