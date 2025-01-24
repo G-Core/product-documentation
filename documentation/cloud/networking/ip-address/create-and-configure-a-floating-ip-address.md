@@ -37,6 +37,8 @@ Another method for providing access is by creating a public interface for the de
 
 When you reserve a floating IP and assign it to your Virtual Machine, the router directs incoming traffic to your device by forwarding packets intended for that IP. Outgoing traffic from your device will then be sent using the floating IP as the source.
 
+If your instance has multiple private IPv4 addresses within a routable private subnet, you can assign a unique floating IP to each of these private addresses. Multiple private subnets from one network can be grouped to a single port, allowing the client to attach a Floating IP to any of the routable addresses.
+
 ## Check if your subnet is routable
 
 1\. Open the **Networking** section, select the required network, and navigate to your equipment's subnet settings. 
