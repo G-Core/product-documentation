@@ -93,7 +93,9 @@ If you previously <a href="https://gcore.com/docs/cloud/networking/create-and-ma
 
 * **Public network**. Ensure that the region where you’re creating a Bare Metal supports IPv6.  
 
-* **Private network**. If your Bare Metal server is only connected to a private network, you need to configure and add both IPv4 and IPv6 private subnets. 
+* **Private network**. If your Bare Metal server is only connected to a private network, you need to configure and add both IPv4 and IPv6 private subnets.
+
+* **Dedicated Network**: It must be pre-configured by the support team and can be selected during server creation. It provides an individual pool of addresses for each client, allowing multiple public IPs to be assigned to a single network port. This setup is ideal for high-traffic applications, workload distribution, or virtualization where each VM requires a unique public IP. Note that this feature supports only statically assigned IPs and requires proper planning and coordination with the support team.
 
 If you don’t meet these prerequisites, the IPv6 dual-stack option won’t appear in the network settings. 
 
