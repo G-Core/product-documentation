@@ -98,11 +98,10 @@ To ensure correct operation and avoid misconfigurations, the IP version of Allow
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-8-edit-listener.png" alt="step 8 cidr validation" width="80%">
 
-* VIPs with only IPv4 → Allow only IPv4 CIDRs.
+* VIPs with only IPv4 allow only IPv4 CIDRs
+* VIPs with only IPv6 allow only IPv6 CIDRs
 
-* VIPs with only IPv6 → Allow only IPv6 CIDRs.
-
-If the provided CIDRs do not match the IP version of the VIP, the API returns a validation error.
+If the provided CIDRs do not match the VIP's IP version, the API will return a validation error.
 
 9\. (Optional) For HTTP-based listeners, you can configure basic user authentication to protect your resource from unauthorized access. Click **Add users** to enable the authentication:
 
