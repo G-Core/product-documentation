@@ -87,13 +87,9 @@ Acceptable CIDR ranges for IPv4 addresses are as follows:
   
 The valid subnet mask range is 16-29. 
 
-## Gateway IP Validation
+## Gateway IP validation
 
-The gateway IP address must belong to the defined CIDR range of the subnetwork. 
-
-For example, if the CIDR is 192.168.0.0/24, the gateway IP must be within the 192.168.0.0 - 192.168.0.255 range. 
-
-Validation ensures proper configuration and prevents errors during creation or updates.
+Validation ensures proper configuration and prevents errors during creation or updates. The gateway IP address must belong to the defined CIDR range of the subnetwork. For example, if the CIDR is 192.168.0.0/24, the gateway IP must be within the 192.168.0.0 - 192.168.0.255 range. 
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/gateway_ip_validation_error.png" alt="Gateway ip validation error" width="80%">
 
