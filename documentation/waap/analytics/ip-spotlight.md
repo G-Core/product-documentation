@@ -3,8 +3,6 @@ title: ip-spotlight
 displayName: IP Spotlight
 published: false
 order: 20
-pageTitle: Use system-generated analytics to get detailed information about a specific IP address | Gcore
-pageDescription: Learn how to use Gcore WAAP’s IP Spotlight feature for your domain protection.
 toc:
    --1-- Analyze an IP: "analyze-an-ip"
    --1-- Inspect global and domain activity: "inspect-global-and-domain-activity"
@@ -20,8 +18,9 @@ toc:
    --3-- Top 10 visited URLs: "top-10-visited-urls"
    --3-- Top 10 sessions: "top-10-sessions"
    --3-- Top 10 user agents: "top-10-user-agents"
+pageTitle: Use system-generated analytics to get detailed information about a specific IP address | Gcore
+pageDescription: Learn how to use Gcore WAAP’s IP Spotlight feature for your domain protection.
 ---
-
 # IP Spotlight
 
 IP Spotlight is a threat analytics tool that provides detailed information about a specific IP address.
