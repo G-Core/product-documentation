@@ -5,6 +5,21 @@ published: false
 order: 20
 pageTitle: Use system-generated analytics to get detailed information about a specific IP address | Gcore
 pageDescription: Learn how to use Gcore WAAP’s IP Spotlight feature for your domain protection.
+toc:
+   --1-- Analyze an IP: "analyze-an-ip"
+   --1-- Inspect global and domain activity: "inspect-global-and-domain-activity"
+   --2-- Global activity: "global-activity"
+   --3-- IP threat summary: "ip-threat-summary"
+   --3-- IP risk assessment: "ip-risk-assessment"
+   --3-- WhoIs: "whois"
+   --3-- Top 10 attack targets: "top-10-attack-targets"
+   --3-- Attack distribution over time: "attack-distribution-over-time"
+   --2-- Domain activity: "domain-activity"
+   --3-- Overview: "overview"
+   --3-- Top 10 triggered policies: "top-10-triggered-policies"
+   --3-- Top 10 visited URLs: "top-10-visited-urls"
+   --3-- Top 10 sessions: "top-10-sessions"
+   --3-- Top 10 user agents: "top-10-user-agents"
 ---
 
 # IP Spotlight
