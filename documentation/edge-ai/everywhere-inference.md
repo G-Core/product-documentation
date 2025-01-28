@@ -1,19 +1,19 @@
 ---
-title: inference-at-the-edge
-displayName: Inference at the Edge
+title: everywhere-inference
+displayName: Everywhere Inference
 order: 10
 published: true
 toc:
-   --1--What is Inference at the Edge?: "what-is-gcore-inference-at-the-edge"
+   --1--What is Everywhere Inference?: "what-is-gcore-everywhere-inference"
    --1--Getting started: "getting-started"
-   --1--How Inference at the Edge works: "how-inference-at-the-edge-works"
+   --1--How Everywhere Inference works: "how-everywhere-inference-works"
    --1--Use cases: "use-cases"
    --1--Key benefits: "key-benefits"
    --1--Supported features: "supported-features"
-pageTitle: About Inference at the Edge | Gcore
-pageDescription: Explore Gcore Inference at the Edge infrastructure. Deploy custom AI models or select from our model catalog.
+pageTitle: About Everywhere Inference | Gcore
+pageDescription: Explore Gcore Everywhere Inference infrastructure. Deploy custom AI models or select from our model catalog.
 ---
-# About Inference at the Edge
+# About Everywhere Inference
 
 The development of machine learning involves two main stages: training and inference.
 
@@ -21,11 +21,11 @@ In the first stage, an AI model is trained on big data, like an array of images,
 
 The second stage is model inference, where the model is used to make predictions from real user requests. For this stage, it’s crucial that the AI model can respond promptly to users regardless of network delays, latency, and distance from data centers.
 
-<a href="https://gcore.com/docs/cloud/ai-Infrustructure/about-our-ai-infrastructure" target="_blank">Gcore GPU Cloud</a> is designed for creating and training models. For inference, we offer Gcore Inference at the Edge.
+<a href="https://gcore.com/docs/cloud/ai-Infrustructure/about-our-ai-infrastructure" target="_blank">Gcore GPU Cloud</a> is designed for creating and training models. For inference, we offer Gcore Everywhere Inference.
 
-## What is Gcore Inference at the Edge?
+## What is Gcore Everywhere Inference?
 
-Gcore Inference at the Edge allows customers to deploy trained AI models on edge inference nodes. By bringing AI models closer to end users, the technology ensures ultra-fast response times and optimized performance.
+Gcore Everywhere Inference allows customers to deploy trained AI models on edge inference nodes. By bringing AI models closer to end users, the technology ensures ultra-fast response times and optimized performance.
 
 Using Anycast endpoints, end users' queries are directed to the nearest running model, resulting in low latency and an enhanced user experience. This setup is automated through a single endpoint, relieving you of the need to manage, scale, and monitor the underlying infrastructure.
 
@@ -33,11 +33,11 @@ Using Anycast endpoints, end users' queries are directed to the nearest running 
 
 Deploy AI models with our global intelligence pipeline—a comprehensive ecosystem that supports the full AI lifecycle, from training to inference. It ensures seamless development, deployment, and operation of AI models at various scales across multiple regions.
 
-To get started, check out our guide on <a href="https://gcore.com/docs/cloud/inference-at-the-edge/deploy-ai-model" target="_blank">deploying a model</a>.
+To get started, check out our guide on <a href="https://gcore.com/docs/cloud/everywhere-inference/deploy-ai-model" target="_blank">deploying a model</a>.
 
-## How Inference at the Edge works
+## How Everywhere Inference works
 
-Inference at the Edge combines two technologies:
+Everywhere Inference combines two technologies:
 
 1\. **Edge Network**: Provides low latency via Anycast balancing and smart routing.
 
@@ -45,15 +45,15 @@ Inference at the Edge combines two technologies:
 
 We provide you with an endpoint that can be integrated into your applications. When your users access this endpoint, their requests are delivered to the nearest Edge nodes. This is achieved through Smart Routing technology, which redirects requests to the closest inference region where the trained model is deployed.
 
-<img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/about-inference-at-the-edge/smart-routing-diagram.png" alt="Diagram depicting Smart Routing technology" width="60%">
+<img src="https://assets.gcore.pro/docs/cloud/everywhere-inference/about-everywhere-inference/smart-routing-diagram.png" alt="Diagram depicting Smart Routing technology" width="60%">
 
 We also use <a href="https://gcore.com/docs/dns/dns-failover/about-dns-failover" target="_blank">Healthchecks</a> to monitor the availability of pods. If the Amsterdam-1 pod is experiencing downtime, the request will be automatically sent to the geographically closest inference region, such as Amsterdam-2.
 
-<img src="https://assets.gcore.pro/docs/cloud/inference-at-the-edge/about-inference-at-the-edge/smart-routing-map.png" alt="<Map depicting Smart Routing across locations" width="60%">
+<img src="https://assets.gcore.pro/docs/cloud/everywhere-inference/about-everywhere-inference/smart-routing-map.png" alt="<Map depicting Smart Routing across locations" width="60%">
 
 ## Use cases
 
-Inference at the Edge is a versatile solution for businesses that require low-latency or real-time model responses. It caters to various industries, including:
+Everywhere Inference is a versatile solution for businesses that require low-latency or real-time model responses. It caters to various industries, including:
 
 * **Fintech and banking**: Enables prompt anti-fraud detection and real-time credit scoring.
 
@@ -69,13 +69,13 @@ Inference at the Edge is a versatile solution for businesses that require low-la
 
 ## Key benefits
 
-Inference at the Edge offers several key benefits:
+Everywhere Inference offers several key benefits:
 
-* **Low latency**: With over 180 points of presence worldwide, requests are transferred quickly to the nearest Inference at the Edge pod, ensuring low latency for users.
+* **Low latency**: With over 180 points of presence worldwide, requests are transferred quickly to the nearest Everywhere Inference pod, ensuring low latency for users.
 
-* **Flexibility in model selection**. Run leading open-source models from our <a href="https://gcore.com/docs/cloud/inference-at-the-edge#ai-models" target="_blank">model catalog</a> or deploy your own custom models.
+* **Flexibility in model selection**. Run leading open-source models from our <a href="https://gcore.com/docs/cloud/everywhere-inference#ai-models" target="_blank">model catalog</a> or deploy your own custom models.
 
-* **High performance**: Utilizing the latest, purpose-built NVIDIA GPU hardware, Inference at the Edge delivers fast model inference capable of handling the most demanding workloads.
+* **High performance**: Utilizing the latest, purpose-built NVIDIA GPU hardware, Everywhere Inference delivers fast model inference capable of handling the most demanding workloads.
 
 * **Cost efficiency**: Payments are based solely on the runtime of the containers, which automatically scale in and out based on the number of user requests to keep your operations cost-effective.
 
