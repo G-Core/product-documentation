@@ -1,7 +1,7 @@
 ---
 title: ip-spotlight
 displayName: IP Spotlight
-published: false
+published: true
 order: 20
 toc:
    --1-- Analyze an IP: "analyze-an-ip"
