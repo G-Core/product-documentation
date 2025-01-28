@@ -86,4 +86,4 @@ The following steps demonstrate how to build, tag, and push a <a href="https://d
 
 ## Step 4. Deploy the model
 
-After you’ve built and pushed a Docker image with your AI model, <a href="https://gcore.com/docs/cloud/inference-at-the-edge/deploy-ai-model" target="_blank">deploy it on edge inference nodes</a> in the Gcore Customer Portal.
+After you’ve built and pushed a Docker image with your AI model, <a href="https://gcore.com/docs/cloud/everywhere-inference/deploy-ai-model" target="_blank">deploy it on edge inference nodes</a> in the Gcore Customer Portal.
