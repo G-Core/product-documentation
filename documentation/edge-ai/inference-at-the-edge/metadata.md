@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: Inference at the Edge
+displayName: Everywhere Inference
 published: true
 order: 105
 ---
