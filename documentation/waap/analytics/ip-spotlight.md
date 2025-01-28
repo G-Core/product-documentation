@@ -28,7 +28,7 @@ IP Spotlight is a threat analytics tool that provides detailed information about
 It operates on the IP-related information we collect from our network to give you insights about the clients that access your domains. This information helps you make better decisions when creating WAF rules and helps with policy configuration to prevent and mitigate attacks.
 
 <alert-element type="info" title="Info">
-The IP Spotlight feature is available on the [Enterprise plan](https://gcorelu.sharepoint.com/:w:/r/sites/technical_writers/_layouts/15/Doc.aspx?sourcedoc=%7BB1815DC7-5466-4D18-A09B-36D928B69808%7D). To enable it for your domain, contact our support team.
+The IP Spotlight feature is available on the <a href="https://gcorelu.sharepoint.com/:w:/r/sites/technical_writers/_layouts/15/Doc.aspx?sourcedoc=%7BB1815DC7-5466-4D18-A09B-36D928B69808%7D">Enterprise plan</a>. To enable it for your domain, contact our support team.
 </alert-element>
 
 ## Analyze an IP
@@ -84,7 +84,7 @@ We query multiple external and internal databases to retrieve and store informat
 The High and Extreme risk scores are typically assigned to addresses that exist on external block lists, participate in DDoS attacks, or make a higher number of requests than usual.
 
 <alert-element type="info" title="Info">
-If the IP is no longer associated with malicious activity, its score might decrease from extreme to **Low** or even **No risk** over time.
+If the IP is no longer associated with malicious activity, its score might decrease from extreme to <strong>Low</strong> or even <strong>No risk</strong> over time.
 </alert-element>
 
 #### WhoIs
