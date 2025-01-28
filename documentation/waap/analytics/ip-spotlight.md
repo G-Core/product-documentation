@@ -28,7 +28,7 @@ IP Spotlight is a threat analytics tool that provides detailed information about
 It operates on the IP-related information we collect from our network to give you insights about the clients that access your domains. This information helps you make better decisions when creating WAF rules and helps with policy configuration to prevent and mitigate attacks.
 
 <alert-element type="info" title="Info">
-The IP Spotlight feature is available on the <a href="https://gcorelu.sharepoint.com/:w:/r/sites/technical_writers/_layouts/15/Doc.aspx?sourcedoc=%7BB1815DC7-5466-4D18-A09B-36D928B69808%7D">Enterprise plan</a>. To enable it for your domain, contact our support team.
+The IP Spotlight feature is available on the <a href="https://gcore.com/docs/waap/billing">Enterprise plan</a>. To enable it for your domain, contact our support team.
 </alert-element>
 
 ## Analyze an IP
