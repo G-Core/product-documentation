@@ -5,23 +5,26 @@ published: true
 order: 40
 toc:
 pageTitle: About Secure Transit | Gcore
-pageDescription: Learn about the Secure Transit feature that provides DDoS protection and helps optimize your data flow.
+pageDescription: Learn about Secure Transit, a feature that provides advanced DDoS protection and optimizes data flow for improved network performance.
 ---
 # Secure Transit
 
-Secure Transit is a network traffic management and security solution designed to optimize data flow while providing DDoS protection. It goes beyond just protecting against DDoS attacks—it also ensures the efficient routing of legitimate traffic, improving network performance by reducing latency. 
+Secure Transit is an advanced network traffic management and security solution that optimizes data flow while delivering robust DDoS protection. It goes beyond just defending against DDoS attacks—it intelligently routes legitimate traffic to enhance network performance, minimize latency, and provide seamless data transmission.
 
-## Key features
+## Key benefits
 
-* **DDoS Protection**. It detects, mitigates, and filters DDoS attacks before they reach your network. This ensures that malicious traffic doesn’t disrupt your services. 
-* **Traffic optimization**. Secure Transit enhances network performance by efficiently routing legitimate traffic through our Gcore network, reducing latency and improving the speed of data delivery. This is crucial for latency-sensitive applications like gaming, real-time communications, and streaming. 
+Secure Transit has two key benefits:
+* **Enhances DDoS Protection:** The feature proactively detects, mitigates, and filters DDoS attacks before they can impact your network. This ensures that malicious traffic is blocked, allowing your services to remain uninterrupted. 
+* **Optimizes traffic routing:** Secure Transit intelligently enhances network performance by efficiently routing legitimate traffic through the Gcore network, reducing latency and accelerating data delivery. This is crucial for latency-sensitive applications such as online gaming, real-time communications, and high-quality streaming.
 
 ## How it works 
 
-We route traffic through Gcore’s global network by anycasting protected network to Internet. It inspects the traffic to filter out malicious activity and ensures that legitimate traffic is delivered with minimal latency, improving performance for users across the globe. 
-
-As we receive your original data packets, we process these packets, encapsulate them with extra headers, and then send the packets back to your origin. Secure Transit uses anycast tunnels to transmit packets from the Gcore’s network to your origin network. 
+Secure Transit uses anycast routing and tunneling technologies to filter out malicious traffic while accelerating legitimate requests. Your traffic is processed as follows:
+- **Traffic diversion:** Incoming traffic is automatically routed through Gcore’s global anycast network, where it is analyzed in real time.
+- **Threat detection and mitigation:** Secure Transit identifies and filters DDoS attacks and other malicious activity, blocking threats before they reach your infrastructure.
+- **Performance optimization:** Legitimate traffic is intelligently routed through the optimal path within Gcore’s high-performance backbone, reducing latency and ensuring seamless data transmission.
+- **Secure tunneling to your network:** Once filtered and optimized, traffic is securely forwarded to your origin using GRE (Generic Routing Encapsulation) or other tunneling protocols, ensuring a smooth, uninterrupted connection.
 
 ## Getting started 
 
-Check the <a href="https://gcore.com/docs/ddos-protection/secure-transit/configure-secure-transit" target="_blank">Configure your infrastructure for Secure Transit</a> guide for details instructions on how to use the feature. 
+Check out our guide on <a href="https://gcore.com/docs/ddos-protection/secure-transit/configure-secure-transit" target="_blank">configuring your infrastructure for Secure Transit</a> guide for detailed instructions on how to use this feature. 
