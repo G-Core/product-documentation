@@ -1,30 +1,72 @@
 ---
 title: upload-a-pkcs12-file
-displayName: Upload a PKCS12 file
+displayName: Configure Secrets for HTTPS Load Balancer
 published: true
 toc:
+   --1--Configure Secrets for HTTPS Load Balancer: "upload-or-add-a-secret-for-https-load-balancer"
+   --2--Upload a PKCS12 File: "upload-a-pkcs12-file"
+   --2--Add certificates directly: "add-certificates-directly"
    --1--What PKCS12 file is: "what-pkcs12-file-is"
    --1--How to create a PKCS12 file: "how-to-create-a-pkcs12-file"
    --2--1. Prepare certificate files: "1-prepare-certificate-files"
    --2--2. Merge certificate files into PKCS12: "2-merge-certificate-files-into-pkcs12"
    --2--3. Base64 encode: "3-base64-encode"
    --1--How to create a Load Balancer with an HTTPS listener: "how-to-create-a-load-balancer-with-an-https-listener"
-pageTitle: Upload a PKCS12 file | Gcore
-pageDescription: Learn how to upload PKCS12 files (SSL/TLS certificates) to Secrets Manager for creating Load Balancers with HTTPS listeners. 
+pageTitle: Configure Secrets for HTTPS Load Balancer | Gcore
+pageDescription: Learn how to upload or add PKCS12 files (SSL/TLS certificates) to Secrets Manager for creating Load Balancers with HTTPS listeners. 
 ---
-# Upload a PKCS12 file
 
-Secrets Manager is a tab where you can upload PKCS12 files (called secrets in the system) to. They are needed to create Load Balancers with HTTPS listeners.
+# Configure Secrets for HTTPS Load Balancer
 
-To add a secret to the Secrets Manager:
+**Secrets Manager** is a dedicated tab where you can manage SSL/TLS secrets required to create Load Balancers with HTTPS listeners. Depending on your setup, you can either upload a PKCS12 file or add certificate details manually.
 
-1\. In the Gcore Customer Portal, navigate to **Cloud**.
+## Upload a PKCS12 File
 
-2\. Open the **Secrets Manager** page.
+If you already have a PKCS12 file containing your SSL/TLS certificate, certificate chain, and private key, you can quickly upload it to the Secrets Manager.
 
-3\. Click **Create Secret**.
+To upload a secret as a PKCS12 file:
+
+1. In the Gcore Customer Portal, navigate to Cloud.
+
+2. Open the **Secrets Manager** page.
+
+3. Click **Create Secret**.
 
 <img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/secrets-manager-page.png" alt="Upload a PKCS12 file" width="80%">
+
+4. Enable Upload as **PKCS12 file**.
+
+<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/upload-as-pkcs12-file.png" alt="Enable Upload as PKCS12 file" width="80%">
+
+6. Enter a name for your secret and choose your file
+
+7. Click **Save**.
+
+## Add certificates directly
+
+If you don't have a PKCS12 file or prefer to add the certificate details individually, you can enter them directly in the Secrets Manager.
+
+To add a secret manually:
+
+1. In the Gcore Customer Portal, navigate to Cloud.
+
+2. Open the Secrets Manager page.
+
+3. Click Create Secret.
+
+<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/add-certificates-directly.png" alt="Add certificates directly" width="80%">
+
+4. In the form that opens, fill in the following fields:
+
+    - Name: Enter a name for your secret to identify it later.
+
+    - Private Key: Paste the content of your private key file.
+
+    - Certificate: Paste the content of your main SSL/TLS certificate file.
+
+    - Certificate Chain (optional): If required, paste the content of the certificate chain file. This should include root and intermediate certificates in the correct order.
+
+5. Click **Save**.
 
 ## What PKCS12 file is 
 
@@ -132,30 +174,12 @@ If your file is named "server.p12" and you want to name the new file "code64" th
 
 A new code64 file with the contents of the base64 encoded PKCS12 file will be created. This is the content of the Secret. The file can be opened using the command: nano code64.
 
-## How to Create a Load Balancer with an HTTPS Listener
+## How to create a Load Balancer with an HTTPS Listener
 
 <alert-element type="info" title="Info">
  
-You can’t delete a secret that’s being used by a Load Balancer’s listener. This restriction is necessary to ensure that a Load Balancer can failover successfully when needed. 
-
-In such cases, you first need to delete a listener that uses the secret and then remove the secret, recreating a listener if needed. 
+You cannot delete a secret that is currently used by a Load Balancer’s listener. To remove a secret, first delete the associated listener, then remove the secret. If needed, recreate the listener afterward. 
  
 </alert-element>
 
-1\. Add the base64 encoded content of the PKCS12 file as a Secret (in examples above it is the content of "code64").  
-
-<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/create-secret.png" alt="How to Create a Load Balancer with an HTTPS Listener" width="80%">
-
-2\. Give your secret a name and add its content.
-
-<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/image4.png" alt="How to Create a Load Balancer with an HTTPS Listener" width="80%">
-
-3\. When creating or editing a Load Balancer, click **Add Listener**. 
-
-<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/add-listener.png" alt="Add Listener" width="80%">
-
-4\. Enter the name of a new listener, select the **Terminated HTTPS** protocol, and then select the desired secret from the **SNI Certificate** dropdown.  
-
-<img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/select-certificate-in-listener.png" alt="Add Listener" width="80%">
-
-You've successfully created a listener with a secret.
+For detailed instructions on configuring a Load Balancer with an HTTPS listener, including adding TLS certificates, follow <a href="https://gcore.com/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer" target="_blank"> Add TLS certificates to a Load Balancer</a> guide.
