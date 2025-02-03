@@ -210,10 +210,11 @@ If the recommended parameters do not suit your stream (codecs, custom FPS, ProRe
 
 ## Multiple ingesting points
 
-To ensure smoother and more reliable streaming, we offer entry servers in key regions, including Luxembourg, Ashburn, Miami, and Singapore. By connecting your streaming equipment to the nearest upload server, you can minimize latency and improve performance before the stream is distributed globally through our CDN.
+For smoother and more reliable streaming, we offer entry servers in key regions including Luxembourg, Ashburn, Miami, and Singapore. By connecting your streaming equipment to the nearest upload server, you can minimize latency and improve performance before the stream is distributed globally through our CDN.
 
-If your streams originate from multiple locations worldwide, this feature becomes especially valuable. You can specify preferred upload servers and the number of streams per region. With this information, our team will configure your account to match your streaming setup. Reach out to our support team or your account manager for setup assistance or additional details.
+This feature is especially valuable if your streams originate from multiple locations worldwide. You can specify preferred upload servers and the number of streams per region. Our team will then configure your account to match your streaming setup.
 
+[Reach out to our support team]([url](https://gcore.com/contact-us)) or your account manager for setup assistance or additional details.
 
 ## RTMP, RTMPS, and SRT for live streaming
 
