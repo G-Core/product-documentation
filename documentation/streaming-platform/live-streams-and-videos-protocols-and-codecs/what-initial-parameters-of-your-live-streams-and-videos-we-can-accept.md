@@ -6,6 +6,7 @@ order: 10
 toc:
    --1--Supported parameters: "supported-parameters"
    --1--Recommended parameters: "recommended-stream-parameters"
+   --1--Multiple ingesting points: "multiple-ingesting-points"
    --1--RTMP, RTMPS, and SRT: "rtmp-rtmps-and-srt-for-live-streaming"
    --1--RTMPS troubleshooting: "rtmps-troubleshooting"
 pageTitle: Guide to Gcore Streaming Parameters | Gcore
@@ -206,6 +207,14 @@ We recommend the following parameters for streams:
 </table>
 
 If the recommended parameters do not suit your stream (codecs, custom FPS, ProRes, High 4:4:4, Enhanced RTMP, etc.), write to us in the chat, send an email to [support@gcore.com](mailto:support@gcore.com), or contact your manager to find the solution.
+
+## Multiple ingesting points
+
+For smoother and more reliable streaming, we offer entry servers in key regions including Luxembourg, Ashburn, Miami, and Singapore. By connecting your streaming equipment to the nearest upload server, you can minimize latency and improve performance before the stream is distributed globally through our CDN.
+
+This feature is especially valuable if your streams originate from multiple locations worldwide. You can specify preferred upload servers and the number of streams per region. Our team will then configure your account to match your streaming setup.
+
+[Reach out to our support team]([url](https://gcore.com/contact-us)) or your account manager for setup assistance or additional details.
 
 ## RTMP, RTMPS, and SRT for live streaming
 
