@@ -60,7 +60,36 @@ Select a network, public or private, and enable additional features:
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-3-lb.png" alt="Select public or private network option" width="70%">
 
-## Step 5. Configure listeners 
+## Step 5. Configure preferred connectivity
+
+You can choose between **L2 (Layer 2)** and **L3 (Layer 3)** connectivity. This setting determines the preferred connectivity method the Load Balancer uses to connect to backend pool members. If the **preferred connectivity** is not feasible, traffic will automatically route via the alternative method:
+
+**L2 (preferred) → (if not possible) L3 → (if not possible) Validation Error**
+
+**L3 (preferred) → (if not possible) L2 → (if not possible) Validation Error**
+
+The Load Balancer determines available routes only by evaluating subnet host routes. Due to current system limitations, it does not take router `host_routes` into account.
+
+**Layer 2**
+
+**L2 connectivity** offers better performance because traffic flows directly between the Load Balancer and pool members without passing through a router. This reduces network hops and minimizes latency.
+
+However, this approach requires more IP addresses. In networks with many `/24` subnets, each Load Balancer must create ports in every subnet where its members are located. This can lead to high IP utilization and reduced efficiency in large-scale deployments.
+
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-5-preferred-connectivity.png" alt="Select Layer 2 connectivity option" width="80%">
+
+**Layer 3** 
+
+**L3 connectivity** routes traffic through a router or gateway, introducing additional network hops that may slightly impact performance.
+
+It also optimizes IP address utilization by reducing the number of required IPs per Load Balancer. Instead of allocating a separate IP in every subnet, the Load Balancer communicates with pool members across subnets using routing mechanisms. This approach improves scalability and efficiency, especially in environments with multiple subnets.
+
+**Recommendation:**
+
+For most cases, such as a single subnet setup, use **L2 connectivity** for optimal performance. If your deployment involves multiple subnets or complex networking requirements, contact support to determine the best configuration.
+
+
+## Step 6. Configure listeners 
 
 ### Listener
 
@@ -169,29 +198,29 @@ Specify client data, member connect and member data timeouts in msec.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-timeouts-lb.png" alt="Configure timeouts" width="65%">
 
-## Step 6. Enter the name
+## Step 7. Enter the name
 
 Enter a name for the Load Balancer. It will be displayed in the Customer Portal.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-6-lb.png" alt="Enter Load Banalcer name" width="65%">
 
-## Step 7. (Optional) Enable Logging
+## Step 8. (Optional) Enable Logging
 
 The Logging service will be activated to store your logs. To learn how it works and how to configure it, refer to the article about <a href="https://gcore.com/docs/cloud/logging-as-a-service/about-logging-as-a-service" target="_blank">Logging</a>.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-7-lb.png" alt="Configure Logging" width="65%">
 
-## Step 8. (Optional) Add tags
+## Step 9. (Optional) Add tags
 
 Create tags for your load balancer by entering "Key" and "Valu."
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-8-lb.png" alt="Configure tags" width="65%"> 
 
-## Step 9. Finalize creation
+## Step 10. Finalize creation
 
 Check the settings and click **Create Load Balancer** on the right. 
 
-## Step 10. Configure firewall
+## Step 11. Configure firewall
 
 Configure firewalls for Virtual Machines in the pool according to the <a href="https://gcore.com/docs/cloud/networking/add-and-configure-a-firewall" target="_blank">separate guide</a>.
 
