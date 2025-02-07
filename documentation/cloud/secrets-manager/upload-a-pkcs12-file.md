@@ -6,7 +6,6 @@ toc:
    --1--Configure Secrets for HTTPS Load Balancer: "upload-or-add-a-secret-for-https-load-balancer"
    --2--Upload a PKCS12 File: "upload-a-pkcs12-file"
    --2--Add certificates directly: "add-certificates-directly"
-   --1--What PKCS12 file is: "what-pkcs12-file-is"
    --1--How to create a PKCS12 file: "how-to-create-a-pkcs12-file"
    --2--1. Prepare certificate files: "1-prepare-certificate-files"
    --2--2. Merge certificate files into PKCS12: "2-merge-certificate-files-into-pkcs12"
@@ -18,7 +17,7 @@ pageDescription: Learn how to upload or add PKCS12 files (SSL/TLS certificates) 
 
 # Configure Secrets for HTTPS Load Balancer
 
-**Secrets Manager** is a dedicated tab where you can manage SSL/TLS secrets required to create Load Balancers with HTTPS listeners. Depending on your setup, you can either upload a PKCS12 file or add certificate details manually.
+Secrets Manager is a dedicated tab where you can manage SSL/TLS secrets required to create Load Balancers with HTTPS listeners. Depending on your setup, you can either upload a PKCS12 file or add certificate details manually.
 
 ## Upload a PKCS12 File
 
@@ -34,11 +33,11 @@ To upload a secret as a PKCS12 file:
 
 <img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/secrets-manager-page.png" alt="Upload a PKCS12 file" width="80%">
 
-4. Enable Upload as **PKCS12 file**.
+4. Enable **Upload as PKCS12 file**.
 
 <img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/upload-as-pkcs12-file.png" alt="Enable Upload as PKCS12 file" width="80%">
 
-6. Enter a name for your secret and choose your file
+6. Enter a name for your secret and choose your file.
 
 7. Click **Save**.
 
@@ -50,25 +49,21 @@ To add a secret manually:
 
 1. In the Gcore Customer Portal, navigate to Cloud.
 
-2. Open the Secrets Manager page.
+2. Open the **Secrets Manager** page.
 
-3. Click Create Secret.
+3. Click **Create Secret**.
 
 <img src="https://assets.gcore.pro/docs/cloud/secrets-manager/upload-a-pkcs12-file/add-certificates-directly.png" alt="Add certificates directly" width="80%">
 
 4. In the form that opens, fill in the following fields:
-
-    - Name: Enter a name for your secret to identify it later.
-
-    - Private Key: Paste the content of your private key file.
-
-    - Certificate: Paste the content of your main SSL/TLS certificate file.
-
-    - Certificate Chain (optional): If required, paste the content of the certificate chain file. This should include root and intermediate certificates in the correct order.
+    - Enter a name for your secret.
+    - Paste the content of your private key file.
+    - Paste the content of your main SSL/TLS certificate file.
+    - If required, paste the content of the certificate chain file. This should include root and intermediate certificates in the correct order.
 
 5. Click **Save**.
 
-## What PKCS12 file is 
+## Create a PKCS12 file
 
 PKCS12 (Public-Key Cryptography Standards) is a binary format for storing SSL/TLS certificate, certificate chain, and private key in one encrypted file.
 
@@ -79,8 +74,6 @@ Basically, you "pack" the main SSL/TLS certificate, the certificate chain, and t
 - The private key is a unique set of letters and numbers (key), using which the cryptographic algorithm will encrypt all data exchanged between the resource and a user.
 
 After receiving the PKCS12 file, our system will be able to open an HTTPS connection. You only need to put the files associated with the certificate in base64 encoded PKCS12 file and upload it to the Secrets Manager.
-
-## How to create a PKCS12 file
 
 ### 1\. Prepare certificate files
 
@@ -182,4 +175,4 @@ You cannot delete a secret that is currently used by a Load Balancer’s listene
  
 </alert-element>
 
-For detailed instructions on configuring a Load Balancer with an HTTPS listener, including adding TLS certificates, follow <a href="https://gcore.com/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer" target="_blank"> Add TLS certificates to a Load Balancer</a> guide.
+For detailed instructions on configuring a Load Balancer with an HTTPS listener, including adding TLS certificates, refer to the documentation on <a href="https://gcore.com/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer" target="_blank">adding TLS certificates to a Load Balancer</a>.
