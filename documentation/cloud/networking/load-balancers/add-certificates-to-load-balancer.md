@@ -30,7 +30,7 @@ You can add multiple certificates to listeners that use the Terminated HTTPS and
 
 ### 1. Add certificates to the Secrets Manager 
 
-To get started, you need to add the required certificates to Gcore Secrets Manager. If you don’t have any certificates created, follow the instructions from this guide: <a href="https://gcore.com/docs/cloud/secrets-manager/upload-a-pkcs12-file" target="_blank">Upload a PKCS12 file</a>. 
+To get started, you need to add the required certificates to Gcore Secrets Manager. If you don’t have any certificates created, To get started, you need to add the required certificates to Gcore Secrets Manager. If you don’t have any certificates created, follow the instructions from our <a href="https://gcore.com/docs/cloud/secrets-manager/upload-a-pkcs12-file" target="_blank">guide on configuring secrets for HTTPS Load Balancers</a>. 
 
 ### 2. Add certificates to a listener 
 
