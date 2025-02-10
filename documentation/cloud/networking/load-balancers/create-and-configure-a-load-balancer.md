@@ -62,7 +62,7 @@ Select a network, public or private, and enable additional features:
 
 ## Step 5. Configure preferred connectivity
 
-You can choose between **L2 (Layer 2)** and **L3 (Layer 3)** connectivity. This setting determines the preferred connectivity method the Load Balancer uses to connect to backend pool members. If the **preferred connectivity** is not feasible, traffic will automatically route via the alternative method:
+You can choose between L2 (Layer 2) and L3 (Layer 3) connectivity. This setting determines the preferred connectivity method the Load Balancer uses to connect to backend pool members. If the preferred connectivity is not feasible, traffic will automatically route via the alternative method:
 
 **L2 (preferred) → (if not possible) L3 → (if not possible) Validation Error**
 
@@ -70,24 +70,25 @@ You can choose between **L2 (Layer 2)** and **L3 (Layer 3)** connectivity. This 
 
 The Load Balancer determines available routes only by evaluating subnet host routes. Due to current system limitations, it does not take router `host_routes` into account.
 
-**Layer 2**
+### Layer 2
 
-**L2 connectivity** offers better performance because traffic flows directly between the Load Balancer and pool members without passing through a router. This reduces network hops and minimizes latency.
+L2 connectivity offers better performance because traffic flows directly between the Load Balancer and pool members without passing through a router. This reduces network hops and minimizes latency.
 
 However, this approach requires more IP addresses. In networks with many `/24` subnets, each Load Balancer must create ports in every subnet where its members are located. This can lead to high IP utilization and reduced efficiency in large-scale deployments.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-5-preferred-connectivity.png" alt="Select Layer 2 connectivity option" width="80%">
 
-**Layer 3** 
+### Layer 3
 
-**L3 connectivity** routes traffic through a router or gateway, introducing additional network hops that may slightly impact performance.
+L3 connectivity routes traffic through a router or gateway, introducing additional network hops that may slightly impact performance.
 
 It also optimizes IP address utilization by reducing the number of required IPs per Load Balancer. Instead of allocating a separate IP in every subnet, the Load Balancer communicates with pool members across subnets using routing mechanisms. This approach improves scalability and efficiency, especially in environments with multiple subnets.
 
-**Recommendation:**
-
+<alert-element type="tip" title="Tip">
+ 
 For most cases, such as a single subnet setup, use **L2 connectivity** for optimal performance. If your deployment involves multiple subnets or complex networking requirements, contact support to determine the best configuration.
-
+ 
+</alert-element>
 
 ## Step 6. Configure listeners 
 
