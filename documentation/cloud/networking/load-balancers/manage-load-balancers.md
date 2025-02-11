@@ -98,16 +98,6 @@ The **Overview** page features the following information:
 * **Type**: Network distribution by a Load Balancer—external (public) or private. 
 * **VIPs**: Virtual IP address of a Load Balancer. 
 * **Floating IP**: If you added a Floating IP while creating a Load Balancer, it will appear in this column. 
-* **Custom security group**: Firewall that defines rules for inbound and outbound traffic. By default, the Load Balancer uses the project's <a href="https://gcore.com/docs/cloud/networking/add-and-configure-a-firewall#use-the-default-firewall" target="_blank">default firewall</a> (also known as “security group”). If you want to customize firewall settings, <a href="https://gcore.com/docs/cloud/networking/add-and-configure-a-firewall#create-a-firewall" target="_blank">create a custom security group</a>. 
-
- <alert-element type="info" title="Info">
- 
- The firewall offers flexible network configuration, allowing you to control incoming and outgoing traffic.  
-
- After creating the balancer, update firewall settings and open VM ports so that traffic can easily pass from the balancer and back. 
-
- </alert-element>
-
 * **Operating status**, **Provisioning status**: Check the <a href="https://gcore.com/docs/cloud/networking/load-balancers/manage-load-balancers#statuses-of-a-load-balancer-and-its-components" target="_blank">statuses of Load Balancer and its components</a> for a detailed overview of each one. 
 
 The Load Balancer settings are organized into tabs, each dedicated to a specific functionality. The following sections provide a detailed description of these settings. 
