@@ -67,19 +67,19 @@ The image with your AI model must be built for the x86-64(AMD64) architecture. A
 
 The following steps explain how to build, tag, and publish a [Docker image](https://docs.docker.com/guides/docker-concepts/building-images/build-tag-and-publish-an-image/):
 
-1. If you’re building a Docker image on Apple Silicon machines, use the following command:
+1\. If you’re building a Docker image on Apple Silicon machines, use the following command:
 
 ```
 docker buildx build --platform linux/amd64 instead of docker build
 ```
 
-2. Tag the image:
+2\. Tag the image:
 
 ```
 docker image tag SOURCE_IMAGE\[:TAG\] TARGET_IMAGE\[:TAG\]
 ```
 
-3. Push the image to the registry:
+3\. Push the image to the registry:
 
 ```
 docker push my-username/my-image
