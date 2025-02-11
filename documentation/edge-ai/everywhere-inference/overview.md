@@ -3,9 +3,16 @@ title: everywhere-inference-overview
 displayName: Overview
 published: true
 order: 1
-toc: 
+toc:
+  --1--Getting started: "getting-started"
+  --1--How Everywhere Inference works: "how-everywhere-inference-works"
+  --1--Use cases: "use-cases"
+  --1--Key benefits: "key-benefits"
+  --1--Supported features: "supported-features"
+  --1--Supported VM flavors: "supported-vm-flavors"
+  --1--Supported AI models: "supported-ai-models"
 pageTitle: Everywhere Inference overview | Gcore
-pageDescription: 
+pageDescription: With Gcore Everywhere Inference, you can deploy trained AI models on edge inference nodes.
 ---
 # Everywhere Inference overview
 
