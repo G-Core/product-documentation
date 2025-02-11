@@ -2,7 +2,7 @@
 title: prepare-a-custom-ai-model-for-deployment
 displayName: Prepare a custom AI model for deployment
 published: true
-order: 
+order: 1
 toc:
   --1-- Train, test, and optimize the model for inference: "train-test-and-optimize-the-model-for-inference"
   --1-- Containerize the model: "containerize-the-model"
