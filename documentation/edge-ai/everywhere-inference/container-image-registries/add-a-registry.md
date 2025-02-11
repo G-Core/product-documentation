@@ -42,4 +42,4 @@ The URL for the Huggingface registry is “<https://registry.hf.space”>. You c
 
 After you enter all registry details, click **Add**. Your new registry’s name should appear in the list of registries.
 
-You can now select the registry for a custom AI model deployment. To learn how to deploy a custom AI model, read [our guide](#_15czpyrgqamg).
+You can now select the registry for a custom AI model deployment. To learn how to deploy a custom AI model, read [our guide](https://gcore.com/docs/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model).
