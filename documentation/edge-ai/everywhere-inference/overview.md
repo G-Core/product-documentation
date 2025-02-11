@@ -35,11 +35,11 @@ Everywhere Inference combines two technologies:
 
 We provide you with an endpoint that can be integrated into your applications. When users access this endpoint, their requests are delivered to their nearest edge nodes. This is achieved through Smart Routing technology, which redirects requests to the closest inference region where the trained model is deployed.
 
-<img src="https://assets.gcore.pro/docs/edge-ai/everywhere-inference/everywhere-inference-overview/everywhere-inference-overview-1.png" alt="How Smart Routing works to speed up requests via Gcore Everywhere Inference">
+<img src="https://assets.gcore.pro/docs/edge-ai/everywhere-inference/overview/overview-1.png" alt="How Smart Routing works to speed up requests via Gcore Everywhere Inference">
 
 We also use [Healthchecks](https://gcore.com/docs/dns/dns-failover/about-dns-failover) to monitor pod availability. If a pod in one region experiences downtime, the request will be automatically sent to the next geographically closest inference region.
 
-<img src="https://assets.gcore.pro/docs/edge-ai/everywhere-inference/everywhere-inference-overview/everywhere-inference-overview-2.png" alt="Healthchecks redirects traffic to the next-closest edge node if the closest node is unavailable, via Gcore Everywhere Inference">
+<img src="https://assets.gcore.pro/docs/edge-ai/everywhere-inference/overview/overview-2.png" alt="Healthchecks redirects traffic to the next-closest edge node if the closest node is unavailable, via Gcore Everywhere Inference">
 
 ## Use cases
 
