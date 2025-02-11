@@ -46,4 +46,4 @@ For security reasons, you should set an expiration date for API Keys. The key wi
 
 After entering the API Key details, click the **Create** button. The new API key will appear in the list of API Keys.
 
-You can now select the API key for an AI model deployment. To learn how to deploy a custom AI model, read [the guide](#_15czpyrgqamg).
+You can now select the API key for an AI model deployment. To learn how to deploy a custom AI model, read [the guide](https://gcore.com/docs/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model).
