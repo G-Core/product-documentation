@@ -2,7 +2,7 @@
 title: manage-deployments
 displayName: Manage deployments in the Customer Portal 
 order: 20
-published: true
+published: false
 toc:
   --1--Manage deployments: "manage-deployments"
   --2--Pause deployments: "pause-deployments"
