@@ -21,7 +21,7 @@ pageDescription:
 With Gcore Everywhere Inference, you can use foundational open-source models from our AI model catalog or deploy a custom model by uploading a Docker container image.
 
 <alert-element type="info" title="Info">
-You might have to request a quota increase before deploying a new model; the [Request quota increase guide](#_5vc5aro3zef3) explains this process.
+You might have to request a quota increase before deploying a new model; the [Request quota increase guide](https://gcore.com/docs/edge-ai/everywhere-inference/quotas/request-quota-increase) explains this process.
 </alert-element>
 
 ## Step 1. Initialize a new deployment
@@ -31,6 +31,8 @@ This step will differ slightly depending on whether you deploy a custom model or
 <alert-element type="tip" title="Tip">
 Before you continue, refer to the Prepare a custom model for deployment guide if you want to deploy a custom model to Everywhere Inference.
 </alert-element>
+
+<tabset-element>
 
 ### Initialize a catalog model deployment
 
@@ -68,13 +70,15 @@ Optionally, you can enable the **Set startup command** toggle to define a comman
 
 If you want to deploy a model from a private registry, select the **Private Registry** type, enter the image URL, Docker tag, and the container port where the model will listen.
 
-If you haven’t added a registry to Everywhere Inference yet, click **Add registry**. This will open a dialog where you can define your private registry URL and login credentials. Check out the [registry guide](#_oeaioewg718x) to learn more about creating and managing your registries.
+If you haven’t added a registry to Everywhere Inference yet, click **Add registry**. This will open a dialog where you can define your private registry URL and login credentials. Check out the [registry guide](https://gcore.com/docs/edge-ai/everywhere-inference/container-image-registries/add-a-registry) to learn more about creating and managing your registries.
 
 <img src="https://assets.gcore.pro/docs/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model/deploy-an-ai-model-7.png" alt="Deploy an AI model">
 
 Select the relevant registry from the **Registry** dropdown.
 
 <img src="https://assets.gcore.pro/docs/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model/deploy-an-ai-model-8.png" alt="Deploy an AI model">
+
+</tabset-element>
 
 ## Step 2. Select a pod configuration
 
@@ -142,7 +146,7 @@ If you haven’t created an API key yet or want to use a new key for this deploy
 
 <img src="https://assets.gcore.pro/docs/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model/deploy-an-ai-model-15.png" alt="Deploy an AI model">
 
-After you generate the key, it will appear in the API Keys dropdown. You can then select it to authenticate to the deployment. Check out the [API Keys guide](#_ewqup6nnm04d) for instructions on authenticating with the API key.
+After you generate the key, it will appear in the API Keys dropdown. You can then select it to authenticate to the deployment. Check out the [API Keys guide](https://gcore.com/docs/edge-ai/everywhere-inference/api-keys/manage-api-keys) for instructions on authenticating with the API key.
 
 ## Step 7. Finalize the deployment
 
@@ -151,5 +155,5 @@ Scroll to the top of the page and click **Deploy model** in the top-right corner
 <img src="https://assets.gcore.pro/docs/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model/deploy-an-ai-model-16.png" alt="Deploy an AI model">
 
 <alert-element type="info" title="Info">
-If you don’t see the Deploy model button, add billing information to your account or create a [quota change request](#_5vc5aro3zef3).
+If you don’t see the Deploy model button, add billing information to your account or create a [quota change request](https://gcore.com/docs/edge-ai/everywhere-inference/quotas/request-quota-increase).
 </alert-element>
