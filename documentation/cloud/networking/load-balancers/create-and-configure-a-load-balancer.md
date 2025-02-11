@@ -200,7 +200,3 @@ Make sure their ports are open for the Load Balancer traffic:
 - If a Load Balancer and Virtual Machines are in a **public network,** set a rule to receive and transmit traffic to the balancer's IP address (specified in the menu) in firewalls settings of the VM.
 - If a Load Balancer and Virtual Machines are in a **private subnetwork,** set a rule to receive and transmit traffic to the entire private subnetwork or to the balancer's IP address (specified in the menu).
 - If a Load Balancer is in a **public network** and Virtual Machine are in a **private subnetwork**, set a rule to receive and transmit traffic to the entire private subnetwork or to the balancer's internal IP address (send a request to the technical support).
-
-In the Load Balancers section, open the created balancer and click **Create** or **Edit** a custom security group (this is the firewall) and edit it: configure the rules for inbound and outbound traffic.
-
-<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/firewall-lb.png" alt="Create a custom security group also known as a firewall">
