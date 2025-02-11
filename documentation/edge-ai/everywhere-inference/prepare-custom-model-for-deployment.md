@@ -2,7 +2,7 @@
 title: prepare-custom-model-for-deployment
 displayName: Prepare a custom model for deployment
 order: 5
-published: true
+published: false
 toc:
 --1-- Ensure a model is trained and optimized: "step-1-ensure-your-model-is-trained-and-optimized-for-inference"
 --1--Step 2. Containerize a model: "step-2-containerize-a-model"
