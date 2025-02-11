@@ -125,4 +125,4 @@ You can change the image by entering a new **Model image URL** and clicking **Sa
 
 If you want to switch to a private registry, you must add it to the Registry section before you switch the Registry type; otherwise, it will not appear in the Registry dropdown.
 
-Check out our [registry guide](#_52cfozqgibz7) to learn more about creating and managing private AI image registries.
+Check out our [registry guide](https://gcore.com/docs/edge-ai/everywhere-inference/container-image-registries/manage-registries) to learn more about creating and managing private AI image registries.
