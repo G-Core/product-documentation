@@ -21,7 +21,7 @@ Check out [our API docs](https://api.gcore.com/docs/cloud#tag/GPU-Cloud) if you 
 
 The second stage of AI is [model inference](https://gcore.com/learning/what-is-ai-inference/), where the model makes predictions based on user requests. In this stage, it’s crucial that the AI model can respond promptly to users regardless of network delays, latency, and distance from data centers.
 
-**If you need inference** for open-source models or models you trained yourself, [our guide on deploying AI models](#_15czpyrgqamg) explains how to set up [Everywhere Inference](https://gcore.com/everywhere-inference) via the Gcore Customer Portal.
+**If you need inference** for open-source models or models you trained yourself, [our guide on deploying AI models](https://gcore.com/docs/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model) explains how to set up [Everywhere Inference](https://gcore.com/everywhere-inference) via the Gcore Customer Portal.
 
 <alert-element type="tip" title="Tip">
 Check out [our API docs](https://api.gcore.com/docs/cloud#tag/Inference-Instances) if you want to control your inference resources programmatically.
