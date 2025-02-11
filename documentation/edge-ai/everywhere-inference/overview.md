@@ -24,7 +24,7 @@ End-user queries are directed to the nearest running model using [anycast endpoi
 
 With our global intelligence pipeline, a comprehensive ecosystem that supports the full AI lifecycle, from training to inference, it’s simple to deploy AI models. We empower the seamless development, deployment, and operation of AI models at various scales across multiple regions.
 
-To get started, check out our guide on [deploying a model](#_15czpyrgqamg).
+To get started, check out our guide on [deploying a model](https://gcore.com/docs/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model).
 
 ## How Everywhere Inference works
 
@@ -66,11 +66,11 @@ Everywhere Inference offers several key benefits:
 
 Everywhere Inference supports the following features:
 
-- Model catalog with more than [20 foundational models](#_x6xybd9rd3f1)
-- [Custom model deployment](#_rwvq5w31sb6m)
-- Various [VM flavors](#_orbqszm2awtn) (vGPU/vCPU/RAM)
+- Model catalog with more than 20 foundational models
+- [Custom model deployment](https://gcore.com/docs/edge-ai/everywhere-inference/ai-models/prepare-a-custom-ai-model-for-deployment)
+- Various VM flavors (vGPU/vCPU/RAM)
 - DDoS and bot protection
-- [API keys](#_ewqup6nnm04d)
+- [API keys](https://gcore.com/docs/edge-ai/everywhere-inference/api-keys/manage-api-keys)
 
 ## Supported VM flavors
 
