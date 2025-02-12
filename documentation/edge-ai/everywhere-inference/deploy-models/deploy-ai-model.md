@@ -1,7 +1,7 @@
 ---
 title: deploy-ai-model
 displayName: Deploy AI models in the Customer Portal
-published: true
+published: false
 order: 10
 toc:
     --1--Step 1. Select a model: "step-1-select-a-model"
