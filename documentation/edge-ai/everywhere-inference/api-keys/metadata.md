@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: GPU Cloud
+displayName: API keys
 published: true
-order: 2
+order: 4
 ---

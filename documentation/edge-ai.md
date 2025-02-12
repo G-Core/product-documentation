@@ -3,7 +3,7 @@ title: edge-ai
 displayName: Edge AI
 published: true
 pageTitle: Gcore Edge AI documentation page | Gcore
-pageDescription: Explore Gcore Edge AI products: Everywhere Inference and GPU Cloud
+pageDescription: "Explore Gcore Edge AI products: Everywhere Inference and GPU Cloud"
 ---
 # Edge AI
 

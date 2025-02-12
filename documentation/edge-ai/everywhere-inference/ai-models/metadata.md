@@ -1,6 +1,6 @@
 ---
 title: metadata
 displayName: AI models
-published: false
-order: 10
+published: true
+order: 2
 ---

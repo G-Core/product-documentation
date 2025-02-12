@@ -1,7 +1,7 @@
 ---
 title: everywhere-inference
 displayName: Everywhere Inference
-order: 10
+order: 4
 published: true
 toc:
    --1--What is Everywhere Inference?: "what-is-gcore-everywhere-inference"

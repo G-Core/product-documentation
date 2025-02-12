@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: GPU Cloud
+displayName: Quotas
 published: true
-order: 2
+order: 5
 ---
