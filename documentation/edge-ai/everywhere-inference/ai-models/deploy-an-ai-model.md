@@ -21,7 +21,7 @@ pageDescription:
 With Gcore Everywhere Inference, you can use foundational open-source models from our AI model catalog or deploy a custom model by uploading a Docker container image.
 
 <alert-element type="info" title="Info">
-You might have to request a quota increase before deploying a new model; the [Request quota increase guide](https://gcore.com/docs/edge-ai/everywhere-inference/quotas/request-quota-increase) explains this process.
+You might have to request a quota increase before deploying a new model; the <a href="https://gcore.com/docs/edge-ai/everywhere-inference/quotas/request-quota-increase">Request quota increase guide</a> explains this process.
 </alert-element>
 
 ## Step 1. Initialize a new deployment
@@ -155,5 +155,5 @@ Scroll to the top of the page and click **Deploy model** in the top-right corner
 <img src="https://assets.gcore.pro/docs/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model/deploy-an-ai-model-16.png" alt="Deploy an AI model">
 
 <alert-element type="info" title="Info">
-If you don’t see the Deploy model button, add billing information to your account or create a [quota change request](https://gcore.com/docs/edge-ai/everywhere-inference/quotas/request-quota-increase).
+If you don’t see the Deploy model button, add billing information to your account or create a <a href="https://gcore.com/docs/edge-ai/everywhere-inference/quotas/request-quota-increase">quota change request</a>.
 </alert-element>

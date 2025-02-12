@@ -57,7 +57,7 @@ If you want to view or change the hardware, autoscaling settings, or environment
 <img src="https://assets.gcore.pro/docs/edge-ai/everywhere-inference/ai-models/manage-ai-model-deployments/manage-ai-model-deployments-4.png" alt="Manage AI model deployments">
 
 <alert-element type="tip" title="Tip">
-Changes aren’t saved automatically, so click the **Save changes** button at the bottom to apply them.
+Changes aren’t saved automatically, so click the <strong>Save changes</strong> button at the bottom to apply them.
 </alert-element>
 
 Click the **Settings** tab to view this deployment’s hardware, autoscaling configuration, and environment variables.

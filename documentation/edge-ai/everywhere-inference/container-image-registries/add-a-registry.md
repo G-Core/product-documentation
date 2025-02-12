@@ -33,7 +33,7 @@ This will open the Add registry dialog, where you can add the authentication cre
 Enter the registry’s name, URL, username, and password.
 
 <alert-element type="tip" title="Tip">
-The URL for the Huggingface registry is “<https://registry.hf.space”>. You can create an access token in the [Huggingface settings](https://huggingface.co/settings/tokens). Use “username” as the Image registry username and the access token as the Image registry password.
+The URL for the Huggingface registry is “<https://registry.hf.space>”. You can create an access token in the <a href="https://huggingface.co/settings/tokens">Huggingface settings</a>. Use “username” as the Image registry username and the access token as the Image registry password.
 </alert-element>
 
 <img src="https://assets.gcore.pro/docs/edge-ai/everywhere-inference/container-image-registries/add-a-registry/add-a-registry-3.png" alt="Add a registry">

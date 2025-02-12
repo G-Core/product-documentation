@@ -58,7 +58,7 @@ CMD \["python3", "inference.py"\]
 ```
 
 <alert-element type="tip" title="Tip">
-For a full list of Dockerfile requirements and supported syntax, check the [official Docker documentation](https://docs.docker.com/reference/dockerfile/).
+For a full list of Dockerfile requirements and supported syntax, check the <a href="https://docs.docker.com/reference/dockerfile/">official Docker documentation</a>.
 </alert-element>
 
 ## Build, tag, and publish the image
