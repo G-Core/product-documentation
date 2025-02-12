@@ -90,9 +90,7 @@ For most cases, such as a single subnet setup, use **L2 connectivity** for optim
  
 </alert-element>
 
-## Step 6. Configure listeners 
-
-### Listener
+## Step 6. Configure listeners
 
 Add listeners that will check for connection requests using the protocol and port that you specify. You can add multiple listeners to a Load Balancer. 
 
