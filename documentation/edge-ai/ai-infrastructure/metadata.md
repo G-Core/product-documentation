@@ -2,5 +2,5 @@
 title: metadata
 displayName: GPU Cloud
 published: true
-order: 20
+order: 2
 ---
