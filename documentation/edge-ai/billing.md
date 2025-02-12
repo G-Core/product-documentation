@@ -2,7 +2,7 @@
 title: billing
 displayName: Billing
 published: true
-order: 5
+order: 2
 toc:
 pageTitle: Edge AI billing | Gcore
 pageDescription: Learn how to pay for Gcore Edge AI services.
