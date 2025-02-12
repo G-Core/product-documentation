@@ -1,7 +1,7 @@
 ---
 title: deploy-huggingface-models
 displayName: Deploy AI models in the Customer Portal
-published: true
+published: false
 order: 20
 toc:
   --1--Step 1. Set up a Hugging Face Space: "step-1-set-up-a-hugging-face-space"
