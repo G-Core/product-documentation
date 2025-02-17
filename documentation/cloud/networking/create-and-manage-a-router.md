@@ -5,20 +5,13 @@ published: true
 order: 30
 toc:
    --1--Create a router: "create-a-router"
-   --2--Step 1. Create a router manually: "step-1-create-a-router-manually"
-   --2--Step 2. Configure router settings: "step-2-configure-router-settings"
-   --2--Step 3. Enable SNAT (Optional): "step-3-enable-snat-optional"
-   --2--Step 4. Define static routes: "step-4-define-static-routes"
-   --1--Router Control and Route Tables: "router-control-and-route-tables"
+   --2--Create a router manually: "create-a-router-manually"
+   --2--Router control and route tables: "router-control-and-route-tables"
    --1--Manage routers: "manage-routers"
-   --2--Step 1. Access router settings: "step-1-access-router-settings"
-   --2--Step 2. Configure subnetworks: "step-2-configure-subnetworks"
-   --3--Supported CIDR ranges: "step-3-supported-cidr-ranges"
-   --3--IPv4 and IPv6 considerations: "step-3-ipv4-and-ipv6-considerations"
-   --2--Step 3. Configure static routes: "step-3-configure-static-routes"
-   --3--Host routes (Layer 2): "step-3-host-routes-layer-2"
-   --3--Router static routes (Layer 3): "step-3-router-static-routes-layer-3"
-   --2--Step 4. Manage router connections: "step-4-manage-router-connections"
+   --2--Configure subnetworks: "configure-subnetworks"
+   --2--Configure static routes: "configure-static-routes"
+   --3--Host routes (Layer 2): "host-routes-layer-2"
+   --3--Router static routes (Layer 3): "router-static-routes-layer-3"
 pageTitle: Add a router | Gcore
 pageDescription: Learn how to create and manage a router in the cloud to dynamically exchange routes between networks.
 ---
