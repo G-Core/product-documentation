@@ -13,7 +13,7 @@ toc:
    --2--Listener: "listener"
    --2--Pool: "pool"
    --2--Virtual Machine: "virtual-machine"
-   --2--Health Сheck: "health-check"
+   --2--Health Check: "health-check"
    --2--Timeouts: "timeouts"
    --1--7. Enter name: "step-7-enter-the-name"
    --1--8. (Optional) Enable Logging: "step-8-optional-enable-logging"
@@ -148,6 +148,8 @@ A password must contain at least one lowercase character, one uppercase characte
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/configure-listener.png" alt="Listener configuration" width="55%">
 
+Listener configuration options differ depending on the selected protocol. For example, HTTP and Terminated HTTPS protocols allow additional settings, such as enabling headers and authentication, while TCP and UDP listeners focus on specifying ports and connection limits.
+
 ### Pool
 
 Configure a pool—a list of VMs to which the listener will redirect incoming traffic. Click **Add new pool** in the "Listeners" block to start configuring.
@@ -198,9 +200,11 @@ Specify client data, member connect and member data timeouts in msec.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-timeouts-lb.png" alt="Configure timeouts" width="65%">
 
+Each Terminated HTTPS listener requires a default TLS certificate. Additional SNI certificates can also be configured, allowing multiple certificates to be assigned to the same listener.
+
 ## Step 7. Enter the name
 
-Enter a name for the Load Balancer. It will be displayed in the Customer Portal.
+Enter a name for the Load Balancer. This name will be displayed in the Customer Portal.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-6-lb.png" alt="Enter Load Banalcer name" width="65%">
 
@@ -212,7 +216,7 @@ The Logging service will be activated to store your logs. To learn how it works 
 
 ## Step 9. (Optional) Add tags
 
-Create tags for your load balancer by entering "Key" and "Valu."
+Create tags for your load balancer by entering "Key" and "Value".
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-8-lb.png" alt="Configure tags" width="65%"> 
 
