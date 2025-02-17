@@ -5,6 +5,7 @@ published: true
 order: 40
 toc:
    --1--Load Balancer statuses: "statuses-of-a-load-balancer-and-its-components"
+   --2--Load Balancer impact on availability: "load-balancer-impact-on-availability"
    --1--Load Balancer settings: "load-balancer-settings"
    --2--Limits: "limits"
    --2--Flavor: "flavor"
@@ -81,6 +82,49 @@ During the resource’s lifetime, its **provisioning** status can signal the fol
 Updating the name, description, or tags of a Load Balancer won't cause any connection interruptions or downtime.
  
 </alert-element>
+
+### Load Balancer impact on availability
+
+Most operations, such as adding or modifying listeners and pools, do not disrupt active traffic. However, changing the load balancer’s flavor or initiating a failover will terminate existing connections, while all other operations have no effect on active connections.
+
+The table below outlines the effect of each operation:
+
+<table>
+  <thead>
+    <tr style="background-color: #555555; color: white;">
+      <th style="text-align: left">Operation</th>
+      <th style="text-align: left">Impact</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Adding a listener</td>
+      <td style="text-align: left">No</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Modifying listener properties</td>
+      <td style="text-align: left">No</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Adding a pool</td>
+      <td style="text-align: left">No</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Changing flavor</td>
+      <td style="text-align: left">Terminates connections</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Initiating failover</td>
+      <td style="text-align: left">Terminates connections</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Removing a listener</td>
+      <td style="text-align: left">No</td>
+    </tr>
+  </tbody>
+</table>
+
+You can schedule updates during low-traffic periods to reduce disruptions for critical operations like changing the flavor or initiating a failover.
 
 ## Load Balancer settings
 
