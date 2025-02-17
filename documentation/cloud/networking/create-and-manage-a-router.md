@@ -4,6 +4,21 @@ displayName: Router
 published: true
 order: 30
 toc:
+   --1--Create a router: "create-a-router"
+   --2--Step 1. Create a router manually: "step-1-create-a-router-manually"
+   --2--Step 2. Configure router settings: "step-2-configure-router-settings"
+   --2--Step 3. Enable SNAT (Optional): "step-3-enable-snat-optional"
+   --2--Step 4. Define static routes: "step-4-define-static-routes"
+   --1--Router Control and Route Tables: "router-control-and-route-tables"
+   --1--Manage routers: "manage-routers"
+   --2--Step 1. Access router settings: "step-1-access-router-settings"
+   --2--Step 2. Configure subnetworks: "step-2-configure-subnetworks"
+   --3--Supported CIDR ranges: "step-3-supported-cidr-ranges"
+   --3--IPv4 and IPv6 considerations: "step-3-ipv4-and-ipv6-considerations"
+   --2--Step 3. Configure static routes: "step-3-configure-static-routes"
+   --3--Host routes (Layer 2): "step-3-host-routes-layer-2"
+   --3--Router static routes (Layer 3): "step-3-router-static-routes-layer-3"
+   --2--Step 4. Manage router connections: "step-4-manage-router-connections"
 pageTitle: Add a router | Gcore
 pageDescription: Learn how to create and manage a router in the cloud to dynamically exchange routes between networks.
 ---
@@ -35,13 +50,25 @@ A router can be created in two ways:
 
 4\. (Optional) Turn on the **Enable SNAT** toggle if you need access to the external network. A separate public IP address is announced for a router with access to an external network. 
 
-5\. In the **Static Routes** section, you can specify the routing scheme. Provide the destination prefix and the address of the next hop. To add the next route, click the **Add Route** button. 
+5\. You can specify the routing scheme in the **Static Routes** section. Provide the destination prefix and the address of the next hop. To add the next route, click the **Add Route** button. 
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/create-router-snat-static-routes.png" alt="Create router menu" width="80%">
 
 6\. Give your router a name and save the configuration by clicking **Create Router**.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/create-router-name.png" alt="Create router menu" width="80%">
+
+### Router control and route tables
+
+Routing is based on route tables, which define the paths that network traffic takes from a VM to other destinations. These destinations can be inside or outside the private network. The tables contain static routes consisting of:
+* The target subnet prefix in CIDR notation.
+* The nexthop's internal IP address (the virtual machine or router handling the traffic).
+
+A router is automatically created when a network is created, but customers can also create and configure routers manually.
+
+By default, all routers have SNAT (Source Network Address Translation) enabled, allowing instances in a private network to access the external network. This can be turned off if needed.
+
+Customers can add subnets to a router and define static routes for controlling traffic flow.
 
 ## Manage routers 
 
@@ -74,8 +101,37 @@ The specified CIDR ranges must align with the destinations configured in your st
 
 </alert-element>
 
+We support both IPv4 and IPv6 subnetworks, but there are key differences. IPv4 is fully supported without restrictions. IPv6 has limitations: Floating IPs are not supported, private IPv6 subnets are not publicly routable, and only public IPv6 subnets can access the internet. 
+
 ## Configure static routes 
 
-In the **Static Routes** section, you can update the destination and nexthop of your routes, add new ones, or remove static routes from the router. 
+In this section, you can define how traffic flows between different subnets and networks. There are two types of static routes: host routes (Layer 2) for internal subnet routing and router static routes (Layer 3) for inter-network traffic control.
+
+### Host Routes for Subnets (Layer 2)
+
+Host routes operate at **Layer 2** without relying on a router, controlling traffic flow within a subnet. They are assigned to instances through DHCP or cloud-init instead of being distributed by a router. DHCP dynamically assigns host routes based on network configurations, while cloud-init configures them automatically at instance startup using predefined settings.
+
+Host routes are automatically assigned to instances within the same subnet and do not require manual configuration. They are not advertised beyond the subnet, ensuring traffic stays internal.
+
+### Router Static Routes (Layer 3)
+
+Router-level static routes operate at **Layer 3** and require a router to forward traffic between networks. These routes are distributed to instances using **Router Advertisement**. When a router is present, it announces available routes to connected instances.
+
+To configure a static route:
+
+1\. Go to the **Routers** page in the Gcore Customer Portal.
+
+2\. Open the settings of the desired router.
+
+3\. Open the **Static Routes** tab.
+
+4\. Click **Edit Static Routes** → **Add Route**.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/configure-static-routes.png" alt="Static routes settings" width="80%">
+
+5\. Enter **Destination** and **Nexthop**.
+
+6\. Click **Save Static Routes**.
+
+By default, subnets within the same network can communicate. This is because the default network router automatically unites all subnets within the network, enabling internal communication. However, traffic between different networks requires an explicit static route via a router.
+
