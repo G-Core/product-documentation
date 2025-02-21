@@ -11,44 +11,74 @@ pageDescription: Learn how to upload images for Virtual Machines to Cloud storag
 ---
 # Upload an image to the storage
 
+You can upload images to the cloud storage by following a few simple steps, ensuring the correct formats and settings are in place for a successful upload and easy management.
+
 ## Image requirements
 
-1. **Format**. The image should be in one of the following formats:
-- raw
-- vhd
-- vhdx
-- vdi
-- ploop
-- qcow2
-- aki
-- ari
-- ami
+Before uploading an image to the storage, check that it meets the required format, driver, and package requirements.
 
-2. **VirtIO drivers**. If you are uploading an image that was previously downloaded from another cloud, the image should already have VirtIO drivers installed. However, if you have built your own image, please make sure to install and configure the VirtIO SCSI drivers.
+### Supported Formats  
 
-3. **`cloud-init`**. If you are uploading an image that was previously downloaded from another cloud, the image should already have the `cloud-init` package installed. However, if you have built your own image, please make sure to install and configure the `cloud-init` package accordingly.
+The uploaded image must be in one of the following formats:
+
+<table>
+   <tr>
+      <td>raw</td>
+      <td>Uncompressed image format</td>
+   </tr>
+   <tr>
+      <td>vhd / vhdx</td>
+      <td>Microsoft Hyper-V formats</td>
+   </tr>
+   <tr>
+      <td>vdi</td>
+      <td>VirtualBox disk image</td>
+   </tr>
+   <tr>
+      <td>ploop</td>
+      <td>Parallels storage format</td>
+   </tr>
+   <tr>
+      <td>qcow2</td>
+      <td>QEMU Copy-On-Write format</td>
+   </tr>
+   <tr>
+      <td>aki / ari / ami</td>
+      <td>Amazon Machine Image formats</td>
+   </tr>
+</table>
+
+### VirtIO drivers  
+
+If you upload an image previously downloaded from another cloud, the image should already have VirtIO drivers installed. However, if you have built your own image, please install and configure the VirtIO SCSI drivers.
+
+### cloud-init  
+
+If you upload an image previously downloaded from another cloud, the image should already have the `cloud-init` package installed. However, if you have built your own image, please install and configure the `cloud-init` package accordingly.
 
 ## Upload an image
 
-1\. In the **Cloud** menu, select the desired project and region.
+1. In the **Cloud** menu, select the desired project and region.
 
-2\. Go to the **Images** tab and then proceed to **Import via URL**.
+2. Go to the **Images** tab and then proceed to **Import via URL**.
 
-<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/3-menu.png" alt="Images tab ">
+<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/click-import-via-url.png" alt="Upload an Image" width="800">
 
-3\. Enter the image name and specify the URL from where the image will be downloaded.
+3. Select the Resource type:
+   - Virtual Instances
+   - Bare Metal
+   - Virtual GPU Clusters
+   - Baremetal GPU Clusters
 
-<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/2-image-settings.png" alt="Upload an Image" width="300" height="225">
+4. Enter the image name and specify the URL from where the image will be downloaded.
 
-4. Turn on the **Show advanced options** toggle to access additional settings.
+<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/enter-url-of-your-image.png" alt="Upload an Image" width="800">
 
-<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/1-advanced-settings.png" alt="Show advanced options " width="300" height="436">
+5. **Architecture**: Choose the architecture of the image based on the processor type where it will run: select x86 for traditional CISC processors like Intel or AMD, or ARM for RISC-based processors such as ARM CPUs.
 
-Additional settings include:
+6. **VM quick start**: If this option is on, the Virtual Machines will be deployed faster with this image mounted. However, please note that you cannot delete this image if there are active Virtual Machines created from this image.
 
-- **VM quick start**: If this option is on, the Virtual Machines will be deployed faster with this image mounted. However, please note that you cannot delete this image if there are active Virtual Machines created from this image.
-
-Standard start vs quick start:
+**Standard start vs quick start:**
 
 <table>
    <tr>
@@ -83,16 +113,16 @@ Standard start vs quick start:
    </tr>
 </table>
 
-- **Permission to use an SSH key in Virtual Machines** (for Linux images): We recommend using SSH-key authorization for security reasons.
+7. **Permission to use an SSH key in instances**: We recommend using SSH-key authorization for security reasons. Specify the permission level for SSH key usage in instances created from this image. You can choose **Allow** to make SSH key usage optional, **Deny** to prohibit SSH key usage entirely, or **Required** to mandate SSH key usage for secure instance access.
 
-- **Image will be used for Bare Metal servers** Turn on this toggle, if you want to use the image for Bare Metal. This ensures that necessary properties are added to the image for the use in a Bare Metal environment, as the deep looping process for physical servers is different from that of Virtual Machines.
+8. **Operating system installed on the image**: Select the OS pre-installed on the image, like Linux or Windows Server, to suit your deployment needs and ensure smooth operation.
 
-- **Operating system installed on the image**. Choose between Linux or Windows.
+9. **Type of firmware with which to boot the guest**: Select either BIOS or UEFI. For Bare Metal servers, UEFI is recommended for proper functionality. For Virtual Machines, the choice depends on your personal preference. The firmware type is determined by the selected product. Virtual Instances and GPU virtual clusters support both UEFI and BIOS, while Bare Metal servers and GPU baremetal clusters are restricted to UEFI for compatibility. Choose UEFI for modern systems or BIOS for legacy setups.
 
-- **Type of firmware with which to boot the guest.** Select either BIOS or UEFI. For Bare Metal servers, UEFI is recommended for proper functionality. For Virtual Machines, the choice depends on your personal preference.
+10. **Virtual chipset type**: Choose between q35 and i440 virtual chipsets based on the OS version, required functionality, and supported virtual devices.
 
-- **Virtual Chipset type.** Choose between q35 and i440 virtual chipsets based on the OS version, required functionality, and supported virtual devices.
+11. Add tags (optional) to identify images using the "Key" and "Value" principles. Enable this option to add metadata tags to your image, helping you efficiently organize and identify resources.
 
-5\. (optional) Add tags to identify images using the "Key" and "Value" principles.
+12. Click the **Upload** button. Your image will be uploaded.
 
-6\. Click the **Next** button. Your image will be uploaded.
+<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/click-upload.png" alt="Upload an Image" width="800">
