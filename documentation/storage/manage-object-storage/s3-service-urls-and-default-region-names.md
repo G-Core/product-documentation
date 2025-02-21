@@ -9,7 +9,7 @@ pageDescription: Table of correspondence between storage locations and service U
 ---
 # S3 service URLs and default region names
 
-You can utilize any software compatible with S3 to work with Gcore Object Storage.
+You can utilize any software compatible with S3 API to work with Gcore Object Storage.
 
 To connect to your storage or carry out any operation, it is recommended that you use the service URLs and default region names.
 
@@ -20,3 +20,5 @@ Please refer to the table below for the appropriate values.
 | S3 Luxembourg      | s-ed1                 | s-ed1.cloud.gcore.lu     |
 | S3 Chicago         | s-drc2                | s-drc2.cloud.gcore.lu    |
 | S3 Singapore       | s-sgc1                | s-sgc1.cloud.gcore.lu    |
+| S3 Incheon         | s-nhn2                | s-nhn2.cloud.gcore.lu    |
+| S3 Darmstadt       | s-darz1               | s-darz1.cloud.gcore.lu   |
