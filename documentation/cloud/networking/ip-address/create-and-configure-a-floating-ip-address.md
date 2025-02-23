@@ -12,14 +12,14 @@ toc:
    --1--Assign: "assign-a-floating-IP-to-a-virtual-machine"
    --1--Detach: "detach-a-floating-IP-from-a-virtual-machine"
    --1--Delete: "delete-a-floating-IP"
-pageTitle: Floating IP address| Gcore
+pageTitle: Floating IP address | Gcore
 pageDescription: Configure a floating IP address for your Virtual Machine to enable external network access. Learn how to reserve, assign, detach, and delete a floating IP.
 ---
 # Create and configure a floating IP address
 
 ## What is a floating IP address?
 
-A Floating IP is a type of public, static IP address that can be assigned to Virtual Machines (VMs), Bare Metal servers, and Load Balancers within a private subnetwork. This means that these products don't have a public network interface, but they can still receive incoming connections from the Internet. 
+A Floating IP is a public, static IP address that can be assigned to Virtual Machines (VMs), Bare Metal servers, and Load Balancers, allowing them to receive external connections without having a public network interface. This means that these products don't have a public network interface, but they can still receive incoming connections from the Internet. 
 
 <alert-element type="info" title="Info">
  
@@ -35,7 +35,7 @@ Another method for providing access is by creating a public interface for the de
 
 ## How does it work?
 
-When you reserve a floating IP and assign it to your Virtual Machine, the router directs incoming traffic to your device by forwarding packets intended for that IP. Outgoing traffic from your device will then be sent using the floating IP as the source.
+When you reserve a floating IP and assign it to your Virtual Machine, the router directs incoming traffic to your device by forwarding packets intended for that IP. Outgoing traffic from your instance will still use its private IP, while incoming traffic will be forwarded through the Floating IP.
 
 If your instance has multiple private IPv4 addresses within a routable private subnet, you can assign a unique floating IP to each of these private addresses. Multiple private subnets from one network can be grouped to a single port, allowing the client to attach a Floating IP to any of the routable addresses.
 
@@ -45,7 +45,7 @@ If your instance has multiple private IPv4 addresses within a routable private s
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12391415662737.png" alt="floating-ip-01.png">
 
-2\. Click the three dots menu, then select **Edit**.
+2\. Click the three-dot menu, then select **Edit**.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12391621674513.png" alt="floating-ip-02.png">
 
@@ -55,17 +55,17 @@ If your instance has multiple private IPv4 addresses within a routable private s
 
 ## Reserve a floating IP from the menu
 
-A floating IP is assigned by a specific data center, and its address is linked to that location. It can only be assigned to a Virtual Machine within the exact location.
+A floating IP is assigned by a specific data center, and its address is linked to that location. It can only be transferred to a Virtual Machine within the exact location.
 
 1\. Select the Region where your machine is located to assign a floating IP and navigate to the **Networking** section.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12391851006353.png" alt="floating-ip-04.png" width=50%>
 
-2\. Open the Floating IPs section. You can create a floating IP without assigning it to a machine by clicking **Create a new Floating IP.**
+2\. Open the Floating IPs section. You can create a floating IP without assigning it to a machine by clicking **Create a new floating IP.**
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12392006241425.png" alt="floating-ip-05.png">
 
-3\. Additionally, you can create a floating IP and immediately assign it to a specific Virtual Machine. To do this, enable the "Assign to existed instance" slider, select the machine and interface, and click **Create a new floating IP.**
+3\. Additionally, you can create a floating IP and immediately assign it to a specific Virtual Machine. To do this, enable the "Assign to existing instance" slider, select the machine and interface, and click **Create a new floating IP.**
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12392182782993.png" alt="floating-ip-06.png">
 
@@ -76,6 +76,12 @@ When creating a VM, in the "Network settings" section, select the "**Private**" 
 <img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12392462274833.png" alt="floating-ip-07.png" width=80%>
 
 The Virtual Machine will be created with a private interface and a new floating IP assigned to it.
+
+<alert-element type="info" title="Info">
+
+A Floating IP can only be added after creating the network interface. A subnet must be created before assigning the floating IP if you add a new interface.  
+
+</alert-element>
 
 ## Assign a floating IP to a Virtual Machine
 
@@ -95,10 +101,12 @@ You can detach a floating IP address in the "Floating IPs" section or in the Vir
 
 In the Virtual Machine menu, open the "Networking" tab and select the private interface. Open the selector and click "**Detach Floating IP**". The IP will no longer be assigned to this machine.
 
+Floating IPs are freely available for Virtual Machines, Bare Metal servers, and Load Balancers. Once detached, they remain ready for reassignment. You can transfer it to another Virtual Machine within the same data center by selecting the target instance and linking the IP. This helps maintain a stable external address even as your infrastructure evolves.
+
 <img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12392664056465.png" alt="floating-ip-11.png">
 
 ## Delete a floating IP
 
-In the "Floating IPs" section, click the selector next to the desired address and select **Delete**. The IP will be removed, and you don't have to pay anymore.
+In the "Floating IPs" section, click the selector next to the desired address and select **Delete**. The IP will be removed, and you will no longer be charged.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12392700821393.png" alt="floating-ip-12.png">
