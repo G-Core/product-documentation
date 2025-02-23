@@ -6,10 +6,11 @@ published: true
 toc:
    --1--What is it?: "what-is-a-virtual-ip-address"
    --1--Billing: "billing"
+   --1--Public IP limits: "public-ip-limits"
    --1--Create a virtual IP: "create-a-virtual-ip-address"
    --1--Use a virtual IP to create a fault-tolerant system: "assign-a-virtual-ip-address-to-multiple-vms"
-   --1--Assign a virtual IP address as a secondary address: ""
-pageTitle: Virtual IP address| Gcore
+   --1--Assign a virtual IP address as a secondary address: "assign-a-virtual-ip-address-as-a-secondary-address"
+pageTitle: Virtual IP address | Gcore
 pageDescription: Create and configure a virtual IP address to assign to multiple Virtual Machines or use as a secondary IP address for a network interface.
 ---
 # Create and configure a virtual IP address
@@ -20,7 +21,7 @@ A virtual IP address (VIP)  is an IP address that can be assigned to multiple V
 
 ## How does it work?
 
-**To use a VIP to create a fault-tolerant system**, you’ll need to install a configure Keepalived, which is a system daemon for Linux. Keepalived uses the Virtual Router Redundancy Protocol (VRRP) to manage the VIP. This protocol allows multiple machines to share a common IP address, and Keepalived uses VRRP to pass the VIP address between the primary machine and the backup machines. When the primary machine fails, the VRRP protocol detects the failure and passes the VIP to one of the backup machines, ensuring that the network service remains available.
+**To use a VIP to create a fault-tolerant system**, you’ll need to install and configure Keepalived, which is a system daemon for Linux. Keepalived uses the Virtual Router Redundancy Protocol (VRRP) to manage the VIP. This protocol allows multiple machines to share a common IP address, and Keepalived uses VRRP to pass the VIP address between the primary machine and the backup machines. When the primary machine fails, the VRRP protocol detects the failure and passes the VIP to one of the backup machines, ensuring that the network service remains available.
 
 **To** **use a VIP as a secondary address** for a network interface, you will reserve a VIP and assign it to a Virtual Machine, first in the settings of our system, then in the settings of the machine. As a result, the VIP becomes the address of the Virtual Machine, working in conjunction with its regular IP address, allowing the machine to receive and transmit data on behalf of both addresses.
 
@@ -29,6 +30,13 @@ A virtual IP address (VIP)  is an IP address that can be assigned to multiple V
 A VIP is billed from the moment you reserve it until the moment you delete it. For example, if you reserve an IP address and then delete it after an hour, you will be charged only for an hour of use, regardless of whether the address was assigned to the Virtual Machine or not.
 
 The monthly price is displayed in the order window.
+
+## Public IP limits
+
+A Virtual Machine has only one public interface, meaning it receives a Public IP from the public network. It also supports multiple Floating IPs from private networks, but quotas limit the number. In a multi-network setup, each subnet can have one Floating IP. Within a single network, multiple subnets can exist, and each subnet of a single machine (VM/BM) is allowed one Floating IP. 
+
+By default, Baremetal servers support up to six attached IPs. A dedicated Baremetal network removes this limit, allowing unlimited IPs per machine. Unlike standard networks, this type of network lacks port security and can be allocated by request.
+
 
 ## Create a virtual IP address
 
@@ -42,7 +50,7 @@ If you select **Private**, specify the network and subnetwork. If you want to re
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12896898220817.png" alt="Screenshot_2023-02-07_at_15.28.15.png">
 
-3\. Go back to the list of reserved IP addresses, find the required IP address, click ⋯ next to it and select **VIP settings**.
+3\. Go back to the list of reserved IP addresses, find the required IP address, click **⋯** next to it and select **VIP settings**.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address/12896925225233.png" alt="Screenshot_2023-02-07_at_15.53_1.png">
 
@@ -65,9 +73,9 @@ You have reserved a virtual IP address. You can now assign it multiple machines 
 
 5\. Run Keepalived on your Virtual Machine and add it to the autostart list. 
 
-You have configured the VIP for your machines, the fault-tolerant system will start working.
+You have configured the VIP for your machines. The fault-tolerant system is now operational.
 
-## Assign a virtual IP address as a secondary address for a network interface
+## Assign a virtual IP address as a secondary address
 
 1\. In the Cloud menu, go to **Networking** → **Reserved IPs**, find the required virtual IP address, click **VIP** in the **Status** column.
 
@@ -86,7 +94,7 @@ Now you have to configure the VIP in the Virtual Machine settings. Below are two
 2\. Run the following command as an administrator:
 
 ```
-ip addr add **\[VIP\]**/**\[mask\]** dev **\[interface name\]**
+ip addr add [VIP]/[mask] dev [interface name]
 ```
 
 where:  
@@ -143,4 +151,4 @@ Go back to the **Control Panel**, make sure the values are correct and click **A
 
 8\. Click **OK**.
 
-The VIP has been configured. To verify it, <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">connect to your Virtual Machine via SSH</a> using your VIP.If the connection fails, there may be an error in the IP assignment command or the IP address may not have been added inside your system. Repeat the Steps.
+The VIP has been configured. To verify it, <a href="https://gcore.com/docs/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh" target="_blank">connect to your Virtual Machine via SSH</a> using your VIP. If the connection fails, there may be an error in the IP assignment command or the IP address may not have been added inside your system. Repeat the Steps.
