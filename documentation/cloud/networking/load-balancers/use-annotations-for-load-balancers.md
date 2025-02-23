@@ -38,95 +38,242 @@ metadata: {
 Below, we have compiled annotations that apply to clusters created in Gcore:
 
 <table>
-    <thead>
-        <tr>
-            <th>Key (annotation)</th>
-            <th>Value sample</th>
-            <th>Type</th>
-            <th>Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td style="text-align: left" id="ddos-profile"><code>loadbalancer.gcorelabs.com/<br>ddos-profile</code></td>
-            <td style="text-align: left"><code>{ "profile_template":65,<br> "fields": [{ "base_field":272,<br> "field_value":40 }] }</code></td>
-            <td style="text-align: left">Integer</td>
-            <td style="text-align: left">Configures and ads the DDoS Protection profile to the Load Balancer</td>
-        </tr>
-        <tr>
-            <td style="text-align: left" id="flavor"><code>loadbalancer.gcorelabs.com/<br>flavor</code></td>
-            <td style="text-align: left"><code>lb1-1-2</code></td>
-            <td style="text-align: left">String</td>
-            <td style="text-align: left">Specifies a custom name for the flavor</td>
-        </tr>
-        <tr>
-            <td style="text-align: left" id="floating-cleanup"><code>loadbalancer.gcorelabs.com/<br>floating-cleanup</code></td>
-            <td style="text-align: left"><code>true</code></td>
-            <td style="text-align: left">Boolean</td>
-            <td style="text-align: left">Automatically cleans up the floating IP assigned to the Load Balancer after deleting the service</td>
-        </tr>
-        <tr>
-            <td style="text-align: left" id="logging-topic-name"><code>loadbalancer.gcorelabs.com/<br>logging-topic-name</code></td>
-            <td style="text-align: left"><code>topic-123</code></td>
-            <td style="text-align: left">String</td>
-            <td style="text-align: left">Specifies <a href="https://gcore.com/docs/cloud/logging-as-a-service/about-logging-as-a-service" target="_blank">LaaS</a> topic name for pushing logs.<br><b>Note:</b> Must be used with the logging-destination-region-id, otherwise logs won’t be sent to LaaS </td>
-        </tr>
-        <tr>
-            <td style="text-align: left" id="logging-destination-region-id" style="text-align: left"><code>loadbalancer.gcorelabs.com/<br>logging-destination-region-id</code></td>
-            <td style="text-align: left"><code>1</code></td>
-            <td style="text-align: left">Integer</td>
-            <td style="text-align: left">Specifies <a href="https://gcore.com/docs/cloud/logging-as-a-service/about-logging-as-a-service" target="_blank">LaaS</a> destination region.<br> <b>Note:</b> Must be used with the logging-topic-name, otherwise logs won’t be sent to LaaS </td>
-        </tr>
-        <tr>
-            <td style="text-align: left" id="logging-retention-policy-period"><code>loadbalancer.gcorelabs.com/<br>logging-retention-policy-period</code></td>
-            <td style="text-align: left"><code>45</code></td>
-            <td style="text-align: left">Integer</td>
-            <td style="text-align: left">Configures log retention policy for LaaS topic (in days)</td>
-        </tr>
-        <tr>
-            <td style="text-align: left" id="proxy-protocol"><code>loadbalancer.gcorelabs.com/<br>proxy-protocol</code></td>
-            <td style="text-align: left"><code>true</code></td>
-            <td style="text-align: left">Boolean</td>
-            <td style="text-align: left">Enables proxy protocol type for <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer#listener" target="_blank">Load Balancer listeners</a></td>
-        </tr>
-        <tr>
-            <td style="text-align: left" id="timeout-client-data"><code>loadbalancer.gcorelabs.com/<br>timeout-client-data</code></td>
-            <td style="text-align: left"><code>6000</code></td>
-            <td style="text-align: left">Integer</td>
-            <td style="text-align: left">Sets client data timeouts for <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer#timeouts" target="_blank">Load Balancer listeners</a> (in msec). <br><b>Note:</b> When removed, the previously set value in effect</td>
-        </tr>
-        <tr>
-            <td style="text-align: left" id="timeout-member-connect"><code>loadbalancer.gcorelabs.com/<br>timeout-member-connect </code></td>
-            <td style="text-align: left"><code>6000</code></td>
-            <td style="text-align: left">Integer</td>
-            <td style="text-align: left">Sets member connect timeouts for <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer#timeouts" target="_blank">Load Balancer listeners</a> (in msec). <br><b>Note:</b> When removed, the previously set value in effect</td>
-        </tr>
-        <tr>
-            <td style="text-align: left" id="timeout-member-data"><code>loadbalancer.gcorelabs.com/<br>timeout-member-data</code></td>
-            <td style="text-align: left"><code>6000</code></td>
-            <td style="text-align: left">Integer</td>
-            <td style="text-align: left">Sets member data timeouts for <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer#timeouts" target="_blank">Load Balancer listeners</a> (in msec). <br><b>Note:</b> When removed, the previously set value in effect</td>
-        </tr>
-        <tr>
-            <td style="text-align: left" id="x-forwarded-for"><code>loadbalancer.gcorelabs.com/<br>x-forwarded-for</code></td>
-            <td style="text-align: left"><code>true</code></td>
-            <td style="text-align: left">Boolean</td>
-            <td style="text-align: left">Adds the “X-Forwarded-For,” “X-Forwarded-Port” and “X-Forwarded-Proto“ headers to requests</td>
-        </tr>
-        <tr>
-            <td style="text-align: left" id="gcore-internal-load-balancer"><code>service.beta.kubernetes.io/<br>gcore-internal-load-balancer</code></td>
-            <td style="text-align: left"><code>true</code></td>
-            <td style="text-align: left">Boolean</td>
-            <td style="text-align: left">Disables floating IP creation and makes the Load Balancer non available for external requests</td>
-        </tr>
-        <tr>
-            <td style="text-align: left" id="gcore-external-load-balancer"><code>service.beta.kubernetes.io/<br>gcore-external-load-balancer</code></td>
-            <td style="text-align: left"><code>true</code></td>
-            <td style="text-align: left">Boolean</td>
-            <td style="text-align: left">Makes the Load Balancer public</td>
-        </tr>
-    </tbody>
+  <thead>
+    <tr>
+      <th>Key (annotation)</th>
+      <th>Value sample</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left" id="flavor">
+        <code>loadbalancer.gcorelabs.com/<br>flavor</code>
+      </td>
+      <td style="text-align: left"><code>lb1-1-2</code></td>
+      <td style="text-align: left">String</td>
+      <td style="text-align: left">Specifies a custom name for the flavor</td>
+    </tr>
+    <tr>
+      <td style="text-align: left" id="proxy-protocol">
+        <code>loadbalancer.gcorelabs.com/<br>proxy-protocol</code>
+      </td>
+      <td style="text-align: left"><code>true</code></td>
+      <td style="text-align: left">Boolean</td>
+      <td style="text-align: left">Enables proxy protocol type for <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer#listener" target="_blank">Load Balancer listeners</a></td>
+    </tr>
+    <tr>
+      <td style="text-align: left" id="x-forwarded-for">
+        <code>loadbalancer.gcorelabs.com/<br>x-forwarded-for</code>
+      </td>
+      <td style="text-align: left"><code>true</code></td>
+      <td style="text-align: left">Boolean</td>
+      <td style="text-align: left">Adds the “X-Forwarded-For,” “X-Forwarded-Port” and “X-Forwarded-Proto“ headers to requests</td>
+    </tr>
+    <tr>
+      <td style="text-align: left" colspan="4"><strong>Enhanced Logging and Monitoring</strong></td>
+    </tr>
+    <tr>
+      <td style="text-align: left" id="logging-topic-name">
+        <code>loadbalancer.gcorelabs.com/<br>logging-topic-name</code>
+      </td>
+      <td style="text-align: left"><code>topic-123</code></td>
+      <td style="text-align: left">String</td>
+      <td style="text-align: left">Specifies <a href="https://gcore.com/docs/cloud/logging-as-a-service/about-logging-as-a-service" target="_blank">LaaS</a> topic name for pushing logs.<br><b>Note:</b> Must be used with the logging-destination-region-id, otherwise logs won’t be sent to LaaS</td>
+    </tr>
+    <tr>
+      <td style="text-align: left" id="logging-destination-region-id">
+        <code>loadbalancer.gcorelabs.com/<br>logging-destination-region-id</code>
+      </td>
+      <td style="text-align: left"><code>1</code></td>
+      <td style="text-align: left">Integer</td>
+      <td style="text-align: left">Specifies <a href="https://gcore.com/docs/cloud/logging-as-a-service/about-logging-as-a-service" target="_blank">LaaS</a> destination region.<br><b>Note:</b> Must be used with the logging-topic-name, otherwise logs won’t be sent to LaaS</td>
+    </tr>
+    <tr>
+      <td style="text-align: left" id="logging-retention-policy-period">
+        <code>loadbalancer.gcorelabs.com/<br>logging-retention-policy-period</code>
+      </td>
+      <td style="text-align: left"><code>45</code></td>
+      <td style="text-align: left">Integer</td>
+      <td style="text-align: left">Configures log retention policy for LaaS topic (in days)</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">
+        <code>loadbalancer.gcore.com/<br>logging-retention-policy-period</code>
+      </td>
+      <td style="text-align: left"><code>30</code></td>
+      <td style="text-align: left">Integer</td>
+      <td style="text-align: left">Defines log retention policy for the LaaS topic (in days)</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">
+        <code>loadbalancer.gcore.com/<br>logging-topic-name</code>
+      </td>
+      <td style="text-align: left"><code>my-logs</code></td>
+      <td style="text-align: left">String</td>
+      <td style="text-align: left">Specifies the LaaS topic name for pushing logs</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">
+        <code>loadbalancer.gcore.com/<br>logging-destination-region-id</code>
+      </td>
+      <td style="text-align: left"><code>15</code></td>
+      <td style="text-align: left">Integer</td>
+      <td style="text-align: left">Defines the LaaS destination region for log storage</td>
+    </tr>
+    <tr>
+      <td style="text-align: left" colspan="4"><strong>Advanced DDoS Protection</strong></td>
+    </tr>
+    <tr>
+      <td style="text-align: left" id="ddos-profile">
+        <code>loadbalancer.gcorelabs.com/<br>ddos-profile</code>
+      </td>
+      <td style="text-align: left">
+        <code>{ "profile_template":65,<br> "fields": [{ "base_field":272,<br> "field_value":40 }] }</code>
+      </td>
+      <td style="text-align: left">Integer</td>
+      <td style="text-align: left">Configures and ads the DDoS Protection profile to the Load Balancer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">
+        <code>loadbalancer.gcore.com/<br>ddos-profile</code>
+      </td>
+      <td style="text-align: left">
+        <code>{ "profile_template":75,<br> "fields": [{ "base_field":300,<br> "field_value":50 }] }</code>
+      </td>
+      <td style="text-align: left">String</td>
+      <td style="text-align: left">Specifies an Advanced DDoS Protection profile using a JSON string</td>
+    </tr>
+    <tr>
+      <td style="text-align: left" colspan="4"><strong>Connection and Timeout Configurations</strong></td>
+    </tr>
+    <tr>
+      <td style="text-align: left" id="timeout-client-data">
+        <code>loadbalancer.gcorelabs.com/<br>timeout-client-data</code>
+      </td>
+      <td style="text-align: left"><code>6000</code></td>
+      <td style="text-align: left">Integer</td>
+      <td style="text-align: left">Sets client data timeouts for <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer#timeouts" target="_blank">Load Balancer listeners</a> (in msec). <br><b>Note:</b> When removed, the previously set value in effect</td>
+    </tr>
+    <tr>
+      <td style="text-align: left" id="timeout-member-connect">
+        <code>loadbalancer.gcorelabs.com/<br>timeout-member-connect</code>
+      </td>
+      <td style="text-align: left"><code>6000</code></td>
+      <td style="text-align: left">Integer</td>
+      <td style="text-align: left">Sets member connect timeouts for <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer#timeouts" target="_blank">Load Balancer listeners</a> (in msec). <br><b>Note:</b> When removed, the previously set value in effect</td>
+    </tr>
+    <tr>
+      <td style="text-align: left" id="timeout-member-data">
+        <code>loadbalancer.gcorelabs.com/<br>timeout-member-data</code>
+      </td>
+      <td style="text-align: left"><code>6000</code></td>
+      <td style="text-align: left">Integer</td>
+      <td style="text-align: left">Sets member data timeouts for <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer#timeouts" target="_blank">Load Balancer listeners</a> (in msec). <br><b>Note:</b> When removed, the previously set value in effect</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">
+        <code>loadbalancer.gcore.com/<br>listener-connection-limit</code>
+      </td>
+      <td style="text-align: left"><code>500</code></td>
+      <td style="text-align: left">Integer</td>
+      <td style="text-align: left">Sets a limit on the number of concurrent connections per listener</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">
+        <code>loadbalancer.gcore.com/<br>listener-timeout-client-data</code>
+      </td>
+      <td style="text-align: left"><code>"30s"</code></td>
+      <td style="text-align: left">String</td>
+      <td style="text-align: left">Defines client data timeout duration (e.g., "30s" or "1m")</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">
+        <code>loadbalancer.gcore.com/<br>listener-timeout-member-connect</code>
+      </td>
+      <td style="text-align: left"><code>"30s"</code></td>
+      <td style="text-align: left">String</td>
+      <td style="text-align: left">Defines the connection timeout between Load Balancer and backend members</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">
+        <code>loadbalancer.gcore.com/<br>listener-timeout-member-data</code>
+      </td>
+      <td style="text-align: left"><code>"30s"</code></td>
+      <td style="text-align: left">String</td>
+      <td style="text-align: left">Defines the data transmission timeout between Load Balancer and backend members</td>
+    </tr>
+    <tr>
+      <td style="text-align: left" colspan="4"><strong>IP and Network Configurations</strong></td>
+    </tr>
+    <tr>
+      <td style="text-align: left" id="floating-cleanup">
+        <code>loadbalancer.gcorelabs.com/<br>floating-cleanup</code>
+      </td>
+      <td style="text-align: left"><code>true</code></td>
+      <td style="text-align: left">Boolean</td>
+      <td style="text-align: left">Automatically cleans up the floating IP assigned to the Load Balancer after deleting the service</td>
+    </tr>
+    <tr>
+      <td style="text-align: left" id="gcore-internal-load-balancer">
+        <code>service.beta.kubernetes.io/<br>gcore-internal-load-balancer</code>
+      </td>
+      <td style="text-align: left"><code>true</code></td>
+      <td style="text-align: left">Boolean</td>
+      <td style="text-align: left">Disables floating IP creation and makes the Load Balancer non available for external requests</td>
+    </tr>
+    <tr>
+      <td style="text-align: left" id="gcore-external-load-balancer">
+        <code>service.beta.kubernetes.io/<br>gcore-external-load-balancer</code>
+      </td>
+      <td style="text-align: left"><code>true</code></td>
+      <td style="text-align: left">Boolean</td>
+      <td style="text-align: left">Makes the Load Balancer public</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">
+        <code>loadbalancer.gcore.com/<br>floating-ip</code>
+      </td>
+      <td style="text-align: left"><code>"1.1.1.1"</code></td>
+      <td style="text-align: left">String</td>
+      <td style="text-align: left">Specifies a floating IP for a private Load Balancer, only for internal networks.</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">
+        <code>loadbalancer.gcore.com/<br>floating-ip</code>
+      </td>
+      <td style="text-align: left"><code>"192.168.1.10"</code></td>
+      <td style="text-align: left">String</td>
+      <td style="text-align: left">Assigns an existing floating IP address to the Load Balancer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">
+        <code>loadbalancer.gcore.com/<br>floating-ip-cleanup</code>
+      </td>
+      <td style="text-align: left"><code>true</code></td>
+      <td style="text-align: left">Boolean</td>
+      <td style="text-align: left">Automatically removes the assigned floating IP when the Service is deleted</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">
+        <code>loadbalancer.gcore.com/<br>reserved-ip</code>
+      </td>
+      <td style="text-align: left"><code>"10.0.0.42"</code></td>
+      <td style="text-align: left">String</td>
+      <td style="text-align: left">Specifies a reserved IP for the Load Balancer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">
+        <code>loadbalancer.gcore.com/<br>reserved-ip-cleanup</code>
+      </td>
+      <td style="text-align: left"><code>true</code></td>
+      <td style="text-align: left">Boolean</td>
+      <td style="text-align: left">Automatically cleans up reserved IPs upon deletion</td>
+    </tr>
+  </tbody>
 </table>
+
 
 ## Examples
 
