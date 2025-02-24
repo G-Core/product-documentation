@@ -25,7 +25,7 @@ Alternatively, there is a tool with a graphical user interface called "Lens". It
 1\.  Send a CURL request. For version v1.23.0, use the following request: 
     
 ```
-curl -LO [https://storage.googleapis.com/kubernetes-release/release/v1.23.0/bin/windows/amd64/kubectl.exe](https://storage.googleapis.com/kubernetes-release/release/v1.23.0/bin/windows/amd64/kubectl.exe)
+curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.23.0/bin/windows/amd64/kubectl.exe
 ```
 
 Instead of a CURL request, you can use a link to download the installation file. Find the link and CURL request for the latest Kubernetes version in the <a href="https://kubernetes.io/docs/tasks/tools/install-kubectl-windows/#install-kubectl-binary-with-curl-on-windows" target="_blank">Kubernetes official documentation</a>.  
