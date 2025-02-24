@@ -159,11 +159,11 @@ Port Security is enabled by default for all Virtual Machines, allowing only auth
 
 To disable Port Security:
 
-1\. Open the Customer Portal and navigate to your Virtual Machine.
+1\. Open the Gcore Customer Portal and navigate to your Virtual Machine.
 
 2\. Go to the **Networking** tab.
 
-3\. Click on the **...** menu next to the interface.
+3\. Click on the three-dot menu next to the interface.
 
 4\. Select **Disable Port Security**.
 
