@@ -58,4 +58,12 @@ Run the following command to retrieve information about the storage classes conf
 kubectl get storageclass 
 ```
 
-If everything’s set up correctly, the `gcore-nfs storage` class should be listed among other storage classes. 
+If everything’s set up correctly, the `gcore-nfs-*` storage class should be listed among other storage classes. 
+
+### Resizing File Share
+
+<alert-element type="info" title="Info">
+
+If you want to change the size of the attached file share, you first need to unmount it and then mount it again inside your Kubernetes cluster. If you resize the attached File Share without unmounting it first, your applications will not work correctly.
+
+</alert-element>
