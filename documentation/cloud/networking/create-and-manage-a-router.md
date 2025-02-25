@@ -53,9 +53,7 @@ A router can be created in two ways:
 
 ### Router control and route tables
 
-Routing is based on route tables, which define the paths that network traffic takes from a VM to other destinations. These destinations can be inside or outside the private network. The tables contain static routes consisting of:
-* The target subnet prefix in CIDR notation.
-* The nexthop's internal IP address (the virtual machine or router handling the traffic).
+Routing is based on route tables, which define the paths that network traffic takes from a VM to other destinations. These destinations can be inside or outside the private network. The tables contain static routes, which consist of a target subnet prefix in CIDR notation and the nexthop's internal IP address (the virtual machine or router handling the traffic).
 
 A router is automatically created when a network is created, but customers can also create and configure routers manually.
 
@@ -98,17 +96,17 @@ We support both IPv4 and IPv6 subnetworks, but there are key differences. IPv4 i
 
 ## Configure static routes 
 
-In this section, you can define how traffic flows between different subnets and networks. There are two types of static routes: host routes (Layer 2) for internal subnet routing and router static routes (Layer 3) for inter-network traffic control.
+There are two types of static routes: host routes (Layer 2) for internal subnet routing and router static routes (Layer 3) for inter-network traffic control.
 
-### Host Routes for Subnets (Layer 2)
+### Host routes for subnets (Layer 2)
 
-Host routes operate at **Layer 2** without relying on a router, controlling traffic flow within a subnet. They are assigned to instances through DHCP or cloud-init instead of being distributed by a router. DHCP dynamically assigns host routes based on network configurations, while cloud-init configures them automatically at instance startup using predefined settings.
+Host routes operate at Layer 2 without relying on a router, controlling traffic flow within a subnet. They are assigned to instances through DHCP or cloud-init instead of being distributed by a router. DHCP dynamically assigns host routes based on network configurations, while cloud-init configures them automatically at instance startup using predefined settings.
 
 Host routes are automatically assigned to instances within the same subnet and do not require manual configuration. They are not advertised beyond the subnet, ensuring traffic stays internal.
 
-### Router Static Routes (Layer 3)
+### Router static routes (Layer 3)
 
-Router-level static routes operate at **Layer 3** and require a router to forward traffic between networks. These routes are distributed to instances using **Router Advertisement**. When a router is present, it announces available routes to connected instances.
+Router-level static routes operate at Layer 3 and require a router to forward traffic between networks. These routes are distributed to instances using Router Advertisement. When a router is present, it announces available routes to connected instances.
 
 To configure a static route:
 
@@ -122,7 +120,7 @@ To configure a static route:
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-router/configure-static-routes.png" alt="Static routes settings" width="80%">
 
-5\. Enter **Destination** and **Nexthop**.
+5\. Enter Destination and Nexthop.
 
 6\. Click **Save Static Routes**.
 
