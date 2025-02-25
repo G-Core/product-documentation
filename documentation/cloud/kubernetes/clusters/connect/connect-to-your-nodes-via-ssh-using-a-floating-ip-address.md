@@ -42,7 +42,7 @@ The floating IP has been assigned to the node, and you can now access it.
 Run the command in the command line utility:
 
 ```
-ssh core@**\[floating IP address\]** -i "**\[path to the private SSH key**\]"
+ssh core@[floating IP address] -i "[path to the private SSH key]"
 ```
   
 Replace **\[floating IP address\]** with the actual floating IP address of the node and **\[path to the private SSH key**\] with the path to the private key on your local machine.
