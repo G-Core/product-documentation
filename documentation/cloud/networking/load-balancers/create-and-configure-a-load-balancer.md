@@ -200,11 +200,11 @@ Specify client data, member connect and member data timeouts in msec.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-timeouts-lb.png" alt="Configure timeouts" width="65%">
 
-Each Terminated HTTPS listener requires a default TLS certificate. Additional SNI certificates can also be configured, allowing multiple certificates to be assigned to the same listener.
+Each terminated HTTPS listener requires a default TLS certificate. Additional SNI certificates can also be configured, allowing multiple certificates to be assigned to the same listener.
 
 ## Step 7. Enter the name
 
-Enter a name for the Load Balancer. This name will be displayed in the Customer Portal.
+Enter a name for the Load Balancer. This name will be displayed in the Gcore Customer Portal.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-configure-a-load-balancer/step-6-lb.png" alt="Enter Load Banalcer name" width="65%">
 
