@@ -5,7 +5,7 @@ order: 20
 published: true
 toc:
    --1--What a reserved IP is used for: "what-a-reserved-ip-is-used-for"
-   --1--How does it works: "how-does-it-works"
+   --1--How does it work: "how-does-it-work"
    --1--Billing: "how-it-is-charged"
    --1--Reserve: "reserve-an-ip-address"
    --1--Assign a reserved IP to a VM: "assign-a-reserved-ip-to-a-vm"
@@ -18,15 +18,15 @@ pageDescription: Create and configure a reserved IP address to assign to Virtual
 ---
 # Create and configure a reserved IP address
 
-A Reserved IP is a dedicated IP address that you can assign to a <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance" target="_blank">Virtual Machine</a> or a <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer" target="_blank">Load Balancer</a> at any time.
+A reserved IP is a dedicated IP address that you can assign to a <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance" target="_blank">Virtual Machine</a> or a <a href="https://gcore.com/docs/cloud/networking/create-and-configure-a-load-balancer" target="_blank">Load Balancer</a> at any time.
 
 ## What a reserved IP is used for
 
-Since you know the IP address in advance, rvices for it, you can pre-configure your services for it — for example, create a DNS record for this IP or configure the server to connect to it.
+Since you know the IP address in advance, you can pre-configure your services for it—for example, create a DNS record for this IP or configure the server to connect to it.
 
 A reserved IP can also be used as a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address" target="_blank">virtual IP address</a>.
 
-## How does it works
+## How does it work
 
 After you create a reserved IP, this address becomes yours inside our system. No one can use it except you.
 
