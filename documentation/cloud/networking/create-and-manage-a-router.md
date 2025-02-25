@@ -57,7 +57,7 @@ Routing is based on route tables, which define the paths that network traffic ta
 
 A router is automatically created when a network is created, but customers can also create and configure routers manually.
 
-By default, all routers have SNAT (Source Network Address Translation) enabled, allowing instances in a private network to access the external network. This can be turned off if needed.
+By default, all routers have SNAT (Source Network Address Translation) enabled, allowing instances in a private network to access the external network. This can be turned off if needed This can be turned off if needed via API or Terraform.
 
 Customers can add subnets to a router and define static routes for controlling traffic flow.
 
