@@ -17,7 +17,7 @@ You can upload images to the cloud storage by following a few simple steps, ensu
 
 Before uploading an image to the storage, check that it meets the required format, driver, and package requirements.
 
-### Supported Formats  
+### Supported formats  
 
 The uploaded image must be in one of the following formats:
 
@@ -40,7 +40,7 @@ The uploaded image must be in one of the following formats:
    </tr>
    <tr>
       <td>qcow2</td>
-      <td>QEMU Copy-On-Write format</td>
+      <td>QEMU copy-on-write format</td>
    </tr>
    <tr>
       <td>aki / ari / ami</td>
@@ -62,7 +62,7 @@ If you upload an image previously downloaded from another cloud, the image shoul
 
 2. Go to the **Images** tab and then proceed to **Import via URL**.
 
-<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/click-import-via-url.png" alt="Upload an Image" width="800">
+<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/click-import-via-url.png" alt="Gcore Customer Portal - Import an image via URL in the Images section" width="800">
 
 3. Select the Resource type:
    - Virtual Instances
@@ -72,11 +72,11 @@ If you upload an image previously downloaded from another cloud, the image shoul
 
 4. Enter the image name and specify the URL from where the image will be downloaded.
 
-<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/enter-url-of-your-image.png" alt="Upload an Image" width="800">
+<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/enter-url-of-your-image.png" alt="Enter the image name and URL for uploading" width="800">
 
-5. **Architecture**: Choose the architecture of the image based on the processor type where it will run: select x86 for traditional CISC processors like Intel or AMD, or ARM for RISC-based processors such as ARM CPUs.
+5. Choose the architecture of the image based on the processor type where it will run: select x86 for traditional CISC processors like Intel or AMD, or ARM for RISC-based processors such as ARM CPUs.
 
-6. **VM quick start**: If this option is on, the Virtual Machines will be deployed faster with this image mounted. However, please note that you cannot delete this image if there are active Virtual Machines created from this image.
+6. If **VM quick start** toggle is on, the Virtual Machines will be deployed faster with this image mounted. However, please note that you cannot delete this image if there are active Virtual Machines created from this image.
 
 **Standard start vs quick start:**
 
@@ -88,8 +88,8 @@ If you upload an image previously downloaded from another cloud, the image shoul
    </tr>
    <tr>
       <td>Technology</td>
-      <td>RBD Copy-On-Write</td>
-      <td>RBD Copy-On-Write</td>
+      <td>RBD copy-on-write</td>
+      <td>RBD copy-on-write</td>
    </tr>
    <tr>
       <td>Image data</td>
@@ -113,16 +113,16 @@ If you upload an image previously downloaded from another cloud, the image shoul
    </tr>
 </table>
 
-7. **Permission to use an SSH key in instances**: We recommend using SSH-key authorization for security reasons. Specify the permission level for SSH key usage in instances created from this image. You can choose **Allow** to make SSH key usage optional, **Deny** to prohibit SSH key usage entirely, or **Required** to mandate SSH key usage for secure instance access.
+7. Specify the permission level for SSH key usage in instances created from this image. You can choose **Allow** to make SSH key usage optional, **Deny** to prohibit SSH key usage entirely, or **Required** to mandate SSH key usage for secure instance access. We recommend using SSH-key authorization for security reasons. 
 
-8. **Operating system installed on the image**: Select the OS pre-installed on the image, like Linux or Windows Server, to suit your deployment needs and ensure smooth operation.
+8. Select the OS pre-installed on the image, like Linux or Windows Server, to suit your deployment needs and ensure smooth operation.
 
-9. **Type of firmware with which to boot the guest**: Select either BIOS or UEFI. For Bare Metal servers, UEFI is recommended for proper functionality. For Virtual Machines, the choice depends on your personal preference. The firmware type is determined by the selected product. Virtual Instances and GPU virtual clusters support both UEFI and BIOS, while Bare Metal servers and GPU baremetal clusters are restricted to UEFI for compatibility. Choose UEFI for modern systems or BIOS for legacy setups.
+9. Select firmware type. For Bare Metal servers, UEFI is recommended for proper functionality. For Virtual Machines, the choice depends on your personal preference. The firmware type is determined by the selected product. Virtual Instances and GPU virtual clusters support both UEFI and BIOS, while Bare Metal servers and GPU baremetal clusters are restricted to UEFI for compatibility. Choose UEFI for modern systems or BIOS for legacy setups.
 
-10. **Virtual chipset type**: Choose between q35 and i440 virtual chipsets based on the OS version, required functionality, and supported virtual devices.
+10. Choose the virtual chipset type between q35 and i440 virtual chipsets based on the OS version, required functionality, and supported virtual devices.
 
 11. Add tags (optional) to identify images using the "Key" and "Value" principles. Enable this option to add metadata tags to your image, helping you efficiently organize and identify resources.
 
 12. Click the **Upload** button. Your image will be uploaded.
 
-<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/click-upload.png" alt="Upload an Image" width="800">
+<img src="https://assets.gcore.pro/docs/cloud/images/upload-an-image-to-the-storage/click-upload.png" alt="Click the Upload button to finalize image import" width="800">
