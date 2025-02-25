@@ -35,7 +35,7 @@ You can create a subnetwork in two ways: <a href="https://gcore.com/docs/cloud/v
 
 5\. Enter the subnetwork name.
 
-6\. Set a CIDR between ranges: 
+6\. Set a CIDR within the specified range: 
  * 10.0.0.0/8
  * 172.16.0.0/12
  * 192.168.0.0/16
@@ -57,11 +57,9 @@ For IPv6 networks, you can only enable or disable DHCP when creating a subnetwor
 
 9\. (optional) Specify custom DNS servers for the subnetwork. If you don’t need custom DNS settings, leave the field blank. 
 
-10\. Define how your traffic will be distributed within a network: 
-
- * **Destination**: Specify the network or host where the traffic is intended to go.  
-
- * **Next hop**: Choose the intermediate device (e.g., a router or gateway) that traffic should pass to reach the destination. 
+10\. Define how your traffic will be distributed within a network:
+ * **Destination:** Specify the network or host where the traffic is intended to go.  
+ * **Next hop:** Choose the intermediate device (e.g., a router or gateway) through which traffic must pass to reach the destination. 
 
 11\. (optional) Turn on **Add tags** to add metadata to the subnetwork.
 
@@ -101,7 +99,7 @@ The table below outlines key networking features for IPv4 and IPv6, including su
     </thead>
     <tbody>
         <tr>
-            <td>CIDR Ranges</td>
+            <td>CIDR ranges</td>
             <td>
                 10.0.0.0/8<br>
                 172.16.0.0/12<br>
@@ -110,7 +108,7 @@ The table below outlines key networking features for IPv4 and IPv6, including su
             <td>fc00::/7</td>
         </tr>
         <tr>
-            <td>Subnet Mask Range</td>
+            <td>Subnet mask range</td>
             <td>
                 /8 - /29 for 10.0.0.0/8<br>
                 /12 - /29 for 172.16.0.0/12<br>
@@ -119,30 +117,30 @@ The table below outlines key networking features for IPv4 and IPv6, including su
             <td>/7 - /126</td>
         </tr>
         <tr>
-            <td>Floating IP Support</td>
+            <td>Floating IP support</td>
             <td>Yes</td>
             <td>No</td>
         </tr>
         <tr>
-            <td>Internet Access</td>
+            <td>Internet access</td>
             <td>Yes</td>
             <td>
-                No - for private IPv6 subnets are not publicly routable<br>
-                Yes - for public IPv6
+                No - private IPv6 subnets are not publicly routable<br>
+                Yes - public IPv6
             </td>
         </tr>
         <tr>
-            <td>DHCP Configuration</td>
+            <td>DHCP configuration</td>
             <td>Can be enabled or disabled</td>
             <td>Cannot be changed after creation</td>
         </tr>
         <tr>
-            <td>Routing Between Subnets</td>
+            <td>Routing between subnets</td>
             <td>Allowed within the same network</td>
             <td>Allowed within the same network</td>
         </tr>
         <tr>
-            <td>UI Availability</td>
+            <td>UI availability</td>
             <td>Available to all users</td>
             <td>Available to all users</td>
         </tr>
@@ -171,7 +169,7 @@ If you need to configure a gateway in a private subnetwork, ensure that only one
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/disable-router-gateway.png" alt="Edit subnetwork dialog" width=80%>
 
-If you add a private interface (with or without a floating IP) after creating a server, some operating systems may not activate it automatically. This is especially relevant for Bare Metal servers. In such cases, configure the interface manually.
+If you add a private interface (with or without a floating IP) after creating a server, some operating systems may not activate it automatically. This is especially common for Bare Metal servers. In such cases, configure the interface manually.
 
 ## Manage subnetworks
 
