@@ -59,7 +59,7 @@ Click **New rule** and select one of the template rules or choose **Custom** to 
 
 For **Sources**, set a specific IP address range in the CIDR format. Otherwise, the rule will be applied to all IP addresses. 
 
-Outbound traffic on port 25 (SMTP) is closed by default to prevent abusive actions within our network. To open this port, please contact support.
+Outbound traffic on port 25 (SMTP) is closed by default to prevent abusive actions within our network. To open this port, please [reach out to our support team](https://gcore.com/contact-us).
 
 5\. (optional) Apply a firewall to a Virtual Machine by selecting it in the **Apply to Instance** drop-down list.
 
@@ -81,7 +81,7 @@ The default firewall contains inbound rules, which allow the following traffic f
 
 All outgoing connections are allowed.  
 
-Some operating systems also have their internal firewall, providing double protection. However, to avoid misconfiguration, it's best to configure either the cloud firewall or the OS firewall, but not simultaneously.
+Some operating systems also have an internal firewall, providing an additional layer of protection. However, to prevent misconfiguration, it's best to configure either the cloud firewall or the OS firewall, but not both at the same time.
 
 When you activate the service, the system automatically creates a default firewall in the default project. If you don’t specify a custom firewall, this default firewall will be applied to your Virtual Machine.
 
@@ -111,7 +111,7 @@ Please note that the RDF template is currently not included in the list of prede
 
 <alert-element type="warning" title="Warning">
  
-You cannot delete a default firewall. 
+You can't delete a default firewall. 
  
 </alert-element>
 
@@ -123,7 +123,9 @@ You cannot delete a default firewall.
 
 ### Restore a default firewall
 
-To restore the default security group settings, you can either use the API or the 'Restore Default' option in the Customer Portal. This will restore any custom changes made to the firewall settings to their default configuration.
+To restore the default security group settings, you can either use the API or click **Restore Default** in the Firewall Rules section. This will restore any custom changes made to the firewall settings to their default configuration.
+
+<img src="https://assets.gcore.pro/docs/cloud/networking/add-and-configure-a-firewall/restore-default-option.png" alt="Restore Default option for resetting firewall settings" width="80%">
 
 ## Firewall feature not supported for Bare Metal servers
 
