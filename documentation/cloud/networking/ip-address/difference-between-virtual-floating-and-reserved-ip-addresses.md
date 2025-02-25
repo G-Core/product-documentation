@@ -22,41 +22,41 @@ Cloud IP addresses serve different purposes based on their type. Virtual, floati
     </thead>
     <tbody>
         <tr>
-            <td>Virtual (VIP)</td>
+            <td>Virtual IP</td>
             <td>
-                • Assign to multiple VMs for fault tolerance<br>
+                • Assign to multiple Virtual Machines for fault tolerance<br>
                 • Use as a secondary address for a network interface<br>
-                • Automatically assigned as a VIP for Load Balancers<br>
-                • VIP is a subtype of Reserved IP
+                • Automatically assigned as a Virtual IP for Load Balancers<br>
+                • A virtual IP is a subtype of a Reserved IP
             </td>
-            <td>VM</td>
+            <td>Virtual Machines</td>
             <td>Public or private</td>
         </tr>
         <tr>
             <td>Floating IP</td>
             <td>
-                • Provide public access to a VM in a private subnet via DNAT<br>
-                • Assign to any VM, Bare Metal, or Load Balancer
+                • Provide public access to a Virtual Machine in a private subnet via DNAT<br>
+                • Assign to any Virtual Machine, Bare Metal server, or Load Balancer
             </td>
-            <td>Private ports of VM, BM, LB</td>
+            <td>Private ports of Virtual Machines, Bare Metal servers, and Load Balancers</td>
             <td>Public (mapped via DNAT)</td>
         </tr>
         <tr>
-            <td>Reserved (Fixed IP)</td>
+            <td>Reserved IP</td>
             <td>
                 • Pre-allocate an IP for future use<br>
-                • Assign to any VM, BM, or LB at any time<br>
-                • Can be converted into a VIP if needed
+                • Assign to any Virtual Machine, Bare Metal server, or Load Balancer at any time<br>
+                • Can be converted into a Virtual IP if needed
             </td>
-            <td>VM, BM, LB</td>
+            <td>Virtual Machines, Bare Metal servers, and Load Balancers</td>
             <td>Public or private</td>
         </tr>
     </tbody>
 </table>
 
-## Cloud IPs and Location
+## Cloud IPs
 
-All IP addresses on the Cloud platform are native, and they correspond to the exact physical location where the server is deployed. This results in low latency, optimized routing, and improved performance for cloud services.
+All IP addresses on the Cloud platform are native and correspond to the exact physical location where the server is deployed. This results in low latency, optimized routing, and improved performance for cloud services.
 
 When a public IP is assigned, it comes from a shared regional pool and remains static for the lifetime of the network interface. However, if the interface is deleted and re-created, the public IP is released back into the pool and replaced with a new one.
 
