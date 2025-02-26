@@ -35,6 +35,8 @@ A transcoded video stream has the following codecs by default:
 
 ## Output parameters after transcoding
 
+The table below shows the available output quality levels after transcoding. Video and audio parameters are optimized for adaptive bitrate streaming, providing smooth playback across devices and network conditions.
+
 <table>
 <thead>
 <tr>
@@ -127,6 +129,13 @@ The values must be reversed for vertical videos. For example, if a horizontal re
 We use variable bitrate (VBR) for encoding video. The table above shows average values. The Gcore Customer Portal shows a sum of audio and video bitrates.
 
 **Note**: We don’t upscale videos. Your output will range from the lowest quality to that of your original bitrate. So, if you upload a 4K video, your output will range from the lowest quality up to 4K. Similarly, if you upload a 720p video, your output will vary from the lowest quality up to 720p only.
+
+### Custom quality sets
+
+We provide an optimized set of quality presets designed for smooth streaming across all devices. These settings balance quality and bandwidth efficiency, making them ideal for most users. However, if you have specific requirements—such as higher audio quality, cost reduction by removing unnecessary renditions, AV1 encoding, or custom settings for individual videos—you have full control over your transcoding presets.
+
+Each video can have its own unique quality settings, so you’re not limited to a single configuration. Default and custom presets work together, giving you the flexibility to fine-tune streaming quality as needed. Check out the <a href="https://api.gcore.com/docs/streaming#tag/QualitySets" target="_blank">API documentation</a> to explore available custom quality sets. If you need assistance, our [support team](mailto:support@gcore.com) is always ready to help you customize the best option for your needs.
+
 
 ## HTTP response codes when requesting Live and VOD videos
 
