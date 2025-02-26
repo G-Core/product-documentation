@@ -21,7 +21,7 @@ Gcore Managed DNS is an authoritative DNS server for domain delegation. When del
 - <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site" target="_blank">Creation of a CDN resource for the entire site</a>
 - DNS records management in the <a href="https://dns.gcore.com/zones" target="_blank">Gcore Customer Portal</a> and via the <a href="https://api.gcore.com/docs/dns" target="_blank">API</a>
 - AnycastDNS for redirecting requests to your domain to the nearest edge location
-- <a href="https://gcore.com/docs/dns/dns-records/configure-weight-balancing-and-geobalancing" target="_blank">Flexible balancing to various IP addresses</a>, based on the geolocation of the user who requested the domain, metadata, or weight that you set
+- <a href="https://gcore.com/docs/dns/dns-records/configure-weight-balancing-and-geobalancing" target="_blank">Flexible balancing to various IP addresses</a>, based on the geolocation of the user who requested the domain, metadata, or weight that you set. This includes support for EDNS Client Subnet to enhance routing accuracy
 - <a href="https://gcore.com/docs/dns/getting-started-with-dnssec" target="_blank">DNSSEC</a> for domain protection during resolving processes
 - <a href="https://gcore.com/docs/dns/dns-failover/configure-and-use-dns-failover" target="_blank">Health Checks</a> for checking the availability of IP addresses
 - <a href="https://gcore.com/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns" target="_blank">OctoDNS</a>, <a href="https://gcore.com/docs/dns/dns-plugins/get-a-let-s-encrypt-certificate-with-certbot" target="_blank">Certbot</a>, Kubernetes, and Terraform third-party solution integrations
