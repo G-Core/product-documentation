@@ -444,3 +444,58 @@ You should see something similar to this:
        valid_lft forever preferred_lft forever
 ```
 Notice in the enp3s0 interface, the static IP address for IPv4 is `192.170.1.25` and for IPv6 it is `2020:1::1`.
+
+## Check Cloud-Init logs for errors
+
+If you encounter any issues with `cloud-init`, you can check the logs to identify the problem. There are two main log files on your instances.
+
+### Cloud-init log
+
+The `cloud-init` log is located at `/var/log/cloud-init.log` and contains detailed information about the `cloud-init` process, including any errors that occur.
+
+To view the `cloud-init` log, run the following command:
+
+```
+cat /var/log/cloud-init.log
+```
+
+You should see the log output similar to this:
+
+```
+2025-02-25 13:47:57,223 - util.py[DEBUG]: Cloud-init v. 24.4~3+really24.3.1-0ubuntu4 running 'init-local' at Tue, 25 Feb 2025 13:47:57 +0000. Up 10.68 seconds.
+2025-02-25 13:47:57,227 - stages.py[DEBUG]: Using distro class <class 'cloudinit.distros.ubuntu.Distro'>
+2025-02-25 13:47:57,228 - main.py[INFO]: PID [1] started cloud-init 'init-local'.
+2025-02-25 13:47:57,228 - main.py[DEBUG]: No kernel command line url found.
+2025-02-25 13:47:57,228 - main.py[DEBUG]: Closing stdin
+2025-02-25 13:47:57,231 - util.py[DEBUG]: Writing to /var/log/cloud-init.log - ab: [640] 0 bytes
+2025-02-25 13:47:57,232 - util.py[DEBUG]: Changing the ownership of /var/log/cloud-init.log to 102:4
+2025-02-25 13:47:57,232 - util.py[DEBUG]: Writing to /var/lib/cloud/data/python-version - wb: [644] 4 bytes
+2025-02-25 13:47:57,233 - util.py[DEBUG]: Attempting to remove /var/lib/cloud/instance/boot-finished
+...
+```
+
+### Cloud-init output log
+
+The `cloud-init-output` log is located at `/var/log/cloud-init-output.log` and contains the output of the scripts the `cloud-init` process runs.
+
+To view the `cloud-init-output` log, run the following command:
+
+```
+cat /var/log/cloud-init-output.log
+```
+
+You should see the log output similar to this:
+
+```
+Cloud-init v. 24.4~3+really24.3.1-0ubuntu4 running 'init-local' at Tue, 25 Feb 2025 13:47:57 +0000. Up 10.68 seconds.
+Cloud-init v. 24.4~3+really24.3.1-0ubuntu4 running 'init' at Tue, 25 Feb 2025 13:47:59 +0000. Up 13.00 seconds.
+ci-info: +++++++++++++++++++++++++++++++++++++++Net device info+++++++++++++++++++++++++++++++++++++++
+ci-info: +--------+------+------------------------------+---------------+--------+-------------------+
+ci-info: | Device |  Up  |           Address            |      Mask     | Scope  |     Hw-Address    |
+ci-info: +--------+------+------------------------------+---------------+--------+-------------------+
+ci-info: | enp3s0 | True |        11.222.111.222        | 255.255.255.0 | global | aa:bb:cc:dd:ee:ff |
+ci-info: | enp3s0 | True | fe80::f816:3eff:fe25:e835/64 |       .       |  link  | aa:bb:cc:dd:ee:ff |
+ci-info: |   lo   | True |          127.0.0.1           |   255.0.0.0   |  host  |         .         |
+ci-info: |   lo   | True |           ::1/128            |       .       |  host  |         .         |
+...
+```
