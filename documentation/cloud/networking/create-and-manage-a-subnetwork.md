@@ -13,11 +13,11 @@ pageDescription: Learn how to create and manage a subnetwork in the cloud to tra
 ---
 # Create and manage a subnetwork
 
-A subnetwork is a range of IP addresses in a cloud network. Addresses from this range will be assigned to Virtual Machines(VMs) in the cloud.  
+A subnetwork is a range of IP addresses in a cloud network. Addresses from this range will be assigned to Virtual Machines (VMs) in the cloud.  
 
 ## Create a subnetwork
 
-There are two ways to create a subnetwork in the network: <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance" target="_blank">during the creation of a Gcore Virtual Machine</a> or from the **Networks** page, which is described in the following section.
+You can create a subnetwork in two ways: <a href="https://gcore.com/docs/cloud/virtual-instances/create-an-instance" target="_blank">during the creation of a Gcore Virtual Machine</a> or from the **Networks** page, which is described in the following section.
 
 ### Create a subnetwork from the Networks page 
 
@@ -35,7 +35,7 @@ There are two ways to create a subnetwork in the network: <a href="https://gcore
 
 5\. Enter the subnetwork name.
 
-6\. Set CIDR between ranges: 
+6\. Set a CIDR within the specified range: 
  * 10.0.0.0/8
  * 172.16.0.0/12
  * 192.168.0.0/16
@@ -55,19 +55,15 @@ For IPv6 networks, you can only enable or disable DHCP when creating a subnetwor
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/create-subnetwork-name-cidr-dhcp.png" alt="Network configuration example" width=80%>
 
-9\. (optional) Enter server addresses in the "Custom DNS" field to add specific DNS servers.
+9\. (optional) Specify custom DNS servers for the subnetwork. If you don’t need custom DNS settings, leave the field blank. 
 
-10\. (optional) Specify custom DNS servers for the subnetwork. If you don’t need custom DNS settings, leave the field blank. 
+10\. Define how your traffic will be distributed within a network:
+ * **Destination:** Specify the network or host where the traffic is intended to go.  
+ * **Next hop:** Choose the intermediate device (e.g., a router or gateway) through which traffic must pass to reach the destination. 
 
-11\. Define how your traffic will be distributed within a network: 
+11\. (optional) Turn on **Add tags** to add metadata to the subnetwork.
 
- * **Destination**: Specify the network or host where the traffic is intended to go.  
-
- * **Next hop**: Choose the intermediate device (e.g., a router or gateway) that traffic should pass to reach the destination. 
-
-12\. (optional) Turn on **Add tags** to add metadata to the subnetwork.
-
-13\. Click **Create subnetwork**.
+12\. Click **Create subnetwork**.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/create-subnetwork-dns-config.png" alt="Network configuration example" width=80%>
 
@@ -76,6 +72,8 @@ For IPv6 networks, you can only enable or disable DHCP when creating a subnetwor
 While creating a subnetwork, specify the address range in the CIDR format.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/create-subnetwork.png" alt="Create a subnetwork dialog" width=80%>
+
+Your subnetwork's IP range must not overlap with others in the same network. Overlapping subnets cause network conflicts and break connectivity. Virtual machines in the same network communicate using private IP addresses, but subnetworks in different networks cannot communicate unless you configure routing.
 
 The subnetwork size is set using the classless addressing (CIDR) method. You can use both private IPv6 and IPv4 addresses in subnetworks. 
 
@@ -86,6 +84,68 @@ Acceptable CIDR ranges for IPv4 addresses are as follows:
 *   192.168.0.0 - 192.168.255.255
   
 The valid subnet mask range is 16-29. 
+
+### Comparison of IPv4 and IPv6 subnets
+
+The table below outlines key networking features for IPv4 and IPv6, including supported CIDR ranges, subnet mask configurations, and connectivity options.
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>Feature</th>
+            <th>IPv4</th>
+            <th>IPv6</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>CIDR ranges</td>
+            <td>
+                10.0.0.0/8<br>
+                172.16.0.0/12<br>
+                192.168.0.0/16
+            </td>
+            <td>fc00::/7</td>
+        </tr>
+        <tr>
+            <td>Subnet mask range</td>
+            <td>
+                /8 - /29 for 10.0.0.0/8<br>
+                /12 - /29 for 172.16.0.0/12<br>
+                /16 - /29 for 192.168.0.0/16
+            </td>
+            <td>/7 - /126</td>
+        </tr>
+        <tr>
+            <td>Floating IP support</td>
+            <td>Yes</td>
+            <td>No</td>
+        </tr>
+        <tr>
+            <td>Internet access</td>
+            <td>Yes</td>
+            <td>
+                No - private IPv6 subnets are not publicly routable<br>
+                Yes - public IPv6
+            </td>
+        </tr>
+        <tr>
+            <td>DHCP configuration</td>
+            <td>Can be enabled or disabled</td>
+            <td>Cannot be changed after creation</td>
+        </tr>
+        <tr>
+            <td>Routing between subnets</td>
+            <td>Allowed within the same network</td>
+            <td>Allowed within the same network</td>
+        </tr>
+        <tr>
+            <td>UI availability</td>
+            <td>Available to all users</td>
+            <td>Available to all users</td>
+        </tr>
+    </tbody>
+</table>
 
 ## Gateway IP validation
 
@@ -108,6 +168,8 @@ If your Gcore Virtual Machine or Gcore Bare Metal server has both public and pri
 If you need to configure a gateway in a private subnetwork, ensure that only one of your subnetworks is routable. To do this, check the subnetwork settings and verify that only one subnetwork has the **Enable router gateway** toggle active.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-subnetwork/disable-router-gateway.png" alt="Edit subnetwork dialog" width=80%>
+
+If you add a private interface (with or without a floating IP) after creating a server, some operating systems may not activate it automatically. This is especially common for Bare Metal servers. In such cases, configure the interface manually.
 
 ## Manage subnetworks
 
