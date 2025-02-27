@@ -97,7 +97,7 @@ If you’ve already created a cloud resource and want to add more networks to it
 
 5\. To attach a new interface, click **Add interface**: 
 
-* **Public**: Each virtual machine can only have one native public interface. If you require additional public IP addresses, consider using a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address" target="_blank">reserved IP address</a> or <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address" target="_blank">floating IP address</a>  (applied to a private interface). instead. 
+* **Public**: Each virtual machine can only have one native public interface. If you require additional public IP addresses, consider using a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address" target="_blank">reserved IP address</a> or <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address" target="_blank">floating IP address</a>  (applied to a private interface) instead. 
 
 * **Private**: Choose a network from the list or create a new one, then <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork" target="_blank">configure a subnetwork</a> according to your requirements.  
 
