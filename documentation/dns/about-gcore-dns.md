@@ -18,16 +18,16 @@ As a DNS provider, we offer customers two products: <a href="https://gcore.com/d
 
 Gcore Managed DNS is an authoritative DNS server for domain delegation. When delegating domains and creating a DNS zone, the following features are available:
 
-- <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site" target="_blank">Creation of a CDN resource for the entire site</a>
-- DNS records management in the <a href="https://dns.gcore.com/zones" target="_blank">Gcore Customer Portal</a> and via the <a href="https://api.gcore.com/docs/dns" target="_blank">API</a>
-- AnycastDNS for redirecting requests to your domain to the nearest edge location
-- <a href="https://gcore.com/docs/dns/dns-records/configure-weight-balancing-and-geobalancing" target="_blank">Flexible balancing to various IP addresses</a>, based on the geolocation of the user who requested the domain, metadata, or weight that you set. This includes support for EDNS Client Subnet to enhance routing accuracy
-- <a href="https://gcore.com/docs/dns/getting-started-with-dnssec" target="_blank">DNSSEC</a> for domain protection during resolving processes
-- <a href="https://gcore.com/docs/dns/dns-failover/configure-and-use-dns-failover" target="_blank">Health Checks</a> for checking the availability of IP addresses
-- <a href="https://gcore.com/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns" target="_blank">OctoDNS</a>, <a href="https://gcore.com/docs/dns/dns-plugins/get-a-let-s-encrypt-certificate-with-certbot" target="_blank">Certbot</a>, Kubernetes, and Terraform third-party solution integrations
-- <a href="https://gcore.com/docs/dns/dns-records/specify-cname-at-root" target="_blank">CNAME flattening</a> for using a subdomain at the root
-- <a href="https://gcore.com/docs/dns/dns-records/what-is-an-https-record-and-how-is-it-configured" target="_blank">Support for HTTPS records</a>
-- <a href="https://gcore.com/docs/dns/dns-records/supported-dns-record-types#aaaa-record" target="_blank">Support for IPv6 addresses</a>
+- <a href="https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site" target="_blank">Creation of a CDN resource for the entire site</a>.
+- DNS records management in the <a href="https://dns.gcore.com/zones" target="_blank">Gcore Customer Portal</a> and via the <a href="https://api.gcore.com/docs/dns" target="_blank">API</a>.
+- AnycastDNS for redirecting requests to your domain to the nearest edge location.
+- <a href="https://gcore.com/docs/dns/dns-records/configure-weight-balancing-and-geobalancing" target="_blank">Flexible balancing to various IP addresses</a>, based on the geolocation of the user who requested the domain, metadata, or weight that you set. This includes support for EDNS Client Subnet to enhance routing accuracy.
+- <a href="https://gcore.com/docs/dns/getting-started-with-dnssec" target="_blank">DNSSEC</a> for domain protection during resolving processes.
+- <a href="https://gcore.com/docs/dns/dns-failover/configure-and-use-dns-failover" target="_blank">Health Checks</a> for checking the availability of IP addresses.
+- <a href="https://gcore.com/docs/dns/dns-plugins/use-gcore-dns-as-a-secondary-dns-with-octodns" target="_blank">OctoDNS</a>, <a href="https://gcore.com/docs/dns/dns-plugins/get-a-let-s-encrypt-certificate-with-certbot" target="_blank">Certbot</a>, Kubernetes, and Terraform third-party solution integrations.
+- <a href="https://gcore.com/docs/dns/dns-records/specify-cname-at-root" target="_blank">CNAME flattening</a> for using a subdomain at the root.
+- <a href="https://gcore.com/docs/dns/dns-records/what-is-an-https-record-and-how-is-it-configured" target="_blank">Support for HTTPS records</a>.
+- <a href="https://gcore.com/docs/dns/dns-records/supported-dns-record-types#aaaa-record" target="_blank">Support for IPv6 addresses</a>.
 
 DNS record management is available in two modes: **non-advanced** and **advanced**. Use non-advanced mode if you need to add a single DNS record without additional balancing settings. Use advanced mode if you want to add RRsets or set additional settings, such as balancing and Health Checks.
 
