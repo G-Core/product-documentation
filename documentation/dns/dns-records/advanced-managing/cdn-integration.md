@@ -9,7 +9,9 @@ pageDescription: Learn how to configure dynamic responses, select pickers, and s
 ---
 # Configure CDN integration
 
-Integrate our domain zone with Gcore CDN for fast delivery of content worldwide. 
+If you use both Gcore DNS and Gcore CDN you can configure A/AAAA DNS record to resolve exactly to our CDN addresses.
+CDN integration allows you to avoid CNAME configuration and additional lookup on the end user side.
+Gcore DNS will resolve the record to the best possible CDN address.
 
 To configure integration:
 
@@ -21,21 +23,19 @@ To configure integration:
 
 A new page will open.
 
-3\. Ensure that the advanced interface mode is enabled. In non-advanced mode, the CDN integration feature isn't available.
-
 <alert-element type="note" title="Note">
 
-The feature is available only for an **A** record type.
+The feature is available only for an **A/AAAA** record types.
 
 </alert-element>
 
-4\. Click the three-dot icon.
+3\. Click the three-dot icon.
 
-5\. Click **CDN integration** in the row of the relevant A record. 
+4\. Click **CDN integration** in the row of the relevant A record. 
 
 <img src="https://assets.gcore.pro/docs/dns/dns-records/advanced-managing/cdn-integration/cdn-integration-10.png" alt="Open a Records list/Edit record set page" width="80%">
 
-6\. In the pop-up window, you'll see the value of the A record. Click **Save changes**.
+5\. In the pop-up window, you'll see the lookup value is predefined for your account. Click **Save changes**.
 
 <img src="https://assets.gcore.pro/docs/dns/dns-records/advanced-managing/cdn-integration/cdn-integration-20.png" alt="Open a Records list/Edit record set page" width="60%">
 
