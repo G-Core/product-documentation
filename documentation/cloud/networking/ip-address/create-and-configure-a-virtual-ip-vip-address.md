@@ -35,7 +35,7 @@ The monthly price is displayed in the order window.
 
 A Virtual Machine has only one public interface, meaning it receives a Public IP from the public network. It also supports multiple Floating IPs from private networks, but quotas limit the number. In a multi-network setup, each subnet can have one Floating IP. Within a single network, multiple subnets can exist, and each subnet of a single machine (VM/BM) is allowed one Floating IP. 
 
-By default, Baremetal servers support up to six attached IPs. A dedicated Baremetal network removes this limit, allowing unlimited IPs per machine. Unlike standard networks, this type of network lacks port security and can be allocated by request.
+By default, Bare Metal servers support up to six attached IPs. A dedicated Bare Metal network removes this limit, allowing unlimited IPs per machine. Unlike standard networks, this type of network lacks port security and can be allocated by request.
 
 
 ## Create a virtual IP address
