@@ -6,7 +6,7 @@ order: 10
 toc:
    --1--Types of networks: "types-of-networks"
    --1--Create and attach networks: "create-and-attach-networks-to-cloud-resources"
-   --1--Detach networks: "detach-a-network-from-a-vm-or-bare-etal"
+   --1--Detach networks: "detach-a-network-from-a-vm-or-bare-metal"
    --1--Manage networks: "manage-networks"
 pageTitle: Add a network | Gcore
 pageDescription: Learn how to create and manage a network in the cloud to transfer information between cloud resources and establish an Internet connection.
@@ -22,11 +22,17 @@ You can attach networks (also known as network interfaces) to <a href="https://g
 For Cloud resources, you can configure the following types of networks: 
 
 * **Private network**: This interface is for local internal connections to the server and doesn't have access to the external network. Resources with private interfaces can only be accessed from the same network. However, you can customize their setup and establish internet connectivity.  
-For example, if you add a VM with a private interface to a public Load Balancer, this Virtual Machine will receive requests from the internet. You can configure a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address" target="_blank">Floating IP address</a>. 
+For example, if you add a VM with a private interface to a public Load Balancer, this Virtual Machine will receive requests from the internet. You can also assign a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address" target="_blank">Floating IP address</a> to provide external connectivity. 
 
-* **Public network**: This interface grants access to the external network. Instances with that interface will be available from the internet.
+* **Public network**: This interface grants access to the external network. Instances with a public network interface will be available from the internet.
 
-* **Dedicated network**: This network type is designed for individual usage, providing an exclusive pool of addresses for each client. It works with Bare Metal servers and supports assigning multiple public IP addresses to a single server, making it ideal for advanced use cases such as virtualization and traffic balancing. These networks rely on dedicated public subnets, and the number of supported public IPs depends on the size of the assigned subnet. Other customizations are available upon request to meet specific needs. 
+* **Dedicated network**: This network type is designed for individual usage, providing an exclusive pool of addresses for each client. It works with Bare Metal servers and supports assigning multiple public IP addresses to a single server, making it ideal for advanced use cases such as virtualization and traffic balancing. These networks rely on dedicated public subnets, and the number of supported public IPs depends on the size of the assigned subnet. Other customizations are available upon request to meet specific needs.
+
+The type of network used depends on the cloud resource:
+
+* Virtual Machines use **VxLAN**, enabling isolated communication between instances across different physical hosts. At the same time, they can operate in both **VxLAN** and **VLAN** networks.
+
+* Bare Metal servers use **VLAN**, providing direct Layer 2 segmentation for higher performance and security.
 
 ## Create and attach networks to Cloud resources 
 
@@ -67,7 +73,7 @@ To add a new network:
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-network/create-network-dialog.png" alt="Create network dialog" width="80%">
 
-If you need to configure a private network, you also need to add a subnetwork. To do so, follow instructions from the <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork#create-a-subnetwork-from-the-networks-page" target="_blank">creating a subnetwork</a>
+If you need to configure a private network, you also need to add a subnetwork. To do so, follow instructions from the <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork#create-a-subnetwork-from-the-networks-page" target="_blank">creating a subnetwork</a> guide.
 
 ### Attach a network interface to an existing VM or Bare Metal 
 
@@ -85,17 +91,17 @@ If you’ve already created a cloud resource and want to add more networks to it
 
 3\. Click the resource name to open its settings. 
 
-4\. Go to the **Networks** tab. Here you can view, attach, and detach network interfaces attached to your resource. Here's the network configuration for a Virtual Machine:
+4\. Go to the **Networking** tab. Here you can view, attach, and detach network interfaces attached to your resource. Here's the network configuration for a Virtual Machine:
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-network/networking-tab-vm.png" alt="Networking tab in the VM settings" width="80%">
 
 5\. To attach a new interface, click **Add interface**: 
 
-* **Public**: It’s only possible to add one public interface per VM.  Additionally, you can use a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address" target="_blank">reserved IP address</a>. 
+* **Public**: Each virtual machine can only have one native public interface. If you require additional public IP addresses, consider using a <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address" target="_blank">reserved IP address</a> or <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address" target="_blank">floating IP address</a>  (applied to a private interface). instead. 
 
 * **Private**: Choose a network from the list or create a new one, then <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork" target="_blank">configure a subnetwork</a> according to your requirements.  
 
-6\. (Optional) If your network contains both IPv6 and IPv4 addresses, you can enable IPV6 dual-stack and simultaneously use IPv4 and IPv6 protocols on the same network infrastructure. 
+6\. (Optional) If your network contains both IPv6 and IPv4 addresses, you can enable IPv6 dual-stack and simultaneously use IPv4 and IPv6 protocols on the same network infrastructure. 
 
 7\. Click **Save Changes**. 
 
@@ -111,7 +117,7 @@ To remove an interface from your cloud resource, you need to detach all subnetwo
 
 2\. Find the needed resource and click its name to open it. 
 
-3\. Go to the **Networks** tab and find the network you want to detach. To remove an interface from your cloud resource, you first need to detach all existing subnetworks. 
+3\. Go to the **Networks** tab and find the network you want to detach. 
 
 4\. Click the three-dot icon next to each subnetwork within the network and select **Detach subnetwork**.  
 
@@ -122,6 +128,12 @@ If you have a connected Floating IP, detach it before removing subnetworks.
 5\. Confirm the action by clicking **Detach**.
 
 Repeat this step for all subnetworks within the network. 
+
+<alert-element type="warning" title="Warning">
+  
+Disabling a subnet will automatically remove its network interface from the machine, causing network disconnection until a new interface is assigned.
+
+</alert-element>
 
 ## Manage networks 
 
@@ -140,6 +152,22 @@ The details page includes comprehensive information about the network, such as n
 <img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-network/network-details.png" alt="Network details page" width="80%">
 
 Here you can also create and remove <a href="https://gcore.com/docs/cloud/networking/create-and-manage-a-subnetwork" target="_blank">subnetworks</a>. 
+
+### Port security
+
+Port Security is enabled by default for all Virtual Machines, allowing only authorized traffic through network interfaces. To establish connectivity, you must configure a firewall. In some cases, such as specific network configurations or applications that require unrestricted access, turning off Port Security may be necessary.
+
+To disable Port Security:
+
+1\. Open the Gcore Customer Portal and navigate to your Virtual Machine.
+
+2\. Go to the **Networking** tab.
+
+3\. Click on the three-dot menu next to the interface.
+
+4\. Select **Disable Port Security**.
+
+<img src="https://assets.gcore.pro/docs/cloud/networking/create-and-manage-a-network/disable-port-security.png" alt="Disable port security" width="80%">
 
 ### Rename a network  
 
