@@ -8,7 +8,8 @@ toc:
    --1--Use the default firewall: "use-the-default-firewall"
    --2--Add, change and delete rules: "add-change-and-delete-rules"
    --2--Assign to a Virtual Machine and detach from it: "assign-to-a-virtual-machine-and-detach-from-it"
-   --2--Delete: "delete-a-firewall"
+   --2--Delete a firewall: "delete-a-firewall"
+   --2--Restore a default firewall: "restore-a-default-firewall"
    --2--Firewall feature not supported for Bare Metal servers: "firewall-feature-not-supported-for-bare-metal-servers"
 pageTitle: Add a firewall | Gcore
 pageDescription: Learn how to add and configure a firewall to protect your servers from network threats.
@@ -23,7 +24,7 @@ If you use a Load Balancer and your Virtual Machine is in a pool, configure its 
 
 If you don’t create your custom firewall, the default firewall will be used.
 
-1\. Open a window to create a firewall. You can do in two ways:
+1\. Open a window to create a firewall. You can do this in two ways:
 
 *   In the Cloud menu, go to **Networking** > **Firewalls** > **Create firewall**.  
 
@@ -36,12 +37,14 @@ If you don’t create your custom firewall, the default firewall will be used.
 3\. Set **Inbound rules** which would define the allowed incoming traffic.  
 Click **New rule** and select one of the template rules or choose **Custom** to apply custom settings.
 
-*   Template rules (All TCP/all UDP/SSH/HTTP/HTTPS/MySQL/DNS UPD/DNS TCP/postgreSQL): template rules come with pre-configured protocols and ports for typical connections 
+*   Template rules (All TCP/all UDP/SSH/HTTP/HTTPS/MySQL/DNS UPD/DNS TCP/PostgreSQL): template rules come with pre-configured protocols and ports for typical connections 
 *   Custom rule: if you select a custom rule, specify the protocol and port manually. 
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/add-and-configure-a-firewall/13257703188369.png" alt="Inbound rule" width="569" height="166">
 
 For **Sources**, set a specific IP address range in the CIDR format. Otherwise, the rule will be applied to all IP addresses. 
+
+You can attach multiple firewalls to a single Virtual Machine, and each port (interface) can have its own dedicated firewall. 
 
 4\. Set the **Outbound rules** which would define the allowed outgoing traffic.
 
@@ -49,12 +52,14 @@ Please note that by default, outbound traffic over port 25 (TCP/UDP) is restrict
 
 Click **New rule** and select one of the template rules or choose **Custom** to apply custom settings.
 
-*   Template rules (All TCP/all UDP/SSH/HTTP/HTTPS/MySQL/DNS UPD/DNS TCP/postgreSQL): template rules come with pre-configured protocols and ports for typical connections 
+*   Template rules (All TCP/all UDP/SSH/HTTP/HTTPS/MySQL/DNS UPD/DNS TCP/PostgreSQL): template rules come with pre-configured protocols and ports for typical connections 
 *   Custom rule: If you select a custom rule, specify the protocol and port manually.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/add-and-configure-a-firewall/13257703188369.png" alt="Custom rule" width="569" height="166">
 
 For **Sources**, set a specific IP address range in the CIDR format. Otherwise, the rule will be applied to all IP addresses. 
+
+Outbound traffic on port 25 (SMTP) is closed by default to prevent abusive actions within our network. To open this port, please [reach out to our support team](https://gcore.com/contact-us).
 
 5\. (optional) Apply a firewall to a Virtual Machine by selecting it in the **Apply to Instance** drop-down list.
 
@@ -76,7 +81,13 @@ The default firewall contains inbound rules, which allow the following traffic f
 
 All outgoing connections are allowed.  
 
+Some operating systems also have an internal firewall, providing an additional layer of protection. However, to prevent misconfiguration, it's best to configure either the cloud firewall or the OS firewall, but not both at the same time.
+
+When you activate the service, the system automatically creates a default firewall in the default project. If you don’t specify a custom firewall, this default firewall will be applied to your Virtual Machine.
+
 ## Manage a firewall
+
+Firewalls protect your cloud infrastructure by filtering network traffic based on defined rules. Use the steps below to configure firewall rules, assign them to Virtual Machines, or delete a firewall if needed.
 
 ### Add, change and delete rules
 
@@ -85,6 +96,8 @@ All outgoing connections are allowed.
 2\. Find the required firewall, click the ⋯ menu on the right and select **Rules**.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/add-and-configure-a-firewall/13257832035729.png" alt="Firewalls">
+
+Please note that the RDF template is currently not included in the list of predefined template rules. If you require specific configurations not covered by the available templates, consider using the 'Custom' rule option and specifying the necessary ports and protocols.
 
 ### Assign to a Virtual Machine and detach from it
 
@@ -98,7 +111,7 @@ All outgoing connections are allowed.
 
 <alert-element type="warning" title="Warning">
  
-You can’t delete a default firewall. 
+You can't delete a default firewall. 
  
 </alert-element>
 
@@ -108,6 +121,11 @@ You can’t delete a default firewall.
 
 <img src="https://assets.gcore.pro/docs/cloud/networking/add-and-configure-a-firewall/13258132640145.png" alt="Delete a firewall">
 
+### Restore a default firewall
+
+To restore the default security group settings, you can either use the API or click **Restore Default** in the Firewall Rules section. This will restore any custom changes made to the firewall settings to their default configuration.
+
+<img src="https://assets.gcore.pro/docs/cloud/networking/add-and-configure-a-firewall/restore-default-option.png" alt="Restore Default option for resetting firewall settings" width="80%">
 
 ## Firewall feature not supported for Bare Metal servers
 
@@ -124,6 +142,6 @@ sudo iptables -A INPUT -i lo -j ACCEPT
 sudo iptables -P INPUT DROP
 ```
 
-*   For an additional layer of protection, opt for [Gcore DDoS Protection]([url](https://gcore.com/ddos-protection)) to keep your server available during attacks. DDoS Protection redirects traffic to the Threat Mitigation System (TMS), which performs filtering and threat detection, preventing service disruptions with its always-on mode.
+*   For an additional layer of protection, opt for [Gcore DDoS Protection](https://gcore.com/ddos-protection) to keep your server available during attacks. DDoS Protection redirects traffic to the Threat Mitigation System (TMS), which performs filtering and threat detection, preventing service disruptions with its always-on mode.
 
-For more information, please [reach out to our support team]([url](https://gcore.com/contact-us)) for tailored DDoS Protection plans.
+For more information, please [reach out to our support team](https://gcore.com/contact-us) for tailored DDoS Protection plans.
