@@ -27,14 +27,14 @@ If you don’t create your custom firewall, the default firewall will be used.
 1\. Open a window to create a firewall. You can do this in two ways:
 
 *   In the Cloud menu, go to **Networking** > **Firewalls** > **Create firewall**.
-*   When you’re creating a Virtual Machine, find the **Firewall settings** section, select **Add a Firewall**.
+*   When you’re creating a Virtual Machine, navigate to **Firewall settings** and select **Add a Firewall**.
 
  <img src="https://assets.gcore.pro/docs/cloud/networking/add-and-configure-a-firewall/13257548714001.png" alt="Firewalls " width="580" height="271">  
    
 2\. Give your firewall a name. 
 
 3\. Set **Inbound rules** which would define the allowed incoming traffic.  
-Click **New rule** and select one of the template rules or choose **Custom** to apply custom settings.
+Click **New rule** and select one of the template rules, or choose **Custom** to apply custom settings.
 
 *   Template rules (All TCP/all UDP/SSH/HTTP/HTTPS/MySQL/DNS UPD/DNS TCP/PostgreSQL): template rules come with pre-configured protocols and ports for typical connections 
 *   Custom rule: if you select a custom rule, specify the protocol and port manually. 
