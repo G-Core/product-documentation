@@ -21,7 +21,7 @@ In the first stage, an AI model is trained on big data, like an array of images,
 
 The second stage is model inference, where the model is used to make predictions from real user requests. For this stage, it’s crucial that the AI model can respond promptly to users regardless of network delays, latency, and distance from data centers.
 
-<a href="https://gcore.com/docs/cloud/ai-Infrustructure/about-our-ai-infrastructure" target="_blank">Gcore GPU Cloud</a> is designed for creating and training models. For inference, we offer Gcore Everywhere Inference.
+<a href="https://gcore.com/docs/edge-ai/ai-infrastructure/about-our-ai-infrastructure">Gcore GPU Cloud</a> is designed for creating and training models. For inference, we offer Gcore Everywhere Inference.
 
 ## What is Gcore Everywhere Inference?
 
@@ -33,7 +33,7 @@ Using Anycast endpoints, end users' queries are directed to the nearest running 
 
 Deploy AI models with our global intelligence pipeline—a comprehensive ecosystem that supports the full AI lifecycle, from training to inference. It ensures seamless development, deployment, and operation of AI models at various scales across multiple regions.
 
-To get started, check out our guide on <a href="https://gcore.com/docs/cloud/everywhere-inference/deploy-ai-model" target="_blank">deploying a model</a>.
+To get started, check out our guide on <a href="https://gcore.com/docs/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model">deploying a model</a>.
 
 ## How Everywhere Inference works
 
@@ -73,7 +73,7 @@ Everywhere Inference offers several key benefits:
 
 * **Low latency**: With over 180 points of presence worldwide, requests are transferred quickly to the nearest Everywhere Inference pod, ensuring low latency for users.
 
-* **Flexibility in model selection**. Run leading open-source models from our <a href="https://gcore.com/docs/cloud/everywhere-inference#ai-models" target="_blank">model catalog</a> or deploy your own custom models.
+* **Flexibility in model selection**. Run leading open-source models from our <a href="https://gcore.com/docs/edge-ai/everywhere-inference#ai-models">model catalog</a> or deploy your own custom models.
 
 * **High performance**: Utilizing the latest, purpose-built NVIDIA GPU hardware, Everywhere Inference delivers fast model inference capable of handling the most demanding workloads.
 
