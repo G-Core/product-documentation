@@ -27,4 +27,4 @@ Super Transit uses anycast routing and tunneling technologies to filter out mali
 
 ## Getting started
 
-Check out our guide on <a href="https://gcore.com/docs/ddos-protection/super-transit/configure-secure-transit">configuring your infrastructure for Super Transit</a> guide for detailed instructions on how to use this feature.
+Check out our guide on <a href="https://gcore.com/docs/ddos-protection/super-transit/configure-super-transit">configuring your infrastructure for Super Transit</a> guide for detailed instructions on how to use this feature.
