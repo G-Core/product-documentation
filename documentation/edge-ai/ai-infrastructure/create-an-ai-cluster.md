@@ -36,9 +36,9 @@ pageDescription: Learn how to create an AI cluster using Gcore's Cloud GPU infra
 * **Private**: If you want to use the service with Gcore servers only. Your cluster will be available only for internal networks.  
   Select one of the existing networks or create a new one to attach it to your server.
 
-6\. (Optional) If you want to assign a reserved IP address to your server, turn on the **Use reserved IP** toggle and select one. For more details, refer to the article <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address" target="_blank">Create and configure a reserved IP address</a>.   
+6\. (Optional) If you want to assign a reserved IP address to your server, turn on the **Use reserved IP** toggle and select one. For more details, refer to the article <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address">Create and configure a reserved IP address</a>.   
   
-7\. Turn on the **Use floating IP** toggle if you want to use a floating IP address. It’ll make your server accessible from outside networks even if they have only a private interface. Create a new IP address or choose an existing one. For more details, check out the article <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address" target="_blank">Create and configure a floating IP address</a>.
+7\. Turn on the **Use floating IP** toggle if you want to use a floating IP address. It’ll make your server accessible from outside networks even if they have only a private interface. Create a new IP address or choose an existing one. For more details, check out the article <a href="https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address">Create and configure a floating IP address</a>.
 
 <img src="https://assets.gcore.pro/docs/gpu-cloud/network-settings.png" alt="Create an AI Cluster network settings" width="80%">
 
