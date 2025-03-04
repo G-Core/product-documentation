@@ -1,6 +1,6 @@
 ---
 title: metadata
-displayName: Secure Transit
+displayName: Super Transit
 published: true
 order: 40
 ---
