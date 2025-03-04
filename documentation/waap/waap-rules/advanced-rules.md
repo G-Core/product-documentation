@@ -160,24 +160,15 @@ curl --request POST \
 ```
 ### Penalty rule 
 
-Block the IPs that were detected with certain TLS fingerprint for the next 5 minutes (chained rule): 
+If a `block` action triggers, WAAP will tag matching requests with the `penalty` tag as long as the `block` action is active.
 
-```
-curl --request POST \ 
---url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \ 
---header 'accept: application/json' \ 
---header 'content-type: application/json' \ 
---data ' 
-{ 
-"action": {"block": {"status_code": 403,   "action_duration": "5m"}}, 
-"phase": "access", 
-"name": "Penalty TLS fingerprint", 
-"description": "Block and tag IPs that are detected with certain TLS fingerprint for the next 5 minutes", 
-"enabled": false, 
-"source": "request.ja3 == 'e2925c27149b0d0dc34373d55040dde1'"
-} 
-'
-```
+To ensure the blocking of specific sources, **you must also check for the `penalty` tag** by defining a separate rule that blocks requests with the `penalty` tag or by including the tag check as part of a rule's `source` condition. 
+
+#### Block all penalty requests
+
+The following rule will block all requests with the `penalty` tag. This ensures `block` actions triggered by any rule will be enforced.
+
+Creating a separate rule for the `penalty` tag is useful when you have exhausted the 5 tags limit in a single rule.
 
 ```
 curl --request POST \
@@ -185,15 +176,34 @@ curl --request POST \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
-    "action": {
-        "block": {}
-    },
+    "action": {"block": {}},
     "phase": "access",
-    "name": "Block Penalty",
+    "name": "Block Penalized Requests",
     "description": "Block requests that are detected with `penalty` tag",
     "enabled": false,
     "source": "tags.exists('penalty')"
 }'
+```
+
+#### Block penalty requests of a specific rule
+
+In this example, the check for the `penalty` tag is embedded in a specific rule, so creating a separate rule to block requests with the `penalty` tag is unnecessary.
+
+```
+curl --request POST \ 
+--url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \ 
+--header 'accept: application/json' \ 
+--header 'content-type: application/json' \ 
+--data ' 
+{
+    "phase": "ACCESS",
+    "action": {"block": {"statusCode": 403, "action_duration": "1h"}},
+    "name": "Rate Limit IP",
+    "description": "Block IPs that hit more than 30 requests per 1 minute",
+    "enabled": True,
+    "source": "request.rate_limit([], '.*', 60, 30, [], [], '', 'ip') or tags.exists('penalty')"
+}
+'
 ```
 
 ### Validate a set of countries 
