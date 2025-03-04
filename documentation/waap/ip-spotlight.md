@@ -2,7 +2,7 @@
 title: ip-spotlight
 displayName: IP Spotlight
 published: true
-order: 20
+order: 
 toc:
    --1-- Analyze an IP: "analyze-an-ip"
    --1-- Inspect global and domain activity: "inspect-global-and-domain-activity"
@@ -39,13 +39,13 @@ To check an IP address, follow these steps:
 
 1. In [the Gcore Customer Portal](https://accounts.gcore.com/reports/dashboard), navigate to **WAAP** \> **Features**
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/ip-spotlight/ip-spotlight-1.png" alt="IP Spotlight">
+<img src="https://assets.gcore.pro/docs/waap/ip-spotlight/ip-spotlight-1.png" alt="IP Spotlight">
 
 2. Click **IP Spotlight**
 3. In the address field, enter the IP address that you want to inspect
 4. Click the **Analyze IP** button
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/ip-spotlight/ip-spotlight-2.png" alt="IP Spotlight">
+<img src="https://assets.gcore.pro/docs/waap/ip-spotlight/ip-spotlight-2.png" alt="IP Spotlight">
 
 5. All collected information about the address will appear on the **Global Activity** and **Domain Activity** tabs
 
@@ -75,7 +75,7 @@ The section includes the following details:
 - Information if the IP address was used for botnet attacks
 - The threats and services the IP is known for. The information will be presented as tags associated with the IP addresses, such as SQL injection, injection attacks, or headless browsers.
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/ip-spotlight/ip-spotlight-3.png" alt="IP Spotlight">
+<img src="https://assets.gcore.pro/docs/waap/ip-spotlight/ip-spotlight-3.png" alt="IP Spotlight">
 
 #### IP risk assessment
 
@@ -91,13 +91,13 @@ If the IP is no longer associated with malicious activity, its score might decre
 
 This section provides information from the [global WHOIS database](https://who.is/). It includes details like the name and type of organization that owns the address, its location, related IP ranges, contact information for reporting abuse, and registry details.
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/ip-spotlight/ip-spotlight-4.png" alt="IP Spotlight">
+<img src="https://assets.gcore.pro/docs/waap/ip-spotlight/ip-spotlight-4.png" alt="IP Spotlight">
 
 #### Top 10 attack targets
 
 This section provides you with a map that shows the targets of past attacks originating from the scanned address. It also includes a list of the top 10 targets of these attacks.
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/ip-spotlight/ip-spotlight-5.png" alt="IP Spotlight">
+<img src="https://assets.gcore.pro/docs/waap/ip-spotlight/ip-spotlight-5.png" alt="IP Spotlight">
 
 #### Attack distribution over time
 
@@ -111,7 +111,7 @@ To view this information, you need to have WAAP enabled for your domain.
 
 The data displayed on the **Domain activity** tab contains details about IP activity on your domain. Select a domain you want to analyze from the dropdown menu.
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/ip-spotlight/ip-spotlight-6.png" alt="IP Spotlight">
+<img src="https://assets.gcore.pro/docs/waap/ip-spotlight/ip-spotlight-6.png" alt="IP Spotlight">
 
 #### Overview
 
@@ -125,7 +125,7 @@ In this section, you can find the following information about the address’ act
 
 This section provides a list and donut chart of policies applied to the IP and a graph displaying how many times each policy triggered.
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/ip-spotlight/ip-spotlight-7.png" alt="IP Spotlight">
+<img src="https://assets.gcore.pro/docs/waap/ip-spotlight/ip-spotlight-7.png" alt="IP Spotlight">
 
 #### Top 10 visited URLs
 
@@ -137,10 +137,10 @@ This section contains a table displaying information about the top 10 sessions f
 
 You can check the session ID, the date the session took place, the time-to-live (TTL) of the request, if it was blocked, and the session duration.
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/ip-spotlight/ip-spotlight-8.png" alt="IP Spotlight">
+<img src="https://assets.gcore.pro/docs/waap/ip-spotlight/ip-spotlight-8.png" alt="IP Spotlight">
 
 #### Top 10 user agents
 
 Here, you find a table with information about the top 10 user agents that accessed your domain from the specified IP.
 
-<img src="https://assets.gcore.pro/docs/waap/analytics/ip-spotlight/ip-spotlight-9.png" alt="IP Spotlight">
+<img src="https://assets.gcore.pro/docs/waap/ip-spotlight/ip-spotlight-9.png" alt="IP Spotlight">
