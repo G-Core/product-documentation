@@ -8,7 +8,7 @@ pageDescription: A short overview of the new Gcore Container Registry product.
 ---
 # Container Registry
 
-Container Registry is a scalable, efficient, and reliable solution for managing containerized applications. It functions as a centralized repository where you can store and manage Docker images used across different Gcore products, including <a href="https://gcore.com/docs/edge-ai/everywhere-inference">Inference at the Edge</a>, <a href="https://gcore.com/docs/cloud/caas" target="_blank">Container as a Service</a>, and <a href="https://gcore.com/docs/cloud/kubernetes/about-gcore-kubernetes">Managed Kubernetes</a>.
+Container Registry is a scalable, efficient, and reliable solution for managing containerized applications. It functions as a centralized repository where you can store and manage Docker images used across different Gcore products, including <a href="https://gcore.com/docs/edge-ai/everywhere-inference">Everywhere Inference</a>, <a href="https://gcore.com/docs/cloud/caas" target="_blank">Container as a Service</a>, and <a href="https://gcore.com/docs/cloud/kubernetes/about-gcore-kubernetes">Managed Kubernetes</a>.
 
 ## How it works
 
