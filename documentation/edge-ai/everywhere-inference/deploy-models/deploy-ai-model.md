@@ -153,7 +153,7 @@ If you want to add additional information to your model deployment, create varia
 
 ## Step 6 (Optional). Configure authentication via API keys
 
-You can configure API authentication for your deployment by enabling API key authentication. To do this, turn on the "Enable API Key Authentication" toggle.
+You can configure API authentication for your deployment by enabling API key authentication. To do this, turn on the **Enable API Key Authentication** toggle.
 
 ## Step 7. Specify pod lifetime
 
