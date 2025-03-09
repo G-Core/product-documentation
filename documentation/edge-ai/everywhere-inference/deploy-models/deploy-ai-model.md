@@ -153,35 +153,7 @@ If you want to add additional information to your model deployment, create varia
 
 ## Step 6 (Optional). Configure authentication via API keys
 
-You can configure API authentication for your deployment. Turn on the "Enable API Key Authentication" toggle to access the authentication settings.
-
-<img src="https://assets.gcore.pro/docs/cloud/everywhere-inference/deploy-ai-model/api-keys.png" alt="API keys section with enabled toggle" width="80%">
-
-<alert-element type="tip" title="Tip">
-
-A single deployment can have multiple API keys, and the same API key can be attached to multiple deployments.
-
-</alert-element>
-
-Choose one of the following options:
-
-* **Select API keys**: Add one or more keys that are already stored in the Gcore Customer Portal by selecting them from the dropdown list.
-
-* **Create new API key**: Generate a new key.
-
-To generate a new key, select the **Create new API key** link and then perform the following steps:
-
-1\. In a new dialog that opens, enter the key name to identify the key in the system.
-
-2\. (Optional) Add a key description to give more context about the key and its usage.
-
-3\. As a security measure, you can specify the key expiration date. If you don’t want to regenerate the key and instead want to keep it indefinitely, choose **Never expire**.
-
-4\. Click **Create** to generate the key.
-
-<img src="https://assets.gcore.pro/docs/cloud/everywhere-inference/deploy-ai-model/create-api-key.png" alt="Create API key dialog with annotated steps" width="80%">
-
-After you generate the key, it will appear in the API Keys dropdown. You can then select it to authenticate to the deployment. For instructions on how to authenticate with the API key, check out the <a href="https://gcore.com/docs/edge-ai/everywhere-inference/create-and-manage-api-keys#access-a-model-using-api-key" target="_blank">Access a model using API key</a> section.
+You can configure API authentication for your deployment by enabling API key authentication. To do this, turn on the **Enable API Key Authentication** toggle.
 
 ## Step 7. Specify pod lifetime
 
