@@ -21,4 +21,4 @@ Please refer to the table below for the appropriate values.
 | S3 Chicago         | s-drc2                | s-drc2.cloud.gcore.lu    |
 | S3 Singapore       | s-sgc1                | s-sgc1.cloud.gcore.lu    |
 | S3 Incheon         | s-nhn2                | s-nhn2.cloud.gcore.lu    |
-| S3 Darmstadt       | s-darz1               | s-darz1.cloud.gcore.lu   |
+| S3 Darmstadt       | s-darz                | s-darz.cloud.gcore.lu   |
