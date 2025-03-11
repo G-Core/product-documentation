@@ -1,8 +1,8 @@
 ---
 title: view-your-live-stream-metrics
-displayName: Monitoring
+displayName: Live Monitoring
 published: true
-order: 70
+order: 30
 toc:
    --1--About Live Stream Monitoring: "about-live-stream-monitoring"
    --1--Open the monitoring page: "open-the-monitoring-page"
