@@ -217,7 +217,7 @@ Specify services whose traffic should always be approved and never blocked.
 
 ## Activate protection for a third-party server 
 
-For detailed configuration instructions, refer to the <a href="https://gcore.com/docs/ddos-protection/secure-transit/configure-secure-transit" target="_blank">Configure your infrastructure for Secure Transit</a> guide. 
+For detailed configuration instructions, refer to the <a href="https://gcore.com/docs/ddos-protection/secure-transit/configure-super-transit" target="_blank">Configure your infrastructure for Secure Transit</a> guide. 
 
 ## Rent a new dedicated server with DDoS protection
 
