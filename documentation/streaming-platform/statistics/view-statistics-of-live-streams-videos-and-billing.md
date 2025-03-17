@@ -2,7 +2,7 @@
 title: view-statistics-of-live-streams-videos-and-billing
 displayName: Reports
 published: true
-order: 30
+order: 40
 toc:
    --1--Video and live streaming statistics: "video-and-live-streaming-statistics"
    --1--Billing statistics: "billing-statistics"
