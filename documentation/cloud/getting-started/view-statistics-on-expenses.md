@@ -16,11 +16,11 @@ pageDescription: Learn how to how to view your expenses on Gcore Edge Cloud reso
 You can check information about Cloud resource usage and associated costs on the following pages: 
 
 * **Cost Report**: view costs for the Cloud resources you’ve used. This report shows data based on the Pay-As-You-Go pricing model and doesn’t include any costs associated with the prepaid resources (active commit features). 
-* **Reservation Cost Report**: check monthly resource usage and costs for both consumed and pre-paid resources.
+* **Reservation Cost Report**: check monthly resource usage and costs for consumed and pre-paid resources.
 
 You can also get reports via <a href="https://api.gcore.com/docs/cloud#tag/Cost-Reports/operation/CostReportResourcesHandler.post" target="_blank">API</a>.
 
-Consider that statistics for the last hour might contain incomplete data. For accuracy, we recommend reviewing cost information that was collected more than an hour ago. 
+Consider that statistics for the last hour might contain incomplete data. For accuracy, we recommend reviewing cost information collected over an hour ago. 
 
 ## Cost Report
 
@@ -30,17 +30,28 @@ This report doesn't contain information about prepaid resources. If you have any
 
 </alert-element>
 
-This report contains data about each Cloud resource you’ve used, which also allows you to forecast pay-as-you-go expenses more accurately.  
+This report contains data about each Cloud resource you’ve used, allowing you to forecast pay-as-you-go expenses more accurately.  
 
 You can filter the cost data by:  
 
 * **Project**: View costs for all your projects or just the selected ones. 
 
-* **Region**: Check costs for products created in all regions or just the selected ones. 
+* **Region**: Check costs for products created in all regions or selected ones. 
 
-* **Resource type**: View costs for the selected resource types. 
+* **Resource type**: View costs for the chosen resource types. 
 
-* **Consumption period**: View costs for a week, two weeks, or a custom period. Consider that the maximum period you can select is one month.  
+* **Consumption period**: You can view costs for a week, two weeks, or a custom period. The maximum period you can select is one month.
+
+* **Tags**: Filter resources by tag keys, values, or specific key-value pairs. You can also apply partial matches. Up to 10 tag filters can be combined.
+
+With tag-based filtering, you can:
+- Filter resources by partial or complete tag key matches.
+- Filter resources by partial or complete tag value matches.
+- Filter resources by specific key-value pair.
+
+You don't need to specify both key and value every time—it's possible to filter by either key or value independently. If multiple filters use the same key with different values, the filters work as an OR condition.
+
+<img src="https://assets.gcore.pro/docs/cloud/getting-started/view-statistics-on-expenses/filter-resources-by-tag-keys-values-or-key-value-pairs.png" alt="Filter resources by tag keys, values or key-value pairs" width="80%">
 
 The report also contains statistics for deleted projects and regions. To include resource costs from deleted projects, select the **Show deleted projects** checkbox. 
 
@@ -50,7 +61,7 @@ You can also choose to add inactive projects and regions from the relevant dropd
 
 <img src="https://assets.gcore.pro/docs/cloud/getting-started/view-statistics-on-expenses/projects-dropdown.png" alt="Projects dropdown expanded" width="80%">
 
-Cost statistics is dispalyed in a graph and table format. In the graph view, the **Total** tab displays the cumulative costs associated with each Cloud resource. 
+Cost statistics is displayed in a graph and table format. In the graph view, the **Total** tab displays the cumulative costs associated with each Cloud resource. 
 
 <img src="https://assets.gcore.pro/docs/cloud/getting-started/view-statistics-on-expenses/cost-report-graph.png" alt="Cost report graph with resource usage" width="80%">
 
@@ -64,7 +75,7 @@ You can also check more granular statistics on the following tabs:
 * Gigabytes of used resources  
 * The total number of outbound GBs and hours of using different flavors 
 
-Under the graph, there is a table with more detailed information about resources consumed within a selected period. The table features the following resource properties: 
+Under the graph is a table with more detailed information about resources consumed within a selected period. The table features the following resource properties: 
 
 * Resource name 
 * Resource type 
@@ -95,7 +106,7 @@ To filter table data:
 
 <img src="https://assets.gcore.pro/docs/cloud/getting-started/view-statistics-on-expenses/table-filter-attribute-example.png" alt="Resource attribute dropdown with IP Address selected" width="80%">
 
-3\. In the search field, enter the IP address for which you want to check the cost information. 
+3\. In the search field, enter the IP address you want to check the cost information. 
 
 The table data and graph above the table will be updated accordingly.
 
@@ -103,7 +114,7 @@ The table data and graph above the table will be updated accordingly.
 
 ### Download Cost Report data 
 
-To export billing report for the selected period, click **Export CSV** in the top-right corner of the screen. You can download two types of files: 
+To export the billing report for the selected period, click **Export CSV** in the top-right corner of the screen. You can download two types of files: 
 
 * **Detailed report**: a detailed breakdown of each resource you are using. 
 
@@ -115,7 +126,7 @@ To export billing report for the selected period, click **Export CSV** in the to
 
 #### Detailed CSV report 
 
-The following table describes what information is included in the **Detailed** CSV report file.  
+The following table describes the information in the **Detailed** CSV report file.  
 
 <table>
 <thead>
@@ -139,11 +150,11 @@ The following table describes what information is included in the **Detailed** C
 </tr>
 <tr>
     <td style="text-align: left">Tags</td>
-    <td style="text-align: left">If you added any tags to the resource, they’ll appear in this column. This column also presents system-generated tags.</td>
+    <td style="text-align: left">If you add any tags to the resource, they’ll appear in this column. This column also presents system-generated tags.</td>
 </tr>
 <tr>
     <td style="text-align: left">Service_name</td>
-    <td style="text-align: left">Name of the service, which is also displayed in the <strong>Name</strong> field in the UI. For example, the name of a Virtual Machine.</td>
+    <td style="text-align: left">The name of the service, which is also displayed in the <strong>Name</strong> field in the UI, such as the name of a Virtual Machine.
 </tr>
 <tr>
     <td style="text-align: left">Region_id</td>
@@ -155,7 +166,7 @@ The following table describes what information is included in the **Detailed** C
 </tr>
 <tr>
     <td style="text-align: left">Project_id</td>
-    <td style="text-align: left">ID of a project where the resource has been created. Your project ID is displayed on the <strong>Projects</strong> page, in the <a href="https://gcore.com/docs/cloud/getting-started/projects/create-a-project#view-projects-in-different-layouts" target="_blank">grid view</a>.</td>
+    <td style="text-align: left">ID of a project where the resource has been created. Your project ID is displayed on the <strong>Projects</strong> page in the <a href="https://gcore.com/docs/cloud/getting-started/projects/create-a-project#view-projects-in-different-layouts" target="_blank">grid view</a>.</td>
 </tr>
 <tr>
     <td style="text-align: left">Project_name</td>
@@ -264,7 +275,7 @@ The following table explains what information is included in the **Totals** CSV 
 
 This report presents information about your prepaid and <a href="https://gcore.com/docs/cloud/getting-started/resource-reservation/about-resource-reservation" target="_blank">reserved</a> resources, active commits, and costs for pay-as-you-go services.  
 
-Contrary to the Cost Report, the Reservation Cost Report doesn't show statistics for individual resources and you can only view total data collected for each month.  
+Contrary to the Cost Report, the Reservation Cost Report doesn't show statistics for individual resources; you can only view the total data collected for each month.  
 
 You can filter cost data by:  
 
@@ -278,7 +289,7 @@ The report also contains statistics for deleted projects and regions. To include
 
 You can view cost data both as a chart or as a table, which contains more detailed information. In the chart view, the **Total** tab displays the cumulative costs associated with reserved Cloud resources. 
 
-<img src="https://assets.gcore.pro/docs/cloud/getting-started/view-statistics-on-expenses/reservation-cost-report.png" alt="Reservation cost report graph" width="80%">
+<img src="https://assets.gcore.pro/docs/cloud/getting-started/view-statistics-on-expenses/reservation-cost-report-update.png" alt="Reservation cost report graph" width="80%">
 
 Additionally, you can check more granular information on the following tabs: 
 
@@ -289,17 +300,14 @@ Additionally, you can check more granular information on the following tabs:
 * Millions 
 * Gigabytes 
 * Flavors, hours 
-* Commit usage 
 
-Under the chart, there is a table with a detailed report of resources consumed during the selected timeframe. 
+Under the chart is a table with a detailed report of resources consumed during the selected timeframe. 
 
 * Resource type 
 * Region 
-* Commit: the number of reserved resources (active commitments) 
+* Feature name: name of the billing feature which shows respective resource configuration and type of the subscription.
 * Usage 
-* Commit cost: fixed monthly costs for resources according to your plan.  
-* Overcommit cost: costs for overuse of resources within your plan. 
-* Total cost
+* Cost: costs for overuse or fixed monthly resources fees according to your plan.
 
 ### Download Reservation Cost Report data 
 
@@ -346,20 +354,8 @@ The following table explains what information is included in the **Totals** file
     <td style="text-align: left">Total consumed value.</td>
 </tr>
 <tr>
-    <td style="text-align: left">Commit value</td>
-    <td style="text-align: left">Total amount of resources that have been reserved.</td>
-</tr>
-<tr>
-    <td style="text-align: left">Commit cost</td>
+    <td style="text-align: left">Cost</td>
     <td style="text-align: left">The cost for a reserved amount of cloud resources.</td>
-</tr>
-<tr>
-    <td style="text-align: left">Overcommit cost</td>
-    <td style="text-align: left">Additional charges incurred after the resource usage exceeded the committed (reserved) amount.</td>
-</tr>
-<tr>
-    <td style="text-align: left">Error</td>
-    <td style="text-align: left">Any errors associated with the reserved resource during the specified period.</td>
 </tr>
 <tr>
     <td style="text-align: left">Currency</td>
