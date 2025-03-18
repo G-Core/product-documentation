@@ -15,6 +15,6 @@ pageDescription: Learn how to pay for Gcore Edge AI services.
 
 ## Billing rules
 
-The resource fees are processed on the second day of each month. If the payment fails, the service will be stopped.
+Resource fees are processed on the second day of each month. If the payment fails, services will be stopped.
 
-Keep enough balance in your account to order and use cloud services, so you can access Gcore GPU Cloud resources without interruptions. The billing section shows a notification if you need to add funds. For more details, please contact the <a href="mailto:support@gcore.com" target="_blank">Gcore support team</a>.
+We recommend that you retain enough balance in your account to order and use cloud services, so you can access Gcore GPU Cloud resources without interruptions. You'll see a notification in Billing if you need to add funds. For more information, please contact the <a href="mailto:support@gcore.com" target="_blank">Gcore support team</a>.
