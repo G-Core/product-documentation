@@ -17,26 +17,28 @@ pageDescription: Step-by-step instructions on how to create Object Storage and S
 
 To create a storage:
 
-1\. In the Gcore Customer Portal, click the **Add new storage** button in the top-right corner of the screen.
+1. In the Gcore Customer Portal, click **Add new storage** in the top-right corner of the screen.
+2. Specify the storage name and location. The location name has two elements: the storage type (Object Storage or SFTP) and the city/region where the data center is located. SFTP locations are added/removed from the list automatically depending on the amount of free storage space available.
 
-2\. Specify storage name and location. The location name has two parts: storage type (Object Storage or SFTP) and city/region where the data center is located. SFTP locations are added/removed from the list automatically depending on the amount of free storage space available.
+Please note: You can create a maximum of 3600 storages per account.
+
 
 ### Object Storage
 
-**Note**: There are several limits for Object Storage:
+Please note two limits for Object Storage:
 
-1.  You can create maximum 1000 buckets. 
-2.  You can place maximum 1 mln objects in one bucket. However, we recommend placing no more than 100 thou objects, so storage performance and availability be higher. If you want to place more than 100 thou ones, it would be better to store them in different buckets. 
+1. You can create a maximum of 1000 buckets. 
+2.  You can place maximum 10M objects in one bucket. However, we recommend placing no more than 100K objects so storage performance and availability are higher. If you want to place more than 100K objects, we recommend storing them in different buckets.
 
 To create an Object Storage, specify its name and location, and click the **Create** button.
 
-You will see both access and secret key in the next window. Copy and save them since we show the keys only once.
+In the next window, you will see both access and secret keys. Copy and save them since you'll see the keys only once.
 
 <img src="https://assets.gcore.pro/docs/storage/create-storage/s3-storage-created-10.png" alt="Create a storage">
 
 The created storage will appear in the storage list.
 
-To see the information (location, hostname), click the **Details** button.
+To see its information (location, hostname), click the **Details** button.
 
 If you have forgotten to copy the keys and want to change them, click the **Generate new keys** button.
 
