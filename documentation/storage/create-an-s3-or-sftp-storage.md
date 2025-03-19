@@ -17,16 +17,17 @@ pageDescription: Step-by-step instructions on how to create Object Storage and S
 
 To create a storage:
 
-1\. In the Gcore Customer Portal, click the **Add new storage** button in the top-right corner of the screen.
+1. In the Gcore Customer Portal, click the **Add new storage** button in the top-right corner of the screen.
+2. Specify storage name and location. The location name has two parts: storage type (Object Storage or SFTP) and city/region where the data center is located. SFTP locations are added/removed from the list automatically depending on the amount of free storage space available.
+3. You can create maximum 3600 storages per account.
 
-2\. Specify storage name and location. The location name has two parts: storage type (Object Storage or SFTP) and city/region where the data center is located. SFTP locations are added/removed from the list automatically depending on the amount of free storage space available.
 
 ### Object Storage
 
 **Note**: There are several limits for Object Storage:
 
 1.  You can create maximum 1000 buckets. 
-2.  You can place maximum 1 mln objects in one bucket. However, we recommend placing no more than 100 thou objects, so storage performance and availability be higher. If you want to place more than 100 thou ones, it would be better to store them in different buckets. 
+2.  You can place maximum 10M objects in one bucket. However, we recommend placing no more than 100K objects, so storage performance and availability be higher. If you want to place more than 100K objects, it would be better to store them in different buckets.
 
 To create an Object Storage, specify its name and location, and click the **Create** button.
 
