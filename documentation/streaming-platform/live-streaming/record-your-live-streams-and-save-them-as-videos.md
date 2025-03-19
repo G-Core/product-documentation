@@ -65,6 +65,11 @@ auto_record: true
 
 The recording will be saved in the Streaming Storage.
 
+Details about additional recording options are available in the following guides:
+
+* <a href="https://api.preprod.world/docs/streaming#tag/Streams/operation/put_streams_id_start_recording">How to record an original or transcoded stream with overlays.</a>
+* <a href="https://api.preprod.world/docs/streaming#tag/Streams/operation/put_streams_id_clip_recording">How to create an instant clip from a currently running live stream.</a>
+
 ## Where the records are kept
 
 After you record a stream, the recording is saved on the **Live Streaming** page. To view the recorded stream:
