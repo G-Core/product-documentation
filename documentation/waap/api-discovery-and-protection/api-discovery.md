@@ -45,7 +45,7 @@ To access the feature:
 
 * **Scan History**: A history of network scans run by the system. 
 
-* **Settings**: A page with available configuration and customization options where you can set up scan settings, configure <a href="https://gcore.com/docs/waap/api-discovery-and-protection/configure-api-base-path" target="_blank">API base URL</a>, and upload a Swagger file. 
+* **Settings**: A page with available configuration and customization options where you can set up scan settings and upload a Swagger file. 
 
 The functionality on these pages is described in more detail in the following sections. 
 
@@ -55,7 +55,7 @@ Each API endpoint can have a specific status. This status reflects the results o
 
 * **Potential**: The endpoint has been added to the system through a network scan and is awaiting to be marked as a confirmed API or not an API. If you confirm the endpoint, it’ll appear on the **API Baseline** page along with other APIs and will automatically get the **Confirmed** status.  
 
-* **Confirmed**: The endpoint is a valid API and should be protected by WAAP. If you manually add the endpoint in the <a href="https://gcore.com/docs/waap/api-discovery-and-protection/configure-api-base-path" target="_blank">API base path</a>, it’ll automatically get this status. You can change the status at any time. 
+* **Confirmed**: The endpoint is a valid API and should be protected by WAAP. An API endpoint automatically gets a “Confirmed” status if it was added to the API Baseline page or via Swagger file scan. You can change the status at any time. 
 
 * **Not an API**: The potential endpoint is not a valid API and doesn’t require protection. You can manually assign this status to endpoints that were falsely detected during a network scan. 
 
@@ -154,15 +154,9 @@ The scan history also displays information about the scan time, analyzed source,
 
 ## Settings
 
-On this page, you can choose the preferred ways of detecting potential API endpoints, configure network scan intervals, and <a href="https://gcore.com/docs/waap/api-discovery-and-protection/configure-api-base-path" target="_blank">manually add APIs to the base path</a>.
+On this page, you can configure specifications and network scan intervals for detecting potential API endpoints.
 
 <img src="https://assets.gcore.pro/docs/waap/api-discovery-and-protection/settings.png" alt="Settings page in the Customer Portal" width="80%">
-
-<alert-element type="warning" title="Warning">
-  
-Manually adding endpoints to the base path is only necessary if you don't have the API discovery feature enabled. If you're using API discovery, manage all your APIs on the **API Baseline** page.
-
-</alert-element>
 
 ### Configure base path 
 
