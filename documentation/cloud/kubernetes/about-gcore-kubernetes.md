@@ -19,3 +19,18 @@ Kubernetes is a container management system that can be deployed and used on our
 - **Data storage**. You can use PersistentVolumeClaims (PVC) with our <a href="https://gcore.com/docs/cloud/virtual-instances/volumes/create-and-configure-volumes" target="_blank">volumes</a> to store all your data. For details, check out the <a href="https://gcore.com/docs/cloud/kubernetes/storage/create-a-pvc-and-bind-it-to-a-pod" target="_blank">relevant product docs</a>.
 - **Networking**. You can manage the routing of networking traffic for your applications by configuring the Nginx ingress controller. We explain how in <a href="https://gcore.com/docs/cloud/kubernetes/networking/install-and-set-up-the-nginx-ingress-controller" target="_blank">our article</a>.      
 - **High availability and SLA**. Our Managed Kubernetes service is built on the Cluster API, providing high availability and a 99.99% SLA guarantee.
+
+## Shared Responsibilities
+
+As the list above shows, the managed Kubernetes service takes care of many, but not all, of the tasks required for running services and apps on Kubernetes. That's why Gcore follows a shared responsibility model.
+
+**Gcore's responsibilities:**
+
+* Managing the control plane.
+* Ensuring high availability and SLA's
+* Ensuring worker nodes are provisioned successfully and according to your settings.
+
+**Your responsibilities:**
+
+* Managing your SSH keys according to industry best practices.
+* Ensuring your services and apps work with your chosen settings and configurations.
