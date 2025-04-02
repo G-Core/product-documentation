@@ -35,13 +35,13 @@ When you enter a path, note that:
 
 <img src="https://assets.gcore.pro/docs/waap/api-discovery-and-protection/domains-page.png" alt="Domains page in the Customer Portal">
 
-2\. Find the needed domain and click its name to open it. You'll be directed to the **Policies** page. 
+2\. Choose a domain from the list and click its name to open it. You'll be directed to the **Policies** page. 
 
-3\. In the sidebar, click **API Discovery** > **Settings**. 
+3\. In the sidebar, click **API Discovery** > **Domain Settings** > **API Base Path**. 
 
-4\. Navigate to the **API base path** section and in the **Host** field, enter a path to your endpoint. 
+4\. Enter your endpoint path into the **Host** input field. 
 
-5\. Click **Add**. The endpoint will appear in the table under the **Host** field.  
+5\. Click the **Add** button, and the endpoint will appear in the table under the **Host** field.  
 
 ## To remove endpoints from the base path
 
