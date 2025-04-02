@@ -54,9 +54,7 @@ Applications that use these resources in equal proportions, such as web servers 
 
 ### A1
 
-Machines equipped with the industry’s first cloud-native, **128-core ARM Ampere Altra Max Family** processors. 
-
-Based on 64-bit ARM architecture that’s optimized for cloud workloads, these VMs deliver predictable high performance to meet the demands of modern data centers and scalable cloud applications.
+Machines equipped with the industry’s first cloud-native, **128-core ARM Ampere Altra Max Family** processors. Based on 64-bit ARM architecture that’s optimized for cloud workloads, these VMs deliver predictable high performance to meet the demands of modern data centers and scalable cloud applications.
 
 #### Linux-based VMs
 
@@ -124,11 +122,7 @@ Based on 64-bit ARM architecture that’s optimized for cloud workloads, these V
 
 ### G1 
 
-Machines equipped with newer generations of CPU:
-
-* **Intel® Xeon® E Family (E-2288G)**: targeted at entry-level and medium applications, these VMs balance performance, cost-effectiveness, and power efficiency. Suitable for operations that don’t require high computing resources or memory-extensive tasks. 
-
-* **2nd Gen Intel® Xeon® Scalable Processors**: optimized for demanding workloads, such as high-performance computing, advanced analytics, and artificial intelligence. Designed for a broader range of applications, including high-performance computing, virtualization, cloud computing, and enterprise workloads.
+Machines equipped with the **2nd Gen Intel® Xeon® Scalable Processors**. Optimized for demanding workloads, such as high-performance computing, advanced analytics, and artificial intelligence. Designed for a broader range of applications, including high-performance computing, virtualization, cloud computing, and enterprise workloads.
 
 #### Linux-based VMs
 
@@ -262,11 +256,7 @@ Windows license is included.
 
 ### G2
 
-Machines powered with the following processors:
-
-* **Intel® Xeon® Ice-Lake 3rd Generation**: new processors with built-in acceleration, increased RAM (up to 4 TB RAM expansion per processor), enhanced security (Integrated Intel <a href="https://www.intel.com/content/www/us/en/products/docs/accelerator-engines/software-guard-extensions.html" target="_blank">SGX</a> and <a href="https://www.intel.com/content/www/us/en/products/docs/processors/xeon-accelerated/crypto-acceleration-solution-brief.html" target="_blank">Crypto Acceleration</a> technologies). Suitable for a wide range of applications, including cloud computing, AI/ML workloads, high-performance computing (HPC), virtualization, and enterprise applications.
-
-* **Intel® Xeon® Scalable Processors**: Designed for scalability, performance, and versatility. These processors meet the diverse needs of data center workloads, ranging from entry-level to high-performance computing. Designed for a broader range of applications, including high-performance computing, virtualization, cloud computing, and enterprise workloads.
+Machines powered with the **3rd Gen Intel® Xeon® Scalable Processors**. Designed for scalability, performance, and versatility. These processors meet the diverse needs of data center workloads, ranging from entry-level to high-performance computing. Designed for a broader range of applications, including high-performance computing, virtualization, cloud computing, and enterprise workloads.
 
 #### Linux-based VMs
 
@@ -405,7 +395,7 @@ Windows license is included.
 
 ### G0
 
-Machines powered with **Intel Xeon E3-E5 Family** processors. Designed for a wide range of workloads and reliable performance.
+Machines powered with the **Intel Xeon E3-E5 Family** processors. Designed for a wide range of workloads and reliable performance.
 
 #### Linux-based VMs
 
@@ -541,11 +531,7 @@ Windows license is included.
 
 ### G2 
 
-Machines powered with the following processors:
-
-* **Intel® Xeon® Ice-Lake 3rd Generation**: new processors with built-in acceleration, increased RAM (up to 4 TB RAM expansion per processor), enhanced security (Integrated Intel <a href="https://www.intel.com/content/www/us/en/products/docs/accelerator-engines/software-guard-extensions.html" target="_blank">SGX</a> and <a href="https://www.intel.com/content/www/us/en/products/docs/processors/xeon-accelerated/crypto-acceleration-solution-brief.html" target="_blank">Crypto Acceleration</a> technologies). Suitable for a wide range of applications, including cloud computing, AI/ML workloads, high-performance computing (HPC), virtualization, and enterprise applications.
-
-* **Intel® Xeon® Scalable Processors**: Designed for scalability, performance, and versatility. These processors meet the diverse needs of data center workloads, ranging from entry-level to high-performance computing. Designed for a broader range of applications, including high-performance computing, virtualization, cloud computing, and enterprise workloads.
+Machines powered with the **3rd Gen Intel® Xeon® Scalable Processors**. Designed for scalability, performance, and versatility. These processors meet the diverse needs of data center workloads, ranging from entry-level to high-performance computing. Designed for a broader range of applications, including high-performance computing, virtualization, cloud computing, and enterprise workloads.
 
 #### Linux-based VMs
 
@@ -645,9 +631,7 @@ Big data packet processing, video coding, huge builds.
 
 ### G1
 
-Machines powered with the **2nd Gen Intel® Xeon® Scalable Processors**. 
-
-Optimized for demanding workloads like high-performance computing, advanced analytics, and artificial intelligence.
+Machines powered with the **2nd Gen Intel® Xeon® Scalable Processors**. Optimized for demanding workloads like high-performance computing, advanced analytics, and artificial intelligence.
 
 #### Linux-based VMs
 
@@ -731,11 +715,7 @@ Windows license is included.
 
 ### G2
 
-Machines powered with the following processors:
-
-* **Intel® Xeon® Ice-Lake 3rd Generation**: new processors with built-in acceleration, increased RAM (up to 4 TB RAM expansion per processor), enhanced security (Integrated Intel <a href="https://www.intel.com/content/www/us/en/products/docs/accelerator-engines/software-guard-extensions.html" target="_blank">SGX</a> and <a href="https://www.intel.com/content/www/us/en/products/docs/processors/xeon-accelerated/crypto-acceleration-solution-brief.html" target="_blank">Crypto Acceleration</a> technologies). Suitable for a wide range of applications, including cloud computing, AI/ML workloads, high-performance computing (HPC), virtualization, and enterprise applications.
-
-* **Intel® Xeon® Scalable Processors**: Designed for scalability, performance, and versatility. These processors meet the diverse needs of data center workloads, ranging from entry-level to high-performance computing. Designed for a broader range of applications, including high-performance computing, virtualization, cloud computing, and enterprise workloads.
+Machines powered with the **3rd Gen Intel® Xeon® Scalable Processors**. Designed for scalability, performance, and versatility. These processors meet the diverse needs of data center workloads, ranging from entry-level to high-performance computing. Designed for a broader range of applications, including high-performance computing, virtualization, cloud computing, and enterprise workloads.
 
 #### Linux-based VMs
 
@@ -778,9 +758,7 @@ Machines powered with the following processors:
 
 ### A1
 
-Machines powered with the cloud-native **ARM Ampere Altra Max Family** processor. 
-
-Optimized for cloud workloads, these VMs deliver predictable high performance to meet the demands of modern data centers and scalable cloud applications.
+Machines powered with the cloud-native **128-core ARM Ampere Altra Max Family** processor. Optimized for cloud workloads, these VMs deliver predictable high performance to meet the demands of modern data centers and scalable cloud applications.
 
 **Use cases**
 
@@ -880,9 +858,7 @@ Databases, real-time analytics, and memory-intensive AI and Machine Learning tas
 
 ### G1
 
-Machines powered with the **Intel® Xeon® Ice-Lake 2nd Generation** and **Intel® Xeon® Scalable Processors**. 
-
-Optimized for demanding workloads, such as high-performance computing, advanced analytics, and artificial intelligence.
+Machines powered with the **2nd Gen Intel® Xeon® Scalable Processors**. Optimized for demanding workloads, such as high-performance computing, advanced analytics, and artificial intelligence.
 
 #### Linux-based VMs
 
@@ -966,11 +942,7 @@ Windows license is included.
 
 ### G2
 
-Machines powered with the following processors:
-
-* **Intel® Xeon® Ice-Lake 3rd Generation**: new processors with built-in acceleration, increased RAM (up to 4 TB RAM expansion per processor), enhanced security (Integrated Intel <a href="https://www.intel.com/content/www/us/en/products/docs/accelerator-engines/software-guard-extensions.html" target="_blank">SGX</a> and <a href="https://www.intel.com/content/www/us/en/products/docs/processors/xeon-accelerated/crypto-acceleration-solution-brief.html" target="_blank">Crypto Acceleration</a> technologies). Suitable for a wide range of applications, including cloud computing, AI/ML workloads, high-performance computing (HPC), virtualization, and enterprise applications.
-
-* **Intel® Xeon® Scalable Processors**: Designed for scalability, performance, and versatility. These processors meet the diverse needs of data center workloads, ranging from entry-level to high-performance computing. Designed for a broader range of applications, including high-performance computing, virtualization, cloud computing, and enterprise workloads.
+Machines powered with the **3rd Gen Intel® Xeon® Scalable Processors**. Designed for scalability, performance, and versatility. These processors meet the diverse needs of data center workloads, ranging from entry-level to high-performance computing. Designed for a broader range of applications, including high-performance computing, virtualization, cloud computing, and enterprise workloads.
 
 #### Linux-based VMs
 
@@ -1054,9 +1026,7 @@ Windows license is included.
 
 ### A1
 
-Machines powered with the cloud-native **ARM Ampere Altra Max Family** processor. 
-
-Optimized for cloud workloads, these VMs deliver predictable high performance to meet the demands of modern data centers and scalable cloud applications.
+Machines powered with the cloud-native **128-core ARM Ampere Altra Max Family** processor. Optimized for cloud workloads, these VMs deliver predictable high performance to meet the demands of modern data centers and scalable cloud applications.
 
 #### Linux-based VMs
 
@@ -1113,11 +1083,7 @@ Financial and probabilistic analytics, automation of computational processes.
 
 ### G1
 
-Machines powered with the following processors: 
-
-* **Intel Xeon E Family**: specifically targeted at entry-level and small business servers, offering a balance of performance and cost-effectiveness for these environments.
-
-* **Intel Xeon 2nd Generation Scalable Processors**: optimized for demanding workloads, such as high-performance computing, advanced analytics, and artificial intelligence.
+Machines equipped with the **2nd Gen Intel® Xeon® Scalable Processors**. Optimized for demanding workloads, such as high-performance computing, advanced analytics, and artificial intelligence. Designed for a broader range of applications, including high-performance computing, virtualization, cloud computing, and enterprise workloads.
 
 #### Linux-based VMs
 
@@ -1193,7 +1159,7 @@ Windows license is included.
 
 ## Basic VM
 
-Shared Virtual Machine with partial core usage. Cost-effective solution featuring Intel Xeon 4314 CPU, ideal for light web servers and microservices. Suitable for operations that don’t require high computing resources or memory-extensive tasks.
+Virtual Machine with shared CPU usage. Cost-effective solution featuring multiple Intel CPU models, ideal for light web servers and microservices. Suitable for operations that don’t require high computing resources or memory-extensive tasks.
 
 **Use cases**
 
@@ -1203,7 +1169,7 @@ File sharing or storage, backup services, web hosting of small websites, or priv
 
 ### G1-shared
 
-Powered with **Intel Xeon E3-V5 Family** processors.
+Powered with multiple Intel CPU models.
 
 #### Linux-based VMs
 
@@ -1246,11 +1212,7 @@ Powered with **Intel Xeon E3-V5 Family** processors.
 
 ### G2-shared
 
-Machines powered with the following processors:
-
-* **Intel® Xeon® Ice-Lake 3rd Generation**: new processors with built-in acceleration, increased RAM (up to 4 TB RAM expansion per processor), enhanced security (Integrated Intel <a href="https://www.intel.com/content/www/us/en/products/docs/accelerator-engines/software-guard-extensions.html" target="_blank">SGX</a> and <a href="https://www.intel.com/content/www/us/en/products/docs/processors/xeon-accelerated/crypto-acceleration-solution-brief.html" target="_blank">Crypto Acceleration</a> technologies). Suitable for a wide range of applications, including cloud computing, AI/ML workloads, high-performance computing (HPC), virtualization, and enterprise applications.
-
-* **Intel® Xeon® Scalable Processors**: Designed for scalability, performance, and versatility. These processors meet the diverse needs of data center workloads, ranging from entry-level to high-performance computing. Designed for a broader range of applications, including high-performance computing, virtualization, cloud computing, and enterprise workloads.
+Powered with multiple Intel CPU models.
 
 #### Linux-based VMs
 
@@ -1329,11 +1291,7 @@ Virtual Machines with a **Trusted Platform Module** (TPM) are suitable for a div
 
 ### G2
 
-Machines powered with the following processors:
-
-* **Intel® Xeon® Ice-Lake 3rd Generation**: new processors with built-in acceleration, increased RAM (up to 4 TB RAM expansion per processor), enhanced security (Integrated Intel <a href="https://www.intel.com/content/www/us/en/products/docs/accelerator-engines/software-guard-extensions.html" target="_blank">SGX</a> and <a href="https://www.intel.com/content/www/us/en/products/docs/processors/xeon-accelerated/crypto-acceleration-solution-brief.html" target="_blank">Crypto Acceleration</a> technologies). Suitable for a wide range of applications, including cloud computing, AI/ML workloads, high-performance computing (HPC), virtualization, and enterprise applications.
-
-* **Intel® Xeon® Scalable Processors**: Designed for scalability, performance, and versatility. These processors meet the diverse needs of data center workloads, ranging from entry-level to high-performance computing. Designed for a broader range of applications, including high-performance computing, virtualization, cloud computing, and enterprise workloads.
+Machines powered with the **3rd Gen Intel® Xeon® Scalable Processors**. Designed for scalability, performance, and versatility. These processors meet the diverse needs of data center workloads, ranging from entry-level to high-performance computing. Designed for a broader range of applications, including high-performance computing, virtualization, cloud computing, and enterprise workloads.
 
 #### Linux-based VMs
 
