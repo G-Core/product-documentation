@@ -138,9 +138,13 @@ You can use our API documentation as a guide in constructing your own advanced r
 
 ### Rate limiting
 
-Block IPs that hit more than 200 requests per 5 seconds (changeable) when the following cookies don't exist. You can find more examples in our <a href="https://gcore.com/docs/waap/waap-rules/advanced-rules/advanced-rate-limiting-rules" target="_blank">Rate limiting</a> guide.
+You can rate limit IPs based on the number of requests they make to your website. This is useful for blocking scrapers or bots that make too many requests in a short period of time.
 
-```
+You can find more examples in our <a href="https://gcore.com/docs/waap/waap-rules/advanced-rules/advanced-rate-limiting-rules" target="_blank">Rate limiting</a> guide.
+
+The following rule limits the rate of requests an IP can sent for 10 minutes, when it exceeds 200 requests in 5 seconds, but excludes requests from mobile or web clients that have specific cookies.
+
+```json
 curl --request POST \
 --url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
 --header 'accept: application/json' \
@@ -148,21 +152,21 @@ curl --request POST \
 --data '{
     "action": {
         "block": {
-            "status_code": 403
+            "status_code": 403,
+            "action_duration": "10m"
         }
     },
     "phase": "access",
     "name": "Block Scrappers",
     "description": "Block IPs that hit more than 200 requests per 5 seconds for any `events` paths",
     "enabled": false,
-    "source": "request.rate_limit([], '.*events', 5, 200, [], [], '', 'ip') and not ('mb-web-ui' in request.headers['Cookie'] or 'mb-mobile-ios' in request.headers['Cookie'] or 'mobile-android' in request.headers['Cookie'] or 'mb-mobile-android' in request.headers['Cookie'] or 'session-token' in request.headers['Cookie']) and not request.headers['session']"
+    "source": "(request.rate_limit([], '.*events', 5, 200, [], [], '', 'ip') and not ('mb-web-ui' in request.headers['Cookie'] or 'mb-mobile-ios' in request.headers['Cookie'] or 'mobile-android' in request.headers['Cookie'] or 'mb-mobile-android' in request.headers['Cookie'] or 'session-token' in request.headers['Cookie']) and not request.headers['session']) or tags.exists('penalty')"
 }'
 ```
-### Penalty rule 
 
-If a `block` action triggers, WAAP will tag matching requests with the `penalty` tag as long as the `block` action is active.
+#### The penalty tag
 
-To ensure the blocking of specific sources, **you must also check for the `penalty` tag** by defining a separate rule that blocks requests with the `penalty` tag or by including the tag check as part of a rule's `source` condition. 
+If a `block` contains an `action_duration`, WAAP will tag matching requests with the `penalty` tag as long as the `block` action is active. To ensure the blocking of specific sources, **you must also check for the `penalty` tag** by including the tag check as part of a rule's `source` condition (like in the example above) or by defining a separate rule that blocks requests with the `penalty` tag.
 
 #### Block all penalty requests
 
@@ -183,27 +187,6 @@ curl --request POST \
     "enabled": false,
     "source": "tags.exists('penalty')"
 }'
-```
-
-#### Block penalty requests of a specific rule
-
-In this example, the check for the `penalty` tag is embedded in a specific rule, so creating a separate rule to block requests with the `penalty` tag is unnecessary.
-
-```
-curl --request POST \ 
---url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \ 
---header 'accept: application/json' \ 
---header 'content-type: application/json' \ 
---data ' 
-{
-    "phase": "ACCESS",
-    "action": {"block": {"statusCode": 403, "action_duration": "1h"}},
-    "name": "Rate Limit IP",
-    "description": "Block IPs that hit more than 30 requests per 1 minute",
-    "enabled": True,
-    "source": "request.rate_limit([], '.*', 60, 30, [], [], '', 'ip') or tags.exists('penalty')"
-}
-'
 ```
 
 ### Validate a set of countries 
