@@ -1,0 +1,221 @@
+---
+title: Specify cache lifetime on a CDN resource or origin
+sidebarTitle: Configure CDN caching
+---
+
+Files cannot be stored in the CDN servers' cache indefinitely. The CDN caching feature allows setting how long requested files from your origin server will be stored in the CDN server's cache. If end-users request these files, they will be loaded from the cache without additional requests to the origin server, reducing delivery time, financial spending, and the origin server load. 
+
+**Note** : Files users have not requested within 36 hours will be removed from the CDN servers' cache, regardless of the feature settings.
+
+When the specified timespan for storing files in the cache has expired, CDN servers send requests to the origin to compare the HTTP "[Etag](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag)" header and determine if the files have changed.
+
+If the values of the "Etag" header for previous and current versions do not match, CDN servers load a new version and cache it for the time specified in the feature. If the values match, the storage time of the file in the cache is extended for the specified time.
+
+## Configure CDN caching
+
+The CDN caching feature has two options: Origin controlled (enabled by default) and CDN controlled. You can choose one of them and set the caching time either in the origin server's HTTP "Cache-Control" header or the CDN control panel.
+
+### Origin controlled
+
+1\. Depending on your web server (Apache or Nginx), add the "Cache-Control" header with the _max-age_ and _public_ parameters to the .htaccess (for Apache) or nginx.conf (for Nginx) file.
+
+Here is an example of the Apache configuration where we have established that .gif and .ico files can be cached (the _public_ parameter) and that they should be cached by CDN servers for 4 days (_max-age=345600_ in seconds):
+    
+    
+```
+<ifModule mod_headers.c>   
+  <FilesMatch "\.(gif|ico)$">   
+    Header set Cache-Control "max-age=345600, public"   
+  </FilesMatch>   
+</ifModule> 
+```
+          
+            
+          
+
+
+Here is an example of the Nginx configuration where we have established that all ico, css, js, gif, jpeg, and png files can be cached (the _public_ parameter) and that they should be cached by CDN servers for about 1 day (_max-age=88000_ in seconds):
+    
+    
+```
+server {   
+ #...   
+  location ~* \.(?:ico|css|js|gif|jpeg|png)$ {   
+    add_header Cache-Control "max-age=88000, public";   
+  }   
+ #...   
+} 
+```
+
+2\. Go to the [CDN](https://cdn.gcore.com/resources/list) section in the Gcore Customer Portal and click the custom domain of the resource on which origin you configured the Cache-Control header.
+
+
+<Frame>![CDN section](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/13249373793809.png)</Frame>
+
+
+
+The new page opens. Do the remaining steps on it.
+
+
+<Frame>![The new page opens](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/13249168410769.png)</Frame>
+
+
+
+3\. Go to the "Cache" section and click **CDN caching**.
+
+4\. Make sure that the "Origin controlled" option is selected in the feature.
+
+5\. Specify the timespan in the "Default cache expiry" field. You can select the defined values from the list or choose **Custom value** and enter the time in seconds. If something goes wrong and the directives for the "Cache-Control" header are lost, files will be cached for the time specified in the field.
+
+6\. Save changes.
+
+### CDN controlled
+
+You can configure CDN caching at two levels: 
+
+  * For the whole resource 
+
+  * At the advanced caching rule level in the resource
+
+
+
+
+These settings can be set up independently—you can set CDN caching to **Do not cache** in the main settings, but have it enabled in a rule, and vice versa. 
+
+<Tabs>
+  <Tab title="Enable CDN caching for the whole resource">
+    1\. In the Gcore Customer Portal, navigate to [CDN](https://cdn.gcore.com/resources/list). 
+
+    2\. Find the resource for which you want to configure the CDN caching feature. Click the CNAME to open the resource settings.
+
+
+    <Frame>![CDN resources page](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/cdn-resource-name.png)</Frame>
+
+
+
+    3\. Open the **Cache** settings.
+
+
+    <Frame>![CDN cache settings](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/cdn-cache-settings.png)</Frame>
+
+
+
+    4\. Make sure that the CDN caching is enabled. If not, click the **Enable CDN caching** toggle. 
+
+    5\. Specify the caching timespan in the **Cache expiry** field. You can select the defined values from the list or choose **Custom value** and enter the preferred time in seconds. 
+
+    Note that this caching time will be applied for response codes 200, 206, 301, and 302. Responses with 4xx and 5xx will not be cached. 
+
+    <Warning>
+    **Warning**
+
+    If you select Do not cache option, caching will be disabled even if the Enable CDN caching toggle is enabled.
+    </Warning>
+
+    6\. (Optional) Set advanced caching rules if you want to set different caching times for specific responses. Check out the following section for instructions. 
+
+  </Tab>
+  <Tab title="Enable CDN caching via advanced caching rules">
+    1\. In the CDN resource settings, navigate to the **Cache** section. 
+
+    2\. Make sure that the CDN caching is enabled. If not, click the **Enable CDN caching** toggle. 
+
+    3\. Click **Add rule** and configure it as follows: 
+
+      * **Response code** : select the HTTP response code for which you want to configure caching. 
+
+      * **Caching time** : specify how long the data will be stored in the cache before it expires.
+
+
+
+    <Frame>![Advanced caching rules](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/add-caching-rule.png)</Frame>
+
+
+
+    4\. Click **Save changes** to apply the settings. 
+
+    Note that the Caching time in advanced rules has a higher priority than general Cache expiry. 
+
+    For instance, if you set a cache expiry of 4 days and add two rules in the "Advanced caching rules" section: one for 200 response code configured for 10 minutes and the other for 404 response code for 1 minute - the requests will be cached as follows:
+
+      * Requests with response code 200 will be cached for 10 minutes.
+      * Requests with response code 404 will be cached for 1 minute.
+      * Requests with response codes 206, 301, and 302 will be cached for 4 days.
+      * Requests with response codes 4xx (except 404) and 5xx will not be cached.
+
+    5\. Save changes. 
+  </Tab>
+</Tabs>
+
+
+## Check CDN caching settings
+
+### Check through cURL
+
+1\. Open the terminal on macOS or command prompt (cmd) on Windows.
+
+2\. Run the following command:
+
+```sh
+curl -I http://cdn.testdomain.com/css/style.css
+```
+
+where http://cdn.testdomain.com/css/style.css is a link to your file delivered via CDN.
+
+You will receive the output. Pay attention to the highlighted headers in bold. They are described in the "[Check caching headers](/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin#check-caching-http-headers)" section.
+    
+    
+```
+HTTP/1.1 200 OK   
+Server: nginx/1.13.1   
+Date: Fri, 09 Jun 2017 12:54:24 GMT   
+Content-Type: image/jpeg   
+Content-Length: 124024   
+Connection: keep-alive   
+X-Image-Generated: 29   
+X-Image-Meta: 1024x768   
+X-Image-Read: 71   
+Expires: Wed, 06 Dec 2017 12:51:43 GMT   
+Access-Control-Allow-Origin: *   
+Last-Modified: Sun, 01 Jan 2017 12:00:00 GMT   
+Cache-Control: max-age=3153600, public  
+Cache: HIT   
+X-Cached-Since: 2017-06-09T12:51:43+00:00  
+X-ID: m9-up-e245
+```
+
+If you suspect any content caching issues, check the settings on the source, read the "[Troubleshooting Low Cache Hit Ratio](/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue)" article, or contact [support@gcore.com](mailto:support@gcore.com).
+
+### Check with DevTools in a browser
+
+1\. Open any internet browser (e.g., Google Chrome).
+
+2\. Go to your website.
+
+3\. Right-click and select **Inspect** to open the DevTools (Developer Toolbar).
+
+4\. Select the "Network" tab.
+
+5\. Refresh the page.
+
+6\. You will get a list of all files retrieved from your website.
+
+7\. Find any file (e.g., JPEG, PNG, IMG, CSS, etc.) integrated with the CDN and select it.
+
+8\. On the "Headers" tab on the right, you will see the configured headers. Analyze them using the description of the important headings below.
+
+
+<Frame>![Headers tab](/images/docs/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin/13249609604753.png)</Frame>
+
+
+
+### Check caching HTTP headers
+
+There are several HTTP header parameters that help analyze the state of the cache:
+
+HTTP header with parameters | Explanation  
+---|---  
+CACHE: HIT | The file has been delivered from the CDN. This parameter indicates that caching is working correctly.  
+CACHE: MISS | The file has been delivered from your origin server. Try to reload the page and clear the browser cache. If the value remains, it indicates something went wrong, and the file is not delivered from the cache.  
+X-ID: ab-cd-d123 | The file has been delivered from the Gcore CDN server with the identifier ab-cd-d123.  
+X-Cached-Since: 2023-02-23T14:33:07+00:00 | The time when the file was cached in the CDN server in UTC.

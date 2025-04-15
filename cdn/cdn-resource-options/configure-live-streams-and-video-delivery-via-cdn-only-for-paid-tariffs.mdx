@@ -1,0 +1,94 @@
+---
+title: Configure live streams and video delivery via CDN (only for paid tariffs)
+sidebarTitle: Streaming via CDN (for paid tariffs)
+---
+
+## Conditions for streams and videos delivery via CDN
+
+If your live stream or videos are in HLS format, they can be proxied to end users via CDN servers to speed up the loading time. It's possible because the HLS protocol is based on HTTP. It's cached and distributed via CDNs like regular static files.
+
+You can use a CDN service for streaming if the following conditions are met:
+
+  * You stream in HLS format
+  * You use Start, Pro 5 TB, or Pro 10 TB subscription
+
+
+
+If your stream is in another format (RTMP, SRT, MP4), use the [Streaming](https://gcore.com/streaming-platform) service.
+
+## Configure the delivery of streams or videos via CDN
+
+### 1\. Send the request
+
+Send us a request to activate the streaming workflow for the CDN at [support@gcore.com](mailto:support@gcore.com) or the chat window in the bottom-right corner of our website. Please specify your ID in the request, so we can identify your account. You can find it on the main page in the Gcore Customer Portal.
+
+
+<Frame>![Send the request](/images/docs/cdn/cdn-resource-options/configure-live-streams-and-video-delivery-via-cdn-only-for-paid-tariffs/12947023694225.png)</Frame>
+
+
+
+In the request, provide the following information:
+
+  * The domain of your website and company name
+  * The type of content you're going to stream: Football games, educational content, series, etc.
+  * A sample of a typical stream URL
+  * The end users' geography
+  * A broadcasting license if you create content yourselves or an illegal content policy if you are an intermediary (e.g., a video hosting platform).
+  * An email for prompt response to complaints from copyright holders and other authorities
+
+
+
+We'll notify you when we activate the workflow. After that, you'll be able to configure streaming.
+
+### 2\. Create a CDN resource
+
+Create a CDN resource according to the "[Create a CDN resource for static assets only](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files)" guide.
+
+### 3\. Set cache settings
+
+Set short-term cache settings for the following types of HLS video files:
+
+  * _.ts_ extension. Each such file consists of small segments of the stream.
+  * _.m3u8_ extension. Each such file consists of information about the stream and the list of video segments in order. These files are also called playlists.
+
+
+
+Firstly, the browser requests a playlist (.m3u8) and then playback segments (.ts) in the order they're listed in the playlist.
+
+**Segments (.ts) should be cached for 1 minute**. This period is a bit longer than the length of each video segment. It's necessary for end users with a slow internet connection. When they receive the playlist with the list of the segments from the CDN server, it may already be outdated, and the origin of the CDN resource may have a new playlist with current segments. So, if segments are cached for less than 1 minute, the end user's browser sends a request to the outdated segments from the origin, and it'll receive a 404 error because these files don't exist.
+
+**Playlists (.m3u8) should be cached for 1–2 seconds**. This period should be very short, so that end users don't receive the playlist with old segments from the cache.
+
+You can set cache settings either on your origin (in the Cache-Control HTTP header) or in the Gcore Customer Portal.
+
+
+<Frame>![set cache settings](/images/docs/cdn/cdn-resource-options/configure-live-streams-and-video-delivery-via-cdn-only-for-paid-tariffs/11775065795729.png)</Frame>
+
+
+
+  1. Go to the Resource settings and then the "Rules" section.
+  2. Click **Create rule**.
+  3. Select **Video segments template (.ts)**. A new page will open. Click **Create rule**. Repeat actions for **the Playlists template (.m3u8)**.
+
+
+
+### 4\. Integrate the stream with CDN
+
+Change your domain address URLs from the origin to your [CDN domain name](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn). For example, `http://domain/playlist.m3u8`` (a stream URL from origin) → `[http://cdn.domain/playlist.m3u8```](http://cdn.domain/playlist.m3u8%60%60%60) (a stream URL from the CDN).
+
+You can check your stream on any player that supports online HLS streaming (for example, [VLC](https://videolan.org)).
+
+### 5\. Turn on the preset (only for streams)
+
+If you're going to deliver videos (VOD), go to the next step. To reduce the load on CDN servers, turn on the Live streaming preset. It allows configuring file caching through RAM instead of through hard drives.
+
+To do this, go to the [CDN resources](https://cdn.gcore.com/resources/list) list. Click the three dots next to the resource and choose **Turn on LIVE STREAMING preset**.
+
+
+<Frame>![CDN resources list.](/images/docs/cdn/cdn-resource-options/configure-live-streams-and-video-delivery-via-cdn-only-for-paid-tariffs/12947072884881.png)</Frame>
+
+
+
+### 6\. Share your stream or videos
+
+Publish the updated [stream URL](/cdn/cdn-resource-options/configure-live-streams-and-video-delivery-via-cdn-only-for-paid-tariffs#4-integrate-the-stream-with-cdn) on your website. If you expect more than 100 viewers simultaneously, we recommend you activate the [Origin shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) option to reduce the load on your origin.

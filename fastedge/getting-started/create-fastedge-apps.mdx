@@ -1,0 +1,539 @@
+---
+title: Create FastEdge HTTP applications
+sidebarTitle: HTTP applications
+---
+
+This guide describes how to create a FastEdge app. Check out our [FastEdge overview](/fastedge/getting-started) article to learn more about the product.
+
+You can create a FastEdge app in two ways: from a custom binary file using [JavaScript SDK](https://github.com/G-Core/FastEdge-sdk-js) or [Rust](https://github.com/rust-lang/rust) as well as from a preconfigured template. If you chose the latter option, skip Stage 1. 
+
+## Stage 1. Create a Wasm binary file
+
+To get started, create a .wasm file that you will later upload to the Gcore Customer Portal.
+
+<Tabs>
+  <Tab title="Via Rust">
+    #### Step 1. Set up the environment
+
+    1\. Install the Rust compiler and cargo (package manager):
+
+    ```sh
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    ```
+
+    2\. Add the Wasm compilation target to Rust compiler:
+
+    ```sh
+    rustup target add wasm32-wasip1
+    ```
+
+    #### Step 2. Prepare directory structure and a configuration file
+
+    1\. Initialize the directory structure:
+
+    ```sh
+    cargo new myapp --lib
+    ```
+
+    2\. Create a directory:
+
+    ```sh
+    mkdir myapp/.cargo
+    ```
+
+    3\. Set the Wasm compilation target for the project by creating a config file `myapp/.cargo/config.toml` with the following content:
+
+    ```toml
+    [build]
+    target = "wasm32-wasip1"
+    ```
+
+    4\. Create the project manifest file `myapp/Cargo.toml` with the following content:
+
+    ```toml
+    [package]
+    name = "myapp"
+    version = "0.1.0"
+    edition = "2021"
+    
+    [lib]
+    crate-type = ["cdylib"]
+    
+    [dependencies]
+    fastedge = "0.2"
+    ```
+
+    #### Step 3. Create a source
+
+    In this example, we'll create a simple app that responds with "HTTP 200" and the text "Hello world!" in the response's body.
+
+    Create a main source file src/lib.rs with the following content:
+
+    ```
+    use fastedge::{
+      body::Body,
+      http::{Request, Response, StatusCode, Error},
+    };
+    
+    #[fastedge::http]
+    fn main(_req: Request<Body>) -> Result<Response<Body>, Error> {
+      Response::builder()
+        .status(StatusCode::OK)
+        .body(Body::from("Hello world!\n"))
+      }
+    ```
+
+    #### Step 4. Compile a Wasm file
+
+    Produce the Wasm binary:
+
+    ```sh
+    cargo build --release
+    ```
+
+    The resulting Wasm code will be written to the `myapp/target/wasm32-wasip1/release/myapp.wasm` file.
+  </Tab>
+  <Tab title="Via JavaScript SDK">
+    A JavaScript code pattern closely resembles [Service Worker API](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API). You can also find multiple examples in the [Gcore repository](https://github.com/G-Core/FastEdge-sdk-js/tree/main/docs/examples). 
+
+    The key aspect of the Wasm configuration is to set up the `addEventListener` that has to synchronously call `event.respondWith` with a callback. This callback can be asynchronous and this is where you'd usually include any custom code to generate a response.
+
+    Here's the sample configuration: 
+
+    ```js
+    async function app(event) {
+      const request = event.request;
+      return new Response(`You made a request to ${request.url}`);
+    }
+    addEventListener('fetch', (event) => {
+      event.respondWith(app(event));
+    });
+    ```
+
+    #### Step 1. Install FastEdge Javascript SDK
+
+    Run the following command `npm install --save-dev @gcoredev/fastedge-sdk-js`
+
+    #### Step 2. Create a file
+
+    Taking the sample configuration as an input `/src/input.js`, create a Wasm binary as output `/dist/main.wasm`. To do so, use the following command: `npx fastedge-build ./src/input.js dist/main.wasm`.
+  </Tab>
+</Tabs>
+
+
+
+## Stage 2. Deploy an application
+
+For detailed steps on how to deploy a FastEdge app, refer to the relevant sections below: 
+
+  * [In the Customer Portal](/fastedge/getting-started/create-fastedge-apps#in-the-customer-portal). Follow the instructions if you created a custom Wasm using either the Rust or Javascript SDK, or if you want to create a FastEdge app from a preconfigured template.
+
+  * [Via command line](/fastedge/getting-started/create-fastedge-apps#via-command-line): Follow the instructions if you want to deploy a custom Wasm using cURL and our API.
+
+
+### In the Customer Portal
+
+<Tabs>
+  <Tab title="Deploy an app from a binary">
+    1\. In the [Gcore Customer Portal](https://accounts.gcore.com/reports/dashboard), navigate to **FastEdge** > **HTTP Applications**. 
+
+    2\. In the top-right corner of the screen, click **Create new application**.
+
+    <Frame>![Create an HTTP app button highlighted](/images/docs/fastedge/create-http-apps/http-apps-create-app.png)</Frame>
+
+    3\. Click **Upload binary**.
+
+    <Frame>![Add raw binary dialog](/images/docs/fastedge/create-http-apps/http-apps-upload-binary.png)</Frame>
+
+    4\. Choose your custom binary file.
+
+    <Frame>![Add raw binary dialog](/images/docs/fastedge/create-http-apps/upload-binary-dialog.png)</Frame>
+
+    5\. If you add multiple files, click **Save binary** to confirm and upload the selected files.
+
+    6\. Enter a name for your application and provide a description if needed. 
+
+    7\. (Optional) Click **\+ Add response headers** to add fixed headers to the responses. For example, you may include CORS (cross-origin resource sharing) headers in each response to ensure secure communication between origins. 
+
+    8\. (Optional) If you want to customize the behavior of your application, click **\+ Add environment variables** and enter your data as key-value pairs.
+
+    If you're adding sensitive information or want to ensure that any data in the app's configuration remains secure, encrypt the variables. Click **Encrypt** next to the value you want to secure:
+
+    <Frame>![Encrypt variable button highlighted](/images/docs/fastedge/create-http-apps/encrypt-variable-button.png)</Frame>
+
+    The provided value will be replaced with the **Encrypted Value** text, and the **Revert** button will appear next to encrypted value. This button allows you to restore the original version if needed. Note that once you save the configuration, you won't be able to view the original unencrypted value. 
+
+    <Frame>![Encrypted variable](/images/docs/fastedge/create-http-apps/encrypted-variable-revert-button.png)</Frame>
+
+    We store all encrypted variables in a separate table in the database to protect your information from potential security breaches or unauthorized access. 
+
+    <Warning>
+    **Warning**
+
+    You won't be able to update the encrypted variable after creating the application. To change the value, delete the existing variable and add a new encrypted variable with the updated value.
+    </Warning>
+
+    9\. Check all the settings. If everything is configured correctly, click **Save and deploy**. 
+
+    Your application has been successfully deployed.
+
+    <Frame>![A page with a link to an app and its configuration](/images/docs/fastedge/create-http-apps/http-app-created.png)</Frame>
+
+    You can now test its configuration and adjust it as described in the following steps.
+  </Tab>
+  <Tab title="Deploy an app from a template">
+    1\. In the [Gcore Customer Portal](https://accounts.gcore.com/reports/dashboard), navigate to **FastEdge** > **HTTP Applications**. 
+
+    2\. In the top-right corner of the screen, click **Create new application**.
+
+    <Frame>![Section with Github and Markdown templates](/images/docs/fastedge/create-http-apps/http-apps-create-app.png)</Frame>
+
+    3\. In the **Create from a template** section, select the preferred template.
+
+    <Frame>![Section with Github and Markdown templates](/images/docs/fastedge/create-http-apps/http-apps-create-from-template.png)</Frame>
+
+    4\. Enter a name for your application and, optionally, update its description. 
+
+    5\. Provide environment variables or any required configuration for your app. Note that the list of setup options depends on the selected template. For example, if you create a FastEdge app from a Markdown template, you need to add response headers, enter the base part of the origin URL, and add content from the `<head>` section of an HTML document. 
+
+    6\. (Optional) If you want to add metadata to the configuration, click **\+ Add environment variables** and enter metadata as key-value pairs.
+
+    <Frame>![A page with a link to an app and its configuration](/images/docs/fastedge/create-http-apps/http-app-from-template-setup.png)</Frame>
+
+    7\. Click **Save and deploy**. 
+
+    Your application has been successfully deployed. 
+
+    <Frame>![A page with a link to an app and its configuration](/images/docs/fastedge/create-http-apps/http-app-created-from-template.png)</Frame>
+
+    You can now test its configuration and adjust it as described in the following steps. 
+  </Tab>
+</Tabs>
+
+### Via command line
+
+1\. Upload the Wasm binary to our edge servers by running the following [API request](https://api.gcore.com/docs/fastedge#tag/Binaries/operation/storeBinary) from the repo's root directory. Insert your [permanent API token](/account-settings/create-use-or-delete-a-permanent-api-token) instead of the api_key:
+
+```sh
+curl -X 'POST' 
+  'https://api.gcore.com/fastedge/v1/binaries/raw' \ 
+  -H 'accept: application/json' 
+  -H 'Authorization: APIKey api_key' 
+  -H 'Content-Type: application/octet-stream' 
+  --data-binary '@./dist/main.wasm'
+```
+
+In the response, you will receive the ID of the uploaded binary (`<binary_id>`). Make sure to save it, as it will be used in the following step.
+
+2\. Create the app by running the following [API request](https://api.gcore.com/docs/fastedge#tag/Apps/operation/addApp): 
+
+```sh
+curl -X 'POST' 
+  'https://api.gcore.com/fastedge/v1/apps' 
+  -H 'name: app_name' 
+  -H 'accept: application/json' 
+  -H 'client_id: 0' 
+  -H 'Authorization: APIKey api_key' 
+  -H 'Content-Type: application/json' 
+  -d '{
+    "binary": binary_id,
+    "plan": "beta",
+    "status": 1
+}'
+```
+
+Where: 
+
+  * `app_name` is the unique name of your app. 
+  * `api_key` is your permanent API token. 
+  * `binary_id` is the ID of your uploaded Wasm binary.
+
+
+## Stage 3. Test an application
+
+<Tabs>
+  <Tab title="In the Customer Portal">
+    You can test the application after its deployment by clicking the application link on the deployment confirmation screen:
+
+    <Frame>![A page with a link to an app and its configuration](/images/docs/fastedge/create-http-apps/test-http-app.png)</Frame>
+
+    Additionally, you can inspect and adjust the configuration in the Customer Portal on the **Dashboards** page: 
+
+    1\. In the Gcore Customer Portal, navigate to **FastEdge** > **Dashboard**. 
+
+    <Frame>![Metrics tab with the list of FastEdge apps](/images/docs/fastedge/create-http-apps/open-app-from-dasboard.png)</Frame>
+
+    2\. Find the app you want to test and click its name to open it.
+
+    3\. Click the app link next to the app status to view the response. 
+
+    <Frame>![A page with a link to an app and its configuration](/images/docs/fastedge/create-http-apps/test-http-app.png)</Frame>
+
+    For example, the response for the application configured in Stage 1 will be "Hello world!".
+  </Tab>
+  <Tab title="Via cURL">
+    To test the app with cURL, run the following request: `curl https://<app_name_assigned_at_the_previous_stage>.fastedge.gcore.dev/`. 
+
+    If everything is set up correctly, the response will be: "You made a request to /".
+  </Tab>
+</Tabs>
+
+## Stage 4 (Optional). Add more functionality
+
+You can add more functionality to your app. For example, instead of printing "Hello world!", the app can print all request headers and set a custom response header from the environment settings. Let's see how to do that.
+
+<Tabs>
+  <Tab title="Via Rust">
+    #### Step 1. Change the source
+
+    To print all request headers and develop a custom response header, replace the current content of the `myapp/src/lib.rs` file with the following:
+
+    ```
+    use fastedge::{
+        body::Body,
+        http::{Request, Response, StatusCode, Error},
+    };
+    use std::env;
+    
+    #[fastedge::http]
+    fn main(req: Request<Body>) -> Result<Response<Body>, Error> {
+        // print headers
+        let mut body: String = "".to_string();
+        for (h, v) in req.headers() {
+            body.push_str(h.as_str());
+            body.push_str(": ");
+            match v.to_str() {
+                Err(_) => body.push_str("not a valid text"),
+                Ok(a) => body.push_str(a),
+            }
+            body.push_str("\n");
+        }
+    
+        // get value for custom header from the env var
+        let value = match env::var("CUSTOM_HEADER").ok() {
+            None => return Response::builder()
+                        .status(StatusCode::INTERNAL_SERVER_ERROR)
+                        .body(Body::from("App misconfigured\n")),
+            Some(val) => val
+        };
+    
+        // build response with body and custom header
+        Response::builder()
+            .status(StatusCode::OK)
+            .header("Custom-Header", value)
+            .body(Body::from(body))
+    }
+    ```
+
+    <Info>
+    **Info**
+
+    The headers listed in the following step are passed to the FastEdge application, which uses the header content for functionalities like geolocation-aware redirects.
+    </Info>
+
+    #### Step 2. Compile and upload the binary file
+
+    Update the application on the edge servers:
+
+    1\. Compile a new Wasm file [as described in step 4](/fastedge/getting-started/create-fastedge-apps#step-4-compile-a-wasm-file).
+
+    2\. Upload it to the Gcore Customer Portal as a custom binary file. 
+
+    When you open the app, you'll see all request headers from the environment settings. It will be similar to the following output:
+
+    ```sh
+    HTTP/2 200
+    server: nginx
+    date: Thu, 19 Oct 2023 22:17:46 GMT
+    content-length: 616
+    custom-header: foo 
+    access-control-allow-origin: *
+    cache-control: no-store
+    x-id: ed-hw-edge-preprod-gc39
+    cache: MISS
+    accept-ranges: bytes 
+    dc: ed 
+    geoip-asn: 7922 
+    geoip-lat: 37.75580
+    geoip-long: -121.95270
+    geoip-reg: CA
+    geoip-city: San Ramon
+    geoip-continent: NA
+    geoip-country-name: United States
+    geoip-country-code: US
+    server_addr: 92.223.112.26 
+    server_name: mistake-globe-6396.fastedge.gcore.dev 
+    connection: upgrade
+    x-real-ip: 1.2.3.4 
+    x-forwarded-for: 1.2.3.4 
+    host: fastedge.gcore.dev
+    x-forwarded-proto: https
+    user-agent: curl/7.88.1
+    accept: */*
+    cdn-loop: nb1d2; c=11
+    pop-long: 6.1294
+    pop-lat: 49.6113
+    pop-reg: LU
+    pop-continent: EU
+    pop-city: Luxembourg
+    pop-country-code: LU
+    pop-country-name: Luxembourg
+    ```
+
+    <Accordion title="Description of the parameters">
+    * custom-header: Custom header
+    * dc: Data center
+    * geoip-*: Client GeoIP data, such as asn, latitude, longitude, region, city, continent, country name, and country code
+    * server_addr: PoP IP address
+    * server_name: Application hostname
+    * x-forwarded-for: Client IP address
+    * pop-*: PoP GeoIP data, such as asn, latitude, longitude, region, city, continent, country name, and country code
+    </Accordion>
+
+  </Tab>
+  <Tab title="Via JavaScript SDK">
+    You can add more functionality to your app. For example, instead of printing "You made a request to /", the app can print all request headers and set a custom response header from the environment settings. 
+
+    #### Step 1. Print request headers and add custom response header
+
+    Replace the sample configuration in the `src/input.js` with the following code: 
+
+    ```js
+    import { getEnv } from 'fastedge::getenv';
+
+    async function eventHandler(event) {
+      const request = event.request;
+      const customEnvVariable = getEnv('MY_CUSTOM_ENV_VAR');
+      const headersStr = JSON.stringify(Object.fromEntries(request.headers.entries()), null, 2);
+
+      return new Response(`Headers: ${headersStr}\n`, {
+        headers: {
+          'Custom-Header': customEnvVariable,
+        },
+      });
+    }
+
+    addEventListener('fetch', (event) => {
+      event.respondWith(eventHandler(event));
+    });
+    ```
+
+    The application logic (e.g., location-aware redirection) assumes the use of the headers listed in the following steps. The headers may change in the future.
+
+    #### Step 2. Compile a new Wasm binary
+
+    Run the command you used in the Stage 1: `npx fastegde-build ./src/input.js ./dist/main.wasm`
+
+    #### Step 3. Compile a new Wasm binary
+
+    Upload the new Wasm file to the edge servers with the same API request you executed in Stage 2: 
+
+    ```sh
+    curl -X 'POST' 
+      'https://api.gcore.com/fastedge/v1/binaries/raw' 
+      -H 'accept: application/json' 
+      -H 'Authorization: APIKey api_key' 
+      -H 'Content-Type: application/octet-stream' 
+      --data-binary '@./dist/main.wasm'
+    ```
+
+    Don't forget to save the ID of the new Wasm binary, as you'll need to use it in the following step. 
+
+    #### Step 4. Update the app
+
+    Run the following API request: 
+
+    ```sh
+    curl -X 'PUT' 
+      'https://api.gcore.com/fastedge/v1/apps/app_id' 
+      -H 'accept: application/json' 
+      -H 'Authorization: APIKey api_key' 
+      -H 'Content-Type: application/json' 
+      -d '{
+        "binary": new_binary_id,
+        "plan": "beta",
+        "status": 1,
+        "name": app_name,
+        "env": {
+          "MY_CUSTOM_ENV_VAR": "Custom-Header-Value"
+        }
+      }'
+    ```
+
+    Where: 
+
+      * app_name is the unique name of your app. 
+      * app_id is the app ID.
+      * api_key is your [permanent API token](/account-settings/create-use-or-delete-a-permanent-api-token).
+      * binary_id is the ID of your uploaded Wasm binary.
+
+
+
+    #### Step 5. Test the app
+
+    Run the following curl request: `curl https://<app_name>.fastedge.gcore.dev/`, where `<app_name>` is the name of your application indicated in the previous step. 
+
+    If everything is updated correctly, the response will be: 
+
+    ```json
+    {
+      "Headers": {
+        "dc": "ed",
+        "my-custom-header": "Custom-Header-Value",
+        "geoip-asn": "199524",
+        "geoip-lat": "49.61130",
+        "geoip-long": "6.12940",
+        "geoip-reg": "LU",
+        "geoip-city": "Luxembourg",
+        "geoip-continent": "EU",
+        "geoip-country-name": "Luxembourg",
+        "geoip-country-code": "LU",
+        "server_addr": "192.2.3.4",
+        "server_addrserver_name": "bear-wiggle-4732724.fastedge.gcore.dev",
+        "connection": "upgrade",
+        "x-real-ip": "1.2.3.4",
+        "x-cdn-requestor": "ed-hw-edge-preprod-gc39",
+        "server_addrx-forwarded-for": "1.2.3.4",
+        "host": "fastedge.gcore.dev",
+        "x-forwarded-proto": "https",
+        "user-agent": "curl/7.81.0",
+        "cdn-loop": "nb1d2; c=11",
+        "server_addrpop-country-code": "LU",
+        "server_addrpop-reg": "LU",
+        "server_addrpop-country-name": "Luxembourg",
+        "server_addrpop-lat": "49.6113",
+        "server_addrpop-long": "6.1294",
+        "server_addrpop-continent": "EU",
+        "server_addrpop-city": "Luxembourg"
+      }
+    }
+    ```
+
+    <Accordion title="Description of the parameters">
+    * my-custom-header: Added custom header
+    * dc: Data center
+    * geoip-*: Client GeoIP data, such as asn, latitude, longitude, region, city, continent, country name, and country code
+    * server_addr: PoP IP address
+    * server_name: Application hostname
+    * x-forwarded-for: Client IP address
+    * pop-*: PoP GeoIP data, such as asn, latitude, longitude, region, city, continent, country name, and country code
+    </Accordion>
+  </Tab>
+</Tabs>
+
+## Troubleshoot an application
+
+If you're having issues with your FastEdge application, the following sections offer helpful tips and troubleshooting suggestions. 
+
+### HTTP status codes
+
+If your application is correctly configured and works as expected, FastEdge will return the expected status code, such as "200 OK."
+
+However, in some exceptional situations, you might get the following status codes. Check the descriptions to understand the root cause. 
+
+| Status code | Description  |
+| ---|--- |
+| 530 | Internal FastEdge error.  |
+| 531 | Application has exceeded the allowed memory limit.  |
+| 532 | Application has timed out.  |
+| 533 | Application has crashed.  |

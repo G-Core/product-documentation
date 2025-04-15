@@ -1,27 +1,32 @@
-# KnowledgeBase
+# Mintlify Starter Kit
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.3.3.
+Click on `Use this template` to copy the Mintlify starter kit. The starter kit contains examples including
 
-## Development server
+- Guide pages
+- Navigation
+- Customizations
+- API Reference pages
+- Use of popular components
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+### Development
 
-## Code scaffolding
+Install the [Mintlify CLI](https://www.npmjs.com/package/mintlify) to preview the documentation changes locally. To install, use the following command
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+```
+npm i -g mintlify
+```
 
-## Build
+Run the following command at the root of your documentation (where mint.json is)
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+```
+mintlify dev
+```
 
-## Running unit tests
+### Publishing Changes
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Install our Github App to auto propagate changes from your repo to your deployment. Changes will be deployed to production automatically after pushing to the default branch. Find the link to install on your dashboard. 
 
-## Running end-to-end tests
+#### Troubleshooting
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+- Mintlify dev isn't running - Run `mintlify install` it'll re-install dependencies.
+- Page loads as a 404 - Make sure you are running in a folder with `mint.json`

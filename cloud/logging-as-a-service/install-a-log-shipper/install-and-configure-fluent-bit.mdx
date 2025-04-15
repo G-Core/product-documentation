@@ -1,0 +1,75 @@
+---
+title: Install and configure Fluent Bit
+sidebarTitle: Fluent Bit
+---
+
+Fluent Bit is a log shipping tool. This means that it is a service that collects logs from a device and sends them to an external storage.
+
+In Fluent Bit's Settings, you specify a source of the logs you need, for example, logs of a specific service, internal storage, TCP port, or OS events. You must indicate a destination for log export—Gcore's Logging servers. After that, Fluent Bit works automatically: Once a required log is recorded in the system, the log shipper transfers it to our storage, and the log appears on OpenSearch Dashboards.
+
+## Install
+
+Fluent Bit's [official documentation](https://docs.fluentbit.io/manual/installation/getting-started-with-fluent-bit) provides up-to-date installation guides for different operating systems. [Open this link](https://docs.fluentbit.io/manual/installation/getting-started-with-fluent-bit) and select your OS. Simply follow the steps in the relevant installation manual.
+
+## Configure
+
+The Fluent Bit configuration file consists of two sections: `INPUT` and `OUTPUT`. `INPUT` determines the source of the logs you need to collect, and `OUTPUT` indicates the destination where they will be sent. Here's how to set up the configuration file correctly:
+
+  1. Open the `fluent-bit.conf` file and add the following data:
+
+```sh
+[INPUT]  
+    Name        tail
+    Path        /var/log/syslog
+[OUTPUT]   
+    name        kafka    
+    brokers       laas-example.gcore.com:443  
+    topics        yourlogin.yourtopic   
+    rdkafka.security.protocol        SASL_SSL    
+    rdkafka.sasl.mechanism        SCRAM-SHA-512   
+    rdkafka.sasl.username       yourlogin
+    rdkafka.sasl.password       yourpassword 
+```
+
+Customize the highlighted values:
+
+  * **tail**: Data source
+  * **/var/log/syslog**: File path 
+  * **laas-example.gcore.com:443**: Kafka Endpoint on the Logging page
+  * **yourlogin.yourtopic**: Your username on the Logging page and your topic name separated with a dot (.)
+  * **yourlogin**: Your username on the Logging page
+  * **yourpassword**: Your password
+
+
+
+For more information on how to add `INPUT` for different log sources, go to the ["Input" section of the Fluent Bit documentation](https://docs.fluentbit.io/manual/pipeline/inputs) and click the log source you need. 
+
+For example, if you want to gather logs from a specific file, open the [guide for Tail](https://docs.fluentbit.io/manual/pipeline/inputs/tail). Tail is a utility on UNIX-like systems used to display the tail end of a file. It helps Fluent Bit to read changes in the log file. You need to fill in the `INPUT` so that it corresponds with Tail.
+
+
+<Accordion title="Descriptions of the OUTPUT parameters">
+* **[OUTPUT]** : Type of process (export). 
+ * **name** : Servers where logs will be delivered (Kafka servers). 
+ * **brokers** : Server(s) where logs will be exported to. 
+ * **topics** : Topic(s) where logs will be exported to. 
+ * **rdkafka.security.protocol** : Security protocol that encrypts data to protect it from theft. 
+ * **rdkafka.sasl.mechanism** : Authentication mechanism that helps to verify a login and a password entered to sign into your logs storage. 
+ * **rdkafka.sasl.username** : The username that helps to verify the sender. 
+ * **rdkafka.sasl.password** : The password that helps to verify the sender.
+</Accordion>
+
+
+  2. Save the changes in the `fluent-bit.conf` file.
+
+  3. Restart Fluent Bit, and it will begin sending logs to the Gcore Managed Logging.
+
+
+
+
+## No timestamps
+
+Some services (for example, nginx) transmit timestamps of logs in a non-standard format. In this case, OpenSearch Dashboards will show logs without their date and time. If this happens, copy the string below to the `OUTPUT` section. This will ensure that Fluent Bit forwards date and time in a different format that is suitable for services like nginx.
+
+```
+timestamp_format iso8601
+```

@@ -1,0 +1,86 @@
+---
+title: "Cache hit ratio is low: How to solve the issue"
+sidebarTitle: Low cache hit ratio
+---
+
+## What is the cache hit ratio?
+
+The cache hit ratio is the percentage of traffic delivered from the CDN edge cache without requesting the origin server. You can check it in the [Statistics](https://cdn.gcore.com/reports/statistics) section in the Gcore Customer Portal. 
+
+
+<Frame>![How to check Cache Hit Ration in the Statistics tab of the Gcore Customer Portal](/images/docs/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue/statistics-low-cache-hit-ratio.png)</Frame>
+
+
+
+A high cache hit ratio shows the efficiency and practicality of using CDNs. The higher it is, the better. By reducing the number of times CDN edge servers request a file from the source, you improve performance, reduce the load on the source, and reduce outbound traffic costs.
+
+## Issues with the low cache hit ratio
+
+A low cache hit ratio is a sign of something going awry, and shows that many requests are proxied to the origin instead of files being delivered from the cache. 
+
+A low cache hit ratio can be accompanied by low content delivery speed Compare the request scheme for cached file `User → CDN edge → User` with uncached—`User → CDN edge → Origin → CDNedge → User`. In the second case, more requests go to the origin, which causes longer response time simply due to a higher distance and more hops in the sequence.
+
+## Check if slow content delivery is related to low cache hit ratio
+
+1\. Check Statistics for "Cache hit ratio." If it is low (less than 80% in most cases), also check "Traffic" and "Requests" to avoid misconceptions in determining the cause. You can learn more about where and how to view reports in the guide about [viewing statistics of CDN resources](/cdn/view-statistics-of-a-cdn-resource#statistics).
+
+**Note** : 80% is an approximate number, used for descriptive purposes, the accurate number highly depends on the use-case.
+
+2\. Check the response headers using the `curl -I` command; for instance:
+    
+```sh
+curl -I cdn.example.com/assets/sample-image.png
+```
+
+**Note** : Request content from one specific CDN edge server. 
+
+
+<Accordion title="How to request content from the same server">
+**Note**: Requesting content from the same server several times is very important. Normally, your request will hit multiple servers in your location, returning an unrepresentative result because one server may have cached the file and another may not. 
+
+To request the file from the same server:
+
+1\. Request the file that appears not to be distributed from the CDN, and check the **"X-id"** header. This header shows the server that received the request. Copy that value.
+
+2\. Run the following command to get its IP:
+
+```
+nslookup/dig {x-id server}.fe.gc.onl
+```
+
+3\. Request the file from the IP address which you got in step 2: 
+
+```sh
+curl -Ik -H "Host: {cdn.domain}" "http{s}://{ip-address}/file"
+```
+
+Compare the file headers with the values listed in the table below.
+</Accordion>
+
+
+The response will contain different headers. You should focus on the inappropriate values of caching headers "Cache-control" and "Cache":
+
+| **Value**                                 | **Meaning**                                                                                                                                                                                                                                                                                                                                              |
+|-------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Cache-Control: *max-age=0*                | This value prohibits content caching. It may cause an issue with the Cache hit ratio and reduce performance. However, in some cases, this value is fine.                                                                                                                                                                                                 |
+| Cache-Control: *no-cache*                 | This value prohibits content caching. It may cause an issue with the Cache hit ratio and reduce performance. However, in some cases, this value is fine.                                                                                                                                                                                                 |
+| Cache-Control: *no-store*                 | This value prohibits content caching. It may cause an issue with the Cache hit ratio and reduce performance. However, in some cases, this value is fine.                                                                                                                                                                                                 |
+| Cache-Control: *private*                  | This value caches content only in users’ browsers, not in the edge servers’ cache.<br/><br/>**Note**: If the request contains custom headers starting with **X** (for example, **X-custom-header**), the CDN will treat the request as a new request and forward it to the origin (as with cookies).                                                  |
+| Cache: *MISS*                             | This value specifies that the response is received from the origin, bypassing the cache. Gcore’s CDN caches files on the first request. This means that the first request for a file will result in **MISS** (CDN had to reach the origin to pull the resource and cache it locally), and every subsequent request for the same file will result in **HIT** (served from a local CDN cache). |
+
+  
+3\. Check the [CDN resource caching settings](/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin). The feature must be enabled and configured to support CDN caching. 
+
+4\. Check [Ignore Query String and Ignore Set-Cookie options](/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers). If it's disabled, content with different query strings and Set-Cookie headers caches separately.
+
+**Note** : If content delivery speed is not related to low cache hit ratio, check [our guide](/cdn/troubleshooting/content-delivery-speed-is-low-how-to-solve-the-issue) to help with other causes.
+
+## Causes and solutions for low cache hit ratio
+
+| **Cause**                                                                                                                                    | **Solution**                                                                                                                                                                                                                                                                                                                                                                                                                          |
+|----------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Traffic started less than two days ago, and more cache needs to be collected.                                                                | Traffic patterns and amounts dictate how long you should wait to populate the cache.<br/>Usually, waiting for around 48 hours after the CDN integration is enough to cache most resources, but the exact time is individual.<br/>You can also deliver more content through CDN.                                                                                                                                                         |
+| Content is not requested enough, and the cache per server is low.                                                                            | Increase the traffic to your content or use the paid [Origin shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) option to accumulate requests.                                                                                                                                                                                                                                |
+| A “Cache-Control” value prohibits the CDN from caching content.                                                                              | Ensure that the [CDN Caching](/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin) option is enabled and configured correctly.<br/><ul><li>**For CDN controlled**: **Do not** set `0` in the “Cache expiry” field.</li><li>**For Origin controlled**: **Do not** set the values mentioned above (`max-age=0`, `no-cache`, `no-store`, `private`).</li></ul>                                    |
+| Responses contain query strings or a Set-Cookie header, so the files are cached as different.                                                | Enable [Ignore Query String and Ignore Set Cookie options](/cdn/cdn-resource-options/cache/ignore-the-set-cookie-or-query-string-parameters-when-caching-content-on-cdn-servers). Then, a single file will be delivered from the cache, regardless of the request parameters and the Set Cookie header.                                                                                                        |
+| The Vary header is set on origins so that content is cached suboptimally.                                                                    | Change the **Vary** header settings on your origin or use the [Hide response headers](/cdn/cdn-resource-options/http-headers/add-or-hide-response-headers#hide-response-headers) feature in the customer portal.<br/>Set “Hide only,” select the **Vary** header and others that are necessary, then save changes.<br/>![How to hide the Vary header](https://assets.gcore.pro/docs/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue/low-cache-hit-ratio-20.png) |
