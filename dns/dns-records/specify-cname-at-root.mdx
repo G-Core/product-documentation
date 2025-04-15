@@ -1,0 +1,38 @@
+---
+title: Create records in zone apex (CNAME flattening)
+sidebarTitle: CNAME flattening
+---
+
+## What is the challenge with the creation of records in the root zone (zone apex)?
+
+[CNAME records](/dns/dns-records#cname-record) are increasingly used to integrate domains with third-party solutions such as CDNs. Using an A record, which specifies the concrete IP address that resolves the domain, may not be suitable in cases where IP addresses change frequently based on the geolocation of requests.
+
+According to the RFC 1034 specification, a CNAME record cannot coexist with other records. Therefore, it is impossible to specify a CNAME record for the root domain, also known as the "apex domain" (e.g., sample-test.com), because it has mandatory NS and SOA records.
+
+While using a subdomain (e.g., cdn.sample-test.com) for CNAME record creation can be sufficient, some website owners may want to integrate their root domain. For this situation, Gcore Managed DNS provides the CNAME flattening feature.
+
+## How does CNAME flattening work?
+
+CNAME flattening is a mechanism that allows specification restrictions to be bypassed, enabling a CNAME to be specified for the root domain. It resolves the CNAME chain and uses the IP address of the final A or AAAA record. This synthetic record is then cached, respecting its TTL, and used to answer subsequent DNS queries for the apex domain on the Gcore DNS side.
+
+By using CNAME flattening, we avoid specification violations and ensure proper DNS resolution in more cases. Due to the local cache layer, the total resolution time may significantly decrease, improving performance.
+
+## Configuration of CNAME flattening
+
+Gcore Managed DNS provides CNAME flattening to customers on all plans by default. To use this feature, you must:
+
+1\. Remove the A record for the root domain before creating the CNAME record.
+
+
+<Frame>![Delete an A record](https://assets.gcore.pro/docs/dns/dns-records/specify-cname-at-root/records-in-the-apex-root.png)</Frame>
+
+
+
+2\. Ensure that there is only one CNAME record to ensure that flattening works as expected.
+
+
+<Frame>![Ada a CNAME record to apex zone](https://assets.gcore.pro/docs/dns/dns-records/specify-cname-at-root/cname-flattening.png)</Frame>
+
+
+
+You can check the CNAME record's value using the [Gcore DNS Lookup](https://gcore.com/dev-tools/dns-lookup) tool.

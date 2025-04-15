@@ -1,0 +1,194 @@
+---
+title: Protect your content with temporary links and secure tokens
+sidebarTitle: Protected temporary link
+---
+
+By default, videos are available by their links with no restrictions and can be placed on any website or in any mobile application. But in some cases, platform owners or rights holders need to ensure that video content does _not_ offer public access, such as when a video is only for paid access, private access, access by country, temporary access, or access on a specific site.
+
+## How does Gcore protect video content?
+
+Gcore has several methods of protecting video content:
+
+  1. Protected temporary links
+  2. [Country access policy (Geo-restrictions)](/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#country-access-policy)
+  3. [Referrer validation](/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#allow-referrer-policy)
+  4. [AES-128 encryption](/streaming-platform/video-hosting/protect-your-videos-with-the-aes-128-encryption)
+
+
+
+We plan to add more types of protections in the future, such as watermarking. Contact us via [support@gcore.com](mailto:support@gcore.com) if you want to suggest additional options.
+
+In this article, we will look at the first option: protected temporary links and, relatedly, Secure Tokens.
+
+## What are protected temporary links?
+
+Protected temporary links are generated using the [Secure Token](/cdn/cdn-resource-options/security/use-a-secure-token/about-secure-token) feature, which allows configuring access with tokenized URLs. When using this option, you add a special character set to every URL. Check out the examples below with the special characters highlighted in bold. At Gcore, we call these special characters _Secure Tokens_.
+
+  * Public: https://demo-public.gvideo.io/videos/2675_3dk4NsRt6vWsffEr/master.m3u8
+  * Protected: https://demo-protected.gvideo.io/videos/2675_3dk4NsRt6vWsffEr/4KF8O8YERpLuwIIO_p3RFQ/1861919999/master.m3u8
+
+
+
+Unlike content with a public URL, which is available to any user, content with a protected temporary link verifies that the user has a special _hash key_ that matches the generated token.
+
+There are three possible scenarios:
+
+  * HTTP 2xx response code, if the hash key is valid and unexpired
+  * HTTP 403 Forbidden response, if the hash key is invalid
+  * HTTP 410 Gone response, if the hash key is valid but expired
+
+
+
+Here is an example of what happens if we try to access the video when the token is expired:
+
+```sh
+curl --head https://demo-protected.gvideo.io/videos/2675_3dk4NsRt6vWsffEr/bbP3uBs-rBM_HY1VfWS5-Q/1688124955/master.m3u8
+
+HTTP/1.1 410 Gone
+Server: nginx
+Date: Fri, 07 Jul 2023 06:42:28 GMT
+Content-Type: text/html
+Content-Length: 136
+Connection: keep-alive
+X-ID: ed-hw-edge-gc38
+X-ID-FE: ed-hw-edge-gc38
+ ```
+
+## CDN resources and scope of restrictions
+
+Video content hosted via the Video Streaming is viewed and delivered through our CDN, so by default your account has only one hidden CDN resource in the format _******.gvideo.io_.
+
+The restriction policies, such as the Secure Token for links protection, apply specifically to CDN resources because a CDN resource covers all video content at once. This means you don't need to create rules and make permissions for each video separately—it is enough to create and apply permissions only once to the CDN resource.
+
+Moreover, your account can have several CDN resources leading to the same content (origin). These CDN resources can be with different access policies. So you can combine open access on one CDN resource, and private access on another one, etc.
+
+## How to enable the Secure Token feature?
+
+To enable the Secure Token feature and start protecting your links, please [check out our product docs on the topic](/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token).
+
+## Format of protected temporary links
+
+Secure Token-protected temporary links have the following format: 
+
+```sh
+https://domain.com/videos|cmaf/{client_id}_{video_id}/{token}/{expiration}/manifest.m3u8
+ ```
+
+Where:
+
+  * `{client_id}` is your account ID
+  * `{video_id}` is the identifier of the video or live stream
+  * `{token}` is the MD5 hash of the video and other attributes
+  * `{expiration}` is the unix time in seconds of how long will the link be valid
+
+
+
+Example: https://demo-protected.gvideo.io/cmaf/2675_201693/cFLm6j00eFFuvos2HZ-6hA/1861919999/master.m3u8
+
+For Gcore Video on Demand (VOD) and Gcore Live Streaming, a relative path is used for all file types used to deliver video content, such as additional manifests, chunks, and MP4 renditions. Therefore, the path of the main manifest is taken as the basis and the following path is built relative to it.
+
+Examples of protected links for VOD:
+
+  * `https://domain.com/videos/{client_id}_{video_slug}/{token}/{expiration}/`**manifest.m3u8**
+  * `https://domain.com/videos/{client_id}_{video_slug}/{token}/{expiration}/`**segment-1-svod720n-v1-a1.ts**
+  * `https://domain.com/videos/{client_id}_{video_slug}/{token}/{expiration}/`**720.mp4**
+
+
+
+Examples of protected links for Gcore Live Streaming:
+
+  * `https://domain.com/cmaf/{client_id}_{stream_id}/{token}/{expiration}/`**master.m3u8**
+  * `https://domain.com/cmaf/{client_id}_{stream_id}/{token}/{expiration}/`**index.mpd**
+  * `https://domain.com/cmaf/{client_id}_{stream_id}/{token}/{expiration}/`**004chunk-stream4-10000000-05213.m4s?part=4**
+
+
+
+## A note on the expiration time
+
+The expiration time must be at least equal to the duration of the original video or the expected duration of the live playback. When the signed URL expires, URLs will no longer be played, even if playback has already begun. Because video expiration time is integrated into the URL described above, new chunks will no longer be given by the relative path.
+
+Your app also needs to handle cases where a user starts to play a video, then leaves your app for a long time, and then comes back later and tries to play the video again. You will probably need to detect this behavior and reacquire the new signed URL to make sure playback can start.
+
+To handle both cases, ensure you set the expiration far enough into the future that users won't experience playback interruptions.
+
+```sh
+expires = 1861919999 # Sunday, December 31, 2028 23:59:59 GMT
+ ```
+
+## How to create protected links with the secure token
+
+Note that generating a Secure Token requires the same process for both VOD and Live Streaming. 
+
+<Tabs>
+  <Tab title="Python">
+    ```python
+    import base64
+    from hashlib import md5
+    from time import time
+
+    def gethash(client_id, video_id, secret, expires):
+        hash_body = "%s_%s_%s_%s_" % (client_id, video_id, secret, expires)   # set of unique parameters of video
+        hash_md5 =  base64.b64encode(                                         # get MD5 hash from parameters of video
+                md5(hash_body.encode()).digest()                            
+            ).decode().replace("+", "-").replace("/", "_").replace("=", "")   # preparation for use in URL 
+        return hash_md5
+
+    client_id = "2675"       # enter your account ID here
+    secret = ""              # enter your secret key from CDN-resource here
+
+    #VOD
+    video_slug = "3dk4NsRt6vWsffEr"     # enter your video's slug here
+    expires = int(time()) + 24*60*60    # 24 hours, unixtime in seconds
+
+    token = gethash(client_id, video_slug, secret, expires)
+    print(f"https://demo-protected.gvideo.io/videos/{client_id}_{video_slug}/{token}/{expires}/master.m3u8")
+
+    #LIVE
+    stream_id = "201693"                      # enter your live stream id here
+    expires = int(time()) + 24*60*60    # 24 hours, unixtime in seconds
+
+    token = gethash(client_id, stream_id, secret, expires)
+    print(f"https://demo-protected.gvideo.io/cmaf/{client_id}_{stream_id}/{token}/{expires}/master.m3u8")
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```go
+    package main
+
+    import (
+        "crypto/md5"
+        "encoding/base64"
+        "fmt"
+        "time"
+    )
+
+    func gethash(clientId string, videoId string, secret string, expires int64) string {
+        hashBody := fmt.Sprintf("%s_%s_%s_%d_", clientId, videoId, secret, expires) // set of unique parameters of video
+
+        md5sum := md5.Sum([]byte(hashBody)) // get MD5 hash from parameters of video
+        hashMd5 := base64.RawURLEncoding.EncodeToString(md5sum[:])
+        return hashMd5
+    }
+
+    func main() {
+        clientId := "2675" // enter your account ID here
+        secret := ""       // enter your secret key from CDN-resource here
+
+        //VOD
+        videoSlug := "3dk4NsRt6vWsffEr"         // enter your video's slug here
+        expires := time.Now().Unix() + 24*60*60 // now + 24 hours, unixtime in seconds
+
+        token := gethash(clientId, videoSlug, secret, expires)
+        fmt.Printf("https://demo-protected.gvideo.io/videos/%s_%s/%s/%d/master.m3u8 \n", clientId, videoSlug, token, expires)
+
+        //LIVE
+        streamId := "201693"                   // enter your live stream id here
+        expires = time.Now().Unix() + 24*60*60 // now + 24 hours, unixtime in seconds
+
+        token = gethash(clientId, streamId, secret, expires)
+        fmt.Printf("https://demo-protected.gvideo.io/cmaf/%s_%s/%s/%d/master.m3u8 \n", clientId, streamId, token, expires)
+    }
+
+    ```
+  </Tab>
+</Tabs>

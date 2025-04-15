@@ -1,0 +1,113 @@
+---
+title: Backup and restore PostgreSQL database for Managed PostgreSQL using external utilities
+sidebarTitle: Backup and restore
+---
+
+This guide will explain how to backup and restore PostgreSQL databases with the `pg_dump` (`pg_dumpall`) and `pg_restore` tools.
+
+To protect yourself against data loss, we recommend frequently backing up the databases you manage with [Gcore Managed PostgreSQL](/cloud/managed-database-postgresql).
+
+## 1\. Install external utilities
+
+Install backup and restore utilities on your virtual or local server. Below are guides on how to do so for Ubuntu, CentOS, and Windows.
+
+**Note** : You must have root rights to run the commands successfully. 
+
+
+<Accordion title="Ubuntu 22.04">
+1. Access your Virtual Server.
+
+2. Download the latest available updates and upgrade `apt`:
+
+  ```sh
+  $ sudo apt update && sudo apt upgrade
+  ```
+
+
+3. To install ` pg_dump` and `pg_restore` tools, install the Postgres package, which includes them:
+  
+  ```sh
+  $ sudo apt install postgresql postgresql-contrib
+  ```
+
+</Accordion>
+
+<Accordion title="CentOS 7">
+1. Access your Virtual Server.
+
+2. Install the PostgreSQL package:
+
+  ```sh
+  $ sudo yum install postgresql-server
+  ```
+
+
+The package contains all required tools.
+</Accordion>
+ 
+<Accordion title="Windows">
+1. Download the [installer of the relevant PostgreSQL version](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads).
+
+2. Run the installation process.
+</Accordion>
+
+
+## 2\. Get your credentials
+
+To launch backup and restore tools, you need credentials (`username`, `password`, `port`, and `dbname`) to connect to the Gcore Managed Database server, where databases are stored. You can find credentials in the Customer Portal, with instructions available in [our dedicated guide](/cloud/managed-database-postgresql/manage-postgresql-servers#get-your-credentials). 
+
+## 3\. Back up databases
+
+### Back up a specific database
+
+Use one of the following commands depending on your choice of backup format:
+
+  * **Default SQL format** : `$ pg_dump -U username -W -h hostname -d database_name > database_name.sql`
+  * **TAR format** : `$ pg_dump -F t -U username -W -h hostname -d database_name > backup_file.tar`
+  * **Custom format** : `$ pg_dump -F c -U username -W -h hostname -d database_name > backup_file.dump`
+  * **Directory format** : `$ pg_dump -F d -U username -W -h hostname -d database_name -f backup_dir`
+
+
+
+Instead of `username`, `hostname`, and `database_name`, enter custom values, which you can access [using our guide](/cloud/managed-database-postgresql/manage-postgresql-servers#get-your-credentials). For `backup_file` or `backup_dir`, specify the relevant name for the backup file or directory.
+
+Below are some other details for the commands:
+
+  * `-W` prompts the password before connecting to the PostgreSQL server
+  * `-F` specifies the output format of the backup and can be followed by the following flags:
+    * `c` for custom format
+    * `d` for directory format
+    * `t` for tar
+
+
+
+### Back up all databases
+
+Run the command:
+
+```sh
+$ pg_dumpall -U username -W -h hostname > all_pg.sql
+ ```
+
+Where: 
+
+  * `all_pg.sql` is the output backup name
+  * `username` is your username from the Customer Portal
+  * `hostname` is your hostname from the Customer Portal
+
+
+
+## 4\. Restore databases
+
+Run the command: 
+
+```sh
+$ pg_restore -U username -W -h hostname -d database_name < backup_file.tar
+ ```
+
+Where: 
+
+  * `username` is your username from the Customer Portal
+  * `hostname` is your hostname from the Customer Portal 
+  * `database_name` is your database name from the Customer Portal
+  * `backup_file.tar` is the file or directory with your backup
