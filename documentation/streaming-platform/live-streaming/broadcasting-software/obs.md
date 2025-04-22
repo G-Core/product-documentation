@@ -1,27 +1,19 @@
 ---
-title: push-live-streams-via-obs
-displayName: OBS (Open Broadcaster Software)
+title: obs
+displayName: OBS
 published: true
-order: 10
-toc:
-   --1--What is an OBS?: "what-is-an-obs"
-   --1--Configure: "configure-the-obs-encoder-for-gcore-streaming"
-   --1--Manage the stream: "manage-the-stream-parameters"
-   --2--Output: "output-parameters"
-   --2--Audio: "audio-parameters"
-   --2--Video: "video-parameters"
+order: 30
 pageTitle: Live Stream Setup with OBS | Gcore
 pageDescription: A step-by-step guide to pushing live streams via Open Broadcaster Software (OBS).
 ---
-# Push live streams via OBS  
 
-## What is an OBS?
+# Open Broadcaster Software
 
 Open Broadcaster Software (OBS) is a free and open-source encoder for video recording, screencasting, and live streaming. It’s suitable for video game streaming, blogging, educational content, and more.
 
 OBS links your device (a laptop or a PC) and different streaming platforms (Gcore Video Streaming, YouTube, Twitch, etc.). It takes an image captured by a camera, converts it into a video stream, and then sends it to the streaming platform.
 
-## Configure the OBS encoder for Gcore Streaming
+## Setup
 
 1\. Download Open Broadcaster Software (OBS) from the <a href="https://obsproject.com" target="_blank">official website</a> and install it.
 
@@ -39,8 +31,8 @@ For example, if you see these values on the Live stream settings page:
 
 paste them to the OBS Settings as follows:
 
-- *rtmp://vp-push-ix1.gvideo.co/in/* is the Server;
-- *400448?cdf2a7ccf990e464c2b…* is the Stream Key.
+-   _rtmp://vp-push-ix1.gvideo.co/in/_ is the Server;
+-   _400448?cdf2a7ccf990e464c2b…_ is the Stream Key.
 
 5\. Click the **Apply** button to save the new configuration.
 
@@ -54,7 +46,7 @@ paste them to the OBS Settings as follows:
 
 That’s it. The stream from OBS will be broadcast to your website.
 
-## Manage the stream parameters
+## Configure the stream parameters for optimal performance
 
 To ensure optimal streaming performance, we recommend configuring the stream parameters you will send to our server. You can adjust these settings in the Output, Audio, and Video tabs within OBS.
 
@@ -64,9 +56,9 @@ To ensure optimal streaming performance, we recommend configuring the stream par
 
 2\. Set the parameters as follows:
 
-- **Video Bitrate:** The resolution of your stream determines the required bitrate: The higher the resolution, the higher the bitrate. To stream at 720p resolution, set the bitrate to 2000Kbps. If you’re broadcasting at 1080p, set the bitrate to 4000Kbps.
-- **Audio Bitrate:** 128.
-- **Encoder:** Software (x264), or any other H264 codec.
+-   **Video Bitrate:** The resolution of your stream determines the required bitrate: The higher the resolution, the higher the bitrate. To stream at 720p resolution, set the bitrate to 2000Kbps. If you’re broadcasting at 1080p, set the bitrate to 4000Kbps.
+-   **Audio Bitrate:** 128.
+-   **Encoder:** Software (x264), or any other H264 codec.
 
 <img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-obs/10807571524241.png" alt="Manage the stream parameters" width="80%">
 
@@ -74,10 +66,10 @@ To ensure optimal streaming performance, we recommend configuring the stream par
 
 4\. Set the parameters as follows:
 
-- **Rate control:** CRF (the default value is 23)
-- **Keyframe Interval (0=auto):** 2s
-- **CPU Usage Preset:** veryfast
-- **Profile:** baseline
+-   **Rate control:** CRF (the default value is 23)
+-   **Keyframe Interval (0=auto):** 2s
+-   **CPU Usage Preset:** veryfast
+-   **Profile:** baseline
 
 5\. Click **Apply** to save the configuration.
 
@@ -101,9 +93,9 @@ If you need to reduce the original resolution (downscale), follow the instructio
 
 2\. Set the following parameters:
 
-- **Output (Scaled) Resolution:** 1280×720
-- **Downscale Filter:** Bicubic
-- **Common FPS Values:** 30
+-   **Output (Scaled) Resolution:** 1280×720
+-   **Downscale Filter:** Bicubic
+-   **Common FPS Values:** 30
 
 3\. Click **Apply**.
 
