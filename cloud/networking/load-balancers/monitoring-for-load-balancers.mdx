@@ -1,0 +1,174 @@
+---
+title: "Monitoring for load balancers"
+sidebarTitle: "Monitoring"
+---
+
+import { Caution } from "/snippets/caution.mdx";
+
+Gcore collects and stores metrics and logs from various cloud resources, including load balancers. This guide explains the different monitoring features and how to configure them for an existing load balancer.
+
+## Prometheus listener
+
+Load balancers use listeners to associate a port with a pool of instances. In addition to the regular balancing listeners, you can create one that exposes an endpoint with the balancer's metrics. This enables you to scrape them with Prometheus and view them with Grafana.
+
+<Tip>
+  Tip: Import [this pre-made Grafana dashboard](https://grafana.com/grafana/dashboards/15828-openstack-octavia-amphora-load-balancer/) to display your metrics.
+</Tip>
+
+### Enable Prometheus listener
+
+You can enable the Prometheus listener from the Customer Portal by following these steps:
+
+<Steps>
+  <Step title="Open the listener settings">
+    To enable the metrics endpoint, open the **Gcore Customer Portal**, navigate to **Cloud** \> **Networking** \> **Load Balancers**, and click the name of a load balancer in the list.
+
+    ![Load blanacers list](/images/load-blanacers-monitoring-1.png)
+
+    This will take you to the **Load Balancer Details** page.
+  </Step>
+  <Step title="Initialize the listener creation">
+    Select the **Listeners** tab, scroll down until you see the **Add Listener** button, and click it.
+
+    ![Load balancers details dialog](/images/load-balancers-monitoring-2.png)
+
+    This will open the **Add Listener** dialog.
+  </Step>
+  <Step title="Configure the listener">
+    Enter a **Name** for your listener, set a **Port** and a **Connection limit**, and for the **Protocol** select **Prometheus**. 
+
+    Just like with regular listeners, you have the following options to secure your Prometheus listener:
+
+    - Define an allowed IP range with CIDRs.
+    - Define a list of users who get access through Basic Auth.
+    - Enable SSL/TLS by [<u>adding certificates</u>](https://gcore.com/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer).
+    - Enable mTLS [<u>via the Gcore Cloud API</u>](https://gcore.com/docs/cloud/networking/load-balancers/configure-mtls-authentication).
+
+    ![Add listener dialog](/images/load-balancers-monitoring-3.png)
+  </Step>
+  <Step title="Finalize the listener">
+    Click the **Create Listener** button and wait until the Prometheus listener appears in the list.
+
+    You can now add the listener as a target to a Prometheus instance by adding the following lines to its prometheus.yml under the scrape_configs section:
+
+    ```yaml
+    - job_name: <LOAD_BALANCER_NAME>
+        metrics_path: /metrics
+        static_configs:
+        - targets:
+          - <LOAD_BALANCER_IP>:<PROMETHEUS_LISTENER_PORT>
+    ```
+  </Step>
+</Steps>
+
+### Disable Prometheus listener
+
+<Info>
+  Before you delete a Prometheus listener, you should delete the corresponding job from all _prometheus.yml_ files.
+</Info>
+
+You can disable the Prometheus listener in the **Customer Portal** by following these steps:
+
+<Steps>
+  <Step title="Open the load balancer settings">
+    Open the **Gcore Customer Portal**, navigate to **Cloud** \> **Networking** \> **Load Balancers**, and click a load balancer's name in the list.
+
+    ![Load Blanacers Monitoring 1 Pn](/images/load-blanacers-monitoring-1.png)
+  </Step>
+  <Step title="Delete the listener">
+    Select the **Listeners** tab, scroll down until you see the Prometheus listener, click on its corresponding action menu on the right, and click **Delete**.
+  </Step>
+</Steps>
+
+## Logging as a service
+
+Gcore offers Managed Logging, also known as logging as a service (LaaS) for all cloud resources. 
+
+<Info>
+  When you enable logging on a load balancer, LaaS will store the logs in the same region as the load balancer.
+</Info>
+
+### Enable logging
+
+You can enable logging via the **Customer Portal** by following these steps:
+
+<Steps>
+  <Step title="Open the load balancer settings">
+    To enable the logging, open the **Gcore Customer Portal**, navigate to **Cloud** \> **Networking** \> **Load Balancers**, and click the name of a load balancer in the list.
+
+    ![Load blanacers list](/images/load-blanacers-monitoring-1.png)
+  </Step>
+  <Step title="Initialize logging">
+    Select the **Logging** tab, and activate the **Enable Logging** toggle.
+
+    You can either use an existing log **Topic** or create a new one, allowing you to define a **Retention** period.
+
+    ![Load balancers settings](/images/load-balancers-moitoring-4)
+  </Step>
+  <Step title="Finalize logging">
+    Click the **Save changes** button, and Gcore’s LaaS will set up the logging for the load balancer.
+  </Step>
+</Steps>
+
+### View the logs
+
+You can now view your logs in the **Customer Portal** or [<u>your own Grafana instance</u>](https://gcore.com/docs/cloud/logging-as-a-service/view-opensearch-logs-in-Grafana). To view the logs in the **Customer Portal**, follow these steps:
+
+<Steps>
+  <Step title="Open Managed Logging">
+    Open the **Gcore Customer Portal** and navigate to **Cloud** \> **Managed Logging**.
+
+    ![Managed logging settings](/images/load-balancers-monitoring-5.png)
+  </Step>
+  <Step title="Open OpenSearch dashboard">
+    Select a log topic from the list and click the corresponding **View Logs** link.
+  </Step>
+</Steps>
+
+### Disable logging
+
+You can disable logging via the **Customer Portal** by following these steps:
+
+<Steps>
+  <Step title="Open the load balancer settings">
+    Open the **Gcore Customer Portal**, navigate to **Cloud** \> **Networking** \> **Load Balancers**, and click a load balancer's name in the list.
+
+    ![Load Blanacers Monitoring 1 Pn](/images/load-blanacers-monitoring-1.png)
+  </Step>
+  <Step title="Deactivate logging">
+    Select the **Logging** tab, deactivate the **Enable Logging** toggle, and click the **Save changes** button.
+
+    ![Load Balancers Monitoring 6 Pn](/images/load-balancers-monitoring-6.png)
+  </Step>
+</Steps>
+
+## Cloud API endpoints
+
+You can request status, metrics, and general statistics for your load balancers via the Gcore Cloud API.
+
+### Load balancer status
+
+The status endpoints provide details about a load balancer's operating and provisioning status, its listeners, and their pools.
+
+You can find more information about the endpoints on the following documentation pages.
+
+- [Status of one specific load balancer](https://api.gcore.com/docs/cloud#tag/Load-Balancers/operation/LoadBalancerStatusInstanceViewSet.get) 
+- [Status of all load balancers](https://api.gcore.com/docs/cloud#tag/Load-Balancers/operation/LoadBalancerStatusViewSet.get) 
+
+### Load balancer metrics
+
+The metrics endpoint provides information about CPU, memory, and network utilization.
+
+You can find more information about the endpoints on the following documentation pages.
+
+- [Metrics of one specific load balancer](https://api.gcore.com/docs/cloud#tag/Load-Balancers/operation/LoadbalancerMetricsHandler.post)
+
+### Load balancer and listener statistics
+
+The get endpoints for load balancers and listeners provide data about connections, traffic, and errors when called with ?show_stats=true.
+
+You can find more information about the endpoints on the following documentation pages.
+
+- [Get one specific load balancer](https://api.gcore.com/docs/cloud#tag/Load-Balancers/operation/LoadBalancerInstanceViewSet.get)
+- [Get one listener](https://api.gcore.com/docs/cloud#tag/Load-Balancers/operation/LoadBalancerListenerInstanceViewSet.get)
+- [Get all listeners](https://api.gcore.com/docs/cloud#tag/Load-Balancers/operation/LoadBalancerListenerViewSet.get)
