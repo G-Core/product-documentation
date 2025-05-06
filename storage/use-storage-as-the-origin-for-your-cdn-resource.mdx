@@ -1,0 +1,97 @@
+---
+title: Use storage as the origin for your CDN resource
+sidebarTitle: Use storage with CDN
+---
+
+## Use as an origin
+
+### Use object storage
+
+1\. Go to the [CDN](https://cdn.gcore.com/resources/list) tab and press **Create CDN resource**.
+
+
+<Frame>![CDN resource](/images/docs/storage/use-storage-with-cdn/create-cdn-resource-10.png)</Frame>
+
+
+
+2\. Select which Object Storage you want to use as a content source: public or private - and follow the instructions.
+
+
+<Accordion title="Public">
+
+<Frame>![Set up initial configuration](/images/docs/storage/use-storage-with-cdn/image3527.png)</Frame>
+
+
+
+1\. Select the **Specify content origin** option.
+
+2\. Select **None** in the "Type of origin authentication" option. 
+
+3\. Specify the path to your bucket in following format: `http(s)://<bucket-name>.<location>.cloud.gcore.lu`. More details in the "[Request content directly from the Object Storage](/storage/use-storage-as-the-origin-for-your-cdn-resource#s3-storage-is-the-origin)" section below. 
+
+4\. Specify custom domain, e.g., _cdn.example.com_. Read more about the personal domain setup in the "[Create and set a custom domain for the content delivery via CDN](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn)" guide.
+</Accordion>
+ 
+<Accordion title="Private">
+If you want to use a private bucket instead of a public S3 bucket, follow our guide on how to [use a private bucket as an origin](/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin).
+</Accordion>
+
+
+### Use SFTP storage
+
+Go to the [CDN](https://cdn.gcore.com/resources/list) tab and press **Create CDN resource**.
+
+
+<Frame>![Use SFTP storage](/images/docs/storage/use-storage-with-cdn/create-cdn-resource-10.png)</Frame>
+
+
+
+To specify the Origin Source, use the following schema: 
+
+`<storage name>.<hostname>`
+
+Both name and hostname can be found on the Storage tab > Storages > Details.
+
+
+<Frame>![Set up initial configuration](/images/docs/storage/use-storage-with-cdn/use-sftp-as-origin-40.png)</Frame>
+
+
+
+If your storage name is 12345-test and your hostname is _ams.origin.gcdn.co_, you should specify _12345-test.ams.origin.gcdn.co_ as the Origin Source. Read more about personal domain setup in the "[Create and set a custom domain for the content delivery via CDN](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn)" guide.
+
+## Request content from CDN
+
+### Object storage is the origin
+
+An addressing scheme where you specify the bucket at the beginning `<bucket-name>.<location>.cloud.gcore.lu` allows you to increase the security of your CDN usage because you hide the Hostname of your repository.
+
+Use the following schema to request uploaded files:
+
+`http(s)://<Custom domain>/<folder*>/<file>`
+
+*If the folder was created in the bucket. If files were added to the root of the bucket - specify file names. 
+
+For example, you've: 
+
+  * used a bucket _mybucket_, S3 storage in the Luxembourg location _s-ed1.cloud.gcore.lu_
+  * created a CDN resource for the storage with the Custom domain with _cdn.example.com_.
+
+
+
+To request file _picture.png_, which was uploaded into the bucket, from CDN use the following URL:
+
+`http://cdn.example.com/picture.png`
+
+**Note** : By default, created buckets and all the stored files in buckets are private. To make a file public, read [the article on ACL and policy](/storage/manage-object-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/configure-access-control-on-s3-storage-with-aws-cli-and-s3cmd) or [official documentation](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl).
+
+### SFTP storage is the origin
+
+Upload your files to the htdocs directory, but don't specify the directory when requesting the content.
+
+Path to the uploaded file in the storage: 
+
+`sftp://12345-test@ams.origin.gcdn.co:2200/export/home/12345-test/htdocs/picture.png`
+
+If the CDN Custom domain is _cdn.example.com_, the URL to request the file from CDN will be:
+
+`http://cdn.example.com/picture.png`

@@ -1,0 +1,271 @@
+---
+title: Extend CDN functionality with FastEdge
+sidebarTitle: CDN applications
+---
+
+If you need to introduce additional functionality to Gcore CDN and customize its behavior for various use cases, integrate your CDN resource with [FastEdge](https://gcore.com/fastedge). 
+
+Such a setup allows you to extend the CDN beyond standard features and implement advanced logic for: 
+
+  * Authentication checks. Deploy FastEdge apps based on the JWT authentication template or develop a custom authentication functionality. 
+  * Custom headers modification. Adjust header information on requests for personalized and more secure content delivery. 
+  * Custom access rules. Use advanced geo-blocking and time-based blocking to control user access to your content and mitigate potential threats.
+
+
+
+## How it works
+
+Unlike traditional HTTP applications, a CDN application in FastEdge must be developed according to the [Proxy-Wasm (WebAssembly for Proxies)](https://github.com/proxy-wasm/spec). This ensures compatibility and standardization across different CDN environments. 
+
+The application is called at the early stage of CDN processing, allowing for immediate intervention and customization. We're actively working on new interception points across the CDN workflow to cover a wide range of use cases. 
+
+## Set up FastEdge integration with CDN
+
+To get started, you need to have a CDN resource configured for your origin. If you don't have Gcore CDN set up, follow the instructions from this guide: [Create a CDN resource](/cdn/getting-started/create-a-cdn-resource). 
+
+### Step 1. Create a FastEdge application
+
+You can deploy an application from a predefined template or from a custom Wasm file. If you choose the latter option, make sure that your Wasm binary file is compliant with the [WebAssembly standard for proxies](https://github.com/proxy-wasm/spec). 
+
+<Tabs>
+  <Tab title="Deploy from the template">
+    Currently, you can use a predefined template to enable authentication in your application. The template is configured to verify the JSON Web Token (JWT) in the request header. 
+
+    To deploy an application from the template: 
+
+    1\. In the [Gcore Customer Portal](https://accounts.gcore.com/reports/dashboard), navigate to **FastEdge**. 
+
+    2\. Open the **CDN Applications** page and click **Create new application**.
+
+
+    <Frame>![Create FastEdge application button](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-apps-page-create-app.png)</Frame>
+
+
+
+    3\. In the **Create from a template** section, choose **Validate JWT in Authorization header**. 
+
+
+    <Frame>![Create from a template section with jwt validation template](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/validate-jwt.png)</Frame>
+
+
+
+    4\. Enter a name for your application and, optionally, update its description. 
+
+    5\. Add required environment variables—a token signing key that will be used for authentication checks.
+
+
+    <Frame>![JWT template configuration menu](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-app-from-template-setup.png)</Frame>
+
+
+
+    6\. Click **Save and deploy**. 
+
+    Your application has been successfully deployed and can now be accessed through the CDN.
+
+
+    <Frame>![A page with app deployment confirmation](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-app-created.png)</Frame>
+
+    If you need to adjust the configuration, click **Actions** > **Edit application**. 
+
+
+    <Frame>![A page with app deployment confirmation](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/actions-edit-app-from-template.png)</Frame>
+  </Tab>
+  <Tab title="Deploy a custom CDN application">
+    If you want to deploy a FastEdge application from your own binary, check the examples of custom implementation in our repository: [FastEdge application examples](https://github.com/G-Core/FastEdge-examples). 
+
+    To deploy a FastEdge application from your own binary:
+
+    1\. In the [Gcore Customer Portal](https://accounts.gcore.com/reports/dashboard), navigate to **FastEdge**. 
+
+    2\. Open the **CDN Applications** page and click **Create new application**.
+
+
+    <Frame>![Create FastEdge application button](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-apps-page-create-app.png)</Frame>
+
+
+
+    3\. Click **Upload binary**.
+
+
+    <Frame>![Create custom application section](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-apps-upload-binary.png)</Frame>
+
+
+
+    4\. Choose your custom binary file. If you add multiple files, click **Save binary** to confirm and upload the selected files.
+
+    5\. Enter a name for your application and, optionally, add a description. 
+
+    6\. Add required environment variables that will be used for authentication checks. Enter the data as key-value pairs.
+
+
+    <Frame>![Custom app configuration menu](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-app-setup.png)</Frame>
+
+
+
+    If you're adding sensitive information or want to ensure that any data in the app's configuration remains secure, encrypt the variables. Click **Encrypt** next to the value you want to secure:
+
+
+    <Frame>![Encrypt variable button highlighted](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/encrypt-variable-button.png)</Frame>
+
+
+
+    The provided value will be replaced with the **Encrypted Value** text, and the **Revert** button will appear next to encrypted value. This button allows you to restore the original version if needed.  
+
+    <Frame>![Encrypted variable](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/encrypted-variable-revert-button.png)</Frame>
+
+
+
+    We store all encrypted variables in a separate table in the database to protect your information from potential security breaches or unauthorized access. 
+
+    <Warning>
+    **Warning**
+
+    You won't be able to update the encrypted variable after creating the application. To change the value, delete the existing variable and add a new encrypted variable with the updated value.
+    </Warning>
+
+    Note that once you save the configuration, you won't be able to view the original unencrypted value. 
+
+    7\. Click **Save and deploy**. 
+
+    Your application has been successfully deployed and can now be referenced from CDN resource settings. If you need to adjust the configuration, click **Actions** > **Edit application**. 
+
+
+    <Frame>![A page with app deployment confirmation](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/actions-edit-app.png)</Frame>
+
+  </Tab>
+</Tabs>
+
+
+### Step 2. Enable FastEdge functions for your CDN resource
+
+You can enable the configured Wasm functionality either to the whole CDN resource or just to some URLs. 
+
+<Tabs>
+  <Tab title="For the whole CDN resource">
+    1\. In the Gcore Customer Portal, navigate to **CDN**. 
+
+    2\. Find the resource you want to integrate with FastEdge and open the resource settings.
+
+
+    <Frame>![CDN resources page with resource settings context menu](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-resource-settings-button.png)</Frame>
+
+
+
+    3\. Scroll the page down to the **FastEdge apps** section and enable the toggle **On request headers**. 
+
+    Currently, we support only one event - **On request headers**, which can be used for authentication and request header manipulation before calling the origin. 
+
+
+    <Frame>![FastEdge apps section in CDN resource settings](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/enable-fastedge-cdn-settings.png)</Frame>
+
+
+
+    4\. Choose your application from the dropdown. 
+
+    5\. (Optional) **Select the Interrupt request processing in case of error** checkbox.
+
+    <Info>
+    **Info**
+
+    The **Interrupt request processing in case of error** checkbox is enabled by default. This ensures that any errors on the FastEdge side will be returned to the browser with the relevant response code. If you disable the checkbox, CDN will ignore the error and pass requests directly to the origin. For security considerations, we recommend keeping this checkbox active.
+    </Info>
+
+    6\. Click **Save**. 
+  </Tab>
+  <Tab title="For specific URL paths">
+    You can set up a function within your uploaded FastEdge application to manage incoming request headers only for specific URLs. For example, protect some parts of your content with a JWT token, and keep the other URLs unaffected. 
+
+    To enable the function for specific URLs: 
+
+    1\. In the Gcore Customer Portal, navigate to **CDN**. 
+
+    2\. Find the resource you want to integrate with FastEdge and open the resource settings. 
+
+    3\. Click **Rules** > **Create rule**.
+
+
+    <Frame>![CDN resource settings with open Rules tab](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-settings-rules-section.png)</Frame>
+
+    4\. Click **Create blank rule**. 
+
+    5\. Give your rule a name. 
+
+    6\. In the **Match criteria** section, specify the content that will be affected by the function configured in your FastEdge application. 
+
+    7\. In the **Options** section, click **Add option**. 
+
+    8\. In the options dialog, find the **FastEdge apps** section and select **On request headers**. 
+
+
+    <Frame>![FastEdge apps section in rule options dialog](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/rule-options-fastedge-app.png)</Frame>
+
+
+    9\. Close the dialog and make sure that the **Enable on request headers** toggle is active. 
+
+    10\. Choose your FastEdge application. 
+
+    11\. (Optional) **Select the Interrupt request processing in case of error** checkbox.
+
+
+    <Frame>![Enable FastEdge apps section in rule options dialog](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/rule-options-fastedge-app-enable.png)</Frame>
+
+    <Info>
+    **Info**
+
+    The **Interrupt request processing in case of error** checkbox is enabled by default. This ensures that any errors on the FastEdge side will be returned to the browser with the relevant response code. 
+    
+    If you disable the checkbox, CDN will ignore the error and pass requests directly to the origin. For security considerations, we recommend keeping this checkbox active.
+    </Info>
+
+    12\. Click **Create rule**. 
+  </Tab>
+</Tabs>
+
+## Disconnect FastEdge from CDN
+
+If you no longer need to use the functionality configured in your FastEdge application, you can disable the FastEdge functions for your CDN resource. 
+
+The steps will slightly differ based on whether you choose to remove FastEdge from the whole CDN resource or just specific URLs. 
+
+1\. In the Gcore Customer Portal, navigate to **CDN**.
+
+2\. Find the resource integrated with FastEdge and open the resource settings.
+
+
+<Frame>![CDN resources page with resource settings context menu](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/cdn-resource-settings-button.png)</Frame>
+
+
+3\. If you enabled FastEdge for the whole resource, disable the toggle **On request headers**. If you enabled Fast Edge just for particular paths, open the **Rules** page and disable the toggle for the required rule. 
+
+4\. Click **Save changes**. 
+
+You've successfully disconnected your CDN resource from FastEdge. 
+
+## Delete CDN application in FastEdge
+
+<Info>
+**Info**
+
+You can't delete a Fastedge application that is enabled for a CDN resource. To remove the application, disconnect it from the CDN resource first.
+</Info>
+
+To delete an application: 
+
+1\. In the Gcore Customer Portal, navigate to **FastEdge**. 
+
+2\. Open the **CDN Applications** page and click the three-dot icon next to the application that you want to remove.
+
+
+<Frame>![FastEdge app settings with delete button](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/remove-app-fstedge.png)</Frame>
+
+
+
+3\. Click **Delete**. 
+
+4\. Confirm your action by clicking **Yes, delete**.
+
+
+<Frame>![Confirm app deletion dialog](/images/docs/cdn/getting-started/integrate-cdn-with-fastedge/confirm-deletion.png)</Frame>
+
+
+You've successfully removed your CDN application from Gcore FastEdge.

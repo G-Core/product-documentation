@@ -1,0 +1,299 @@
+---
+title: "Configure WAAP for a domain"
+sidebarTitle: Configure WAAP for a domain
+---
+
+Web Application and API Protection (WAAP) is a single SaaS tool that combines all aspects of website security and traffic management, including Layer 7 DDoS protection, and web application security. 
+
+<Info>
+**Info**
+
+WAAP is currently in beta mode. To join the beta, contact the [Gcore support team](mailto:support@gcore.com).
+</Info>
+
+To secure your application with WAAP, you need to create a Gcore CDN resource for your domain, enable WAAP protection in the resource settings, and then verify that everything works as expected and you don't block legitimate traffic. The following steps will guide you through this process and help you configure WAAP according to your requirements.
+
+<Tip>
+**Tip**
+
+After you enable WAAP, all traffic will be diverted to our network, and it may cause a temporary disruption for your users. We recommend setting up Gcore WAAP during a low-traffic period to minimize the impact.
+</Tip>
+
+## Step 1. Create a CDN resource
+
+To secure your web application and APIs with Gcore WAAP, it's necessary to create a CDN resource associated with your website's origin. If you also need to add an SSL certificate, check out the [Add an SSL certificate to deliver content over HTTPS](/cdn/ssl-certificates/add-an-ssl-certificate-to-deliver-content-over-https) guide. 
+
+<Info>
+**Info**
+
+When configuring a resource, you need to update your domain's DNS records so they point to our network. This is necessary to allow all traffic to pass through WAAP.
+</Info>
+
+<Tabs>
+  <Tab title="Create a resource with Gcore Managed DNS">
+    If you don't have Gcore CDN configured, follow the instructions from this guide: [Create a CDN resource for the entire site](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site). 
+  </Tab>
+  <Tab title="Create a resource with your DNS provider">
+    If you want to use a custom DNS provider, configure the resource according to the following steps. 
+
+#### Step 1. Choose acceleration and protection type
+
+1\. Go to the [CDN page](https://cdn.gcore.com/resources/list) and click **Create CDN resource**.
+
+
+<Frame>![CDN page in the Customer Portal](/images/docs/waap/getting-started/create-cdn-resource-button.png)</Frame>
+
+
+
+2\. Select **Accelerate and protect static assets only**. This option lets you configure a CNAME for your static assets, also ensuring that your domain is fully protected from any harmful traffic. 
+
+
+<Frame>![Protect static assets option enabled](/images/docs/waap/getting-started/protect-static-assets-option.png)</Frame>
+
+
+
+3\. Click **Confirm** to proceed with the next steps.
+
+#### Step 2. Set up initial configuration for a domain
+
+1\. Provide a CNAME record. For example, `waap.mydomain.yt`. 
+
+
+<Frame>![CNAME example](/images/docs/waap/getting-started/cname-example.png)</Frame>
+
+
+
+2\. Specify the content origin and add an origin group. If you haven't previously created an origin group, refer to [add an origin group (step 2)](/cdn/add-an-origin-group#step-2-enter-the-origin-group-name). 
+
+3\. To use the default port 80, keep the **Use default checkbox** selected. If you need to specify a custom port, deselect the checkbox and enter the needed port in the relevant field.
+
+
+<Frame>![Example of origin configuration](/images/docs/waap/getting-started/origin-config-example.png)</Frame>
+
+
+
+4\. Add a description (optional). It won't affect your resource settings and will only be displayed in the [CDN resources](https://cdn.gcore.com/resources/list) section next to the resource CNAME. 
+
+#### Step 3. Set up your DNS
+
+1\. Copy the generated CNAME and add it to your DNS configuration. 
+
+2\. In the Gcore Customer Portal, click **Confirm** to finish the DNS configuration and proceed with the next steps.
+
+
+<Frame>![Example of DNS configuration](/images/docs/waap/getting-started/dns-setup.png)</Frame>
+
+
+
+#### Step 4. Set up a content management system
+
+1\. Select **I don't have CMS**. Replace the origin domain with the CNAME that points to your static files, if necessary. 
+
+2\. Click **Confirm** to complete the configuration.
+
+
+<Frame>![Example of CMS configuration](/images/docs/waap/getting-started/cms-setup.png)</Frame>
+
+
+
+#### Step 5. Finalize the settings
+
+1\. Once you've completed all the resource creation steps, access the resource settings by clicking the corresponding button. 
+
+2\. Navigate to the **Cache** settings and disable the **Always online** option.
+
+
+<Frame>![Always online option disabled](/images/docs/waap/getting-started/always-online-disabled.png)</Frame>
+
+
+
+3\. Make sure that the **Host header** is set to the **Forward Host header** option.
+
+
+<Frame>![Host header configuration](/images/docs/waap/getting-started/host-header-config.png)</Frame>
+  </Tab>
+</Tabs>
+
+## Step 2: Enable WAAP in CDN resource settings
+
+Once your CDN resource is set up, you can activate WAAP protection for it. Refer to the [Protect CDN resources with Gcore WAAP](/cdn/cdn-resource-options/cdn-security/protect-cdn-resources-with-basic-waf) guide for detailed instructions.
+
+## Step 3: Use WAAP in monitor mode
+
+After you enable WAAP, it will be automatically set to the [monitor mode](/waap/getting-started/waap-modes#monitor-mode). In this mode, we'll inspect all incoming requests but won't take any action. It's best to use monitor mode for several days before enabling the [protect mode](/waap/getting-started/waap-modes#protect-mode) to make sure that all security settings work correctly. 
+
+Completing this step is important because it allows you to analyze requests and test the WAAP behavior before you fully activate it. 
+
+<Warning>
+**Warning**
+
+In monitor mode, all traffic is allowed to your domain, regardless of configured security rules and policy groups. This mode is only recommended for testing WAAP settings.
+</Warning>
+
+## Step 4: View your domain traffic
+
+While keeping WAAP in monitor mode, you can view all logged requests and check the corresponding actions that the WAAP will take once you put it in the protect mode. 
+
+Go through the [analytics pages](/waap/analytics) to detect common traffic patterns and understand if the current configuration requires any adjustments. 
+
+For instance, you can find information about incoming web requests on the **WAAP** analytics page in the **Requests** table: 
+
+1\. In the [Gcore Customer Portal](https://accounts.gcore.com/reports/dashboard), navigate to **WAAP** > **Domains**.
+
+
+<Frame>![Domains page in the Customer Portal](/images/docs/waap/getting-started/domains-waap-page.png)</Frame>
+
+
+
+2\. Find the needed domain and click its name to open it. You'll be directed to the **Policies** page.
+
+3\. In the sidebar, click **Analytics** > **WAAP**. 
+
+4\. Review the information under **Requests**.
+
+
+<Frame>![Analytics page in the Customer Portal showing Requests table](/images/docs/waap/getting-started/waap-requests-table.png)</Frame>
+
+
+
+5\. You can also filter requests to get more granular information about your traffic: 
+
+  * **Traffic types** : View requests based on the rule that triggered the request. 
+
+  * **Policy – Blocked** or **Policy – Allowed** : View requests that triggered our predefined policy groups. 
+
+  * Select **Custom Rule – Blocked** or **Custom Rule – Allowed** : View requests that triggered custom rules created by your account users.
+
+
+<Info>
+**Info**
+
+**Policy - Blocked** and **Custom Rule - Blocked** are the default filters automatically displayed for the table.
+</Info>
+
+To view more information about a request, click the request ID and inspect the [Request Details](/waap/analytics#request-details) page.
+
+
+<Frame>![Request details section open from the Analytics page](/images/docs/waap/getting-started/request-details-overview.png)</Frame>
+
+
+
+The screenshot above depicts a request that was blocked because of the [SQL injection](/waap/waap-policies/waf-and-owasp-top-threats#sql_injection) policy. It blocks requests if there is evidence that the request contains malicious SQL code.
+
+## Step 5: Test your WAAP configuration
+
+To achieve the desired WAAP behavior, we recommend that you navigate through your website as both a user and administrator. 
+
+Navigating the website will generate entries in the [Requests](/waap/analytics#requests-table) table. You can use this information to determine if you need to create [Firewall rules](/waap/ip-security/allow-and-block-ip-addresses) or [custom WAAP rules](/waap/waap-rules/custom-rules) for some requests and let them access your website's content. 
+
+Specifically, review requests that relate to: 
+
+  * **Your origin IP** : IP address assigned to your device. 
+  * **Your office IP** : IP address assigned to your device within your office's network. 
+  * **Your workstation IP** : IP address assigned to a workstation or specific computer in a network.
+
+
+
+If you notice that WAAP will block such requests in the protect mode, you need to update your settings to prevent such a situation. You can find detailed instructions on how to update your settings in the following step. 
+
+Check out the [allow and block IP addresses](/waap/ip-security/allow-and-block-ip-addresses) guide for more information. 
+
+## Step 6: Allow admins, bots, and CMS
+
+Before the WAAP is in protection mode, you need to ensure that critical IP addresses, content management systems (CMS), and common automated services are allowed to make successful requests. 
+
+Check the [WAAP policy groups](/waap/waap-policies) for a full list of security policies and their detailed overview. 
+
+### Allow admin IP addresses
+
+If your domain doesn't use a CMS, we highly recommend allowlisting the site administrator's IP address: 
+
+1\. In the [Gcore Customer Portal](https://accounts.gcore.com/reports/dashboard), navigate to **WAAP** > **Domains**.
+
+
+<Frame>![Domains page in the Customer Portal](/images/docs/waap/getting-started/domains-waap-page.png)</Frame>
+
+
+
+2\. Find the needed domain and click its name to open it. You'll be directed to the **Policies** page.
+
+3\. In the sidebar, click **Firewall**. 
+
+4\. In the **Allowed IPs** section, click **Add IP/IP Range**.
+
+
+<Frame>![Firewall page in the Customer Portal](/images/docs/waap/getting-started/firewall-add-rules.png)</Frame>
+
+
+
+5\. Enter any admin user's public IP address. 
+
+6\. Click **Save**. 
+
+Repeat these steps if needed. 
+
+### Allow CMS
+
+If you use content management systems, such as WordPress, allow traffic for CMS admins: 
+
+1\. In the [Gcore Customer Portal](https://accounts.gcore.com/reports/dashboard), navigate to **WAAP** > **Domains**.
+
+2\. Find the needed domain and click its name to open it. You'll be directed to the **Policies** page.
+
+3\. In the sidebar, click **WAAP**. 
+
+4\. On the **Policies** page, find CMS protection, and then allow traffic for a desired content management system by enabling a toggle next to it.
+
+
+<Frame>![WAAP policies page with the highlighted CMS protection policy](/images/docs/waap/getting-started/cms-protection.png)</Frame>
+
+ <Tip>
+**Tip**
+
+The **WordPress WAF ruleset** policy is enabled by default.
+</Tip>
+
+### Allow common automated services
+
+Follow these steps to allow crawlers, scanners, monitoring bots, and similar tools to access your website: 
+
+1\. In the [Gcore Customer Portal](https://accounts.gcore.com/reports/dashboard), navigate to **WAAP** > **Domains**.
+
+2\. Find the needed domain and click its name to open it. You'll be directed to the **Policies** page.
+
+3\. Click the **Common automated services** to expand the section and enable the desired bot.
+
+
+<Frame>![WAAP policies page with the highlighted common automated bots policy](/images/docs/waap/getting-started/automated-services.png)</Frame>
+
+
+
+The [common automated services](/waap/waap-policies/common-automated-services) policy group allows a few trusted bots by default, which is why we recommend reviewing this list before enabling the protect mode.
+
+## Step 7: Configure your APIs
+
+If you plan to serve JSON requests through an API on your domain, you can disable the JavaScript injection and CAPTCHA functionalities for specified API endpoints.
+
+You can [manually add endpoints to API base path](/waap/api-discovery-and-protection/configure-api-base-path) or [configure the API Discovery feature](/waap/api-discovery-and-protection/api-discovery) to automatically detect and protect your APIs.
+
+## Step 8: Enable protect mode
+
+1\. In the [Gcore Customer Portal](https://accounts.gcore.com/reports/dashboard), navigate to **WAAP** > **Domains**.
+
+2\. Find the needed domain and click its name to open it. You'll be directed to the **Policies** page.
+
+3\. In the sidebar, click **WAAP**. 
+
+4\. In the upper-right corner of the screen next to WAAP mode, select **Protect**. The WAAP will begin to inspect and act upon incoming requests.
+
+
+<Frame>![WAAP modes dropdown](/images/docs/waap/getting-started/protect-mode.png)</Frame>
+
+
+
+## Step 9. Block non-GCore traffic
+
+After successful DNS propagation and verifying that domain-based traffic is being handled by WAAP, ensure that all requests to your domain are routed through Gcore servers. This is necessary to prevent unauthorized traffic from bypassing WAAP and directly reaching your domain.
+
+  * [Add our CDN servers to the allowlist](/cdn/getting-started/configure-an-origin/add-cdn-servers-to-the-origin-acl-whitelist). 
+  * Block other incoming requests that don't match our allowlist.

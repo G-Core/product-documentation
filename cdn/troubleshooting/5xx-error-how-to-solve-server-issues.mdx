@@ -1,0 +1,50 @@
+---
+title: "5xx error: how to solve server issues"
+sidebarTitle: 5xx error
+---
+
+HTTP 5xx codes can be caused by an error on an origin server or CDN edge servers.
+
+## Check for incidents or maintenances
+
+If you have noticed a significant increase of 5xx codes or received multiple complaints from users, we recommend checking our [Status Page](https://status.gcore.com) for incidents or maintenance associated with the following services: 
+
+  * CDN service
+
+  * Other Gcore services (if you use one of them as an origin: Object Storage, VPS, Dedicated Server, Edge Cloud).
+
+
+
+
+## Check your origin server
+
+Make sure that your origin server is available.
+
+If the origin is not responding, or it is returning an HTTP error, contact your hosting provider or server's administrator to solve this issue. 
+
+  * HTTP 504 error usually appears when an origin server fails to respond in time: the CDN edge servers wait for 5 seconds and, if an origin server is not responding, they return a 504 error. Change the settings of your origin to respond in time. 
+  * If you restrict access to your origin by IP or use DDoS Protection service, make sure that you've whitelisted the CDN edge servers. Use an API request below to receive the list of IP:
+
+```sh
+curl -i -X GET https://api.gcore.com/cdn/public-ip-list
+```
+
+**Note** : We constantly update this list and suggest you two solutions: creating a script to keep the origin whitelist regularly updated or using the HTTP header authorization. Find more about [ACL in the article](/cdn/getting-started/configure-an-origin/add-cdn-servers-to-the-origin-acl-whitelist). 
+
+## Check your CDN resource settings
+
+HTTP 5xx errors can be caused by incorrect CDN resource's settings. Check the list of the most common errors below.
+
+### Incorrect origin pull protocol
+
+Check the origin pull protocol in the resource's settings and make sure that your origin server uses the same protocol. For more information about this feature, refer the [article](/cdn/cdn-resource-options/general/specify-an-origin-and-the-origin-pull-protocol).
+
+If you use Cloudflare or CloudFront services as an origin server, select "HTTP" as the origin pull protocol. If your origin only supports HTTPS, or it has a redirect from HTTP to HTTPS, contact our Technical Support ([support@gcore.com](mailto:support@gcore.com)) to add settings. 
+
+### Incorrect host header
+
+Check the "Change Host Header" option. Make sure that the option is active, and the value is the same as the Origin Source or match with the host that you have set up on the Origin. For more information about Host Header, refer [here](/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header). 
+
+To track the amount of 5xx errors use the Response codes statistic on the [Report](/cdn/view-statistics-of-a-cdn-resource) tab. 
+
+To receive detailed data about error responses, use our paid feature Raw Logs. Check the [article to know more about Raw logs](/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage) receiving set up and logs' fields specifications.

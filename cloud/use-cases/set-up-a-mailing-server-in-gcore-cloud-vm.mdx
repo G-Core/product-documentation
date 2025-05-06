@@ -1,0 +1,170 @@
+---
+title: Set up a mailing server in GCore cloud VM
+sidebarTitle: Set up a mailing server
+---
+
+This article outlines basic steps for setting up a mail server using popular components such as Postfix and Dovecot. Please note that mail server setup may vary depending on the selected software and operating system, as well as the environment's specific settings. This article is focused on the Ubuntu and Debian operating systems.
+
+**Please note** : The use of email sending services must not violate [our terms of use](https://gcore.com/legal). Suspicious requests will be rejected and, if necessary, accounts will be blocked.
+
+  1. Create an Virtual Machine.
+
+
+
+Install Cloud VM using [our guide](/cloud/virtual-instances/create-an-instance). The minimum available configuration—1vCPU and 2 GB RAM—will be enough to install and run a mail server on your VM.
+
+  2. Check internet access.
+
+
+
+Check the **Network settings** tab in the machine settings. The interface must be set to the public to access the internet.
+
+
+<Frame>![Network settings tab in the machine settings](/images/docs/cloud/use-cases/1.png)</Frame>
+
+
+
+However, if you first chose the option private method, then you need to get a [floating IP address](/cloud/networking/ip-address/create-and-configure-a-floating-ip-address) to access the internet.
+
+**Please note** : By default, Gcore Cloud VM has limits on SMTP port 25. In order to open a port and successfully install a mail server, [contact support](https://accounts.gcore.com/tickets/all) and click **Create Ticket**.
+
+
+<Frame>![Create Ticket](/images/docs/cloud/use-cases/2.png)</Frame>
+
+
+
+  3. Connect to your Gcore Cloud VM via either [SSH](/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh) or [the VNC concole](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel) in the Customer Portal.
+
+  4. Install Postfix.
+
+
+
+
+[Postfix](https://www.postfix.org/) is one of the popular Mail Transfer Agents (MTAs) responsible for sending and delivering mail messages. To install Postfix, run the following commands:
+
+```sh
+sudo apt-get update
+sudo apt-get install postfix
+ ```
+
+During Postfix installation, you will be prompted to select a configuration type. Select the `Internet Site` option and enter the fully qualified hostname of your server, then click `<Ok>`.
+
+
+<Frame>![Internet Site option](/images/docs/cloud/use-cases/3.png)</Frame>
+
+
+
+  5. Configure Postfix.
+
+
+
+Navigate to the Postfix configuration file:
+
+```sh
+sudo nano /etc/postfix/main.cf
+ ```
+
+In this configuration file, edit the following parameters:
+
+```sh
+myhostname = your_server_domain.com
+mydestination = your_server_domain.com, localhost.localdomain, localhost
+mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
+ ```
+
+  * **myhostname** : Specify the fully qualified domain name of the Virtual Server on which Postfix is running.
+
+  * **mydestination** : Specify the domains for which mail will be delivered locally instead of being forwarded to another host.
+
+  * **mynetworks** : Specify a list of networks or IP addresses from which mail messages are allowed to be sent through this server.
+
+
+
+<Frame>![Configure Postfix](/images/docs/cloud/use-cases/4.png)</Frame>
+
+
+
+Save the changes and restart Postfix:
+
+```sh
+sudo service postfix restart
+ ```
+
+More information about Postfix is available in their [documentation](https://www.postfix.org/documentation.html).
+
+  6. Install Dovecot.
+
+
+
+[Dovecot](https://www.dovecot.org/) is an IMAP (Internet Message Access Protocol) and POP3 (Post Office Protocol 3) server that provides access to mailboxes. It is required during the mail server setup, so installing it will be the next step. Use the following command to install Dovecot:
+
+```sh
+sudo apt-get install dovecot-imapd dovecot-pop3d
+ ```
+
+  7. Configure Dovecot.
+
+
+
+Add the following SSL parameters:
+
+```sh
+listen = *, ::
+ssl = required
+ssl_cert = </etc/ssl/certs/ssl-cert-snakeoil.pem
+ssl_key = </etc/ssl/private/ssl-cert-snakeoil.key
+ ```
+
+Insert the required SSL parameters below, as noted in the screenshot, after `listen = *, ::`.
+
+
+<Frame>![required SSL parameters](/images/docs/cloud/use-cases/5.png)</Frame>
+
+
+
+Save your changes and restart Dovecot:
+
+```sh
+sudo service dovecot restart
+ ```
+
+  8. Create mailboxes.
+
+
+
+Now you have successfully configured and installed Postfix and Dovecot, you can create mailboxes for users. For each user, run this command:
+
+```sh
+sudo useradd -m -s /usr/sbin/nologin username
+sudo passwd username
+ ```
+
+Create a password for each user and retype it. The password will be saved automatically.
+
+
+<Frame>![Create a password](/images/docs/cloud/use-cases/6.png)</Frame>
+
+
+
+  9. Add DNS records.
+
+
+
+Next, you should manage the DNS settings. Use [our PD guide](/dns/dns-records/set-up-dns-for-sending-email) to get step-by-step configuration instructions.
+
+  10. Test and verify.
+
+
+
+Restart Postfix and Dovecot to apply the changes. 
+
+```sh
+sudo service postfix restart
+sudo service dovecot restart
+ ```
+
+You can use an email client (for example, [Thunderbird](https://www.thunderbird.net/)) to send a test email from one of the email addresses you created. After sending a test email, check your email client or webmail to receive this email. Analyze the Postfix and Dovecot logs, located in the following directory:
+
+```sh
+/var/log/mail.log
+ ```

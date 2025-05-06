@@ -1,0 +1,147 @@
+---
+title: Getting started with DNSSEC
+sidebarTitle: DNSSEC
+---
+
+## DNSSEC overview
+
+DNSSEC (DNS Security Extensions) is a set of security extensions for DNS, functioning as an additional layer of authentication. DNSSEC guards against attacks such as DNS cache poisoning, where scammers attempt to redirect users to a harmful site even when users input a valid web address.
+
+DNSSEC validates digital signatures in a sequential manner across a chain of trust, extending from the DNS root to the specific DNS record being requested. DNSSEC permits authoritative DNS servers to respond with a signature. Recursive DNS resolvers (recursors) then use these signatures to authenticate the DNS responses.
+
+<Warning>
+**Warning**
+
+DNSSEC does not encrypt the data between the end user and the recursor. To ensure confidentiality and integrity between clients and recursors, use technologies such as DNS over HTTPS (DoH) and DNS over TLS (DoT). We plan to implement DNS over TLS/HTTPS secure protocols on our public servers in 2024 to reduce the risk of query interceptions.
+</Warning>
+
+## Enable DNSSEC
+
+<Tabs>
+  <Tab title="DNS API">
+    Remember to replace the placeholders in the API request samples in double curly brackets with your own values.
+
+    1\. [Create a domain zone](https://api.gcore.com/docs/dns#tag/Zones/operation/CreateZone) for which you want to use DNSSEC using the following API request:
+
+    ```sh
+    POST https://api.gcore.com/dns/v2/zones 
+    Content-Type: application/json 
+    Authorization: APIKey {{apikey}} 
+    { 
+        "contact": "support@gcore.com", 
+        "enabled": true, 
+        "expiry": 3600, 
+        "name": "{{zone_name}}", 
+        "nx_ttl": 60, 
+        "primary_server": "ns1.gcorelabs.net", 
+        "refresh": 3600, 
+        "retry": 3600, 
+        "serial": 1 
+    } 
+    ```
+
+    <Tip>
+    **Tip**
+
+    If you're transferring your DNS zone from one DNS provider to another, disable DNSSEC in advance and wait the duration of the DS record TTL time before taking further action.
+    </Tip>
+
+    2\. [Create an RRSet](https://api.gcore.com/docs/dns#tag/RRsets/operation/CreateRRSet) using the following API request:
+
+    ```sh
+    POST https://api.gcore.com/dns/v2/zones/{{zone_name}}/{{rrset_name}}/A 
+    Content-Type: application/json 
+    Authorization: APIKey {{apikey}} 
+    { 
+        "resource_records": [ 
+                { 
+                        "content": [ 
+                                "{{ip_address}}" 
+                        ], 
+                        "enabled": true 
+                } 
+        ] 
+    } 
+    ```
+
+    3\. Enable DNSSEC for the domain using the following API request:
+
+    ```sh
+    PATCH https://api.gcore.com/dns/v2/zones/{{zone_name}}/dnssec 
+    Content-Type: application/json 
+    Authorization: APIKey {{apikey}}  
+    {"enabled":true}
+    ```
+
+    4\. Obtain Delegation Signer (DS) record data for your registrar control panel using the following API request:
+
+    ```sh
+    GET https://api.gcore.com/dns/v2/zones/{{zone_name}}/dnssec 
+    Content-Type: application/json 
+    Authorization: APIKey {{apikey}}
+    ```
+
+    Here's an example output. 
+
+    ```json
+    {
+      "algorithm": "13",
+      "digest": "87071836FA02797589CBA87E1F808CE1CADF6D32F1FCD375D9EEE1914720521B",
+      "digest_algorithm": "SHA256",
+      "digest_type": "2",
+      "ds": "example.com. 3600 IN DS 7888 13 2 87071836FA02797589CBA87E1F808CE1CADF6D32F1FCD375D9EEE1914720521B",
+      "flags": 257,
+      "key_tag": 7888,
+      "key_type": "ECDSAP256SHA256",
+      "public_key": "1Aobr0AwVzIefTveXVrjk06w9iMVHUOzdSiW3V9Vr9l6A3D+8tuf9Hv6CBGgVAbx0GYFQicOLn5jV30C1o20QQ=="
+    }
+    ```
+
+    The DS value of the record is represented in the "ds" field, not "digest."
+
+    5\. Input the Delegation Signer record in your registrar's control panel.
+
+    That's it. You have completed the configuration on your end. However, please note that adding a Delegation Signer (DS) record in your domain registrar's control panel may take up to 24 hours to take effect, though usually, it takes about an hour.
+  </Tab>
+  <Tab title="Customer Portal">
+    1\. Go to [All zones](https://portal.gcore.com/dns/zones) and open the existing zone, or create the new one according to our [dedicated guide](/dns/manage-a-dns-zone#create-a-dns-zone).
+
+    2\. Enable [advanced interface mode](/dns/about-gcore-dns#interface-modes-non-advanced-and-advanced) if it's not already enabled.
+
+    3\. Enable DNSSEC.
+
+    <Frame>![Enable DNSSEC](https://assets.gcore.pro/docs/dns/getting-started-with-dnssec/enable-dnssec-cp.png)</Frame>
+
+
+    A pop-up window will appear. 
+
+    4\. Copy the value in the "DS record" (Deligation Signer) field.
+
+    <Frame>![Copy the DS record](https://assets.gcore.pro/docs/dns/getting-started-with-dnssec/ds-value-dnssec.png)</Frame>
+
+
+    5\. Paste this Delegation Signer record value into your registrar's control panel.
+  </Tab>
+</Tabs>
+
+
+## Disable DNSSEC
+
+Remember to replace the placeholders in the API request samples in double curly brackets with your own values.
+
+To disable DNSSEC:
+
+1\. Remove the DS record in the registrar control panel. The DNS record in the upper-level zone informs the recursors that they must validate authoritative servers' responses for your zone. If DNSSEC is disabled in Gcore but not in the upper-level domain, recursors will attempt to validate a record signature that is already disabled. This scenario will cause an outage for your domain.
+
+2\. Disable DNSSEC in Gcore using the following API request:
+
+```sh
+PATCH https://api.gcore.com/dns/v2/zones/{{zone_name}}/dnssec 
+Content-Type: application/json 
+Authorization: APIKey {{apikey}} 
+{"enabled":false}
+```
+
+Or, disable the feature in the Customer Portal by turning off the toggle.
+
+3\. After disabling DNSSEC, wait the duration of the TTL of the DS record. The cached record will expire for seamless performance.

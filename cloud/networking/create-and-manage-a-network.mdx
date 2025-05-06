@@ -1,0 +1,233 @@
+---
+title: Create and manage a network
+sidebarTitle: Network
+---
+
+A Gcore Cloud network is a virtualized software-defined network that operates in a cloud computing infrastructure. Cloud networks are used to transfer information between cloud resources and provide an internet connection. 
+
+You can attach networks (also known as network interfaces) to [Virtual Machines](/cloud/virtual-instances/types-of-virtual-machines), [Bare Metal](/cloud/bare-metal-servers/about-bare-metal-servers), [Load Balancers](/cloud/networking/create-and-configure-a-load-balancer), and [Managed Kubernetes](/cloud/kubernetes/about-gcore-kubernetes) clusters. 
+
+## Types of networks
+
+For Cloud resources, you can configure the following types of networks: 
+
+  * **Private network** : This interface is for local internal connections to the server and doesn't have access to the external network. Resources with private interfaces can only be accessed from the same network. However, you can customize their setup and establish internet connectivity.  
+For example, if you add a VM with a private interface to a public Load Balancer, this Virtual Machine will receive requests from the internet. You can also assign a [Floating IP address](/cloud/networking/ip-address/create-and-configure-a-floating-ip-address) to provide external connectivity. 
+
+  * **Public network** : This interface grants access to the external network. Instances with a public network interface will be available from the internet.
+
+  * **Dedicated network** : This network type is designed for individual usage, providing an exclusive pool of addresses for each client. It works with Bare Metal servers and supports assigning multiple public IP addresses to a single server, making it ideal for advanced use cases such as virtualization and traffic balancing. These networks rely on dedicated public subnets, and the number of supported public IPs depends on the size of the assigned subnet. Other customizations are available upon request to meet specific needs.
+
+
+
+
+The type of network used depends on the cloud resource:
+
+  * Virtual Machines use **VxLAN**, enabling isolated communication between instances across different physical hosts. At the same time, they can operate in both **VxLAN** and **VLAN** networks.
+
+  * Bare Metal servers use **VLAN**, providing direct Layer 2 segmentation for higher performance and security.
+
+
+
+
+## Create and attach networks to cloud resources
+
+You can attach both public and private networks to Virtual Machines, Bare Metal, Load Balancers, and Managed Kubernetes clusters. 
+
+There are two ways to create and attach a network: during resource creation or by adding a network separately and then attaching it to an existing Cloud resource. 
+
+The support team must configure a dedicated network before it can be selected or used. This network type allows the assignment of multiple public IP addresses to a single server, with the total number of IPs determined by the size of the assigned subnet. Public IPs in a dedicated network must be explicitly assigned to the server in order to function. Unassigned IPs within the subnet will not be operational.
+
+### Attach a network when creating a new cloud resource
+
+For detailed steps on how to attach a network interface for each resource, refer to the relevant guide: 
+
+  * [Attach network interface to a Virtual Machine](/cloud/virtual-instances/create-an-instance)
+  * [Attach network interface to a Bare Metal](/cloud/bare-metal-servers/create-a-bare-metal-server)
+  * [Attach network interface to a Managed Kubernetes cluster](/cloud/kubernetes/clusters/create-a-kubernetes-cluster#step-6-configure-network-settings)
+  * [Attach network interface to a Load Balancer](/cloud/networking/create-and-configure-a-load-balancer#step-4-configure-network)
+
+
+
+### Create a network from the Networks page
+
+You can create new network interfaces in the Customer Portal, on the **Networks** page. 
+
+To add a new network: 
+
+1\. In the Gcore Customer Portal, navigate to **Cloud** > **Networking**.
+
+2\. Click **Create network**.
+
+
+<Frame>![Create network page in the Customer Portal](/images/docs/cloud/networking/create-and-manage-a-network/networking-page.png)</Frame>
+
+
+
+3\. Enter the network name. 
+
+4\. (Optional) If you want to create a network for Bare Metal servers, turn on the **Bare Metal Network (VLAN)** toggle. 
+
+5\. (Optional) Add tags if you want to include metadata. 
+
+6\. Click **Create network**. 
+
+
+<Frame>![Create network dialog](/images/docs/cloud/networking/create-and-manage-a-network/create-network-dialog.png)</Frame>
+
+
+
+If you need to configure a private network, you also need to add a subnetwork. To do so, follow instructions from the [creating a subnetwork](/cloud/networking/create-and-manage-a-subnetwork#create-a-subnetwork-from-the-networks-page) guide.
+
+### Attach a network interface to an existing VM or Bare Metal
+
+<Info>
+**Info**
+
+You can't change network interfaces for created Load Balancers.
+</Info>
+
+If you've already created a cloud resource and want to add more networks to it, you can do so in the resource settings: 
+
+1\. In the Gcore Customer Portal, navigate to **Cloud**. 
+
+2\. Open the relevant page with your resource: **Virtual Instances** or **Bare Metal**. 
+
+3\. Click the resource name to open its settings. 
+
+4\. Go to the **Networking** tab. Here you can view, attach, and detach network interfaces attached to your resource. Here's the network configuration for a Virtual Machine:
+
+
+<Frame>![Networking tab in the VM settings](/images/docs/cloud/networking/create-and-manage-a-network/networking-tab-vm.png)</Frame>
+
+
+
+5\. To attach a new interface, click **Add interface** : 
+
+  * **Public** : Each virtual machine can only have one native public interface. If you require additional public IP addresses, consider using a [reserved IP address](/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address) or [floating IP address](/cloud/networking/ip-address/create-and-configure-a-floating-ip-address) (applied to a private interface) instead. 
+
+  * **Private** : Choose a network from the list or create a new one, then [configure a subnetwork](/cloud/networking/create-and-manage-a-subnetwork) according to your requirements.
+
+
+
+
+6\. (Optional) If your network contains both IPv6 and IPv4 addresses, you can enable IPv6 dual-stack and simultaneously use IPv4 and IPv6 protocols on the same network infrastructure. 
+
+7\. Click **Save Changes**. 
+
+You've successfully attached a new network interface to your resource. 
+
+## Detach a network from a VM or Bare Metal
+
+To remove an interface from your cloud resource, you need to detach all subnetworks within this network interface: 
+
+1\. In the Gcore Customer Portal, navigate to **Cloud**. 
+
+2\. Open the relevant page with your resource: **Virtual Instances** or **Bare Metal**. 
+
+2\. Find the needed resource and click its name to open it. 
+
+3\. Go to the **Networks** tab and find the network you want to detach. 
+
+4\. Click the three-dot icon next to each subnetwork within the network and select **Detach subnetwork**. 
+
+
+<Frame>![Network settings with the detach subnetwork option](/images/docs/cloud/networking/create-and-manage-a-network/detach-subnetwork.png)</Frame>
+
+
+
+If you have a connected Floating IP, detach it before removing subnetworks.
+
+5\. Confirm the action by clicking **Detach**.
+
+Repeat this step for all subnetworks within the network. 
+
+<Warning>
+**Warning**
+
+Disabling a subnet will automatically remove its network interface from the machine, causing network disconnection until a new interface is assigned.
+</Warning>
+
+## Manage networks
+
+All your configured network interfaces and their subnetworks appear in the Customer Portal, on the **Networks** page. 
+
+You can view network details, rename or delete a network, and configure its subnetworks. 
+
+### View network details
+
+1\. In the Gcore Customer Portal, navigate to **Cloud** > **Networking**. 
+
+2\. Find the needed network and click its name to open the details page. 
+
+The details page includes comprehensive information about the network, such as network ID, creation date, tags, and other relevant specifications. 
+
+
+<Frame>![Network details page](/images/docs/cloud/networking/create-and-manage-a-network/network-details.png)</Frame>
+
+
+
+Here you can also create and remove [subnetworks](/cloud/networking/create-and-manage-a-subnetwork). 
+
+### Port security
+
+Port Security is enabled by default for all Virtual Machines, allowing only authorized traffic through network interfaces. To establish connectivity, you must configure a firewall. In some cases, such as specific network configurations or applications that require unrestricted access, turning off Port Security may be necessary.
+
+To disable Port Security:
+
+1\. Open the Gcore Customer Portal and navigate to your Virtual Machine.
+
+2\. Go to the **Networking** tab.
+
+3\. Click on the three-dot menu next to the interface.
+
+4\. Select **Disable Port Security**.
+
+
+<Frame>![Disable port security](/images/docs/cloud/networking/create-and-manage-a-network/disable-port-security.png)</Frame>
+
+
+
+### Rename a network
+
+1\. In the Gcore Customer Portal, navigate to **Cloud** > **Networking**. 
+
+2\. Find the network that you want to rename and click the three-dot icon next to it. 
+
+3\. Select **Rename**. 
+
+
+<Frame>![Network settings menu with the rename button highlighted](/images/docs/cloud/networking/create-and-manage-a-network/rename-network.png)</Frame>
+
+
+
+4\. Enter a new name and click **Save** to apply the changes.
+
+
+<Frame>![Edit network name and description dialog](/images/docs/cloud/networking/create-and-manage-a-network/edit-name-description.png)</Frame>
+
+
+
+The network has been renamed. 
+
+### Delete a network
+
+1\. In the Gcore Customer Portal, navigate to **Cloud** > **Networking**. 
+
+2\. Find the network that you want to remove and click the three-dot icon next to it. 
+
+3\. Select **Delete**. 
+
+
+<Frame>![Network settings menu with the delete button highlighted.png](/images/docs/cloud/networking/create-and-manage-a-network/delete-network.png)</Frame>
+
+
+
+4\. Click **Delete network** to confirm your action.
+
+
+<Frame>![Delete network dialog](/images/docs/cloud/networking/create-and-manage-a-network/verify-deletion.png)</Frame>
+
+
+
+You've successfully removed a network.

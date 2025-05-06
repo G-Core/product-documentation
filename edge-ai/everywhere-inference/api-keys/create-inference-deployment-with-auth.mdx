@@ -1,0 +1,59 @@
+---
+title: Create an inference deployment with authorization
+sidebarTitle: Create an inference deployment with authorization
+---
+
+To ensure that only authenticated clients can access your AI models, you must deploy an inference instance with authorization enabled.
+
+## Step 1. Enable authorization
+
+When deploying an AI model, set the `auth_enabled` option to `true`. This means an API Key will be automatically generated and linked to the deployment.
+
+## Step 2. Retrieve the API key
+
+Once the deployment is created with authentication enabled, you can retrieve the API Key via the designated API endpoint.
+
+### API request
+
+The API key can be retrieved via [this endpoint](https://api.gcore.com/docs/cloud#tag/Everywhere-Inference/operation/InferenceInstanceApikeySecretHandlerV3.get). 
+
+<Info>
+**Info**
+
+The API Key is only available through this endpoint. Store it securely.
+</Info>
+
+## Step 3. Use the API key for authorization
+
+Once you have retrieved the API Key, include it in your API requests using the `X-API-Key` header.
+
+### Example using OpenAI python client library
+
+Here's an example demonstrating how to use the API key for authorization:
+
+```python
+from openai import OpenAI
+
+def get_llm_response(message: str) -> str:
+    client = OpenAI(api_key=LLM_KEY, base_url=f"{LLM_API}/v1")
+
+    response = client.chat.completions.create(
+        model="meta-llama/Llama-3.3-70B-Instruct",
+        messages=[
+            {"role": "user", "content": message},
+        ],
+        extra_headers={"X-API-Key": LLM_KEY},
+    )
+    return response.choices[0].message.content
+
+if __name__ == "__main__":
+    print(get_llm_response("Why is the sky blue?"))
+```
+
+<Info>
+**Info**
+
+For Gcore deployments with authorization enabled, the `X-API-Key` header is mandatory in all API requests.
+</Info>
+
+To learn more about deploying AI models, refer to [our dedicated guide](/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model).

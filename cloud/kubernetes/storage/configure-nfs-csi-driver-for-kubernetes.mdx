@@ -1,0 +1,70 @@
+---
+title: Configure NFS CSI driver for Managed Kubernetes
+sidebarTitle: Configure NFS CSI driver for Kubernetes
+---
+
+Data stored in a Kubernetes container's file system is temporary and not intended for long-term retention. When you replace or terminate a container, all information within it is deleted and can't be restored. 
+
+To prevent data loss, you can connect your Managed Kubernetes cluster to the NFS Container Storage Interface (CSI) driver. This driver connects [Kubernetes](/cloud/kubernetes/about-gcore-kubernetes) and [Gcore File Shares](/cloud/file-shares/about-file-shares), allowing Kubernetes clusters to dynamically provision, attach, and manage NFS volumes as [persistent volumes](/cloud/kubernetes/storage/create-a-pvc-and-bind-it-to-a-pod). 
+
+## Provision clusters with persistent NFS volumes
+
+Kubernetes integration with the NFS driver is enabled by default, and the driver is installed in each cluster. 
+
+<Info>
+**Info**
+
+To provision persistent NFS volumes, ensure that a Managed Kubernetes cluster and File Share are created in the same project and connected to the same network and subnetwork.
+</Info>
+
+### Step 1. Create a Managed Kubernetes cluster
+
+Create a cluster by following the instructions from our guide: [Create a Managed Kubernetes cluster](/cloud/kubernetes/clusters/create-a-kubernetes-cluster). 
+
+If you already have a Kubernetes cluster created, proceed to the next step.
+
+### Step 2. Create a file share
+
+Create a File Share in the same project and region as your Kubernetes cluster: 
+
+1\. In the Gcore Customer Portal, navigate to **Storage** > **File Shares**.
+
+2\. Click **Create File Share**.
+
+
+<Frame>![File Shares page with a highlighted button to create file share](/images/docs/cloud/kubernetes/storage/add-file-share.png)</Frame>
+
+
+
+3\. Configure File Share settings:
+
+  * **Basic settings** : Enter the name of the File Share and specify its size and protocol.
+
+  * **File Share network settings** : Select the private network and subnetwork that you will use for file sharing. Ensure that they match those selected in your Kubernetes cluster.
+
+  * **Access** : Click the **Add rule** button and specify the IP addresses of machines that should have access to the File Share, along with their access modes.
+
+  * (optional) **Add tags** : Add metadata to your File Share.
+
+
+
+
+The File Share should be set up within a few minutes.
+
+### Step 3. Validate persistent NFS volume configuration
+
+Run the following command to retrieve information about the storage classes configured in your Kubernetes cluster: 
+
+```sh
+kubectl get storageclass 
+ ```
+
+If everything's set up correctly, the `gcore-nfs-*` storage class should be listed among other storage classes. 
+
+### Resizing file share
+
+<Info>
+**Info**
+
+If you want to change the size of the attached file share, you first need to unmount it and then mount it again inside your Kubernetes cluster. If you resize the attached File Share without unmounting it first, your applications will not work correctly.
+</Info>

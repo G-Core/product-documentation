@@ -1,0 +1,216 @@
+---
+title: Add an origin group to a CDN resource
+sidebarTitle: Origin group
+---
+
+This guide will explain the origin groups feature and show you how to configure and add an origin group to your CDN resource.
+
+## What is the origin groups feature?
+
+Origin groups is a feature that allows you to specify sources for a CDN resource. One origin group can consist of a single site/private bucket or of multiple sites. 
+
+Specifying several sites increases fault tolerance. If one origin fails, another can function as a backup. You can specify a group and set the logic of interaction between origins.
+
+For example, if you make both origins in the group active, requests between them will be distributed 50:50. If you make one source the backup, then that source will respond only when the primary source gives an error 5xx. 
+
+## Step 1. Add a new origin group
+
+You can do this in several ways: [during CDN resource creation](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files#step-1-start-creation), in the settings of an existing resource, or on the **Origin groups** page. 
+
+### In resource settings
+
+1\. In the [Gcore Customer Portal](https://accounts.gcore.com/reports/dashboard), navigate to **CDN**. You'll be directed to the **CDN resources** page. 
+
+2\. Find the resource where you want to add a new origin group and click the CNAME to open its settings.
+
+
+<Frame>![Resource name highlighted](/images/docs/cdn/add-an-origin-group/cdn-resource-name-no-waap.png)</Frame>
+
+
+
+3\. Scroll down to the **Origin pull protocol** section.
+
+4\. Click **Add group** and proceed with the configuration as described in Step 2. 
+
+
+<Frame>![Choose a new origin group in resource settings](/images/docs/cdn/add-an-origin-group/add-group-resource-settings.png)</Frame>
+
+
+
+### On the origin groups page
+
+If you add a group from the **Origin groups** page, the created group won't be automatically added to a CDN resource. You'll need to [manually add a group to the resource](). 
+
+1\. In the [Gcore Customer Portal](https://accounts.gcore.com/reports/dashboard), navigate to **CDN** > **Origin groups**.
+
+
+<Frame>![Choose a new origin group in resource settings](/images/docs/cdn/add-an-origin-group/origin-groups-page.png)</Frame>
+
+
+
+2\. Click **Add origin group** and proceed with the configuration as described in Step 2. 
+
+## Step 2. Enter the origin group name
+
+Enter a unique name of a group. 
+
+
+<Frame>![Choose a new origin group in resource settings](/images/docs/cdn/add-an-origin-group/origin-group-name.png)</Frame>
+
+
+
+## Step 3. Configure the origin group
+
+You can choose the **AWS signature V4** origin authentication or select **None** for the public origins without authentication. 
+
+### With S3 authentication
+
+If you selected AWS signature authentication, choose your storage type and proceed with the relevant instructions. 
+
+You can configure any S3-compatible storage, such as Google Cloud Platform, DigitalOcean Spaces, or Azure Blob Storage. 
+
+#### Amazon S3 storage
+
+1\. Specify your access key ID. In your Amazon personal account, it's called "AWS access key ID". For details on how to find your key ID, check the [official Amazon guide](https://docs.aws.amazon.com/powershell/latest/userguide/pstools-appendix-sign-up.html). 
+
+2\. Specify your secret access key. In your Amazon account, it's called "AWS secret access key". For details on how to find your access key, check the [official Amazon guide](https://docs.aws.amazon.com/powershell/latest/userguide/pstools-appendix-sign-up.html). 
+
+3\. Choose your AWS region—the location of a server where your storage is hosted. 
+
+4\. Enter your S3 bucket name. 
+
+
+<Frame>![Amazon S3 authentication for a new origin](/images/docs/cdn/add-an-origin-group/aws-authentication.png)</Frame>
+
+
+
+#### Other S3 storage
+
+1\. Specify a hostname—a name that's assigned to a storage server within a network and is used instead of an IP address. 
+
+2\. Specify your access key ID. 
+
+3\. Specify your secret access key. 
+
+4\. Specify a region—location ID of a server where your storage is hosted. 
+
+5\. Enter your S3 bucket name. 
+
+
+<Frame>![Amazon S3 authentication for a new origin](/images/docs/cdn/add-an-origin-group/other-authentication.png)</Frame>
+
+
+
+### With no authentication
+
+1\. In the origin source field, enter the origin IP or its domain name without `http` or `https://`. The CDN will pull content from this source. 
+
+
+<Frame>![Amazon S3 authentication for a new origin](/images/docs/cdn/add-an-origin-group/no-auth-origin-source.png)</Frame>
+
+
+
+2\. (Optional) If your source uses ports other than 80 or 443, disable the **Use default port** toggle and enter the port on the right. 
+
+3\. (Optional) If you want to use several sources of content, click **+Add origin** and enter the value. The CDN will determine the origin IPs as separate sources and distribute requests to them according to the round robin algorithm. In other words, the first request will go to the first source, the second request will go to the second source, and so on. 
+
+
+<Accordion title="Set up multiple origins">
+When you have more than one origin in a group, you can adjust the balance between them. To do so: 
+
+ * Select which origins to enable and disable. 
+
+ * Select active and backup origins.
+
+
+
+
+Decide whether to enable the **Use next upstream** option.
+
+
+<Frame>![Amazon S3 authentication for a new origin](/images/docs/cdn/add-an-origin-group/multiple-origins.png)</Frame>
+
+
+</Accordion>
+ 
+<Accordion title="Enable or disable an origin">
+Each origin has the **On** toggle enabled by default. This means that CDN can pull content from this origin and it has been added to the balance. 
+
+
+<Frame>![Amazon S3 authentication for a new origin](/images/docs/cdn/add-an-origin-group/enable-origin-toggle.png)</Frame>
+
+
+
+If you want to disable the content origin in the group, disable the toggle so it changes to **Off**. Note that this will only disable the origin in the current group, but the origin will continue to work in other groups. 
+
+CDN requests will stop coming to the disabled origin within fifteen minutes. 
+
+<Info>
+**Info**
+
+You can't disable the last active origin.
+</Info>
+</Accordion>
+ 
+<Accordion title="Activate origin or use it as backup">
+All new origins are automatically assigned an **Active** status. The CDN pulls content from such origins. The balancing between them is determined by the round-robin algorithm. 
+
+You can turn the active origin into the backup origin by selecting the **Use origin as a backup** option. 
+
+
+<Frame>![Amazon S3 authentication for a new origin](/images/docs/cdn/add-an-origin-group/use-origin-as-backup.png)</Frame>
+
+
+
+Backup origins are taken out of balance by default. The CDN requests content from them only if the active origin gives a 5xx response code.
+</Accordion>
+ 
+<Accordion title="Use next upstream">
+This option only works if each origin has the same content. When enabled, the CDN will call the following origins on the list if the previous one is unavailable and respond with any 4xx or 5xx series response code. 
+
+Code 400 is an exception. In this case, the CDN won't redirect requests to another source. If all origins are unavailable, the CDN will show the response of the last one in the list. 
+
+
+<Frame>![Amazon S3 authentication for a new origin](/images/docs/cdn/add-an-origin-group/use-next-upstream.png)</Frame>
+
+
+
+At first glance, the interaction between the active/backup origins and the **Use next upstream** option may seem complicated, so to make it easier to understand, let's look at examples of how it works.
+
+**Case** | **How the CDN requests content** 
+\---|--- 
+The "Use next upstream" option is disabled; all origins are active. | If the active origin responds with an error, the CDN will hand it off to the end user. 
+The "Use next upstream" option is enabled. One origin is active, and the rest are backups. | If the active origin responds with 4xx and 5xx response codes, the CDN will start requesting content from the other origins, moving down the list. 
+The "Use next upstream" option is enabled. All origins are active. | If the first active origin responds with 404, 500, 502, 503, or 504 response codes, the CDN will start requesting content from the other origins, moving down the list. 
+The "Use next upstream" option is disabled. One origin is active, and the rest are backups. | If the active origin doesn't respond within 5 seconds or responds with a 5xx response code, the CDN will request content from the backup origin. If the active origin responds with a 4xx response code, the CDN won't request the backup origin and will send an error message to the user.
+</Accordion>
+
+
+## Step 4. Save changes
+
+Click **Add group** to save changes.
+
+## Step 5. Connect the origin group to the CDN resource
+
+<Info>
+**Info**
+
+If you change an origin group for a CDN resource, the Host header will not automatically change. You'll have to [update it manually](/cdn/cdn-resource-options/http-headers/configure-and-check-the-host-header#how-to-manage-the-host-header).
+</Info>
+
+To add a created group to the CDN resource: 
+
+1\. In the [Gcore Customer Portal](https://accounts.gcore.com/reports/dashboard), navigate to **CDN**. You'll be directed to the **CDN resources** page. 
+
+2\. Find the resource where you want to add a new origin group and click the CNAME to open its settings. 
+
+3\. Navigate to the **Origin** section. 
+
+4\. Choose the relevant group from the Origin group dropdown and click **Add group**.
+
+
+<Frame>![Amazon S3 authentication for a new origin](/images/docs/cdn/add-an-origin-group/add-group-resource-settings.png)</Frame>
+
+
+
+5\. Click **Save changes**.

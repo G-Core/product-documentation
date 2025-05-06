@@ -1,0 +1,116 @@
+---
+title: "Source field objects in advanced rule expressions"
+sidebarTitle: Source field objects
+---
+
+<Info>
+**Info**
+
+For the `request`, `Whois`, `session`, and `user-agent` objects, every string value should be enclosed in a single-quotes `'` and **not** in double-quotes `"`.
+</Info>
+
+## request
+
+| Attribute    | Type    | Description                                                                                                                      | Compiled `source` field                                                                                                                                                      |
+| ------------ | ------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| headers      | dict    | Request headers                                                                                                                  |                                                                                                                                                                               |
+| ip           | string  | Client IP                                                                                                                        | request.ip<br/>request.ip == '117.20.32.5' \|\|<br/>request.ip == '117.20.32.4'                                                                                                |
+| uri          | string  | Domain's URI (URL path + arguments)                                                                                              | request.uri<br/>('/prehistoric/monotony/monotony.phtml' or '/amfphp/services') in request.uri                                                                                 |
+| path         | string  | Domain’s URL path                                                                                                                | request.path<br/>request.path in ['/process_neopet_desc.phtml', '/modify_neomessages.phtml']                                                                                  |
+| method       | string  | HTTP method (uppercase).                                                                                                          | request.method<br/>request.method == 'OPTION'                                                                                                                                |
+| origin_ip    | string  | Web application server IP                                                                                                         | request.origin_ip<br/>request.origin_ip == '120.36.54.1'                                                                                                                      |
+| ja3          | string  | TLS fingerprint.                                                                                                                  | request.ja3<br/>request.ja3 == 'e2925c27149b0d0dc34373d55040dde1' or request.ja3 == '3e9b20610098b6c9bff953856e58016a' or request.ja3 == '7d671906ed4a1edac3262a54676dacfa'   |
+| http_version | string  | Represents HTTP version                                                                                                           | request.http_version<br/>request.http_version in ['1.1']                                                                                                                       |
+| is_api()     | function| Returns true if the request is API                                                                                                | request.is_api()                                                                                                                                                             |
+| is_ajax()    | function| Returns true if the request is AJAX                                                                                               | request.is_ajax()                                                                                                                                                            |
+| is_static()  | function| Returns `true` if the request is static                                                                                           | request.is_static()                                                                                                                                                          |
+| ip_in_range  | function| Returns `true` if client IP is within the specified range                                                                         | `request.ip_in_range(<string>, <string>)`<br/>request.ip_in_range('72.21.217.0', '72.21.217.255')<br/>or request.ip_in_range('2409:4072:6c8c:e228:ecaf:ce2c:fd7d:0000', '2409:4072:6c8c:e228:ecaf:ce2c:fd7d:4780') |
+| rate_limit   | function| Returns true if the rate limit is exceeded for these parameters (the scope is 'ip'/'cluster').<br/>For parameter descriptions, check out the [Rate limiting](/waap/waap-rules/advanced-rules/advanced-rate-limiting-rules) guide. | rate_limit(<br/>`[ip <string>, ...],`<br/>`url <string>,`<br/>`interval <int>,`<br/>`requests <int>,`<br/>`[method <string>,...]`,<br/>`[status_code <int>,...],`<br/>`content_type <string>,`<br/>`scope <string>`<br/>)<br/>example:<br/>request.rate_limit([], '/', 5, 200, ['GET', 'HEAD'], [], 'text/html; charset=', 'ip') |
+
+  
+## whois
+
+| Attribute   | Type   | Description                                 | Compiled `source` field                                                                                     |
+| ----------- | ------ | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| country     | string | Two-letter country code (uppercase).        | whois.country<br/>whois.country in ['BR', 'VN', 'ID']                                                        |
+| org         | string | Organization name from the WHOIS database.  | whois.org<br/>whois.org in ['Google Inc', 'Google Inc.', 'Google LLC', 'Google Incorporated']               |
+| owner_type  | string | Owner type of the range.                    | whois.owner_type<br/>whois.owner_type != 'hosting services'                                                  |
+  
+  
+## session
+
+| Attribute         | Type  | Description                                                                                                                     | Compiled `source` field                                        |
+| ----------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| request_counter   | int    | Sequential number of the request within the session.                                                                             | session.session_request_counter<br/>session.request_counter &gt; 1000 |
+| profiling_status  | string | Client’s fingerprint profiling status.<br/><br/>Values:<br/><strong>Initiated</strong>: JavaScript was injected in the response and sent to the client for execution.<br/><strong>Executed once</strong>: JavaScript was executed, and WAAP received preliminary results.<br/><strong>Profiling error</strong>: An error occurred during profiling.<br/><strong>Profiling completed</strong>: Profiling completed without error.<br/><strong>Idle</strong>: All JavaScript tests and fingerprinting process completed. | session.profiling_status<br/>session.profiling_status == 'idle' |
+
+  
+## response
+
+Attribute | Type | Description | Compiled `source` field  
+-- | - | - | --  
+status | int | HTTP status code | response.status  
+headers | dict | Response headers | response.headers['Access-Control-Allow-Credentials'] == 'true'  
+  
+## tags
+
+| Attribute                    | Type     | Description                                         | Compiled `source` field                                                                                                                                                               |
+| --------------------------- | -------- | --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| exists(tag `<string>`)      | function | Returns `true` if the tag exists.                  | tags.exists(`<string>`)<br/>tags.any([`<string>`, `<string>`, …]) up to 10 tags<br/>tags.all([`<string>`, `<string>`, …]) up to 10 tags<br/>tags.any(['proxynetwork','hostingservices'])<br/>tags.exists('penalty') |
+| any([tag `<string>`, ...])  | function | Returns `true` if any of the tags exists.           |                                                                                                                                                                                        |
+| all([tag `<string>`, ...])  | function | Returns `true` if all tags exist.                   |                                                                                                                                                                                        |
+
+  
+## user-agent
+
+The **ua_parsed** table contains user agent information collected by WAAP from the source of the logged request. 
+
+| Attribute             | Type   | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Compiled `source` field                            |
+| --------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| engine                | string | The client engine. For example, Gecko.                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | user_agent.engine                                   |
+| client                | string | The name of the client. An example of client name is "Firefox".                                                                                                                                                                                                                                                                                                                                                                                                                                                | user_agent.client                                   |
+| client_type           | string | The type of client. Optional values: Major browser, NA, Lib, Crawler, Custom browser, mobile app, Headless browser, Bot, Application, mail client, Site monitoring, RSS reader, Game console, Text browser, Network diagnostics, certificate authority, paying service.                                                                                                                                                                                                                                     | user_agent.client_type<br/> 'major browser' in user_agent.client_type |
+| client_version        | string | The client engine's version.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | user_agent.client_version                           |
+| client_version_float  | string | A possibly truncated version of the client browser engine's version.                                                                                                                                                                                                                                                                                                                                                                                                                                           | user_agent.client_version_float                     |
+| os                    | string | The client computer's operating system. An example of os is "Mac OS X 10.14".                                                                                                                                                                                                                                                                                                                                                                                                                                 | user_agent.os                                       |
+| cpu                   | string | The client computer's CPU. An example of CPU is "Intel".                                                                                                                                                                                                                                                                                                                                                                                                                                                       | user_agent.cpu                                      |
+| device                | string | Information about the client device. An example of a device is "mac".                                                                                                                                                                                                                                                                                                                                                                                                                                          | user_agent.device                                   |
+| device_type           | string | Additional information about the client device.<br/><br/>Optional values:<br/>- Web search engine bots<br/>- mobile<br/>- NA<br/>- SEO<br/>- Analytics or marketing bots<br/>- Preview bot<br/>- Media or entertainment search bots<br/>- Social media or blog bots<br/>- RSS seed reader bots<br/>- Site monitoring and web development bots<br/>- Web archiver bots<br/>- console<br/>- Job search engine bots<br/>- Online advertising bots<br/>- News aggregator bots<br/>- Academic or research bots<br/>- Desktop<br/>- Business intelligence bots<br/>- Automated shopping cart and sniper bots<br/>- Enterprise data aggregator bots<br/>- Media player | user_agent.device_type<br/> user_agent.device_type == 'na' |
+
+  
+## client_data
+
+
+<table>
+<thead>
+  <tr>
+    <th>Attribute</th>
+    <th>Type</th>
+    <th>Description</th>
+    <th>Compiled <code>source</code> field</th>
+  </tr>
+  </thead>
+<tbody>
+<tr>
+    <td>fingerprint['hash']</td>
+    <td>dict</td>
+      <td rowspan="4">A table that contains fingerprint information about the request (the information is collected by WAAP with injected JavaScript):<br/><ul>  <li>fp__hash of the client</li>  <li>fp__js of the client</li>  <li>fp__flash of the client</li>  <li>fp__header of the client</li></ul>        <br/>        client_data.fingerprint == 'kvd8oxizrdl-41-37zpvwqrr-5tzoaavgfr7-v2osmr4iefe-noieo-90.3095389639745667'      </td>
+    <td>client_data.fingerprint['hash']client_data.fingerprint['hash'] == '9be394dca715eca8e42783397a507d2e'</td>
+  </tr>
+  <tr>
+    <td>fingerprint['js']</td>
+    <td>dict</td>
+    <td>client_data.fingerprint['js']</td>
+  </tr>
+    <tr>
+    <td>fingerprint['flash']</td>
+    <td>dict</td>
+    <td>client_data.fingerprint['flash'] </td>
+  </tr>
+    <tr>
+    <td>fingerprint['header']</td>
+    <td>dict</td>
+    <td>client_data.fingerprint['header'] </td>
+  </tr>
+  </tbody>
+</table>

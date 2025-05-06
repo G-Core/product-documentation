@@ -1,0 +1,115 @@
+---
+title: Add TLS certificates to a load balancer
+sidebarTitle: Add TLS certificates to a load balancer
+---
+
+You can configure multiple TLS (Transport Layer Security) certificates for a single Load Balancer, which allows you to host several secure websites on a single IP address. 
+
+Instead of configuring separate Load Balancers for each website, you can configure just one Load Balancer and add multiple TLS certificates to it. The Load Balancer will serve the correct certificate based on the requested domain name, and everything will be managed in one place. 
+
+## How it works
+
+Our listeners support Server Name Indication (SNI) extension to handle multiple TLS certificates. Based on the SNI information provided by the client, the listener selects the appropriate TLS certificate for encrypting the connection. Once the TLS connection is terminated at the listener, the Load Balancer inspects the decrypted traffic and routes it to the proper server. 
+
+Each listener can also be configured with its own TLS certificate, corresponding to a specific hostname or domain. 
+
+## Add multiple certificates
+
+You can add multiple certificates to listeners that use the Terminated HTTPS and Prometheus protocols.
+
+### 1\. Add certificates to the Secrets Manager
+
+To get started, you need to add the required certificates to Gcore Secrets Manager. If you don't have any certificates created, To get started, you need to add the required certificates to Gcore Secrets Manager. If you don't have any certificates created, follow the instructions from our [guide on configuring secrets for HTTPS Load Balancers](/cloud/secrets-manager/upload-a-pkcs12-file). 
+
+### 2\. Add certificates to a listener
+
+After you configure the certificates, you need to add them to the relevant listener. This can be done during Load Balancer creation or in the settings of an existing Load Balancer. 
+
+<Info>
+**Info**
+
+You can't delete a secret that's being used by a Load Balancer's listener. This restriction is necessary to ensure that a Load Balancer can failover successfully when needed. In such cases, you first need to delete a listener that uses the secret and then remove the secret, recreating a listener if needed.
+</Info>
+
+<Tabs>
+  <Tab title="During Load Balancer creation">
+    Create a new Load Balancer [according to the instructions](/cloud/networking/create-and-configure-a-load-balancer). In step 5, configure a new listener as follows: 
+
+    1\. Give your listener a name.
+
+    2\. Select a protocol with the supported TLS encryption: **Terminated HTTPS** or **Prometheus**. 
+
+    3\. Use a default port or specify a custom port from 1 to 65535. 
+
+    <Frame>![Create a listener dialog](/images/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/add-listener-name-port.png)</Frame>
+
+    4\. (Optional) To identify the origin of the user's IP address connecting to a web server via a Load balancer, enable the **Add headers X-Forwarded-For, X-Forwarded-Port, X-Forwarded-Proto to requests** toggle.
+
+    5\. Choose the default TLS Certificate. It's the main certificate that will be used when there's no configured certificate for a domain. 
+
+    6\. Select the CNI Certificates stored in the Secret Manager. 
+
+    7\. Set the connection limit - a maximum number of simultaneous connections that can be handled by the listener.
+
+    <Frame>![Create a listener dialog](/images/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/add-listener-headers-cni.png)</Frame>
+
+    8\. (Optional) Add allowed CIDR ranges to define which IP addresses can access your content. All IP addresses that don't belong to the specified range will be denied access. 
+
+    9\. (Optional) Configure Basic Authentication for HTTP traffic to protect your resource from unauthorized access. Click **Add user** to specify who can access your resource only by logging in with the following credentials: 
+
+      * **Enter username** : specify a username that needs to be entered on the login screen. 
+
+      * **Password** : specify a password or provide an encrypted password.
+
+
+    10\. Click **Create Listener**. 
+
+    After you configure the listener, proceed with the rest of the steps described in the [Create a Load Balancer](/cloud/networking/create-and-configure-a-load-balancer) guide to finish the balancer's creation. 
+
+    <Frame>![Create a listener dialog](/images/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/create-listener.png)</Frame>
+  </Tab>
+  <Tab title="From the Load Balancer settings">
+    If you already have a Load Balancer and don't want to create a new one to terminate SSL connections, update the existing Load Balancer as follows: 
+
+    1\. In the Gcore Customer Portal, navigate to the **Cloud** page and click **Networking**. 
+
+    2\. Open the **Load Balancers** page.
+
+    <Frame>![Load Balancers page in Customer Portal](/images/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/load-balancers-page.png)</Frame>
+
+    3\. Find the Load Balancer you want to configure and click its name to open it. 
+
+    4\. Navigate to the **Listeners** tab and click **Add listener**. 
+
+    <Frame>![Listener tab in the Load Balancer settings](/images/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/listeners-tab.png)</Frame>
+
+    5\. To configure a new listener, follow the same instructions as in the "Add certificates during Load Balancer creation" step.
+  </Tab>
+</Tabs>
+
+
+
+## Create an encrypted password
+
+When configuring basic authentication for HTTP traffic, you have the option to specify an encrypted password for a user. 
+
+You can use any preferred encryption method or generate a hashed password using the [MKPasswd](https://www.unix.com/man-page/linux/1/mkpasswd/) utility. 
+
+To generate a password hash using a dockerized version of MKPasswd: 
+
+1\. Check the available encryption types: 
+
+```sh
+docker run --rm yardalgedal/mkpasswd -m help 
+ ```
+
+2\. Choose your preferred encryption method and generate the password hash. For example, to create a password hash using the bcrypt method, run: 
+
+```sh
+docker run --rm yardalgedal/mkpasswd -m bcrypt mypassword 
+ ```
+
+3\. Insert the hash into the **Encrypted password** field:
+
+
+<Frame>![Encrypted password in listener settings](/images/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/encrypted-password-field.png)</Frame>

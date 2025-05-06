@@ -1,0 +1,169 @@
+---
+title: Use a private bucket as an origin
+sidebarTitle: Private origin
+---
+
+import { Caution } from "/snippets/caution.mdx";
+
+## Overview
+
+Gcore allows private buckets in S3-compatible storage services, including Amazon and Gcore, as a [CDN resource origin](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files#origin). However, to allow CDN servers to access the content stored in these private buckets, you must provide authentication data, including Access Key ID, Secret Access Key, Hostname, and Region. Without this information, the servers cannot access the content.
+
+## Authentication data
+
+You can find the necessary authentication data in your personal S3 storage account.
+
+<Tabs>
+  <Tab title="Amazon AWS">
+    To locate all the essential keys, refer to the [Managing access keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html) guide.
+  </Tab>
+  <Tab title="Gcore">
+    You can find the Hostname and Region in the **Details** section under the [Storages](https://storage.gcore.com/storage/list) tab.
+    
+    <Frame>![Gcore S3 storage](/images/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/object-storages-context-menu.png)</Frame>
+
+    <Caution>
+    **Caution**
+
+    We don't store the Access Key ID and Secret access key for S3 storage. It is your responsibility to save them after creating the storage. If you forget them, click **Generate new keys** under the "Details" section.
+    </Caution>
+  </Tab>
+</Tabs>
+
+
+## Configure a private bucket as an origin
+
+<Tabs>
+  <Tab title="Customer Portal">
+    There are two options for configuring a private bucket as an origin:
+
+      1. Create an origin group during the CDN resource creation process;
+      2. Add a group in the "Origins groups" tab and specify this group in the CDN resource setting.
+
+
+
+    The instructions below are relevant to the first option. The process for the second option is slightly different. 
+
+    To configure a private origin: 
+
+    1\. Go to the [CDN resource creation page](https://cdn.gcore.com/resources/create/wizard), select **Accelerate and protect static assets only**, and click **Confirm**.
+
+
+    <Frame>![CDN resource creation page](/images/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/protect-static-assets-only.png)</Frame>
+
+
+
+    A new page will open. Complete the remaining steps of the manual in the "Origin" section on this page.
+
+    2\. Select the **Specify content origin** option.
+
+    3\. Select **AWS signature V4** in the "Type of origin authentication" field.
+
+    4\. Select the type of S3 storage: **Amazon** or **Other**.
+
+    5\. Specify the needed authentication data. It depends on the type of storage selected in the previous step.
+
+      * for **Amazon** : Access Key ID, Secret access key, and AWS region
+      * for **Other** : Hostname (there's a bucket at the beginning), Access Key ID, Secret access key, and Region
+
+    <Tip>
+    **Tip**
+
+    To determine the region of your Gcore Object Storage, use the [S3 service URLs and default region names](/storage/manage-object-storage/s3-service-urls-and-default-region-names) guide.
+    </Tip>
+
+    More information about where to find the keys can be found in the "[Authentication data](/storage/create-an-s3-or-sftp-storage)" section.
+
+    6\. Enter the **Bucket name**.
+
+    In the example below, we use the private bucket `test-private` in Gcore Object Storage with the endpoint (service URL) `s-ed1.cloud.gcore.lu`. Configure an origin group as follows:
+
+
+    <Frame>![Origin section](/images/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/private-bucket-conf.png)</Frame>
+
+
+
+    7\. Continue the CDN resource creation according to the [Create CDN resource for static assets only](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files) guide.
+
+    8\. Go to the resource settings and open the Host header option in the "HTTP headers" section. Specify the URL of your storage Hostname (the URL depends on your S3 provider) in the following format: 
+
+      * For Gcore Object Storage: `{bucket-name}.s-ed1.cloud.gcore.lu`
+      * For most other storages (including Amazon): `{bucket-name}.s3.{region-code}.{storage-hostname}`
+
+
+
+    **Note** : The bucket in the "Host header" is very important to specify for the security of the storage data outside the bucket.
+
+    Click **Save changes**.
+
+
+    <Frame>![Save changes](/images/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/image-3719.png)</Frame>
+  </Tab>
+  <Tab title="API">
+    Next, we will explain in detail how to specify private origin via API calls. 
+
+
+    | Method | POST |
+    | ---|--- |
+    | Header | Bearer **`{{access_token}}`** <br/> **application/json**  |
+    | Payload | `{ "name": "YourOriginGroup", "useNext": true, "auth_type": "awsSignatureV4", "auth": { "s3_type": "amazon", "s3_access_key_id": "EXAMPLEFODNN7EXAMPLE", "s3_secret_access_key": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY", "s3_bucket_name": "bucket_name", "s3_region": "us-east-2" } }`|
+    | Request parameter | For more information, see Gcore's [API documentation](https://api.gcore.com/docs/cdn?_gl=1*1vtlv8c*_ga*ODE2MjQ4NzgwLjE2NjY2MDkxMzk.*_ga_Y79HRL8RPR*MTY4NDI0MDAyMC43MjYuMS4xNjg0MjQzNDMyLjYwLjAuMA..#tag/Origins/operation/create_origin_group)  |
+    | Response |  **201 Successful** <br/>** 400 Request for creation origin group is failed** <br/> **403 Group creation is forbidden**    |
+      
+      
+    To access the API and make authenticated requests, [generate an access token](/account-settings/create-use-or-delete-a-permanent-api-token). You can use a REST tool like cURL or Postman to send the requests. For this guide, we used Postman.
+
+    To specify private origin by URL request:
+
+    1\. In Postman, open a new request tab.
+
+    a. Set the request method to **POST**.
+
+    b. Enter the API URL in the request URL field.
+
+
+    <Frame>![ API URL ](/images/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15353579849745.png)</Frame>
+
+
+
+    2\. Go to the **Auth** tab.
+
+    a. Select **Bearer Token** from the "Type dropdown".
+
+    b. Copy the generated access token and paste it into the "Token" field.
+
+
+    <Frame>![Token](/images/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15353599876753.png)</Frame>
+
+
+
+    3\. Go to the **Body** tab.
+
+    a. Select **raw** as the data type.
+
+    b. Select **JSON** from the format dropdown.
+
+    c. Enter the payload in the text area. Replace the sample values indicated by `{{ }}` with your actual values.
+
+    4\. Click **Send**.
+
+
+    <Frame>![Send](/images/docs/cdn/cdn-resource-options/general/use-a-private-bucket-as-an-origin/15353638607505.png)</Frame>
+  </Tab>
+</Tabs>
+
+
+## Troubleshooting Amazon S3 (403 Forbidden for HEAD requests)
+
+When using private buckets in Amazon S3 storage as an origin, you might encounter a 403 Forbidden error for HEAD requests intended to retrieve metadata. However, a GET request may operate without any errors and return a 200 OK status. The disparity in the results of these requests can be attributed to several causes:
+
+  1. **Restricted object-level permissions:** If the buckets or IAM policy permits public read access but the object's Access Control List (ACL) denies access to your user or role, AWS S3 will return a 403 status for HEAD requests.
+
+  2. **Different policies in effect:** If the user making the HEAD request doesn't have the necessary permissions to read the object's metadata, AWS S3 will return a 403 status for HEAD requests.
+
+  3. **Incorrect parameters in presigned URLs:** If a [presigned URL](/storage/manage-object-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/generate-temporary-links-to-files-with-aws-cli-and-s3cmd) for a HEAD request was generated with incorrect parameters, AWS will return a 403 error. The parameters for URL generation (access key, secret access key, bucket name, object key, etc.) must be consistent for both HEAD and GET requests.
+
+  4. **Different owners for bucket and object:** If the bucket and object belong to different AWS accounts and the object owner hasn't granted the necessary permissions to the bucket owner, AWS will return a 403 error for a HEAD request and a 200 status for a GET request.
+
+
+To resolve the issue, modify the bucket policy, IAM, or the object's ACL as required.

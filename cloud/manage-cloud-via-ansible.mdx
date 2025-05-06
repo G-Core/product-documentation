@@ -1,0 +1,238 @@
+---
+title: Manage cloud resources via Ansible
+sidebarTitle: Ansible
+---
+
+[Ansible](https://www.ansible.com/) is a configuration management tool used for provisioning, deploying, and orchestrating IT resources. Similarly to [using Terraform](/cloud/manage-cloud-via-terraform), you can use Ansible to create and set up Gcore Cloud services. 
+
+You can find all Ansible modules and plugins required to interact with the Gcore Cloud in the [Ansible Galaxy Collection for Gcore Cloud](https://galaxy.ansible.com/ui/repo/published/gcore/cloud/docs/) and in our official [ansible-collection-gcore](https://github.com/G-Core/ansible-collection-gcore) repository. 
+
+## Install and configure Ansible
+
+There are several methods for installing Ansible that depend on the type of your machine's operating system.
+
+<Tip>
+**Tip**
+
+If you already have Ansible installed, ensure that you're using the recommended version of Python: 3.11 or higher. To check your Ansible and Python versions and get more details about the configuration, run `ansible –version`.
+</Tip>
+
+<Tabs>
+  <Tab title="Install Ansible on Ubuntu">
+    Run the following command: `apt-get install ansible`.
+  </Tab>
+  <Tab title="Install Ansible on CentOS">
+      1\. Install Extra Packages for Enterprise Linux (EPEL): 
+
+      ```sh
+      yum install epel-release 
+      ```
+
+      2\. Install Python 3.11 or higher. 
+
+      ```sh
+      yum install python3.11
+      ```
+
+      3\. Install Ansible in your environment: 
+
+      ```sh
+      yum install ansible 
+      ```
+  </Tab>
+  <Tab title="Install Ansible via Python's pipx">
+    You can also use pipx to install Ansible on most systems. For details, check out the [official Ansible documentation](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-and-upgrading-ansible-with-pipx).
+  </Tab>
+</Tabs>
+
+## Add GCore collection from Galaxy
+
+We have a dedicated [Ansible Galaxy Collection](https://galaxy.ansible.com/ui/repo/published/gcore/cloud/docs/) that contains all modules and plugins you need for interacting with the Gcore Cloud. 
+
+To install the collection, run the following command: 
+
+```sh
+ansible-galaxy collection install gcore.cloud 
+```
+
+You can now use all modules and plugins provided by the collection to manage your resources in the Gcore Cloud. 
+
+## Validate Ansible configuration
+
+To ensure that everything works as expected, run a test playbook according to the following instructions. 
+
+1\. Configure the playbook: 
+
+```yaml
+- name: Gather Gcore instances info 
+  hosts: localhost 
+  vars: 
+    ansible_python_interpreter: /usr/bin/python3.11 
+  tasks: 
+    - gcore.cloud.instance_info: 
+        api_key: "add your api key" 
+        region_name: "specify region" 
+        project_id: "add your project ID"
+
+```
+
+<Accordion title="Descriptions of the configuration parameters">
+* `api_key`: The API key created in the Gcore Customer Portal in the profile settings. 
+ * `region_name`: A region in which your cloud resource is created. 
+ * `project_id`: An ID of the project that contains your cloud resources. You can check the ID in the Gcore Customer Portal on the Projects page.
+</Accordion>
+
+<Info>
+**Info**
+
+In the playbook configuration, add the ansible_python_interpreter: `/usr/bin/python3.11` variable only if your Python version is lower than the recommended `3.11`.
+</Info>
+
+2\. Start the playbook: `ansible-playbook ./get_instance.yaml -v`.
+
+3\. If you correctly configured Ansible, you should see one of the following: 
+
+  * If you have any instances created in the specified region, you'll get a summary of their setup. 
+  * In case you have no cloud resources created in the specified region, you'll get an empty response.
+
+
+
+## Manage cloud resources
+
+Use modules and plugins from our [Ansible Collection](https://galaxy.ansible.com/ui/repo/published/gcore/cloud/docs/) to create playbooks customized to your infrastructure requirements and deployment workflows. 
+
+As an example, let's create a `test.yaml` playbook that checks your quota limits creates a virtual instance if you have sufficient quotas. 
+
+To create and run the playbook: 
+
+1\. Initialize a new "create_vm" role template. 
+
+```sh
+ansible-galaxy init create_vm
+```
+
+2\. Create a new task file in the tasks directory. 
+
+```sh
+touch ./create_vm/tasks/check_quota.yaml
+```
+
+3\. Configure the task to check if you have enough quotas to create the instance.
+
+```yaml
+- name: Check quota before create instance 
+  register: returned_data 
+  gcore.cloud.instance_quota_info: 
+    api_key: "{{ your_api_key }}" 
+    region_name: "{{ region_name }}" 
+    project_id: "{{ project_id }}" 
+    flavor: "{{ flavor }}" 
+    names:  ['inst1'] 
+    volumes: [ 
+        {'size': "{{ size }}", 'source': 'image', 'type_name': "{{ type_name }}"}, 
+    ] 
+    interfaces: [ 
+        {'type': 'external'} 
+    ] 
+ 
+- name: Needed quota 
+  debug: 
+    msg: "{{ returned_data.data }}" 
+  when: returned_data.data != {} 
+```
+
+4\. Create another task file `touch ./create_vm/tasks/create_vm.yaml`. 
+
+5\. Configure the task to create an instance. 
+
+```yaml
+- name: Create instance from volume 
+  register: created_vm 
+  gcore.cloud.instance: 
+    api_key: "{{ your_api_key }}" 
+    region_name: "{{ region_name }}" 
+    project_id: "{{ project_id }}" 
+    command: create 
+    flavor: "{{ flavor }}" 
+    volumes: [{ 
+        'source': 'image', 
+        'image_id': "{{ image_id }}", 
+        'size': "{{ size }}", 
+        'boot_index': 0, 
+    }] 
+    interfaces: [{ 
+        'type': 'external' 
+    }] 
+    keypair_name: "{{ keypair_name }}" 
+  when: returned_data.data == {} 
+  
+--- 
+- name: Created VM Info 
+  debug: 
+    msg: "{{ created_vm.data }}" 
+  when: created_vm is not skipped
+```
+
+6\. Add all required tasks to the `create_vm/tasks/main.yml` file:
+
+```yaml
+# tasks file for create_vm 
+- name: Check quotas to create VM 
+  import_tasks: check_quota.yaml 
+  
+- name: Create VM 
+  import_tasks: create_vm.yaml 
+ 
+- name: create_log_file 
+  file: 
+    path: "{{ path_to_log }}{{ log_filename }}" 
+    state: touch 
+  
+- name: save_log 
+  blockinfile: 
+    state: present 
+    insertafter: EOF 
+    dest: "{{ path_to_log }}{{ log_filename }}" 
+    marker: "" 
+    content: 
+      - "{{ returned_data }}" 
+      - "{{ created_vm }}"
+```
+
+7\. Add any required variables to the `create_vm/vars/main.yml` file. For example:
+
+```yaml
+api_key: "PUT_HERE_YOUR_API_KEY" 
+region_name: "Frankfurt" 
+project_id: "328787" 
+flavor: "g2-standard-1-2" 
+size: 10 
+type_name: "ssd_hiiops" 
+image_id: "e72903b6-9b45-463f-834e-7316f7f3ff37" 
+keypair_name: "id.rsa" 
+path_to_log: "/var/log/" 
+log_filename: "create_vm.log" 
+```
+
+8\. Create a playbook `test.yaml` to test the "create_vm" role. 
+
+```yaml
+- hosts: localhost 
+  become: true 
+  vars: 
+    ansible_python_interpreter: /usr/bin/python3.11 
+  roles: 
+    - create_vm  
+```
+
+9\. Run the playbook: `ansible-playbook test.yaml`.
+
+You should get one of the following outputs:
+
+  * If everything is set up correctly, a new virtual instance will be created. 
+
+  * The information about your instance will appear in the "Created VM Info" task section, and it'll also be written to the log file. 
+
+  * If you don't have sufficient quotas, you'll get the "Needed quota" output, followed by the list of your current and requested quota limits. This information will also be stored in logs. 
+
+  * If you made a mistake in variables (for example, set a wrong flavor), you'll get the "Failed" error. In this case, double-check the playbook configuration and rerun it.

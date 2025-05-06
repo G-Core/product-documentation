@@ -1,0 +1,53 @@
+---
+title: Add an SSL certificate to a CDN resource via Terraform
+sidebarTitle: Add an SSL certificate
+---
+
+If a CDN resource was created via Terraform, you can add an SSL certificate via Terraform. To do this, use the following steps. 
+
+1\. Open the _main.tf_ file. 
+
+2\. The file is supposed to contain the code for the creation of your CDN resource. If it is missing, add the code according to the [Create a new CDN resource](/cdn/terraform/manage-a-cdn-resource-with-terraform#create-a-new-cdn-resource) section. 
+
+Don't worry, Terraform won't duplicate a resource. Terraform requires the code used for the creation of the resource only to identify a resource that should be changed. 
+
+3\. At this step, you will add the necessary strings for issuing an SSL certificate. 
+
+Add the code below before the following string: `resource "gcore_cdn_resource" "(name of your resource in Terraform)" {`. Replace the hints in the brackets with your values and remove the brackets. 
+
+```
+resource "gcore_cdn_sslcert" "make up Terraform name for your certificate; you can use any name, it will be linked to the certificate inside the Terraform system" {   
+name = "make up a certificate name that will be displayed in the Gcore Customer Portal; it should not match the names of other SSL certificates in the same account"   
+cert = "specify a public key of your certificate, including the BEGIN CERTIFICATE----- and-----END CERTIFICATE---- strings"   
+private_key ="specify a private key of your SSL certificate, including the -----BEGIN RSA PRIVATE KEY----- and -----END RSA PRIVATE KEY----- string"   
+}
+```
+
+4\. Add the code below after the _secondary_hostnames_ string, if any (if not, after _origin_protocol_). Replace the hints in the brackets with your values and remove the brackets. 
+
+```
+ssl_enabled = true 
+ssl_data = gcore_cdn_sslcert.Terraform name of the certificate.id 
+```
+
+Here is an example of adding a certificate. Let's suppose your values are as follows: 
+
+  * example_cert — the name of the certificate that will be displayed in Terraform, 
+  * example_certificate — the name of the certificate that will be displayed in the Gcore Customer Portal, 
+  * \-----BEGIN CERTIFICATE-----MIIDkjCCAnqgAwIBAgIgTfqoZeTGCEvm...T7XH8IlQY0SGq2FSZKJAlrfX+UOpIMWQcOwcuDB97DXl5Bjs+QEXO203GW0C-----END CERTIFICATE----- — the public key of the certificate,
+  * \-----BEGIN RSA PRIVATE KEY-----MIIEpAIBAAKCAQEAzzj54zBOWxBIJRFMBtG...xyf2T9RZYRpIVbkatg977nXryEZC8Sp8U76c3Oww==-----END RSA PRIVATE KEY----- — the private key of the certificate.
+
+
+
+To add such a certificate, you have inserted the necessary strings into the configuration file. The file is supposed to look as follows:
+
+
+<Frame>![configuration file](/images/docs/cdn/grafana-terraform/manage-a-cdn-resource-with-terraform/image_1709-2.png)</Frame>
+
+
+
+5\. Save the changes in the configuration file. 
+
+6\. Access the "Terraform" folder in the command-line interface unless you are already in it, and run the `terraform plan` command — it will show what changes Terraform is going to make. If the code contains an error, the output will give a brief description of it. 
+
+7\. Run the `terraform apply` command — it will make changes to the CDN. Terraform will ask you to confirm the action — enter "yes".

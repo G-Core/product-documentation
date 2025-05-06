@@ -1,0 +1,112 @@
+---
+title: Copy CDN resources via Terraform
+sidebarTitle: Copy CDN resources
+---
+
+Terraform simplifies the duplication of CDN configurations across environments, ensuring consistency and reliability. By managing environment-specific variables and using workspaces, you can maintain identical setups across your staging and production environments.
+
+<Tip>
+**Tip**
+
+To proceed with the following steps, you need to have [API keys](/account-settings/create-use-or-delete-a-permanent-api-token#create-a-permanent-api-token) configured.
+</Tip>
+
+## Step 1: Define variables
+
+One of the key benefits of Terraform is its ability to manage configurations through variables, making it easier to handle environment-specific settings. 
+
+Create a _variables.tf_ file to define parameters that change between environments, such as API URL, token, or CDN resource names. 
+
+
+```
+// variables.tf
+variable "api_token" {
+  description = "API token for access to your Gcore account"
+  type        = string
+  sensitive   = true
+}
+variable "api_endpoint" {
+  description = "Gcore API url"
+  type        = string
+}
+variable "cdn_resource_cname" {
+  description = "Name of the CDN resource"
+  type        = string
+}
+```
+
+## Step 2: Configure environment variables
+
+Create _.tfvars_ file for each environment to set the variable values. For example, for preproduction:
+
+```
+// preprod.tfvars
+api_token          = "your-preprod-api-token"
+api_endpoint       = "https://api.preprod.world"
+cdn_resource_cname = "preprod.example.com"
+```
+
+And for production:
+
+```
+// production.tfvars
+api_token          = "your-production-api-token"
+api_endpoint       = "https://api.gcore.com"
+cdn_resource_cname = "prod.example.com"
+```
+
+## Step 3: Write configurarion for copying resources
+
+Add the following Terraform configuration to the _main.tf_ :
+
+```
+// main.tf
+terraform {
+  required_providers {
+    gcore = {
+      source  = "G-Core/gcore"
+      version = ">= 0.8.20"
+    }
+  }
+}
+provider "gcore" {
+  permanent_api_token = var.api_token
+  api_endpoint = var.api_endpoint
+}
+resource "gcore_cdn_resource" "example" {
+  cname  = var.cdn_resource_cname
+  origin = "example.com"
+}
+```
+
+
+## Step 4: Use Terraform workspaces
+
+Terraform workspaces allow you to manage multiple environments using the same configuration. 
+
+Initialize Terraform: `terraform init`
+
+Then create workspaces for preproduction and production: 
+
+```
+terraform workspace new preprod
+terraform workspace new production
+```
+
+## Step 5: Apply the configuration
+
+Switch to the staging workspace and apply the configuration:
+
+```
+terraform workspace select staging
+terraform apply -var-file=preprod.tfvars
+```
+
+Then switch to the production workspace and apply the configuration there as well: 
+
+```
+terraform workspace select production
+terraform apply -var-file=production.tfvars
+```
+
+By using Terraform workspaces and variable files, you can apply the same configuration to different environments with a few commands.

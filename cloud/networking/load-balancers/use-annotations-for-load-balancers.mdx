@@ -1,0 +1,106 @@
+---
+title: Use annotations for load balancers
+sidebarTitle: Annotations
+---
+
+Annotations are a way to add custom, non-identifiable metadata to objects. They are used to configure additional behavior for Load Balancers service in [Kubernetes clusters](/cloud/kubernetes/clusters/create-a-kubernetes-cluster) beyond the standard configuration offerings. Learn more about annotations in the [official Kubernetes documentation](https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/). 
+
+You can add annotations via the [command line (kubectl)](https://kubernetes.io/docs/reference/kubectl/generated/kubectl_annotate/) or the Kubernetes service manifest using the annotations field as follows:
+
+```js
+metadata: {
+ annotations: {
+ key: "value"
+ }
+}
+```
+
+Below, we have compiled annotations that apply to clusters created in Gcore:
+
+| **Key (annotation)**                                           | **Value sample**                                                                                       | **Type**   | **Description**                                                                                                                                                                            |
+|----------------------------------------------------------------|---------------------------------------------------------------------------------------------------------|-----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `loadbalancer.gcorelabs.com/flavor`                            | `lb1-1-2`                                                                                              | String    | Specifies a custom name for the flavor                                                                                                                                                     |
+| `loadbalancer.gcorelabs.com/proxy-protocol`                    | `true`                                                                                                  | Boolean   | Enables proxy protocol type for [Load Balancer listeners](/cloud/networking/create-and-configure-a-load-balancer#listener)                                         |
+| `loadbalancer.gcorelabs.com/x-forwarded-for`                   | `true`                                                                                                  | Boolean   | Adds the “X-Forwarded-For,” “X-Forwarded-Port” and “X-Forwarded-Proto“ headers to requests                                                                                                |
+| **Enhanced Logging and Monitoring**                            |                                                                                                         |           |                                                                                                                                                                                            |
+| `loadbalancer.gcorelabs.com/logging-topic-name`                | `topic-123`                                                                                             | String    | Specifies [LaaS](/cloud/logging-as-a-service/about-logging-as-a-service) topic name for pushing logs.<br/>**Note:** Must be used with the logging-destination-region-id |
+| `loadbalancer.gcorelabs.com/logging-destination-region-id`     | `1`                                                                                                     | Integer   | Specifies [LaaS](/cloud/logging-as-a-service/about-logging-as-a-service) destination region.<br/>**Note:** Must be used with the logging-topic-name                    |
+| `loadbalancer.gcorelabs.com/logging-retention-policy-period`   | `45`                                                                                                    | Integer   | Configures log retention policy for LaaS topic (in days)                                                                                                                                  |
+| `loadbalancer.gcore.com/logging-retention-policy-period`       | `30`                                                                                                    | Integer   | Defines log retention policy for the LaaS topic (in days)                                                                                                                                 |
+| `loadbalancer.gcore.com/logging-topic-name`                    | `my-logs`                                                                                               | String    | Specifies the LaaS topic name for pushing logs                                                                                                                                             |
+| `loadbalancer.gcore.com/logging-destination-region-id`         | `15`                                                                                                    | Integer   | Defines the LaaS destination region for log storage                                                                                                                                        |
+| **Advanced DDoS Protection**                                   |                                                                                                         |           |                                                                                                                                                                                            |
+| `loadbalancer.gcorelabs.com/ddos-profile`                      | `{ "profile_template":65, "fields": [{ "base_field":272, "field_value":40 }] }`                        | Integer   | Configures and ads the DDoS Protection profile to the Load Balancer                                                                                                                        |
+| `loadbalancer.gcore.com/ddos-profile`                          | `{ "profile_template":75, "fields": [{ "base_field":300, "field_value":50 }] }`                        | String    | Specifies an Advanced DDoS Protection profile using a JSON string                                                                                                                          |
+| **Connection and Timeout Configurations**                      |                                                                                                         |           |                                                                                                                                                                                            |
+| `loadbalancer.gcorelabs.com/timeout-client-data`               | `6000`                                                                                                  | Integer   | Sets client data timeouts for [Load Balancer listeners](/cloud/networking/create-and-configure-a-load-balancer#timeouts) (in msec).<br/>**Note:** When removed, the previously set value remains in effect |
+| `loadbalancer.gcorelabs.com/timeout-member-connect`            | `6000`                                                                                                  | Integer   | Sets member connect timeouts for [Load Balancer listeners](/cloud/networking/create-and-configure-a-load-balancer#timeouts) (in msec).<br/>**Note:** When removed, the previously set value remains in effect |
+| `loadbalancer.gcorelabs.com/timeout-member-data`               | `6000`                                                                                                  | Integer   | Sets member data timeouts for [Load Balancer listeners](/cloud/networking/create-and-configure-a-load-balancer#timeouts) (in msec).<br/>**Note:** When removed, the previously set value remains in effect |
+| `loadbalancer.gcore.com/listener-connection-limit`             | `500`                                                                                                   | Integer   | Sets a limit on the number of concurrent connections per listener                                                                                                                         |
+| `loadbalancer.gcore.com/listener-timeout-client-data`          | `"30s"`                                                                                                 | String    | Defines client data timeout duration (e.g., "30s" or "1m")                                                                                                                                 |
+| `loadbalancer.gcore.com/listener-timeout-member-connect`       | `"30s"`                                                                                                 | String    | Defines the connection timeout between Load Balancer and backend members                                                                                                                   |
+| `loadbalancer.gcore.com/listener-timeout-member-data`          | `"30s"`                                                                                                 | String    | Defines the data transmission timeout between Load Balancer and backend members                                                                                                            |
+| **IP and Network Configurations**                              |                                                                                                         |           |                                                                                                                                                                                            |
+| `loadbalancer.gcorelabs.com/floating-cleanup`                  | `true`                                                                                                  | Boolean   | Automatically cleans up the floating IP assigned to the Load Balancer after deleting the service                                                                                          |
+| `service.beta.kubernetes.io/gcore-internal-load-balancer`      | `true`                                                                                                  | Boolean   | Disables floating IP creation and makes the Load Balancer unavailable for external requests                                                                                               |
+| `service.beta.kubernetes.io/gcore-external-load-balancer`      | `true`                                                                                                  | Boolean   | Makes the Load Balancer public                                                                                                                                                             |
+| `loadbalancer.gcore.com/floating-ip`                           | `"1.1.1.1"`                                                                                             | String    | Specifies a floating IP for a private Load Balancer, only for internal networks                                                                                                            |
+| `loadbalancer.gcore.com/floating-ip`                           | `"192.168.1.10"`                                                                                        | String    | Assigns an existing floating IP address to the Load Balancer                                                                                                                               |
+| `loadbalancer.gcore.com/floating-ip-cleanup`                   | `true`                                                                                                  | Boolean   | Automatically removes the assigned floating IP when the Service is deleted                                                                                                                 |
+| `loadbalancer.gcore.com/reserved-ip`                           | `"10.0.0.42"`                                                                                           | String    | Specifies a reserved IP for the Load Balancer                                                                                                                                             |
+| `loadbalancer.gcore.com/reserved-ip-cleanup`                   | `true`                                                                                                  | Boolean   | Automatically cleans up reserved IPs upon deletion                                                                                                                                         |
+
+  
+## Examples
+
+Here, several examples of annotations using are presented. 
+
+To assign an Advanced DDoS protection profile to your cluster, use the following code in the manifest: 
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    loadbalancer.gcorelabs.com/ddos-profile: |
+  {"profile_template":65,"fields":[{"base_field":272,"field_value":40}]}
+  labels:
+    app: grafana
+  name: grafana
+  namespace: default
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: grafana
+  type: LoadBalancer
+```
+
+Instead of the sample values (`65`, `272`, and `40`), use the appropriate values for your project. The value format is the same as supported by the public [DDoS Protection API](https://api.gcore.com/docs/cloud#tag/DDOS-Protection). 
+
+To enable logging for your cluster, use the following one: 
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    loadbalancer.gcorelabs.com/logging-topic-name: test123
+    loadbalancer.gcorelabs.com/logging-destination-region-id: 15
+  labels:
+    app: grafana
+  name: grafana
+  namespace: default
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: grafana
+  type: LoadBalancer
+```
+
+Instead of the sample values (`test123` and `15`), use the appropriate values for your project.

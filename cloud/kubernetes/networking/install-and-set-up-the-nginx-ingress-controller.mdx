@@ -1,0 +1,100 @@
+---
+title: Install nginx Ingress controller
+sidebarTitle: Install nginx controller
+---
+
+When you install the nginx Ingress Controller, our system automatically creates a [Load Balancer](https://gcore.com/cloud/load-balancers). This Load Balancer acts as an entry point for incoming traffic. When traffic arrives, the Load Balancer forwards it to the Ingress Controller. The Ingress Controller is responsible for routing the traffic to the appropriate services within your Managed Kubernetes cluster based on the rules defined in the Ingress manifests.
+
+## Step 1. Install helm
+
+Using [Helm](https://helm.sh/) package manager simplifies the process of deploying, managing, and scaling applications on Kubernetes. 
+
+The following sections contain instructions for installing Helm on Windows, Ubuntu, and macOS. For more installation options, check out the official [installing Helm](https://helm.sh/docs/intro/install/) guide. 
+
+<Tabs>
+    <Tab title="On Linux">
+        1\. In the Terminal, run the official Helm installation script: 
+
+        ```sh
+        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+        ```
+
+        This command will download and install the latest version of Helm and place the Helm binary in `/usr/local/bin/helm` (or another location based on your system's configuration). 
+
+        2\. Verify that Helm was installed successfully by checking its version: `helm version`. You should get the installed version of Helm.
+    </Tab>
+    <Tab title="On macOS">
+        If you have [Homebrew](https://brew.sh/) installed, run `brew install helm`. 
+
+        Verify installation by running `helm version`.This command should return the Helm version that was installed. 
+
+        If you don't have Brew on your macOS, follow the installation steps for Linux.
+    </Tab>
+    <Tab title="On Windows">
+        Download the latest Helm release from the [Helm GitHub releases](https://github.com/helm/helm/releases) page and extract the contents of the downloaded ZIP file to a directory of your choice. For instance, `C:\Program Files\Helm`. 
+
+        Add Helm binary to the `PATH`: 
+
+        1\. Open the **Start** menu and search for **Environment Variables**. 
+
+        2\. Click **Edit** the system environment variables. 
+
+        3\. In the **System properties** window, click **Environment variables**. 
+
+        4\. In the **System variables** section, click **New**. 
+
+        5\. Provide a variable name and add the full path to the directory where you moved `helm.exe` (e.g., `C:\Program Files\Helm`). 
+
+        6\. Click **OK** to save the changes. 
+
+        7\. Verify the installation. In the Terminal, run `helm version`. You should get the latest release version downloaded from the GitHub repository in step 1. 
+    </Tab>
+</Tabs>
+
+## Step 2. Create a namespace
+
+Run the following kubectl command to create a namespace:
+
+```sh
+kubectl create namespace ingress-nginx
+ ```
+
+## Step 3. Add helm repository for the nginx controller
+
+Run the following command to add the helm repository for the nginx Ingress Controller:
+
+```sh
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+ ```
+
+## Step 4. Update helm repository
+
+Update data in the helm repository:
+
+```sh
+helm repo update
+ ```
+
+## Step 5. Install nginx Ingress controller
+
+Run the following command:
+
+```sh
+helm install ingress-nginx ingress-nginx/ingress-nginx \
+\--namespace ingress-nginx \
+\--set controller.ingressClassResource.name=nginx
+ ```
+
+After the nginx Ingress Controller is installed, it will automatically create a Load Balancer on your behalf.
+
+## Step 6. Get an IP of a load balancer
+
+To get the IP address of the created Load Balancer, execute the command below:
+
+```sh
+watch kubectl -n ingress-nginx get svc
+ ```
+
+Wait until the `<pending> state` of the `EXTERNAL-IP` column changes to the IP address.
+
+The Load Balancer will be shown in the Gcore Customer Portal on the **Load Balancers** page. The traffic will reach the nginx Ingress Controller via this balancer.
