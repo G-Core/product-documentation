@@ -125,89 +125,177 @@ You can enable and set up the **Logs uploader** feature in the Gcore Customer Po
 
 To access log settings, navigate to **Logs** > **Logs uploader** and configure the feature as described in the following steps.
 
-### Step 1 (optional). Include empty logs
+## Step 1. Create Policy
+
+Policies - rules that define which logs are uploaded and how they are uploaded. To create a policy, navigate to the "Policies" tab and click the "Add policy" button. 
+
+### Name your policy
+
+Each created policy must have a name. A maximum of 255 characters in this field is allowed.
+
+### (Optional). Include empty logs
 
 Keep the **Do not send empty logs** option selected if you don't want to receive empty logs. Otherwise, uncheck it. 
 
-### Step 2 (optional). Enable origin shielding
+### (Optional). Enable origin shielding
 
-If you are using the [origin shielding](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding) feature, you'll see the **Add logs from origin shielding** checkbox when configuring Logs uploader. 
+If you are using the <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">origin shielding</a> feature, you’ll see the **Add logs from origin shielding** checkbox when configuring the Logs uploader. 
 
-We recommend that you select this option as it ensures that the logs report will include both requests to cache services and requests to the pre-cache server. Thus, you'll receive more detailed information on resource usage. To include these logs, select the checkbox to enable **Include logs from origin shielding**.
+We recommend that you select this option as it ensures that the logs report will include both requests to cache services and requests to the pre-cache server. Thus, you’ll receive more detailed information on resource usage. To include these logs, select the checkbox to enable **Include logs from origin shielding**.
 
+<alert-element type="tip" title="Tip">
+ 
+If you don’t see the origin shielding option on the **Logs uploader** page, this feature is not activated for your account. For details on how to activate origin shielding, check our <a href="https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding" target="_blank">dedicated guide</a>. 
+ 
+</alert-element>
 
-<Frame>![Include logs from origin shielding checkbox highlighted](/images/docs/cdn/logs/logs-uploader/enable-origin-shielding.png)</Frame>
+### Select log fields
 
-<Tip>
-**Tip**
+Choose which <a href="https://gcore.com/docs/cdn/logs/logs-uploader#log-fields" target="_blank">log fields</a> you want to include in the exported report. By default, all fields are selected. Additionally, fields can be re-ordered via the "Edit order" button.
 
-If you don't see the origin shielding option on the **Logs uploader** page, this feature is not activated for your account. For details on how to activate origin shielding, check our [dedicated guide](/cdn/cdn-resource-options/general/enable-and-configure-origin-shielding).
-</Tip>
+### (Optional) Change log fields delimiter
 
-### Step 3. Select log fields
+Here, the field delimiter for logs can be changed - the default delimiter is " , but it can be changed to any string up to 10 characters.
 
-Choose which [log fields](/cdn/logs/logs-uploader#log-fields) you want to include in the exported report. By default, all fields are selected. 
+### (Optional) Change log fields separator
 
-## Step 4. Configure a storage provider
+The default separator for the log fields is space (" "), but it can be changed to any string up to 10 characters.
+
+### (Optional) Specify log file name format
+
+Template for the path and name of the log file to be uploaded. Supports variables (e.g., {{TIMESTAMP}}). By default, the log format will be "{{YYYY}}/{{MM}}/{{DD}}/{{HH}}/{{mm}}/{{ss}}/{{HOST}}_{{CNAME}}_access.log.gz". 
+
+<alert-element type="tip" title="Tip">
+
+Ensure this field includes: {{CNAME}}, {{HOST}}, at least one of {{TIMESTAMP}}, {{UUID}}, a valid combination of {{YYYY}}, {{MM}}, {{DD}}, {{HH}}, {{mm}}, {{ss}} - otherwise the log files will overwrite each other and you will see an error.
+
+</alert-element>
+
+### (Optional) Specify time interval for sending logs
+
+By default, the Logs uploader will send entries every 60 minutes, but any time interval from 5 to 60 minutes can be specified.
+
+### (Optional) Specify log file size limit
+
+The maximum log file limit in MB is not specified by default, which means that logs will be sent according to the selected time interval. However, a threshold in MB (minimum 100 MB) can be specified, indicating that logs will be sent after the log file reaches the threshold. Log size limit applies before compression; the actual file size delivered to your endpoint will be compressed, hence much smaller.
+
+Click **Add policy** to create the policy with all specified settings.
+
+## Step 2. Create Target
+
+Targets - destinations where logs are uploaded. To create a target, navigate to the "Targets" tab and click the "Add target" button. 
+
+Each created target must have a name. A maximum of 255 characters in this field is allowed. After filling in the target name, select one of the Storage providers.
 
 <Tabs>
+  <Tab title="Gcore">
+    Follow these instructions to export logs to <a href="https://gcore.com/storage" target="_blank">Gcore Object Storage</a>: 
+
+    1\. In the **Storage provider**, select **Gcore** or **Other**; 
+
+    2\. Specify a hostname — a name that’s assigned to a storage server within a network and is used instead of an IP address. In you’re using Gcore Storage, you can find your hostname in the <a href="https://gcore.com/docs/storage/create-an-s3-or-sftp-storage#object-storage" target="_blank">storage details section</a>; 
+
+    3\. Provide your access key ID and secret access key. You can find this information in the <a href="https://gcore.com/docs/storage/request-content-directly-from-the-storage" target="_blank">Details of the storage</a>; 
+
+    4\. Choose a storage region. Check the <a href="https://gcore.com/docs/storage/manage-object-storage/s3-service-urls-and-default-region-names" target="_blank>official Gcore S3 documentation</a> for default region names;
+
+    5\. Specify the name of a bucket where you want to export CDN logs; 
+
+    6\. (Optional). Enter a folder name if you want to export logs to a specific folder within a bucket; 
+
+    7\. Click **Add target** to create the target.
+
+  </Tab>
   <Tab title="Amazon">
     Follow these instructions to export logs to AWS storage: 
 
-    1\. In the **Storage provider**, select **Amazon**. 
+    1\. In the **Storage provider**, select **Amazon**; 
 
-    2\. Provide your access key ID and secret access key, which together form [long-term AWS credentials](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html). 
+    2\. Provide your access key ID and secret access key, which together form <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html" target="_blank">long-term AWS credentials</a>; 
 
-    3\. (Optional). Choose a storage region. While the region is often determined automatically, we recommend specifying it to ensure that your logs are exported successfully. 
+    3\. Choose a storage region; 
 
-    4\. Specify the name of a bucket where you want to export CDN logs. 
+    4\. Specify the name of a bucket where you want to export CDN logs; 
 
-    5\. (Optional). Enter a folder name if you want to export logs to a specific folder within a bucket. 
+    5\. (Optional). Enter a folder name if you want to export logs to a specific folder within a bucket; 
 
-
-    <Frame>![Receive logs to AWS](/images/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/logs-uploader-aws.png)</Frame>
-
-    6\. Click **Save changes** to apply the updates.
+    6\. Click **Add target** to create the target.
   </Tab>
-  <Tab title="OSS">
-    Follow these instructions to export logs to configure logs for Alibaba Cloud [Object Storage Service](https://www.alibabacloud.com/en/product/object-storage-service?_p_lc=1) (OSS): 
+  <Tab value="Alibaba Cloud OSS">
+    Follow these instructions to export logs to configure logs for Alibaba Cloud <a href="https://www.alibabacloud.com/en/product/object-storage-service?_p_lc=1" target="_blank">Object Storage Service</a> (OSS): 
 
-    1\. In the **Storage provider**, select **OSS**. 
+    1\. In the **Storage provider**, select **Alibaba Cloud OSS**; 
 
-    2\. Provide your access key ID and secret access key. Check the [official OSS documentation](https://www.alibabacloud.com/help/en/oss/developer-reference/access-control/?spm=a2c63.p38356.0.0.439d43celIzLks) for details. 
+    2\. Provide your access key ID and secret access key. Check the <a href="https://www.alibabacloud.com/help/en/oss/developer-reference/access-control/?spm=a2c63.p38356.0.0.439d43celIzLks" target="_blank">official OSS documentation</a> for details; 
 
-    3\. (Optional). Choose a storage region. While the region is often determined automatically, we recommend specifying it to ensure that your logs are exported successfully. 
+    3\. Choose a storage region. While the region is often determined automatically, we recommend specifying it to ensure that your logs are exported successfully; 
 
-    4\. Specify the name of a bucket where you want to export CDN logs. 
+    4\. Specify the name of a bucket where you want to export CDN logs; 
 
-    5\. (Optional). Enter a folder name if you want to export logs to a specific folder within a bucket. 
+    5\. (Optional). Enter a folder name if you want to export logs to a specific folder within a bucket; 
 
-
-    <Frame>![Receive logs to OSS](/images/docs/cdn/logs/logs-uploader/logs-uploader-oss.png)</Frame>
-
-    6\. Click **Save changes** to apply the updates.
+    6\. Click **Add target** to create the target.
   </Tab>
-  <Tab value="Gcore\Other">
-    Follow these instructions to export logs to [Gcore Object Storage](https://gcore.com/storage) or any S3 storage of your choice: 
+  <Tab title="Other">
+    Follow these instructions to export logs to any other S3 storage of your choice:
 
-    1.In the **Storage provider**, select **Gcore** or **Other**. 
+    1\. In the **Storage provider**, select **Other**; 
 
-    2\. Specify a hostname—a name that's assigned to a storage server within a network and is used instead of an IP address. In you're using Gcore Storage, you can find your hostname in the [storage details section](/storage/create-an-s3-or-sftp-storage#object-storage). 
+    2\. Specify a hostname — a name that’s assigned to a storage server within a network and is used instead of an IP address; 
 
-    3\. Provide your access key ID and secret access key. You can find this information in the [Details of the storage](/storage/request-content-directly-from-the-storage). 
+    3\. Provide your access key ID and secret access key; 
 
-    4\. Specify the name of a bucket where you want to export CDN logs. 
+    4\. Choose a storage region. While the region is often determined automatically, we recommend specifying it to ensure that your logs are exported successfully;
 
-    5\. (Optional). Enter a folder name if you want to export logs to a specific folder within a bucket. 
+    5\. Specify the name of a bucket where you want to export CDN logs; 
 
-    <Frame>![Receive logs to AWS](/images/docs/cdn/logs/raw-logs-export-cdn-resource-logs-to-your-storage/logs-uploader-gcore-other.png)</Frame>
+    6\. (Optional). Enter a folder name if you want to export logs to a specific folder within a bucket; 
 
-    6\. Click **Save changes** to apply the updates.
+    7\. Click **Add target** to create the target.
   </Tab>
 </Tabs>
 
+## Step 3. Create Configuration
 
+Configurations - combinations of the Logs uploader policies, targets, and resources to which they are applied. To create a configuration, navigate to the "Configurations" tab and click the "Add configuration" button. 
 
-## How near real-time log exporting works
+By default, all newly created configurations are in the enabled state. To change this, turn off the "Enable configuration" switch. It can be enabled later via the Configurations tab. 
 
-Logs are achived and exported to your endpoint every five minutes. If CDN servers are not requested and you didn't select the **Do not send empty logs** checkbox when configuring Logs uploader, an empty log file (± 20 bytes) will be sent to your storage.
+Select one of the following options: whether the configuration will be applied to all CDN resources (including new ones) or to the selected CDN resources only.
+
+<Tabs>
+  <Tab title="All Resources">
+    1\. Enter a configuration name. A maximum of 255 characters in this field is allowed;
+
+    2\. Select a policy from the dropdown;
+
+    3\. Select a target from the dropdown;
+
+    4\. Click **Add configuration** to create a configuration.
+  </Tab>
+  <Tab title="Specific Resource(s)">
+    1\. Enter a configuration name. A maximum of 255 characters in this field is allowed;
+
+    2\. (Optional) Select CDN resources to which the configuration will be applied;
+
+    3\. Select a policy from the dropdown;
+
+    4\. Select a target from the dropdown;
+
+    5\. Click **Add configuration** to create a configuration.
+  </Tab>
+</Tabs>
+
+## Managing Logs uploader
+
+After configuring the Logs uploader policy, target, and configuration for the first time, they can be edited and deleted from the corresponding tabs. The current limit for each entity is set to 10 per account. If you need an increase of the limit, [contact the Gcore support team](mailto:support@gcore.com).
+
+<alert-element type="tip" title="Tip">
+
+The target and policy linked to the active configuration cannot be deleted; you first need to unlink it from the configuration - otherwise, the log files can be lost, so you will see an error upon deleting such a target or policy.
+
+</alert-element>
+
+## How near-real-time log exporting works
+
+Logs are archived and exported to your endpoint according to the set time interval. After creating or changing the target, a test file will be sent to the provided storage to validate the availability of your storage.
