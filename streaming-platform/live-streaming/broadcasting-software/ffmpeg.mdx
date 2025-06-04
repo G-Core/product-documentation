@@ -1,0 +1,68 @@
+---
+title: "FFmpeg"
+sidebarTitle: "FFmpeg"
+---
+
+FFmpeg is a free and open-source command-line tool for recording, screencasting, and live streaming. It’s suitable for video game streaming, blogging, educational content, and more.
+
+FFmpeg links your device (e.g, a laptop or a PC) to different streaming platforms (e.g., Gcore Video Streaming, YouTube, Twitch, etc.). It takes an image captured by a camera, converts it into a video stream, and then sends it to the streaming platform.
+
+## Setup
+
+1. Install FFmpeg on your device. Follow the download instructions on [the official website](https://ffmpeg.org/download.html).
+
+2. To get the server URL and stream key, go to the [Streaming list](https://streaming.gcore.com/streaming/list), open the **Live stream settings** you need, and copy the relevant value from the **URLs for the encoder** section.
+
+For example, if you see these values on the **Live stream settings** page:
+
+![Live stream settings](https://assets.gcore.pro/docs/streaming-platform/live-streaming/push-live-streams-software/push-live-streams-via-obs/11774973436177.png)
+
+Concatenate them to form the full RTMP URL for the stream:
+
+```
+rtmp://vp-push-ix1.gvideo.co/in/400448?cdf2a7ccf990e464c2b…
+```
+
+3. Open the command line interface (CLI) on your device and run the following command:
+
+```
+ffmpeg -f {input format params} -f flv {RTMP URL}
+```
+
+## Configure the stream parameters for optimal performance
+
+We recommend configuring the stream parameters you will send to our server to ensure optimal streaming performance. You can adjust these settings via the CLI parameters of FFmpeg.
+
+Example of a command line for streaming via FFmpeg with the recommended parameters:
+
+```
+ffmpeg -f {input format params} \
+  -c:v libx264 -preset veryfast -b:v 2000000 \
+  -profile:v baseline -vf format=yuv420p \
+  -crf 23 -g 60 \
+  -b:a 128k -ar 44100 -ac 2 \
+  -f flv {RTMP URL}
+```
+
+### Output parameters
+
+- **Video Bitrate:** To stream at 720p resolution, set the bitrate to 2000Kbps (`-b:v 2000000`). If you’re broadcasting at 1080p, set the bitrate to 4000Kbps (`-b:v 4000000`).
+- **Audio Bitrate:** 128 (`-b:a 128k`).
+- **Encoder:** Software (`-c:v libx264`), or any other H264 codec.
+- **Rate control:** CRF (`-crf 23`)
+- **Keyframe Interval:** 2s (`-g 60`).
+- **CPU Usage Preset:** veryfast (`-preset veryfast`).
+- **Profile:** baseline (`-profile:v baseline -vf format=yuv420p`)
+
+### Audio parameters
+
+- **Sample Rate**: 44.1 kHz (`-ar 44100`) or 48 kHz (`-ar 48000`).
+- Use **Stereo** for the best sound quality (`-ac 2`).
+
+### Video parameters
+
+If you need to reduce the original resolution (downscale), follow the instructions in this section. If no resolution change is required, you can skip this step.
+
+- **Output (Scaled) Resolution:** 1280×720
+- **Downscale Filter:** Bicubic
+- **Common FPS Values:** 30
