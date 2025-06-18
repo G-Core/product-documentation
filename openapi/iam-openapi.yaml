@@ -1,0 +1,2231 @@
+openapi: 3.1.0
+info:
+  title: IAM API
+  description: >
+    IAM API allows you to manage your account and users in the account
+
+
+    IAM API base URL: https://api.___serverHost___/iam
+
+
+    # Introduction
+
+    Learn how to use the ___brandName___ API.
+
+    All the functionality that you are familiar with in the ___brandName___  control panel
+
+    is also available through the API, allowing you to script the complex actions that your use case requires.
+
+
+    The API documentation starts with a general overview about the design and technology that has been implemented,
+
+    followed by reference information about specific endpoints.
+
+
+    Our API has predictable, resource-oriented URLs and uses HTTP response codes to indicate API errors.
+
+    We use built-in HTTP features, such as HTTP authentication and HTTP terminology, which can be understood by HTTP clients.
+
+    JSON will be returned in all responses from the API, including errors.
+
+
+    ### Requests
+
+    Any tool that is fluent in HTTP can communicate with the API simply by requesting the correct URI.
+
+    Requests should be made using the HTTPS protocol so that traffic is encrypted.
+
+    The interface responds to different methods depending on the action required.
+
+
+    The maximum API body request size is 50 MB.
+
+
+    <table>
+      <tr>
+        <th>Method</th>
+        <th>Usage</th>
+      </tr>
+      <tr>
+        <td>GET</td>
+        <td>
+            For simple retrieval of information about your account, use the GET method.
+            The information you request will be returned to you as a JSON object.
+            Any request using the GET method is read-only and will not affect any of the objects you are querying.
+        </td>
+      </tr>
+      <tr>
+        <td>DELETE</td>
+        <td>
+          To destroy a resource and remove it from your account and environment, use the DELETE method.
+          This will remove the specified object if it is found.
+        </td>
+      </tr>
+      <tr>
+        <td>PUT</td>
+        <td>
+          To update the information about a resource in your account, use the PUT method.
+        </td>
+      </tr>
+      <tr>
+        <td>PATCH</td>
+        <td>
+          Some resources support partial modification. In these cases, use the PATCH method.
+          Use the PATCH method instead of PUT if you need to change one parameter.
+        </td>
+      </tr>
+      <tr>
+        <td>POST</td>
+        <td>
+          To create a new object, your request should specify the POST method.
+          The POST request includes all of the attributes necessary to create a new object.
+        </td>
+      </tr>
+    </table>
+
+
+    ### HTTP Statuses
+
+    Along with the HTTP methods that the API responds to, it will also return standard HTTP statuses, including error codes.
+
+
+
+    In the event of a problem, the status will contain the error code,
+
+    while the body of the response will usually contain additional information about the problem that was encountered.
+
+
+    <table>
+      <tr>
+        <th>Code</th>
+        <th>Description</th>
+      </tr>
+      <tr>
+        <td>2xx</td>
+        <td>OK — Request has been completed successfully.</td>
+      </tr>
+      <tr>
+        <td>400</td>
+        <td>Bad Request — Required parameter is missing.</td>
+      </tr>
+      <tr>
+        <td>401</td>
+        <td>Unauthorized — Provided credentials are invalid or your API token has expired.</td>
+      </tr>
+      <tr>
+        <td>403</td>
+        <td>Forbidden — Access denied. You do not have enough rights.</td>
+      </tr>
+      <tr>
+        <td>404</td>
+        <td>Not Found — Requested item doesn't exist.</td>
+      </tr>
+      <tr>
+        <td>429</td>
+        <td>Too Many Requests — You have exceeded number of allowed requests for your resources.</td>
+      </tr>
+      <tr>
+        <td>503</td>
+        <td>Service Unavailable — You have made a mistake in request parameters or service is currently unavailable.</td>
+      </tr>
+      <tr>
+        <td>500 502 504</td>
+        <td>
+          Server errors — Something went wrong on ___brandName___ 's end.
+          A subscription to our Status page will keep you up to date on ongoing incidents.
+        </td>
+      </tr>
+    </table>
+
+
+    ### Responses
+
+    When a request is successful, a response body will typically be sent back in the form of a JSON object.
+
+    An exception to this is when a DELETE request is processed,
+
+    which will result in a successful HTTP 200 status and an empty response body.
+
+
+    ### Deprecated API
+
+
+    API evolution causes some endpoints to become deprecated. If you want to monitor deprecated API parts and be urgently
+
+    notified once some API parts become deprecated, you should add deprecation header support in your client application.
+
+    We follow <a href="https://tools.ietf.org/html/draft-dalal-deprecation-header-02" target="_blank">this document</a>
+
+    but use 'X-' prefix for all headers instead, e.g. X-Deprecation, X-Sunset, X-Link etc.
+
+
+    # Rate limits and throttling
+
+    Rate limiting and throttling are crucial mechanisms used to control and manage API traffic, ensuring optimal performance and preventing abuse. Our API employs these techniques to maintain a stable and secure environment for our users. 
+
+    By implementing rate limits and throttling, our API maintains a balanced and secure environment, ensuring the availability and integrity of our services while protecting user accounts from malicious activities. 
+
+    If you go over the rate limit, you will receive a 429 Too Many Requests HTTP response.
+
+    ### Rate limits
+
+    The API enforces an overall rate limit of 100 requests per second (rps.) This limit ensures that the system can handle a consistent flow of incoming requests without overloading the server or causing performance degradation. 
+
+    ### Throttling
+
+    We have implemented throttling specifically for the login endpoint to enhance security and deter unauthorized access attempts. This mechanism restricts the number of login requests and login failures within specific time intervals. 
+
+    * Login attempts per minute: Users are allowed a maximum of five login attempts per minute. This limit prevents brute-force attacks by enforcing a reasonable rate for login attempts, reducing the risk of unauthorized access through trial and error. 
+
+    * Login failures per hour: To protect against potential account compromise, our API implements a limit of three login failures per hour for each user. This restriction helps to mitigate the impact of credential stuffing attacks, where attackers systematically try different login credentials to gain unauthorized access. 
+  version: 1.0.0
+tags:
+  - name: Account
+  - name: API Tokens
+    description: >
+      Use permanent API tokens for regular automated requests to services.
+
+      You can either set its validity period when creating it or issue a token for an unlimited time.
+
+      Please address the API documentation of the specific product in order to check if it supports API tokens.
+
+
+      Provide your APIKey in the Authorization header.
+
+
+      Example: ```curl -H "Authorization: APIKey 123$61b8e1e7a68c" https://api.___serverHost___/iam/users/me```
+
+
+      Please note: When authorizing via SAML SSO, our system does not have any
+
+      information about permissions given to the user by the identity provider.
+
+      Even if the provider revokes the user's access rights, their tokens remain active.
+
+      Therefore, if necessary, the token will need to be deleted manually.
+servers:
+  - url: https://api.___serverHost___/iam/
+paths:
+  /auth/jwt/login:
+    post:
+      tags:
+        - Account
+      summary: Login
+      description: >
+        Log in to get access to your account and services. If you have more than
+        one account, you will be logged
+
+        in the first account. To select an account make an
+
+        [additional request](#tag/Account/paths/~1auth~1jwt~1clients~1{clientId}~1login/get) after successful log in.
+
+
+        <span class="hide-block-whitelabel">[Sign up](https://auth.___serverHost___/login/signup) This method is available only for users who log in by email.
+
+        Use [API Tokens](#tag/API-Tokens) to get access to your services if use social networks (Google, GitHub) to log in.</span>
+
+
+        **Permission**
+
+
+        In addition to authentication, the API checks if the role of the user is authorized to perform the requested action.
+
+
+        **Token Expiration**
+
+
+        The access token will expire in an hour, the refresh token — in 24 hours.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - password
+                - username
+              properties:
+                username:
+                  type: string
+                  description: |
+                    User's email address.
+                password:
+                  type: string
+                  description: |
+                    User's password.
+                one_time_password:
+                  type: string
+                  description: |
+                    User's authenticator passcode in case of enabled 2fa.
+              example:
+                username: you@yourcompany.com
+                password: yourpassword
+                one_time_password: authenticator passcode
+      responses:
+        "200":
+          description: OK.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  refresh:
+                    type: string
+                    description: >
+                      Use this token to refresh the access token via
+
+                      [`/auth/jwt/refresh`](#tag/Account/paths/~1auth~1jwt~1refresh/post) method.
+                    example: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYwMTcwNzA5MiwianRpIjoiMGFmOGU3NTMzYWEyNDM0YmI4M2NmMjA1ZWM2NTMwZjQiLCJ1c2VyX2lkIjo1LCJ1c2VyX3R5cGUiOiJjb21tb24iLCJ1c2VyX2dyb3VwcyI6WyJBZG1pbmlzdHJhdG9ycyJdLCJjbGllbnRfaWQiOjIsImVtYWlsIjoidGVzdHVzZXJAZXhhbXBsZS5jb20iLCJ1c2VybmFtZSI6InRlc3R1c2VyQGV4YW1wbGUuY29tIiwic3NvX2VudGl0eSI6bnVsbCwiaXNfYWRtaW4iOmZhbHNlLCJjbGllbnRfbmFtZSI6IlRlc3QgQ29tcGFueSIsImV4Y2hhbmdlYWJsZSI6dHJ1ZX0.C-RuHDWLpu1bd0_SoZgbkqSqA65egSBigKikeEKXkdK-PRVx4ZUIMdkJd-L4ebeydDHgeq3AwXbDBSqPuXZMTKTFKe1HTvpLycTNkTKa-dp9nTq0VwfUlf3G7QajEJA1UiQ7IhSDZJK5NBkEzs_-PFtPOQjeE2u2AbKKJ_SK3hNi1BVU3uVjfWsMVwGDkVnPIa0aLtYDTYd2QKN5InBGh06XITFD_P_IETfwhw7yG4PvLWGejGQO9jJx1ViFYCQi-O8vLR9-mjwaD8Ngc5O8v3mnzRkkxeWoukSW1p8eWiGf7QaLg-zSI6pNFO3_LO-ILHcJ394GJzW2rSpaAgvxwRHDIulDxJtAbqyxykLgnDSHUZbKq8mgQqkeshbmQ-BUT_nkYj1LcQisNTGp4QsDRdi095QQIXLntJiGC59BxpZQ5y3j67AZHG9qiVuHQSlHBaQKBAFdA_d7CRqV7TzsT4p3cHVXF_VccBM06pItkYYY5Xj0bQPU6qWf26bONnYh1FHOlaejw2mGc_FsPpi0soGUh-1v_Qs6C4N086VJ5uYSHw_M3MNcGBjAahnUdrKNX_8gmbTDwYNw7h1ELPYfBAFeQJrdTOOQPfUHzkt9g67DHdxRDHMQxz933Wxmfl_5fiHWoWE82n5ZA110BZB9JQoP7Tqtg4qIZoE1M6Knh14
+                  access:
+                    type: string
+                    description: |
+                      Use this token to access API.
+                    example: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjAxNjI0MjkyLCJqdGkiOiI0Mjk1ZjZhMjI4ZTE0MmE3YjA1ZmIxYjE5MjlhZjZlYyIsInVzZXJfaWQiOjUsInVzZXJfdHlwZSI6ImNvbW1vbiIsInVzZXJfZ3JvdXBzIjpbIkFkbWluaXN0cmF0b3JzIl0sImNsaWVudF9pZCI6MiwiZW1haWwiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsInVzZXJuYW1lIjoidGVzdHVzZXJAZXhhbXBsZS5jb20iLCJzc29fZW50aXR5IjpudWxsLCJpc19hZG1pbiI6ZmFsc2UsImNsaWVudF9uYW1lIjoiVGVzdCBDb21wYW55IiwiZXhjaGFuZ2VhYmxlIjp0cnVlLCJyanRpIjoiMGFmOGU3NTMzYWEyNDM0YmI4M2NmMjA1ZWM2NTMwZjQifQ.aJjVE3_mC8fimclIPggD0ynh0EIwO8kCEffhFN4CxbaDBGz4R2Xn2mJQqhsRB2YoDCx_oH3uLii6aM_6OQtc2DbIElfN1KHoQmzzEjxKKXlgTOF_gsq9dVwQ9hajeOsQu5ly1rMk41WW1LrQ6Nkb_v6LC8g57Ah4h2pGot44h87BDsG6uUyMFVV3ZTJjkVNWJxceljFeDPO5rhx-ujtkX5iYwAeVh6HAq3I4Sw7OO5LZHF9pnhNBJVRNu8HlBNyk5UVB7uyStc9vjAnjGJyqc4yWL3QVTz7BMtvXX19W6sypl_YQiYzz5dsOiL4dzsI5RERBVt9DtOytSqDNigF_WTVUn0VsmXEK1oDGb8I2AWuAmiKYxizKY2JEOHoUz7B1L87fiPg5fNlv3QDrFJhuy1M6A-72jL1-N4tCGhUCQubvZEv90JshAhc6A5W88ghtjS_W80xt63gpvK81vE9b3coutIBnh-yvzEwTvudm3YKTnRrNBxRT01tdiJVEKoJ1poST0BxzxtGAvW_JgASTcOqQcFR6-Rr5smDSOki_mKVqODbRgcAj7CeNOvrwDZqC2XlQkTLvlo6msNvyVQH8vugRzPsbZK7F3pCvOEB5ub2WY6a1ui7lm-mAVyAs1VbzCHEnLu5GiXmyNE-mlNXQlAS1xz5P751rANnwODJJFz0
+        "400":
+          description: Login failed.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - allOf:
+                      - &a2
+                        title: Validation error
+                        type: object
+                        properties:
+                          errors:
+                            type: object
+                            description: This object contains error descriptions per field from your
+                              request.
+                            additionalProperties:
+                              type: array
+                              description: Error list for specific field.
+                              items:
+                                type: string
+                                description: Error description
+                      - example:
+                          errors:
+                            password:
+                              - This field is required
+                  - &a10
+                    title: Invalid request JSON schema
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        description: This message describes error if json schema from your request is
+                          invalid.
+                        example: >
+                          JSON parse error - Expecting ',' delimiter: line 3
+                          column 33 (char 77)
+                  - title: No active account found
+                    type: object
+                    properties:
+                      errors:
+                        type: object
+                        properties:
+                          errors:
+                            type: array
+                            items:
+                              type: string
+                              enum:
+                                - No active account found with the given credentials.
+                        description: >
+                          Username or password is incorrect. Check you username
+                          and password and try again.
+  /auth/jwt/refresh:
+    post:
+      tags:
+        - Account
+      summary: Refresh token
+      description: >
+        Use this request to refresh your access token.
+
+
+        If your refresh token is invalid, expired or blacklisted you should
+
+        [authenticate](#tag/Account/paths/~1auth~1jwt~1login/post) to obtain valid refresh token and try again.
+
+
+        **Token Expiration**
+
+
+        The access token will expire in an hour, the refresh token — in 24 hours.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refresh
+              properties:
+                refresh:
+                  &a1
+                  type: string
+                  description: >
+                    Use this token to refresh the access token via
+
+                    [`/auth/jwt/refresh`](#tag/Account/paths/~1auth~1jwt~1refresh/post) method.
+                  example: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYwMTcwNzA5MiwianRpIjoiMGFmOGU3NTMzYWEyNDM0YmI4M2NmMjA1ZWM2NTMwZjQiLCJ1c2VyX2lkIjo1LCJ1c2VyX3R5cGUiOiJjb21tb24iLCJ1c2VyX2dyb3VwcyI6WyJBZG1pbmlzdHJhdG9ycyJdLCJjbGllbnRfaWQiOjIsImVtYWlsIjoidGVzdHVzZXJAZXhhbXBsZS5jb20iLCJ1c2VybmFtZSI6InRlc3R1c2VyQGV4YW1wbGUuY29tIiwic3NvX2VudGl0eSI6bnVsbCwiaXNfYWRtaW4iOmZhbHNlLCJjbGllbnRfbmFtZSI6IlRlc3QgQ29tcGFueSIsImV4Y2hhbmdlYWJsZSI6dHJ1ZX0.C-RuHDWLpu1bd0_SoZgbkqSqA65egSBigKikeEKXkdK-PRVx4ZUIMdkJd-L4ebeydDHgeq3AwXbDBSqPuXZMTKTFKe1HTvpLycTNkTKa-dp9nTq0VwfUlf3G7QajEJA1UiQ7IhSDZJK5NBkEzs_-PFtPOQjeE2u2AbKKJ_SK3hNi1BVU3uVjfWsMVwGDkVnPIa0aLtYDTYd2QKN5InBGh06XITFD_P_IETfwhw7yG4PvLWGejGQO9jJx1ViFYCQi-O8vLR9-mjwaD8Ngc5O8v3mnzRkkxeWoukSW1p8eWiGf7QaLg-zSI6pNFO3_LO-ILHcJ394GJzW2rSpaAgvxwRHDIulDxJtAbqyxykLgnDSHUZbKq8mgQqkeshbmQ-BUT_nkYj1LcQisNTGp4QsDRdi095QQIXLntJiGC59BxpZQ5y3j67AZHG9qiVuHQSlHBaQKBAFdA_d7CRqV7TzsT4p3cHVXF_VccBM06pItkYYY5Xj0bQPU6qWf26bONnYh1FHOlaejw2mGc_FsPpi0soGUh-1v_Qs6C4N086VJ5uYSHw_M3MNcGBjAahnUdrKNX_8gmbTDwYNw7h1ELPYfBAFeQJrdTOOQPfUHzkt9g67DHdxRDHMQxz933Wxmfl_5fiHWoWE82n5ZA110BZB9JQoP7Tqtg4qIZoE1M6Knh14
+      responses:
+        "200":
+          description: OK.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  refresh: *a1
+                  access:
+                    type: string
+                    description: |
+                      Use this token to access API.
+                    example: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjAxNjI0MjkyLCJqdGkiOiI0Mjk1ZjZhMjI4ZTE0MmE3YjA1ZmIxYjE5MjlhZjZlYyIsInVzZXJfaWQiOjUsInVzZXJfdHlwZSI6ImNvbW1vbiIsInVzZXJfZ3JvdXBzIjpbIkFkbWluaXN0cmF0b3JzIl0sImNsaWVudF9pZCI6MiwiZW1haWwiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsInVzZXJuYW1lIjoidGVzdHVzZXJAZXhhbXBsZS5jb20iLCJzc29fZW50aXR5IjpudWxsLCJpc19hZG1pbiI6ZmFsc2UsImNsaWVudF9uYW1lIjoiVGVzdCBDb21wYW55IiwiZXhjaGFuZ2VhYmxlIjp0cnVlLCJyanRpIjoiMGFmOGU3NTMzYWEyNDM0YmI4M2NmMjA1ZWM2NTMwZjQifQ.aJjVE3_mC8fimclIPggD0ynh0EIwO8kCEffhFN4CxbaDBGz4R2Xn2mJQqhsRB2YoDCx_oH3uLii6aM_6OQtc2DbIElfN1KHoQmzzEjxKKXlgTOF_gsq9dVwQ9hajeOsQu5ly1rMk41WW1LrQ6Nkb_v6LC8g57Ah4h2pGot44h87BDsG6uUyMFVV3ZTJjkVNWJxceljFeDPO5rhx-ujtkX5iYwAeVh6HAq3I4Sw7OO5LZHF9pnhNBJVRNu8HlBNyk5UVB7uyStc9vjAnjGJyqc4yWL3QVTz7BMtvXX19W6sypl_YQiYzz5dsOiL4dzsI5RERBVt9DtOytSqDNigF_WTVUn0VsmXEK1oDGb8I2AWuAmiKYxizKY2JEOHoUz7B1L87fiPg5fNlv3QDrFJhuy1M6A-72jL1-N4tCGhUCQubvZEv90JshAhc6A5W88ghtjS_W80xt63gpvK81vE9b3coutIBnh-yvzEwTvudm3YKTnRrNBxRT01tdiJVEKoJ1poST0BxzxtGAvW_JgASTcOqQcFR6-Rr5smDSOki_mKVqODbRgcAj7CeNOvrwDZqC2XlQkTLvlo6msNvyVQH8vugRzPsbZK7F3pCvOEB5ub2WY6a1ui7lm-mAVyAs1VbzCHEnLu5GiXmyNE-mlNXQlAS1xz5P751rANnwODJJFz0
+        "400":
+          description: Token refreshing failed.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - allOf:
+                      - *a2
+                      - example:
+                          errors:
+                            refresh:
+                              - This field is required.
+        "401":
+          description: >
+            Refresh token is invalid, expired or blacklisted.
+
+            Refresh token is blacklisted if it was already used for refreshing token.
+  "/auth/jwt/clients/{clientId}/login":
+    get:
+      tags:
+        - Account
+      parameters:
+        - &a17
+          name: clientId
+          in: path
+          required: true
+          description: Account ID.
+          schema:
+            type: integer
+      summary: Select Account
+      description: |
+        Select an account which you want to get access to.
+      responses:
+        "200":
+          description: OK.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  refresh:
+                    type: string
+                    description: >
+                      Use this token to refresh the access token via
+
+                      [`/auth/jwt/refresh`](#tag/Account/paths/~1auth~1jwt~1refresh/post) method.
+                    example: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYwMTcwNzA5MiwianRpIjoiMGFmOGU3NTMzYWEyNDM0YmI4M2NmMjA1ZWM2NTMwZjQiLCJ1c2VyX2lkIjo1LCJ1c2VyX3R5cGUiOiJjb21tb24iLCJ1c2VyX2dyb3VwcyI6WyJBZG1pbmlzdHJhdG9ycyJdLCJjbGllbnRfaWQiOjIsImVtYWlsIjoidGVzdHVzZXJAZXhhbXBsZS5jb20iLCJ1c2VybmFtZSI6InRlc3R1c2VyQGV4YW1wbGUuY29tIiwic3NvX2VudGl0eSI6bnVsbCwiaXNfYWRtaW4iOmZhbHNlLCJjbGllbnRfbmFtZSI6IlRlc3QgQ29tcGFueSIsImV4Y2hhbmdlYWJsZSI6dHJ1ZX0.C-RuHDWLpu1bd0_SoZgbkqSqA65egSBigKikeEKXkdK-PRVx4ZUIMdkJd-L4ebeydDHgeq3AwXbDBSqPuXZMTKTFKe1HTvpLycTNkTKa-dp9nTq0VwfUlf3G7QajEJA1UiQ7IhSDZJK5NBkEzs_-PFtPOQjeE2u2AbKKJ_SK3hNi1BVU3uVjfWsMVwGDkVnPIa0aLtYDTYd2QKN5InBGh06XITFD_P_IETfwhw7yG4PvLWGejGQO9jJx1ViFYCQi-O8vLR9-mjwaD8Ngc5O8v3mnzRkkxeWoukSW1p8eWiGf7QaLg-zSI6pNFO3_LO-ILHcJ394GJzW2rSpaAgvxwRHDIulDxJtAbqyxykLgnDSHUZbKq8mgQqkeshbmQ-BUT_nkYj1LcQisNTGp4QsDRdi095QQIXLntJiGC59BxpZQ5y3j67AZHG9qiVuHQSlHBaQKBAFdA_d7CRqV7TzsT4p3cHVXF_VccBM06pItkYYY5Xj0bQPU6qWf26bONnYh1FHOlaejw2mGc_FsPpi0soGUh-1v_Qs6C4N086VJ5uYSHw_M3MNcGBjAahnUdrKNX_8gmbTDwYNw7h1ELPYfBAFeQJrdTOOQPfUHzkt9g67DHdxRDHMQxz933Wxmfl_5fiHWoWE82n5ZA110BZB9JQoP7Tqtg4qIZoE1M6Knh14
+                  access:
+                    type: string
+                    description: |
+                      Use this token to access API.
+                    example: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjAxNjI0MjkyLCJqdGkiOiI0Mjk1ZjZhMjI4ZTE0MmE3YjA1ZmIxYjE5MjlhZjZlYyIsInVzZXJfaWQiOjUsInVzZXJfdHlwZSI6ImNvbW1vbiIsInVzZXJfZ3JvdXBzIjpbIkFkbWluaXN0cmF0b3JzIl0sImNsaWVudF9pZCI6MiwiZW1haWwiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsInVzZXJuYW1lIjoidGVzdHVzZXJAZXhhbXBsZS5jb20iLCJzc29fZW50aXR5IjpudWxsLCJpc19hZG1pbiI6ZmFsc2UsImNsaWVudF9uYW1lIjoiVGVzdCBDb21wYW55IiwiZXhjaGFuZ2VhYmxlIjp0cnVlLCJyanRpIjoiMGFmOGU3NTMzYWEyNDM0YmI4M2NmMjA1ZWM2NTMwZjQifQ.aJjVE3_mC8fimclIPggD0ynh0EIwO8kCEffhFN4CxbaDBGz4R2Xn2mJQqhsRB2YoDCx_oH3uLii6aM_6OQtc2DbIElfN1KHoQmzzEjxKKXlgTOF_gsq9dVwQ9hajeOsQu5ly1rMk41WW1LrQ6Nkb_v6LC8g57Ah4h2pGot44h87BDsG6uUyMFVV3ZTJjkVNWJxceljFeDPO5rhx-ujtkX5iYwAeVh6HAq3I4Sw7OO5LZHF9pnhNBJVRNu8HlBNyk5UVB7uyStc9vjAnjGJyqc4yWL3QVTz7BMtvXX19W6sypl_YQiYzz5dsOiL4dzsI5RERBVt9DtOytSqDNigF_WTVUn0VsmXEK1oDGb8I2AWuAmiKYxizKY2JEOHoUz7B1L87fiPg5fNlv3QDrFJhuy1M6A-72jL1-N4tCGhUCQubvZEv90JshAhc6A5W88ghtjS_W80xt63gpvK81vE9b3coutIBnh-yvzEwTvudm3YKTnRrNBxRT01tdiJVEKoJ1poST0BxzxtGAvW_JgASTcOqQcFR6-Rr5smDSOki_mKVqODbRgcAj7CeNOvrwDZqC2XlQkTLvlo6msNvyVQH8vugRzPsbZK7F3pCvOEB5ub2WY6a1ui7lm-mAVyAs1VbzCHEnLu5GiXmyNE-mlNXQlAS1xz5P751rANnwODJJFz0
+        "401":
+          &a4
+          description: >
+            Authentication credentials were not provided or given token not
+            valid for any token type.
+        "403":
+          &a5
+          description: |
+            You do not have permission to perform this action.
+        "404":
+          description: Account not found.
+      security:
+        - Bearer: []
+  /clients/create:
+    post:
+      tags:
+        - Account
+      summary: Create Account
+      description: Create an additional account for the current user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              &a3
+              type: object
+              required:
+                - company
+              properties:
+                id:
+                  type: integer
+                  description: The ID of the created account.
+                  readOnly: true
+                company:
+                  type: string
+                  description: The company name.
+      responses:
+        "201":
+          description: OK.
+          content:
+            application/json:
+              schema: *a3
+        "400":
+          description: Account creation failed.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - allOf:
+                      - *a2
+                      - example:
+                          errors:
+                            company:
+                              - Company with this name already exists
+        "401": *a4
+        "403": *a5
+      security:
+        - Bearer: []
+  /clients/me:
+    get:
+      tags:
+        - Account
+      summary: Account Details
+      description: |
+        Get information about your profile, users and other account details.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                &a24
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: The account ID.
+                  users:
+                    type: array
+                    description: List of account users.
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: User's ID.
+                          readOnly: true
+                        email:
+                          type: string
+                          format: email
+                          description: User's email address.
+                        name:
+                          type: string
+                          description: User's name.
+                          nullable: true
+                        lang:
+                          type: string
+                          description: >
+                            User's language.
+
+
+                            Defines language of the control panel and email messages.
+                          enum:
+                            - de
+                            - en
+                            - ru
+                            - zh
+                            - az
+                        phone:
+                          type: string
+                          description: User's phone.
+                          nullable: true
+                        company:
+                          type: string
+                          description: User's company.
+                        reseller:
+                          type: integer
+                          description: Services provider ID.
+                          readOnly: true
+                        client:
+                          type: number
+                          description: User's  account ID.
+                          readOnly: true
+                        deleted:
+                          type: boolean
+                          description: Deletion flag. If `true` then user was deleted.
+                          readOnly: true
+                        groups:
+                          type: array
+                          description: |
+                            User's group in the current account.
+
+                            IAM supports 5 groups:
+
+                              - Users
+                              - Administrators
+                              - Engineers
+                              - Purge and Prefetch only (API)
+                              - Purge and Prefetch only (API+Web)
+                          items:
+                            &a11
+                            type: object
+                            properties:
+                              id:
+                                type: integer
+                                example: 1
+                                description: "Group&#39;s ID: Possible values are: <br> <ul> <li>1 -
+                                  Administrators <li>2 - Users <li>5 - Engineers
+                                  <li>3009 - Purge and Prefetch only (API+Web)
+                                  <li>3022 - Purge and Prefetch only (API)"
+                              name:
+                                type: string
+                                example: Administrators
+                                description: Group's name.
+                                enum:
+                                  - Users
+                                  - Administrators
+                                  - Engineers
+                                  - Purge and Prefetch only (API)
+                                  - Purge and Prefetch only (API+Web)
+                        activated:
+                          type: boolean
+                          description: |
+                            Email confirmation:
+                            - `true` – user confirmed the email;
+                            - `false` – user did not confirm the email.
+                          readOnly: true
+                        sso_auth:
+                          type: boolean
+                          description: SSO authentication flag. If `true` then user can login via SAML
+                            SSO.
+                          readOnly: true
+                        two_fa:
+                          type: boolean
+                          description: |
+                            Two-step verification:
+                              - `true` – user enabled two-step verification;
+                              - `false` – user disabled two-step verification.
+                          readOnly: true
+                        auth_types:
+                          type: array
+                          items:
+                            &a12
+                            type: string
+                            description: Auth types.
+                            enum:
+                              - password
+                              - sso
+                              - github
+                              - google-oauth2
+                          description: >
+                            System field. List of auth types available for the
+                            account.
+                  email:
+                    type: string
+                    format: email
+                    description: The account email.
+                  phone:
+                    type: string
+                    description: Phone of a user who registered the requested account.
+                    nullable: true
+                  name:
+                    type: string
+                    description: Name of a user who registered the requested account.
+                    nullable: true
+                  status:
+                    type: string
+                    description: Status of the account.
+                    enum:
+                      - new
+                      - trial
+                      - trialend
+                      - active
+                      - integration
+                      - paused
+                      - preparation
+                      - ready
+                  companyName:
+                    type: string
+                    description: The company name.
+                  website:
+                    type: string
+                    description: The company website.
+                  currentUser:
+                    type: integer
+                    description: ID of the current user.
+                  capabilities:
+                    type: array
+                    items:
+                      &a7
+                      type: string
+                      description: Service's name.
+                      enum:
+                        - CDN
+                        - STORAGE
+                        - STREAMING
+                        - DNS
+                        - DDOS
+                        - CLOUD
+                    description: |
+                      System field. List of services available for the account.
+                  serviceStatuses:
+                    type: object
+                    description: >
+                      An object of arrays which contains information about all
+                      services available for the requested account.
+                    properties:
+                      CDN:
+                        &a6
+                        type: object
+                        properties:
+                          status:
+                            type: string
+                            description: Status of the service.
+                            enum:
+                              - new
+                              - trial
+                              - trialend
+                              - active
+                              - paused
+                              - activating
+                              - deleted
+                          enabled:
+                            type: boolean
+                            description: >
+                              `true` - service is available in the Control Panel.
+                      CLOUD: *a6
+                      DDOS: *a6
+                      DNS: *a6
+                      STORAGE: *a6
+                      STREAMING: *a6
+                  paidFeatures:
+                    type: object
+                    description: >
+                      An object of arrays which contains information about paid
+                      features available for the requested account.
+                    properties:
+                      CDN:
+                        type: array
+                        items:
+                          &a8
+                          type: object
+                          description: Feature object.
+                          properties:
+                            feature_id:
+                              type: integer
+                              description: Feature ID.
+                            service:
+                              allOf:
+                                - description: Name of a service which the feature belongs to.
+                                - *a7
+                            name:
+                              type: string
+                              description: Name of the feature.
+                            create_date:
+                              type: string
+                              description: Date and time when the feature was activated (ISO 8086/RFC 3339
+                                format).
+                            paid_feature_id:
+                              type: integer
+                              description: Internal feature activation ID.
+                      CLOUD:
+                        type: array
+                        items: *a8
+                      DDOS:
+                        type: array
+                        items: *a8
+                      DNS:
+                        type: array
+                        items: *a8
+                      STORAGE:
+                        type: array
+                        items: *a8
+                      STREAMING:
+                        type: array
+                        items: *a8
+                    example:
+                      CDN:
+                        - feature_id: 1
+                          name: paid feature name
+                          service: CDN
+                      STREAMING:
+                        - feature_id: 2
+                          name: another paid feature name
+                          service: STREAMING
+                  freeFeatures:
+                    type: object
+                    description: >
+                      An object of arrays which contains information about free
+                      features available for the requested account.
+                    properties:
+                      CDN:
+                        type: array
+                        items:
+                          &a9
+                          type: object
+                          description: Feature object.
+                          properties:
+                            feature_id:
+                              type: integer
+                              description: Feature ID.
+                            service:
+                              allOf:
+                                - description: Name of a service which the feature belongs to.
+                                - *a7
+                            name:
+                              type: string
+                              description: Name of the feature.
+                            create_date:
+                              type: string
+                              description: Date and time when the feature was activated (ISO 8086/RFC 3339
+                                format).
+                            free_feature_id:
+                              type: integer
+                              description: Internal feature activation ID.
+                      CLOUD:
+                        type: array
+                        items: *a9
+                      DDOS:
+                        type: array
+                        items: *a9
+                      DNS:
+                        type: array
+                        items: *a9
+                      STORAGE:
+                        type: array
+                        items: *a9
+                      STREAMING:
+                        type: array
+                        items: *a9
+                    example:
+                      CDN:
+                        - feature_id: 1
+                          name: free feature name
+                          service: CDN
+                      STREAMING:
+                        - feature_id: 2
+                          name: another free feature name
+                          service: STREAMING
+                  entryBaseDomain:
+                    type: string
+                    nullable: true
+                    description: System field. Control panel domain.
+                  signup_process:
+                    type: string
+                    nullable: true
+                    description: System field. Type of the account registration process.
+                    enum:
+                      - sign_up_full
+                      - sign_up_simple
+                  deleted:
+                    type: boolean
+                    description: |
+                      The field shows the status of the account:
+                        - `true` – the account has been deleted
+                        - `false` – the account is not deleted
+                    readOnly: true
+                  bill_type:
+                    type: string
+                    description: System field. Billing type of the account.
+                  custom_id:
+                    type: string
+                    nullable: true
+                    description: |
+                      The account custom ID.
+                  country_code:
+                    type: string
+                    description: System field. The company country (ISO 3166-1 alpha-2 format).
+                  is_test:
+                    type: boolean
+                    description: |
+                      System field:
+                      - `true` — a test account;
+                      - `false` — a production account.
+                  has_active_admin:
+                    type: boolean
+                    description: |
+                      System field.
+        "401":
+          &a14
+          description: >
+            Authentication credentials were not provided or given token not
+            valid for any token type.
+      security:
+        - Bearer: []
+  /auth/password/forgot:
+    post:
+      tags:
+        - Account
+      summary: Password Recovery
+      description: >
+        Recover your password in case you forgot it.
+
+
+        Your password recovery link will be sent to your email. If you didn't receive an email, ensure that you have
+
+        an account associated with a specified email, then check the spam folder.
+
+
+        If it does not help, contact us at ___supportEmail___.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User's email address.
+      responses:
+        "200":
+          description: OK.
+          content:
+            application/json:
+              example:
+                status: sent
+        "400":
+          description: Password recovery failed.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - allOf:
+                      - *a2
+                      - example:
+                          errors:
+                            email:
+                              - This field is required.
+  "/users/{userId}/password":
+    put:
+      tags:
+        - Account
+      parameters:
+        - &a15
+          name: userId
+          in: path
+          required: true
+          description: User's ID.
+          schema:
+            type: integer
+      summary: Password Change
+      description: |
+        Reset your password.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                old:
+                  type: string
+                  description: Your old password.
+                new:
+                  type: string
+                  description: Your new password.
+                double:
+                  type: string
+                  description: Confirm your new password.
+              required:
+                - old
+                - new
+                - double
+      responses:
+        "200":
+          description: Password was successfully changed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  refresh:
+                    type: string
+                    description: >
+                      Use this token to refresh the access token via
+
+                      [`/auth/jwt/refresh`](#tag/Account/paths/~1auth~1jwt~1refresh/post) method.
+                    example: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYwMTcwNzA5MiwianRpIjoiMGFmOGU3NTMzYWEyNDM0YmI4M2NmMjA1ZWM2NTMwZjQiLCJ1c2VyX2lkIjo1LCJ1c2VyX3R5cGUiOiJjb21tb24iLCJ1c2VyX2dyb3VwcyI6WyJBZG1pbmlzdHJhdG9ycyJdLCJjbGllbnRfaWQiOjIsImVtYWlsIjoidGVzdHVzZXJAZXhhbXBsZS5jb20iLCJ1c2VybmFtZSI6InRlc3R1c2VyQGV4YW1wbGUuY29tIiwic3NvX2VudGl0eSI6bnVsbCwiaXNfYWRtaW4iOmZhbHNlLCJjbGllbnRfbmFtZSI6IlRlc3QgQ29tcGFueSIsImV4Y2hhbmdlYWJsZSI6dHJ1ZX0.C-RuHDWLpu1bd0_SoZgbkqSqA65egSBigKikeEKXkdK-PRVx4ZUIMdkJd-L4ebeydDHgeq3AwXbDBSqPuXZMTKTFKe1HTvpLycTNkTKa-dp9nTq0VwfUlf3G7QajEJA1UiQ7IhSDZJK5NBkEzs_-PFtPOQjeE2u2AbKKJ_SK3hNi1BVU3uVjfWsMVwGDkVnPIa0aLtYDTYd2QKN5InBGh06XITFD_P_IETfwhw7yG4PvLWGejGQO9jJx1ViFYCQi-O8vLR9-mjwaD8Ngc5O8v3mnzRkkxeWoukSW1p8eWiGf7QaLg-zSI6pNFO3_LO-ILHcJ394GJzW2rSpaAgvxwRHDIulDxJtAbqyxykLgnDSHUZbKq8mgQqkeshbmQ-BUT_nkYj1LcQisNTGp4QsDRdi095QQIXLntJiGC59BxpZQ5y3j67AZHG9qiVuHQSlHBaQKBAFdA_d7CRqV7TzsT4p3cHVXF_VccBM06pItkYYY5Xj0bQPU6qWf26bONnYh1FHOlaejw2mGc_FsPpi0soGUh-1v_Qs6C4N086VJ5uYSHw_M3MNcGBjAahnUdrKNX_8gmbTDwYNw7h1ELPYfBAFeQJrdTOOQPfUHzkt9g67DHdxRDHMQxz933Wxmfl_5fiHWoWE82n5ZA110BZB9JQoP7Tqtg4qIZoE1M6Knh14
+                  access:
+                    type: string
+                    description: |
+                      Use this token to access API.
+                    example: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjAxNjI0MjkyLCJqdGkiOiI0Mjk1ZjZhMjI4ZTE0MmE3YjA1ZmIxYjE5MjlhZjZlYyIsInVzZXJfaWQiOjUsInVzZXJfdHlwZSI6ImNvbW1vbiIsInVzZXJfZ3JvdXBzIjpbIkFkbWluaXN0cmF0b3JzIl0sImNsaWVudF9pZCI6MiwiZW1haWwiOiJ0ZXN0dXNlckBleGFtcGxlLmNvbSIsInVzZXJuYW1lIjoidGVzdHVzZXJAZXhhbXBsZS5jb20iLCJzc29fZW50aXR5IjpudWxsLCJpc19hZG1pbiI6ZmFsc2UsImNsaWVudF9uYW1lIjoiVGVzdCBDb21wYW55IiwiZXhjaGFuZ2VhYmxlIjp0cnVlLCJyanRpIjoiMGFmOGU3NTMzYWEyNDM0YmI4M2NmMjA1ZWM2NTMwZjQifQ.aJjVE3_mC8fimclIPggD0ynh0EIwO8kCEffhFN4CxbaDBGz4R2Xn2mJQqhsRB2YoDCx_oH3uLii6aM_6OQtc2DbIElfN1KHoQmzzEjxKKXlgTOF_gsq9dVwQ9hajeOsQu5ly1rMk41WW1LrQ6Nkb_v6LC8g57Ah4h2pGot44h87BDsG6uUyMFVV3ZTJjkVNWJxceljFeDPO5rhx-ujtkX5iYwAeVh6HAq3I4Sw7OO5LZHF9pnhNBJVRNu8HlBNyk5UVB7uyStc9vjAnjGJyqc4yWL3QVTz7BMtvXX19W6sypl_YQiYzz5dsOiL4dzsI5RERBVt9DtOytSqDNigF_WTVUn0VsmXEK1oDGb8I2AWuAmiKYxizKY2JEOHoUz7B1L87fiPg5fNlv3QDrFJhuy1M6A-72jL1-N4tCGhUCQubvZEv90JshAhc6A5W88ghtjS_W80xt63gpvK81vE9b3coutIBnh-yvzEwTvudm3YKTnRrNBxRT01tdiJVEKoJ1poST0BxzxtGAvW_JgASTcOqQcFR6-Rr5smDSOki_mKVqODbRgcAj7CeNOvrwDZqC2XlQkTLvlo6msNvyVQH8vugRzPsbZK7F3pCvOEB5ub2WY6a1ui7lm-mAVyAs1VbzCHEnLu5GiXmyNE-mlNXQlAS1xz5P751rANnwODJJFz0
+        "400":
+          description: Password change failed.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - allOf:
+                      - *a2
+                      - example:
+                          errors:
+                            old:
+                              - Old password is incorrect
+                            new:
+                              - New and double values don't match
+        "401": *a4
+        "403": *a5
+      security:
+        - Bearer: []
+  /activity_log/logins:
+    get:
+      tags:
+        - Account
+      summary: Last Login Time
+      description: |
+        Information about the account's last login time.
+      parameters:
+        - name: limit
+          in: query
+          description: The maximum number of items.
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          description: Offset relative to the beginning of list.
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: number
+                    description: Total number of users
+                  next:
+                    type: string
+                    description: URL to the next users slice
+                    example: /activity_log/logins?offset=20&limit=10
+                  previous:
+                    type: string
+                    description: URL to the previous users slice
+                    example: /activity_log/logins?offset=10&limit=10
+                  result:
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: The account ID.
+                          example: 123456
+                        login_at:
+                          type: string
+                          description: ISO 8086/RFC 3339 format
+                          example: 2024-11-13T15:23:30Z
+                        ip_address:
+                          type: string
+                          description: IP Address
+                          example: 192.168.1.1
+                        user_agent:
+                          type: string
+                          description: User-Agent
+                          example: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
+                            like Gecko) Chrome/118.0.5993.88 Safari/537.36
+                        is_successful:
+                          type: boolean
+                          description: Successful login or not
+                          example: true
+                        auth_type:
+                          type: string
+                          description: Describes the type of authentication
+                          example: OAUTH
+                        user:
+                          type: integer
+                          description: UserID
+                          example: 123456
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - *a2
+                  - *a10
+        "403": *a5
+        "404":
+          description: Not found.
+      security:
+        - Bearer: []
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Get users
+      description: >
+        Get a list of users.
+
+
+        Pass a value for the `limit` parameter in your request if you want retrieve a paginated result.
+
+        Otherwise API returns a list with all users without pagination.
+      parameters:
+        - &a22
+          name: limit
+          in: query
+          description: The maximum number of items.
+          schema:
+            type: integer
+        - &a23
+          name: offset
+          in: query
+          description: Offset relative to the beginning of list.
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - &a25
+                    allOf:
+                      - type: array
+                        description: Simple array without pagination
+                        items:
+                          type: object
+                      - items:
+                          &a13
+                          allOf:
+                            - type: object
+                              properties:
+                                id:
+                                  type: integer
+                                  description: User's ID.
+                                  readOnly: true
+                                email:
+                                  type: string
+                                  format: email
+                                  description: User's email address.
+                                name:
+                                  type: string
+                                  description: User's name.
+                                  nullable: true
+                                lang:
+                                  type: string
+                                  description: >
+                                    User's language.
+
+
+                                    Defines language of the control panel and email messages.
+                                  enum:
+                                    - de
+                                    - en
+                                    - ru
+                                    - zh
+                                    - az
+                                phone:
+                                  type: string
+                                  description: User's phone.
+                                  nullable: true
+                                company:
+                                  type: string
+                                  description: User's company.
+                                reseller:
+                                  type: integer
+                                  description: Services provider ID.
+                                  readOnly: true
+                                client:
+                                  type: number
+                                  description: User's  account ID.
+                                  readOnly: true
+                                deleted:
+                                  type: boolean
+                                  description: Deletion flag. If `true` then user was deleted.
+                                  readOnly: true
+                                groups:
+                                  type: array
+                                  description: |
+                                    User's group in the current account.
+
+                                    IAM supports 5 groups:
+
+                                      - Users
+                                      - Administrators
+                                      - Engineers
+                                      - Purge and Prefetch only (API)
+                                      - Purge and Prefetch only (API+Web)
+                                  items: *a11
+                                activated:
+                                  type: boolean
+                                  description: |
+                                    Email confirmation:
+                                    - `true` – user confirmed the email;
+                                    - `false` – user did not confirm the email.
+                                  readOnly: true
+                                sso_auth:
+                                  type: boolean
+                                  description: SSO authentication flag. If `true` then user can login via SAML
+                                    SSO.
+                                  readOnly: true
+                                two_fa:
+                                  type: boolean
+                                  description: >
+                                    Two-step verification:
+                                      - `true` – user enabled two-step verification;
+                                      - `false` – user disabled two-step verification.
+                                  readOnly: true
+                                auth_types:
+                                  type: array
+                                  items: *a12
+                                  description: >
+                                    System field. List of auth types available
+                                    for the account.
+                            - type: object
+                              properties:
+                                user_type:
+                                  type: string
+                                  description: User's type.
+                                  enum:
+                                    - common
+                                  readOnly: true
+                                email:
+                                  type: string
+                                  format: email
+                                  description: User's email address.
+                                  readOnly: true
+                  - &a26
+                    allOf:
+                      - type: object
+                        properties:
+                          count:
+                            type: number
+                            description: Total number of users
+                          next:
+                            type: string
+                            description: URL to the next users slice
+                            example: /users?offset=20&limit=10
+                          previous:
+                            type: string
+                            description: URL to the previous users slice
+                            example: /users?offset=10&limit=10
+                          result:
+                            type: array
+                            items:
+                              type: object
+                      - type: object
+                        properties:
+                          result:
+                            items: *a13
+        "401": *a14
+      security:
+        - Bearer: []
+  "/users/{userId}":
+    get:
+      tags:
+        - Users
+      summary: Get user's details
+      parameters:
+        - *a15
+      responses:
+        "200":
+          description: OK.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: User's ID.
+                        readOnly: true
+                      email:
+                        type: string
+                        format: email
+                        description: User's email address.
+                      name:
+                        type: string
+                        description: User's name.
+                        nullable: true
+                      lang:
+                        type: string
+                        description: >
+                          User's language.
+
+
+                          Defines language of the control panel and email messages.
+                        enum:
+                          - de
+                          - en
+                          - ru
+                          - zh
+                          - az
+                      phone:
+                        type: string
+                        description: User's phone.
+                        nullable: true
+                      company:
+                        type: string
+                        description: User's company.
+                      reseller:
+                        type: integer
+                        description: Services provider ID.
+                        readOnly: true
+                      client:
+                        type: number
+                        description: User's  account ID.
+                        readOnly: true
+                      deleted:
+                        type: boolean
+                        description: Deletion flag. If `true` then user was deleted.
+                        readOnly: true
+                      groups:
+                        type: array
+                        description: |
+                          User's group in the current account.
+
+                          IAM supports 5 groups:
+
+                            - Users
+                            - Administrators
+                            - Engineers
+                            - Purge and Prefetch only (API)
+                            - Purge and Prefetch only (API+Web)
+                        items: *a11
+                      activated:
+                        type: boolean
+                        description: |
+                          Email confirmation:
+                          - `true` – user confirmed the email;
+                          - `false` – user did not confirm the email.
+                        readOnly: true
+                      sso_auth:
+                        type: boolean
+                        description: SSO authentication flag. If `true` then user can login via SAML
+                          SSO.
+                        readOnly: true
+                      two_fa:
+                        type: boolean
+                        description: |
+                          Two-step verification:
+                            - `true` – user enabled two-step verification;
+                            - `false` – user disabled two-step verification.
+                        readOnly: true
+                      auth_types:
+                        type: array
+                        items: *a12
+                        description: >
+                          System field. List of auth types available for the
+                          account.
+                  - type: object
+                    properties:
+                      user_type:
+                        type: string
+                        description: User's type.
+                        enum:
+                          - common
+                          - reseller
+                          - seller
+                        readOnly: true
+                      is_active:
+                        type: boolean
+                        description: User activity flag.
+                        readOnly: true
+                      client_and_roles:
+                        type: array
+                        description: List of user's clients. User can access to one or more clients.
+                        readOnly: true
+                        items:
+                          required:
+                            - client_company_name
+                            - client_id
+                            - user_id
+                            - user_roles
+                          type: object
+                          properties:
+                            client_id:
+                              type: integer
+                            client_company_name:
+                              type: string
+                            user_roles:
+                              type: array
+                              description: User role in this client.
+                              example:
+                                - "2"
+                              items:
+                                type: string
+                                description: String representation of role id.
+                            user_id:
+                              type: integer
+                              description: User's ID.
+        "401": *a4
+        "404":
+          description: User not found.
+      security:
+        - Bearer: []
+    patch:
+      tags:
+        - Users
+      summary: Update user's details
+      description: This method updates user's details.
+      parameters:
+        - &a16
+          name: userId
+          in: path
+          required: true
+          description: User's ID.
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - *a13
+      responses:
+        "200":
+          description: OK.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: User's ID.
+                        readOnly: true
+                      email:
+                        type: string
+                        format: email
+                        description: User's email address.
+                      name:
+                        type: string
+                        description: User's name.
+                        nullable: true
+                      lang:
+                        type: string
+                        description: >
+                          User's language.
+
+
+                          Defines language of the control panel and email messages.
+                        enum:
+                          - de
+                          - en
+                          - ru
+                          - zh
+                          - az
+                      phone:
+                        type: string
+                        description: User's phone.
+                        nullable: true
+                      company:
+                        type: string
+                        description: User's company.
+                      reseller:
+                        type: integer
+                        description: Services provider ID.
+                        readOnly: true
+                      client:
+                        type: number
+                        description: User's  account ID.
+                        readOnly: true
+                      deleted:
+                        type: boolean
+                        description: Deletion flag. If `true` then user was deleted.
+                        readOnly: true
+                      groups:
+                        type: array
+                        description: |
+                          User's group in the current account.
+
+                          IAM supports 5 groups:
+
+                            - Users
+                            - Administrators
+                            - Engineers
+                            - Purge and Prefetch only (API)
+                            - Purge and Prefetch only (API+Web)
+                        items: *a11
+                      activated:
+                        type: boolean
+                        description: |
+                          Email confirmation:
+                          - `true` – user confirmed the email;
+                          - `false` – user did not confirm the email.
+                        readOnly: true
+                      sso_auth:
+                        type: boolean
+                        description: SSO authentication flag. If `true` then user can login via SAML
+                          SSO.
+                        readOnly: true
+                      two_fa:
+                        type: boolean
+                        description: |
+                          Two-step verification:
+                            - `true` – user enabled two-step verification;
+                            - `false` – user disabled two-step verification.
+                        readOnly: true
+                      auth_types:
+                        type: array
+                        items: *a12
+                        description: >
+                          System field. List of auth types available for the
+                          account.
+                  - type: object
+                    properties:
+                      user_type:
+                        type: string
+                        description: User's type.
+                        enum:
+                          - common
+                          - reseller
+                          - seller
+                        readOnly: true
+                      is_active:
+                        type: boolean
+                        description: User activity flag.
+                        readOnly: true
+                      client_and_roles:
+                        type: array
+                        description: List of user's clients. User can access to one or more clients.
+                        readOnly: true
+                        items:
+                          required:
+                            - client_company_name
+                            - client_id
+                            - user_id
+                            - user_roles
+                          type: object
+                          properties:
+                            client_id:
+                              type: integer
+                            client_company_name:
+                              type: string
+                            user_roles:
+                              type: array
+                              description: User role in this client.
+                              example:
+                                - "2"
+                              items:
+                                type: string
+                                description: String representation of role id.
+                            user_id:
+                              type: integer
+                              description: User's ID.
+        "400":
+          description: Update user's details failed.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - allOf:
+                      - *a2
+                      - example:
+                          errors:
+                            groups: Group matching query does not exist.
+                  - *a10
+        "403":
+          description: The specified user has issued a token with a higher role. Try using
+            another role.
+        "404":
+          description: User not found.
+  "/users/{userId}/email":
+    put:
+      tags:
+        - Users
+      summary: Update User email
+      description: |
+        Route for update user's email address
+      parameters:
+        - *a16
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                new_email:
+                  type: string
+                  description: User's new email.
+                  required: true
+                password:
+                  type: string
+                  description: User's password for approve.
+                  required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  new_email:
+                    type: string
+                    description: User's new email.
+        "400":
+          description: Email update failed.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - title: Same email address.
+                    description: Tried to update email address with same email.
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        errors:
+                          type: object
+                          properties:
+                            new_email:
+                              type: string
+                              description: Same email address.
+                  - title: Invalid email address.
+                    description: Tried to update email address with invalid email.
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        errors:
+                          type: object
+                          properties:
+                            new_email:
+                              type: string
+                              description: Enter a valid email address
+                  - title: User with email already exists.
+                    description: Tried to update email address with invalid email.
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        errors:
+                          type: object
+                          properties:
+                            new_email:
+                              type: string
+                              description: Client with email {new_email} already exists.
+                  - title: Password is incorrect.
+                    description: Password is incorrect.
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        errors:
+                          type: object
+                          properties:
+                            password:
+                              type: string
+                              description: Password is incorrect.
+        "401": *a14
+      security:
+        - Bearer: []
+  /clients/invite_user:
+    post:
+      tags:
+        - Users
+      summary: Invite new user
+      description: >
+        Invite a user to the account.
+
+
+        User will receive an email.
+
+        The new user will receive an invitation email with a link to create an account password,
+
+        the existing user will be notified about the invitation to the account.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User email.
+                user_role: *a11
+                client_id:
+                  type: integer
+                  description: ID of account.
+                lang:
+                  type: string
+                  description: |
+                    User's language.
+
+                    Defines language of the control panel and email messages.
+                  enum:
+                    - de
+                    - en
+                    - ru
+                    - zh
+                    - az
+                name:
+                  type: string
+                  description: User name.
+              required:
+                - email
+                - user_role
+                - client_id
+      responses:
+        "200":
+          description: OK.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: Status of the invitation.
+                  user_id:
+                    type: integer
+                    description: Invited user ID.
+              example:
+                status: sent
+                user_id: 19449
+        "400":
+          description: Validation error.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - allOf:
+                      - *a2
+                      - example:
+                          errors:
+                            email:
+                              - This field is required
+                  - title: User has already been invited
+                    description: The specified user has already been invited to the specified
+                      account.
+                    type: array
+                    items:
+                      type: string
+                      enum:
+                        - User {user ID} has already been invited to client
+                          {account ID}
+                  - title: User cannot be added
+                    description: The specified user cannot be added to the specified account.
+                    type: array
+                    items:
+                      type: string
+                      enum:
+                        - This user cannot be added to this client.
+        "401": *a4
+        "403": *a5
+      security:
+        - Bearer: []
+  "/clients/{clientId}/client-users/{userId}":
+    get:
+      tags:
+        - Users
+      summary: Get user's group
+      description: Returns user's group in the specified account.
+      parameters:
+        - *a15
+        - *a17
+      responses:
+        "200":
+          description: OK.
+          content:
+            application/json:
+              schema:
+                &a18
+                type: object
+                description: User's group.
+                properties:
+                  user_role: *a11
+        "403":
+          description: You do not have permission for the specified account to perform
+            this action.
+        "404":
+          description: User is not found in the specified account.
+      security:
+        - Bearer: []
+    put:
+      tags:
+        - Users
+      summary: Change user's group
+      parameters:
+        - *a15
+        - *a17
+      requestBody:
+        content:
+          application/json:
+            schema: *a18
+      responses:
+        "204":
+          description: The user's group has been successfully changed.
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  errors:
+                    user_role:
+                      - "Invalid role: OrderedDict([('id', 100), ('name', 'Fake
+                        role')])"
+                properties:
+                  errors:
+                    type: object
+                    description: This object contains error descriptions per field from your
+                      request.
+                    properties:
+                      property_name:
+                        type: array
+                        items:
+                          type: string
+                        description: Error list for a specific field.
+        "403":
+          description: You do not have permission for the specified account to perform
+            this action.
+        "404":
+          description: User is not found in the specified account.
+      security:
+        - Bearer: []
+    delete:
+      tags:
+        - Users
+      summary: Revoke user's access to account
+      description: Revokes user's access to the specified account. If the specified
+        user doesn't have access to multiple accounts, the user is deleted.
+      parameters:
+        - *a15
+        - *a17
+      responses:
+        "200":
+          description: The user's access has been successfully revoked.
+        "403":
+          description: You do not have permission to perform this action.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - title: You do not have permission for the specified account to perform this
+                      action.
+                    type: object
+                    example:
+                      message: You do not have permission to perform this action.
+                  - title: The specified user has API tokens.
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        description: >
+                          The specified user has API tokens.
+
+                          Please [delete API tokens](#tag/API-Tokens/paths/~1clients~1{clientId}~1tokens~1{tokenId}/delete) before the user deleting.
+                    example:
+                      message: You can't remove the user as they have active tokens
+        "404":
+          description: User is not found in the specified account.
+      security:
+        - Bearer: []
+  "/clients/{clientId}/tokens":
+    get:
+      tags:
+        - API Tokens
+      summary: Get All API Tokens
+      description: >
+        Get information about your permanent API tokens in the account.
+
+        A user with the Administrators role gets information about all API tokens in the account.
+      security:
+        - Bearer: []
+      parameters:
+        - *a17
+        - name: role
+          in: query
+          required: false
+          description: "Group&#39;s ID. Possible values are: <br> <ul> <li>1 -
+            Administrators <li>2 - Users <li>5 - Engineers <li>3009 - Purge and
+            Prefetch only (API+Web) <li>3022 - Purge and Prefetch only (API)
+            </ul> Example, <i>&role=Engineers</i>"
+          schema:
+            type: string
+        - name: issued_by
+          in: query
+          required: false
+          description: User&#39;s ID. Use to get API tokens issued by a particular user.
+            <br> Example, <i>&issued_by=1234</i>
+          schema:
+            type: integer
+        - name: not_issued_by
+          in: query
+          required: false
+          description: User&#39;s ID. Use to get API tokens issued by anyone except a
+            particular user. <br> Example, <i>&not_issued_by=1234</i>
+          schema:
+            type: integer
+        - name: deleted
+          in: query
+          required: false
+          description: "The state of API tokens included in the response. <br> Two
+            possible values: <br> <ul> <li> True - API token was not deleted.
+            <li> False - API token was deleted. </ul> Example,
+            <i>&deleted=True</i>"
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: OK.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - &a19
+                      type: object
+                      required:
+                        - name
+                        - exp_date
+                        - client_user
+                      properties:
+                        name:
+                          type: string
+                          description: API token name.
+                          example: My token
+                        description:
+                          type: string
+                          description: API token description.
+                          example: It's my token
+                        exp_date:
+                          type: string
+                          description: >
+                            Date when the API token becomes expired (ISO
+                            8086/RFC 3339 format), UTC.
+
+                            If null, then the API token will never expire.
+                          example: null
+                        client_user:
+                          type: object
+                          description: API token role.
+                          properties:
+                            role: *a11
+                    - type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: API token ID.
+                          example: 42
+                        deleted:
+                          type: boolean
+                          description: Deletion flag. If true, then the API token was deleted.
+                          example: false
+                        expired:
+                          type: boolean
+                          description: >
+                            Expiration flag. If true, then the API token has
+                            expired.
+
+                            When an API token expires it will be automatically deleted.
+                          example: false
+                        created:
+                          type: string
+                          description: Date when the API token was issued (ISO 8086/RFC 3339 format), UTC.
+                          example: 2021-01-01T12:00:00.000000Z
+                        client_user:
+                          type: object
+                          description: API token role and issuer data.
+                          properties:
+                            deleted:
+                              type: boolean
+                              example: false
+                              description: Deletion flag. If true, then the API token was deleted.
+                            user_id:
+                              type: integer
+                              description: User's ID who issued the API token.
+                              example: 123
+                            user_name:
+                              type: string
+                              description: User's name who issued the API token.
+                              example: John Doe
+                            user_email:
+                              type: string
+                              description: User's email who issued the API token.
+                              example: some@email.com
+                            client_id:
+                              type: integer
+                              description: Account's ID.
+                              example: 456
+                            role: *a11
+                        last_usage:
+                          type: string
+                          description: Date when the API token was last used (ISO 8086/RFC 3339 format),
+                            UTC.
+                          example: null
+        "403": *a5
+        "404":
+          description: Account not found.
+    post:
+      tags:
+        - API Tokens
+      summary: Create API Token
+      description: Create an API token in the current account.
+      security:
+        - Bearer: []
+      parameters:
+        - *a17
+      requestBody:
+        content:
+          application/json:
+            schema: *a19
+      responses:
+        "200":
+          description: OK.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: >
+                      API token.
+
+                      Copy it, because you will not be able to get it again.
+
+                      We do not store tokens. All responsibility for token storage and usage is on the issuer.
+        "400":
+          description: API token creation failed.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - title: Invalid role
+                    type: object
+                    properties:
+                      errors:
+                        type: object
+                        description: The specified role does not exist. Please check the role name.
+                    example:
+                      errors:
+                        client_user:
+                          role:
+                            - "Invalid role: RoleName"
+                  - title: You can't create an API token with the specified role.
+                    type: object
+                    properties:
+                      errors:
+                        type: object
+                        description: The specified role is higher than yours. Try using another role.
+                    example:
+                      errors:
+                        client_user:
+                          role:
+                            - Can't create token with role Administrators
+  "/clients/{clientId}/tokens/{tokenId}":
+    get:
+      tags:
+        - API Tokens
+      summary: Get API Token
+      security:
+        - Bearer: []
+      parameters:
+        - *a17
+        - &a20
+          name: tokenId
+          in: path
+          required: true
+          description: API token ID.
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    required:
+                      - name
+                      - exp_date
+                      - client_user
+                    properties:
+                      name:
+                        type: string
+                        description: API token name.
+                        example: My token
+                      description:
+                        type: string
+                        description: API token description.
+                        example: It's my token
+                      exp_date:
+                        type: string
+                        description: >
+                          Date when the API token becomes expired (ISO 8086/RFC
+                          3339 format), UTC.
+
+                          If null, then the API token will never expire.
+                        example: null
+                      client_user:
+                        type: object
+                        description: API token role.
+                        properties:
+                          role: *a11
+                  - type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: API token ID.
+                        example: 42
+                      deleted:
+                        type: boolean
+                        description: Deletion flag. If true, then the API token was deleted.
+                        example: false
+                      expired:
+                        type: boolean
+                        description: >
+                          Expiration flag. If true, then the API token has
+                          expired.
+
+                          When an API token expires it will be automatically deleted.
+                        example: false
+                      created:
+                        type: string
+                        description: Date when the API token was issued (ISO 8086/RFC 3339 format), UTC.
+                        example: 2021-01-01T12:00:00.000000Z
+                      client_user:
+                        type: object
+                        description: API token role and issuer data.
+                        properties:
+                          deleted:
+                            type: boolean
+                            example: false
+                            description: Deletion flag. If true, then the API token was deleted.
+                          user_id:
+                            type: integer
+                            description: User's ID who issued the API token.
+                            example: 123
+                          user_name:
+                            type: string
+                            description: User's name who issued the API token.
+                            example: John Doe
+                          user_email:
+                            type: string
+                            description: User's email who issued the API token.
+                            example: some@email.com
+                          client_id:
+                            type: integer
+                            description: Account's ID.
+                            example: 456
+                          role: *a11
+                      last_usage:
+                        type: string
+                        description: Date when the API token was last used (ISO 8086/RFC 3339 format),
+                          UTC.
+                        example: null
+        "403": *a5
+        "404":
+          &a21
+          description: API token not found.
+    delete:
+      tags:
+        - API Tokens
+      summary: Delete API Token
+      description: >
+        Delete API token from current account.
+
+        Ensure that the API token is not being used by an active application.
+
+        After deleting the token, all applications that use this token will not be able to get access to your account via API.
+
+        The action cannot be reversed.
+      security:
+        - Bearer: []
+      parameters:
+        - *a17
+        - *a20
+      responses:
+        "204":
+          description: API token has been successfully deleted.
+        "403": *a5
+        "404": *a21
+components:
+  parameters:
+    Limit: *a22
+    Offset: *a23
+    UserID: *a16
+    ClintID:
+      name: clientId
+      in: path
+      required: true
+      description: Account ID.
+      schema:
+        type: integer
+  responses:
+    "400":
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - *a2
+              - *a10
+    "401": *a14
+    "404":
+      description: |
+        Resource not found.
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: Bearer
+      description: >
+        <div id="authDescription">
+
+        In order to interact with the ___brandName___ API, you need to have a registered account.
+
+        <span class="hide-block-whitelabel"><a href="https://auth.___serverHost___/login/signup">Sign up</a> if you don't have one.</span>
+
+
+        The majority of methods require an API token in the Authorization header.
+
+        An API token is a unique key that all users and applications should add to requests in order to interact with our services.
+
+        </div>
+
+
+        The **access** token will be provided upon [Login](#tag/Account/paths/~1auth~1jwt~1login/post) request.
+
+        This method is available only for users who log in using email address and password. Use [API tokens](#tag/API-Tokens) if using social networks (Google, GitHub) to log in.
+
+        You can send this request no more than 5 times per second.
+
+        In addition to authentication, the API checks if the user is authorized to perform the requested action.
+
+
+        In the response you will get two tokens: **access** and **refresh.**
+
+
+        Provide your **access** token in the Authorization header.
+
+
+        Example: ```curl 'https://api.___serverHost___/iam/users' -H 'Authorization: Bearer eyJ0eXAiOiJKV'```
+
+
+        Use the [Refresh](#tag/Account/paths/~1auth~1jwt~1refresh/post) request to refresh your access token.
+    APIKey:
+      type: http
+      scheme: APIKey
+      description: >
+        You can also use a [permanent API token](#tag/API-Tokens) for regular
+        automated requests to services via API.
+
+
+        Provide your APIKey in the Authorization header.
+
+
+        Example: ```curl 'https://api.___serverHost___/iam/users' -H 'Authorization: APIKey 123$61b8e1e7a68c' ```
+  schemas:
+    Client: *a24
+    User: *a13
+    UsersArray: *a25
+    PaginatedUsersArray: *a26
