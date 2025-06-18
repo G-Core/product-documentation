@@ -1,0 +1,1143 @@
+# This file is auto-generated, do not edit
+
+info:
+    description: |
+        Fastedge is edge compute service which allows to execute edge apps, compiled to WebAssembly, on CDN edges.<br>
+        <br/><br/>
+        FastEdge API base url: https://api.___serverHost___/fastedge
+
+        # Authentication
+
+        You can find the available authorization methods in this section: [Authorization methods](https://api.___serverHost___/docs/iam#section/Authentication).
+    title: FastEdge API
+    version: 1.0.0
+openapi: 3.0.1
+paths:
+    /v1/apps:
+        get:
+            operationId: listApps
+            parameters:
+                - description: Name of the app
+                  in: query
+                  name: name
+                  required: false
+                  schema:
+                    type: string
+                - description: API type:<br>wasi-http - WASI with HTTP entry point<br>proxy-wasm - Proxy-Wasm app, callable from CDN
+                  in: query
+                  name: api_type
+                  required: false
+                  schema:
+                    enum:
+                        - wasi-http
+                        - proxy-wasm
+                    type: string
+                - description: Status code:<br>0 - draft (inactive)<br>1 - enabled<br>2 - disabled<br>3 - hourly call limit exceeded<br>4 - daily call limit exceeded<br>5 - suspended
+                  in: query
+                  name: status
+                  required: false
+                  schema:
+                    type: integer
+                - description: Template ID
+                  in: query
+                  name: template
+                  required: false
+                  schema:
+                    format: int64
+                    type: integer
+                - description: Binary ID
+                  in: query
+                  name: binary
+                  required: false
+                  schema:
+                    format: int64
+                    type: integer
+                - description: Plan ID
+                  in: query
+                  name: plan
+                  required: false
+                  schema:
+                    format: int64
+                    type: integer
+                - description: Limit for pagination
+                  in: query
+                  name: limit
+                  schema:
+                    type: integer
+                - description: Offset for pagination
+                  in: query
+                  name: offset
+                  schema:
+                    type: integer
+                - description: Ordering
+                  in: query
+                  name: ordering
+                  schema:
+                    enum:
+                        - name
+                        - -name
+                        - status
+                        - -status
+                        - id
+                        - -id
+                        - template
+                        - -template
+                        - binary
+                        - -binary
+                        - plan
+                        - -plan
+                    type: string
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                properties:
+                                    apps:
+                                        items:
+                                            $ref: ./schemas.yml#/components/schemas/app_short
+                                        type: array
+                                    count:
+                                        description: Total number of apps
+                                        type: integer
+                                required:
+                                    - apps
+                                type: object
+                    description: Ok
+                400:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Bad request
+                404:
+                    description: Not found
+            summary: List client's apps
+            tags:
+                - Apps
+        post:
+            operationId: addApp
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: ./schemas.yml#/components/schemas/app
+                description: App details
+                required: false
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/app_short
+                    description: Ok
+                400:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Bad request
+                429:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Limit exceeded
+                503:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Service unavailable
+            summary: Add a new app
+            tags:
+                - Apps
+            x-codegen-request-body-name: app
+    /v1/apps/{id}:
+        delete:
+            operationId: delApp
+            parameters:
+                - description: ID of the app
+                  in: path
+                  name: id
+                  required: true
+                  schema:
+                    format: int64
+                    type: integer
+            responses:
+                204:
+                    description: Ok
+                400:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Bad request
+                404:
+                    description: Not found
+                503:
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                    description: Service unavailable
+            summary: Delete app
+            tags:
+                - Apps
+        get:
+            operationId: getApp
+            parameters:
+                - description: ID of the app
+                  in: path
+                  name: id
+                  required: true
+                  schema:
+                    format: int64
+                    type: integer
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/app
+                    description: Ok
+                400:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Bad request
+                404:
+                    description: Not found
+            summary: Get app details
+            tags:
+                - Apps
+        patch:
+            operationId: patchApp
+            parameters:
+                - description: ID of the app
+                  in: path
+                  name: id
+                  required: true
+                  schema:
+                    format: int64
+                    type: integer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: ./schemas.yml#/components/schemas/app
+                description: App details
+                required: false
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/app_short
+                    description: Ok
+                400:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Bad request
+                404:
+                    description: Not found
+                500:
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                    description: Error occurred
+                503:
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                    description: Service unavailable
+            summary: Update app
+            tags:
+                - Apps
+            x-codegen-request-body-name: app
+        put:
+            operationId: updateApp
+            parameters:
+                - description: ID of the app
+                  in: path
+                  name: id
+                  required: true
+                  schema:
+                    format: int64
+                    type: integer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            allOf:
+                                - $ref: ./schemas.yml#/components/schemas/app
+                                - required:
+                                    - binary
+                                    - status
+                                  type: object
+                description: App details
+                required: false
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/app_short
+                    description: Ok
+                400:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Bad request
+                404:
+                    description: Not found
+                503:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Service unavailable
+            summary: Update an app
+            tags:
+                - Apps
+            x-codegen-request-body-name: app
+    /v1/apps/{id}/logs:
+        get:
+            description: List logs for the app
+            operationId: listLogs
+            parameters:
+                - description: ID of the app
+                  in: path
+                  name: id
+                  required: true
+                  schema:
+                    format: int64
+                    type: integer
+                - description: Reporting period start time, RFC3339 format. Default 1 hour ago.
+                  in: query
+                  name: from
+                  schema:
+                    example: 2023-12-31T23:59:59Z
+                    format: date-time
+                    type: string
+                - description: Reporting period end time, RFC3339 format. Default current time in UTC.
+                  in: query
+                  name: to
+                  schema:
+                    example: 2024-01-31T23:59:59Z
+                    format: date-time
+                    type: string
+                - description: Edge name
+                  in: query
+                  name: edge
+                  schema:
+                    format: string
+                    type: string
+                - description: Sort order (default desc)
+                  in: query
+                  name: sort
+                  schema:
+                    enum:
+                        - desc
+                        - asc
+                    format: string
+                    type: string
+                - description: Limit for pagination
+                  in: query
+                  name: limit
+                  schema:
+                    format: int32
+                    type: integer
+                - description: Offset for pagination
+                  in: query
+                  name: offset
+                  schema:
+                    format: int32
+                    type: integer
+                - description: Search string
+                  example: upstream timeout
+                  in: query
+                  name: search
+                  schema:
+                    format: string
+                    type: string
+                - description: Search by client IP
+                  example: 8.8.4.4
+                  in: query
+                  name: client_ip
+                  schema:
+                    format: ipv4
+                    type: string
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                properties:
+                                    logs:
+                                        items:
+                                            $ref: ./schemas.yml#/components/schemas/log
+                                        type: array
+                                    offset:
+                                        description: Current request offset
+                                        format: int32
+                                        type: integer
+                                    total_count:
+                                        description: Number of total logs available
+                                        format: int32
+                                        type: integer
+                                type: object
+                    description: A paged array of logs
+                400:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Bad request
+                404:
+                    description: Not found
+                503:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Service unavailable
+            summary: List application logs
+            tags:
+                - Apps
+    /v1/apps/by-name/{name}:
+        get:
+            deprecated: true
+            operationId: getAppIdByName
+            parameters:
+                - description: Name of the app
+                  in: path
+                  name: name
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                format: int64
+                                type: integer
+                    description: Ok
+                400:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Bad request
+            summary: Get app id by app name
+            tags:
+                - Apps
+    /v1/binaries:
+        get:
+            operationId: listBinaries
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                properties:
+                                    binaries:
+                                        items:
+                                            $ref: ./schemas.yml#/components/schemas/binary_short
+                                        type: array
+                                required:
+                                    - binaries
+                                type: object
+                    description: Ok
+            summary: List binaries
+            tags:
+                - Binaries
+    /v1/binaries/{id}:
+        delete:
+            operationId: delBinary
+            parameters:
+                - description: Binary ID
+                  in: path
+                  name: id
+                  required: true
+                  schema:
+                    format: int64
+                    type: integer
+            responses:
+                204:
+                    description: Ok
+                400:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Bad request
+                404:
+                    description: Not found
+                409:
+                    description: Binary referenced
+                503:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Service unavailable
+            summary: Delete a binary
+            tags:
+                - Binaries
+        get:
+            operationId: getBinary
+            parameters:
+                - description: Binary ID
+                  in: path
+                  name: id
+                  required: true
+                  schema:
+                    format: int64
+                    type: integer
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/binary
+                    description: Ok
+                400:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Bad request
+                404:
+                    description: Not found
+            summary: Get binary
+            tags:
+                - Binaries
+    /v1/binaries/raw:
+        post:
+            operationId: storeBinary
+            requestBody:
+                content:
+                    application/octet-stream:
+                        schema:
+                            format: binary
+                            type: string
+                required: true
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/binary_short
+                    description: Ok
+                400:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Bad request
+                429:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Limit exceeded
+                503:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Service unavailable
+            summary: Store compiled WASM binary
+            tags:
+                - Binaries
+    /v1/me:
+        get:
+            operationId: getClientMe
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/client
+                    description: Ok
+                400:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Bad request
+            summary: Get status and limits for the client
+            tags:
+                - Clients
+    /v1/secrets:
+        get:
+            operationId: listSecrets
+            parameters:
+                - description: App ID
+                  in: query
+                  name: app_id
+                  schema:
+                    format: int64
+                    type: integer
+                - description: Secret name
+                  in: query
+                  name: secret_name
+                  schema:
+                    type: string
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                properties:
+                                    secrets:
+                                        items:
+                                            $ref: ./schemas.yml#/components/schemas/secret_short
+                                        type: array
+                                required:
+                                    - secrets
+                                type: object
+                    description: Ok
+                404:
+                    description: Not found
+            summary: List available secrets
+            tags:
+                - Secrets
+        post:
+            operationId: addSecret
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            allOf:
+                                - $ref: ./schemas.yml#/components/schemas/secret
+                                - required:
+                                    - name
+                                  type: object
+                description: Secret details
+                required: true
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                allOf:
+                                    - $ref: ./schemas.yml#/components/schemas/secret
+                                    - properties:
+                                        id:
+                                            description: The unique identifier of the secret.
+                                            format: int64
+                                            type: integer
+                                      type: object
+                    description: Ok
+                400:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Bad request
+                503:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Service unavailable
+            summary: Add a new secret
+            tags:
+                - Secrets
+            x-codegen-request-body-name: secret
+    /v1/secrets/{id}:
+        delete:
+            operationId: deleteSecret
+            parameters:
+                - description: Id of the secret
+                  in: path
+                  name: id
+                  required: true
+                  schema:
+                    format: int64
+                    type: integer
+                - description: Force delete secret even if it is used in slots
+                  in: query
+                  name: force
+                  schema:
+                    type: boolean
+            responses:
+                204:
+                    description: Ok
+                400:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Bad request
+                404:
+                    description: Not found
+                409:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/conflictError
+                    description: Entity referenced
+                503:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Service unavailable
+            summary: Delete a secret
+            tags:
+                - Secrets
+        get:
+            operationId: getSecret
+            parameters:
+                - description: Id of the secret
+                  in: path
+                  name: id
+                  required: true
+                  schema:
+                    format: int64
+                    type: integer
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/secret
+                    description: Ok
+                404:
+                    description: Not found
+            summary: Get secret by id
+            tags:
+                - Secrets
+        patch:
+            description: Update a secret
+            operationId: patchSecret
+            parameters:
+                - description: Id of the secret
+                  in: path
+                  name: id
+                  required: true
+                  schema:
+                    format: int64
+                    type: integer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: ./schemas.yml#/components/schemas/secret
+                description: Secret details
+                required: true
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/secret
+                    description: Ok
+                400:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Bad request
+                404:
+                    description: Not found
+                409:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/conflictError
+                    description: Entity referenced
+                503:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Service unavailable
+            summary: Update a secret
+            tags:
+                - Secrets
+            x-codegen-request-body-name: secret
+        put:
+            description: Update a secret
+            operationId: updateSecret
+            parameters:
+                - description: Id of the secret
+                  in: path
+                  name: id
+                  required: true
+                  schema:
+                    format: int64
+                    type: integer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            allOf:
+                                - $ref: ./schemas.yml#/components/schemas/secret
+                                - required:
+                                    - name
+                                  type: object
+                description: Secret details
+                required: true
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/secret
+                    description: Ok
+                400:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Bad request
+                404:
+                    description: Not found
+                409:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/conflictError
+                    description: Entity referenced
+                503:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Service unavailable
+            summary: Update a secret
+            tags:
+                - Secrets
+            x-codegen-request-body-name: secret
+    /v1/stats/app_duration:
+        get:
+            operationId: StatsDuration
+            parameters:
+                - description: App ID
+                  in: query
+                  name: id
+                  schema:
+                    format: int64
+                    type: integer
+                - description: Reporting period start time, RFC3339 format
+                  in: query
+                  name: from
+                  required: true
+                  schema:
+                    format: date-time
+                    type: string
+                - description: Reporting period end time (not included into reporting period), RFC3339 format
+                  in: query
+                  name: to
+                  required: true
+                  schema:
+                    format: date-time
+                    type: string
+                - description: Reporting granularity, in seconds
+                  in: query
+                  name: step
+                  required: true
+                  schema:
+                    default: 60
+                    type: integer
+                - description: Network name
+                  in: query
+                  name: network
+                  schema:
+                    format: string
+                    type: string
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                properties:
+                                    stats:
+                                        items:
+                                            $ref: ./schemas.yml#/components/schemas/duration_stats
+                                        type: array
+                                required:
+                                    - stats
+                                type: object
+                    description: Ok
+                400:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Bad request
+            summary: Execution duration statistics
+            tags:
+                - Stats
+    /v1/stats/calls:
+        get:
+            operationId: StatsCalls
+            parameters:
+                - description: Reporting period start time, RFC3339 format
+                  in: query
+                  name: from
+                  required: true
+                  schema:
+                    format: date-time
+                    type: string
+                - description: Reporting period end time (not included into reporting period), RFC3339 format
+                  in: query
+                  name: to
+                  required: true
+                  schema:
+                    format: date-time
+                    type: string
+                - description: Reporting granularity, in seconds
+                  in: query
+                  name: step
+                  required: true
+                  schema:
+                    default: 60
+                    type: integer
+                - description: App ID
+                  in: query
+                  name: id
+                  schema:
+                    format: int64
+                    type: integer
+                - description: Network name
+                  in: query
+                  name: network
+                  schema:
+                    format: string
+                    type: string
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                properties:
+                                    stats:
+                                        items:
+                                            $ref: ./schemas.yml#/components/schemas/call_stats
+                                        type: array
+                                required:
+                                    - stats
+                                type: object
+                    description: Ok
+                400:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Bad request
+            summary: Call statistics
+            tags:
+                - Stats
+    /v1/template:
+        get:
+            operationId: listTemplates
+            parameters:
+                - description: API type:<br>wasi-http - WASI with HTTP entry point<br>proxy-wasm - Proxy-Wasm app, callable from CDN
+                  in: query
+                  name: api_type
+                  required: false
+                  schema:
+                    enum:
+                        - wasi-http
+                        - proxy-wasm
+                    type: string
+                - description: Only mine templates
+                  in: query
+                  name: only_mine
+                  required: false
+                  schema:
+                    default: false
+                    type: boolean
+                - description: Limit for pagination
+                  in: query
+                  name: limit
+                  schema:
+                    type: integer
+                - description: Offset for pagination
+                  in: query
+                  name: offset
+                  schema:
+                    type: integer
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                properties:
+                                    count:
+                                        description: Total number of templates
+                                        type: integer
+                                    templates:
+                                        items:
+                                            $ref: ./schemas.yml#/components/schemas/template_short
+                                        type: array
+                                required:
+                                    - templates
+                                type: object
+                    description: Ok
+                400:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Bad request
+            summary: List app templates
+            tags:
+                - Templates
+        post:
+            operationId: addTemplate
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: ./schemas.yml#/components/schemas/template
+                description: Template details
+                required: true
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/template_short
+                    description: Ok
+                400:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Bad request
+                503:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Service unavailable
+            summary: Add template
+            tags:
+                - Templates
+    /v1/template/{id}:
+        delete:
+            operationId: delTemplate
+            parameters:
+                - description: ID of the template
+                  in: path
+                  name: id
+                  required: true
+                  schema:
+                    format: int64
+                    type: integer
+                - description: Force template deletion even if it is shared to groups
+                  in: query
+                  name: force
+                  schema:
+                    type: boolean
+            responses:
+                204:
+                    description: Ok
+                400:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Bad request
+                404:
+                    description: Not found
+                503:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Service unavailable
+            summary: Delete template
+            tags:
+                - Templates
+        get:
+            operationId: getTemplate
+            parameters:
+                - description: ID of the template
+                  in: path
+                  name: id
+                  required: true
+                  schema:
+                    format: int64
+                    type: integer
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/template
+                    description: Ok
+                404:
+                    description: Not found
+            summary: Get template details
+            tags:
+                - Templates
+        put:
+            operationId: updateTemplate
+            parameters:
+                - description: ID of the template
+                  in: path
+                  name: id
+                  required: true
+                  schema:
+                    format: int64
+                    type: integer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: ./schemas.yml#/components/schemas/template
+                description: Template details
+                required: true
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/template_short
+                    description: Ok
+                400:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Bad request
+                404:
+                    description: Not found
+                503:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: ./schemas.yml#/components/schemas/error
+                    description: Service unavailable
+            summary: Update template
+            tags:
+                - Templates
+servers:
+    - url: https://api.___serverHost___/fastedge
+tags:
+    - description: Application templates
+      name: Templates
+    - description: Client-level settings and limits
+      name: Clients
+    - description: Apps are descriptions of edge apps, that reference the binary and may contain app-specific settings, such as environment variables.
+      name: Apps
+    - description: Binaries are WebAssembly executables that are actually executed when app is ran.
+      name: Binaries
+    - description: Statistics of edge app use
+      name: Stats
+    - description: Secret values that can be used in app code, wich
+      name: Secrets

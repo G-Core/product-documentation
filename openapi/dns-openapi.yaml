@@ -1,0 +1,2820 @@
+openapi: 3.0.1
+info:
+  title: DNS API
+  description: |-
+    Managed DNS provides API to manage dns zones and records.
+
+    Managed DNS API base url: https://api.___serverHost___/dns
+
+    # Authentication
+    You can find the available authorization methods in this section: <a href="https://api.___serverHost___/docs/iam#section/Authentication">Authorization methods</a>
+  version: 2.0.0
+servers:
+- url: https://api.___serverHost___/dns
+paths:
+  /v2/analyze/{name}/delegation-status:
+    post:
+      tags:
+      - Analyze
+      summary: Check Delegation Status
+      description: |-
+        Returns delegation status for specified domain name.
+        This endpoint has rate limit.
+      operationId: AnalyzeDelegationStatus
+      parameters:
+      - name: name
+        in: path
+        description: zone name
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: DelegationStatusResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DelegationStatusResponse'
+        "400":
+          description: Error message response
+          headers:
+            error:
+              schema:
+                type: string
+          content: {}
+  /v2/locations:
+    get:
+      tags:
+      - Locations
+      summary: All Locations
+      description: List of All locations continents/countries/regions.
+      operationId: AllLocations
+      responses:
+        "200":
+          description: AllResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllResponse'
+  /v2/locations/continents:
+    get:
+      tags:
+      - Locations
+      summary: Continent Locations
+      description: List of All locations continents.
+      operationId: ContinentLocations
+      responses:
+        "200":
+          description: ContinentsResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContinentsResponse'
+  /v2/locations/countries:
+    get:
+      tags:
+      - Locations
+      summary: Country Location
+      description: List of All locations countries.
+      operationId: CountryLocations
+      responses:
+        "200":
+          description: CountriesResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountriesResponse'
+  /v2/locations/regions:
+    get:
+      tags:
+      - Locations
+      summary: Region Locations
+      description: List of All locations regions.
+      operationId: RegionLocations
+      responses:
+        "200":
+          description: RegionsResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegionsResponse'
+  /v2/lookup:
+    get:
+      tags:
+      - Lookup
+      summary: Lookup
+      description: Get the dns records from a specific domain or ip.
+      operationId: LookupRequest
+      parameters:
+      - name: name
+        in: query
+        description: Domain name
+        schema:
+          type: string
+      - name: request_server
+        in: query
+        description: Server that will be used as resolver
+        schema:
+          type: string
+          enum:
+          - authoritative_dns
+          - google
+          - cloudflare
+          - open_dns
+          - quad9
+          - gcore
+      responses:
+        "200":
+          description: LookupResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LookupResponse'
+        "400":
+          description: Error message response
+          headers:
+            error:
+              schema:
+                type: string
+          content: {}
+  /v2/monitor/metrics:
+    get:
+      tags:
+      - Metrics
+      summary: Get monitors state in metrics (prometheus) format for authorized user.
+      description: |-
+        Example of success response:
+        ```
+        # HELP healthcheck_state The `healthcheck_state` metric reflects the state of a specific monitor after conducting a health check
+        # TYPE healthcheck_state gauge
+        healthcheck_state{client_id="1",monitor_id="431",monitor_locations="us-east-1,us-west-1",monitor_name="test-monitor-1",monitor_type="http",rrset_name="rrset-name1",rrset_type="rrset-type1",zone_name="zone-name1"} 0
+        healthcheck_state{client_id="1",monitor_id="4871",monitor_locations="fr-1,fr-2",monitor_name="test-monitor-2",monitor_type="tcp",rrset_name="rrset-name2",rrset_type="rrset-type2",zone_name="zone-name2"} 1
+        healthcheck_state{client_id="2",monitor_id="7123",monitor_locations="ua-1,ua-2",monitor_name="test-monitor-3",monitor_type="icmp",rrset_name="rrset-name3",rrset_type="rrset-type3",zone_name="zone-name3"} 0
+        ```
+      operationId: MonitorMetrics
+      parameters:
+      - name: client_ids
+        in: query
+        description: |-
+          Admin and technical user can specify client_id to get metrics for particular client.
+          Ignored for client
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: uint64
+      - name: zone_names
+        in: query
+        description: |-
+          Admin and technical user can specify monitor_id to get metrics for particular zone.
+          Ignored for client
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            plain/text:
+              schema:
+                type: string
+  /v2/pickers:
+    get:
+      tags:
+      - Pickers
+      summary: List of Picker
+      description: Returns list of picker
+      operationId: PickerList
+      responses:
+        "200":
+          description: PickerListResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PickerListResponse'
+  /v2/pickers/presets:
+    get:
+      tags:
+      - Pickers
+      summary: List of Picker preset
+      description: Returns list of picker preset
+      operationId: PickerPresetList
+      responses:
+        "200":
+          description: PickerPresetListResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PickerPresetListResponse'
+  /v2/platform/info:
+    get:
+      tags:
+      - Clients
+      summary: Client Info
+      description: Get info about client
+      operationId: ClientInfo
+      responses:
+        "200":
+          description: InfoResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InfoResponse'
+        "400":
+          description: Error message response
+          headers:
+            error:
+              schema:
+                type: string
+          content: {}
+  /v2/zones:
+    get:
+      tags:
+      - Zones
+      summary: List of Zones
+      description: Show created zones with pagination managed by limit and offset
+        params. All query params are optional.
+      operationId: Zones
+      parameters:
+      - name: offset
+        in: query
+        description: Amount of records to skip before beginning to write in response.
+        schema:
+          type: integer
+          format: uint64
+      - name: limit
+        in: query
+        description: Max number of records in response
+        schema:
+          type: integer
+          format: uint64
+      - name: order_by
+        in: query
+        description: Field name to sort by
+        schema:
+          type: string
+      - name: order_direction
+        in: query
+        description: Ascending or descending order
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: id
+        in: query
+        description: to pass several ids `id=1&id=3&id=5...`
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: client_id
+        in: query
+        description: to pass several client_ids `client_id=1&client_id=3&client_id=5...`
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: reseller_id
+        in: query
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: iam_reseller_id
+        in: query
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: name
+        in: query
+        description: to pass several names `name=first&name=second...`
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      - name: case_sensitive
+        in: query
+        schema:
+          type: boolean
+      - name: exact_match
+        in: query
+        schema:
+          type: boolean
+      - name: enabled
+        in: query
+        schema:
+          type: boolean
+      - name: status
+        in: query
+        schema:
+          type: string
+      - name: dynamic
+        in: query
+        description: Zones with dynamic RRsets
+        schema:
+          type: boolean
+      - name: healthcheck
+        in: query
+        description: Zones with RRsets that have healthchecks
+        schema:
+          type: boolean
+      - name: updated_at_from
+        in: query
+        schema:
+          type: string
+          format: date-time
+      - name: updated_at_to
+        in: query
+        schema:
+          type: string
+          format: date-time
+      responses:
+        "200":
+          description: ListZoneResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListZoneResponse'
+        "400":
+          description: Error message response
+          headers:
+            error:
+              schema:
+                type: string
+          content: {}
+    post:
+      tags:
+      - Zones
+      summary: Create Zone
+      description: Add DNS zone.
+      operationId: CreateZone
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InputZone'
+        required: false
+      responses:
+        "200":
+          description: CreateZoneResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateZoneResponse'
+        "400":
+          description: Error message response
+          headers:
+            error:
+              schema:
+                type: string
+          content: {}
+      x-codegen-request-body-name: zone
+  /v2/zones/{name}:
+    get:
+      tags:
+      - Zones
+      summary: Get Zone
+      description: Zone info by zone name.
+      operationId: Zone
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: ItemZoneResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemZoneResponse'
+        "400":
+          description: Error message response
+          headers:
+            error:
+              schema:
+                type: string
+          content: {}
+    put:
+      tags:
+      - Zones
+      summary: Update Zone
+      description: Update DNS zone and SOA record.
+      operationId: UpdateZone
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InputZone'
+        required: false
+      responses:
+        "200":
+          description: UpdateZoneResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateZoneResponse'
+        "400":
+          description: Error message response
+          headers:
+            error:
+              schema:
+                type: string
+          content: {}
+      x-codegen-request-body-name: zone
+    delete:
+      tags:
+      - Zones
+      summary: Delete Zone
+      description: Delete DNS zone and its records and raws.
+      operationId: DeleteZone
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: DeleteZoneResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteZoneResponse'
+        "400":
+          description: Error message response
+          headers:
+            error:
+              schema:
+                type: string
+          content: {}
+  /v2/zones/{name}/disable:
+    patch:
+      tags:
+      - Zones
+      summary: Disable Zone
+      description: Disable DNS zone.
+      operationId: DisableZone
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: DisableZoneResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DisableZoneResponse'
+        "400":
+          description: Error message response
+          headers:
+            error:
+              schema:
+                type: string
+          content: {}
+  /v2/zones/{name}/dnssec:
+    get:
+      tags:
+      - DNSSEC
+      summary: Get DNSSEC DS
+      description: Get DNSSEC DS for a DNS zone.
+      operationId: GetDNSSECDS
+      responses:
+        "200":
+          description: GetDNSSECDSResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetDNSSECDSResponse'
+        "400":
+          description: Error message response
+          headers:
+            error:
+              schema:
+                type: string
+          content: {}
+    patch:
+      tags:
+      - DNSSEC
+      summary: Toggle DNSSEC
+      description: Enable or disable DNSSEC for a DNS zone.
+      operationId: ToggleDNSSEC
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ToggleDNSSECRequestBody'
+        required: false
+      responses:
+        "200":
+          description: ToggleDNSSECResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ToggleDNSSECResponse'
+        "400":
+          description: Error message response
+          headers:
+            error:
+              schema:
+                type: string
+          content: {}
+      x-codegen-request-body-name: Body
+  /v2/zones/{name}/enable:
+    patch:
+      tags:
+      - Zones
+      summary: Enable Zone
+      description: Enable DNS zone.
+      operationId: EnableZone
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: EnableZoneResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnableZoneResponse'
+        "400":
+          description: Error message response
+          headers:
+            error:
+              schema:
+                type: string
+          content: {}
+  /v2/zones/{name}/statistics:
+    get:
+      tags:
+      - Zones
+      summary: Get Zone Statistics
+      description: |-
+        Statistics of DNS zone in common and by record types.
+
+        To get summary statistics for all zones use `all` instead of zone name in path.
+
+        Note: Consumption statistics is updated in near real-time as a standard practice.
+        However, the frequency of updates can vary, but they are typically available within a 30 minutes period.
+        Exceptions, such as maintenance periods, may delay data beyond 30 minutes until servers resume and backfill missing statistics.
+      operationId: ZoneStatistics
+      parameters:
+      - name: name
+        in: path
+        description: |-
+          Zone name.
+
+          Use `all` to get statistics for all zones.
+        required: true
+        schema:
+          type: string
+      - name: from
+        in: query
+        description: |-
+          Beginning of the requested time period (Unix Timestamp, UTC.)
+
+          In a query string: &from=1709068637
+        schema:
+          type: integer
+          format: int64
+      - name: to
+        in: query
+        description: |-
+          End of the requested time period (Unix Timestamp, UTC.)
+
+          In a query string: &to=1709673437
+        schema:
+          type: integer
+          format: int64
+      - name: record_type
+        in: query
+        description: |-
+          DNS record type.
+
+          Possible values:
+
+           * A
+           * AAAA
+           * NS
+           * CNAME
+           * MX
+           * TXT
+           * SVCB
+           * HTTPS
+        schema:
+          type: string
+      - name: granularity
+        in: query
+        description: |-
+          Granularity parameter string is a sequence
+          of decimal numbers, each with optional fraction and a unit suffix, such as "300ms", "1.5h" or "2h45m".
+
+          Valid time units are "s", "m", "h".
+        schema:
+          type: string
+      responses:
+        "200":
+          description: StatisticsZoneResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatisticsZoneResponse'
+        "400":
+          description: Error message response
+          headers:
+            error:
+              schema:
+                type: string
+          content: {}
+  /v2/zones/{zoneName}/export:
+    get:
+      tags:
+      - Zones
+      summary: Export Zone (Alpha)
+      description: Export zone to bind9 format.
+      operationId: ExportZone
+      parameters:
+      - name: zoneName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: ExportZoneResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportZoneResponse'
+        "400":
+          description: Error message response
+          headers:
+            error:
+              schema:
+                type: string
+          content: {}
+  /v2/zones/{zoneName}/import:
+    post:
+      tags:
+      - Zones
+      summary: Import Zone
+      description: Import zone in bind9 format.
+      operationId: ImportZone
+      parameters:
+      - name: zoneName
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reader'
+        required: false
+      responses:
+        "200":
+          description: ImportZoneResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportZoneResponse'
+        "400":
+          description: Error message response
+          headers:
+            error:
+              schema:
+                type: string
+          content: {}
+      x-codegen-request-body-name: zone
+  /v2/zones/{zoneName}/rrsets:
+    get:
+      tags:
+      - RRsets
+      summary: List of RRset
+      description: List of RRset.
+      operationId: RRSetList
+      parameters:
+      - name: offset
+        in: query
+        description: Amount of records to skip before beginning to write in response.
+        schema:
+          type: integer
+          format: uint64
+      - name: limit
+        in: query
+        description: Max number of records in response
+        schema:
+          type: integer
+          format: uint64
+      - name: order_by
+        in: query
+        description: Field name to sort by
+        schema:
+          type: string
+      - name: order_direction
+        in: query
+        description: Ascending or descending order
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: zoneName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: ListRRSetResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListRRSetResponse'
+        "400":
+          description: Error message response
+          headers:
+            error:
+              schema:
+                type: string
+          content: {}
+  /v2/zones/{zoneName}/{rrsetName}/{rrsetType}:
+    get:
+      tags:
+      - RRsets
+      summary: Get RRset
+      description: Particular RRset item info
+      operationId: RRSet
+      parameters:
+      - name: zoneName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: rrsetName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: rrsetType
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OutputRRSet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OutputRRSet'
+        "400":
+          description: Error message response
+          headers:
+            error:
+              schema:
+                type: string
+          content: {}
+    put:
+      tags:
+      - RRsets
+      summary: Update RRset
+      description: Create/update RRset.
+      operationId: UpdateRRSet
+      parameters:
+      - name: zoneName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: rrsetName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: rrsetType
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InputRRSet'
+        required: false
+      responses:
+        "200":
+          description: OutputRRSet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OutputRRSet'
+        "400":
+          description: Error message response
+          headers:
+            error:
+              schema:
+                type: string
+          content: {}
+      x-codegen-request-body-name: RRSet
+    post:
+      tags:
+      - RRsets
+      summary: Create RRset
+      description: |-
+        Add the RRSet to the zone specified by zoneName, RRSets can be configured to be either dynamic or static.
+
+        ### Static RRsets
+        Staticly configured RRSets provide DNS responses as is.
+
+        ### Dynamic RRsets
+        Dynamic RRSets have picker configuration defined thus it's possible to finely customize DNS response.
+        Picking rules are defined on the RRSet level as a list of selectors, filters and mutators.
+        Picker considers different resource records metadata, requestor IP, and other event-feeds like monitoring.
+        Picker configuration is an ordered list defined by "pickers" attribute.
+        Requestor IP is determined by EDNS Client Subnet (ECS) if defined, otherwise - by client/recursor IP.
+        Selector pickers are used in the specified order until the first match, in case of match - all next selectors
+        are bypassed. Filters or mutators are applied to the match according to the order they are specified.
+
+        For example, sort records by proximity to user, shuffle based on weights and return not more than 3:
+
+        `"pickers":
+        [
+        { "type": "geodistance" },
+        { "type": "weighted_shuffle" },
+        { "type": "first_n", "limit": 3 }
+        ]`
+
+        #### geodns filter
+        A resource record is included in the answer if resource record's metadata matches requestor info.
+        For each resource record in RRSet, the following metadata is considered (in the order specified):
+
+        + `ip` - list of network addresses in CIDR format, e.g. `["192.168.15.150/25", "2003:de:2016::/48"]`;
+        + `asn` - list of autonomous system numbers, e.g. `[1234, 5678]`;
+        + `regions` - list of region codes, e.g. `["de-bw", "de-by"]`;
+        + `countries` - list of country codes, e.g. `["de", "lu", "lt"]`;
+        + `continents` - list of continent codes, e.g. `["af", "an", "eu", "as", "na", "sa", "oc"]`.
+
+        If there is a record (or multiple) with metadata matched IP, it's used as a response. If not - asn,
+        then country and then continent are checked for a match. If there is no match, then the behaviour
+        is defined by _strict_ parameter of the filter.
+
+        Example: `"pickers": [ { "type": "geodns", "strict": true } ]`
+
+        ##### Strict parameter
+        `strict: true` means that if no records percolate through the geodns filter it returns no answers.
+        `strict: false` means that if no records percolate through the geodns filter, all records are passed over.
+
+        #### asn selector
+        Resource records which ASN metadata matches ASN of the requestor are picked by this selector,
+        and passed to the next non-selector picker, if there is no match - next configured picker starts with all records.
+
+        Example: `"pickers": [ {"type": "asn"} ]`
+
+        #### country selector
+        Resource records which country metadata matches country of the requestor are picked by this selector,
+        and passed to the next non-selector picker, if there is no match - next configured picker starts with all records.
+
+        Example: `"pickers": [ { "type": "country" } ]`
+
+        #### continent selector
+        Resource records which continent metadata matches continent of the requestor are picked by this selector,
+        and passed to the next non-selector picker, if there is no match - next configured picker starts with all records.
+
+        Example: `"pickers": [ { "type": "continent" } ]`
+
+        #### region selector
+        Resource records which region metadata matches region of the requestor are picked by this selector,
+        and passed to the next non-selector picker, if there is no match - next configured picker starts with all records.
+        e.g. `fr-nor` for France/Normandy.
+
+        Example: `"pickers": [ { "type": "region" } ]`
+
+        #### ip selector
+        Resource records which IP metadata matches IP of the requestor are picked by this selector,
+        and passed to the next non-selector picker, if there is no match - next configured picker starts with all records.
+        Maximum 100 subnets are allowed to specify in meta of RR.
+
+        Example: `"pickers": [ { "type": "ip" } ]`
+
+        #### default selector
+        When enabled, records marked as default are selected: `"meta": {"default": true}`.
+
+        Example:
+        `"pickers":
+        [
+        { "type": "geodns", "strict": false },
+        { "type": "default" },
+        { "type": "first_n", "limit": 2 }
+        ]`
+
+        #### geodistance mutator
+        The resource records are rearranged in ascending order based on the distance (in meters) from requestor to
+        the coordinates specified in latlong metadata. Distance is calculated using Haversine formula.
+        The "nearest" to the user's IP RR goes first. The records without latlong metadata come last.
+        e.g. for Berlin `[52.520008, 13.404954]`.;
+
+        In this configuration the only "nearest" to the requestor record to be returned:
+        `"pickers": [ { "type": "geodistance" }, { "type": "first_n", "limit": 1 } ]`
+
+        #### weighted_shuffle mutator
+        The resource records are rearranged in random order based on the `weight` metadata.
+        Default weight (if not specified) is 50.
+
+        Example: `"pickers": [ { "type": "weighted_shuffle" } ]`
+
+        #### first_n filter
+        Slices first N (N specified as a limit parameter value) resource records.
+
+        Example: `"pickers": [ { "type": "first_n", "limit": 1 } ]` returns only the first resource record.
+
+        ##### limit parameter
+        Can be a positive value for a specific limit. Use zero or leave it blank to indicate no limits.
+      operationId: CreateRRSet
+      parameters:
+      - name: zoneName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: rrsetName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: rrsetType
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InputRRSet'
+        required: false
+      responses:
+        "200":
+          description: OutputRRSet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OutputRRSet'
+        "400":
+          description: Error message response
+          headers:
+            error:
+              schema:
+                type: string
+          content: {}
+      x-codegen-request-body-name: RRSet
+    delete:
+      tags:
+      - RRsets
+      summary: Delete RRset
+      description: Delete RRset.
+      operationId: DeleteRRSet
+      parameters:
+      - name: zoneName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: rrsetName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: rrsetType
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: DeleteRRSetResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteRRSetResponse'
+        "400":
+          description: Error message response
+          headers:
+            error:
+              schema:
+                type: string
+          content: {}
+  /v2/zones/{zoneName}/{rrsetName}/{rrsetType}/failover/log:
+    get:
+      tags:
+      - RRsets
+      summary: Get RRset Failover Logs
+      description: Get failover history for the RRset
+      operationId: FailoverLog
+      parameters:
+      - name: offset
+        in: query
+        description: Amount of records to skip before beginning to write in response.
+        schema:
+          type: integer
+          format: uint64
+      - name: limit
+        in: query
+        description: Max number of records in response
+        schema:
+          type: integer
+          format: uint64
+      - name: zoneName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: rrsetName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: rrsetType
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: FailoverLogResponse
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailoverLogResponse'
+        "400":
+          description: Error message response
+          headers:
+            error:
+              schema:
+                type: string
+          content: {}
+components:
+  schemas:
+    AdminListRRSetResponse:
+      type: object
+      properties:
+        rrsets:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutputRRSet'
+        total_amount:
+          type: integer
+          format: int64
+    AdminZoneRenderResponse:
+      type: object
+    AllResponse:
+      type: object
+      properties:
+        continents:
+          $ref: '#/components/schemas/ContinentsResponse'
+        countries:
+          $ref: '#/components/schemas/CountriesResponse'
+        regions:
+          $ref: '#/components/schemas/RegionsResponse'
+    BillingStatisticsFlatResponse:
+      type: array
+      description: BillingStatisticsFlatResponse Billing statistics response with
+        flat=true
+      items:
+        $ref: '#/components/schemas/StatisticsMetrics'
+    BillingStatisticsResponse:
+      type: object
+      properties:
+        client:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/StatisticsMetrics'
+      description: BillingStatisticsResponse Billing statistics response with flat=false
+    Client:
+      type: object
+      properties:
+        client_id:
+          type: integer
+          format: uint64
+        enabled:
+          type: boolean
+        reseller:
+          type: integer
+          format: int64
+        status:
+          type: string
+        tariff_id:
+          type: integer
+          format: uint32
+        tariff_name:
+          $ref: '#/components/schemas/TariffName'
+      description: Client
+    ContinentsResponse:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/LocationTranslations'
+    CountriesResponse:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/LocationTranslations'
+    CreateClientLimitsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Limit'
+    CreateNetworkMappingResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint64
+    CreateResourceRecordResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint64
+    CreateZoneLimitsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ZoneLimit'
+    CreateZoneResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint64
+        warnings:
+          $ref: '#/components/schemas/SimpleWarnings'
+    DNSRecord:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            type: string
+        name:
+          type: string
+        ttl:
+          type: integer
+          format: int32
+        type:
+          type: string
+    DNSSECKey:
+      type: object
+      properties:
+        algorithm:
+          type: string
+        digest:
+          type: string
+        digest_algorithm:
+          type: string
+        digest_type:
+          type: string
+        ds:
+          type: string
+        flags:
+          type: integer
+          format: int64
+        key_tag:
+          type: integer
+          format: int64
+        key_type:
+          type: string
+        public_key:
+          type: string
+        uuid:
+          type: string
+    DelegationStatusResponse:
+      $ref: '#/components/schemas/DelegationStatusScanResult'
+    DelegationStatusScanResult:
+      type: object
+      properties:
+        authoritative_name_servers:
+          type: array
+          items:
+            $ref: '#/components/schemas/NameServer'
+        gcore_authorized_count:
+          type: integer
+          format: int64
+        is_whitelabel_delegation:
+          type: boolean
+        non_gcore_authorized_count:
+          type: integer
+          format: int64
+        zone_exists:
+          type: boolean
+    DeleteClientLimitsResponse:
+      type: object
+    DeleteDNSSECZSKResponse:
+      type: object
+    DeleteNetworkMappingResponse:
+      type: object
+    DeleteRRSetResponse:
+      type: object
+    DeleteResourceRecordResponse:
+      type: object
+    DeleteZoneLimitsResponse:
+      type: object
+    DeleteZoneResponse:
+      type: object
+      description: DeleteZoneResponse
+    DisableZoneResponse:
+      type: object
+    Duration:
+      type: integer
+      description: |-
+        A Duration represents the elapsed time between two instants
+        as an int64 nanosecond count. The representation limits the
+        largest representable duration to approximately 290 years.
+      format: int64
+    DynamicRRSetsLimit:
+      type: object
+      properties:
+        current:
+          type: integer
+          format: int64
+        max:
+          type: integer
+          description: "Max is an optional field. If the field is omitted, therefore\
+            \ there is no limit on the number of dynamic rrsets."
+          format: int64
+        monitoring_rrsets:
+          $ref: '#/components/schemas/MonitoringRRSetsLimit'
+    EmptyResponse:
+      type: object
+    EnableZoneResponse:
+      type: object
+    ExportZoneResponse:
+      type: object
+      properties:
+        raw_zone:
+          type: string
+    FailoverLog:
+      type: array
+      description: FailoverLog
+      items:
+        $ref: '#/components/schemas/FailoverLogEntry'
+    FailoverLogEntry:
+      type: object
+      properties:
+        action:
+          type: string
+        address:
+          type: string
+        time:
+          type: integer
+          format: int64
+      description: FailoverLogEntry
+    FailoverLogResponse:
+      type: object
+      properties:
+        log:
+          $ref: '#/components/schemas/FailoverLog'
+        total_amount:
+          type: integer
+          format: int64
+    Filter:
+      required:
+      - type
+      type: object
+      properties:
+        config:
+          $ref: '#/components/schemas/FilterConfig'
+        type:
+          type: string
+          description: Type of filer
+          enum:
+          - geodns
+    FilterConfig:
+      type: object
+      properties:
+        limit:
+          type: integer
+          format: int64
+        name:
+          type: string
+        strict:
+          type: boolean
+    FilterSet:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint64
+        name:
+          type: string
+    GenerateDNSSECZSKResponse:
+      type: object
+      properties:
+        algorithm:
+          type: string
+        digest:
+          type: string
+        digest_algorithm:
+          type: string
+        digest_type:
+          type: string
+        ds:
+          type: string
+        flags:
+          type: integer
+          format: int64
+        key_tag:
+          type: integer
+          format: int64
+        key_type:
+          type: string
+        public_key:
+          type: string
+        uuid:
+          type: string
+    GetDNSSECDSResponse:
+      type: object
+      properties:
+        algorithm:
+          type: string
+          description: Specifies the algorithm used for the key.
+          example: "13"
+        digest:
+          type: string
+          description: Represents the hashed value of the DS record.
+          example: 28D2F00FB7FD127C05D1CE02BFA8660B094CA6728B1619ABA2144234F7221069
+        digest_algorithm:
+          type: string
+          description: Specifies the algorithm used to generate the digest.
+          example: SHA256
+        digest_type:
+          type: string
+          description: Specifies the type of the digest algorithm used.
+          example: "2"
+        ds:
+          type: string
+          description: Represents the complete DS record.
+          example: zxy.com. 3600 IN DS 26191 13 2 135E208FF18578AB18C1EB8EA064BE08324DCBA6CF08FF55D76F0DBD4BF49F07
+        flags:
+          type: integer
+          description: Represents the flag for DNSSEC record.
+          format: int64
+          example: 257
+        key_tag:
+          type: integer
+          description: Represents the identifier of the DNSKEY record.
+          format: int64
+          example: 26191
+        key_type:
+          type: string
+          description: Specifies the type of the key used in the algorithm.
+          example: ECDSAP256SHA256
+        public_key:
+          type: string
+          description: Represents the public key used in the DS record.
+          example: ahD2C5Th+4NIFmErQPgSe/j6yPc2pbuhr3QcOJImCYHtv/mR/2qP2yHjBE1x20ERnmAnp6e6//g0uYAQKTW+DA==
+        uuid:
+          type: string
+    GetDNSSECKeyResponse:
+      type: object
+      properties:
+        algorithm:
+          type: string
+        digest:
+          type: string
+        digest_algorithm:
+          type: string
+        digest_type:
+          type: string
+        ds:
+          type: string
+        flags:
+          type: integer
+          format: int64
+        key_tag:
+          type: integer
+          format: int64
+        key_type:
+          type: string
+        public_key:
+          type: string
+        uuid:
+          type: string
+    GetFeatureFlagsResponse:
+      type: object
+      properties:
+        flags:
+          type: object
+          additionalProperties:
+            type: boolean
+    IPNet:
+      type: object
+    ImportNetworkMappingResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+    ImportZoneResponse:
+      type: object
+      properties:
+        imported:
+          $ref: '#/components/schemas/ImportedRRSets'
+        success:
+          type: boolean
+        warnings:
+          $ref: '#/components/schemas/Warnings'
+    ImportedRRSets:
+      type: object
+      properties:
+        qtype:
+          type: integer
+          format: uint64
+        resource_records:
+          type: integer
+          format: uint64
+        rrsets:
+          type: integer
+          format: uint64
+        skipped_resource_records:
+          type: integer
+          format: uint64
+      description: ImportedRRSets - import statistics
+    InfoResponse:
+      type: object
+      properties:
+        Info:
+          $ref: '#/components/schemas/ResellerInfo'
+    InputRRSet:
+      required:
+      - resource_records
+      type: object
+      properties:
+        meta:
+          type: object
+          additionalProperties:
+            type: object
+          description: Meta information for rrset
+          example: {}
+        pickers:
+          type: array
+          description: Set of pickers
+          items:
+            $ref: '#/components/schemas/OutputFilter'
+        resource_records:
+          type: array
+          description: List of resource record from rrset
+          items:
+            $ref: '#/components/schemas/InputResourceRecord'
+        ttl:
+          type: integer
+          format: uint32
+    InputResourceRecord:
+      required:
+      - content
+      type: object
+      properties:
+        content:
+          type: array
+          description: |-
+            Content of resource record
+            The exact length of the array depends on the type of rrset,
+            each individual record parameter must be a separate element of the array. For example
+            + SRV-record: `[100, 1, 5061, "example.com"]`
+            + CNAME-record: `[ "the.target.domain" ]`
+            + A-record: `[ "1.2.3.4", "5.6.7.8" ]`
+            + AAAA-record: `[ "2001:db8::1", "2001:db8::2" ]`
+            + MX-record: `[ "mail1.example.com", "mail2.example.com" ]`
+            + SVCB/HTTPS-record: `[ 1, ".", ["alpn", "h3", "h2"], [ "port", 1443 ], [ "ipv4hint", "10.0.0.1" ], [ "ech", "AEn+DQBFKwAgACABWIHUGj4u+PIggYXcR5JF0gYk3dCRioBW8uJq9H4mKAAIAAEAAQABAANAEnB1YmxpYy50bHMtZWNoLmRldgAA" ] ]`
+          example:
+          - 1.1.1.1
+          items:
+            type: object
+        enabled:
+          type: boolean
+          default: true
+        meta:
+          type: object
+          additionalProperties:
+            type: object
+          description: |-
+            This meta will be used to decide which resource record should pass
+            through filters from the filter set
+          example:
+            asn:
+            - 17544
+            - 17812
+            continents:
+            - europe
+            - asia
+            countries:
+            - us
+            - gb
+            - lu
+            ip:
+            - 192.168.15.150/25
+            - 2003:de:2016::/48
+            weight: 30
+      description: "nolint: lll"
+    InputZone:
+      required:
+      - name
+      type: object
+      properties:
+        contact:
+          type: string
+          description: email address of the administrator responsible for this zone
+        enabled:
+          type: boolean
+          description: "If a zone is disabled, then its records will not be resolved\
+            \ on dns servers"
+          default: true
+        expiry:
+          type: integer
+          description: number of seconds after which secondary name servers should
+            stop answering request for this zone
+          format: uint64
+        meta:
+          type: object
+          description: |-
+            arbitrarily data of zone in json format
+            you can specify `webhook` url and `webhook_method` here
+            webhook will get a map with three arrays: for created, updated and deleted rrsets
+            webhook_method can be omitted, POST will be used by default
+          example: "{\"webhook\": \"http://example.com/hook\",\"webhook_method\":\"\
+            PUT\"}"
+        name:
+          type: string
+          description: name of DNS zone
+          example: example.com
+        nx_ttl:
+          type: integer
+          description: Time To Live of cache
+          format: uint64
+        primary_server:
+          type: string
+          description: primary master name server for zone
+        refresh:
+          type: integer
+          description: "number of seconds after which secondary name servers should\
+            \ query the master for the SOA record, to detect zone changes."
+          format: uint64
+        retry:
+          type: integer
+          description: number of seconds after which secondary name servers should
+            retry to request the serial number
+          format: uint64
+        serial:
+          type: integer
+          description: |-
+            Serial number for this zone or Timestamp of zone modification moment.
+            If a secondary name server slaved to this one observes an increase in this number,
+            the slave will assume that the zone has been updated and initiate a zone transfer.
+          format: uint64
+    InvalidRRSet:
+      required:
+      - name
+      - resource_records
+      - type
+      type: object
+      properties:
+        ValidationErr:
+          type: string
+        Warning:
+          type: string
+          description: "Deprecated: warnings should be used instead"
+        Warnings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Warning'
+        filter_set_id:
+          type: integer
+          description: |-
+            You can either set id, if you have multiple rrset with same filters' set
+            or include in rrset filter set itself.
+            filter_set_id has priority over filters
+          format: uint64
+        filters:
+          type: array
+          description: |-
+            Set of filters
+            you must set either filer_set_id of filters here otherwise rrset will be unusable
+          items:
+            $ref: '#/components/schemas/Filter'
+        id:
+          type: integer
+          description: RRSet id
+          format: uint64
+        meta:
+          $ref: '#/components/schemas/Meta'
+        name:
+          type: string
+          description: RRSet name
+          example: sub.example.com
+        resource_records:
+          type: array
+          description: List of resource record from rrset
+          items:
+            $ref: '#/components/schemas/ResourceRecord'
+        ttl:
+          type: integer
+          format: uint32
+        type:
+          type: string
+          description: RRSet type
+          enum:
+          - A
+          - AAAA
+          - NS
+          - CNAME
+          - MX
+          - TXT
+          - SRV
+          - SOA
+        updated_at:
+          $ref: '#/components/schemas/Timestamp'
+        zone_id:
+          type: integer
+          format: uint64
+      description: InvalidRRSet
+    ItemNetworkMappingResponse:
+      type: object
+      properties:
+        network_mapping:
+          $ref: '#/components/schemas/NetworkMapping'
+    ItemRRSetResponse:
+      type: object
+      properties:
+        rrset:
+          $ref: '#/components/schemas/OutputRRSet'
+    ItemResourceRecordResponse:
+      type: object
+      properties:
+        resource_record:
+          $ref: '#/components/schemas/ResourceRecord'
+    ItemZoneResponse:
+      type: object
+      properties:
+        Zone:
+          $ref: '#/components/schemas/OutputZone'
+      description: Complete zone info with all records included
+    LabelName:
+      type: object
+      properties:
+        label:
+          type: string
+        name:
+          type: string
+    LastDelegationStatusResponse:
+      type: object
+      properties:
+        result:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/UndelegatedZone'
+      description: LastDelegationStatusResponse
+    LightRRSet:
+      type: object
+      properties:
+        client_id:
+          type: integer
+          format: uint64
+        id:
+          type: integer
+          format: uint64
+        meta:
+          $ref: '#/components/schemas/Meta'
+        name:
+          type: string
+        resource_records:
+          type: array
+          items:
+            type: object
+            properties:
+              content:
+                $ref: '#/components/schemas/ResourceRecordContent'
+              enabled:
+                type: boolean
+              id:
+                type: integer
+                format: uint64
+        type:
+          type: string
+        zone_id:
+          type: integer
+          format: uint64
+        zone_name:
+          type: string
+      description: LightRRSet
+    LightRRSetResponse:
+      type: object
+      properties:
+        client_id:
+          type: integer
+          format: uint64
+        id:
+          type: integer
+          format: uint64
+        meta:
+          $ref: '#/components/schemas/Meta'
+        name:
+          type: string
+        resource_records:
+          type: array
+          items:
+            type: object
+            properties: {}
+        type:
+          type: string
+        zone_id:
+          type: integer
+          format: uint64
+        zone_name:
+          type: string
+      description: Light rrset info
+    LightZoneResponse:
+      type: object
+      properties:
+        client_id:
+          type: integer
+          format: uint64
+        enabled:
+          type: boolean
+        id:
+          type: integer
+          format: uint64
+        name:
+          type: string
+        status:
+          type: string
+      description: Light zone info
+    Limit:
+      type: object
+      properties:
+        client_id:
+          type: integer
+          format: uint64
+        created_at:
+          type: string
+          format: date-time
+        deleted_at:
+          type: string
+          format: date-time
+        id:
+          type: integer
+          format: uint64
+        is_soft_limit:
+          type: boolean
+        limit_type:
+          $ref: '#/components/schemas/LimitType'
+        updated_at:
+          type: string
+          format: date-time
+        value:
+          type: integer
+          format: uint64
+    LimitType:
+      type: string
+    LimitsForClientResponse:
+      type: object
+      properties:
+        can_edit_contact:
+          type: boolean
+        can_edit_primary_ns:
+          type: boolean
+        dynamic_rrsets:
+          $ref: '#/components/schemas/DynamicRRSetsLimit'
+        exceeded_monitoring_rrsets:
+          type: integer
+          format: int64
+        hard_limits:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+        max_dynamic_rrset_size:
+          type: integer
+          format: int64
+        max_rrset_size:
+          type: integer
+          format: int64
+        min_monitoring_frequency:
+          type: integer
+          format: int64
+        min_ttl:
+          type: integer
+          format: int64
+        remaining_balancing_rrsets:
+          type: integer
+          format: int64
+        remaining_monitoring_rrsets:
+          type: integer
+          format: int64
+        soft_limits:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+    ListClientLimitsResponse:
+      type: object
+      properties:
+        limits:
+          type: array
+          items:
+            $ref: '#/components/schemas/Limit'
+        total_amount:
+          type: integer
+          format: int64
+    ListClientsResponse:
+      type: object
+      properties:
+        clients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Client'
+        total_amount:
+          type: integer
+          format: int64
+    ListNetworkMappingResponse:
+      type: object
+      properties:
+        network_mappings:
+          type: array
+          items:
+            $ref: '#/components/schemas/NetworkMapping'
+        total_amount:
+          type: integer
+          format: int64
+    ListRRSetResponse:
+      type: object
+      properties:
+        rrsets:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutputRRSet'
+        total_amount:
+          type: integer
+          format: int64
+    ListResourceRecordResponse:
+      type: object
+      properties:
+        resource_records:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceRecord'
+    ListZoneLimitsResponse:
+      type: object
+      properties:
+        limits:
+          type: array
+          items:
+            $ref: '#/components/schemas/ZoneLimit'
+        total_amount:
+          type: integer
+          format: int64
+    ListZoneResponse:
+      type: object
+      properties:
+        total_amount:
+          type: integer
+          format: int64
+        zones:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutputZone'
+    LocationTranslations:
+      type: object
+      properties:
+        names:
+          type: object
+          additionalProperties:
+            type: string
+    LookupResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/DNSRecord'
+    ManualUpdateDNSSECForRolloverResponse:
+      type: object
+    MapForRender:
+      type: object
+      additionalProperties:
+        type: object
+        additionalProperties:
+          $ref: '#/components/schemas/RrsetForRender'
+      description: "MapForRender keys - rrset name, rrset type"
+    Mapping:
+      type: array
+      items:
+        $ref: '#/components/schemas/MappingEntry'
+    MappingEntry:
+      type: object
+      properties:
+        cidr4:
+          type: array
+          items:
+            $ref: '#/components/schemas/IPNet'
+        cidr6:
+          type: array
+          items:
+            $ref: '#/components/schemas/IPNet'
+        tags:
+          type: array
+          items:
+            type: string
+    Meta:
+      type: object
+      properties:
+        description:
+          type: string
+        format:
+          type: string
+        key:
+          type: string
+        name:
+          type: string
+      additionalProperties:
+        type: object
+      description: Meta
+    MetaListResponse:
+      type: object
+      properties:
+        meta:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Meta'
+        total_amount:
+          type: integer
+          format: int64
+    MonitoringRRSetsLimit:
+      type: object
+      properties:
+        current:
+          type: integer
+          format: int64
+        is_billable_limit:
+          type: boolean
+        max:
+          type: integer
+          format: int64
+      description: MonitoringRRSetsLimit is a subset of DynamicRRSetsLimit
+    NSZoneResponse:
+      type: object
+      properties:
+        authoritative_name_servers:
+          type: array
+          items:
+            $ref: '#/components/schemas/NameServer'
+      description: NSZoneResponse
+    NameServer:
+      type: object
+      properties:
+        ipv4Addresses:
+          type: array
+          items:
+            type: string
+        ipv6Addresses:
+          type: array
+          items:
+            type: string
+        name:
+          type: string
+      description: NameServer
+    NetworkMapping:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint64
+        mapping:
+          $ref: '#/components/schemas/Mapping'
+        name:
+          type: string
+    OutputFilter:
+      required:
+      - type
+      type: object
+      properties:
+        limit:
+          type: integer
+          description: |-
+            Limits the number of records returned by the filter
+            Can be a positive value for a specific limit. Use zero or leave it blank to indicate no limits.
+          format: int64
+        strict:
+          type: boolean
+          description: "if strict=false, then the filter will return all records if\
+            \ no records match the filter"
+        type:
+          type: string
+          description: Filter type
+          enum:
+          - geodns
+          - asn
+          - country
+          - continent
+          - region
+          - ip
+          - geodistance
+          - weighted_shuffle
+          - default
+          - first_n
+    OutputRRSet:
+      required:
+      - name
+      - resource_records
+      - type
+      type: object
+      properties:
+        filter_set_id:
+          type: integer
+          format: uint64
+        meta:
+          type: object
+          additionalProperties:
+            type: object
+          description: |-
+            Meta information for rrset. Map with string key and any valid json as value, with valid keys
+            1. `failover` (object, beta feature, might be changed in the future) can have fields
+            1.1. `protocol` (string, required, HTTP, TCP, UDP, ICMP)
+            1.2. `port` (int, required, 1-65535)
+            1.3. `frequency` (int, required, in seconds 10-3600)
+            1.4. `timeout` (int, required, in seconds 1-10),
+            1.5. `method` (string, only for protocol=HTTP)
+            1.6. `command` (string, bytes to be sent only for protocol=TCP/UDP)
+            1.7. `url` (string, only for protocol=HTTP)
+            1.8. `tls` (bool, only for protocol=HTTP)
+            1.9. `regexp` (string regex to match, only for non-ICMP)
+            1.10. `http_status_code` (int, only for protocol=HTTP)
+            1.11. `host` (string, only for protocol=HTTP)
+            2. `geodns_link` (string) - name of the geodns link to use, if previously set, must re-send when updating or
+            CDN integration will be removed for this RRSet
+          example: {}
+        name:
+          type: string
+          example: sub.example.com
+        pickers:
+          type: array
+          description: Set of pickers
+          items:
+            $ref: '#/components/schemas/OutputFilter'
+        resource_records:
+          type: array
+          description: List of resource record from rrset
+          items:
+            $ref: '#/components/schemas/OutputResourceRecord'
+        ttl:
+          type: integer
+          format: uint32
+        type:
+          type: string
+          description: RRSet type
+          enum:
+          - A
+          - AAAA
+          - NS
+          - CNAME
+          - MX
+          - TXT
+          - SRV
+          - SOA
+        updated_at:
+          $ref: '#/components/schemas/Timestamp'
+        warning:
+          type: string
+          description: |-
+            Warning about some possible side effects without strictly disallowing operations on rrset
+            readonly
+            Deprecated: use Warnings instead
+        warnings:
+          type: array
+          description: |-
+            Warning about some possible side effects without strictly disallowing operations on rrset
+            readonly
+          items:
+            $ref: '#/components/schemas/Warning'
+    OutputResourceRecord:
+      required:
+      - content
+      type: object
+      properties:
+        content:
+          type: array
+          description: |-
+            Content of resource record
+            The exact length of the array depends on the type of rrset,
+            each individual record parameter must be a separate element of the array. For example
+            + SRV-record: `[100, 1, 5061, "example.com"]`
+            + CNAME-record: `[ "the.target.domain" ]`
+            + A-record: `[ "1.2.3.4", "5.6.7.8" ]`
+            + AAAA-record: `[ "2001:db8::1", "2001:db8::2" ]`
+            + MX-record: `[ "mail1.example.com", "mail2.example.com" ]`
+            + SVCB/HTTPS-record: `[ 1, ".", ["alpn", "h3", "h2"], [ "port", 1443 ], [ "ipv4hint", "10.0.0.1" ], [ "ech", "AEn+DQBFKwAgACABWIHUGj4u+PIggYXcR5JF0gYk3dCRioBW8uJq9H4mKAAIAAEAAQABAANAEnB1YmxpYy50bHMtZWNoLmRldgAA" ] ]`
+          example:
+          - 1.1.1.1
+          items:
+            type: object
+        enabled:
+          type: boolean
+          default: true
+        id:
+          type: integer
+          format: uint64
+          example: 42
+        meta:
+          type: object
+          additionalProperties:
+            type: object
+          description: |-
+            Meta information for record
+            Map with string key and any valid json as value, with valid keys
+            1. `asn` (array of int)
+            2. `continents` (array of string)
+            3. `countries` (array of string)
+            4. `latlong` (array of float64, latitude and longitude)
+            5. `fallback` (bool)
+            6. `backup` (bool)
+            7. `notes` (string)
+            8. `weight` (float)
+            9. `ip` (string)
+
+            Some keys are reserved for balancing, @see https://api.___serverHost___/dns/v2/info/meta
+
+            This meta will be used to decide which resource record should pass
+            through filters from the filter set
+          example:
+            continents:
+            - europe
+            - asia
+            countries:
+            - us
+            - gb
+            - lu
+            ip:
+            - 192.168.15.150/25
+            - 2003:de:2016::/48
+    OutputZone:
+      type: object
+      properties:
+        client_id:
+          type: integer
+          format: uint64
+        contact:
+          type: string
+          description: email address of the administrator responsible for this zone
+        dnssec_enabled:
+          type: boolean
+          description: |-
+            describe dnssec status
+            true means dnssec is enabled for the zone
+            false means dnssec is disabled for the zone
+        expiry:
+          type: integer
+          description: number of seconds after which secondary name servers should
+            stop answering request for this zone
+          format: uint64
+        id:
+          type: integer
+          description: |-
+            ID of zone.
+            This field usually is omitted in response and available only in
+            case of getting deleted zones by admin.
+          format: uint64
+        meta:
+          type: object
+          description: arbitrarily data of zone in json format
+        name:
+          type: string
+          description: name of DNS zone
+        nx_ttl:
+          type: integer
+          description: Time To Live of cache
+          format: uint64
+        primary_server:
+          type: string
+          description: primary master name server for zone
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/Record'
+        refresh:
+          type: integer
+          description: "number of seconds after which secondary name servers should\
+            \ query the master for the SOA record, to detect zone changes."
+          format: uint64
+        retry:
+          type: integer
+          description: number of seconds after which secondary name servers should
+            retry to request the serial number
+          format: uint64
+        rrsets_amount:
+          $ref: '#/components/schemas/RRSetsAmount'
+        serial:
+          type: integer
+          description: |-
+            Serial number for this zone or Timestamp of zone modification moment.
+            If a secondary name server slaved to this one observes an increase in this number,
+            the slave will assume that the zone has been updated and initiate a zone transfer.
+          format: uint64
+        status:
+          $ref: '#/components/schemas/ZoneStatus'
+      description: OutputZone
+    PickerListResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/LabelName'
+    PickerPresetListResponse:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          $ref: '#/components/schemas/LabelName'
+    RRSet:
+      required:
+      - name
+      - resource_records
+      - type
+      type: object
+      properties:
+        Warning:
+          type: string
+          description: "Deprecated: warnings should be used instead"
+        Warnings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Warning'
+        filter_set_id:
+          type: integer
+          description: |-
+            You can either set id, if you have multiple rrset with same filters' set
+            or include in rrset filter set itself.
+            filter_set_id has priority over filters
+          format: uint64
+        filters:
+          type: array
+          description: |-
+            Set of filters
+            you must set either filer_set_id of filters here otherwise rrset will be unusable
+          items:
+            $ref: '#/components/schemas/Filter'
+        id:
+          type: integer
+          description: RRSet id
+          format: uint64
+        meta:
+          $ref: '#/components/schemas/Meta'
+        name:
+          type: string
+          description: RRSet name
+          example: sub.example.com
+        resource_records:
+          type: array
+          description: List of resource record from rrset
+          items:
+            $ref: '#/components/schemas/ResourceRecord'
+        ttl:
+          type: integer
+          format: uint32
+        type:
+          type: string
+          description: RRSet type
+          enum:
+          - A
+          - AAAA
+          - NS
+          - CNAME
+          - MX
+          - TXT
+          - SRV
+          - SOA
+        updated_at:
+          $ref: '#/components/schemas/Timestamp'
+        zone_id:
+          type: integer
+          format: uint64
+      description: RRSet
+    RRSetsAmount:
+      type: object
+      properties:
+        dynamic:
+          type: object
+          properties:
+            healthcheck:
+              type: integer
+              description: Amount of RRsets with enabled healthchecks
+              format: int64
+            total:
+              type: integer
+              description: Total amount of dynamic RRsets in zone
+              format: int64
+          description: Amount of dynamic RRsets in zone
+        static:
+          type: integer
+          description: Amount of static RRsets in zone
+          format: int64
+        total:
+          type: integer
+          description: Total amount of RRsets in zone
+          format: int64
+    Reader:
+      title: Reader is the interface that wraps the basic Read method.
+      type: object
+      description: |-
+        Read reads up to len(p) bytes into p. It returns the number of bytes
+        read (0 <= n <= len(p)) and any error encountered. Even if Read
+        returns n < len(p), it may use all of p as scratch space during the call.
+        If some data is available but not len(p) bytes, Read conventionally
+        returns what is available instead of waiting for more.
+
+        When Read encounters an error or end-of-file condition after
+        successfully reading n > 0 bytes, it returns the number of
+        bytes read. It may return the (non-nil) error from the same call
+        or return the error (and n == 0) from a subsequent call.
+        An instance of this general case is that a Reader returning
+        a non-zero number of bytes at the end of the input stream may
+        return either err == EOF or err == nil. The next Read should
+        return 0, EOF.
+
+        Callers should always process the n > 0 bytes returned before
+        considering the error err. Doing so correctly handles I/O errors
+        that happen after reading some bytes and also both of the
+        allowed EOF behaviors.
+
+        If len(p) == 0, Read should always return n == 0. It may return a
+        non-nil error if some error condition is known, such as EOF.
+
+        Implementations of Read are discouraged from returning a
+        zero byte count with a nil error, except when len(p) == 0.
+        Callers should treat a return of 0 and nil as indicating that
+        nothing happened; in particular it does not indicate EOF.
+
+        Implementations must not retain p.
+    Record:
+      type: object
+      properties:
+        name:
+          type: string
+        short_answers:
+          type: array
+          items:
+            type: string
+        ttl:
+          type: integer
+          format: uint32
+        type:
+          type: string
+      description: Record - readonly short version of rrset
+    RegionsResponse:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/LocationTranslations'
+    ResellerInfo:
+      type: object
+      properties:
+        contact:
+          type: string
+        name_server_1:
+          type: string
+        name_server_2:
+          type: string
+    ResourceRecord:
+      required:
+      - content
+      - rrset_id
+      type: object
+      properties:
+        content:
+          $ref: '#/components/schemas/ResourceRecordContent'
+        enabled:
+          type: boolean
+          default: true
+        id:
+          type: integer
+          format: uint64
+        meta:
+          $ref: '#/components/schemas/Meta'
+        rrset_id:
+          type: integer
+          format: uint64
+      description: ResourceRecord
+    ResourceRecordContent:
+      type: array
+      items:
+        type: object
+    ResourceRecordForRender:
+      type: object
+      properties:
+        content:
+          $ref: '#/components/schemas/ResourceRecordContent'
+        meta:
+          $ref: '#/components/schemas/Meta'
+        weight:
+          type: integer
+          format: int64
+    RestoreZoneResponse:
+      type: object
+      properties:
+        message:
+          type: string
+    RevalidationResponse:
+      type: object
+      properties:
+        rrsets:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvalidRRSet'
+    RrsetForRender:
+      type: object
+      properties:
+        filters:
+          type: array
+          items:
+            $ref: '#/components/schemas/FilterConfig'
+        meta:
+          $ref: '#/components/schemas/Meta'
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceRecordForRender'
+        ttl:
+          type: integer
+          format: uint32
+    SimpleWarnings:
+      type: array
+      items:
+        type: string
+    StartOfAuthorityRecord:
+      type: object
+      properties:
+        contact:
+          type: string
+          description: email address of the administrator responsible for this zone
+        expiry:
+          type: integer
+          description: number of seconds after which secondary name servers should
+            stop answering request for this zone
+          format: uint64
+        nx_ttl:
+          type: integer
+          description: Time To Live of cache
+          format: uint64
+        primary_server:
+          type: string
+          description: primary master name server for zone
+        refresh:
+          type: integer
+          description: "number of seconds after which secondary name servers should\
+            \ query the master for the SOA record, to detect zone changes."
+          format: uint64
+        retry:
+          type: integer
+          description: number of seconds after which secondary name servers should
+            retry to request the serial number
+          format: uint64
+        serial:
+          type: integer
+          description: |-
+            Serial number for this zone or Timestamp of zone modification moment.
+            If a secondary name server slaved to this one observes an increase in this number,
+            the slave will assume that the zone has been updated and initiate a zone transfer.
+          format: uint64
+      description: StartOfAuthorityRecord
+    StatisticsMetrics:
+      type: object
+      properties:
+        client:
+          type: string
+        metrics:
+          type: object
+          properties:
+            requests:
+              type: integer
+              format: uint64
+      description: StatisticsMetrics
+    StatisticsZoneResponse:
+      type: object
+      properties:
+        requests:
+          type: object
+          description: |-
+            Requests amount (values) for particular zone fractionated by time intervals (keys).
+
+            Example of response:
+            `{
+            "requests": {
+            "1598608080000": 14716,
+            "1598608140000": 51167,
+            "1598608200000": 53432,
+            "1598611020000": 51050,
+            "1598611080000": 52611,
+            "1598611140000": 46884
+            }
+            }`
+        total:
+          type: integer
+          description: Total - sum of all values
+          format: uint64
+      description: StatisticsZoneResponse
+    StatsFilters:
+      type: object
+      properties:
+        from:
+          type: string
+          format: date-time
+        granularity:
+          $ref: '#/components/schemas/Duration'
+        name:
+          type: string
+        record_type:
+          type: string
+        to:
+          type: string
+          format: date-time
+    SwitchStatusEndpointRes:
+      type: object
+    SwitchTariffEndpointRes:
+      type: object
+    SyncUnhealthySetResponse:
+      type: object
+      properties:
+        status:
+          type: string
+    TariffLimits:
+      type: object
+      properties:
+        can_edit_contact:
+          type: boolean
+        can_edit_primary_ns:
+          type: boolean
+        dynamic_rrsets:
+          $ref: '#/components/schemas/DynamicRRSetsLimit'
+        exceeded_monitoring_rrsets:
+          type: integer
+          format: int64
+        hard_limits:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+        max_dynamic_rrset_size:
+          type: integer
+          format: int64
+        max_rrset_size:
+          type: integer
+          format: int64
+        min_monitoring_frequency:
+          type: integer
+          format: int64
+        min_ttl:
+          type: integer
+          format: int64
+        remaining_balancing_rrsets:
+          type: integer
+          format: int64
+        remaining_monitoring_rrsets:
+          type: integer
+          format: int64
+        soft_limits:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+    TariffName:
+      type: string
+      description: TariffName
+    TechCreateRRSetResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint64
+        warnings:
+          $ref: '#/components/schemas/Warnings'
+    TechDeleteRRSetResponse:
+      type: object
+    TechItemRRSetResponse:
+      type: object
+      properties:
+        rrset:
+          $ref: '#/components/schemas/RRSet'
+    TechListRRSetResponse:
+      type: object
+      properties:
+        rrsets:
+          type: array
+          items:
+            $ref: '#/components/schemas/RRSet'
+    TechUpdateRRSetResponse:
+      type: object
+      properties:
+        warnings:
+          $ref: '#/components/schemas/Warnings'
+    Timestamp:
+      type: string
+      description: Timestamp marshals/unmarshals  date and time as timestamp in json
+      format: date-time
+    ToggleDNSSECRequestBody:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+    ToggleDNSSECResponse:
+      type: object
+      properties:
+        algorithm:
+          type: string
+          description: Specifies the algorithm used for the key.
+          example: "13"
+        digest:
+          type: string
+          description: Represents the hashed value of the DS record.
+          example: 28D2F00FB7FD127C05D1CE02BFA8660B094CA6728B1619ABA2144234F7221069
+        digest_algorithm:
+          type: string
+          description: Specifies the algorithm used to generate the digest.
+          example: SHA256
+        digest_type:
+          type: string
+          description: Specifies the type of the digest algorithm used.
+          example: "2"
+        ds:
+          type: string
+          description: Represents the complete DS record.
+          example: zxy.com. 3600 IN DS 26191 13 2 135E208FF18578AB18C1EB8EA064BE08324DCBA6CF08FF55D76F0DBD4BF49F07
+        flags:
+          type: integer
+          description: Represents the flag for DNSSEC record.
+          format: int64
+          example: 257
+        key_tag:
+          type: integer
+          description: Represents the identifier of the DNSKEY record.
+          format: int64
+          example: 26191
+        key_type:
+          type: string
+          description: Specifies the type of the key used in the algorithm.
+          example: ECDSAP256SHA256
+        message:
+          type: string
+        public_key:
+          type: string
+          description: Represents the public key used in the DS record.
+          example: ahD2C5Th+4NIFmErQPgSe/j6yPc2pbuhr3QcOJImCYHtv/mR/2qP2yHjBE1x20ERnmAnp6e6//g0uYAQKTW+DA==
+    ToggleZoneFlagsResponse:
+      type: object
+    TransferZoneResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      description: TransferZoneResponse
+    TriggerDNSSECRolloverCompleteResponse:
+      type: object
+    TriggerDNSSECRolloverStartResponse:
+      type: object
+    UndelegatedZone:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: uint64
+        last_scan_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+    UpdateClientLimitsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Limit'
+    UpdateInfoResponse:
+      type: object
+    UpdateNetworkMappingResponse:
+      type: object
+    UpdateRRSetResponse:
+      type: object
+      properties:
+        RRSet:
+          $ref: '#/components/schemas/OutputRRSet'
+    UpdateResourceRecordResponse:
+      type: object
+    UpdateZoneLimitsResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ZoneLimit'
+    UpdateZoneResponse:
+      type: object
+    Warning:
+      type: object
+      properties:
+        key:
+          type: string
+        message:
+          type: string
+    Warnings:
+      type: object
+      additionalProperties:
+        type: object
+        additionalProperties:
+          type: string
+    ZoneBrief:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID of zone in database
+          format: uint64
+        meta:
+          type: object
+          description: arbitrarily data of zone in json format
+        name:
+          type: string
+          description: name of DNS zone
+        render_updated_at:
+          $ref: '#/components/schemas/Timestamp'
+    ZoneLimit:
+      type: object
+      properties:
+        created_at:
+          type: string
+          format: date-time
+        deleted_at:
+          type: string
+          format: date-time
+        id:
+          type: integer
+          format: uint64
+        limit_type:
+          $ref: '#/components/schemas/ZoneLimitType'
+        updated_at:
+          type: string
+          format: date-time
+        value:
+          type: integer
+          format: uint64
+        zone_id:
+          type: integer
+          format: uint64
+    ZoneLimitType:
+      type: string
+    ZoneRenderResponse:
+      type: object
+    ZoneResponse:
+      type: object
+      properties:
+        rrsets:
+          type: array
+          items:
+            $ref: '#/components/schemas/OutputRRSet'
+        total_amount:
+          type: integer
+          format: int64
+        warnings:
+          $ref: '#/components/schemas/Warnings'
+      description: ZoneResponse
+    ZoneStatus:
+      type: string
+  responses:
+    ErrorMessage:
+      description: Error message response
+      headers:
+        error:
+          schema:
+            type: string
+      content: {}
+x-original-swagger-version: "2.0"
