@@ -22,6 +22,6 @@ function searchAndReplace(searchText, replacementText) {
   }
 }
 
-next.on("routeChangeComplete", () => {
+next.emmiter.on("routeChangeComplete", () => {
   searchAndReplace("___serverhost___", "example.com");
 });
