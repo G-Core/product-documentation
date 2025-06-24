@@ -116,9 +116,9 @@ Select the interface "type": "external", "subnet", "any_subnet", or "reserved_fi
     * If you select "anu_subnet", specify the "network_ID". 
     * If you select "reserved_fixed_ip", specify the "port_id".
 
-(optional) Add is_parent = "true" to ensure the interface cannot be detached and is always connected first.
+  * (optional) Add is_parent = "true" to ensure the interface cannot be detached and is always connected first.
 
-(optional) Specify "order" to set the order in which interfaces will be attached.
+  * (optional) Specify "order" to set the order in which interfaces will be attached.
 
   * (optional) Specify "app_config" to set parameters for the application template from the marketplace.
 
@@ -156,6 +156,82 @@ terraform apply
 ```
 
 Terraform will ask you to confirm the action. Enter "yes".
+
+### Create a Bare Metal image
+
+1\. Open the **main.tf** file where you configured the Gcore provider for Terraform.
+
+2\. Copy the code below to the file and customize the highlighted values:
+
+```js
+provider "gcore" {
+  permanent_api_token = "251$d3361.............1b35f26d8"
+}
+
+data "gcore_project" "project" {
+  name = "Default"
+}
+
+data "gcore_region" "region" {
+  name = "Luxembourg-2"
+}
+
+resource "gcore_gpu_virtual_image" "example" {
+  project_id   = data.gcore_project.project.id
+  region_id    = data.gcore_region.region.id
+  name         = "my-cirros-image"
+  url          = "http://mirror.noris.net/cirros/0.4.0/cirros-0.4.0-x86_64-disk.img"
+  architecture = "x86_64"
+  os_type      = "linux"
+  ssh_key      = "allow"
+}
+```
+
+3\. Configure your Bare Metal image.
+
+Required attributes: 
+
+* "name" for your image.
+* "url" where your image is located.
+
+Optional attributes:
+
+* "project_id" - The ID of the project. Conflicts with "project_name".
+* "project_name" - The name of the project. Conflicts with "project_id".
+* "region_id" - The ID of the region. Conflicts with "region_name".
+* "region_name" - The name of the region. Conflicts with "region_id".
+* "ssh_key" - SSH key permission setting. Valid values are:
+  * "allow" - (Default) Allow SSH key usage
+  * "deny" - Deny SSH key usage
+  * "required" - Require SSH key
+* "cow_format" - When set to "true", the image cannot be deleted until all volumes created from it are deleted.
+* "architecture" - CPU architecture type. Valid values are:
+  * "x86_64" - (Default) x86 64-bit architecture
+  * "aarch64" - ARM 64-bit architecture
+* "os_type" - The type of operating system.
+* "os_distro" - The distribution of the operating system (e.g., "ubuntu", "centos").
+* "os_version" - The version of the operating system.
+* "hw_firmware_type" - The type of firmware used for booting.
+* "metadata" - A map of metadata key-value pairs to associate with the image.
+
+4\. Save changes in the file.
+
+5\. Run the following command from the Terraform directory to preview the changes:
+
+```sh
+terraform plan
+```
+
+If the code contains an error, the output will show it.
+
+6\. Run the following command to apply the changes:
+
+```sh
+terraform apply
+```
+
+Terraform will ask you to confirm the action. Enter "yes".
+
 
 ### Create a Virtual Machine
 
