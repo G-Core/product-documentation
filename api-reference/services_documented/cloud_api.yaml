@@ -4,7 +4,7 @@ info:
   description: >-
     This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It
     covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: '2025-07-02T08:10:18.604105+00:00'
+  version: '2025-07-02T14:07:46.395139+00:00'
 servers:
 - url: https://api.gcore.com
 paths:
@@ -6304,7 +6304,7 @@ paths:
   /cloud/v1/ai/clusters/gpu/{project_id}/{region_id}/{cluster_id}/node/{instance_id}:
     delete:
       operationId: AIClustersNodeDelete.delete
-      summary: Delete server from bare metal GPU cluster
+      summary: Delete bare metal GPU cluster server
       description: |-
         Delete a specific node from a GPU cluster.
         The node must be in a state that allows deletion.
@@ -16697,6 +16697,72 @@ paths:
             }
             fmt.Printf("%+v\n", loadBalancerPoolList.Count)
           }
+  /cloud/v2/lbpools/{project_id}/{region_id}/{pool_id}:
+    patch:
+      operationId: LoadBalancerPoolInstanceViewSetV2.patch
+      summary: Update load balancer pool
+      description: |-
+        Updates the specified load balancer pool with the provided changes.
+        **Behavior:**
+        - Simple fields (strings, numbers, booleans) will be updated if provided
+        - Complex objects (nested structures like members, health monitors, etc.) must be specified
+        completely - partial updates are not supported for these objects
+        - Undefined fields will remain unchanged
+        - If no change is detected for a specific field compared to the current pool state,
+        that field will be skipped
+        - If no changes are detected at all across all fields, no task will be created and
+        an empty task list will be returned
+        **Examples of complex objects that require full specification:**
+        - Pool members: All member properties must be provided when updating members
+        - Health monitors: Complete health monitor configuration must be specified
+        - Session persistence: Full session persistence settings must be included
+      parameters:
+      - in: path
+        name: project_id
+        required: true
+        description: Project ID
+        schema:
+          description: Project ID
+          examples:
+          - 1
+          title: Project Id
+          type: integer
+      - in: path
+        name: region_id
+        required: true
+        description: Region ID
+        schema:
+          description: Region ID
+          examples:
+          - 1
+          exclusiveMinimum: 0
+          title: Region Id
+          type: integer
+      - in: path
+        name: pool_id
+        required: true
+        description: Pool ID
+        schema:
+          description: Pool ID
+          examples:
+          - 00000000-0000-4000-8000-000000000000
+          format: uuid4
+          title: Pool Id
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskIDsSerializer'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchLbPoolSerializer'
+      tags:
+      - Load Balancers
   /cloud/v1/lbpools/{project_id}/{region_id}/{pool_id}:
     get:
       operationId: LoadBalancerPoolInstanceViewSet.get
@@ -65244,10 +65310,13 @@ components:
           anyOf:
           - type: boolean
           - type: 'null'
-          default:
-          description: true if enabled. Defaults to true
+          default: true
+          description: >-
+            Administrative state of the resource. When set to true, the resource is enabled and operational.
+            When set to false, the resource is disabled and will not process traffic. When null is passed, the
+            value is skipped and defaults to true.
           examples:
-          - false
+          - true
           title: Admin State Up
         instance_id:
           anyOf:
@@ -65556,7 +65625,10 @@ components:
     LbHealthMonitorSerializer:
       properties:
         admin_state_up:
-          description: true if enabled. Defaults to true
+          description: >-
+            Administrative state of the resource. When set to true, the resource is enabled and operational.
+            When set to false, the resource is disabled and will not process traffic. When null is passed, the
+            value is skipped and defaults to true.
           examples:
           - false
           title: Admin State Up
@@ -65680,7 +65752,10 @@ components:
           title: Address
           type: string
         admin_state_up:
-          description: true if enabled. Defaults to true
+          description: >-
+            Administrative state of the resource. When set to true, the resource is enabled and operational.
+            When set to false, the resource is disabled and will not process traffic. When null is passed, the
+            value is skipped and defaults to true.
           examples:
           - false
           title: Admin State Up
@@ -65798,175 +65873,6 @@ components:
       required:
       - type
       title: LbSessionPersistence
-      type: object
-    LbPoolInstanceSerializer:
-      properties:
-        ca_secret_id:
-          anyOf:
-          - format: uuid4
-            type: string
-          - type: 'null'
-          description: Secret ID of CA certificate bundle
-          title: Ca Secret Id
-        creator_task_id:
-          anyOf:
-          - format: uuid4
-            type: string
-          - type: 'null'
-          description: Task that created this entity
-          examples:
-          - d8334c12-2881-4c4a-84ad-1b21fea73ad1
-          title: Creator Task Id
-        crl_secret_id:
-          anyOf:
-          - format: uuid4
-            type: string
-          - type: 'null'
-          description: Secret ID of CA revocation list file
-          title: Crl Secret Id
-        healthmonitor:
-          anyOf:
-          - $ref: '#/components/schemas/LbHealthMonitorSerializer'
-          - type: 'null'
-          description: Health monitor parameters
-          examples:
-          - delay: 10
-            http_method: GET
-            max_retries: 3
-            max_retries_down: 3
-            timeout: 5
-            type: HTTP
-            url_path: /
-        id:
-          description: Pool ID
-          examples:
-          - 9fccf0a3-c0de-441d-9afd-2b9b58b08b9f
-          format: uuid4
-          title: Id
-          type: string
-        lb_algorithm:
-          $ref: '#/components/schemas/LbAlgorithmEnum'
-          description: Load balancer algorithm
-          examples:
-          - ROUND_ROBIN
-        listeners:
-          description: Listeners IDs
-          examples:
-          - - id: c63341da-ea44-4027-bbf6-1f1939c783da
-          items:
-            $ref: '#/components/schemas/MandatoryIdSerializerPydantic'
-          title: Listeners
-          type: array
-        loadbalancers:
-          description: Load balancers IDs
-          examples:
-          - - id: 79943b39-5e67-47e1-8878-85044b39667a
-          items:
-            $ref: '#/components/schemas/MandatoryIdSerializerPydantic'
-          title: Loadbalancers
-          type: array
-        members:
-          description: Pool members
-          items:
-            $ref: '#/components/schemas/DetailedLbPoolMemberSerializer'
-          title: Members
-          type: array
-        name:
-          description: Pool name
-          examples:
-          - lbaas_test_pool
-          pattern: ^[a-zA-Z0-9][a-zA-Z 0-9._\-]{1,61}[a-zA-Z0-9._]$
-          title: Name
-          type: string
-        operating_status:
-          $ref: '#/components/schemas/OperatingStatusEnum'
-          description: Pool operating status
-          examples:
-          - ONLINE
-        protocol:
-          $ref: '#/components/schemas/LbPoolProtocolEnum'
-          description: Protocol
-          examples:
-          - TCP
-        provisioning_status:
-          $ref: '#/components/schemas/ProvisioningStatusEnum'
-          description: Pool lifecycle status
-          examples:
-          - ACTIVE
-        secret_id:
-          anyOf:
-          - format: uuid4
-            type: string
-          - type: 'null'
-          description: Secret ID for TLS client authentication to the member servers
-          title: Secret Id
-        session_persistence:
-          anyOf:
-          - $ref: '#/components/schemas/LbSessionPersistence'
-          - type: 'null'
-          description: Session persistence parameters
-        task_id:
-          anyOf:
-          - format: uuid4
-            type: string
-          - type: 'null'
-          description: >-
-            The UUID of the active task that currently holds a lock on the resource. This lock prevents
-            concurrent modifications to ensure consistency. If `null`, the resource is not locked.
-          examples:
-          - 
-          title: Task Id
-        timeout_client_data:
-          anyOf:
-          - maximum: 86400000
-            minimum: 0
-            type: integer
-          - type: 'null'
-          description: Frontend client inactivity timeout in milliseconds
-          examples:
-          - 50000
-          title: Timeout Client Data
-        timeout_member_connect:
-          anyOf:
-          - maximum: 86400000
-            minimum: 0
-            type: integer
-          - type: 'null'
-          description: Backend member connection timeout in milliseconds
-          examples:
-          - 50000
-          title: Timeout Member Connect
-        timeout_member_data:
-          anyOf:
-          - maximum: 86400000
-            minimum: 0
-            type: integer
-          - type: 'null'
-          description: Backend member inactivity timeout in milliseconds
-          examples:
-          - 
-          title: Timeout Member Data
-      required:
-      - id
-      - name
-      - lb_algorithm
-      - protocol
-      - loadbalancers
-      - listeners
-      - members
-      - session_persistence
-      - operating_status
-      - provisioning_status
-      - creator_task_id
-      - task_id
-      - timeout_client_data
-      - timeout_member_connect
-      - timeout_member_data
-      - secret_id
-      - crl_secret_id
-      - ca_secret_id
-      - healthmonitor
-      title: LbPoolInstanceSerializer
       type: object
     PatchLbPoolSerializer:
       properties:
@@ -66163,6 +66069,175 @@ components:
       - max_retries
       - timeout
       title: PatchLbHealthMonitorSerializer
+      type: object
+    LbPoolInstanceSerializer:
+      properties:
+        ca_secret_id:
+          anyOf:
+          - format: uuid4
+            type: string
+          - type: 'null'
+          description: Secret ID of CA certificate bundle
+          title: Ca Secret Id
+        creator_task_id:
+          anyOf:
+          - format: uuid4
+            type: string
+          - type: 'null'
+          description: Task that created this entity
+          examples:
+          - d8334c12-2881-4c4a-84ad-1b21fea73ad1
+          title: Creator Task Id
+        crl_secret_id:
+          anyOf:
+          - format: uuid4
+            type: string
+          - type: 'null'
+          description: Secret ID of CA revocation list file
+          title: Crl Secret Id
+        healthmonitor:
+          anyOf:
+          - $ref: '#/components/schemas/LbHealthMonitorSerializer'
+          - type: 'null'
+          description: Health monitor parameters
+          examples:
+          - delay: 10
+            http_method: GET
+            max_retries: 3
+            max_retries_down: 3
+            timeout: 5
+            type: HTTP
+            url_path: /
+        id:
+          description: Pool ID
+          examples:
+          - 9fccf0a3-c0de-441d-9afd-2b9b58b08b9f
+          format: uuid4
+          title: Id
+          type: string
+        lb_algorithm:
+          $ref: '#/components/schemas/LbAlgorithmEnum'
+          description: Load balancer algorithm
+          examples:
+          - ROUND_ROBIN
+        listeners:
+          description: Listeners IDs
+          examples:
+          - - id: c63341da-ea44-4027-bbf6-1f1939c783da
+          items:
+            $ref: '#/components/schemas/MandatoryIdSerializerPydantic'
+          title: Listeners
+          type: array
+        loadbalancers:
+          description: Load balancers IDs
+          examples:
+          - - id: 79943b39-5e67-47e1-8878-85044b39667a
+          items:
+            $ref: '#/components/schemas/MandatoryIdSerializerPydantic'
+          title: Loadbalancers
+          type: array
+        members:
+          description: Pool members
+          items:
+            $ref: '#/components/schemas/DetailedLbPoolMemberSerializer'
+          title: Members
+          type: array
+        name:
+          description: Pool name
+          examples:
+          - lbaas_test_pool
+          pattern: ^[a-zA-Z0-9][a-zA-Z 0-9._\-]{1,61}[a-zA-Z0-9._]$
+          title: Name
+          type: string
+        operating_status:
+          $ref: '#/components/schemas/OperatingStatusEnum'
+          description: Pool operating status
+          examples:
+          - ONLINE
+        protocol:
+          $ref: '#/components/schemas/LbPoolProtocolEnum'
+          description: Protocol
+          examples:
+          - TCP
+        provisioning_status:
+          $ref: '#/components/schemas/ProvisioningStatusEnum'
+          description: Pool lifecycle status
+          examples:
+          - ACTIVE
+        secret_id:
+          anyOf:
+          - format: uuid4
+            type: string
+          - type: 'null'
+          description: Secret ID for TLS client authentication to the member servers
+          title: Secret Id
+        session_persistence:
+          anyOf:
+          - $ref: '#/components/schemas/LbSessionPersistence'
+          - type: 'null'
+          description: Session persistence parameters
+        task_id:
+          anyOf:
+          - format: uuid4
+            type: string
+          - type: 'null'
+          description: >-
+            The UUID of the active task that currently holds a lock on the resource. This lock prevents
+            concurrent modifications to ensure consistency. If `null`, the resource is not locked.
+          examples:
+          - 
+          title: Task Id
+        timeout_client_data:
+          anyOf:
+          - maximum: 86400000
+            minimum: 0
+            type: integer
+          - type: 'null'
+          description: Frontend client inactivity timeout in milliseconds
+          examples:
+          - 50000
+          title: Timeout Client Data
+        timeout_member_connect:
+          anyOf:
+          - maximum: 86400000
+            minimum: 0
+            type: integer
+          - type: 'null'
+          description: Backend member connection timeout in milliseconds
+          examples:
+          - 50000
+          title: Timeout Member Connect
+        timeout_member_data:
+          anyOf:
+          - maximum: 86400000
+            minimum: 0
+            type: integer
+          - type: 'null'
+          description: Backend member inactivity timeout in milliseconds
+          examples:
+          - 
+          title: Timeout Member Data
+      required:
+      - id
+      - name
+      - lb_algorithm
+      - protocol
+      - loadbalancers
+      - listeners
+      - members
+      - session_persistence
+      - operating_status
+      - provisioning_status
+      - creator_task_id
+      - task_id
+      - timeout_client_data
+      - timeout_member_connect
+      - timeout_member_data
+      - secret_id
+      - crl_secret_id
+      - ca_secret_id
+      - healthmonitor
+      title: LbPoolInstanceSerializer
       type: object
     CreateLoadbalancerSerializer:
       properties:
