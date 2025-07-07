@@ -4,7 +4,7 @@ info:
   description: >-
     This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It
     covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: '2025-07-02T14:07:46.395139+00:00'
+  version: '2025-07-07T14:08:54.666519+00:00'
 servers:
 - url: https://api.gcore.com
 paths:
@@ -9404,6 +9404,208 @@ paths:
                 $ref: '#/components/schemas/ImageCollectionSerializer'
       tags:
       - Images
+  /cloud/v3/inference/{project_id}/api_keys:
+    post:
+      operationId: InferenceApiKeysHandler.post
+      summary: Create inference API key
+      description: >-
+        This endpoint creates a new API key for everywhere inference. It returs api key's actual secret only
+        once
+
+        after creation.
+      parameters:
+      - in: path
+        name: project_id
+        required: true
+        description: Project ID
+        schema:
+          description: Project ID
+          examples:
+          - 1
+          title: Project Id
+          type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateApiKeyResponseSerializer'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiKeyCreateRequestSerializer'
+      tags:
+      - Inference Instances
+      - Everywhere Inference
+    get:
+      operationId: InferenceApiKeysHandler.get
+      summary: List inference API keys
+      description: This endpoint retrieves a list of API keys for everywhere inference.
+      parameters:
+      - in: path
+        name: project_id
+        required: true
+        description: Project ID
+        schema:
+          description: Project ID
+          examples:
+          - 1
+          title: Project Id
+          type: integer
+      - in: query
+        name: limit
+        required: false
+        description: Optional. Limit the number of returned items
+        schema:
+          default: 100
+          description: Optional. Limit the number of returned items
+          examples:
+          - 100
+          exclusiveMinimum: 0
+          maximum: 1000
+          title: Limit
+          type: integer
+      - in: query
+        name: offset
+        required: false
+        description: Optional. Offset value is used to exclude the first set of records from the result
+        schema:
+          default: 0
+          description: Optional. Offset value is used to exclude the first set of records from the result
+          examples:
+          - 0
+          minimum: 0
+          title: Offset
+          type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKeyListResponseSerializer'
+      tags:
+      - Inference Instances
+      - Everywhere Inference
+  /cloud/v3/inference/{project_id}/api_keys/{api_key_name}:
+    get:
+      operationId: InferenceApiKeyHandler.get
+      summary: Get inference API key
+      description: This endpoint retrieves a specific API key for everywhere inference.
+      parameters:
+      - in: path
+        name: project_id
+        required: true
+        description: Project ID
+        schema:
+          description: Project ID
+          examples:
+          - 1
+          title: Project Id
+          type: integer
+      - in: path
+        name: api_key_name
+        required: true
+        description: Api key name.
+        schema:
+          description: Api key name.
+          examples:
+          - aws-dev
+          minLength: 4
+          pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+          title: Api Key Name
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetApiKeyResponseSerializer'
+      tags:
+      - Inference Instances
+      - Everywhere Inference
+    patch:
+      operationId: InferenceApiKeyHandler.patch
+      summary: Update inference API key
+      description: This endpoint updates a specific API key for everywhere inference.
+      parameters:
+      - in: path
+        name: project_id
+        required: true
+        description: Project ID
+        schema:
+          description: Project ID
+          examples:
+          - 1
+          title: Project Id
+          type: integer
+      - in: path
+        name: api_key_name
+        required: true
+        description: Api key name.
+        schema:
+          description: Api key name.
+          examples:
+          - aws-dev
+          minLength: 4
+          pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+          title: Api Key Name
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetApiKeyResponseSerializer'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiKeyUpdateRequestSerializer'
+      tags:
+      - Inference Instances
+      - Everywhere Inference
+    delete:
+      operationId: InferenceApiKeyHandler.delete
+      summary: Delete inference API key
+      description: >-
+        This endpoint deletes a specific API key for everywhere inference.
+
+        If the API key is attached to any inference deployments, it will not be removed. ConflictError will be
+        raised
+      parameters:
+      - in: path
+        name: project_id
+        required: true
+        description: Project ID
+        schema:
+          description: Project ID
+          examples:
+          - 1
+          title: Project Id
+          type: integer
+      - in: path
+        name: api_key_name
+        required: true
+        description: Api key name.
+        schema:
+          description: Api key name.
+          examples:
+          - aws-dev
+          minLength: 4
+          pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+          title: Api Key Name
+          type: string
+      responses:
+        '204':
+          description: No Content
+      tags:
+      - Inference Instances
+      - Everywhere Inference
   /cloud/v3/inference/{project_id}/deployments:
     post:
       operationId: InferenceInstancesHandlerV3.post
@@ -9632,11 +9834,11 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          inference = client.cloud.inference.deployments.get(
+          inference_deployment = client.cloud.inference.deployments.get(
               deployment_name="my-instance",
               project_id=1,
           )
-          print(inference.project_id)
+          print(inference_deployment.project_id)
       - lang: Go
         source: |
           package main
@@ -9654,7 +9856,7 @@ paths:
             client := gcore.NewClient(
               option.WithAPIKey("My API Key"), // defaults to os.LookupEnv("GCORE_API_KEY")
             )
-            inference, err := client.Cloud.Inference.Deployments.Get(
+            inferenceDeployment, err := client.Cloud.Inference.Deployments.Get(
               context.TODO(),
               "my-instance",
               cloud.InferenceDeploymentGetParams{
@@ -9664,7 +9866,7 @@ paths:
             if err != nil {
               panic(err.Error())
             }
-            fmt.Printf("%+v\n", inference.ProjectID)
+            fmt.Printf("%+v\n", inferenceDeployment.ProjectID)
           }
     patch:
       operationId: InferenceInstanceHandlerV3.patch
@@ -9881,11 +10083,11 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          inference_apikey_secret = client.cloud.inference.deployments.get_api_key(
+          inference_deployment_api_key = client.cloud.inference.deployments.get_api_key(
               deployment_name="my-instance",
               project_id=1,
           )
-          print(inference_apikey_secret.secret)
+          print(inference_deployment_api_key.secret)
       - lang: Go
         source: |
           package main
@@ -9903,7 +10105,7 @@ paths:
             client := gcore.NewClient(
               option.WithAPIKey("My API Key"), // defaults to os.LookupEnv("GCORE_API_KEY")
             )
-            inferenceApikeySecret, err := client.Cloud.Inference.Deployments.GetAPIKey(
+            inferenceDeploymentAPIKey, err := client.Cloud.Inference.Deployments.GetAPIKey(
               context.TODO(),
               "my-instance",
               cloud.InferenceDeploymentGetAPIKeyParams{
@@ -9913,7 +10115,7 @@ paths:
             if err != nil {
               panic(err.Error())
             }
-            fmt.Printf("%+v\n", inferenceApikeySecret.Secret)
+            fmt.Printf("%+v\n", inferenceDeploymentAPIKey.Secret)
           }
   /cloud/v3/inference/{project_id}/deployments/{deployment_name}/logs:
     get:
@@ -10253,14 +10455,14 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          inference_registry_credential_full = client.cloud.inference.registry_credentials.create(
+          inference_registry_credentials_create = client.cloud.inference.registry_credentials.create(
               project_id=1,
               name="docker-io",
               password="password",
               registry_url="registry.example.com",
               username="username",
           )
-          print(inference_registry_credential_full.project_id)
+          print(inference_registry_credentials_create.project_id)
       - lang: Go
         source: |
           package main
@@ -10278,7 +10480,7 @@ paths:
             client := gcore.NewClient(
               option.WithAPIKey("My API Key"), // defaults to os.LookupEnv("GCORE_API_KEY")
             )
-            inferenceRegistryCredentialFull, err := client.Cloud.Inference.RegistryCredentials.New(context.TODO(), cloud.InferenceRegistryCredentialNewParams{
+            inferenceRegistryCredentialsCreate, err := client.Cloud.Inference.RegistryCredentials.New(context.TODO(), cloud.InferenceRegistryCredentialNewParams{
               ProjectID: gcore.Int(1),
               Name: "docker-io",
               Password: "password",
@@ -10288,7 +10490,7 @@ paths:
             if err != nil {
               panic(err.Error())
             }
-            fmt.Printf("%+v\n", inferenceRegistryCredentialFull.ProjectID)
+            fmt.Printf("%+v\n", inferenceRegistryCredentialsCreate.ProjectID)
           }
     get:
       operationId: InferenceRegistryCredentialsHandler.get
@@ -10426,11 +10628,11 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          inference_registry_credential = client.cloud.inference.registry_credentials.get(
+          inference_registry_credentials = client.cloud.inference.registry_credentials.get(
               credential_name="docker-io",
               project_id=1,
           )
-          print(inference_registry_credential.project_id)
+          print(inference_registry_credentials.project_id)
       - lang: Go
         source: |
           package main
@@ -10448,7 +10650,7 @@ paths:
             client := gcore.NewClient(
               option.WithAPIKey("My API Key"), // defaults to os.LookupEnv("GCORE_API_KEY")
             )
-            inferenceRegistryCredential, err := client.Cloud.Inference.RegistryCredentials.Get(
+            inferenceRegistryCredentials, err := client.Cloud.Inference.RegistryCredentials.Get(
               context.TODO(),
               "docker-io",
               cloud.InferenceRegistryCredentialGetParams{
@@ -10458,7 +10660,7 @@ paths:
             if err != nil {
               panic(err.Error())
             }
-            fmt.Printf("%+v\n", inferenceRegistryCredential.ProjectID)
+            fmt.Printf("%+v\n", inferenceRegistryCredentials.ProjectID)
           }
     put:
       operationId: InferenceRegistryCredentialHandler.put
@@ -10686,7 +10888,7 @@ paths:
             )
             inferenceSecret, err := client.Cloud.Inference.Secrets.New(context.TODO(), cloud.InferenceSecretNewParams{
               ProjectID: gcore.Int(1),
-              Data: cloud.AwsIamDataParam{
+              Data: cloud.InferenceSecretNewParamsData{
                 AwsAccessKeyID: "fake-key-id",
                 AwsSecretAccessKey: "fake-secret",
               },
@@ -10951,7 +11153,7 @@ paths:
               "aws-dev",
               cloud.InferenceSecretReplaceParams{
                 ProjectID: gcore.Int(1),
-                Data: cloud.AwsIamDataParam{
+                Data: cloud.InferenceSecretReplaceParamsData{
                   AwsAccessKeyID: "fake-key-id",
                   AwsSecretAccessKey: "fake-secret",
                 },
@@ -11061,8 +11263,8 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          region_capacity_list = client.cloud.inference.get_capacity_by_region()
-          print(region_capacity_list.count)
+          inference_region_capacity_list = client.cloud.inference.get_capacity_by_region()
+          print(inference_region_capacity_list.count)
       - lang: Go
         source: |
           package main
@@ -11079,11 +11281,11 @@ paths:
             client := gcore.NewClient(
               option.WithAPIKey("My API Key"), // defaults to os.LookupEnv("GCORE_API_KEY")
             )
-            regionCapacityList, err := client.Cloud.Inference.GetCapacityByRegion(context.TODO())
+            inferenceRegionCapacityList, err := client.Cloud.Inference.GetCapacityByRegion(context.TODO())
             if err != nil {
               panic(err.Error())
             }
-            fmt.Printf("%+v\n", regionCapacityList.Count)
+            fmt.Printf("%+v\n", inferenceRegionCapacityList.Count)
           }
   /cloud/v3/inference/flavors:
     get:
@@ -11345,10 +11547,10 @@ paths:
           client = Gcore(
               api_key=os.environ.get("GCORE_API_KEY"),  # This is the default and can be omitted
           )
-          mlcatalog_model_card = client.cloud.inference.models.get(
+          inference_model = client.cloud.inference.models.get(
               "model_id",
           )
-          print(mlcatalog_model_card.id)
+          print(inference_model.id)
       - lang: Go
         source: |
           package main
@@ -11365,11 +11567,11 @@ paths:
             client := gcore.NewClient(
               option.WithAPIKey("My API Key"), // defaults to os.LookupEnv("GCORE_API_KEY")
             )
-            mlcatalogModelCard, err := client.Cloud.Inference.Models.Get(context.TODO(), "model_id")
+            inferenceModel, err := client.Cloud.Inference.Models.Get(context.TODO(), "model_id")
             if err != nil {
               panic(err.Error())
             }
-            fmt.Printf("%+v\n", mlcatalogModelCard.ID)
+            fmt.Printf("%+v\n", inferenceModel.ID)
           }
   /cloud/v2/pricing/inference/deployments:
     post:
@@ -36281,14 +36483,12 @@ components:
             minLength: 3
             type: string
           - type: 'null'
-          default:
           description: Currency code (3 letter code per ISO 4217)
           title: Currency Code
         discount_percent:
           anyOf:
           - type: number
           - type: 'null'
-          default:
           description: Actual discount relative value
           examples:
           - 0.16
@@ -36297,7 +36497,6 @@ components:
           anyOf:
           - type: number
           - type: 'null'
-          default:
           description: Price of the item charged per hour
           examples:
           - 1
@@ -36306,7 +36505,6 @@ components:
           anyOf:
           - type: number
           - type: 'null'
-          default:
           description: Price of the item charged per month
           examples:
           - 720
@@ -36320,12 +36518,16 @@ components:
           anyOf:
           - type: number
           - type: 'null'
-          default:
           description: Total price VAT inclusive per month without discount
           examples:
           - 604.8
           title: Price Without Discount Per Month
       required:
+      - currency_code
+      - price_per_hour
+      - price_per_month
+      - price_without_discount_per_month
+      - discount_percent
       - price_status
       title: ItemPriceResponseSerializer
       type: object
@@ -55232,31 +55434,57 @@ components:
           title: Action
           type: string
         tags:
-          $ref: '#/components/schemas/_UpdateTagsSerializer'
-          description: Tags to add or modify
+          anyOf:
+          - $ref: '#/components/schemas/UpdateTagsSerializer'
+          - type: 'null'
+          description: >-
+            Update key-value tags using JSON Merge Patch semantics (RFC 7386). Provide key-value pairs to add
+            or update tags. Set tag values to `null` to remove tags. Unspecified tags remain unchanged.
+            Read-only tags are always preserved and cannot be modified.
+
+            **Examples:**
+
+            \* **Add/update tags:** `{'tags': {'environment': 'production', 'team': 'backend'}}` adds new tags
+            or updates existing ones.
+
+            \* **Delete tags:** `{'tags': {'`old_tag`': null}}` removes specific tags.
+
+            \* **Remove all tags:** `{'tags': null}` removes all user-managed tags (read-only tags are
+            preserved).
+
+            \* **Partial update:** `{'tags': {'environment': 'staging'}}` only updates specified tags.
+
+            \* **Mixed operations:** `{'tags': {'environment': 'production', '`cost_center`': 'engineering',
+            '`deprecated_tag`': null}}` adds/updates 'environment' and '`cost_center`' while removing
+            '`deprecated_tag`', preserving other existing tags.
+
+            \* **Replace all:** first delete existing tags with null values, then add new ones in the same
+            request.
           examples:
-          - my_tag: my_value
+          - my-tag: my-tag-value
+            my-tag-to-remove:
       required:
       - action
       - tags
       title: UpdateTagsVirtualGPUClusterSerializer
       type: object
-    _UpdateTagsSerializer:
+    UpdateTagsSerializer:
       additionalProperties:
-        description: Tag value. The maximum size for a value is 1024 bytes.
+        anyOf:
+        - maxLength: 1024
+          minLength: 1
+          type: string
+        - type: 'null'
+        description: Tag value. The maximum size for a value is 1024 bytes. Set to `null` in order to delete this tag.
         examples:
         - my-tag-value
-        maxLength: 1024
-        minLength: 1
-        type: string
-      description: Tags serializer with internal and read-only fields validation
       propertyNames:
         description: Tag key. The maximum size for a key is 255 bytes.
         examples:
         - my-tag
         maxLength: 255
         minLength: 1
-      title: _UpdateTagsSerializer
+      title: UpdateTagsSerializer
       type: object
     ResizeVirtualGPUClusterSerializer:
       properties:
@@ -56411,7 +56639,6 @@ components:
             minLength: 3
             type: string
           - type: 'null'
-          default:
           description: Currency code (3-letter code per ISO 4217).
           examples:
           - USD
@@ -56421,7 +56648,6 @@ components:
           anyOf:
           - type: string
           - type: 'null'
-          default:
           description: Actual discount as a relative value.
           examples:
           - '10.50'
@@ -56467,7 +56693,6 @@ components:
           anyOf:
           - type: number
           - type: 'null'
-          default:
           description: Total price VAT inclusive per month without discount.
           examples:
           - '800.00'
@@ -56477,7 +56702,6 @@ components:
           anyOf:
           - type: number
           - type: 'null'
-          default:
           description: Total price VAT inclusive per hour.
           examples:
           - '1.02'
@@ -56487,7 +56711,6 @@ components:
           anyOf:
           - type: number
           - type: 'null'
-          default:
           description: Total price VAT inclusive per month.
           examples:
           - '734.4'
@@ -56502,9 +56725,14 @@ components:
           title: Vm Count
           type: integer
       required:
+      - currency_code
+      - discount_percent
       - per_hour
       - per_month
       - price_status
+      - price_without_discount_per_month
+      - total_price_per_hour
+      - total_price_per_month
       title: InstancePricingPreviewV2ResponseSerializer
       type: object
     DetailedInstancePricingPerGBSerializer:
@@ -57858,24 +58086,6 @@ components:
           - my-tag: my-tag-value
       title: UpdateImageSerializer
       type: object
-    UpdateTagsSerializer:
-      additionalProperties:
-        anyOf:
-        - maxLength: 1024
-          minLength: 1
-          type: string
-        - type: 'null'
-        description: Tag value. The maximum size for a value is 1024 bytes. Set to `null` in order to delete this tag.
-        examples:
-        - my-tag-value
-      propertyNames:
-        description: Tag key. The maximum size for a key is 255 bytes.
-        examples:
-        - my-tag
-        maxLength: 255
-        minLength: 1
-      title: UpdateTagsSerializer
-      type: object
     ImagePricingRequestSerializer:
       examples:
       - size: 1000
@@ -57890,14 +58100,189 @@ components:
       - size
       title: ImagePricingRequestSerializer
       type: object
+    CreateApiKeyResponseSerializer:
+      properties:
+        created_at:
+          description: Timestamp when the API Key was created.
+          examples:
+          - '2023-10-01T12:00:00Z'
+          title: Created At
+          type: string
+        deployment_names:
+          description: List of inference deployment names to which this API Key has been attached.
+          examples:
+          - - inference-1
+            - inference-2
+          items:
+            type: string
+          title: Deployment Names
+          type: array
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Description of the API Key.
+          examples:
+          - This key is used for accessing the inference service.
+          title: Description
+        expires_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Timestamp when the API Key will expire.
+          examples:
+          - '2024-10-01T12:00:00Z'
+          title: Expires At
+        name:
+          description: API Key name.
+          examples:
+          - my-api-key
+          title: Name
+          type: string
+        secret:
+          description: The actual API Key secret.
+          examples:
+          - qLyjWDarjtT1zdp7dc
+          title: Secret
+          type: string
+      required:
+      - name
+      - description
+      - secret
+      - created_at
+      - expires_at
+      - deployment_names
+      title: CreateApiKeyResponseSerializer
+      type: object
+    ApiKeyCreateRequestSerializer:
+      properties:
+        description:
+          description: Description of the API Key.
+          examples:
+          - This key is used for accessing the inference service.
+          maxLength: 300
+          title: Description
+          type: string
+        expires_at:
+          description: Expiration date of the API Key in ISO 8601 format.
+          examples:
+          - '2024-10-01T12:00:00Z'
+          title: Expires At
+          type: string
+        name:
+          description: Name of the API Key.
+          examples:
+          - my-api-key
+          maxLength: 63
+          minLength: 4
+          pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$
+          title: Name
+          type: string
+      required:
+      - name
+      title: ApiKeyCreateRequestSerializer
+      type: object
+    ApiKeyListResponseSerializer:
+      properties:
+        count:
+          description: Number of objects
+          examples:
+          - 1
+          minimum: 0
+          title: Count
+          type: integer
+        results:
+          description: Objects
+          items:
+            $ref: '#/components/schemas/GetApiKeyResponseSerializer'
+          title: Results
+          type: array
+      required:
+      - count
+      - results
+      title: ApiKeyListResponseSerializer
+      type: object
+    GetApiKeyResponseSerializer:
+      properties:
+        created_at:
+          description: Timestamp when the API Key was created.
+          examples:
+          - '2023-10-01T12:00:00Z'
+          title: Created At
+          type: string
+        deployment_names:
+          description: List of inference deployment names to which this API Key has been attached.
+          examples:
+          - - inference-1
+            - inference-2
+          items:
+            type: string
+          title: Deployment Names
+          type: array
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Description of the API Key.
+          examples:
+          - This key is used for accessing the inference service.
+          title: Description
+        expires_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Timestamp when the API Key will expire.
+          examples:
+          - '2024-10-01T12:00:00Z'
+          title: Expires At
+        name:
+          description: API Key name.
+          examples:
+          - my-api-key
+          title: Name
+          type: string
+      required:
+      - name
+      - description
+      - created_at
+      - expires_at
+      - deployment_names
+      title: GetApiKeyResponseSerializer
+      type: object
+    ApiKeyUpdateRequestSerializer:
+      properties:
+        description:
+          anyOf:
+          - maxLength: 300
+            type: string
+          - type: 'null'
+          description: Description of the API Key.
+          examples:
+          - This key is used for accessing the inference service.
+          title: Description
+      title: ApiKeyUpdateRequestSerializer
+      type: object
     InferenceInstanceInSerializerV3:
       properties:
+        api_keys:
+          description: >-
+            List of API keys for the inference instance. Multiple keys can be attached to one deployment.If
+            `auth_enabled` and `api_keys` are both specified, a ValidationError will be raised.
+          examples:
+          - - key1
+            - key2
+          items:
+            type: string
+          title: Api Keys
+          type: array
         auth_enabled:
           default: false
+          deprecated: true
           description: >-
             Set to `true` to enable API key authentication for the inference instance. `"Authorization":
             "Bearer ****\*"` or `"X-Api-Key": "****\*"` header is required for the requests to the instance if
-            enabled
+            enabled. This field is deprecated and will be removed in the future. Use `api_keys` field
+            instead.If `auth_enabled` and `api_keys` are both specified, a ValidationError will be raised.
           examples:
           - false
           title: Auth Enabled
@@ -58539,7 +58924,20 @@ components:
           examples:
           - https://example.com
           title: Address
+        api_keys:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          default:
+          description: List of API keys for the inference instance
+          examples:
+          - - key1
+            - key2
+          title: Api Keys
         auth_enabled:
+          deprecated: true
           description: >-
             `true` if instance uses API key authentication. `"Authorization": "Bearer ****\*"` or
             `"X-Api-Key": "****\*"` header is required for the requests to the instance if enabled.
@@ -59171,11 +59569,27 @@ components:
       type: string
     InferenceInstanceInUpdateSerializerV3:
       properties:
+        api_keys:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          description: >-
+            List of API keys for the inference instance. Multiple keys can be attached to one deployment.If
+            `auth_enabled` and `api_keys` are both specified, a ValidationError will be raised.If `[]` is
+            provided, the API keys will be removed and auth will be disabled on the deployment.
+          examples:
+          - - key1
+            - key2
+          title: Api Keys
         auth_enabled:
+          deprecated: true
           description: >-
             Set to `true` to enable API key authentication for the inference instance. `"Authorization":
             "Bearer ****\*"` or `"X-Api-Key": "****\*"` header is required for the requests to the instance if
-            enabled
+            enabled. This field is deprecated and will be removed in the future. Use `api_keys` field
+            instead.If `auth_enabled` and `api_keys` are both specified, a ValidationError will be raised.
           examples:
           - false
           title: Auth Enabled
@@ -67236,7 +67650,6 @@ components:
             minLength: 3
             type: string
           - type: 'null'
-          default:
           description: Currency code (3 letter code per ISO 4217)
           title: Currency Code
         discount_percent:
@@ -67262,27 +67675,28 @@ components:
           anyOf:
           - type: number
           - type: 'null'
-          default:
           description: Total price VAT inclusive per month without discount
           title: Price Without Discount Per Month
         total_price_per_hour:
           anyOf:
           - type: number
           - type: 'null'
-          default:
           description: Total price VAT inclusive per hour
           title: Total Price Per Hour
         total_price_per_month:
           anyOf:
           - type: number
           - type: 'null'
-          default:
           description: Total price VAT inclusive per month
           title: Total Price Per Month
       required:
+      - currency_code
       - per_hour
       - per_month
+      - total_price_per_hour
+      - total_price_per_month
       - price_status
+      - price_without_discount_per_month
       - discount_percent
       title: LoadBalancerPricingPreviewResponseSerializer
       type: object
@@ -78230,6 +78644,7 @@ components:
       - gpu_virtual_server
       - gpuai_cluster
       - image
+      - inference_api_key
       - inference_instance
       - inference_registry_credentials
       - inference_secret
