@@ -14,7 +14,7 @@ pageDescription: An article about conditions and periods of data deletion.
 
 ## Grounds for product and data deletion
 
-We delete a service, its settings, and associated customer data after the service is suspended. The duration depends on the product; scroll down for full details.
+We delete a service, its settings, and associated customer data after the service is suspended. The duration depends on the product; scroll down for full details. 
 
 Products can be suspended in three cases:
 
