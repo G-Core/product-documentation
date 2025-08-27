@@ -5,7 +5,7 @@ sidebarTitle: "SRT"
 
 Secure Reliable Transport (SRT) is an open-source streaming protocol that solves some of the limitations of RTMP delivery. In contrast to RTMP/RTMPS, SRT is a UDP-based protocol that provides low-latency streaming over unpredictable networks. On Gcore Video Streaming, SRT is also required if you want to use the H265/HVEC codec.
 
-## Push streams
+## SRT PUSH
 
 Gcore Video Streaming provides two endpoints for pushing a stream: the default one and a backup one. The default endpoint is the one closest to your location. The backup endpoint is in a different location and is used if the default one is unavailable.
 
@@ -45,15 +45,15 @@ Example of the API response:
 
 ```json
 {
-  "push_url": "srt://vp-push-anx2.domain.com/in/123?08cd54f0",
-  "backup_push_url": "srt://vp-push-ed1.domain.com/in/123b?08cd54f0",
+  "push_url_srt": "srt://vp-push-anx2.domain.com/in/123?08cd54f0",
+  "backup_push_url_srt": "srt://vp-push-ed1.domain.com/in/123b?08cd54f0",
   ...
 }
 ```
 
-Read more in [the API documentation](https://api.gcore.com/docs/streaming#tag/Streams/operation/post_streams_id).
+Read more in [the API documentation](/docs/api-reference/streaming/streams/create-live-stream).
 
-## Pull streams
+## SRT PULL
 
 Gcore Video Streaming can pull video data from your external server.
 
@@ -105,4 +105,52 @@ PATCH /streaming/streams/{stream_id}
 }
 ```
 
-Read more in [the API documentation](https://api.gcore.com/docs/streaming#tag/Streams/operation/patch_streams_id).
+Read more in [API documentation](/docs/api-reference/streaming/streams/change-live-stream).
+
+## SRT Latency
+
+### Playback problems with SRT
+
+SRT is a low-latency transport protocol by design, but real-world networks are not always stable and the path from a venue to our ingest point may traverse long and unpredictable routes. For this reason, the latency parameter must be tuned to actual network conditions.
+  - Too small latency → insufficient buffer for retransmissions under jitter or loss → packet drops and playback errors.
+	- Too large latency → excessive buffering → unnecessary end-to-end delay.
+	- Manual tuning is recommended rather than relying on defaults, since each environment behaves differently.
+
+*Incorrect or low default value is one of the most common reasons for packet loss, frames loss, and bad picture.*
+
+We therefore recommend setting latency manually rather than relying on the default, to ensure the buffer is correctly sized for your environment. 
+A practical range is 400–2000 ms, with the exact value chosen based on RTT, jitter, and expected packet loss.
+
+### Recommended Latency Ranges
+
+Recommended latency ranges for SRT ingest based on network conditions.  
+
+| Network Conditions               | Typical RTT (ms) | Jitter/Loss         | Recommended Latency (ms) |
+|----------------------------------|------------------|---------------------|--------------------------|
+| Same datacenter                  | &lt;20              | Very low            | 150–400                  |
+| Same country, stable uplink      | 20–80            | Low (&lt;0.5% loss)    | 600–1000                 |
+| Cross-region, higher variability | 80–200           | Moderate (&lt;1%)      | 1000–1500                |
+| Long-haul international          | 200–350+         | High (>1% bursts)   | 1500–2000                |
+
+### Best Practices for Configuring SRT Latency
+
+Practical setup notes:
+ - Rule of thumb: Set latency ≥ 3 × RTT + jitter margin (e.g., RTT 100 ms → latency ~500 ms).
+ - Parameter location: Latency must be set on the sender side (caller or listener mode). Receiver should be equal or higher.
+ - Default values are often too low (e.g., 120 ms) for WAN paths, which can cause instability.
+ - Monitoring: Check SRT statistics for retransmissions, buffer usage, and packet drops. If drops occur, increase latency in steps of 100–200 ms.
+ - Encoder settings:
+    - Enable tsbpd=1 (timestamp-based delivery).
+    - Cap stream bitrate to ~70–80% of available uplink.
+    - Redundancy: Configure failover to a backup ingest point or secondary SRT target.
+
+
+Also check official SRT statistics documentation https://github.com/Haivision/srt/blob/master/docs/API/statistics.md 
+Enable sender-side SRT stats and watch these fields:
+ - RTT and jitter: round-trip time, variability. Drives latency sizing.  ￼
+ - Loss and retransmissions: pkt*Loss, pkt*Retrans, pkt*Drop. Rising values → increase latency or reduce bitrate.  ￼
+ - Throughput/bandwidth: current/peak send rate vs configured caps.  ￼
+ - Buffer occupancy: send/receive buffer fill vs negotiated latency; approaching 0 under loss means too low latency.  ￼
+ - Flight/window size, MSS/packet size: detects fragmentation or congestion.  ￼
+
+

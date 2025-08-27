@@ -18,7 +18,7 @@ We offer the following formats for playback:
 
 
 
-You can also find a description of supported video formats and relevant use cases in our [API documentation](https://api.gcore.com/docs/streaming#tag/Videos/operation/get_api_videos_id). 
+You can also find a description of supported video formats and relevant use cases in our [API documentation](/docs/api-reference/streaming/videos/get-video). 
 
 ## HLS TS and CMAF formats
 
@@ -55,7 +55,7 @@ Where:
 
   * `{client_id}`: Your account ID.
   * `{video_slug}`: Slug identifier of the video.
-  * `[-cmaf]`: The HLS CMAF version of the manifest. For details, check the hls_cmaf_url field description in our [API docs](https://api.gcore.com/docs/streaming#tag/Videos/operation/get_api_videos). 
+  * `[-cmaf]`: The HLS CMAF version of the manifest. For details, check the hls_cmaf_url field description in our [API docs](/docs/api-reference/streaming/videos/get-list-of-videos). 
   * `[-min-N]`: Special suffix that specifies the lowest video quality limit available in an Adaptive Bitrate (ABR) streaming. Learn more about the setting in the [Limit quality](/streaming-platform/video-hosting/hls-and-mp4#limit-the-lowest-and-highest-quality-in-hls-adaptive-bitrate) section.
   * `[-max-N]`: Special suffix that specifies the highest video quality limit available in the ABR streaming. Learn more about the setting in the [Limit quality](/streaming-platform/video-hosting/hls-and-mp4#limit-the-lowest-and-highest-quality-in-hls-adaptive-bitrate) section.
   * `[-img]`: The trick play feature for Roku devices allows thumbnail images to be embedded directly into the manifest. Read more in the article [Timeline hover previews: use with players and Roku devices](/streaming-platform/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices#roku-trick-play).
@@ -138,15 +138,7 @@ Where:
   * `[-max-N]`: Special suffix that specifies the highest video quality limit available in the ABR streaming (same behaviour as for HLS). Learn more about the setting in the Limit quality section.
   * `[-(h264|hevc|av1)]`: Video codec soft limitation. Applicable if the video was simultaneously transcoded into multiple codecs (264, H265, and AV1) and you want to return just one video codec in a manifest.
 
-<Info>
-**Info**
-
-ABR soft-limiting of video quality isn't available for DASH format.
-</Info>
-
-Example of the manifest link: 
-
-https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/master.mpd
+Example of the manifest link:  https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/master.mpd
 
 ## MP4 format
 
@@ -170,7 +162,52 @@ Example usage:
 </video>
  ```
 
-Gcore supports regular download requests for entire MP4 file downloads. We also support range requests specifying the HTTP "Range" header.
+Gcore supports regular download requests for entire MP4 file downloads. For each converted video, additional download endpoints are available from API. 
+An MP4 download enpoints look like:
+  - `/videos/{client_id}_{slug}/{filename}.mp4`
+  - `/videos/{client_id}_{slug}/{filename}.mp4/download`
+  - `/videos/{client_id}_{slug}/{filename}.mp4/download={custom_filename}`
+
+The first option returns the file as is.
+Response will be:
+```
+  GET .mp4
+  ...
+  content-type: video/mp4
+```
+
+The second option with /download will respond with HTTP response header that directly tells browsers to download the file instead of playing it in the browser:
+
+``` 
+  GET .mp4/download
+  ...
+  content-type: video/mp4
+  content-disposition: attachment
+  access-control-expose-headers: Content-Disposition
+```
+
+The third option allows you to set a custom name for the file being downloaded. 
+Filename constraints:
+  - Length: 1-255 characters
+  - Must NOT include the .mp4 extension (it is added automatically)
+  - Allowed characters: a-z, A-Z, 0-9, _(underscore), -(dash), .(dot)
+  - First character cannot be .(dot)
+  - Example valid filenames: ```holiday2025```, ```_backup.final```, ```clip-v1.2```
+
+```  
+  GET .mp4/download={custom_filename}
+  ...
+  content-type: video/mp4
+  content-disposition: attachment; filename="{custom_filename}.mp4"
+  access-control-expose-headers: Content-Disposition                    
+```
+
+Example:
+- Video: ```https://demo-public.gvideo.io/videos/2675_1OFgHZ1FWZNNvx1A/qid3567v1_h264_4050_1080.mp4/download```
+- Video with custom download filename: ```https://demo-public.gvideo.io/videos/2675_1OFgHZ1FWZNNvx1A/qid3567v1_h264_4050_1080.mp4/download=highlights_v1.1_2025-05-30```
+
+
+We also support range requests specifying the HTTP "Range" header.
 
 ```sh
 curl -I 'https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/qid3570v3_h264_1566_720.mp4' -H 'range: bytes=4000000-' 
@@ -190,7 +227,7 @@ You can protect MP4 files with the [Video protection via the Security Tokens fea
 
 ## Get HLS, DASH, and MP4 links
 
-You can get links to videos in two ways: in the Gcore Customer Portal or via the [API](https://api.gcore.com/docs/streaming#tag/Videos/operation/get_api_videos_id).
+You can get links to videos in two ways: in the Gcore Customer Portal or via the [API](/docs/api-reference/streaming/videos/get-video).
 
 ### Customer portal
 
@@ -213,11 +250,7 @@ You can get links to videos in two ways: in the Gcore Customer Portal or via the
 
 ### API
 
-To get information about the video, call a method:
-
-```sh
-https://api.gcore.com/docs/streaming#tag/Videos/operation/get_api_videos_id
- ```
+To get information about the video, [API Documentation](/docs/api-reference/streaming/videos/get-video)
 
 Example request:
 
