@@ -5,7 +5,7 @@ sidebarTitle: Protected temporary link
 
 By default, videos are available by their links with no restrictions and can be placed on any website or in any mobile application. But in some cases, platform owners or rights holders need to ensure that video content does _not_ offer public access, such as when a video is only for paid access, private access, access by country, temporary access, or access on a specific site.
 
-## How does GCore protect video content?
+## How does Gcore protect video content?
 
 Gcore has several methods of protecting video content:
 
@@ -24,9 +24,13 @@ In this article, we will look at the first option: protected temporary links and
 
 Protected temporary links are generated using the [Secure Token](/cdn/cdn-resource-options/security/use-a-secure-token/about-secure-token) feature, which allows configuring access with tokenized URLs. When using this option, you add a special character set to every URL. Check out the examples below with the special characters highlighted in bold. At Gcore, we call these special characters _Secure Tokens_.
 
-  * Public: https://demo-public.gvideo.io/videos/2675_3dk4NsRt6vWsffEr/master.m3u8
-  * Protected: https://demo-protected.gvideo.io/videos/2675_3dk4NsRt6vWsffEr/4KF8O8YERpLuwIIO_p3RFQ/1861919999/master.m3u8
+VOD:
+  * Public: https://demo-public.gvideo.io/videos/2675_pG8TfmKx2LU2qs/master.m3u8
+  * Protected: https://demo-protected.gvideo.io/videos/2675_pG8TfmKx2LU2qs/rI1224fiE3USCa8qYnMuGQ/1861919999/master.m3u8 
 
+LIVE:
+  * Public: https://demo-public.gvideo.io/cmaf/2675_19146/master.m3u8
+  * Protected: https://demo-protected.gvideo.io/cmaf/2675_19146/9y9nJqRofJQw-DbX2LDgYw/1861919999/master.m3u8 
 
 
 Unlike content with a public URL, which is available to any user, content with a protected temporary link verifies that the user has a special _hash key_ that matches the generated token.
@@ -42,17 +46,13 @@ There are three possible scenarios:
 Here is an example of what happens if we try to access the video when the token is expired:
 
 ```sh
-curl --head https://demo-protected.gvideo.io/videos/2675_3dk4NsRt6vWsffEr/bbP3uBs-rBM_HY1VfWS5-Q/1688124955/master.m3u8
+curl -I https://demo-protected.gvideo.io/videos/2675_pG8TfmKx2LU2qs/2oY5gKMSVBBX2x-VbzN03g/1755007200/master.m3u8
 
-HTTP/1.1 410 Gone
-Server: nginx
-Date: Fri, 07 Jul 2023 06:42:28 GMT
-Content-Type: text/html
-Content-Length: 136
-Connection: keep-alive
-X-ID: ed-hw-edge-gc38
-X-ID-FE: ed-hw-edge-gc38
- ```
+HTTP/2 410 
+date: Tue, 12 Aug 2025 15:15:18 GMT
+content-type: text/html
+content-length: 136
+```
 
 ## CDN resources and scope of restrictions
 
@@ -76,18 +76,16 @@ https://domain.com/videos|cmaf/{client_id}_{video_id}/{token}/{expiration}/manif
 
 Where:
 
+  * `videos` – for VOD, `cmaf` – for LIVE
   * `{client_id}` is your account ID
   * `{video_id}` is the identifier of the video or live stream
   * `{token}` is the MD5 hash of the video and other attributes
   * `{expiration}` is the unix time in seconds of how long will the link be valid
 
 
-
-Example: https://demo-protected.gvideo.io/cmaf/2675_201693/cFLm6j00eFFuvos2HZ-6hA/1861919999/master.m3u8
-
 For Gcore Video on Demand (VOD) and Gcore Live Streaming, a relative path is used for all file types used to deliver video content, such as additional manifests, chunks, and MP4 renditions. Therefore, the path of the main manifest is taken as the basis and the following path is built relative to it.
 
-Examples of protected links for VOD:
+Examples of templates of protected links for VOD:
 
   * `https://domain.com/videos/{client_id}_{video_slug}/{token}/{expiration}/`**manifest.m3u8**
   * `https://domain.com/videos/{client_id}_{video_slug}/{token}/{expiration}/`**segment-1-svod720n-v1-a1.ts**
@@ -95,7 +93,7 @@ Examples of protected links for VOD:
 
 
 
-Examples of protected links for Gcore Live Streaming:
+Examples of templates of protected links for LIVE:
 
   * `https://domain.com/cmaf/{client_id}_{stream_id}/{token}/{expiration}/`**master.m3u8**
   * `https://domain.com/cmaf/{client_id}_{stream_id}/{token}/{expiration}/`**index.mpd**
