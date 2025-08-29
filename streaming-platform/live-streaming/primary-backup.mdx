@@ -1,0 +1,65 @@
+---
+title: "Primary, Backup, and Global Ingest Points"
+sidebarTitle: "Ingest Points & Backup"
+---
+
+## PUSH Failover with Primary and Backup Ingest Points
+
+In most cases 1 primary point is used for broadcasting. Multiple points are needed for large broadcasts with multiple backups.
+Streaming Platform offers special failover mechanism for RTMP and SRT origin streams. You can push primary and backup origin streams simultaneosly to organize a backup plan. 
+
+Use for RTMP/S: 
+- push_url – as primary
+- backup_push_url - as backup
+
+Use for SRT:
+- push_url_srt – as primary
+- backup_push_url_srt – as backup
+
+PUSH fallback algorith:
+- Primary stream active. Primary is always takes priority over the backup stream.
+– When the primary stream fails and is unavailable for more than ±3 seconds, then fallback process begins (the backup stream must be available and online):
+  - New transcoding started for the backup stream
+  - End-viewers will be without stream data for ±15 seconds
+- When the primary stream is restored, a timer starts counting the time the primary stream has been active. Primary must be available for at least 60 consecutive seconds before a transition to the primary begins:
+  - New transcoding started for the primary stream
+  - End-viewers will be without stream data for ±15 seconds
+
+
+## PUSH Geo Distributed Ingest Points
+
+For smoother and more reliable streaming we offer entry servers in regions including:
+ - Europe Luxembourg, The Netherlands,
+ - US Ashburn, Miami,
+ - and Singapore. 
+ 
+By connecting your encoder to the nearest ingest server, you can minimize latency and improve performance.
+You can specify preferred upload servers and the number of streams per region. Our team will then configure your account to match your streaming setup.
+
+[Reach out to our support team](https://gcore.com/contact-us) or your account manager for setup assistance.
+
+
+## PULL Failover with Multiple Source URIs
+
+"PULL URL" field can contain 1 link, or many at once. In most cases 1 point is used. Multiple points are needed for large broadcasts with multiple backups. You can specify multiple addresses separated by a space (" "), so you can organize a extra-backup plan. 
+Example #1: `rtmp://encoder.example.com/live/stream123`
+Example #2: `rtmp://encoder1.example.com/live/stream123 rtmp://encoder2.example.com/live/stream123_backup srt://encoder3.example.com:9000?mode=caller&latency=2000&streamid=stream123`
+
+PULL fallback algorithm:
+- Stream #1 is active
+- If stream #1 is unavailable and is missing for more than ±3 seconds, then the next stream #2 is taken from the "PULL URI" and transition to the next backup source begins:
+  - A new transcoding for the backup stream is started.
+  - End viewers will be without stream data for ±15 seconds.
+  - If this stream #2 is also interrupted, the above algorithm will be repeated for the next backup stream. In this case, the specified addresses will be selected one by one using round robin algorithm. If the first address does not respond, then the next one in the list will be automatically requested, returning to the first and so on in a circle. No worries, if only 1 link is specified in "PULL URI", then the system will request that link.
+- The system will try to pull the origin stream for 2 hours approximately, making requests approximatelly every 3 seconds. 
+  - If one of the links works, the timer is reset to zero, transcoding begins. 
+  - Otherwise the stream stops permanently. To resume it, you will have to activate it manually or via API.
+
+
+## PULL Geo Distributed Points
+
+By setting location correctly, you can minimize latency and improve performance.
+
+[Reach out to our support team](https://gcore.com/contact-us) or your account manager for setup assistance.
+
+

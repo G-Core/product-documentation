@@ -5,6 +5,24 @@ sidebarTitle: "SRT"
 
 Secure Reliable Transport (SRT) is an open-source streaming protocol that solves some of the limitations of RTMP delivery. In contrast to RTMP/RTMPS, SRT is a UDP-based protocol that provides low-latency streaming over unpredictable networks. On Gcore Video Streaming, SRT is also required if you want to use the H265/HVEC codec.
 
+Ingest link looks like srt://vp-push-ed1-srt.gvideo.co:5001?streamid=12345#aaabbbcccddd and contains:
+- protocol srt://
+- name of a specific server located in a specific geographic location – vp-push-ed1-srt is located in Europe
+- exact stream key
+
+*Example:*
+That ffmpeg command will generate a test video (1280×720 @30fps color bars) with a 2kHz sine-tone audio track, encode them to H.264 video + AAC audio, and push the stream in FLV format over RTMP to the specified ingest URL.
+```sh 
+ffmpeg -re -f lavfi -i testsrc2=size=1280x720:rate=30 \
+       -f lavfi -i sine=f=2000:r=48000 \
+       -c:v libx264 -preset veryfast -b:v 1M -g 30 \
+       -c:a aac -b:a 128k -ar 48000 \
+       -f mpegts "srt://vp-push-ed1-srt.gvideo.co:5001?latency=2000&streamid=12345#aaabbbcccddd"
+```
+
+
+(!!! rewrite below !!!)
+
 ## SRT PUSH
 
 Gcore Video Streaming provides two endpoints for pushing a stream: the default one and a backup one. The default endpoint is the one closest to your location. The backup endpoint is in a different location and is used if the default one is unavailable.
