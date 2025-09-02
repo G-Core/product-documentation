@@ -1,624 +1,254 @@
 ---
-title: Get webhooks from the video streaming
+title: Webhooks on system state changes
 sidebarTitle: Webhooks
+description: Know about changing the status of Lives, VOD, and Restreams
 ---
 
-A webhook is a free automated notification about an event in our service. You can receive notifications about the following events of our Video Streaming:
+## Webhook types
 
-  * A live stream has started or finished.
-  * Recording of a live stream has started or paused.
-  * Updates on processing of a live stream recording: a recording has started processing, partially processed, or completely processed.
-  * Updates on broadcast statuses: pending, live, paused, or finished.
-  * A video is uploaded to the Gcore Customer Portal.
-  * Updates on video processing: a video has started processing, partially processed, or completely processed.
-  * Updates to a restream: it was created, is live, or was stopped.
+A webhook is a real-time callback that sends an HTTP POST request to your server-side app when a defined event happens in our Video Streaming service. 
+This way, you instantly receive updates and can trigger automated actions without manual checks by constant pulling API.
 
-
-
-Whenever any of these events happens, our server will create an HTTP POST request and notify you about it. You will receive the information in JSON format. Below is an example of a webhook triggered when a live stream starts.
+A single universal endpoint is used for all types of webhooks.
 
 ```json
-{   
-    "type": "stream",   
-     "message": {   
-           "stream": {   
-             "id": 12345,   
-             "live": true,  
-             "recording": false    
-           }   
-      }   
+{
+  "type": "stream|video|restream",
+  "message": { ... } 
 }
- ```
+```
 
-Customize the following values:
-
-  * **12345** is the stream ID in the Gcore Customer Portal,
-  * **true** is the indicator that the Video Streaming is receiving your stream,
-  * **false** is the indicator that your stream is not being recorded.
-
+Supported entities:
+	1.	Live streams – `type: stream`
+	2.	VOD videos – `type: vod`
+	3.	Restreamings – `type: restream`
 
 
-## What are the video streaming webhooks used for?
+The webhook will contain main fields of the entity for which the event occurred. This allows you to not pull the API to get additional data each time.
 
-Webhooks are used by apps integrated with the Video Streaming. You can configure your app so that it will activate automatic workflows whenever it receives a webhook.
 
-For example, users share videos in your app. When a user adds a new video, it is uploaded and processed through our Video Streaming. Then you need to embed the video in your application. You set up the auto-posting: as soon as the video is processed, the Video Streaming will send a webhook, and your app will post the video.
+### Webhooks for Live
 
-## Configure the webhook integration
+When the state of a live stream changes, the system triggers a webhook with type `stream`. The payload contains a message.stream object with stream properties.
+
+**Behaviour:**
+  - A webhook is fired on key state changes, such as a stream going live or stopping.
+  - The payload allows you to track whether a stream is active, its source, and related metadata.
+  - Both PUSH and PULL origins are supported.
+
+**Fields:**
+| Field               | Type    | Description                                                                |
+|---------------------|---------|----------------------------------------------------------------------------|
+| **id**              | int     | Unique identifier of the stream                                            |
+| **live**            | bool    | `true` if the stream is currently active, `false` if it has stopped        |
+| **backup_live**     | bool    | `true` if the backup source is currently active                            |
+| **recording**       | bool    | `true` if the stream is being recorded                                     |
+| **client_user_id**  | string  | Optional client-defined user ID, `null` if not provided                    |
+| **client_entity_data** | string | Optional client metadata associated with the stream, `null` if not provided |
+| **pull**            | bool    | `true` if the stream is pulled from an external origin, `false` if pushed  |
+| **uri**             | string  | The source URI of the stream (e.g. HTTPS or SRT endpoint)                  |
+| **stream_source_type** | string | Type of the stream source (e.g. `https`, `rtmp`, `srt`)                      |
+
+**Example:**
+
+Started stream:
+```json
+{
+  "type": "stream",
+  "message": {
+    "stream": {
+      "id": 1001,
+      "live": true,
+      "backup_live": false,
+      "recording": false,
+      "client_user_id": null,
+      "client_entity_data": null,
+      "pull": false,
+      "uri": "srt://vp-push-ed1-srt.gvideo.co:5001?streamid=12345#aaabbbcccddd",
+      "stream_source_type": "srt"
+    }
+  }
+}
+```
+
+Stoped stream:
+```json
+{
+  "type": "stream",
+  "message": {
+    "stream": {
+      "id": 1002,
+      "live": false,
+      "backup_live": false,
+      "recording": false,
+      "client_user_id": null,
+      "client_entity_data": null,
+      "pull": true,
+      "uri": "https://.../master.m3u8",
+      "stream_source_type": "https"
+    }
+  }
+}
+```
+
+
+### Webhooks for VOD
+
+A webhook with type `video` fires when a VOD file is created, processed, or becomes playable. Use the payload to track processing progress and available renditions.
+
+**Behaviour:**
+  - Sent on key status changes of a video: empty → pending → viewable → ready or error.  ￼
+  - converted_videos[].status reflects per-rendition progress like processing or complete.  ￼
+
+
+**Fields:**
+| Field                | Type        | Description                                                                |
+|----------------------|-------------|----------------------------------------------------------------------------|
+| **id**               | int         | VideoID                                                                    |
+| **slug**             | string      | Public identifier used in playback URLs                                    |
+| **name**             | string      | Video name                                                                 |
+| **duration**         | int         | Duration of the video in milliseconds                                      |
+| **stream_id**        | int \| null | StreamID if it was recorded from a Live stream, otherwise `null`           |
+| **status**           | string      | Processing status of the video: `empty`, `pending`, `viewable`, `ready`, `error` |
+| **converted_videos** | array       | List of transcoded renditions with details                                 |
+| └─ **name**          | string      | Rendition label (e.g., `vod1080p`)                                         |
+| └─ **status**        | string      | Rendition status                       |
+| └─ **mp4_url**       | string      | Direct URL for a rendition in MP4 fromat                                   |
+
+
+See the statuses of VOD processing in API docs:
+  - Video status processing – [status](/docs/api-reference/streaming/videos/get-video#response-status)
+  - Rendition status processing – [converted_videos/status](/docs/api-reference/streaming/videos/get-video#response-converted-videos)
+
+**Example:**
+
+Video uploaded:
+```json
+{
+  "type": "video",
+  "message": {
+    "video": {
+      "id": 2001,
+      "slug": "bJkptcIp9a5wrowz",
+      "name": "football_videoplayback_720",
+      "duration": 43989,
+      "stream_id": null,
+      "status": "empty",
+      "converted_videos": []
+    }
+  }
+}
+```
+Video becomes viewable (not all renditions are ready yet, but video can be watched by end-users already):
+```json
+{
+  "type": "video",
+  "message": {
+    "video": {
+      "id": 2001,
+      "slug": "bJkptcIp9a5wrowz",
+      "name": "football_videoplayback_720",
+      "duration": 43989,
+      "stream_id": null,
+      "status": "viewable",
+      "converted_videos": [
+        {
+          "name": "4029_h264_720p",
+          "status": "complete",
+          "mp4_url": "https://102748.gvideo.io/videos/102748_bJkptcIp9a5wrowz/qid4029v1_h264_2700_720.mp4"
+        },
+        {
+          "name": "4014_hevc_720p",
+          "status": "processing",
+          "mp4_url": "https://102748.gvideo.io/videos/102748_bJkptcIp9a5wrowz/qid4014v1_hevc_1620_720.mp4"
+        },
+        {
+          "name": "3999_av1_720p",
+          "status": "processing",
+          "mp4_url": "https://102748.gvideo.io/videos/102748_bJkptcIp9a5wrowz/qid3999v1_av1_1350_720.mp4"
+        }
+      ]
+    }
+  }
+}
+```
+
+
+### Webhooks for Restream
+
+When a restream changes state (for example, starts or stops), the system sends a webhook with type `restream`. 
+The payload contains a message.restream object.
+
+**Behaviour:**
+  - Fired whenever a restream goes live or stops.
+  - Allows you to track the status of a specific restream linked to a live stream.
+
+**Fields:**
+| Field      | Type   | Description                                                        |
+|------------|--------|--------------------------------------------------------------------|
+| **id**     | int    | Unique identifier of the restream.                                 |
+| **name**   | string | Human-readable name of the restream.                               |
+| **stream_id** | int | ID of the source live stream that this restream is linked to.      |
+| **live**   | bool   | `true` if the restream is currently active, `false` if it stopped. |
+
+
+**Example:**
+
+Restream starts:
+```json
+{
+  "type": "restream",
+  "message": {
+    "restream": {
+      "id": 3001,
+      "name": "RTMP from Brodcast#1 to Youtube",
+      "stream_id": 1001,
+      "live": true
+    }
+  }
+}
+```
+
+Restream stops:
+```json
+{
+  "type": "restream",
+  "message": {
+    "restream": {
+      "id": 3001,
+      "name": "RTMP from Brodcast#1 to Youtube",
+      "stream_id": 1001,
+      "live": false
+    }
+  }
+}
+```
+
+## Sending events
+
+We deliver webhooks from IP addresses `92.223.112.0/24` and `92.223.123.0/24`. So put them into the whitelist.
+
+Events are sent only once. If your server is unavailable, undelivered webhooks won't be sent again.
+
+
+## How to enable webhooks
+
+<Info>
+At the moment, webhooks can only be set up with our help. Tell us your end-point and we will install it in your account.
+</Info>
 
 1\. Prepare your HTTP server to receive webhooks.
 
 2\. Contact us via chat or email [support@gcore.com](mailto:support@gcore.com) and ask to enable the webhook integration. Specify your ID (personal client ID) and the URL of the server that will receive webhooks. You can find your ID in the [Gcore Customer Portal](https://accounts.gcore.com/reports/dashboard).
 
-
 <Frame>![your ID in the Gcore Customer Portal](/images/docs/streaming-platform/extra-features/get-webhooks-from-the-streaming-platform/image.png)</Frame>
-
-
 
 The message template: _"Good afternoon! Please configure the Video Streaming webhook integration for my account with ID..... The URL of my server to send webhooks to is ...."_.
 
 3\. We will notify you when we configure the webhook integration.
 
-We deliver webhooks for free from the IP range  _92.223.123.0/24_.
 
-We can send webhooks of one account only to one server. If your server is unavailable, undelivered webhooks won't be sent again. You will only receive a webhook of the next event.
+**Testing:**
 
-## Webhook examples of all video streaming events
-
-Below are examples of all the webhooks that you can get from our service. Parameters are explained in round brackets.
-
-**A live stream has started**
-
-```json
-{   
-  "type": "stream",   
-  "message": {   
-    "stream": {   
-      "id": 12345,   
-      "live": true,   
-      "recording": false   
-    }   
-  }   
-}
- ```
-
-Where:
-
-  * **12345** is the stream ID in Gcore Customer Portal,
-  * **true** is the indicator that the Video Streaming is receiving your stream,
-  * **false** is the indicator that your stream is not being recorded.
-
-
-
-**A live stream is paused**
-
-```json
-{   
-  "type": "stream",   
-  "message": {   
-    "stream": {   
-      "id": 12345,   
-      "live": false,   
-      "recording": false   
-    }   
-  }   
-} 
- ```
-
-Where:
-
-  * **12345** is the stream ID in the Gcore Customer Portal,
-  * **false** is the indicator the Video Streaming is not receiving your stream,
-  * **false** is the indicator that your stream is not being recorded.
-
-
-
-**Recording has started**
-
-```json
-{  
-  "type": "stream",   
-  "message": {   
-    "stream": {   
-      "id": 12345,   
-      "live": true,   
-      "recording": true  
-    }   
-  }   
-}
- ```
-
-Where:
-
-  * **12345** is the stream ID in the Gcore Customer Portal,
-  * **true** is the indicator that the Video Streaming is receiving your stream,
-  * **true** is the indicator that your stream is being recorded.
-
-
-
-**Recording has finished**
-
-```json
-{   
-  "type": "stream",   
-  "message": {   
-    "stream": {   
-       "id": 12345,   
-       "live": true,   
-       "recording": false  
-    }   
-  }   
-}
- ```
-
-Where:
-
-  * **12345** is the stream ID in the Gcore Customer Portal,
-  * **true** is the indicator that the Video Streaming is receiving your stream,
-  * **false** is the indicator that your stream is not being recorded.
-
-
-
-**A recording has started processing**
-
-```json
-{   
-  "type": "video",   
-  "message": {   
-    "video": {   
-      "id": 12345,   
-      "slug": "ZeC44gtQQ4E97N9S",   
-      "name": "Stream Record: test, 2022-05-27 09:08:40 +0000",   
-      "duration": 19580,   
-      "status": "pending",   
-      "converted_videos": [   
-        {   
-          "name": "vod720n",   
-          "status": "processing"  
-        },   
-        {            
-           "name": "vod480n",   
-           "status": "processing"   
-        },   
-        {   
-          "name": "vod360n",   
-          "status": "processing"   
-        },   
-        {   
-           "name": "vod240n",   
-           "status": "processing"   
-        }   
-      ]    
-    }   
-  }   
-}
- ```
-
-Where:
-
-  * **12345** is the recording ID in the Gcore Customer Portal,
-  * **ZeC44gtQQ4E97N9S** is the video ID presented as a random set of characters, which prevents a video URL from stealing if the webhook is intercepted,
-  * **test** is your stream name,
-  * **19580** is the recording duration in seconds,
-  * **vod720n**, **vod480n**, **vod360n**, **vod240n** are the different qualities of the record. 
-  * **processing** is indicator that the recording is being processed.
-
-
-
-**A recording is partially processed**
-
-```json
-{   
-  "type": "video",   
-  "message": {   
-    "video": {   
-      "id": 12345,   
-      "slug": "ZeC44gtQQ4E97N9S",   
-      "name": "Stream Record: test, 2022-05-27 09:08:40 +0000",   
-      "duration": 19580,   
-      "status": "viewable",   
-      "converted_videos": [   
-        {   
-          "name": "vod720n",   
-          "status": "complete"   
-        },   
-        {   
-          "name": "vod480n",   
-          "status": "processing"   
-        },   
-        {   
-          "name": "vod360n",   
-          "status": "processing"   
-        },   
-        {   
-          "name": "vod240n",    
-          "status": "processing"   
-        }   
-      ]   
-    }   
-  }   
-}
- ```
-
-Where:
-
-  * **12345** is the recording ID in the Gcore Customer Portal,
-  * **ZeC44gtQQ4E97N9S** is the video ID presented as a random set of characters, which prevents a video URL from stealing if the webhook is intercepted,
-  * **test** is your stream name,
-  * **19580** is the recording duration in seconds,
-  * **vod720n**, **vod480n**, **vod360n**, **vod240n** are the different qualities of the record. 
-  * **processing** is indicator that the recording is being processed.
-  * **complete** is the indicator that the processing is completed.
-
-
-
-**A recording is completely processed**
-
-```json
-{   
-  "type": "video",   
-  "message": {   
-    "video": {   
-      "id": 12345,   
-      "slug": "ZeC44gtQQ4E97N9S",   
-      "name": "Stream Record: test, 2022-05-27 09:08:40 +0000",   
-      "duration": 19580,   
-      "status": "ready",   
-      "converted_videos": [   
-        {   
-          "name": "vod720n",   
-          "status": "complete"   
-        },   
-        {   
-           "name": "vod480n",   
-           "status": "complete"   
-        },  
-        {   
-          "name": "vod360n",   
-          "status": "complete"  
-        },   
-        {   
-          "name": "vod240n",    
-          "status": "complete"    
-        }   
-      ]   
-    }   
-  }   
-} 
- ```
-
-Where:
-
-  * **12345** is the recording ID in the Gcore Customer Portal,
-  * **ZeC44gtQQ4E97N9S** is the video ID presented as a random set of characters, which prevents a video URL from stealing if the webhook is intercepted,
-  * **test** is your stream name,
-  * **19580** is the recording duration in seconds,
-  * **vod720n**, **vod480n**, **vod360n**, **vod240n** are the different qualities of the record. 
-  * **complete** is the indicator that the processing is completed.
-
-
-
-**A broadcast status is updated to "Waiting to start"**
-
-```json
-{   
-  "type": "broadcast",   
-  "message": {   
-    "broadcast": {   
-      "id": 12345,   
-      "status": "pending"   
-    }   
-  }   
-}
- ```
-
-Where:
-
-  * **12345** is the broadcast ID in your personal account,
-  * **pending** is the status which means "Waiting to start".
-
-
-
-**A broadcast status is updated to "Live"**
-
-```json
-{   
-  "type": "broadcast",   
-  "message": {   
-    "broadcast": {   
-      "id": 12345,   
-      "status": "live"   
-    }   
-  }   
-}
- ```
-
-Where:
-
-  * **12345** is the broadcast ID in your personal account,
-  * **live** is the status which means "Live".
-
-
-
-**A broadcast status is updated to "Finished"**
-
-```json
-{   
-  "type": "broadcast",   
-  "message": {   
-    "broadcast": {   
-      "id": 12345,   
-      "status": "finished"   
-    }   
-  }   
-}
- ```
-
-Where:
-
-  * **12345** is the broadcast ID in your personal account,
-  * **finished** is the status which means "Finished".
-
-
-
-**A broadcast status is updated to "Paused"**
-
-```json
-{   
-  "type": "broadcast",   
-  "message": {   
-    "broadcast": {   
-      "id": 12345,   
-      "status": "paused"  
-    }   
-  }   
-}
- ```
-
-Where:
-
-  * **12345** is the broadcast ID in your personal account,
-  * **paused** is the status which means "Paused".
-
-
-
-**A video is uploaded to the Video Streaming**
-
-```json
-{   
-  "type": "video",   
-  "message": {   
-    "video": {   
-      "id": 54321,   
-      "slug": "Lfsq14hKvLkNsExx",   
-      "name": "SampleVideo",   
-      "duration": 170859,   
-      "status": "empty",   
-      "converted_videos": []   
-    }   
-  }   
-}  
- ```
-
-Where:
-
-  * **54321** is the video ID in the Gcore Customer Portal,
-  * **Lfsq14hKvLkNsExx** is the video ID presented as a random set of characters, which prevents a video URL from stealing if the webhook is intercepted,
-  * **SampleVideo** is the video name,
-  * **170859** is the duration of the video in seconds,
-  * **empty** is the status which means that the video has not been processed yet
-
-
-
-**A video has started processing**
-
-```json
-{   
-  "type": "video",   
-  "message": {   
-    "video": {   
-      "id": 784280,   
-      "slug": "Lfsq14hKvLkNsExx",   
-      "name": "SampleVideo",   
-      "duration": 170859,   
-      "status": "pending",   
-      "converted_videos": [   
-        {   
-          "name": "vod720n",   
-          "status": "processing"   
-        },   
-        {   
-          "name": "vod480n",   
-          "status": "processing"   
-        },   
-        {   
-          "name": "vod360n",   
-          "status": "processing"   
-        },   
-        {   
-          "name": "vod240n",   
-          "status": "processing"  
-        }   
-      ]   
-    }   
-  }   
-}
- ```
-
-Where:
-
-  * **784280** is the video ID in the Gcore Customer Portal,
-  * **Lfsq14hKvLkNsExx** is the video ID presented as a random set of characters, which prevents a video URL from stealing if the webhook is intercepted,
-  * **SampleVideo** is the video name,
-  * **170859** is the duration of the video in seconds,
-  * **processing**, **pending** are the different statuses of the video processing.
-  * **vod720n**, **vod480n**, **vod360n**, **vod240n** are the different qualities of the video.
-
-
-
-**A video is partially processed**
-
-```json
-{   
-  "type": "video",   
-  "message": {   
-    "video": {   
-      "id": 784280,   
-      "slug": "Lfsq14hKvLkNsExx",   
-      "name": "SampleVideo",   
-      "duration": 170859,   
-      "status": "viewable",   
-      "converted_videos": [   
-        {   
-          "name": "vod720n",   
-          "status": "complete"   
-        },   
-        {   
-          "name": "vod480n",   
-          "status": "processing"  
-        },   
-        {   
-          "name": "vod360n",   
-          "status": "processing"   
-        },   
-        {   
-          "name": "vod240n",   
-          "status": "processing"  
-        }   
-      ]   
-    }   
-  }  
-}
- ```
-
-Where:
-
-  * **784280** is the video ID in the Gcore Customer Portal,
-  * **Lfsq14hKvLkNsExx** is the video ID presented as a random set of characters, which prevents a video URL from stealing if the webhook is intercepted,
-  * **SampleVideo** is the video name,
-  * **170859** is the duration of the video in seconds,
-  * **processing**, **complete**, **viewable** are the different statuses of the video processing.
-  * **vod720n**, **vod480n**, **vod360n**, **vod240n** are the different qualities of the video.
-
-
-
-**A video is completely processed**
-
-```json
-{   
-  "type": "video",  
-  "message": {   
-    "video": {   
-      "id": 784280,   
-      "slug": "Lfsq14hKvLkNsExx",   
-      "name": "SampleVideo",   
-      "duration": 170859,   
-      "status": "ready",   
-      "converted_videos": [   
-        {   
-          "name": "vod720n",   
-          "status": "complete"   
-        },   
-        {   
-          "name": "vod480n",   
-          "status": "complete"   
-        },   
-        {   
-          "name": "vod360n",   
-          "status": "complete"   
-        },   
-        {   
-          "name": "vod240n",   
-          "status": "complete"   
-        }   
-      ]   
-    }   
-  }  
-}
- ```
-
-Where:
-
-  * **784280** is the video ID in the Gcore Customer Portal,
-  * **Lfsq14hKvLkNsExx** is the video ID presented as a random set of characters, which prevents a video URL from stealing if the webhook is intercepted,
-  * **SampleVideo** is the video name,
-  * **170859** is the duration of the video in seconds,
-  * **complete**, **ready** is the status which means that the video was processed.
-  * **vod720n**, **vod480n**, **vod360n**, **vod240n** are the different qualities of the video.
-
-
-
-**A restream was created**
-
-```json
-{ 
-  "type": "restream", 
-  "message": { 
-    "restream": { 
-      "id": 228237, 
-      "name": "restream 1", 
-      "stream_id": 1665243, 
-      "live": true 
-      "active": false 
-    } 
-  }
-}
- ```
-
-Where:
-
-  * **228237** is the restream ID in Gcore Customer Portal
-  * **restream 1** is the name of your restream
-  * **1665243** is the stream ID in Gcore Customer Portal
-  * **true** is the indicator that the Video Streaming is receiving your restream
-  * **false** is the indicator that your stream is not being broadcasted
-
-
-
-**A restream is live**
-
-```json
-{ 
-  "type": "restream", 
-  "message": { 
-    "restream": { 
-      "id": 228237, 
-      "name": "restream 1", 
-      "stream_id": 1665243, 
-      "live": true 
-    } 
-  } 
-} 
- ```
-
-Where:
-
-  * **228237** is the restream ID in Gcore Customer Portal
-  * **restream 1** is the name of your restream
-  * **1665243** is the stream ID in Gcore Customer Portal
-  * **true** is the indicator that the Video Streaming is receiving your restream
-
-
-
-**A restream was stopped**
-
-```json
-{ 
-  "type": "restream", 
-  "message": { 
-    "restream": { 
-      "id": 228237, 
-      "name": "restream 1", 
-      "stream_id": 1665243, 
-      "active": false 
-    } 
-  } 
-} 
- ```
-
-Where:
-
-  * **228237** is the restream ID in Gcore Customer Portal
-  * **restream 1** is the name of your restream
-  * **1665243** is the stream ID in Gcore Customer Portal
-  * **false** is the indicator that your stream is not being broadcasted
+Also you can easily create and inspect webhook requests using web site https://webhook.site. 
+For example, the temporary link look like `https://webhook.site/56ce9331-4ec4-4fa1-bf23-4c4e14276f24` to capture and display incoming webhook payloads for debugging. Create your own and send it to us to set up. 

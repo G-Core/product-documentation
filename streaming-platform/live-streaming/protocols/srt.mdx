@@ -1,14 +1,23 @@
 ---
-title: "The Secure Reliable Transport Protocol"
+title: "SRT"
 sidebarTitle: "SRT"
+description: Ingesting original streams via SRT protocol
 ---
 
-Secure Reliable Transport (SRT) is an open-source streaming protocol that solves some of the limitations of RTMP delivery. In contrast to RTMP/RTMPS, SRT is a UDP-based protocol that provides low-latency streaming over unpredictable networks. On Gcore Video Streaming, SRT is also required if you want to use the H265/HVEC codec.
+Secure Reliable Transport (SRT) is an open-source streaming protocol that solves some of the limitations of RTMP delivery. 
+In contrast to RTMP/RTMPS, SRT is a UDP-based protocol that provides low-latency streaming over unpredictable networks. SRT is also required if you want to use the H265/HVEC codec.
 
-Ingest link looks like srt://vp-push-ed1-srt.gvideo.co:5001?streamid=12345#aaabbbcccddd and contains:
-- protocol srt://
-- name of a specific server located in a specific geographic location – vp-push-ed1-srt is located in Europe
-- exact stream key
+Used as:
+ - Used for receiving an origin stream from your encoder, not for playback.
+ - Default port: SRT 5001 (UDP).
+ - Must be configured on your encoder with parameters provided in the [Input Parameters and Codecs](/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs).
+
+
+Ingest link looks like `srt://vp-push-ed1-srt.gvideo.co:5001?streamid=12345#aaabbbcccddd` and contains:
+- protocol `srt://`
+- name of a specific server located in a specific geographic location – `vp-push-ed1-srt` is located in Europe
+- port `:5001`
+- exact stream key `?streamid=12345#aaabbbcccddd`
 
 *Example:*
 That ffmpeg command will generate a test video (1280×720 @30fps color bars) with a 2kHz sine-tone audio track, encode them to H.264 video + AAC audio, and push the stream in FLV format over RTMP to the specified ingest URL.
@@ -33,23 +42,23 @@ By default, Gcore will route your stream to free ingest points with the lowest l
 
 There are two ways to obtain the SRT server URLs: via the Gcore Customer Portal or via the API.
 
-#### Via the Gcore Customer Portal
+#### Via UI
 
 1. In the **Gcore Customer Portal**, navigate to **Streaming** \> [**Live Streaming**](https://portal.gcore.com/streaming/streaming/list).
 
-![List of live streams](https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/live-stream-list.png)
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/live-stream-list.png" alt="List of live streams" style={{ width:"200pt" }} />
 
 2. Click on the stream you want to push to. This will open the **Live Stream Settings**.
 
-![Live stream settings](https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/live-stream-settings.png)
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/live-stream-settings.png" alt="Live stream settings" style={{ width:"200pt" }} />
 
 3. Ensure that the **Ingest type** is set to **Push**.
 4. Ensure that the protocol is set to **SRT** in the **URLs for encoder** section.
 5. Copy the server URL from the **Push URL SRT** field.
 
-![URLs for encoder section](https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/urls-for-encoder.png)
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/urls-for-encoder.png" alt="URLs for encoder section" style={{ width:"200pt" }} />
 
-#### Via the API
+#### Via API
 
 You can also obtain the URL and stream key via the Gcore API. The endpoint returns the complete URLs for the default and backup ingest points, as well as the stream key.
 
@@ -71,6 +80,7 @@ Example of the API response:
 
 Read more in [the API documentation](/docs/api-reference/streaming/streams/create-live-stream).
 
+
 ## SRT PULL
 
 Gcore Video Streaming can pull video data from your external server.
@@ -83,11 +93,11 @@ Main rules of pulling:
 - The stream will be deactivated after 24 hours of inactivity.
 - If you need to set an allowlist for access to the stream, please contact support to get an up-to-date list of networks.
 
-### Setting up a pull stream
+### Setting up PULL stream
 
 There are two ways to set up a pull stream: via the Gcore Customer Portal or via the API.
 
-#### Via the Gcore Customer Portal
+#### Via UI
 
 1. In the **Gcore Customer Portal**, navigate to **Streaming** \> [**Live Streaming**](https://portal.gcore.com/streaming/streaming/list).
 
@@ -103,11 +113,11 @@ There are two ways to set up a pull stream: via the Gcore Customer Portal or via
 
 ![URLs for encoder section](https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/urls-for-encoder.png)
 
-#### Via the API
+#### Via API
 
 You can also set up a pull stream via the Gcore API. The endpoint accepts the URL of the stream to pull from.
 
-Example of the API request:
+Example of API request:
 
 ```http
 PATCH /streaming/streams/{stream_id}
@@ -125,16 +135,39 @@ PATCH /streaming/streams/{stream_id}
 
 Read more in [API documentation](/docs/api-reference/streaming/streams/change-live-stream).
 
+
+## Primary, Backup, and Global Ingest Points
+
+In most cases, one primary ingest point with the default ingest region is enough for streaming.
+For those cases where more attention is needed, Streaming Platform also offers a special feature to use backup ingest point and specify another explicit ingest region.
+
+For example, if you are streaming from Asia and latency seems too big or unstable to you.
+
+For more information, see [Ingest & Backup](/docs/streaming-platform/live-streaming/primary-backup.mdx)
+
+
+## Ingest Limits
+
+<Info>
+Only one ingest protocol type can be used for a live stream at a time.
+For example, if you start pushing SRT and then try to push another protocol like WebRTC WHIP to the same stream simultaneously, the transcoding process will fail.
+</Info>
+
+
 ## SRT Latency
 
 ### Playback problems with SRT
 
-SRT is a low-latency transport protocol by design, but real-world networks are not always stable and the path from a venue to our ingest point may traverse long and unpredictable routes. For this reason, the latency parameter must be tuned to actual network conditions.
-  - Too small latency → insufficient buffer for retransmissions under jitter or loss → packet drops and playback errors.
-	- Too large latency → excessive buffering → unnecessary end-to-end delay.
-	- Manual tuning is recommended rather than relying on defaults, since each environment behaves differently.
+SRT is a low-latency transport protocol by design, but real-world networks are not always stable and the path from a venue to our ingest point may traverse long and unpredictable routes. 
 
-*Incorrect or low default value is one of the most common reasons for packet loss, frames loss, and bad picture.*
+For this reason, the latency parameter must be tuned to actual network conditions:
+  - Too small latency → insufficient buffer for retransmissions under jitter or loss → packet drops and playback errors.
+  - Too large latency → excessive buffering → unnecessary end-to-end delay.
+  - Manual tuning is recommended rather than relying on defaults, since each environment behaves differently.
+
+<Info>
+Incorrect or low default value is one of the most common reasons for packet loss, frames loss, and bad picture.
+</Info>
 
 We therefore recommend setting latency manually rather than relying on the default, to ensure the buffer is correctly sized for your environment. 
 A practical range is 400–2000 ms, with the exact value chosen based on RTT, jitter, and expected packet loss.
@@ -164,6 +197,7 @@ Practical setup notes:
 
 
 Also check official SRT statistics documentation https://github.com/Haivision/srt/blob/master/docs/API/statistics.md 
+
 Enable sender-side SRT stats and watch these fields:
  - RTT and jitter: round-trip time, variability. Drives latency sizing.  ￼
  - Loss and retransmissions: pkt*Loss, pkt*Retrans, pkt*Drop. Rising values → increase latency or reduce bitrate.  ￼

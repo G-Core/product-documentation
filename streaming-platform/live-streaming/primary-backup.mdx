@@ -1,37 +1,79 @@
 ---
-title: "Primary, Backup, and Global Ingest Points"
-sidebarTitle: "Ingest Points & Backup"
+title: "Primary, Backup, and Global Ingest Points for PUSH and PULL"
+sidebarTitle: "Ingest & Backup"
+description: Multiple geo distributed ingest points and limits of getting original stream
 ---
 
-## PUSH Failover with Primary and Backup Ingest Points
+## PUSH Ingest
+
+### Live Ingesting
+
+Live ingesting is the process of sending a live video and audio stream from your source (encoder, camera, or app) into the Streaming Platform. 
+The ingest point is the server endpoint that first receives the stream before it is processed (transcoded, packaged, or distributed via CDN).
+
+In PUSH mode, your encoder initiates the connection to the platform ingest server. You configure the encoder with a target URL and stream key, and the server listens for that incoming connection.
+
+Protocols supported for PUSH ingest typically include:
+  - RTMP/RTMPS — Widely supported in encoders and streaming software.
+  - SRT — Secure and reliable, recommended for contribution over the Internet.
+  - WebRTC WHIP — Low-latency contribution from browsers or apps.
+
+<Info>
+Only one ingest protocol type can be used for a live stream at a time.
+For example, if you start pushing RTMP and then try to push WebRTC WHIP simultaneously, the transcoding process will fail.
+
+Example of server response after sending a second stream:
+```
+[out#0/flv @ 0x600003934000] Error muxing a packet
+[out#0/flv @ 0x600003934000] Task finished with error code: -32 (Broken pipe)
+[out#0/flv @ 0x600003934000] Terminating thread with return code -32 (Broken pipe)
+[out#0/flv @ 0x600003934000] Error writing trailer: Broken pipe
+[out#0/flv @ 0x600003934000] Error closing file: Broken pipe
+```
+</Info>
+
+To use PUSH ingest, you must:
+  1) Select one protocol (RTMP, SRT, or WebRTC WHIP).
+  2) Configure your encoder with the server ingest URL and your unique stream key.
+  3) Ensure network/firewall allows outbound TCP (for RTMP/RTMPS) and UDP (for SRT, WebRTC).
+
+<Info>
+The origin stream provided by your encoder must strictly comply with the input parameters and codec requirements described in the [Input Parameters and Codecs](/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs) documentation.  
+
+Only streams that follow these specifications (supported protocols, video/audio codecs, profiles, GOP structure, and bitrate constraints) can be accepted by the ingest servers and reliably transcoded for further distribution. Any deviation from the documented requirements may cause the connection to be rejected or lead to unstable transcoding and delivery.  
+</Info>
+
+
+### Failover with Primary and Backup Ingest Points for PUSH
 
 In most cases 1 primary point is used for broadcasting. Multiple points are needed for large broadcasts with multiple backups.
 Streaming Platform offers special failover mechanism for RTMP and SRT origin streams. You can push primary and backup origin streams simultaneosly to organize a backup plan. 
 
 Use for RTMP/S: 
-- push_url – as primary
-- backup_push_url - as backup
+- `push_url` – as primary
+- `backup_push_url` - as backup
 
 Use for SRT:
-- push_url_srt – as primary
-- backup_push_url_srt – as backup
+- `push_url_srt` – as primary
+- `backup_push_url_srt` – as backup
 
-PUSH fallback algorith:
-- Primary stream active. Primary is always takes priority over the backup stream.
-– When the primary stream fails and is unavailable for more than ±3 seconds, then fallback process begins (the backup stream must be available and online):
-  - New transcoding started for the backup stream
-  - End-viewers will be without stream data for ±15 seconds
-- When the primary stream is restored, a timer starts counting the time the primary stream has been active. Primary must be available for at least 60 consecutive seconds before a transition to the primary begins:
-  - New transcoding started for the primary stream
-  - End-viewers will be without stream data for ±15 seconds
+**PUSH fallback algorith:**
+
+1)  Primary stream active. Primary is always takes priority over the backup stream.
+2)  When the primary stream fails and is unavailable for more than ±3 seconds, then fallback process begins (the backup stream must be available and online):
+    1) New transcoding started for the backup stream
+    2) End-viewers will be without stream data for ±15 seconds
+3)  When the primary stream is restored, a timer starts counting the time the primary stream has been active. Primary must be available for at least 60 consecutive seconds before a transition to the primary begins:
+    1) New transcoding started for the primary stream
+    2) End-viewers will be without stream data for ±15 seconds
 
 
-## PUSH Geo Distributed Ingest Points
+### Geo Distributed Ingest Points for PUSH
 
 For smoother and more reliable streaming we offer entry servers in regions including:
- - Europe Luxembourg, The Netherlands,
- - US Ashburn, Miami,
- - and Singapore. 
+ - Europe Luxembourg, The Netherlands
+ - US Ashburn, Miami
+ - Singapore
  
 By connecting your encoder to the nearest ingest server, you can minimize latency and improve performance.
 You can specify preferred upload servers and the number of streams per region. Our team will then configure your account to match your streaming setup.
@@ -39,27 +81,49 @@ You can specify preferred upload servers and the number of streams per region. O
 [Reach out to our support team](https://gcore.com/contact-us) or your account manager for setup assistance.
 
 
-## PULL Failover with Multiple Source URIs
+### PUSH Ingest Limits
+
+Pay attention to rules of ingest server behavior because of security reason:
+1) After a connection is established with a valid stream key, the server registers it as active. While this session remains active, any subsequent connection attempts using the same stream key will be rejected. Ingest protocol does not provide error codes for this case, so rejections occur silently. To verify whether a stream is currently active, use UI or API.  
+2) The server also enforces a connection rate limit. If too many connection attempts are made in a short period, new attempts will be denied. To avoid triggering the limiter, allow at least 10 seconds between connection attempts.  
+
+<Info>
+1 connection and 1 protocol can be used at a single moment in time per unique stream key input. Trying to send 2+ connection requests at once, or 2+ protocols at once will not lead to a result.
+
+For example, if you start pushing primary RTMP and backup RTMP to the same single `push_url` simultaneously, the transcoding process will fail.
+</Info>
+
+
+## PULL 
+
+### Failover with Multiple Source URIs for PULL
 
 "PULL URL" field can contain 1 link, or many at once. In most cases 1 point is used. Multiple points are needed for large broadcasts with multiple backups. You can specify multiple addresses separated by a space (" "), so you can organize a extra-backup plan. 
-Example #1: `rtmp://encoder.example.com/live/stream123`
-Example #2: `rtmp://encoder1.example.com/live/stream123 rtmp://encoder2.example.com/live/stream123_backup srt://encoder3.example.com:9000?mode=caller&latency=2000&streamid=stream123`
 
-PULL fallback algorithm:
-- Stream #1 is active
-- If stream #1 is unavailable and is missing for more than ±3 seconds, then the next stream #2 is taken from the "PULL URI" and transition to the next backup source begins:
-  - A new transcoding for the backup stream is started.
-  - End viewers will be without stream data for ±15 seconds.
-  - If this stream #2 is also interrupted, the above algorithm will be repeated for the next backup stream. In this case, the specified addresses will be selected one by one using round robin algorithm. If the first address does not respond, then the next one in the list will be automatically requested, returning to the first and so on in a circle. No worries, if only 1 link is specified in "PULL URI", then the system will request that link.
-- The system will try to pull the origin stream for 2 hours approximately, making requests approximatelly every 3 seconds. 
-  - If one of the links works, the timer is reset to zero, transcoding begins. 
-  - Otherwise the stream stops permanently. To resume it, you will have to activate it manually or via API.
+Example #1:
+```
+rtmp://encoder.example.com/live/stream123
+```
 
+Example #2: 
+```
+rtmp://encoder1.example.com/live/stream123 rtmp://encoder2.example.com/live/stream123_backup srt://encoder3.example.com:9000?mode=caller&latency=2000&streamid=stream123
+```
 
-## PULL Geo Distributed Points
+**PULL fallback algorithm:**
+
+1)  Stream #1 is active
+2)  If stream #1 is unavailable and is missing for more than ±3 seconds, then the next stream #2 is taken from the "PULL URI" and transition to the next backup source begins:
+    1) A new transcoding for the backup stream is started.
+    2) End viewers will be without stream data for ±15 seconds.
+    3) If this stream #2 is also interrupted, the above algorithm will be repeated for the next backup stream. In this case, the specified addresses will be selected one by one using round robin algorithm. If the first address does not respond, then the next one in the list will be automatically requested, returning to the first and so on in a circle. No worries, if only 1 link is specified in "PULL URI", then the system will request that link.
+3)  The system will try to pull the origin stream for 2 hours approximately, making requests approximatelly every 3 seconds. 
+    1) If one of the links works, the timer is reset to zero, transcoding begins. 
+    2) Otherwise the stream stops permanently. To resume it, you will have to activate it manually or via API.
+
+ 
+### Geo Distributed Points for PULL
 
 By setting location correctly, you can minimize latency and improve performance.
 
 [Reach out to our support team](https://gcore.com/contact-us) or your account manager for setup assistance.
-
-
