@@ -38,7 +38,7 @@ To use PUSH ingest, you must:
   3) Ensure network/firewall allows outbound TCP (for RTMP/RTMPS) and UDP (for SRT, WebRTC).
 
 <Info>
-The origin stream provided by your encoder must strictly comply with the input parameters and codec requirements described in the [Input Parameters and Codecs](/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs) documentation.  
+The origin stream provided by your encoder must strictly comply with the input parameters and codec requirements described in the [Input Parameters and Codecs](/streaming-platform/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs) documentation.  
 
 Only streams that follow these specifications (supported protocols, video/audio codecs, profiles, GOP structure, and bitrate constraints) can be accepted by the ingest servers and reliably transcoded for further distribution. Any deviation from the documented requirements may cause the connection to be rejected or lead to unstable transcoding and delivery.  
 </Info>
@@ -57,7 +57,7 @@ Use for SRT:
 - `push_url_srt` – as primary
 - `backup_push_url_srt` – as backup
 
-**PUSH fallback algorith:**
+**PUSH fallback algorithm:**
 
 1)  Primary stream active. Primary is always takes priority over the backup stream.
 2)  When the primary stream fails and is unavailable for more than ±3 seconds, then fallback process begins (the backup stream must be available and online):
@@ -107,7 +107,7 @@ rtmp://encoder.example.com/live/stream123
 
 Example #2: 
 ```
-rtmp://encoder1.example.com/live/stream123 rtmp://encoder2.example.com/live/stream123_backup srt://encoder3.example.com:9000?mode=caller&latency=2000&streamid=stream123
+rtmp://encoder1.example.com/live/stream123 rtmp://encoder2.example.com/live/stream123_backup srt://encoder3.example.com:9000?mode=caller&latency=1000000&streamid=stream123
 ```
 
 **PULL fallback algorithm:**
@@ -127,3 +127,82 @@ rtmp://encoder1.example.com/live/stream123 rtmp://encoder2.example.com/live/stre
 By setting location correctly, you can minimize latency and improve performance.
 
 [Reach out to our support team](https://gcore.com/contact-us) or your account manager for setup assistance.
+
+
+## Players behavior 
+
+Please note that the manifesto and fragments will be available again at the time indicated above. Consider your player configuration for automatic playback of restored live stream. Some players resume playback with a large delay automatically. But if you update them manually, the video will appear instantly.
+
+Use built-in retry knobs and an error handler that re-loads the manifest when it comes back.
+
+For example:
+```
+  hls.js:
+  manifestLoadingMaxRetry: 10,
+  manifestLoadingRetryDelay: 1000,
+
+  dasj.js:
+  retryAttempts: { manifest: 100, media: 10, lowLatency: 10 },
+  retryIntervals: { manifest: 1_000, media: 1_000, lowLatency: 1_000 },
+  rebufferToLive: true,
+```
+
+
+## Backup playback demo
+
+Watch the demo video below of how switching from primary to backup works using PUSH connection example in a real situation.
+
+On the encoder side, 2 streams are organized: "Stream 1 Primary" and "Stream 2 Backup". They are both launched by ffmpeg command. And another terminal with a constant curl of the .mpd manifest status in the CDN: 200 is present or 404 is absent.
+
+The screen displays:
+- Player in UI of personal account, with the ability to manually refresh the player.
+- Second player with the same stream, but with fully automatic recovery. Our player has automatic reconnection logic, but this logic specifically uses a delayed connection check algorithm to reduce the load on the server. You will see that the automatic connection is triggered a little later than the manual one.
+
+<iframe
+  src="https://player.gvideo.co/videos/2675_6FMc2FoOatkgl31"
+  width="100%"
+  height="360"
+  loading="lazy"
+  allow="autoplay; fullscreen; picture-in-picture"
+  allowFullScreen
+/>
+
+Timing (time burned in the stream inside the player):
+1) 13:52:16 UTC – Stream 1 Primary started
+2) 13:52:19 UTC – Stream 1 Primary displayed
+3) 13:52:27 UTC – Stream 2 Backup started
+4) 13:52:50 UTC – Stream 1 Primary stopped
+5) 13:52:53 UTC – Stream 2 Primary enabling
+6) 13:53:02 UTC – Stream 2 Backup displayed **(12 seconds without playback)**
+7) 13:53:10 UTC – Stream 1 Primary started
+8) 13:54:20 UTC – Stream 1 Primary enabling
+9) 13:54:31 UTC – Stream 1 Primary displayed **(11 seconds without playback)**
+
+<Info>
+Players in automatic mode may take longer time to restore playback. See the section above on how to work with players.
+
+After switching from backup to primary the Gcore Video Player decided to use 4 sec latency. Don't worry, it will catch up with the live feed pretty quickly later.
+</Info>
+
+
+**Scripts used in the demo:**
+
+Encoding of the "Stream 1 Primary", and similar for backup:
+```
+ffmpeg -re -stream_loop -1 \
+  -i ~/Temp/coffee_run.webm \
+  -c:a aac -ar 44100 \
+  -c:v libx264 -profile:v baseline -tune zerolatency -preset veryfast \
+  -x264opts "bframes=0:scenecut=0" \
+  -vf "scale=-1:640,\
+drawtext=fontsize=(h/15):fontcolor=yellow:box=1:boxcolor=black:text='%{gmtime\:%T}.%{gmtime\:%3N}UTC, %{frame_num}, %{pts\:hms} %{pts} %{pict_type}, %{eif\:h\:d}px':x=20:y=20,\
+drawtext=text='Stream 1 Primary':fontsize=(h/15):fontcolor=white:box=1:boxcolor=black:x=20:y=80,\
+drawtext=text='%{eif\:t/2\:d\:2}  %{eif\:trunc(mod(t\,2)*4/2)\:d\:2}':fontsize=(h/15):box=1:x=(w-tw)/2:y=h-(4*lh)" \
+  -hide_banner -f flv \
+  "rtmp://vp-push-ed2.gvideo.co/in/2409264?aaabbbcccddd"
+```
+
+Checking HTTP status of the manifest:
+```
+while true; do curl -s -D - -o /dev/null -w 'HTTP/%{http_version} %{http_code}\n' "https://demo-public.gvideo.io/cmaf/11111_2409264/index.mpd" | tr -d '\r' | awk '/^HTTP\//{proto=$1;status=$2} tolower($1)=="content-length:"{cl=$2} tolower($1)=="content-type:"{$1=""; sub(/^ /,""); ctype=$0} tolower($1)=="date:"{$1=""; sub(/^ /,""); dt=$0} END{print proto, status, (cl?cl:"-"), (ctype?ctype:"-"), (dt?dt:"-")}'; sleep 1; done
+```
