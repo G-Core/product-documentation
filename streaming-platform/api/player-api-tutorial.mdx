@@ -1,197 +1,439 @@
 ---
-title: Player API tutorial
-sidebarTitle: Player API tutorial
+title: JS Video Player & SDK
+sidebarTitle: JS player & SDK
+description: SDK of embeddable and customizable JS player for web
 ---
 
+## Main principles
+
+Gcore JS Video Player (@gcorevideo/player) is a lightweight, customizable video player built on top of hls.js, dash.js, and native tag &lt;video />.
+It supports LIVE and VOD playback with low-latency, adaptive protocols, and flexible embedding options.
+
 <Info>
-**Deprecation Notice**  
-This documentation refers to the current version of the Gcore Video Player based on Iframe.
-
-A new version of the player is under development and will be released soon. New player is based on native javascript, and supports all modern browsers and OS. 
-
-Once the new player is available, this documentation will be deprecated and replaced with updated guidelines.
+Full SDK reference is available on [github](https://github.com/G-Core/gcore-videoplayer-js/).
 </Info>
 
-The API allows you to manage the player settings using JavaScript and collect data about its use for further analysis.
+Why use it?
+  - Supports HLS, LL-HLS, MPEG-DASH, LL-DASH, MP4.
+  - Works in all browsers, and on all PCs and mobile devices.
+  - Configurable via plugins.
+  - Full control with SDK methods, events, and error handling.
+  - Works with any source URL (not limited to Gcore Streaming Platform).
 
-## Player initialization via iFrame
+<Info>
+The player was originally created to support LL-HLS and LL-DASH with a latency of ±2-3 seconds.
+</Info>
 
-Copy the iFrame code from the VOD/broadcast settings in your account:
+We developed a new version of the player from scratch using experience in working with video transcoding, video delivery over public network, and video playback.
 
-  * For videos: the All videos section, Settings, Export, Code
-  * For live streaming: the Live streaming section, Settings, Links for the export
+Our architecture is based on the following blocks:
+  - Core of the player is Clappr module.
+  - hls.js to play HLS and LL-HLS on devices without native support.
+  - dash.js to play DASH and LL-DASH on devices without native support. 
+  - Wrapper of &lt;video /> element for native playback of video formats.
 
-
-
-Add the `id='gplayer'` parameter to the iFrame and paste it into the site code.
-
-Example of the iFrame code from the Gcore Customer Portal with the id= 'gplayer' parameter:
-
-```html
-<iframe width="640" height="360" src="https://12345.gvideo.io/video/dSmuIp-tNRtwACT" allow="autoplay" allowfullscreen frameborder="0" id="gplayer"></iframe>
- ```
-
-Parameters:
-
-  * **width** \- the width of the player,
-  * **height** \- the height of the player,
-  * **src** \- content URL (link to VOD or live stream),
-  * **allowfullscreen** \- if the parameter is added to the iframe, a button for switching to full-screen mode is added to the controls of the player,
-  * **frameborder** \- border of the player. The default value is "0" (the border shouldn't be visible),
-  * **id** \- the player ID. Required for further initialization of the player when calling API methods.
+Various plugins (marked with PLUGIN keyword) are available to extend the core functionality with additional features. See full list of plugins, methods, and events in [github](https://github.com/G-Core/gcore-videoplayer-js/blob/main/packages/player/docs/api/player.md).
 
 
+## Live demo
 
-After the iframe add the following code to initialize the player:
+We prepared 2 live demo projects for you:
 
-```html
-<script type="text/javascript" charset="utf-8" src="https://vplatform.gvideo.co/_players/latest/gplayerAPI.min.js"></script>
+**Nuxt**
 
-<script>  
-  window.onload = function() {  
-    let gplayerAPI = new GcorePlayer.gplayerAPI(document.getElementById('gplayer'));   
-  }  
-</script>
- ```
+Full implementation through installation and configuration of each plugin. All plugins are placed on a separate page, where you can select and enable/disable the necessary ones. 
 
-The onload event on window is triggered when the entire page, including the iframe, is loaded. Then there is an indication of the player to which the API call will be applied.
+Pages:
+  - Home – player with configured plugins and sources.
+  - Settings – Settings and plugins to configure.
+  - Source – Video sources to play.
 
-Example of the full player initialization code and iframe for HTML page:
+Live demo on vercel.app – https://gcore-videoplayer-js-nuxt.vercel.app/settings
 
-```html
-<!DOCTYPE html>  
-<html>  
-<head>  
- <title>TITLE</title>  
-</head>  
-<body>  
- <iframe width="640" height="360" src="https://12345.gvideo.io/video/dSmuIp-tNRtwACT" allowfullscreen frameborder="0" id='gplayer'></iframe>  
- <script type="text/javascript" charset="utf-8" src="https://vplatform.gcdn.co/_players/latest/gplayerAPI.min.js"></script>  
- <script>  
- window.onload = function() {  
- let gplayerAPI = new GcorePlayer.gplayerAPI(document.getElementById('gplayer'));  
-}  
- </script>  
-</body>  
-</html>
- ```
 
-## Events
+**Native JS**
 
-| **Event**       | **Returns**                       | **Description**                                           |
-|-----------------|-----------------------------------|-----------------------------------------------------------|
-| ready          |                                   | Fired when playback is ready                              |
-| play           |                                   | Fired when player starts to play                          |
-| pause          |                                   | Fired when player is paused                               |
-| seek           | the current time in seconds       | Fired when player seeks the video                         |
-| resize         | the object with the current size  | Fired when player is resized                              |
-| fullscreen     | true/false                         | Fired when the player is switched to the full screen mode |
-| timeupdate     | data progress object              | Fired when the time is updated on player                  |
-| volumeupdate   | current volume level              | Fired when player's volume is updated                     |
-| error          | error                             | Fired when player receives an error                       |
-| ended          |                                   | Fired when player ends the video                          |
-| stop           |                                   | Fired when player stops                                   |
+Native JS version directly imported as .js file into a web page. 
+Demo supports simplicity of integration with full set of plugins and rich methods of JS Player SDK. 
 
-  
-## Calling player methods
+Live demo on codepen.io – https://codepen.io/dmitritz/pen/OPLdEab
 
-You can start calling methods once you receive the ready event:
 
+## Basic functions
+
+### Set video source
+
+Controlling how and what your player plays is simple thanks to a set of built‑in functions you can configure at initialization. These options let you switch sources, enable autoplay, loop content, mute on start, and even show a preview image before playback begins.
+
+You can use any video source URL, not just streams hosted on Gcore. The player supports standard formats like HLS (.m3u8) and MPEG-DASH (.mpd), Live and VOD. The player will automatically determine the source type and start playback.
+
+You can define a single source to play, and also multiple sources in the configuration. Player will try them in order, use the first compatible one, and display an error stub if none can be played.
+
+
+**Simple way to start HLS playback:**
+
+LIVE, player detects type of video automatically ([clickable link to the video](https://player.gvideo.co/streams/2675_19146)):
 ```js
-gplayerAPI.on('ready', () => { 
-console.log('[Event]', 'ready') 
-gplayerAPI.method({name: 'play'}) 
+const player = new Player({
+  autoPlay: true,
+  mute: true,
+  sources: ["https://demo.gvideo.io/cmaf/2675_19146/master.m3u8"],
 })
- ```
+```
 
-Available methods:
+VOD, player detects type of video automatically ([clickable link to the video](https://player.gvideo.co/videos/2675_w6nGXEimHz4Z6t1j)):
+```js
+const player = new Player({
+  autoPlay: true,
+  mute: true,
+  sources: ["https://demo-public.gvideo.io/videos/2675_w6nGXEimHz4Z6t1j/master.m3u8"],
+})
+```
 
-| **Method name**      | **Data type** | **Description**                                                                                                    |
-|----------------------|---------------|--------------------------------------------------------------------------------------------------------------------|
-| `getCurrentTime`      | Number        | The current time in seconds                                                                                         |
-| `getDuration`        | Number        | The duration time in seconds                                                                                        |
-| `getVolume`          | Number        | Volume. Value from 0 (sound off, mute) to 100 (maximum volume)                                                     |
-| `isDvrEnabled`       | Boolean       | Shows DVR service status: `true` - DVR is enabled, `false` - DVR is disabled                                       |
-| `isPlaying`          | Boolean       | Checks if the player is playing: `true` - the current source is playing, `false` - playback is off/stopped/not started |
-| `mute`               |               | Turns off the sound                                                                                                 |
-| `unmute`             |               | Turns on the sound                                                                                                  |
-| `pause`              |               | Pauses playback                                                                                                     |
-| `play`               |               | Starts playback                                                                                                     |
-| `resize`             | Object        | Modifies the canvas of the player                                                                                   |
-| `seek`               | Number        | Rewinds playback (seconds). For example, `player.seek(120)` rewinds the video and starts at 2 minutes               |
-| `seekPercentage`     | Number        | Rewinds playback (percent). For example, `player.seek(50)` rewinds the video and starts playing from the middle of the video |
-| `setVolume`          | Number        | Sets the volume for the current video                                                                                |
-| `stop`               |               | Stops playback of the current video                                                                                 |
+**Advanced way to start playback with multiple sources:**
 
-  
-Method call pattern:
+Let’s say you want to serve users in different environments. Ideally, you want to deliver a DASH stream, but if the user’s device doesn’t support it, or if the stream fails, you want the player to fall back to HLS. You might also want to show a poster image before playback begins, such as a branded thumbnail or a title screen.
+
+The poster field comes from the Poster plugin and defines which image is shown before playback starts.
+
+You can configure all of this in the player setup:
+
+LIVE ([clickable link to the video](https://player.gvideo.co/streams/2675_19146)):
+```js
+const player = new Player({
+  autoPlay: true,
+  mute: true,
+  playbackType: "live",
+  priorityTransport: 'dash', // [dash|hls], "dash" is default value
+  sources: [
+    {
+      source: "https://demo-public.gvideo.io/cmaf/2675_19146/index.mpd",
+      mimeType: 'application/dash+xml',
+    },
+    {
+      source: "https://demo-public.gvideo.io/cmaf/2675_19146/master.m3u8", 
+      mimeType: 'application/x-mpegURL',
+    }
+  ],
+  poster: { url: 'https://static.gvideo.co/videoplatform/posters/broadcast/21606/e0a5243fdd2ae36061b8cadfa5089fc8.jpeg' },
+})
+```
+
+VOD ([clickable link to the video](https://player.gvideo.co/videos/2675_w6nGXEimHz4Z6t1j)):
+```js
+const player = new Player({
+  autoPlay: true,
+  mute: true,
+  playbackType: "vod",
+  priorityTransport: 'dash', // [dash|hls], "dash" is default value
+  sources: [
+    {
+      source: "https://demo-public.gvideo.io/videos/2675_w6nGXEimHz4Z6t1j/master.mpd",
+      mimeType: 'application/dash+xml',
+    },
+    {
+      source: "https://demo-public.gvideo.io/videos/2675_w6nGXEimHz4Z6t1j/master.m3u8", 
+      mimeType: 'application/x-mpegURL',
+    }
+  ],
+  poster: { url: 'https://static.gvideo.co/videoplatform/posters/video/11452407/eb4fba797fc1f41309e5b0b552319208.jpeg' },
+})
+```
+
+
+### Enable autoplay
+
+To enable autoplay, set `autoPlay: true`. Don't forget to combine it with `mute: true` to comply with most browser policies.
+```js
+const player = new Player({
+  autoPlay: true,
+  sources: ["https://demo-public.gvideo.io/videos/2675_mvsPGvDVx0Hzbog/master.m3u8"],
+})
+```
+
+
+### Loop playback
+
+Use the `loop: true` config option to repeat the video continuously.
+```js
+const player = new Player({
+  loop: true,
+  playbackType: 'vod',
+  sources: ["https://demo-public.gvideo.io/videos/2675_mvsPGvDVx0Hzbog/master.m3u8"],
+})
+```
+
+
+### Mute on start
+
+Set `mute: true` to start playback without audio. This helps meet autoplay restrictions.
+```js
+const player = new Player({
+  mute: true,
+  sources: ["https://demo-public.gvideo.io/videos/2675_mvsPGvDVx0Hzbog/master.m3u8"],
+})
+```
+
+
+### Set thumbnail
+
+Use the `Poster` plugin and define an image using the `poster.url` setting. This image appears before playback starts and is helpful for branding, showing a preview, or providing visual context.
+```js
+poster: {
+  url: "https://static.gvideo.co/videoplatform/posters/video/11452143/6423b07877c27c372b205aa99fd13f42.jpeg",
+  showForNoOp: true
+}
+```
+
+
+## How to customize
+
+Make the player look and behave exactly how you want by applying custom styles or hiding built‑in interface elements before diving into specific tweaks.
+
+
+### How to set custom skin
+
+Since the player’s UI is plugin-based, most interface elements expose class names that can be targeted directly. For complete control over layout and styling, it’s recommended that you define your styles in a scoped or external stylesheet. 
+
+| Theme eleme        | Description                               |
+|--------------------|-------------------------------------------|
+| Background color   | Background of bottom play panel           |
+| Foreground color   | Color of icons, play button, and timeline |
+| Text color         | Color of text                             |
+| Hover color        | Color of buttons under mouse pointer      |
+
+Example of CSS can be found here:
+```html
+  <link rel="stylesheet" href="https://player.gvideo.co/v2/assets/2.26.9/index.css" />
+```
+
+
+### How to hide UI components
+
+The player interface is modular. Visual elements are enabled by activating corresponding plugins. The `Media controls` plugin handles the core of the UI — if it's not selected, most visible components won’t appear. Each UI-related plugin can be toggled dynamically at runtime. Some plugins also act as containers and unlock access to additional components.
 
 ```js
-gplayerAPI.method({name: 'isPlaying', params: {}, callback: (res) => { 
- console.log(res) 
-}})
- ```
+player.on('ready', () => {
+  const mc = player.getPlugin('MediaControl')
+  if (mc) {
+    mc.disable()
+  }
+})
+```
 
-  * name - the name of the function,
-  * params - the parameters of the function,
-  * callback - the callback function.
+If you're building a completely custom UI, you can disable the default controls (via plugin settings) and implement your interface on top of the [core playback API](https://github.com/G-Core/gcore-videoplayer-js/blob/main/packages/player/docs/api/player.md). 
 
 
+## Install and configure
 
-Examples:
+### Install via npm or yarn
 
+The Gcore Player SDK doesn’t depend on any specific framework — it works with React, Vue, Svelte, plain JS, or even CMS platforms like WordPress and Tilda.
+
+This section shows how to install and launch a minimal player in your environment.
+
+
+**Step 1. Install the SDK**
+
+Use npm or yarn to install the player package:
+```
+npm install @gcorevideo/player
+```
+or 
+```
+yarn add @gcorevideo/player
+```
+
+
+**Step 2. Import and configure the player**
+
+In your frontend app, import the player’s styles and core modules, register the plugins you need, and then initialize the player against your container element once it’s in the DOM by using code like this (adaptable to any framework):
+
+```js
+import '@gcorevideo/player/dist/index.css'
+import { Player, MediaControl, SourceController } from '@gcorevideo/player'
+ 
+Player.registerPlugin(MediaControl)
+Player.registerPlugin(SourceController)
+ 
+const player = new Player({
+  autoPlay: true,
+  mute: true,
+  sources: [{
+	source: 'https://example.com/your-video.m3u8',
+	type: 'application/x-mpegURL'
+  }]
+})
+ 
+player.attachTo(document.getElementById('container'))
+```
+
+
+**Step 3: Add container**
+
+Then, you must define your container element in HTML or your component:
+```
+<div id="container" style="width: 640px; height: 360px;"></div>
+```
+
+Set the container’s width and height explicitly with CSS or inline styles, like in the example. The player attaches only if the container has visible dimensions.
+
+
+### Native JS
+
+As alternative you can directly import native .js file into your HTML pages without installation.
+
+Add module:
 ```html
-<script>  
- window.onload = function() {  
- let gplayerAPI = new GcorePlayer.gplayerAPI(document.getElementById('gplayer'));  
- let flag = true;  
- gplayerAPI.on('ready', () => {  
- console.log('\[Event\]', 'ready')  
- gplayerAPI.method({name: 'play'})  
- })  
-  
-gplayerAPI.on('play', () => {  
- if(flag) {  
- gplayerAPI.method({name: 'pause'})  
- flag = false;  
- }  
- console.log('[Event]', 'play')  
- })  
-  
-gplayerAPI.on('pause', () => {  
- console.log('[Event]', 'pause')  
- })  
-  
-gplayerAPI.on('volumeupdate', () => {  
- console.log('[Event]', 'volumeupdate')  
- })  
-  
-gplayerAPI.on('timeupdate', () => {  
- console.log('[Event]', 'timeupdate')  
- })  
-  
-gplayerAPI.on('stop', () => {  
- console.log('[Event]', 'stop')  
- })  
-  
-gplayerAPI.on('seek', () => {  
- console.log('[Event]', 'seek')  
- })  
-  
-gplayerAPI.on('resize', () => {  
- console.log('[Event]', 'resize')  
- })  
-  
-gplayerAPI.on('fullscreen', () => {  
- console.log('[Event]', 'fullscreen')  
- })  
-  
-gplayerAPI.on('error', () => {  
- console.log('[Event]', 'error')  
- })  
-  
-gplayerAPI.on('ended', () => {  
- console.log('[Event]', 'ended')  
- }) }  
+<script src="https://player.gvideo.co/v2/assets/2.26.9/index.js"></script>
+```
+
+Or import exact modules and plugins you need:
+```html
+<script type="module">
+  import {
+    Player,
+    ...
+  } from 'https://player.gvideo.co/v2/assets/2.26.9/index.js'
+  ...
 </script>
- ```
+```
+
+Description of how to use and the latest version is alwas available on [github](https://github.com/G-Core/gcore-videoplayer-js/blob/main/packages/player/README.md). 
+
+
+## Use plugins
+
+The following plugins extend the player’s capabilities:
+| Category     | Feature            | Description                                                                 |
+|--------------|--------------------|-----------------------------------------------------------------------------|
+| **Playback** | Audio tracks       | Allows selection of different audio tracks                                  |
+|              | Click to pause     | Enables pausing by clicking on the player                                   |
+|              | Clips              | Enables clipping segments from the video                                    |
+|              | DVR controls       | Enables Digital Video Recorder (DVR) functionality                          |
+|              | Picture in picture | Enables floating mini-player mode                                           |
+|              | Playback rate      | Adjusts playback speed                                                      |
+|              | Quality levels     | Allows manual or automatic video quality selection                          |
+|              | Seek time          | Shows timestamp preview when hovering over the timeline                     |
+|              | Skip time          | Allows skipping forward 30s or backward 10s by tapping screen edges on mobile|
+|              | Source controller  | Manages the auto-selection of playback sources                              |
+|              | Subtitles          | Enables closed captions or subtitles                                        |
+|              | Volume fade        | Smoothly fades volume up when hovering on the player, and down when leaving |
+| **UI**       | Big mute button    | Adds a larger mute button on top of the player                              |
+|              | Context menu       | Provides a right-click menu with options                                    |
+|              | Error screen       | Displays an error message if playback fails                                 |
+|              | Example UI         | Loads an example user interface                                             |
+|              | Favicon            | Displays a favicon for branding in the browser tab                          |
+|              | Gear button        | Adds a settings button to the interface                                     |
+|              | Media controls     | Displays basic controls (play, pause, seek, etc.)                           |
+|              | Poster             | Displays a cover image before playback starts                               |
+|              | Spinner            | Displays a loading animation while buffering                                |
+|              | Thumbnails         | Shows preview images when hovering over the timeline                        |
+| **Analytics** | CMCD       | Adds Common Media Client Data support for analytics                        |
+|              | Stats for nerds    | Displays detailed performance stats for debugging                           |
+
+
+For a full list and detailed descriptions of every plugin, see the [Plugin Reference](https://github.com/G-Core/gcore-videoplayer-js/blob/main/packages/player/docs/api/player.md) in our GitHub repository.
+
+
+## SDK overview
+
+Gcore Video Player is configured through a single object called `PlayerConfig`. This object defines the player’s behavior, including video sources, playback type, preferred streaming protocol, autoplay and mute settings, poster image, and enabled plugins.
+
+
+### Methods overview
+
+Once the player is initialized, you can use its instance methods to control playback. You don’t need to deal with the internal architecture—most features are exposed via simple methods.
+
+| Category              | Method              | Description                                                                 |
+|-----------------------|---------------------|-----------------------------------------------------------------------------|
+| **Playback control**  | `player.play()`     | Start playback                                                              |
+|                       | `player.pause()`    | Pause playback                                                              |
+|                       | `player.stop()`     | Stop playback and clear the current stream                                  |
+| **Mute & volume**     | `player.mute()`     | Mute audio                                                                  |
+|                       | `player.unmute()`   | Unmute audio                                                                |
+|                       | `player.setVolume(0.5)` | Set volume (0.0 – 1.0)                                                    |
+|                       | `player.isMuted()`  | Check if player is muted                                                    |
+|                       | `player.getVolume()`| Get current volume value                                                     |
+| **Seek & timing**     | `player.getCurrentTime()` | Get current playback position (in seconds)                              |
+|                       | `player.getDuration()`   | Get total media duration (in seconds)                                     |
+|                       | `player.seek(120)`       | Jump to a specific time (e.g. 120 seconds = 2 min)                        |
+| **Cleanup**           | `player.destroy()`  | Release resources and disconnect player before removing DOM container       |
+
+For a full list of methods see the [Player class](https://github.com/G-Core/gcore-videoplayer-js/blob/main/packages/player/docs/api/player.player.md#methods) in our GitHub repository.
+
+
+### Events overview
+
+The player emits events throughout the playback lifecycle. You can track user interaction, update your interface, or synchronize video playback with other actions in your app.
+
+One of the most common events is play, which triggers when playback begins—either automatically or after user interaction:
+```js
+player.on("play", () => {
+  // Called when playback starts
+})
+```
+
+| Category        | Event           | Description                                                                 |
+|-----------------|-----------------|-----------------------------------------------------------------------------|
+| **Playback**    | `pause`         | Triggered when playback is paused                                           |
+| **Seek & time** | `seek`          | Fired when the current time changes (programmatically or by user action)    |
+| **Audio**       | `volumeupdate`  | Fired when volume or mute state changes                                     |
+| **Errors**      | `error`         | Fired when playback fails or media cannot be loaded                         |
+
+For a complete list of player events and their parameters, refer to the [PlayerEvent class](https://docs.gcore.com/video-streaming/sdk/player-events) documentation.
+
+
+### Errors overview
+
+Gcore Video Player emits a standardized error event whenever playback fails. This event returns a `PlaybackError` object containing details such as error code, message, severity, and source:
+
+```js
+player.on("error", (error) => {
+  console.warn("Playback error:", error.message)
+})
+```
+
+The most common playback errors include:
+  - Invalid or unreachable video URLs
+  - Missing or corrupted media metadata
+  - Unrecognized formats or codec issues
+
+Most non-fatal errors can be handled by showing fallback UI, retrying playback, or switching to a backup stream. We recommend using the SourceController plugin to automate fallback logic and recovery scenarios.
+You can find additional insights in the [PlaybackError](https://github.com/G-Core/gcore-videoplayer-js/blob/main/packages/player/docs/api/player.playbackerror.md) reference.
+
+
+### Debug overview
+
+If the video doesn’t start, buffers indefinitely, or behaves unexpectedly, you can enable logs to investigate the issue.
+
+**Enable debug output:**
+
+Use the built-in tracer utility to print internal logs to the browser console:
+
+```js
+import { Logger, LogTracer } from "@gcorevideo/utils"
+Logger.enable("*")
+const tracer = new LogTracer("your-app-name")
+```
+
+This will show detailed output about player lifecycle events, source selection, buffering status, and error messages, which are helpful when debugging unsupported formats or network failures.
+
+**Integrate with observability tools:**
+
+Gcore Player supports integration with remote logging platforms like Sentry for production setups. You can send structured metadata (browser, device, resolution, etc.) and playback errors to help identify user-side issues at scale — see the [Sentry integration](https://github.com/dmitritz/gcore-videoplayer-js-nuxt/blob/29f9c6bb226970886962f99a9d475f57169bceba/app.vue#L56) and [server-side logging](https://github.com/dmitritz/gcore-videoplayer-js-nuxt/blob/29f9c6bb226970886962f99a9d475f57169bceba/app.vue#L38C22-L38C34) examples.
+
+
+## Limits
+
+### Views Statistics
+
+This player does not collect or send usage statistics from end user devices. Viewing statistics are available from CDN data. See the apidocs section [Get unique viewers via CDN](/api-reference/streaming/streaming-statistics/get-unique-viewers-via-cdn).
+
+
+### Missing the feature you need?
+
+We are extremely customer-oriented. If you see a lack of functionality, it means the player can be modified to suit your requirements.
+
+If something is missing in the player, it means there were no requirements for implementation. Contact us and we will come up with a suitable solution.
+
