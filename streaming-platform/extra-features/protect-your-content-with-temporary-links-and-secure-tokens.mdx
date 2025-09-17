@@ -9,8 +9,8 @@ By default, videos are available by their links with no restrictions and can be 
 
 Gcore has several methods of protecting video content:
 
-  1. Protected temporary links
-  2. [Country access policy (Geo-restrictions)](/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#country-access-policy)
+  1. Protected temporary links with secure token
+  2. [Country access policy (geo-restrictions)](/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#country-access-policy)
   3. [Referrer validation](/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#allow-referrer-policy)
   4. [AES-128 encryption](/streaming-platform/video-hosting/protect-your-videos-with-the-aes-128-encryption)
 
@@ -22,7 +22,7 @@ In this article, we will look at the first option: protected temporary links and
 
 ## What are protected temporary links?
 
-Protected temporary links are generated using the [Secure Token](/cdn/cdn-resource-options/security/use-a-secure-token/about-secure-token) feature, which allows configuring access with tokenized URLs. When using this option, you add a special character set to every URL. Check out the examples below with the special characters highlighted in bold. At Gcore, we call these special characters _Secure Tokens_.
+Protected temporary links are generated using the [CDN-resource Secure Token](/cdn/cdn-resource-options/security/use-a-secure-token/about-secure-token) feature, which allows configuring access with tokenized URLs. When using this option, you add a special character set to every URL. Check out the examples below with the special characters highlighted in bold. At Gcore, we call these special characters _Secure Tokens_.
 
 VOD:
   * Public: https://demo-public.gvideo.io/videos/2675_pG8TfmKx2LU2qs/master.m3u8
@@ -54,33 +54,43 @@ content-type: text/html
 content-length: 136
 ```
 
+
 ## CDN resources and scope of restrictions
 
 Video content hosted via the Video Streaming is viewed and delivered through our CDN, so by default your account has only one hidden CDN resource in the format _******.gvideo.io_.
 
 The restriction policies, such as the Secure Token for links protection, apply specifically to CDN resources because a CDN resource covers all video content at once. This means you don't need to create rules and make permissions for each video separately—it is enough to create and apply permissions only once to the CDN resource.
 
-Moreover, your account can have several CDN resources leading to the same content (origin). These CDN resources can be with different access policies. So you can combine open access on one CDN resource, and private access on another one, etc.
+Note: Your account can have several CDN resources leading to the same content (origin). These CDN resources can be with different access policies. So you can combine open access on one CDN resource, and private access on another one, etc.
+
+For example we have 2 demo domains for IP-binding and generic:
+  - For generic secure token use without IP-binding: https://demo-protected.gvideo.io/
+  - For IP-binded secure token: https://demo-protected-ip.gvideo.io/
+
 
 ## How to enable the secure token feature?
 
-To enable the Secure Token feature and start protecting your links, please [check out our product docs on the topic](/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token).
+To enable the Secure Token feature and start protecting your links, please check out [the CDN page how to activate a secure token for CDN-resource](/cdn/cdn-resource-options/security/use-a-secure-token/about-secure-token).
 
-## Format of protected temporary links
+<Info>
+  To enable IP-based secure tokens, turn on the “Add client IP to token” option. Disable this option if IP binding is not required.
+</Info>
 
-Secure Token-protected temporary links have the following format: 
+
+## Secure token for HLS/DASH
+
+Secure token – protected temporary links have the following format: 
 
 ```sh
-https://domain.com/videos|cmaf/{client_id}_{video_id}/{token}/{expiration}/manifest.m3u8
+https://domain.com/videos|cmaf|mpegts/{client_id}_{video_id}/{token}/{expiration}/manifest.m3u8
  ```
 
 Where:
-
-  * `videos` – for VOD, `cmaf` – for LIVE
+  * `videos` – for VOD, `cmaf|mpegts` – for LIVE
   * `{client_id}` is your account ID
   * `{video_id}` is the identifier of the video or live stream
   * `{token}` is the MD5 hash of the video and other attributes
-  * `{expiration}` is the unix time in seconds of how long will the link be valid
+  * `{expiration}` is a Unix timestamp (in seconds) that defines until when the link remains valid
 
 
 For Gcore Video on Demand (VOD) and Gcore Live Streaming, a relative path is used for all file types used to deliver video content, such as additional manifests, chunks, and MP4 renditions. Therefore, the path of the main manifest is taken as the basis and the following path is built relative to it.
@@ -100,6 +110,24 @@ Examples of templates of protected links for LIVE:
   * `https://domain.com/cmaf/{client_id}_{stream_id}/{token}/{expiration}/`**004chunk-stream4-10000000-05213.m4s?part=4**
 
 
+## Advanced secure token for MP4
+
+A regular secure token for HLS/DASH from above protects the entire video entity. 
+When distributing MP4 files separately from ABR, use an MP4 advanced secure token as an additional query parameter. This restricts access to the specific MP4 rendition and prevents unauthorized MP4 distribution.
+
+<Info>
+  Advanced secure token for MP4 cannot be combined with generic secure token for HLS/DASH. In case of combination the secure token for HLS/DASH will have priority to resolve an accees.
+</Info>
+
+Advanced secure token for MP4 – protected temporary links have the following format: 
+```sh
+https://domain.com/videos/client_id_video_id/filename.mp4?md5={token}&expires={expiration}
+ ```
+
+Where:
+  * `{token}` is the MD5 hash of the MP4 file path and other options
+  * `{expiration}` is a Unix timestamp (in seconds) that defines until when the link remains valid
+
 
 ## A note on the expiration time
 
@@ -113,9 +141,29 @@ To handle both cases, ensure you set the expiration far enough into the future t
 expires = 1861919999 # Sunday, December 31, 2028 23:59:59 GMT
  ```
 
+
 ## How to create protected links with the secure token
 
-Note that generating a Secure Token requires the same process for both VOD and Live Streaming. 
+### Create secure token for HLS/DASH
+
+Pattern to generate token:
+1) Tokens without user ip: 
+```
+${client_id}_${video_id}_${secret}_${expires}_
+```
+2) Tokens with user ip: 
+```
+${client_id}_${video_id}_${secret}_${expires}_${user_ip}
+```
+
+| Parameter     | Required | Description                                                                |
+|---------------|----------|----------------------------------------------------------------------------|
+| **client_id** | yes      | URL of the MP4 file                                                        |
+| **video_id**  | yes      | Video_Slug or Stream_ID identifier                                         |
+| **secret**    | yes      | Secret phrase                                                              |
+| **expires**   | yes      | Expiration time (Unix timestamp, UTC)                                      |
+| **user_ip**   | optional | Client IP address. Required only if token was generated with IP binding    |
+
 
 <Tabs>
   <Tab title="Python">
@@ -125,11 +173,11 @@ Note that generating a Secure Token requires the same process for both VOD and L
     from time import time
 
     def gethash(client_id, video_id, secret, expires):
-        hash_body = "%s_%s_%s_%s_" % (client_id, video_id, secret, expires)   # set of unique parameters of video
-        hash_md5 =  base64.b64encode(                                         # get MD5 hash from parameters of video
-                md5(hash_body.encode()).digest()                            
-            ).decode().replace("+", "-").replace("/", "_").replace("=", "")   # preparation for use in URL 
-        return hash_md5
+      hash_body = "%s_%s_%s_%s_" % (client_id, video_id, secret, expires)   # set of unique parameters of video
+      hash_md5 =  base64.b64encode(                                         # get MD5 hash from parameters of video
+          md5(hash_body.encode()).digest()                            
+        ).decode().replace("+", "-").replace("/", "_").replace("=", "")   # preparation for use in URL 
+      return hash_md5
 
     client_id = "2675"       # enter your account ID here
     secret = ""              # enter your secret key from CDN-resource here
@@ -154,39 +202,227 @@ Note that generating a Secure Token requires the same process for both VOD and L
     package main
 
     import (
-        "crypto/md5"
-        "encoding/base64"
-        "fmt"
-        "time"
+      "crypto/md5"
+      "encoding/base64"
+      "fmt"
+      "time"
     )
 
     func gethash(clientId string, videoId string, secret string, expires int64) string {
-        hashBody := fmt.Sprintf("%s_%s_%s_%d_", clientId, videoId, secret, expires) // set of unique parameters of video
-
-        md5sum := md5.Sum([]byte(hashBody)) // get MD5 hash from parameters of video
-        hashMd5 := base64.RawURLEncoding.EncodeToString(md5sum[:])
-        return hashMd5
+      hashBody := fmt.Sprintf("%s_%s_%s_%d_", clientId, videoId, secret, expires) // set of unique parameters of video
+      md5sum := md5.Sum([]byte(hashBody)) // get MD5 hash from parameters of video
+      hashMd5 := base64.RawURLEncoding.EncodeToString(md5sum[:])
+      return hashMd5
     }
 
     func main() {
-        clientId := "2675" // enter your account ID here
-        secret := ""       // enter your secret key from CDN-resource here
+      clientId := "2675" // enter your account ID here
+      secret := ""       // enter your secret key from CDN-resource here
 
-        //VOD
-        videoSlug := "3dk4NsRt6vWsffEr"         // enter your video's slug here
-        expires := time.Now().Unix() + 24*60*60 // now + 24 hours, unixtime in seconds
+      //VOD
+      videoSlug := "3dk4NsRt6vWsffEr"         // enter your video's slug here
+      expires := time.Now().Unix() + 24*60*60 // now + 24 hours, unixtime in seconds
 
-        token := gethash(clientId, videoSlug, secret, expires)
-        fmt.Printf("https://demo-protected.gvideo.io/videos/%s_%s/%s/%d/master.m3u8 \n", clientId, videoSlug, token, expires)
+      token := gethash(clientId, videoSlug, secret, expires)
+      fmt.Printf("https://demo-protected.gvideo.io/videos/%s_%s/%s/%d/master.m3u8 \n", clientId, videoSlug, token, expires)
 
-        //LIVE
-        streamId := "201693"                   // enter your live stream id here
-        expires = time.Now().Unix() + 24*60*60 // now + 24 hours, unixtime in seconds
+      //LIVE
+      streamId := "201693"                   // enter your live stream id here
+      expires = time.Now().Unix() + 24*60*60 // now + 24 hours, unixtime in seconds
 
-        token = gethash(clientId, streamId, secret, expires)
-        fmt.Printf("https://demo-protected.gvideo.io/cmaf/%s_%s/%s/%d/master.m3u8 \n", clientId, streamId, token, expires)
+      token = gethash(clientId, streamId, secret, expires)
+      fmt.Printf("https://demo-protected.gvideo.io/cmaf/%s_%s/%s/%d/master.m3u8 \n", clientId, streamId, token, expires)
     }
 
     ```
+  </Tab>
+</Tabs>
+
+
+### Create advanced secure token for MP4
+
+The MP4 advanced secure token is generated from the full MP4 URL. You can optionally bind [MP4 speed limit](/streaming-platform/video-hosting/hls-and-mp4#mp4-dynamic-speed-limiting) to the token by including the `speed` and `buffer` parameters. This ensures that download rate limits cannot be bypassed – if a user tampers with these values, the request will return 403 Forbidden.
+If no speed limit is required, set both `speed` and `buffer` to an empty string when generating the token.
+
+Pattern to generate token:
+1) Tokens without user ip: 
+```
+${uri}_${secret}_${expires}_${speed}_${buffer}_
+```
+2) Tokens with user ip: 
+```
+${uri}_${secret}_${expires}_${speed}_${buffer}_${user_ip}
+```
+
+| Parameter   | Required | Description                                                                |
+|-------------|----------|----------------------------------------------------------------------------|
+| **uri**     | yes      | Path from MP4 file URL                                                     |
+| **secret**  | yes      | Secret phrase                                                              |
+| **expires** | yes      | Expiration time (Unix timestamp, UTC)                                      |
+| **speed**   | optional | Download speed limit in bytes/sec. Use an empty string if not required     |
+| **buffer**  | optional | Buffer size in bytes for rate limiting. Use an empty string if not required|
+| **user_ip** | optional | Client IP address. Required only if token was generated with IP binding    |
+ 
+Examples:
+Secret: `MySecr3tStr1ng`
+
+Without user ip:
+```
+string to sign: /videos/279481_1053391/qid2920v1_h264_4050_1080_1.mp4_MySecr3tStr1ng_1743167062___
+url: http://gvideo.dev/videos/279481_1053391/qid2920v1_h264_4050_1080_1.mp4?md5=QX39c77lbQKvYgMMAvpyMQ&expires=1743167062
+
+string to sign: /videos/279481_1053391/qid2920v1_h264_4050_1080_1.mp4_MySecr3tStr1ng_1743167062_1000k__
+url: http://gvideo.dev/videos/279481_1053391/qid2920v1_h264_4050_1080_1.mp4?md5=UcB_lMku9m-MtxIEos_V-w&expires=1743167062&speed=1000k
+
+string to sign: /videos/279481_1053391/qid2920v1_h264_4050_1080_1.mp4_MySecr3tStr1ng_1743167062_1000k_2000k_
+url: http://gvideo.dev/videos/279481_1053391/qid2920v1_h264_4050_1080_1.mp4?md5=yGa6cK0jM4YvwaSUEPvwMA&expires=1743167062&speed=1000k&buffer=2000k
+```
+
+With user ip 1.2.3.4
+```
+string to sign: /videos/279481_1053391/qid2920v1_h264_4050_1080_1.mp4_MySecr3tStr1ng_1743167062___1.2.3.4 
+url: http://gvideo.dev/videos/279481_1053391/qid2920v1_h264_4050_1080_1.mp4?md5=SZMnuXQv-81sVqslGtXwlA&expires=1743167062 
+
+string to sign: /videos/279481_1053391/qid2920v1_h264_4050_1080_1.mp4_MySecr3tStr1ng_1743167062_1000k__1.2.3.4 
+url: http://gvideo.dev/videos/279481_1053391/qid2920v1_h264_4050_1080_1.mp4?md5=fhhV7JWE7c1HGjD7Vu5XsA&expires=1743167062&speed=1000k 
+
+string to sign: /videos/279481_1053391/qid2920v1_h264_4050_1080_1.mp4_MySecr3tStr1ng_1743167062_1000k_2000k_1.2.3.4 
+url: http://gvideo.dev/videos/279481_1053391/qid2920v1_h264_4050_1080_1.mp4?md5=by-olfoRZ3-Nntli7_2Ecw&expires=1743167062&speed=1000k&buffer=2000k
+```
+
+<Tabs>
+  <Tab title="Python">
+    ```python
+    import base64
+    from hashlib import md5
+    from time import time
+    from datetime import datetime, timezone, timedelta
+
+    def gethash_mp4(uri, secret, expires, speed, buffer, ip):
+        hash_body = "%s_%s_%d_%s_%s_%s" % (uri, secret, expires, speed, buffer, ip)   # set of unique parameters of video
+        hash_md5 =  base64.b64encode(                                                 # get MD5 hash from parameters of video
+            md5(hash_body.encode()).digest()
+        ).decode().replace("+", "-").replace("/", "_").replace("=", "")   # preparation for use in URL
+        return hash_md5
+
+    secret = ""                                             # enter your secret key from the CDN-resource
+    uri = "/videos/2675_pG8TfmKx2LU2qs/qid3570v1_h264_1800_720.mp4"   # path of the MP4 file
+
+    # current time
+    time_now = datetime.now(timezone.utc)
+    expires = int(time()) + 24 * 60 * 60            # expiration = now + 24 hours, unixtime in seconds
+    expires_dt = datetime.fromtimestamp(expires, tz=timezone.utc)
+    time_format = "%Y-%m-%d %H:%M:%S %Z"
+    print("Now:     ", int(time_now.timestamp()), time_now.strftime(time_format))
+    print("Expires: ", expires, expires_dt.strftime(time_format))
+
+    # MP4 protected (the CDN resource must be with deactivated option "Add a client's IP to the token")
+    token = gethash_mp4(uri, secret, expires, "", "", "")
+    print(f"https://demo-protected.gvideo.io{uri}?md5={token}&expires={expires}")
+    print(f"https://demo-protected.gvideo.io{uri}/download?md5={token}&expires={expires}")
+    print(f"https://demo-protected.gvideo.io{uri}/download=my-awesome-video?md5={token}&expires={expires}")
+
+    # MP4 with speed limit
+    speed = "1M"
+    token = gethash_mp4(uri, secret, expires, speed, "", "")
+    print(f"https://demo-protected.gvideo.io{uri}?md5={token}&expires={expires}&speed={speed}")
+
+    # MP4 with speed and buffer limit
+    speed = "500K"
+    buffer = "10M"
+    token = gethash_mp4(uri, secret, expires, speed, buffer, "")
+    print(f"https://demo-protected.gvideo.io{uri}?md5={token}&expires={expires}&speed={speed}&buffer={buffer}")
+
+    # MP4 protected with user's IP address (the CDN resource must be with activated option "Add a client's IP to the token")
+    ip = "92.223.112.84"
+    token = gethash_mp4(uri, secret, expires, "", "", ip)
+    print(f"https://demo-protected-ip.gvideo.io{uri}?md5={token}&expires={expires}")
+    print(f"https://demo-protected-ip.gvideo.io{uri}/download?md5={token}&expires={expires}")
+    print(f"https://demo-protected-ip.gvideo.io{uri}/download=my-awesome-video?md5={token}&expires={expires}")
+
+    # MP4 protected with user's IP address and speed limit
+    speed = "1000K"
+    token = gethash_mp4(uri, secret, expires, speed, "", ip)
+    print(f"https://demo-protected-ip.gvideo.io{uri}?md5={token}&expires={expires}&speed={speed}")
+
+    # MP4 protected with user's IP address, speed and buffer limit
+    speed = "500K"
+    buffer = "10M"
+    token = gethash_mp4(uri, secret, expires, speed, buffer, ip)
+    print(f"https://demo-protected-ip.gvideo.io{uri}?md5={token}&expires={expires}&speed={speed}&buffer={buffer}")
+
+    ```
+    Python playground – https://www.onlineide.pro/playground/share/d6126cff-e97f-456b-b667-6a95030563b4 
+  </Tab>
+  <Tab title="Go">
+    ```go
+    package main
+
+    import (
+      "crypto/md5"
+      "encoding/base64"
+      "fmt"
+      "time"
+    )
+
+    func gethash_mp4(uri, secret string, expires int64, speed, buffer, ip string) string {
+      hashBody := fmt.Sprintf("%s_%s_%d_%s_%s_%s", uri, secret, expires, speed, buffer, ip)
+      md5sum := md5.Sum([]byte(hashBody))
+      hashMd5 := base64.RawURLEncoding.EncodeToString(md5sum[:])
+      return hashMd5
+    }
+
+    const time_format string = "2006-01-02 15:04"
+
+    func main() {
+      var token, speed, buffer string
+
+      secret := ""                                                     // enter your secret key from the CDN-resource
+      uri := "/videos/2675_pG8TfmKx2LU2qs/qid3570v1_h264_1800_720.mp4" // path of the MP4 file
+
+      //timeNow := time.Now().UTC()
+      timeNow, _ := time.Parse(time_format, "2025-09-16 23:00") // workaround for Go playground. As you know time.Now() doesn’t work in goplay.tools, because playground runs in a deterministic sandboxed environment where system time is not exposed.
+      expires := timeNow.Add(24 * time.Hour).Unix()             // expiration = now + 24 hours, unixtime in seconds
+
+      fmt.Println("Now:     ", timeNow.Unix(), timeNow.UTC().Format(time_format))
+      fmt.Println("Expires: ", expires, time.Unix(expires, 0).UTC().Format(time_format))
+
+      // MP4 protected (the CDN resource must be with deactivated option "Add a client's IP to the token")
+      token = gethash_mp4(uri, secret, expires, "", "", "")
+      fmt.Printf("https://demo-protected.gvideo.io%s?md5=%s&expires=%d\n", uri, token, expires)
+      fmt.Printf("https://demo-protected.gvideo.io%s/download?md5=%s&expires=%d\n", uri, token, expires)
+      fmt.Printf("https://demo-protected.gvideo.io%s/download=my-awesome-video?md5=%s&expires=%d\n", uri, token, expires)
+
+      // MP4 with speed limit
+      speed = "1M"
+      token = gethash_mp4(uri, secret, expires, speed, "", "")
+      fmt.Printf("https://demo-protected.gvideo.io%s?md5=%s&expires=%d&speed=%s\n", uri, token, expires, speed)
+
+      // MP4 with speed and buffer limit
+      speed = "500K"
+      buffer = "10M"
+      token = gethash_mp4(uri, secret, expires, speed, buffer, "")
+      fmt.Printf("https://demo-protected.gvideo.io%s?md5=%s&expires=%d&speed=%s&buffer=%s\n", uri, token, expires, speed, buffer)
+
+      // MP4 protected with user's IP address (the CDN resource must be with activated option "Add a client's IP to the token")
+      ip := "92.223.112.84" //
+      token = gethash_mp4(uri, secret, expires, "", "", ip)
+      fmt.Printf("https://demo-protected-ip.gvideo.io%s?md5=%s&expires=%d\n", uri, token, expires)
+      fmt.Printf("https://demo-protected-ip.gvideo.io%s/download?md5=%s&expires=%d\n", uri, token, expires)
+      fmt.Printf("https://demo-protected-ip.gvideo.io%s/download=my-awesome-video?md5=%s&expires=%d\n", uri, token, expires)
+
+      // MP4 protected with user's IP address and speed limit
+      speed = "1000K"
+      token = gethash_mp4(uri, secret, expires, speed, "", ip)
+      fmt.Printf("https://demo-protected-ip.gvideo.io%s?md5=%s&expires=%d&speed=%s\n", uri, token, expires, speed)
+
+      // MP4 protected with user's IP address, speed and buffer limit
+      speed = "500K"
+      buffer = "10M"
+      token = gethash_mp4(uri, secret, expires, speed, buffer, ip)
+      fmt.Printf("https://demo-protected-ip.gvideo.io%s?md5=%s&expires=%d&speed=%s&buffer=%s\n", uri, token, expires, speed, buffer)
+    }
+    ```
+    Go playground – https://goplay.tools/snippet/iqktoxSaTh3
   </Tab>
 </Tabs>

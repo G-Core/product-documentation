@@ -1,12 +1,23 @@
 ---
-title: Generate and translate AI captions for a new VOD
+title: Generate and translate AI captions for VOD
 sidebarTitle: Via API
 ---
 
-You can upload videos and generate captions automatically during the process of uploading new videos to Gcire Video Streaming at /docs/api-reference/streaming/videos/create-video
+## Introduction
 
-When uploading a video, add one new attribute: "auto_transcribe_audio_language." The system will automatically create a task for transcribing the video, and the finished result will be added to the video as a subtitle.
+You can upload videos and generate captions automatically during the process of uploading new videos to Gcore Video Streaming or do it later for any earlier uploaded video. 
 
+
+## AI captions for a new video
+
+
+When uploading a video use new parameters in the end-point. The system will automatically create a task for transcribing the video and translating subtitles, and the finished result will be added to the video as a subtitle.
+
+AI caption parameters:
+  - `auto_transcribe_audio_language: auto|<language_code>` – Immediately after successful transcoding, an AI task will be automatically created for transcription the video to original language. Output by default is one subtitle channel with original languages inside.
+  - `auto_translate_subtitles_language: default|<language_codes,>` – In additional to transcription on original language it's possible to translate to other languagaes, so AI-task of subtitles translation can be applied. Use that parameter for that. Here you can specify multiple set of languages to translate to, then a separate subtitle will be generated for each specified language.
+
+Example to transcribe:
 ```sh
 POST https://api.gcore.com/streaming/videos
 {
@@ -17,20 +28,59 @@ POST https://api.gcore.com/streaming/videos
 }
 ```
 
-# Generate and translate AI captions for an existing VOD
-
-To create AI subtitles for an existing video, run the add subtitle method, but instead of specifying the subtitle text, specify the "auto_transcribe_audio_language" parameter. Subtitles will be generated and attached to the video: /docs/api-reference/streaming/subtitles/add-subtitle
-
+Example to transcribe from "eng" and translate to "fre,ger,ita,spa":
 ```sh
-POST hhttps://api.gcore.com/streaming/videos/{video_id}/subtitles
+POST https://api.gcore.com/streaming/videos
+{
+    "name": "Spritefright Blender",
+    "description": "Video copied from an external S3 Storage",
+    "origin_url": "https://demo-files.gvideo.io/apidocs/spritefright-blender-cut30sec.mp4",
+    "auto_transcribe_audio_language": "eng"
+    "auto_translate_subtitles_language": "fre,ger,ita,spa"
+}
+```
+
+Read more about it in the API [`POST /streaming/videos`](/api-reference/streaming/videos/create-video).
+
+
+## AI captions for an exist video
+
+It's possible to use post-processing for generating AI captions. 
+Using new attributes for subtitles API you will be able to create subtitles automatically. 
+
+AI caption parameters are the same for uploading:
+  - `auto_transcribe_audio_language: auto|<language_code>` – for transcribing.
+  - `auto_translate_subtitles_language: default|<language_codes,>` – for translating.
+
+Example to transcribe:
+```sh
+POST https://api.gcore.com/streaming/videos/{video_id}/subtitles
 {
     "auto_transcribe_audio_language": "auto"
 }
 ```
 
-# Extended use of AI API for any video inside or outside the video streaming platform
+Example to transcribe from a detected language and translate to "fre,ger,ita,spa":
+```sh
+POST https://api.gcore.com/streaming/videos/{video_id}/subtitles
+{
+    "auto_transcribe_audio_language": "auto"
+    "auto_translate_subtitles_language": "fre,ger,ita,spa"
+}
+```
 
-AI ​​system can process any video stored in an MP4 container and available via a direct download link. Please note that links to YouTube, Vimeo, etc., are not links to a video file, so they cannot be used for processing.
+Read more about it in the API [`POST /streaming/videos/{video_id}/subtitles`](/api-reference/streaming/subtitles/add-subtitle).
+
+
+## Advanced use of native AI API for any video inside or outside the video streaming platform
+
+Methods above are for videos stored in the Gcore Video Platform only, because they were designed for simplicity. 
+
+Using AI API directly you can process any videos stored inside or outside Gcore Video Streaming Platform. 
+AI ​​system can process any video stored in an MP4 container and available via a direct download link. 
+
+Please note that links to YouTube, Vimeo, etc., are not links to a video file, so they cannot be used for processing.
+
 
 ### Step 1. Obtain an MP4 link
 

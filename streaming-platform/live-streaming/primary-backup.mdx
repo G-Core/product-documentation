@@ -129,6 +129,31 @@ By setting location correctly, you can minimize latency and improve performance.
 [Reach out to our support team](https://gcore.com/contact-us) or your account manager for setup assistance.
 
 
+## Stream availability
+
+A live stream typically requires a short initialization period before playback becomes available.
+Our system initializes all required services within ~2–5 seconds, from receiving a live stream at the ingester to publishing segments on the CDN.
+
+<Info>
+  Stream segments become available in the CDN (and player) within ~2–5 seconds after the `type: stream (live=true)` webhook is issued.
+</Info>
+
+Workflow when starting a stream on server:
+  - Accept and check the stream on the ingester
+  - Initialize the stream
+  - **Send a webhook**
+  - Start the transcoding process
+  - Publish the first segment to the CDN
+  - **Playback available** – here your player can start downloading video segments
+
+The table below compares how different platforms approach latency reduction. We evaluated multiple implementations and identified best practices for minimizing delay.
+
+<Frame>![Timing of live streaming](https://assets.gcore.pro/site-media/uploads-staging/how_we_solve_issues_of_rtmp_to_hls_streaming_on_ios_and_android_2_c737a90322.svg)</Frame>
+
+By collaborating with streaming platforms that deliver RTMP-to-HLS on iOS and Android, we defined best practices: optimize GOP size, enable background streaming, trigger player startup at the optimal moment, and adjust bitrate and delivery region dynamically. These improvements enhance playback stability, minimize startup delay, and reduce rebuffering.
+Read more in the blog article [How we solve issues of RTMP-to-HLS streaming on iOS and Android](https://gcore.com/blog/how-we-solve-issues-of-rtmp-to-hls-streaming-on-ios-and-android).
+
+
 ## Players behavior 
 
 Please note that the manifesto and fragments will be available again at the time indicated above. Consider your player configuration for automatic playback of restored live stream. Some players resume playback with a large delay automatically. But if you update them manually, the video will appear instantly.
@@ -141,7 +166,7 @@ For example:
   manifestLoadingMaxRetry: 10,
   manifestLoadingRetryDelay: 1000,
 
-  dasj.js:
+  dash.js:
   retryAttempts: { manifest: 100, media: 10, lowLatency: 10 },
   retryIntervals: { manifest: 1_000, media: 1_000, lowLatency: 1_000 },
   rebufferToLive: true,

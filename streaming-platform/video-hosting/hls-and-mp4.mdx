@@ -64,12 +64,8 @@ Where:
 
 
 For example, check out the following manifest links for a master playlist: 
-
-  * The link to the master playlist: https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/master.m3u8
-
-  * The link to the master playlist with CMAF-based chunks: https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/master-cmaf.m3u8
-
-
+  - The link to the master playlist: https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/master.m3u8
+  - The link to the master playlist with CMAF-based chunks: https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/master-cmaf.m3u8
 
 
 ## DASH format
@@ -91,8 +87,8 @@ Video content delivered in DASH format contains a manifest file (.mpd). This fil
 
 For DASH, chunks will also differ depending on the type of video codec that was used to encode the quality: 
 
-  * CMAF chunks for H264 and H265 video codecs 
-  * WebM chunks for AV1 video
+  - CMAF chunks for H264 and H265 video codecs 
+  - WebM chunks for AV1 video
 
 
 
@@ -142,6 +138,8 @@ Example of the manifest link:  https://demo-public.gvideo.io/videos/2675_FnlHXwA
 
 ## MP4 format
 
+### MP4 as a source
+
 Video can be streamed and downloaded using the .mp4 file format when you want to handle the whole file at once instead of in chunks. MP4 format allows users to:
 
   * Watch videos offline on mobile devices
@@ -150,43 +148,59 @@ Video can be streamed and downloaded using the .mp4 file format when you want to
   * Share videos on social networks and other streaming services
   * Content can be protected with [Secure Token](/streaming-platform/extra-features/protect-your-content-with-temporary-links-and-secure-tokens#how-to-enable-the-secure-token-feature). DRM protection isn't supported.
 
-
-
 When using the MP4 format, users can work with each available video resolution separately. For example, select the video quality version (720p) and download only that version: https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/qid3570v3_h264_1566_720.mp4
 
 Example usage:
-
 ```html
 <video width="100%" height="auto" autoplay="autoplay" loop="true" playsinline="" oncanplay="this.play()">
      <source type="video/mp4" src="https://demo-public.gvideo.io/videos/2675_FnlHXwA16ZMxmUr/qid3570v3_h264_1566_720.mp4"/>
 </video>
  ```
 
+Link to the MP4 file contains information about the encoding method using format: 
+```
+<quality_version>_<codec>_<bitrate>_<height>.mp4
+```
+Where: 
+  - `<quality_version>` – Internal quality identifier and file version
+  - `<codec>` – Codec name that was used to encode the video, or audio codec if it is an audio-only file
+  - `<bitrate>` – Encoding bitrate in Kbps
+  - `<height>` – Video height, or word "audio" if it is an audio-only file
+
+Example: ``` /videos/{client_id}_{slug}/qid3567v1_h264_4050_1080.mp4 ```
+
+<Info>
+Avoid storing or relying on direct MP4 file links. These URLs are internal and dynamically generated, and their structure may change at any time without prior notice.
+</Info>
+
+
+### MP4 custom download
+
 Gcore supports regular download requests for entire MP4 file downloads. For each converted video, additional download endpoints are available from API. 
 An MP4 download enpoints look like:
-  - `/videos/{client_id}_{slug}/{filename}.mp4`
-  - `/videos/{client_id}_{slug}/{filename}.mp4/download`
-  - `/videos/{client_id}_{slug}/{filename}.mp4/download={custom_filename}`
+  1.  `/videos/{client_id}_{slug}/{filename}.mp4`
+  2.  `/videos/{client_id}_{slug}/{filename}.mp4/download`
+  3.  `/videos/{client_id}_{slug}/{filename}.mp4/download={custom_filename}`
 
 The first option returns the file as is.
 Response will be:
-```
-  GET .mp4
-  ...
-  content-type: video/mp4
+```sh
+GET /qid3576v3_h264_450_360.mp4
+...
+content-type: video/mp4
 ```
 
-The second option with /download will respond with HTTP response header that directly tells browsers to download the file instead of playing it in the browser:
+The second option with `/download` will respond with HTTP response header that directly tells browsers to download the file instead of playing it in the browser:
 
 ``` 
-  GET .mp4/download
-  ...
-  content-type: video/mp4
-  content-disposition: attachment
-  access-control-expose-headers: Content-Disposition
+GET /qid3576v3_h264_450_360.mp4/download
+...
+content-type: video/mp4
+content-disposition: attachment
+access-control-expose-headers: Content-Disposition
 ```
 
-The third option allows you to set a custom name for the file being downloaded. 
+The third option with `/download={custom_filename}` allows you to set a custom name for the file being downloaded. 
 Filename constraints:
   - Length: 1-255 characters
   - Must NOT include the .mp4 extension (it is added automatically)
@@ -195,17 +209,53 @@ Filename constraints:
   - Example valid filenames: ```holiday2025```, ```_backup.final```, ```clip-v1.2```
 
 ```  
-  GET .mp4/download={custom_filename}
-  ...
-  content-type: video/mp4
-  content-disposition: attachment; filename="{custom_filename}.mp4"
-  access-control-expose-headers: Content-Disposition                    
+GET /qid3576v3_h264_450_360.mp4/download={custom_filename}
+...
+content-type: video/mp4
+content-disposition: attachment; filename="{custom_filename}.mp4"
+access-control-expose-headers: Content-Disposition                    
 ```
 
 Example:
-- Video: ```https://demo-public.gvideo.io/videos/2675_1OFgHZ1FWZNNvx1A/qid3567v1_h264_4050_1080.mp4/download```
-- Video with custom download filename: ```https://demo-public.gvideo.io/videos/2675_1OFgHZ1FWZNNvx1A/qid3567v1_h264_4050_1080.mp4/download=highlights_v1.1_2025-05-30```
+- MP4 as is: ```https://demo-public.gvideo.io/videos/2675_1OFgHZ1FWZNNvx1A/qid3567v1_h264_4050_1080.mp4/download```
+- MP4 with custom download filename "`highlights_v1.1_2025-05-30`.mp4": ```https://demo-public.gvideo.io/videos/2675_1OFgHZ1FWZNNvx1A/qid3567v1_h264_4050_1080.mp4/download=highlights_v1.1_2025-05-30```
 
+
+### MP4 dynamic speed limiting
+
+This mode sets download limits for requests. To activate limits use special attributes in in a query string. 
+The `speed` sets the maximum download speed, while the buffer sets how much data will be transferred without the speed limit. The buffer argument is optional.
+
+Example with limit download speed to 500KB/s after downloading 10MB.
+``` 
+curl -L -o /dev/null -w "%{speed_download}\n" \
+"https://demo-public.gvideo.io/videos/2675_1OFgHZ1FWZNNvx1A/qid3576v1_h264_450_360.mp4?speed=500K&buffer=10M" \           
+| awk '{printf "Download speed: %.2f KB/s (%.2f MB/s)\n", $1/1024, $1/1048576}'
+
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 14.4M  100 14.4M    0     0   501k      0  0:00:29  0:00:29 --:--:--  467k
+
+Download speed: 501.86 KB/s (0.49 MB/s)
+```
+
+
+### MP4 advanced secure token protection 
+
+A regular secure token protects the entire video entity, so it allows to play HLS/DASH ABR securely.
+
+When you need to distribute MP4 files separatelly from ABR use an advanced secure token provided as an additional query parameter. This ensures that only authorized requests can access a given MP4 version and prevents unauthorized distribution across qualities.
+MP4 advanced secure token can be combined with MP4 speed limit.
+
+Example:
+```
+???
+```
+
+Read more on the page [Protected temporary link](/streaming-platform/extra-features/protect-your-content-with-temporary-links-and-secure-tokens#advanced-secure-token-for-mp4).
+
+
+### MP4 range request
 
 We also support range requests specifying the HTTP "Range" header.
 
@@ -217,13 +267,17 @@ content-type: video/mp4
 content-length: 38878900
 content-range: bytes 4000000-42878899/42878900
 ...
- ```
+```
 
 <Tip>
 **Tip**
 
 You can protect MP4 files with the [Video protection via the Security Tokens feature](/streaming-platform/extra-features/protect-your-content-with-temporary-links-and-secure-tokens).
 </Tip>
+
+
+
+
 
 ## Get HLS, DASH, and MP4 links
 

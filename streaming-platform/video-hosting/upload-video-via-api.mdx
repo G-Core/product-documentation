@@ -24,57 +24,27 @@ Only videos that follow these specifications (supported protocols, video/audio c
 
 ## Video upload and processing statuses
 
-When uploading a video to our storage and its processing, the file may have one of the following statuses: 
-
-  * **Empty** means the video entity has been created, but the origin video file has not yet been uploaded. In case of a long delay, check the "error" field for more details. 
-  * **Pending** means the video is being processed; the original video file has been downloaded and submitted for processing.
-  * **Viewable** means the video is available for watching at least in 1 quality (but not in all qualities.)
-  * **Ready** means the video is ready and available in all qualities.
+Statuses of video processing are described in the [Video Status article](/streaming-platform/video-hosting/vod-status).
 
 
+## Priority of processing
 
-**Note** : In the status "Viewable," manifest.m3u8 has already been generated. End users in any player can watch the video, but a limited number of qualities are available. Qualities will be added automatically to manifest.m3u8 as they are ready; you don't have to do anything. After adding all qualities, the video will be moved to "Ready."
+Every uploaded video enters a processing queue. 
 
-Example of the response of a video under processing:
+Scheduling is influenced by two levels of priority:
+	- Global priority – Managed automatically by the system on global scale. You cannot influence on it. It depends on converter availability in the processing cluster. This ensures that even without a dedicated region (this an option for enterprises), your videos usually start processing without significant delay.
+	- Account priority – Applied within your account. You can control it explicitly using the priority attribute.
 
-```json
-{ 
-  "id": 2558721, 
-  "name": "Gcore Demo", 
-  "description": "Video copied from an external S3 Storage", 
-  "status": "pending", 
-  "screenshots": [], 
-  "origin_url": "https://demo-files.gvideo.io/gcore.mp4", 
-  ... 
-  "converted_videos": [ 
-    { 
-      "name": "vod480n", 
-      "progress": 0, 
-      "status": "processing", 
-      "error": "", 
-      ... 
-   }, 
-   ... 
-  ] 
-}  
- ```
+You can control account priority using the `priority` field in uploaded videos. This field controls scheduling order for video processing tasks within your account. It lets you influence transcoding queue behavior when some jobs should be processed earlier than others (e.g., urgent uploads or sub-user on higher service tiers).
+Field `priority` in `POST /streaming/videos` method:
+	- Type: integer
+	- Range: -10 … 10
+	  - -10 = lowest priority (processed after others)
+	  - 0 = default priority
+	  - 10 = highest priority (processed first)
 
-If the video fails while uploading and checking, it will remain in "empty" status with details in the "error" field. Most commonly, this happens when an end user uploads a non-video file or has a connectivity issue. In that case, re-upload the video from the origin, or delete the entity and create a new one with the correct video file.
+This value does not guarantee absolute ordering but adjusts relative job weight in the processing queue.
 
-Example of the response if an error occurs during video processing:
-
-```json
-{ 
-  "id": 2558799, 
-  "name": "Gcore Demo", 
-  "description": "Video copied from an external S3 Storage", 
-  "status": "empty", 
-  "error": "File Invalid", 
-  "origin_url": "https://demo-files.gvideo.io/hls/master.m3u8", 
-  ... 
-  "converted_videos": [] 
-}  
- ```
 
 ## Copy from external storage
 
@@ -91,8 +61,10 @@ Available protocols for migration:
   * SFTP protocol
 
 
+<Info>
+The original file must be in MP4 format or one of the following formats: 3g2, 3gp, asf, avi, dif, dv, flv, f4v, m4v, mov, mp4, mpeg, mpg, mts, m2t, m2ts, qt, wmv, vob, mkv, ogv, webm, vob, ogg, mxf, quicktime, x-ms-wmv, mpeg-tts, vnd.dlna.mpeg-tts.
+</Info>
 
-**Note** : The original file must be in MP4 format or one of the following formats: 3g2, 3gp, asf, avi, dif, dv, flv, f4v, m4v, mov, mp4, mpeg, mpg, mts, m2t, m2ts, qt, wmv, vob, mkv, ogv, webm, vob, ogg, mxf, quicktime, x-ms-wmv, mpeg-tts, vnd.dlna.mpeg-tts.
 
 Streaming formats like HLS (.m3u8/.ts) and DASH (.mpd/.m4v) are intended for the final video distribution to end viewers, so they cannot be used as original file formats.
 
@@ -335,6 +307,14 @@ Most common TUS errors:
     * Error: token video (12345) does not match this video (23456)
     * Error: token client (123) does not match this client (234)
 
+
+## AI extra processing
+
+When uploading a video, it is possible to automatically create subtitles based on AI. 
+
+Use parameters `auto_transcribe_audio_language: auto|<language_code>` and `auto_translate_subtitles_language: default|<language_codes,>` when creating a new video via API. 
+
+Read more on the page [Generate and translate AI captions for a new VOD](/streaming-platform/ai-video-service/generate-ai-subtitles-and-add-them-to-video/generate-captions-via-api).
 
 
 ## Batch upload to migrate a vast number of videos from other services
