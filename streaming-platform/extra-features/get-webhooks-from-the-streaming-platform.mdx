@@ -13,21 +13,22 @@ A single universal endpoint is used for all types of webhooks.
 
 ```json
 {
-  "type": "stream|video|restream",
+  "type": "stream|video|video_delete|restream",
   "message": { ... } 
 }
 ```
 
 Supported entities:
-	1.	Live streams – `type: stream`
-	2.	VOD videos – `type: vod`
-	3.	Restreamings – `type: restream`
+	1. Live streams – `type: stream`
+	2. VOD videos – `type: vod`
+  4. VOD delete – `type: video_delete`
+	3. Restreamings – `type: restream`
 
 
 The webhook will contain main fields of the entity for which the event occurred. This allows you to not pull the API to get additional data each time.
 
 
-### Webhooks for Live
+## Webhooks for Live
 
 When the state of a live stream changes, the system triggers a webhook with type `stream`. The payload contains a message.stream object with stream properties.
 
@@ -46,8 +47,14 @@ When the state of a live stream changes, the system triggers a webhook with type
 | **client_user_id**  | string  | Optional client-defined user ID, `null` if not provided                    |
 | **client_entity_data** | string | Optional client metadata associated with the stream, `null` if not provided |
 | **pull**            | bool    | `true` if the stream is pulled from an external origin, `false` if pushed  |
-| **uri**             | string  | The source URI of the stream (e.g. HTTPS or SRT endpoint)                  |
-| **stream_source_type** | string | Type of the stream source (e.g. `https`, `rtmp`, `srt`)                      |
+| **uri**             | string  | The source URI of the stream:                                              |
+| **stream_source_type** | string | Type of the stream source: `rtmp`, `srt`, `webrtc`, `https`, etc         |
+
+<Info>
+  Stream segments become available in the CDN (and player) within ~2–5 seconds after the `type: stream (live=true)` webhook is issued.
+  
+  Read more in the article [Ingest & Backup](/streaming-platform/live-streaming/primary-backup#stream-availability).
+</Info>
 
 **Example:**
 
@@ -92,14 +99,15 @@ Stoped stream:
 ```
 
 
-### Webhooks for VOD
+## Webhooks for VOD
+
+### VOD create and update
 
 A webhook with type `video` fires when a VOD file is created, processed, or becomes playable. Use the payload to track processing progress and available renditions.
 
 **Behaviour:**
   - Sent on key status changes of a video: empty → pending → viewable → ready or error.  ￼
   - converted_videos[].status reflects per-rendition progress like processing or complete.  ￼
-
 
 **Fields:**
 | Field                | Type        | Description                                                                |
@@ -139,6 +147,7 @@ Video uploaded:
   }
 }
 ```
+
 Video becomes viewable (not all renditions are ready yet, but video can be watched by end-users already):
 ```json
 {
@@ -174,7 +183,43 @@ Video becomes viewable (not all renditions are ready yet, but video can be watch
 ```
 
 
-### Webhooks for Restream
+### VOD delete
+
+A webhook with type `video_delete` notify your system that a VOD entity was deleted so you can purge caches, revoke URLs, and clean metadata.
+
+**Behaviour:**
+  - Fired when a video is deleted via API or UI. 
+  - Emitted once per deletion event.
+
+**Fields:**
+
+| Field          | Type        | Description                                                                 |
+|----------------|-------------|-----------------------------------------------------------------------------|
+| **id**         | integer     | VideoID                                                                     |
+| **slug**       | string      | Public identifier used in playback URLs                                     |
+| **name**       | string      | Video name                                                                  |
+| **status**     | string      | Processing status of the video (e.g. `viewable`, `ready`)                   |
+| **deleted_at** | timestamp   | ISO-8601 UTC timestamp of when the deletion was committed in the system     |
+
+**Example:**
+
+```json
+{
+  "type": "video_delete",
+  "message": {
+    "video": {
+      "id": 2001,
+      "slug": "bJkptcIp9a5wrowz",
+      "name": "football_videoplayback_720",
+      "status": "ready",
+      "deleted_at": "2025-09-16T13:50:42.000Z"
+    }
+  }
+}
+```
+
+
+## Webhooks for Restream
 
 When a restream changes state (for example, starts or stops), the system sends a webhook with type `restream`. 
 The payload contains a message.restream object.

@@ -1,0 +1,248 @@
+---
+title: "Video Lifecycle and Statuses"
+sidebarTitle: "Status"
+description: Understanding Video Transcoding and Processing Statuses
+---
+
+## VOD Status
+
+When a video is uploaded and processed, the status field reflects the current state of the file:
+  - `Empty` – Video entity created, but no source file has been uploaded yet. For prolonged delays, inspect the error field.
+  - `Pending` – Source file uploaded and queued for processing.
+  - `Viewable` – **Playback available already**. At least one rendition is available for playback, but not all target renditions are complete.
+  - `Ready` – Playback in all qualities. All renditions have been successfully processed and are available for playback.
+  - `Error` – Processing failed. Details available in the `error` field.
+
+<Info>
+**When playback starts:**
+
+Playback becomes available immediately when the video reaches `Viewable` status, even if only a subset of renditions is ready. 
+
+Additional renditions are appended automatically to manifest.m3u8 and master.mpd as processing completes. When all renditions are available, the status transitions to `Ready`. 
+So no waiting for `Ready` is required to start playback.
+</Info>
+
+
+Workflow: 
+```
+    Empty -> Pending -> Viewable -> Ready
+    [Any status] -> Error
+```
+
+
+Example of a response for a video under processing:
+
+```json
+{ 
+  "id": 2558721, 
+  "name": "Gcore Demo", 
+  "description": "Video copied from an external S3 Storage", 
+  "status": "pending", 
+  "screenshots": [], 
+  "origin_url": "https://demo-files.gvideo.io/gcore.mp4", 
+  ... 
+  "converted_videos": [ 
+    { 
+      "name": "vod480n", 
+      "progress": 0, 
+      "status": "processing", 
+      "error": "", 
+      ... 
+   }, 
+   ... 
+  ] 
+}  
+ ```
+
+If the video fails while uploading and checking, it will remain in "empty" status with details in the "error" field. Most commonly, this happens when an end user uploads a non-video file or has a connectivity issue. In that case, re-upload the video from the origin, or delete the entity and create a new one with the correct video file.
+
+Example of the response if an error occurs during video processing:
+
+```json
+{ 
+  "id": 2558799, 
+  "name": "Gcore Demo", 
+  "description": "Video copied from an external S3 Storage", 
+  "status": "empty", 
+  "error": "File Invalid", 
+  "origin_url": "https://demo-files.gvideo.io/hls/master.m3u8", 
+  ... 
+  "converted_videos": [] 
+}  
+ ```
+
+## Uploading process
+
+Process of uploading is described in the [Upload video via API article](/streaming-platform/video-hosting/upload-video-via-api).
+
+Briefly:
+	1.	You create a video (TUS upload or copy from external origin_url).
+	2.	Backend schedules transcodes for the target quality set.
+	3.	Each rendition becomes an item in `converted_videos`. Fields update as jobs run.
+
+
+## Renditions status
+
+Each video entity is transcoded into several qualities – each such individual quality is called a **rendition**.
+So for a video entity there is always a set of renditions with specified parameters: quality and size. 
+
+An array of renditions for each playback of the video entity in API has name of `converted_videos`. Each element contains playback metadata for the rendition and status of processing.
+
+Status lifecycle per rendition:
+  - `processing` – transcode job accepted and running for this quality.
+  - `complete` – rendition finished. mp4_url becomes available and the quality is appended to HLS/DASH manifests.
+  - `error` – rendition failed. Inspect the item’s error string.  ￼
+
+<Info>
+**When playback starts:**
+
+Playback can be started once at least one rendition is `complete`. Additional renditions appear automatically as they complete. No need to wait for all renditions are ready.
+</Info>
+
+What you can read from each rendition (read more in API [GET `/streaming/videos/{video_id}`](/api-reference/streaming/videos/get-video#response-converted-videos)):
+  - Dimensions and approximate bitrate proxy: width, height, size.
+  - Completion percent: progress (0–100).
+  - Availability: status, mp4_url presence.
+  - Failure reason: error.
+  - Name/label for UI or logging: name (e.g., vod720p).  ￼
+
+Transcoder workers report the state of each rendition. The API translates these states into processing, complete, or error, and updates the converted_videos array in the response of GET `/streaming/videos/{video_id}`. Completion events can also be delivered via webhooks. Read more about [Webhooks here](/streaming-platform/extra-features/get-webhooks-from-the-streaming-platform#webhooks-for-vod). ￼
+
+
+## Long video processing
+
+The duration of video transcoding is directly proportional to the length of the original video. A 1 minute video will be processed in a matter of seconds. A 10 hour video will take a long time to process, possibly tens of minutes due to a queue of other videos.
+
+All renditions are queued at the same time. Remember that the lower the quality, the easier it is to transcode and the faster you can get the result. That's why SD and other medium resolutions often become available faster than 1080, 2K and 4K.
+
+
+## Error handling
+
+During upload and processing, the API may return errors in the `error` field of the video object or in a specific rendition (`converted_videos[i].error`).  
+Each error indicates the reason why the system was unable to fetch, parse, or process the video file.  
+
+If a video remains in `empty` or `pending` state for long period, inspect the check the `error` field and check corresponding `converted_videos[].status` values for details.
+In most cases, the video cannot be processed correctly due to problems with the original file. It may not fit to [recommended input parameters](/streaming-platform/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs).
+
+If you encounter an error, first check the error message against the list below. Then validate your input (URL, headers, original video file) and retry the operation. If the issue persists or is caused by quota limitations, contact the Support Team.
+
+| Error message                                   | Description                                                                   |
+|-------------------------------------------------|-----------------------------------------------------------------------------------------|
+| **Encoding problems**                           |                                                                                         |
+| Encoding has failed                             | Transcoding stopped due to broken/corrupted frames. Ensure source file is playable.     |
+| Unable to analyze the origin file               | File structure could not be parsed. Confirm input format.                               |
+| Unable to validate video file                   | File validation failed. Confirm input format.                                           |
+| Video file has codec parameters issue           | Codec parameters unsupported. Check codec against system requirements.                  |
+| Video file has empty streams                    | No video streams detected in file. Validate content before upload.                      |
+| Video file is invalid                           | File is not a recognized format or container. Verify input format.                      |
+| **Clips**                                       |                                                                                         |
+| Requested encoding duration exceeds clip length | Requested clip duration exceeds actual file duration. Review start/end range.           |
+| **Limits**                                      |                                                                                         |
+| The storage limit has been exceeded             | Storage or encoding quota exceeded. Contact support to increase limits.                 |
+| **Migration from external origin**              |                                                                                         |
+| Access to the origin is forbidden               | `origin_url` requires authentication but failed. Check URL and `origin_http_headers`.   |
+| Connection reset by peer                        | `origin_url` exists but the external server dropped the connection.                     |
+| Network timeout occurred                        | `origin_url` exists but external server did not respond. Network timeout occurred.      |
+| The downloaded file is incomplete               | File download started but finished incomplete. Validate the URL and source server.      |
+| The requested origin was not found              | `origin_url` points to a non-existent HTTP resource. Verify the URL.                    |
+
+
+Example:
+```sh
+GET /streaming/videos/{video_id}
+{
+    "id": 11936778,
+    "status": "viewable",
+    "error": "The storage limit has been exceeded",
+    ...
+}
+```
+
+Other problems you can see in UI and solution are described in the [VOD issues article](/streaming-platform/troubleshooting/vod-issues).
+
+
+## Demo video with "viewable" status
+
+We prepared a demo video which has the status `viewable` and was not fully processed. In this demo video, one quality has a deliberate conversion error.
+
+HTML player:
+<div style={{ display: "flex", justifyContent: "center" }}>
+<iframe
+  src="https://player.gvideo.co/videos/2675_vGcX1W3aTFEL"
+  height="480"
+  width="270"
+  loading="lazy"
+  allow="autoplay; fullscreen; picture-in-picture"
+  allowFullScreen
+/>
+</div>
+
+The video itself is already available for playback and download, you can see in the player above. 
+However, the rendition "vod1080p" encountered a storage space limitation problem and has an "error" status.
+
+Status:
+  - Entity status: `viewable`
+  - Renditions status: 
+    - vod360p: `complete`
+    - vod480p: `complete`
+    - vod720p: `complete`
+    - vod1080p: `error`
+
+
+In master.m3u8 you will see 3 completed renditions:
+```
+curl https://demo-public.gvideo.io/videos/2675_vGcX1W3aTFEL/master.m3u8
+
+#EXTM3U
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=1800000,RESOLUTION=720x1280,FRAME-RATE=23.980,CODECS="avc1.64001f",VIDEO-RANGE=SDR
+index-s0q3570v1-v1.m3u8
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=800000,RESOLUTION=468x832,FRAME-RATE=23.980,CODECS="avc1.4d401e",VIDEO-RANGE=SDR
+index-s0q3573v1-v1.m3u8
+#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=450000,RESOLUTION=360x640,FRAME-RATE=23.980,CODECS="avc1.42c01e",VIDEO-RANGE=SDR
+index-s0q3576v1-v1.m3u8
+
+#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=130266,RESOLUTION=720x1280,CODECS="avc1.64001f",URI="iframes-s0q3570v1-v1.m3u8",VIDEO-RANGE=SDR
+#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=71689,RESOLUTION=468x832,CODECS="avc1.4d401e",URI="iframes-s0q3573v1-v1.m3u8",VIDEO-RANGE=SDR
+#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=43082,RESOLUTION=360x640,CODECS="avc1.42c01e",URI="iframes-s0q3576v1-v1.m3u8",VIDEO-RANGE=SDR
+```
+
+
+In API you will see details of the issue:
+```json
+{
+    "id": 11936778,
+    "status": "viewable",
+    "error": "The storage limit has been exceeded",
+    "hls_url": "https://demo-public.gvideo.io/videos/2675_vGcX1W3aTFEL/master.m3u8",
+    "dash_url": "https://demo-public.gvideo.io/videos/2675_vGcX1W3aTFEL/master.mpd",
+    "converted_videos": [
+        {
+            "name": "vod1080p",
+            "progress": 0,
+            "status": "error",
+            ...
+        },
+        {
+            "name": "vod720p",
+            "progress": 100,
+            "status": "complete",
+            "mp4_url": "https://demo-public.gvideo.io/videos/2675_vGcX1W3aTFEL/qid3570v1_h264_1800_1280.mp4"
+            ...
+        },
+        {
+            "name": "vod480p",
+            "progress": 100,
+            "status": "complete",
+            "mp4_url": "https://demo-public.gvideo.io/videos/2675_vGcX1W3aTFEL/qid3573v1_h264_800_832.mp4"
+            ...
+        },
+        {
+            "name": "vod360p",
+            "progress": 100,
+            "status": "complete",
+            "mp4_url": "https://demo-public.gvideo.io/videos/2675_vGcX1W3aTFEL/qid3576v1_h264_450_640.mp4"
+            ...
+        }
+    ],
+}
+```

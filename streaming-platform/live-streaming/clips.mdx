@@ -1,0 +1,114 @@
+---
+title: "Instant clips"
+sidebarTitle: "Clips"
+description: Creating instant video clips from a live stream
+---
+
+## Main principles
+
+Clips let you cut a segment from an ongoing live stream without waiting for the broadcast to end or the full recording to complete. 
+This is useful for quickly publishing highlights from sports, news, concerts, or other live events.
+
+Why use clips?
+  - Deliver important moments to viewers instantly, while the event is still live.
+  - Share highlights across platforms without waiting for full VOD processing.
+  - Convert a short live excerpt into a standalone asset in HLS (.m3u8), MP4, or as a permanent VOD.
+
+<Frame>![clip_recording_mp4_hls](https://demo-files.gvideo.io/apidocs/clip_recording_mp4_hls.gif)</Frame>
+
+Common use cases:
+  - Sports highlights – publish goals, replays, or decisive moments immediatelly after they happen.
+  - News coverage – cut and share breaking news segments without waiting for the full recording.
+  - Live performances – highlight songs, interviews, or standout moments from concerts or shows.
+
+
+## Clips vs. traditional VOD
+
+| Feature                | Traditional VOD                                       | Clips                                                       |
+|-------------------------|-------------------------------------------------------|-------------------------------------------------------------|
+| **Source**             | Recording of the full live stream                      | Raw data from the ongoing live stream                       |
+| **Availability**       | Only after the live stream has ended and transcoding completes | Immediately after the selected segment is copied from DVR    |
+| **Use case**           | Full replays, long-term storage, on-demand catalogs    | Highlights, instant sharing, short previews                 |
+| **Formats**            | HLS, DASH, MP4 (transcoded renditions)                 | HLS, MP4                 |
+| **Latency to publish** | Minutes (depends on stream length & transcoding time) | Seconds (available right after clip duration ends)           |
+| **Lifetime**           | Permanent until manually deleted                       | Temporary (controlled by `expiration`)           |
+| **Storage impact**     | Requires full file storage                             | Lightweight, **stored in server memory** until expiration               |
+| **Conversion to VOD**  | N/A (already VOD)                                      | Can be converted to permanent VOD with `vod_required: true`  |
+| **Best for**           | Full-event replays, archives, monetization catalogs    | Instant highlights, social media snippets, news flashes      |
+
+
+## Clips lifetime
+
+Instant clips are a copy of the stream from DVR buffer.
+They are stored in memory for a limited time, after which the clip ceases to exist and you will receive a 404 on the link.
+
+Limits that you should keep in mind:
+  - The clip’s lifespan is controlled by `expiration` parameter.
+  - The default expiration value is 1 hour. The value can be set from 1 minute to 4 hours (but not more than the DVR duration of the stream, see the section below).
+  - If you want a video for longer or permanent viewing, then create a traditional VOD based on the clip. This way you can use the clip’s link for the first time, and immediately after the transcoded version is ready, you can change by yourself it to a permanent link of VOD.
+  - The clip becomes available only after it is completely copied from the live stream. So the clip will be available after `start + duration` exact time. If you try to request it before this time, the response will be error code 425 “Too Early”.
+
+
+## Cutting a clip from live stream
+
+API method – [`PUT /streaming/streams/{stream_id}/clip_recording`](/api-reference/streaming/streams/create-clip)
+```
+curl -L -X PUT 'https://api.gcore.com/streaming/streams/2409264/clip_recording' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: APIKey 1234$1d3...d11' \
+-d '{
+  "duration": 60
+}'
+```
+
+Clips generation uses DVR buffer of a live stream. In order to use clips recording feature, DVR must be enabled for a stream: `dvr_enabled: true`. 
+You can generate a clip from any part of DVR window by specifying the start time and duration. Read more about DVR window on the page [DVR, Pause and rewind the live streams](/streaming-platform/live-streaming/pause-and-rewind-the-live-streams).
+
+Therefore, to create a clip, the DVR must have the necessary data for timeframe you would like to save. However, once a clip is created, it exists as an independent copy and remains accessible until its time expires, even if the DVR window has already expired.
+
+
+## Getting a clip
+
+Instant clip becomes available for viewing in the following formats:
+  - HLS .m3u8 with ABR,
+  - MP4 in different renditions,
+  - VOD in video hosting with a permanent link to watch video.
+
+Clips are cut on the server-side using video keyframes. While you can't specify the start and end times down to the millisecond, the edegs will be selected as close as possible to the nearest keyframe based on the timing you specify.
+One advantage of this approach is that clips aren't created by temporarily removing .ts files from the .m3u8 manifest and aren't dependent on chunk length.
+
+Example:
+```
+{
+    "id": "eycnb3utc6bk",
+    "start": 1758113719,
+    "duration": 60,
+    "expiration": 1758117379,
+    "created_at": "2025-09-17T12:55:19.393328284Z",
+    "vod_required": true,
+    "video_id": 11969118,
+    "renditions": [
+        "media_0_720",
+        "media_1_468",
+        "media_2_360"
+    ],
+    "hls_master": "https://cid.domain.com/rec/111_1000/rec_eycnb3utc6bk_qsid42_master.m3u8",
+    "mp4_master": "https://cid.domain.com/rec/111_1000/rec_eycnb3utc6bk_qsid42_master.mp4"
+}
+```
+
+By default, URLs include the master alias, which resolves to the highest available quality in the ABR set (based on video height metadata). 
+You can also request a specific rendition manually: replace `master` in the URL with a value from the renditions list to access an exact bitrate/quality. This applies to both HLS and MP4 outputs.
+
+Example:
+  - HLS ABR: `https://cid.domain.com/rec/111_1000/rec_eycnb3utc6bk_qsid42_master.m3u8`
+  - HLS 360p: `https://cid.domain.com/rec/111_1000/rec_eycnb3utc6bk_qsid42_media_0_720.m3u8`
+  - MP4 max: `https://cid.domain.com/rec/111_1000/rec_eycnb3utc6bk_qsid42_master.mp4`
+  - MP4 360p: `https://cid.domain.com/rec/111_1000/rec_eycnb3utc6bk_qsid42_media_2_360.mp4`
+
+
+## Getting permanent VOD
+
+To get permanent VOD version of a live clip use this parameter when making a request to create a clip: `vod_required: true`. 
+
+Later, when the clip is ready, grab `video_id` value from the response and query the video by regular `GET /streaming/video/` endpoint.
