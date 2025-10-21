@@ -15,7 +15,7 @@ There are two available types:
 </Info>
 
 <Info>
-  It is best to create VAST shares either **during** the creation of [GPU clusters](/edge-ai/ai-infrastructure/create-an-ai-cluster), or **prior** to provisioning the corresponding [compute resources](/cloud/virtual-instances/types-of-virtual-machines) (such as VMs).
+  It is best to create VAST shares either **during** the creation of [GPU clusters](/edge-ai/ai-infrastructure/create-an-ai-cluster) or **prior** to provisioning the corresponding [compute resources](/cloud/virtual-instances/types-of-virtual-machines) (such as VMs).
 </Info>
 
 The creation flow for both types starts the same. Use the steps below and follow the instructions for your selected file share type.
@@ -96,7 +96,7 @@ Replace `/mount/path` with the path to the local file directory where you want t
 </Info>
 
 <Info>
-  It is best to create VAST shares either **during** the creation of [GPU clusters](/edge-ai/ai-infrastructure/create-an-ai-cluster), or **prior** to provisioning the corresponding [compute resources](/cloud/virtual-instances/types-of-virtual-machines) (such as VMs).
+  It is best to create VAST shares either **during** the creation of [GPU clusters](/edge-ai/ai-infrastructure/create-an-ai-cluster) or **prior** to provisioning the corresponding [compute resources](/cloud/virtual-instances/types-of-virtual-machines) (such as VMs).
 </Info>
 
 ### Step 1: Create a VAST share
@@ -114,17 +114,18 @@ The network is assigned automatically, and you cannot configure access rules man
 
 VAST file shares always use read/write access. Access rules are not supported.
 
-### Step 2: Add the VAST network interface to a compute resouce
+### Step 2: Add VAST network interface to a compute resouce
 
 Once the VAST file share is created, it is best to add the VAST network interface while provisioning the corresponding GPU cluster or compute resource.
 
 #### Adding VAST interface while creating a compute resource
 
-1. Go to the \*\*resource \*\*settings ([VM](/cloud/virtual-instances/create-an-instance), [Bare Metal](/cloud/bare-metal-servers/create-a-bare-metal-server), or [GPU cluster](/edge-ai/ai-infrastructure/create-an-ai-cluster)).
-2. Open the **Interfaces** section.
-3. Click **Add interface**.
-4. In the **Network** dropdown, select the **VAST network**.
-5. Click **Apply**.
+While creating a compute resource:
+
+1. Scroll down to the **Network settings** panel.
+2. Click **Add interface**
+3. Click the interface to configure, and select the **VAST network**.
+4. Continue with provisioning the compute resource.
 
 The VAST network becomes available only after the file share is created. It is a third, dedicated network, separate from the public and private networks.
 
@@ -132,7 +133,55 @@ The VAST network becomes available only after the file share is created. It is a
 
 #### Adding VAST interface to an existing compute resource
 
-The VAST network interface can also be added to an already-provisioned [GPU cluster](/edge-ai/ai-infrastructure/create-an-ai-cluster) or [compute resource](/cloud/virtual-instances/types-of-virtual-machines).
+While the VAST interface can be attached to an already-provisioned GPU cluster or compute resource, this order is generally **not recommended** due to its greater complexity.
+
+1. Go to the **Resource** settings ([VM](/cloud/virtual-instances/create-an-instance), [Bare Metal](/cloud/bare-metal-servers/create-a-bare-metal-server), or [GPU cluster](/edge-ai/ai-infrastructure/create-an-ai-cluster)).
+2. Select the **Networking** tab and click **Add interface**.
+4. Click the **Network** drop-down and select the **VAST network**, then click **Add**.
+6. Note the assigned **IP** address and **MAC** identifier for use in the following step.
+
+### Step 3: Configure attached VAST network interface
+
+Connect to your server via the [Gcore Customer Portal](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel) or SSH and configure the attached VAST network interface.
+
+#### For Ubuntu and Debian
+
+1. Use `ip addr` to  list all available interfaces.
+2. Identify the VAST interface by matching the **link/ether** MAC identifier to the one from the prevous step.
+3. Note the interface name, such as `enp8s0` or `enp4s0`, for use in subsequebt commands.
+4. Set interface parameters, using the correct interface name from above:
+
+   `sudo ip link set enpXs0 mtu 9000`
+
+   `sudo ip link set enpXs0 up` 
+4. Assign an IP adress to the interface, using the IP adress from Step 2 and the interface name from above:
+
+   `sudo ip addr add 172.18.XXX.XXX/22 dev enpXs0`
+4. Add a static route for this interface, using....
+
+   `sudo ip route add 172.19.252.0/22 via 172.18.XXX.XXX dev enpXs0`
+
+TBC
+
+4. 
+
+`sudo apt -y install nfs-common`
+
+`sudo apt -y install nfs-common`
+
+For CentOS:
+
+`????????`
+
+9. Install the NFS client to enable your system to access the file share.
+
+For Ubuntu and Debian:
+
+`sudo apt -y install nfs-common`
+
+For CentOS:
+
+`sudo yum install nfs-utils`
 
 ### Step 3: Mount the file share
 
