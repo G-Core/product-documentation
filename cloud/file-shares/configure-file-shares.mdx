@@ -133,37 +133,54 @@ The VAST network becomes available only after the file share is created. It is a
 
 #### Adding VAST interface to an existing compute resource
 
-While the VAST interface can be attached to an already-provisioned GPU cluster or compute resource, this order is generally **not recommended** due to its greater complexity.
+While the VAST interface can be attached to an already-provisioned GPU cluster or compute resource, this order is generally **not recommended** due to greater complexity.
 
-1. Go to the **Resource** settings ([VM](/cloud/virtual-instances/create-an-instance), [Bare Metal](/cloud/bare-metal-servers/create-a-bare-metal-server), or [GPU cluster](/edge-ai/ai-infrastructure/create-an-ai-cluster)).
+1. Go to server **Resource** settings ([VM](/cloud/virtual-instances/create-an-instance), [Bare Metal](/cloud/bare-metal-servers/create-a-bare-metal-server), or [GPU cluster](/edge-ai/ai-infrastructure/create-an-ai-cluster)).
 2. Select the **Networking** tab and click **Add interface**.
 4. Click the **Network** drop-down and select the **VAST network**, then click **Add**.
-6. Note the assigned **IP** address and **MAC** identifier for use in the following step.
+6. Once the interface is added, **note the following details** for use in subsequent steps:
+   - **IP** address (such as `198.51.100.25`)
+   - **MAC** address (such as `fa:16:3e:12:34:56`)
+   - **CIDR** block (such as `192.51.100.0/24`)
 
-### Step 3: Configure attached VAST network interface
+### Step 3: Configure attached VAST network interface (only for  already-provisioned?)
 
 Connect to your server via the [Gcore Customer Portal](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel) or SSH and configure the attached VAST network interface.
 
-#### For Ubuntu and Debian
+#### Ubuntu and Debian
 
-1. Use `ip addr` to  list all available interfaces.
-2. Identify the VAST interface by matching the **link/ether** MAC identifier to the one from the prevous step.
-3. Note the interface name, such as `enp8s0` or `enp4s0`, for use in subsequebt commands.
-4. Set interface parameters, using the correct interface name from above:
+1. Run `ip addr` to  list all available interfaces.
+2. Identify the VAST interface using the MAC address from the prevous step.
+3. Note the **interface name** (such as `enp8s0` or `enp4s0`) for use in the following steps.
+4. For the following commands:
+   - Replace `198.51.100.25` with the IP adress from Step 2.
+   - Replace `enpXs0` with the interface name from above.
 
-   `sudo ip link set enpXs0 mtu 9000`
+     Configure the interface:
 
-   `sudo ip link set enpXs0 up` 
-4. Assign an IP adress to the interface, using the IP adress from Step 2 and the interface name from above:
+     `sudo ip link set enpXs0 mtu 9000` `sudo ip link set enpXs0 up`
 
-   `sudo ip addr add 172.18.XXX.XXX/22 dev enpXs0`
-4. Add a static route for this interface, using....
+     Set the interface CIDR:
 
-   `sudo ip route add 172.19.252.0/22 via 172.18.XXX.XXX dev enpXs0`
+     `sudo ip addr add 198.51.100.25/22 dev enpXs0`
+5. Add a static route to the VAST network:
+   - Replace `198.51.100.1` with the IP adress from Step 2, modifying the last octet to `1` to obtain the gateway address for the network, and use the same interface name.
 
-TBC
+     `sudo ip route add 172.19.252.0/22 via 198.51.100.1 dev enpXs0`
 
-4. 
+### Step 4: Install VAST drivers
+
+Connect to your server via the [Gcore Customer Portal](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel) or SSH and configure the attached VAST network interface.
+
+#### Ubuntu and Debian
+
+Install required build tools and headers:
+
+`sudo apt install dkms debhelper dh-dkms build-essential linux-headers-$(uname -r) -y`
+
+Download and install VAST drivers:
+
+`curl -sSf https://vast-nfs.s3.amazonaws.com/download.sh | bash -s --`
 
 `sudo apt -y install nfs-common`
 
