@@ -141,7 +141,6 @@ While the VAST interface can be attached to an already-provisioned GPU cluster o
 6. Once the interface is added, **note the following details** for use in subsequent steps:
    - **IP** address (such as `198.51.100.25`)
    - **MAC** address (such as `fa:16:3e:12:34:56`)
-   - **CIDR** block (such as `192.51.100.0/24`)
 
 ### Step 3: Configure attached VAST network interface (only for  already-provisioned?)
 
@@ -149,24 +148,28 @@ Connect to your server via the [Gcore Customer Portal](/cloud/virtual-instances/
 
 #### Ubuntu and Debian
 
-1. Run `ip addr` to  list all available interfaces.
+1. Use `ip addr` to  list all available interfaces.
 2. Identify the VAST interface using the MAC address from the prevous step.
 3. Note the **interface name** (such as `enp8s0` or `enp4s0`) for use in the following steps.
-4. For the following commands:
+4. Using commands below:
    - Replace `198.51.100.25` with the IP adress from Step 2.
    - Replace `enpXs0` with the interface name from above.
 
-     Configure the interface:
+   Set interface MTU
 
-     `sudo ip link set enpXs0 mtu 9000` `sudo ip link set enpXs0 up`
+   `sudo ip link set enpXs0 mtu 9000`
 
-     Set the interface CIDR:
+   Activate the interface
 
-     `sudo ip addr add 198.51.100.25/22 dev enpXs0`
-5. Add a static route to the VAST network:
-   - Replace `198.51.100.1` with the IP adress from Step 2, modifying the last octet to `1` to obtain the gateway address for the network, and use the same interface name.
+   `sudo ip link set enpXs0 up`
 
-     `sudo ip route add 172.19.252.0/22 via 198.51.100.1 dev enpXs0`
+   Set interface CIDR
+
+   `sudo ip addr add 198.51.100.25/22 dev enpXs0`
+6. Add static route to the VAST network:
+   - Replace `198.51.100.1` with the IP adress from Step 2, modifying the last octet to `1` for network gateway, and use the same interface name.
+
+   `sudo ip route add 172.19.252.0/22 via 198.51.100.1 dev enpXs0`
 
 ### Step 4: Install VAST drivers
 
@@ -180,7 +183,17 @@ Install required build tools and headers:
 
 Download and install VAST drivers:
 
-`curl -sSf https://vast-nfs.s3.amazonaws.com/download.sh | bash -s --`
+`curl -sSf https://vast-nfs.s3.amazonaws.com/download.sh | bash -s -- `
+
+`cd vastnfs-4.0.36`
+
+`sudo ./build.sh bin --dkms`
+
+`sudo dpkg -i /dist/vastnfs-dkms_4.0.36-vastdata_all.deb`
+
+chmod +x vast_download.sh
+
+./vast_download.sh
 
 `sudo apt -y install nfs-common`
 
