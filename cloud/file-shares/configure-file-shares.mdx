@@ -139,6 +139,8 @@ While the VAST interface can be attached to an already-provisioned GPU cluster o
   It is best to create VAST shares either **during** the creation of [GPU clusters](/edge-ai/ai-infrastructure/create-an-ai-cluster) or **prior** to provisioning the corresponding [compute resources](/cloud/virtual-instances/types-of-virtual-machines) (such as VMs).
 </Info>
 
+**Attach VAST network interface**
+
 1. Go to server **Resource** settings ([VM](/cloud/virtual-instances/create-an-instance), [Bare Metal](/cloud/bare-metal-servers/create-a-bare-metal-server), or [GPU cluster](/edge-ai/ai-infrastructure/create-an-ai-cluster)).
 2. Select the **Networking** tab and click **Add interface**.
 4. Click the **Network** drop-down and select the **VAST network**, then click **Add**.
@@ -147,7 +149,11 @@ While the VAST interface can be attached to an already-provisioned GPU cluster o
    - **MAC** address (such as `fa:16:3e:12:34:56`)
    - **CIDR** range (such as `198.51.102.0/22`)
 
-### Step 3: Configure attached VAST network interface
+**Configure attached VAST network interface**
+
+<Info>
+  This configuration is required only when adding an interface to an existing, already provisionned resource; for interfaces added during resource creation and provisioning, this configuration is performed automatically.
+</Info>
 
 Connect to your server via the [Gcore Customer Portal](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel) or SSH and configure the attached VAST network interface.
 
@@ -156,25 +162,29 @@ Connect to your server via the [Gcore Customer Portal](/cloud/virtual-instances/
 3. Note the **interface name** (such as `enp8s0` or `enp4s0`) for use in the following steps.
 4. Using commands below:
    - Replace `198.51.100.25` with the IP adress from Step 2.
-   - Replace `enpXs0` with the interface name from above.
+   - Replace `enp8s0` with the interface name from above, if different.
 
    Set interface MTU
 
-   `sudo ip link set enpXs0 mtu 9000`
+   `sudo ip link set enp8s0 mtu 9000`
 
    Activate the interface
 
-   `sudo ip link set enpXs0 up`
+   `sudo ip link set enp8s0 up`
 
    Set interface CIDR
 
    `sudo ip addr add 198.51.100.25/22 dev enpXs0`
 6. Add static route to the VAST network:
-   - Replace `198.51.102.1` with an address formed by the first three octets from the CIDR range in Step 2, keeping `1` as the last octet for the gateway IP, and use the same interface name.
+   - Replace `198.51.102.1` with an address formed by the first three octets from the CIDR range in Step 2, keeping `1` as the last octet for the gateway IP, and using the same interface name.
 
-   `sudo ip route add 172.19.252.0/22 via 198.51.100.1 dev enpXs0`
+   `sudo ip route add 172.19.252.0/22 via 198.51.100.1 dev enp8s0`
 
-### Step 4: Set up VAST NFS client support
+### Step 3: Set up VAST NFS client support
+
+<Info>
+  This step is **always required** for VAST shares, regardless of whether they are added during or after resource provisioning.   
+</Info>
 
 Connect to your server via the [Gcore Customer Portal](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel) or SSH and configure the attached VAST network interface.
 
@@ -188,9 +198,9 @@ Install build tools and headers for kernel modules:
 
 Install VAST NFS package:
 
-`curl -sSf https://vast-nfs.s3.amazonaws.com/download.sh | bash -s -- `
+`curl -sSf https://vast-nfs.s3.amazonaws.com/download.sh | bash -s --` 
 
-### Step 5: Mount the file share
+### Step 4: Mount the file share
 
 Create a mount directory, for example:
 
@@ -199,9 +209,9 @@ Create a mount directory, for example:
 Mount the VAST file share:
 
 - Replace `ndp1-2-vast.cloud.gc.onl:/manila/manila-01234567-89ab-cdef-0123-456789abcdef` with the connection point from the VAST file share overview tab.
-- Replace `/home/ubuntu/mount` with the mount directory.
+- Replace `/home/ubuntu/mount` with the mount directory, if it differs.
 
-`sudo mount mount -o vers=3,nconnect=56,remoteports=dns,spread_reads,spread_writes,noextend ndp1-2-vast.cloud.gc.onl:/manila/manila-01234567-89ab-cdef-0123-456789abcdef /home/ubuntu/mount`
+`sudo mount -o vers=3,nconnect=56,remoteports=dns,spread_reads,spread_writes,noextend ndp1-2-vast.cloud.gc.onl:/manila/manila-01234567-89ab-cdef-0123-456789abcdef /home/ubuntu/mount`
 
 Now you can access the contents of the VAST file share in the specified directory.
 
