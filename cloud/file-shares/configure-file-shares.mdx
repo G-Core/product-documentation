@@ -164,15 +164,15 @@ Connect to your server via the [Gcore Customer Portal](/cloud/virtual-instances/
    - Replace `198.51.100.25` with the IP adress from Step 2.
    - Replace `enp8s0` with the interface name from above, if different.
 
-   Set interface MTU
+   Set interface MTU:
 
    `sudo ip link set enp8s0 mtu 9000`
 
-   Activate the interface
+   Activate the interface:
 
    `sudo ip link set enp8s0 up`
 
-   Set interface CIDR
+   Set interface CIDR:
 
    `sudo ip addr add 198.51.100.25/22 dev enpXs0`
 6. Add static route to the VAST network:
@@ -183,22 +183,22 @@ Connect to your server via the [Gcore Customer Portal](/cloud/virtual-instances/
 ### Step 3: Set up VAST NFS client support
 
 <Info>
-  This step is **always required** for VAST shares, regardless of whether they are added during or after resource provisioning.   
+  This step is **always required** for VAST shares, regardless of whether they are added during or after resource provisioning.
 </Info>
 
 Connect to your server via the [Gcore Customer Portal](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel) or SSH and configure the attached VAST network interface.
 
-Install NFS client tools:
+1. Install NFS client tools:
 
 `sudo apt-get update && sudo apt-get install nfs-common -y`
 
-Install build tools and headers for kernel modules:
+2. Install build tools and headers for kernel modules:
 
 `sudo apt install dkms debhelper dh-dkms build-essential linux-headers-$(uname -r) -y`
 
-Install VAST NFS package:
+3. Install VAST NFS package:
 
-`curl -sSf https://vast-nfs.s3.amazonaws.com/download.sh | bash -s --` 
+`curl -sSf https://vast-nfs.s3.amazonaws.com/download.sh | bash -s --`
 
 ### Step 4: Mount the file share
 
@@ -209,7 +209,7 @@ Create a mount directory, for example:
 Mount the VAST file share:
 
 - Replace `ndp1-2-vast.cloud.gc.onl:/manila/manila-01234567-89ab-cdef-0123-456789abcdef` with the connection point from the VAST file share overview tab.
-- Replace `/home/ubuntu/mount` with the mount directory, if it differs.
+- Replace `/home/ubuntu/mount` with the mount directory, if needed.
 
 `sudo mount -o vers=3,nconnect=56,remoteports=dns,spread_reads,spread_writes,noextend ndp1-2-vast.cloud.gc.onl:/manila/manila-01234567-89ab-cdef-0123-456789abcdef /home/ubuntu/mount`
 
@@ -221,15 +221,21 @@ Now you can access the contents of the VAST file share in the specified director
 
 ![File Share Mount Pn](/images/file-share-mount.png)
 
-## Change size and unmount a file share
+## Resizing file shares
 
-If you want to change the file share size, you must unmount it and then remount it.
+<Info>
+  - **VAST** shares can be resized directly, without being unmounted.
+  - **Standard** shares must first be unmounted before they can be resized, for example:
 
-To unmount a file share:
+    `umount -lf /home/ubuntu/mount/`
 
-`umount -lf /your/share`
+    Once resized, standard shares can be remounted as described above in Step 4.
+</Info>
 
-To resize your file share, go to the **Overview** tab and click **Resize** as shown below.
+### Resize file share
+
+1. In the **Cloud** menu, go to the **Storage** tab, select **File Shares**, and click the file share to be resized.
+2. In the **Overview** tab, click **Resize** and enter the new share size:
 
 <Frame>
   ![Overview tab](/images/docs/cloud/file-shares/5-1.png)
