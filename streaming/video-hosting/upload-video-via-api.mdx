@@ -1,0 +1,335 @@
+---
+title: Upload video via API to VOD storage
+sidebarTitle: Upload video via API
+---
+
+## How is Gcore video hosting organized?
+
+Video Hosting refers to cloud storage of videos that are ready to be distributed and watched on end devices via the public internet. You can upload original video files in [different formats](/streaming/live-streams-and-videos-protocols-and-codecs/what-initial-parameters-of-your-live-streams-and-videos-we-can-accept), we process the videos in various ways, and we save the result to our internal storage. As a result, you get videos in [HLS/MP4 format](/streaming/video-hosting/hls-and-mp4) with [subtitles](/streaming/video-hosting/subtitles-and-closed-captions-for-vod), [timeline previews](/streaming/video-hosting/timeline-hover-previews-use-in-players-and-roku-devices), and other features available.
+
+You can upload videos to the storage via the Gcore Customer Portal or API. Learn how to [add a video via the Gcore Customer Portal](/streaming/video-hosting/upload-a-video-and-embed-it-to-your-app).
+
+Upload of videos via API can be done in three ways, which we describe in detail in this article. Quickly navigate to your chosen method here: 
+
+  * Copy from external storage 
+  * Upload from a local device 
+  * Batch upload to migrate a vast number of videos from other services
+
+<Info>
+The original video provided from your side must strictly comply with the input parameters and codec requirements described in the [Input Parameters and Codecs](/streaming/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs) documentation.  
+
+Only videos that follow these specifications (supported protocols, video/audio codecs, profiles, GOP structure, and bitrate constraints) can be accepted by the uploader servers and reliably transcoded for further distribution. Any deviation from the documented requirements may cause the connection to be rejected or lead to unstable transcoding and delivery.  
+</Info>
+
+
+## Video upload and processing statuses
+
+Statuses of video processing are described in the [Video Status article](/streaming/video-hosting/vod-status).
+
+
+## Priority of processing
+
+Every uploaded video enters a processing queue. 
+
+Scheduling is influenced by two levels of priority:
+	- Global priority – Managed automatically by the system on global scale. You cannot influence on it. It depends on converter availability in the processing cluster. This ensures that even without a dedicated region (this an option for enterprises), your videos usually start processing without significant delay.
+	- Account priority – Applied within your account. You can control it explicitly using the priority attribute.
+
+You can control account priority using the `priority` field in uploaded videos. This field controls scheduling order for video processing tasks within your account. It lets you influence transcoding queue behavior when some jobs should be processed earlier than others (e.g., urgent uploads or sub-user on higher service tiers).
+Field `priority` in `POST /streaming/videos` method:
+	- Type: integer
+	- Range: -10 … 10
+	  - -10 = lowest priority (processed after others)
+	  - 0 = default priority
+	  - 10 = highest priority (processed first)
+
+This value does not guarantee absolute ordering but adjusts relative job weight in the processing queue.
+
+
+## Copy from external storage
+
+In the section, we explain how to copy and migrate files from a third-party, external storage to the Gcore Video Streaming. We will explain the process, offer an example API request, then explain how it works.
+
+### Overview
+
+If your videos are available by public HTTPS URL, this is the best option to copy video files directly from external storage.
+
+Available protocols for migration:
+
+  * HTTP/HTTPS public access from external video hosting services, such as Vimeo or Mux
+  * HTTP/HTTPS public access from S3-like storages, such as AWS or Azure
+  * SFTP protocol
+
+
+<Info>
+The original file must be in MP4 format or one of the following formats: 3g2, 3gp, asf, avi, dif, dv, flv, f4v, m4v, mov, mp4, mpeg, mpg, mts, m2t, m2ts, qt, wmv, vob, mkv, ogv, webm, vob, ogg, mxf, quicktime, x-ms-wmv, mpeg-tts, vnd.dlna.mpeg-tts.
+</Info>
+
+
+Streaming formats like HLS (.m3u8/.ts) and DASH (.mpd/.m4v) are intended for the final video distribution to end viewers, so they cannot be used as original file formats.
+
+Examples of good and bad links to video files from external storage: 
+
+  * **Good link** : `https://demo-files.gvideo.io/gcore.mp4` (13,8MB from S3 storage)
+  * **Good SFTP template** : `sftp://login:password@domain.com/path/file.mp4`
+  * **Bad link** (because of chunked HLS format): `https://demo-files.gvideo.io/hls/master.m3u8`
+
+
+
+Below, we explain how to [get HTTP public access links](/streaming/video-hosting/upload-video-via-api#batch-upload-to-migrate-a-vast-number-of-videos-from-other-services) in some popular external storages. 
+
+To copy a video from another server, specify the attribute `origin_url` in the [POST API request](/api-reference/streaming/videos/create-video). The original video will be downloaded for Video Hosting on our server side. 
+
+**Note** : You can only upload one video per request.
+
+### Example of API request
+
+Here is an example of the API request to set a task for copying a video from external storage:
+
+```sh
+curl -L 'https://api.gcore.com/streaming/videos/' \ 
+-H 'Content-Type: application/json' \ 
+-H 'Authorization: APIKey 1234$0d16599c' \ 
+-d '{ 
+  "video": { 
+    "name": "Gcore Demo", 
+    "description": "Video copied from an external S3 Storage", 
+    "origin_url": "https://demo-files.gvideo.io/gcore.mp4"
+  } 
+}
+ ```
+
+Example of the response:
+
+```json
+{ 
+  "id": 2496039, 
+  "name": "Gcore Demo", 
+  "description": "Video copied from an external S3 Storage", 
+  ... 
+}
+ ```
+
+After setting the task for downloading, it is queued. You can queue an unlimited number of files, and each one will be processed as soon as possible.
+
+**Note** : Please be aware of [RPS limits for using API](https://api.gcore.com/docs/iam#section/Rate-limits).
+
+### How it works
+
+Here's how it works on our end. We attempt to download a file three times, expecting a 200 OK response to access your provided link. If the download fails, the video entity will stay in the "Empty" status, and details will be added to the field `error`. You need to delete the empty video entity and try to create a new one with the correct origin URL.
+
+Once successfully uploaded and processed, the video will be available in the Customer Portal. You can check the status of the video by the [GET API request](/api-reference/streaming/videos/get-video) or via webhook [notifications](/streaming/extra-features/get-webhooks-from-the-streaming-platform). 
+
+## Upload from a local device
+
+When you develop your service, a video must be uploaded from the local host (your backend) or by users from a browser or mobile app. 
+
+We use the [TUS resumable upload protocol](https://tus.io) for uploading files, which works by cutting the video for upload into small segments and, if an interruption occurs, continuing from the point of interruption. 
+
+The uploading process consists of three steps.
+
+### Step 1. Create a video entity and get a video identifier
+
+Specify the main parameters, and do not use the `origin_url` attribute in the [POST API request](/api-reference/streaming/videos/create-video).
+
+Example of the request:
+
+```sh
+curl -L 'https://api.gcore.com/streaming/videos/' \ 
+-H 'Content-Type: application/json' \ 
+-H 'Authorization: APIKey 1234$0d16599c' \ 
+-d '{ 
+  "video": { 
+    "name": "Gcore Demo", 
+    "description": "Uploaded via TUS session" 
+  } 
+}'
+ ```
+
+Example of the response:
+
+```json
+{ 
+  "id": 2501637, 
+  "name": "Gcore Demo", 
+  "description": "Uploaded via TUS session", 
+  "duration": null, 
+  "slug": "70NbFUCZyXU2s3tY", 
+  "status": "empty", 
+  ... 
+}  
+ ```
+
+### Step 2. Get TUS session parameters
+
+To upload a file, you must get a TUS server URL and secret token. Specify the "id" parameter from step 1 and [get the TUS session parameters](/api-reference/streaming/videos/get-tus-parameters-for-direct-upload).
+
+Example of the request:
+
+```sh
+
+curl -L 'https://api.gcore.com/streaming/videos/2501637/upload' \ 
+-H 'Authorization: APIKey 1234$0d16599c' 
+ ```
+
+Example of the response:
+
+```json
+{ 
+  "servers": [ 
+   { 
+      "id": 561, 
+      "role": "upload", 
+      "hostname": "vod-uploader-ed-2.gvideo.co", 
+      "active": true, 
+      "ssl": true 
+    }, 
+    ... 
+  ], 
+  "token": "eyJhbGciOiJIUzI3O6kc3Og...", 
+  "video": { 
+    "id": 2501637, 
+    "name": "Gcore Demo", 
+    "description": "Uploaded via TUS session", 
+    "duration": null, 
+    "slug": "70NbFUCZyXU2s3tY", 
+    "status": "empty", 
+    ... 
+   } 
+}  
+ ```
+
+Where: 
+
+  * `servers`: A list of available servers to upload the file; you can use any of them.
+  * `token`: A secret token for starting the TUS session, valid for 4 hours which is long enough because as soon as the session starts, the token is no longer needed.
+  * `video`: A copy of the main data pertaining to your video entity.
+
+
+
+### Step 3. Upload file via TUS chunked protocol
+
+For uploading, use the session parameters taken from the previous step:
+
+```py
+endpoint = "https://{hostname}/upload/" 
+chunksize = 10000000 
+filename = "{filename}" 
+filetype = "{file_mime_type}" 
+token = "{tus_token}" 
+video_id = {video_id} 
+client_id = {client_id} 
+ ```
+
+**Note** : The `chunksize` number is given in bytes. Take care to choose the chunk size appropriately:
+
+  * The larger the size of a chunk, the faster each chunk will be uploaded using the maximum bandwidth. But in the case of failure to upload, TUS will only start uploading from the last successful chunk, which may have been some time ago. So with large sizes, the speed will be faster, but if it fails, the additional reupload time will be significant.
+  * With small sizes, the risk of uploading errors decreases. However, due to the features of HTTP (handshakes, etc.) for each chunk's request, the upload speed will significantly reduce. So small chunk sizes mean a slow but reliable upload speed.
+
+<Info>
+**Info**
+
+Transmitted data must comply with the [rules for the Upload-Metadata header](https://tus.io/protocols/resumable-upload#upload-metadata), including: 
+* Header fields must be comma-separated. 
+* All values are encoded using the Base64 scheme. 
+* All keys are unique.
+
+</Info>
+
+**Example of bash script:**
+
+```sh
+DEBUG=1 tusc -H "https://vod-uploader-ed-2.gvideo.co" -f "file_to_upload.mp4" -b "/upload/" -- -H "'Upload-Metadata: client_id $(echo <client_id> | base64 -w0),filename $(echo <filename> | base64 -w0),token $(echo <token> | base64 -w0),video_id $(echo <video_id> | base64 -w0)'"
+ ```
+
+**Example of JS code:**
+
+Try the [CodePen template](https://codepen.io/apih9000/pen/wvQmNEW?editors=1011) by copying your `token`, `video_id`, and `client_id` to find out the upload functionality of the TUS protocol: 
+
+
+<Frame>![CodePen template](/images/docs/streaming-platform/video-hosting/upload-video-via-api/codepen-example.png)</Frame>
+
+
+
+```js
+const options = { 
+  endpoint,   
+  chunkSize, 
+  retryDelays: [0, 1000, 3000], 
+  metadata: { 
+    filename: file.name, 
+    filetype: file.type, 
+    // must provide these 3 fields too 
+    token: token, 
+    video_id: videoid, 
+    client_id: clientid 
+  }, 
+  onError(error) { 
+    ... 
+  }, 
+  onProgress(bytesUploaded, bytesTotal) { 
+    ... 
+  }, 
+  onShouldRetry: function (err, retryAttempt, options) { 
+    // tus-js-client should retry 
+    return true 
+  }, 
+  onSuccess() { 
+    ... 
+  } 
+} 
+ 
+upload = new tus.Upload(file, options) 
+upload.findPreviousUploads().then((previousUploads) => { 
+  askToResumeUpload(previousUploads, upload) 
+ 
+  upload.start() 
+  uploadIsRunning = true 
+})  
+ ```
+
+Choose your TUS implementation: 
+
+  * JS: We support 2.x version of tus-js-client, for details check out [GitHub](https://github.com/tus/tus-js-client/releases?q=v2.&expanded=true)
+  * Android: [Gcore's open-source Kotlin demo app](https://github.com/G-Core/android-demo-vod-hosting)
+  * iOS: [Gcore's open-source Swift demo app](https://github.com/G-Core/ios-demo-vod-hosting)
+  * Other implementation options can be found on the [official TUS website](https://tus.io/implementations)
+
+
+
+Most common TUS errors: 
+
+  * **HTTP 405 Method Not Allowed**. Unexpected response while creating upload session; check parameters of the request.
+  * **HTTP 429 Too Many Requests**. Try to send a request later.
+  * **HTTP 500 Internal Server Error** :
+    * Error: token invalid (null) – check the format of parameters, encoding in base64, separation of parameters and key-value pairs.
+    * Error: token invalid (eyJhbGciOi...) – the same as above.
+    * Error: token video (12345) does not match this video (23456)
+    * Error: token client (123) does not match this client (234)
+
+
+## AI extra processing
+
+When uploading a video, it is possible to automatically create subtitles based on AI. 
+
+Use parameters `auto_transcribe_audio_language: auto|<language_code>` and `auto_translate_subtitles_language: default|<language_codes,>` when creating a new video via API. 
+
+Read more on the page [Generate and translate AI captions for a new VOD](/streaming/ai-video-service/generate-ai-subtitles-and-add-them-to-video/generate-captions-via-api).
+
+
+## Batch upload to migrate a vast number of videos from other services
+
+When moving a huge collection of video files, batch upload is the best method. This option will be available soon. Please ask our [support team](mailto:support@gcore.com) for details.
+
+We can help you to migrate from several storage types. We have compiled a list of storage types with instructions on how to get an HTTP link to access the file:
+
+  * [Google Drive](https://support.google.com/drive/answer/2494822?hl=en&co=GENIE.Platform%3DDesktop&oco=0#zippy=%2Cshare-multiple-files)
+  * Amazon S3 (step 1: [Setting permissions for website access](https://docs.aws.amazon.com/AmazonS3/latest/userguide/WebsiteAccessPermissionsReqd.html), step 2: [Get the list of objects](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html))
+  * [Vimeo](https://help.vimeo.com/hc/en-us/articles/12426150952593-Direct-links-to-video-files)
+  * [Mux](https://docs.mux.com/guides/video/download-for-offline-editing#retrieving-the-url-to-the-master)
+  * [Dropbox](https://help.dropbox.com/share/create-and-share-link)
+  * [General SFTP or S3 storage with HTTP file access](/storage/manage-object-storage/manage-buckets-via-the-control-panel#manage-files)
+
+
+
+If your storage type isn't mentioned in this list, ask our [support team](mailto:support@gcore.com) and we will be happy to help you with your video migration.

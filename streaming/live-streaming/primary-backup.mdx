@@ -1,0 +1,237 @@
+---
+title: "Primary, Backup, and Global Ingest Points for PUSH and PULL"
+sidebarTitle: "Ingest & Backup"
+description: Multiple geo distributed ingest points and limits of getting original stream
+---
+
+## PUSH Ingest
+
+### Live Ingesting
+
+Live ingesting is the process of sending a live video and audio stream from your source (encoder, camera, or app) into the Streaming Platform. 
+The ingest point is the server endpoint that first receives the stream before it is processed (transcoded, packaged, or distributed via CDN).
+
+In PUSH mode, your encoder initiates the connection to the platform ingest server. You configure the encoder with a target URL and stream key, and the server listens for that incoming connection.
+
+Protocols supported for PUSH ingest typically include:
+  - RTMP/RTMPS — Widely supported in encoders and streaming software.
+  - SRT — Secure and reliable, recommended for contribution over the Internet.
+  - WebRTC WHIP — Low-latency contribution from browsers or apps.
+
+<Info>
+Only one ingest protocol type can be used for a live stream at a time.
+For example, if you start pushing RTMP and then try to push WebRTC WHIP simultaneously, the transcoding process will fail.
+
+Example of server response after sending a second stream:
+```
+[out#0/flv @ 0x600003934000] Error muxing a packet
+[out#0/flv @ 0x600003934000] Task finished with error code: -32 (Broken pipe)
+[out#0/flv @ 0x600003934000] Terminating thread with return code -32 (Broken pipe)
+[out#0/flv @ 0x600003934000] Error writing trailer: Broken pipe
+[out#0/flv @ 0x600003934000] Error closing file: Broken pipe
+```
+</Info>
+
+To use PUSH ingest, you must:
+  1) Select one protocol (RTMP, SRT, or WebRTC WHIP).
+  2) Configure your encoder with the server ingest URL and your unique stream key.
+  3) Ensure network/firewall allows outbound TCP (for RTMP/RTMPS) and UDP (for SRT, WebRTC).
+
+<Info>
+The origin stream provided by your encoder must strictly comply with the input parameters and codec requirements described in the [Input Parameters and Codecs](/streaming/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs) documentation.  
+
+Only streams that follow these specifications (supported protocols, video/audio codecs, profiles, GOP structure, and bitrate constraints) can be accepted by the ingest servers and reliably transcoded for further distribution. Any deviation from the documented requirements may cause the connection to be rejected or lead to unstable transcoding and delivery.  
+</Info>
+
+
+### Failover with Primary and Backup Ingest Points for PUSH
+
+In most cases 1 primary point is used for broadcasting. Multiple points are needed for large broadcasts with multiple backups.
+Streaming Platform offers special failover mechanism for RTMP and SRT origin streams. You can push primary and backup origin streams simultaneosly to organize a backup plan. 
+
+Use for RTMP/S: 
+- `push_url` – as primary
+- `backup_push_url` - as backup
+
+Use for SRT:
+- `push_url_srt` – as primary
+- `backup_push_url_srt` – as backup
+
+**PUSH fallback algorithm:**
+
+1)  Primary stream active. Primary is always takes priority over the backup stream.
+2)  When the primary stream fails and is unavailable for more than ±3 seconds, then fallback process begins (the backup stream must be available and online):
+    1) New transcoding started for the backup stream
+    2) End-viewers will be without stream data for ±15 seconds
+3)  When the primary stream is restored, a timer starts counting the time the primary stream has been active. Primary must be available for at least 60 consecutive seconds before a transition to the primary begins:
+    1) New transcoding started for the primary stream
+    2) End-viewers will be without stream data for ±15 seconds
+
+
+### Geo Distributed Ingest Points for PUSH
+
+For smoother and more reliable streaming we offer entry servers in regions including:
+ - Europe Luxembourg, The Netherlands
+ - US Ashburn, Miami
+ - Singapore
+ 
+By connecting your encoder to the nearest ingest server, you can minimize latency and improve performance.
+You can specify preferred upload servers and the number of streams per region. Our team will then configure your account to match your streaming setup.
+
+[Reach out to our support team](https://gcore.com/contact-us) or your account manager for setup assistance.
+
+<Frame>![Geo distributed ingest points for PUSH](/images/docs/streaming-platform/live-streaming/ingest-points.png)</Frame>
+
+
+### PUSH Ingest Limits
+
+Pay attention to rules of ingest server behavior because of security reason:
+1) After a connection is established with a valid stream key, the server registers it as active. While this session remains active, any subsequent connection attempts using the same stream key will be rejected. Ingest protocol does not provide error codes for this case, so rejections occur silently. To verify whether a stream is currently active, use UI or API.  
+2) The server also enforces a connection rate limit. If too many connection attempts are made in a short period, new attempts will be denied. To avoid triggering the limiter, allow at least 10 seconds between connection attempts.  
+
+<Info>
+1 connection and 1 protocol can be used at a single moment in time per unique stream key input. Trying to send 2+ connection requests at once, or 2+ protocols at once will not lead to a result.
+
+For example, if you start pushing primary RTMP and backup RTMP to the same single `push_url` simultaneously, the transcoding process will fail.
+</Info>
+
+
+## PULL 
+
+### Failover with Multiple Source URIs for PULL
+
+"PULL URL" field can contain 1 link, or many at once. In most cases 1 point is used. Multiple points are needed for large broadcasts with multiple backups. You can specify multiple addresses separated by a space (" "), so you can organize a extra-backup plan. 
+
+Example #1:
+```
+rtmp://encoder.example.com/live/stream123
+```
+
+Example #2: 
+```
+rtmp://encoder1.example.com/live/stream123 rtmp://encoder2.example.com/live/stream123_backup srt://encoder3.example.com:9000?mode=caller&latency=1000000&streamid=stream123
+```
+
+**PULL fallback algorithm:**
+
+1)  Stream #1 is active
+2)  If stream #1 is unavailable and is missing for more than ±3 seconds, then the next stream #2 is taken from the "PULL URI" and transition to the next backup source begins:
+    1) A new transcoding for the backup stream is started.
+    2) End viewers will be without stream data for ±15 seconds.
+    3) If this stream #2 is also interrupted, the above algorithm will be repeated for the next backup stream. In this case, the specified addresses will be selected one by one using round robin algorithm. If the first address does not respond, then the next one in the list will be automatically requested, returning to the first and so on in a circle. No worries, if only 1 link is specified in "PULL URI", then the system will request that link.
+3)  The system will try to pull the origin stream for 2 hours approximately, making requests approximatelly every 3 seconds. 
+    1) If one of the links works, the timer is reset to zero, transcoding begins. 
+    2) Otherwise the stream stops permanently. To resume it, you will have to activate it manually or via API.
+
+ 
+### Geo Distributed Points for PULL
+
+By setting location correctly, you can minimize latency and improve performance.
+
+[Reach out to our support team](https://gcore.com/contact-us) or your account manager for setup assistance.
+
+
+## Stream availability
+
+A live stream typically requires a short initialization period before playback becomes available.
+Our system initializes all required services within ~2–5 seconds, from receiving a live stream at the ingester to publishing segments on the CDN.
+
+<Info>
+  Stream segments become available in the CDN (and player) within ~2–5 seconds after the `type: stream (live=true)` webhook is issued.
+</Info>
+
+Workflow when starting a stream on server:
+  - Accept and check the stream on the ingester
+  - Initialize the stream
+  - **Send a webhook**
+  - Start the transcoding process
+  - Publish the first segment to the CDN
+  - **Playback available** – here your player can start downloading video segments
+
+The table below compares how different platforms approach latency reduction. We evaluated multiple implementations and identified best practices for minimizing delay.
+
+<Frame>![Timing of live streaming](https://assets.gcore.pro/site-media/uploads-staging/how_we_solve_issues_of_rtmp_to_hls_streaming_on_ios_and_android_2_c737a90322.svg)</Frame>
+
+By collaborating with streaming platforms that deliver RTMP-to-HLS on iOS and Android, we defined best practices: optimize GOP size, enable background streaming, trigger player startup at the optimal moment, and adjust bitrate and delivery region dynamically. These improvements enhance playback stability, minimize startup delay, and reduce rebuffering.
+Read more in the blog article [How we solve issues of RTMP-to-HLS streaming on iOS and Android](https://gcore.com/blog/how-we-solve-issues-of-rtmp-to-hls-streaming-on-ios-and-android).
+
+
+## Players behavior 
+
+Please note that the manifesto and fragments will be available again at the time indicated above. Consider your player configuration for automatic playback of restored live stream. Some players resume playback with a large delay automatically. But if you update them manually, the video will appear instantly.
+
+Use built-in retry knobs and an error handler that re-loads the manifest when it comes back.
+
+For example:
+```
+  hls.js:
+  manifestLoadingMaxRetry: 10,
+  manifestLoadingRetryDelay: 1000,
+
+  dash.js:
+  retryAttempts: { manifest: 100, media: 10, lowLatency: 10 },
+  retryIntervals: { manifest: 1_000, media: 1_000, lowLatency: 1_000 },
+  rebufferToLive: true,
+```
+
+
+## Backup playback demo
+
+Watch the demo video below of how switching from primary to backup works using PUSH connection example in a real situation.
+
+On the encoder side, 2 streams are organized: "Stream 1 Primary" and "Stream 2 Backup". They are both launched by ffmpeg command. And another terminal with a constant curl of the .mpd manifest status in the CDN: 200 is present or 404 is absent.
+
+The screen displays:
+- Player in UI of personal account, with the ability to manually refresh the player.
+- Second player with the same stream, but with fully automatic recovery. Our player has automatic reconnection logic, but this logic specifically uses a delayed connection check algorithm to reduce the load on the server. You will see that the automatic connection is triggered a little later than the manual one.
+
+<Frame>
+<iframe
+  src="https://player.gvideo.co/videos/2675_6FMc2FoOatkgl31"
+  width="100%"
+  height="360"
+  loading="lazy"
+  allow="autoplay; fullscreen; picture-in-picture"
+  allowFullScreen
+/>
+</Frame>
+
+Timing (time burned in the stream inside the player):
+1) 13:52:16 UTC – Stream 1 Primary started
+2) 13:52:19 UTC – Stream 1 Primary displayed
+3) 13:52:27 UTC – Stream 2 Backup started
+4) 13:52:50 UTC – Stream 1 Primary stopped
+5) 13:52:53 UTC – Stream 2 Primary enabling
+6) 13:53:02 UTC – Stream 2 Backup displayed **(12 seconds without playback)**
+7) 13:53:10 UTC – Stream 1 Primary started
+8) 13:54:20 UTC – Stream 1 Primary enabling
+9) 13:54:31 UTC – Stream 1 Primary displayed **(11 seconds without playback)**
+
+<Info>
+Players in automatic mode may take longer time to restore playback. See the section above on how to work with players.
+
+After switching from backup to primary the Gcore Video Player decided to use 4 sec latency. Don't worry, it will catch up with the live feed pretty quickly later.
+</Info>
+
+
+**Scripts used in the demo:**
+
+Encoding of the "Stream 1 Primary", and similar for backup:
+```
+ffmpeg -re -stream_loop -1 \
+  -i ~/Temp/coffee_run.webm \
+  -c:a aac -ar 44100 \
+  -c:v libx264 -profile:v baseline -tune zerolatency -preset veryfast \
+  -x264opts "bframes=0:scenecut=0" \
+  -vf "scale=-1:640,\
+drawtext=fontsize=(h/15):fontcolor=yellow:box=1:boxcolor=black:text='%{gmtime\:%T}.%{gmtime\:%3N}UTC, %{frame_num}, %{pts\:hms} %{pts} %{pict_type}, %{eif\:h\:d}px':x=20:y=20,\
+drawtext=text='Stream 1 Primary':fontsize=(h/15):fontcolor=white:box=1:boxcolor=black:x=20:y=80,\
+drawtext=text='%{eif\:t/2\:d\:2}  %{eif\:trunc(mod(t\,2)*4/2)\:d\:2}':fontsize=(h/15):box=1:x=(w-tw)/2:y=h-(4*lh)" \
+  -hide_banner -f flv \
+  "rtmp://vp-push-ed2.gvideo.co/in/2409264?aaabbbcccddd"
+```
+
+Checking HTTP status of the manifest:
+```
+while true; do curl -s -D - -o /dev/null -w 'HTTP/%{http_version} %{http_code}\n' "https://demo-public.gvideo.io/cmaf/11111_2409264/index.mpd" | tr -d '\r' | awk '/^HTTP\//{proto=$1;status=$2} tolower($1)=="content-length:"{cl=$2} tolower($1)=="content-type:"{$1=""; sub(/^ /,""); ctype=$0} tolower($1)=="date:"{$1=""; sub(/^ /,""); dt=$0} END{print proto, status, (cl?cl:"-"), (ctype?ctype:"-"), (dt?dt:"-")}'; sleep 1; done
+```
