@@ -24,7 +24,7 @@ This creates the appearance of a “smooth” and stable stream even if the netw
 
 ### 2. SRT behavior (UDP-based)
 
-SRT implements reliability using UDP plus selective retransmissions. Unlike TCP, SRT enforces a strict latency window (e.g., 500–2000 ms). Packets must arrive within this time, otherwise they are dropped. 
+SRT implements reliability using UDP plus selective retransmissions. Unlike TCP, SRT enforces a strict `latency` window (e.g., 500–3000 ms). Packets must arrive within this time, otherwise they are dropped. 
 When the network is unstable:
  - Retransmissions may arrive too late
  - Jitter bursts may exceed the buffer window
@@ -34,6 +34,12 @@ When the network is unstable:
 SRT prioritizes stable abd predictable latency. It exposes real network limitations instead of masking them with unlimited buffering.
 
 **Note**: This is also the main advantage of SRT. It manages packets independently and can send data for transcoding even with dropped packets. Broadcast may visually suffer for a few frames, but it won't stop, and the frame-rate will remain stable.
+
+<Info>
+SRT does offer more capabilities than the other de-facto standard protocol RTMP. However, SRT also requires a precise understanding of how to configure it to suit your needs.
+
+If you encounter problems with its use, use an alternative RTMP.
+</Info>
 
 
 ### 3. Additional factor: limited outgoing bandwidth
@@ -49,9 +55,11 @@ Pay attention that this makes SRT more sensitive to bandwidth ceilings and upstr
 
 ### 4. Additional factor: encoder frame buffer
 
-Most H.264/H.265 encoders introduce internal delay by using lookahead, B-frames, and scenecut analysis, which buffer and reorder frames before output. This added latency (often 1.3–1.5 seconds) can exceed the SRT latency window, causing the receiver to treat packets as “late” and drop them. For live SRT ingest, encoders must operate with minimal buffering, which is why `-tune zerolatency` (or equivalent parameters) is required to disable lookahead and frame reordering.
+Most H.264/H.265 encoders introduce internal delay by using lookahead, B-frames, and scenecut analysis, which buffer and reorder frames before output. This added latency (often 1.3–1.5 seconds) can exceed the SRT latency window, causing the receiver to treat packets as “late” and drop them. 
 
-Read more about [encoder buffering, frame reordering, and zerolatency tuning using SRT](srt)
+So it's desirable for RTMP, and mandatory for SRT that: encoders must operate with minimal buffering, which is why `-tune zerolatency` (or equivalent parameters) is required to disable lookahead, B-frames, and frame reordering.
+
+Read more about [encoder buffering, frame reordering, and zerolatency tuning using SRT](srt#encoder-frame-buffer-and-zerolatency).
 
 
 ## Main RTMP vs SRT differencies
@@ -65,6 +73,8 @@ Read more about [encoder buffering, frame reordering, and zerolatency tuning usi
 |                 | severe delays can break transcoding completely         | "latency" param can compensate for network problems    |
 | Visible effects | No visual glitches; but long gaps in reception between | May show brief visual glitches when drops late packets |
 |                 | packets will be displayed as buffering in the player   |                                                        |
+| Configuring     | No configuration required                              | Requires mandatory fine-tuning to suit your conditions;|
+|                 |                                                        | otherwise, you'll get a bad image or buffering         |
 
 
 So, let's summarize. If RTMP capabilities are sufficient, you can continue using it. Its TCP-based algorithm allows you to handle most issues. Otherwise, connect SRT.
