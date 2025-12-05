@@ -10,9 +10,15 @@ Secure Reliable Transport (SRT) is an open-source streaming protocol that solves
 In contrast to RTMP/RTMPS, SRT is a UDP-based protocol that provides low-latency streaming over unpredictable networks. SRT is also required if you want to use the H265/HVEC codec.
 
 Used as:
- - Used for receiving an origin stream from your encoder, not for playback.
+ - Used for sending/receiving an origin stream from your encoder, not for playback.
  - Default port: SRT 5001 (UDP).
- - Must be configured on your encoder with parameters provided in the [Input Parameters and Codecs](/streaming/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs).
+ - Must be configured on your encoder with parameters provided in the [Input Parameters and Codecs](/streaming/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs) and `latency`+`-tune zerolatency` (read below).
+
+<Info>
+SRT does offer more capabilities than the other de-facto standard protocol RTMP. However, SRT also requires a precise understanding of how to configure it to suit your needs. 
+
+If you encounter problems with its use, use an alternative RTMP. For more details, see the comparison of [RTMP vs SRT](/streaming/live-streaming/protocols/rtmp-srt).
+</Info>
 
 
 ## SRT PUSH
@@ -24,22 +30,15 @@ Use SRT PUSH when the encoder itself can establish an outbound connection to our
 
 Your encoder settings should contain the exact ingest parameters: server URL, backup URL (if used), stream key. Read below how to get ingest links.
 
-Ingest link looks like `srt://vp-push-ed1-srt.gvideo.co:5001?streamid=12345#aaabbbcccddd` and contains:
+Ingest link looks like `srt://vp-push-ed1-srt.gvideo.co:5001?latency=2000&streamid=12345#aaabbbcccddd` and contains:
 - protocol `srt://`
 - name of a specific server located in a specific geographic location – `vp-push-ed1-srt` is located in Europe
 - port `:5001`
-- exact stream key `?streamid=12345#aaabbbcccddd`
+- latency window 2sec
+- exact stream key `&streamid=12345#aaabbbcccddd`
 
-*Example:*
-That ffmpeg command will generate a test video (1280×720 @30fps color bars) with a 2kHz sine-tone audio track, encode them to H.264 video + AAC audio, and push the stream in FLV format over RTMP to the specified ingest URL.
-```sh 
-ffmpeg -re -f lavfi -i testsrc2=size=1280x720:rate=30 \
-       -f lavfi -i sine=f=2000:r=48000 \
-       -c:v libx264 -preset veryfast -b:v 1M -g 30 \
-       -c:a aac -b:a 128k -ar 48000 \
-       -f mpegts "srt://vp-push-ed1-srt.gvideo.co:5001?latency=1100000&streamid=12345#aaabbbcccddd"
-```
 
+Refer to the examples at the bottom of this page for properly configured SRT push workflows using FFmpeg, GStreamer, and other supported software encoders.
 
 <Info>
 If the stream is experiencing transcoding or playback problems, then perhaps changing the ingest server to another location will solve the problem. Read more in the [Geo Distributed Ingest Points](/streaming/live-streaming/primary-backup) section, and contact our support to change the ingest server location.
@@ -167,7 +166,20 @@ Ingester timeout limit is 3 sec (3000ms). If there is no data in the connection 
 
 ### Encoder frame buffer and zerolatency
 
-By default, both H.264 and H.265 encoders optimize compression efficiency using techniques such as B-frames, lookahead (rc-lookahead), scenecut analysis, and related predictive tools. These features require the encoder to pre-buffer and reorder frames internally, resulting in delayed output and non-monotonic DTS/PTS patterns. While SRT will transport whatever MPEG-TS packets it receives, the receiver and transcoder are sensitive to packets that arrive too late relative to SRT’s configured latency window. If frames emerge from the encoder with significant internal delay, the receiver may classify them as “late” and discard them, causing GOP breaks and unstable ingest.
+By default, both H.264 and H.265 encoders optimize compression efficiency using techniques such as B-frames, lookahead (rc-lookahead), scenecut analysis, and related predictive tools. 
+
+You may already be familiar with this well-known diagram illustrating how modern video codecs structure a sequence of frames using different types of prediction to achieve compression efficiency:
+
+<Frame>
+![Video frame compression algorithm](/images/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/compressed-frames.png)
+</Frame>
+
+In this structure:
+ - I-frames contain a full image and act as decoding references, 
+ - while P-frames encode only changes from a previous frame 
+ - and B-frames use both past and future frames for prediction. 
+ 
+This hierarchy significantly reduces bitrate: I-frames preserve the complete scene, whereas P- and B-frames efficiently capture only the motion or changes between frames. These features require the encoder to pre-buffer and reorder frames internally, resulting in delayed output and non-monotonic DTS/PTS patterns. While SRT will transport whatever MPEG-TS packets it receives, the receiver and transcoder are sensitive to packets that arrive too late relative to SRT’s configured latency window. If frames emerge from the encoder with significant internal delay, the receiver may classify them as “late” and discard them, causing GOP breaks and unstable ingest.
 
 This is why SRT ingest almost always requires the use of `-tune zerolatency` (or equivalent encoder parameters) for live scenarios.
 
@@ -183,8 +195,12 @@ Together, these behaviors can add 1.3–1.5 seconds of encoder latency before th
 
 If the SRT sender uses a small default latency window (commonly 100–500 ms on certain encoders by default), packets emerging from the encoder will exceed SRT’s delivery deadline. Anything arriving outside the latency budget is treated as “late” and dropped, making the stream inherently non-functional regardless of network conditions.
 
+<Frame>
+![Lookahead buffer window of 40 frames](/images/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/lookahead-40.png)
+</Frame>
+
 <Info>
-In other words: if your encoder introduces 1.5 seconds of delay but your SRT latency is 0.5 seconds, you are generating a stream that cannot possibly be delivered reliably—SRT will discard the majority of packets as late.
+In other words: if your encoder introduces 1.5 seconds of delay but your SRT latency is 0.5 seconds, you are generating a stream that cannot possibly be delivered reliably. SRT will discard the majority of packets as late.
 
 Thus, your encoder is creating a deliberately unworkable stream.
 </Info>
@@ -192,8 +208,11 @@ Thus, your encoder is creating a deliberately unworkable stream.
 
 **Recommendation:**
 
-Always enable `-tune zerolatency` (or explicitly disable lookahead, B-frames, and reordering parameters) when sending video over SRT. This ensures the encoder outputs frames immediately and keeps all timestamps within SRT’s latency window, enabling stable, predictable ingest.
+Always enable `-tune zerolatency` (and explicitly disable lookahead, B-frames, and reordering parameters) when sending video over SRT. This ensures the encoder outputs frames immediately and keeps all timestamps within increased SRT’s `latency` window, enabling stable, predictable ingest.
 
+<Frame>
+![Lookahead buffer window is minimized](/images/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/lookahead-0.png)
+</Frame>
 
 
 ### Public Internet latency
@@ -205,7 +224,7 @@ Incorrect or low default value is one of the most common reasons for packet loss
 </Info>
 
 We therefore recommend setting latency manually rather than relying on the default, to ensure the buffer is correctly sized for your environment. 
-A practical range is 1000–2000 ms, with the exact value chosen based on RTT, jitter, and expected packet loss. Increasing SRT 2000ms latency provides a larger error absorption window, stabilizing the stream and keeping delay predictable.
+A practical range is 1500–2000 ms, with the exact value chosen based on RTT, jitter, and expected packet loss. Increasing SRT 2000ms latency provides a larger error absorption window, stabilizing the stream and keeping delay predictable.
 
 
 ### Best Practices for Configuring SRT Latency
@@ -214,18 +233,18 @@ Recommended latency ranges for SRT ingest based on network conditions and "zerol
 
 | Network Conditions               | Typical RTT (ms) | Jitter/Loss         | Recommended Latency (ms) |
 |----------------------------------|------------------|---------------------|--------------------------|
-| Same datacenter                  | &lt;20              | Very low            | 150–400                  |
-| Same country, stable uplink      | 20–100            | Low (&lt;0.5% loss)    | 600–1000                 |
-| Cross-region, higher variability | 100–300           | Moderate (&lt;1%)      | 1000–2000                |
-| Other unstable (mobile) internet | >300         | High (>1% bursts)   | 2000-2500                |
+| Same datacenter                  | &lt;20           | Very low            | 150–400                  |
+| Same country, stable uplink      | 20–100           | Low (&lt;0.5% loss) | 600–1000                 |
+| Cross-region, higher variability | 100–300          | Moderate (&lt;1%)   | 1000–2000                |
+| Other unstable (mobile) internet | >300             | High (>1% bursts)   | 2000-2500                |
 
 Do not set `latency` in SRT encoder close to or more than 3000ms. See about limits above. Your SRT encoder will collect and fill the buffer for 3 seconds before sending the data, but this will already be considered an inactive connection.
 
 
 Practical setup notes:
  - Use `-tune zerolatency` option in your encoder.
- - Default values are often too low (e.g., 120-500 ms) for WAN paths, which can cause instability for Internet delivery.
- - Monitoring: Check SRT statistics for retransmissions, buffer usage, and packet drops. If drops occur, increase latency according to the table above.
+ - Use 1500-2000ms latency in SRT configuration.
+ - Check SRT statistics for retransmissions, buffer usage, and packet drops. If drops occur, increase latency more according to the table above.
  - Read your encoder docs carefully to see what the `latency` attribute is and what units it uses: s, ms, µs. In most cases, it will be ms (milliseconds), but ffmpeg requiress a value in µs (microseconds) – [ffmpeg](https://ffmpeg.org//ffmpeg-protocols.html#srt).
 
 Enable SRT-stats on your sender-side and watch these fields:
@@ -343,3 +362,4 @@ Read more information about OBS on page [OBS](/streaming/live-streaming/broadcas
   - Encoder Preset: veryfast
   - Tune: zero latency
   - Custom x264 Params: rc-lookahead=0
+
