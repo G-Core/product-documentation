@@ -10,9 +10,16 @@ Secure Reliable Transport (SRT) is an open-source streaming protocol that solves
 In contrast to RTMP/RTMPS, SRT is a UDP-based protocol that provides low-latency streaming over unpredictable networks. SRT is also required if you want to use the H265/HVEC codec.
 
 Used as:
- - Used for sending/receiving an origin stream from your encoder, not for playback.
- - Default port: SRT 5001 (UDP).
- - Must be configured on your encoder with parameters provided in the [Input Parameters and Codecs](/streaming/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs) and `latency`+`-tune zerolatency` (read below).
+ - Used for sending/receiving an origin stream from your encoder, not for playback
+ - Default port: SRT 5001 (UDP)
+ - Must be configured on your encoder:
+   - Video codec and bitrate: look at [Input Parameters and Codecs](/streaming/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs)
+   - SRT URL latency: `&latency=2000`
+   - Keyframe interval: `1sec`
+   - CPU usage preset: `veryfast`
+   - Profile: `baseline`
+   - Tune: `zerolatency`
+   - x264/x265 options: `rc-lookahead=0:bframes=0:scenecut=0`
 
 <Info>
 SRT does offer more capabilities than the other de-facto standard protocol RTMP. However, SRT also requires a precise understanding of how to configure it to suit your needs. 
@@ -214,6 +221,10 @@ Always enable `-tune zerolatency` (and explicitly disable lookahead, B-frames, a
 ![Lookahead buffer window is minimized](/images/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/lookahead-0.png)
 </Frame>
 
+<Tip>
+Watch a video demonstrating how RTMP and SRT protocols work with optimizations under unstable internet conditions – [RTMP vs SRT: demo video](/streaming/live-streaming/protocols/rtmp-srt#demo-rtmp%2Fsrt-comparison).
+</Tip>
+
 
 ### Public Internet latency
 
@@ -294,7 +305,7 @@ This FFmpeg command generates a live 1080p/30fps test video and sine-wave audio,
 ffmpeg -re \
   -f lavfi -i "testsrc=size=1920x1080:rate=30" \
   -f lavfi -i "sine=frequency=1000:sample_rate=48000" \
-  -c:v libx264 -preset veryfast -tune zerolatency -x264-params "rc-lookahead=0" \
+  -c:v libx264 -preset veryfast -tune zerolatency -x264-params "rc-lookahead=0:bframes=0:scenecut=0" \
   -g 30 -keyint_min 30 -pix_fmt yuv420p -b:v 3000k \
   -c:a aac -b:a 128k \
   -f mpegts \
@@ -363,3 +374,7 @@ Read more information about OBS on page [OBS](/streaming/live-streaming/broadcas
   - Tune: zero latency
   - Custom x264 Params: rc-lookahead=0
 
+
+### Other encoder
+
+If you are using other encoders, please see the documentation to set these lowlatency tuning parameters.

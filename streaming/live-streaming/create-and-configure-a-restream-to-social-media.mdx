@@ -11,10 +11,23 @@ Example: you use our Video Streaming for an educational site where you hold webi
 
 **How it works.** You get the credentials from the target platform (Facebook, YouTube, Twitch, etc.): stream URL and stream key. Then create a restream in the Gcore Customer Portal. When creating the restream, add credentials and choose the appropriate live stream. The setup is complete. You can begin the live stream; it will be broadcast on our player and the target platform.
 
+Here's how retransmission looks schematically: 1 stream at the input, many RTMP restreams at the output:
+```text
+                 +-----------------------+
+ RTMP            |                       | -------->  Facebook (RTMP)
+  or   --------> |    Gcore Streaming    | -------->  YouTube (RTMP)
+ SRT             |                       | -------->  Twitch (RTMP)
+                 +-----------------------+ -------->  Other RTMP targets
+```
+
 **Features.** Restreams can be broadcast on an unlimited number of platforms. The price of the service depends on how many platforms you want to stream to. The fewer platforms there are, the cheaper it is. By default, when you enable the feature, you will be able to stream to one platform. To increase the number of platforms, contact technical support. We will change the limit and the price of the service.
 
 <Info>
-RTMP restreaming is supported only. No SRT restreaming. 
+Supported restreaming combinations are limited to:
+ - RTMP → RTMP
+ - SRT → RTMP
+ 
+Please note that SRT → SRT restreaming is currently not supported.
 </Info>
 
 
@@ -115,3 +128,86 @@ If there is a problem getting the original stream, it will be re-requested multi
 3)  The system will attempt to re-request (PULL) the original stream for approximately 60 minutes. 
     1) If original stream is back, the timer is reset to zero and the restream is restored. 
     2) Otherwise the restream stops permanently. To resume it, you will have to activate it manually or via API.
+
+
+## Restream Troubleshooting
+
+### Facebook
+
+**Common Issues**
+- **Expired or invalid stream key/token**  
+  The RTMP connection is rejected if the event is marked as finished in the Facebook UI or if the token/stream key has been regenerated.
+- **Keyframe interval exceeds 4 seconds**  
+  Facebook enforces a maximum GOP size of 4 seconds; exceeding this value results in rejection.
+- **Unstable or insufficient bitrate**  
+  Significant bitrate drops may cause Facebook to terminate the stream.
+- **Incorrect event configuration**  
+  Using an outdated or incorrect stream key leads to immediate connection failure.
+
+**Solutions**
+- Confirm the stream key is active and the event is in *Live* or *Preview* state.  
+- Set keyframe interval to **2 seconds (recommended)** or 4 seconds (maximum).  
+- Maintain a stable, constant bitrate.  
+- Update stream keys after Facebook regenerates them.  
+- Verify correct ingest server selection.
+
+Facebook documentation: https://www.facebook.com/business/help/162540111070395?id=1123223941353904
+
+
+### YouTube
+
+**Common Issues**
+- **Invalid stream key or inactive event**  
+  YouTube rejects connections when the key is incorrect or the event is not yet open.
+- **Unsupported codec or profile**  
+  YouTube requires H.264 (Baseline/Main/High) and AAC audio.
+- **Unstable input bitrate**  
+  Bitrate drops cause buffering and disconnects.
+- **High keyframe interval**  
+  YouTube recommends a GOP of **2 seconds**.
+
+**Solutions**
+- Verify the stream key and event status before connecting.  
+- Use standard H.264 + AAC encoding.  
+- Keep keyframe interval at **2 seconds**.  
+- Ensure encoder output is stable and avoids bitrate spikes.  
+- Enable low-latency only if supported reliably by your pipeline.
+
+Youtube documentation: https://support.google.com/youtube/answer/2853702 
+
+
+### Twitch
+
+**Common Issues**
+- **Rate limiting or ingest overload**  
+  Frequent connection attempts may trigger temporary limits.
+- **Excessive bitrate for account type**  
+  Twitch generally recommends a maximum of **6,000 Kbps** for non-partners.
+- **Unsupported codec settings**  
+  Twitch requires H.264 + AAC.
+- **Disconnects due to unstable upstream**  
+  Twitch is sensitive to jitter and packet loss.
+
+**Solutions**
+- Follow Twitch bitrate and profile recommendations.  
+- Use a **2-second** keyframe interval.  
+- Select the closest ingest server.  
+- Reduce connection retries to avoid rate limiting.  
+- Use CBR and ensure stable network paths.
+
+Twitch documentation: https://help.twitch.tv/s/article/broadcasting-guidelines
+
+
+### Other Social Platforms
+
+**Common Issues**
+- Stream keys are frequently rotated.  
+- Strict GOP/keyframe interval requirements (often **2 seconds**).  
+- Dynamic regional ingest endpoints.  
+- Some platforms accept only RTMP or specific RTMP variants.
+
+**Solutions**
+- Validate the latest stream key before restreaming.  
+- Use a standard **2-second** keyframe interval unless specified otherwise.  
+- Maintain consistent bitrate and resolution.  
+- Review platform-specific RTMP error codes for precise causes.
