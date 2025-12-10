@@ -1,0 +1,78 @@
+---
+title: "Live Streaming issues"
+sidebarTitle: "Live Streaming issues"
+---
+
+Common issues you may encounter when working with Live Streaming, as well as steps you can take to troubleshoot them.
+
+## Current broadcast contains DVR chunks of the previous broadcast
+
+_Possible cause_: The broadcast is over, but the stream has not been stopped.  
+_Suggested solution_: This is a normal behavior.
+
+To avoid this situation:
+ - Stop the stream when the broadcast is finished.
+ - Delete the DVR archive before starting a new broadcast.
+
+
+## Low-latency streaming is buffering
+
+_Possible cause_: Perhaps end-user's public internet speed and quality aren't sufficient to download data in a timely manner.
+_Suggested solution_: For such users, provide an alternative viewing experience: display /master_mpegts.m3u8 link (HLS non-low-latency manifest URL from UI) in your player or add an attribute `?no_low_latency` to our built-in player.
+
+Read more:
+ - [Switch to legacy HLS mode](/streaming/live-streaming/how-low-latency-streaming-works#switch-to-legacy-hls-modes)
+ - [Built-in player](/streaming/extra-features/customize-appearance-of-the-built-in-player#no-low-latency)
+
+
+## Manifest is empty and stream is not working
+
+The stream is sent to ingester normally, ffmpeg or OBS show correct info. But the manifest .m3u8 is empty and the stream is not shown.
+
+_Possible cause_: The master stream is being sent with network problems, or the encoder settings are set incorrectly.
+_Suggested solution_: Our low latency solution has a latency of 4-5 seconds. If the delay is more than 5 seconds:
+
+Check the graphs for the relevant stream in your personal account under "Monitoring." Frames per second, Interval between key frames, and Bitrate should be stable. If you see breaks in the graph, this means your stream is being sent from your encoder with issues.
+
+Check your encoder's latency and settings. See the relevant sections in the documentation:
+ - [Input parameters of your live streams and videos](/streaming/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs)
+ - [Use RTMP protocol](/streaming/live-streaming/protocols/rtmp)
+ - [Use SRT protocol](/streaming/live-streaming/protocols/srt)
+ - [Use broadcasting software (ffmpeg, OBS, Streamlabs, etc)](/streaming/live-streaming/broadcasting-software/)
+
+
+## Picture is falling apart
+
+When you see this picture, it means there is packet loss in the network from your encoder to our ingester.
+
+![Picture is falling apart](/images/docs/streaming-platform/live-streaming/falling-apart.jpg)
+
+_Possible cause_: Packet loss during delivery from your encoder via SRT.
+_Suggested solution_: Try sending from another network of another provider, and also reduce the bitrate of the master stream plus set SRT latency explicitly.
+
+Read more about latency in section [SRT Latency](/streaming/live-streaming/protocols/srt#srt-latency). And validate that PTS/DTS values in the master stream follow a continuous and monotonic timeline [PTS/DTS timestamps](/streaming/live-streaming/pts-dts).
+
+
+## Restream failed
+
+Each social platform enforces its own technical requirements for ingesting live video streams. These limits typically include constraints on bitrate, codec profiles, audio formats, keyframe intervals (GOP), and connection behavior. When restreaming through Gcore, the output must comply with the destination platform’s specifications; otherwise, the remote side may reject the connection or terminate the stream during broadcasting.
+
+When troubleshooting restreaming, always remember that **when restreaming, your master-stream is multipied as is without transcoding**. So verify your master-stream parameters to match the requirements of the target platform. In many cases, connection refusals or stream instability occur because of mismatched keyframe intervals, unsupported codecs, or exceeding bitrate thresholds.
+
+We collected some common cases on our page [Restreaming troubleshooting](/streaming/live-streaming/create-and-configure-a-restream-to-social-media#restream-troubleshooting)
+
+
+## Stream is frozen or buffered
+
+When the player stops and starts showing running dots or a clock.
+
+_Possible cause_: Packet loss during delivery from your encoder via RTMP.
+_Suggested solution_: Try sending from another network of another provider, and also reduce the bitrate of the master stream. 
+
+Advanced solution:
+ - Read more about recommended input parameters in section [Input parameters](/streaming/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs). Set et the minimum specified values ​​or even lower (You won't lose much quality, but you'll still get the broadcast).
+ - Verify that your master stream is configured with the recommended low-latency encoding parameters. See section [RTMP](/streaming/live-streaming/protocols/rtmp).
+ - Validate that PTS and DTS values in the master stream follow a continuous and monotonic timeline [PTS/DTS timestamps](/streaming/live-streaming/pts-dts).
+
+
+

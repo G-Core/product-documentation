@@ -1,0 +1,107 @@
+---
+title: "RTMP vs SRT: protocol comparison"
+sidebarTitle: "RTMP vs SRT"
+description: "Key differences of RTMP vs SRT, behavior on unstable networks, and guidance on choosing the right ingest protocol."
+---
+
+## RTMP/SRT on public Internet
+
+Both protocols can deliver high-quality streams, but they behave fundamentally differently when facing packet loss, jitter, and limited uplink bandwidth.
+
+
+### 1. RTMP behavior (TCP-based)
+
+RTMP uses TCP for transport. TCP guarantees in-order, lossless delivery through unlimited retransmissions, sliding windows and backpressure. When the network is unstable:
+ - Lost packets are retransmitted automatically by TCP
+ - The sender slows down and buffers more data
+ - Delay grows silently as TCP tries to recover
+ - Output at the receiver remains continuous
+
+This creates the appearance of a “smooth” and stable stream even if the network is congested or lossy. The tradeoff is unpredictable, often very large latency spikes (several seconds or more), which are hidden from the user.
+
+**Note**: This is also the main problem of RTMP, that if packets are delayed for too long, then transcoding experiences problems or is interrupted.
+
+
+### 2. SRT behavior (UDP-based)
+
+SRT implements reliability using UDP plus selective retransmissions. Unlike TCP, SRT enforces a strict `latency` window (e.g., 500–3000 ms). Packets must arrive within this time, otherwise they are dropped. 
+When the network is unstable:
+ - Retransmissions may arrive too late
+ - Jitter bursts may exceed the buffer window
+ - Packets that miss the latency budget are discarded
+ - Decoders receive incomplete GOPs and break
+
+SRT prioritizes stable abd predictable latency. It exposes real network limitations instead of masking them with unlimited buffering.
+
+**Note**: This is also the main advantage of SRT. It manages packets independently and can send data for transcoding even with dropped packets. Broadcast may visually suffer for a few frames, but it won't stop, and the frame-rate will remain stable.
+
+<Info>
+SRT does offer more capabilities than the other de-facto standard protocol RTMP. However, SRT also requires a precise understanding of how to configure it to suit your needs.
+
+If you encounter problems with its use, use an alternative RTMP.
+</Info>
+
+
+### 3. Additional factor: limited outgoing bandwidth
+
+In this case, we mean potential uplink bandwidth limitations on the side of your encoder, when several streams with a high bitrate are simultaneously sent from your server to our transcoder. So outgoing bandwidth is limited (by your local provider or other network conditions) and competition occurs.
+
+When multiple simultaneous live streams compete for the same uplink next may happen:
+ - RTMP (TCP) slows down each stream, increases buffering, and eventually inflates latency to keep all streams alive.
+ - SRT (UDP) does not introduce backpressure; it continues sending packets at encoder rate. If uplink bandwidth is insufficient, packets are dropped or retransmitted too late.
+
+Pay attention that this makes SRT more sensitive to bandwidth ceilings and upstream congestion unless its latency/buffer settings are tuned for the real network conditions.
+
+
+### 4. Additional factor: encoder frame buffer
+
+Most H.264/H.265 encoders introduce internal delay by using lookahead, B-frames, and scenecut analysis, which buffer and reorder frames before output. This added latency (often 1.3–1.5 seconds) can exceed the SRT latency window, causing the receiver to treat packets as “late” and drop them. 
+
+So it's desirable for RTMP, and mandatory for SRT that: encoders must operate with minimal buffering, which is why `-tune zerolatency` (or equivalent parameters) is required to disable lookahead, B-frames, and frame reordering.
+
+Read more about [encoder buffering, frame reordering, and zerolatency tuning using SRT](srt#encoder-frame-buffer-and-zerolatency).
+
+
+## Main RTMP vs SRT differencies
+
+| Category        | RTMP                                      | SRT                                        |
+|-----------------|--------------------------------------------------------|--------------------------------------------------------|
+| Transport layer | TCP with guaranteed in-order delivery                  | UDP with selective retransmissions (ARQ)               |
+| Codecs          | H264 + AAC only                                        | Codec independent, so use any H264/H265/AV1 etc + audio|
+| Latency design  | Latency is out of control                              | Strict, configurable latency window (500–3000 ms)      |
+| Bad network     | Unpredictable latency spikes (hidden from you); severe delays can break transcoding completely        | Retransmits only within a strict latency window; "latency" param can compensate for network problems      |
+| Visible effects | No visual glitches; but long gaps in reception between packets will be displayed as buffering in the player | May show brief visual glitches when drops late packets |
+| Configuring     | No configuration required                              | Requires mandatory fine-tuning to suit your conditions; otherwise, you'll get a bad image or buffering|
+
+
+So, let's summarize. If RTMP capabilities are sufficient, you can continue using it. Its TCP-based algorithm allows you to handle most issues. Otherwise, connect SRT.
+
+SRT provides an explicit latency parameter, which RTMP does not have. This parameter defines the size of SRT’s retransmission and jitter-absorption window, directly controlling how the protocol behaves under real-world packet loss, jitter, and uplink congestion. RTMP appears stable on poor networks because TCP hides all transport-layer problems by buffering and increasing delay, while SRT exposes actual network conditions unless its latency window is configured appropriately.
+
+In scenarios where RTMP works “perfectly” but SRT shows visual glitches or intermittent disconnects, the root cause is usually that the default SRT latency (commonly 500–1200 ms) is smaller than encoder frames preparation/reordering time, and the network path RTT, jitter bursts, loss-recovery time. This means the retransmission window is insufficient: packets arrive after the deadline, are marked late, and get dropped, which leads to broken GOPs and transcoder instability. Increasing the SRT latency to ~2000 ms expands the correction window and tune encoder do not use lookahead frames queue, allowing late packets to arrive in time, smoothing jitter, and restoring a stable, predictable ingest stream.
+
+For details on the implementation of each protocol, please refer to the next pages:
+ - [RTMP](rtmp)
+ - [SRT](srt)
+
+
+## Demo RTMP/SRT comparison
+
+This video demonstrates operation of RTMP and SRT protocols with different settings under unstable internet conditions.
+
+Conclusion of demo: SRT is a modern protocol, but it requires you to adjust its parameters to your specific network conditions.
+
+<Frame>
+<iframe width="100%" src="https://player.gvideo.co/videos/2675_kbo9xHApXyhYO1Sj" title="RTMP, SRT comparing on a poor internet connection" frameborder="0" allow="fullscreen; accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+</Frame>
+
+In the video OBS SRT2 lowlatency tuning sesttings are:
+ - Stream URL: `&latency=2000` is added
+ - Output, Encoder Settings: 
+   - Keyframe Interval: `1sec`
+   - CPU Usage Preset: `veryfast`
+   - Profile: `baseline`
+   - Tune: `zerolatency`
+   - x264 Options: `rc-lookahead=0:bframes=0:scenecut=0`
+
+Wish you good streaming.

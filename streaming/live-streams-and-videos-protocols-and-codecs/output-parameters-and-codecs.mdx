@@ -1,0 +1,141 @@
+---
+title: "Output parameters after transcoding: codecs, bitrate, frame rate"
+sidebarTitle: "Output parameters"
+description: "List of output parameters after transcoding"
+---
+
+## Protocols
+
+Our platform supports simultaneous output in all three popular streaming formats: **HLS MPEG-TS**, **HLS CMAF**, and **MPEG-DASH**. This means you can easily choose the link format best suited to your players or devices — no need to configure separate pipelines.
+
+### HLS MPEG-TS
+
+This is the traditional format for HLS, using `.ts` segments. It's ideal for legacy devices and software.
+
+- **Latency**: Regular, ~10 sec
+- **Use case**: Compatibility with older players
+- **Example manifest**:
+
+  ```
+  #EXTM3U
+  #EXT-X-VERSION:3
+  #EXT-X-TARGETDURATION:4
+  #EXT-X-MEDIA-SEQUENCE:0
+  #EXTINF:4.000,
+  segment0.ts
+  ```
+
+### HLS CMAF (Low Latency)
+
+This is the modern low-latency version of HLS using `.m4s` fragmented MP4 (fMP4) segments. Chunks are small (0.5–1s), making it suitable for real-time streaming.
+
+- **Latency**: Low, ~3 sec
+- **Recommended for**: All modern HLS-compatible devices
+- **Example manifest**:
+
+  ```
+  #EXTM3U
+  #EXT-X-VERSION:6
+  #EXT-X-TARGETDURATION:2
+  #EXT-X-PART-INF:PART-TARGET=0.5
+  #EXTINF:2.0,
+  seg0.m4s
+  #EXT-X-PART:DURATION=0.5,URI="seg1_part_0.m4s?part=0",INDEPENDENT=YES
+  ```
+
+### MPEG-DASH (Low Latency)
+
+Our MPEG-DASH output uses **SegmentTimeline** / **Time-Based Template** with `.m4s` fMP4 chunks. Chunks are ±2–4 seconds by default. You can request ±2 sec mode for lower latency.
+
+- **Latency**: Low, ~3 sec
+- **Delivery**: Using chunk transfer for real-time playback
+- **Example MPD structure**:
+
+  ```xml
+  <MPD type="dynamic" minimumUpdatePeriod="PT2S">
+    <Period>
+      <AdaptationSet>
+        <SegmentTemplate media="segment_$Time$.m4s" initialization="init.mp4" duration="2000" startNumber="1">
+          <SegmentTimeline>
+            <S t="0" d="2000" r="4"/>
+          </SegmentTimeline>
+        </SegmentTemplate>
+      </AdaptationSet>
+    </Period>
+  </MPD>
+  ```
+
+## What is transcoding with ABR?
+
+In a nutshell, transcoding is converting the original video from one format to another format with a set of extra qualities (ABR). Transcoding aims to make videos viewable across different platforms and devices and to expand the number of viewers, e.g., adding those who couldn't watch the video in its original format. Learn more about transcoding with our [in-depth article](https://gcore.com/learning/what-is-transcoding).
+
+Transcoding with adaptive bitrate streaming (ABR) works like this:
+
+1. Decoding of the original video ([list of accepted parameters](/streaming/live-streams-and-videos-protocols-and-codecs/what-initial-parameters-of-your-live-streams-and-videos-we-can-accept) for input video)
+2. Processing, including scaling (resizing,) frame rate conversion, aspect ratio conversion, and other types of video processing
+3. Encoding into the desired output format
+
+Discover in an article how we [lowered the bitrate](https://gcore.com/blog/how-we-lowered-the-bitrate-for-live-and-vod-streaming-by-32-5-without-sacrificing-quality) for Live and VOD streaming by 32.5% without sacrificing quality.
+
+## Audio and video codecs
+
+A transcoded video stream has the following codecs by default:
+
+- **Audio** : AAC, 44.1KHz, stereo
+- **Video** : H264 (H265, AV1), 30FPS, ABR
+
+## Output parameters after transcoding
+
+The table below shows the available output quality levels after transcoding. Video and audio parameters are optimized for adaptive bitrate streaming, providing smooth playback across devices and network conditions.
+
+| **Video Quality** | **Resolution** | **FPS** | **Video bitrate, Mbps** | **Audio bitrate, Mbps** |
+| ----------------- | -------------- | ------- | ----------------------- | ----------------------- |
+| UHD 8K\*          | 7680 × 4320    | -       | -                       | -                       |
+| UHD 4K\*          | 3840 × 2160    | 30      | 14,000                  | 0,196                   |
+| QHD 2K\*          | 2560 × 1440    | 30      | 7,200                   | 0,196                   |
+| Full HD 1080p     | 1920 × 1080    | 30      | 4,050                   | 0,128                   |
+| HD 720p           | 1280 × 720     | 30      | 1,800                   | 0,128                   |
+| SD 468p           | 832 × 468      | 30      | 0,800                   | 0,096                   |
+| 360p              | 640 × 360      | 30      | 0,450                   | 0,064                   |
+| 240p\*            | 427 × 240      | 30      | 0,200                   | 0,064                   |
+| 144p\*            | 254 × 144      | 30      | 0,072                   | 0,064                   |
+| Audio only\*      | -              | -       | -                       | 0,128                   |
+
+\*To enable these qualities, contact the [support team](mailto:support@gcore.com).
+
+The values in the table are given for videos with a horizontal aspect ratio of 16:9. The values must be reversed for vertical videos. For example, if a horizontal resolution is (1280 × 720), the relevant vertical resolution is (720 × 1280).
+
+We use variable bitrate (VBR) for encoding video. The table above shows average values. The Gcore Customer Portal shows a sum of audio and video bitrates.
+
+**Note** : We don't upscale videos. Your output will range from the lowest quality to that of your original bitrate. So, if you upload a 4K video, your output will range from the lowest quality up to 4K. Similarly, if you upload a 720p video, your output will vary from the lowest quality up to 720p only.
+
+### Custom quality sets
+
+We provide an optimized set of quality presets designed for smooth streaming across all devices. These settings balance quality and bandwidth efficiency, making them ideal for most users. However, if you have specific requirements—such as higher audio quality, cost reduction by removing unnecessary renditions, AV1 encoding, or custom settings for individual videos—you have full control over your transcoding presets.
+
+Each video can have its own unique quality settings, so you're not limited to a single configuration. Default and custom presets work together, giving you the flexibility to fine-tune streaming quality as needed. Check out the [API documentation](/api-reference/streaming/qualitysets/get-all-quality-sets) to explore available custom quality sets. If you need assistance, our [support team](mailto:support@gcore.com) is always ready to help you customize the best option for your needs.
+
+## How to apply 2K/4K\+ and custom advanced settings
+
+Some settings require manual control. If you need them, contact the Gcore [support team](mailto:support@gcore.com) or your manager.
+
+The basic tariff plan doesn't include 2K/4K\+ in the transcoding quality preset. For information about high-quality video processing costs, check our [pricing page](https://gcore.com/pricing/streaming-platform). To work with high-quality video, we'll provide you with new quality presets and a new tariff plan.
+
+Additionally, you can ask to activate the following settings:
+
+- Use codecs H265 HEVC, VP9, AV1, etc.,
+- Add 8K quality,
+- Add super-low quality 144p,
+- Change preset of output ABR qualities for all or some renditions, remove low-quality renditions,
+- Use 60\+ FPS or use original FPS values,
+- Increase bitrate for audio; use 48KHz,
+- Use Dolby Digital, Dolby Atmos,
+- Transmux VOD MP4 files into HLS on the fly.
+- Transmux and "pass-through" instead of transcoding for LIVE streams.
+
+## Demo
+
+You can try out our low-latency streaming in action on the demo page:\
+👉 [Live Streaming Demo](https://gcore.com/streaming-platform/features-demo/low-latency)
+
+There, you'll see an embedded video player that shows real-time latency, playback stats, and protocol behavior. It's a quick way to test how HLS and MPEG-DASH perform under normal and low-latency conditions.
