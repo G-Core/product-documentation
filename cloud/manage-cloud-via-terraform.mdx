@@ -12,17 +12,11 @@ To work with Terraform, you create a configuration file where you specify the ch
 ## Install Terraform and integrate it with our cloud
 
 1. Download a Terraform package suitable for your OS from the [official Terraform website](https://terraform.io/downloads).
-
 2. Create a new folder and name it the same as the downloaded package.
-
 3. Unzip the Terraform archive in the new folder.
-
 4. Add the directory of the unzipped Terraform archive to the PATH environment variable.
-
 5. Create a configuration file in the Terraform folder and name it **main.tf**.
-
 6. Find out the latest version of the Terraform provider on [the page](https://registry.terraform.io/providers/G-Core/gcore/latest) and generate a permanent API token using [the guide](/account-settings/create-use-or-delete-a-permanent-api-token), if you don't have one yet.
-
 7. Add the following code to main.tf:
 
 ```js
@@ -65,9 +59,7 @@ This means Terraform has been successfully downloaded and installed, and you can
 If you have already worked with Terraform, you can use this abridged guide on how to manage Gcore Cloud resources:
 
 1. Go to the Terraform documentation, click **Resources**, and copy the necessary code to main.tf.
-
 2. Customize values in the code.
-
 3. Run the following command to preview the expected changes:
 
 ```sh
@@ -85,7 +77,6 @@ You can also use our step-by-step guides below.
 ### Create a Bare Metal server
 
 1. Open the **main.tf** file where you configured the Gcore provider for Terraform.
-
 2. Copy the code below to the file and customize the highlighted values:
 
 ```js
@@ -120,7 +111,6 @@ Select the interface "type": "external", "subnet", "any_subnet", or "reserved_fi
 - (optional) Specify "username" and/or "password".
 
 4. Save changes in the file.
-
 5. Run the following command from the Terraform directory to preview the changes:
 
 ```sh
@@ -140,7 +130,6 @@ Terraform will ask you to confirm the action. Enter "yes".
 ### Create a GPU Bare Metal image
 
 1. Open the **main.tf** file where you configured the Gcore provider for Terraform.
-
 2. Copy the code below to the file and customize the highlighted values:
 
 ```js
@@ -191,7 +180,6 @@ Optional attributes:
 - "metadata" - A map of metadata key-value pairs to associate with the image.
 
 4. Save changes in the file.
-
 5. Run the following command from the Terraform directory to preview the changes:
 
 ```sh
@@ -211,7 +199,6 @@ Terraform will ask you to confirm the action. Enter "yes".
 ### Create a Virtual Machine
 
 1. Open the main.tf file where you configured the Gcore provider for Terraform.
-
 2. Copy the code to the file and customize the highlighted values:
 
 ```js
@@ -266,7 +253,6 @@ resource "gcore_instance" "v" {
 ```
 
 3. Configure resources required for the Virtual Machine: [a reserved IP address](/cloud/manage-cloud-via-terraform#reserve-an-ip-address), [network](/cloud/manage-cloud-via-terraform#create-a-network-and-subnetwork), [subnetwork](/cloud/manage-cloud-via-terraform#create-a-network-and-subnetwork), [volume](/cloud/manage-cloud-via-terraform#create-a-volume).
-
 4. Configure the Virtual Machine.
 
 - Specify "flavor_id".
@@ -291,7 +277,6 @@ resource "gcore_instance" "v" {
 - (optional) Specify the "security_group" to add firewalls.
 
 5. Save changes in the file.
-
 6. Run the following command from the Terraform directory to preview the expected changes:
 
 ```sh
@@ -311,7 +296,6 @@ Terraform will ask you to confirm the action. Enter "yes".
 ### Create a managed Kubernetes cluster
 
 1. Open the main.tf file where you configured the Gcore provider for Terraform.
-
 2. Copy the code below to the file and customize the highlighted values:
 
 ```js
@@ -371,7 +355,6 @@ resource "gcore_k8sv2" "cluster" {
   - (optional) Select "docker_volume_type": "standard", "ssd_hiiops", "cold", or "ultra".
 
 4. Save changes in the file.
-
 5. Run the following command from the Terraform directory to preview the expected changes:
 
 ```sh
@@ -392,89 +375,57 @@ Terraform will ask you to confirm the action. Enter "yes".
 
 This configuration allows for high-throughput, low-latency applications where preserving the client's source IP is important for logging, security, or other purposes.
 
+1. Open the main.tf file where you configured the Gcore provider for Terraform. 
+
+2. Copy the code below to the file and customize the highlighted values:
+
 ```js
-terraform {
-  required_version = ">= 0.13.0"
-  required_providers {
-    gcore = {
-      source  = "G-Core/gcore"
-      version = "~>0.9.1"
-    }
-  }
+resource "gcore_network" "network" {
+  name       = "my-network"
+  type       = "vxlan"
+  project_id = 1
+  region_id  = 1
 }
 
-provider gcore {
-  permanent_api_token = "your_api_token"
+resource "gcore_subnet" "subnet" {
+  name       = "my-subnet"
+  cidr       = "192.168.10.0/24"
+  network_id = gcore_network.network.id
+
+  project_id = 1
+  region_id  = 1
 }
 
-data "gcore_project" "pr" {
-  name = "default"
-}
+resource "gcore_k8sv2" "cluster" {
+  project_id    = 1
+  region_id     = 1
+  name          = "my-k8s-cluster"
+  fixed_network = gcore_network.network.id
+  fixed_subnet  = gcore_subnet.subnet.id
+  keypair       = "qa-new-preprod-tk"
+  version       = "v1.33.6"
 
-variable "region_id" {
-  type = string
-  default = "4"
-}
-
-resource "gcore_network" "network_k8s" {
-  name = "network_k8s_ds"
-  type = "vxlan"
-  region_id = var.region_id
-  project_id = data.gcore_project.pr.id
-  create_router = true
-}
-
-resource "gcore_subnet" "subnet_k8sv4" {
-  name = "subnet_ipv4_k8s"
-  cidr = "192.168.56.0/24"
-  network_id = gcore_network.network_k8s.id
-  enable_dhcp = true
-  connect_to_network_router = true
-  region_id = var.region_id
-  project_id = data.gcore_project.pr.id
-}
-
-resource "gcore_keypair" "kp2" {
-  project_id = data.gcore_project.pr.id
-  public_key  = "your_public_key"
-  sshkey_name = "k8s-nodes3"
-}
-
-resource "gcore_k8sv2" "cl2" {
-  region_id = var.region_id
-  project_id = data.gcore_project.pr.id
-  name          = "somename"
-  keypair       = "k8s-nodes3"
-  version       = "v1.30.4"
-  fixed_network = gcore_network.network_k8s.id
-  fixed_subnet  = gcore_subnet.subnet_k8sv4.id
   cni {
     provider = "cilium"
+    cilium {
+      lb_mode = "dsr"
+      routing_mode = "native"
+    }
   }
-  pool {
-    name             = "pool1"
-    flavor_id        = "g1-standard-2-4"
-    min_node_count   = 2
-    max_node_count   = 2
-    boot_volume_size = 10
-    boot_volume_type = "standard"
-    servergroup_policy = "soft-anti-affinity"
-  }
-}
 
-data "gcore_k8sv2_kubeconfig" "config" {
-  cluster_name       = gcore_k8sv2.cl2.name
-  region_id          = var.region_id
-  project_id         = data.gcore_project.pr.id
-}
-// to store kubeconfig in a file pls use
-// terraform output -raw kubeconfig > config.yaml
-output "kubeconfig" {
-  value = data.gcore_k8sv2_kubeconfig.config.kubeconfig
+  pool {
+    name               = "pool-1"
+    flavor_id          = "g1-standard-2-4"
+    servergroup_policy = "anti-affinity"
+    min_node_count     = 1
+    max_node_count     = 1
+    boot_volume_size   = 10
+    boot_volume_type   = "standard"
+  }
 }
 ```
 
-Where:
+3. Configure the cluster.
 
 - **region_id** : A location of the Data Center where the cluster has been created.
 - **project_id** : A unique identifier of the project in which the cluster has been created.
@@ -484,12 +435,25 @@ Where:
 - **fixed_subnet** : ID of a subnetwork within the fixed network.
 - **pool** : A node pool for the Kubernetes cluster.
 
+4. Save changes in the file.
+
+5. Run the following command from the Terraform directory to preview the expected changes:
+
+terraform plan
+
+If the code contains an error, the output will show it.
+
+6. Run the following command to apply the changes:
+
+terraform apply
+
+Terraform will ask you to confirm the action. Enter "yes".
+
 ### Create a load balancer
 
 This section explains how to create a Load Balancer with a pool, listener, and member.
 
 1. Open the main.tf file where you configured the Gcore provider for Terraform.
-
 2. Copy the code below to the file and customize the highlighted values:
 
 ```js
@@ -585,7 +549,6 @@ resource "gcore_lbmember" "lbm" {
 - (optional) Specify member "weight" from 0 to 256.
 
 7. Save changes in the file.
-
 8. Run the following command from the Terraform directory to preview the expected changes:
 
 ```sh
@@ -605,7 +568,6 @@ Terraform will ask you to confirm the action. Enter "yes".
 ### Create a network and subnetwork
 
 1. Open the main.tf file where you configured the Gcore provider for Terraform.
-
 2. Copy the code below to the file and customize the highlighted values:
 
 ```js
@@ -651,7 +613,6 @@ resource "gcore_subnet" "subnet" {
 - (optional) Specify the "project_id" and "project_name".
 
 6. Save changes in the file.
-
 7. Run the following command from the Terraform directory to preview the expected changes:
 
 ```sh
@@ -671,7 +632,6 @@ Terraform will ask you to confirm the action. Enter "yes".
 ### Create a server group
 
 1. Open the main.tf file where you configured the Gcore provider for Terraform.
-
 2. Copy the code below to the file and customize the highlighted values:
 
 ```js
@@ -691,7 +651,47 @@ resource "gcore_servergroup" "default" {
 - (optional) Specify the "project_id" or "project_name".
 
 4. Save changes in the file.
+5. Run the following command from the Terraform directory to preview the expected changes:
 
+```sh
+terraform plan
+```
+
+If the code contains an error, the output will show it.
+
+6. Run the following command to apply the changes:
+
+```sh
+terraform apply
+```
+
+Terraform will ask you to confirm the action. Enter "yes".
+
+### Create a volume
+
+1. Open the main.tf file where you configured the Gcore provider for Terraform.
+2. Copy the code below to the file and customize:
+
+```js
+resource "gcore_volume" "volume" {
+  project_id = 1
+  region_id  = 1
+  name       = "volume_example"
+  type_name  = "standard"
+  size       = 1
+}
+```
+
+3. Configure the volume.
+
+- Specify "name".
+- Specify the "snapshot_id" or "image_id".
+- (optional) Specify the "size" of your volume in GB.
+- (optional) Select the "type_name": "standard", "ssd_hiiops", "cold", or "ultra".
+- (optional) Specify the "region_id" or "region_name".
+- (optional) Specify the "project_id" or "project_name".
+
+4. Save changes in the file.
 5. Run the following command from the Terraform directory to preview the expected changes:
 
 ```sh
@@ -711,7 +711,6 @@ Terraform will ask you to confirm the action. Enter "yes".
 ### Create a snapshot
 
 1. Open the main.tf file where you configured the Gcore provider for Terraform.
-
 2. Copy the code below to the file and customize the highlighted values:
 
 ```js
@@ -719,7 +718,7 @@ resource "gcore_snapshot" "snapshot" {
   project_id  = 1
   region_id   = 1
   name        = "snapshot_example"
-  volume_id   = "28e9edcb-1593-41fe-971b-da729c6ec301"
+  volume_id   = gcore_volume.volume.id
 }
 ```
 
@@ -732,7 +731,6 @@ resource "gcore_snapshot" "snapshot" {
 - (optional) Specify the "project_id" and "project_name".
 
 4. Save changes in the file.
-
 5. Run the following command from the Terraform directory to preview the expected changes:
 
 ```sh
@@ -749,51 +747,9 @@ terraform apply
 
 Terraform will ask you to confirm the action. Enter "yes".
 
-### Create a volume
-
-1. Open the main.tf file where you configured the Gcore provider for Terraform.
-
-2. Copy the code below to the file and customize:
-
-```js
-resource "gcore_volume" "volume" {
-  name       = "volume_example"
-  type_name  = "standard"
-  size       = 1
-}
-```
-
-3. Configure the volume.
-
-- Specify "name".
-- Specify the "snapshot_id" or "image_id".
-- (optional) Specify the "size" of your volume in GB.
-- (optional) Select the "type_name": "standard", "ssd_hiiops", "cold", or "ultra".
-- (optional) Specify the "region_id" or "region_name".
-- (optional) Specify the "project_id" or "project_name".
-
-4. Save changes in the file.
-
-5. Run the following command from the Terraform directory to preview the expected changes:
-
-```sh
-terraform plan
-```
-
-If the code contains an error, the output will show it.
-
-6. Run the following command to apply the changes:
-
-```sh
-terraform apply
-```
-
-Terraform will ask you to confirm the action. Enter "yes".
-
 ### Reserve an IP address
 
 1. Open the main.tf file where you configured the Gcore provider for Terraform.
-
 2. Copy the code below to the file and customize the highlighted values:
 
 ```js
@@ -815,7 +771,6 @@ resource "gcore_reservedfixedip" "fixed_ip" {
 - (optional) Specify the "project_id" or "project_name".
 
 4. Save changes in the file.
-
 5. Run the following command from the Terraform directory to preview the expected changes:
 
 ```sh
