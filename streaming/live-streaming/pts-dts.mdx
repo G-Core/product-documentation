@@ -39,17 +39,17 @@ Below are some example scenarios of poor PTS generation by your encoder:
 └───────────────────────────────────────────┘
                 │
                 ▼
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ 1) NON-MONOTONIC PTS (PTS goes backward)                                      │
-│                                                                               │
-│   Frames:   F1   F2   F3   F4   F5                                            │
-│   PTS in:  100  120  110  130  140     ← PTS drops backward at F3             │
-│                     ↑                                                         │
-│                                                                               │
-│   Transcoder Output (damaged timeline):                                       │
-│   Frames:   F1   F2   F4   F5   F3?                                           │
-│   PTS out: 100  120  130  140   X  → jitter, freezes, decoder resets          │
-└───────────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│ 1) NON-MONOTONIC PTS (PTS goes backward)                                │
+│                                                                         │
+│   Frames:   F1   F2   F3   F4   F5                                      │
+│   PTS in:  100  120  110  130  140     ← PTS drops backward at F3       │
+│                     ↑                                                   │
+│                                                                         │
+│   Transcoder Output (damaged timeline):                                 │
+│   Frames:   F1   F2   F4   F5   F3?                                     │
+│   PTS out: 100  120  130  140   X  → jitter, freezes, decoder resets    │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 You see that for frame `F3` it is impossible to clearly determine whether the frame needs to be dropped or what to do with them.
 
@@ -58,35 +58,35 @@ It is also often simply impossible to process such random PTSs when the .ts/.m4v
 
 **PTS/DTS gaps:**
 ```
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ 2) PTS GAP / RESET TO ZERO MID-STREAM                                         │
-│                                                                               │
-│   Frames:   F1   F2   F3   F4   F5   F6                                       │
-│   PTS in:  100  120  140    0   20   40     ← unexpected reset to zero        │
-│                            ↑                                                  │
-│                                                                               │
-│   Transcoder Output (attempted repair):                                       │
-│   PTS out: 100  120  140  150?  160? 170?                                     │
-│            (stitching fake timeline → A/V drift, segment misalignment)        │
-└───────────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│ 2) PTS GAP / RESET TO ZERO MID-STREAM                                   │
+│                                                                         │
+│   Frames:   F1   F2   F3   F4   F5   F6                                 │
+│   PTS in:  100  120  140    0   20   40     ← unexpected reset to zero  │
+│                            ↑                                            │
+│                                                                         │
+│   Transcoder Output (attempted repair):                                 │
+│   PTS out: 100  120  140  150?  160? 170?                               │
+│            (stitching fake timeline → A/V drift, segment misalignment)  │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 You see that starting from frame `F4` it is impossible to clearly determine whether the frame needs to be dropped or what to do with them.
 
 
 **Missing, repeated, or negative timestamps:**
 ```
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ 3) RANDOM / UNSTABLE PTS CHANGES                                              │
-│                                                                               │
-│   Frames:   F1   F2    F3   F4   F5   F6                                      │
-│   PTS in:  100   500  140  300  300  300                                      │
-│           big jump↑   ↑back  ↑staled values                                   │
-│                                                                               │
-│   Transcoder Output (timeline collapse):                                      │
-│   Frames:   F1   F3   F5   F2?  F4?  F6?                                      │
-│   PTS out: 100  140  160    X    X   300                                      │
-│            → stutter, dropped frames, impossible segment duration             │
-└───────────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│ 3) RANDOM / UNSTABLE PTS CHANGES                                        │
+│                                                                         │
+│   Frames:   F1   F2    F3   F4   F5   F6                                │
+│   PTS in:  100   500  140  300  300  300                                │
+│           big jump↑   ↑back  ↑staled values                             │
+│                                                                         │
+│   Transcoder Output (timeline collapse):                                │
+│   Frames:   F1   F3   F5   F2?  F4?  F6?                                │
+│   PTS out: 100  140  160    X    X   300                                │
+│            → stutter, dropped frames, impossible segment duration       │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 You see that starting from frame `F2` it is impossible to clearly determine whether frames need to be dropped, or what to do with constantly repeating frames.
 
