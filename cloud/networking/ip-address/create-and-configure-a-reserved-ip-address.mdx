@@ -83,7 +83,7 @@ For example, if you had reserved an IP and then deleted it after an hour, you wi
     <Frame>
       ![Assign after Virtual Machine creation](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/add-reserved-ip-vm.png)
     </Frame>
-    3. Select the reserved IP and click **Save Changes**.
+    3. Select the reserved IP and click **Add**.
 
     The IP will be assigned to the Virtual Machine.
   </Tab>
@@ -92,8 +92,108 @@ For example, if you had reserved an IP and then deleted it after an hour, you wi
 <Info>
   **Info**
 
-  If you add a public interface after creating a Virtual Machine, you may need to configure it manually on some operating systems. The OS cannot automatically detect and apply the new interface settings, especially for BMs. If your VM has an IPv6 address, it will be configured automatically without additional setup.
+  If you add a private interface after creating a Virtual Machine, you may need to configure it manually on some operating systems. The OS cannot automatically detect and apply the new interface settings, especially for Bare Metal servers. If your VM has an IPv6 address, it will be configured automatically without additional setup.
 </Info>
+
+## Configure the network interface in the operating system
+
+When you add a new private network interface to an existing Virtual Machine or Bare Metal server, the operating system may not automatically configure it. You need to manually assign the IP address and set up routing.
+
+You can find the required network parameters (IP address, CIDR, and MAC address) in the **Networking** tab of your Virtual Machine settings:
+
+<Frame>
+  ![Network interface details in VM settings](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/vm-interface-details.png)
+</Frame>
+
+<Info>
+  **Info**
+
+  The gateway IP address is typically the first usable IP in the subnet's CIDR range. For example, if the CIDR is `10.10.0.0/24`, the gateway is `10.10.0.1`.
+</Info>
+
+<Tabs>
+  <Tab title="Linux">
+    1\. Connect to your Virtual Machine via SSH or console.
+
+    2\. List available network interfaces to find the new one:
+
+    ```sh
+    ip link show
+    ```
+
+    The new interface will appear in the list (for example, `eth1`, `ens4`, or similar). You can identify it by the MAC address shown in the portal.
+
+    3\. Bring up the interface:
+
+    ```sh
+    sudo ip link set <interface_name> up
+    ```
+
+    4\. Assign the IP address with the subnet mask:
+
+    ```sh
+    sudo ip addr add <ip_address>/<prefix> dev <interface_name>
+    ```
+
+    For example, to assign `10.10.0.134` with a `/24` prefix to the `eth1` interface:
+
+    ```sh
+    sudo ip addr add 10.10.0.134/24 dev eth1
+    ```
+
+    5\. (Optional) Add a route to the private network via the gateway:
+
+    ```sh
+    sudo ip route add <network_cidr> via <gateway_ip> dev <interface_name>
+    ```
+
+    For example:
+
+    ```sh
+    sudo ip route add 10.10.0.0/24 via 10.10.0.1 dev eth1
+    ```
+
+    6\. Verify the configuration:
+
+    ```sh
+    ip addr show <interface_name>
+    ```
+
+    <Warning>
+      **Warning**
+
+      These commands configure the interface temporarily. After a reboot, the settings will be lost. To make the configuration persistent, add it to your system's network configuration files (such as Netplan for Ubuntu or `ifcfg` files for CentOS/RHEL).
+    </Warning>
+  </Tab>
+  <Tab title="Windows">
+    1\. Connect to your Virtual Machine via RDP or console.
+
+    2\. Open **Control Panel** and go to **Network and Sharing Center**.
+
+    3\. Click **Change adapter settings** in the left panel.
+
+    4\. Right-click the new network adapter and select **Properties**.
+
+    5\. Select **Internet Protocol Version 4 (TCP/IPv4)** and click **Properties**.
+
+    6\. Select **Use the following IP address** and enter:
+       - **IP address**: The reserved IP assigned to the interface (for example, `10.10.0.134`)
+       - **Subnet mask**: Based on the CIDR prefix (for `/24`, use `255.255.255.0`)
+       - **Default gateway**: The first IP in the subnet (for example, `10.10.0.1`)
+
+    7\. Click **OK** to save the settings.
+
+    To verify the configuration, open Command Prompt and run:
+
+    ```sh
+    ipconfig
+    ```
+
+    The new interface should display the assigned IP address.
+  </Tab>
+</Tabs>
+
+For more detailed information about configuring network interfaces, refer to the [Virtual IP (VIP) address configuration](/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address#configure-a-virtual-ip-address-for-non-windows-virtual-machines) guide.
 
 ## Detach a reserved IP from a VM
 
@@ -117,7 +217,7 @@ If a reserved IP address is attached to a particular resource, you'll see this i
   ![Reserved IPs page in the Customer Portal](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/attached-to-instance.png)
 </Frame>
 
-You click the resource name to view and update its settings.
+Click the resource name to view and update its settings.
 
 ## Delete a reserved IP
 
