@@ -25,7 +25,7 @@ terraform {
   required_providers {
     gcore = {
       source = "G-Core/gcore"
-      version = "0.32.5"
+      version = ">=0.32.5"
    }
   }
 }
@@ -80,9 +80,25 @@ You can also use our step-by-step guides below.
 2. Copy the code below to the file and customize the highlighted values:
 
 ```js
+data "gcore_project" "project" {
+  name = "Default"
+}
+
+data "gcore_region" "region" {
+  name = "Luxembourg-2"
+}
+
+data "gcore_image" "ubuntu" {
+  name       = "ubuntu-24.04-x64-ironic"
+  is_baremetal = true
+  project_id = data.gcore_project.project.id
+  region_id  = data.gcore_region.region.id
+}
+
 resource "gcore_baremetal" "bm" {
   name       = "baremetal_example"
   flavor_id  = "bm1-infrastructure-small"
+  image_id   = data.gcore_image.ubuntu.id
   interface {
       type = "external"            
   }
@@ -132,14 +148,6 @@ Terraform will ask you to confirm the action. Enter "yes".
 2. Copy the code below to the file and customize the highlighted values:
 
 ```js
-data "gcore_project" "project" {
-  name = "Default"
-}
-
-data "gcore_region" "region" {
-  name = "Luxembourg-2"
-}
-
 resource "gcore_gpu_baremetal_image" "example" {
   project_id   = data.gcore_project.project.id
   region_id    = data.gcore_region.region.id
@@ -347,6 +355,7 @@ resource "gcore_k8sv2" "cluster" {
 - Configure the pool, a set of cluster nodes with the same specifications.
   - Specify "name".
   - Specify "flavor_id".
+  - Specify "servergroup_policy". Server group policy: "anti-affinity", "soft-anti-affinity" or "affinity".
   - Specify the "min_node_count" for autoscaling.
   - Specify the "max_node_count" for autoscaling.
   - Specify the "node_count". This is the initial number of nodes to be deployed.
@@ -436,11 +445,12 @@ resource "gcore_k8sv2" "cluster" {
 - Specify the "fixed_network" to define the ID of the network to which the Kubernetes cluster will be connected.
 - Specify the "fixed_subnet" to define the ID of the subnet within the selected network.
 - Configure the "pool" for the Kubernetes cluster. Specify the following parameters:
+  - name: Cluster pool name. Changing the value of this attribute will trigger recreation of the cluster pool.
   - flavor_id:  Cluster pool node flavor ID. Changing the value of this attribute will trigger recreation of the cluster pool.
+  - servergroup_policy: Server group policy, "anti-affinity", "soft-anti-affinity" or "affinity".
   - min_node_count: Minimum number of nodes in the cluster pool.
   - max_node_count: Maximum number of nodes in the cluster pool.
-  - name: Cluster pool name. Changing the value of this attribute will trigger recreation of the cluster pool.
-  - boot_volume_size: Cluster pool boot volume size. Must be set only for VM pools. Changing the value of this attribute will trigger recreation of the cluster pool. 
+  - boot_volume_size: Cluster pool boot volume size. Must be set only for VM pools. Changing the value of this attribute will trigger recreation of the cluster pool.
   - boot_volume_type: Cluster pool boot volume type. Must be set only for VM pools. Available values are "standard", "ssd_hiiops", "cold", "ultra". Changing the value of this attribute will trigger recreation of the cluster pool.
 
 4. Save changes in the file.
