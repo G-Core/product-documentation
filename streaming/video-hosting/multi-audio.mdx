@@ -1,0 +1,156 @@
+---
+title: "Videos with multiple audio tracks"
+sidebarTitle: "Multi audio"
+description: Playing videos with multiple audio tracks in different languages
+---
+
+## Overview
+
+The Streaming Platform supports **VOD assets with multiple audio tracks** embedded in a single video file.  
+This enables multilingual playback (for example, original audio plus dubbed tracks) with seamless language switching in supported players.
+
+A typical use case is international content distribution, where one video contains multiple language tracks (EN, ES, DE, FR, etc.), and the player allows the viewer to choose the preferred audio language.
+
+<Frame>
+  <img
+    src="/images/docs/streaming-platform/video-hosting/multi-audio/vod-multi-audio-menu.jpeg"
+    alt="Multi-audio track selection in video player"
+  />
+</Frame>
+
+---
+
+## Audio requirements
+
+### Source file requirements
+
+To enable multi-audio support:
+
+- All audio tracks must be embedded inside the original uploaded `.mp4` file
+- Each audio track should:
+  - Represent a distinct language
+  - Use a supported audio codec
+  - Contain correct language metadata
+
+During processing:
+- Each audio track is extracted
+- Audio tracks are transcoded and replicated across all ABR video qualities
+- Separate audio playlists / representations are generated for HLS and DASH
+
+
+### Audio codec requirements
+
+All audio tracks must be encoded using recommended codecs and parameters to ensure consistent playback across browsers, mobile devices, and Smart TVs.
+
+Detailed requirements are available here: [Recommended input parameters and codecs](/streaming/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs#recommended-video-parameters).
+
+Using unsupported or non-standard audio formats may lead to:
+ - Missing audio tracks in HLS or DASH manifests
+ - Playback issues on specific devices or operating systems
+ - Inconsistent behavior in player audio selection menus
+
+
+### Supported playback environments
+
+Multi-audio VOD playback is supported across the following environments:
+ - Desktop browsers using HLS or DASH
+ - Mobile browsers and native mobile players
+ - Smart TV platforms that support multi-audio HLS or DASH
+ - Embedded iframe playback using the Streaming Platform built-in player
+
+Exact behavior (automatic language selection and UI layout) may vary depending on the device, operating system, and player implementation.
+
+
+---
+
+## Demo: Multi-audio VOD playback
+
+The demo below uses *Tears of Steel HD* with four audio tracks:
+
+- English (original)
+- Spanish (AI-dubbed)
+- German (AI-dubbed)
+- Russian (AI-dubbed)
+
+Click on the language name in the bottom right corner:
+
+<Frame>
+  <iframe
+    width="100%"
+    src="https://player.gvideo.co/videos/2675_HCzdHTj79iSt3wiW"
+    title="Tears of Steel, multi-audio EN, ES, DE, RU"
+    frameborder="0"
+    allow="fullscreen; accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    referrerpolicy="strict-origin-when-cross-origin"
+    allowfullscreen
+  />
+</Frame>
+
+Direct link to the player: https://player.gvideo.co/videos/2675_HCzdHTj79iSt3wiW
+
+---
+
+
+## Audio track output
+
+### Player UI
+
+All available audio tracks are automatically exposed in the built-in video player UI. As shown in the player example above.
+
+
+### HLS representation (`.m3u8`)
+
+In HLS, each audio track is represented via `#EXT-X-MEDIA` entries:
+
+```m3u8
+#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="audio0",NAME="English",LANGUAGE="en",AUTOSELECT=YES,DEFAULT=YES,CHANNELS="2",URI="index-s0q3570v1-a1.m3u8"
+#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="audio0",NAME="Spanish",LANGUAGE="es",AUTOSELECT=NO,DEFAULT=NO,CHANNELS="2",URI="index-s1q3570v1-a2.m3u8"
+#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="audio0",NAME="German",LANGUAGE="de",AUTOSELECT=NO,DEFAULT=NO,CHANNELS="2",URI="index-s2q3570v1-a3.m3u8"
+#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="audio0",NAME="Russian",LANGUAGE="ru",AUTOSELECT=NO,DEFAULT=NO,CHANNELS="2",URI="index-s3q3570v1-a4.m3u8"
+```
+
+The `AUTOSELECT` and `DEFAULT` attributes define how players choose an audio track during startup and language matching:
+
+  - The original language track is typically marked as both `DEFAULT=YES` and `AUTOSELECT=YES`.
+  - Dubbed or alternative language tracks are usually marked with `AUTOSELECT=NO` to avoid unexpected language switching.
+
+Meaning of `AUTOSELECT` and `DEFAULT`:
+
+- `DEFAULT=YES` – Indicates the audio track that will be selected automatically when playback starts, if the user has not explicitly chosen another language. Only one audio track in a group should be marked as default.
+- `AUTOSELECT=YES` – Allows the player to automatically select this audio track based on the viewer’s language preferences, such as browser or operating system locale.
+- `AUTOSELECT=NO` – The audio track is available to the viewer but will only be selected manually via the player UI.
+
+Direct link to the .m3u8 manifest: https://demo-public.gvideo.io/videos/2675_HCzdHTj79iSt3wiW/master.m3u8 
+
+Example of playback in [hls.js](https://hlsjs.video-dev.org/demo/?src=https%3A%2F%2Fdemo-public.gvideo.io%2Fvideos%2F2675_HCzdHTj79iSt3wiW%2Fmaster.m3u8):
+<Frame>
+![Example of playback in hls.js](/images/docs/streaming-platform/video-hosting/multi-audio/vod-multi-audio-hls.png)
+</Frame>
+
+
+### DASH representation (`.mpd`)
+
+In MPEG-DASH, each audio language is exposed as a separate `AdaptationSet`.  
+This allows players to list and switch audio languages independently from video quality.
+
+```xml
+<AdaptationSet id="4" lang="de" label="German" segmentAlignment="true">
+  <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="1" />
+  <Representation id="f7-a3-x3" mimeType="audio/mp4" codecs="mp4a.40.2" audioSamplingRate="44100" startWithSAP="1" bandwidth="128000"></Representation>
+</AdaptationSet>
+```
+
+Key fields:
+    - `lang` – ISO language code used by the player for language matching
+    - `label` – Human-readable language name displayed in the player UI
+    - `Representation` – Defines the encoded audio stream parameters (codec, bitrate, sampling rate)
+
+Each AdaptationSet corresponds to one selectable audio track.
+
+Direct link to the .mpd manifest: https://demo-public.gvideo.io/videos/2675_HCzdHTj79iSt3wiW/master.mpd
+
+Example of playback in [dash.js](https://reference.dashif.org/dash.js/latest/samples/dash-if-reference-player/index.html?mpd=https%3A%2F%2Fdemo-public.gvideo.io%2Fvideos%2F2675_HCzdHTj79iSt3wiW%2Fmaster.mpd):
+<Frame>
+![Example of playback in dash.js](/images/docs/streaming-platform/video-hosting/multi-audio/vod-multi-audio-dash.png)
+</Frame>
+
