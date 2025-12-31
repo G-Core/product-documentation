@@ -56,14 +56,14 @@ The advanced rule object contains the following properties:
 </Info>
 
 <Accordion title="Description of the properties">
-  | Field         | Description                                     | Values                                                                                                                                                                                                                                                                                                                                                                                                                    | Details                                                                                                                                                                                                                                                                                                                                                                                 |
-  | ------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-  | `name`        | Rule name                                       | Can contain only ASCII letters, numbers, spaces, periods, and colons.                                                                                                                                                                                                                                                                                                                                                     |                                                                                                                                                                                                                                                                                                                                                                                         |
-  | `action`      | The action to execute when a condition is true. | <ul>         <li>         block: WAAP blocked the request.</li>                  <li>         allow: WAAP allowed the request.</li>                  <li>         captcha: WAAP presented the user with a CAPTCHA</li>                  <li>         handshake: WAAP performed automatic browser validation.</li>                  <li>         tag: WAAP will generate a tag with no action.</li>                  </ul> | On `tag` [action](/waap/waap-rules/custom-rules#actions-in-custom-rules), the tag field should be provided.<br /><br />For the `block` [action](/waap/waap-rules/custom-rules#actions-in-custom-rules), setting up the `status_code` (integer) and `action_duration` (time in seconds) is optional. By default, the status is set to `"status_code": 403`, and duration equals to `0s`. |
-  | `source`      | The condition part of the rule.                 | Can reference namespace objects: request, whois, session, response, tags, user_agent, client_data, as well as use data and functions.<br /><br />Supported Python operand syntax: and, or, in, not, ==, !=, \>, \<, etc.<br />Supported CEL operand syntax: \|\|, &&                                                                                                                                                      | Every string value should be enclosed in single quotation marks `'` and **not** in double quotation marks `"`.                                                                                                                                                                                                                                                                          |
-  | `enabled`     | Whether or not the rule is enabled.             | Boolean: `true` or `false`                                                                                                                                                                                                                                                                                                                                                                                                | Default value: `false`                                                                                                                                                                                                                                                                                                                                                                  |
-  | `description` | A string to describe the purpose of the rule.   | Any string.<br />The character limit for the description field is 100 characters.                                                                                                                                                                                                                                                                                                                                         | Default value: `false`                                                                                                                                                                                                                                                                                                                                                                  |
-  | `phase`       | The request processing phase.                   | <ul>         <li>         access: The advanced rule applies to the request phase (request headers and body available).</li>                  <li>         header_filter: The advanced rule applies to the response headers phase.</li>                  <li>         body_filter: The advanced rule applies to the response body phase.</li>                  </ul>                                                       | Default value: `access`                                                                                                                                                                                                                                                                                                                                                                 |
+  | Field         | Description                                     | Values                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Details                                                                                                                                                                                                                                                                                                                                                                                                   |
+  | ------------- | ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | `name`        | Rule name                                       | Can contain only ASCII letters, numbers, spaces, periods, and colons.                                                                                                                                                                                                                                                                                                                                                                                     | **Required.**                                                                                                                                                                                                                                                                                                                                                                                             |
+  | `action`      | The action to execute when a condition is true. | <ul>           <li>           block: WAAP blocked the request.</li>                      <li>           allow: WAAP allowed the request.</li>                      <li>           captcha: WAAP presented the user with a CAPTCHA</li>                      <li>           handshake: WAAP performed automatic browser validation.</li>                      <li>           tag: WAAP will generate a tag with no action.</li>                      </ul> | \*\*Required. \*\*On `tag` [action](/waap/waap-rules/custom-rules#actions-in-custom-rules), the tag field should be provided.<br /><br />For the `block` [action](/waap/waap-rules/custom-rules#actions-in-custom-rules), setting up the `status_code` (integer) and `action_duration` (time in seconds) is optional. By default, the status is set to `"status_code": 403`, and duration equals to `0s`. |
+  | `source`      | The condition part of the rule.                 | Can reference namespace objects: request, whois, session, response, tags, user_agent, client_data, as well as use data and functions.<br /><br />Supported Python operand syntax: and, or, in, not, ==, !=, \>, \<, etc.<br />Supported CEL operand syntax: \|\|, &&                                                                                                                                                                                      | \*\*Required. \*\*Every string value should be enclosed in single quotation marks `'` and **not** in double quotation marks `"`.                                                                                                                                                                                                                                                                          |
+  | `enabled`     | Whether or not the rule is enabled.             | Boolean: `true` or `false`                                                                                                                                                                                                                                                                                                                                                                                                                                | **Required.**                                                                                                                                                                                                                                                                                                                                                                                             |
+  | `description` | A string to describe the purpose of the rule.   | Any string.<br />The character limit for the description field is 100 characters.                                                                                                                                                                                                                                                                                                                                                                         |                                                                                                                                                                                                                                                                                                                                                                                                           |
+  | `phase`       | The request processing phase.                   | <ul>           <li>           access: The advanced rule applies to the request phase (request headers and body available).</li>                      <li>           header_filter: The advanced rule applies to the response headers phase.</li>                      <li>           body_filter: The advanced rule applies to the response body phase.</li>                      </ul>                                                                   | Default value: `access`                                                                                                                                                                                                                                                                                                                                                                                   |
 </Accordion>
 
 ## Best practices
@@ -78,49 +78,55 @@ You can find more examples in our [Rate limiting](https://gcore.com/docs/waap/wa
 
 The following rule limits the rate of requests an IP can send for 10 minutes, when it exceeds 200 requests in 5 seconds, but excludes requests from mobile or web clients that have specific cookies.
 
+**Rate Limiting curl example**
+
 ```sh
 curl --request POST \
 --url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
-    "action": {
-        "block": {
-            "status_code": 403,
-            "action_duration": "10m"
-        }
-    },
-    "phase": "access",
-    "name": "Block Scrappers",
-    "description": "Block IPs that hit more than 200 requests per 5 seconds for any `events` paths",
-    "enabled": false,
-    "source": "(request.limit_rate([], '.*events', 5, 200, [], [], '', 'ip') and not ('mb-web-ui' in request.headers['Cookie'] or 'mb-mobile-ios' in request.headers['Cookie'] or 'mobile-android' in request.headers['Cookie'] or 'mb-mobile-android' in request.headers['Cookie'] or 'session-token' in request.headers['Cookie']) and not request.headers['session']) or tags.exists('penalty')"
+  "action": {
+    "block": {
+      "status_code": 403,
+      "action_duration": "10m"
+    }
+  },
+  "phase": "access",
+  "name": "Block Scrappers",
+  "description": "Block IPs that hit more than 200 requests per 5 seconds for any `events` paths",
+  "enabled": false,
+  "source": "((request.limit_rate(url='.*events', interval=5, requests=200, scope='ip')) and not ('mb-web-ui' in request.headers['Cookie'] or 'mb-mobile-ios' in request.headers['Cookie'] or 'mobile-android' in request.headers['Cookie'] or 'mb-mobile-android' in request.headers['Cookie'] or 'session-token' in request.headers['Cookie']) and not request.headers['session']) or tags.exists('penalty')"
 }'
 ```
 
 ### The penalty tag
 
-The WAAP system appends the `penalty` tag to the local (domain-related) IP record, for an IP address that triggers a block rule configured with an `action_duration` parameter.
+The WAAP system appends the `penalty` tag to the local (domain-related) IP record when an IP address triggers a block rule configured with an `action_duration` parameter.
 
-To continue blocking an IP address after the original rule’s conditions are no longer met, you should include a `penalty` tag check in the rule’s source conditions (for example, using a condition such as `... `or `tags.exists('penalty')`, or define a separate rule that targets requests carrying the penalty tag. The following example illustrates this approach.
+To continue blocking an IP address after the original rule’s conditions are no longer met, include a `penalty` tag check in the rule’s source conditions (for example, using a condition such as `... `or `tags.exists('penalty')`, or define a separate rule that targets requests carrying the penalty tag. The following example illustrates this approach.
 
 #### Block all penalty requests
 
 The following rule blocks requests from IP addresses tagged with the `penalty` tag, allowing block actions applied by other rules to persist.
 
+**Block penalty-tagged IP requests**
+
 ```sh
 curl --request POST \
---url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
---header 'accept: application/json' \
---header 'content-type: application/json' \
---data '{
-    "action": {"block": {}},
-    "phase": "access",
+  --url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
+  --header 'accept: application/json' \
+  --header 'content-type: application/json' \
+  --data '{
     "name": "Block Penalized Requests",
-    "description": "Block requests that are detected with `penalty` tag",
+    "description": "Block requests from IP addresses tagged with the penalty tag",
     "enabled": false,
+    "phase": "access",
+    "action": {
+      "block": {}
+    },
     "source": "tags.exists('penalty')"
-}'
+  }'
 ```
 
 ## Other examples
@@ -129,40 +135,44 @@ curl --request POST \
 
 Demonstrates how to apply browser validation (JavaScript-based challenge) using the `handshake `action to requests originating from specific countries, based on the `whois.country` field, while excluding requests that contain certain cookies.
 
+**Validate a set of countries**
+
 ```sh
 curl --request POST \
---url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
---header 'accept: application/json' \
---header 'content-type: application/json' \
---data '{
+  --url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
+  --header 'accept: application/json' \
+  --header 'content-type: application/json' \
+  --data '{
     "action": {
-        "handshake": {}
+      "handshake": {}
     },
     "phase": "access",
     "name": "Validate set of countries",
     "description": "Validate with JavaScript challenge IPs that are coming from the following countries",
     "enabled": false,
     "source": "whois.country in ['BR', 'VN', 'ID', 'TH', 'ME', 'XK', 'LK'] and not ('mb-web-ui' in request.headers['Cookie'] or 'mb-mobile-ios' in request.headers['Cookie'] or 'mobile-android' in request.headers['Cookie'] or 'mb-mobile-android' in request.headers['Cookie'])"
-}'
+  }'
 ```
 
 ### Add clients to allow list
 
 Demonstrates how to allow requests from specific IP addresses or IP ranges by matching IP values in the rule condition.
 
+**Add clients to allow list**
+
 ```sh
 curl --request POST \
---url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
---header 'accept: application/json' \
---header 'content-type: application/json' \
---data '{
-    "action": {
-        "allow": {}
-    },
+  --url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
+  --header 'accept: application/json' \
+  --header 'content-type: application/json' \
+  --data '{
     "name": "Whitelist known IPs",
     "enabled": false,
+    "action": {
+      "allow": {}
+    },
     "source": "request.ip == '117.20.32.5' or request.ip == '117.20.32.4' or request.ip_in_range('72.21.217.0', '72.21.217.255')"
-}'
+  }'
 ```
 
 ### Tag and allow registered clients
@@ -170,56 +180,68 @@ curl --request POST \
 Demonstrates how to tag requests based on the presence of a specific cookie and allow requests associated with the assigned tag.\
 When defining tag values in JSON, double quotation marks must be used, while string values inside rule expressions must be enclosed in single quotation marks.
 
-```sh
-curl --request POST \
---url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
---header 'accept: application/json' \
---header 'content-type: application/json' \
---data '{
-    "name": "Tag registered clients",
-    "description": "Detect and tag registered clients by cookie",
-    "source": "'mb-mobile-android' in request.headers['Cookie']",
-    "action": {
-        "tag": {
-            "tags": ["registered"]
-        }
-    }
-}'
-```
+**Tag registered clients**
 
 ```sh
 curl --request POST \
---url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
---header 'accept: application/json' \
---header 'content-type: application/json' \
---data '{
+  --url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
+  --header 'accept: application/json' \
+  --header 'content-type: application/json' \
+  --data '{
+    "name": "Tag registered clients",
+    "description": "Detect and tag registered clients by cookie",
+    "enabled": false,
+    "phase": "access",
+    "source": "'mb-mobile-android' in request.headers['Cookie']",
+    "action": {
+      "tag": {
+        "tags": ["registered"]
+      }
+    }
+  }'
+```
+
+**Allow registered clients**
+
+```sh
+curl --request POST \
+  --url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
+  --header 'accept: application/json' \
+  --header 'content-type: application/json' \
+  --data '{
     "name": "Allow registered clients",
     "description": "Allow registered clients",
+    "enabled": false,
+    "phase": "access",
     "source": "tags.exists('registered')",
     "action": {
-        "allow": {}
+      "allow": {}
     }
-}'
+  }'
 ```
 
 ### Define login pages
 
 Demonstrates how to tag requests that match specific URL patterns using string matching on the request URI.
 
+**Define login pages**
+
 ```sh
 curl --request POST \
---url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
---header 'accept: application/json' \
---header 'content-type: application/json' \
---data '{
+  --url https://api.gcore.com/waap/v1/domains/{domain_id}/advanced-rules \
+  --header 'accept: application/json' \
+  --header 'content-type: application/json' \
+  --data '{
     "name": "Detect and Tag Login Pages",
+    "enabled": false,
+    "phase": "access",
     "source": "['url1/login','url2/signup'] in request.uri",
     "action": {
-        "tag": {
-            "tags": ["login page"]
-        }
+      "tag": {
+        "tags": ["login page"]
+      }
     }
-}'
+  }'
 ```
 
 ## Review existing rules
