@@ -101,42 +101,6 @@ Replace `/mount/path` with the absolute local directory path where you want the 
   The best practice is to create VAST shares **when** creating [GPU clusters](/edge-ai/ai-infrastructure/create-an-ai-cluster) or **before** provisioning the corresponding [compute resources](/cloud/virtual-instances/types-of-virtual-machines) (such as VMs).
 </Tip>
 
-### Add VAST file share during GPU cluster creation
-
-When creating a GPU cluster, you can add a VAST file share directly in the cluster creation wizard. This is the recommended approach as network interfaces and mounting are configured automatically.
-
-#### Step 1. Enable file share integration
-
-Follow the [GPU cluster creation guide](/edge-ai/ai-infrastructure/create-an-ai-cluster). When you reach the **File share integration** section, enable the toggle.
-
-<Frame>![Enable File Share integration toggle](/images/docs/cloud/file-shares/vast-cluster-enable-toggle.png)</Frame>
-
-#### Step 2. Select file share and mount path
-
-Select an existing VAST file share or create a new one, and specify the **Mount path** where the file share will be accessible on your cluster nodes.
-
-<Frame>![Select file share and configure mount path](/images/docs/cloud/file-shares/vast-cluster-select-fileshare.png)</Frame>
-
-After selecting a VAST file share, the required network interfaces are automatically added to each node in your cluster.
-
-#### Step 3. Configure user data (optional)
-
-By default, **User data** is disabled and the file share will be mounted automatically when the cluster starts.
-
-<Frame>![User data disabled - file share mounts automatically](/images/docs/cloud/file-shares/vast-cluster-userdata-disabled.png)</Frame>
-
-If **User data** is enabled, mounting commands are included in the user data script.
-
-<Frame>![User data enabled with auto-generated mount commands](/images/docs/cloud/file-shares/vast-cluster-userdata-enabled.png)</Frame>
-
-<Warning>
-  If user data is enabled, do not modify or delete the auto-generated mounting commands. Changing these commands may break automatic mounting.
-</Warning>
-
-### Add VAST file share manually
-
-If you need to add a VAST file share to an existing resource or prefer manual configuration, follow the steps below.
-
 ### Step 1. Create a VAST share
 
 1. In the **Cloud** menu, click **Storage**, select **File Shares**, and click **Create File Share** on the right.
@@ -196,73 +160,100 @@ Connect to your server via the [Gcore Customer Portal](/cloud/virtual-instances/
 
 1. Use `ip addr` to list all available interfaces.
 2. Identify the VAST interface using the MAC address from the previous step.
-3. Note the **interface name** for use in the following steps.
+3. Note the **interface name** (such as `enp8s0` or `enp4s0`) for use in the following steps.
 4. Configure the interface using the commands for your instance type:
 
 <Tabs>
   <Tab title="VM / GPU VM">
-    ```bash
-    # Replace $interface with interface name (e.g., enp4s0)
-    # Replace $ipcidr with IP/CIDR from Step 2 (e.g., 172.18.220.100/22)
-    # Replace $subnetgw with first IP in subnet (e.g., 172.18.220.1)
+    Using commands below:
+    - Replace `198.51.100.25` with the IP address from Step 2.
+    - Replace `enp8s0` with the interface name from above, if different.
 
-    sudo ip link set $interface mtu 9000
-    sudo ip link set $interface up
-    sudo ip addr add $ipcidr dev $interface
-    sudo ip route add 172.19.252.0/22 via $subnetgw dev $interface
+    Set interface MTU:
+
+    ```bash
+    sudo ip link set enp8s0 mtu 9000
     ```
 
-    **Example:**
+    Activate the interface:
 
     ```bash
-    sudo ip link set enp4s0 mtu 9000
-    sudo ip link set enp4s0 up
-    sudo ip addr add 172.18.220.100/22 dev enp4s0
-    sudo ip route add 172.19.252.0/22 via 172.18.220.1 dev enp4s0
+    sudo ip link set enp8s0 up
+    ```
+
+    Set interface CIDR:
+
+    ```bash
+    sudo ip addr add 198.51.100.25/22 dev enp8s0
+    ```
+
+    Add static route to the VAST network:
+    - Replace `198.51.100.1` with an address formed by the first three octets from the CIDR range in Step 2, keeping `1` as the last octet for the gateway IP, and using the same interface name.
+
+    ```bash
+    sudo ip route add 172.19.252.0/22 via 198.51.100.1 dev enp8s0
     ```
   </Tab>
   <Tab title="Bare Metal with Bluefield DPU">
-    ```bash
-    # Replace $interface with interface name (e.g., ens10f0v0)
-    # Replace $ipcidr with IP/CIDR from Step 2 (e.g., 172.18.220.100/22)
-    # Replace $subnetgw with first IP in subnet (e.g., 172.18.220.1)
+    Using commands below:
+    - Replace `198.51.100.25` with the IP address from Step 2.
+    - Replace `ens10f0v0` with the interface name from above, if different.
 
-    sudo ip link set $interface mtu 9000
-    sudo ip link set $interface up
-    sudo ip addr add $ipcidr dev $interface
-    sudo ip route add 172.19.252.0/22 via $subnetgw dev $interface
-    ```
-
-    **Example:**
+    Set interface MTU:
 
     ```bash
     sudo ip link set ens10f0v0 mtu 9000
+    ```
+
+    Activate the interface:
+
+    ```bash
     sudo ip link set ens10f0v0 up
-    sudo ip addr add 172.18.220.100/22 dev ens10f0v0
-    sudo ip route add 172.19.252.0/22 via 172.18.220.1 dev ens10f0v0
+    ```
+
+    Set interface CIDR:
+
+    ```bash
+    sudo ip addr add 198.51.100.25/22 dev ens10f0v0
+    ```
+
+    Add static route to the VAST network:
+    - Replace `198.51.100.1` with an address formed by the first three octets from the CIDR range in Step 2, keeping `1` as the last octet for the gateway IP, and using the same interface name.
+
+    ```bash
+    sudo ip route add 172.19.252.0/22 via 198.51.100.1 dev ens10f0v0
     ```
   </Tab>
   <Tab title="Bare Metal with Arista (Trunks)">
-    Create a VLAN interface on the bond:
+    For Bare Metal servers with Arista switches (Trunks), create a VLAN interface on the bond.
 
-    ```bash
-    # Replace $vlan_id with VLAN ID from UI/API (e.g., 2998)
-    # Replace $ipcidr with IP/CIDR from Step 2 (e.g., 172.19.137.8/22)
-    # Replace $subnetgw with first IP in subnet (e.g., 172.19.136.1)
+    Using commands below:
+    - Replace `2998` with the VLAN ID from the UI or API.
+    - Replace `198.51.100.25` with the IP address from Step 2.
 
-    sudo ip link add link bond0 name bond0.$vlan_id type vlan id $vlan_id
-    sudo ip link set bond0.$vlan_id up
-    sudo ip addr add $ipcidr dev bond0.$vlan_id
-    sudo ip route add 172.19.252.0/22 via $subnetgw dev bond0.$vlan_id
-    ```
-
-    **Example:**
+    Create VLAN interface on bond:
 
     ```bash
     sudo ip link add link bond0 name bond0.2998 type vlan id 2998
+    ```
+
+    Activate the interface:
+
+    ```bash
     sudo ip link set bond0.2998 up
-    sudo ip addr add 172.19.137.8/22 dev bond0.2998
-    sudo ip route add 172.19.252.0/22 via 172.19.136.1 dev bond0.2998
+    ```
+
+    Set interface CIDR:
+
+    ```bash
+    sudo ip addr add 198.51.100.25/22 dev bond0.2998
+    ```
+
+    Add static route to the VAST network:
+    - Replace `198.51.100.1` with an address formed by the first three octets from the CIDR range in Step 2, keeping `1` as the last octet for the gateway IP.
+
+    ```bash
+    sudo ip route add 172.19.252.0/22 via 198.51.100.1 dev bond0.2998
     ```
   </Tab>
 </Tabs>
