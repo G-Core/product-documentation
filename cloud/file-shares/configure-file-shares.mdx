@@ -94,27 +94,31 @@ Replace `/mount/path` with the absolute local directory path where you want the 
 ## VAST file shares
 
 <Info>
-  VAST-based file shares are only available in regions with GPU support, and use high-performance backend designed for intensive data workloads.
+  VAST-based file shares are only available in regions with GPU support and use a high-performance backend designed for intensive data workloads.
 </Info>
+
+<Tip>
+  The best practice is to create VAST shares **when** creating [GPU clusters](/edge-ai/ai-infrastructure/create-an-ai-cluster) or **before** provisioning the corresponding [compute resources](/cloud/virtual-instances/types-of-virtual-machines) (such as VMs).
+</Tip>
 
 There are two ways to configure VAST file shares:
 
 - **During GPU cluster creation** (recommended): Network interfaces and mounting are configured automatically.
 - **After resource creation** (not recommended): Requires manual network configuration and mounting for each instance.
 
-### Option 1: Add VAST file share during GPU cluster creation (recommended)
+### Add a VAST file share during GPU cluster creation (recommended)
 
 This is the preferred method for GPU clusters. Network interfaces are added automatically, and the file share is mounted without manual intervention.
 
 #### Step 1. Start creating a GPU cluster
 
-Follow the [GPU cluster creation guide](/edge-ai/ai-infrastructure/create-an-ai-cluster). When you reach the file share configuration step, select an existing VAST file share or create a new one.
+Follow the [GPU cluster creation guide](/edge-ai/ai-infrastructure/create-an-ai-cluster). When you reach the **File share integration** section, enable the toggle.
 
-<Frame>![Select file share during cluster creation](/images/docs/cloud/file-shares/vast-select-fileshare.png)</Frame>
+<Frame>![Enable File Share integration toggle](/images/docs/cloud/file-shares/vast-cluster-enable-toggle.png)</Frame>
 
-Specify the **Mount path** where the file share will be accessible on your cluster nodes.
+Select an existing VAST file share or create a new one, and specify the **Mount path** where the file share will be accessible on your cluster nodes.
 
-<Frame>![Configure mount path](/images/docs/cloud/file-shares/vast-mount-path.png)</Frame>
+<Frame>![Select file share and configure mount path](/images/docs/cloud/file-shares/vast-cluster-select-fileshare.png)</Frame>
 
 #### Step 2. Review automatic network configuration
 
@@ -124,33 +128,35 @@ After selecting or creating a VAST file share, the required network interfaces a
 
 By default, **User data** is disabled and the file share will be mounted automatically when the cluster starts.
 
-<Frame>![User data disabled](/images/docs/cloud/file-shares/vast-user-data-disabled.png)</Frame>
+<Frame>![User data disabled - file share mounts automatically](/images/docs/cloud/file-shares/vast-cluster-userdata-disabled.png)</Frame>
 
 If **User data** is enabled, mounting commands are included in the user data script.
 
-<Frame>![User data enabled](/images/docs/cloud/file-shares/vast-user-data-enabled.png)</Frame>
+<Frame>![User data enabled with auto-generated mount commands](/images/docs/cloud/file-shares/vast-cluster-userdata-enabled.png)</Frame>
 
 <Warning>
   If user data is enabled, do not modify or delete the auto-generated mounting commands. Changing these commands may break automatic mounting.
 </Warning>
 
-### Option 2: Add VAST file share after resource creation (not recommended)
+### Add a VAST file share to an existing resource (manual configuration)
 
 <Warning>
-  This approach requires manual configuration for each instance and is significantly more complex. Use Option 1 whenever possible.
+  This approach requires manual configuration for each instance and is significantly more complex. Use the recommended method above whenever possible.
 </Warning>
 
 Use this method when adding a VAST file share to an existing GPU cluster, VM, or Bare Metal server.
 
-#### Step 1. Create a VAST file share
+#### Step 1. Create a VAST share
 
-1. In the **Cloud** menu, click **Storage**, select **File Shares**, and click **Create File Share**.
+1. In the **Cloud** menu, click **Storage**, select **File Shares**, and click **Create File Share** on the right.
 2. In the **Basic settings** panel, enter _File Share name_, specify _Size_, and select **VAST** as the _File Share type_.
 3. Set **Additional options**, if required.
 
 ![File Share Vast Pn](/images/file-share-vast.png)
 
 When VAST share type is selected, controls in **Network settings** and **Access** panels are disabled, and the network is assigned automatically.
+
+The access rules cannot be configured manually. The VAST share is always available in read/write mode within its assigned network only. This network is not visible in the general **Network** tab. It is only available when attaching interfaces to a resource (VM, Bare Metal, or GPU cluster).
 
 VAST file shares always use read/write access; access rules are not supported.
 
