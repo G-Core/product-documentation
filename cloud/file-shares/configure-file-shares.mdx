@@ -68,17 +68,24 @@ Connect to your server via the [Gcore Customer Portal](/cloud/virtual-instances/
 
 For Ubuntu and Debian:
 
-`sudo apt -y install nfs-common`
+```bash
+sudo apt -y install nfs-common
+```
 
 For CentOS:
 
-`sudo yum install nfs-utils`
+```bash
+sudo yum install nfs-utils
+```
 
 ### Step 3. Mount the file share
 
 1. Use an existing directory for mounting the share, or create a new one, for example:
 
-   `sudo mkdir -p /mount/path`
+   ```bash
+   sudo mkdir -p /mount/path
+   ```
+
 2. Copy the mount command from the file share **Overview** tab.
 
 <Frame>
@@ -87,7 +94,9 @@ For CentOS:
 
 Mount the file share:
 
-`mount 0.0.0.0:/shares/share-d54589b8-132f-4de4-ae99-af5c6cdfdb9c /mount/path`
+```bash
+mount 0.0.0.0:/shares/share-d54589b8-132f-4de4-ae99-af5c6cdfdb9c /mount/path
+```
 
 Replace `/mount/path` with the absolute local directory path where you want the file share to be mounted.
 
@@ -144,8 +153,8 @@ While the VAST interface can be attached to an already-provisioned GPU cluster o
 
 1. Go to server **Resource** settings ([VM](/cloud/virtual-instances/create-an-instance), [Bare Metal](/cloud/bare-metal-servers/create-a-bare-metal-server), or [GPU cluster](/edge-ai/ai-infrastructure/create-an-ai-cluster)).
 2. Select the **Networking** tab and click **Add interface**.
-4. Click the **Network** drop-down and select the **VAST network**, then click **Add**.
-6. Once the interface is added, **note the following details** for use in subsequent steps:
+3. Click the **Network** drop-down and select the **VAST network**, then click **Add**.
+4. Once the interface is added, **note the following details** for use in subsequent steps:
    - **IP** address (such as `198.51.100.25`)
    - **MAC** address (such as `fa:16:3e:12:34:56`)
    - **CIDR** range (such as `198.51.102.0/22`)
@@ -161,43 +170,43 @@ Connect to your server via the [Gcore Customer Portal](/cloud/virtual-instances/
 1. Use `ip addr` to list all available interfaces.
 2. Identify the VAST interface using the MAC address from the previous step.
 3. Note the **interface name** (such as `enp8s0` or `enp4s0`) for use in the following steps.
-4. Configure the interface using the commands for your instance type:
+4. Configure the interface using the commands for your instance type.
 
-<Tabs>
-  <Tab title="VM / GPU VM">
-    Using commands below:
-    - Replace `198.51.100.25` with the IP address from Step 2.
-    - Replace `enp8s0` with the interface name from above, if different.
+#### VM / GPU VM
 
-    Set interface MTU:
+In the commands below, replace `198.51.100.25` with the IP address from Step 2, and replace `enp8s0` with the interface name identified above.
 
-    ```bash
-    sudo ip link set enp8s0 mtu 9000
-    ```
+Set interface MTU:
 
-    Activate the interface:
+```bash
+sudo ip link set enp8s0 mtu 9000
+```
 
-    ```bash
-    sudo ip link set enp8s0 up
-    ```
+Activate the interface:
 
-    Set interface CIDR:
+```bash
+sudo ip link set enp8s0 up
+```
 
-    ```bash
-    sudo ip addr add 198.51.100.25/22 dev enp8s0
-    ```
+Set interface CIDR:
 
-    Add static route to the VAST network:
-    - Replace `198.51.100.1` with an address formed by the first three octets from the CIDR range in Step 2, keeping `1` as the last octet for the gateway IP, and using the same interface name.
+```bash
+sudo ip addr add 198.51.100.25/22 dev enp8s0
+```
 
-    ```bash
-    sudo ip route add 172.19.252.0/22 via 198.51.100.1 dev enp8s0
-    ```
-  </Tab>
-  <Tab title="Bare Metal with Bluefield DPU">
-    Using commands below:
-    - Replace `198.51.100.25` with the IP address from Step 2.
-    - Replace `ens10f0v0` with the interface name from above, if different.
+Add static route to the VAST network. Replace `198.51.100.1` with an address formed by the first three octets from the CIDR range in Step 2, keeping `1` as the last octet for the gateway IP.
+
+```bash
+sudo ip route add 172.19.252.0/22 via 198.51.100.1 dev enp8s0
+```
+
+#### Bare Metal
+
+Bare Metal servers require different configuration depending on the network hardware.
+
+<AccordionGroup>
+  <Accordion title="Bluefield DPU">
+    In the commands below, replace `198.51.100.25` with the IP address from Step 2, and replace `ens10f0v0` with the interface name identified above.
 
     Set interface MTU:
 
@@ -217,21 +226,18 @@ Connect to your server via the [Gcore Customer Portal](/cloud/virtual-instances/
     sudo ip addr add 198.51.100.25/22 dev ens10f0v0
     ```
 
-    Add static route to the VAST network:
-    - Replace `198.51.100.1` with an address formed by the first three octets from the CIDR range in Step 2, keeping `1` as the last octet for the gateway IP, and using the same interface name.
+    Add static route to the VAST network. Replace `198.51.100.1` with an address formed by the first three octets from the CIDR range in Step 2, keeping `1` as the last octet for the gateway IP.
 
     ```bash
     sudo ip route add 172.19.252.0/22 via 198.51.100.1 dev ens10f0v0
     ```
-  </Tab>
-  <Tab title="Bare Metal with Arista (Trunks)">
+  </Accordion>
+  <Accordion title="Arista (Trunks)">
     For Bare Metal servers with Arista switches (Trunks), create a VLAN interface on the bond. A bond (link aggregation) combines multiple physical network interfaces into a single logical interface, providing higher throughput and redundancy.
 
-    Using commands below:
-    - Replace `100` with the VLAN ID shown in the **Networking** tab of the server details page.
-    - Replace `198.51.100.25` with the IP address from Step 2.
+    In the commands below, replace `100` with the VLAN ID shown in the **Networking** tab of the server details page, and replace `198.51.100.25` with the IP address from Step 2.
 
-    Create VLAN interface on bond:
+    Create VLAN interface on a bond:
 
     ```bash
     sudo ip link add link bond0 name bond0.100 type vlan id 100
@@ -249,14 +255,13 @@ Connect to your server via the [Gcore Customer Portal](/cloud/virtual-instances/
     sudo ip addr add 198.51.100.25/22 dev bond0.100
     ```
 
-    Add static route to the VAST network:
-    - Replace `198.51.100.1` with an address formed by the first three octets from the CIDR range in Step 2, keeping `1` as the last octet for the gateway IP.
+    Add static route to the VAST network. Replace `198.51.100.1` with an address formed by the first three octets from the CIDR range in Step 2, keeping `1` as the last octet for the gateway IP.
 
     ```bash
     sudo ip route add 172.19.252.0/22 via 198.51.100.1 dev bond0.100
     ```
-  </Tab>
-</Tabs>
+  </Accordion>
+</AccordionGroup>
 
 <Info>
   The route `ip route add 172.19.252.0/22` is the same for all instance types.
@@ -272,33 +277,43 @@ Connect to your server via the [Gcore Customer Portal](/cloud/virtual-instances/
 
 1. Install NFS client tools:
 
-`sudo apt-get update && sudo apt-get install nfs-common -y`
+   ```bash
+   sudo apt-get update && sudo apt-get install nfs-common -y
+   ```
 
 2. Install build tools and headers for kernel modules:
 
-`sudo apt install dkms debhelper dh-dkms build-essential linux-headers-$(uname -r) -y`
+   ```bash
+   sudo apt install dkms debhelper dh-dkms build-essential linux-headers-$(uname -r) -y
+   ```
 
 3. Install VAST NFS package:
 
-`curl -sSf https://vast-nfs.s3.amazonaws.com/download.sh | bash -s --`
+   ```bash
+   curl -sSf https://vast-nfs.s3.amazonaws.com/download.sh | bash -s --
+   ```
 
 ### Step 4. Mount the file share
 
 You can use an existing directory for mounting the share, or create a new one, for example:
 
-`sudo mkdir -p /mount/path`
+```bash
+sudo mkdir -p /mount/path
+```
 
 Mount the VAST file share:
 
 - Replace `ndp1-2-vast.cloud.gc.onl:/manila/manila-01234567-89ab-cdef-0123-456789abcdef` with the connection point from the VAST file share overview tab.
 - Replace `/mount/path` with the absolute local directory path where you want the file share to be mounted.
 
-`sudo mount -o vers=3,nconnect=56,remoteports=dns,spread_reads,spread_writes,noextend ndp1-2-vast.cloud.gc.onl:/manila/manila-01234567-89ab-cdef-0123-456789abcdef /mount/path`
+```bash
+sudo mount -o vers=3,nconnect=56,remoteports=dns,spread_reads,spread_writes,noextend ndp1-2-vast.cloud.gc.onl:/manila/manila-01234567-89ab-cdef-0123-456789abcdef /mount/path
+```
 
 Now you can access the contents of the VAST file share in the specified directory.
 
 <Info>
-  Always use NFS version 3 (vers=3) when mounting VAST file shares. If your system does not support the `nconnect` option, install the[ VAST Enhanced NFS Client](https://vastnfs.vastdata.com/docs/4.0/download.html).
+  Always use NFS version 3 (vers=3) when mounting VAST file shares. If your system does not support the `nconnect` option, install the [VAST Enhanced NFS Client](https://vastnfs.vastdata.com/docs/4.0/download.html).
 </Info>
 
 ![File Share Mount Pn](/images/file-share-mount.png)
@@ -309,7 +324,9 @@ Now you can access the contents of the VAST file share in the specified director
   - **VAST** shares can be resized directly, without being unmounted.
   - **Standard** shares must first be unmounted before they can be resized, for example:
 
-    `umount -lf /mount/path`
+    ```bash
+    umount -lf /mount/path
+    ```
 
     Once resized, file shares can be remounted as described above for each share type.
 </Info>
