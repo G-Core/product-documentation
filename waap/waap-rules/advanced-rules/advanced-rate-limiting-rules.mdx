@@ -35,12 +35,12 @@ The method returns `true` , and the enclosing rule condition is satisfied when t
 
 | # | Parameter name        | Required                                                                                                | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                | |
 | --- | --------------------- | ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
-| 1 | `ip`                  | False                                                                                                   | List of IP addresses that the rule applies to.<br />If there are no IPs in the list, counting will be done for all IPs.                                                                                                                                                                                                                                                                                                                                    | |
+| 1 | `ip_list`             | False                                                                                                   | List of IP addresses that the rule applies to.<br />If there are no IPs in the list, counting will be done for all IPs.                                                                                                                                                                                                                                                                                                                                    | |
 | 2 | `url`                 | True                                                                                                    | A regex pattern used to match the request's URI (URL + query_params).                                                                                                                                                                                                                                                                                                                                                                                      | |
-| 3 | `time`                | True                                                                                                    | The time limit, in seconds, within which we only allow **n** number of requests to URI matching the pattern.                                                                                                                                                                                                                                                                                                                                               | |
+| 3 | `interval`            | True                                                                                                    | The time limit, in seconds, within which we only allow **n** number of requests to URI matching the pattern.                                                                                                                                                                                                                                                                                                                                               | |
 | 4 | `requests`            | True                                                                                                    | The maximum number of requests **accepted** within the given period before an action is taken (minimum value is 21 requests).                                                                                                                                                                                                                                                                                                                              | |
-| 5 | `method`              | False                                                                                                   | List of method types the request aggregation will be applied to.                                                                                                                                                                                                                                                                                                                                                                                           | |
-| 6 | `status_code`         | False                                                                                                   | List of status codes the request aggregation will be applied to.                                                                                                                                                                                                                                                                                                                                                                                           | |
+| 5 | `method_list`         | False                                                                                                   | List of method types the request aggregation will be applied to.                                                                                                                                                                                                                                                                                                                                                                                           | |
+| 6 | `status_list`         | False                                                                                                   | List of status codes the request aggregation will be applied to.                                                                                                                                                                                                                                                                                                                                                                                           | |
 | 7 | `content_type`        | False                                                                                                   | Regex pattern to match request content_type against.                                                                                                                                                                                                                                                                                                                                                                                                       | |
 | 8 | `scope` (granularity) | False<br />If the granularity isn’t set to `cluster`, the default aggregation will be set to `cluster`. | When protecting the origin, you can configure rate limit rules that apply to either IPs or all requests that come through the cluster.<br />- If you set it to `IP`, once the IP exceeds the threshold, the rule is triggered. This helps against individual attackers<br />- If you set it to `cluster`, once the total requests (from any IP) exceed the threshold, the rule is triggered. This helps protect the origin from getting too many requests. | |
 | 9 | `tag`                 | False                                                                                                   | Aggregation of tagged ([user-defined tags](/waap/waap-rules/custom-rules/tag-rules#tag-generating-rules)) requests will be applied for each IP.                                                                                                                                                                                                                                                                                                            | |
@@ -55,12 +55,16 @@ curl --request POST \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
-    "ruleAction": {"block": {"statusCode": "FORBIDDEN_403"}},
-    "phase": "ACCESS",
-    "name": "Block Scrappers",
-    "description": "Block IPs that hit more than 200 requests per 5 seconds for any `events` paths",
-    "enabled": false,
-    "source": "request.rate_limit([], '.*events', 5, 200, [], [], '', 'ip') and not ('mb-web-ui' in request.headers['Cookie'] or 'mb-mobile-ios' in request.headers['Cookie'] or 'mobile-android' in request.headers['Cookie'] or 'mb-mobile-android' in request.headers['Cookie'] or 'session-token' in request.headers['Cookie']) and not request.headers['session']" 
+  "action": {
+    "block": {
+      "status_code": 403
+    }
+  },
+  "phase": "access",
+  "name": "Block Scrappers",
+  "description": "Block IPs that hit more than 200 requests per 5 seconds for any `events` paths",
+  "enabled": false,
+  "source": "request.limit_rate(url='.*events', interval=5, requests=200, scope='ip') and not ('mb-web-ui' in request.headers['Cookie'] or 'mb-mobile-ios' in request.headers['Cookie'] or 'mobile-android' in request.headers['Cookie'] or 'mb-mobile-android' in request.headers['Cookie'] or 'session-token' in request.headers['Cookie']) and not request.headers['session']"
 }'
 ```
 
@@ -78,12 +82,16 @@ curl --request POST \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
-    "ruleAction": {"block": {"statusCode": "FORBIDDEN_403"}},
-    "phase": "ACCESS",
-    "name": "Limit Certain IPs",
-    "description": "Limit Certain IPs",
-    "enabled": false,
-    "source": "request.rate_limit(['1.2.3.4', '1.2.3.5'], '.*events', 5, 200, [], [], '', 'ip')"
+  "action": {
+    "block": {
+      "status_code": 403
+    }
+  },
+  "phase": "access",
+  "name": "Limit Certain IPs",
+  "description": "Limit Certain IPs",
+  "enabled": false,
+  "source": "request.limit_rate(ip_list=['1.2.3.4','1.2.3.5'], url='.*events', interval=5, requests=200, scope='ip')"
 }'
 ```
 
@@ -95,16 +103,20 @@ curl --request POST \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
-    "ruleAction": {"block": {"statusCode": "FORBIDDEN_403"}},
-    "phase": "ACCESS",
-    "name": "Embedding additional condition to rate limit feature",
-    "description": "Embedding additional condition to rate limit feature",
-    "enabled": false,
-    "source": "request.headers['User-Agent'] == 'Firefox' AND request.rate_limit(['1.2.3.4', '1.2.3.5'], '.*events', 5, 200, [], [], '', 'ip')"
+  "action": {
+    "block": {
+      "status_code": 403
+    }
+  },
+  "phase": "access",
+  "name": "Embedding additional condition to rate limit feature",
+  "description": "Embedding additional condition to rate limit feature",
+  "enabled": false,
+  "source": "request.headers['User-Agent'] == 'Firefox' and request.limit_rate(ip_list=['1.2.3.4','1.2.3.5'], url='.*events', interval=5, requests=200, scope='ip')"
 }'
 ```
 
-Note that using an additional condition, such as an IP, is considered a bad practice. For example, if you use `request.ip in ['1.2.3.4']` and `request.rate_limit([], '', 5, 200, [], [], '', 'ip')`, the rate limit will count requests per interval for every IP. However, it will set an action only when 1.2.3.4 exceeds the number of requests.
+Note that using an additional condition, such as an IP, is considered a bad practice. For example, if you use `request.ip in ['1.2.3.4']` and `request.limit_rate([], '', 5, 200, [], [], '', 'ip')`, the rate limit will count requests per interval for every IP. However, it will set an action only when 1.2.3.4 exceeds the number of requests.
 
 This behavior is linked to the rule you are creating, not the rate limit condition. Thus, even with a blank IP list and an embedded IP condition, the rate limit will still count requests for all IPs.
 
@@ -116,12 +128,16 @@ curl --request POST \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
-    "ruleAction": {"block": {"statusCode": "FORBIDDEN_403"}},
-    "phase": "ACCESS",
-    "name": "Rate limit complexed URL regex",
-    "description": "Rate limit complexed URL regex",
-    "enabled": false,
-    "source": "request.rate_limit([], '.*(?<!aif|aiff|au|avi|bin|bmp|cab|carb|cct|cdf|class|css|doc|dor|dtd|exe|flv|gcf|gff|gif|grv hdmt hqx|ico|ini|jpeg|jpg|js|mov|mp3|nc|pct|pdf|png|ppc|pws|svg|swa|swf|txt|vbs|w32|wav|wbmp|wml|wmlc|wmls|wmlsc|xsd|zip|webp|jxr|hdp|wdp|webm|ogv|mp4|tif|woff|wot|woff)$', 120, 20, [], [], '', 'ip')"
+  "action": {
+    "block": {
+      "status_code": 403
+    }
+  },
+  "phase": "access",
+  "name": "Rate limit complexed URL regex",
+  "description": "Rate limit complexed URL regex",
+  "enabled": false,
+  "source": "request.limit_rate(url='.*(?<!aif|aiff|au|avi|bin|bmp|cab|carb|cct|cdf|class|css|doc|dor|dtd|exe|flv|gcf|gff|gif|grv hdmt hqx|ico|ini|jpeg|jpg|js|mov|mp3|nc|pct|pdf|png|ppc|pws|svg|swa|swf|txt|vbs|w32|wav|wbmp|wml|wmlc|wmls|wmlsc|xsd|zip|webp|jxr|hdp|wdp|webm|ogv|mp4|tif|woff|wot|woff|woff)$', interval=120, requests=20, scope='ip')"
 }'
 ```
 
