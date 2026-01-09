@@ -149,12 +149,16 @@ curl --request POST \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
-    "ruleAction": {"block": {"statusCode": "FORBIDDEN_403"}},
-    "phase": "ACCESS",
-    "name": "Embedding IP range to the condition",
-    "description": "Embedding IP range to the condition",
-    "enabled": false,
-    "source": "request.ip_in_range('10.0.0.0', '10.255.255.255') and request.rate_limit([], '.*[.]jpg', 120, 20, [], [], '', 'ip')"
+  "action": {
+    "block": {
+      "status_code": 403
+    }
+  },
+  "phase": "access",
+  "name": "Embedding IP range to the condition",
+  "description": "Embedding IP range to the condition",
+  "enabled": false,
+  "source": "request.ip_in_range('10.0.0.0', '10.255.255.255') and request.limit_rate(url='.*[.]jpg', interval=120, requests=20, scope='ip')"
 }'
 ```
 
@@ -168,12 +172,16 @@ curl --request POST \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
-    "ruleAction": {"block": {"statusCode": "FORBIDDEN_403"}},
-    "phase": "ACCESS",
-    "name": "Embedding IP range to the condition",
-    "description": "Embedding IP range to the condition",
-    "enabled": false,
-    "source": "request.rate_limit([], '.*url', 120, 20, ['GET', 'HEAD'], [302], 'text/html; charset=[uU][tT][fF]-8', 'cluster')"
+  "action": {
+    "block": {
+      "status_code": 403
+    }
+  },
+  "phase": "access",
+  "name": "RL GET or HEAD redirected requests with specific content type on Cluster granularity",
+  "description": "Rate limit all GET or HEAD redirected requests with specific content type on Cluster granularity",
+  "enabled": false,
+  "source": "request.limit_rate(url='.*url', interval=120, requests=20, method_list=['GET','HEAD'], status_list=[302], content_type='text/html; charset=utf-8', scope='cluster')"
 }'
 ```
 
@@ -189,10 +197,14 @@ curl --request POST \
 --header 'accept: application/json' \
 --header 'content-type: application/json' \
 --data '{
-    "ruleAction": {"block": {"statusCode": "FORBIDDEN_403"}},
-    "phase": "ACCESS",
-    "name": "Embedding tag to the condition",
-    "enabled": false,
-    "source": "request.limit_rate(tag="my tag",ips=["2.3.4.5"], url="/my_url/.*", time=10, requests=120, scope="ip")"
+  "action": {
+    "block": {
+      "status_code": 403
+    }
+  },
+  "phase": "access",
+  "name": "Embedding tag to the condition",
+  "enabled": false,
+  "source": "request.limit_rate(tag='my tag', ip_list=['2.3.4.5'], url='/my_url/.*', interval=10, requests=120, scope='ip')"
 }'
 ```
