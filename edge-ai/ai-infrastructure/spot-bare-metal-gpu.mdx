@@ -52,34 +52,47 @@ Spot clusters can be reclaimed when Gcore needs the capacity for on-demand workl
 
 1. **Email notification**: An email notification is sent to the account owner 24 hours before reclamation.
 2. **24-hour window**: This period allows saving data, transferring workloads, and preparing for cluster deletion.
-3. **Cluster deletion**: After the notice period expires, the cluster is deleted and all data on local NVMe storage is permanently erased.
+3. **Cluster suspension and deletion**: After the notice period expires, the cluster is suspended and data deletion begins immediately.
 
 <Warning>
 The 24-hour notice period cannot be extended or negotiated. The countdown starts when the email is sent, not when it is read. Ensure the account email is actively monitored.
 </Warning>
 
-## Data preservation
+### Data deletion timeline
 
-When a Spot cluster is reclaimed:
+Once a Spot cluster is suspended, data deletion follows this timeline:
 
-| Resource | What happens |
-|----------|--------------|
-| Local NVMe storage | Permanently erased |
-| File shares | Not affected (independent resource) |
-| Object storage (S3) | Not affected |
-| External backups | Not affected |
+| Resource | Deletion timing |
+|----------|-----------------|
+| Local NVMe storage (worker nodes) | Immediately upon suspension |
+| Attached volumes | Within 48 hours |
+| File shares | Not deleted (independent resource) |
+| Object storage | Not deleted (independent resource) |
+
+There is no grace period for data recovery after suspension. All critical data must be transferred to persistent storage before the 24-hour notice expires.
+
+## Data preservation strategies
+
+Since data on Spot clusters is deleted immediately upon suspension, proactive data preservation is essential.
 
 To protect critical data:
 
-- Use [file shares](/cloud/file-shares/configure-file-shares) for datasets and checkpoints
-- Save model weights to [object storage](/storage/manage-s3-storage/manage-buckets-via-the-control-panel) regularly
-- Implement checkpointing in training scripts
+- **File shares**: Use [file shares](/cloud/file-shares/configure-file-shares) for datasets, checkpoints, and model weights. File shares are independent resources and are not affected by cluster reclamation.
+- **Object storage**: Save outputs and backups to [object storage](/storage/manage-s3-storage/manage-buckets-via-the-control-panel). This provides durable storage outside the cluster lifecycle.
+- **Automated checkpointing**: Implement regular checkpointing in training scripts. Save state to file shares or object storage every 1-4 hours.
+- **Pre-reclamation transfer**: When a reclamation notice is received, prioritize transferring any data not already on persistent storage.
 
-## Pricing
+## Pricing and billing
 
 Spot clusters are billed at a discounted rate compared to standard Bare Metal GPU. The exact discount varies by region and GPU model. Current pricing is displayed on the flavor card during cluster creation.
 
-Billing stops when the cluster is deleted, whether by user action or reclamation.
+Billing details:
+
+- **Billing unit**: Entire node (all GPUs on the server)
+- **Billing granularity**: Per minute, aggregated hourly
+- **Billing stops**: When the cluster is deleted, whether by user action or reclamation
+
+The discounted rate applies for the entire duration the cluster is running. There are no additional fees for Spot termination.
 
 ## Creating a Spot cluster
 
