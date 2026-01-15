@@ -3,24 +3,38 @@ title: "Spot Bare Metal GPU"
 sidebarTitle: "Spot Bare Metal GPU"
 ---
 
-Spot Bare Metal GPU clusters are discounted GPU servers available at reduced pricing compared to standard Bare Metal GPU clusters. They provide the same hardware specifications and functionality, with one key difference: Gcore can reclaim these resources with 24 hours' notice.
+Spot Bare Metal GPU clusters are discounted GPU servers that utilize unused capacity at reduced pricing. They provide the same hardware specifications and functionality as standard Bare Metal GPU clusters, with one key difference: Gcore can reclaim these resources with 24 hours' notice when capacity is needed for on-demand workloads.
+
+## Spot vs On-demand
+
+Understanding the difference between Spot and On-demand clusters helps determine which option fits a specific workload.
+
+| Aspect | On-demand (Bare Metal GPU) | Spot (Spot Bare Metal GPU) |
+|--------|---------------------------|---------------------------|
+| Pricing | Standard rates | Discounted rates |
+| Availability guarantee | Once provisioned, the cluster remains available until deleted by the user | Can be reclaimed by Gcore with 24 hours' notice |
+| Use case | Production workloads, critical applications | Cost-sensitive workloads that tolerate interruption |
+| Capacity source | Dedicated capacity | Unused/excess capacity |
+
+On-demand clusters are the default option. Once a cluster is provisioned, it remains available until explicitly deleted. Spot clusters utilize unused capacity and offer lower pricing, but can be terminated when that capacity is needed elsewhere.
 
 ## When to use Spot clusters
 
 Spot clusters trade availability guarantees for cost savings. Choose Spot when workloads can tolerate interruptions.
 
-Spot clusters are suitable for:
+Suitable workloads:
 
 - **Batch processing**: Jobs that can be checkpointed and resumed
 - **Training experiments**: Model development and hyperparameter tuning
 - **Testing and development**: Non-production workloads
 - **Cost optimization**: Workloads where cost savings outweigh availability guarantees
 
-Do not use Spot clusters for:
+Workloads to avoid on Spot:
 
-- Production inference services
+- Production inference services requiring high availability
 - Time-critical workloads with strict deadlines
-- Workloads that cannot tolerate interruption
+- Long-running jobs that cannot be checkpointed
+- Any workload where unexpected termination causes significant business impact
 
 ## Availability
 
@@ -34,13 +48,15 @@ If Spot is not visible in a region, only standard Bare Metal GPU is available at
 
 ## Reclamation process
 
-When Gcore needs to reclaim Spot resources:
+Spot clusters can be reclaimed when Gcore needs the capacity for on-demand workloads or other operational requirements. The reclamation process follows a fixed timeline:
 
-1. **Email notification**: An email notification is sent 24 hours before reclamation.
-2. **24-hour window**: The 24-hour period allows saving data and preparing for cluster deletion.
-3. **Cluster deletion**: After the notice period, the cluster is deleted and all data on local storage is permanently erased.
+1. **Email notification**: An email notification is sent to the account owner 24 hours before reclamation.
+2. **24-hour window**: This period allows saving data, transferring workloads, and preparing for cluster deletion.
+3. **Cluster deletion**: After the notice period expires, the cluster is deleted and all data on local NVMe storage is permanently erased.
 
-There is no extension or negotiation of the 24-hour period. Plan accordingly.
+<Warning>
+The 24-hour notice period cannot be extended or negotiated. The countdown starts when the email is sent, not when it is read. Ensure the account email is actively monitored.
+</Warning>
 
 ## Data preservation
 
@@ -67,29 +83,40 @@ Billing stops when the cluster is deleted, whether by user action or reclamation
 
 ## Creating a Spot cluster
 
-The creation process is identical to standard Bare Metal GPU clusters:
+The creation process is identical to standard Bare Metal GPU clusters, with one additional step: acknowledging the Spot terms.
 
 1. Navigate to **GPU Cloud** > **GPU Clusters** > **Bare Metal GPU Clusters**.
 2. Click **Create Cluster**.
 3. Select a region where Spot is available.
 4. In **GPU Cluster type**, select **Spot Bare Metal GPU**.
 
-When selecting Spot, a warning appears explaining the terms and conditions:
+When selecting Spot, a warning appears with the terms and conditions:
 
 <Frame>
   <img src="/images/docs/edge-ai/ai-infrastructure/spot-bare-metal-gpu/gpu-cluster-spot-warning.png" alt="Spot Bare Metal GPU warning explaining 24-hour notice and data erasure terms" />
 </Frame>
 
-5. Complete the remaining configuration steps.
+The warning states:
+- Spot Instances can be suspended by Gcore with 24 hours' notice
+- Any data on these instances may be permanently erased after the notice period
+- Spot Instances should not be used for critical applications
 
-For detailed instructions, see [Create a Bare Metal GPU cluster](/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster).
+By selecting Spot Bare Metal GPU, the user agrees to these terms.
+
+5. Complete the remaining configuration steps (image, network, SSH key, etc.).
+
+For detailed configuration instructions, see [Create a Bare Metal GPU cluster](/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster).
 
 ## Best practices
 
-**Checkpoint frequently**: Save training state to file shares or object storage at regular intervals. If reclaimed, training can resume from the last checkpoint on a new cluster.
+The following practices help maximize cost savings while minimizing the impact of potential reclamation.
 
-**Monitor email**: Ensure the account email is monitored for reclamation notices. The 24-hour window starts when the email is sent, not when it is read.
+**Checkpoint frequently**: Save training state to file shares or object storage at regular intervals. A checkpoint interval of 1-4 hours ensures minimal progress loss if reclaimed. If reclaimed, training can resume from the last checkpoint on a new cluster.
 
-**Automate data transfer**: Use scripts or automation to transfer critical data to persistent storage before the reclamation deadline.
+**Use persistent storage for critical data**: Store datasets, model weights, and outputs on [file shares](/cloud/file-shares/configure-file-shares) or [object storage](/storage/manage-s3-storage/manage-buckets-via-the-control-panel). These resources are not affected by cluster reclamation.
 
-**Plan for interruption**: Design workloads to handle interruption gracefully. Avoid long-running jobs that cannot be checkpointed.
+**Monitor the account email**: The 24-hour notice is sent to the account owner's email. Ensure this email is actively monitored, especially during long training runs.
+
+**Automate data transfer**: Implement scripts that automatically sync critical data to persistent storage. This reduces manual intervention during the 24-hour window.
+
+**Design for interruption**: Structure workloads to handle unexpected termination. Avoid monolithic jobs that run for days without checkpoints. Break large training runs into resumable stages.
