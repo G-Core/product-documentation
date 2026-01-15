@@ -1,0 +1,225 @@
+---
+title: "Create a Bare Metal GPU cluster"
+sidebarTitle: "Create a Bare Metal GPU cluster"
+---
+
+GPU clusters are high-performance computing resources designed for AI/ML workloads, inference, and large-scale data processing. Each cluster consists of one or more GPU servers connected via high-speed networking.
+
+Two cluster types are available:
+
+- **Bare Metal GPU**: Dedicated physical GPU servers without virtualization. Best for maximum performance and full hardware control.
+- **Spot Bare Metal GPU**: Discounted bare metal servers with non-guaranteed availability. Suitable for batch processing, training, and testing where interruptions are acceptable. Availability depends on region and current stock.
+
+<Info>
+  Spot instances can be suspended by Gcore with 24 hours' notice, and data may be permanently erased after the notice period. Do not use Spot clusters for production or critical workloads.
+</Info>
+
+Cluster type and GPU model availability varies by region. The creation form displays only the options available in the selected region.
+
+## Cluster architecture
+
+Each cluster consists of one or more dedicated bare-metal GPU servers connected by high-speed networking (InfiniBand or Ethernet, depending on flavor).
+
+The platform provides the infrastructure layer: GPU servers, networking, storage options, and secure access. This allows installing and running preferred frameworks for distributed training, job scheduling, or container orchestration.
+
+For multi-node workloads, configure SSH access between nodes and set up a training framework such as NCCL, MPI, Slurm, or Kubernetes. File shares provide shared storage for datasets and checkpoints across all nodes.
+
+## Create a GPU cluster
+
+1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **GPU Cloud**.
+2. In the sidebar, expand **GPU Clusters** and select **Bare Metal GPU Clusters**.
+3. Click **Create Cluster**.
+
+### Step 1. Select region
+
+In the **Region** section, select the data center location for the cluster.
+
+Regions are grouped by geography (Asia-Pacific, EMEA). Each region card shows availability status. Some features (such as file share integration) are available only in select regions.
+
+<Info>
+  GPU model availability and pricing differ between regions. If a specific GPU model is required, check multiple regions for stock availability.
+</Info>
+
+### Step 2. Configure cluster capacity
+
+Cluster capacity determines the hardware specifications for each node in the cluster. The available options depend on the selected region.
+
+1. In the **Cluster capacity** section, select the **GPU Cluster type**:
+   - **Bare Metal GPU** for dedicated physical servers
+   - **Spot Bare Metal GPU** for discounted, interruptible instances (available in select regions)
+
+2. Select the **GPU Model**. Available models (such as A100, H100, or H200) depend on the region.
+
+3. Enable or disable **Show out of stock** to filter available flavors.
+
+4. Select a flavor. Each flavor card displays GPU configuration, CPU type, RAM capacity, storage, network connectivity, pricing, and stock availability.
+
+<Frame>
+  <img src="/images/edge-ai/gpu-cluster-capacity.png" alt="Cluster capacity section showing GPU Cluster type, GPU Model selector, and flavor card with specifications" />
+</Frame>
+
+### Step 3. Set number of instances
+
+In the **Number of Instances** section, specify how many servers to provision in the cluster.
+
+Each instance is a separate physical server with the selected flavor configuration. For single-node workloads, one instance is sufficient. For distributed training, provision multiple instances.
+
+### Step 4. Select image
+
+The image defines the operating system and pre-installed software for cluster nodes.
+
+1. In the **Image** section, choose the operating system:
+   - **Public**: Pre-configured images with NVIDIA drivers and CUDA toolkit (recommended)
+   - **Custom**: Custom images uploaded to the account
+
+The default Ubuntu images include pre-installed NVIDIA drivers and CUDA toolkit. Check the image name for specific driver version details.
+
+2. Note the default login credentials displayed below the image selector: username `ubuntu`, SSH port `22`. These credentials are used to connect to the cluster after creation.
+
+### Step 5. Configure file share integration
+
+File shares provide shared storage accessible from all cluster nodes simultaneously. This is essential for:
+
+- **Shared datasets**: All nodes can read the same training data without duplication
+- **Model checkpoints**: Save and resume training across any node in the cluster
+- **Distributed training**: Frameworks like PyTorch DDP or Horovod require shared storage for coordination
+
+Without a file share, each node has only its own local NVMe storage. Data must be copied to each node manually, and there is no shared location for checkpoints or outputs.
+
+Key specifications:
+- **Protocol**: NFS
+- **Minimum size**: 100 GiB
+
+<Info>
+File share integration is available only in select regions (for example, Sines-3 and Chester). In regions without this feature, the section does not appear in the creation form.
+</Info>
+
+For detailed configuration options, see [Configuring file shares.](/cloud/file-shares/configure-file-shares)
+
+1. In the **File share integration** section, enable the **Enable File Share integration** checkbox.
+
+2. Select an existing file share from the dropdown, or click **Create new File Share** to create one.
+
+   When creating a new file share, the **Create VAST File Share** dialog opens:
+   - **File Share name**: Enter a name or use the auto-generated one.
+   - **Size**: Specify the storage size in GiB (minimum 100 GiB).
+   - **Protocol**: NFS is used for VAST file shares.
+   - **Additional options**: Configure Root squash, Slurm compatibility, and character/path length settings as needed.
+
+   Click **Create** to provision the file share. Network, subnetwork, and access settings are configured automatically.
+
+<Frame>
+  <img src="/images/edge-ai/gpu-cluster-create-file-share-modal.png" alt="Create VAST File Share dialog with basic settings and additional options" />
+</Frame>
+
+3. Specify the **Mount path** where the file share will be accessible on cluster nodes. The default is `/home/ubuntu/mnt/nfs`.
+
+4. To attach additional file shares, click **Add File Share** and repeat the configuration.
+
+<Warning>
+  If **User data** is enabled in Additional options, mounting commands are included in the user data script. Do not modify or delete these auto-generated commands, as this breaks automatic mounting.
+</Warning>
+
+For detailed file share configuration, including manual mounting procedures, see [Configuring file shares.](/cloud/file-shares/configure-file-shares)
+
+### Step 6. Configure network settings
+
+Network settings define how the cluster communicates with external services and other resources. At least one interface is required.
+
+1. In the **Network settings** section, configure the network interface:
+
+| Type | Access | Use case |
+|------|--------|----------|
+| **Public** | Direct internet access with dynamic public IP | Development, testing, quick access to cluster |
+| **Private** | Internal network only, no external access | Production workloads, security-sensitive environments |
+| **Dedicated public** | Reserved static public IP | Production APIs, services requiring stable endpoints |
+
+   For multi-node training, adding a private interface for inter-node communication is recommended. This isolates training traffic from public network traffic.
+
+2. Expand the interface card to configure additional options such as **Floating IP** or **Reserved IP**.
+
+3. Click **Add Interface** to attach additional network interfaces if needed.
+
+All public interfaces include Basic DDoS Protection at no additional cost.
+
+<Frame>
+  <img src="/images/edge-ai/gpu-cluster-network-settings.png" alt="Network settings section showing interface configuration and network type options" />
+</Frame>
+
+For detailed networking configuration, see [Create and manage a network.](/cloud/networking/create-and-manage-a-network)
+
+### Step 7. Configure SSH key
+
+In the **SSH key** section, select an existing SSH key or create a new one:
+- Select from the dropdown to use an existing key
+- Click **add a new SSH Key** to upload a public key
+- Click **generate an SSH Key** to create a new key pair (save the private key immediately—it cannot be retrieved later)
+
+<Frame>
+  <img src="/images/edge-ai/gpu-cluster-ssh-key.png" alt="SSH key section with dropdown and options to add or generate keys" />
+</Frame>
+
+### Step 8. Set additional options
+
+In the **Additional options** section, configure optional settings:
+- **User data**: Add a cloud-init script for automated instance configuration
+- **Add tags**: Attach key-value metadata tags for resource organization (optional, does not affect cluster functionality)
+
+<Frame>
+  <img src="/images/edge-ai/gpu-cluster-additional-options.png" alt="Additional options section with User data and Add tags checkboxes" />
+</Frame>
+
+### Step 9. Name and create the cluster
+
+The final step assigns a name to the cluster and initiates provisioning.
+
+1. In the **GPU Cluster Name** section, enter a name or use the auto-generated one.
+
+2. Review the **Estimated cost** panel on the right.
+
+3. Click **Create Cluster**.
+
+Once all instances reach **Power on** status, the cluster is ready for use.
+
+## Connect to the cluster
+
+After the cluster is created, connect via SSH:
+
+```bash
+ssh ubuntu@<instance-ip-address>
+```
+
+Replace `<instance-ip-address>` with the public or floating IP shown in the cluster details.
+
+For instances with only private interfaces, connect through a bastion host or VPN, or use the [Gcore Customer Portal console.](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel)
+
+## Verify cluster status
+
+After connecting, verify that GPUs are available and drivers are loaded:
+
+```bash
+nvidia-smi
+```
+
+The output displays all available GPUs, driver version, and CUDA version. If no GPUs appear, check that the image includes the correct NVIDIA drivers for the GPU model.
+
+If file share integration was enabled during cluster creation, verify the mount is accessible:
+
+```bash
+ls /home/ubuntu/mnt/nfs
+```
+
+The directory should be empty initially. Files saved here are accessible from all nodes in the cluster.
+
+## Automating cluster management
+
+The Customer Portal is suitable for creating and managing individual clusters. For automated workflows—such as CI/CD pipelines, infrastructure-as-code, or batch provisioning—use the GPU Bare Metal API.
+
+The API allows:
+
+- Creating and deleting clusters programmatically
+- Scaling the number of instances in a cluster
+- Querying available GPU flavors and regions
+- Checking quota and capacity before provisioning
+
+For authentication, request formats, and code examples, see the [GPU Bare Metal API reference.](/api-reference/cloud/gpu-bare-metal/create-bare-metal-gpu-cluster)
