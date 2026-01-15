@@ -1,0 +1,179 @@
+---
+title: "Manage a Bare Metal GPU cluster"
+sidebarTitle: "Manage a Bare Metal GPU cluster"
+---
+
+After creating a GPU cluster, use the cluster details page to monitor nodes, scale capacity, manage network interfaces, and perform administrative actions.
+
+## Access cluster details
+
+To view and manage an existing cluster, open the cluster details page.
+
+1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **GPU Cloud**.
+2. In the sidebar, expand **GPU Clusters** and select **Bare Metal GPU Clusters**.
+3. Click on a cluster name to open the details page.
+
+The cluster details page displays all nodes in the cluster with their status, configuration, and network information.
+
+## View cluster nodes
+
+The main panel lists all nodes (servers) in the cluster. Each node entry shows:
+
+| Field | Description |
+|-------|-------------|
+| ID | Unique identifier for the node |
+| Status | Current state (Power on, Power off, Creating, etc.) |
+| Configuration | GPU model, CPU, RAM, storage specifications |
+| Cost | Hourly and monthly cost for the node |
+
+For clusters with InfiniBand, the **PKID** (Partition Key ID) is displayed, indicating the InfiniBand network configuration.
+
+<Info>
+All nodes in a cluster share the same configuration (image, network settings, file shares) defined at cluster creation.
+</Info>
+
+## Resize a cluster
+
+Cluster size can be adjusted after creation by adding or removing nodes.
+
+### Scale up
+
+To add nodes:
+
+1. Select one or more nodes in the cluster list (or use the select all checkbox).
+2. Click the **Resize** action.
+3. Increase the instance count.
+4. Click **Apply**.
+
+New nodes are created with the same configuration used at cluster creation: same image, network settings, and file share mounts. The maximum number of nodes depends on current stock availability in the region.
+
+### Scale down
+
+To remove nodes:
+
+1. Select one or more nodes in the cluster list.
+2. Click the **Resize** action.
+3. Decrease the instance count.
+4. Click **Apply**.
+
+<Warning>
+When scaling down, the system removes a random node from the cluster. To delete a specific node, use the per-node delete action instead of resize.
+</Warning>
+
+### Delete a specific node
+
+To remove a specific node without random selection:
+
+1. Locate the node in the cluster list.
+2. Click the actions menu (three dots) on the node row.
+3. Select **Delete**.
+4. Confirm the deletion.
+
+<Warning>
+Deleting the last node in a cluster deletes the entire cluster. All cluster-level metadata is removed.
+</Warning>
+
+## Power actions
+
+Power actions control the running state of cluster nodes. Actions can be applied to individual nodes or in bulk.
+
+### Individual node actions
+
+To control a single node:
+
+1. Locate the node in the cluster list.
+2. Click the actions menu on the node row.
+3. Select the desired action:
+   - **Power on**: Start the node
+   - **Power off**: Shut down the node
+   - **Reboot**: Restart the node
+
+### Bulk actions
+
+To apply power actions to multiple nodes simultaneously:
+
+1. Select multiple nodes using the checkboxes.
+2. Click the **Power** action in the toolbar.
+3. Select the action to apply to all selected nodes.
+
+## Network interfaces
+
+Each node displays its network interfaces in the details view. Interface types include:
+
+| Type | Description |
+|------|-------------|
+| Public | External IP address for internet access |
+| Private | Internal network for communication with other cloud resources |
+| InfiniBand | High-speed, low-latency inter-node network for GPU-to-GPU communication (automatically configured for supported flavors) |
+
+For flavors with InfiniBand, multiple InfiniBand interfaces are created automatically (typically 8 for H100 configurations). These appear as "GPU-cluster B-subnet" entries in the interface list.
+
+### Modify network interfaces
+
+To add or modify network interfaces on a specific node:
+
+1. Click on the node to expand its details.
+2. In the network section, click **Add Interface** to attach additional networks.
+3. Configure the interface type (public or private) and IP settings.
+
+<Info>
+InfiniBand interfaces are managed by the platform and cannot be modified or deleted. This prevents accidental disruption of inter-node communication.
+</Info>
+
+## Console access
+
+For troubleshooting or when SSH access is unavailable, use the browser-based console:
+
+1. Locate the node in the cluster list.
+2. Click the actions menu on the node row.
+3. Select **Console**.
+
+The console opens in a new browser tab, providing direct terminal access to the node.
+
+## Tags
+
+Tags are key-value pairs for organizing and categorizing clusters. Tags are applied at the cluster level and inherited by all nodes.
+
+To manage tags:
+
+1. Navigate to the **Tags** tab on the cluster details page.
+2. Click **Add tag** to create a new tag.
+3. Enter the key and value.
+4. Click **Save**.
+
+Tags do not affect cluster functionality. Use them for billing allocation, environment identification, or organizational purposes.
+
+## User actions
+
+The **User Actions** tab displays a log of all operations performed on the cluster:
+
+- Creation and deletion events
+- Resize operations
+- Power state changes
+- Network modifications
+
+Use the date filter to view actions within a specific time period. This log is useful for auditing and troubleshooting.
+
+## Delete a cluster
+
+To delete an entire cluster:
+
+1. On the cluster details page, click **Delete** in the top action bar.
+2. Confirm the deletion.
+
+<Warning>
+Deleting a cluster permanently erases all data on local NVMe storage. This action cannot be undone. File shares attached to the cluster are not deleted (they are independent resources).
+</Warning>
+
+## Limitations
+
+Current limitations for cluster management:
+
+- **Configuration changes**: Image, file share integration, and default network settings cannot be changed after cluster creation. New nodes inherit the original configuration.
+- **Node-level settings**: Only network interfaces can be modified on individual nodes. Image and storage cannot be changed.
+- **Resize selection**: Scaling down removes a random node. Use per-node delete for targeted removal.
+
+<Info>
+Cluster specification management (changing default settings for new nodes) is planned for a future release.
+</Info>
+
