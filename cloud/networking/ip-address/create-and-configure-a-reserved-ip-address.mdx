@@ -84,64 +84,109 @@ To create a new reserved IP:
 
 ## Configure the network interface in the operating system
 
-Manual configuration is required only when adding a private interface to an existing VM or Bare Metal server. Find the IP address, CIDR, and MAC in the **Networking** tab. The gateway is the first usable IP in the subnet (`10.10.0.1` for `10.10.0.0/24`).
+Manual configuration is required only when adding a private interface to an existing VM or Bare Metal server. Find the interface name, IP address, and CIDR in the **Networking** tab. The gateway is the first usable IP in the subnet (`10.10.0.1` for `10.10.0.0/24`).
 
 <Frame>
   ![Network interface details in VM settings](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/vm-interface-details.png)
 </Frame>
 
-<Warning>
-  These commands configure the interface temporarily. To make the configuration persistent, add it to the system's network configuration files (Netplan for Ubuntu, `ifcfg` for CentOS/RHEL, or Windows network adapter settings).
-</Warning>
+To identify the new interface, run `ip link show` and match the MAC address shown in the portal.
 
 <Tabs>
   <Tab title="Linux">
-    1\. Connect to the Virtual Machine via SSH or console.
+    <Tabs>
+      <Tab title="Temporary DHCP">
+        If the network has DHCP enabled, request an IP address automatically:
 
-    2\. List available network interfaces to find the new one:
+        ```sh
+        sudo dhcpcd <interface_name>
+        ```
 
-    ```sh
-    ip link show
-    ```
+        Example:
 
-    The new interface (`eth1`, `ens4`, or similar) can be identified by the MAC address shown in the portal.
+        ```sh
+        sudo dhcpcd enp4s0
+        ```
 
-    3\. Bring up the interface:
+        This configuration is lost after reboot.
+      </Tab>
+      <Tab title="Temporary static">
+        Assign a static IP address manually:
 
-    ```sh
-    sudo ip link set <interface_name> up
-    ```
+        ```sh
+        sudo ip link set <interface_name> up
+        sudo ip addr add <ip_address>/<prefix> dev <interface_name>
+        sudo ip route add <subnet_cidr> via <gateway_ip> dev <interface_name>
+        ```
 
-    4\. Assign the IP address with the subnet mask:
+        Example:
 
-    ```sh
-    sudo ip addr add <ip_address>/<prefix> dev <interface_name>
-    ```
+        ```sh
+        sudo ip link set enp4s0 up
+        sudo ip addr add 172.18.220.100/22 dev enp4s0
+        ```
 
-    5\. (Optional) Add a route to the private network via the gateway:
+        This configuration is lost after reboot.
+      </Tab>
+      <Tab title="Persistent DHCP">
+        For Ubuntu 24.04 and other Netplan-based distributions, create a configuration file:
 
-    ```sh
-    sudo ip route add <network_cidr> via <gateway_ip> dev <interface_name>
-    ```
+        ```sh
+        sudo bash -c 'cat <<EOF > /etc/netplan/51-new-interface.yaml
+        network:
+          version: 2
+          ethernets:
+            enp4s0:
+              dhcp4: true
+        EOF'
+        ```
 
-    6\. Verify the configuration:
+        Apply the configuration:
 
-    ```sh
-    ip addr show <interface_name>
-    ```
+        ```sh
+        sudo netplan apply
+        ```
+      </Tab>
+      <Tab title="Persistent static">
+        For Ubuntu 24.04 and other Netplan-based distributions, create a configuration file:
+
+        ```sh
+        sudo bash -c 'cat <<EOF > /etc/netplan/51-new-interface.yaml
+        network:
+          version: 2
+          ethernets:
+            enp4s0:
+              dhcp4: false
+              addresses:
+                - 192.168.1.10/24
+              gateway4: 192.168.1.1
+              nameservers:
+                addresses:
+                  - 95.85.95.85
+                  - 2.56.220.2
+        EOF'
+        ```
+
+        Replace `enp4s0`, IP address, gateway, and nameservers with the actual values.
+
+        Apply the configuration:
+
+        ```sh
+        sudo netplan apply
+        ```
+      </Tab>
+    </Tabs>
   </Tab>
   <Tab title="Windows">
-    1\. Connect to the Virtual Machine via RDP or console.
+    1\. Open **Control Panel** > **Network and Sharing Center** > **Change adapter settings**.
 
-    2\. Open **Control Panel** > **Network and Sharing Center** > **Change adapter settings**.
+    2\. Right-click the new network adapter and select **Properties**.
 
-    3\. Right-click the new network adapter and select **Properties**.
+    3\. Select **Internet Protocol Version 4 (TCP/IPv4)** and click **Properties**.
 
-    4\. Select **Internet Protocol Version 4 (TCP/IPv4)** and click **Properties**.
+    4\. Select **Use the following IP address** and enter the IP address, subnet mask, and default gateway.
 
-    5\. Select **Use the following IP address** and enter the IP address, subnet mask, and default gateway.
-
-    6\. Click **OK** to save the settings.
+    5\. Click **OK** to save the settings.
   </Tab>
 </Tabs>
 
