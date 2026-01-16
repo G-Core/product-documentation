@@ -20,7 +20,7 @@ Cluster type and GPU model availability varies by region. The creation form disp
 
 Each cluster consists of one or more dedicated bare-metal GPU servers. When creating a cluster with multiple nodes, all servers are placed in the same private network and share identical configuration (image, network settings, file shares).
 
-For flavors with InfiniBand cards, high-speed inter-node networking is configured automatically. InfiniBand is a low-latency, high-bandwidth interconnect designed for GPU-to-GPU communication in distributed training. The platform creates a dedicated InfiniBand subnet (visible as "GPU-cluster B-subnet" in the interface list) with one interface per InfiniBand port (typically 8 for H100 configurations). No manual InfiniBand or NCCL (NVIDIA Collective Communications Library) configuration is required.
+For flavors with InfiniBand cards, high-speed inter-node networking is configured automatically. No manual network configuration is required for distributed training.
 
 The platform provides the infrastructure layer: GPU servers, networking, storage options, and secure access. This allows installing and running preferred frameworks for distributed training, job scheduling, or container orchestration.
 
@@ -106,18 +106,7 @@ File shares provide shared storage accessible from all cluster nodes simultaneou
   <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-file-share.png" alt="File share integration section with Enable File Share checkbox" />
 </Frame>
 
-This is essential for:
-
-- **Shared datasets**: All nodes can read the same training data without duplication
-- **Model checkpoints**: Save and resume training across any node in the cluster
-- **Distributed training**: Frameworks like PyTorch DDP (Distributed Data Parallel) or Horovod require shared storage for coordination
-
-Without a file share, each node has only its own local NVMe storage. Data must be copied to each node manually, and there is no shared location for checkpoints or outputs.
-
-Key specifications:
-- **Protocol**: NFS
-- **Minimum size**: 100 GiB
-- **Persistence**: File shares are independent resources. Deleting a cluster does not delete attached file shares. One file share can be attached to multiple clusters in the same region.
+File shares (NFS, minimum 100 GiB) allow all nodes to access shared datasets, checkpoints, and outputs. Without a file share, each node has only local NVMe storage. File shares are independent resources and persist when clusters are deleted.
 
 <Info>
 File share integration is available only in select regions. In regions without this feature, the section does not appear in the creation form.
@@ -125,17 +114,9 @@ File share integration is available only in select regions. In regions without t
 
 For detailed configuration options, see [Configuring file shares.](/cloud/file-shares/configure-file-shares)
 
-1. In the **File share integration** section, enable the **Enable File Share integration** checkbox.
+1. Enable the **Enable File Share integration** checkbox.
 
-2. Select an existing file share from the dropdown, or click **Create new File Share** to create one.
-
-   When creating a new file share, the **Create VAST File Share** dialog opens:
-   - **File Share name**: Enter a name or use the auto-generated one.
-   - **Size**: Specify the storage size in GiB (minimum 100 GiB).
-   - **Protocol**: NFS is used for VAST file shares.
-   - **Additional options**: Configure Root squash, Slurm (workload manager) compatibility, and character/path length settings as needed.
-
-   Click **Create** to provision the file share. Network, subnetwork, and access settings are configured automatically.
+2. Select an existing file share from the dropdown, or click **Create new File Share** to create one. When creating a new file share, specify the name, size (minimum 100 GiB), and any additional options such as Root squash or Slurm compatibility.
 
 <Frame>
   <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-create-file-share-modal.png" alt="Create VAST File Share dialog with basic settings and additional options" />
@@ -143,7 +124,7 @@ For detailed configuration options, see [Configuring file shares.](/cloud/file-s
 
 3. Specify the **Mount path** where the file share is accessible on cluster nodes. The default is `/home/ubuntu/mnt/nfs`.
 
-4. To attach additional file shares, click **Add File Share** and repeat the configuration.
+4. To attach additional file shares, click **Add File Share**.
 
 <Warning>
   If **User data** is enabled in Additional options, mounting commands are included in the user data script. Do not modify or delete these auto-generated commands, as this breaks automatic mounting.
@@ -169,9 +150,7 @@ Network settings define how the cluster communicates with external services and 
 
    For multi-node clusters, a private interface keeps internal traffic separate from internet-facing traffic. Inter-node training communication uses the automatically configured InfiniBand network when available.
 
-2. Expand the interface card to configure additional options such as **Floating IP** or **Reserved IP**.
-
-3. Click **Add Interface** to attach additional network interfaces if needed.
+To add or configure interfaces, expand the interface card and adjust settings as needed. Additional interfaces can be attached by clicking **Add Interface**.
 
 All public interfaces include Basic DDoS Protection at no additional cost.
 
@@ -189,19 +168,13 @@ In the **Firewall settings** section, configure firewall rules to control inboun
   <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-firewall.png" alt="Firewall settings section with firewall selector" />
 </Frame>
 
-1. Select an existing firewall from the dropdown, or use the default firewall.
-
-2. Click **Add Firewall** to attach additional firewalls if needed.
+Select an existing firewall from the dropdown or use the default. Additional firewalls can be attached if needed.
 
 For detailed firewall configuration, see [Create and configure firewalls.](/cloud/networking/add-and-configure-a-firewall)
 
 ### Step 8. Configure SSH key
 
-In the **SSH key** section, configure authentication:
-
-1. Select an existing key from the dropdown, or create a new one:
-   - To upload a public key, click **add a new SSH Key**.
-   - To generate a new key pair, click **generate a SSH Key**. Save the private key immediately---it cannot be retrieved later.
+In the **SSH key** section, select an existing key from the dropdown or create a new one. Keys can be uploaded or generated directly in the portal. If generating a new key pair, save the private key immediately as it cannot be retrieved later.
 
 <Frame>
   <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-ssh-key.png" alt="SSH key section with dropdown and options to add or generate keys" />
@@ -209,9 +182,7 @@ In the **SSH key** section, configure authentication:
 
 ### Step 9. Set additional options
 
-In the **Additional options** section, configure optional settings:
-- **User data**: Add a cloud-init script for automated instance configuration
-- **Add tags**: Attach key-value metadata tags for resource organization (optional, does not affect cluster functionality)
+The **Additional options** section provides optional settings: user data scripts for automated configuration and metadata tags for resource organization.
 
 <Frame>
   <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-additional-options.png" alt="Additional options section with User data and Add tags checkboxes" />
