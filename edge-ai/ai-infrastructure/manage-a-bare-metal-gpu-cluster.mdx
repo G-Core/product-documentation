@@ -3,7 +3,7 @@ title: "Manage a Bare Metal GPU cluster"
 sidebarTitle: "Manage a Bare Metal GPU cluster"
 ---
 
-After creating a GPU cluster, use the cluster details page to monitor nodes, scale capacity, manage network interfaces, and perform administrative actions.
+After creating a GPU cluster, use the cluster details page to monitor nodes, resize the cluster, manage power state, configure network interfaces, and delete cluster resources.
 
 ## Access cluster details
 
@@ -13,20 +13,36 @@ To view and manage an existing cluster, open the cluster details page.
 2. In the sidebar, expand **GPU Clusters** and select **Bare Metal GPU Clusters**.
 3. Click on a cluster name to open the details page.
 
-The cluster details page displays all nodes in the cluster with their status, configuration, and network information.
-
-## View cluster nodes
-
-The main panel lists all nodes (servers) in the cluster. Each node entry shows:
+The cluster details page displays summary information in the header panel:
 
 | Field | Description |
 |-------|-------------|
-| ID | Unique identifier for the node |
-| Status | Current state (Power on, Power off, Creating, etc.) |
-| Configuration | GPU model, CPU, RAM, storage specifications |
-| Cost | Hourly and monthly cost for the node |
+| Cluster ID | Unique identifier for the cluster |
+| Pkey ID | InfiniBand Partition Key ID. Displayed as "-" if InfiniBand is not configured or during cluster provisioning |
+| OS Distro | Operating system image installed on all nodes |
+| Status | Current cluster state |
+| Region | Data center location |
+| Plan | Monthly pricing plan for the cluster |
 
-For clusters with InfiniBand, the **PKID** (Partition Key ID) is displayed, indicating the InfiniBand network configuration.
+The page is organized into tabs: **Overview**, **Power**, **Networking**, **Tags**, **User Actions**, and **Delete**.
+
+<Frame>![Cluster overview page showing header panel and tabs](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-overview.png)</Frame>
+
+## View cluster nodes
+
+The **Overview** tab lists all nodes (servers) in the cluster. Each node entry shows:
+
+| Field | Description |
+|-------|-------------|
+| Name | Node name and flavor (GPU model, CPU, RAM, storage) |
+| IPs | Assigned IP addresses |
+| Price per month | Monthly cost for the node |
+| Console | Link to open browser-based noVNC console |
+| Created at | Node creation timestamp |
+| Last updated | Most recent modification timestamp |
+| Status | Current state (Power on, Power off, Creating, etc.) |
+
+The table supports filtering by name, date range, and status. Use the search field to find specific nodes in large clusters.
 
 <Info>
 All nodes in a cluster share the same configuration (image, network settings, file shares) defined at cluster creation.
@@ -36,25 +52,19 @@ All nodes in a cluster share the same configuration (image, network settings, fi
 
 Cluster size can be adjusted after creation by adding or removing nodes.
 
-### Scale up
+To resize a cluster:
 
-To add nodes:
+1. On the **Overview** tab, click **Resize Cluster**.
+2. Adjust the instance count using the **+** and **-** buttons.
+3. Click **Resize**.
 
-1. Select one or more nodes in the cluster list (or use the select all checkbox).
-2. Click the **Resize** action.
-3. Increase the instance count.
-4. Click **Apply**.
+<Frame>![Resize cluster dialog with instance count controls](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-resize-dialog.png)</Frame>
 
-New nodes are created with the same configuration used at cluster creation: same image, network settings, and file share mounts. The maximum number of nodes depends on current stock availability in the region.
+New nodes inherit the cluster's original configuration defined at creation time. The maximum number of nodes is limited by current stock availability in the selected region.
 
-### Scale down
-
-To remove nodes:
-
-1. Select one or more nodes in the cluster list.
-2. Click the **Resize** action.
-3. Decrease the instance count.
-4. Click **Apply**.
+<Info>
+While a cluster is in the Resizing state, most management actions are unavailable.
+</Info>
 
 <Warning>
 When scaling down, the system removes a random node from the cluster. To delete a specific node, use the per-node delete action instead of resize.
@@ -82,39 +92,54 @@ Power actions control the running state of cluster nodes. Actions can be applied
 To control a single node:
 
 1. Locate the node in the cluster list.
-2. Click the actions menu on the node row.
+2. Click the actions menu (three dots) on the node row.
 3. Select the desired action:
    - **Power on**: Start the node
    - **Power off**: Shut down the node
-   - **Reboot**: Restart the node
+   - **Soft reboot**: Graceful restart of the operating system
+   - **Hard reboot**: If soft reboot fails, force restart the node
+   - **Rebuild**: Reinstall the original operating system image used at cluster creation. All data on local storage is deleted.
+
+<Frame>![Node actions menu showing power and management options](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/node-actions-menu.png)</Frame>
 
 ### Bulk actions
 
-To apply power actions to multiple nodes simultaneously:
+To apply actions to multiple nodes simultaneously:
 
-1. Select multiple nodes using the checkboxes.
-2. Click the **Power** action in the toolbar.
+1. Select nodes using the checkboxes in the nodes table.
+2. Click **Group actions** in the toolbar.
 3. Select the action to apply to all selected nodes.
+
+Alternatively, use the **Power** tab to perform soft or hard reboot on all cluster nodes at once.
+
+<Frame>![Power tab with soft and hard reboot options](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-power-tab.png)</Frame>
 
 ## Network interfaces
 
-Each node displays its network interfaces in the details view. Interface types include:
+The **Networking** tab displays network interfaces for each node. Click on a node name to expand its interface details. Interface types include:
 
 | Type | Description |
 |------|-------------|
 | Public | External IP address for internet access |
 | Private | Internal network for communication with other cloud resources |
-| InfiniBand | High-speed, low-latency inter-node network for GPU-to-GPU communication (automatically configured for supported flavors) |
+| InfiniBand | High-speed, low-latency inter-node network for GPU-to-GPU communication |
 
-For flavors with InfiniBand, multiple InfiniBand interfaces are created automatically (typically 8 for H100 configurations). These appear as "GPU-cluster B-subnet" entries in the interface list.
+<Frame>![Networking tab showing node and interface list](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-networking-tab.png)</Frame>
+
+For flavors with InfiniBand, multiple InfiniBand interfaces are created automatically (by default, 8 for H100 configurations). These appear as "GPU-cluster ib-subnet" entries in the interface list.
+
+Click on an interface to expand its details. Each interface displays detailed information including IP address, network name, subnetwork, MAC address, CIDR, and DDoS protection level.
+
+<Frame>![Node with expanded interface showing network details](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-network-interfaces.png)</Frame>
 
 ### Modify network interfaces
 
-To add or modify network interfaces on a specific node:
+To add network interfaces on a specific node:
 
-1. Click on the node to expand its details.
-2. In the network section, click **Add Interface** to attach additional networks.
-3. Configure the interface type (public or private) and IP settings.
+1. Navigate to the **Networking** tab.
+2. Click on a node to expand its details.
+3. Click **Add Interface** or **Add Sub-Interface**.
+4. Configure the interface type (public or private) and IP allocation settings as supported by the platform.
 
 <Info>
 InfiniBand interfaces are managed by the platform and cannot be modified or deleted. This prevents accidental disruption of inter-node communication.
@@ -122,13 +147,16 @@ InfiniBand interfaces are managed by the platform and cannot be modified or dele
 
 ## Console access
 
-For troubleshooting or when SSH access is unavailable, use the browser-based console:
+For troubleshooting or when SSH access is unavailable, use the browser-based console.
 
-1. Locate the node in the cluster list.
-2. Click the actions menu on the node row.
-3. Select **Console**.
+1. In the **Overview** tab, locate the node you want to access.
+2. Click **Open Console** in the node row.
+3. The console opens in a new browser tab using noVNC.
+4. Log in using the same credentials as for SSH access.
 
-The console opens in a new browser tab, providing direct terminal access to the node.
+<Frame>![Browser-based noVNC console with login prompt](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-console.png)</Frame>
+
+The console provides direct terminal access to the node, useful when network connectivity issues prevent SSH access.
 
 ## Tags
 
@@ -137,43 +165,59 @@ Tags are key-value pairs for organizing and categorizing clusters. Tags are appl
 To manage tags:
 
 1. Navigate to the **Tags** tab on the cluster details page.
-2. Click **Add tag** to create a new tag.
-3. Enter the key and value.
-4. Click **Save**.
+2. Enable the **Add custom tags** checkbox.
+3. Enter the key and value for each tag.
+4. Click **Save changes**.
 
-Tags do not affect cluster functionality. Use them for billing allocation, environment identification, or organizational purposes.
+<Frame>![Tags tab with custom tags toggle](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-tags-tab.png)</Frame>
+
+Use tags for billing allocation, environment identification, or organizational purposes.
+
+<Info>
+Tags can be modified even while the cluster is in the Resizing state, unlike most other management actions.
+</Info>
 
 ## User actions
 
-The **User Actions** tab displays a log of all operations performed on the cluster:
+The **User Actions** tab displays a log of all operations performed on the cluster. This log acts as an audit trail for cluster operations.
 
 - Creation and deletion events
 - Resize operations
 - Power state changes
 - Network modifications
 
-Use the date filter to view actions within a specific time period. This log is useful for auditing and troubleshooting.
+<Frame>![User Actions tab showing audit log of cluster operations](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-user-actions-tab.png)</Frame>
+
+Use the date filter to view actions within a specific time period. Filter by action type using the **Actions** dropdown. This log is useful for auditing and troubleshooting.
 
 ## Delete a cluster
 
+When a cluster is deleted, data is handled as follows:
+
+| Resource | Behavior |
+|----------|----------|
+| Local NVMe storage | Permanently erased and scrubbed |
+| File shares | Not deleted (independent resources) |
+| Object storage | Not deleted (independent resources) |
+
 To delete an entire cluster:
 
-1. On the cluster details page, click **Delete** in the top action bar.
-2. Confirm the deletion.
+1. Navigate to the **Delete** tab on the cluster details page.
+2. Click **Delete Cluster**.
+3. Confirm the deletion.
+
+<Frame>![Delete tab with warning message and delete button](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-delete-tab.png)</Frame>
 
 <Warning>
-Deleting a cluster permanently erases all data on local NVMe storage. This action cannot be undone. File shares attached to the cluster are not deleted (they are independent resources).
+Cluster deletion is irreversible. Data on local NVMe storage cannot be recovered.
 </Warning>
 
 ## Limitations
 
 Current limitations for cluster management:
 
-- **Configuration changes**: Image, file share integration, and default network settings cannot be changed after cluster creation. New nodes inherit the original configuration.
+- **Provisioning time**: Bare Metal GPU servers, especially H100 configurations, may take 15-40 minutes to provision due to hardware preparation.
+- **Configuration immutability**: Cluster-level configuration is fixed at creation time. Image, file share integration, and network settings cannot be changed after cluster creation.
 - **Node-level settings**: Only network interfaces can be modified on individual nodes. Image and storage cannot be changed.
-- **Resize selection**: Scaling down removes a random node. Use per-node delete for targeted removal.
-
-<Info>
-Cluster specification management (changing default settings for new nodes) is planned for a future release.
-</Info>
-
+- **Resize behavior**: Scaling down removes a random node. Use per-node delete for targeted removal.
+- **State-based restrictions**: Management actions are restricted while the cluster is in transitional states (for example, Resizing).
