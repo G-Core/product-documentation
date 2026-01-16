@@ -1,0 +1,174 @@
+---
+title: "Migrate data from S3 and EFS to Gcore"
+description: "Migrate data from Amazon S3 or EFS to Gcore Object Storage or File Shares using rclone."
+---
+
+Gcore offers storage solutions compatible with [S3](/storage) and [NFS](/cloud/file-shares/about-file-shares).
+
+This guide explains how to migrate data from Amazon S3 or EFS to Gcore using [rclone](https://rclone.org/), a popular CLI tool for cloud storage management.
+
+<Info>
+  **AWS bills outgoing traffic**. Before migrating a large amount of data, [check the transfer costs.](https://calculator.aws/#/createCalculator/DataTransfer)
+</Info>
+
+The following sections use similar AWS and Gcore credentials and rclone configuration patterns. Once configured, the same remotes work across multiple migration scenarios.
+
+## Migrate data from S3 to Gcore
+
+### Gcore Object Storage
+
+To keep processes close to the existing AWS infrastructure, [Gcore Object Storage](/storage) is a good choice for migration.
+
+**Prerequisites:** A Linux machine with public Internet access and rclone installed.
+
+#### Step 1. Collect AWS account credentials
+
+Use an existing AWS CLI user or create a new one via IAM. The user must have read access to the source bucket.
+
+Required AWS credentials and bucket details:
+
+- Access key ID
+- Secret access key
+- Source bucket region
+- Source bucket name
+
+#### Step 2. Create a Gcore Object Storage bucket
+
+Create a new Object Storage bucket as described in [Create S3 or SFTP storage.](/storage/create-an-s3-or-sftp-storage) At the end of this process, the following Gcore credentials and bucket details are available:
+
+- Access key ID
+- Secret access key
+- Endpoint
+- Bucket name
+
+#### Step 3. Configure rclone remotes
+
+Add rclone remotes for AWS and Gcore to the rclone config file:
+
+```sh
+~/.config/rclone/rclone.conf
+```
+
+Paste the following configuration, replacing placeholders with the values from the previous steps:
+
+```ini
+[aws-s3]
+type = s3
+provider = AWS
+access_key_id = <AWS_ACCESS_KEY_ID>
+secret_access_key = <AWS_SECRET_ACCESS_KEY>
+region = <AWS_REGION>
+acl = private
+
+[gcore-os]
+type = s3
+provider = Other
+access_key_id = <GCORE_ACCESS_KEY_ID>
+secret_access_key = <GCORE_SECRET_ACCESS_KEY>
+endpoint = <GCORE_STORAGE_ENDPOINT>
+acl = private
+```
+
+#### Step 4. Migrate the data
+
+Sync the data from S3 to Gcore Object Storage:
+
+```sh
+rclone sync aws-s3://<SOURCE_BUCKET> gcore-os://<DESTINATION_BUCKET>
+```
+
+Replace `SOURCE_BUCKET` with the name of the Amazon S3 bucket and `DESTINATION_BUCKET` with the name of the Gcore Object Storage bucket.
+
+### Gcore File Share (NFS)
+
+To use data from S3 via NFS mounts inside an instance or container, consider [Gcore File Shares.](/cloud/file-shares/about-file-shares)
+
+Complete these steps on a Gcore instance with public Internet access, Linux, and rclone installed.
+
+#### Step 1. Collect AWS account credentials
+
+Gather the same AWS credentials and bucket details as described in the Object Storage migration above.
+
+#### Step 2. Create and mount a Gcore File Share
+
+Create a new File Share as described in [Configure File Shares.](/cloud/file-shares/configure-file-shares) At the end of this process, the mount path of the File Share is available.
+
+#### Step 3. Configure rclone remote
+
+Add the `[aws-s3]` remote to `~/.config/rclone/rclone.conf` using the same configuration pattern as in the Object Storage migration.
+
+#### Step 4. Migrate the data
+
+Sync the data from S3 directly to the mounted File Share:
+
+```sh
+rclone sync aws-s3://<SOURCE_BUCKET> <DESTINATION_PATH>
+```
+
+Replace `SOURCE_BUCKET` with the name of the Amazon S3 bucket and `DESTINATION_PATH` with the Gcore File Share mount path from Step 2.
+
+## Migrate data from EFS to Gcore
+
+### Gcore Object Storage
+
+Migrate data from Amazon EFS to Gcore Object Storage for backup.
+
+**Prerequisites:** An EC2 instance with access to the EFS, public Internet access, Linux, and [rclone](https://rclone.org/install/) installed.
+
+#### Step 1. Create a Gcore Object Storage bucket
+
+Create a new Object Storage bucket as described in [Create S3 or SFTP storage.](/storage/create-an-s3-or-sftp-storage) The same Gcore credentials listed in the S3 migration section are needed: access key ID, secret access key, endpoint, and bucket name.
+
+#### Step 2. Configure rclone remote
+
+Add the rclone remote for Gcore to the rclone config file:
+
+```sh
+~/.config/rclone/rclone.conf
+```
+
+Paste the following configuration, replacing placeholders with the credentials from Step 1:
+
+```ini
+[gcore-os]
+type = s3
+provider = Other
+access_key_id = <GCORE_ACCESS_KEY_ID>
+secret_access_key = <GCORE_SECRET_ACCESS_KEY>
+endpoint = <GCORE_STORAGE_ENDPOINT>
+acl = private
+```
+
+#### Step 3. Migrate the data
+
+Sync the EFS data to Gcore Object Storage:
+
+```sh
+rclone sync <SOURCE_PATH> gcore-os://<DESTINATION_BUCKET>
+```
+
+Replace `SOURCE_PATH` with the Amazon EFS mount path and `DESTINATION_BUCKET` with the Gcore Object Storage bucket name from Step 1.
+
+### Gcore File Share (NFS)
+
+Gcore File Shares and Amazon EFS are private to their respective cloud infrastructures. Direct migration between them isn't possible. First, migrate data to Gcore Object Storage using the steps in the previous section, then transfer it to a File Share.
+
+Before starting, ensure a Gcore instance with public Internet access, Linux, and rclone is available.
+
+#### Step 1. Create and mount a Gcore File Share
+
+Create a new File Share as described in [Configure File Shares.](/cloud/file-shares/configure-file-shares) Note the mount path for use in Step 3.
+
+#### Step 2. Configure rclone
+
+If not already configured, add the `[gcore-os]` remote to `~/.config/rclone/rclone.conf` using the same configuration from the Object Storage migration above.
+
+#### Step 3. Migrate the data
+
+Pull the data from Object Storage to the mounted File Share:
+
+```sh
+rclone sync gcore-os://<SOURCE_BUCKET> <DESTINATION_PATH>
+```
+
+Replace `SOURCE_BUCKET` with the name of the Gcore Object Storage bucket and `DESTINATION_PATH` with the Gcore File Share mount path from Step 1.
