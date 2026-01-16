@@ -1,0 +1,85 @@
+---
+title: About GPU Cloud
+sidebarTitle: About GPU Cloud
+---
+
+GPU cloud provides dedicated compute infrastructure for machine learning workloads. Use GPU clusters to train models, run inference, and process large-scale AI tasks.
+
+## What is a GPU cluster
+
+A GPU cluster is a group of interconnected servers, each equipped with multiple high-performance GPUs. Clusters are designed for workloads that require massive parallel processing power, such as training large language models, fine-tuning foundation models, running inference at scale, and high-performance computing tasks.
+
+<Frame>
+  <img src="/images/docs/edge-ai/ai-infrastructure/about-gpu-cloud/create-cluster-page.png" alt="GPU Cloud create cluster page showing region selection, cluster type, and GPU configuration options" />
+</Frame>
+
+All nodes in a cluster share the same configuration: operating system image, network settings, and storage mounts. This ensures consistent behavior across the cluster.
+
+## Cluster types
+
+Gcore offers two types of GPU clusters:
+
+| Type | Description | Best for |
+|------|-------------|----------|
+| **Bare Metal GPU** | Dedicated physical servers with guaranteed resources. No virtualization overhead. | Production workloads, long-running training jobs, latency-sensitive inference |
+| **Spot Bare Metal GPU** | Same hardware as Bare Metal, but at reduced price (up to 50% discount). Instances can be preempted with 24-hour notice when capacity is needed. | Fault-tolerant training with checkpointing, batch processing, development and testing |
+
+<Info>
+Spot instances are ideal for workloads that can handle interruptions. When a Spot cluster is reclaimed, you receive an email notification 24 hours before deletion. Use this time to save critical data to file shares or object storage.
+</Info>
+
+Clusters can scale to hundreds of nodes. Production deployments with 250+ nodes in a single cluster are supported, limited only by regional stock availability.
+
+## Available configurations
+
+Select a configuration based on your workload requirements:
+
+| Configuration | GPUs | Interconnect | RAM | Storage | Use case |
+|--------------|------|--------------|-----|---------|----------|
+| H100 with InfiniBand | 8x NVIDIA H100 80GB | 3.2 Tbit/s InfiniBand | 2TB | 8x 3.84TB NVMe | Distributed LLM training requiring high-speed inter-node communication |
+| H100 (bm3-ai-ndp) | 8x NVIDIA H100 80GB | 3.2 Tbit/s InfiniBand | 2TB | 6x 3.84TB NVMe | Distributed training and latency-sensitive inference at scale |
+| A100 with InfiniBand | 8x NVIDIA A100 80GB | 800 Gbit/s InfiniBand | 2TB | 8x 3.84TB NVMe | Multi-node ML training and HPC workloads |
+| A100 without InfiniBand | 8x NVIDIA A100 80GB | 2x 100 Gbit/s Ethernet | 2TB | 8x 3.84TB NVMe | Single-node training, inference for large models requiring more than 48GB VRAM |
+| L40S | 8x NVIDIA L40S | 2x 25 Gbit/s Ethernet | 2TB | 4x 7.68TB NVMe | Inference, fine-tuning small to medium models requiring less than 48GB VRAM |
+
+Outbound data transfer (egress) from GPU clusters is free. For pricing details, see [GPU Cloud billing](/edge-ai/billing).
+
+## InfiniBand networking
+
+InfiniBand is a high-bandwidth, low-latency interconnect technology used for communication between nodes in a cluster.
+
+InfiniBand is configured automatically when you create a cluster. If the selected configuration includes InfiniBand network cards, all nodes are placed in the same InfiniBand domain with no manual setup required. H100 configurations typically have 8 InfiniBand ports per node, each creating a dedicated network interface.
+
+InfiniBand matters most for distributed training, where models that don't fit on a single node require frequent gradient synchronization between GPUs. The same applies to multi-node inference when large models are split across servers. In these cases, InfiniBand reduces communication overhead significantly compared to Ethernet.
+
+For single-node workloads or independent batch jobs that don't require node-to-node communication, InfiniBand provides no benefit. Standard Ethernet configurations work equally well and may be more cost-effective.
+
+## Storage options
+
+GPU clusters support two storage types:
+
+| Storage type | Persistence | Performance | Use case |
+|-------------|-------------|-------------|----------|
+| Local NVMe | Temporary (deleted with cluster) | Highest IOPS, lowest latency | Training data cache, checkpoints during training |
+| File shares | Persistent (independent of cluster) | Network-attached, lower latency than object storage | Datasets, model weights, shared checkpoints |
+
+Learn more about [configuring file shares](/cloud/file-shares/configure-file-shares) for persistent storage and sharing data between nodes.
+
+## Cluster lifecycle
+
+```
+Create --> Configure --> Run workloads --> Resize (optional) --> Delete
+```
+
+1. **Create**: Select region, GPU type, number of nodes, image, and network settings when [creating a Bare Metal GPU cluster](/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster).
+
+2. **Configure**: Connect via SSH to each node, install required dependencies, and mount file shares to prepare the environment for workloads.
+
+3. **Run workloads**: Execute training jobs, run inference services, process data.
+
+4. **Resize**: Add or remove nodes based on demand. New nodes inherit the cluster configuration, which you can manage in the [Bare Metal GPU cluster details](/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster).
+
+5. **Delete**: Remove the cluster when no longer needed. Local storage is erased; file shares remain.
+
+When planning a GPU cluster, consider **provisioning time** (Bare Metal H100 servers take 15-40 minutes), **configuration immutability** (image, file shares, and network settings are fixed at creation), **data persistence** (local NVMe is temporary; use file shares for critical data), **resize constraints** (maximum nodes depend on regional stock), and **spot preemption** (Spot clusters may be interrupted with 24-hour notice). Hardware firewall support is available for servers with Bluefield network cards.
+
