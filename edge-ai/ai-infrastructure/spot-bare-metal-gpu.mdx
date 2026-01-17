@@ -1,0 +1,83 @@
+---
+title: "Spot Bare Metal GPU"
+sidebarTitle: "Spot Bare Metal GPU"
+---
+
+Spot Bare Metal GPU clusters are discounted GPU servers that utilize unused capacity at reduced pricing. They provide the same hardware specifications and functionality as standard Bare Metal GPU clusters, with one key difference: they can be reclaimed with 24 hours' notice.
+
+## Spot vs On-demand
+
+| Aspect | On-demand (Bare Metal GPU) | Spot (Spot Bare Metal GPU) |
+|--------|---------------------------|---------------------------|
+| Pricing | Standard rates | Discounted rates |
+| Availability | Guaranteed until deleted | Can be reclaimed with 24 hours' notice |
+| Use case | Production workloads, critical applications | Cost-sensitive workloads that tolerate interruption |
+| Capacity source | Dedicated capacity | Unused/excess capacity |
+
+## When to use Spot clusters
+
+Spot clusters are ideal for interruptible workloads, such as batch processing, experiments, testing, and development. They should not be used for production inference, time-critical tasks, long-running jobs without checkpoints, or any workload where unexpected reclamation could have serious consequences.
+
+## Availability
+
+Spot Bare Metal GPU availability depends on region and current stock. When available, a **Spot Bare Metal GPU** option appears alongside the standard **Bare Metal GPU** in the cluster type selector:
+
+<Frame>
+  <img src="/images/docs/edge-ai/ai-infrastructure/spot-bare-metal-gpu/step-gpu-cluster-type.png" alt="GPU Cluster type selector" />
+</Frame>
+
+If only **Bare Metal GPU** appears in the selector, Spot is not currently available in that region. In some regions, Spot may appear but show "Out of Stock"—this indicates the option exists, but no capacity is currently available.
+
+## Reclamation process
+
+Spot clusters can be reclaimed when Gcore needs the capacity for on-demand workloads or other operational requirements. The reclamation process follows a fixed timeline:
+
+1. An email notification is sent to the account owner.
+2. A 24-hour window begins to save data, transfer workloads, and prepare for cluster deletion.
+3. The cluster is deleted. Data on local storage is erased immediately.
+
+<Warning>
+The notice period is fixed and starts when the email is sent. After 24 hours, the cluster is deleted automatically.
+</Warning>
+
+## Data preservation
+
+When a Spot cluster is deleted, data is handled as follows:
+
+| Resource | What happens |
+|----------|--------------|
+| Local NVMe storage | Erased immediately |
+| File shares | Not affected (independent resource) |
+| Object storage | Not affected (independent resource) |
+
+To protect critical data, use [file shares](/cloud/file-shares/configure-file-shares) for datasets, checkpoints, and model weights. Save outputs and backups to [object storage](/storage/manage-object-storage/manage-buckets-via-the-control-panel). Implement regular checkpointing in training scripts every 1-4 hours. When a reclamation notice is received, prioritize transferring any data not already on persistent storage.
+
+## Pricing and billing
+
+Spot clusters are billed at a discounted rate compared to standard Bare Metal GPU. The exact discount varies by region and GPU model. The flavor selection card displays both hourly and monthly rates:
+
+<Frame>
+  <img src="/images/docs/edge-ai/ai-infrastructure/spot-bare-metal-gpu/spot-with-price.png" alt="Spot flavor pricing" />
+</Frame>
+
+Billing is per entire node (all GPUs on the server), calculated per minute, and aggregated hourly. Billing stops when the cluster is deleted, whether by user action or reclamation.
+
+A minimum account balance is required before provisioning. If the balance is insufficient, provisioning will fail. For details, see [GPU Cloud billing.](/edge-ai/billing)
+
+## Creating a Spot cluster
+
+The creation process is identical to standard Bare Metal GPU clusters, with one additional step: acknowledging the Spot terms.
+
+1. Navigate to **GPU Cloud** > **GPU Clusters** > **Bare Metal GPU Clusters**.
+2. Click **Create Cluster**.
+3. Select a region where Spot is available.
+
+<Frame>
+  <img src="/images/docs/edge-ai/ai-infrastructure/spot-bare-metal-gpu/step-region.png" alt="Region selector" />
+</Frame>
+
+4. In **GPU Cluster type**, select **Spot Bare Metal GPU**. A warning banner displays the terms and conditions.
+5. Select a GPU flavor and configure network, SSH key, and cluster name.
+6. Click **Create Cluster**.
+
+For detailed configuration, see [Create a Bare Metal GPU cluster.](/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster)
