@@ -1,0 +1,267 @@
+---
+title: "RTMP"
+sidebarTitle: "RTMP"
+description: Ingesting original streams via RTMP, RTMPS protocols
+---
+
+## Main principles
+
+Real Time Messaging Protocol (RTMP) is the most common way to stream to video streaming platforms:
+ - Used primarily for receiving an origin stream from your encoder, not for playback.
+ - Default port: RTMP 1935 (TCP), RTMPS 443 (TCP).
+ - Must be configured on your encoder:
+   - Video codec and bitrate: look at [Input Parameters and Codecs](/streaming/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs)
+   - Keyframe interval: `1sec`
+   - CPU usage preset: `veryfast`
+   - Profile: `baseline`
+   - Tune: `zerolatency`
+   - x264/x265 options: `rc-lookahead=0:bframes=0:scenecut=0`
+
+Gcore Live Streaming supports both RTMP and RTMPS. RTMPS wrapped in TLS for encrypted transport, which helps traverse restrictive firewalls.
+
+<Info>
+  RTMP only supports H.264 video + AAC audio; for other codecs (e.g. H.265/HEVC), use [use SRT](/streaming/live-streaming/protocols/srt) ingest.
+
+  We plan to support H265/HVEC and other extensions from the Enhanced RTMP specification. Stay tuned for updates.
+</Info>
+
+
+## PUSH streams
+
+Use RTMP PUSH when the encoder itself can establish an outbound connection to our Streaming Platform. This is the best choice in situations like:
+- Use software encoders like OBS, ffmpeg, etc,
+- use hardware encoders like Elemental, Haivision, etc,
+- and when you control the encoder, want the simplest workflow, and don’t want to maintain your own always-on origin server.
+
+Your encoder settings should contain the exact ingest parameters: server URL, backup URL (if used), stream key. Read below how to get ingest links.
+
+To use RTMPS, just manually change the protocol name from `rtmp://` to `rtmps://`.
+
+Ingest link is looks like `rtmp://vp-push-ed1.gvideo.co/in/12345?aaabbbcccddd` and contains:
+- protocol `rtmp://` or `rtmps://`
+- name of a specific server located in a specific geographic location – `vp-push-ed1` is located in Europe
+- exact stream key `12345?aaabbcccddd`
+
+*Example:*
+That ffmpeg command will generate a test video (1280×720 @30fps color bars) with a 2kHz sine-tone audio track, encode them to H.264 video + AAC audio, and push the stream in FLV format over RTMP to the specified ingest URL.
+```sh
+ffmpeg -re -f lavfi -i testsrc2=size=1280x720:rate=30 \
+       -f lavfi -i sine=f=2000:r=48000 \
+       -c:v libx264 -preset veryfast -b:v 1M -g 30 \
+       -c:a aac -b:a 128k -ar 48000 \
+       -f flv "rtmp://vp-push-ed1.gvideo.co/in/12345?aaabbbcccddd"
+```
+
+<Info>
+If the stream is experiencing transcoding or playback problems, then perhaps changing the ingest server to another location will solve the problem. Read more in the [Geo Distributed Ingest Points](/streaming/live-streaming/primary-backup) section, and contact our support to change the ingest server location.
+</Info>
+
+
+### Obtain the server URLs and stream key
+
+There are two ways to obtain the server URLs and stream key: Customer Portal UI or API.
+
+#### Via UI
+
+1. In the **Gcore Customer Portal**, navigate to **Streaming** \> [**Live Streaming**](https://portal.gcore.com/streaming/streaming/list).
+
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/live-stream-list.png" alt="List of live streams" style={{ width:"200pt" }} />
+
+2. Click on the stream you want to push to. This will open the **Live Stream Settings**.
+
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/live-stream-settings.png" alt="Live stream settings" style={{ width:"200pt" }} />
+
+3. Ensure that the **Ingest type** is set to **Push**.
+4. Ensure that the protocol is set to **RTMP** or **RTMPS** in the **URLs for encoder** section. 5. Copy the **Server** URL and **Stream Key** from the **URLs for encoder** section.
+
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/urls-for-encoder.png" alt="URLs for encoder section" style={{ width:"300pt" }} />
+
+
+#### Via API
+
+You can also obtain the URL and stream key via the Gcore API. The endpoint returns the complete URLs for the default and backup ingest points and the stream key.
+
+Example of the API request:
+
+```http
+GET /streaming/streams/{stream_id}
+```
+
+Example of API response:
+
+```json
+{
+  "push_url": "rtmp://vp-push-anx2.domain.com/in/123?08cd54f0",
+  "backup_push_url": "rtmp://vp-push-ed1.domain.com/in/123b?08cd54f0",
+  ...
+}
+```
+
+Read more in [API documentation](/api-reference/streaming/streams/create-live-stream).
+
+
+## Ingest Limits
+
+<Info>
+Only one ingest protocol type can be used for a live stream at a time.
+Pushing RTMP and another protocol (e.g., SRT) to the same stream at once will cause transcoding to fail.
+</Info>
+
+Ingester timeout limit is 3 sec (3000ms). If there is no data in the connection for this period, the connection will be discarded as inactive. Your enode will need to reconnect again.
+
+
+## PULL streams
+
+Gcore Video Streaming can PULL video data from your origin.
+
+Main rules of pulling:
+- The URL of the stream to pull from must be **publicly available** and **return data** for all requests.
+- If you need to set an allowlist for access to the stream, please contact support to get an up-to-date list of networks.
+
+### Setting up a PULL stream
+
+There are two ways to set up a pull stream: via the Gcore Customer Portal or via the API.
+
+#### Via UI
+
+1. In the **Gcore Customer Portal**, navigate to **Streaming** \> [**Live Streaming**](https://portal.gcore.com/streaming/streaming/list).
+
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/live-stream-list.png" alt="List of live streams" style={{ width:"200pt" }} />
+
+
+2. Click on the stream you want to pull from. This will open the **Live Stream Settings**.
+
+<img src="https://assets.gcore.pro/docs/streaming-platform/live-streaming/create-a-live-stream/live-stream-settings.png" alt="Live stream settings" style={{ width:"200pt" }} />
+
+3. Ensure that the **Ingest type** is set to **Pull**.
+4. In the **URL** field, insert a link to the stream from your media server.
+5. Click the **Save changes** button on the top right.
+
+#### Via API
+
+You can also set up a pull stream via the Gcore API. The endpoint accepts the URL of the stream to pull from.
+
+Example of API request:
+
+```http
+PATCH /streaming/streams/{stream_id}
+```
+
+```json
+{
+  "stream": {
+    "pull": true,
+    "uri": "rtmp://example.com/path/to/stream",
+    ...
+  }
+}
+```
+
+Read more in [API documentation](/api-reference/streaming/streams/change-live-stream).
+
+
+## Primary, Backup, and Global Ingest Points
+
+In most cases, one primary ingest point with the default ingest region is enough for streaming.
+For those cases where more attention is needed, Streaming Platform also offers a special feature to use backup ingest point and specify another explicit ingest region.
+
+For example, if you are streaming from Asia and latency seems too big or unstable to you.
+
+For more information, see [Primary, Backup, and Global Ingest Points](/streaming/live-streaming/primary-backup)
+
+
+## Ingest Limits
+
+<Info>
+Only one ingest protocol type can be used for a live stream at a time.
+For example, if you start pushing RTMP and then try to push another protocol like WebRTC WHIP to the same stream simultaneously, the transcoding process will fail.
+</Info>
+
+
+## Demo RTMP Streaming: How LowLatency Encoder Tuning Impact Delivery
+
+This short demo shows how optimized RTMP encoder settings reduce end-to-end latency and improve stream resilience. 
+Two streams are compared: one with standard settings and one configured for low latency. You’ll see how the low-latency stream starts faster, reacts better under packet loss, and why these settings are crucial for stable, real-time live streaming.
+
+<Frame>
+<iframe width="100%" src="https://player.gvideo.co/videos/2675_ALtmYUJkzPjafNmZ" title="RTMP Streaming Demo: How LowLatency Encoder Tuning Impact Delivery" frameborder="0" allow="fullscreen; accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+</Frame>
+
+In the video OBS RTMP2 lowlatency tuning sesttings are:
+ - Output, Encoder Settings: 
+   - Keyframe Interval: `1sec`
+   - CPU Usage Preset: `veryfast`
+   - Profile: `baseline`
+   - Tune: `zerolatency`
+   - x264 Options: `rc-lookahead=0:bframes=0:scenecut=0`
+
+Wish you good streaming.
+
+
+## RTMP/S Troubleshooting
+
+<table>
+  <thead>
+    <tr>
+      <th><b>Error</b></th>
+      <th><b>Cause</b></th>
+      <th><b>Solution</b></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Inappropriate codec for RTMP</td>
+      <td>Only H.264 and AAC are compatible</td>
+      <td>
+        <ul>
+          <li>Only H.264 codecs for video and AAC for audio are suitable for RTMP, while other codecs H.265/HEVC, AV1, MP3, Opus, etc are not suitable because they do not fit into the native RTMP protocol format.</li>
+          <li>Check the video and audio ouput codecs in your encoder for RTMP output.</li>
+          <li>Enhanced RTMP is not supported yet.</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td rowspan="2">SSL issues</td>
+      <td>You used <code>rtmps://</code> but in the encoder <code>rtmp://</code> is specified</td>
+      <td>
+        Check the protocol in your encoder.<br />
+        Follow <a href="/docs/streaming-platform/live-streaming/create-a-live-stream#step-3-configure-your-stream-for-push%2C-pull%2C-or-webrtc-to-hls" target="_blank">step 3 of the guide</a>.
+      </td>
+    </tr>
+    <tr>
+      <td>You used a port (80) unsuitable for secure data transfer</td>
+      <td>
+        Manually add the correct port (443) to the server link, e.g.:<br />
+        <code>rtmps://vp-push-ed1.gvideo.co:443/in/</code>
+      </td>
+    </tr>
+    <tr>
+      <td>No transcoding or image degradation when using web cameras with custom video codecs</td>
+      <td>The video codec H264+ extension has an over-increased keyframe</td>
+      <td>
+        Check the outgoing live stream parameters of the web camera:
+        <ul>
+          <li>Streams must be encoded using H.264 — no custom codecs like H264+ allowed.</li>
+          <li>“Smart” codec modes must be turned off.</li>
+        </ul>
+        <img
+          src="https://assets.gcore.pro/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/what-initial-parameters-of-your-live-streams-and-videos-we-can-accept/dahua-video-codec-settings-2.png" alt="Web camera codec settings" />
+      </td>
+    </tr>
+    <tr>
+      <td rowspan="2">“Connection timed out”</td>
+      <td>The server URL is incorrect</td>
+      <td>
+        Check the server URL in the encoder settings.<br />
+        Ensure the protocol is <code>rtmps://</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>Your encoder doesn’t support RTMPS</td>
+      <td>
+        Verify whether your encoder supports RTMPS.<br />
+        If not, consider switching to one that does.
+      </td>
+    </tr>
+  </tbody>
+</table>

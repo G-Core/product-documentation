@@ -1,0 +1,59 @@
+---
+title: "GStreamer"
+sidebarTitle: "GStreamer"
+---
+
+## What is GStreamer?
+
+GStreamer is an open‑source multimedia framework used to build **streaming pipelines** that capture, process and transmit audio and video.  Instead of being a single application, GStreamer provides a modular set of elements that can be assembled to perform tasks like **media playback, recording, transcoding** or **live broadcasting**.  This flexibility makes it popular for both desktop applications and server‑side streaming platforms, including broadcasting software for live events.
+
+For live streaming, GStreamer can act as the “encoder” component of your broadcast workflow.  It takes raw video/audio from sources (e.g. cameras or test patterns), encodes them with a codec (such as H.264 for video and AAC for audio), packs the streams into a container and sends them to an ingest server over protocols like **RTMP** or **SRT**.
+
+An example pipeline below is a concise example of how to contribute a stable test stream to the Gcore RTMP/SRT ingest point using GStreamer:
+ - Synthetic test sources: videotestsrc pattern=smpte and audiotestsrc wave=sine produce a continuous 1080p, 30 fps color bar video and a sine‑tone audio track. This allows you to test the ingest without needing any external media files.
+ - Efficient, low‑latency encoding: The caps filter enforces YUV 4:2:0 (I420) and 30 fps, while x264enc tune=zerolatency combined with key‑int‑max=30 and bframes=0 produces a GOP every second and avoids B‑frames. This keeps latency low and ensures the stream is easy for downstream transcoding.
+
+
+## Pushing via RTMP
+
+To push a test stream via RTMP, you can generate a synthetic video and audio source, encode them, wrap them into an FLV container and send them to your ingest endpoint.  The following command demonstrates how to do this with GStreamer:
+
+```sh
+gst-launch-1.0 -v \
+    videotestsrc is-live=true pattern=smpte ! \
+        video/x-raw,format=I420,width=1920,height=1080,framerate=30/1 ! \
+        x264enc tune=zerolatency bitrate=3000 speed-preset=veryfast key-int-max=30 bframes=0 ! \
+        h264parse config-interval=1 ! queue ! mux. \
+    audiotestsrc is-live=true wave=sine ! \
+        audio/x-raw,channels=2,rate=48000 ! \
+        avenc_aac bitrate=128000 ! queue ! mux. \
+    flvmux name=mux streamable=true ! \
+    rtmpsink location="rtmp://vp-push-ed2.gvideo.co/in/123?719"
+```
+
+
+## Pushing via SRT
+
+For stability contribution, you can push the same test stream via **SRT** instead of RTMP.  The main differences are the container (MPEG‑TS rather than FLV) and the sink element.  SRT also allows you to specify latency and mode parameters.  Here is a sample SRT pipeline using the provided ingest URL:
+
+```sh
+gst-launch-1.0 -v \
+    videotestsrc is-live=true pattern=smpte ! \
+        video/x-raw,format=I420,width=1920,height=1080,framerate=30/1 ! \
+        x264enc tune=zerolatency bitrate=3000 speed-preset=veryfast key-int-max=60 bframes=0 ! \
+        h264parse config-interval=1 ! queue ! mux. \
+    audiotestsrc is-live=true wave=sine ! \
+        audio/x-raw,channels=2,rate=48000 ! \
+        avenc_aac bitrate=128000 ! queue ! mux. \
+    mpegtsmux name=mux ! \
+    srtsink uri="srt://vp-push-ed2-srt.gvideo.co:5001" \
+            mode=caller latency=1500 \
+            streamid="123#719"
+```
+
+This pipeline mirrors the RTMP example but uses an MPEG‑TS container and the SRT protocol:
+ - "mpegtsmux" multiplexes the H.264 video and AAC audio into a MPEG‑TS stream, which is a more common container for SRT.
+ - "srtsink" sends the MPEG‑TS stream to the SRT ingest URL. The "uri" parameter is taken from UI/API from igester server field. The mode=caller option says that GStreamer initiates the connection, the latency in milliseconds (1.5 sec in this example).
+ - Pay attention to the stream identification: The "streamid" parameter uniquely identifies your stream to the server. Using the uri plus separate mode and latency properties ensures the # in your stream ID is passed correctly.
+
+
