@@ -1,0 +1,223 @@
+---
+title: Create a GPU Kubernetes cluster
+sidebarTitle: Create a GPU Kubernetes cluster
+---
+
+Managed Kubernetes in GPU Cloud provides a fully managed Kubernetes environment optimized for GPU workloads. Clusters support standard virtual instances, bare metal servers, and GPU bare metal nodes with NVIDIA A100 and H100 GPUs.
+
+Unlike traditional Kubernetes deployments that require manual control plane management, Managed Kubernetes handles the control plane automatically. This allows focus on deploying and scaling AI/ML workloads rather than cluster administration.
+
+## Cluster architecture
+
+Each Kubernetes cluster consists of:
+
+- **Control plane**: Managed by Gcore, handles scheduling, API server, and cluster state
+- **Worker node pools**: Groups of nodes with identical configuration where workloads run
+
+Node pools can contain different instance types within the same cluster. For example, a cluster might have one pool of standard virtual machines for general workloads and another pool of GPU bare metal nodes for training jobs.
+
+All nodes in a pool share the same configuration: instance type, volume settings, and network configuration. The cluster autoscaler can add or remove nodes within each pool based on demand.
+
+## Prerequisites
+
+Before creating a cluster, ensure the following resources are configured:
+
+| Resource | Description |
+|----------|-------------|
+| Network | A VxLAN or VLAN network in the target region |
+| Subnet | A subnet within the network with available IP addresses |
+| SSH key | At least one SSH key for node access |
+
+Networks and subnets can be created during cluster creation or configured beforehand in **GPU Cloud** > **Networking** > **Networks**.
+
+## Create a Kubernetes cluster
+
+To create a Managed Kubernetes cluster in GPU Cloud:
+
+1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **GPU Cloud**.
+2. In the sidebar, select **Managed Kubernetes**.
+3. Click **Create Cluster**.
+
+### Step 1. Select region
+
+In the **Region** section, select the data center location for the cluster.
+
+Available regions include Chester, London-2, Luxembourg-2, Luxembourg-3, Sines-2, and Sines-3. GPU availability and pricing vary by region.
+
+### Step 2. Select Kubernetes version
+
+In the **Kubernetes cluster version** dropdown, select the desired version.
+
+Kubernetes versions follow the standard release cycle. Newer versions include the latest features and security patches. The version can be upgraded after cluster creation through the cluster settings.
+
+### Step 3. Configure node pools
+
+Node pools define the worker nodes where workloads run. Each pool has its own instance type, scaling settings, and volume configuration.
+
+1. In the **Pools** section, configure the default pool or click **Add pool** to create additional pools.
+
+2. Enter a **Pool name** to identify the pool.
+
+3. Set **Minimum nodes** and **Maximum nodes** for autoscaling. The cluster autoscaler adds nodes when pods are pending due to resource constraints and removes nodes when they are underutilized.
+
+4. Select the node **Type**:
+
+| Type | Description | Use case |
+|------|-------------|----------|
+| Virtual instances | Standard VMs with shared or dedicated vCPU | Development, testing, general workloads |
+| Bare metal instances | Dedicated physical servers without GPU | High-performance CPU workloads |
+| GPU Bare metal instances | NVIDIA A100 or H100 GPU servers | Model training, inference at scale |
+
+5. Select a flavor. Each flavor card displays specifications and hourly pricing.
+
+6. Configure the volume:
+   - **Volume type**: High IOPS SSD or SSD Low-Latency
+   - **Size**: Minimum 50 GiB for the root volume
+
+7. Select a **Placement policy**. Anti-affinity soft distributes nodes across different physical hosts when possible.
+
+8. Configure optional settings:
+   - **Add labels**: Kubernetes labels for node selection in pod specs
+   - **Add taints**: Prevent pods from scheduling on nodes unless they tolerate the taint
+   - **Autohealing nodes**: Automatically replace unhealthy nodes (enabled by default)
+   - **Public IPv4 address**: Assign public IPs to nodes for direct internet access
+
+<Warning>
+GPU bare metal nodes follow Kubernetes stateless principles and may be deleted during scaling or maintenance. For persistent data, use external storage such as File Shares, Object Storage, or managed databases.
+</Warning>
+
+### Step 4. Configure CNI provider
+
+The Container Network Interface (CNI) provider manages pod networking within the cluster.
+
+| Provider | Description |
+|----------|-------------|
+| Calico | Established CNI with broad compatibility |
+| Cilium | Modern eBPF-based CNI with advanced observability |
+
+Configure the network ranges:
+
+- **Pod CIDR**: IP range for pods (default: 172.16.0.0/17)
+- **Service CIDR**: IP range for Kubernetes services (default: 172.24.0.0/17)
+- **Node mask size**: Subnet size allocated to each node (default: /24)
+
+For Cilium, the **Enable Hubble** option adds network observability and monitoring capabilities.
+
+<Info>
+The CNI provider cannot be changed after cluster creation. Choose based on long-term requirements.
+</Info>
+
+### Step 5. Configure network settings
+
+In the **Network settings** section, configure the network interface for cluster nodes.
+
+1. Select an existing **Network** or click **Add a new network** to create one.
+
+2. Select a **Subnetwork** within the chosen network.
+
+The subnet determines the IP range for node interfaces. Ensure the subnet has sufficient available IP addresses for the maximum number of nodes across all pools.
+
+All cluster nodes receive Basic DDoS Protection at no additional cost.
+
+### Step 6. Select SSH key
+
+In the **SSH key** section, select one or more SSH keys for node access.
+
+SSH keys allow connecting to nodes as the `ubuntu` user for debugging and manual configuration. Keys can be added or generated directly in the portal.
+
+### Step 7. Name the cluster
+
+In the **Cluster name** field, enter a name or use the auto-generated default.
+
+### Step 8. Configure optional features
+
+**Logging** (paid feature): Enable to save cluster logs to OpenSearch Dashboards for debugging and monitoring.
+
+**Advanced settings**:
+
+- **OIDC authentication**: Enable Single Sign-On for the Kubernetes API using an external identity provider
+- **Cluster Autoscaler**: Configure autoscaling behavior including scan intervals, scale-down thresholds, and node grace periods
+
+### Step 9. Create the cluster
+
+1. Review the **Estimated cost** panel showing monthly and hourly pricing for all resources.
+
+2. Click **Create Cluster**.
+
+Cluster provisioning typically takes 5-15 minutes depending on the number and type of nodes. The cluster status changes to **Provisioned** when ready.
+
+## Connect to the cluster
+
+After creation, download the kubeconfig file to connect with kubectl.
+
+1. Navigate to the cluster overview page.
+2. Click **Kubernetes config**.
+3. Save the downloaded `k8sConfig.yml` file.
+
+Configure kubectl to use the downloaded configuration:
+
+```bash
+export KUBECONFIG=/path/to/k8sConfig.yml
+```
+
+Verify the connection:
+
+```bash
+kubectl cluster-info
+kubectl get nodes
+```
+
+The output displays all worker nodes and their status. Nodes should show **Ready** status within a few minutes of cluster creation.
+
+## Manage the cluster
+
+The cluster overview page provides access to:
+
+| Tab | Description |
+|-----|-------------|
+| Pools | View and manage node pools, add new pools |
+| Logging | Configure log collection (paid feature) |
+| Advanced DDoS Protection | Enable additional DDoS protection |
+| Advanced settings | OIDC and autoscaler configuration |
+| User Actions | Audit log of cluster operations |
+
+### Scale node pools
+
+Node pools scale automatically based on the configured minimum and maximum node counts. To manually adjust scaling:
+
+1. Navigate to the **Pools** tab.
+2. Expand the target pool.
+3. Adjust the minimum or maximum node count.
+4. Click **Save changes**.
+
+### Add a node pool
+
+Additional pools allow mixing instance types within a cluster. For example, add a GPU pool to an existing cluster:
+
+1. Navigate to the **Pools** tab.
+2. Click **Add pool**.
+3. Configure the pool with the desired GPU flavor.
+4. Click **Save**.
+
+Use Kubernetes labels and taints to schedule GPU workloads on the appropriate nodes.
+
+### Upgrade Kubernetes version
+
+To upgrade to a newer Kubernetes version:
+
+1. In the cluster overview, locate the **Kubernetes Version** field.
+2. Click **Change**.
+3. Select the target version.
+4. Confirm the upgrade.
+
+Upgrades are performed with minimal disruption. Nodes are drained and replaced sequentially to maintain workload availability.
+
+## Delete the cluster
+
+Deleting a cluster removes all nodes and associated resources. Persistent volumes and file shares created outside the cluster are not affected.
+
+1. Navigate to the cluster overview.
+2. Click **Delete cluster**.
+3. Confirm the deletion.
+
+Cluster deletion is irreversible. Export any required data before proceeding.
