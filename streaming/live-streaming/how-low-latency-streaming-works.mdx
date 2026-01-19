@@ -1,65 +1,105 @@
 ---
 title: "How low latency streaming works"
 sidebarTitle: "Low latency streaming"
+description: "Achieve ~2–4s latency with Gcore's unified LL-HLS and LL-DASH support."
 ---
+
+## Low latency for LIVE streams
+
+Gcore offers specific latency numbers to customers, providing advanced low-latency streaming options:
+
+| Protocol | Format | Latency | Latency Level | Details |
+| :--- | :--- | :--- | :--- | :--- |
+| **LL-DASH** | CMAF | **2–4 seconds** | Low Latency | Chunked download of partially ready files from origin, quick segments download. |
+| **LL-HLS** | CMAF | **3–5 seconds** | Low Latency | Quick segments and parts download, manifest blocking. |
+| **HLS** | MPEG-TS | **~9 seconds** | Reduced Latency | Reduced chunk sizes and optimizations for fast manifest and file delivery. |
+
+Traditionally, other providers may continue to provide old regular HLS MPEG-TS, and traditional streaming with 20–30 seconds latency.
 
 ## What is low-latency?
 
 Streaming latency is the timespan between the moment a frame is captured and when that frame is displayed on the viewers' screens. Latency occurs because each stream is processed several times during broadcasting to be delivered worldwide:
 
 1. **Encoding (or packaging).** In this step, the streaming service retrieves your stream in any format, converts it into the format for delivery through CDN, and divides it into small fragments.
-
 2. **Transferring.** In this step, CDN servers pull the processed stream, cache it, and send it to the end-users.
-
 3. **Receipt by players.** In this step, end-user players load the fragments and buffer them.
 
 Each step affects latency, so the total timespan can increase to 30–40 seconds, especially if the streaming processing isn't optimized. For some companies (such as sports or metaverse events, or news releases), such latency is too large, and it's crucial to reduce it.
-
-## How does Gcore provide low latency?
-
-The Gcore Video Streaming receives live streams in RTMP or SRT protocols; transcodes to ABR ([adaptive bitrate](/streaming/live-streams-and-videos-protocols-and-codecs/output-parameters-after-transcoding-bitrate-frame-rate-and-codecs#output-parameters-after-transcoding)), via CDN in LL-HLS and LL-DASH protocols.
-
-- LL-HLS (Low Latency HTTP Live Streaming) is an adaptive protocol developed by Apple for live streaming via the Internet. This protocol is based on HTTP, which allows it to be cached on CDN servers and distributed via CDN as static content.
-- LL-DASH (Low Latency Dynamic Adaptive Streaming over HTTP) is a data streaming technology that optimizes media content delivery via the HTTP protocol.
-
-Also, Gcore uses CMAF (Common Media Application Format) as a base for LL-HLS/DASH. CMAF allows dividing segments into chunks (video fragments) for faster delivery over HTTP networks.
-
-LL-HLS and LL-DASH reduce latency to 2–4 sec, depending on the network conditions.
-
-<Frame>
-  ![How does Gcore provide low latency](/images/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-low-latency-streaming-works/gcore-vs-traditional-streaming.png)
-</Frame>
-
-
-## How do LL-HLS and LL-DASH work in comparison to the standard approach?
-
-The standard video delivery approach involves sending the entirely created segment to the CDN. Once the CDN receives the complete segment, it transmits it to the player.
-
-With this approach, video latency depends on segment length. For example, if a segment is 6 seconds long when requesting and processing the first segment, the player displays a frame that is already 6 seconds late compared to the actual time.
-
-The Low Latency approach uses the CMAF-CTE extension (Chunked Transfer-Encoding), which helps divide live stream segments into small, non-overlapping, and independent fragments (chunks) with a length of 0.5–2 seconds. The independence of the chunks allows the encoder not to wait for the end of the complete loading of the segment but to send it to the CDN and the player in ready-made small fragments.
-
-This approach helps eliminate the segment duration factor affecting video latency in standard video delivery methods. Therefore, latency for 10-second and 2-second segments will be the same and minimal. The total latency between the CDN server and the viewers will be at most 4 seconds.
-
-Compared to the standard approach, a 6-second segment will be divided into 0.5-2 seconds chunks. Thus, the total latency will be lower.
 
 <Frame>
   ![Example of how low latency works](/images/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-low-latency-streaming-works/low-latency-casino.gif)
 </Frame>
 
+## How does Gcore provide low latency?
 
-## LL-HLS, LL-DASH
+The Gcore Video Streaming receives live streams in RTMP or SRT protocols; transcodes to ABR ([adaptive bitrate](/streaming-platform/live-streams-and-videos-protocols-and-codecs/output-parameters-after-transcoding-bitrate-frame-rate-and-codecs#output-parameters-after-transcoding)), via CDN in LL-HLS and LL-DASH protocols.
 
-We support [Low Latency streaming](https://gcore.com/news/low-latency-hls/) by default. It means your live streams are automatically transcoded to LL-HLS or LL-DASH protocol when you [create and configure a live stream](/streaming/live-streaming/create-a-live-stream).
+| Protocol | Name | Details |
+| :--- | :--- | :--- |
+| **LL-HLS** | Low Latency HTTP Live Streaming | Based on constantly changed manifests with extra information about last parts to be downloaded. Requires full speed of downloading when files are ready on origin. Requires manifest blocking on the server. |
+| **LL-DASH** | Low Latency MPEG-DASH | Based on partially completed files that must be continuously downloaded from the origin, it is distributed as new portions of data are received from the file. |
+
+Both protocols use **CMAF** (Common Media Application Format) as a base. CMAF uses a standardized **fragmented MP4 (fMP4)** container to divide media into small chunks (video fragments) that can be individually addressed and transferred.
+
+This allows for:
+  -   **Faster Delivery:** Small chunks can be sent over HTTP networks immediately as they are encoded, without waiting for the full segment to complete.
+  -   **Compatibility:** A single set of media files works for both HLS and DASH players, reducing storage and encoding costs.
+  -   **Low Latency:** Enables "Chunked Encoding" where playback can begin while the file is still being downloaded.
+
+
+## Gcore's Implementation: Unified Pipeline & Chunked-Proxy
+
+To realize this low-latency potential at scale, Gcore employs specific optimizations described below. 
+For full details deep dive into our tech article [Achieving 3-Second Latency in Streaming: A Deep Dive into LL-HLS and LL-DASH Optimization with CDN](https://gcore.com/blog/optimizing-hls-dash-3sec) in the blog.
+
+### 1. Transcoding: Unified Pipeline Engine
+
+If you use our Streaming ingest and transcoding service.
+
+Our **Unified Low-Latency Transcoder** and **Just-in-Time Packager** process LL-DASH and LL-HLS simultaneously. This synchronization ensures that both protocols share identical keyframes, segment boundaries, and availability timelines, eliminating the "drift" often seen in multi-protocol delivery. To achieve this, we enforce strict parameters:
+*   **GOP:** 1 or 2 second (Ensures rapid seek and playback start).
+*   **Segment Size:** 2 seconds.
+*   **Part Size:** 0.5 or 1 second (Allows players to download content in tiny increments).
+*   **Minimal Buffer:** 1.5 seconds.
+
+### 2. Low-Latency CDN Delivery: Chunked-Proxy
+
+If you use our CDN delivery service.
+
+Standard CDNs typically wait for a file to be completely downloaded from the origin before sending it to the user ("Store and Forward"). Gcore uses a proprietary **Chunked-Proxy** module that streams data immediately:
+*   **Immediate Distribution:** The CDN edge begins sending bytes to the user *while* they are still being received from the origin.
+*   **Protocol Optimization:** Uses Chunked Transfer Encoding for HTTP/1.1 and Framing for HTTP/2 & HTTP/3 for partially ready files.
+*   **Smart Caching:** Efficiently handles the high volume of requests for tiny parts and Blocking Playlist Reloads.
+
+<Tip>
+  **Tip**
+
+  If you use Gcore CDN with an external transcoder (not our Streaming ingest and transcoding service), the Chunked-Proxy module must be explicitly activated. Please contact your account manager to activate this feature.
+</Tip>
+
+
+## How to use low latency streaming
+
+Low Latency streaming is enabled by default. It means your live streams are transcoded to HLS, LL-HLS, and LL-DASH protocols automatically.
 
 Links for embedding the live stream to your own player contain the _/cmaf/_ part and look as follows:
-
-- MPEG-DASH, CMAF (low latency): `https://demo.gvideo.io/cmaf/2675_19146/index.mpd`
-- LL HLS, CMAF (low latency): `https://demo.gvideo.io/cmaf/2675_19146/master.m3u8`
+- LL-HLS, CMAF (low latency): `https://demo.gvideo.io/cmaf/2675_19146/master.m3u8`
+- LL-DASH, CMAF (low latency): `https://demo.gvideo.io/cmaf/2675_19146/index.mpd`
 - Traditional HLS, MPEG TS (no low latency): `https://demo.gvideo.io/mpegts/2675_19146/master_mpegts.m3u8`
 
+Demo player with low latency enabled live stream:
+<iframe
+  src="https://player.gvideo.co/broadcasts/2675_21606"
+  width="100%"
+  height="360"
+  loading="lazy"
+  allow="autoplay; fullscreen; picture-in-picture"
+  allowFullScreen
+/>
+Direct link to the player: https://player.gvideo.co/broadcasts/2675_21606
 
-## Legacy HLS MPEG-TS
+
+## Switch to legacy HLS modes
 
 Some legacy devices or software require MPEG-TS (.ts) segments for streaming. To ensure full backward compatibility with HLS across all devices and infrastructures, we offer MPEG-TS streaming options.
 
@@ -90,10 +130,10 @@ Low‑latency ingest is all about minimising buffering across the capture–enco
 Each step introduces delay: encoders buffer frames to make better compression decisions, the network adds jitter, and downstream transcoders and segmenters wait for clean GOP boundaries.  
 
 To achieve sub‑second latency you must tune the encoder and pipeline for **real‑time** operation:
- - **Disable B‑frames and scene‑cut detection.**  Many codecs use B‑frames and variable GOPs for compression efficiency.  These require buffering multiple frames and cause unpredictable key‑frame spacing.  FFmpeg’s x264 encoder exposes a special tuning preset for live streaming: `-tune zerolatency`.  Phenix’s real‑time documentation notes that without this option the encoder introduces about 0.5 seconds of latency [oai_citation:0‡phenixrts.com](https://phenixrts.com/docs/integration-guides/3rd-party-encoders/ffmpeg/#:~:text=FFMPEG%20Sources).  The `zerolatency` tune disables B‑frames and reduces internal buffering [oai_citation:1‡phenixrts.com](https://phenixrts.com/docs/integration-guides/3rd-party-encoders/ffmpeg/#:~:text=FFMPEG%20Sources).
+ - **Disable B‑frames and scene‑cut detection.**  Many codecs use B‑frames and variable GOPs for compression efficiency.  These require buffering multiple frames and cause unpredictable key‑frame spacing.  FFmpeg’s x264 encoder exposes a special tuning preset for live streaming: `-tune zerolatency`, which disables B‑frames and reduces internal buffering.
  - **Use a fast preset and 4:2:0 colour format.**  Real‑time encoding trades compression for speed.  A `veryfast` or `ultrafast` preset lowers CPU usage and latency.  Constraining the pixel format to `yuv420p` (I420) avoids 4:4:4 output, which some ingest servers reject when operating in baseline mode.
  - **Fix the GOP length.**  Set a constant GOP (group of pictures) so that keyframes arrive at predictable intervals.  DASH/HLS segmenters rely on consistent I‑frame spacing to start segments; a wandering GOP breaks segmentation and forces downstream buffers to wait.  A common rule of thumb is a 1‑second GOP: for 30 fps material set `-g 30 -keyint_min 30 -sc_threshold 0` and disable B‑frames (`-bf 0`).  This creates exactly one IDR frame every 30 frames, making it easy for transcoders to segment evenly.
- - **Minimise muxing and packet buffers.**  Phenix’s real‑time documentation recommends adding flags such as `-flags low_delay`, `-fflags +nobuffer+flush_packets`, `-max_delay 0` and `-muxdelay 0` so that packets are flushed immediately rather than accumulated [oai_citation:2‡phenixrts.com](https://phenixrts.com/docs/integration-guides/3rd-party-encoders/ffmpeg/#:~:text=In%20general%2C%20when%20using%20FFMPEG,with%20Phenix%2C%20always).  These options are especially important for protocols like RTMP or SRT that otherwise buffer data internally.
+ - **Minimise muxing and packet buffers.**  Add flags such as `-flags low_delay`, `-fflags +nobuffer+flush_packets`, `-max_delay 0`, and `-muxdelay 0` so that packets are flushed immediately rather than accumulated. These options are especially important for protocols like RTMP or SRT that otherwise buffer data internally.
  - **Use SRT latency and mode parameters.**  When streaming over **SRT** you must specify an application‑layer buffer in the URI.  It should be large enough to cover the round‑trip time plus any network jitter.
 
 Below is a recommended FFmpeg command that follows these guidelines to push a low‑latency test stream over SRT.  
