@@ -5,7 +5,7 @@ sidebarTitle: API tokens
 
 API tokens provide programmatic access to Gcore services without requiring interactive authentication. Permanent tokens are useful for automated processes such as cache clearing, resource provisioning, and monitoring integrations.
 
-To access API tokens, navigate to **Settings** > **API tokens**.
+To access API tokens, click the avatar in the top-right corner of the Customer Portal, select **Profile**, then select **API tokens** in the sidebar. The API tokens page is where tokens are created, managed, and deleted.
 
 <img src="/images/docs/account-settings/api-tokens.png" alt="API tokens page" width="80%"/>
 
@@ -18,19 +18,18 @@ Gcore supports two types of API authentication:
 | Standard token | 1 hour (refreshable to 24 hours) | One-time requests, testing |
 | Permanent token | Configurable (up to unlimited) | Automation, integrations, CI/CD |
 
-For standard token authentication, see the [API documentation.](https://api.gcore.com/docs/account#section/Authentication)
+Standard tokens are temporary session credentials used for interactive or short-lived access. [Standard token authentication](https://api.gcore.com/docs/account#section/Authentication) uses OAuth-style refresh flows.
 
-## Token limits
+Permanent tokens are standalone credentials intended for automation and service integrations that run without user interaction.
 
-Each account can have a maximum of 50 active API tokens. Expired and deleted tokens do not count against this limit.
+## Create and use tokens
 
-## Create a permanent API token
+### Create a token
 
 To create a new API token:
 
-1. Navigate to **Settings** > **API tokens**.
-2. Click **Create token**.
-3. Configure the token settings:
+1. In the top-right corner, click **Create token**.
+2. Configure the token settings.
 
 | Field | Required | Description |
 |-------|----------|-------------|
@@ -39,20 +38,20 @@ To create a new API token:
 | Role | Yes | Permission level assigned to the token |
 | Expiration | Yes | Token validity period or "Never expire" |
 
-4. Click **Create**.
+<img src="/images/docs/account-settings/api-tokens-create-dialog.png" alt="Create API Token dialog with name, description, expiration, and role options" width="80%"/>
+
+3. Click **Create**.
 
 <Warning>
 The generated token is displayed only once. Copy and store the token securely before closing the dialog. The token value cannot be retrieved after the creation dialog is closed.
 </Warning>
 
-5. Copy the token value.
-6. Click **OK, I've copied token**.
+4. Copy the token value.
+5. Click **OK, I've copied token**.
 
 ### Role assignment
 
 A token can only be assigned a role equal to or lower than the role of the user creating it. Users with the "User" role cannot create tokens with "Administrators" permissions.
-
-Available roles:
 
 - **Administrators**: Full access to all account features and settings
 - **Users**: Standard access with project-level restrictions
@@ -62,9 +61,11 @@ Available roles:
 - **Never expire**: Token remains valid indefinitely
 - **Set expiration date**: Token expires on the specified date
 
-## Use an API token
+### Use a token
 
-To authenticate API requests with a permanent token, include it in the Authorization header:
+API tokens authenticate requests as the user who created the token. All permissions and restrictions of that user's role apply to API operations performed with the token.
+
+To authenticate API requests, include the token in the Authorization header:
 
 ```
 Authorization: APIKey <token_value>
@@ -76,9 +77,11 @@ Example:
 curl -H "Authorization: APIKey 7711$eyJ0eXAiOiJKV..." https://api.gcore.com/cdn/resources
 ```
 
-Check the [API documentation](https://api.gcore.com/docs/iam) for service-specific token support.
+If a token is exposed or no longer needed, delete it immediately and create a new one.
 
-## Manage existing tokens
+Token support varies by service and is described in the [IAM API documentation.](https://api.gcore.com/docs/iam)
+
+## Manage tokens
 
 The API tokens page displays all tokens with the following information:
 
@@ -94,53 +97,52 @@ The API tokens page displays all tokens with the following information:
 | Start | Token creation date |
 | Last usage | Most recent API call using the token |
 
-### Filter tokens
+### Manage the token list
 
-Filter the token list using:
+The toolbar above the token table provides options for organizing and viewing tokens:
 
-- **Status**: Active, Expired, or All
-- **Add filter**: Additional filter options
+- **Filters**: Show tokens by status (Active, Expired, or All) or apply additional conditions
+- **My Presets**: Save filter configurations for reuse. Click **Save current set as a preset** to create a new preset.
+- **Manage Columns**: Choose which table columns are visible
+- **Display Density**: Adjust row spacing (compact, comfortable, or spacious)
+
+<img src="/images/docs/account-settings/api-tokens-toolbar.png" alt="Token list toolbar with filters, presets, and display options" width="80%"/>
 
 ### Token visibility
 
-- **Administrators**: Can view and manage all tokens on the account
-- **Other roles**: Can only view and manage tokens they created
+Administrators can view and manage all tokens on the account. Other roles can only view and manage tokens they created.
 
-## Delete an API token
+### Delete a token
 
 Deleting a token immediately revokes API access for any application using that token.
 
-To delete a token:
+1. Locate the token in the list.
+2. Click the three-dot menu icon.
+3. Select **Delete API token**.
 
-1. Navigate to **Settings** > **API tokens**.
-2. Locate the token in the list.
-3. Click the three-dot menu icon.
-4. Select **Delete**.
-5. Confirm the deletion.
+<img src="/images/docs/account-settings/api-tokens-delete-menu.png" alt="Three-dot menu with Delete API token option" width="60%"/>
+
+4. Confirm the deletion.
 
 <Info>
 Administrators can delete any token on the account. Other users can only delete tokens they created.
 </Info>
 
-## Token expiration notifications
+## Security and lifecycle
 
-Email notifications are sent automatically before tokens expire:
+### Token limits
 
-- 7 days before expiration
-- 1 day before expiration
+Each account can have a maximum of 50 active API tokens. Expired and deleted tokens do not count against this limit.
 
-Notifications are sent to:
+### Expiration notifications
 
-- The user who created the token
-- All users with the Administrators role
+Email notifications are sent automatically before tokens expire (7 days and 1 day before expiration). Notifications are sent to the user who created the token and all Administrators.
 
-The API tokens section displays an indicator when tokens expire within 7 days.
+The API tokens section displays an indicator when tokens expire within 7 days. [Notification preferences](/account-settings/manage-service-notifications) can be configured in the Notifications section.
 
-To configure notification preferences, see [Manage service notifications.](/account-settings/manage-service-notifications)
+### SSO considerations
 
-## Tokens and SSO authentication
-
-When using SAML SSO for login, the Gcore system does not receive permission updates from the identity provider. If a user's access is revoked in the identity provider, any API tokens created by that user remain active.
+When using Security Assertion Markup Language (SAML) Single Sign-On (SSO) for login, the Gcore system does not receive permission updates from the identity provider. If a user's access is revoked in the identity provider, any API tokens created by that user remain active.
 
 <Warning>
 To restrict API access for SSO users whose permissions have been revoked, manually delete their API tokens from the account.
