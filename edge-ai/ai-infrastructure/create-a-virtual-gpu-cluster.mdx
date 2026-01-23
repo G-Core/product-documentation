@@ -1,0 +1,277 @@
+---
+title: Create a Virtual GPU cluster
+sidebarTitle: Create a Virtual GPU cluster
+---
+
+Virtual GPU clusters provide GPU computing resources through virtualization, offering flexibility in configuration and resource allocation. Each cluster consists of one or more virtual machines with dedicated GPU access.
+
+For an overview of GPU cluster types and their differences, see [About GPU Cloud](/edge-ai/ai-infrastructure/about-gpu-cloud).
+
+## Cluster architecture
+
+Each Virtual GPU cluster consists of one or more virtual machine nodes. All nodes share the same base configuration (image, network settings), but individual nodes can have different disk configurations after creation.
+
+Each node has:
+
+- A **local data disk** added by default. This disk cannot be edited and is deleted when the node is shelved.
+- Optional **network disks** that can be attached during creation or added later. Network disks persist independently of node state.
+
+
+## Create a Virtual GPU cluster
+
+To create a Virtual GPU cluster, complete the following steps in the Gcore Customer Portal.
+
+1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **GPU Cloud**.
+2. In the sidebar, expand **GPU Clusters** and select **Virtual Clusters**.
+3. Click **Create Cluster**.
+
+
+### Step 1. Select region
+
+In the **Region** section, select the data center location for the cluster.
+
+
+Regions are grouped by geography (Asia-Pacific, EMEA). Each region card shows its availability status.
+
+<Info>
+GPU model availability and pricing vary by region. Check other regions if a required GPU model is not available. For help with availability, contact the [sales team.](https://gcore.com/contact-sales)
+</Info>
+
+### Step 2. Select cluster type
+
+In the **Cluster type** section, select **Virtual** to create a Virtual GPU cluster.
+
+Selecting **Virtual** displays flavors and options specific to Virtual GPU clusters. Selecting **Physical** switches to Bare Metal GPU cluster creation.
+
+### Step 3. Configure cluster capacity
+
+Cluster capacity determines the hardware specifications for each node in the cluster.
+
+1. Select the **GPU Model**. Available models depend on the region.
+
+2. Enable or disable **Show out of stock** to filter available flavors.
+
+3. Select a flavor. Each flavor card displays GPU configuration, vCPU count, RAM capacity, and pricing.
+
+### Step 4. Set the number of nodes
+
+In the **Number of Nodes** section, specify how many virtual machines to provision in the cluster.
+
+<Frame>![Number of Instances selector showing increment and decrement buttons](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/virtual-gpu-instances-count.png)</Frame>
+
+Each node is a separate virtual machine with the selected flavor configuration. When created, all nodes have identical configurations. The minimum is 1 node, maximum is 999 nodes per cluster.
+
+### Step 5. Select image
+
+The image defines the operating system and pre-installed software for cluster nodes.
+
+<Frame>![Image selector with Public and Custom tabs and image dropdown](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/virtual-gpu-image-selector.png)</Frame>
+
+1. In the **Image** section, choose the operating system:
+   - **Public**: Pre-configured images with NVIDIA drivers and CUDA toolkit
+   - **Custom**: Custom images uploaded to the account
+
+2. Note the default login credentials displayed below the image selector.
+
+
+### Step 6. Configure disks
+
+Each Virtual GPU cluster node has two types of storage:
+
+- **Local data disk**: Added automatically to every node. This disk cannot be edited or removed. Data on this disk is deleted when the node is shelved (powered off).
+- **Network disks**: Optional persistent storage that survives power cycles. Up to 8 network disks of different sizes and types can be attached.
+
+<Frame>![Volumes configuration section with disk type, size, and Your plan summary](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/virtual-gpu-volumes-config.png)</Frame>
+
+To add network disks:
+
+1. Click **Add Disk** to add a network disk to the configuration.
+
+2. For each disk, select:
+   - **Disk type**: Select from available storage types in the region
+   - **Size**: Minimum 120 GiB
+
+3. Repeat to add additional disks (maximum 8 disks total).
+
+All configured network disks are attached to every node in the cluster at creation.
+
+<Warning>
+Store important data on network disks, not on the local disk. The local disk is deleted when the node is shelved, resulting in data loss.
+</Warning>
+
+<Info>
+After cluster creation, network disks can be managed individually per node. Additional disks can be added to specific nodes, and existing disks can be detached from individual nodes.
+</Info>
+
+
+### Step 7. Configure network settings
+
+Network settings define how the cluster communicates with external services and other resources. At least one interface is required.
+
+
+1. In the **Network settings** section, configure the network interface:
+
+| Type | Access | Use case |
+|------|--------|----------|
+| **Public** | Direct internet access with dynamic public IP | Development, testing, quick access to cluster |
+| **Private** | Internal network only, no external access | Production workloads, security-sensitive environments |
+| **Dedicated public** | Reserved static public IP | Production APIs, services requiring stable endpoints |
+
+To add additional interfaces, click **Add Interface**.
+
+For detailed networking configuration, see [Create and manage a network.](/cloud/networking/create-and-manage-a-network)
+
+### Step 8. Configure SSH key
+
+In the **SSH key** section, select an existing key from the dropdown or create a new one. Keys can be uploaded or generated directly in the portal.
+
+<Frame>![SSH key selector and Firewall settings section](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/virtual-gpu-ssh-firewall.png)</Frame>
+
+If generating a new key pair, save the private key immediately as it cannot be retrieved later.
+
+### Step 9. Set additional options
+
+The **Additional options** section provides optional settings: user data scripts for automated configuration and metadata tags for resource organization.
+
+
+### Step 10. Name and create the cluster
+
+The final step assigns a name to the cluster and initiates provisioning.
+
+
+1. In the **Cluster Name** section, enter a name or use the auto-generated one.
+
+2. Review the **Estimated cost** panel on the right.
+
+3. Click **Create Cluster**.
+
+Once all nodes reach **Power on** status, the cluster is ready for use.
+
+<Warning>
+Cluster-level settings (image, default networks) cannot be changed after creation. New nodes added via scaling inherit the original configuration. To change these settings, create a new cluster.
+</Warning>
+
+## Connect to the cluster
+
+After the cluster is created, use SSH to access the nodes. The default username is `ubuntu`.
+
+```bash
+ssh ubuntu@<node-ip-address>
+```
+
+Replace `<node-ip-address>` with the public or floating IP shown in the cluster details.
+
+For nodes with only private interfaces, connect through a bastion host or VPN, or use the [Gcore Customer Portal console.](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel)
+
+## Verify cluster status
+
+After connecting, verify that GPUs are available and drivers are loaded:
+
+```bash
+nvidia-smi
+```
+
+The output displays all available GPUs, driver version, and CUDA version. If no GPUs appear, check that the image includes the correct NVIDIA drivers for the GPU model.
+
+## Manage cluster power state
+
+Virtual GPU clusters support power management operations at the cluster level. Unlike Bare Metal clusters, powering off a Virtual GPU cluster releases compute resources (shelving), which stops billing but also removes data from local disks.
+
+<Frame>![Power tab showing Power on, Power off, and Soft reboot options](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/virtual-gpu-power-tab.png)</Frame>
+
+### Power off (shelve) a cluster
+
+Powering off a Virtual GPU cluster shelves all nodes. Shelving releases CPU, RAM, GPU, and local disk resources. No charges apply while nodes are shelved.
+
+1. In the cluster list or cluster details page, locate the cluster.
+2. Click the **Power Off** action.
+3. Confirm the operation.
+
+<Warning>
+When a node is shelved, the local data disk is deleted and all data on it is lost. Only network disks persist. Save important data to network disks or external storage before powering off.
+</Warning>
+
+### Power on a cluster
+
+Powering on a shelved cluster attempts to allocate resources for all nodes.
+
+1. In the cluster list or cluster details page, locate the powered-off cluster.
+2. Click the **Power On** action.
+
+<Warning>
+Restart is not guaranteed after shelving. If the requested resources (GPU model, flavor) are not available in the region at the time of power on, the operation fails. For workloads requiring guaranteed availability, use Bare Metal clusters.
+</Warning>
+
+
+## Change cluster flavor
+
+Virtual GPU clusters support changing the flavor after creation, allowing adjustment of GPU, CPU, and RAM allocation without recreating the cluster. This is not available for Bare Metal clusters.
+
+
+1. Power off (shelve) the cluster. Flavor changes require the cluster to be in shelved state.
+2. In the cluster details page, click **Change Flavor**.
+3. Select the new flavor from available options.
+4. Confirm the change.
+5. Power on the cluster.
+
+<Info>
+Flavor availability depends on the region and current capacity. If the desired flavor is not available, the change cannot be applied.
+</Info>
+
+
+## Manage node disks
+
+After cluster creation, disks can be managed individually for each node. This allows adding storage to specific nodes or removing unused disks.
+
+<Frame>![Cluster details page showing Overview, Power, Volumes, Networking, Tags, and Delete tabs](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/virtual-gpu-cluster-details.png)</Frame>
+
+### Add a disk to a node
+
+1. Navigate to the cluster details page.
+2. Open the **Volumes** tab.
+3. Select the node to attach a disk to.
+4. Click **Add Volume** and configure the disk type and size.
+5. Click **Create** to attach the new disk.
+
+### Remove a disk from a node
+
+1. Navigate to the cluster details page.
+2. Open the **Volumes** tab.
+3. Locate the disk to remove and click the detach action.
+4. Confirm the operation.
+
+<Warning>
+Detaching a disk does not delete it. The disk remains in the account and continues to incur storage charges until explicitly deleted.
+</Warning>
+
+## Delete a cluster
+
+When deleting a Virtual GPU cluster, disks attached to nodes can optionally be preserved.
+
+<Frame>![Delete Cluster dialog with options to select which volumes to delete](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/virtual-gpu-delete-dialog.png)</Frame>
+
+1. In the cluster list or cluster details page, click **Delete**.
+2. In the confirmation dialog:
+   - To delete all disks along with the cluster, leave the **Delete disks** checkbox selected.
+   - To preserve disks for later use, clear the **Delete disks** checkbox.
+3. Confirm the deletion.
+
+
+<Info>
+Preserved disks remain in the account and continue to incur storage charges. They can be attached to other instances or clusters.
+</Info>
+
+## Automating cluster management
+
+The [Gcore Customer Portal](https://portal.gcore.com) is suitable for creating and managing individual clusters. For automated workflows—such as CI/CD pipelines, infrastructure-as-code, or batch provisioning—use the GPU Virtual API.
+
+The API allows:
+
+- Creating and deleting clusters programmatically
+- Starting, stopping, and rebooting clusters
+- Changing cluster flavor
+- Managing volumes attached to cluster servers
+- Querying available GPU flavors and regions
+
+For authentication, request formats, and code examples, see the [GPU Virtual API reference.](/api-reference/cloud/gpu-virtual/create-virtual-gpu-cluster)
+
