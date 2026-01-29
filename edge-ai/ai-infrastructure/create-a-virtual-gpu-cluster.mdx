@@ -9,12 +9,24 @@ For an overview of GPU cluster types and their differences, see [About GPU Cloud
 
 ## Cluster architecture
 
-Each Virtual GPU cluster consists of one or more virtual machine nodes. All nodes share the same base configuration (image, network settings), but individual nodes can have different disk configurations after creation.
+Each Virtual GPU cluster consists of one or more virtual machine nodes. All nodes are created from an identical template (image, network settings, disk configuration). After creation, individual nodes can have their disk and network configurations modified independently.
 
 Each node has:
 
-- A **local data disk** added by default. This disk cannot be edited and is deleted when the node is shelved.
-- Optional **network disks** that can be attached during creation or added later. Network disks persist independently of node state.
+- A **network boot disk** (required). At least one network disk is required as the boot volume for the operating system.
+- A **local data disk** added by default. This non-replicated disk is dedicated to temporary storage.
+- Optional **network data disks** that can be attached during creation or added later. Network disks persist independently of node state.
+- Optional **Vast fileshare** integration for shared storage across nodes.
+
+<Warning>
+The local data disk is a non-replicated volume that comes with every Virtual GPU instance. This disk:
+
+- Cannot be modified, detached, or used as a boot volume
+- Is strictly bound to the specific virtual machine and its configuration
+- Is wiped when the node is reconfigured, powered off (shelved), or deleted
+
+Use this disk only for temporary data. Store all important data on network disks or NFS storage to prevent data loss.
+</Warning>
 
 
 ## Create a Virtual GPU cluster
@@ -76,27 +88,33 @@ The image defines the operating system and pre-installed software for cluster no
 
 ### Step 6. Configure disks
 
-Each Virtual GPU cluster node has two types of storage:
+Each Virtual GPU cluster node has the following storage:
 
-- **Local data disk**: Added automatically to every node. This disk cannot be edited or removed. Data on this disk is deleted when the node is shelved (powered off).
-- **Network disks**: Optional persistent storage that survives power cycles. Up to 8 network disks of different sizes and types can be attached.
+- **Network boot disk** (required): At least one network disk is required as the boot volume for the operating system. This disk persists across power cycles.
+- **Local data disk**: Added automatically to every node. This non-replicated disk is dedicated to temporary storage only. It cannot be edited, removed, or used as a boot volume. Data on this disk is deleted when the node is shelved, reconfigured, or deleted.
+- **Network data disks** (optional): Additional persistent storage that survives power cycles. Up to 8 network disks of different sizes and types can be attached.
+- **Vast fileshare** (optional): Shared storage integration for data accessible across multiple nodes.
 
 <Frame>![Volumes configuration section with disk type, size, and Your plan summary](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/virtual-gpu-volumes-config.png)</Frame>
 
-To add network disks:
+To configure disks:
 
-1. Click **Add Disk** to add a network disk to the configuration.
+1. Configure the **boot disk**:
+   - **Disk type**: Select from available storage types in the region
+   - **Size**: Minimum size depends on the selected image
 
-2. For each disk, select:
+2. To add additional network data disks, click **Add Disk**.
+
+3. For each additional disk, select:
    - **Disk type**: Select from available storage types in the region
    - **Size**: Minimum 120 GiB
 
-3. Repeat to add additional disks (maximum 8 disks total).
+4. Repeat to add more disks (maximum 8 disks total).
 
 All configured network disks are attached to every node in the cluster at creation.
 
 <Warning>
-Store important data on network disks, not on the local disk. The local disk is deleted when the node is shelved, resulting in data loss.
+Store important data on network disks or NFS storage, not on the local data disk. The local disk is wiped when the node is shelved, reconfigured, or deleted, resulting in permanent data loss.
 </Warning>
 
 <Info>
