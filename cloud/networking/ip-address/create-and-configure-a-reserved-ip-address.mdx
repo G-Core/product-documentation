@@ -3,29 +3,25 @@ title: "Create and configure a reserved IP address"
 sidebarTitle: "Reserved IP address"
 ---
 
-Reserved IPs are dedicated IP addresses that can be assigned to [Virtual Machines](/cloud/virtual-instances/create-an-instance), [Bare Metal servers](/cloud/bare-metal-servers/create-a-bare-metal-server), or [Load Balancers](/cloud/networking/create-and-configure-a-load-balancer).
+A reserved IP is a dedicated address that can be assigned to a [Virtual Machine](/cloud/virtual-instances/create-an-instance), [Bare Metal server](/cloud/bare-metal-servers/create-a-bare-metal-server), or [Load Balancer](/cloud/networking/create-and-configure-a-load-balancer). It exists independently of resources, can be pre-configured in DNS or firewall rules, and remains valid when reassigned. A reserved IP can also be used as a [Virtual IP address](/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address).
 
-## What a reserved IP is used for
+## Overview
 
-Since you know the IP address in advance, you can pre-configure your services for it—for example, create a DNS record for this IP or configure the server to connect to it.
+After a reserved IP is created, this address is exclusively allocated within the Gcore system. No other account can use it. The IP can be assigned to a resource or kept unassigned for future use.
 
-A reserved IP can also be used as a [virtual IP address](/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address).
+## Billing
 
-## How it works
+The monthly price for the IP is displayed in the order window. Billing applies only for the time from creating an IP to deleting it.
 
-After you create a reserved IP, this address becomes yours inside our system. No one can use it except you.
-
-## How it is charged
-
-The monthly price for the IP is displayed in the order window. You pay only for the time from creating an IP to deleting it.
-
-For example, if you had reserved an IP and then deleted it after an hour, you will be charged only for an hour of use. The price remains the same whether the IP address is assigned to a Virtual Machine or not.
+If an IP is reserved and deleted after an hour, charges apply only for that hour. The price remains the same whether the IP is assigned or not.
 
 <Frame>
   ![How it is charged](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/create-reserved-ip-dialog.png)
 </Frame>
 
 ## Reserve an IP address
+
+To create a new reserved IP:
 
 1. In the [Gcore Customer Portal](https://accounts.gcore.com/reports/dashboard), navigate to **Cloud** \> **Networking**.
 
@@ -36,9 +32,7 @@ For example, if you had reserved an IP and then deleted it after an hour, you wi
 2. Open the **Reserved IPs** page.
 
 <Info>
-  **Info**
-
-  You can have up to 1000 reserved fixed IP addresses that are not attached to any resource in your project.
+  A project can have up to 1000 reserved fixed IP addresses that are not attached to any resource.
 </Info>
 
 3. Click **Reserve new IP**.
@@ -47,33 +41,34 @@ For example, if you had reserved an IP and then deleted it after an hour, you wi
   ![Reserved IPs page in the Customer Portal](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/reserved-ips-page.png)
 </Frame>
 
-4. Select the IP type:
+4. Select the network type:
 
-- Public (for external network). A public IP address can be created immediately.
-- Private (for internal network). If you selected this option, choose the network and subnetwork in which the address will be created.
+- **Public** (for external network). A public IP address can be created immediately.
+- **Private** (for internal network). For this option, select the network and subnetwork in which the address will be created.
+- **Dedicated public** (for a dedicated public network). Select this option if a dedicated public network is configured for the project.
 
 <Info>
-  **Info**
-
-  A reserved private IP can only be used in the specified subnetwork. To order a specific address, enable the **Set IP address** toggle and enter the IP that belongs to that subnetwork.
+  A reserved private IP can only be used in the specified subnetwork. To request a specific address, select **Custom** in the **IP address to reserve** section and enter the IP that belongs to that subnetwork.
 </Info>
 
-5. (Optional) If you want to use IPv6 addresses, turn on the **Enable IPv6 dual-stack** toggle.
+5. (Optional) In the **IP Family** section, select the IP version: **IPv4**, **IPv6**, or **Dual (IPv4 + IPv6)**.
 
-![Create Reserved Ip Dialog Pn](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/create-reserved-ip-dialog.png)
+![Reserve IP dialog](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/create-reserved-ip-dialog.png)
 
-6. Click **Create**.
+6. Click **Reserve IP**.
 
 ## Assign a reserved IP to a VM
 
 <Tabs>
   <Tab title="During VM creation">
-    For instructions on how to add a Reserved IP when creating a Virtual Machine, refer to the [VM creation](/cloud/virtual-instances/create-an-instance#step-5-add-network-interfaces) guide.
+    Refer to the [VM creation](/cloud/virtual-instances/create-an-instance#step-5-add-network-interfaces) guide.
   </Tab>
   <Tab title="After VM creation">
     1. In the Virtual Machine settings, open the **Networking** tab.
 
-    If the machine is already connected to the target subnetwork, detach it first before assigning a new IP. This will remove the old IP.
+    <Warning>
+If the machine is already connected to the target subnetwork, detach it first before assigning a new IP. This removes the existing IP from the interface.
+</Warning>
 
     <Frame>
       ![Detach subnetwork](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/detach-subnetwork.png)
@@ -83,21 +78,137 @@ For example, if you had reserved an IP and then deleted it after an hour, you wi
     <Frame>
       ![Assign after Virtual Machine creation](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/add-reserved-ip-vm.png)
     </Frame>
-    3. Select the reserved IP and click **Save Changes**.
+    3. Select the reserved IP and click **Add**.
 
     The IP will be assigned to the Virtual Machine.
   </Tab>
 </Tabs>
 
-<Info>
-  **Info**
+## Configure the network interface in the operating system
 
-  If you add a public interface after creating a Virtual Machine, you may need to configure it manually on some operating systems. The OS cannot automatically detect and apply the new interface settings, especially for BMs. If your VM has an IPv6 address, it will be configured automatically without additional setup.
-</Info>
+Manual configuration is required only when adding a private interface to an existing VM or Bare Metal server.
+
+Find the interface name, IP address, and CIDR in the **Networking** tab. The gateway is the first usable IP in the subnet (`10.10.0.1` for `10.10.0.0/24`).
+
+<Frame>
+  ![Network interface details in VM settings](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/vm-interface-details.png)
+</Frame>
+
+To identify the new interface, run `ip link show` and match the MAC address shown in the portal.
+
+<Tabs>
+  <Tab title="Linux">
+    <Tabs>
+      <Tab title="Temporary DHCP">
+        If the network has DHCP enabled, request an IP address automatically:
+
+        ```sh
+        sudo dhcpcd <interface_name>
+        ```
+
+        Example:
+
+        ```sh
+        sudo dhcpcd enp4s0
+        ```
+
+        <Info>
+        This configuration is lost after a reboot.
+        </Info>
+      </Tab>
+      <Tab title="Temporary static">
+        Assign a static IP address manually:
+
+        ```sh
+        sudo ip link set <interface_name> up
+        sudo ip addr add <ip_address>/<prefix> dev <interface_name>
+        sudo ip route add <subnet_cidr> via <gateway_ip> dev <interface_name>
+        ```
+
+        Example:
+
+        ```sh
+        sudo ip link set enp4s0 up
+        sudo ip addr add 172.18.220.100/22 dev enp4s0
+        ```
+
+        <Info>
+        This configuration is lost after a reboot.
+        </Info>
+      </Tab>
+      <Tab title="Persistent DHCP">
+        For Ubuntu 24.04 and other Netplan-based distributions, create a configuration file:
+
+        ```sh
+        sudo bash -c 'cat <<EOF > /etc/netplan/51-new-interface.yaml
+        network:
+          version: 2
+          ethernets:
+            enp4s0:
+              dhcp4: true
+        EOF'
+        ```
+
+        Apply the configuration:
+
+        ```sh
+        sudo netplan apply
+        ```
+      </Tab>
+      <Tab title="Persistent static">
+        For Ubuntu 24.04 and other Netplan-based distributions, create a configuration file:
+
+        ```sh
+        sudo bash -c 'cat <<EOF > /etc/netplan/51-new-interface.yaml
+        network:
+          version: 2
+          ethernets:
+            enp4s0:
+              dhcp4: false
+              addresses:
+                - 192.168.1.10/24
+              gateway4: 192.168.1.1
+              nameservers:
+                addresses:
+                  - 95.85.95.85
+                  - 2.56.220.2
+        EOF'
+        ```
+
+        Replace `enp4s0`, IP address, gateway, and nameservers with the actual values.
+
+        Apply the configuration:
+
+        ```sh
+        sudo netplan apply
+        ```
+      </Tab>
+    </Tabs>
+  </Tab>
+  <Tab title="Windows">
+    1\. Open **Control Panel** > **Network and Sharing Center** > **Change adapter settings**.
+
+    2\. Right-click the new network adapter and select **Properties**.
+
+    3\. Select **Internet Protocol Version 4 (TCP/IPv4)** and click **Properties**.
+
+    4\. Select **Use the following IP address** and enter the IP address, subnet mask, and default gateway.
+
+    5\. Click **OK** to save the settings.
+  </Tab>
+</Tabs>
+
+For more detailed information, refer to the [Virtual IP (VIP) address configuration](/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address#configure-a-virtual-ip-address-for-non-windows-virtual-machines) guide.
 
 ## Detach a reserved IP from a VM
 
-Detach the subnetwork to which the reserved IP is assigned. This address will be detached from the Virtual Machine automatically.
+Detaching is required before reassigning the IP to another resource or deleting it.
+
+1. Open the Virtual Machine settings.
+2. Go to the **Networking** tab.
+3. Expand the interface that contains the reserved IP.
+4. Click the three-dot menu next to the subnetwork row.
+5. Select **Detach Subnetwork**.
 
 <Frame>
   ![Detach from the Virtual Machine](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/detach-subnetwork.png)
@@ -105,25 +216,27 @@ Detach the subnetwork to which the reserved IP is assigned. This address will be
 
 ## Assign a reserved IP to a load balancer
 
-You can assign the reserved IP only during the Load Balancer creation.
+A reserved IP can only be assigned during Load Balancer creation.
 
-For instructions on how to add a Reserved IP when creating a Load Balancer, refer to the [Load Balancer creation](/cloud/networking/create-and-configure-a-load-balancer#step-4-configure-network) guide.
+<Warning>
+The IP becomes the frontend address and is tightly bound to the frontend network interface. It cannot be changed after provisioning.
+</Warning>
+
+For instructions, refer to the [Load Balancer creation](/cloud/networking/create-and-configure-a-load-balancer#step-4-configure-network) guide.
 
 ## Find a resource with reserved IP
 
-If a reserved IP address is attached to a particular resource, you'll see this information on the **Reserved IPs** page, in the **Status** column:
+The **Status** column on the **Reserved IPs** page shows if an IP is attached to a resource:
 
 <Frame>
   ![Reserved IPs page in the Customer Portal](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/attached-to-instance.png)
 </Frame>
 
-You click the resource name to view and update its settings.
+Click the resource name to view and update its settings.
 
 ## Delete a reserved IP
 
-If the reserved IP is attached to the Virtual Machine or Load Balancer, you need to detach it first. Otherwise, you won't be able to delete the IP.
-
-To delete a reserved IP address:
+After verifying that the IP is no longer attached to any resource, it can be deleted:
 
 1. In the [Gcore Customer Portal](https://accounts.gcore.com/reports/dashboard), navigate to **Cloud** \> **Networking**.
 
@@ -132,7 +245,7 @@ To delete a reserved IP address:
 </Frame>
 
 2. Open the **Reserved IPs** page.
-3. Click a three-dot icon next to the IP you want to delete.
+3. Click the three-dot icon next to the target IP.
 4. Select **Delete**.
 
 <Frame>
