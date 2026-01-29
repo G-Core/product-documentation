@@ -1,0 +1,143 @@
+---
+title: IP reputation control
+sidebarTitle: IP reputation control
+---
+
+IP Reputation is a self-service tool for managing IP addresses that have been automatically flagged by Web Application and API Protection (WAAP) security algorithms. It allows reviewing blocked IPs, clearing false positives, and understanding why specific addresses were flagged.
+
+When WAAP detects suspicious behavior from an IP address—such as repeated attacks, abnormal traffic volume, or automated activity—it assigns reputation tags to that IP. These tags can result in the IP being blocked or challenged. IP Reputation provides visibility into these tags and the ability to clear them when an IP was incorrectly flagged.
+
+<Info>
+**Info**
+
+IP Reputation is available on the [Pro](/waap/billing#the-pro-plan) and [Enterprise](/waap/billing#the-enterprise-plan) plans.
+</Info>
+
+## How IP reputation works
+
+WAAP maintains two types of IP reputation:
+
+- **Local reputation**: Tags assigned based on behavior observed on domains within a specific account. These tags affect only the domains belonging to that account and can be cleared by the account owner.
+
+- **Global reputation**: Tags assigned based on behavior observed across the entire Gcore WAAP network. These tags affect all WAAP-protected domains and cannot be cleared by individual users—only Gcore support can manage global reputation.
+
+This distinction is important: clearing local tags removes restrictions only for domains within the account. If an IP also has global tags indicating malicious behavior, it may still be blocked or challenged even after clearing local tags.
+
+### Common local tags
+
+Local tags are assigned based on behavior patterns detected on account domains:
+
+| Tag | Description |
+|-----|-------------|
+| `abnormaltrafficvolume` | Unusually high request rate from the IP |
+| `multiplerepeatedrequests` | Same request sent multiple times |
+| `sessionlessclient` | Requests without maintaining sessions |
+| `suspectedautomation` | Behavior patterns suggesting automated tools |
+| `confirmedautomation` | Confirmed bot or automated agent |
+| `prolongedinjectedtraffic` | Sustained injection attack attempts |
+
+### Common global tags
+
+Global tags indicate reputation across the entire WAAP network:
+
+| Tag | Description |
+|-----|-------------|
+| `noriskip` | No malicious activity detected |
+| `lowriskip` | Minor suspicious activity |
+| `mediumriskip` | Moderate risk level |
+| `extremeriskip` | High-risk IP with confirmed attacks |
+| `blocklistde` | Listed on external blocklists |
+| `honeypotcrawl` | Detected crawling honeypot systems |
+| `spambot` | Associated with spam activity |
+
+## Open IP Reputation
+
+IP Reputation is an account-level feature accessible from the WAAP Features section.
+
+1. In the [Gcore Customer Portal](https://accounts.gcore.com/reports/dashboard), navigate to **WAAP** > **Features**.
+2. Click **IP Reputation Control**.
+
+<Frame>![IP Reputation Control page](/images/docs/waap/ip-security/ip-reputation-control/features-navigation.png)</Frame>
+
+The IP Reputation page opens, displaying the search interface and results list.
+
+## Search for IP addresses
+
+To check the reputation of a specific IP address:
+
+1. Enter the IPv4 or IPv6 address in the search field.
+2. Click **Search for IP** (or press Enter).
+
+<Frame>![IP search](/images/docs/waap/ip-security/ip-reputation-control/single-ip-search.png)</Frame>
+
+The results show all domain-IP combinations where this address has received reputation tags.
+
+## Results list
+
+Search results display as a table with one row per IP-domain combination. The same IP address may appear multiple times if it accessed different domains within the account.
+
+<Frame>![Results list](/images/docs/waap/ip-security/ip-reputation-control/results-list.png)</Frame>
+
+Each row contains:
+
+| Column | Description |
+|--------|-------------|
+| **Date** | When the IP last sent a request to the domain |
+| **Domain** | The domain that received traffic from this IP |
+| **IP address** | The flagged IP (IPv4 or IPv6) |
+| **Local IP tags** | Reputation tags assigned based on behavior on this account's domains |
+| **Global IP tags** | Reputation tags from the WAAP network (shown only when local tags exist) |
+
+The list is sorted by date (most recent first) by default.
+
+## Clear local IP tags
+
+Clearing local tags removes the reputation restrictions for a specific IP-domain pair. This is useful when an IP was incorrectly flagged—for example, during security testing or when a legitimate partner IP triggered automated defenses.
+
+To clear local tags:
+
+1. Locate the IP-domain row in the results list.
+2. Click the three-dot menu at the end of the row and select **Delete local tags**. Alternatively, select checkboxes next to one or more rows and click **Delete selected**.
+3. In the confirmation dialog, confirm the action.
+
+<Frame>![Delete local tags](/images/docs/waap/ip-security/ip-reputation-control/delete-local-tags.png)</Frame>
+
+The local tags are removed and the rows disappear from the list. The IP addresses can now access the domain without reputation-based restrictions.
+
+<Warning>
+**Warning**
+
+If the IP also has global tags (visible in the **Global IP tags** column), it may still be blocked or challenged. Global reputation can only be cleared by [contacting Gcore support](https://gcore.com/contact-us).
+</Warning>
+
+## Clear IP reputation from Analytics
+
+IP reputation can also be cleared directly from the domain Analytics page when investigating specific security events.
+
+1. In the Gcore Customer Portal, navigate to **WAAP** > **Domains** and select the domain.
+2. In the domain sidebar, expand **Analytics** and click **WAAP**.
+
+<Frame>![WAAP Analytics page](/images/docs/waap/ip-security/ip-reputation-control/waap-analytics.png)</Frame>
+
+3. In the **Requests** section, find the event row for the IP address.
+4. Click the three-dot menu on the event row and select **Clear IP Reputation**.
+
+<Frame>![Clear IP reputation from requests](/images/docs/waap/ip-security/ip-reputation-control/clear-from-analytics.png)</Frame>
+
+This action opens the IP Reputation page with the IP pre-populated, allowing review of all affected domains before clearing.
+
+## Add IPs to permanent allow or block lists
+
+IP Reputation handles dynamically-assigned reputation tags. For permanent access control, use the [Firewall allow and block lists](/waap/ip-security/allow-and-block-ip-addresses).
+
+- **Allow list**: Trusted IPs bypass all security checks. Use for known partners, office networks, or monitoring services.
+- **Block list**: IPs are permanently denied access. Use for confirmed attackers or unwanted traffic sources.
+
+Firewall rules take precedence over reputation-based blocking. An IP on the allow list is never blocked by reputation, and an IP on the block list is always blocked regardless of reputation.
+
+## Limitations
+
+- Only local tags can be cleared through IP Reputation. Global tags require Gcore support intervention.
+- Clearing reputation removes current tags but does not prevent future tagging. If the same behavior patterns recur, the IP will be tagged again.
+
+For detailed investigation of specific IP addresses before clearing reputation, use [IP Spotlight](/waap/ip-security/ip-spotlight) to analyze threat history and risk scores. To configure which traffic sources (TOR, VPN, proxies) are automatically blocked or challenged, adjust the [IP reputation policy](/waap/waap-policies/ip-reputation) settings.
