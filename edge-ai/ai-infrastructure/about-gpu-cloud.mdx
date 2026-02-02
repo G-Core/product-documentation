@@ -23,14 +23,6 @@ Gcore offers three types of GPU clusters:
 | **Spot Bare Metal GPU** | Same hardware as Bare Metal, but at a reduced price (up to 50% discount). Instances can be preempted with a 24-hour notice when capacity is needed | Fault-tolerant training with checkpointing, batch processing, development, and testing |
 | **Virtual GPU** | Virtualized GPU instances with flexible resource management. Supports flavor changes and cost optimization through shelving (powering off releases resources and stops billing) | Development environments, variable workloads, cost-sensitive projects |
 
-<Info>
-Spot instances are ideal for workloads that can handle interruptions. When a Spot cluster is reclaimed, you receive an email notification 24 hours before deletion. Use this time to save critical data to file shares or object storage.
-</Info>
-
-<Info>
-Virtual GPU clusters can be shelved (powered off) to stop billing. However, restart is not guaranteed if capacity is unavailable. Local disks are deleted when shelved. For guaranteed availability, use Bare Metal clusters.
-</Info>
-
 Clusters can scale to hundreds of nodes. Production deployments with 250+ nodes in a single cluster are supported, limited only by regional stock availability.
 
 ## Available configurations
@@ -45,19 +37,11 @@ Select a configuration based on your workload requirements:
 | A100 without InfiniBand | 8x NVIDIA A100 80GB | 2x 100 Gbit/s Ethernet | 2TB | 8x 3.84TB NVMe | Single-node training, inference for large models requiring more than 48GB VRAM |
 | L40S | 8x NVIDIA L40S | 2x 25 Gbit/s Ethernet | 2TB | 4x 7.68TB NVMe | Inference, fine-tuning small to medium models requiring less than 48GB VRAM |
 
-Outbound data transfer (egress) from GPU clusters is free. For pricing details, see [GPU Cloud billing](/edge-ai/billing).
+Outbound data transfer (egress) from GPU clusters is free. Other costs are covered in [GPU Cloud billing](/edge-ai/billing).
 
 ## InfiniBand networking
 
-InfiniBand is a high-bandwidth, low-latency interconnect technology used for communication between nodes in a cluster.
-
-InfiniBand is configured automatically when you create a cluster. If the selected configuration includes InfiniBand network cards, all nodes are placed in the same InfiniBand domain with no manual setup required.
-
-H100 configurations typically have 8 InfiniBand ports per node, each creating a dedicated network interface.
-
-InfiniBand matters most for distributed training, where models that don't fit on a single node require frequent gradient synchronization between GPUs. The same applies to multi-node inference when large models are split across servers. In these cases, InfiniBand reduces communication overhead significantly compared to Ethernet.
-
-For single-node workloads or independent batch jobs that don't require node-to-node communication, InfiniBand provides no benefit. Standard Ethernet configurations work equally well and may be more cost-effective.
+InfiniBand is a high-bandwidth, low-latency interconnect for communication between cluster nodes. It is essential for distributed training and multi-node inference where frequent data synchronization is required. InfiniBand is available for both Bare Metal and Virtual GPU clusters and is configured automatically when you select a flavor with InfiniBand support.
 
 ## Storage options
 
@@ -67,8 +51,6 @@ GPU clusters support two storage types:
 |-------------|-------------|-------------|----------|
 | Local NVMe | Temporary (deleted with cluster) | Highest IOPS, lowest latency | Training data cache, checkpoints during training |
 | File shares | Persistent (independent of cluster) | Network-attached, lower latency than object storage | Datasets, model weights, shared checkpoints |
-
-Learn more about [configuring file shares](/cloud/file-shares/configure-file-shares) for persistent storage and sharing data between nodes.
 
 ## Cluster lifecycle
 
