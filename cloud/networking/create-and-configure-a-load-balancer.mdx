@@ -167,6 +167,28 @@ Configure a pool—a list of VMs to which the listener will redirect incoming tr
   ![Pool configuration](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-pool-conf-lb.png)
 </Frame>
 
+#### Sharing a pool across multiple listeners
+
+A single pool can be used by multiple listeners within the same Load Balancer. This reduces configuration overhead and simplifies pool member management when routing traffic from different ports to the same backend servers.
+
+<Info>
+  **Info**
+
+  Shared pools can only be configured via the [Load Balancer API](https://apidocs.gcore.com/cloud#tag/Load-Balancers).
+</Info>
+
+To configure a shared pool:
+
+1. Create a Load Balancer via `POST /cloud/v1/loadbalancers/{project_id}/{region_id}`.
+2. Create a pool via `POST /cloud/v1/lbpools/{project_id}/{region_id}`, specifying `loadbalancer_id` without `listener_id`.
+3. Create listeners via `POST /cloud/v1/lblisteners/{project_id}/{region_id}`, referencing the pool via `default_pool_id`.
+
+<Warning>
+  **Warning**
+
+  When deleting a listener that uses a shared pool, do not use the `delete_default_pool` option. This would delete the pool and affect all other listeners using it. Instead, manage the pool separately.
+</Warning>
+
 ### Virtual Machine
 
 <Frame>
