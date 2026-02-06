@@ -1,0 +1,77 @@
+---
+title: "CDN properties"
+sidebarTitle: "CDN properties"
+---
+
+CDN applications built on the Proxy-Wasm ABI interact with HTTP requests and responses through a property system. Since each hook (onRequestHeaders, onRequestBody, onResponseHeaders, onResponseBody) runs in its own isolated WASM instance, properties provide the mechanism for reading request/response data and modifying CDN behavior throughout the request lifecycle.
+
+### How properties work
+
+Properties are accessed through two core methods:
+
+- **`get_property(path)`**: Reads data from the current request context
+- **`set_property(path, value)`**: Modifies writable properties to customize CDN behavior
+
+Each property is identified by a path (e.g., `request.path`, `response.status`) and has specific access permissions based on the hook where it's accessed.
+
+### Property access patterns
+
+**Read-only properties**: Can be read but not modified. These typically represent immutable request data or CDN internal state.
+
+**Read-write properties**: Can be both read and modified. Use these to customize headers, adjust routing, or modify response behavior.
+
+**Hook-specific availability**: Some properties are only accessible in certain hooks. For example, response properties are unavailable in request hooks.
+
+### Available properties
+
+The following table lists all available properties, their access permissions, and the hooks where they can be used:
+
+| Property Path           | Type    | Access     | Available In                      | Description                            |
+| ----------------------- | ------- | ---------- | --------------------------------- | -------------------------------------- |
+| `request.method`        | String  | Read-write | onRequestHeaders, onRequestBody   | HTTP method (GET, POST, etc.)          |
+| `request.path`          | String  | Read-write | onRequestHeaders, onRequestBody   | Request URL path                       |
+| `request.url`           | String  | Read-write | onRequestHeaders, onRequestBody   | Original URL path before modifications |
+| `request.host`          | String  | Read-write | onRequestHeaders, onRequestBody   | Host header value                      |
+| `request.scheme`        | String  | Read-only  | onRequestHeaders, onRequestBody   | Protocol scheme (http/https)           |
+| `request.protocol`      | String  | Read-only  | onRequestHeaders, onRequestBody   | HTTP version (HTTP/1.1, HTTP/2)        |
+| `request.country`       | String  | Read-only  | onRequestHeaders, onRequestBody   | Country Code - deciphered from IP      |
+| `request.extension`     | String  | Read-only  | onRequestHeaders, onRequestBody   | Request path extension                 |
+| `request.content-type`  | String  | Read-write | onRequestHeaders, onRequestBody   | Content-Type                           |
+| `request.query`         | String  | Read-write | onRequestHeaders, onRequestBody   | Query string parameters                |
+| `request.body`          | Bytes   | Read-only  | onRequestBody                     | Request body content                   |
+| `request.size`          | Integer | Read-only  | onRequestHeaders, onRequestBody   | Total request size in bytes            |
+| `response.status`       | Integer | Read-only  | onResponseHeaders, onResponseBody | HTTP status code                       |
+| `response.content-type` | String  | Read-write | onResponseHeaders, onResponseBody | Content-Type                           |
+| `response.body`         | Bytes   | Read-only  | onResponseBody                    | Response body content                  |
+| `response.size`         | Integer | Read-only  | onResponseHeaders, onResponseBody | Total response size in bytes           |
+| `response.markdown`     | Boolean | Read-write | onResponseHeaders, onResponseBody | Contains markdown                      |
+
+### Property modification best practices
+
+**Validate before setting**: Always validate property values before modification to prevent errors.
+
+**Preserve critical headers**: Avoid removing or modifying headers that CDN or origin servers depend on (e.g., `Host`, `Content-Length`).
+
+**Use appropriate hooks**: Modify request properties in request hooks and response properties in response hooks.
+
+**Handle missing properties**: Not all properties are available in all contexts. Use error handling when accessing optional properties.
+
+### Example: Response modification
+
+```rust
+// In onResponseHeaders
+fn on_response_headers() {
+    // Read response status
+    let status_code = self.get_property(vec!["response.status"])
+
+    // Add markdown property
+    self.set_property(vec!["response.markdown"], Some(b"true"));
+}
+```
+
+<Info>
+**Note**
+
+Property paths are case-sensitive. Header names follow HTTP conventions (lowercase with hyphens).
+
+</Info>
