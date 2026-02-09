@@ -26,25 +26,24 @@ Each property is identified by a path (e.g., `request.path`, `response.status`) 
 
 The following table lists all available properties, their access permissions, and the hooks where they can be used:
 
-| Property Path           | Type    | Access     | Available In                      | Description                            |
-| ----------------------- | ------- | ---------- | --------------------------------- | -------------------------------------- |
-| `request.method`        | String  | Read-write | onRequestHeaders, onRequestBody   | HTTP method (GET, POST, etc.)          |
-| `request.path`          | String  | Read-write | onRequestHeaders, onRequestBody   | Request URL path                       |
-| `request.url`           | String  | Read-write | onRequestHeaders, onRequestBody   | Original URL path before modifications |
-| `request.host`          | String  | Read-write | onRequestHeaders, onRequestBody   | Host header value                      |
-| `request.scheme`        | String  | Read-only  | onRequestHeaders, onRequestBody   | Protocol scheme (http/https)           |
-| `request.protocol`      | String  | Read-only  | onRequestHeaders, onRequestBody   | HTTP version (HTTP/1.1, HTTP/2)        |
-| `request.country`       | String  | Read-only  | onRequestHeaders, onRequestBody   | Country Code - deciphered from IP      |
-| `request.extension`     | String  | Read-only  | onRequestHeaders, onRequestBody   | Request path extension                 |
-| `request.content-type`  | String  | Read-write | onRequestHeaders, onRequestBody   | Content-Type                           |
-| `request.query`         | String  | Read-write | onRequestHeaders, onRequestBody   | Query string parameters                |
-| `request.body`          | Bytes   | Read-only  | onRequestBody                     | Request body content                   |
-| `request.size`          | Integer | Read-only  | onRequestHeaders, onRequestBody   | Total request size in bytes            |
-| `response.status`       | Integer | Read-only  | onResponseHeaders, onResponseBody | HTTP status code                       |
-| `response.content-type` | String  | Read-write | onResponseHeaders, onResponseBody | Content-Type                           |
-| `response.body`         | Bytes   | Read-only  | onResponseBody                    | Response body content                  |
-| `response.size`         | Integer | Read-only  | onResponseHeaders, onResponseBody | Total response size in bytes           |
-| `response.markdown`     | Boolean | Read-write | onResponseHeaders, onResponseBody | Contains markdown                      |
+| Property Path             | Type    | Access     | Available In                      | Description                            |
+| ------------------------- | ------- | ---------- | --------------------------------- | -------------------------------------- |
+| `request.method`          | String  | Read-write | onRequestHeaders, onRequestBody   | HTTP method (GET, POST, etc.)          |
+| `request.path`            | String  | Read-write | onRequestHeaders, onRequestBody   | Request URL path                       |
+| `request.url`             | String  | Read-write | onRequestHeaders, onRequestBody   | Original URL path before modifications |
+| `request.host`            | String  | Read-write | onRequestHeaders, onRequestBody   | Host header value                      |
+| `request.scheme`          | String  | Read-only  | onRequestHeaders, onRequestBody   | Protocol scheme (http/https)           |
+| `request.protocol`        | String  | Read-only  | onRequestHeaders, onRequestBody   | HTTP version (HTTP/1.1, HTTP/2)        |
+| `request.country`         | String  | Read-only  | onRequestHeaders, onRequestBody   | Country Code - deciphered from IP      |
+| `request.extension`       | String  | Read-only  | onRequestHeaders, onRequestBody   | Request path extension                 |
+| `request.content-type`    | String  | Read-write | onRequestHeaders, onRequestBody   | Content-Type                           |
+| `request.query`           | String  | Read-write | onRequestHeaders, onRequestBody   | Query string parameters                |
+| `request.body`            | Bytes   | Read-only  | onRequestBody                     | Request body content                   |
+| `request.content-length`  | Integer | Read-only  | onRequestHeaders, onRequestBody   | Total request size length              |
+| `response.status`         | Integer | Read-only  | onResponseHeaders, onResponseBody | HTTP status code                       |
+| `response.content-type`   | String  | Read-write | onResponseHeaders, onResponseBody | Content-Type                           |
+| `response.body`           | Bytes   | Read-only  | onResponseBody                    | Response body content                  |
+| `response.content-length` | Integer | Read-only  | onResponseHeaders, onResponseBody | Total response size length             |
 
 ### Property modification best practices
 
@@ -56,16 +55,33 @@ The following table lists all available properties, their access permissions, an
 
 **Handle missing properties**: Not all properties are available in all contexts. Use error handling when accessing optional properties.
 
+### Custom properties
+
+You can also create custom properties within hooks. This allows you to track data between hook runs. e.g. custom property `markdown`
+
 ### Example: Response modification
 
 ```rust
 // In onResponseHeaders
 fn on_response_headers() {
-    // Read response status
-    let status_code = self.get_property(vec!["response.status"])
+    // Add Custom markdown property
+    if let Some(content_type) = self.get_http_response_header("Content-Type") {
+        if content_type.starts_with("text/plain") || content_type.starts_with("text/markdown") {
+            self.set_http_response_header("Content-Length", None);
+            self.set_http_response_header("Transfer-Encoding", Some("Chunked"));
+            self.set_http_response_header("Content-Type", Some("text/html"));
+            self.set_property(vec!["response.markdown"], Some(b"true"));
+            println!("Response is markdown, on_response_body can now convert to HTML");
+        }
+    }
+}
 
-    // Add markdown property
-    self.set_property(vec!["response.markdown"], Some(b"true"));
+// In onResponseBody
+fn on_http_response_body(&mut self, body_size: usize, end_of_stream: bool) -> Action {
+    // only process markdown
+    if None == self.get_property(vec!["response.markdown"]) {
+        return Action::Continue;
+    }
 }
 ```
 
