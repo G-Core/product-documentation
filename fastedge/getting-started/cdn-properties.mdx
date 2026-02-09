@@ -24,40 +24,38 @@ Each property is identified by a path (e.g., `request.path`, `response.status`) 
 
 ### Available properties
 
-The following table lists all available properties, their access permissions, and the hooks where they can be used:
+The following table lists all available properties and their access permissions. These properties can only be written to within the onRequestHeaders hook:
 
-| Property Path             | Type    | Access     | Available In                      | Description                            |
-| ------------------------- | ------- | ---------- | --------------------------------- | -------------------------------------- |
-| `request.method`          | String  | Read-write | onRequestHeaders, onRequestBody   | HTTP method (GET, POST, etc.)          |
-| `request.path`            | String  | Read-write | onRequestHeaders, onRequestBody   | Request URL path                       |
-| `request.url`             | String  | Read-write | onRequestHeaders, onRequestBody   | Original URL path before modifications |
-| `request.host`            | String  | Read-write | onRequestHeaders, onRequestBody   | Host header value                      |
-| `request.scheme`          | String  | Read-only  | onRequestHeaders, onRequestBody   | Protocol scheme (http/https)           |
-| `request.protocol`        | String  | Read-only  | onRequestHeaders, onRequestBody   | HTTP version (HTTP/1.1, HTTP/2)        |
-| `request.country`         | String  | Read-only  | onRequestHeaders, onRequestBody   | Country Code - deciphered from IP      |
-| `request.extension`       | String  | Read-only  | onRequestHeaders, onRequestBody   | Request path extension                 |
-| `request.content-type`    | String  | Read-write | onRequestHeaders, onRequestBody   | Content-Type                           |
-| `request.query`           | String  | Read-write | onRequestHeaders, onRequestBody   | Query string parameters                |
-| `request.body`            | Bytes   | Read-only  | onRequestBody                     | Request body content                   |
-| `request.content-length`  | Integer | Read-only  | onRequestHeaders, onRequestBody   | Total request size length              |
-| `response.status`         | Integer | Read-only  | onResponseHeaders, onResponseBody | HTTP status code                       |
-| `response.content-type`   | String  | Read-write | onResponseHeaders, onResponseBody | Content-Type                           |
-| `response.body`           | Bytes   | Read-only  | onResponseBody                    | Response body content                  |
-| `response.content-length` | Integer | Read-only  | onResponseHeaders, onResponseBody | Total response size length             |
+| Property Path          | Type    | Access     | Description                                           |
+| ---------------------- | ------- | ---------- | ----------------------------------------------------- |
+| `request.url`          | String  | Read-write | Original URL path before modifications                |
+| `request.host`         | String  | Read-write | Host header value                                     |
+| `request.path`         | String  | Read-write | Request URL path                                      |
+| `request.scheme`       | String  | Read-only  | Protocol scheme (http/https)                          |
+| `request.method`       | String  | Read-only  | HTTP method (GET, POST, etc.)                         |
+| `request.extension`    | String  | Read-only  | Request path extension                                |
+| `request.query`        | String  | Read-write | Query string parameters                               |
+| `request.country`      | String  | Read-only  | Country Code - deciphered from IP                     |
+| `request.city`         | String  | Read-only  | City name - deciphered from IP                        |
+| `request.asn`          | String  | Read-only  | ASN of the network/ISP associated with the request IP |
+| `request.geo.lat`      | String  | Read-only  | Latitude - deciphered from IP                         |
+| `request.geo.long`     | String  | Read-only  | Longitude - deciphered from IP                        |
+| `request.region`       | String  | Read-only  | Region - deciphered from IP                           |
+| `request.continent`    | String  | Read-only  | Continent - deciphered from IP                        |
+| `request.country.name` | String  | Read-only  | Country name - deciphered from IP                     |
+| `nginx.log_field1`     | String  | Write-only | Adds value to nginx access logs                       |
+| `response.status`      | Integer | Read-only  | HTTP status code                                      |
 
-### Property modification best practices
 
-**Validate before setting**: Always validate property values before modification to prevent errors.
+#### `nginx.log_field1`
 
-**Preserve critical headers**: Avoid removing or modifying headers that CDN or origin servers depend on (e.g., `Host`, `Content-Length`).
+This field is write-only (onRequestHeaders). Adding a value here will ensure it is written to CDN access log, available through the Log uploader feature.
 
-**Use appropriate hooks**: Modify request properties in request hooks and response properties in response hooks.
-
-**Handle missing properties**: Not all properties are available in all contexts. Use error handling when accessing optional properties.
 
 ### Custom properties
 
 You can also create custom properties within hooks. This allows you to track data between hook runs. e.g. custom property `markdown`
+These custom hooks are all read-write, however they are only available from onRequestBody onwards. Anything added within onRequestHeaders will **not** be available, in future hooks.
 
 ### Example: Response modification
 
@@ -84,6 +82,14 @@ fn on_http_response_body(&mut self, body_size: usize, end_of_stream: bool) -> Ac
     }
 }
 ```
+
+### Property modification best practices
+
+**Validate before setting**: Always validate property values before modification to prevent errors.
+
+**Use appropriate hooks**: Modify request properties only in onRequestHeaders.
+
+**Handle missing properties**: Not all properties are available in all contexts. Use error handling when accessing optional properties.
 
 <Info>
 **Note**
