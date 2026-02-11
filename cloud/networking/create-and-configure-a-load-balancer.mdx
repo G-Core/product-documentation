@@ -35,12 +35,17 @@ Select a suitable computing configuration for your Load Balancer: GiB and vCPU. 
 
 ## Step 4. Configure network
 
-Select a network, public or private, and enable additional features:
+Configure the network interface:
 
-- Reserved IP and IPv6 dual-stack for the public network.
-- Floating IP, reserved IP and IPv6 dual-stack for the private network.
+1. Select the **Network type**: **Public**, **Private**, or **Dedicated public**.
 
-![Step 3 Lb Pn](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-3-lb.png)
+2. In the **IP Family** section, select the IP version: **IPv4**, **IPv6**, or **Dual (IPv4 + IPv6)**.
+
+3. (Optional) Enable **Use reserved IP** to assign a [reserved IP address](/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address) to the Load Balancer.
+
+4. Configure **Preferred connectivity** (L2 or L3) as described in the next step.
+
+![Network configuration](/images/docs/cloud/networking/create-and-configure-a-load-balancer/lb-network-section.png)
 
 ## Step 5. Configure preferred connectivity
 
@@ -161,6 +166,28 @@ Configure a pool—a list of VMs to which the listener will redirect incoming tr
 <Frame>
   ![Pool configuration](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-pool-conf-lb.png)
 </Frame>
+
+#### Sharing a pool across multiple listeners
+
+A single pool can be used by multiple listeners within the same Load Balancer. This reduces configuration overhead and simplifies pool member management when routing traffic from different ports to the same backend servers.
+
+<Info>
+  **Info**
+
+  Shared pools can only be configured via the [Load Balancer API](https://apidocs.gcore.com/cloud#tag/Load-Balancers).
+</Info>
+
+To configure a shared pool:
+
+1. Create a Load Balancer via `POST /cloud/v1/loadbalancers/{project_id}/{region_id}`.
+2. Create a pool via `POST /cloud/v1/lbpools/{project_id}/{region_id}`, specifying `loadbalancer_id` without `listener_id`.
+3. Create listeners via `POST /cloud/v1/lblisteners/{project_id}/{region_id}`, referencing the pool via `default_pool_id`.
+
+<Warning>
+  **Warning**
+
+  When deleting a listener that uses a shared pool, do not use the `delete_default_pool` option. This would delete the pool and affect all other listeners using it. Instead, manage the pool separately.
+</Warning>
 
 ### Virtual Machine
 
