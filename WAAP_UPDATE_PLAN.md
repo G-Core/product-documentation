@@ -247,7 +247,7 @@ Before marking an article complete, verify:
 
 | Category | Articles | Screenshots | Completed | Remaining |
 |----------|----------|-------------|-----------|-----------|
-| Getting Started | 5 | 22 | 1 | 4 |
+| Getting Started | 5 | 22 | 4 | 1 |
 | Analytics | 1 | 21 | 1 | 0 |
 | IP Firewall | 3 | 10 | 0 | 3 |
 | DDoS Protection | 1 | 0 | 0 | 1 |
@@ -258,7 +258,7 @@ Before marking an article complete, verify:
 | API Protection | 6 | 16 | 0 | 6 |
 | Response Pages | 3 | 19 | 0 | 3 |
 | FAQs/Troubleshooting | 7 | 4 | 0 | 7 |
-| **TOTAL** | **45** | **151** | **2** | **43** |
+| **TOTAL** | **45** | **151** | **5** | **40** |
 
 ---
 
@@ -268,6 +268,10 @@ Before marking an article complete, verify:
 |------|---------|---------|--------|
 | 2026-02-12 | configure-waap-for-a-domain.mdx | Full revision: terminology, navigation, filters, screenshots, proofreading | Agent |
 | 2026-02-12 | analytics.mdx | Full revision: title to Events, terminology, table columns, section descriptions, screenshots | Agent |
+| 2026-02-12 | overview.mdx | No changes needed - general overview | Agent |
+| 2026-02-12 | billing.mdx | Fixed broken link, replaced "Common automated services" with "Known Bots" | Agent |
+| 2026-02-12 | waap-modes.mdx | Fixed alt text Analytics->Events | Agent |
+| 2026-02-12 | manage-domains.mdx | Fixed spacing before colons, grammar error | Agent |
 
 ---
 
