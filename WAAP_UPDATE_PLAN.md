@@ -184,62 +184,62 @@ Before marking an article complete, verify:
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 15 | `waap/waap-rules.mdx` | 0 | [ ] Pending | | |
-| 16 | `waap/waap-rules/custom-rules.mdx` | 0 | [ ] Pending | | |
-| 17 | `waap/waap-rules/advanced-rules/advanced-rate-limiting-rules.mdx` | 0 | [ ] Pending | | |
-| 18 | `waap/waap-rules/advanced-rules.mdx` | 1 | [ ] Pending | | |
-| 19 | `waap/waap-rules/advanced-rules/advanced-rule-objects.mdx` | 0 | [ ] Pending | | |
-| 20 | `waap/waap-rules/advanced-rules/source-field-objects.mdx` | 0 | [ ] Pending | | |
-| 21 | `waap/waap-rules/custom-rules/tag-rules.mdx` | 3 | [ ] Pending | | |
-| 22 | `waap/waap-rules/custom-rules/tag-rules/reserved-tags.mdx` | 9 | [ ] Pending | | |
-| 23 | `waap/waap-rules/custom-rules/tag-rules/predefined-tags.mdx` | 0 | [ ] Pending | | |
+| 15 | `waap/waap-rules.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
+| 16 | `waap/waap-rules/custom-rules.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
+| 17 | `waap/waap-rules/advanced-rules/advanced-rate-limiting-rules.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed (Enterprise) |
+| 18 | `waap/waap-rules/advanced-rules.mdx` | 1 | [x] DONE | waap-urgent-updates | No changes needed (Enterprise) |
+| 19 | `waap/waap-rules/advanced-rules/advanced-rule-objects.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed (Enterprise) |
+| 20 | `waap/waap-rules/advanced-rules/source-field-objects.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed (Enterprise) |
+| 21 | `waap/waap-rules/custom-rules/tag-rules.mdx` | 3 | [x] DONE | waap-urgent-updates | No changes needed |
+| 22 | `waap/waap-rules/custom-rules/tag-rules/reserved-tags.mdx` | 9 | [x] DONE | waap-urgent-updates | No changes needed |
+| 23 | `waap/waap-rules/custom-rules/tag-rules/predefined-tags.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
 
 ### Bot Management (4 articles)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 24 | `waap/troubleshooting/enable-troubleshoot-bot-protection.mdx` | 2 | [ ] Pending | | |
-| 25 | `waap/waap-policies/known-bots.mdx` | 2 | [ ] Pending | | |
-| 26 | `waap/waap-policies/anti-automation-and-bot-protection.mdx` | 2 | [ ] Pending | | |
-| 27 | `waap/waap-policies/invalid-user-agent-and-unknown-user-agent.mdx` | 0 | [ ] Pending | | |
+| 24 | `waap/troubleshooting/enable-troubleshoot-bot-protection.mdx` | 2 | [x] DONE | waap-urgent-updates | No changes needed |
+| 25 | `waap/waap-policies/known-bots.mdx` | 2 | [x] DONE | waap-urgent-updates | No changes needed (Pro/Enterprise) |
+| 26 | `waap/waap-policies/anti-automation-and-bot-protection.mdx` | 2 | [x] DONE | waap-urgent-updates | No changes needed |
+| 27 | `waap/waap-policies/invalid-user-agent-and-unknown-user-agent.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
 
 ### Threat Intelligence (2 articles)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 28 | `waap/security-insights.mdx` | 22 | [ ] Pending | | |
-| 29 | `waap/ip-security/ip-spotlight.mdx` | 9 | [ ] Pending | | |
+| 28 | `waap/security-insights.mdx` | 22 | [x] DONE | waap-urgent-updates | No changes needed |
+| 29 | `waap/ip-security/ip-spotlight.mdx` | 9 | [x] DONE | waap-urgent-updates | No changes needed |
 
 ### API Protection (6 articles)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 30 | `waap/api-discovery-and-protection.mdx` | 0 | [ ] Pending | | |
-| 31 | `waap/api-discovery-and-protection/api-discovery.mdx` | 5 | [ ] Pending | | |
-| 32 | `waap/api-discovery-and-protection/configure-api-access-with-reserved-tags.mdx` | 6 | [ ] Pending | | |
-| 33 | `waap/api-discovery-and-protection/configure-api-base-path.mdx` | 1 | [ ] Pending | | |
-| 34 | `waap/waap-policies/advanced-api-protection.mdx` | 2 | [ ] Pending | | |
-| 35 | `waap/waap-policies/protocol-validation.mdx` | 2 | [ ] Pending | | |
+| 30 | `waap/api-discovery-and-protection.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
+| 31 | `waap/api-discovery-and-protection/api-discovery.mdx` | 5 | [x] DONE | waap-urgent-updates | No changes needed (Enterprise) |
+| 32 | `waap/api-discovery-and-protection/configure-api-access-with-reserved-tags.mdx` | 6 | [x] DONE | waap-urgent-updates | No changes needed |
+| 33 | `waap/api-discovery-and-protection/configure-api-base-path.mdx` | 1 | [x] DONE | waap-urgent-updates | No changes needed |
+| 34 | `waap/waap-policies/advanced-api-protection.mdx` | 2 | [x] DONE | waap-urgent-updates | No changes needed (Enterprise) |
+| 35 | `waap/waap-policies/protocol-validation.mdx` | 2 | [x] DONE | waap-urgent-updates | No changes needed |
 
 ### Response Pages (3 articles)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 36 | `waap/response-pages.mdx` | 5 | [ ] Pending | | |
-| 37 | `waap/response-pages/create-custom-response-pages.mdx` | 9 | [ ] Pending | | |
-| 38 | `waap/response-pages/manage-custom-response-pages.mdx` | 5 | [ ] Pending | | |
+| 36 | `waap/response-pages.mdx` | 5 | [x] DONE | waap-urgent-updates | No changes needed |
+| 37 | `waap/response-pages/create-custom-response-pages.mdx` | 9 | [x] DONE | waap-urgent-updates | No changes needed |
+| 38 | `waap/response-pages/manage-custom-response-pages.mdx` | 5 | [x] DONE | waap-urgent-updates | No changes needed |
 
 ### FAQs and Troubleshooting (7 articles)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 39 | `waap/frequently-asked-questions.mdx` | 0 | [ ] Pending | | |
-| 40 | `waap/frequently-asked-questions/javascript-injection.mdx` | 0 | [ ] Pending | | |
-| 41 | `waap/frequently-asked-questions/waap-cookies.mdx` | 0 | [ ] Pending | | |
-| 42 | `waap/frequently-asked-questions/storage-variables.mdx` | 0 | [ ] Pending | | |
-| 43 | `waap/troubleshooting.mdx` | 0 | [ ] Pending | | |
-| 44 | `waap/troubleshooting/troubleshoot-blocked-users.mdx` | 3 | [ ] Pending | | |
-| 45 | `waap/troubleshooting/troubleshoot-5xx-errors.mdx` | 1 | [ ] Pending | | |
+| 39 | `waap/frequently-asked-questions.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
+| 40 | `waap/frequently-asked-questions/javascript-injection.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
+| 41 | `waap/frequently-asked-questions/waap-cookies.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
+| 42 | `waap/frequently-asked-questions/storage-variables.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
+| 43 | `waap/troubleshooting.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
+| 44 | `waap/troubleshooting/troubleshoot-blocked-users.mdx` | 3 | [x] DONE | waap-urgent-updates | No changes needed |
+| 45 | `waap/troubleshooting/troubleshoot-5xx-errors.mdx` | 1 | [x] DONE | waap-urgent-updates | No changes needed |
 
 ---
 
@@ -247,18 +247,18 @@ Before marking an article complete, verify:
 
 | Category | Articles | Screenshots | Completed | Remaining |
 |----------|----------|-------------|-----------|-----------|
-| Getting Started | 5 | 22 | 4 | 1 |
+| Getting Started | 5 | 22 | 5 | 0 |
 | Analytics | 1 | 21 | 1 | 0 |
-| IP Firewall | 3 | 10 | 0 | 3 |
-| DDoS Protection | 1 | 0 | 0 | 1 |
-| Default WAF Policies | 4 | 8 | 0 | 4 |
-| Custom Rules | 9 | 13 | 0 | 9 |
-| Bot Management | 4 | 6 | 0 | 4 |
-| Threat Intelligence | 2 | 31 | 0 | 2 |
-| API Protection | 6 | 16 | 0 | 6 |
-| Response Pages | 3 | 19 | 0 | 3 |
-| FAQs/Troubleshooting | 7 | 4 | 0 | 7 |
-| **TOTAL** | **45** | **151** | **5** | **40** |
+| IP Firewall | 3 | 10 | 3 | 0 |
+| DDoS Protection | 1 | 0 | 1 | 0 |
+| Default WAF Policies | 4 | 8 | 4 | 0 |
+| Custom Rules | 9 | 13 | 9 | 0 |
+| Bot Management | 4 | 6 | 4 | 0 |
+| Threat Intelligence | 2 | 31 | 2 | 0 |
+| API Protection | 6 | 16 | 6 | 0 |
+| Response Pages | 3 | 19 | 3 | 0 |
+| FAQs/Troubleshooting | 7 | 4 | 7 | 0 |
+| **TOTAL** | **45** | **151** | **45** | **0** |
 
 ---
 
