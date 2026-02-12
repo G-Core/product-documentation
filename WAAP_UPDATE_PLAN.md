@@ -162,8 +162,8 @@ Before marking an article complete, verify:
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
 | 7 | `waap/ip-security.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
-| 8 | `waap/ip-security/allow-and-block-ip-addresses.mdx` | 8 | [x] DONE | waap-urgent-updates | Fixed UI labels, numbering, em dash spacing |
-| 9 | `waap/waap-policies/ip-reputation.mdx` | 2 | [x] DONE | waap-urgent-updates | No changes needed (Pro/Enterprise only) |
+| 8 | `waap/ip-security/allow-and-block-ip-addresses.mdx` | 8 | [x] RE-VERIFIED | waap-urgent-updates | Fixed UI labels, updated firewall-page.png screenshot |
+| 9 | `waap/waap-policies/ip-reputation.mdx` | 2 | [x] RE-VERIFIED | waap-urgent-updates | Fixed default policy states and toggle description |
 
 ### DDoS Protection (1 article)
 
@@ -177,15 +177,15 @@ Before marking an article complete, verify:
 |---|------|-------------|--------|--------|-------|
 | 11 | `waap/waap-policies.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
 | 12 | `waap/waap-policies/waf-and-owasp-top-threats.mdx` | 2 | [x] DONE | waap-urgent-updates | Added RFI/LFI abbreviations to match UI |
-| 13 | `waap/waap-policies/behavioral-waf.mdx` | 2 | [x] DONE | waap-urgent-updates | No changes needed (Pro/Enterprise features) |
-| 14 | `waap/waap-policies/cms-protection.mdx` | 4 | [x] DONE | waap-urgent-updates | No changes needed |
+| 13 | `waap/waap-policies/behavioral-waf.mdx` | 2 | [x] RE-VERIFIED | waap-urgent-updates | Removed Anti-spam section (not in UI), fixed default states |
+| 14 | `waap/waap-policies/cms-protection.mdx` | 4 | [x] RE-VERIFIED | waap-urgent-updates | Removed "Requests from origin's IP" policy |
 
 ### Custom Rules (8 articles)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
 | 15 | `waap/waap-rules.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
-| 16 | `waap/waap-rules/custom-rules.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
+| 16 | `waap/waap-rules/custom-rules.mdx` | 0 | [x] RE-VERIFIED | waap-urgent-updates | Fixed: "Browser validation" -> "JS Challenge" |
 | 17 | `waap/waap-rules/advanced-rules/advanced-rate-limiting-rules.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed (Enterprise) |
 | 18 | `waap/waap-rules/advanced-rules.mdx` | 1 | [x] DONE | waap-urgent-updates | No changes needed (Enterprise) |
 | 19 | `waap/waap-rules/advanced-rules/advanced-rule-objects.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed (Enterprise) |
@@ -200,15 +200,15 @@ Before marking an article complete, verify:
 |---|------|-------------|--------|--------|-------|
 | 24 | `waap/troubleshooting/enable-troubleshoot-bot-protection.mdx` | 2 | [x] DONE | waap-urgent-updates | No changes needed |
 | 25 | `waap/waap-policies/known-bots.mdx` | 2 | [x] DONE | waap-urgent-updates | No changes needed (Pro/Enterprise) |
-| 26 | `waap/waap-policies/anti-automation-and-bot-protection.mdx` | 2 | [x] DONE | waap-urgent-updates | No changes needed |
+| 26 | `waap/waap-policies/anti-automation-and-bot-protection.mdx` | 2 | [x] RE-VERIFIED | waap-urgent-updates | Added Anti-spam policy, fixed defaults |
 | 27 | `waap/waap-policies/invalid-user-agent-and-unknown-user-agent.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
 
 ### Threat Intelligence (2 articles)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 28 | `waap/security-insights.mdx` | 22 | [x] DONE | waap-urgent-updates | No changes needed |
-| 29 | `waap/ip-security/ip-spotlight.mdx` | 9 | [x] DONE | waap-urgent-updates | No changes needed |
+| 28 | `waap/security-insights.mdx` | 22 | [x] RE-VERIFIED | waap-urgent-updates | Fixed SharePoint link, updated navigation to match current UI |
+| 29 | `waap/ip-security/ip-spotlight.mdx` | 9 | [x] RE-VERIFIED | waap-urgent-updates | Fixed navigation: WAAP > IP Spotlight (not Features) |
 
 ### API Protection (6 articles)
 
@@ -225,9 +225,9 @@ Before marking an article complete, verify:
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 36 | `waap/response-pages.mdx` | 5 | [x] DONE | waap-urgent-updates | No changes needed |
-| 37 | `waap/response-pages/create-custom-response-pages.mdx` | 9 | [x] DONE | waap-urgent-updates | No changes needed |
-| 38 | `waap/response-pages/manage-custom-response-pages.mdx` | 5 | [x] DONE | waap-urgent-updates | No changes needed |
+| 36 | `waap/response-pages.mdx` | 5 | [x] RE-VERIFIED | waap-urgent-updates | Fixed formatting: removed spaces before colons |
+| 37 | `waap/response-pages/create-custom-response-pages.mdx` | 9 | [x] RE-VERIFIED | waap-urgent-updates | Fixed navigation, button name, updated screenshot |
+| 38 | `waap/response-pages/manage-custom-response-pages.mdx` | 5 | [x] RE-VERIFIED | waap-urgent-updates | Fixed navigation (Features -> Response Pages) |
 
 ### FAQs and Troubleshooting (7 articles)
 
