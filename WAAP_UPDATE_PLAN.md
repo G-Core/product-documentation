@@ -145,11 +145,11 @@ Before marking an article complete, verify:
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 1 | `waap/overview.mdx` | 0 | [ ] Pending | | |
+| 1 | `waap/overview.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed - general overview |
 | 2 | `waap/getting-started/configure-waap-for-a-domain.mdx` | 16 | [x] DONE | waap-urgent-updates | Full revision |
-| 3 | `waap/billing.mdx` | 0 | [ ] Pending | | |
-| 4 | `waap/getting-started/waap-modes.mdx` | 3 | [ ] Pending | | |
-| 5 | `waap/getting-started/manage-domains.mdx` | 3 | [ ] Pending | | |
+| 3 | `waap/billing.mdx` | 0 | [x] DONE | waap-urgent-updates | Fixed broken link, replaced "Common automated services" with "Known Bots" |
+| 4 | `waap/getting-started/waap-modes.mdx` | 3 | [x] DONE | waap-urgent-updates | Fixed alt text Analytics->Events |
+| 5 | `waap/getting-started/manage-domains.mdx` | 3 | [x] DONE | waap-urgent-updates | Fixed spacing before colons, grammar error |
 
 ### Analytics (1 article)
 
