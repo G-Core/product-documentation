@@ -386,3 +386,23 @@ High-traffic/critical articles first:
 5. `waap-modes.mdx` (core concept)
 
 Then proceed by section systematically.
+
+---
+
+## Resolved UI Discrepancies
+
+The following deprecated UI elements were removed from documentation:
+
+| File | Element | Action |
+|------|---------|--------|
+| `configure-waap-for-a-domain.mdx` | Wizard "Acceleration and protection type" step | Removed step and screenshot |
+| `analytics.mdx` | Auto-Refresh toggle section | Removed paragraph and screenshot |
+| `analytics.mdx` | Status Codes graph section | Removed entire section and screenshot |
+
+**Deleted screenshots:**
+- `images/docs/waap/getting-started/protect-static-assets-option.png`
+- `images/docs/waap/analytics/auto-refresh.png`
+- `images/docs/waap/analytics/overview-status-codes.png`
+
+**Commit**: `e9322247` - docs(waap): remove deprecated UI elements from documentation
+**Commit**: `214c4a92` - chore(waap): remove obsolete screenshots for deprecated UI elements
