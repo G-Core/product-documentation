@@ -145,101 +145,101 @@ Before marking an article complete, verify:
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 1 | `waap/overview.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed - general overview |
-| 2 | `waap/getting-started/configure-waap-for-a-domain.mdx` | 16 | [x] DONE | waap-urgent-updates | Full revision |
-| 3 | `waap/billing.mdx` | 0 | [x] DONE | waap-urgent-updates | Fixed broken link, replaced "Common automated services" with "Known Bots" |
-| 4 | `waap/getting-started/waap-modes.mdx` | 3 | [x] DONE | waap-urgent-updates | Fixed alt text Analytics->Events |
-| 5 | `waap/getting-started/manage-domains.mdx` | 3 | [x] DONE | waap-urgent-updates | Fixed spacing before colons, grammar error |
+| 1 | `waap/overview.mdx` | 0 | [x] VERIFIED | waap-urgent-updates | No changes needed - general overview matches portal |
+| 2 | `waap/getting-started/configure-waap-for-a-domain.mdx` | 16 | [x] VERIFIED | waap-urgent-updates | Complete rewrite of CDN creation section, new screenshot, 5 obsolete screenshots removed |
+| 3 | `waap/billing.mdx` | 0 | [ ] Pending | - | - |
+| 4 | `waap/getting-started/waap-modes.mdx` | 3 | [ ] Pending | - | - |
+| 5 | `waap/getting-started/manage-domains.mdx` | 3 | [ ] Pending | - | - |
 
 ### Analytics (1 article)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 6 | `waap/analytics.mdx` | 21 | [x] DONE | waap-urgent-updates | Full revision: terminology, navigation, screenshots |
+| 6 | `waap/analytics.mdx` | 21 | [ ] Pending | - | - |
 
 ### IP Firewall (3 articles)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 7 | `waap/ip-security.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
-| 8 | `waap/ip-security/allow-and-block-ip-addresses.mdx` | 8 | [x] RE-VERIFIED | waap-urgent-updates | Fixed UI labels, updated firewall-page.png screenshot |
-| 9 | `waap/waap-policies/ip-reputation.mdx` | 2 | [x] RE-VERIFIED | waap-urgent-updates | Fixed default policy states and toggle description |
+| 7 | `waap/ip-security.mdx` | 0 | [ ] Pending | - | - |
+| 8 | `waap/ip-security/allow-and-block-ip-addresses.mdx` | 8 | [ ] Pending | - | - |
+| 9 | `waap/waap-policies/ip-reputation.mdx` | 2 | [ ] Pending | - | - |
 
 ### DDoS Protection (1 article)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 10 | `waap/ddos-protection.mdx` | 0 | [x] DONE | waap-urgent-updates | Fixed anchor link to L7 DDoS page |
+| 10 | `waap/ddos-protection.mdx` | 0 | [ ] Pending | - | - |
 
 ### Default WAF Policies (4 articles)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 11 | `waap/waap-policies.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
-| 12 | `waap/waap-policies/waf-and-owasp-top-threats.mdx` | 2 | [x] DONE | waap-urgent-updates | Added RFI/LFI abbreviations to match UI |
-| 13 | `waap/waap-policies/behavioral-waf.mdx` | 2 | [x] RE-VERIFIED | waap-urgent-updates | Removed Anti-spam section (not in UI), fixed default states |
-| 14 | `waap/waap-policies/cms-protection.mdx` | 4 | [x] RE-VERIFIED | waap-urgent-updates | Removed "Requests from origin's IP" policy |
+| 11 | `waap/waap-policies.mdx` | 0 | [ ] Pending | - | - |
+| 12 | `waap/waap-policies/waf-and-owasp-top-threats.mdx` | 2 | [ ] Pending | - | - |
+| 13 | `waap/waap-policies/behavioral-waf.mdx` | 2 | [ ] Pending | - | - |
+| 14 | `waap/waap-policies/cms-protection.mdx` | 4 | [ ] Pending | - | - |
 
 ### Custom Rules (8 articles)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 15 | `waap/waap-rules.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
-| 16 | `waap/waap-rules/custom-rules.mdx` | 0 | [x] RE-VERIFIED | waap-urgent-updates | Fixed: "Browser validation" -> "JS Challenge" |
-| 17 | `waap/waap-rules/advanced-rules/advanced-rate-limiting-rules.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed (Enterprise) |
-| 18 | `waap/waap-rules/advanced-rules.mdx` | 1 | [x] DONE | waap-urgent-updates | No changes needed (Enterprise) |
-| 19 | `waap/waap-rules/advanced-rules/advanced-rule-objects.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed (Enterprise) |
-| 20 | `waap/waap-rules/advanced-rules/source-field-objects.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed (Enterprise) |
-| 21 | `waap/waap-rules/custom-rules/tag-rules.mdx` | 3 | [x] DONE | waap-urgent-updates | No changes needed |
-| 22 | `waap/waap-rules/custom-rules/tag-rules/reserved-tags.mdx` | 9 | [x] DONE | waap-urgent-updates | No changes needed |
-| 23 | `waap/waap-rules/custom-rules/tag-rules/predefined-tags.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
+| 15 | `waap/waap-rules.mdx` | 0 | [ ] Pending | - | - |
+| 16 | `waap/waap-rules/custom-rules.mdx` | 0 | [ ] Pending | - | - |
+| 17 | `waap/waap-rules/advanced-rules/advanced-rate-limiting-rules.mdx` | 0 | [ ] Pending | - | - |
+| 18 | `waap/waap-rules/advanced-rules.mdx` | 1 | [ ] Pending | - | - |
+| 19 | `waap/waap-rules/advanced-rules/advanced-rule-objects.mdx` | 0 | [ ] Pending | - | - |
+| 20 | `waap/waap-rules/advanced-rules/source-field-objects.mdx` | 0 | [ ] Pending | - | - |
+| 21 | `waap/waap-rules/custom-rules/tag-rules.mdx` | 3 | [ ] Pending | - | - |
+| 22 | `waap/waap-rules/custom-rules/tag-rules/reserved-tags.mdx` | 9 | [ ] Pending | - | - |
+| 23 | `waap/waap-rules/custom-rules/tag-rules/predefined-tags.mdx` | 0 | [ ] Pending | - | - |
 
 ### Bot Management (4 articles)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 24 | `waap/troubleshooting/enable-troubleshoot-bot-protection.mdx` | 2 | [x] DONE | waap-urgent-updates | No changes needed |
-| 25 | `waap/waap-policies/known-bots.mdx` | 2 | [x] DONE | waap-urgent-updates | No changes needed (Pro/Enterprise) |
-| 26 | `waap/waap-policies/anti-automation-and-bot-protection.mdx` | 2 | [x] RE-VERIFIED | waap-urgent-updates | Added Anti-spam policy, fixed defaults |
-| 27 | `waap/waap-policies/invalid-user-agent-and-unknown-user-agent.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
+| 24 | `waap/troubleshooting/enable-troubleshoot-bot-protection.mdx` | 2 | [ ] Pending | - | - |
+| 25 | `waap/waap-policies/known-bots.mdx` | 2 | [ ] Pending | - | - |
+| 26 | `waap/waap-policies/anti-automation-and-bot-protection.mdx` | 2 | [ ] Pending | - | - |
+| 27 | `waap/waap-policies/invalid-user-agent-and-unknown-user-agent.mdx` | 0 | [ ] Pending | - | - |
 
 ### Threat Intelligence (2 articles)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 28 | `waap/security-insights.mdx` | 22 | [x] RE-VERIFIED | waap-urgent-updates | Fixed SharePoint link, updated navigation to match current UI |
-| 29 | `waap/ip-security/ip-spotlight.mdx` | 9 | [x] RE-VERIFIED | waap-urgent-updates | Fixed navigation: WAAP > IP Spotlight (not Features) |
+| 28 | `waap/security-insights.mdx` | 22 | [ ] Pending | - | - |
+| 29 | `waap/ip-security/ip-spotlight.mdx` | 9 | [ ] Pending | - | - |
 
 ### API Protection (6 articles)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 30 | `waap/api-discovery-and-protection.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
-| 31 | `waap/api-discovery-and-protection/api-discovery.mdx` | 5 | [x] DONE | waap-urgent-updates | No changes needed (Enterprise) |
-| 32 | `waap/api-discovery-and-protection/configure-api-access-with-reserved-tags.mdx` | 6 | [x] DONE | waap-urgent-updates | No changes needed |
-| 33 | `waap/api-discovery-and-protection/configure-api-base-path.mdx` | 1 | [x] DONE | waap-urgent-updates | No changes needed |
-| 34 | `waap/waap-policies/advanced-api-protection.mdx` | 2 | [x] DONE | waap-urgent-updates | No changes needed (Enterprise) |
-| 35 | `waap/waap-policies/protocol-validation.mdx` | 2 | [x] DONE | waap-urgent-updates | No changes needed |
+| 30 | `waap/api-discovery-and-protection.mdx` | 0 | [ ] Pending | - | - |
+| 31 | `waap/api-discovery-and-protection/api-discovery.mdx` | 5 | [ ] Pending | - | - |
+| 32 | `waap/api-discovery-and-protection/configure-api-access-with-reserved-tags.mdx` | 6 | [ ] Pending | - | - |
+| 33 | `waap/api-discovery-and-protection/configure-api-base-path.mdx` | 1 | [ ] Pending | - | - |
+| 34 | `waap/waap-policies/advanced-api-protection.mdx` | 2 | [ ] Pending | - | - |
+| 35 | `waap/waap-policies/protocol-validation.mdx` | 2 | [ ] Pending | - | - |
 
 ### Response Pages (3 articles)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 36 | `waap/response-pages.mdx` | 5 | [x] RE-VERIFIED | waap-urgent-updates | Fixed formatting: removed spaces before colons |
-| 37 | `waap/response-pages/create-custom-response-pages.mdx` | 9 | [x] RE-VERIFIED | waap-urgent-updates | Fixed navigation, button name, updated screenshot |
-| 38 | `waap/response-pages/manage-custom-response-pages.mdx` | 5 | [x] RE-VERIFIED | waap-urgent-updates | Fixed navigation (Features -> Response Pages) |
+| 36 | `waap/response-pages.mdx` | 5 | [ ] Pending | - | - |
+| 37 | `waap/response-pages/create-custom-response-pages.mdx` | 9 | [ ] Pending | - | - |
+| 38 | `waap/response-pages/manage-custom-response-pages.mdx` | 5 | [ ] Pending | - | - |
 
 ### FAQs and Troubleshooting (7 articles)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 39 | `waap/frequently-asked-questions.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
-| 40 | `waap/frequently-asked-questions/javascript-injection.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
-| 41 | `waap/frequently-asked-questions/waap-cookies.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
-| 42 | `waap/frequently-asked-questions/storage-variables.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
-| 43 | `waap/troubleshooting.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
-| 44 | `waap/troubleshooting/troubleshoot-blocked-users.mdx` | 3 | [x] DONE | waap-urgent-updates | No changes needed |
-| 45 | `waap/troubleshooting/troubleshoot-5xx-errors.mdx` | 1 | [x] DONE | waap-urgent-updates | No changes needed |
+| 39 | `waap/frequently-asked-questions.mdx` | 0 | [ ] Pending | - | - |
+| 40 | `waap/frequently-asked-questions/javascript-injection.mdx` | 0 | [ ] Pending | - | - |
+| 41 | `waap/frequently-asked-questions/waap-cookies.mdx` | 0 | [ ] Pending | - | - |
+| 42 | `waap/frequently-asked-questions/storage-variables.mdx` | 0 | [ ] Pending | - | - |
+| 43 | `waap/troubleshooting.mdx` | 0 | [ ] Pending | - | - |
+| 44 | `waap/troubleshooting/troubleshoot-blocked-users.mdx` | 3 | [ ] Pending | - | - |
+| 45 | `waap/troubleshooting/troubleshoot-5xx-errors.mdx` | 1 | [ ] Pending | - | - |
 
 ---
 
