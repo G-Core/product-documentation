@@ -161,9 +161,9 @@ Before marking an article complete, verify:
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 7 | `waap/ip-security.mdx` | 0 | [ ] Pending | | |
-| 8 | `waap/ip-security/allow-and-block-ip-addresses.mdx` | 8 | [ ] Pending | | |
-| 9 | `waap/waap-policies/ip-reputation.mdx` | 2 | [ ] Pending | | |
+| 7 | `waap/ip-security.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
+| 8 | `waap/ip-security/allow-and-block-ip-addresses.mdx` | 8 | [x] DONE | waap-urgent-updates | Fixed UI labels, numbering, em dash spacing |
+| 9 | `waap/waap-policies/ip-reputation.mdx` | 2 | [x] DONE | waap-urgent-updates | No changes needed (Pro/Enterprise only) |
 
 ### DDoS Protection (1 article)
 
