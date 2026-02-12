@@ -169,16 +169,16 @@ Before marking an article complete, verify:
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 10 | `waap/ddos-protection.mdx` | 0 | [ ] Pending | | |
+| 10 | `waap/ddos-protection.mdx` | 0 | [x] DONE | waap-urgent-updates | Fixed anchor link to L7 DDoS page |
 
 ### Default WAF Policies (4 articles)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 11 | `waap/waap-policies.mdx` | 0 | [ ] Pending | | |
-| 12 | `waap/waap-policies/waf-and-owasp-top-threats.mdx` | 2 | [ ] Pending | | |
-| 13 | `waap/waap-policies/behavioral-waf.mdx` | 2 | [ ] Pending | | |
-| 14 | `waap/waap-policies/cms-protection.mdx` | 4 | [ ] Pending | | |
+| 11 | `waap/waap-policies.mdx` | 0 | [x] DONE | waap-urgent-updates | No changes needed |
+| 12 | `waap/waap-policies/waf-and-owasp-top-threats.mdx` | 2 | [x] DONE | waap-urgent-updates | Added RFI/LFI abbreviations to match UI |
+| 13 | `waap/waap-policies/behavioral-waf.mdx` | 2 | [x] DONE | waap-urgent-updates | No changes needed (Pro/Enterprise features) |
+| 14 | `waap/waap-policies/cms-protection.mdx` | 4 | [x] DONE | waap-urgent-updates | No changes needed |
 
 ### Custom Rules (8 articles)
 
