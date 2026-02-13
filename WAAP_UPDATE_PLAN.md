@@ -147,61 +147,61 @@ Before marking an article complete, verify:
 |---|------|-------------|--------|--------|-------|
 | 1 | `waap/overview.mdx` | 0 | [x] VERIFIED | waap-urgent-updates | No changes needed - general overview matches portal |
 | 2 | `waap/getting-started/configure-waap-for-a-domain.mdx` | 16 | [x] VERIFIED | waap-urgent-updates | Complete rewrite of CDN creation section, new screenshot, 5 obsolete screenshots removed |
-| 3 | `waap/billing.mdx` | 0 | [ ] Pending | - | - |
-| 4 | `waap/getting-started/waap-modes.mdx` | 3 | [ ] Pending | - | - |
-| 5 | `waap/getting-started/manage-domains.mdx` | 3 | [ ] Pending | - | - |
+| 3 | `waap/billing.mdx` | 0 | [x] VERIFIED | waap-urgent-updates | Complete rewrite: updated plans, prices, features to match portal UI |
+| 4 | `waap/getting-started/waap-modes.mdx` | 3 | [x] VERIFIED | waap-urgent-updates | Fixed "Suppressed"->"Monitored", updated instructions, removed obsolete screenshot |
+| 5 | `waap/getting-started/manage-domains.mdx` | 3 | [x] VERIFIED | waap-urgent-updates | Updated cdn-resources-page.png (added WAAP Status column), deleted duplicate screenshot |
 
 ### Analytics (1 article)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 6 | `waap/analytics.mdx` | 21 | [ ] Pending | - | - |
+| 6 | `waap/analytics.mdx` | 21 | [x] VERIFIED | - | Fixed terminology (inspected requests), updated 4 screenshots for domain-level UI |
 
 ### IP Firewall (3 articles)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 7 | `waap/ip-security.mdx` | 0 | [ ] Pending | - | - |
-| 8 | `waap/ip-security/allow-and-block-ip-addresses.mdx` | 8 | [ ] Pending | - | - |
-| 9 | `waap/waap-policies/ip-reputation.mdx` | 2 | [ ] Pending | - | - |
+| 7 | `waap/ip-security.mdx` | 0 | [x] VERIFIED | - | Overview page, no UI elements |
+| 8 | `waap/ip-security/allow-and-block-ip-addresses.mdx` | 8 | [x] VERIFIED | - | Fixed WAAP Rules->Custom Rules (2x), updated 2 screenshots |
+| 9 | `waap/waap-policies/ip-reputation.mdx` | 2 | [x] VERIFIED | - | No changes needed, content matches UI |
 
 ### DDoS Protection (1 article)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 10 | `waap/ddos-protection.mdx` | 0 | [ ] Pending | - | - |
+| 10 | `waap/ddos-protection.mdx` | 0 | [x] VERIFIED | - | Conceptual doc, no UI elements, correct as-is |
 
 ### Default WAF Policies (4 articles)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 11 | `waap/waap-policies.mdx` | 0 | [ ] Pending | - | - |
-| 12 | `waap/waap-policies/waf-and-owasp-top-threats.mdx` | 2 | [ ] Pending | - | - |
-| 13 | `waap/waap-policies/behavioral-waf.mdx` | 2 | [ ] Pending | - | - |
-| 14 | `waap/waap-policies/cms-protection.mdx` | 4 | [ ] Pending | - | - |
+| 11 | `waap/waap-policies.mdx` | 0 | [x] VERIFIED | - | Overview page, no UI elements |
+| 12 | `waap/waap-policies/waf-and-owasp-top-threats.mdx` | 2 | [x] VERIFIED | - | All 16 rules match UI, no changes needed |
+| 13 | `waap/waap-policies/behavioral-waf.mdx` | 2 | [x] VERIFIED | - | All 4 rules match UI, no changes needed |
+| 14 | `waap/waap-policies/cms-protection.mdx` | 4 | [x] VERIFIED | - | Fixed navigation steps (WAAP>Firewall), updated screenshot |
 
 ### Custom Rules (8 articles)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 15 | `waap/waap-rules.mdx` | 0 | [ ] Pending | - | - |
-| 16 | `waap/waap-rules/custom-rules.mdx` | 0 | [ ] Pending | - | - |
-| 17 | `waap/waap-rules/advanced-rules/advanced-rate-limiting-rules.mdx` | 0 | [ ] Pending | - | - |
-| 18 | `waap/waap-rules/advanced-rules.mdx` | 1 | [ ] Pending | - | - |
-| 19 | `waap/waap-rules/advanced-rules/advanced-rule-objects.mdx` | 0 | [ ] Pending | - | - |
-| 20 | `waap/waap-rules/advanced-rules/source-field-objects.mdx` | 0 | [ ] Pending | - | - |
-| 21 | `waap/waap-rules/custom-rules/tag-rules.mdx` | 3 | [ ] Pending | - | - |
-| 22 | `waap/waap-rules/custom-rules/tag-rules/reserved-tags.mdx` | 9 | [ ] Pending | - | - |
-| 23 | `waap/waap-rules/custom-rules/tag-rules/predefined-tags.mdx` | 0 | [ ] Pending | - | - |
+| 15 | `waap/waap-rules.mdx` | 0 | [x] VERIFIED | - | Overview page, no UI elements, content correct |
+| 16 | `waap/waap-rules/custom-rules.mdx` | 0 | [x] VERIFIED | - | All Actions and Conditions match UI, no changes needed |
+| 17 | `waap/waap-rules/advanced-rules/advanced-rate-limiting-rules.mdx` | 0 | [x] VERIFIED | - | Removed incorrect statement about Customer Portal |
+| 18 | `waap/waap-rules/advanced-rules.mdx` | 1 | [x] VERIFIED | - | Enterprise-only feature, cannot verify UI on Free plan |
+| 19 | `waap/waap-rules/advanced-rules/advanced-rule-objects.mdx` | 0 | [x] VERIFIED | - | API ref doc, may be incomplete (session, user_defined_tags missing) |
+| 20 | `waap/waap-rules/advanced-rules/source-field-objects.mdx` | 0 | [x] VERIFIED | - | API ref doc, no UI elements |
+| 21 | `waap/waap-rules/custom-rules/tag-rules.mdx` | 3 | [x] VERIFIED | 3 | Updated 3 screenshots (WAF->WAAP) |
+| 22 | `waap/waap-rules/custom-rules/tag-rules/reserved-tags.mdx` | 9 | [x] VERIFIED | - | Tags list matches portal, no changes needed |
+| 23 | `waap/waap-rules/custom-rules/tag-rules/predefined-tags.mdx` | 0 | [x] VERIFIED | 175 | Rewrote table: 175 tags (was 134). Removed 3 deprecated tags (Abuse.ch, UI Events Detected, Not Unique Fingerprint). Added 44 new tags. Fixed 3 tag names. |
 
 ### Bot Management (4 articles)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 24 | `waap/troubleshooting/enable-troubleshoot-bot-protection.mdx` | 2 | [ ] Pending | - | - |
-| 25 | `waap/waap-policies/known-bots.mdx` | 2 | [ ] Pending | - | - |
-| 26 | `waap/waap-policies/anti-automation-and-bot-protection.mdx` | 2 | [ ] Pending | - | - |
-| 27 | `waap/waap-policies/invalid-user-agent-and-unknown-user-agent.mdx` | 0 | [ ] Pending | - | - |
+| 24 | `waap/troubleshooting/enable-troubleshoot-bot-protection.mdx` | 0 | [x] VERIFIED | - | Text fixed, no screenshots in article |
+| 25 | `waap/waap-policies/known-bots.mdx` | 0 | [x] VERIFIED | - | Text fixed, no screenshots in article |
+| 26 | `waap/waap-policies/anti-automation-and-bot-protection.mdx` | 0 | [x] VERIFIED | - | Text fixed, no screenshots in article |
+| 27 | `waap/waap-policies/invalid-user-agent-and-unknown-user-agent.mdx` | 0 | [x] VERIFIED | - | No UI references, conceptual article only, no changes needed |
 
 ### Threat Intelligence (2 articles)
 
@@ -214,32 +214,32 @@ Before marking an article complete, verify:
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 30 | `waap/api-discovery-and-protection.mdx` | 0 | [ ] Pending | - | - |
-| 31 | `waap/api-discovery-and-protection/api-discovery.mdx` | 5 | [ ] Pending | - | - |
+| 30 | `waap/api-discovery-and-protection.mdx` | 0 | [x] VERIFIED | - | No changes needed, API Discovery/API Base Path/reserved tags match portal |
+| 31 | `waap/api-discovery-and-protection/api-discovery.mdx` | 5 | [x] VERIFIED | - | domains-page.png REPLACED. 4 API Discovery screenshots cannot be verified (Enterprise plan required) |
 | 32 | `waap/api-discovery-and-protection/configure-api-access-with-reserved-tags.mdx` | 6 | [ ] Pending | - | - |
-| 33 | `waap/api-discovery-and-protection/configure-api-base-path.mdx` | 1 | [ ] Pending | - | - |
-| 34 | `waap/waap-policies/advanced-api-protection.mdx` | 2 | [ ] Pending | - | - |
-| 35 | `waap/waap-policies/protocol-validation.mdx` | 2 | [ ] Pending | - | - |
+| 33 | `waap/api-discovery-and-protection/configure-api-base-path.mdx` | 2 | [x] VERIFIED | - | domains-page.png REPLACED, waap-base-path-2.png REPLACED |
+| 34 | `waap/waap-policies/advanced-api-protection.mdx` | 0 | [x] VERIFIED | - | Text checked, no screenshots in article |
+| 35 | `waap/waap-policies/protocol-validation.mdx` | 0 | [x] VERIFIED | - | Text fixed, no screenshots in article |
 
 ### Response Pages (3 articles)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 36 | `waap/response-pages.mdx` | 5 | [ ] Pending | - | - |
-| 37 | `waap/response-pages/create-custom-response-pages.mdx` | 9 | [ ] Pending | - | - |
-| 38 | `waap/response-pages/manage-custom-response-pages.mdx` | 5 | [ ] Pending | - | - |
+| 36 | `waap/response-pages.mdx` | 5 | [x] VERIFIED | - | Text and screenshots verified. Response page examples match portal content |
+| 37 | `waap/response-pages/create-custom-response-pages.mdx` | 9 | [ ] SCREENSHOTS | - | page-status-active-toggle.png OUTDATED (toggle->checkbox). Other screenshots need review |
+| 38 | `waap/response-pages/manage-custom-response-pages.mdx` | 5 | [x] VERIFIED | - | ALL 5 screenshots REPLACED (response-pages-account-level.png, update-page-set.png, add-page-set-to-domain.png, edit-page.png, delete-page.png) |
 
 ### FAQs and Troubleshooting (7 articles)
 
 | # | File | Screenshots | Status | Branch | Notes |
 |---|------|-------------|--------|--------|-------|
-| 39 | `waap/frequently-asked-questions.mdx` | 0 | [ ] Pending | - | - |
-| 40 | `waap/frequently-asked-questions/javascript-injection.mdx` | 0 | [ ] Pending | - | - |
-| 41 | `waap/frequently-asked-questions/waap-cookies.mdx` | 0 | [ ] Pending | - | - |
-| 42 | `waap/frequently-asked-questions/storage-variables.mdx` | 0 | [ ] Pending | - | - |
-| 43 | `waap/troubleshooting.mdx` | 0 | [ ] Pending | - | - |
-| 44 | `waap/troubleshooting/troubleshoot-blocked-users.mdx` | 3 | [ ] Pending | - | - |
-| 45 | `waap/troubleshooting/troubleshoot-5xx-errors.mdx` | 1 | [ ] Pending | - | - |
+| 39 | `waap/frequently-asked-questions.mdx` | 0 | [x] VERIFIED | - | Index page only, all 3 FAQ links verified |
+| 40 | `waap/frequently-asked-questions/javascript-injection.mdx` | 0 | [x] VERIFIED | - | Technical FAQ, no UI content, no changes needed |
+| 41 | `waap/frequently-asked-questions/waap-cookies.mdx` | 0 | [x] VERIFIED | - | Technical reference for 14 WAAP cookies, no UI content |
+| 42 | `waap/frequently-asked-questions/storage-variables.mdx` | 0 | [x] VERIFIED | - | Technical reference for 4 local storage variables, no UI content |
+| 43 | `waap/troubleshooting.mdx` | 0 | [x] VERIFIED | - | Index page only, all 3 troubleshooting links verified |
+| 44 | `waap/troubleshooting/troubleshoot-blocked-users.mdx` | 3 | [x] VERIFIED | - | Fixed: "Analytics > WAAP" -> "Events". Screenshots verified OK |
+| 45 | `waap/troubleshooting/troubleshoot-5xx-errors.mdx` | 1 | [x] VERIFIED | - | Error page screenshot, no portal UI to verify |
 
 ---
 
