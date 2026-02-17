@@ -1,0 +1,99 @@
+---
+title: "CDN properties"
+sidebarTitle: "CDN properties"
+---
+
+CDN applications built on the Proxy-Wasm ABI interact with HTTP requests and responses through a property system. Since each hook (onRequestHeaders, onRequestBody, onResponseHeaders, onResponseBody) runs in its own isolated WASM instance, properties provide the mechanism for reading request/response data and modifying CDN behavior throughout the request lifecycle.
+
+### How properties work
+
+Properties are accessed through two core methods:
+
+- **`get_property(path)`**: Reads data from the current request context
+- **`set_property(path, value)`**: Modifies writable properties to customize CDN behavior
+
+Each property is identified by a path (e.g., `request.path`, `response.status`) and has specific access permissions based on the hook where it's accessed.
+
+### Property access patterns
+
+**Read-only properties**: Can be read but not modified. These typically represent immutable request data or CDN internal state.
+
+**Read-write properties**: Can be both read and modified. Use these to customize headers, adjust routing, or modify response behavior.
+
+**Hook-specific availability**: Some properties are only accessible in certain hooks. For example, response properties are unavailable in request hooks.
+
+### Available properties
+
+The following table lists all available properties and their access permissions. These properties can only be written to within the onRequestHeaders hook:
+
+| Property Path          | Type    | Access     | Description                                           |
+| ---------------------- | ------- | ---------- | ----------------------------------------------------- |
+| `request.url`          | String  | Read-write | Original URL path before modifications                |
+| `request.host`         | String  | Read-write | Host header value                                     |
+| `request.path`         | String  | Read-write | Request URL path                                      |
+| `request.scheme`       | String  | Read-only  | Protocol scheme (http/https)                          |
+| `request.method`       | String  | Read-only  | HTTP method (GET, POST, etc.)                         |
+| `request.extension`    | String  | Read-only  | Request path extension                                |
+| `request.query`        | String  | Read-write | Query string parameters                               |
+| `request.country`      | String  | Read-only  | Country Code - deciphered from IP                     |
+| `request.city`         | String  | Read-only  | City name - deciphered from IP                        |
+| `request.asn`          | String  | Read-only  | ASN of the network/ISP associated with the request IP |
+| `request.geo.lat`      | String  | Read-only  | Latitude - deciphered from IP                         |
+| `request.geo.long`     | String  | Read-only  | Longitude - deciphered from IP                        |
+| `request.region`       | String  | Read-only  | Region - deciphered from IP                           |
+| `request.continent`    | String  | Read-only  | Continent - deciphered from IP                        |
+| `request.country.name` | String  | Read-only  | Country name - deciphered from IP                     |
+| `nginx.log_field1`     | String  | Write-only | Adds value to nginx access logs                       |
+| `response.status`      | Integer | Read-only  | HTTP status code                                      |
+
+
+#### `nginx.log_field1`
+
+This field is write-only (onRequestHeaders). Adding a value here will ensure it is written to CDN access log, available through the Log uploader feature.
+
+
+### Custom properties
+
+You can also create custom properties within hooks. This allows you to track data between hook runs. e.g. custom property `markdown`
+These custom hooks are all read-write, however they are only available from onRequestBody onwards. Anything added within onRequestHeaders will **not** be available, in future hooks.
+
+### Example: Response modification
+
+```rust
+// In onResponseHeaders
+fn on_response_headers() {
+    // Add Custom markdown property
+    if let Some(content_type) = self.get_http_response_header("Content-Type") {
+        if content_type.starts_with("text/plain") || content_type.starts_with("text/markdown") {
+            self.set_http_response_header("Content-Length", None);
+            self.set_http_response_header("Transfer-Encoding", Some("Chunked"));
+            self.set_http_response_header("Content-Type", Some("text/html"));
+            self.set_property(vec!["response.markdown"], Some(b"true"));
+            println!("Response is markdown, on_response_body can now convert to HTML");
+        }
+    }
+}
+
+// In onResponseBody
+fn on_http_response_body(&mut self, body_size: usize, end_of_stream: bool) -> Action {
+    // only process markdown
+    if None == self.get_property(vec!["response.markdown"]) {
+        return Action::Continue;
+    }
+}
+```
+
+### Property modification best practices
+
+**Validate before setting**: Always validate property values before modification to prevent errors.
+
+**Use appropriate hooks**: Modify request properties only in onRequestHeaders.
+
+**Handle missing properties**: Not all properties are available in all contexts. Use error handling when accessing optional properties.
+
+<Info>
+**Note**
+
+Property paths are case-sensitive. Header names follow HTTP conventions (lowercase with hyphens).
+
+</Info>
