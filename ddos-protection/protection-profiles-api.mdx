@@ -1,0 +1,125 @@
+---
+title: "DDoS protection profiles API"
+displayName: "Protection profiles API"
+published: true
+order: 50
+toc:
+   --1--: Retrieve protection profiles
+   --2--: Query parameters
+   --3--: Response format
+   --4--: Profile types
+   --5--: Example usage
+pageTitle: "DDoS Protection Profiles API | Gcore"
+pageDescription: "Learn how to retrieve DDoS protection profiles through the API, including static (system-managed) and dynamic (user-created) profiles."
+---
+
+# DDoS protection profiles API
+
+Use the DDoS protection profiles API to retrieve information about available protection profiles for your resources. The API provides access to both system-managed and user-created protection profiles.
+
+## Retrieve protection profiles
+
+**Endpoint:** `GET /ddos-protection/profiles`
+
+Retrieves a list of DDoS protection profiles available for your account.
+
+### Query parameters
+
+| Parameter    | Type   | Description                                      | Required |
+|-------------|--------|--------------------------------------------------|----------|
+| `managed_by` | string | Filter profiles by management type: `system` or `user` | No       |
+
+**Supported values for `managed_by`:**
+- `system` - Returns static (system-managed) profiles
+- `user` - Returns dynamic (user-created) profiles
+
+### Response format
+
+The API returns an array of protection profile objects. Each profile includes:
+
+| Field        | Type   | Description                                    |
+|-------------|--------|------------------------------------------------|
+| `id`         | string | Unique identifier for the profile             |
+| `name`       | string | Display name of the protection profile        |
+| `managed_by` | string | Management type: `system` or `user`           |
+| `description`| string | Description of the protection profile         |
+| `settings`   | object | Protection configuration settings             |
+
+### Profile types
+
+The API returns two types of protection profiles based on the `managed_by` field:
+
+#### System-managed profiles (`managed_by: "system"`)
+
+Static protection profiles created and maintained by Gcore. These profiles:
+- Cannot be modified or deleted through the API
+- Provide predefined protection configurations
+- Are automatically updated with security improvements
+
+#### User-created profiles (`managed_by: "user"`)
+
+Dynamic protection profiles created by users. These profiles:
+- Can be modified and deleted through the API
+- Allow custom protection configurations
+- Are managed entirely by the user
+
+## Example usage
+
+### Retrieve all protection profiles
+
+```bash
+curl -X GET "https://api.gcore.com/ddos-protection/profiles" \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json"
+```
+
+### Retrieve only system-managed profiles
+
+```bash
+curl -X GET "https://api.gcore.com/ddos-protection/profiles?managed_by=system" \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json"
+```
+
+### Retrieve only user-created profiles
+
+```bash
+curl -X GET "https://api.gcore.com/ddos-protection/profiles?managed_by=user" \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json"
+```
+
+### Example response
+
+```json
+{
+  "profiles": [
+    {
+      "id": "prof-123",
+      "name": "Basic Protection",
+      "managed_by": "system",
+      "description": "Standard DDoS protection configuration",
+      "settings": {
+        "threshold": "automatic",
+        "sensitivity": "medium"
+      }
+    },
+    {
+      "id": "prof-456",
+      "name": "Custom High Protection",
+      "managed_by": "user", 
+      "description": "User-defined high-sensitivity profile",
+      "settings": {
+        "threshold": "1000",
+        "sensitivity": "high"
+      }
+    }
+  ]
+}
+```
+
+## Next steps
+
+- Learn how to [create custom protection profiles](custom-protection-profile-configuration)
+- Understand how to [apply profiles to protected networks](apply-a-custom-profile-to-a-protected-network)
+- Explore the [DDoS protection overview](about-ddos-protection)
