@@ -159,7 +159,95 @@ While the VAST interface can be attached to an already-provisioned GPU cluster o
    - **MAC** address (such as `fa:16:3e:12:34:56`)
    - **CIDR** range (such as `198.51.102.0/22`)
 
-#### Configure attached VAST network interface
+#### Configure VAST interface using DHCP (recommended)
+
+<Info>
+  This is the recommended method for configuring VAST interfaces on existing resources. DHCP automatically handles IP assignment, routing, and network configuration, eliminating the need for manual setup.
+</Info>
+
+Before attaching the VAST interface, ensure DHCP is enabled on the VAST subnet. Set `enable_dhcp` to `true` for the VAST subnet.
+
+After attaching the VAST network interface to your compute resource, connect to the server via the [Gcore Customer Portal](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel) or SSH and configure the interface using DHCP.
+
+1. Use `ip addr` to list all available interfaces.
+2. Identify the VAST interface using the MAC address from the previous step.
+3. Note the **interface name** (such as `enp8s0` or `enp4s0`) for use in the following steps.
+4. Configure the interface as described below for the relevant instance type.
+
+##### **Configuring VAST interface for VMs and GPU clusters**
+
+Replace `enp8s0` with the interface name from above, if different.
+
+Set interface MTU:
+
+bash
+sudo ip link set enp8s0 mtu 9000
+
+
+Activate the interface:
+
+bash
+sudo ip link set enp8s0 up
+
+
+Obtain network configuration via DHCP:
+
+bash
+sudo dhcpcd enp8s0
+
+
+##### **Configuring VAST interface for Bare Metal servers**
+
+Bare Metal servers require different configuration depending on the network hardware.
+
+<AccordionGroup>
+  <Accordion title="Bluefield DPU">
+    In the commands below, replace `ens10f0v0` with the interface name identified above.
+
+    Set interface MTU:
+
+    bash
+    sudo ip link set ens10f0v0 mtu 9000
+    
+
+    Activate the interface:
+
+    bash
+    sudo ip link set ens10f0v0 up
+    
+
+    Obtain network configuration via DHCP:
+
+    bash
+    sudo dhcpcd ens10f0v0
+    
+  </Accordion>
+  <Accordion title="Arista (Trunks)">
+    For Bare Metal servers with Arista switches (Trunks), create a VLAN interface on the bond. A bond (link aggregation) combines multiple physical network interfaces into a single logical interface, providing higher throughput and redundancy.
+
+    In the commands below, replace `100` with the VLAN ID shown in the **Networking** tab of the server details page.
+
+    Create VLAN interface on a bond:
+
+    bash
+    sudo ip link add link bond0 name bond0.100 type vlan id 100
+    
+
+    Activate the interface:
+
+    bash
+    sudo ip link set bond0.100 up
+    
+
+    Obtain network configuration via DHCP:
+
+    bash
+    sudo dhcpcd bond0.100
+    
+  </Accordion>
+</AccordionGroup>
+
+#### Configure attached VAST network interface (manual)
 
 <Info>
   This configuration is required only when adding an interface to an existing, already provisioned resource; for interfaces added during resource creation and provisioning, this configuration is performed automatically.
