@@ -172,6 +172,53 @@ Connect to the server via the [Gcore Customer Portal](/cloud/virtual-instances/c
 3. Note the **interface name** (such as `enp8s0` or `enp4s0`) for use in the following steps.
 4. Configure the interface as described below for the relevant instance type.
 
+##### **Enable DHCP for automatic configuration (recommended)**
+
+<Info>
+  Enabling DHCP is the recommended method for configuring VAST network interfaces. It automatically provides IP address, CIDR, gateway, and routing information, eliminating the need for manual configuration.
+</Info>
+
+To enable DHCP for your VAST subnet, configure the following parameter:
+
+- `enable_dhcp` (boolean, optional): Enables automatic IP address and network configuration via DHCP. Set to `true` to use DHCP.
+  Default: `false`.
+
+Once DHCP is enabled, configure the interface using a DHCP client:
+
+**For VMs and GPU clusters:**
+
+1. Run the DHCP client on the interface:
+
+   ```bash
+   sudo dhcpcd enp8s0
+   ```
+
+**For Bare Metal servers with Arista switches (Trunks):**
+
+1. Create the VLAN interface on the bond:
+
+   ```bash
+   sudo ip link add link bond0 name bond0.100 type vlan id 100
+   ```
+
+2. Activate the interface:
+
+   ```bash
+   sudo ip link set bond0.100 up
+   ```
+
+3. Run the DHCP client:
+
+   ```bash
+   sudo dhcpcd bond0.100
+   ```
+
+Replace `enp8s0` or `bond0.100` with your actual interface name, and replace `100` with the VLAN ID shown in the **Networking** tab. The DHCP client will automatically obtain the IP address, netmask, gateway, and routing information.
+
+<Note>
+  If you prefer manual configuration or DHCP is not available, follow the steps below.
+</Note>
+
 ##### **Configuring VAST interface for VMs and GPU clusters**
 
 Replace `198.51.100.25` with the IP address from Step 2. Replace `enp8s0` with the interface name from above, if different.
