@@ -165,38 +165,46 @@ While the VAST interface can be attached to an already-provisioned GPU cluster o
   This configuration is required only when adding an interface to an existing, already provisioned resource; for interfaces added during resource creation and provisioning, this configuration is performed automatically.
 </Info>
 
-Connect to the server via the [Gcore Customer Portal](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel) or SSH and configure the attached VAST network interface.
+After attaching a VAST network interface to a compute resource, configure it to establish connectivity. Gcore now provides DHCP configuration for VAST subnets, making the setup process much simpler.
 
-Gcore has enabled DHCP on VAST subnets to simplify network configuration. Use automatic DHCP configuration (recommended) or configure the interface manually.
-
-##### Automatic configuration with DHCP (recommended)
+**Automatic configuration with DHCP (recommended)**
 
 <Info>
-  DHCP automatically provides IP address, subnet mask, gateway, and routing configuration. This eliminates the need to manually determine network parameters that were previously unavailable.
+DHCP automatically provides IP address, CIDR, gateway, and routing configuration for the VAST network interface, eliminating the need to manually configure network parameters.
 </Info>
 
-For Bare Metal servers with Arista switches (Trunks), first create the VLAN interface, then run the DHCP client on that interface. The VLAN interface must exist before DHCP can configure it. Replace `100` with the VLAN ID shown in the **Networking** tab of the server details page:
+For Bare Metal servers, use these commands to configure the VAST interface with DHCP:
 
 ```bash
-# Create VLAN interface on bond
-sudo ip link add link bond0 name bond0.100 type vlan id 100
+# Create VLAN interface (replace 2998 with the VLAN ID)
+ip link add link bond0 name bond0.2998 type vlan id 2998
+ip link set bond0.2998 up
 
-# Get automatic configuration via DHCP
-sudo dhcpcd bond0.100
+# Obtain network configuration via DHCP
+dhcpcd bond0.2998
 ```
 
-For VMs, GPU clusters, and Bare Metal servers with Bluefield DPU, DHCP configuration is typically handled automatically when the interface is attached during resource creation.
+The DHCP client automatically obtains the IP address, subnet mask, gateway, and routing information needed to connect to the VAST storage.
 
-##### Manual configuration
+#### Manual configuration (alternative method)
 
-If automatic DHCP configuration doesn't work for the setup, configure the interface manually as described in the following sections.
+<Warning>
+**Warning**
+
+Manual configuration requires specific network parameters that are not displayed in the interface. Contact Gcore support if you need the exact IP addresses, CIDR blocks, and gateway information for manual setup.
+</Warning>
+</Warning>
+
+To configure the interface manually, use the following approach:
+
+Connect to the server via the [Gcore Customer Portal](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel) or SSH and configure the attached VAST network interface.
 
 1. Use `ip addr` to list all available interfaces.
 2. Identify the VAST interface using the MAC address from the previous step.
 3. Note the **interface name** (such as `enp8s0` or `enp4s0`) for use in the following steps.
 4. Configure the interface as described below for the relevant instance type.
 
-##### **Configuring VAST interface for VMs and GPU clusters**
+**Configuring VAST interface for VMs and GPU clusters**
 
 Replace `198.51.100.25` with the IP address from Step 2. Replace `enp8s0` with the interface name from above, if different.
 
@@ -224,7 +232,7 @@ Add static route to the VAST network. Replace `198.51.100.1` with an address for
 sudo ip route add 172.19.252.0/22 via 198.51.100.1 dev enp8s0
 ```
 
-##### **Configuring VAST interface for Bare Metal servers**
+**Configuring VAST interface for Bare Metal servers**
 
 Bare Metal servers require different configuration depending on the network hardware.
 
