@@ -172,46 +172,40 @@ Connect to the server via the [Gcore Customer Portal](/cloud/virtual-instances/c
 3. Note the **interface name** (such as `enp8s0` or `enp4s0`) for use in the following steps.
 4. Configure the interface as described below for the relevant instance type.
 
-##### **Automatic configuration using DHCP (recommended)**
+##### **Enable DHCP for automatic configuration (recommended)**
 
-DHCP is enabled on VAST subnets. Use DHCP to automatically configure the network interface, as it provides the IP address, CIDR, gateway, and routing configuration without manual setup.
+<Info>
+  DHCP is enabled on VAST subnets. We recommend using DHCP to automatically obtain the IP address, CIDR, gateway, and routing configuration, eliminating the need for manual network configuration.
+</Info>
 
 ###### **For VMs and GPU clusters**
 
-Run the DHCP client on the identified interface. Replace `enp8s0` with your interface name.
+To configure the interface automatically, run the DHCP client on the identified interface:
 
 ```bash
-sudo dhcpcd enp8s0
+sudo dhcpcd <interface_name>
 ```
 
-###### **For Bare Metal servers**
+Replace `<interface_name>` with the actual interface name (e.g., `enp8s0`).
 
-<AccordionGroup>
-  <Accordion title="Bluefield DPU">
-    Run the DHCP client on the identified interface. Replace `ens10f0v0` with your interface name.
+###### **For Bare Metal servers (Arista/Trunks)**
 
-    ```bash
-    sudo dhcpcd ens10f0v0
-    ```
-  </Accordion>
-  <Accordion title="Arista (Trunks)">
-    For Arista switches, you must create the VLAN interface manually, but can use DHCP for the IP and routing configuration.
+For Bare Metal servers using Arista switches, you must first create the VLAN interface on the bond, then run the DHCP client:
 
-    1. Create the VLAN interface on the bond. Replace `100` with the VLAN ID from the **Networking** tab.
+```bash
+# Create the VLAN interface (replace 100 with your VLAN ID)
+sudo ip link add link bond0 name bond0.100 type vlan id 100
 
-    ```bash
-    sudo ip link add link bond0 name bond0.100 type vlan id 100
-    ```
+# Activate the interface
+sudo ip link set bond0.100 up
 
-    2. Run the DHCP client on the new VLAN interface.
+# Obtain configuration via DHCP
+sudo dhcpcd bond0.100
+```
 
-    ```bash
-    sudo dhcpcd bond0.100
-    ```
-  </Accordion>
-</AccordionGroup>
+Replace `100` with the VLAN ID shown in the **Networking** tab of the server details page.
 
-##### **Manual configuration for VMs and GPU clusters**
+##### **Configuring VAST interface for VMs and GPU clusters (manual)**
 
 Replace `198.51.100.25` with the IP address from Step 2. Replace `enp8s0` with the interface name from above, if different.
 
@@ -239,7 +233,7 @@ Add static route to the VAST network. Replace `198.51.100.1` with an address for
 sudo ip route add 172.19.252.0/22 via 198.51.100.1 dev enp8s0
 ```
 
-##### **Manual configuration for Bare Metal servers**
+##### **Configuring VAST interface for Bare Metal servers (manual)**
 
 Bare Metal servers require different configuration depending on the network hardware.
 
