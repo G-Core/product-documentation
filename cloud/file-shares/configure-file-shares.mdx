@@ -167,45 +167,36 @@ While the VAST interface can be attached to an already-provisioned GPU cluster o
 
 Connect to the server via the [Gcore Customer Portal](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel) or SSH and configure the attached VAST network interface.
 
+Gcore has enabled DHCP on VAST subnets to simplify network configuration. Use automatic DHCP configuration (recommended) or configure the interface manually.
+
+##### Automatic configuration with DHCP (recommended)
+
+<Info>
+  DHCP automatically provides IP address, subnet mask, gateway, and routing configuration. This eliminates the need to manually determine network parameters that were previously unavailable.
+</Info>
+
+For Bare Metal servers with Arista switches (Trunks), first create the VLAN interface, then run the DHCP client on that interface. The VLAN interface must exist before DHCP can configure it. Replace `100` with the VLAN ID shown in the **Networking** tab of the server details page:
+
+```bash
+# Create VLAN interface on bond
+sudo ip link add link bond0 name bond0.100 type vlan id 100
+
+# Get automatic configuration via DHCP
+sudo dhcpcd bond0.100
+```
+
+For VMs, GPU clusters, and Bare Metal servers with Bluefield DPU, DHCP configuration is typically handled automatically when the interface is attached during resource creation.
+
+##### Manual configuration
+
+If automatic DHCP configuration doesn't work for the setup, configure the interface manually as described in the following sections.
+
 1. Use `ip addr` to list all available interfaces.
 2. Identify the VAST interface using the MAC address from the previous step.
 3. Note the **interface name** (such as `enp8s0` or `enp4s0`) for use in the following steps.
 4. Configure the interface as described below for the relevant instance type.
 
-##### **Enable DHCP for automatic configuration (recommended)**
-
-<Info>
-  DHCP is enabled on VAST subnets. We recommend using DHCP to automatically obtain the IP address, CIDR, gateway, and routing configuration, eliminating the need for manual network configuration.
-</Info>
-
-###### **For VMs and GPU clusters**
-
-To configure the interface automatically, run the DHCP client on the identified interface:
-
-```bash
-sudo dhcpcd <interface_name>
-```
-
-Replace `<interface_name>` with the actual interface name (e.g., `enp8s0`).
-
-###### **For Bare Metal servers (Arista/Trunks)**
-
-For Bare Metal servers using Arista switches, you must first create the VLAN interface on the bond, then run the DHCP client:
-
-```bash
-# Create the VLAN interface (replace 100 with your VLAN ID)
-sudo ip link add link bond0 name bond0.100 type vlan id 100
-
-# Activate the interface
-sudo ip link set bond0.100 up
-
-# Obtain configuration via DHCP
-sudo dhcpcd bond0.100
-```
-
-Replace `100` with the VLAN ID shown in the **Networking** tab of the server details page.
-
-##### **Configuring VAST interface for VMs and GPU clusters (manual)**
+##### **Configuring VAST interface for VMs and GPU clusters**
 
 Replace `198.51.100.25` with the IP address from Step 2. Replace `enp8s0` with the interface name from above, if different.
 
@@ -233,7 +224,7 @@ Add static route to the VAST network. Replace `198.51.100.1` with an address for
 sudo ip route add 172.19.252.0/22 via 198.51.100.1 dev enp8s0
 ```
 
-##### **Configuring VAST interface for Bare Metal servers (manual)**
+##### **Configuring VAST interface for Bare Metal servers**
 
 Bare Metal servers require different configuration depending on the network hardware.
 
