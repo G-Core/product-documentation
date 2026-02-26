@@ -165,6 +165,31 @@ While the VAST interface can be attached to an already-provisioned GPU cluster o
   This configuration is required only when adding an interface to an existing, already provisioned resource; for interfaces added during resource creation and provisioning, this configuration is performed automatically.
 </Info>
 
+**Automatic configuration with DHCP (recommended)**
+
+<Info>
+
+DHCP is now enabled on VAST subnets. This automatically provides IP address, CIDR, gateway, and route information when attaching a VAST subnet to a compute resource.
+
+</Info>
+
+When attaching a VAST subnet to an existing compute resource, use DHCP to automatically configure the network interface. This is the recommended method as it eliminates the need for manual network configuration.
+
+For Bare Metal servers, create the VLAN interface and run the DHCP client:
+
+```bash
+ip link add link bond0 name bond0.2998 type vlan id 2998
+dhcpcd bond0.2998
+```
+
+Replace `bond0.2998` with the actual VLAN interface name and VLAN ID.
+
+The DHCP client automatically configures the IP address, subnet mask, gateway, and routing information, following the same [network configuration](/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address) approach used across Gcore Cloud.
+
+**Manual configuration (alternative method)**
+
+If you prefer manual configuration or need custom network settings, you can configure the network interface manually.
+
 Connect to the server via the [Gcore Customer Portal](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel) or SSH and configure the attached VAST network interface.
 
 1. Use `ip addr` to list all available interfaces.
@@ -172,7 +197,7 @@ Connect to the server via the [Gcore Customer Portal](/cloud/virtual-instances/c
 3. Note the **interface name** (such as `enp8s0` or `enp4s0`) for use in the following steps.
 4. Configure the interface as described below for the relevant instance type.
 
-##### **Configuring VAST interface for VMs and GPU clusters**
+**Configuring VAST interface for VMs and GPU clusters**
 
 Replace `198.51.100.25` with the IP address from Step 2. Replace `enp8s0` with the interface name from above, if different.
 
@@ -200,7 +225,7 @@ Add static route to the VAST network. Replace `198.51.100.1` with an address for
 sudo ip route add 172.19.252.0/22 via 198.51.100.1 dev enp8s0
 ```
 
-##### **Configuring VAST interface for Bare Metal servers**
+**Configuring VAST interface for Bare Metal servers**
 
 Bare Metal servers require different configuration depending on the network hardware.
 
