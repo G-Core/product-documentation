@@ -18,7 +18,7 @@ Each node has:
 - A **network boot disk** (required). At least one network disk is required as the boot volume for the operating system.
 - A **local data disk** added by default. This non-replicated disk is dedicated to temporary storage.
 - Optional **network data disks** that can be attached during creation or added later. Network disks persist independently of node state.
-- Optional **Vast fileshare** integration for shared storage across nodes.
+- Optional **file share** integration for shared storage across instances.
 
 <Warning>
 The local data disk is a non-replicated volume that comes with every Virtual GPU instance. This disk:
@@ -36,7 +36,7 @@ Use this disk only for temporary data. Store all important data on network disks
 To create a Virtual GPU cluster, complete the following steps in the Gcore Customer Portal.
 
 1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **GPU Cloud**.
-2. In the sidebar, expand **GPU Clusters** and select **Virtual Clusters**.
+2. In the sidebar, expand **GPU Clusters** and select **Virtual GPU Clusters**.
 3. Click **Create Cluster**.
 
 
@@ -53,9 +53,15 @@ GPU model availability and pricing vary by region. Check other regions if a requ
 
 ### Step 2. Select cluster type
 
-In the **Cluster type** section, select **Virtual** to create a Virtual GPU cluster.
+In the **GPU Cluster type** section, select **Virtual GPU** to create a Virtual GPU cluster.
 
-Selecting **Virtual** displays flavors and options specific to Virtual GPU clusters. Selecting **Physical** switches to Bare Metal GPU cluster creation.
+The available cluster types are:
+
+- **Virtual GPU**: Clusters of virtual instances with dedicated GPU resources
+- **Bare Metal GPU**: Dedicated clusters of physical GPU servers
+- **Spot Bare Metal GPU**: Discounted bare metal GPU servers with non-guaranteed availability
+
+Selecting **Virtual GPU** displays flavors and options specific to Virtual GPU clusters.
 
 ### Step 3. Configure cluster capacity
 
@@ -67,13 +73,13 @@ Cluster capacity determines the hardware specifications for each node in the clu
 
 3. Select a flavor. Each flavor card displays GPU configuration, vCPU count, RAM capacity, and pricing.
 
-### Step 4. Set the number of nodes
+### Step 4. Set the number of instances
 
-In the **Number of Nodes** section, specify how many virtual machines to provision in the cluster.
+In the **Number of Instances** section, specify how many virtual machines to provision in the cluster.
 
 <Frame>![Number of Instances selector showing increment and decrement buttons](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/virtual-gpu-instances-count.png)</Frame>
 
-Each node is a separate virtual machine with the selected flavor configuration. When created, all nodes have identical configurations. The minimum is 1 node, maximum is 999 nodes per cluster.
+Each instance is a separate virtual machine with the selected flavor configuration. When created, all instances have identical configurations. The minimum is 1 instance, maximum depends on regional availability.
 
 ### Step 5. Select image
 
@@ -90,48 +96,60 @@ The default Ubuntu images include pre-installed NVIDIA drivers and CUDA toolkit.
 2. Note the default login credentials displayed below the image selector.
 
 
-### Step 6. Configure disks
+### Step 6. Configure volumes
 
-Each Virtual GPU cluster node has the following storage:
+Each Virtual GPU cluster instance has the following storage:
 
-- **Network boot disk** (required): At least one network disk is required as the boot volume for the operating system. This disk persists across power cycles.
-- **Local data disk**: Added automatically to every node. This non-replicated disk is dedicated to temporary storage only. It cannot be edited, removed, or used as a boot volume. Data on this disk is deleted when the node is shelved, reconfigured, or deleted.
-- **Network data disks** (optional): Additional persistent storage that survives power cycles. Up to 8 network disks of different sizes and types can be attached.
-- **Vast fileshare** (optional): Shared storage integration for data accessible across multiple nodes.
+- **System volume** (required): The boot volume for the operating system. This network disk persists across power cycles.
+- **Local volume**: Added automatically to every instance. This non-replicated disk is dedicated to temporary storage only. It cannot be edited, removed, or used as a boot volume. Data on this disk is deleted when the instance is shelved, reconfigured, or deleted.
+- **Additional network volumes** (optional): Additional persistent storage that survives power cycles.
 
-<Frame>![Volumes configuration section with disk type, size, and Your plan summary](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/virtual-gpu-volumes-config.png)</Frame>
+<Frame>![Volumes configuration section with volume type, size, and configuration options](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/virtual-gpu-volumes-config.png)</Frame>
 
-To configure disks:
+To configure volumes:
 
-1. Configure the **boot disk**:
-   - **Disk type**: Select from available storage types in the region
-   - **Size**: Minimum size depends on the selected image
+1. Configure the **System** volume:
+   - **Name**: Enter a name for the volume
+   - **Size**: Minimum size depends on the selected image (default: 120 GiB)
+   - **Type**: Select from available storage types in the region (for example, High IOPS SSD)
 
-2. To add additional network data disks, click **Add Disk**.
+2. To add additional network volumes, click **Add Volume**.
 
-3. For each additional disk, select:
-   - **Disk type**: Select from available storage types in the region
-   - **Size**: Minimum 120 GiB
+3. For each additional volume, configure the name, size, and type.
 
-4. Repeat to add more disks (maximum 8 disks total).
-
-All configured network disks are attached to every node in the cluster at creation.
+All configured network volumes are attached to every instance in the cluster at creation.
 
 <Warning>
-Store important data on network disks or NFS storage, not on the local data disk. The local disk is wiped when the node is shelved, reconfigured, or deleted, resulting in permanent data loss.
+Store important data on network volumes or file shares, not on the local volume. The local volume is wiped when the instance is shelved, reconfigured, or deleted, resulting in permanent data loss.
 </Warning>
 
 <Info>
-After cluster creation, network disks can be managed individually per node. Additional disks can be added to specific nodes, and existing disks can be detached from individual nodes.
+After cluster creation, network volumes can be managed individually per instance. Additional volumes can be added to specific instances, and existing volumes can be detached from individual instances.
 </Info>
 
+### Step 6a. Configure file share integration (optional)
+
+The **File share integration** section allows you to connect a shared file system that is accessible across all instances in the cluster.
+
+Enabling file share integration is recommended for workflows that require shared data access, such as distributed training or shared datasets.
+
+To enable file share integration:
+
+1. Select the **Enable File Share integration** checkbox.
+2. Select an existing file share or create a new one.
+
+<Info>
+When file share integration is enabled, the maximum number of network interfaces per instance is reduced from 3 to 2, because one interface is reserved for NFS connectivity.
+</Info>
+
+For detailed information about file shares, see [Configure file shares](/cloud/file-shares/configure-file-shares).
 
 ### Step 7. Configure network settings
 
 Network settings define how the cluster communicates with external services and other resources. At least one interface is required.
 
 <Info>
-Virtual GPU clusters support a maximum of 3 network interfaces (Public and Private combined) per node. If Vast file share integration is enabled, the limit is reduced to 2 interfaces, because one interface is reserved for NFS connectivity.
+Virtual GPU clusters support a maximum of 3 network interfaces (Public and Private combined) per instance. If file share integration is enabled, the limit is reduced to 2 interfaces, because one interface is reserved for NFS connectivity.
 
 InfiniBand interfaces are not counted toward this limit; they are configured automatically based on the selected flavor.
 </Info>
@@ -147,6 +165,17 @@ InfiniBand interfaces are not counted toward this limit; they are configured aut
 To add additional interfaces, click **Add Interface**. When the maximum number of interfaces is reached, the button is disabled.
 
 For detailed networking configuration, see [Create and manage a network.](/cloud/networking/create-and-manage-a-network)
+
+### Step 7a. Configure firewall settings
+
+The **Firewall settings** section allows you to apply firewall rules to control inbound and outbound traffic for the cluster instances.
+
+1. In the **Firewall settings** section, select one or more firewalls from the dropdown.
+2. To add more firewalls, click **Add Firewall**.
+
+A default firewall is pre-selected. You can remove it and select different firewalls as needed.
+
+For detailed information about configuring firewall rules, see [Add and configure a firewall](/cloud/networking/add-and-configure-a-firewall).
 
 ### Step 8. Configure SSH key
 
@@ -166,13 +195,13 @@ The **Additional options** section provides optional settings: user data scripts
 The final step assigns a name to the cluster and initiates provisioning.
 
 
-1. In the **Cluster Name** section, enter a name or use the auto-generated one.
+1. In the **GPU Cluster Name** section, enter a name or use the auto-generated one.
 
 2. Review the **Estimated cost** panel on the right.
 
 3. Click **Create Cluster**.
 
-Once all nodes reach **Power on** status, the cluster is ready for use.
+Once all instances reach **Power on** status, the cluster is ready for use.
 
 <Warning>
 Cluster-level settings (image, default networks) cannot be changed after creation. New nodes added via scaling inherit the original configuration. To change these settings, create a new cluster.
@@ -204,7 +233,7 @@ The output displays all available GPUs, driver version, and CUDA version. If no 
 
 Virtual GPU clusters support power management operations at the cluster level. Unlike Bare Metal clusters, powering off a Virtual GPU cluster releases compute resources (shelving), which stops billing but also removes data from local disks.
 
-<Frame>![Power tab showing Power on, Power off, and Soft reboot options](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/virtual-gpu-power-tab.png)</Frame>
+<Frame>![Power tab showing Power on, Power off, Soft reboot, and Hard reboot options](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/virtual-gpu-power-tab.png)</Frame>
 
 ### Power off (shelve) a cluster
 
