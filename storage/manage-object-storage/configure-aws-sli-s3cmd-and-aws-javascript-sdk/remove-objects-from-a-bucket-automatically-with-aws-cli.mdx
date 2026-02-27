@@ -104,7 +104,7 @@ aws s3api put-bucket-lifecycle --bucket my_bucket --lifecycle-configuration file
 Replace:
 
   * `my_bucket` name in the example with your bucket name.
-  * `https://s-ed1.cloud.gcore.lu` with your storage endpoint. To choose the correct value for this parameter, use the "[S3 service URLs and default region names](/storage/manage-object-storage/s3-service-urls-and-default-region-names)" guide.
+  * `https://s-ed1.cloud.gcore.lu` with your [storage endpoint](/storage/manage-object-storage/s3-service-urls-and-default-region-names).
 
 
 
@@ -117,7 +117,7 @@ aws s3api get-bucket-lifecycle-configuration --bucket my_bucket --endpoint-url=h
 Replace:
 
   * `my_bucket` name in the example with your bucket name.
-  * `https://s-ed1.cloud.gcore.lu` with your storage endpoint. To choose the correct value for this parameter, use the "[S3 service URLs and default region names](/storage/manage-object-storage/s3-service-urls-and-default-region-names)" guide.
+  * `https://s-ed1.cloud.gcore.lu` with your [storage endpoint](/storage/manage-object-storage/s3-service-urls-and-default-region-names).
 
 
 
@@ -134,10 +134,62 @@ aws s3api delete-bucket-lifecycle --bucket my-bucket --endpoint-url=https://s-ed
 Replace:
 
   * `my_bucket` name in the example with your bucket name.
-  * `https://s-ed1.cloud.gcore.lu` with your storage endpoint. To choose the correct value for this parameter, use the "[S3 service URLs and default region names](/storage/manage-object-storage/s3-service-urls-and-default-region-names)" guide.
+  * `https://s-ed1.cloud.gcore.lu` with your [storage endpoint](/storage/manage-object-storage/s3-service-urls-and-default-region-names).
 
 
 
 ## Manage a lifecycle policy with the UI
 
-If you are using S3 storage in Luxembourg, you can manage your lifecycle policy for buckets in the Gcore Customer Portal according to the "[Manage buckets via the Gcore Customer Portal](/storage/manage-object-storage/manage-buckets-via-the-control-panel#add-lifecycle-policy-available-for-s3-in-luxembourg-only)" guide.
+S3 storage in Luxembourg also supports lifecycle policy management via the [Gcore Customer Portal](/storage/manage-object-storage/manage-buckets-via-the-control-panel#add-lifecycle-policy-available-for-s3-in-luxembourg-only).
+
+## Protect objects from deletion with Object Lock
+
+Object Lock protects objects from deletion or modification for a retention period. It is available via the S3 protocol only.
+
+**Note** : Object Lock requires a new bucket and automatically activates versioning. Existing buckets do not support this feature.
+
+### Create a bucket with Object Lock
+
+```sh
+aws s3api create-bucket --bucket my-locked-bucket --object-lock-enabled-for-bucket --endpoint-url=https://s-ed1.cloud.gcore.lu
+```
+
+Replace:
+
+  * `my-locked-bucket` with your bucket name.
+  * `https://s-ed1.cloud.gcore.lu` with your [storage endpoint](/storage/manage-object-storage/s3-service-urls-and-default-region-names).
+
+### Set a default retention policy
+
+```sh
+aws s3api put-object-lock-configuration --bucket my-locked-bucket --object-lock-configuration '{"ObjectLockEnabled":"Enabled","Rule":{"DefaultRetention":{"Mode":"GOVERNANCE","Days":30}}}' --endpoint-url=https://s-ed1.cloud.gcore.lu
+```
+
+Replace:
+
+  * `my-locked-bucket` with your bucket name.
+  * `GOVERNANCE` with `COMPLIANCE` for stricter protection. Governance mode allows override with permissions; Compliance mode prevents deletion until expiry.
+  * `30` with the retention period in days.
+  * `https://s-ed1.cloud.gcore.lu` with your [storage endpoint](/storage/manage-object-storage/s3-service-urls-and-default-region-names).
+
+### Verify Object Lock is working
+
+1\. Upload a test file:
+
+```sh
+aws s3 cp testfile.txt s3://my-locked-bucket/ --endpoint-url=https://s-ed1.cloud.gcore.lu
+```
+
+2\. List object versions to get the version ID:
+
+```sh
+aws s3api list-object-versions --bucket my-locked-bucket --prefix testfile.txt --endpoint-url=https://s-ed1.cloud.gcore.lu
+```
+
+3\. Attempt to delete the object by version ID:
+
+```sh
+aws s3api delete-object --bucket my-locked-bucket --key testfile.txt --version-id <version-id> --endpoint-url=https://s-ed1.cloud.gcore.lu
+```
+
+If configured correctly, the command returns an error: `AccessDenied: forbidden by object lock`.
