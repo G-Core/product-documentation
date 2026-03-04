@@ -16,4 +16,146 @@ To configure mTLS, you need to set up:
 
 
 
-You can configure mTLS via API. Check [Gcore API documentation](https://api.gcore.com/docs/cloud#tag/Load-Balancers/operation/LoadBalancerPoolViewSet.post) for more information about the required parameters and acceptable values for setting up mTLS.
+mTLS can be configured via API. Check [Gcore API documentation](https://api.gcore.com/docs/cloud#tag/Load-Balancers/operation/LoadBalancerPoolViewSet.post) for more information about the required parameters and acceptable values for setting up mTLS.
+
+## Configuration examples
+
+The following examples demonstrate complete workflows for configuring mTLS authentication at different levels.
+
+### Example 1: Client ↔ Load Balancer mTLS
+
+This configuration validates client certificates connecting to the load balancer.
+
+**Step 1: Create server certificate secret (for HTTPS termination)**
+
+Create a secret containing your server certificate in PKCS12 format:
+
+```
+POST /v1/secrets/{project_id}/{region_id}
+Content-Type: application/json
+```
+
+```json
+{
+  "name": "lb-server-cert",
+  "secret_type": "certificate",
+  "payload": "<base64-encoded-pkcs12-certificate>",
+  "payload_content_type": "application/octet-stream",
+  "payload_content_encoding": "base64"
+}
+```
+
+**Response:**
+
+```json
+{"task_id": "task-001"}
+```
+
+Wait for task completion, then retrieve the secret_id from the task result.
+
+<Warning>
+**Important:** Using `payload_content_type: "text/plain"` with `payload_content_encoding: "base64"` will cause secret creation to fail.
+</Warning>
+
+<Info>
+**Valid payload_content_type values for base64 encoding:** `application/octet-stream`
+</Info>
+
+**Step 2: Create listener with server certificate**
+
+Create a listener with TERMINATED_HTTPS protocol:
+
+```
+POST /v1/loadbalancers/{project_id}/{region_id}/{loadbalancer_id}/listeners
+Content-Type: application/json
+```
+
+```json
+{
+  "name": "https-listener",
+  "protocol": "TERMINATED_HTTPS",
+  "protocol_port": 443,
+  "secret_id": "<server-certificate-secret-id>"
+}
+```
+
+Each API call returns a task_id and you must wait for task completion before proceeding to the next step.
+
+### Example 2: Load Balancer ↔ Backend Servers mTLS
+
+This configuration validates server certificates when the load balancer connects to backend members.
+
+**Step 1: Create CA certificate secret**
+
+Create a secret containing the CA certificate to validate backend servers:
+
+```
+POST /v1/secrets/{project_id}/{region_id}
+Content-Type: application/json
+```
+
+```json
+{
+  "name": "backend-ca-cert",
+  "secret_type": "certificate",
+  "payload": "<base64-encoded-ca-certificate>",
+  "payload_content_type": "application/octet-stream",
+  "payload_content_encoding": "base64"
+}
+```
+
+**Step 2: Create pool with mTLS configuration**
+
+Create a pool that validates backend server certificates:
+
+```
+POST /v1/loadbalancers/{project_id}/{region_id}/{loadbalancer_id}/pools
+Content-Type: application/json
+```
+
+```json
+{
+  "name": "mtls-pool",
+  "protocol": "HTTPS",
+  "lb_algorithm": "ROUND_ROBIN",
+  "ca_secret_id": "<ca-certificate-secret-id>"
+}
+```
+
+The `ca_secret_id` parameter enables the load balancer to validate backend server certificates using the specified CA certificate.
+
+This configuration validates client certificates connecting to the load balancer.
+
+**Step 1: Create server certificate secret (for HTTPS termination)**
+
+Create a secret containing the server certificate in PKCS12 format:
+
+```bash
+POST /v1/secrets/{project_id}/{region_id}
+```
+
+```json
+{
+  "name": "lb-server-cert",
+  "secret_type": "certificate",
+  "payload": "<base64-encoded-pkcs12>",
+  "payload_content_encoding": "base64",
+  "payload_content_type": "application/octet-stream"
+}
+```
+
+**Response:**
+
+```json
+{"task_id": "task-001"}
+```
+
+Wait for task completion, then retrieve the secret_id from the task result.
+
+<Warning>
+**Important:** Using `payload_content_type: "text/plain"` with `payload_content_encoding: "base64"` will cause secret creation to fail. Always use `application/octet-stream` for base64-encoded certificate data.
+</Warning>
+
+<Info>
+**Valid payload_content_type values for base64 encoding:** `application/octet-stream`, `application/pkcs8`, or `null`
+</Info>
