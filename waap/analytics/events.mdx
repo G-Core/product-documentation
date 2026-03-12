@@ -1,0 +1,139 @@
+## Events
+
+### Purpose
+
+The Events section provides detailed visibility into HTTP requests and security events processed by WAAP. It serves as the primary workspace for traffic investigation, security analysis, and policy validation.
+
+Events allow teams to move from high-level attack patterns to individual requests, sessions, and security signals.
+
+Request history is retained for 30 days.
+
+### Why filtering matters
+
+In production environments, raw request logs are too large to analyze manually. The Events interface is designed around flexible, filter-driven investigation, allowing analysts to quickly reduce large traffic volumes to a meaningful investigative scope.
+
+WAAP Events supports a wide range of filtering dimensions so teams can analyze traffic from multiple perspectives — by source, target, action, or request characteristics. Filters can be combined to progressively narrow the dataset and focus on the exact traffic relevant to an incident or investigation.
+
+Supported filters include:
+
+- Time range — isolate the exact period when suspicious activity occurred  
+- Event type — focus on specific security signals or detections  
+- Action — filter requests based on the mitigation decision applied by WAAP. Available values include:
+
+  - Blocked — malicious traffic that was denied and did not reach the origin, according to the active security rules.
+  - Monitored — malicious traffic that was detected but intentionally allowed to pass according to the current security policy (for example when rules operate in monitoring mode).
+  - Allowed — traffic explicitly permitted by user-defined policies or allow rules.
+  - Passed — legitimate traffic that was inspected and forwarded to the origin because it did not trigger blocking policies.
+
+  Two additional actions may appear in combination with the states above:
+
+  - CAPTCHA — a CAPTCHA challenge was issued to the client request.
+  - Challenge — a JavaScript or browser validation challenge was issued.
+
+  Challenge-based actions can appear together with Blocked, Monitored, or Passed, indicating that the request triggered a challenge before the final mitigation decision.
+
+- Country — analyze traffic based on geographic origin  
+- IP address — investigate activity from a specific client  
+- Path — focus on a particular application endpoint or API route  
+- HTTP method — distinguish between request types such as GET, POST, PUT, PATCH, or DELETE  
+- Response code — correlate security events with application behavior  
+- Request ID — inspect one or more specific requests. Multiple request IDs can be provided as a comma-separated list.  
+- Reference ID — group repeated requests that triggered the same security rule. Multiple reference IDs can be provided as a comma-separated list.  
+- Session ID — analyze sequences of requests generated within one client session. Multiple session IDs can be provided as a comma-separated list.
+
+Because filters can be combined, analysts can move from broad analysis to highly precise investigations — for example isolating POST requests to `/login` from a specific country that were blocked during a five-minute attack window.
+
+Filtered datasets are immediately reflected in the Events analytics view. Graphs dynamically update to display:
+
+- the volume of requests over time within the selected scope  
+- the distribution of mitigation actions (blocked, monitored, allowed, passed, and challenge-based actions such as CAPTCHA or Challenge)  
+- the relationship between suspicious and legitimate traffic for the selected filters  
+
+This dynamic filtering makes Events a practical investigation workspace rather than a static log viewer. Analysts can quickly test hypotheses, validate rule behavior, and understand how attacks evolve over time.
+
+Security analysts, SREs, and DevSecOps engineers typically use Events to:
+
+- investigate suspicious traffic  
+- validate enforcement actions  
+- detect recurring attack patterns  
+- confirm whether rules behave as expected  
+- export evidence for incident response  
+
+### Exporting events
+
+WAAP provides multiple ways to export security events for reporting, long-term storage, or integration with external security systems.
+
+#### Export from the Events page
+
+Events visible in the Events interface can be exported directly as a report. When filters are applied, the exported dataset contains only the filtered results, allowing analysts to generate focused reports for investigations or incident documentation.
+
+Typical use cases include:
+
+- sharing traffic samples with SOC or incident response teams  
+- attaching evidence to security incident records  
+- providing filtered datasets to engineering teams for troubleshooting  
+- preparing customer-facing security reports  
+
+Exports from the Events page are typically provided in CSV format, making them easy to process in spreadsheets, SIEM platforms, or analytical tools.
+
+#### Continuous export via Log Uploader
+
+For automated pipelines and long-term retention, WAAP supports continuous event delivery using Log Uploader.
+
+Log Uploader allows teams to stream WAAP events to external storage or processing systems. Supported destinations include:
+
+- Amazon S3 — for centralized log storage and integration with data lakes or analytics pipelines  
+- FTP — for compatibility with legacy log ingestion systems  
+- SFTP — for secure file transfer to security or compliance infrastructure  
+- HTTP endpoints — for integration with SIEM platforms, log collectors, or custom processing services  
+
+This capability allows organizations to integrate WAAP telemetry into broader security monitoring, DevSecOps, and observability pipelines, enabling correlation with application logs, infrastructure metrics, and threat intelligence systems.
+
+### Real-world investigation scenarios
+
+#### Investigating an API attack
+
+A backend team notices abnormal behavior on `/api/login`. A security analyst opens Events and filters traffic by time range, path, and HTTP method.
+
+The filtered dataset reveals a burst of POST requests from a limited set of IP addresses, triggering authentication-related rules. The analyst confirms that WAAP blocked the majority of these requests and identifies the activity as credential-stuffing automation.
+
+#### Distinguishing legitimate automation from malicious bots
+
+Some services rely on legitimate automated traffic from partners or internal integrations. However, malicious bots may produce similar patterns.
+
+By filtering events by country, session ID, and action, analysts can distinguish legitimate automation from abusive scripts attempting to scrape content or overload endpoints.
+
+#### Validating a new security rule
+
+After deploying a new custom rule, a DevSecOps engineer reviews Events to confirm that the rule correctly identifies malicious requests without affecting legitimate traffic.
+
+The analyst filters by time range and action to review blocked versus allowed requests and confirm that the policy change behaves as intended.
+
+#### Investigating repeated attacker behavior
+
+Automated attacks often generate sequences of requests rather than isolated events.
+
+By pivoting from an IP address to a session ID or reference ID, analysts can observe the full sequence of requests generated by a single automated workflow. This helps determine whether the attacker is scanning, probing authentication flows, or attempting exploitation.
+
+#### Exporting evidence for incident response
+
+Once relevant traffic is isolated, analysts can export the filtered dataset in CSV format.
+
+This allows teams to:
+
+- attach traffic samples to incident reports  
+- share evidence with SOC teams  
+- provide technical context to engineering teams  
+- document mitigation effectiveness  
+
+### Recommended investigation workflow
+
+A typical investigation process in Events includes:
+
+1. Narrow the timeframe of the incident.  
+2. Identify the affected endpoint or domain.  
+3. Review mitigation actions taken by WAAP.  
+4. Pivot to source indicators such as IP address or session ID.  
+5. Export relevant events for documentation or response.
+
+This structured approach allows teams to transform raw request telemetry into actionable security insight.
