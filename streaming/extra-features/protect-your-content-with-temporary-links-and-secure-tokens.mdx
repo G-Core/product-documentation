@@ -3,20 +3,75 @@ title: Protect your content with temporary links and secure tokens
 sidebarTitle: Protected temporary link
 ---
 
-By default, videos are available by their links with no restrictions and can be placed on any website or in any mobile application. But in some cases, platform owners or rights holders need to ensure that video content does _not_ offer public access, such as when a video is only for paid access, private access, access by country, temporary access, or access on a specific site.
+By default, videos are available by their links with no restrictions and can be placed on any website or in any mobile application. But in some cases, platform owners or rights holders need to ensure that video content does _not_ offer public access, such as when a video is only for paid access, private access, temporary access, or access on a specific site.
+
+## When to use secure tokens (and when NOT to)
+
+<Tabs>
+  <Tab title="✅ Use secure tokens if...">
+    **You need to control WHO can access your content:**
+
+    - **Paid content/Paywalls**: Only authenticated, paying users should access videos
+    - **Private videos**: Content for logged-in users only (educational platforms, corporate training)
+    - **Time-limited access**: Preview links that expire after X hours/days
+    - **Anti-hotlinking**: Prevent other websites from embedding your videos without permission
+    - **Per-user access control**: Generate unique tokens for each user with your backend
+
+    **Example use cases:**
+    - Online course platform: Students must log in to watch lessons
+    - VOD platform: Users pay subscription to access movies
+    - Event streaming: Generate one-time links for ticket holders
+    - Content preview: Share 24-hour preview links with partners
+  </Tab>
+  <Tab title="❌ Don't use secure tokens if...">
+    **You just need to control WHERE content is available:**
+
+    - **Geo-restrictions only**: Use [Country access policy](https://gcore.com/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#country-access-policy) instead
+      - Example: "Stream only available in Dominican Republic"
+      - This is simpler and doesn't require backend token generation
+
+    - **Domain restrictions only**: Use [Referrer validation](https://gcore.com/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#allow-referrer-policy) instead
+      - Example: "Video can only be embedded on mywebsite.com"
+      - No token generation needed
+
+    - **Public content**: If your content is free and publicly accessible, you don't need any protection
+
+    - **Legal authorization**: If you're asking about copyright/broadcasting rights clearance, this is a legal question—contact [support@gcore.com](mailto:support@gcore.com)
+
+    **Common confusion:**
+    - "Authorization to stream" (legal rights) ≠ Secure tokens (technical access control)
+    - Geo-blocking ≠ Secure tokens (different features, different purposes)
+  </Tab>
+</Tabs>
+
+<Warning>
+**Important:** Secure tokens require backend development to generate tokens for each user/request. If you just need geo-blocking or domain restrictions, use the simpler CDN security policies instead.
+</Warning>
 
 ## How does Gcore protect video content?
 
 Gcore has several methods of protecting video content:
 
-  1. Protected temporary links with secure token
-  2. [Country access policy (geo-restrictions)](/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#country-access-policy)
-  3. [Referrer validation](/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#allow-referrer-policy)
-  4. [AES-128 encryption](/streaming/video-hosting/protect-your-videos-with-the-aes-128-encryption)
-
-
+  1. **Protected temporary links with secure token** (this article) - Controls WHO can access
+  2. [**Country access policy (geo-restrictions)**](/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#country-access-policy) - Controls WHERE content is available
+  3. [**Referrer validation**](/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#allow-referrer-policy) - Controls which websites can embed
+  4. [**AES-128 encryption**](/streaming/video-hosting/protect-your-videos-with-the-aes-128-encryption) - Encrypts video content
 
 We plan to add more types of protections in the future, such as watermarking. Contact us via [support@gcore.com](mailto:support@gcore.com) if you want to suggest additional options.
+
+### Quick decision guide: Which protection method do I need?
+
+| Your requirement | Protection method | Complexity |
+|-----------------|-------------------|------------|
+| "Only allow viewers in specific countries" | [Country access policy](https://gcore.com/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#country-access-policy) | ⭐ Easy (CDN setting) |
+| "Only allow embedding on my website" | [Referrer validation](https://gcore.com/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#allow-referrer-policy) | ⭐ Easy (CDN setting) |
+| "Only paid/logged-in users can watch" | Secure tokens (this article) | ⭐⭐⭐ Advanced (requires backend) |
+| "Encrypt video files for DRM" | [AES-128 encryption](https://gcore.com/docs/streaming/video-hosting/protect-your-videos-with-the-aes-128-encryption) | ⭐⭐⭐ Advanced (requires key management) |
+| "Prevent unauthorized downloads" | Combine secure tokens + AES-128 | ⭐⭐⭐ Advanced |
+
+<Info>
+**Most common scenario:** If you just need to restrict content by country (e.g., "only available in Dominican Republic for broadcasting rights"), use **Country access policy**—not secure tokens. It's much simpler and doesn't require backend development.
+</Info>
 
 In this article, we will look at the first option: protected temporary links and, relatedly, Secure Tokens.
 
@@ -61,11 +116,25 @@ Video content hosted via the Video Streaming is viewed and delivered through our
 
 The restriction policies, such as the Secure Token for links protection, apply specifically to CDN resources because a CDN resource covers all video content at once. This means you don't need to create rules and make permissions for each video separately—it is enough to create and apply permissions only once to the CDN resource.
 
-Note: Your account can have several CDN resources leading to the same content (origin). These CDN resources can be with different access policies. So you can combine open access on one CDN resource, and private access on another one, etc.
+### Multiple CDN resources for different policies
 
-For example we have 2 demo domains for IP-binding and generic:
-  - For generic secure token use without IP-binding: https://demo-protected.gvideo.io/
-  - For IP-binded secure token: https://demo-protected-ip.gvideo.io/
+Your account can have several CDN resources leading to the same content (origin). These CDN resources can have different access policies. This allows you to combine:
+- Open access on one CDN resource (e.g., `public.gvideo.io`)
+- Protected access on another CDN resource (e.g., `protected.gvideo.io`)
+- Geo-restricted access on a third resource (e.g., `us-only.gvideo.io`)
+
+**Example configurations:**
+
+| CDN resource | Security policy | Use case |
+|-------------|----------------|----------|
+| `demo-protected.gvideo.io` | Secure tokens (no IP binding) | Paid content accessible from any location |
+| `demo-protected-ip.gvideo.io` | Secure tokens (with IP binding) | Enhanced security with IP validation |
+| `demo-geo.gvideo.io` | Country access policy | Content available only in specific countries |
+| `demo-public.gvideo.io` | No restrictions | Free, public content |
+
+<Info>
+**To create custom CDN resources:** Contact [support team](mailto:support@gcore.com) or follow the [CDN resource creation guide](https://gcore.com/docs/cdn/about-cdn-resources-interface-how-it-is-arranged). Support will help configure `vp_rules` to route your streaming content correctly.
+</Info>
 
 
 ## How to enable the secure token feature?
