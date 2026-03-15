@@ -3,7 +3,100 @@ title: Troubleshoot issues with an SSH connection
 sidebarTitle: SSH connection
 ---
 
-## **Incorrect firewall rules. Errors: Connection timed out**
+## Recommended SSH connection method
+
+We recommend using SSH key authentication for connecting to your Virtual Machines. SSH keys provide better security compared to password authentication.
+
+To set up SSH key authentication:
+
+1. [Generate SSH keys](/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh#generate-ssh-keys) or use existing ones.
+2. [Add your public key to the Gcore Customer Portal](/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh#add-a-public-ssh-key-to-the-customer-portal).
+3. Select the key when [creating a VM](/cloud/virtual-instances/create-an-instance).
+
+<Warning>
+**Warning**
+
+SSH keys cannot be downloaded again after creation. Make sure to save your private key in a secure location immediately after generating it.
+</Warning>
+
+### Add multiple SSH keys to a resource
+
+To allow multiple users or devices to access the same VM, you can add several public SSH keys. Use the **User Data** field when creating a VM:
+
+```yaml
+#cloud-config
+ssh_authorized_keys:
+  - ssh-rsa AAAAB3... user1@host1
+  - ssh-rsa AAAAB3... user2@host2
+  - ssh-rsa AAAAB3... user3@host3
+```
+
+For more details, see [Add an SSH key via User Data](/cloud/virtual-instances/customize-initial-setup-for-your-instance#add-an-ssh-key).
+
+## Cannot log in as root. Permission denied error
+
+Gcore platform images have root SSH login disabled by default for security reasons. 
+
+The default username depends on the operating system. When creating a VM, the portal displays the correct username in the format `ssh [username]@ipaddress`.
+
+| Operating system | Default username |
+|------------------|------------------|
+| Ubuntu | `ubuntu` |
+| Debian | `debian` |
+| Fedora | `fedora` |
+| CentOS | `cloud-user` |
+| Fedora-CoreOS | `core` |
+| Windows | `Admin` (RDP only) |
+
+You can also find your VM's username in the Gcore Customer Portal: go to **Cloud** > **Virtual Instances**, open your instance, and check the information next to the **Access to Console** link in the format `[login]@[ip-of-your-VM]`.
+
+After connecting with the default user, you can switch to root:
+
+```sh
+sudo -i
+```
+
+<Info>
+**Info**
+
+Custom images may have different default usernames or allow root login. Check with the image provider for specific access credentials.
+</Info>
+
+## No password received via email
+
+Gcore does not send VM credentials via email. By default, Virtual Machines only accept SSH key authentication.
+
+If you need password access for the [VNC console](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel), configure a password during VM creation using the **User Data** field:
+
+```yaml
+#cloud-config
+password: your_password
+chpasswd: { expire: False }
+```
+
+<Warning>
+**Warning**
+
+This password is for VNC console access only. We do not recommend enabling SSH password authentication due to security concerns.
+</Warning>
+
+For details, see [Set a password for a Virtual Machine](/cloud/virtual-instances/customize-initial-setup-for-your-instance#set-a-password-for-a-virtual-machine).
+
+## Lost SSH key and cannot connect
+
+If you lost your private SSH key:
+
+1. **If you configured a password during VM creation:** Access the VM via the [VNC console](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel) and add a new public key to `~/.ssh/authorized_keys`.
+
+2. **If no password was configured:** Delete the VM and create a new one. Make sure to save the SSH private key during creation.
+
+<Tip>
+**Tip**
+
+To prevent losing access, add multiple SSH keys to your VM during creation or use the User Data field to configure a VNC console password as a backup access method.
+</Tip>
+
+## Incorrect firewall rules. Errors: Connection timed out
 
 In most cases, the error is caused by the incorrect configuration of the firewall rules.
 
@@ -13,19 +106,19 @@ Also, for SSH connection, you should set up a rule to allow incoming SSH connect
 
 In the default group, which is configured by default for all users, the above settings are initially set. You can choose this firewall group while creating a Virtual Machine if you have difficulties with the configuration of a custom one.
 
-## **Incorrectly added SSH key. Errors: Connection refused.**
+## Incorrectly added SSH key. Errors: Connection refused
 
 While generating a key with the PuttyGen utility, you should keep in mind that PuTTY and OpenSSH use different formats of public SSH keys. If the public key has a format like BEGIN SSH2 PUBLIC KEY, it will not work. The key should start with \"ssh-rsa AAAA...\".
 
 When creating a key from the PuttyGen utility, you can just use The OpenSSH format key that appears in the interface after generation. You should copy it from the field \"Public key for pasting into OpenSSH authorized_keys file\"
 
-## **No floating (public) IP address. Connection refused error**
+## No floating (public) IP address. Connection refused error
 
 If you used a previously created subnet while creating the machine, the system allows you to create a server without a floating IP.
 
 The SSH connection would not be possible in this case, because an internal IP address is not announced on the Internet. You should add [a floating IP address](/cloud/networking/ip-address/create-and-configure-a-floating-ip-address) to the newly created machine for the connection from external networks.
 
-## **The failure to connect to the remote server with Windows OS on it. Connection error.**
+## The failure to connect to the remote server with Windows OS on it. Connection error
 
 The Connection error occurs when you are trying to connect to the remote machine with Windows OS on it.
 
