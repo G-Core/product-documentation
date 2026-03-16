@@ -21,17 +21,9 @@ SSH keys cannot be downloaded again after creation. Make sure to save your priva
 
 ### Add multiple SSH keys to a resource
 
-To allow multiple users or devices to access the same VM, you can add several public SSH keys. Use the **User Data** field when creating a VM:
+To allow multiple users or devices to access the same VM, add several SSH keys through the Gcore Customer Portal when [creating a VM](/cloud/virtual-instances/create-an-instance). In the **SSH key** section, select multiple keys from your saved keys list.
 
-```yaml
-#cloud-config
-ssh_authorized_keys:
-  - ssh-rsa AAAAB3... user1@host1
-  - ssh-rsa AAAAB3... user2@host2
-  - ssh-rsa AAAAB3... user3@host3
-```
-
-For more details, see [Add an SSH key via User Data](/cloud/virtual-instances/customize-initial-setup-for-your-instance#add-an-ssh-key).
+To add more keys to your account, see [Add a public SSH key to the Customer Portal](/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh#add-a-public-ssh-key-to-the-customer-portal).
 
 ## Cannot log in as root. Permission denied error
 
@@ -68,21 +60,13 @@ Custom images may have different default usernames or allow root login. Check wi
 
 Gcore does not send VM credentials via email. By default, Virtual Machines only accept SSH key authentication.
 
-If you need password access for the [VNC console](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel), configure a password during VM creation using the **User Data** field:
-
-```yaml
-#cloud-config
-password: your_password
-chpasswd: { expire: False }
-```
+If you need password access for the [VNC console](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel), configure a password during VM creation. For details, see [Set a password for a Virtual Machine](/cloud/virtual-instances/customize-initial-setup-for-your-instance#set-a-password-for-a-virtual-machine).
 
 <Warning>
 **Warning**
 
-This password is for VNC console access only. We do not recommend enabling SSH password authentication due to security concerns.
+VNC console passwords are for emergency access only. SSH key authentication is the recommended method for connecting to Virtual Machines.
 </Warning>
-
-For details, see [Set a password for a Virtual Machine](/cloud/virtual-instances/customize-initial-setup-for-your-instance#set-a-password-for-a-virtual-machine).
 
 ## Lost SSH key and cannot connect
 
@@ -100,13 +84,25 @@ To prevent losing access, add multiple SSH keys to your VM during creation or us
 
 ## Incorrect firewall rules. Errors: Connection timed out
 
-In most cases, the error is caused by the incorrect configuration of the firewall rules.
+This error is usually caused by incorrect firewall configuration.
 
-In order to connect, you should allow all incoming connections via ICMP Protocol in the Inbound rules (if the connection is not allowed, the packets won't reach the machine when you try to ping).
+**To allow ping (ICMP):**
 
-Also, for SSH connection, you should set up a rule to allow incoming SSH connections over TCP on a given port.
+Add an inbound rule with ICMP protocol:
 
-In the default group, which is configured by default for all users, the above settings are initially set. You can choose this firewall group while creating a Virtual Machine if you have difficulties with the configuration of a custom one.
+| Protocol | Type | Code | Source |
+|----------|------|------|--------|
+| ICMP | Any | Any | 0.0.0.0/0 |
+
+**To allow SSH connections:**
+
+Add an inbound rule for TCP port 22:
+
+| Protocol | Port | Source |
+|----------|------|--------|
+| TCP | 22 | 0.0.0.0/0 |
+
+The **default** firewall group includes these rules. Select the default group when creating a VM if you have difficulties configuring a custom firewall.
 
 ## Incorrectly added SSH key. Errors: Connection refused
 
