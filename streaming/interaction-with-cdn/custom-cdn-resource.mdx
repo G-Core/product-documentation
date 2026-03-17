@@ -1,0 +1,384 @@
+---
+title: Use custom CDN resources with video streaming
+sidebarTitle: Custom CDN resource
+---
+
+While Video Streaming includes integrated CDN delivery by default, you can create **dedicated custom CDN resources** for advanced use cases that require additional protection, custom configuration, or different billing models.
+
+## What is a custom CDN resource?
+
+A custom CDN resource is a **separate CDN product** that you create and configure independently from the default Video Streaming setup. It provides:
+
+- **Advanced security policies** (geo-blocking, referrer validation, IP restrictions)
+- **Custom domain names** (e.g., `video.yourdomain.com`)
+- **Granular caching control** and CDN settings
+- **Different billing model** (per-GB instead of per-minute)
+- **Separate access policies** for different content types
+
+<Info>
+**Key difference:** The default Video Streaming CDN is fully integrated and billed per-minute. A custom CDN resource is a separate service billed per-GB with more configuration options.
+</Info>
+
+## When to use a custom CDN resource
+
+Consider creating a custom CDN resource if you need:
+
+| Feature | Default streaming CDN | Custom CDN resource |
+|---------|----------------------|---------------------|
+| **Billing model** | Per-minute (all-inclusive) | Per-GB (bandwidth only) |
+| **Custom domains** | Not available | ✅ Supported |
+| **Geo-blocking** | Not available | ✅ Country access policies |
+| **Referrer validation** | Not available | ✅ Domain restrictions |
+| **IP allowlists/blocklists** | Not available | ✅ IP access policies |
+| **Secure tokens** | Requires custom resource | ✅ Configurable |
+| **Advanced caching** | Default settings | ✅ Full control |
+| **Separate policies** | One policy for all | ✅ Multiple resources |
+
+<Warning>
+**Important:** Custom CDN resources are **billed per-GB** of bandwidth consumed, not per-minute like standard streaming. This is a separate CDN product that must be activated with a paid tariff.
+</Warning>
+
+## Common use cases
+
+### 1. Geo-blocking for broadcasting rights
+
+**Scenario:** You have broadcasting rights only in specific countries (e.g., sports events, regional content).
+
+**Solution:** Create a custom CDN resource with [Country access policy](https://gcore.com/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#country-access-policy) to restrict content to specific regions.
+
+**Example:**
+- **Allow only:** Stream available only in Dominican Republic, Mexico, and Brazil
+- **Block:** Stream blocked in specific countries while available elsewhere
+
+### 2. Custom domain names
+
+**Scenario:** You want to deliver video from your branded domain instead of default `clientID.gvideo.io`.
+
+**Solution:** Create a custom CDN resource with a CNAME pointing to your domain (e.g., `video.yourdomain.com`).
+
+**Benefits:**
+- Brand consistency
+- Professional appearance
+- Custom SSL certificates
+
+### 3. Protected and public content separation
+
+**Scenario:** You have both free public content and paid/protected content.
+
+**Solution:** Create two custom CDN resources:
+- `public.yourdomain.com` – No restrictions, free content
+- `protected.yourdomain.com` – Secure tokens enabled, paid content
+
+### 4. Referrer validation for embedding control
+
+**Scenario:** You want to prevent other websites from embedding your videos without permission.
+
+**Solution:** Create a custom CDN resource with [Referrer validation](https://gcore.com/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#allow-referrer-policy) to allow embedding only on approved domains.
+
+**Example:**
+- Allow embedding only on `mywebsite.com` and `*.mywebsite.com`
+- Block embedding on all other sites
+
+## Security and access control policies
+
+Custom CDN resources unlock powerful security features through CDN access policies. See the full documentation: [Control access to content with country, referrer, IP, and user agents policies](/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies).
+
+### Country access policy (geo-blocking)
+
+**What it does:**
+- Restrict content availability by country or region
+- Support for both allowlists (allow only) and blocklists (block specific countries)
+- Applied at CDN edge servers for fast enforcement
+
+**Use cases:**
+- Broadcasting rights compliance (e.g., "available only in EU countries")
+- Regional content distribution
+- Regulatory compliance for specific markets
+
+**How to configure:**
+1. Navigate to **CDN** > **CDN resources** > Select your resource > **Security**
+2. Enable [Country access policy](https://gcore.com/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#country-access-policy)
+3. Choose **Allow only** (whitelist) or **Block** (blacklist)
+4. Select countries from the list
+5. Save changes
+
+**Example configuration:**
+```
+Policy: Allow only
+Countries: United States, Canada, United Kingdom
+Result: Content accessible only from these three countries
+```
+
+### Referrer access policy
+
+**What it does:**
+- Control which websites can embed your video content
+- Prevent unauthorized hotlinking
+- Protect against content theft
+
+**Use cases:**
+- Allow embedding only on your own websites
+- Prevent competitors from embedding your content
+- Control distribution channels
+
+**How to configure:**
+1. Navigate to **CDN** > **CDN resources** > Select your resource > **Security**
+2. Enable [Referrer access policy](https://gcore.com/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#allow-referrer-policy)
+3. Choose **Allow referrer policy** or **Block referrer policy**
+4. Add domains:
+   - `www.domain.com` – specific domain only
+   - `*.domain.com` – all subdomains
+5. Save changes
+
+**Example configuration:**
+```
+Policy: Allow referrer policy
+Domains: *.mywebsite.com, *.partner-site.com
+Result: Content can only be embedded on these domains
+```
+
+### IP access policy
+
+**What it does:**
+- Restrict access based on IP addresses or CIDR ranges
+- Create IP allowlists or blocklists
+- Network-level access control
+
+**Use cases:**
+- Corporate content delivery (allow only company IP ranges)
+- Block known bot networks or abusive IPs
+- Partner-specific content delivery
+
+**How to configure:**
+1. Navigate to **CDN** > **CDN resources** > Select your resource > **Security**
+2. Enable [IP access policy](https://gcore.com/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies)
+3. Choose **Allow IP policy** or **Block IP policy**
+4. Add IP addresses or CIDR ranges
+5. Save changes
+
+### User agent policy
+
+**What it does:**
+- Control access based on user agent strings
+- Block or allow specific browsers, devices, or bots
+- Useful for device-specific content delivery
+
+**Use cases:**
+- Block known scrapers or bots
+- Deliver content only to mobile devices
+- Restrict access to specific applications
+
+For complete documentation on all access policies, see: [Control access to content with country, referrer, IP, and user agents policies](/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies).
+
+## Billing: per-GB vs. per-minute
+
+Understanding the billing difference is crucial when choosing between default streaming and custom CDN resources.
+
+### Default streaming CDN (per-minute billing)
+
+**What's included:**
+- Video transcoding
+- CDN bandwidth
+- Storage
+- All streaming features
+
+**Billed based on:** Total minutes of content streamed to viewers
+
+**Example:**
+- 10,000 minutes streamed = billed for 10,000 minutes
+- Simple, predictable billing
+
+**Best for:**
+- Most streaming use cases
+- When you want all-inclusive pricing
+- When you don't need advanced CDN features
+
+### Custom CDN resource (per-GB billing)
+
+**What's included:**
+- CDN bandwidth only
+- No transcoding costs (already covered by streaming)
+- No storage costs (already covered by streaming)
+
+**Billed based on:** Total gigabytes of data transferred
+
+**Example:**
+- 100 GB transferred = billed for 100 GB at your CDN tariff rate
+- Plus your streaming costs (transcoding, storage)
+
+**Best for:**
+- When you need advanced CDN features (geo-blocking, custom domains)
+- High-volume delivery where per-GB is more cost-effective
+- When you need separate billing for different content types
+
+<Warning>
+**Cost consideration:** Custom CDN resources add per-GB bandwidth charges **on top of** your streaming costs. Evaluate whether the additional features justify the added cost.
+</Warning>
+
+## How to set up a custom CDN resource for streaming
+
+### Prerequisites
+
+Before you begin, ensure:
+1. **Active CDN subscription** – Activate the [CDN product](https://gcore.com/docs/cdn/getting-started/activate-a-cdn-service)
+2. **Paid CDN tariff** – Free tariff does not support streaming
+3. **Video Streaming active** – Your streaming account must be active
+
+### Step 1: Activate CDN product
+
+1. Log in to your [Gcore account](https://portal.gcore.com/)
+2. Navigate to **CDN** in the main menu
+3. Click **Activate CDN service** if not already active
+4. Select a **paid tariff** that fits your bandwidth needs
+
+<Info>
+**Important:** The free CDN tariff cannot be used for streaming delivery. You must select a paid plan.
+</Info>
+
+### Step 2: Create a new CDN resource
+
+1. Navigate to **CDN** > **CDN resources**
+2. Click **Create CDN resource**
+3. Configure the resource:
+
+**Origin settings:**
+- **Origin source:** Your Video Streaming subdomain (e.g., `12345.gvideo.io`)
+- **Origin protocol:** HTTPS
+- **Origin pull protocol:** HTTPS
+
+**CDN settings:**
+- **CDN resource name:** Descriptive name (e.g., "Streaming - Protected Content")
+- **CNAME (custom domain):** Optional – Add your custom domain if needed
+
+**Example configuration:**
+```
+Resource name: Streaming Geo-Blocked Content
+Origin: 12345.gvideo.io
+CNAME: video-us.mywebsite.com
+```
+
+4. Click **Create resource**
+
+For detailed instructions, see: [Create a CDN resource](https://gcore.com/docs/cdn/about-cdn-resources-interface-how-it-is-arranged)
+
+### Step 3: Configure security policies (optional)
+
+After creating the resource, configure security policies as needed:
+
+1. Go to **CDN** > **CDN resources** > Select your resource
+2. Navigate to **Security** tab
+3. Configure:
+   - [Country access policy](https://gcore.com/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#country-access-policy) for geo-blocking
+   - [Referrer access policy](https://gcore.com/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#allow-referrer-policy) for embedding control
+   - [Secure tokens](/streaming/interaction-with-cdn/video-secure-token) for access control
+
+### Step 4: Contact support to enable streaming
+
+**Critical step:** For legal and technical reasons, you must contact Gcore support to activate streaming delivery on your custom CDN resource.
+
+**What support will do:**
+- Apply necessary `Streaming Rules` to route streaming traffic correctly
+- Ensure proper manifest and chunk delivery
+- Verify CDN resource is properly configured for streaming
+
+**How to contact:**
+- Contact: [Gcore Support](mailto:support@gcore.com)
+- Provide: Your CDN resource ID and streaming client ID
+
+<Warning>
+**Important:** Do not skip this step. Streaming will not work correctly on a custom CDN resource without support configuration.
+</Warning>
+
+### Step 5: Update your application
+
+Once support confirms the setup is complete:
+
+1. **Test the new CDN resource:**
+   - Replace `clientID.gvideo.io` with your custom domain in video URLs
+   - Verify playback works correctly
+   - Test security policies (if configured)
+
+2. **Update your application:**
+   - Change video URLs to use the new custom CDN resource
+   - Deploy the changes
+   - Monitor playback metrics
+
+**Example URL change:**
+```
+Before: https://12345.gvideo.io/videos/12345_ABcdefg123HiJ/master.m3u8
+After:  https://video.mywebsite.com/videos/12345_ABcdefg123HiJ/master.m3u8
+```
+
+## Multiple CDN resources for different policies
+
+You can create multiple custom CDN resources pointing to the same streaming origin, each with different security policies. This allows sophisticated content delivery strategies:
+
+**Example setup:**
+
+| CDN resource | Domain | Security policy | Use case |
+|-------------|---------|----------------|----------|
+| Resource 1 | `public.mysite.com` | No restrictions | Free, public content |
+| Resource 2 | `protected.mysite.com` | Secure tokens | Paid/private content |
+| Resource 3 | `us-only.mysite.com` | Country: US only | US-specific content |
+| Resource 4 | `eu-only.mysite.com` | Country: EU only | EU-specific content |
+
+**Benefits:**
+- Separate billing per resource
+- Different security policies
+- Granular access control
+- Easier monitoring and analytics
+
+## Troubleshooting
+
+### CDN resource not delivering content
+
+**Problem:** 404 or 502 errors when accessing content through custom CDN resource.
+
+**Solution:**
+- Verify support has configured `Streaming Rules` for streaming
+- Check origin settings (should be your streaming subdomain)
+- Ensure CDN tariff is paid and active
+
+### Secure tokens not working
+
+**Problem:** 403 errors even with valid tokens.
+
+**Solution:**
+- Verify secure token is enabled on the CDN resource
+- Check token generation matches CDN configuration (IP binding, etc.)
+- Ensure expiration time is in the future
+- See [Video secure token](/streaming/interaction-with-cdn/video-secure-token) for implementation details
+
+### Geo-blocking not working
+
+**Problem:** Content accessible from blocked countries.
+
+**Solution:**
+- Verify country access policy is enabled and saved
+- Check policy type (Allow only vs. Block)
+- CDN changes can take 5-15 minutes to propagate
+- Test from a VPN or proxy in the target country
+
+### Custom domain not working
+
+**Problem:** DNS errors or certificate issues with custom domain.
+
+**Solution:**
+- Verify CNAME record points to your CDN resource
+- DNS propagation can take 24-48 hours
+- Ensure SSL certificate is valid
+- Check CDN resource status in portal
+
+## Next steps
+
+- **Set up access control:** See [Video secure token](/streaming/interaction-with-cdn/video-secure-token)
+- **Learn about CDN features:** Browse [CDN documentation](/cdn)
+- **Optimize caching:** Configure [CDN caching rules](https://gcore.com/docs/cdn/cdn-resource-options/general/enable-and-configure-caching-based-on-response-codes)
+- **Monitor performance:** Set up [CDN resource monitoring](https://gcore.com/docs/cdn/view-statistics-of-a-cdn-resource)
+
+## Need help?
+
+For assistance with custom CDN resources:
+- **Contact support:** [Gcore Support](mailto:support@gcore.com)
+- **Contact your personal manager** (if applicable)
+- **Documentation:** [CDN documentation](/cdn)
