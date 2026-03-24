@@ -1,0 +1,50 @@
+---
+title: "Autoinstaller"
+sidebarTitle: "Autoinstaller"
+---
+
+The Everywhere AI autoinstaller is a command-line tool that automates platform deployment on Kubernetes clusters. Instead of manual component installation, administrators run a single utility with a configuration file.
+
+The installer uses a GitOps approach: it bootstraps Argo CD and a Git repository on the master cluster, then sequentially deploys Argo Applications for each platform component. Argo CD synchronizes the desired state from the repository to the cluster. Configuration parameters and credentials are stored in Kubernetes secrets, making the deployment reproducible and auditable through standard Kubernetes tooling.
+
+## Prerequisites
+
+A Kubernetes cluster with administrative access serves as the master cluster. This cluster is mandatory—all deployments include at least this one cluster. Some deployments consist of the master cluster only.
+
+A container registry with Everywhere AI component images must be accessible from the cluster. Two options exist:
+
+- **Gcore-hosted registry**: The installer connects to Gcore's registry using provided credentials.
+- **Customer registry**: Images are pre-loaded into a private registry that the cluster can access.
+
+<Warning>
+Air-gapped environments require pre-loading all component images into a local registry before installation. This scenario is handled separately from the standard installation process.
+</Warning>
+
+## Configuration
+
+The installer reads deployment parameters from a YAML configuration file. The format is designed for minimal required input—basic deployments need only two to three parameters. Advanced options are available but optional.
+
+## Installation process
+
+The installer performs the following operations:
+
+1. Validates configuration and cluster connectivity.
+2. Deploys Argo CD to the master cluster (bootstrap phase).
+3. Creates a Git repository for storing Argo Application manifests.
+4. Deploys platform components sequentially by adding Argo Applications to the repository.
+5. Waits for each component to reach a healthy state before proceeding to the next.
+6. Stores generated parameters and credentials in Kubernetes secrets for use by subsequent components.
+
+Some components depend on parameters from previously installed components. The installer reads these values from secrets, injects them into the next component's configuration, and continues.
+
+## Multi-cluster deployments
+
+For deployments spanning multiple clusters, the configuration file specifies additional clusters. The installer connects to each cluster and deploys region-specific components. The master cluster remains the central point where Argo CD runs and manages all deployments.
+
+## Troubleshooting
+
+Since the installer uses Argo CD and a Git repository, troubleshooting follows standard GitOps practices:
+
+- **Argo CD dashboard**: Shows the synchronization status of each application and detailed error messages for failed deployments.
+- **Git repository**: Contains all Argo Application manifests, providing a complete history of what was deployed and when.
+- **Kubernetes secrets**: Store configuration parameters that can be inspected if components fail to connect to each other.
