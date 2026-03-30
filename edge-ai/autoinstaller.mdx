@@ -9,9 +9,21 @@ The installer uses a GitOps approach: it bootstraps Argo CD and a Git repository
 
 ## Prerequisites
 
-A Kubernetes cluster with administrative access serves as the master cluster. This cluster is mandatory—all deployments include at least this one cluster. Some deployments consist of the master cluster only.
+### Kubernetes cluster
 
-A container registry with Everywhere AI component images must be accessible from the cluster. Two options exist:
+A Kubernetes cluster with administrative access serves as the master cluster. The cluster nodes must have the following labels assigned:
+
+| Label | Minimum nodes | Description |
+|-------|---------------|-------------|
+| `worker` | — | General workload nodes |
+| `infra` | 3 | Infrastructure components (minimum 3 for controller quorum) |
+| `ingress` | 1 | Ingress controller nodes |
+
+kubectl must be configured with access to the cluster.
+
+### Container registry
+
+A container registry with Everywhere AI component images must be accessible from the cluster:
 
 - **Gcore-hosted registry**: The installer connects to Gcore's registry using provided credentials.
 - **Customer registry**: Images are pre-loaded into a private registry that the cluster can access.
@@ -20,31 +32,167 @@ A container registry with Everywhere AI component images must be accessible from
 Air-gapped environments require pre-loading all component images into a local registry before installation. This scenario is handled separately from the standard installation process.
 </Warning>
 
+### Domain
+
+A base domain that the administrator can manage is required. DNS records are created under this domain for platform services.
+
 ## Configuration
 
-The installer reads deployment parameters from a YAML configuration file. The format is designed for minimal required input—basic deployments need only two to three parameters. Advanced options are available but optional.
+The installer reads deployment parameters from two files: a main configuration file and a separate secrets file.
+
+### Main configuration file
+
+The main configuration file contains non-sensitive parameters:
+
+```yaml
+# Path to secrets file
+secrets_path: /path/to/secrets.yaml
+
+# Base domain for the installation
+domain: box1.example.com
+
+# Master cluster configuration
+master:
+  name: master-cluster
+  kubeconfig: /path/to/kubeconfig
+
+# Container registry
+registry:
+  host: registry.example.com
+```
+
+### Secrets file
+
+Sensitive credentials are stored in a separate file:
+
+```yaml
+# DNS provider API token
+dns_token: <token>
+
+# Container registry credentials
+registry:
+  username: <username>
+  password: <password>
+```
+
+Separating secrets from the main configuration allows storing the configuration file in version control while keeping credentials on a secure medium.
 
 ## Installation process
 
-The installer performs the following operations:
+The installation consists of sequential phases. Each phase must complete before proceeding to the next.
 
-1. Validates configuration and cluster connectivity.
-2. Deploys Argo CD to the master cluster (bootstrap phase).
-3. Creates a Git repository for storing Argo Application manifests.
-4. Deploys platform components sequentially by adding Argo Applications to the repository.
-5. Waits for each component to reach a healthy state before proceeding to the next.
-6. Stores generated parameters and credentials in Kubernetes secrets for use by subsequent components.
+### Phase 1: Bootstrap master cluster
 
-Some components depend on parameters from previously installed components. The installer reads these values from secrets, injects them into the next component's configuration, and continues.
+```bash
+box-installer --config config.yaml install bootstrap-master
+```
+
+This command installs the core GitOps infrastructure:
+
+| Component | Purpose |
+|-----------|---------|
+| Gitea | Lightweight Git server for storing Argo CD manifests |
+| Argo CD | GitOps controller that synchronizes cluster state from Git |
+| Vault | Central secrets storage |
+| External Secrets | Operator that syncs secrets from Vault to Kubernetes |
+
+The installer creates two repositories in Gitea:
+- **box-cluster**: Argo CD Application manifests
+- **box-helmli**: Helm charts for components
+
+### Phase 2: Certificates (optional)
+
+If automatic certificate management is required:
+
+```bash
+box-installer --config config.yaml install cert-manager
+box-installer --config config.yaml install dns-provider
+```
+
+The `cert-manager` command installs Cert Manager. The `dns-provider` command configures the DNS provider for DNS-01 challenge validation.
+
+Certificates can also be installed manually. Three certificates with specific names are required. After creating certificates manually, proceed to the next phase.
+
+### Phase 3: Infrastructure
+
+```bash
+box-installer --config config.yaml install infra
+```
+
+Installs infrastructure components including gateways and networking. Platform components depend on this infrastructure to receive external IPs and route traffic.
+
+### Phase 4: Platform components
+
+```bash
+box-installer --config config.yaml install box-stack
+```
+
+Installs the main platform components. Components are deployed in dependency order — each component waits for its dependencies to become healthy before proceeding.
+
+### Phase 5: Finalize
+
+```bash
+box-installer --config config.yaml install commit
+```
+
+Activates GitOps synchronization and verifies that all components are healthy.
+
+## Verifying the installation
+
+After installation, verify cluster status:
+
+```bash
+box-installer --config config.yaml install list-clusters
+```
+
+This command shows registered clusters and their connectivity status.
 
 ## Multi-cluster deployments
 
-For deployments spanning multiple clusters, the configuration file specifies additional clusters. The installer connects to each cluster and deploys region-specific components. The master cluster remains the central point where Argo CD runs and manages all deployments.
+For deployments spanning multiple clusters, the configuration file specifies additional clusters. The installer connects to each cluster and deploys region-specific components. The master cluster remains the central point where Argo CD and Vault run. All other clusters connect to the master Vault instance.
 
 ## Troubleshooting
 
-Since the installer uses Argo CD and a Git repository, troubleshooting follows standard GitOps practices:
+### Viewing credentials
 
-- **Argo CD dashboard**: Shows the synchronization status of each application and detailed error messages for failed deployments.
-- **Git repository**: Contains all Argo Application manifests, providing a complete history of what was deployed and when.
-- **Kubernetes secrets**: Store configuration parameters that can be inspected if components fail to connect to each other.
+To access Gitea or Argo CD dashboards:
+
+```bash
+box-installer --config config.yaml dev show-bootstrap-creds
+```
+
+### Checking registry connectivity
+
+To verify that the cluster can access the container registry:
+
+```bash
+box-installer --config config.yaml dev check-registry
+```
+
+### Inspecting rendered manifests
+
+To see what manifests will be deployed without applying them:
+
+```bash
+box-installer --config config.yaml dev render-repo
+```
+
+### Repeating failed steps
+
+If a step fails due to a transient error, the same command can be run again. The installer handles repeated runs.
+
+If the repository already exists and needs to be overwritten:
+
+```bash
+box-installer --config config.yaml install bootstrap-master --force
+```
+
+The `--force` flag allows overwriting existing repository contents.
+
+### Additional commands
+
+| Command | Description |
+|---------|-------------|
+| `dev conf-dump` | Display validated configuration |
+| `dev runtime-conf-dump` | Display runtime configuration including resolved secrets |
+| `dev show-release` | Display embedded release configuration and component versions |
