@@ -1,0 +1,135 @@
+---
+title: How the video streaming interact with the CDN
+sidebarTitle: Interaction with CDN
+---
+
+## How does our video streaming distribute video content?
+
+Our [Video Streaming](https://gcore.com/streaming-platform) distributes video content through the Gcore CDN network. Edge servers pull videos from storage or live streams from the media server and deliver them quickly to end users.
+
+## Choosing between Video Streaming (Transcoding) and Video CDN only
+
+Gcore offers two different approaches to deliver your content, depending on your needs:
+
+<Tabs>
+  <Tab title="Video Streaming (Transcoding + CDN)">
+    **What it does:**
+    - Accepts raw video input (RTMP, SRT, WebRTC, or pulls HLS)
+    - Transcodes your stream into multiple quality levels (ABR ladder up to 1080p)
+    - Packages into HLS and MPEG-DASH formats
+    - Delivers via Gcore CDN with built-in player
+
+    **Choose this if:**
+    - You have a raw stream (RTMP, SRT, WebRTC) that needs transcoding
+    - You want Gcore to handle adaptive bitrate (ABR) encoding
+    - You need multiple quality levels generated automatically
+    - You want to reduce delivery load on your own servers
+    - You need DVR or recording features
+
+    **Example use cases:**
+    - Streaming from OBS, vMix, or hardware encoders
+    - Pulling an HLS stream but wanting better ABR quality options
+    - Broadcasting live events with automatic quality adaptation
+  </Tab>
+  <Tab title="Video CDN only">
+    **What it does:**
+    - Delivers your already-prepared HLS or MPEG-DASH stream
+    - No transcoding—just distribution at scale
+    - Caches and delivers your stream from 140+ edge locations worldwide
+
+    **Choose this if:**
+    - You already have an HLS or MPEG-DASH stream ready
+    - You've already handled transcoding on your side
+    - You only need global CDN distribution
+    - You want maximum control over encoding settings
+    - You need advanced CDN features (geo-blocking, custom domains, etc.)
+
+    **Example use cases:**
+    - You have a media server producing HLS already
+    - You need geo-restrictions or custom access policies
+    - You want to offload bandwidth from your origin server
+    - You're migrating from another CDN provider
+
+    **How to set up:**
+    1. [Activate CDN product](https://gcore.com/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files) with paid tariff
+    2. [Create a CDN resource](https://gcore.com/docs/cdn/about-cdn-resources-interface-how-it-is-arranged) with your stream URL as origin
+    3. Apply [geo-restrictions](https://gcore.com/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#country-access-policy) or other security policies
+    4. Contact [support](mailto:support@gcore.com) to activate live streaming delivery (legal requirement)
+  </Tab>
+</Tabs>
+
+<Info>
+**Need help deciding?** If you already have an HLS stream (`*.m3u8` URL), you can use either option. Video Streaming will re-transcode it (better for quality/ABR), while Video CDN will deliver it as-is (faster setup, more control).
+</Info>
+
+## From which subdomain is your content distributed?
+
+Content is distributed to viewers from a CDN resource subdomain name. When you create an account and activate the Video Streaming, we create a subdomain in the format:
+
+```sh
+clientID.gvideo.io
+ ```
+
+The _clientID_ is a unique identifier for your account, which can be found in the [General](https://accounts.gcore.com/profile/company) section under the "Client ID" field. For example, if your clientID is _12345_, the subdomain for the Video Streaming will be _12345.gvideo.io_. 
+
+This subdomain is included in the URLs of all your videos or live streams uploaded to the Video Streaming, such as `https://12345.gvideo.io/cmaf/12345_00000/master.m3u8` (a link to a live stream) or `https://12345.gvideo.io/videos/12345_ABcdefg123HiJ` (a link to a VoD).
+
+## Change the default subdomain
+
+If you want to change the default subdomain to set a custom domain name, configure geo-restrictions, or implement other settings, please contact our [support team](mailto:support@gcore.com) or your personal manager.
+
+## Advanced CDN configuration
+
+### Creating a custom CDN resource for Video Streaming
+
+By default, Video Streaming uses a single CDN resource (`clientID.gvideo.io`) for all content. However, you can create additional CDN resources with different configurations:
+
+**Why create a custom CDN resource?**
+- Apply different security policies (geo-restrictions, referrer validation, secure tokens)
+- Use custom domains (e.g., `video.yourdomain.com`)
+- Separate public and protected content
+- Configure specific caching rules
+
+**How to create a custom CDN resource:**
+
+1. **Activate CDN product**
+   - Ensure you have an active [CDN subscription](https://gcore.com/docs/cdn/getting-started/activate-a-cdn-service)
+   - Select a paid tariff that fits your bandwidth needs
+
+2. **Create a new CDN resource**
+   - Follow the [CDN resource creation guide](https://gcore.com/docs/cdn/about-cdn-resources-interface-how-it-is-arranged)
+   - Set your Video Streaming subdomain as the origin source
+   - Configure custom domain (CNAME) if needed
+
+3. **Apply security policies** (optional)
+   - [Geo-restrictions](https://gcore.com/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#country-access-policy): Limit access by country
+   - [Referrer validation](https://gcore.com/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#allow-referrer-policy): Restrict embedding to specific domains
+   - [Secure tokens](/streaming/extra-features/protect-your-content-with-temporary-links-and-secure-tokens): Add authentication for paid/private content
+
+4. **Set as default CDN for streaming**
+   - Contact [support team](mailto:support@gcore.com) to configure your custom CDN resource as the default for live and VOD streaming
+   - Support will apply the necessary `vp_rules` to route traffic correctly
+
+### Geo-blocking for live streams
+
+**Common use case:** You have broadcasting rights only in specific countries (e.g., sports events, regional content).
+
+**How to set up geo-blocking:**
+
+1. Create a custom CDN resource (see above)
+2. Navigate to **CDN** > **CDN resources** > Select your resource > **Security**
+3. Enable [Country access policy](https://gcore.com/docs/cdn/cdn-resource-options/security/control-access-to-the-content-with-country-referrer-ip-and-user-agents-policies#country-access-policy)
+4. Choose:
+   - **Allow only**: Content available only in selected countries
+   - **Block**: Content blocked in selected countries
+5. Select countries from the list
+6. Save changes
+
+<Info>
+**Example:** To stream only in the Dominican Republic, create a CDN resource and set Country access policy to "Allow only" → Select "Dominican Republic".
+</Info>
+
+**Important notes:**
+- Geo-blocking is applied at CDN level, not per-stream
+- All content delivered through that CDN resource will follow the same geo-restrictions
+- For per-video restrictions, create multiple CDN resources with different policies

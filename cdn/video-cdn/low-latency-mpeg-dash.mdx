@@ -1,0 +1,235 @@
+---
+title: Low-Latency MPEG-DASH Streaming
+sidebarTitle: LL-DASH
+description: Deliver ultra-low latency MPEG-DASH live streams with 2-4 second glass-to-glass latency using Gcore CDN
+---
+
+## Overview
+
+Low-Latency MPEG-DASH (LL-DASH) enables **2-4 second glass-to-glass latency** for live streaming using the industry-standard DASH protocol with CMAF (Common Media Application Format) segments. This is achieved through Gcore's **Chunked-Proxy** technology that streams content immediately as it's received, rather than waiting for complete file downloads.
+
+## When to use LL-DASH
+
+**Use LL-DASH if:**
+- You need 2-4 second latency for live events (sports, auctions, gaming)
+- Your transcoder produces MPEG-DASH with CMAF segments
+- You need broad device compatibility (Android, Smart TVs, web browsers)
+- You want an industry-standard alternative to LL-HLS
+
+**Use Video Streaming Platform if:**
+- You need transcoding from RTMP/SRT → Use [Video Streaming](/streaming) instead
+- You want automatic ABR ladder generation → Use [Video Streaming](/streaming) instead
+
+## How LL-DASH works on Gcore CDN
+
+### Traditional CDN delivery (high latency)
+
+Standard CDNs use **"Store and Forward"** delivery:
+1. The CDN edge waits for the complete segment to download from the origin (2-6 seconds).
+2. Only then starts sending to viewers.
+3. Result: minimum latency of 10–15 seconds.
+
+### Gcore Chunked-Proxy delivery (low latency)
+
+Gcore's **Chunked-Proxy module** uses **immediate streaming**:
+1. The CDN then begins delivering the segment to viewers.
+2. Immediately starts streaming to viewers while still downloading.
+3. Uses HTTP Chunked Transfer Encoding (HTTP/1.1) or Framing (HTTP/2/3).
+4. Result: 2-4 second glass-to-glass latency.
+
+**Technical details:** Read our engineering blog post: [Optimizing HLS and DASH for 3-second latency](https://gcore.com/blog/optimizing-hls-dash-3sec) - essential reading for CTOs and video engineers.
+
+---
+
+## Requirements
+
+To use LL-DASH via Gcore CDN:
+
+| Requirement | Details |
+|-------------|---------|
+| **Format** | MPEG-DASH with CMAF segments (`.mpd` manifests, `.m4s` segments) |
+| **Chunked-Proxy activation** | **Required** - Contact [Gcore Support](mailto:support@gcore.com) |
+| **Paid CDN plan** | Any paid subscription |
+| **Legal approval** | Streaming activation from Gcore support |
+
+<Warning>
+**Critical:** Chunked-Proxy activation is **mandatory** for low-latency delivery. Without it, your stream will have 10-15 second latency instead of 2-4 seconds.
+</Warning>
+
+---
+
+## Quick setup
+
+**Step-by-step guide:** [Create a CDN Resource for Video Streaming](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming)
+
+Select the **"For Live MPEG-DASH CMAF Streaming"** tab for complete instructions on:
+- Requesting Chunked-Proxy activation from support
+- Configuring cache rules for manifests and segments
+- Enabling "Always online" for reliability
+- Testing your low-latency stream
+
+---
+
+## Supported file formats
+
+| File Type | Extension | Description |
+|-----------|-----------|-------------|
+| **Manifests** | `.mpd` | DASH Media Presentation Description |
+| **Video segments** | `.m4s`, `.m4v` | CMAF video segments |
+| **Audio segments** | `.m4a`, `.m4s` | CMAF audio segments |
+| **Initialization** | `.mp4` | Initialization segments for fMP4 streams |
+
+---
+
+## How Chunked-Proxy works
+
+### Without Chunked-Proxy (standard CDN)
+
+```
+Origin → [CDN waits for full file] → CDN → Viewer
+         ⏱️ 2-6 second delay
+Total latency: 10-15 seconds
+```
+
+### With Chunked-Proxy (Gcore CDN)
+
+```
+Origin → [CDN streams immediately] → Viewer
+         ⚡ No waiting
+Total latency: 2-4 seconds
+```
+
+**Key technical advantages:**
+- **Byte-level streaming**: Data flows from origin → CDN → viewer simultaneously
+- **Protocol optimization**: HTTP/1.1 Chunked Transfer Encoding, HTTP/2 Framing
+- **RAM-based caching**: LIVE STREAMING preset uses RAM instead of disk
+- **Origin shielding compatible**: Reduces origin load while maintaining low latency
+
+---
+
+## Activation process
+
+### Step 1: Request Chunked-Proxy activation
+
+Contact [Gcore Support](mailto:support@gcore.com) with:
+- Your CDN resource ID or domain
+- Confirmation you're using LL-DASH with CMAF segments
+- Your origin transcoder details (Wowza, Nginx-RTMP, FFmpeg, etc.)
+
+**Processing time:** Usually 1-2 business days
+
+<Info>
+**Using Gcore Video Streaming?** If you're using our [Video Streaming Platform](/streaming) with transcoding, Chunked-Proxy is **already enabled by default**. No activation needed.
+</Info>
+
+### Step 2: Configure CDN resource
+
+After activation, follow the cache configuration steps in the [Getting Started Guide](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming#step-4-configure-caching-rules).
+
+**Key settings:**
+- **Manifests (`.mpd`)**: 2 second cache
+- **Segments (`.m4s`)**: 60 second cache
+- **Always online**: Enabled (error + timeout, **not** updating)
+- **LIVE STREAMING preset**: Enabled for RAM caching
+
+---
+
+## Best practices
+
+### Origin configuration
+
+- **Segment duration**: 2-6 seconds (shorter = lower latency, higher overhead)
+- **Chunked encoding**: Enable chunked transfer encoding on your origin
+- **Availability window**: Keep 30-60 seconds of segments available
+
+### CDN optimization
+
+- **Origin shielding**: Recommended for 100+ concurrent viewers
+- **Edge locations**: Content cached at 210+ global edge servers
+- **Monitoring**: Use [CDN Statistics](/cdn/view-statistics-of-a-cdn-resource) to track performance
+
+### Player compatibility
+
+Ensure your video player supports:
+- MPEG-DASH playback
+- CMAF segment format
+- Low-latency mode (if available)
+
+**Recommended players:**
+- dash.js (with low-latency mode)
+- Shaka Player
+- ExoPlayer (Android)
+- AVPlayer (iOS/tvOS with DASH support)
+
+---
+
+## Latency comparison
+
+| Delivery Method | Typical Latency | Use Case |
+|-----------------|-----------------|----------|
+| **LL-DASH (Gcore Chunked-Proxy)** | 2-4 seconds | Live sports, auctions, interactive events |
+| **Standard DASH (no Chunked-Proxy)** | 10-15 seconds | News, conferences, less interactive content |
+| **HTTP-FLV** | 1-3 seconds | Ultra-low latency for specific use cases |
+| **Traditional RTMP** | 3-5 seconds | Legacy systems |
+
+---
+
+## Technical deep dive
+
+For video engineers and CTOs interested in the technical implementation:
+
+**Engineering blog post:** [Optimizing HLS and DASH for 3-second latency](https://gcore.com/blog/optimizing-hls-dash-3sec)
+
+This article covers:
+- HTTP Chunked Transfer Encoding implementation
+- HTTP/2 and HTTP/3 framing optimizations
+- Origin-to-edge-to-viewer data flow
+- Benchmarks and performance analysis
+- Comparison with other low-latency approaches
+
+---
+
+## Troubleshooting
+
+### High latency (>10 seconds)
+
+**Cause:** Chunked-Proxy not activated or not working correctly
+
+**Solution:**
+1. Verify Chunked-Proxy is activated by support
+2. Check origin supports chunked encoding
+3. Verify CMAF segments are used (not MPEG-TS)
+4. Contact [Gcore Support](mailto:support@gcore.com) for diagnostics
+
+### Buffering or playback issues
+
+**Cause:** Cache settings too aggressive or manifest updates too slow
+
+**Solution:**
+1. Reduce manifest cache to 1-2 seconds
+2. Ensure segment cache is 60 seconds
+3. Enable "Always online" (error + timeout only)
+4. Check origin availability and response times
+
+### Need help?
+
+Contact [Gcore Support](mailto:support@gcore.com) or use the chat in the bottom-right corner.
+
+---
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Getting Started Guide" icon="rocket" href="/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming">
+    Complete setup instructions to create a CDN resource for video streaming
+  </Card>
+  <Card title="HLS Streaming" icon="play" href="/cdn/video-cdn/hls-streaming">
+    Alternative: Low-Latency HLS (LL-HLS)
+  </Card>
+  <Card title="Video CDN Overview" icon="info" href="/cdn/video-cdn/video-cdn-overview">
+    All Video CDN features and capabilities
+  </Card>
+  <Card title="Engineering Blog" icon="book" href="https://gcore.com/blog/optimizing-hls-dash-3sec">
+    Technical deep dive: 3-second latency optimization
+  </Card>
+</CardGroup>
