@@ -35,13 +35,32 @@ _Suggested solution_:
 _Possible cause_: Processing queue is too long or loaded with large videos.\
 _Suggested solution_: Wait a while and then try uploading again.
 
+## Video is stuck in Error status
+
+_Possible cause_: The original source file is internally inconsistent. Some videos change technical parameters in the middle of the file, for example pixel format, color range, codec parameters, or stream structure. A known example is a transition from `yuv420p` to `yuvj420p` near the end of the source. In such cases, reprocessing the same file usually does not help because the problem is already inside the uploaded source.
+
+_Suggested solution_:
+- Inspect the original file with a media analyzer such as `ffprobe`.
+- Verify that video parameters stay stable for the full duration of the file.
+- Re-export the file with consistent parameters from start to finish.
+- If the issue happens only at the end of the file, trim the broken segment and upload the corrected file again.
+- If the source was created from a live recording, check whether the source stream changed parameters during the broadcast.
+
 ## Video returns an HTTP 404 error
 
 A 404 error typically indicates that the transcoding process is still in progress (initial segments haven't been generated yet), or the requested video asset does not exist.
 
 For a complete list of 404 error descriptions and other responses, please refer to our [HTTP status codes](/streaming/faq/http-status-codes) guide.
 
+## Video segments have high latency or slow time-to-first-byte (TTFB)
+
+_Possible cause_: Your account has low viewer traffic, so CDN edge servers rarely cache your video segments. Each request results in a cache miss and the edge must pull the segment from the origin server, which adds latency.\
+_Suggested solution_: This is expected behavior for accounts with low traffic. See [Improve video delivery speed for low-traffic accounts](/cdn/video-cdn/improve-video-delivery-speed) for a full explanation and actionable steps, including enabling origin shielding and verifying cache TTL settings.
+
+
 ## Source video issues
 
 If your video is blurry, stuttering, or has no audio, first check the original file.  
 _Suggested solution_: Play the original source file on your local machine. If the issue is present there, you must correct the source file and re-upload it. Gcore Streaming preserves the quality of the input, so any defects in the source will be visible in the transcoded renditions.
+
+Also check that the source file keeps the same technical parameters for the whole duration. Mid-file changes of pixel format, color range, or codec parameters may cause transcoding to fail and place the video into `Error` status.

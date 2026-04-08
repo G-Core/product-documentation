@@ -7,6 +7,8 @@ sidebarTitle: Record
 
 Record is a feature that allows you to record your live streams and store them in the Streaming storage. You can automatically record entire streams or manually record only desired fragments.
 
+Recording and live transcoding are separate, independent workflows. Recording saves the incoming stream for later processing and export, while the live transcoder builds the live playback session from the source metadata read once when the encoder connects.
+
 ## How to record a live stream
 
 ### How to record your live stream via the customer portal
@@ -73,3 +75,73 @@ After you record a stream, the recording is saved on the **Live Streaming** page
 
 
 <Frame>![Export tab](/images/docs/streaming-platform/live-streaming/record-your-live-streams-and-save-them-as-videos/live-streams-export-iframe.png)</Frame>
+
+## How recording interacts with live transcoding
+
+Because of this, a saved recording may still look correct even if the live stream session started with degraded source FPS or unstable source timestamps.
+
+Recording also preserves technical changes that happen later inside the incoming live stream. If the source stream changes pixel format, color range, codec parameters, or similar properties during the broadcast, the recording may still be saved, but later VOD processing of that recording can fail because the recorded file now contains inconsistent source parameters.
+
+```text
+Simplified MP4 timeline:
+
+time ------------------------------------------------------------------------------>
+
+| MP4 headers + metadata | stable video samples | parameter change | later samples |
+| ftyp | moov            | mdat: yuv420p        | yuv420p->yuvj420p| mdat: changed |
+
+                        OK for decoder/transcoder
+                                              ^
+                                              |
+                         from this point, later video data may decode incorrectly,
+                         show artifacts, fail validation, or stop transcoding
+```
+
+In a simplified MP4 view, the file begins with container headers and stream description metadata, for example `ftyp` and `moov`, while the encoded video/audio payload is stored in `mdat`.
+
+Inside `moov`, MP4 stores the track description and sample tables that tell downstream tools how to interpret the later samples. In practice this includes boxes such as `trak`, `mdia`, `stbl`, `stsd`, and timing/index tables like `stts`, `ctts`, `stss`, `stsc`, `stsz`, and `stco`/`co64`.
+
+If the live source changes parameters in the middle of the recording, the later samples inside `mdat` may no longer match the stream description assumed at the beginning of the file, or may require a mid-file sample-description change that the workflow does not support. Starting from that change point, decoders and transcoders may see corrupted frames, reject the file, or fail during later processing.
+
+
+<Info>
+If this has already happened in a saved recording, in many cases there may be no complete corrective action available afterward. If the recording is business-critical, contact the Support Team as soon as possible while source-side artifacts or temporary raw data may still be available for investigation. In some cases, our engineers may be able to recover part of the file or prepare a trimmed/restored version, but this is always best-effort work and cannot be guaranteed.
+</Info>
+
+
+If your live playback is unexpectedly running at 10-12 fps while the recording looks smooth, this usually means the live transcoder read low source FPS metadata at the beginning of the live session. This FPS value is not re-read later, and Gcore does not upscale live frame rate dynamically during the session. After fixing the encoder settings, the customer must reconnect the live stream from the encoder side to start a new session with the correct source metadata.
+
+```text
+LIVE ENCODER
+  first part of stream: stable parameters
+  example: yuv420p
+            |
+            +----------------------> LIVE TRANSCODER
+            |                         uses live session rules
+            |
+            +----------------------> RECORDING WORKFLOW
+                                      stores source as received
+
+... later during the same broadcast ...
+
+LIVE ENCODER
+  source parameters change mid-stream
+  example: yuv420p -> yuvj420p
+            |
+            +----------------------> LIVE TRANSCODER
+            |                         may continue, degrade, or fail
+            |                         depending on the type of change
+            |
+            +----------------------> RECORDING WORKFLOW
+                                      stores the changed segment too
+
+RECORDED FILE RESULT
+  beginning: yuv420p
+  ending:    yuvj420p
+            |
+            v
+LATER VOD PROCESSING / EXPORT OF RECORDING
+  sees mixed source parameters inside one file
+  may fail, enter Error status, or require trimming
+  of the broken segment before reprocessing
+```
