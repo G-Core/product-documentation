@@ -1,0 +1,110 @@
+---
+title: Gcore MCP Server overview
+sidebarTitle: Overview
+---
+
+Gcore MCP Server enables AI assistants to manage Gcore services through natural language commands. The server implements the Model Context Protocol (MCP), a standard for AI tool integration developed by Anthropic.
+
+## What MCP provides
+
+The Model Context Protocol defines how AI assistants interact with external tools. An MCP server exposes tools as callable functions with structured inputs and outputs. AI assistants send tool calls to the server, receive results, and use them to fulfill user requests.
+
+Gcore MCP Server wraps the Gcore API, exposing it as MCP tools. This allows AI assistants to:
+
+- Create and configure CDN resources
+- Manage DNS zones and records
+- Provision cloud infrastructure (VMs, volumes, networks)
+- Deploy edge applications with FastEdge
+- Configure security policies and certificates
+
+## Supported products
+
+Gcore MCP Server provides tools for the following products:
+
+| Product | Description |
+|---------|-------------|
+| CDN | Content Delivery Network resources, origins, caching rules |
+| Streaming | Live and VOD video streaming |
+| Storage | S3-compatible object storage |
+| Cloud | Virtual machines, bare metal, GPU clusters, networking |
+| FastEdge | Edge computing applications |
+| DNS | DNS zones and records |
+| WAAP | Web application and API protection |
+| Security | SSL certificates, secrets management |
+| IAM | Users, roles, permissions |
+
+The server exposes approximately 780 tools covering the full Gcore API surface.
+
+## Supported AI clients
+
+Gcore MCP Server works with any MCP-compatible client. Tested clients include:
+
+| Client | Compatibility | Notes |
+|--------|---------------|-------|
+| Claude Code | Full | Recommended. Supports tool search, handles all 780 tools |
+| Cursor IDE | Limited | Maximum 40-50 tools before context issues |
+| MCP Inspector | Full | Web-based tool for testing and exploration |
+
+<Info>
+Claude Code uses deferred tool schema loading. Tool schemas are fetched on demand when they match a query. This prevents context window bloat even with all tools enabled.
+</Info>
+
+## Tool filtering
+
+Most AI clients cannot process hundreds of tools simultaneously. The `GCORE_TOOLS` environment variable controls which tools are exposed:
+
+```bash
+# Expose only CDN tools
+GCORE_TOOLS="cdn.*"
+
+# Expose CDN and DNS tools
+GCORE_TOOLS="cdn.*,dns.*"
+
+# Use predefined toolsets
+GCORE_TOOLS="instances,management"
+
+# Expose all tools (Claude Code only)
+GCORE_TOOLS="*"
+```
+
+<Warning>
+Setting `GCORE_TOOLS=*` exposes all 780 tools. Most clients fail or become slow with this configuration. Use Claude Code or filter to specific products.
+</Warning>
+
+## Use cases
+
+### Infrastructure provisioning through conversation
+
+Instead of navigating the control panel or writing API scripts, describe the desired state:
+
+- "Create a CDN resource for example.com with origin at origin.example.com"
+- "Set up a DNS zone for mydomain.com with an A record pointing to 192.0.2.1"
+- "Provision a virtual machine with 4 vCPUs and 8 GB RAM in Amsterdam"
+
+### Querying resource status
+
+Retrieve information about existing resources without switching contexts:
+
+- "List all CDN resources and their status"
+- "Show DNS records for mydomain.com"
+- "What virtual machines are running in my project?"
+
+### Automation workflows
+
+Chain multiple operations in a single conversation:
+
+- "Create a storage bucket, configure CORS for my domain, and set up a CDN resource pointing to it"
+- "Find all unused floating IPs and release them"
+
+## Limitations
+
+- **API key required**: A Gcore account with API access is necessary. The API key must have permissions for the intended operations.
+- **No streaming responses**: Tool execution is synchronous. Long operations block until completion.
+- **Read-only operations recommended for exploration**: When learning the system, use list/read operations before modifying resources.
+- **Tool count limits in most clients**: Filter tools with `GCORE_TOOLS` unless using Claude Code.
+
+## Next steps
+
+- [Install and configure Gcore MCP Server](/account-settings/integrations/install-and-configure-gcore-mcp-server)
+- [Connect Claude Code to Gcore MCP Server](/account-settings/integrations/connect-claude-code-to-gcore-mcp-server)
+- [Filter tools with GCORE_TOOLS](/account-settings/integrations/filter-tools-with-gcore-tools)

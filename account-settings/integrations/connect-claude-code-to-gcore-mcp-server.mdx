@@ -1,0 +1,188 @@
+---
+title: Connect Claude Code to Gcore MCP Server
+sidebarTitle: Connect Claude Code
+---
+
+Claude Code is the recommended client for Gcore MCP Server. Its tool search feature handles large tool sets without context window issues.
+
+## Why Claude Code
+
+Claude Code differs from other MCP clients in how it handles tools:
+
+- **Deferred schema loading**: Tool schemas are fetched on demand when they match a query
+- **Tool search**: Claude searches for relevant tools instead of loading all schemas upfront
+- **No context bloat**: Registering many tools does not affect the context window
+
+These features allow Claude Code to work with all 780 Gcore tools simultaneously.
+
+## Configure the server
+
+1. Open the Claude Code configuration file at `~/.claude.json`.
+2. Add the Gcore MCP Server entry to `mcpServers`:
+
+```json
+{
+  "mcpServers": {
+    "gcore-mcp-server": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "gcore-mcp-server@git+https://github.com/G-Core/gcore-mcp-server.git",
+        "gcore-mcp-server"
+      ],
+      "env": {
+        "GCORE_API_KEY": "your-api-key",
+        "GCORE_TOOLS": "*"
+      }
+    }
+  }
+}
+```
+
+3. Replace `your-api-key` with a valid Gcore API token.
+4. Save the file and restart Claude Code.
+
+<Info>
+Setting `GCORE_TOOLS=*` enables all available tools. This configuration is safe for Claude Code due to deferred schema loading.
+</Info>
+
+## Verify the connection
+
+After configuring, start a new Claude Code session and ask:
+
+```
+List my CDN resources
+```
+
+Claude Code searches for CDN-related tools, loads their schemas, and executes the appropriate tool. The response shows CDN resource details from the Gcore account.
+
+Example response:
+
+```
+Found 1 CDN resource:
+
+- ID: 888473
+- CName: example.com
+- Status: active
+- Origin Group: 1298426
+```
+
+## Example conversations
+
+### CDN management
+
+**Create a CDN resource:**
+
+```
+Create a CDN resource for static.example.com with origin at origin.example.com
+```
+
+**Purge cache:**
+
+```
+Purge the CDN cache for all resources
+```
+
+**Check resource status:**
+
+```
+What is the status of CDN resource 888473?
+```
+
+### DNS management
+
+**List DNS zones:**
+
+```
+Show all DNS zones in my account
+```
+
+**Create a record:**
+
+```
+Add an A record for api.mydomain.com pointing to 192.0.2.10 with TTL 300
+```
+
+### Cloud infrastructure
+
+**List projects:**
+
+```
+List all cloud projects and their IDs
+```
+
+**List instances in a project:**
+
+```
+Show all virtual machines in project 780356
+```
+
+**Create an instance:**
+
+```
+Create a virtual machine with 2 vCPUs, 4 GB RAM, and Ubuntu 22.04 in region Luxembourg
+```
+
+## Tool search behavior
+
+When a query mentions a specific product or operation, Claude Code:
+
+1. Searches tool names and descriptions for matches
+2. Loads schemas for matched tools
+3. Selects the most appropriate tool
+4. Executes the tool with extracted parameters
+
+If multiple tools match, Claude may ask for clarification or choose based on context.
+
+## Handling tool warnings
+
+Claude Code displays a warning when tools exceed 10% of the context window. With Gcore MCP Server configured as above, this warning does not appear because schemas are loaded on demand.
+
+If the warning appears:
+- Verify `GCORE_TOOLS=*` is set
+- Restart Claude Code to clear cached schemas
+- Check that no other MCP servers are loading many tools
+
+## Troubleshooting
+
+### Server not connecting
+
+Verify the configuration syntax:
+
+```bash
+cat ~/.claude.json | python -m json.tool
+```
+
+Check that `uvx` is installed and available:
+
+```bash
+uvx --version
+```
+
+### API authentication errors
+
+Confirm the API key is valid:
+
+```bash
+curl -H "Authorization: Bearer your-api-key" https://api.gcore.com/cdn/resources
+```
+
+A 200 response indicates the key is valid. A 401 response indicates invalid credentials.
+
+### Tools not found
+
+If Claude cannot find Gcore tools:
+
+1. Restart Claude Code
+2. Check that `GCORE_TOOLS=*` is set
+3. Verify the server starts without errors by running it manually:
+
+```bash
+GCORE_API_KEY=your-key uvx --from "gcore-mcp-server@git+https://github.com/G-Core/gcore-mcp-server.git" gcore-mcp-server
+```
+
+## Next steps
+
+- [Test tools with MCP Inspector](/account-settings/integrations/test-tools-with-mcp-inspector)
+- [Filter tools with GCORE_TOOLS](/account-settings/integrations/filter-tools-with-gcore-tools)
+- [Available products and tools](/account-settings/integrations/gcore-mcp-server-available-products-and-tools)

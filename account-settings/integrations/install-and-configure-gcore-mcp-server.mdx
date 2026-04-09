@@ -1,0 +1,176 @@
+---
+title: Install and configure Gcore MCP Server
+sidebarTitle: Install and configure
+---
+
+This guide covers obtaining an API key, installing the MCP server, and configuring environment variables.
+
+## Prerequisites
+
+- A Gcore account with API access. To create an API token, see [Create, use, or delete a permanent API token](/account-settings/api-tokens).
+- The `uv` package manager is required for running the server. Installation instructions are available at [uv documentation](https://docs.astral.sh/uv/getting-started/installation/).
+
+## Get an API key
+
+1. Navigate to the Gcore Customer Portal.
+2. Open **Profile** > **API tokens**.
+3. Click **Create token**.
+4. Select the permissions required for the intended operations.
+5. Copy the generated token. The token is displayed once and cannot be retrieved later.
+
+<Warning>
+The API key provides access to account resources based on its permissions. Store it securely and do not commit to version control.
+</Warning>
+
+## Installation methods
+
+### Temporary environment (uvx)
+
+The `uvx` command runs the server in a temporary environment without persistent installation. Suitable for testing and one-off usage.
+
+```bash
+uvx --from "gcore-mcp-server@git+https://github.com/G-Core/gcore-mcp-server.git" gcore-mcp-server
+```
+
+To run a specific version:
+
+```bash
+uvx --from "gcore-mcp-server@git+https://github.com/G-Core/gcore-mcp-server.git@v0.1.1" gcore-mcp-server
+```
+
+### Persistent installation (uv tool)
+
+Installing as a tool makes the command globally available:
+
+```bash
+uv tool install "gcore-mcp-server@git+https://github.com/G-Core/gcore-mcp-server.git"
+```
+
+After installation, run:
+
+```bash
+gcore-mcp-server
+```
+
+If the command is not found, run `uv tool update-shell` or verify that the `uv` tool bin directory is in the `PATH`.
+
+## Environment variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `GCORE_API_KEY` | Yes | API token for authentication |
+| `GCORE_TOOLS` | No | Tool filter pattern. Default: `management,instances` (HTTP) or `management` (stdio) |
+| `GCORE_BASE_URL` | No | API endpoint. Default: `https://api.gcore.com` |
+| `GCORE_CLOUD_PROJECT_ID` | No | Default project ID for Cloud operations |
+| `GCORE_CLOUD_REGION_ID` | No | Default region ID for Cloud operations |
+
+### Setting environment variables
+
+**Linux/macOS:**
+
+```bash
+export GCORE_API_KEY="your-api-key"
+export GCORE_TOOLS="cdn.*"
+```
+
+**Windows PowerShell:**
+
+```powershell
+$env:GCORE_API_KEY = "your-api-key"
+$env:GCORE_TOOLS = "cdn.*"
+```
+
+**Windows Command Prompt:**
+
+```cmd
+set GCORE_API_KEY=your-api-key
+set GCORE_TOOLS=cdn.*
+```
+
+## Verify installation
+
+After setting environment variables, start the server:
+
+```bash
+gcore-mcp-server
+```
+
+Expected output when connected to an MCP client shows the server version and loaded tools.
+
+To verify the API key works, use the Gcore SDK directly:
+
+```python
+from gcore import Gcore
+from dotenv import load_dotenv
+
+load_dotenv()
+
+client = Gcore()
+projects = client.cloud.projects.list()
+for project in projects:
+    print(f"Project: {project.name} (ID: {project.id})")
+```
+
+If projects are listed, the API key is valid and has Cloud access.
+
+## Transport modes
+
+Gcore MCP Server supports two transport modes:
+
+### stdio (standard input/output)
+
+Default mode. The server reads JSON-RPC messages from stdin and writes responses to stdout. Used by most MCP clients.
+
+```bash
+gcore-mcp-server
+```
+
+### HTTP (SSE)
+
+HTTP mode with Server-Sent Events. Useful for debugging with MCP Inspector.
+
+```bash
+gcore-mcp-server --http
+```
+
+The server listens on `http://localhost:8000` by default.
+
+## Configuration files
+
+MCP clients store server configuration in JSON files. The location depends on the client:
+
+| Client | Configuration file |
+|--------|-------------------|
+| Claude Code | `~/.claude.json` |
+| Cursor IDE | `~/.cursor/mcp.json` |
+
+Example configuration for Claude Code (`~/.claude.json`):
+
+```json
+{
+  "mcpServers": {
+    "gcore-mcp-server": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "gcore-mcp-server@git+https://github.com/G-Core/gcore-mcp-server.git",
+        "gcore-mcp-server"
+      ],
+      "env": {
+        "GCORE_API_KEY": "your-api-key",
+        "GCORE_TOOLS": "*"
+      }
+    }
+  }
+}
+```
+
+<Info>
+Setting `GCORE_TOOLS=*` is recommended for Claude Code. Other clients require filtering to fewer tools.
+</Info>
+
+## Next steps
+
+- [Connect Claude Code to Gcore MCP Server](/account-settings/integrations/connect-claude-code-to-gcore-mcp-server)
+- [Test tools with MCP Inspector](/account-settings/integrations/test-tools-with-mcp-inspector)
+- [Filter tools with GCORE_TOOLS](/account-settings/integrations/filter-tools-with-gcore-tools)
