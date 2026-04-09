@@ -1,0 +1,193 @@
+---
+title: Manage CDN via MCP Server
+sidebarTitle: MCP Server
+---
+
+Gcore MCP Server enables AI assistants to manage CDN resources through natural language commands. This guide covers CDN-specific tools and example conversations.
+
+For general setup instructions, see [Gcore MCP Server overview](/account-settings/integrations/gcore-mcp-server-overview).
+
+## Configure for CDN
+
+Set the `GCORE_TOOLS` environment variable to expose CDN tools:
+
+```bash
+GCORE_TOOLS="cdn.*"
+```
+
+This exposes approximately 50 CDN tools covering resources, origins, certificates, and caching rules.
+
+## Available CDN tools
+
+| Resource | Operations | Description |
+|----------|------------|-------------|
+| `cdn_resources` | list, create, get, update, delete | CDN resource configuration |
+| `origin_groups` | list, create, get, update, delete | Origin server groups |
+| `certificates` | list, create, get, delete | SSL/TLS certificates |
+| `rule_templates` | list, get | Caching and behavior rules |
+| `shields` | list, get | Origin shielding locations |
+| `logs` | list, get | Access logs |
+| `statistics` | get | Traffic and performance metrics |
+| `ip_ranges` | list | CDN edge IP ranges |
+
+## Example conversations
+
+### List CDN resources
+
+**Prompt:**
+```
+List all my CDN resources
+```
+
+**Response:**
+```
+Found 2 CDN resources:
+
+1. ID: 888473
+   CName: static.example.com
+   Status: active
+   Origin Group: 1298426
+
+2. ID: 892156
+   CName: media.example.com
+   Status: active
+   Origin Group: 1298427
+```
+
+### Create a CDN resource
+
+**Prompt:**
+```
+Create a CDN resource for assets.example.com with origin at origin.example.com using HTTPS
+```
+
+**Response:**
+```
+Created CDN resource:
+- ID: 893001
+- CName: assets.example.com
+- Origin: origin.example.com
+- Protocol: HTTPS
+- Status: pending
+
+The resource will be active within 15 minutes after DNS propagation.
+```
+
+### Configure caching rules
+
+**Prompt:**
+```
+Set cache TTL to 1 hour for all static files on CDN resource 888473
+```
+
+### Purge cache
+
+**Prompt:**
+```
+Purge the cache for static.example.com
+```
+
+**Response:**
+```
+Cache purge initiated for CDN resource 888473:
+- Purge ID: 456789
+- Status: in_progress
+- Scope: all content
+
+Purge typically completes within 5-10 minutes.
+```
+
+### Check CDN statistics
+
+**Prompt:**
+```
+Show traffic statistics for the last 24 hours for all CDN resources
+```
+
+### Manage origin groups
+
+**Prompt:**
+```
+List all origin groups and their health status
+```
+
+**Prompt:**
+```
+Add a backup origin server 203.0.113.10 to origin group 1298426
+```
+
+### SSL certificates
+
+**Prompt:**
+```
+List SSL certificates and their expiration dates
+```
+
+**Prompt:**
+```
+Add a Let's Encrypt certificate for cdn.example.com
+```
+
+## Common workflows
+
+### Set up a new CDN resource
+
+1. Create an origin group with your servers
+2. Create a CDN resource pointing to the origin group
+3. Configure SSL certificate
+4. Set caching rules
+5. Update DNS to point to the CDN
+
+**Combined prompt:**
+```
+Set up CDN for my website. Origin server is at 198.51.100.10. 
+The CDN domain should be cdn.mysite.com. Use Let's Encrypt for SSL.
+Cache static files for 24 hours.
+```
+
+### Optimize caching
+
+**Prompt:**
+```
+Review caching configuration for resource 888473 and suggest improvements
+```
+
+### Troubleshoot delivery issues
+
+**Prompt:**
+```
+Check if CDN resource 888473 is properly configured and show any potential issues
+```
+
+## Tool reference
+
+### cdn.cdn_resources.list
+
+Lists all CDN resources in the account.
+
+**Parameters:** None required
+
+**Returns:** Array of CDN resources with ID, cname, status, and origin group
+
+### cdn.cdn_resources.create
+
+Creates a new CDN resource.
+
+**Parameters:**
+- `cname` (required): Domain name for the CDN resource
+- `origin_group` (required): Origin group ID
+- `origin_protocol`: HTTP or HTTPS (default: HTTP)
+
+### cdn.cdn_resources.purge
+
+Purges cached content from CDN edges.
+
+**Parameters:**
+- `resource_id` (required): CDN resource ID
+- `paths`: Array of URL paths to purge, or `["/*"]` for all content
+
+## Related documentation
+
+- [Create a CDN resource](/cdn/getting-started/create-a-cdn-resource)
+- [Add an origin group](/cdn/add-an-origin-group)
+- [Filter tools with GCORE_TOOLS](/account-settings/integrations/filter-tools-with-gcore-tools)

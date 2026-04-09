@@ -1,0 +1,290 @@
+---
+title: Manage WAAP via MCP Server
+sidebarTitle: MCP Server
+---
+
+Gcore MCP Server enables AI assistants to manage Web Application and API Protection (WAAP) through natural language commands. This guide covers WAAP-specific tools and example conversations.
+
+For general setup instructions, see [Gcore MCP Server overview](/account-settings/integrations/gcore-mcp-server-overview).
+
+## Configure for WAAP
+
+Set the `GCORE_TOOLS` environment variable to expose WAAP tools:
+
+```bash
+GCORE_TOOLS="waap.*"
+```
+
+This exposes approximately 80 WAAP tools covering domains, policies, rules, and security analytics.
+
+## Available WAAP tools
+
+| Resource | Operations | Description |
+|----------|------------|-------------|
+| `domains` | list, create, get, update, delete | Protected domains |
+| `advanced_rules` | list, create, get, update, delete | Custom security rules |
+| `custom_page_sets` | list, create, get, delete | Custom error pages |
+| `tags` | list, create, get, delete | Domain tags |
+| `analytics` | get | Security analytics |
+| `insights` | get | Security insights |
+| `statistics` | get | Traffic statistics |
+| `ip_info` | lookup | IP reputation lookup |
+
+## Example conversations
+
+### List protected domains
+
+**Prompt:**
+```
+List all domains protected by WAAP
+```
+
+**Response:**
+```
+Found 3 protected domains:
+
+1. api.example.com (ID: dom_12345)
+   - Status: active
+   - Mode: blocking
+   - Requests (24h): 1.2M
+   - Blocked: 15,430
+
+2. www.example.com (ID: dom_12346)
+   - Status: active
+   - Mode: monitoring
+   - Requests (24h): 890K
+   - Blocked: 0 (monitoring only)
+
+3. admin.example.com (ID: dom_12347)
+   - Status: active
+   - Mode: blocking
+   - Requests (24h): 45K
+   - Blocked: 2,100
+```
+
+### Add a domain
+
+**Prompt:**
+```
+Add domain shop.example.com to WAAP protection
+```
+
+**Response:**
+```
+Domain added to WAAP:
+- Domain: shop.example.com
+- ID: dom_12348
+- Status: pending
+- Mode: monitoring (default)
+
+Update your DNS to point to the WAAP proxy:
+- CNAME: shop.example.com -> waap.gcore.com
+```
+
+### Configure protection mode
+
+**Prompt:**
+```
+Switch domain shop.example.com from monitoring to blocking mode
+```
+
+**Response:**
+```
+Domain updated:
+- Domain: shop.example.com
+- Mode: blocking
+
+All detected threats will now be blocked.
+```
+
+### View security analytics
+
+**Prompt:**
+```
+Show security analytics for api.example.com over the last 24 hours
+```
+
+**Response:**
+```
+Security analytics for api.example.com (last 24h):
+
+| Threat Type         | Detected | Blocked |
+|---------------------|----------|---------|
+| SQL Injection       | 4,230    | 4,230   |
+| XSS                 | 2,150    | 2,150   |
+| Bot Traffic         | 8,900    | 8,900   |
+| Rate Limit Exceeded | 150      | 150     |
+| **Total**           | 15,430   | 15,430  |
+
+Top attacking IPs:
+1. 192.0.2.100 - 3,200 requests
+2. 198.51.100.50 - 2,100 requests
+3. 203.0.113.25 - 1,800 requests
+```
+
+### Create custom rules
+
+**Prompt:**
+```
+Create a rule to block requests from country RU for domain api.example.com
+```
+
+**Response:**
+```
+Rule created:
+- Domain: api.example.com
+- Rule ID: rule_56789
+- Type: geo-blocking
+- Action: block
+- Condition: country = RU
+```
+
+**Prompt:**
+```
+Create a rate limiting rule: max 100 requests per minute per IP for api.example.com
+```
+
+**Response:**
+```
+Rule created:
+- Domain: api.example.com
+- Rule ID: rule_56790
+- Type: rate-limit
+- Action: block
+- Limit: 100 requests/minute per IP
+```
+
+### IP reputation lookup
+
+**Prompt:**
+```
+Check the reputation of IP 192.0.2.100
+```
+
+**Response:**
+```
+IP reputation for 192.0.2.100:
+
+| Attribute        | Value                |
+|------------------|----------------------|
+| Risk Score       | 85/100 (High Risk)   |
+| Country          | Unknown              |
+| ISP              | Cloud Provider X     |
+| Type             | Data Center          |
+| Known Threats    | Scanner, Brute Force |
+| Last Seen Attack | 2 hours ago          |
+```
+
+### Manage custom error pages
+
+**Prompt:**
+```
+Create a custom block page with message "Access denied for security reasons"
+```
+
+**Prompt:**
+```
+Apply the custom block page to domain api.example.com
+```
+
+### Security insights
+
+**Prompt:**
+```
+Show security insights and recommendations for my domains
+```
+
+**Response:**
+```
+Security insights:
+
+1. api.example.com
+   - Recommendation: Enable bot protection
+   - Reason: 45% of traffic identified as automated
+
+2. www.example.com
+   - Recommendation: Switch to blocking mode
+   - Reason: 30 days in monitoring with no false positives
+
+3. admin.example.com
+   - Recommendation: Add IP allowlist
+   - Reason: Admin panel should restrict access
+```
+
+## Common workflows
+
+### Onboard a new domain
+
+**Combined prompt:**
+```
+Set up WAAP protection for newsite.com:
+1. Add the domain
+2. Enable bot protection
+3. Set rate limiting to 200 requests/minute
+4. Start in monitoring mode
+```
+
+### Investigate an attack
+
+**Prompt:**
+```
+Show all blocked requests for api.example.com in the last hour, grouped by attack type
+```
+
+**Prompt:**
+```
+Which IPs are responsible for the most SQL injection attempts?
+```
+
+### Tune security rules
+
+**Prompt:**
+```
+List all custom rules for api.example.com and their hit counts
+```
+
+**Prompt:**
+```
+Disable rule rule_56789 temporarily for testing
+```
+
+## Tool reference
+
+### waap.domains.list
+
+Lists all protected domains.
+
+**Parameters:** None required
+
+**Returns:** Array of domains with ID, status, mode, and statistics
+
+### waap.domains.create
+
+Adds a domain to WAAP protection.
+
+**Parameters:**
+- `domain` (required): Domain name
+- `mode`: Protection mode (monitoring, blocking)
+
+### waap.advanced_rules.create
+
+Creates a custom security rule.
+
+**Parameters:**
+- `domain_id` (required): Domain ID
+- `type` (required): Rule type
+- `action` (required): Action (block, allow, challenge)
+- `conditions` (required): Rule conditions
+
+### waap.ip_info.lookup
+
+Looks up IP reputation.
+
+**Parameters:**
+- `ip` (required): IP address
+
+## Related documentation
+
+- [Configure WAAP for a domain](/waap/getting-started/configure-waap-for-a-domain)
+- [Manage domains](/waap/getting-started/manage-domains)
+- [Filter tools with GCORE_TOOLS](/account-settings/integrations/filter-tools-with-gcore-tools)
