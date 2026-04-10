@@ -3,223 +3,55 @@ title: Manage Cloud via MCP Server
 sidebarTitle: MCP Server
 ---
 
-Gcore MCP Server enables AI assistants to manage Cloud infrastructure through natural language commands. This guide covers Cloud-specific tools and example conversations.
-
-For general setup instructions, see [Gcore MCP Server overview](/account-settings/integrations/gcore-mcp-server-overview).
+Gcore MCP Server provides approximately 400 tools for managing Cloud infrastructure—virtual machines, storage, networking, and security—through natural language. Configuration and client setup are covered in the [Gcore MCP Server overview](/account-settings/integrations/gcore-mcp-server-overview).
 
 ## Configure for Cloud
 
-Set the `GCORE_TOOLS` environment variable to expose Cloud tools:
+The `GCORE_TOOLS` environment variable controls which tools are exposed. Setting `GCORE_TOOLS="cloud.*"` loads all Cloud tools, while predefined toolsets provide focused subsets for specific workflows.
 
 ```bash
-# All cloud tools (approximately 400 tools)
 GCORE_TOOLS="cloud.*"
-
-# Or use predefined toolsets for specific tasks
-GCORE_TOOLS="management,instances,storage,networking"
 ```
 
-For focused workflows, use specific toolsets:
-- `instances` - Virtual machine operations
-- `storage` - Volumes and file shares
-- `networking` - Networks, floating IPs, load balancers
-- `security` - Security groups, SSH keys
+Predefined toolsets group related operations: `instances` for virtual machine operations, `storage` for volumes and file shares, `networking` for networks, floating IPs, and load balancers, and `security` for security groups and SSH keys. Combining toolsets with `GCORE_TOOLS="management,instances,storage,networking"` loads tools from multiple categories.
 
-## Available Cloud tools
+Cloud tools follow the `cloud.<resource>.<operation>` naming pattern. Compute tools include `instances` for virtual machines with list, create, get, delete, start, stop, and resize operations, `baremetal` for bare metal servers with power management, and `gpu_baremetal` and `gpu_virtual` for GPU cluster management. Storage tools include `volumes` for block storage with attach and detach operations, `volume_snapshots` for point-in-time copies, and `file_shares` for shared file systems. Networking tools include `networks` for virtual networks, `floating_ips` for public IP addresses with assign and unassign operations, `load_balancers` for traffic distribution, and `security_groups` for firewall rules. Management tools include `projects`, `regions`, `quotas`, and `ssh_keys`.
 
-### Compute
+## Cloud operations
 
-| Resource | Operations | Description |
-|----------|------------|-------------|
-| `instances` | list, create, get, delete, start, stop, resize | Virtual machines |
-| `baremetal` | list, create, get, delete, power_on, power_off | Bare metal servers |
-| `gpu_baremetal` | clusters.list, clusters.create, clusters.delete | GPU bare metal clusters |
-| `gpu_virtual` | clusters.list, clusters.create, clusters.delete | GPU virtual clusters |
+Natural language requests trigger the corresponding API operations. Listing projects requires no parameters—a request like "List all my cloud projects" returns project names and IDs.
 
-### Storage
+Instance creation requires project ID, region, flavor specifications, and image selection. Requesting "Create a virtual machine in project 780356 with 4 vCPUs, 8 GB RAM, Ubuntu 22.04, and 80 GB SSD in Luxembourg region" provisions an instance with the specified configuration. The instance typically becomes available within two minutes.
 
-| Resource | Operations | Description |
-|----------|------------|-------------|
-| `volumes` | list, create, get, delete, attach, detach | Block storage |
-| `volume_snapshots` | list, create, get, delete | Volume snapshots |
-| `file_shares` | list, create, get, delete | Shared file systems |
+Instance management includes lifecycle operations and resource changes. A request to "Stop instance 12345" powers down the virtual machine while preserving its configuration. Resizing with "Resize instance 12345 to 8 vCPUs and 16 GB RAM" changes the instance flavor—this operation requires a stopped instance.
 
-### Networking
+Storage operations span volume lifecycle and attachment. Creating a volume with "Create a 100 GB SSD volume named data-volume in project 780356, Luxembourg region" provisions block storage. Attaching with "Attach volume data-volume to instance 12345" makes the volume available to the instance. Snapshots capture volume state—"Create a snapshot of volume data-volume" creates a point-in-time copy.
 
-| Resource | Operations | Description |
-|----------|------------|-------------|
-| `networks` | list, create, get, delete | Virtual networks |
-| `floating_ips` | list, create, get, delete, assign, unassign | Public IP addresses |
-| `load_balancers` | list, create, get, delete, update | Load balancers |
-| `security_groups` | list, create, get, delete, add_rule | Firewall rules |
+Networking operations configure connectivity and access. Listing floating IPs shows available public addresses. Creating and assigning with "Create a floating IP and assign it to instance 12345" provisions a public IP and associates it with the instance. Load balancer creation requires backend instances and port configuration—"Create a load balancer for instances 12345 and 12346 on port 80" distributes traffic across the specified instances.
 
-### Management
+Security group operations define firewall rules. Creating a group with "Create a security group that allows SSH (port 22) and HTTP (port 80) from anywhere" provisions a rule set with the specified ingress permissions. Adding rules with "Add a rule to security group 5678 allowing HTTPS (port 443)" extends an existing group.
 
-| Resource | Operations | Description |
-|----------|------------|-------------|
-| `projects` | list, get | Cloud projects |
-| `regions` | list, get | Available regions |
-| `quotas` | get | Resource quotas |
-| `ssh_keys` | list, create, get, delete | SSH public keys |
+## Multi-step workflows
 
-## Example conversations
+Complex deployments involve multiple tools executed in sequence. Deploying a web server requires creating a VM, provisioning a floating IP, configuring security rules, and applying the security group. A combined request like "In project 780356, Luxembourg region: create a VM with 2 vCPUs, 4 GB RAM, Ubuntu 22.04; create a floating IP and assign it; create a security group allowing SSH, HTTP, and HTTPS; apply the security group to the VM" triggers the appropriate tool sequence.
 
-### List projects and regions
+Database server setup combines compute, storage, and security configuration. Requesting "Create a database server setup with 4 vCPUs, 16 GB RAM, a 500 GB SSD data volume, private network without floating IP, and a security group allowing PostgreSQL port 5432 from the internal network" provisions the complete stack.
 
-**Prompt:**
-```
-List all my cloud projects
-```
+Resource cleanup queries identify unused assets. "List all unattached volumes in project 780356" shows volumes not connected to instances. "Find floating IPs that are not assigned to any instance" identifies billable IPs without associated workloads.
 
-**Response:**
-```
-Found 3 projects:
+## Default project and region
 
-1. production (ID: 780356)
-2. staging (ID: 780412)
-3. development (ID: 780489)
-```
-
-**Prompt:**
-```
-Show available regions
-```
-
-### Create a virtual machine
-
-**Prompt:**
-```
-Create a virtual machine in project 780356 with 4 vCPUs, 8 GB RAM, 
-Ubuntu 22.04, and 80 GB SSD in Luxembourg region
-```
-
-**Response:**
-```
-Created virtual machine:
-- Name: vm-1
-- ID: 12345
-- Flavor: g1-standard-4-8
-- Image: Ubuntu 22.04 LTS
-- Volume: 80 GB SSD
-- Region: Luxembourg
-- Status: spawning
-
-The instance will be ready in approximately 2 minutes.
-```
-
-### Manage instances
-
-**Prompt:**
-```
-List all running instances in project 780356
-```
-
-**Prompt:**
-```
-Stop instance 12345
-```
-
-**Prompt:**
-```
-Resize instance 12345 to 8 vCPUs and 16 GB RAM
-```
-
-### Storage operations
-
-**Prompt:**
-```
-Create a 100 GB SSD volume named "data-volume" in project 780356, Luxembourg region
-```
-
-**Prompt:**
-```
-Attach volume data-volume to instance 12345
-```
-
-**Prompt:**
-```
-Create a snapshot of volume data-volume
-```
-
-### Networking
-
-**Prompt:**
-```
-List all floating IPs in project 780356
-```
-
-**Prompt:**
-```
-Create a floating IP and assign it to instance 12345
-```
-
-**Prompt:**
-```
-Create a load balancer for instances 12345 and 12346 on port 80
-```
-
-### Security groups
-
-**Prompt:**
-```
-Create a security group that allows SSH (port 22) and HTTP (port 80) from anywhere
-```
-
-**Prompt:**
-```
-Add a rule to security group 5678 allowing HTTPS (port 443)
-```
-
-## Common workflows
-
-### Deploy a web server
-
-**Combined prompt:**
-```
-In project 780356, Luxembourg region:
-1. Create a VM with 2 vCPUs, 4 GB RAM, Ubuntu 22.04
-2. Create a floating IP and assign it
-3. Create a security group allowing SSH, HTTP, and HTTPS
-4. Apply the security group to the VM
-```
-
-### Set up a database server
-
-**Prompt:**
-```
-Create a database server setup:
-- VM with 4 vCPUs, 16 GB RAM
-- 500 GB SSD data volume
-- Private network only (no floating IP)
-- Security group allowing PostgreSQL port 5432 from internal network only
-```
-
-### Clean up unused resources
-
-**Prompt:**
-```
-List all unattached volumes in project 780356
-```
-
-**Prompt:**
-```
-Find floating IPs that are not assigned to any instance
-```
-
-## Environment variables
-
-For Cloud operations, you can set default project and region:
+Environment variables can set default context for Cloud operations, eliminating the need to specify project and region in every request.
 
 ```bash
 GCORE_CLOUD_PROJECT_ID="780356"
 GCORE_CLOUD_REGION_ID="76"
 ```
 
-This eliminates the need to specify project and region in every request.
+With these defaults, requests like "Create a VM with 2 vCPUs and 4 GB RAM" use the specified project and region automatically.
 
-## Related documentation
+<Info>
+**Info**
 
-- [Create a virtual machine](/cloud/virtual-instances/create-an-instance)
-- [Create a volume](/cloud/block-storage/volumes/create-and-configure-volumes)
-- [Create a load balancer](/cloud/networking/load-balancers/create-a-load-balancer)
-- [Filter tools with GCORE_TOOLS](/account-settings/integrations/filter-tools-with-gcore-tools)
+Tool parameters and behavior reflect the [Gcore Cloud API](/cloud/virtual-instances/create-an-instance). Volume management is documented in the [block storage guide](/cloud/block-storage/volumes/create-and-configure-volumes). Load balancer configuration is covered in the [load balancer guide](/cloud/networking/load-balancers/create-a-load-balancer). Tool filtering options are available in the [GCORE_TOOLS reference](/account-settings/integrations/filter-tools-with-gcore-tools).
+</Info>

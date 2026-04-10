@@ -3,185 +3,68 @@ title: Test tools with MCP Inspector
 sidebarTitle: Test with MCP Inspector
 ---
 
-MCP Inspector provides a web interface for exploring and testing MCP server tools without an AI client. It displays available tools, their parameters, and allows manual tool execution.
-
-## Prerequisites
-
-Node.js 18 or later is required. Verify the installation:
-
-```bash
-node --version
-npx --version
-```
+MCP Inspector provides a web interface for exploring and testing MCP server tools without an AI client. The interface displays available tools with their parameters and allows manual execution to verify behavior before integrating with Claude Code or other clients.
 
 ## Start MCP Inspector
 
-Run the inspector using npx:
+MCP Inspector runs via npx and requires Node.js 18 or later. Verify the installation with `node --version`, then start the inspector:
 
 ```bash
 npx @modelcontextprotocol/inspector
 ```
 
-The inspector starts at `http://localhost:6274`. A browser window opens automatically.
+The inspector starts at `http://localhost:6274` and opens a browser window automatically.
 
 ## Connect to Gcore MCP Server
 
-MCP Inspector connects to servers via stdio or HTTP transport.
+MCP Inspector supports two connection methods: stdio transport through the UI configuration, and HTTP transport for debugging scenarios where server logs need monitoring.
 
-### Option 1: Configure in the Inspector UI
+### Stdio transport
 
-1. Set **Transport Type** to `STDIO`.
-2. Enter the command: `uvx`
-3. Enter arguments: `--from gcore-mcp-server@git+https://github.com/G-Core/gcore-mcp-server.git gcore-mcp-server`
-4. Click **Environment Variables** and add:
-   - `GCORE_API_KEY`: your API key
-   - `GCORE_TOOLS`: tool filter (for example, `cdn.*`)
-5. Click **Connect**.
+The stdio method launches the server directly from the Inspector interface. Set **Transport Type** to `STDIO`, enter `uvx` as the command, and provide the arguments `--from gcore-mcp-server@git+https://github.com/G-Core/gcore-mcp-server.git gcore-mcp-server`. Under **Environment Variables**, add `GCORE_API_KEY` with a valid [API token](/account-settings/api-tokens) and `GCORE_TOOLS` with a filter pattern such as `cdn.*`. Click **Connect** to establish the connection.
 
-### Option 2: Run server in HTTP mode
+### HTTP transport
 
-Start the server with HTTP transport in one terminal:
+HTTP mode allows monitoring server logs in a separate terminal. Start the server with HTTP transport enabled:
 
 ```bash
 GCORE_API_KEY=your-key GCORE_TOOLS="cdn.*" gcore-mcp-server --http
 ```
 
-In the Inspector:
-1. Set **Transport Type** to `SSE`.
-2. Enter URL: `http://localhost:8000/sse`
-3. Click **Connect**.
+In the Inspector, set **Transport Type** to `SSE`, enter `http://localhost:8000/sse` as the URL, and click **Connect**.
 
-## Explore tools
+## Explore available tools
 
-After connecting, the Inspector displays:
+After connecting, the Inspector displays three tabs: Tools (available MCP tools), Resources (MCP resources if configured), and Prompts (MCP prompts if configured). Selecting a tool reveals its description, input schema with required and optional parameters, and a test interface for manual execution.
 
-- **Tools**: List of available MCP tools
-- **Resources**: MCP resources (if any)
-- **Prompts**: MCP prompts (if any)
+The tool list reflects the `GCORE_TOOLS` filter. Setting `GCORE_TOOLS="cdn.*"` shows CDN-related tools, while `GCORE_TOOLS="cloud.instances.*"` displays Cloud instance tools. Multiple products can be combined with `GCORE_TOOLS="cdn.*,dns.*"`.
 
-Click a tool to view:
-- **Description**: What the tool does
-- **Input Schema**: Required and optional parameters
-- **Test Interface**: Form to execute the tool with custom parameters
+<Warning>
+Setting `GCORE_TOOLS=*` loads all 780 tools. The Inspector interface may become slow or unresponsive with this configuration. Filter to specific products for responsive navigation.
+</Warning>
 
 ## Execute tools manually
 
-1. Select a tool from the list.
-2. Fill in the required parameters.
-3. Click **Execute**.
-4. View the response in the Results panel.
+Tool execution requires selecting a tool from the list, filling parameter values according to the input schema, and clicking **Execute**. The Results panel displays the JSON response from the server.
 
-### Example: List CDN resources
+Listing CDN resources demonstrates a parameterless call: connect with `GCORE_TOOLS="cdn.*"`, select `cdn.cdn_resources.list` from the tools list, and execute without parameters. The response contains an array of CDN resource objects with their configuration details.
 
-1. Connect with `GCORE_TOOLS="cdn.*"`.
-2. Find `cdn.cdn_resources.list` in the tools list.
-3. Click to open the tool details.
-4. No parameters are required for listing.
-5. Click **Execute**.
-6. View the JSON response containing CDN resources.
+Retrieving DNS zone details demonstrates a parameterized call: connect with `GCORE_TOOLS="dns.*"`, select `dns.zones.get`, enter the zone name in the parameter field, and execute. The response contains the zone configuration including records, TTL settings, and status.
 
-### Example: Get DNS zone details
+## Understand tool schemas
 
-1. Connect with `GCORE_TOOLS="dns.*"`.
-2. Find `dns.zones.get` in the tools list.
-3. Enter the zone name parameter.
-4. Click **Execute**.
-5. View zone configuration in the response.
+Tool schemas define the expected input format and appear in the **Input Schema** section when selecting a tool. Each field includes its data type (string, number, object, or array), whether it is required, a description of its purpose, and default values if applicable. Expanding nested objects reveals all available configuration options.
 
-## Filter tools for exploration
+Schema exploration helps understand exact parameter names and formats before constructing requests in Claude Code or other clients.
 
-The `GCORE_TOOLS` variable controls which tools appear in the Inspector.
+## Debug execution errors
 
-**Explore CDN tools:**
-
-```bash
-GCORE_TOOLS="cdn.*"
-```
-
-**Explore Cloud instance tools:**
-
-```bash
-GCORE_TOOLS="cloud.instances.*"
-```
-
-**Explore multiple products:**
-
-```bash
-GCORE_TOOLS="cdn.*,dns.*"
-```
+The Inspector displays the full JSON-RPC request sent to the server, the response with results or errors, and execution timing. This visibility helps diagnose issues that produce generic errors in AI clients.
 
 <Warning>
-Using `GCORE_TOOLS=*` loads all 780 tools. The Inspector interface may become slow or unresponsive. Filter to specific products for better performance.
+Authentication errors (401) indicate an invalid or expired API key—generate a new token in the [Gcore Customer Portal](/account-settings/api-tokens). Permission errors (403) indicate the token lacks required permissions for the operation. Resource not found errors (404) indicate incorrect parameter values such as nonexistent IDs or zone names. Validation errors indicate missing required parameters or incorrect types—check the tool schema for the expected format.
 </Warning>
 
-## View tool schemas
+## Practical applications
 
-Tool schemas define the expected input and output formats. In the Inspector:
-
-1. Select a tool.
-2. View the **Input Schema** section.
-3. Expand nested objects to see all fields.
-
-Schema information includes:
-- **type**: Data type (string, number, object, array)
-- **required**: Whether the field is mandatory
-- **description**: Field purpose and constraints
-- **default**: Default value if not provided
-
-## Debug tool execution
-
-The Inspector shows:
-
-- **Request**: JSON-RPC message sent to the server
-- **Response**: Server response with results or errors
-- **Timing**: Execution duration
-
-Common issues:
-
-### Authentication error (401)
-
-The API key is invalid or expired. Generate a new token in the Gcore Customer Portal.
-
-### Permission denied (403)
-
-The API key lacks permissions for the requested operation. Check token permissions.
-
-### Resource not found (404)
-
-The specified resource ID or name does not exist. Verify the parameter values.
-
-### Validation error
-
-Required parameters are missing or have invalid types. Check the tool schema for correct format.
-
-## Use cases for MCP Inspector
-
-### Discover tool names and parameters
-
-Before documenting tools, explore them in the Inspector to understand:
-- Exact tool names
-- Required vs optional parameters
-- Parameter types and formats
-- Response structure
-
-### Test tool filtering patterns
-
-Verify that `GCORE_TOOLS` patterns match the intended tools:
-
-```bash
-GCORE_TOOLS="cloud.instances.*"
-```
-
-Connect and verify the tool list.
-
-### Debug API issues
-
-When Claude Code or other clients report errors, replicate the tool call in the Inspector to see:
-- Exact request sent
-- Full error response
-- Server logs
-
-## Next steps
-
-- [Filter tools with GCORE_TOOLS](/account-settings/integrations/filter-tools-with-gcore-tools)
-- [Available products and tools](/account-settings/integrations/gcore-mcp-server-available-products-and-tools)
+MCP Inspector serves as a reference tool when documenting or integrating Gcore MCP Server. Exploring tools reveals exact names, parameter requirements, types, and response structures. Testing [filter patterns](/account-settings/integrations/filter-tools-with-gcore-tools) confirms that `GCORE_TOOLS` values match the intended tool set before configuring production clients. When Claude Code reports errors, replicating the tool call in the Inspector reveals the exact request and full error response for debugging.

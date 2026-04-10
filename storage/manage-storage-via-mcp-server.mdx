@@ -3,230 +3,61 @@ title: Manage Storage via MCP Server
 sidebarTitle: MCP Server
 ---
 
-Gcore MCP Server enables AI assistants to manage Object Storage through natural language commands. This guide covers Storage-specific tools and example conversations.
-
-For general setup instructions, see [Gcore MCP Server overview](/account-settings/integrations/gcore-mcp-server-overview).
+Gcore MCP Server provides approximately 40 tools for managing S3-compatible object storage and SFTP storage through natural language. Configuration and client setup are covered in the [Gcore MCP Server overview](/account-settings/integrations/gcore-mcp-server-overview).
 
 ## Configure for Storage
 
-Set the `GCORE_TOOLS` environment variable to expose Storage tools:
+The `GCORE_TOOLS` environment variable controls which tools are exposed. Setting `GCORE_TOOLS="storage.*"` loads all Storage tools.
 
 ```bash
 GCORE_TOOLS="storage.*"
 ```
 
-This exposes approximately 40 Storage tools covering S3-compatible object storage and SFTP storage.
+Storage tools follow the `storage.<resource>.<operation>` naming pattern. The `object_storages` tools manage S3-compatible storage buckets with list, create, get, and delete operations. The `sftp_storages` tools handle SFTP storage instances. The `locations` tools list available storage locations, `ssh_keys` tools manage SSH keys for SFTP access, and `statistics` tools retrieve storage usage metrics.
 
-## Available Storage tools
+## Storage operations
 
-| Resource | Operations | Description |
-|----------|------------|-------------|
-| `object_storages` | list, create, get, delete | S3-compatible storage buckets |
-| `sftp_storages` | list, create, get, delete | SFTP storage instances |
-| `locations` | list | Available storage locations |
-| `ssh_keys` | list, create, delete | SSH keys for SFTP access |
-| `statistics` | get | Storage usage statistics |
+Natural language requests trigger the corresponding API operations. Listing locations requires no parameters—a request like "Show available storage locations" returns location names, regions, and S3 endpoints such as `s3.lu.gcore.com` for Luxembourg.
 
-## Example conversations
+Bucket listing shows all storage buckets. A request to "List all my storage buckets" returns bucket names, locations, sizes, object counts, and creation dates.
 
-### List storage locations
+Bucket creation requires a name and location. Requesting "Create a new storage bucket named 'app-uploads' in Luxembourg" provisions the bucket and returns the S3 endpoint with access credentials for client configuration.
 
-**Prompt:**
-```
-Show available storage locations
-```
+Storage statistics provide usage insights. "Show storage usage statistics for all buckets" returns per-bucket size, object count, and bandwidth consumption alongside totals.
 
-**Response:**
-```
-Available storage locations:
-
-| Location     | Region          | S3 Endpoint                    |
-|--------------|-----------------|--------------------------------|
-| Luxembourg   | EU              | s3.lu.gcore.com                |
-| Amsterdam    | EU              | s3.ams.gcore.com               |
-| Singapore    | Asia            | s3.sgp.gcore.com               |
-| Chicago      | North America   | s3.chi.gcore.com               |
-```
-
-### List storage buckets
-
-**Prompt:**
-```
-List all my storage buckets
-```
-
-**Response:**
-```
-Found 3 storage buckets:
-
-1. media-assets
-   - Location: Luxembourg
-   - Size: 156 GB
-   - Objects: 12,450
-   - Created: 2024-01-15
-
-2. backup-data
-   - Location: Amsterdam
-   - Size: 892 GB
-   - Objects: 3,200
-   - Created: 2023-11-20
-
-3. static-files
-   - Location: Luxembourg
-   - Size: 45 GB
-   - Objects: 8,900
-   - Created: 2024-02-01
-```
-
-### Create a storage bucket
-
-**Prompt:**
-```
-Create a new storage bucket named "app-uploads" in Luxembourg
-```
-
-**Response:**
-```
-Created storage bucket:
-- Name: app-uploads
-- Location: Luxembourg
-- S3 Endpoint: s3.lu.gcore.com
-- Access Key: AKIAXXXXXXXXXXXXXXXX
-- Secret Key: ********
-
-Configure your S3 client with these credentials.
-```
-
-### Storage statistics
-
-**Prompt:**
-```
-Show storage usage statistics for all buckets
-```
-
-**Response:**
-```
-Storage usage summary:
-
-| Bucket        | Size     | Objects | Bandwidth (30d) |
-|---------------|----------|---------|-----------------|
-| media-assets  | 156 GB   | 12,450  | 2.4 TB          |
-| backup-data   | 892 GB   | 3,200   | 120 GB          |
-| static-files  | 45 GB    | 8,900   | 890 GB          |
-| **Total**     | 1,093 GB | 24,550  | 3.4 TB          |
-```
-
-### Manage SFTP storage
-
-**Prompt:**
-```
-Create an SFTP storage instance in Luxembourg
-```
-
-**Response:**
-```
-Created SFTP storage:
-- Host: sftp.lu.gcore.com
-- Port: 22
-- Username: sftp_user_12345
-- Location: Luxembourg
-
-Add an SSH key to enable access.
-```
-
-**Prompt:**
-```
-List all SFTP storage instances
-```
-
-### Manage SSH keys
-
-**Prompt:**
-```
-Add an SSH key for SFTP access
-```
-
-**Prompt:**
-```
-List SSH keys configured for storage
-```
-
-### Delete storage
-
-**Prompt:**
-```
-Delete the storage bucket "old-backup"
-```
+SFTP storage management includes instance creation and listing. Creating with "Create an SFTP storage instance in Luxembourg" provisions the instance and returns connection details including host, port, and username. SSH keys must be added separately to enable access—"Add an SSH key for SFTP access" configures authentication.
 
 <Warning>
-Deleting a storage bucket removes all objects permanently. This action cannot be undone.
+**Warning**
+
+Deleting a storage bucket removes all objects permanently. Requesting "Delete the storage bucket 'old-backup'" executes immediately and cannot be undone.
 </Warning>
 
-## Common workflows
+## Multi-step workflows
 
-### Set up CDN with Storage origin
+Complex storage configurations involve multiple tools executed in sequence. Setting up CDN with storage origin requires creating a bucket, retrieving credentials, and configuring the CDN. A combined request like "Create a storage bucket named 'cdn-origin' in Luxembourg and show me the S3 endpoint and credentials" provisions storage ready for CDN integration.
 
-**Combined prompt:**
-```
-1. Create a storage bucket named "cdn-origin" in Luxembourg
-2. Show me the S3 endpoint and credentials
-3. Then I'll configure my CDN to use this as origin
-```
+Migration planning queries available locations. "What storage locations are available for migrating data from Luxembourg to a US region?" returns US-based locations with their endpoints.
 
-### Migrate data between locations
+Cost analysis combines statistics with billing context. "Show storage usage and estimated costs for all buckets" returns usage metrics and cost projections.
 
-**Prompt:**
-```
-What storage locations are available for migrating data from Luxembourg to a US region?
-```
+## S3 client integration
 
-### Storage cost analysis
-
-**Prompt:**
-```
-Show storage usage and estimated costs for all buckets
-```
-
-## S3 compatibility
-
-Gcore Object Storage is S3-compatible. After creating a bucket via MCP, use any S3 client:
+Gcore Object Storage is S3-compatible. After creating a bucket via MCP Server, any S3 client can access it using the returned endpoint and credentials.
 
 ```bash
-# AWS CLI example
 aws s3 ls s3://app-uploads --endpoint-url https://s3.lu.gcore.com
-
-# Upload a file
 aws s3 cp file.txt s3://app-uploads/ --endpoint-url https://s3.lu.gcore.com
 ```
 
-## Tool reference
+The AWS CLI, s3cmd, and S3-compatible SDKs work with Gcore storage endpoints.
 
-### storage.object_storages.list
+## Tool naming patterns
 
-Lists all storage buckets.
+Storage tool names follow the `storage.<resource>.<operation>` pattern. The `storage.object_storages.list` tool lists all storage buckets without parameters and returns bucket names, locations, sizes, and object counts. The `storage.object_storages.create` tool requires `name` (the bucket name) and `location` (the storage location). The `storage.locations.list` tool returns available storage locations with regions and S3 endpoints.
 
-**Parameters:** None required
+<Info>
+**Info**
 
-**Returns:** Array of buckets with name, location, size, and object count
-
-### storage.object_storages.create
-
-Creates a new S3-compatible storage bucket.
-
-**Parameters:**
-- `name` (required): Bucket name
-- `location` (required): Storage location
-
-### storage.locations.list
-
-Lists available storage locations.
-
-**Parameters:** None required
-
-**Returns:** Array of locations with region and S3 endpoint
-
-## Related documentation
-
-- [Create a storage bucket](/storage/create-a-storage)
-- [Manage S3 storage](/storage/manage-s3-storage/manage-buckets-via-the-control-panel)
-- [Filter tools with GCORE_TOOLS](/account-settings/integrations/filter-tools-with-gcore-tools)
+Tool parameters and behavior reflect the [Gcore Storage API](/storage/create-a-storage). Bucket management via the control panel is documented in the [S3 storage guide](/storage/manage-s3-storage/manage-buckets-via-the-control-panel). Tool filtering options are available in the [GCORE_TOOLS reference](/account-settings/integrations/filter-tools-with-gcore-tools).
+</Info>

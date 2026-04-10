@@ -3,34 +3,26 @@ title: Filter tools with GCORE_TOOLS
 sidebarTitle: Filter tools
 ---
 
-Most AI clients cannot process hundreds of tools simultaneously. The `GCORE_TOOLS` environment variable controls which tools are exposed by the server.
+Most AI clients cannot process hundreds of tools simultaneously. The `GCORE_TOOLS` environment variable controls which tools are exposed by the server, reducing context consumption and improving tool selection accuracy.
 
-## Why filter tools
+## Tool filtering overview
 
-Gcore MCP Server provides approximately 780 tools covering the full API surface. Loading all tools causes issues in most clients:
+Gcore MCP Server provides approximately 780 tools covering the full API surface. Loading all tools consumes significant context window space, leaving less room for conversation. When too many similar tools are available, models may select incorrect tools or produce slower responses due to schema processing overhead.
 
-- **Context window overflow**: Tool schemas consume context, leaving less space for conversation
-- **Model confusion**: Too many similar tools lead to incorrect tool selection
-- **Performance degradation**: Schema processing slows down responses
-
-Claude Code handles large tool sets through deferred loading. Other clients require filtering.
+Claude Code handles large tool sets through deferred loading—tool schemas load on demand rather than at startup. Other clients require explicit filtering to function properly.
 
 ## Filter syntax
 
-The `GCORE_TOOLS` variable accepts three types of values:
+The `GCORE_TOOLS` variable accepts predefined toolset names, wildcard patterns, and exact tool names. These can be combined in a single value separated by commas.
 
-### Predefined toolsets
-
-Named collections of related tools:
+Predefined toolsets are named collections of related tools:
 
 ```bash
 GCORE_TOOLS="instances"
 GCORE_TOOLS="instances,management"
 ```
 
-### Wildcard patterns
-
-Match tools by name prefix:
+Wildcard patterns match tools by name prefix using `*`:
 
 ```bash
 GCORE_TOOLS="cdn.*"
@@ -38,23 +30,21 @@ GCORE_TOOLS="cloud.instances.*"
 GCORE_TOOLS="dns.records.*"
 ```
 
-### Exact tool names
-
-Specify individual tools:
+Exact tool names specify individual tools:
 
 ```bash
 GCORE_TOOLS="cloud.instances.create,cloud.instances.delete"
 ```
 
-### Combined mode
-
-Mix toolsets and patterns:
+Mixed configurations combine toolsets and patterns:
 
 ```bash
 GCORE_TOOLS="instances,management,cloud.gpu_baremetal.clusters.*"
 ```
 
 ## Predefined toolsets
+
+Gcore MCP Server includes predefined toolsets that group related operations. Using toolsets simplifies configuration compared to listing individual tools.
 
 | Toolset | Description | Included tools |
 |---------|-------------|----------------|
@@ -73,9 +63,9 @@ GCORE_TOOLS="instances,management,cloud.gpu_baremetal.clusters.*"
 | `cleanup` | Deletion operations | Resource cleanup tools |
 | `list` | Read-only operations | All list/get operations |
 
-## Pattern matching rules
+## Pattern matching
 
-Patterns use `*` as a wildcard:
+Patterns use `*` as a wildcard to match tool name prefixes. The pattern `cdn.*` matches all CDN tools including `cdn.cdn_resources.list`, `cdn.cdn_resources.create`, and `cdn.origins.list`. More specific patterns like `cdn.cdn_resources.*` match only the CDN resource tools, excluding origin and other CDN tools.
 
 | Pattern | Matches |
 |---------|---------|
@@ -86,145 +76,37 @@ Patterns use `*` as a wildcard:
 | `dns.records.create` | Single specific tool |
 | `*` | All tools |
 
-### Pattern examples
-
-**Single product:**
-
-```bash
-GCORE_TOOLS="cdn.*"
-```
-
-Exposes: `cdn.cdn_resources.list`, `cdn.cdn_resources.create`, `cdn.origins.list`, etc.
-
-**Multiple products:**
-
-```bash
-GCORE_TOOLS="cdn.*,dns.*"
-```
-
-Exposes all CDN and DNS tools.
-
-**Specific operations:**
-
-```bash
-GCORE_TOOLS="cloud.instances.create,cloud.instances.list,cloud.instances.delete"
-```
-
-Exposes only the specified three tools.
-
-**Nested filtering:**
-
-```bash
-GCORE_TOOLS="cloud.gpu_baremetal.clusters.*"
-```
-
-Exposes only GPU bare metal cluster tools, not other cloud tools.
+Multiple products combine with commas: `GCORE_TOOLS="cdn.*,dns.*"` exposes all CDN and DNS tools. Nested filtering narrows scope: `GCORE_TOOLS="cloud.gpu_baremetal.clusters.*"` exposes GPU bare metal cluster tools without including other cloud tools.
 
 ## Default behavior
 
-When `GCORE_TOOLS` is not set:
+When `GCORE_TOOLS` is not set, the server applies default toolsets based on transport mode. Stdio transport defaults to the `management` toolset, while HTTP transport defaults to `management,instances`. These defaults provide minimal tools for basic exploration without overwhelming the client.
 
 | Transport | Default tools |
 |-----------|---------------|
 | stdio | `management` toolset |
 | HTTP | `management,instances` toolsets |
 
-The defaults provide minimal tools for basic exploration without overwhelming the client.
+## Priority and combination
 
-## Priority rules
+When combining toolsets and patterns, toolset tools are included first, pattern-matched tools are added second, and duplicates are removed. Toolset definitions take precedence over pattern matches.
 
-When combining toolsets and patterns:
+With `GCORE_TOOLS="instances,cloud.volumes.*"`, all `instances` toolset tools load first, then volume tools from the pattern are added. If the same tool appears in both, it appears once in the final set.
 
-1. Toolset tools are included first
-2. Pattern-matched tools are added second
-3. Duplicates are removed
-4. Toolset definitions take precedence
+## Configuration examples
 
-Example:
-
-```bash
-GCORE_TOOLS="instances,cloud.volumes.*"
-```
-
-Includes all `instances` toolset tools plus volume tools from patterns.
-
-## Recommended configurations
-
-### CDN management
-
-```bash
-GCORE_TOOLS="cdn.*"
-```
-
-### DNS management
-
-```bash
-GCORE_TOOLS="dns.*"
-```
-
-### Cloud infrastructure
-
-```bash
-GCORE_TOOLS="management,instances,storage,networking"
-```
-
-### GPU clusters
-
-```bash
-GCORE_TOOLS="management,gpu_baremetal"
-```
-
-### Full access (Claude Code only)
-
-```bash
-GCORE_TOOLS="*"
-```
+CDN-focused work requires the CDN tools: `GCORE_TOOLS="cdn.*"`. DNS management uses DNS tools: `GCORE_TOOLS="dns.*"`. Cloud infrastructure work typically combines management, instances, storage, and networking: `GCORE_TOOLS="management,instances,storage,networking"`. GPU cluster operations require management and GPU toolsets: `GCORE_TOOLS="management,gpu_baremetal"`.
 
 <Warning>
-Use `GCORE_TOOLS=*` only with Claude Code. Other clients may fail or become unresponsive.
+Setting `GCORE_TOOLS=*` exposes all 780 tools. Use this configuration with Claude Code where deferred loading prevents context overflow. Other clients may fail or become unresponsive with this setting.
 </Warning>
 
 ## Verify active tools
 
-After configuring, verify which tools are exposed:
+After configuring, verify which tools are exposed using [MCP Inspector](/account-settings/integrations/test-tools-with-mcp-inspector). Connect with the desired `GCORE_TOOLS` value and view the Tools panel to count and verify the tool list.
 
-### Using MCP Inspector
+Server logs also indicate loaded tools at startup. Running `GCORE_TOOLS="cdn.*" gcore-mcp-server 2>&1 | head -50` displays startup messages including the tool count.
 
-1. Connect with the desired `GCORE_TOOLS` value.
-2. View the Tools panel.
-3. Count and verify the tool list.
-
-### Using server logs
-
-Start the server with verbose logging:
-
-```bash
-GCORE_TOOLS="cdn.*" gcore-mcp-server 2>&1 | head -50
-```
-
-The startup messages indicate loaded tools.
-
-## Troubleshooting
-
-### No tools available
-
-- Check `GCORE_TOOLS` syntax
-- Verify pattern matches actual tool names
-- Use MCP Inspector to discover correct tool names
-
-### Wrong tools loaded
-
-- Patterns are case-sensitive
-- Check for typos in toolset names
-- Verify the product prefix (for example, `cdn` vs `cloud`)
-
-### Client still shows context warnings
-
-- Reduce the number of matched tools
-- Use more specific patterns
-- Consider using only essential toolsets
-
-## Next steps
-
-- [Available products and tools](/account-settings/integrations/gcore-mcp-server-available-products-and-tools)
-- [Test tools with MCP Inspector](/account-settings/integrations/test-tools-with-mcp-inspector)
+<Warning>
+Patterns are case-sensitive and must match actual tool names. If no tools appear, check the pattern syntax and use MCP Inspector to discover correct tool names. The product prefix matters—`cdn` differs from `cloud` in the tool namespace.
+</Warning>

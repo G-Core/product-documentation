@@ -3,21 +3,21 @@ title: Manage FastEdge via MCP Server
 sidebarTitle: MCP Server
 ---
 
-Gcore MCP Server enables AI assistants to manage FastEdge applications through natural language commands. This guide covers FastEdge-specific tools and example conversations.
-
-For general setup instructions, see [Gcore MCP Server overview](/account-settings/integrations/gcore-mcp-server-overview).
+Gcore MCP Server enables AI assistants to manage FastEdge applications through natural language commands. The MCP Server exposes tools for deploying WebAssembly binaries, managing secrets, configuring key-value stores, and monitoring application performance—all through conversational prompts in [Claude Code or other MCP-compatible clients](/account-settings/integrations/gcore-mcp-server-overview).
 
 ## Configure for FastEdge
 
-Set the `GCORE_TOOLS` environment variable to expose FastEdge tools:
+To work exclusively with FastEdge tools, set the `GCORE_TOOLS` environment variable to filter the toolset. This reduces tool count and helps clients load faster when managing edge applications.
 
 ```bash
 GCORE_TOOLS="fastedge.*"
 ```
 
-This exposes approximately 20 FastEdge tools covering edge applications, deployments, and secrets.
+With this filter, approximately 20 FastEdge tools become available.
 
-## Available FastEdge tools
+## Available tools
+
+FastEdge tools cover applications, binaries, key-value stores, secrets, templates, and statistics:
 
 | Resource | Operations | Description |
 |----------|------------|-------------|
@@ -28,240 +28,52 @@ This exposes approximately 20 FastEdge tools covering edge applications, deploym
 | `templates` | list, get | Application templates |
 | `statistics` | get | Usage statistics |
 
-## Example conversations
+## Application management
 
-### List applications
+Asking the assistant to "list all my FastEdge applications" returns each application with its ID, status, public URL, and recent request counts. The assistant presents this information in a readable format, showing which applications are active and their traffic levels over the past 24 hours.
 
-**Prompt:**
-```
-List all my FastEdge applications
-```
+Creating applications works through natural language—"create a FastEdge application named api-cache" provisions a new application and returns its generated URL. The application starts in pending status until a WebAssembly binary is deployed.
 
-**Response:**
-```
-Found 3 FastEdge applications:
+## Binary deployment
 
-1. edge-router (ID: app_12345)
-   - Status: active
-   - URL: https://edge-router.fastedge.gcore.dev
-   - Requests (24h): 125,000
+After creating an application, deploy WebAssembly binaries by asking the assistant to upload from a local path—"upload binary from ./dist/app.wasm to application api-cache" triggers the upload and deployment process. The assistant reports the binary ID, size, and deployment status. Edge deployments typically complete within 30 seconds.
 
-2. image-optimizer (ID: app_12346)
-   - Status: active
-   - URL: https://image-optimizer.fastedge.gcore.dev
-   - Requests (24h): 45,000
+To check available binaries before deployment, ask the assistant to list binaries for a specific application. This shows all uploaded versions with their IDs and upload timestamps.
 
-3. auth-middleware (ID: app_12347)
-   - Status: inactive
-```
+## Secrets and configuration
 
-### Create an application
+Application secrets store sensitive values such as API keys and configuration parameters. Asking "add a secret named API_KEY with value sk-xxx to application api-cache" creates the secret and makes it available as an environment variable within the application code. The assistant confirms creation without echoing the secret value back.
 
-**Prompt:**
-```
-Create a new FastEdge application named "api-cache"
-```
+To review configured secrets, ask the assistant to list secrets for an application. Secret values are not returned in listings for security reasons—the assistant shows secret names and creation timestamps.
 
-**Response:**
-```
-Created FastEdge application:
-- Name: api-cache
-- ID: app_12348
-- Status: pending
-- URL: https://api-cache.fastedge.gcore.dev
+## Key-value stores
 
-Upload a WebAssembly binary to deploy the application.
-```
+FastEdge applications can use key-value stores for session data, caching, and counters. Creating a store—"create a KV store named session-cache for application auth-middleware"—provisions the store and associates it with the application. The KV API becomes available in the application runtime for read and write operations.
 
-### Deploy a binary
+To view all stores across applications, ask the assistant to list KV stores. The response shows store names, IDs, and associated applications.
 
-**Prompt:**
-```
-List available binaries for application api-cache
-```
+## Statistics and monitoring
 
-**Prompt:**
-```
-Upload binary from ./dist/app.wasm to application api-cache
-```
+Request statistics show traffic patterns, latency, and error rates. Asking "show statistics for all FastEdge applications over the last 7 days" returns a summary with request counts, average latency, and error percentages per application. This helps identify performance trends and inactive applications that may need attention.
 
-**Response:**
-```
-Binary uploaded and deployed:
-- Application: api-cache
-- Binary ID: bin_56789
-- Size: 245 KB
-- Status: deploying
+For detailed latency analysis, request percentile breakdowns—"show request latency percentiles for edge-router over the last 24 hours" returns p50, p90, p95, and p99 latency values.
 
-Deployment typically completes within 30 seconds.
-```
+## Templates
 
-### Manage secrets
+FastEdge provides starter templates for common use cases including HTTP handlers, image resizing, JWT validation, and geolocation. Asking "show available FastEdge templates" lists templates with their descriptions and supported languages (Rust or JavaScript). To create an application from a template, specify the template name—"create an application from the auth-jwt template" scaffolds the application with the template code.
 
-**Prompt:**
-```
-Add a secret named "API_KEY" with value "sk-xxx" to application api-cache
-```
+## Multi-step workflows
 
-**Response:**
-```
-Secret created:
-- Application: api-cache
-- Secret name: API_KEY
-- Status: active
+The assistant handles multi-step workflows in a single conversation. To deploy a rate-limiting edge function, describe the full setup—"create a FastEdge application named rate-limiter, create a KV store for counters, and add secrets RATE_LIMIT=100 and WINDOW_SECONDS=60." The assistant executes each step in sequence and reports the results.
 
-The secret is available as an environment variable in your application.
-```
+When updating existing applications, deploying a new binary version works the same way as the initial deployment. The assistant uploads the binary and initiates a rolling update. Previous versions remain available for rollback if needed.
 
-**Prompt:**
-```
-List all secrets for application api-cache
-```
+To find applications across environments, filter by name patterns—"list applications with staging in the name" shows matching applications. This helps manage development, staging, and production deployments through a single conversation.
 
-### Key-value stores
+<Info>
+**Info**
 
-**Prompt:**
-```
-Create a KV store named "session-cache" for application auth-middleware
-```
+Tool names follow the pattern `fastedge.[resource].[operation]`, such as `fastedge.apps.list` or `fastedge.secrets.create`. The [MCP Inspector](/account-settings/integrations/test-tools-with-mcp-inspector) displays all available tools with their parameters and expected inputs.
+</Info>
 
-**Response:**
-```
-KV store created:
-- Name: session-cache
-- ID: kv_78901
-- Application: auth-middleware
-
-Use the KV API in your application to read and write data.
-```
-
-**Prompt:**
-```
-List all KV stores
-```
-
-### View statistics
-
-**Prompt:**
-```
-Show statistics for all FastEdge applications over the last 7 days
-```
-
-**Response:**
-```
-FastEdge statistics (last 7 days):
-
-| Application      | Requests   | Avg Latency | Errors |
-|------------------|------------|-------------|--------|
-| edge-router      | 875,000    | 12ms        | 0.01%  |
-| image-optimizer  | 315,000    | 45ms        | 0.02%  |
-| auth-middleware  | 0          | -           | -      |
-| **Total**        | 1,190,000  | 18ms        | 0.01%  |
-```
-
-### Application templates
-
-**Prompt:**
-```
-Show available FastEdge templates
-```
-
-**Response:**
-```
-Available templates:
-
-1. hello-world
-   - Simple HTTP response
-   - Languages: Rust, JavaScript
-
-2. image-resize
-   - On-the-fly image resizing
-   - Languages: Rust
-
-3. auth-jwt
-   - JWT validation middleware
-   - Languages: Rust, JavaScript
-
-4. geolocation
-   - IP-based geolocation
-   - Languages: Rust
-```
-
-**Prompt:**
-```
-Create an application from the auth-jwt template
-```
-
-## Common workflows
-
-### Deploy a new edge function
-
-**Combined prompt:**
-```
-1. Create a FastEdge application named "rate-limiter"
-2. Create a KV store for storing rate limit counters
-3. Add secrets for configuration:
-   - RATE_LIMIT: 100
-   - WINDOW_SECONDS: 60
-```
-
-### Update application
-
-**Prompt:**
-```
-Deploy a new version of binary to application edge-router
-```
-
-### Monitor performance
-
-**Prompt:**
-```
-Show request latency percentiles for edge-router over the last 24 hours
-```
-
-### Manage multiple environments
-
-**Prompt:**
-```
-List all applications with "staging" in the name
-```
-
-## Tool reference
-
-### fastedge.apps.list
-
-Lists all FastEdge applications.
-
-**Parameters:** None required
-
-**Returns:** Array of applications with ID, name, status, and URL
-
-### fastedge.apps.create
-
-Creates a new FastEdge application.
-
-**Parameters:**
-- `name` (required): Application name
-
-### fastedge.secrets.create
-
-Creates a secret for an application.
-
-**Parameters:**
-- `app_id` (required): Application ID
-- `name` (required): Secret name
-- `value` (required): Secret value
-
-### fastedge.kv_stores.create
-
-Creates a key-value store.
-
-**Parameters:**
-- `name` (required): KV store name
-- `app_id` (required): Application ID
-
-## Related documentation
-
-- [Getting started with FastEdge](/fastedge/getting-started)
-- [Deploy an application](/fastedge/getting-started/deploy-an-app-from-prepared-binary)
-- [Filter tools with GCORE_TOOLS](/account-settings/integrations/filter-tools-with-gcore-tools)
+For detailed deployment procedures outside of MCP Server, see the [FastEdge deployment guide](/fastedge/getting-started/deploy-an-app-from-prepared-binary). To filter tools and reduce the exposed toolset, configure the [`GCORE_TOOLS` environment variable](/account-settings/integrations/filter-tools-with-gcore-tools).

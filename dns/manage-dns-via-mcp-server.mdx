@@ -3,228 +3,50 @@ title: Manage DNS via MCP Server
 sidebarTitle: MCP Server
 ---
 
-Gcore MCP Server enables AI assistants to manage DNS zones and records through natural language commands. This guide covers DNS-specific tools and example conversations.
-
-For general setup instructions, see [Gcore MCP Server overview](/account-settings/integrations/gcore-mcp-server-overview).
+Gcore MCP Server provides approximately 30 tools for managing DNS zones and records through natural language. Configuration and client setup are covered in the [Gcore MCP Server overview](/account-settings/integrations/gcore-mcp-server-overview).
 
 ## Configure for DNS
 
-Set the `GCORE_TOOLS` environment variable to expose DNS tools:
+The `GCORE_TOOLS` environment variable controls which tools are exposed. Setting `GCORE_TOOLS="dns.*"` loads all DNS tools.
 
 ```bash
 GCORE_TOOLS="dns.*"
 ```
 
-This exposes approximately 30 DNS tools covering zones, records, and DNS analytics.
+DNS tools follow the `dns.<resource>.<operation>` naming pattern. The `zones` tools handle DNS zone management with list, create, get, update, and delete operations. The `zones.records` tools manage DNS records within zones. The `locations` tools list DNS server locations, while `metrics` and `lookup` tools provide DNS query analytics and record lookups.
 
-## Available DNS tools
+## DNS operations
 
-| Resource | Operations | Description |
-|----------|------------|-------------|
-| `zones` | list, create, get, update, delete | DNS zones |
-| `zones.records` | list, create, get, update, delete | DNS records |
-| `locations` | list | DNS server locations |
-| `metrics` | get | DNS query metrics |
-| `lookup` | query | DNS record lookup |
+Natural language requests trigger the corresponding API operations. Listing zones requires no parameters—a request like "List all my DNS zones" returns zone names, record counts, and status.
 
-## Example conversations
+Zone creation requires the domain name. Requesting "Create a DNS zone for newdomain.com" provisions the zone and returns nameserver assignments (such as `ns1.gcorelabs.net` and `ns2.gcdn.services`) that must be configured at the domain registrar.
 
-### List DNS zones
+Record listing shows all records in a zone. A request to "Show all DNS records for example.com" returns a table with record types, names, values, and TTL settings.
 
-**Prompt:**
-```
-List all my DNS zones
-```
+Record creation requires the zone name, record type, name, and value. Creating an A record with "Add an A record for api.example.com pointing to 198.51.100.20 with TTL 300" adds the record to the zone. CNAME records use the same pattern—"Add a CNAME record for www.example.com pointing to example.com" creates the alias. MX records require priority—"Add an MX record for example.com with priority 10 pointing to mail.example.com" sets the mail exchanger. TXT records for email authentication use quoted values—"Add a TXT record for _dmarc.example.com with value 'v=DMARC1; p=reject; rua=mailto:dmarc@example.com'" creates the DMARC policy record.
 
-**Response:**
-```
-Found 2 DNS zones:
+Record updates modify existing entries. A request to "Change the TTL of all A records in example.com to 600 seconds" bulk-updates TTL values. Updating specific records with "Update the A record for api.example.com to point to 198.51.100.25" changes the target address.
 
-1. example.com
-   - Records: 12
-   - Status: active
+Record deletion removes entries from the zone. "Delete the CNAME record for old.example.com" removes the specified record.
 
-2. myapp.io
-   - Records: 8
-   - Status: active
-```
+DNS lookups verify record resolution. "Lookup the A record for www.example.com" queries the DNS system and returns the resolved value, TTL, and response time.
 
-### Create a DNS zone
+## Multi-step workflows
 
-**Prompt:**
-```
-Create a DNS zone for newdomain.com
-```
+Complex DNS configurations involve multiple tools executed in sequence. Setting up a new domain requires creating the zone, adding A records for the apex and www subdomain, configuring MX records for email, and adding SPF TXT records for email authentication. A combined request like "Set up DNS for mynewsite.com with A records for @ and www pointing to 198.51.100.50, MX record pointing to mail.mynewsite.com with priority 10, and SPF TXT record" triggers the appropriate tool sequence.
 
-**Response:**
-```
-Created DNS zone:
-- Name: newdomain.com
-- Status: active
-- Nameservers:
-  - ns1.gcorelabs.net
-  - ns2.gcdn.services
+Email DNS configuration combines multiple record types. Requesting "Set up email DNS records for example.com with MX record pointing to mail.example.com, SPF record allowing mail.example.com, DKIM record with selector 'default', and DMARC record with reject policy" creates the complete email authentication stack.
 
-Update your domain registrar to use these nameservers.
-```
+Migration workflows analyze existing zones. "List all records from oldsite.com that I need to recreate in newsite.com" exports records for migration planning.
 
-### Manage DNS records
+Propagation verification checks DNS resolution. "Check if the A record for api.example.com has propagated" queries multiple DNS servers to confirm record availability.
 
-**Prompt:**
-```
-Show all DNS records for example.com
-```
+## Tool naming patterns
 
-**Response:**
-```
-DNS records for example.com:
+DNS tool names follow the `dns.<resource>.<operation>` pattern. The `dns.zones.list` tool lists all DNS zones in the account without parameters and returns zone names, record counts, and status. The `dns.zones.create` tool requires `name` (the zone name such as `example.com`). The `dns.zones.records.create` tool requires `zone_name` (the parent zone), `name` (the record name, using `@` for apex), `type` (A, AAAA, CNAME, MX, TXT, or other record types), and `content` (the record value), with optional `ttl` in seconds defaulting to 300.
 
-| Type  | Name              | Value                | TTL  |
-|-------|-------------------|----------------------|------|
-| A     | @                 | 198.51.100.10        | 300  |
-| A     | www               | 198.51.100.10        | 300  |
-| AAAA  | @                 | 2001:db8::1          | 300  |
-| MX    | @                 | mail.example.com     | 3600 |
-| TXT   | @                 | v=spf1 include:...   | 3600 |
-| CNAME | api               | api.example.com      | 300  |
-```
+<Info>
+**Info**
 
-### Create DNS records
-
-**Prompt:**
-```
-Add an A record for api.example.com pointing to 198.51.100.20 with TTL 300
-```
-
-**Response:**
-```
-Created DNS record:
-- Zone: example.com
-- Type: A
-- Name: api
-- Value: 198.51.100.20
-- TTL: 300 seconds
-```
-
-**Prompt:**
-```
-Add a CNAME record for www.example.com pointing to example.com
-```
-
-**Prompt:**
-```
-Add an MX record for example.com with priority 10 pointing to mail.example.com
-```
-
-**Prompt:**
-```
-Add a TXT record for _dmarc.example.com with value "v=DMARC1; p=reject; rua=mailto:dmarc@example.com"
-```
-
-### Update DNS records
-
-**Prompt:**
-```
-Change the TTL of all A records in example.com to 600 seconds
-```
-
-**Prompt:**
-```
-Update the A record for api.example.com to point to 198.51.100.25
-```
-
-### Delete DNS records
-
-**Prompt:**
-```
-Delete the CNAME record for old.example.com
-```
-
-### DNS lookup
-
-**Prompt:**
-```
-Lookup the A record for www.example.com
-```
-
-**Response:**
-```
-DNS lookup result for www.example.com:
-- Type: A
-- Value: 198.51.100.10
-- TTL: 300
-- Response time: 12ms
-```
-
-## Common workflows
-
-### Set up a new domain
-
-**Combined prompt:**
-```
-Set up DNS for mynewsite.com:
-1. Create the zone
-2. Add A record for @ pointing to 198.51.100.50
-3. Add A record for www pointing to 198.51.100.50
-4. Add MX record pointing to mail.mynewsite.com with priority 10
-5. Add SPF TXT record
-```
-
-### Configure email DNS
-
-**Prompt:**
-```
-Set up email DNS records for example.com:
-- MX record pointing to mail.example.com
-- SPF record allowing mail.example.com
-- DKIM record with selector "default"
-- DMARC record with reject policy
-```
-
-### Migrate DNS records
-
-**Prompt:**
-```
-List all records from oldsite.com that I need to recreate in newsite.com
-```
-
-### Verify DNS propagation
-
-**Prompt:**
-```
-Check if the A record for api.example.com has propagated
-```
-
-## Tool reference
-
-### dns.zones.list
-
-Lists all DNS zones in the account.
-
-**Parameters:** None required
-
-**Returns:** Array of zones with name, record count, and status
-
-### dns.zones.create
-
-Creates a new DNS zone.
-
-**Parameters:**
-- `name` (required): Zone name (for example, `example.com`)
-
-### dns.zones.records.create
-
-Creates a DNS record in a zone.
-
-**Parameters:**
-- `zone_name` (required): Parent zone
-- `name` (required): Record name (use `@` for apex)
-- `type` (required): Record type (A, AAAA, CNAME, MX, TXT, etc.)
-- `content` (required): Record value
-- `ttl`: Time to live in seconds (default: 300)
-
-## Related documentation
-
-- [Create a DNS zone](/dns/manage-dns-records-non-advanced-interface-mode/add-a-dns-zone-in-non-advanced-mode)
-- [Manage DNS records](/dns/manage-dns-records-non-advanced-interface-mode/add-a-dns-record)
-- [Filter tools with GCORE_TOOLS](/account-settings/integrations/filter-tools-with-gcore-tools)
+Tool parameters and behavior reflect the [Gcore DNS API](/dns/manage-dns-records-non-advanced-interface-mode/add-a-dns-zone-in-non-advanced-mode). Record management is documented in the [DNS records guide](/dns/manage-dns-records-non-advanced-interface-mode/add-a-dns-record). Tool filtering options are available in the [GCORE_TOOLS reference](/account-settings/integrations/filter-tools-with-gcore-tools).
+</Info>

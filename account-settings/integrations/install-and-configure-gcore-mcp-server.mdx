@@ -3,36 +3,32 @@ title: Install and configure Gcore MCP Server
 sidebarTitle: Install and configure
 ---
 
-This guide covers obtaining an API key, installing the MCP server, and configuring environment variables.
+Gcore MCP Server requires a [Gcore API token](/account-settings/api-tokens) and the `uv` package manager. The `uv` tool handles Python dependencies and provides isolated execution environments—installation instructions are available in the [uv documentation](https://docs.astral.sh/uv/getting-started/installation/).
 
-## Prerequisites
+## Create an API token
 
-- A Gcore account with API access. To create an API token, see [Create, use, or delete a permanent API token](/account-settings/api-tokens).
-- The `uv` package manager is required for running the server. Installation instructions are available at [uv documentation](https://docs.astral.sh/uv/getting-started/installation/).
+The API token authenticates requests to the Gcore API. Token permissions determine which operations are available through the MCP server.
 
-## Get an API key
-
-1. Navigate to the Gcore Customer Portal.
-2. Open **Profile** > **API tokens**.
-3. Click **Create token**.
-4. Select the permissions required for the intended operations.
-5. Copy the generated token. The token is displayed once and cannot be retrieved later.
+1. In the Gcore Customer Portal, navigate to **Profile** > **API tokens**.
+2. Click **Create token**.
+3. Select the permissions required for the intended operations.
+4. Copy the generated token.
 
 <Warning>
-The API key provides access to account resources based on its permissions. Store it securely and do not commit to version control.
+The token is displayed once and cannot be retrieved later. Store it securely and do not commit to version control.
 </Warning>
 
 ## Installation methods
 
 ### Temporary environment (uvx)
 
-The `uvx` command runs the server in a temporary environment without persistent installation. Suitable for testing and one-off usage.
+The `uvx` command runs the server in a temporary environment without persistent installation:
 
 ```bash
 uvx --from "gcore-mcp-server@git+https://github.com/G-Core/gcore-mcp-server.git" gcore-mcp-server
 ```
 
-To run a specific version:
+A specific version can be pinned by appending the tag:
 
 ```bash
 uvx --from "gcore-mcp-server@git+https://github.com/G-Core/gcore-mcp-server.git@v0.1.1" gcore-mcp-server
@@ -46,13 +42,13 @@ Installing as a tool makes the command globally available:
 uv tool install "gcore-mcp-server@git+https://github.com/G-Core/gcore-mcp-server.git"
 ```
 
-After installation, run:
+After installation, the server starts with:
 
 ```bash
 gcore-mcp-server
 ```
 
-If the command is not found, run `uv tool update-shell` or verify that the `uv` tool bin directory is in the `PATH`.
+If the command is not found, run `uv tool update-shell` or verify that the `uv` tool bin directory is in `PATH`.
 
 ## Environment variables
 
@@ -64,7 +60,7 @@ If the command is not found, run `uv tool update-shell` or verify that the `uv` 
 | `GCORE_CLOUD_PROJECT_ID` | No | Default project ID for Cloud operations |
 | `GCORE_CLOUD_REGION_ID` | No | Default region ID for Cloud operations |
 
-### Setting environment variables
+### Set environment variables
 
 **Linux/macOS:**
 
@@ -95,9 +91,7 @@ After setting environment variables, start the server:
 gcore-mcp-server
 ```
 
-Expected output when connected to an MCP client shows the server version and loaded tools.
-
-To verify the API key works, use the Gcore SDK directly:
+The server outputs its version and the number of loaded tools when connected to an MCP client. To verify API key validity independently, the Gcore Python SDK can list Cloud projects:
 
 ```python
 from gcore import Gcore
@@ -111,15 +105,13 @@ for project in projects:
     print(f"Project: {project.name} (ID: {project.id})")
 ```
 
-If projects are listed, the API key is valid and has Cloud access.
+A successful response confirms the API key has Cloud access.
 
 ## Transport modes
 
-Gcore MCP Server supports two transport modes:
-
 ### stdio (standard input/output)
 
-Default mode. The server reads JSON-RPC messages from stdin and writes responses to stdout. Used by most MCP clients.
+The default mode reads JSON-RPC messages from stdin and writes responses to stdout. Most MCP clients use this mode:
 
 ```bash
 gcore-mcp-server
@@ -127,24 +119,22 @@ gcore-mcp-server
 
 ### HTTP (SSE)
 
-HTTP mode with Server-Sent Events. Useful for debugging with MCP Inspector.
+HTTP mode with Server-Sent Events listens on `http://localhost:8000` by default. This mode is useful for debugging with [MCP Inspector](/account-settings/integrations/test-tools-with-mcp-inspector):
 
 ```bash
 gcore-mcp-server --http
 ```
 
-The server listens on `http://localhost:8000` by default.
-
 ## Configuration files
 
-MCP clients store server configuration in JSON files. The location depends on the client:
+MCP clients store server configuration in JSON files:
 
 | Client | Configuration file |
 |--------|-------------------|
 | Claude Code | `~/.claude.json` |
 | Cursor IDE | `~/.cursor/mcp.json` |
 
-Example configuration for Claude Code (`~/.claude.json`):
+Claude Code configuration example (`~/.claude.json`):
 
 ```json
 {
@@ -165,12 +155,4 @@ Example configuration for Claude Code (`~/.claude.json`):
 }
 ```
 
-<Info>
-Setting `GCORE_TOOLS=*` is recommended for Claude Code. Other clients require filtering to fewer tools.
-</Info>
-
-## Next steps
-
-- [Connect Claude Code to Gcore MCP Server](/account-settings/integrations/connect-claude-code-to-gcore-mcp-server)
-- [Test tools with MCP Inspector](/account-settings/integrations/test-tools-with-mcp-inspector)
-- [Filter tools with GCORE_TOOLS](/account-settings/integrations/filter-tools-with-gcore-tools)
+Setting `GCORE_TOOLS=*` is appropriate for Claude Code due to its deferred schema loading. Other clients require [filtering to fewer tools](/account-settings/integrations/filter-tools-with-gcore-tools) to avoid context window issues.

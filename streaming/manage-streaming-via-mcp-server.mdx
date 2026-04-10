@@ -3,238 +3,50 @@ title: Manage Streaming via MCP Server
 sidebarTitle: MCP Server
 ---
 
-Gcore MCP Server enables AI assistants to manage video streaming resources through natural language commands. This guide covers Streaming-specific tools and example conversations.
-
-For general setup instructions, see [Gcore MCP Server overview](/account-settings/integrations/gcore-mcp-server-overview).
+Gcore MCP Server provides approximately 60 tools for managing live streams, video on demand, players, and broadcasts through natural language. Configuration and client setup are covered in the [Gcore MCP Server overview](/account-settings/integrations/gcore-mcp-server-overview).
 
 ## Configure for Streaming
 
-Set the `GCORE_TOOLS` environment variable to expose Streaming tools:
+The `GCORE_TOOLS` environment variable controls which tools are exposed. Setting `GCORE_TOOLS="streaming.*"` loads all Streaming tools.
 
 ```bash
 GCORE_TOOLS="streaming.*"
 ```
 
-This exposes approximately 60 Streaming tools covering live streams, VOD, players, and broadcasts.
+Streaming tools follow the `streaming.<resource>.<operation>` naming pattern. The `streams` tools handle live stream management with list, create, get, update, and delete operations. The `videos` tools manage video on demand (VOD) content. The `broadcasts` tools handle scheduled broadcasts, while `players` tools configure video player appearance and behavior. The `playlists` tools organize videos into sequences, and `directories` tools provide content organization. The `quality_sets` tools manage encoding presets, `restreams` tools configure multi-platform distribution, and `statistics` tools retrieve viewing metrics.
 
-## Available Streaming tools
+## Streaming operations
 
-| Resource | Operations | Description |
-|----------|------------|-------------|
-| `streams` | list, create, get, update, delete | Live streams |
-| `videos` | list, create, get, update, delete | Video on demand (VOD) |
-| `broadcasts` | list, create, get, update, delete | Scheduled broadcasts |
-| `players` | list, create, get, update, delete | Video player configurations |
-| `playlists` | list, create, get, update, delete | Video playlists |
-| `directories` | list, create, get, delete | Content organization |
-| `quality_sets` | list, create, get | Encoding quality presets |
-| `restreams` | list, create, get, delete | Stream restreaming |
-| `statistics` | get | Viewing statistics |
+Natural language requests trigger the corresponding API operations. Listing streams requires no parameters—a request like "List all my live streams" returns stream names, IDs, status, push URLs, and current viewer counts.
 
-## Example conversations
+Stream creation requires a name and optional quality settings. Requesting "Create a new live stream named 'Product Launch' with HD quality" provisions the stream and returns the push URL, stream key, and playback URL for use in streaming software such as OBS.
 
-### List live streams
+VOD management includes video listing and upload. A request to "List all uploaded videos" returns the video library. Uploading with "Upload a video from URL https://example.com/video.mp4 named 'Tutorial Part 1'" initiates processing that typically takes 5-15 minutes depending on video length. Processing status can be checked with "Check the processing status of video 56789".
 
-**Prompt:**
-```
-List all my live streams
-```
+Broadcast scheduling configures timed stream events. Requesting "Create a scheduled broadcast for stream 12345 starting at 2024-03-15 14:00 UTC" creates a broadcast entry that activates the stream at the specified time.
 
-**Response:**
-```
-Found 3 live streams:
+Player configuration customizes playback experience. A request to "Create a custom video player with autoplay disabled and controls visible" provisions a player configuration. Listing players with "List all player configurations" shows available presets.
 
-1. Main Event Stream (ID: 12345)
-   - Status: active
-   - URL: rtmp://push.gcore.com/live/stream_12345
-   - Viewers: 1,250
+Playlist management organizes content sequences. Creating playlists with "Create a playlist named 'Tutorial Series' with videos 56789, 56790, and 56791" groups videos for sequential playback. Adding videos with "Add video 56792 to playlist 'Tutorial Series'" extends existing playlists.
 
-2. Backup Stream (ID: 12346)
-   - Status: idle
-   - URL: rtmp://push.gcore.com/live/stream_12346
+Restreaming distributes streams to external platforms. Requesting "Create a restream from stream 12345 to YouTube with RTMP URL rtmp://a.rtmp.youtube.com/live2" configures simultaneous distribution.
 
-3. Test Stream (ID: 12347)
-   - Status: idle
-```
+Statistics queries return viewing metrics. "Show viewing statistics for the last 7 days" returns total views, unique viewers, average watch time, peak concurrent viewers, and bandwidth consumption.
 
-### Create a live stream
+## Multi-step workflows
 
-**Prompt:**
-```
-Create a new live stream named "Product Launch" with HD quality
-```
+Complex streaming configurations involve multiple tools executed in sequence. Setting up a live event requires creating a stream, configuring quality settings, customizing the player, and scheduling the broadcast. A combined request like "Set up a live streaming event named 'Annual Conference' with HD 1080p quality, custom branded player, and scheduled broadcast for March 20, 2024 at 10:00 UTC" triggers the appropriate tool sequence.
 
-**Response:**
-```
-Created live stream:
-- Name: Product Launch
-- ID: 12348
-- Status: idle
-- Push URL: rtmp://push.gcore.com/live/stream_12348
-- Stream Key: abc123xyz
-- Playback URL: https://player.gcore.com/stream_12348
+VOD library organization uses directories and batch operations. Requesting "Create directories for Tutorials, Webinars, and Product Demos, then organize existing videos into appropriate directories" structures the content library.
 
-Use the push URL and stream key in your streaming software (OBS, etc.).
-```
+Multi-platform streaming combines restream configuration. A request to "Set up multi-platform restreaming from my main stream to YouTube, Twitch, and Facebook Live" creates restream entries for each destination platform.
 
-### Manage VOD content
+## Tool naming patterns
 
-**Prompt:**
-```
-List all uploaded videos
-```
+Streaming tool names follow the `streaming.<resource>.<operation>` pattern. The `streaming.streams.list` tool lists all live streams without parameters and returns stream IDs, names, status, and URLs. The `streaming.streams.create` tool requires `name` (the stream name) with optional `quality` (SD, HD, or FHD preset). The `streaming.videos.create` tool requires `name` (the video name) and `url` (the source video URL) for VOD ingestion.
 
-**Prompt:**
-```
-Upload a video from URL https://example.com/video.mp4 named "Tutorial Part 1"
-```
+<Info>
+**Info**
 
-**Response:**
-```
-Video upload initiated:
-- Name: Tutorial Part 1
-- ID: 56789
-- Status: processing
-- Source: https://example.com/video.mp4
-
-Processing typically takes 5-15 minutes depending on video length.
-```
-
-**Prompt:**
-```
-Check the processing status of video 56789
-```
-
-### Create broadcasts
-
-**Prompt:**
-```
-Create a scheduled broadcast for stream 12345 starting at 2024-03-15 14:00 UTC
-```
-
-**Response:**
-```
-Created broadcast:
-- Stream: Main Event Stream (12345)
-- Scheduled start: 2024-03-15 14:00 UTC
-- Status: scheduled
-- Broadcast ID: 78901
-```
-
-### Configure players
-
-**Prompt:**
-```
-Create a custom video player with autoplay disabled and controls visible
-```
-
-**Prompt:**
-```
-List all player configurations
-```
-
-### Manage playlists
-
-**Prompt:**
-```
-Create a playlist named "Tutorial Series" with videos 56789, 56790, and 56791
-```
-
-**Prompt:**
-```
-Add video 56792 to playlist "Tutorial Series"
-```
-
-### Set up restreaming
-
-**Prompt:**
-```
-Create a restream from stream 12345 to YouTube with RTMP URL rtmp://a.rtmp.youtube.com/live2
-```
-
-### View statistics
-
-**Prompt:**
-```
-Show viewing statistics for the last 7 days
-```
-
-**Response:**
-```
-Streaming statistics (last 7 days):
-
-| Metric              | Value        |
-|---------------------|--------------|
-| Total views         | 45,230       |
-| Unique viewers      | 12,450       |
-| Average watch time  | 8m 32s       |
-| Peak concurrent     | 3,200        |
-| Total bandwidth     | 2.4 TB       |
-```
-
-## Common workflows
-
-### Set up a live event
-
-**Combined prompt:**
-```
-Set up a live streaming event:
-1. Create a new stream named "Annual Conference"
-2. Configure HD quality (1080p)
-3. Create a custom player with branding
-4. Schedule a broadcast for March 20, 2024 at 10:00 UTC
-```
-
-### Organize VOD library
-
-**Prompt:**
-```
-Create a directory structure for my video library:
-- Tutorials
-- Webinars
-- Product Demos
-
-Then move existing videos into appropriate directories.
-```
-
-### Multi-platform streaming
-
-**Prompt:**
-```
-Set up multi-platform restreaming from my main stream to:
-- YouTube
-- Twitch
-- Facebook Live
-```
-
-## Tool reference
-
-### streaming.streams.list
-
-Lists all live streams.
-
-**Parameters:** None required
-
-**Returns:** Array of streams with ID, name, status, and URLs
-
-### streaming.streams.create
-
-Creates a new live stream.
-
-**Parameters:**
-- `name` (required): Stream name
-- `quality`: Quality preset (SD, HD, FHD)
-
-### streaming.videos.create
-
-Creates a VOD entry from a URL.
-
-**Parameters:**
-- `name` (required): Video name
-- `url` (required): Source video URL
-
-## Related documentation
-
-- [Create a live stream](/streaming/create-a-live-stream)
-- [Upload videos](/streaming/video-hosting/upload-a-video-and-embed-it-to-your-app)
-- [Filter tools with GCORE_TOOLS](/account-settings/integrations/filter-tools-with-gcore-tools)
+Tool parameters and behavior reflect the [Gcore Streaming API](/streaming/create-a-live-stream). Video upload is documented in the [video hosting guide](/streaming/video-hosting/upload-a-video-and-embed-it-to-your-app). Tool filtering options are available in the [GCORE_TOOLS reference](/account-settings/integrations/filter-tools-with-gcore-tools).
+</Info>

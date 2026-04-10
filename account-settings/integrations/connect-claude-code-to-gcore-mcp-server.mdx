@@ -3,22 +3,14 @@ title: Connect Claude Code to Gcore MCP Server
 sidebarTitle: Connect Claude Code
 ---
 
-Claude Code is the recommended client for Gcore MCP Server. Its tool search feature handles large tool sets without context window issues.
-
-## Why Claude Code
-
-Claude Code differs from other MCP clients in how it handles tools:
-
-- **Deferred schema loading**: Tool schemas are fetched on demand when they match a query
-- **Tool search**: Claude searches for relevant tools instead of loading all schemas upfront
-- **No context bloat**: Registering many tools does not affect the context window
-
-These features allow Claude Code to work with all 780 Gcore tools simultaneously.
+Claude Code is the recommended client for Gcore MCP Server due to its deferred schema loading architecture. Unlike other MCP clients that load all tool schemas at startup, Claude Code fetches schemas on demand when they match a query. This approach allows Claude Code to work with all 780 Gcore tools simultaneously without context window bloat.
 
 ## Configure the server
 
-1. Open the Claude Code configuration file at `~/.claude.json`.
-2. Add the Gcore MCP Server entry to `mcpServers`:
+The configuration file `~/.claude.json` defines MCP server connections. Add Gcore MCP Server to enable Gcore API access through natural language.
+
+1. Open `~/.claude.json` in a text editor.
+2. Add the Gcore MCP Server entry to the `mcpServers` section:
 
 ```json
 {
@@ -39,24 +31,28 @@ These features allow Claude Code to work with all 780 Gcore tools simultaneously
 }
 ```
 
-3. Replace `your-api-key` with a valid Gcore API token.
+3. Replace `your-api-key` with a valid [Gcore API token](/account-settings/api-tokens).
 4. Save the file and restart Claude Code.
 
-<Info>
-Setting `GCORE_TOOLS=*` enables all available tools. This configuration is safe for Claude Code due to deferred schema loading.
-</Info>
+Setting `GCORE_TOOLS=*` enables all available tools. This configuration is appropriate for Claude Code because schemas load only when needed—other clients require [tool filtering](/account-settings/integrations/filter-tools-with-gcore-tools) to avoid context window limits.
+
+<Warning>
+If the configuration file contains syntax errors, Claude Code fails silently. Validate JSON syntax before restarting:
+
+```bash
+cat ~/.claude.json | python -m json.tool
+```
+</Warning>
 
 ## Verify the connection
 
-After configuring, start a new Claude Code session and ask:
+After configuration, start a new Claude Code session and request a resource listing:
 
 ```
 List my CDN resources
 ```
 
-Claude Code searches for CDN-related tools, loads their schemas, and executes the appropriate tool. The response shows CDN resource details from the Gcore account.
-
-Example response:
+Claude Code searches for CDN-related tools, loads their schemas, and executes the appropriate tool. A successful response displays CDN resource details:
 
 ```
 Found 1 CDN resource:
@@ -67,122 +63,36 @@ Found 1 CDN resource:
 - Origin Group: 1298426
 ```
 
-## Example conversations
-
-### CDN management
-
-**Create a CDN resource:**
-
-```
-Create a CDN resource for static.example.com with origin at origin.example.com
-```
-
-**Purge cache:**
-
-```
-Purge the CDN cache for all resources
-```
-
-**Check resource status:**
-
-```
-What is the status of CDN resource 888473?
-```
-
-### DNS management
-
-**List DNS zones:**
-
-```
-Show all DNS zones in my account
-```
-
-**Create a record:**
-
-```
-Add an A record for api.mydomain.com pointing to 192.0.2.10 with TTL 300
-```
-
-### Cloud infrastructure
-
-**List projects:**
-
-```
-List all cloud projects and their IDs
-```
-
-**List instances in a project:**
-
-```
-Show all virtual machines in project 780356
-```
-
-**Create an instance:**
-
-```
-Create a virtual machine with 2 vCPUs, 4 GB RAM, and Ubuntu 22.04 in region Luxembourg
-```
+<Warning>
+If Claude Code cannot find tools, verify that `GCORE_TOOLS=*` is set and restart the session. Cached schemas from previous configurations may interfere until cleared.
+</Warning>
 
 ## Tool search behavior
 
-When a query mentions a specific product or operation, Claude Code:
+When a query mentions a specific product or operation, Claude Code searches tool names and descriptions for matches, loads schemas for matched tools, selects the most appropriate tool, and executes it with extracted parameters. If multiple tools match, Claude may ask for clarification or choose based on context.
 
-1. Searches tool names and descriptions for matches
-2. Loads schemas for matched tools
-3. Selects the most appropriate tool
-4. Executes the tool with extracted parameters
+The tool search feature distinguishes Claude Code from clients that require all schemas upfront. A query like "create a CDN resource" triggers a search for `cdn` and `create` patterns, returning only the relevant tool schema rather than loading all 780 tools.
 
-If multiple tools match, Claude may ask for clarification or choose based on context.
+## Common operations
 
-## Handling tool warnings
+Natural language requests trigger the corresponding Gcore API operations. CDN resource creation requires specifying the cname and origin—a request like "Create a CDN resource for static.example.com with origin at origin.example.com" triggers the resource creation tool with extracted parameters. Cache purging works similarly when requesting "Purge the CDN cache for all resources."
 
-Claude Code displays a warning when tools exceed 10% of the context window. With Gcore MCP Server configured as above, this warning does not appear because schemas are loaded on demand.
+DNS zone and record management uses natural descriptions. Requesting "Show all DNS zones in my account" lists zones, while "Add an A record for api.mydomain.com pointing to 192.0.2.10 with TTL 300" creates a specific record with the provided values.
 
-If the warning appears:
-- Verify `GCORE_TOOLS=*` is set
-- Restart Claude Code to clear cached schemas
-- Check that no other MCP servers are loading many tools
+Cloud infrastructure queries include project and instance management. A request for "List all cloud projects and their IDs" returns project information, and "Show all virtual machines in project 780356" lists instances within a specific project. Instance creation requires flavor, image, and region details—"Create a virtual machine with 2 vCPUs, 4 GB RAM, and Ubuntu 22.04 in region Luxembourg" triggers the provisioning workflow with extracted specifications.
 
-## Troubleshooting
+## Context window considerations
 
-### Server not connecting
+Claude Code displays a warning when registered tools exceed 10% of the context window. With Gcore MCP Server and `GCORE_TOOLS=*`, this warning typically does not appear because schemas load on demand rather than at startup.
 
-Verify the configuration syntax:
+If the warning appears despite the configuration, other MCP servers may be loading many tools simultaneously. Check all configured servers and consider [filtering tools](/account-settings/integrations/filter-tools-with-gcore-tools) for servers that do not support deferred loading.
 
-```bash
-cat ~/.claude.json | python -m json.tool
-```
-
-Check that `uvx` is installed and available:
-
-```bash
-uvx --version
-```
-
-### API authentication errors
-
-Confirm the API key is valid:
+<Warning>
+API authentication errors produce generic failure messages. Verify API key validity independently using a direct request:
 
 ```bash
 curl -H "Authorization: Bearer your-api-key" https://api.gcore.com/cdn/resources
 ```
 
-A 200 response indicates the key is valid. A 401 response indicates invalid credentials.
-
-### Tools not found
-
-If Claude cannot find Gcore tools:
-
-1. Restart Claude Code
-2. Check that `GCORE_TOOLS=*` is set
-3. Verify the server starts without errors by running it manually:
-
-```bash
-GCORE_API_KEY=your-key uvx --from "gcore-mcp-server@git+https://github.com/G-Core/gcore-mcp-server.git" gcore-mcp-server
-```
-
-## Next steps
-
-- [Test tools with MCP Inspector](/account-settings/integrations/test-tools-with-mcp-inspector)
-- [Filter tools with GCORE_TOOLS](/account-settings/integrations/filter-tools-with-gcore-tools)
-- [Available products and tools](/account-settings/integrations/gcore-mcp-server-available-products-and-tools)
+A 200 response confirms valid credentials. A 401 response indicates the key is invalid or expired.
+</Warning>
