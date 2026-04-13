@@ -1,4 +1,4 @@
-export const HomeWrapper = ({children}) => {
+export const HomeWrapper = ({ children }) => {
   return (
     <div className="homepage_wrapper">
       {children}
