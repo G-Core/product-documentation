@@ -3,13 +3,7 @@ title: Gcore MCP Server overview
 sidebarTitle: Overview
 ---
 
-Gcore MCP Server enables AI assistants to manage Gcore services through natural language commands. The server implements the Model Context Protocol (MCP), a standard for AI tool integration developed by Anthropic.
-
-## Model Context Protocol
-
-The Model Context Protocol defines how AI assistants interact with external tools. An MCP server exposes tools as callable functions with structured inputs and outputs. AI assistants send tool calls to the server, receive results, and use them to complete requests.
-
-Gcore MCP Server wraps the Gcore API, exposing approximately 780 tools that cover CDN resources, DNS zones and records, cloud infrastructure (virtual machines, volumes, networks), edge applications with FastEdge, and security policies.
+Gcore MCP Server enables AI assistants to manage Gcore services through natural language commands. The server implements the Model Context Protocol (MCP), exposing approximately 720 Gcore API operations as callable tools for provisioning infrastructure, querying resources, and chaining multi-step workflows.
 
 ## Supported products
 
@@ -33,31 +27,8 @@ Gcore MCP Server wraps the Gcore API, exposing approximately 780 tools that cove
 | Cursor IDE | Limited | Maximum 40-50 tools before context issues |
 | MCP Inspector | Full | Web-based interface for testing and exploration |
 
-Claude Code handles large tool sets through deferred schema loading—tool schemas are fetched on demand when they match a query, preventing context window bloat. Other clients require [tool filtering](/account-settings/integrations/filter-tools-with-gcore-tools) to reduce the number of exposed tools.
+Claude Code handles large tool sets through deferred schema loading—tool schemas are fetched on demand when they match a query, preventing context window bloat. Other clients require [tool filtering](/account-settings/integrations/filter-tools-with-gcore-tools) via the `GCORE_TOOLS` environment variable to reduce the number of exposed tools.
 
-## Tool filtering
+## Requirements and limitations
 
-Most AI clients cannot process hundreds of tools simultaneously. The `GCORE_TOOLS` environment variable controls which tools are exposed:
-
-```bash
-GCORE_TOOLS="cdn.*"                    # CDN tools only
-GCORE_TOOLS="cdn.*,dns.*"              # CDN and DNS tools
-GCORE_TOOLS="instances,management"     # Predefined toolsets
-GCORE_TOOLS="*"                        # All tools (Claude Code only)
-```
-
-<Warning>
-Setting `GCORE_TOOLS=*` exposes all 780 tools. Most clients fail or become slow with this configuration.
-</Warning>
-
-## Typical operations
-
-Infrastructure provisioning through conversation replaces manual control panel navigation or API scripting. A request like "Create a CDN resource for example.com with origin at origin.example.com" triggers the appropriate API calls and returns the result.
-
-Resource queries retrieve information without switching contexts. Requests such as "List all CDN resources and their status" or "Show DNS records for mydomain.com" return current state from the Gcore API.
-
-Multi-step workflows chain operations in a single conversation. A request like "Create a storage bucket, configure CORS, and set up a CDN resource pointing to it" executes sequentially with intermediate results available for verification.
-
-## Limitations
-
-A [Gcore API key](/account-settings/api-tokens) with appropriate permissions is required. Tool execution is synchronous—long operations block until completion. Most AI clients cannot handle all 780 tools simultaneously and require filtering through `GCORE_TOOLS`. When exploring the system, start with read-only operations (list, get) before modifying resources.
+A [Gcore API key](/account-settings/api-tokens) with appropriate permissions is required. Tool execution is synchronous—long operations block until completion.

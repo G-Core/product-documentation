@@ -3,138 +3,51 @@ title: Install and configure Gcore MCP Server
 sidebarTitle: Install and configure
 ---
 
-Gcore MCP Server requires a [Gcore API token](/account-settings/api-tokens) and the `uv` package manager. The `uv` tool handles Python dependencies and provides isolated execution environments—installation instructions are available in the [uv documentation](https://docs.astral.sh/uv/getting-started/installation/).
+Gcore MCP Server runs locally and connects to Claude Code or Cursor IDE. For browser-based testing without installation, use [MCP Inspector](/account-settings/integrations/test-tools-with-mcp-inspector).
 
-## Create an API token
+Before installing:
 
-The API token authenticates requests to the Gcore API. Token permissions determine which operations are available through the MCP server.
-
-1. In the Gcore Customer Portal, navigate to **Profile** > **API tokens**.
-2. Click **Create token**.
-3. Select the permissions required for the intended operations.
-4. Copy the generated token.
+1. Install the `uv` package manager from the [uv documentation](https://docs.astral.sh/uv/getting-started/installation/).
+2. Create a [Gcore API token](/account-settings/api-tokens) with permissions for the operations the server will perform.
 
 <Warning>
-The token is displayed once and cannot be retrieved later. Store it securely and do not commit to version control.
+The API token is displayed once and cannot be retrieved later. Store it securely and do not commit to version control.
 </Warning>
 
-## Installation methods
+## Step 1. Install the server
 
-### Temporary environment (uvx)
-
-The `uvx` command runs the server in a temporary environment without persistent installation:
+<Tabs>
+  <Tab title="Temporary (uvx)">
+Run the server in a temporary environment without persistent installation:
 
 ```bash
 uvx --from "gcore-mcp-server@git+https://github.com/G-Core/gcore-mcp-server.git" gcore-mcp-server
 ```
 
-A specific version can be pinned by appending the tag:
+Pin a specific version by appending the tag:
 
 ```bash
 uvx --from "gcore-mcp-server@git+https://github.com/G-Core/gcore-mcp-server.git@v0.1.1" gcore-mcp-server
 ```
-
-### Persistent installation (uv tool)
-
-Installing as a tool makes the command globally available:
+  </Tab>
+  <Tab title="Persistent (uv tool)">
+Install as a global command:
 
 ```bash
 uv tool install "gcore-mcp-server@git+https://github.com/G-Core/gcore-mcp-server.git"
 ```
 
-After installation, the server starts with:
+If `gcore-mcp-server` is not found after installation, run `uv tool update-shell` or add the `uv` tool bin directory to `PATH`.
+  </Tab>
+</Tabs>
 
-```bash
-gcore-mcp-server
-```
+## Step 2. Configure the AI client
 
-If the command is not found, run `uv tool update-shell` or verify that the `uv` tool bin directory is in `PATH`.
+Add the server to the AI client configuration file. The configuration includes environment variables for authentication and tool filtering.
 
-## Environment variables
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `GCORE_API_KEY` | Yes | API token for authentication |
-| `GCORE_TOOLS` | No | Tool filter pattern. Default: `management,instances` (HTTP) or `management` (stdio) |
-| `GCORE_BASE_URL` | No | API endpoint. Default: `https://api.gcore.com` |
-| `GCORE_CLOUD_PROJECT_ID` | No | Default project ID for Cloud operations |
-| `GCORE_CLOUD_REGION_ID` | No | Default region ID for Cloud operations |
-
-### Set environment variables
-
-**Linux/macOS:**
-
-```bash
-export GCORE_API_KEY="your-api-key"
-export GCORE_TOOLS="cdn.*"
-```
-
-**Windows PowerShell:**
-
-```powershell
-$env:GCORE_API_KEY = "your-api-key"
-$env:GCORE_TOOLS = "cdn.*"
-```
-
-**Windows Command Prompt:**
-
-```cmd
-set GCORE_API_KEY=your-api-key
-set GCORE_TOOLS=cdn.*
-```
-
-## Verify installation
-
-After setting environment variables, start the server:
-
-```bash
-gcore-mcp-server
-```
-
-The server outputs its version and the number of loaded tools when connected to an MCP client. To verify API key validity independently, the Gcore Python SDK can list Cloud projects:
-
-```python
-from gcore import Gcore
-from dotenv import load_dotenv
-
-load_dotenv()
-
-client = Gcore()
-projects = client.cloud.projects.list()
-for project in projects:
-    print(f"Project: {project.name} (ID: {project.id})")
-```
-
-A successful response confirms the API key has Cloud access.
-
-## Transport modes
-
-### stdio (standard input/output)
-
-The default mode reads JSON-RPC messages from stdin and writes responses to stdout. Most MCP clients use this mode:
-
-```bash
-gcore-mcp-server
-```
-
-### HTTP (SSE)
-
-HTTP mode with Server-Sent Events listens on `http://localhost:8000` by default. This mode is useful for debugging with [MCP Inspector](/account-settings/integrations/test-tools-with-mcp-inspector):
-
-```bash
-gcore-mcp-server --http
-```
-
-## Configuration files
-
-MCP clients store server configuration in JSON files:
-
-| Client | Configuration file |
-|--------|-------------------|
-| Claude Code | `~/.claude.json` |
-| Cursor IDE | `~/.cursor/mcp.json` |
-
-Claude Code configuration example (`~/.claude.json`):
+<Tabs>
+  <Tab title="Claude Code">
+Edit `~/.claude.json`:
 
 ```json
 {
@@ -155,4 +68,51 @@ Claude Code configuration example (`~/.claude.json`):
 }
 ```
 
-Setting `GCORE_TOOLS=*` is appropriate for Claude Code due to its deferred schema loading. Other clients require [filtering to fewer tools](/account-settings/integrations/filter-tools-with-gcore-tools) to avoid context window issues.
+Claude Code supports `GCORE_TOOLS=*` (all tools) due to its deferred schema loading.
+  </Tab>
+  <Tab title="Cursor IDE">
+Edit `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "gcore-mcp-server": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "gcore-mcp-server@git+https://github.com/G-Core/gcore-mcp-server.git",
+        "gcore-mcp-server"
+      ],
+      "env": {
+        "GCORE_API_KEY": "your-api-key",
+        "GCORE_TOOLS": "cdn.*"
+      }
+    }
+  }
+}
+```
+
+Cursor IDE requires [tool filtering](/account-settings/integrations/filter-tools-with-gcore-tools) to avoid context window issues. Limit to 40-50 tools.
+  </Tab>
+</Tabs>
+
+### Environment variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `GCORE_API_KEY` | Yes | API token for authentication |
+| `GCORE_TOOLS` | No | Tool filter pattern (see [Filter tools](/account-settings/integrations/filter-tools-with-gcore-tools)) |
+| `GCORE_CLOUD_PROJECT_ID` | No | Default project ID for Cloud operations |
+| `GCORE_CLOUD_REGION_ID` | No | Default region ID for Cloud operations |
+
+## Step 3. Verify the setup
+
+Restart the AI client to load the new configuration. The server outputs its version and the number of loaded tools when connected.
+
+Test with a simple query:
+
+```
+List my CDN resources
+```
+
+A successful response confirms the server is configured correctly.
