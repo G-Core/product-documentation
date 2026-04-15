@@ -3,46 +3,178 @@ title: Manage CDN via MCP Server
 sidebarTitle: Manage via MCP
 ---
 
-Gcore MCP Server provides approximately 50 tools for managing CDN resources, origin groups, SSL certificates, and caching rules through natural language. Configuration and client setup are covered in the [Gcore MCP Server overview](/account-settings/integrations/gcore-mcp-server-overview).
-
-## Configure for CDN
-
-The `GCORE_TOOLS` environment variable controls which tools are exposed. Setting `GCORE_TOOLS="cdn.*"` loads all CDN tools.
-
-```bash
-GCORE_TOOLS="cdn.*"
-```
-
-CDN tools are organized by resource type. The `cdn_resources` tools handle CDN resource configuration with list, create, get, update, and delete operations. The `origin_groups` tools manage origin server groups. The `certificates` tools handle SSL/TLS certificates for HTTPS delivery. The `rule_templates` and `shields` tools provide caching behavior rules and origin shielding locations. The `logs` and `statistics` tools retrieve access logs and traffic metrics. The `ip_ranges` tools list CDN edge IP addresses for firewall configuration.
-
-## CDN operations
-
-Natural language requests trigger the corresponding API operations. Resource listing requires no parameters—a request like "List all my CDN resources" returns resource IDs, cnames, status, and origin group assignments.
-
-Resource creation requires the cname and origin. Requesting "Create a CDN resource for assets.example.com with origin at origin.example.com using HTTPS" provisions a new resource with the specified domain and origin configuration. The resource typically becomes active within 15 minutes after DNS propagation.
-
-Cache purging accepts resource ID and optional path patterns. A request to "Purge the cache for static.example.com" initiates a full cache purge that typically completes within 5-10 minutes. Purging specific paths uses the same tool with path parameters—"Purge /images/* from CDN resource 888473" targets the specified directory.
-
-Origin group management includes listing groups with health status and modifying group membership. Adding backup origins or adjusting health check parameters uses the origin group update tools.
-
-SSL certificate operations include listing certificates with expiration dates, creating new certificates, and associating certificates with CDN resources. Let's Encrypt certificates can be provisioned automatically by specifying the domain.
-
-Statistics queries accept time ranges and return traffic volumes, cache hit ratios, and response code distributions. Requesting "Show traffic statistics for the last 24 hours" returns aggregated metrics across all CDN resources.
-
-## Multi-step workflows
-
-Complex CDN configurations involve multiple tools executed in sequence. Setting up a new CDN resource for a website requires creating an origin group with server addresses, creating a CDN resource pointing to that origin group, configuring SSL with a certificate, setting cache rules for static content, and updating DNS to point to the CDN endpoint. A combined request like "Set up CDN for my website with origin at 198.51.100.10, domain cdn.mysite.com, Let's Encrypt SSL, and 24-hour cache for static files" triggers the appropriate tool sequence.
-
-Optimization workflows analyze existing configurations. A request to "Review caching configuration for resource 888473 and suggest improvements" examines current rules and identifies potential adjustments for better cache efficiency.
-
-Diagnostic workflows check resource health and configuration validity. Requesting "Check if CDN resource 888473 is properly configured and show any potential issues" validates settings and reports configuration problems.
-
-## Tool naming patterns
-
-CDN tool names follow the `cdn.<resource>.<operation>` pattern. The `cdn.cdn_resources.list` tool lists all CDN resources in the account without parameters and returns an array of resources with ID, cname, status, and origin group. The `cdn.cdn_resources.create` tool requires `cname` (the domain name) and `origin_group` (the origin group ID), with optional `origin_protocol` for HTTP or HTTPS selection. The `cdn.cdn_resources.purge` tool requires `resource_id` and accepts `paths` as an array of URL paths—using `["/*"]` purges all content.
+Gcore MCP Server provides CDN management tools that AI clients like Claude Code can invoke through natural language requests. The server returns structured data that the AI client interprets and presents in a readable format.
 
 <Info>
-**Info**
-
-Tool parameters and behavior reflect the [Gcore CDN API](/cdn/getting-started/create-a-cdn-resource). Origin group configuration is documented in the [origin group guide](/cdn/add-an-origin-group). Tool filtering options are available in the [GCORE_TOOLS reference](/account-settings/integrations/filter-tools-with-gcore-tools).
+Before starting, [install and configure Gcore MCP Server](/account-settings/integrations/install-and-configure-gcore-mcp-server) with `GCORE_TOOLS="cdn.*"` to load CDN tools.
 </Info>
+
+## How it works
+
+When a request is made in natural language, the AI client:
+
+1. Identifies the appropriate MCP tool (e.g., `cdn_cdn_resources_ls`)
+2. Extracts parameters from the request
+3. Calls the tool and receives JSON data
+4. Formats the response for readability
+
+Example request:
+
+```
+List my CDN resources
+```
+
+The MCP server returns structured data:
+
+```json
+{
+  "id": 888473,
+  "cname": "cdn.example.com",
+  "status": "active",
+  "enabled": true,
+  "origin_group": 1298426,
+  "origin_protocol": "HTTP",
+  "ssl_enabled": false,
+  "waap_enabled": true,
+  "edge_cache_settings": {"default": "4d"}
+}
+```
+
+The AI client presents this as readable text, typically summarizing key fields like ID, domain, status, and configuration highlights.
+
+## Available tools
+
+CDN tools follow the naming pattern `cdn_*`. Common operations:
+
+| Tool | Description |
+|------|-------------|
+| `cdn_cdn_resources_ls` | List all CDN resources |
+| `cdn_cdn_resources_get` | Get resource details by ID |
+| `cdn_cdn_resources_new` | Create a new resource |
+| `cdn_cdn_resources_upd` | Update resource settings |
+| `cdn_cdn_resources_del` | Delete a resource |
+| `cdn_cdn_resources_purge` | Purge cached content |
+| `cdn_ssl_certs_ls` | List SSL certificates |
+| `cdn_ssl_certs_new` | Upload SSL certificate |
+| `cdn_statistics_get_resource_usage_aggregated` | Get traffic statistics |
+
+## View CDN resources
+
+List all CDN resources:
+
+```
+List my CDN resources
+```
+
+Get details for a specific resource:
+
+```
+Show details for CDN resource 888473
+```
+
+The response includes: resource ID, CNAME, status (active/suspended/deleted), origin group, SSL configuration, cache settings, and enabled features like WAAP or websockets.
+
+## Create a CDN resource
+
+```
+Create a CDN resource for cdn.example.com with origin at origin.example.com
+```
+
+Required information:
+- **cname**: The delivery domain (e.g., cdn.example.com)
+- **origin**: The origin server address
+
+The AI client calls `cdn_cdn_resources_new` with these parameters. Upon success, the response includes the new resource ID and a reminder to configure DNS with a CNAME record pointing to the Gcore CDN endpoint.
+
+## Purge cache
+
+Clear all cached content for a resource:
+
+```
+Purge all cache for CDN resource 888473
+```
+
+Purge specific paths:
+
+```
+Purge /images/logo.png from CDN resource 888473
+```
+
+The `cdn_cdn_resources_purge` tool accepts a resource ID and an optional list of paths. Without paths, it purges all content.
+
+<Warning>
+Some resources have `can_purge_by_urls: false`, which means only full cache purge is available. Check resource details to verify purge capabilities.
+</Warning>
+
+## Manage SSL certificates
+
+List certificates:
+
+```
+Show my SSL certificates
+```
+
+The `cdn_ssl_certs_ls` tool returns certificate details including domain, type (Let's Encrypt or custom), expiration date, and status.
+
+Request a Let's Encrypt certificate:
+
+```
+Create a Let's Encrypt certificate for cdn.example.com
+```
+
+## View statistics
+
+Get traffic statistics:
+
+```
+Show CDN statistics for the last 7 days
+```
+
+The statistics tool requires date range and metrics parameters. The AI client typically requests common metrics like `total_bytes`, `requests`, `responses_2xx`, `responses_4xx`, and `responses_5xx`.
+
+For a specific resource:
+
+```
+Show traffic for CDN resource 888473 this week
+```
+
+## Update resource settings
+
+Modify cache duration:
+
+```
+Set cache TTL to 1 hour for CDN resource 888473
+```
+
+Enable or disable features:
+
+```
+Enable HTTPS redirect for CDN resource 888473
+```
+
+```
+Disable websockets for CDN resource 888473
+```
+
+The `cdn_cdn_resources_upd` tool updates the specified settings while preserving other configuration.
+
+## Common requests
+
+| Request | Tool called |
+|---------|-------------|
+| "List my CDN resources" | `cdn_cdn_resources_ls` |
+| "Show CDN resource 123456" | `cdn_cdn_resources_get` |
+| "Create CDN for cdn.site.com with origin backend.site.com" | `cdn_cdn_resources_new` |
+| "Purge cache for resource 123456" | `cdn_cdn_resources_purge` |
+| "Show my SSL certificates" | `cdn_ssl_certs_ls` |
+| "Delete CDN resource 123456" | `cdn_cdn_resources_del` |
+
+## Troubleshooting
+
+If a request fails, the AI client displays the error message from the MCP server. Common issues:
+
+- **Resource not found**: Verify the resource ID exists in the account
+- **Permission denied**: Check that the API token has CDN permissions
+- **Invalid parameters**: Review the request for typos or missing information
+
+For operations not available through MCP, use the [Gcore Customer Portal](https://portal.gcore.com) or [CDN API](/api-reference/cdn).

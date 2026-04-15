@@ -1,0 +1,374 @@
+---
+title: Manage Virtual Machines via MCP Server
+sidebarTitle: Virtual Machines
+---
+
+Gcore MCP Server provides compute management tools that AI clients can invoke through natural language requests. The server returns structured data that the AI client interprets and presents in a readable format.
+
+<Info>
+Before starting, [install and configure Gcore MCP Server](/account-settings/integrations/install-and-configure-gcore-mcp-server) with `GCORE_TOOLS="instances"` to load Virtual Machine tools, or `GCORE_TOOLS="instances,baremetal,gpu_baremetal,gpu_virtual"` for full compute capabilities.
+</Info>
+
+## How it works
+
+When a request is made in natural language, the AI client:
+
+1. Resolves the project and region (using lookup tools or configured defaults)
+2. Identifies the appropriate MCP tool
+3. Extracts parameters from the request
+4. Calls the tool and receives JSON data
+5. Formats the response for readability
+
+Example request:
+
+```
+List my virtual machines in Luxembourg
+```
+
+The MCP server returns structured data:
+
+```json
+{
+  "id": "a1b2c3d4-5678-90ab-cdef-1234567890ab",
+  "name": "web-server-01",
+  "status": "ACTIVE",
+  "flavor": {
+    "vcpus": 4,
+    "ram": 8192,
+    "flavor_name": "g1-standard-4-8"
+  },
+  "addresses": {
+    "private": "10.0.0.15",
+    "public": "92.38.xxx.xxx"
+  },
+  "image": "Ubuntu 22.04 LTS"
+}
+```
+
+The AI client presents this as readable text, summarizing instance name, status, resources, and network configuration.
+
+## View and manage instances
+
+Listing instances returns all Virtual Machines in the specified project and region. The response includes instance names, statuses, flavors, IP addresses, and attached resources.
+
+```
+List my virtual machines
+```
+
+For detailed information about a specific instance, reference it by name or ID:
+
+```
+Show details for instance web-server-01
+```
+
+The detailed view includes additional information such as attached volumes, security groups, network interfaces, and creation timestamp.
+
+To check available configurations before creating an instance:
+
+```
+What VM flavors are available in Luxembourg?
+```
+
+The response lists flavor names with vCPU count, RAM, and any special characteristics like GPU availability or high-frequency CPUs.
+
+## Create an instance
+
+Creating a Virtual Machine requires specifying the configuration. The AI client resolves flavor names, images, and network settings from natural language descriptions.
+
+```
+Create a virtual machine named api-server with 4 vCPUs, 8 GB RAM, 
+Ubuntu 22.04, and 80 GB SSD in Luxembourg
+```
+
+The AI client maps this to specific API parameters:
+- Flavor: `g1-standard-4-8` (4 vCPUs, 8 GB RAM)
+- Image: Ubuntu 22.04 LTS from available images
+- Volume: 80 GB High IOPS SSD
+- Region: Luxembourg (region_id resolved from name)
+
+For simpler requests, the AI uses reasonable defaults:
+
+```
+Create a small Linux server for testing
+```
+
+This provisions a standard flavor with Ubuntu and default storage in the configured default region.
+
+<Info>
+Instance creation typically completes within two minutes. The AI client waits for the operation to finish and confirms with the new instance details including assigned IP addresses.
+</Info>
+
+### Network configuration
+
+By default, instances receive a private IP address. To attach a public IP:
+
+```
+Create a VM with Ubuntu 22.04 and assign a floating IP
+```
+
+For specific network requirements:
+
+```
+Create a VM attached to network my-private-network with IP 10.0.1.50
+```
+
+### Security groups
+
+Security groups control network access to instances. Assign them during creation:
+
+```
+Create a VM with Ubuntu and attach security group allow-ssh-http
+```
+
+Or modify after creation:
+
+```
+Add security group allow-https to instance web-server-01
+```
+
+## Instance lifecycle operations
+
+Running instances can be controlled through power state operations.
+
+### Stop and start
+
+Stopping an instance powers it down while preserving configuration and attached storage. Billing for compute resources pauses, but storage charges continue.
+
+```
+Stop instance dev-server
+```
+
+Starting resumes the instance:
+
+```
+Start instance dev-server
+```
+
+### Reboot
+
+Rebooting restarts the operating system without changing the power state:
+
+```
+Reboot instance web-server-01
+```
+
+### Suspend and resume
+
+Suspending preserves the instance memory state to disk, allowing faster resume than a full start:
+
+```
+Suspend instance batch-processor
+```
+
+```
+Resume instance batch-processor
+```
+
+## Resize an instance
+
+Resizing changes the instance flavor, adjusting vCPU count, RAM, or both.
+
+```
+Resize instance api-server to 8 vCPUs and 16 GB RAM
+```
+
+<Warning>
+Resizing requires stopping the instance. The AI client handles the stop-resize-start sequence automatically. Plan for brief downtime during this operation.
+</Warning>
+
+The AI client confirms the new configuration after resize completes:
+
+```
+Instance api-server resized to g1-standard-8-16 (8 vCPUs, 16 GB RAM). 
+Instance is now running.
+```
+
+## Access instance console
+
+When SSH access is unavailable due to network issues or misconfiguration, console access provides direct connection through the browser.
+
+```
+Get console access for instance db-server
+```
+
+The AI client returns a URL that opens a VNC console session in the browser. Console access works regardless of network configuration and is useful for troubleshooting boot issues or firewall misconfigurations.
+
+## Work with instance images
+
+Images serve as templates for creating instances. Custom images capture an instance state for replication or backup.
+
+### List available images
+
+```
+What Ubuntu images are available?
+```
+
+The response shows image names, versions, architecture (x86-64 or ARM), and availability by region.
+
+### Create an image from an instance
+
+Capturing an image preserves the current state including installed software and configuration:
+
+```
+Create an image from instance web-server-01 named web-template-v2
+```
+
+The resulting image appears in the image list and can be used for creating new instances.
+
+### Upload a custom image
+
+External images in standard formats (QCOW2, RAW) can be uploaded:
+
+```
+Upload image from URL https://example.com/custom-image.qcow2 named my-custom-os
+```
+
+## Bare Metal servers
+
+Bare Metal provides dedicated physical hardware without virtualization overhead. Use Bare Metal when workloads require direct hardware access, consistent performance without noisy neighbors, or specific hardware configurations.
+
+### List Bare Metal options
+
+```
+What Bare Metal configurations are available in Frankfurt?
+```
+
+The response includes server specifications: CPU model, core count, RAM, storage type and capacity, and network bandwidth.
+
+### Create a Bare Metal server
+
+```
+Create a Bare Metal server with Ubuntu 22.04 in Frankfurt
+```
+
+Bare Metal provisioning takes longer than VM creation (typically 10-15 minutes) as it involves physical server allocation and operating system installation.
+
+### Rebuild a Bare Metal server
+
+Rebuilding reinstalls the operating system while preserving the hardware allocation:
+
+```
+Rebuild server db-bare-metal with CentOS 9
+```
+
+This is useful for repurposing servers or recovering from OS issues without relinquishing the hardware.
+
+## GPU clusters
+
+GPU clusters provide multi-node GPU infrastructure for AI/ML training, inference, and high-performance computing workloads. Available in Bare Metal and Virtual configurations.
+
+### GPU Bare Metal clusters
+
+Bare Metal GPU clusters provide dedicated physical servers with direct GPU access, interconnected via high-speed networking (InfiniBand where available).
+
+```
+List my GPU Bare Metal clusters
+```
+
+Creating a cluster provisions multiple GPU-equipped servers:
+
+```
+Create a GPU Bare Metal cluster named ml-training with 4 H100 nodes
+```
+
+<Info>
+GPU cluster creation involves significant resource allocation and may take 15-30 minutes. The AI client monitors progress and confirms when all nodes are ready.
+</Info>
+
+Managing cluster nodes:
+
+```
+Get console access for node 1 in cluster ml-training
+```
+
+```
+Reboot all nodes in cluster ml-training
+```
+
+### GPU Virtual clusters
+
+Virtual GPU clusters offer flexibility with faster provisioning and easier scaling compared to Bare Metal:
+
+```
+Create a GPU Virtual cluster with 2 A100 nodes for inference
+```
+
+Scaling a cluster:
+
+```
+Add 2 more nodes to cluster inference-dev
+```
+
+Checking attached storage:
+
+```
+Show volumes attached to cluster inference-dev
+```
+
+## Configure default project and region
+
+Cloud tools require project and region context. Configure defaults to simplify requests:
+
+```bash
+GCORE_CLOUD_PROJECT_ID="780356"
+GCORE_CLOUD_REGION_ID="76"
+```
+
+With defaults configured, requests like "Create a VM with 2 vCPUs" use the specified project and region automatically without requiring explicit mention.
+
+To find project and region IDs:
+
+```
+List my projects
+```
+
+```
+List available regions
+```
+
+## Troubleshooting
+
+If a request fails, the AI client displays the error message from the MCP server. Common issues and resolutions:
+
+### Project or region not found
+
+Cloud tools require valid project and region context. If operations fail with "not found" errors, verify the project exists and list available regions:
+
+```
+List my projects
+```
+
+```
+What regions are available for project production?
+```
+
+### Flavor not available in region
+
+Not all flavors exist in all regions. GPU and high-frequency flavors have limited regional availability:
+
+```
+What GPU flavors are available in Luxembourg?
+```
+
+The AI client suggests alternative regions when a requested configuration is unavailable locally.
+
+### Quota exceeded
+
+Resource limits apply per project. Check current usage:
+
+```
+Show quota usage for project production
+```
+
+If quota is exhausted, delete unused resources or request a quota increase through the Customer Portal.
+
+### Instance creation fails
+
+Common causes include:
+- **Insufficient quota**: Check quota limits
+- **Invalid network**: Verify the specified network exists in the region
+- **Image incompatible with flavor**: Some images only work with specific architectures (x86-64 vs ARM)
+
+<Info>
+For detailed VM configuration options, see [Types of Virtual Machines](/cloud/virtual-instances/types-of-virtual-machines). Step-by-step creation through the Customer Portal is documented in [Create a Virtual Machine](/cloud/virtual-instances/create-an-instance). GPU cluster documentation is available in [GPU Cloud](/edge-ai/ai-infrastructure/about-gpu-cloud).
+</Info>

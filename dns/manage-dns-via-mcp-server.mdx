@@ -3,50 +3,476 @@ title: Manage DNS via MCP Server
 sidebarTitle: Manage via MCP
 ---
 
-Gcore MCP Server provides approximately 30 tools for managing DNS zones and records through natural language. Configuration and client setup are covered in the [Gcore MCP Server overview](/account-settings/integrations/gcore-mcp-server-overview).
-
-## Configure for DNS
-
-The `GCORE_TOOLS` environment variable controls which tools are exposed. Setting `GCORE_TOOLS="dns.*"` loads all DNS tools.
-
-```bash
-GCORE_TOOLS="dns.*"
-```
-
-DNS tools follow the `dns.<resource>.<operation>` naming pattern. The `zones` tools handle DNS zone management with list, create, get, update, and delete operations. The `zones.records` tools manage DNS records within zones. The `locations` tools list DNS server locations, while `metrics` and `lookup` tools provide DNS query analytics and record lookups.
-
-## DNS operations
-
-Natural language requests trigger the corresponding API operations. Listing zones requires no parameters—a request like "List all my DNS zones" returns zone names, record counts, and status.
-
-Zone creation requires the domain name. Requesting "Create a DNS zone for newdomain.com" provisions the zone and returns nameserver assignments (such as `ns1.gcorelabs.net` and `ns2.gcdn.services`) that must be configured at the domain registrar.
-
-Record listing shows all records in a zone. A request to "Show all DNS records for example.com" returns a table with record types, names, values, and TTL settings.
-
-Record creation requires the zone name, record type, name, and value. Creating an A record with "Add an A record for api.example.com pointing to 198.51.100.20 with TTL 300" adds the record to the zone. CNAME records use the same pattern—"Add a CNAME record for www.example.com pointing to example.com" creates the alias. MX records require priority—"Add an MX record for example.com with priority 10 pointing to mail.example.com" sets the mail exchanger. TXT records for email authentication use quoted values—"Add a TXT record for _dmarc.example.com with value 'v=DMARC1; p=reject; rua=mailto:dmarc@example.com'" creates the DMARC policy record.
-
-Record updates modify existing entries. A request to "Change the TTL of all A records in example.com to 600 seconds" bulk-updates TTL values. Updating specific records with "Update the A record for api.example.com to point to 198.51.100.25" changes the target address.
-
-Record deletion removes entries from the zone. "Delete the CNAME record for old.example.com" removes the specified record.
-
-DNS lookups verify record resolution. "Lookup the A record for www.example.com" queries the DNS system and returns the resolved value, TTL, and response time.
-
-## Multi-step workflows
-
-Complex DNS configurations involve multiple tools executed in sequence. Setting up a new domain requires creating the zone, adding A records for the apex and www subdomain, configuring MX records for email, and adding SPF TXT records for email authentication. A combined request like "Set up DNS for mynewsite.com with A records for @ and www pointing to 198.51.100.50, MX record pointing to mail.mynewsite.com with priority 10, and SPF TXT record" triggers the appropriate tool sequence.
-
-Email DNS configuration combines multiple record types. Requesting "Set up email DNS records for example.com with MX record pointing to mail.example.com, SPF record allowing mail.example.com, DKIM record with selector 'default', and DMARC record with reject policy" creates the complete email authentication stack.
-
-Migration workflows analyze existing zones. "List all records from oldsite.com that I need to recreate in newsite.com" exports records for migration planning.
-
-Propagation verification checks DNS resolution. "Check if the A record for api.example.com has propagated" queries multiple DNS servers to confirm record availability.
-
-## Tool naming patterns
-
-DNS tool names follow the `dns.<resource>.<operation>` pattern. The `dns.zones.list` tool lists all DNS zones in the account without parameters and returns zone names, record counts, and status. The `dns.zones.create` tool requires `name` (the zone name such as `example.com`). The `dns.zones.records.create` tool requires `zone_name` (the parent zone), `name` (the record name, using `@` for apex), `type` (A, AAAA, CNAME, MX, TXT, or other record types), and `content` (the record value), with optional `ttl` in seconds defaulting to 300.
+Gcore MCP Server provides DNS management through natural language. AI assistants can create zones, manage records, and configure email authentication - the same operations available in the Customer Portal or API.
 
 <Info>
-**Info**
+Before starting, [install and configure Gcore MCP Server](/account-settings/integrations/install-and-configure-gcore-mcp-server) with `GCORE_TOOLS="dns.*"` to load DNS tools.
+</Info>
 
-Tool parameters and behavior reflect the [Gcore DNS API](/dns/manage-dns-records-non-advanced-interface-mode/add-a-dns-zone-in-non-advanced-mode). Record management is documented in the [DNS records guide](/dns/manage-dns-records-non-advanced-interface-mode/add-a-dns-record). Tool filtering options are available in the [GCORE_TOOLS reference](/account-settings/integrations/filter-tools-with-gcore-tools).
+## When to use DNS management
+
+Common scenarios for DNS via MCP:
+
+- **New domain setup** - create zone, add records, configure nameservers
+- **Email configuration** - MX records, SPF, DKIM, DMARC for deliverability
+- **Website changes** - update A records when IP changes, add subdomains
+- **SSL certificates** - add TXT records for Let's Encrypt validation
+- **Troubleshooting** - verify records, check propagation
+
+## Set up a new domain
+
+When you register a new domain or want to move DNS to Gcore, start by creating a zone.
+
+```
+I just registered example.com. Help me set it up with DNS.
+```
+
+The AI assistant guides you through the process:
+
+```
+Let's set up DNS for example.com.
+
+Step 1: Creating DNS zone...
+
+Zone created: example.com
+Status: non-delegated (not active yet)
+Nameservers to configure at your registrar:
+  - ns1.gcorelabs.net
+  - ns2.gcdn.services
+
+Step 2: What do you need for this domain?
+
+  a) Website - I'll create A records for @ and www
+  b) Email - I'll set up MX and authentication records
+  c) Both website and email
+  d) Just the zone for now
+
+What would you like to set up?
+```
+
+After you respond:
+
+```
+Setting up website records for example.com...
+
+Created records:
+  example.com         A     203.0.113.50    (your server IP)
+  www.example.com     CNAME example.com     (www redirects to apex)
+
+Your zone now has:
+  - NS records (nameservers) - automatic
+  - A record for apex domain
+  - CNAME for www subdomain
+
+Next steps:
+1. Update nameservers at your domain registrar to:
+   - ns1.gcorelabs.net
+   - ns2.gcdn.services
+
+2. Wait for propagation (typically 1-48 hours)
+
+3. Once active, your domain will resolve to 203.0.113.50
+
+Would you like to set up email records as well?
+```
+
+## Configure email DNS
+
+Email deliverability requires several DNS records working together. The AI assistant helps configure the complete stack.
+
+```
+Set up email for acme-corp.com so I can send mail without it going to spam.
+```
+
+The AI assistant explains what's needed:
+
+```
+Email DNS requires several records to work properly and avoid spam filters.
+Let me check your current setup...
+
+Current email records for acme-corp.com:
+  MX record: exists (pointing to mail.acme-corp.com)
+  SPF (TXT): exists
+  DKIM: exists (dkim._domainkey.acme-corp.com)
+  DMARC: exists (_dmarc.acme-corp.com)
+
+Your email DNS is fully configured. Here's what each record does:
+
+1. MX (Mail Exchanger)
+   acme-corp.com → mail.acme-corp.com (priority 10)
+   Tells other mail servers where to deliver email for your domain.
+
+2. SPF (Sender Policy Framework)
+   Lists IP addresses allowed to send email for your domain.
+   Receiving servers check this to verify sender legitimacy.
+
+3. DKIM (DomainKeys Identified Mail)
+   Public key for verifying email signatures.
+   Your mail server signs outgoing messages; recipients verify with this key.
+
+4. DMARC (Domain-based Message Authentication)
+   Policy telling receivers what to do with unauthenticated email.
+   Your policy: reject (strict - unauthenticated emails are rejected).
+
+Everything looks good. Want me to verify any specific record?
+```
+
+### Set up email from scratch
+
+For a domain without email configuration:
+
+```
+I need to set up email for newcompany.com. My mail server is at mail.newcompany.com (IP: 198.51.100.25).
+```
+
+Response:
+
+```
+Setting up email DNS for newcompany.com...
+
+Step 1: A record for mail server
+  mail.newcompany.com  A  198.51.100.25
+  ✓ Created
+
+Step 2: MX record (directs incoming email)
+  newcompany.com  MX  10 mail.newcompany.com
+  ✓ Created
+  
+Step 3: SPF record (authorizes mail server to send)
+  newcompany.com  TXT  "v=spf1 mx a:mail.newcompany.com -all"
+  ✓ Created
+  
+  This allows only your mail server to send email for your domain.
+  -all means reject emails from unauthorized servers.
+
+Step 4: DKIM and DMARC
+
+  DKIM requires a key pair generated by your mail server.
+  Do you have a DKIM public key to add? 
+  
+  If not, I can create a placeholder DMARC record with monitoring 
+  mode (p=none) so you can see authentication reports without 
+  rejecting email.
+
+What would you like to do?
+```
+
+After providing DKIM:
+
+```
+Adding DKIM and DMARC records...
+
+DKIM record:
+  default._domainkey.newcompany.com  TXT  "v=DKIM1; k=rsa; p=MIIBIjANBg..."
+  ✓ Created
+
+DMARC record (strict policy):
+  _dmarc.newcompany.com  TXT  "v=DMARC1; p=reject; rua=mailto:dmarc@newcompany.com"
+  ✓ Created
+
+Email DNS setup complete:
+
+  ✓ MX - incoming mail routing
+  ✓ SPF - sender authorization
+  ✓ DKIM - message signing
+  ✓ DMARC - authentication policy
+
+Your domain is now configured for secure email delivery.
+Test by sending an email to mail-tester.com or using Google's 
+Postmaster Tools.
+```
+
+## View and manage records
+
+### List all records
+
+```
+Show me all DNS records for acme-corp.com
+```
+
+Response:
+
+```
+DNS records for acme-corp.com (14 records):
+
+Type  Name                          Value                    TTL
+────────────────────────────────────────────────────────────────
+A     acme-corp.com                 203.0.113.10             600
+A     mail.acme-corp.com            203.0.113.25             600
+A     api.acme-corp.com             203.0.113.30             600
+
+CNAME www.acme-corp.com             acme-corp.com            600
+CNAME ftp.acme-corp.com             acme-corp.com            600
+CNAME imap.acme-corp.com            mail.acme-corp.com       600
+CNAME smtp.acme-corp.com            mail.acme-corp.com       600
+CNAME pop.acme-corp.com             mail.acme-corp.com       600
+CNAME app.acme-corp.com             acme-corp.cdn.gcore.com  600
+
+MX    acme-corp.com                 10 mail.acme-corp.com    600
+
+TXT   acme-corp.com                 [SPF record]             600
+TXT   dkim._domainkey.acme-corp.com [DKIM public key]        600
+TXT   _dmarc.acme-corp.com          [DMARC policy]           600
+
+NS    acme-corp.com                 ns1.gcorelabs.net        3600
+                                    ns2.gcdn.services
+
+Zone status: active (delegated to Gcore nameservers)
+DNSSEC: disabled
+```
+
+### Add a subdomain
+
+```
+I need to add a subdomain api.example.com pointing to 198.51.100.30
+```
+
+Response:
+
+```
+Adding A record for api.example.com...
+
+Created:
+  api.example.com  A  198.51.100.30  TTL: 300
+
+The record is active. DNS propagation typically takes a few minutes 
+for new records in an already-delegated zone.
+
+To verify: "Check if api.example.com resolves correctly"
+```
+
+### Update an existing record
+
+```
+Change the IP for api.example.com to 198.51.100.35
+```
+
+Response:
+
+```
+Updating A record for api.example.com...
+
+Previous: 198.51.100.30
+New:      198.51.100.35
+
+Record updated. The change will propagate based on TTL (300 seconds).
+Clients with cached responses may see the old IP for up to 5 minutes.
+```
+
+### Delete a record
+
+```
+Remove the old.example.com subdomain, we don't use it anymore
+```
+
+Response:
+
+```
+Deleting records for old.example.com...
+
+Found and deleted:
+  old.example.com  A  198.51.100.20
+
+The subdomain will stop resolving once cached records expire.
+```
+
+## SSL certificate validation
+
+Let's Encrypt and other CAs use DNS TXT records to verify domain ownership. The AI assistant can add these records.
+
+```
+Add this Let's Encrypt challenge: _acme-challenge.api.example.com with value "abc123xyz"
+```
+
+Response:
+
+```
+Adding ACME challenge record...
+
+Created:
+  _acme-challenge.api.example.com  TXT  "abc123xyz"  TTL: 60
+
+Low TTL (60 seconds) allows quick cleanup after validation.
+
+Note: I see you already have ACME challenge records for other 
+subdomains (app.example.com, cdn.example.com).
+Are you using wildcard certificates or per-subdomain certs?
+```
+
+## Troubleshoot DNS issues
+
+### Check why a domain isn't resolving
+
+```
+example.com isn't working. Can you check what's wrong?
+```
+
+Response:
+
+```
+Checking DNS for example.com...
+
+Zone status: non-delegated
+
+Problem: Your domain registrar is not pointing to Gcore nameservers.
+
+Current nameservers (at registrar):
+  Unknown - not using ns1.gcorelabs.net / ns2.gcdn.services
+
+Required nameservers:
+  ns1.gcorelabs.net
+  ns2.gcdn.services
+
+Solution:
+1. Log into your domain registrar (GoDaddy, Namecheap, etc.)
+2. Find DNS/Nameserver settings
+3. Change nameservers to:
+   - ns1.gcorelabs.net
+   - ns2.gcdn.services
+4. Save changes
+5. Wait for propagation (1-48 hours)
+
+Once delegated, all records in your Gcore zone will become active.
+```
+
+### Verify record propagation
+
+```
+I updated an A record 30 minutes ago but it's not working
+```
+
+Response:
+
+```
+Checking propagation for the updated record...
+
+Record: api.example.com A
+Expected: 198.51.100.35
+TTL: 300 seconds (5 minutes)
+
+Query results from different locations:
+
+  ns1.gcorelabs.net (authoritative): 198.51.100.35 ✓
+  8.8.8.8 (Google):                  198.51.100.35 ✓
+  1.1.1.1 (Cloudflare):              198.51.100.35 ✓
+  
+Propagation looks complete from major resolvers.
+
+If you're still seeing the old IP:
+  1. Clear local DNS cache (ipconfig /flushdns on Windows)
+  2. Check browser cache (try incognito mode)
+  3. Your ISP's resolver may have longer cache times
+
+The record is correctly configured at Gcore.
+```
+
+### Check email DNS health
+
+```
+My emails are going to spam. Is something wrong with my DNS?
+```
+
+Response:
+
+```
+Checking email DNS for example.com...
+
+MX record: ✓ mail.example.com (priority 10)
+
+SPF record: ⚠ Issues found
+  Current: "v=spf1 include:_spf.google.com ~all"
+  
+  Problem: ~all (softfail) is weak. Messages may still be delivered 
+  even if SPF fails. Consider changing to -all (hardfail) for 
+  stricter policy.
+
+DKIM record: ✓ Found at default._domainkey.example.com
+
+DMARC record: ⚠ Issues found
+  Current: "v=DMARC1; p=none"
+  
+  Problem: p=none means no action on authentication failures.
+  This is monitoring-only mode. Spammers can still spoof your domain.
+  
+  Recommendation: After verifying legitimate emails pass authentication,
+  change to p=quarantine or p=reject.
+
+PTR record: ❌ Not configured
+  Your mail server IP should have a PTR record pointing back to 
+  mail.example.com. Contact your hosting provider to set this up.
+
+Summary: SPF and DMARC are in weak/monitoring mode. This is fine 
+for initial setup but should be strengthened for production.
+
+Would you like me to update SPF to -all and DMARC to p=quarantine?
+```
+
+## Migrate from another DNS provider
+
+```
+I want to move example.org from Cloudflare to Gcore DNS
+```
+
+Response:
+
+```
+Let's migrate example.org to Gcore DNS.
+
+Step 1: Export records from Cloudflare
+  In Cloudflare dashboard: DNS → Export DNS Records
+  This gives you a BIND-format zone file.
+
+Step 2: Create zone in Gcore
+  Creating zone example.org...
+  ✓ Zone created (status: non-delegated)
+
+Step 3: Import records
+  Do you have the exported zone file? 
+  Share the records and I'll recreate them in Gcore.
+
+  Or I can look up your current public DNS records and recreate them:
+  "Scan and import current DNS records for example.org"
+
+Step 4: After import, verify records match
+  I'll compare Gcore records with live DNS to ensure nothing is missing.
+
+Step 5: Update nameservers at registrar
+  Change to: ns1.gcorelabs.net, ns2.gcdn.services
+  
+Step 6: Wait for propagation
+  Keep Cloudflare active until propagation completes (24-48 hours).
+  Then you can delete the zone from Cloudflare.
+
+Ready to proceed with step 3?
+```
+
+## Bulk operations
+
+### Update TTL for all records
+
+```
+Change TTL to 3600 for all A records in example.com
+```
+
+Response:
+
+```
+Updating TTL for A records in example.com...
+
+Updated 5 A records:
+  example.com         300 → 3600
+  mail.example.com    300 → 3600
+  api.example.com     300 → 3600
+  app.example.com     300 → 3600
+  staging.example.com 300 → 3600
+
+New TTL (3600 seconds = 1 hour) means:
+  - Less DNS queries (cached longer)
+  - Slower propagation when you make changes
+
+Tip: Use low TTL (300) before planned changes, then increase after.
+```
+
+<Info>
+For DNS concepts and record types, see [GCore DNS overview](/dns/about-gcore-dns). Record management is documented in [Manage DNS records](/dns/dns-records/manage-dns-records-non-advanced-interface-mode). Email DNS setup is covered in [Configure DNS records to send emails](/dns/dns-records/set-up-dns-for-sending-email).
 </Info>

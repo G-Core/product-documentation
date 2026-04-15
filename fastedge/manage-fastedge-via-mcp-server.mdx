@@ -3,77 +3,225 @@ title: Manage FastEdge via MCP Server
 sidebarTitle: Manage via MCP
 ---
 
-Gcore MCP Server enables AI assistants to manage FastEdge applications through natural language commands. The MCP Server exposes tools for deploying WebAssembly binaries, managing secrets, configuring key-value stores, and monitoring application performance—all through conversational prompts in [Claude Code or other MCP-compatible clients](/account-settings/integrations/gcore-mcp-server-overview).
+Gcore MCP Server provides FastEdge management tools that AI clients like Claude Code can invoke through natural language requests. The server returns structured data that the AI client interprets and presents in a readable format.
 
-## Configure for FastEdge
+<Info>
+Before starting, [install and configure Gcore MCP Server](/account-settings/integrations/install-and-configure-gcore-mcp-server) with `GCORE_TOOLS="fastedge.*"` to load FastEdge tools.
+</Info>
 
-To work exclusively with FastEdge tools, set the `GCORE_TOOLS` environment variable to filter the toolset. This reduces tool count and helps clients load faster when managing edge applications.
+## How it works
 
-```bash
-GCORE_TOOLS="fastedge.*"
+When a request is made in natural language, the AI client:
+
+1. Identifies the appropriate MCP tool (e.g., `fastedge_apps_ls`)
+2. Extracts parameters from the request
+3. Calls the tool and receives JSON data
+4. Formats the response for readability
+
+Example request:
+
+```
+List my FastEdge applications
 ```
 
-With this filter, approximately 20 FastEdge tools become available.
+The MCP server returns structured data with application details including ID, name, status, URL, and configuration.
 
 ## Available tools
 
-FastEdge tools cover applications, binaries, key-value stores, secrets, templates, and statistics:
+FastEdge tools follow the naming pattern `fastedge_*`. Main categories:
 
-| Resource | Operations | Description |
-|----------|------------|-------------|
-| `apps` | list, create, get, update, delete | Edge applications |
-| `binaries` | list, upload, get, delete | WebAssembly binaries |
-| `kv_stores` | list, create, get, delete | Key-value stores |
-| `secrets` | list, create, get, delete | Application secrets |
-| `templates` | list, get | Application templates |
-| `statistics` | get | Usage statistics |
+| Tool | Description |
+|------|-------------|
+| `fastedge_apps_ls` | List all applications |
+| `fastedge_apps_get` | Get application details |
+| `fastedge_apps_new` | Create an application |
+| `fastedge_apps_upd` | Update application settings |
+| `fastedge_apps_del` | Delete an application |
+| `fastedge_apps_logs_ls` | View application logs |
+| `fastedge_binaries_ls` | List WebAssembly binaries |
+| `fastedge_binaries_get` | Get binary details |
+| `fastedge_binaries_del` | Delete a binary |
+| `fastedge_kv_stores_ls` | List key-value stores |
+| `fastedge_kv_stores_new` | Create a KV store |
+| `fastedge_kv_stores_del` | Delete a KV store |
+| `fastedge_secr_ls` | List secrets |
+| `fastedge_secr_new` | Create a secret |
+| `fastedge_secr_upd` | Update a secret |
+| `fastedge_secr_del` | Delete a secret |
+| `fastedge_templates_ls` | List available templates |
+| `fastedge_templates_get` | Get template details |
+| `fastedge_statistics_get_call_series` | Get request statistics |
+| `fastedge_statistics_get_duration_series` | Get latency statistics |
 
-## Application management
+## Manage applications
 
-Asking the assistant to "list all my FastEdge applications" returns each application with its ID, status, public URL, and recent request counts. The assistant presents this information in a readable format, showing which applications are active and their traffic levels over the past 24 hours.
+List all FastEdge applications:
 
-Creating applications works through natural language—"create a FastEdge application named api-cache" provisions a new application and returns its generated URL. The application starts in pending status until a WebAssembly binary is deployed.
+```
+List my FastEdge applications
+```
 
-## Binary deployment
+Get details for a specific application:
 
-After creating an application, deploy WebAssembly binaries by asking the assistant to upload from a local path—"upload binary from ./dist/app.wasm to application api-cache" triggers the upload and deployment process. The assistant reports the binary ID, size, and deployment status. Edge deployments typically complete within 30 seconds.
+```
+Show details for FastEdge application 12345
+```
 
-To check available binaries before deployment, ask the assistant to list binaries for a specific application. This shows all uploaded versions with their IDs and upload timestamps.
+Create a new application:
 
-## Secrets and configuration
+```
+Create a FastEdge application named api-gateway
+```
 
-Application secrets store sensitive values such as API keys and configuration parameters. Asking "add a secret named API_KEY with value sk-xxx to application api-cache" creates the secret and makes it available as an environment variable within the application code. The assistant confirms creation without echoing the secret value back.
+The AI client calls `fastedge_apps_new` and returns the new application ID and URL.
 
-To review configured secrets, ask the assistant to list secrets for an application. Secret values are not returned in listings for security reasons—the assistant shows secret names and creation timestamps.
+Stop or start an application:
 
-## Key-value stores
+```
+Stop FastEdge application 12345
+```
 
-FastEdge applications can use key-value stores for session data, caching, and counters. Creating a store—"create a KV store named session-cache for application auth-middleware"—provisions the store and associates it with the application. The KV API becomes available in the application runtime for read and write operations.
+```
+Start FastEdge application 12345
+```
 
-To view all stores across applications, ask the assistant to list KV stores. The response shows store names, IDs, and associated applications.
+## Deploy WebAssembly binaries
 
-## Statistics and monitoring
+List available binaries for an application:
 
-Request statistics show traffic patterns, latency, and error rates. Asking "show statistics for all FastEdge applications over the last 7 days" returns a summary with request counts, average latency, and error percentages per application. This helps identify performance trends and inactive applications that may need attention.
+```
+Show binaries for FastEdge application 12345
+```
 
-For detailed latency analysis, request percentile breakdowns—"show request latency percentiles for edge-router over the last 24 hours" returns p50, p90, p95, and p99 latency values.
+Check binary details:
 
-## Templates
+```
+Show details for binary 67890
+```
 
-FastEdge provides starter templates for common use cases including HTTP handlers, image resizing, JWT validation, and geolocation. Asking "show available FastEdge templates" lists templates with their descriptions and supported languages (Rust or JavaScript). To create an application from a template, specify the template name—"create an application from the auth-jwt template" scaffolds the application with the template code.
+Delete an old binary version:
 
-## Multi-step workflows
-
-The assistant handles multi-step workflows in a single conversation. To deploy a rate-limiting edge function, describe the full setup—"create a FastEdge application named rate-limiter, create a KV store for counters, and add secrets RATE_LIMIT=100 and WINDOW_SECONDS=60." The assistant executes each step in sequence and reports the results.
-
-When updating existing applications, deploying a new binary version works the same way as the initial deployment. The assistant uploads the binary and initiates a rolling update. Previous versions remain available for rollback if needed.
-
-To find applications across environments, filter by name patterns—"list applications with staging in the name" shows matching applications. This helps manage development, staging, and production deployments through a single conversation.
+```
+Delete binary 67890 from application 12345
+```
 
 <Info>
-**Info**
-
-Tool names follow the pattern `fastedge.[resource].[operation]`, such as `fastedge.apps.list` or `fastedge.secrets.create`. The [MCP Inspector](/account-settings/integrations/test-tools-with-mcp-inspector) displays all available tools with their parameters and expected inputs.
+Binary upload requires file access. Use the [Gcore Customer Portal](https://portal.gcore.com) or [FastEdge CLI](/fastedge/fastedge-cli) to upload new .wasm files.
 </Info>
 
-For detailed deployment procedures outside of MCP Server, see the [FastEdge deployment guide](/fastedge/getting-started/deploy-an-app-from-prepared-binary). To filter tools and reduce the exposed toolset, configure the [`GCORE_TOOLS` environment variable](/account-settings/integrations/filter-tools-with-gcore-tools).
+## Manage secrets
+
+Secrets store sensitive configuration values like API keys. List secrets for an application:
+
+```
+Show secrets for FastEdge application 12345
+```
+
+Create a new secret:
+
+```
+Create a secret named API_KEY with value sk-xxx for application 12345
+```
+
+Update an existing secret:
+
+```
+Update secret API_KEY to new value for application 12345
+```
+
+Delete a secret:
+
+```
+Delete secret API_KEY from application 12345
+```
+
+<Warning>
+Secret values are not returned in listings for security. The AI client shows secret names and metadata only.
+</Warning>
+
+## Manage key-value stores
+
+Key-value stores provide persistent storage for session data, caching, and counters.
+
+List all KV stores:
+
+```
+Show my FastEdge KV stores
+```
+
+Create a new store:
+
+```
+Create a KV store named session-cache
+```
+
+Associate a store with an application:
+
+```
+Link KV store session-cache to application 12345
+```
+
+## View statistics
+
+Get request statistics:
+
+```
+Show FastEdge statistics for the last 7 days
+```
+
+Get latency breakdown:
+
+```
+Show request duration statistics for application 12345
+```
+
+The `fastedge_statistics_get_call_series` tool returns request counts over time. The `fastedge_statistics_get_duration_series` tool returns execution time metrics.
+
+## Use templates
+
+List available starter templates:
+
+```
+Show FastEdge templates
+```
+
+Get template details:
+
+```
+Show details for the auth-jwt template
+```
+
+Templates provide pre-built code for common use cases like JWT validation, image resizing, geolocation, and A/B testing.
+
+## View logs
+
+Enable and view application logs:
+
+```
+Show logs for FastEdge application 12345
+```
+
+The `fastedge_apps_logs_ls` tool returns recent log entries. Logging must be enabled in the application settings to capture data.
+
+## Common requests
+
+| Request | Tool called |
+|---------|-------------|
+| "List my FastEdge applications" | `fastedge_apps_ls` |
+| "Show application 12345" | `fastedge_apps_get` |
+| "Create application named api-cache" | `fastedge_apps_new` |
+| "Delete application 12345" | `fastedge_apps_del` |
+| "Show my KV stores" | `fastedge_kv_stores_ls` |
+| "Create KV store named cache" | `fastedge_kv_stores_new` |
+| "Show secrets for application 12345" | `fastedge_secr_ls` |
+| "Show available templates" | `fastedge_templates_ls` |
+
+## Troubleshooting
+
+If a request fails, the AI client displays the error message. Common issues:
+
+- **Client not found**: FastEdge service is not activated for this account
+- **Application not found**: Verify the application ID exists
+- **Permission denied**: Check that the API token has FastEdge permissions
+
+For binary uploads and advanced configuration, use the [Gcore Customer Portal](https://portal.gcore.com) or [FastEdge CLI](/fastedge/fastedge-cli).

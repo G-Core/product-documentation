@@ -1,0 +1,477 @@
+---
+title: Manage Networking via MCP Server
+sidebarTitle: Networking
+---
+
+Gcore MCP Server provides networking and security tools that AI clients can invoke through natural language requests. The server returns structured data that the AI client interprets and presents in a readable format.
+
+<Info>
+Before starting, [install and configure Gcore MCP Server](/account-settings/integrations/install-and-configure-gcore-mcp-server) with `GCORE_TOOLS="networking,security"` to load networking and security tools.
+</Info>
+
+## How it works
+
+When a request is made in natural language, the AI client resolves project and region context, calls the appropriate MCP tool, and formats the JSON response for readability.
+
+Example request:
+
+```
+List my networks in Luxembourg
+```
+
+The MCP server returns structured data for each network:
+
+```json
+{
+  "id": "50a04f9f-6b8d-46fa-b0dc-191c275084c2",
+  "name": "production-network",
+  "mtu": 1500,
+  "type": "vxlan",
+  "subnets": ["93dd71bb-b8e9-41bd-bc40-22c386ab3eaf"],
+  "port_security_enabled": true,
+  "region": "Luxembourg-2"
+}
+```
+
+The AI client presents this as readable text:
+
+```
+Found 3 networks in Luxembourg-2:
+
+1. production-network
+   Type: VxLAN, MTU: 1500
+   Subnets: 1 attached
+   Port security: enabled
+
+2. gpu-cluster-network
+   Type: VLAN, MTU: 2044
+   Subnets: 1 attached
+   Tags: cluster_id=f9a7de07-b480-4db8-bd39-5491aa8cb1c0
+
+3. baremetal-network
+   Type: VLAN, MTU: 1500
+   Subnets: none
+```
+
+## Networks and subnetworks
+
+Networks provide isolated communication channels between cloud resources. Two network types exist: VxLAN for Virtual Machines (software-defined, flexible) and VLAN for Bare Metal servers (hardware-level, lower latency).
+
+### List networks
+
+Listing networks shows all networks in a project and region with their type, MTU settings, and attached subnets.
+
+```
+List my networks
+```
+
+To see which instances use a specific network:
+
+```
+Show details for network production-network
+```
+
+The response includes the network ID (needed for creating subnets or attaching resources), subnet list, and whether port security is enabled.
+
+### Create a network
+
+Creating a network establishes an isolated segment. The AI client returns the network ID upon successful creation.
+
+```
+Create a private network named backend-network in Luxembourg
+```
+
+Response from AI client:
+
+```
+Created network backend-network
+ID: 7f8a9b2c-3d4e-5f6a-7b8c-9d0e1f2a3b4c
+Type: VxLAN
+Region: Luxembourg-2
+
+Next: Create a subnet to define the IP address range.
+```
+
+For Bare Metal servers, specify VLAN type:
+
+```
+Create a VLAN network named bare-metal-network
+```
+
+### View subnet details
+
+Subnets define IP address ranges within a network. The AI returns CIDR, gateway, DHCP status, and available addresses.
+
+```
+Show details for subnet app-subnet
+```
+
+Response:
+
+```
+Subnet: app-subnet
+Network: production-network
+CIDR: 10.240.0.0/16
+Gateway: 10.240.0.1
+DHCP: enabled
+DNS servers: 8.8.8.8, 8.8.4.4
+Available IPs: 65,527 of 65,533
+Router attached: no
+```
+
+### Create a subnet
+
+When creating a subnet, specify the CIDR range and whether DHCP should assign addresses automatically.
+
+```
+Create a subnet 10.0.2.0/24 named db-tier in network backend-network with DHCP enabled
+```
+
+Response:
+
+```
+Created subnet db-tier
+CIDR: 10.0.2.0/24
+Gateway: 10.0.2.1 (auto-assigned)
+DHCP: enabled
+Available IPs: 251
+
+To make this subnet routable (allow external access), attach it to a router.
+```
+
+For subnets that should remain isolated from external networks:
+
+```
+Create a non-routable subnet 10.0.3.0/24 named internal-only without gateway
+```
+
+<Info>
+Subnets with a gateway configured (routable) allow instances to access external networks and receive floating IPs. Non-routable subnets are isolated from external connectivity.
+</Info>
+
+### Delete a network
+
+Deleting removes the network and releases resources.
+
+```
+Delete network test-network
+```
+
+<Warning>
+Networks with attached resources (instances, load balancers) cannot be deleted. The AI client returns an error listing which resources must be detached first.
+</Warning>
+
+## Floating IPs
+
+Floating IPs are public addresses that can be assigned to instances with private interfaces, enabling external connectivity without a public network interface. They can be moved between instances for failover.
+
+### List floating IPs
+
+```
+List my floating IPs
+```
+
+If no floating IPs exist, the response confirms this:
+
+```
+No floating IPs found in Luxembourg-2.
+
+To reserve a floating IP:
+"Create a floating IP in Luxembourg"
+```
+
+### Reserve a floating IP
+
+Reserving allocates a public IP from the regional pool.
+
+```
+Create a floating IP in Luxembourg
+```
+
+Response:
+
+```
+Reserved floating IP: 92.38.171.42
+Status: available (not assigned)
+Region: Luxembourg-2
+
+To assign: "Assign floating IP 92.38.171.42 to instance web-server-01"
+```
+
+### Assign to an instance
+
+```
+Assign floating IP 92.38.171.42 to instance web-server-01
+```
+
+Response:
+
+```
+Assigned floating IP 92.38.171.42 to instance web-server-01
+Instance private IP: 10.240.1.15
+External access: enabled
+
+The instance is now accessible at 92.38.171.42
+```
+
+<Info>
+Floating IPs require the instance's subnet to have a gateway configured (routable). If assignment fails, check subnet settings with "Show details for subnet [name]".
+</Info>
+
+### Move between instances
+
+Floating IPs can be reassigned for failover or maintenance:
+
+```
+Reassign floating IP 92.38.171.42 from web-server-01 to web-server-02
+```
+
+## Load balancers
+
+Load balancers distribute incoming traffic across multiple backend instances. They operate in high-availability mode with automatic failover.
+
+### List load balancers
+
+```
+List my load balancers
+```
+
+Response with existing load balancer:
+
+```
+Found 1 load balancer in Luxembourg-2:
+
+api-loadbalancer
+  Flavor: lb1-1-2 (1 vCPU, 2 GB RAM)
+  VIP address: 10.0.5.100
+  Status: ACTIVE
+  Operating status: ONLINE
+  Connectivity: L2 (direct)
+  Listeners: 1
+  Created: 2025-02-20
+```
+
+### View load balancer details
+
+```
+Show details for load balancer api-loadbalancer
+```
+
+Response includes listeners, pools, and health check configuration:
+
+```
+Load balancer: api-loadbalancer
+VIP: 10.0.5.100
+Floating IPs: none assigned
+
+Listeners:
+  - ID: 9046af1d-a190-46e2-a76a-fcdc666da1c4
+    (use "Show listener 9046af1d..." for protocol/port details)
+
+Status: Operating status is ERROR - check listener and pool health.
+```
+
+### Create a load balancer
+
+Creating a load balancer provisions the infrastructure and returns connection details.
+
+```
+Create a load balancer named api-lb in network production-network on port 443
+```
+
+Response:
+
+```
+Creating load balancer api-lb...
+
+Load balancer created:
+  ID: 8b9c0d1e-2f3a-4b5c-6d7e-8f9a0b1c2d3e
+  VIP: 10.240.5.100
+  Flavor: lb1-1-2 (default)
+  Status: PENDING_CREATE
+
+The load balancer will be ready in 2-3 minutes.
+Next: Add backend instances with "Add instance [name] to load balancer api-lb pool"
+```
+
+<Info>
+Load balancers are created in high-availability mode with active-standby instances. Failover is automatic if the active instance fails.
+</Info>
+
+### Add pool members
+
+Pool members are backend instances that receive distributed traffic.
+
+```
+Add instance api-server-01 to load balancer api-lb pool on port 8080
+```
+
+Response:
+
+```
+Added api-server-01 to load balancer api-lb
+Backend port: 8080
+Health check: inherited from pool defaults
+
+Pool members (1):
+  - api-server-01: 10.240.1.20:8080
+```
+
+### Check health status
+
+```
+Show health status for load balancer api-lb
+```
+
+Response:
+
+```
+Load balancer api-lb health:
+
+Pool: default-pool
+  api-server-01: ONLINE (last check: 10s ago)
+  api-server-02: OFFLINE - connection refused on port 8080
+  
+1 of 2 members healthy. Traffic routing to healthy members only.
+```
+
+## Security groups
+
+Security groups (firewalls) control network access to instances by defining allowed inbound and outbound traffic.
+
+### List security groups
+
+```
+List my security groups
+```
+
+Response:
+
+```
+Found 7 security groups in Luxembourg-2:
+
+1. web-servers
+   Rules: 4 (SSH, HTTP, egress all)
+   
+2. default
+   Rules: 6 (SSH, RDP, ICMP, egress all)
+   
+3. database-tier
+   Rules: 3 (PostgreSQL from app subnet)
+```
+
+### View security group rules
+
+```
+Show rules for security group web-servers
+```
+
+Response:
+
+```
+Security group: web-servers
+
+Inbound rules:
+  - TCP 22 (SSH) from 0.0.0.0/0
+  - TCP 80 (HTTP) from 0.0.0.0/0
+
+Outbound rules:
+  - TCP all ports to 0.0.0.0/0
+  - UDP all ports to 0.0.0.0/0
+```
+
+### Create a security group
+
+```
+Create a security group named allow-web that allows HTTP and HTTPS from anywhere
+```
+
+Response:
+
+```
+Created security group allow-web
+ID: 5e6f7a8b-9c0d-1e2f-3a4b-5c6d7e8f9a0b
+
+Inbound rules added:
+  - TCP 80 (HTTP) from 0.0.0.0/0
+  - TCP 443 (HTTPS) from 0.0.0.0/0
+
+Outbound rules: all traffic allowed (default)
+
+To apply: "Assign security group allow-web to instance [name]"
+```
+
+### Add rules to existing groups
+
+```
+Add a rule to security group allow-web allowing port 8080 from 10.0.0.0/8
+```
+
+Response:
+
+```
+Added rule to allow-web:
+  TCP 8080 from 10.0.0.0/8 (inbound)
+
+Current rules (3 inbound):
+  - TCP 80 from 0.0.0.0/0
+  - TCP 443 from 0.0.0.0/0
+  - TCP 8080 from 10.0.0.0/8
+```
+
+### Apply to instances
+
+```
+Assign security group allow-web to instance web-server-01
+```
+
+Response:
+
+```
+Assigned security group allow-web to instance web-server-01
+
+Instance security groups (2):
+  - default
+  - allow-web
+
+Rules from all groups are combined.
+```
+
+## Troubleshooting
+
+### Floating IP assignment fails
+
+The instance's subnet must be routable (gateway configured).
+
+```
+Show details for subnet web-tier
+```
+
+If `has_router: false` and no gateway, the subnet cannot receive floating IPs. Either attach the subnet to a router or use a public network interface.
+
+### Load balancer shows ERROR status
+
+Check listener and pool configuration:
+
+```
+Show health status for load balancer [name]
+```
+
+Common causes:
+- No pool members added
+- Backend instances not listening on configured port
+- Security group blocking health check traffic from load balancer VIP
+
+### Security group changes not taking effect
+
+Verify the group is attached to the instance:
+
+```
+Show security groups for instance web-server-01
+```
+
+Check for conflicting rules in other attached groups. Rules from all groups combine, but an explicit deny in one group blocks traffic.
+
+<Info>
+For detailed networking concepts, see [Create and manage a network](/cloud/networking/create-and-manage-a-network). Load balancer configuration is documented in [Create a Load Balancer](/cloud/networking/create-and-configure-a-load-balancer). Firewall setup is covered in [Add and configure a firewall](/cloud/networking/add-and-configure-a-firewall).
+</Info>
