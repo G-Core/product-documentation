@@ -3,269 +3,125 @@ title: Manage Live Streaming via MCP Server
 sidebarTitle: Live Streaming
 ---
 
-Gcore MCP Server enables AI assistants to manage live streams through natural language. This article covers stream creation, encoder configuration, restreaming to social platforms, and broadcast monitoring.
+Gcore MCP Server provides live streaming tools that AI clients can invoke through natural language. The server returns structured data that the AI client interprets and presents in readable format.
 
 <Info>
 Before starting, [install and configure Gcore MCP Server](/account-settings/integrations/install-and-configure-gcore-mcp-server) with `GCORE_TOOLS="streaming.*"` to load streaming tools.
 </Info>
 
-## Live streaming concepts
+## Available tools
 
-Live streaming involves three stages: ingest (sending video to Gcore), transcoding (converting to multiple quality levels), and delivery (distributing to viewers worldwide).
+| Tool | Description |
+|------|-------------|
+| `streaming_streams_ls` | List all live streams |
+| `streaming_streams_get` | Get stream details by ID |
+| `streaming_streams_new` | Create a new stream |
+| `streaming_streams_upd` | Update stream settings |
+| `streaming_streams_del` | Delete a stream |
+| `streaming_restreams_ls` | List restreams |
+| `streaming_restreams_new` | Create restream to external platform |
+| `streaming_restreams_del` | Delete a restream |
+| `streaming_broadcasts_ls` | List scheduled broadcasts |
+| `streaming_broadcasts_new` | Schedule a broadcast |
+| `streaming_statistics_get` | Get viewing statistics |
 
-**Ingest protocols:**
-- **RTMP/RTMPS** - Standard protocol supported by OBS, vMix, and hardware encoders
-- **SRT** - Secure Reliable Transport for unstable networks with built-in error correction
-- **WebRTC WHIP** - Browser-based streaming without encoder software
+## View streams
 
-**Delivery formats:**
-- **LL-HLS** - Low-latency HLS with 2-3 second delay
-- **LL-DASH** - Low-latency DASH for non-Apple devices
-- **HLS MPEG-TS** - Traditional HLS for maximum compatibility
-
-## Create a live stream
-
-To create a stream, provide a name and optionally specify quality settings. The MCP server returns connection details for encoder configuration.
-
-```
-Create a live stream named "Weekly Webinar" with recording enabled
-```
-
-The response includes:
-- Push URL and stream key for encoder configuration
-- Playback URLs in HLS and DASH formats
-- Embed code for website integration
-- Current feature status (recording, DVR, low latency)
-
-Stream names should be descriptive for easy identification in the library. After creation, the stream remains in "ready" status until an encoder connects and starts pushing video.
-
-## Configure encoder software
-
-### OBS Studio setup
-
-After creating a stream, configure OBS with the provided credentials:
-
-1. Open OBS Settings → Stream
-2. Set Service to "Custom"
-3. Enter the server URL from MCP response (e.g., `rtmp://vp-push-ed1.gvideo.co/in`)
-4. Enter the stream key (e.g., `12345?s=abc123def456`)
-5. Click OK and start streaming
-
-Recommended output settings for 1080p:
-- Encoder: x264 or NVENC
-- Rate Control: CBR
-- Bitrate: 4500-6000 kbps
-- Keyframe Interval: 2 seconds
-
-### SRT for unstable networks
-
-SRT provides better reliability over poor connections. Request SRT credentials:
+List all live streams:
 
 ```
-Show SRT connection details for stream "Weekly Webinar"
+List my live streams
 ```
 
-SRT URL format: `srt://vp-push-ed1.gvideo.co:5001?streamid=12345,s=abc123`
-
-SRT handles packet loss up to 30% and includes built-in encryption. For networks with high latency or packet loss, increase the latency buffer in OBS (Settings → Advanced → SRT Latency).
-
-## Enable stream features
-
-### Recording
-
-Recording saves the live stream as a video-on-demand file after the broadcast ends.
+Get details for a specific stream:
 
 ```
-Enable recording for stream "Weekly Webinar"
+Show details for stream 12345
 ```
 
-Recording must be enabled before the stream starts. Once enabled, recording begins automatically when the encoder connects. After the stream ends, the recording is processed and appears in Video Hosting within 5-15 minutes.
+The response includes: stream ID, name, status (active/ready/offline), push URL, stream key, playback URLs, and enabled features (recording, DVR, low latency).
 
-### DVR (pause and rewind)
-
-DVR allows viewers to pause playback and rewind within a configurable window (default: 1 hour).
+## Create a stream
 
 ```
-Enable DVR for stream "Weekly Webinar"
+Create a live stream named "Weekly Webinar"
 ```
 
-DVR requires approximately 10 minutes of content accumulation before viewers can rewind. The DVR window can be extended up to 4 hours (or 24 hours for Enterprise customers) by contacting support.
+The response includes push URL and stream key for encoder configuration. For encoder setup details, see [OBS configuration](/streaming/live-streaming/broadcasting-software/obs) or [SRT protocol](/streaming/live-streaming/protocols/srt).
 
-Clear the DVR cache before starting a new broadcast in an existing stream to prevent viewers from seeing content from previous broadcasts:
+## Enable features
 
-```
-Clear DVR cache for stream "Weekly Webinar"
-```
-
-### Low latency
-
-Low latency mode (LL-HLS/LL-DASH) reduces glass-to-glass delay to 2-3 seconds, suitable for interactive broadcasts where real-time viewer engagement matters.
-
-Low latency is enabled by default. For traditional HLS with maximum compatibility (higher latency), disable low latency mode:
+Enable recording to save the stream as VOD:
 
 ```
-Disable low latency for stream "Weekly Webinar"
+Enable recording for stream 12345
 ```
 
-## Restreaming to social platforms
-
-Restreaming distributes a single stream to multiple platforms simultaneously. Instead of running separate broadcasts, send one stream to Gcore and let the platform distribute to YouTube, Twitch, Facebook, and other RTMP destinations.
-
-### Set up a restream
-
-1. Obtain RTMP credentials from the target platform (stream URL and stream key)
-2. Create the restream in Gcore:
+Enable DVR to allow viewers to pause and rewind:
 
 ```
-Create restream for stream "Weekly Webinar" to YouTube with URL rtmp://a.rtmp.youtube.com/live2 and key xxxx-xxxx-xxxx
+Enable DVR for stream 12345
 ```
 
-3. Start the main stream - content automatically distributes to all configured restreams
-
-### Platform credential locations
-
-**YouTube:** YouTube Studio → Go Live → Stream → copy Stream URL and Stream Key
-
-**Twitch:** Dashboard → Settings → Stream → Primary Stream Key
-
-**Facebook:** Creator Studio → Go Live → Stream Settings → copy Server URL and Stream Key
-
-### Monitor restream status
-
-Check if all restreams are connected and healthy:
+Clear DVR cache before a new broadcast:
 
 ```
-Show restream status for "Weekly Webinar"
+Clear DVR cache for stream 12345
 ```
 
-The response shows connection status, uptime, bitrate, and health for each configured destination. If a restream disconnects, it automatically reconnects within 10 seconds.
+For feature details, see [Recording](/streaming/live-streaming/record-your-live-streams-and-save-them-as-videos) and [DVR](/streaming/live-streaming/pause-and-rewind-the-live-streams).
 
-## Create clips during broadcast
+## Restreaming
 
-Live clipping captures highlights during a broadcast and saves them as permanent VOD files.
-
-```
-Create a 60-second clip from stream "Weekly Webinar"
-```
-
-The clip captures the most recent 60 seconds and processes within 1-2 minutes. Clips are stored permanently and can be shared or embedded like regular videos.
-
-Specify a custom time range for clips from earlier in the broadcast (requires DVR enabled):
+Create a restream to broadcast simultaneously on external platforms:
 
 ```
-Create clip from stream "Weekly Webinar" from 14:30 to 15:00
+Create restream for stream 12345 to rtmp://a.rtmp.youtube.com/live2 with key xxxx-xxxx
 ```
 
-## Monitor live broadcasts
-
-### Current viewers and statistics
-
-View real-time metrics during a broadcast:
+List configured restreams:
 
 ```
-Show live statistics for stream "Weekly Webinar"
+List restreams for stream 12345
 ```
 
-Available metrics:
-- Current and peak viewer counts
-- Stream duration and uptime
-- Viewer geographic distribution
-- Quality distribution (percentage at each resolution)
-- Ingest bitrate and stability
-
-### Stream health diagnostics
-
-If viewers report issues, check stream health:
-
-```
-Check health for stream "Weekly Webinar"
-```
-
-The health check analyzes:
-- Ingest connection stability
-- Dropped frame percentage
-- Bitrate consistency
-- Encoder connection status
-
-Common issues and solutions:
-
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| Dropped frames >1% | CPU overload or network congestion | Reduce bitrate or use faster encoder preset |
-| Bitrate fluctuation | Unstable upload connection | Switch to SRT protocol |
-| No video received | Incorrect stream key or firewall | Verify credentials and check port 1935 |
+For platform setup, see [Restreaming](/streaming/live-streaming/create-and-configure-a-restream-to-social-media).
 
 ## Schedule broadcasts
 
-Schedule a broadcast to start at a specific time:
+Schedule a stream to start at a specific time:
 
 ```
-Schedule stream "Product Launch" for April 15, 2026 at 14:00 UTC
+Schedule broadcast for stream 12345 on April 15 at 14:00 UTC
 ```
 
-Scheduled broadcasts:
-- Activate 30 minutes before the scheduled time
-- Allow encoder connection for pre-broadcast testing
-- Display a countdown or "Starting soon" slate to viewers
-- Send reminder notifications (if configured)
+## View statistics
 
-Share the playback URL immediately after scheduling - viewers see the countdown until the broadcast begins.
-
-## List and manage streams
-
-### View all streams
+Get viewing metrics:
 
 ```
-List all live streams
+Show statistics for stream 12345 for the last 7 days
 ```
 
-The response shows stream names, IDs, status (ready/live/offline), and recent activity.
+Available metrics include viewer counts, peak concurrent viewers, watch time, and geographic distribution.
 
-### Filter by status
+## Common requests
 
-```
-Show only active streams
-```
-
-### Delete a stream
-
-```
-Delete stream "Old Webinar"
-```
-
-<Warning>
-Deleting a stream removes all associated recordings, clips, and statistics. This action cannot be undone.
-</Warning>
+| Request | Tool called |
+|---------|-------------|
+| "List my live streams" | `streaming_streams_ls` |
+| "Create stream named X" | `streaming_streams_new` |
+| "Enable recording for stream 123" | `streaming_streams_upd` |
+| "Create restream to YouTube" | `streaming_restreams_new` |
+| "Show stream statistics" | `streaming_statistics_get` |
+| "Delete stream 123" | `streaming_streams_del` |
 
 ## Troubleshooting
 
-### Stream not appearing after starting encoder
+If a request fails, the AI client displays the error message. Common issues:
 
-1. Verify the stream key matches exactly (including the `?s=` parameter)
-2. Check that the server URL is correct (`rtmp://vp-push-ed1.gvideo.co/in`)
-3. Confirm the stream is enabled in Gcore
-4. Ensure firewall allows outbound connections on port 1935 (RTMP) or 5001 (SRT)
+- **Stream not found**: Verify the stream ID exists
+- **Permission denied**: Check API token permissions
+- **Feature unavailable**: Some features require plan upgrade
 
-### Poor video quality despite high bitrate
-
-Check encoder settings:
-- Keyframe interval should be 2 seconds (not higher)
-- Use CBR (Constant Bit Rate), not VBR
-- Encoder preset affects quality - "slow" produces better quality than "veryfast" at the same bitrate
-
-### Viewers experiencing buffering
-
-Analyze the stream:
-
-```
-Analyze buffering issues for stream "Weekly Webinar"
-```
-
-Common causes:
-- Source bitrate too high for encoder's upload speed
-- Keyframe interval >2 seconds causing seek issues
-- Viewers on slow connections - ensure lower quality renditions are available
-
-<Info>
-For detailed live streaming setup, see [Getting started with live streaming](/streaming/live-streaming/create-a-live-stream). Encoder configuration is documented in [OBS setup](/streaming/live-streaming/broadcasting-software/obs). Restreaming is covered in [Create a restream](/streaming/live-streaming/create-and-configure-a-restream-to-social-media).
-</Info>
+For operations not available through MCP, use the [Gcore Customer Portal](https://streaming.gcore.com) or [Streaming API](/api-reference/streaming).
