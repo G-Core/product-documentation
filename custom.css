@@ -48,6 +48,36 @@
 /* Homepage product cards: dense layout (similar to Wallarm docs card grid) */
 .homepage_wrapper .gcore_hero {
   margin-bottom: 2rem;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+
+/* Hero: Mintlify `.prose` defaults left-align headings; force centered title + tagline */
+.homepage_wrapper .gcore_hero .gcore_hero_inner {
+  align-items: center !important;
+  text-align: center !important;
+}
+
+.homepage_wrapper .gcore_hero .gcore_hero_title,
+.homepage_wrapper .gcore_hero .gcore_hero_subtitle {
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Hero title size: do not scope only under .homepage_wrapper — Mintlify layout can break that chain.
+   Inline style on <h1> in Hero.mdx is the primary control; this backs it up vs .prose / theme h1 rules. */
+section.gcore_hero.not-prose h1.gcore_hero_title,
+.homepage_wrapper .gcore_hero h1.gcore_hero_title {
+  font-size: 20px !important;
+  line-height: 1.35 !important;
+}
+
+.homepage_wrapper .gcore_hero .gcore_hero_subtitle {
+  display: block !important;
+  width: 100% !important;
+  max-width: 42rem !important;
 }
 
 .homepage_wrapper .card-group {
@@ -64,8 +94,58 @@
   gap: 0.375rem !important;
 }
 
-.homepage_wrapper .card-group .card h2 {
-  font-size: 0.9375rem !important;
+/*
+ * Horizontal cards: row 1 = [ icon | product name ], row 2 = description full width
+ * starting under the icon (same left edge as the icon column / card padding).
+ */
+.homepage_wrapper .card-group .card [data-component-part="card-content-container"] {
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr) !important;
+  grid-template-rows: auto auto !important;
+  column-gap: 0.5rem !important;
+  row-gap: 0.35rem !important;
+  align-items: start !important;
+}
+
+.homepage_wrapper .card-group .card [data-component-part="card-content-container"] > :first-child {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  align-self: start !important;
+}
+
+/* Mintlify often wraps title + body in one div; display:contents lets title sit row1 and body row2 */
+.homepage_wrapper .card-group .card [data-component-part="card-content-container"] > :nth-child(2) {
+  display: contents !important;
+}
+
+.homepage_wrapper .card-group .card [data-component-part="card-content-container"] [data-component-part="card-title"] {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  min-width: 0 !important;
+}
+
+.homepage_wrapper .card-group .card [data-component-part="card-content-container"] [data-component-part="card-content"] {
+  grid-column: 1 / -1 !important;
+  grid-row: 2 !important;
+  min-width: 0 !important;
+}
+
+/* Flat DOM (no wrapper): icon, h2, then body */
+.homepage_wrapper .card-group .card [data-component-part="card-content-container"] > h2 {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  min-width: 0 !important;
+}
+
+.homepage_wrapper .card-group .card [data-component-part="card-content-container"] > p {
+  grid-column: 1 / -1 !important;
+  grid-row: 2 !important;
+}
+
+/* Product names: 1rem ≈ 16px at default root */
+.homepage_wrapper .card-group .card h2,
+.homepage_wrapper .card-group .card [data-component-part="card-title"] h2 {
+  font-size: 1rem !important;
   font-weight: 600 !important;
   line-height: 1.25 !important;
   margin: 0 !important;
@@ -76,10 +156,23 @@
   height: 1.25rem !important;
 }
 
+/*
+ * Descriptions: Mintlify .prose often sets body text to ~1rem; override here.
+ * 0.75rem ≈ 12px at a 16px root; scales with zoom and user font settings.
+ */
+.homepage_wrapper .card-group .card [data-component-part="card-content"],
+.homepage_wrapper .card-group .card [data-component-part="card-content"] .prose {
+  font-size: 0.75rem !important;
+  line-height: 1.4 !important;
+}
+
+.homepage_wrapper .card-group .card [data-component-part="card-content"] p,
+.homepage_wrapper .card-group .card [data-component-part="card-content"] .prose p,
 .homepage_wrapper .card-group .card p,
 .homepage_wrapper .card-group .card .prose p {
-  font-size: 0.8125rem !important;
+  font-size: 0.75rem !important;
   line-height: 1.4 !important;
+  font-weight: 400 !important;
   margin: 0 0 0.375rem !important;
 }
 
@@ -91,7 +184,7 @@
 .homepage_wrapper .card-group .card .prose ul {
   margin: 0.25rem 0 0 !important;
   padding-left: 1rem !important;
-  font-size: 0.8125rem !important;
+  font-size: 0.75rem !important;
   line-height: 1.35 !important;
 }
 
@@ -99,16 +192,6 @@
 .homepage_wrapper .card-group .card .prose li {
   margin-top: 0.125rem !important;
   margin-bottom: 0 !important;
-}
-
-/*
- * Mintlify horizontal Card uses `flex items-center` on the inner content row
- * (card-content-container), which vertically centers the icon against the full
- * title + body column. Use flex-start so the icon lines up with the product name
- * (Wallarm-style: https://docs.wallarm.com/).
- */
-.homepage_wrapper .card-group .card [data-component-part="card-content-container"] {
-  align-items: flex-start !important;
 }
 
 /* Homepage card bullet links: default body color, orange on hover (card has no outer href to allow nested links) */
@@ -187,9 +270,9 @@
     gap: 0.375rem !important;
   }
 
-  /* Smaller card titles on mobile */
+  /* Same nominal size as desktop (1rem); slightly tighter line-height in dense grid */
   .homepage_wrapper .card-group .card h2 {
-    font-size: 0.8125rem !important;
+    font-size: 1rem !important;
     line-height: 1.2 !important;
   }
 
