@@ -1,0 +1,693 @@
+---
+title: Manage Video Hosting via MCP Server
+sidebarTitle: Video Hosting
+---
+
+Gcore MCP Server provides video-on-demand (VOD) management through natural language. AI assistants can upload videos, organize libraries, create playlists, manage subtitles, and track viewing analytics.
+
+<Info>
+Before starting, [install and configure Gcore MCP Server](/account-settings/integrations/install-and-configure-gcore-mcp-server) with `GCORE_TOOLS="streaming.*"` to load streaming tools.
+</Info>
+
+## How it works
+
+When a request is made in natural language, the AI client calls the appropriate MCP tool and formats the JSON response for readability.
+
+Example request:
+
+```
+List my videos
+```
+
+The MCP server returns structured data:
+
+```json
+{
+  "id": 56789,
+  "name": "Product Tutorial Part 1",
+  "status": "ready",
+  "duration": 845,
+  "size": 524288000,
+  "views": 12456,
+  "created_at": "2026-03-15T10:30:00Z",
+  "qualities": ["360p", "480p", "720p", "1080p"]
+}
+```
+
+The AI client presents this as readable text:
+
+```
+Found 24 videos in library:
+
+1. Product Tutorial Part 1
+   Duration: 14:05
+   Size: 500 MB
+   Views: 12,456
+   Qualities: 360p, 480p, 720p, 1080p
+   Status: ready
+
+2. Onboarding Webinar Recording
+   Duration: 58:32
+   Size: 2.1 GB
+   Views: 3,892
+   Qualities: 360p, 480p, 720p, 1080p
+   Status: ready
+
+3. Q1 Product Demo
+   Duration: 22:15
+   Size: 890 MB
+   Views: 567
+   Status: processing (78% complete)
+```
+
+## Upload videos
+
+### Upload from URL
+
+The most common method for bulk uploads or migration.
+
+```
+Upload a video from https://example.com/training/module1.mp4
+```
+
+Response:
+
+```
+Starting video upload...
+
+Video queued:
+  Source: https://example.com/training/module1.mp4
+  Name: module1 (auto-detected from filename)
+  Status: downloading
+
+Progress:
+  Download: started
+  Processing: pending
+  Encoding: pending
+
+Estimated time: 10-15 minutes for a typical video.
+I'll let you know when it's ready.
+
+Check status: "What's the status of my uploading videos?"
+Upload more: "Upload videos from https://example.com/training/module2.mp4 
+             and module3.mp4"
+```
+
+### Batch upload
+
+```
+Upload all videos from our training folder: module1.mp4, module2.mp4, module3.mp4, module4.mp4 from https://cdn.example.com/training/
+```
+
+Response:
+
+```
+Starting batch upload (4 videos)...
+
+Upload queue:
+  1. module1.mp4 - downloading
+  2. module2.mp4 - queued
+  3. module3.mp4 - queued  
+  4. module4.mp4 - queued
+
+Videos are processed in parallel (up to 3 simultaneously).
+Estimated completion: 20-30 minutes for all 4 videos.
+
+Each video will be transcoded to:
+  - 360p (mobile/low bandwidth)
+  - 480p (standard)
+  - 720p (HD)
+  - 1080p (Full HD)
+
+Progress updates: "Show upload progress"
+```
+
+### Check upload status
+
+```
+What's the status of my uploading videos?
+```
+
+Response:
+
+```
+Video processing status:
+
+Completed:
+  ✓ module1.mp4 → Product Tutorial Part 1 (ID: 56789)
+    Duration: 14:05, all qualities ready
+    
+  ✓ module2.mp4 → Product Tutorial Part 2 (ID: 56790)
+    Duration: 12:30, all qualities ready
+
+In progress:
+  ⟳ module3.mp4 (78% complete)
+    Encoding 1080p rendition...
+    ETA: 3 minutes
+
+Queued:
+  ○ module4.mp4
+    Waiting for processing slot
+
+All videos will be ready in approximately 8 minutes.
+```
+
+## Organize video library
+
+### Create folders
+
+```
+Create folders for our video library: Tutorials, Webinars, Product Demos
+```
+
+Response:
+
+```
+Creating directory structure...
+
+Directories created:
+  📁 Tutorials (ID: dir_101)
+  📁 Webinars (ID: dir_102)
+  📁 Product Demos (ID: dir_103)
+
+Your library structure:
+  /
+  ├── Tutorials/
+  ├── Webinars/
+  └── Product Demos/
+
+Move videos: "Move Product Tutorial videos to Tutorials folder"
+```
+
+### Organize videos
+
+```
+Move all tutorial videos to the Tutorials folder
+```
+
+Response:
+
+```
+Moving videos to Tutorials folder...
+
+Moved 6 videos:
+  ✓ Product Tutorial Part 1 → Tutorials/
+  ✓ Product Tutorial Part 2 → Tutorials/
+  ✓ Product Tutorial Part 3 → Tutorials/
+  ✓ Getting Started Guide → Tutorials/
+  ✓ Advanced Features → Tutorials/
+  ✓ Tips and Tricks → Tutorials/
+
+Tutorials folder now contains 6 videos.
+Total duration: 1 hour 45 minutes
+```
+
+### Search videos
+
+```
+Find all videos about onboarding
+```
+
+Response:
+
+```
+Search results for "onboarding":
+
+Found 4 videos:
+
+1. New Employee Onboarding (Tutorials/)
+   Duration: 25:30
+   Views: 2,341
+   Tags: onboarding, hr, training
+   
+2. Customer Onboarding Webinar (Webinars/)
+   Duration: 45:00
+   Views: 5,672
+   Tags: onboarding, customers, sales
+   
+3. Platform Onboarding Guide (Tutorials/)
+   Duration: 18:45
+   Views: 8,923
+   Tags: onboarding, platform, getting-started
+
+4. Partner Onboarding Process (Webinars/)
+   Duration: 32:15
+   Views: 1,234
+   Tags: onboarding, partners
+
+Filter by folder: "Show only onboarding videos in Tutorials"
+```
+
+## Create playlists
+
+```
+Create a playlist called "New Employee Training" with videos in order: 
+Onboarding, Company Overview, Tools Setup, First Week Guide
+```
+
+Response:
+
+```
+Creating playlist...
+
+Playlist created: New Employee Training
+ID: playlist_201
+Type: sequential (plays in order)
+
+Videos (4):
+  1. New Employee Onboarding (25:30)
+  2. Company Overview (12:45)
+  3. Tools Setup (18:20)
+  4. First Week Guide (22:10)
+
+Total duration: 1 hour 18 minutes
+
+Playback URL: https://player.gvideo.io/playlists/201
+
+Embed code:
+<iframe src="https://player.gvideo.io/playlists/201" 
+        width="640" height="360" allowfullscreen></iframe>
+
+The player shows video titles and allows navigation between videos.
+
+Add video: "Add Security Training to New Employee Training playlist"
+Reorder: "Move First Week Guide to position 2 in playlist"
+```
+
+### Manage playlist
+
+```
+Add the new Compliance Training video at the end of New Employee Training playlist
+```
+
+Response:
+
+```
+Adding video to playlist...
+
+Updated: New Employee Training
+
+Videos (5):
+  1. New Employee Onboarding (25:30)
+  2. Company Overview (12:45)
+  3. Tools Setup (18:20)
+  4. First Week Guide (22:10)
+  5. Compliance Training (35:00) ← added
+
+Total duration: 1 hour 53 minutes
+
+Playlist URL unchanged - viewers see updated content automatically.
+```
+
+## Manage subtitles
+
+### Generate AI subtitles
+
+```
+Generate subtitles for my Product Tutorial video using AI
+```
+
+Response:
+
+```
+Starting AI transcription for Product Tutorial Part 1...
+
+Transcription queued:
+  Video ID: 56789
+  Duration: 14:05
+  Language detection: automatic
+  
+Process:
+  1. Audio extraction
+  2. Speech recognition (AI ASR)
+  3. Timing synchronization
+  4. Subtitle generation
+
+Estimated time: 2-3 minutes for this video length.
+
+Status check: "Check subtitle generation status for video 56789"
+```
+
+After completion:
+
+```
+Subtitles ready for Product Tutorial Part 1
+
+Generated subtitles:
+  Language: English (auto-detected)
+  Segments: 127
+  Confidence: 96%
+
+Preview (first 3 segments):
+  00:00:02 → 00:00:05: Welcome to this product tutorial.
+  00:00:05 → 00:00:09: Today we'll cover the main features of our platform.
+  00:00:09 → 00:00:14: Let's start by looking at the dashboard.
+
+Subtitles are now available in the player.
+Viewers can toggle them on/off.
+
+Translate: "Translate subtitles to Spanish and German"
+Edit: Download SRT file from Customer Portal to make corrections
+```
+
+### Translate subtitles
+
+```
+Translate the English subtitles for Product Tutorial to Spanish, German, and French
+```
+
+Response:
+
+```
+Starting subtitle translation...
+
+Translation jobs:
+  ✓ English → Spanish: completed
+  ✓ English → German: completed
+  ⟳ English → French: in progress (80%)
+
+Product Tutorial Part 1 now has subtitles in:
+  - English (original, AI-generated)
+  - Spanish (translated)
+  - German (translated)
+  - French (processing...)
+
+Player language selector will show all available languages.
+Viewers can switch languages during playback.
+
+French translation ready in ~1 minute.
+```
+
+## Video analytics
+
+### View statistics
+
+```
+Show viewing statistics for the last 30 days
+```
+
+Response:
+
+```
+Video analytics (March 1-30, 2026):
+
+Overall:
+  Total views: 45,678
+  Unique viewers: 12,345
+  Total watch time: 2,156 hours
+  Average completion rate: 72%
+
+Top performing videos:
+  1. Getting Started Guide
+     Views: 8,923 | Completion: 89% | Avg watch: 18:02
+     
+  2. Product Demo 2026
+     Views: 6,234 | Completion: 78% | Avg watch: 15:45
+     
+  3. Customer Onboarding Webinar
+     Views: 5,672 | Completion: 65% | Avg watch: 29:15
+
+Viewer geography:
+  United States: 42%
+  Germany: 18%
+  United Kingdom: 14%
+  Other: 26%
+
+Devices:
+  Desktop: 58%
+  Mobile: 32%
+  Tablet: 10%
+
+Peak viewing hours: 14:00-17:00 UTC
+```
+
+### Analyze specific video
+
+```
+Why does the Onboarding video have low completion rate?
+```
+
+Response:
+
+```
+Analyzing: Customer Onboarding Webinar
+Completion rate: 65% (below average of 72%)
+
+Viewer drop-off analysis:
+
+Timeline:
+  0:00-5:00   100% watching (intro)
+  5:00-15:00   92% watching
+  15:00-25:00  78% watching ← gradual decline
+  25:00-35:00  68% watching
+  35:00-45:00  65% watching ← plateau
+
+Drop-off points:
+  - 15:23 (12% drop): Long technical explanation section
+  - 28:45 (8% drop): Q&A section begins
+
+Insights:
+  1. Technical section at 15:00 may be too detailed
+  2. Q&A section could be separate video
+  3. Video length (45 min) is above optimal (15-25 min)
+
+Recommendations:
+  1. Split into 2-3 shorter videos
+  2. Add chapters for navigation
+  3. Move Q&A to separate video
+
+Add chapters: "Add chapter markers to Onboarding video at 0:00, 15:00, 28:45"
+```
+
+## Embed and share
+
+### Get embed code
+
+```
+Give me the embed code for Product Tutorial Part 1
+```
+
+Response:
+
+```
+Embed options for Product Tutorial Part 1:
+
+Standard embed (responsive):
+<iframe src="https://player.gvideo.io/videos/56789" 
+        style="width:100%; aspect-ratio:16/9" 
+        allowfullscreen></iframe>
+
+Fixed size (640x360):
+<iframe src="https://player.gvideo.io/videos/56789" 
+        width="640" height="360" 
+        allowfullscreen></iframe>
+
+Direct URLs:
+  Player: https://player.gvideo.io/videos/56789
+  HLS: https://56789.gvideo.io/videos/56789/master.m3u8
+  Thumbnail: https://56789.gvideo.io/videos/56789/thumb.jpg
+
+Options:
+  Autoplay: add ?autoplay=1
+  Start time: add ?t=120 (starts at 2:00)
+  Hide controls: add ?controls=0
+
+Custom player: "Create a branded player without Gcore logo"
+```
+
+### Create custom player
+
+```
+Create a custom video player with our brand colors (blue #0066CC) and no logo
+```
+
+Response:
+
+```
+Creating custom player configuration...
+
+Player created:
+  ID: player_301
+  Name: Brand Blue Player
+
+Customizations:
+  Primary color: #0066CC
+  Controls: visible
+  Logo: hidden
+  Autoplay: disabled
+  Quality selector: visible
+
+Embed with custom player:
+<iframe src="https://player.gvideo.io/videos/56789?player_id=301" 
+        style="width:100%; aspect-ratio:16/9" 
+        allowfullscreen></iframe>
+
+Apply to all videos:
+"Set Brand Blue Player as default for all videos"
+
+Preview the player in the Customer Portal before using in production.
+```
+
+## Content moderation
+
+### Check video for inappropriate content
+
+```
+Check if the user-uploaded video contains inappropriate content
+```
+
+Response:
+
+```
+Running content moderation on video 56792...
+
+AI analysis in progress:
+  ✓ NSFW detection: scanning
+  ✓ Violence detection: scanning
+  ✓ Offensive language: scanning
+
+Results (video 56792):
+
+Content safety: PASSED ✓
+
+Detailed analysis:
+  NSFW content: none detected (confidence: 98%)
+  Violence: none detected (confidence: 99%)
+  Offensive language: none detected (confidence: 97%)
+
+This video is safe for general audiences.
+No manual review required.
+
+For automatic moderation on all uploads:
+"Enable automatic content moderation for new uploads"
+```
+
+### Flagged content
+
+```
+The new video was flagged, what's the issue?
+```
+
+Response:
+
+```
+Content moderation results for video 56793:
+
+Status: FLAGGED ⚠️
+
+Issues detected:
+
+1. NSFW content (soft nudity)
+   Timestamp: 02:34 - 02:41
+   Confidence: 87%
+   Description: Partial nudity detected in scene
+
+2. Offensive language
+   Timestamp: 05:12
+   Confidence: 72%
+   Description: Potentially offensive word detected
+
+Recommendation: Manual review required
+
+Options:
+  1. Review and approve manually in Customer Portal
+  2. Delete the video
+  3. Edit to remove flagged sections
+  
+For borderline cases, review the actual timestamps before deciding.
+
+Delete video: "Delete video 56793"
+View in portal: [Link to Customer Portal for manual review]
+```
+
+## Troubleshooting
+
+### Video stuck processing
+
+```
+My video has been processing for 2 hours, is something wrong?
+```
+
+Response:
+
+```
+Checking video processing status...
+
+Video: Large Conference Recording
+ID: 56794
+Status: processing (stuck at 45%)
+
+Analysis:
+  File size: 8.5 GB
+  Duration: 3 hours 20 minutes
+  Source format: 4K H.265
+  
+Issue identified: Large 4K file with complex codec
+
+This is expected for very large files. Processing time scales with:
+  - File size (8.5 GB is large)
+  - Resolution (4K = 4x more pixels than 1080p)
+  - Duration (3+ hours)
+  - Source codec (H.265 is compute-intensive)
+
+Estimated completion: 1-2 more hours
+
+For faster processing in future:
+  - Upload in 1080p when 4K isn't needed
+  - Use H.264 codec for faster processing
+  - Split long recordings into parts
+
+No action needed - processing will complete.
+Check again: "Check status of video 56794"
+```
+
+### Playback issues
+
+```
+Viewers report the video buffers a lot
+```
+
+Response:
+
+```
+Analyzing playback performance for reported video...
+
+Video: Product Demo 2026
+ID: 56790
+
+CDN delivery status: healthy ✓
+Edge locations: 210+ active
+
+Potential issues:
+
+1. Viewer network
+   Most buffering reports come from mobile networks
+   Solution: Ensure adaptive bitrate is working
+   
+   Current qualities:
+   ✓ 360p (for slow connections)
+   ✓ 480p
+   ✓ 720p
+   ✓ 1080p
+   
+   ABR is enabled - player should auto-adjust.
+
+2. Initial load time
+   Video starts at 1080p by default
+   For slow connections, this causes initial buffer
+   
+   Fix: "Set default quality to 720p for Product Demo video"
+
+3. Player settings
+   Preload: disabled
+   Buffer size: default (30 seconds)
+   
+   To improve: enable preload for frequently viewed videos
+
+Recommendation: Enable preload for top videos
+"Enable video preload for Product Demo 2026"
+```
+
+<Info>
+For detailed video hosting setup, see [Upload a video](/streaming/video-hosting/upload-a-video-and-embed-it-to-your-app). Playlist management is documented in [Create playlists](/streaming/video-hosting/create-and-configure-playlists-for-videos). AI subtitles are covered in [Generate AI subtitles](/streaming/video-hosting/ai-for-video/generate-ai-subtitles-and-add-them-to-video).
+</Info>

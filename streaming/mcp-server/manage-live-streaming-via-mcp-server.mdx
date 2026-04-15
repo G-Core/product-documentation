@@ -1,0 +1,595 @@
+---
+title: Manage Live Streaming via MCP Server
+sidebarTitle: Live Streaming
+---
+
+Gcore MCP Server provides live streaming management through natural language. AI assistants can create streams, configure encoders, set up restreams to social platforms, and monitor broadcasts.
+
+<Info>
+Before starting, [install and configure Gcore MCP Server](/account-settings/integrations/install-and-configure-gcore-mcp-server) with `GCORE_TOOLS="streaming.*"` to load streaming tools.
+</Info>
+
+## How it works
+
+When a request is made in natural language, the AI client calls the appropriate MCP tool and formats the JSON response for readability.
+
+Example request:
+
+```
+List my live streams
+```
+
+The MCP server returns structured data:
+
+```json
+{
+  "id": 12345,
+  "name": "Weekly Webinar",
+  "status": "active",
+  "push_url": "rtmp://vp-push-ed1.gvideo.co/in",
+  "stream_key": "12345?s=abc123def456",
+  "playback_url": "https://12345.gvideo.io/cmaf/12345/master.m3u8",
+  "viewers": 234,
+  "recording": true,
+  "dvr": true
+}
+```
+
+The AI client presents this as readable text:
+
+```
+Found 3 live streams:
+
+1. Weekly Webinar
+   Status: LIVE (234 viewers)
+   Push URL: rtmp://vp-push-ed1.gvideo.co/in
+   Stream Key: 12345?s=abc123def456
+   Recording: enabled
+   DVR: enabled
+
+2. Product Launch Event
+   Status: offline
+   Last broadcast: 2 days ago
+   Recording: enabled
+
+3. Training Sessions
+   Status: offline
+   Scheduled: March 25, 2026 at 14:00 UTC
+```
+
+## Create a live stream
+
+Setting up a new stream for broadcasting.
+
+```
+Create a live stream for our monthly town hall meeting
+```
+
+Response:
+
+```
+Creating live stream...
+
+Stream created: Monthly Town Hall
+ID: 45678
+Status: ready (waiting for encoder connection)
+
+Encoder configuration:
+  Protocol: RTMP (recommended for OBS, vMix, hardware encoders)
+  Server URL: rtmp://vp-push-ed1.gvideo.co/in
+  Stream Key: 45678?s=xyz789abc123
+  
+  Or use SRT for unreliable networks:
+  srt://vp-push-ed1.gvideo.co:5001?streamid=45678,s=xyz789abc123
+
+Playback URLs:
+  Player: https://player.gvideo.io/streams/45678
+  HLS: https://45678.gvideo.io/cmaf/45678/master.m3u8
+  LL-HLS: https://45678.gvideo.io/cmaf/45678/master.m3u8 (4-5s latency)
+  Embed: <iframe src="https://player.gvideo.io/streams/45678" ...>
+
+Default settings:
+  Quality: up to 1080p (adaptive bitrate)
+  Low latency: enabled (LL-HLS/LL-DASH)
+  Recording: disabled
+  DVR: disabled
+
+Configure OBS: "Show me how to configure OBS for this stream"
+Enable recording: "Enable recording for Monthly Town Hall stream"
+```
+
+### Configure for specific use case
+
+```
+I need a stream for a gaming tournament with ultra-low latency and DVR for replays
+```
+
+Response:
+
+```
+Creating gaming stream with optimized settings...
+
+Stream created: Gaming Tournament
+ID: 45679
+
+Optimized configuration:
+  Low latency: enabled (LL-HLS 2-3 seconds)
+  DVR: enabled (viewers can rewind up to 2 hours)
+  Recording: enabled (automatic VOD after broadcast)
+  Quality: up to 1080p60 (60fps for gaming)
+
+Encoder settings for gaming:
+  Protocol: SRT (recommended for stable gaming streams)
+  URL: srt://vp-push-ed1.gvideo.co:5001?streamid=45679,s=abc123
+  
+  Recommended OBS settings:
+    Encoder: x264 or NVENC
+    Bitrate: 6000-8000 kbps
+    Keyframe interval: 1 second (required for low latency)
+    Profile: High
+    Tune: zerolatency
+
+Playback:
+  LL-HLS: https://45679.gvideo.io/cmaf/45679/master.m3u8
+  Latency: 2-3 seconds glass-to-glass
+  DVR window: 2 hours
+
+Tournament viewers can pause and rewind to see plays they missed.
+Recording will be available as VOD after the stream ends.
+```
+
+## Configure encoder software
+
+The AI assistant provides step-by-step encoder setup.
+
+```
+How do I configure OBS for my stream 45678?
+```
+
+Response:
+
+```
+OBS Studio configuration for stream 45678:
+
+Step 1: Open OBS Settings → Stream
+  Service: Custom
+  Server: rtmp://vp-push-ed1.gvideo.co/in
+  Stream Key: 45678?s=xyz789abc123
+
+Step 2: Output settings (recommended)
+  Output Mode: Advanced
+  Encoder: x264 or NVENC (if available)
+  Rate Control: CBR
+  Bitrate: 4500-6000 kbps (for 1080p)
+  Keyframe Interval: 2 seconds
+
+Step 3: Video settings
+  Base Resolution: 1920x1080
+  Output Resolution: 1920x1080
+  FPS: 30 (or 60 for gaming)
+
+Step 4: Audio settings
+  Sample Rate: 48 kHz
+  Channels: Stereo
+
+Click "Start Streaming" when ready.
+
+Your stream will appear at:
+https://player.gvideo.io/streams/45678
+
+Test stream: "Start a test and check if stream 45678 is receiving video"
+```
+
+### Alternative protocols
+
+```
+My network is unstable, what's the best protocol?
+```
+
+Response:
+
+```
+For unstable networks, SRT (Secure Reliable Transport) is recommended.
+
+SRT advantages:
+  - Built-in error correction
+  - Handles packet loss up to 30%
+  - Lower latency than RTMP over bad connections
+  - Encrypted by default
+
+SRT configuration for stream 45678:
+  URL: srt://vp-push-ed1.gvideo.co:5001
+  Stream ID: 45678,s=xyz789abc123
+
+OBS SRT settings:
+  Service: Custom
+  Server: srt://vp-push-ed1.gvideo.co:5001
+  Stream Key: streamid=45678,s=xyz789abc123
+
+Latency buffer:
+  Default: 120ms (good for most connections)
+  High packet loss: 200-500ms
+  
+  In OBS: Settings → Advanced → Sources → SRT Latency
+
+For browser-based streaming without encoder software:
+"Set up WebRTC streaming for stream 45678"
+```
+
+## Set up restreaming
+
+Broadcast simultaneously to multiple platforms.
+
+```
+I want to stream to YouTube and Twitch at the same time
+```
+
+Response:
+
+```
+Setting up multi-platform restreaming...
+
+To restream, I need the RTMP credentials from each platform:
+
+For YouTube:
+  1. Go to YouTube Studio → Go Live → Stream
+  2. Copy the Stream URL and Stream Key
+  
+For Twitch:
+  1. Go to Twitch Dashboard → Settings → Stream
+  2. Copy your Primary Stream Key
+
+Provide the credentials in this format:
+"Add YouTube restream with URL rtmp://a.rtmp.youtube.com/live2 
+ and key xxxx-xxxx-xxxx-xxxx"
+```
+
+After providing credentials:
+
+```
+Creating restreams for stream 45678...
+
+Restream 1: YouTube
+  ID: rs_101
+  Target: rtmp://a.rtmp.youtube.com/live2
+  Status: ready
+  
+Restream 2: Twitch  
+  ID: rs_102
+  Target: rtmp://live.twitch.tv/app
+  Status: ready
+
+Both restreams are configured. When you start your main stream:
+  - Gcore receives your stream once
+  - Automatically distributes to YouTube and Twitch
+  - Each platform shows your content simultaneously
+
+Benefits:
+  - Single encoder output (saves bandwidth and CPU)
+  - Synchronized across platforms
+  - If one platform has issues, others continue
+
+Start streaming to see content on all platforms.
+Restream limit: 2 of 3 available (contact support to increase)
+```
+
+### Monitor restream status
+
+```
+Check if my restreams are working
+```
+
+Response:
+
+```
+Checking restream status for stream 45678...
+
+Main stream: LIVE (45 minutes, 1,234 viewers on Gcore player)
+
+Restream status:
+  
+  YouTube (rs_101)
+    Status: CONNECTED
+    Uptime: 45 minutes
+    Bitrate: 5,200 kbps (stable)
+    Health: excellent
+    
+  Twitch (rs_102)
+    Status: CONNECTED  
+    Uptime: 45 minutes
+    Bitrate: 5,180 kbps (stable)
+    Health: excellent
+
+All restreams operational. Your content is live on:
+  - Gcore player: https://player.gvideo.io/streams/45678
+  - YouTube: [check your YouTube Studio]
+  - Twitch: [check your Twitch dashboard]
+
+If a restream disconnects, it auto-reconnects within 10 seconds.
+```
+
+## Live stream controls
+
+### Enable recording
+
+```
+Enable recording for my webinar stream so attendees can watch later
+```
+
+Response:
+
+```
+Enabling recording for stream 45678 (Weekly Webinar)...
+
+Recording enabled:
+  Mode: automatic (starts when stream goes live)
+  Format: original quality preserved
+  Storage: Gcore Video Hosting
+  
+When stream ends:
+  - Recording is processed (5-15 minutes)
+  - Appears in Video Hosting as VOD
+  - Retains all quality levels for adaptive playback
+  
+Current recording status: waiting for stream start
+
+Note: Recording must be enabled BEFORE starting the stream.
+If stream is already live, recording starts from this moment forward.
+```
+
+### Enable DVR
+
+```
+Let viewers rewind the live stream
+```
+
+Response:
+
+```
+Enabling DVR for stream 45678...
+
+DVR enabled:
+  Window: 2 hours (viewers can rewind up to 2 hours back)
+  Seek: enabled (viewers can jump to any point in window)
+  Pause: enabled
+  
+Player behavior:
+  - Live button returns to real-time
+  - Progress bar shows DVR window
+  - Viewers can pause and resume without losing place
+
+Use cases:
+  - Viewers in different timezones catch up
+  - Replay important moments
+  - Pause for breaks without missing content
+
+DVR uses additional storage - charges apply for the buffer window.
+```
+
+### Create clips during broadcast
+
+```
+Create a highlight clip from the last 60 seconds of my stream
+```
+
+Response:
+
+```
+Creating clip from stream 45678...
+
+Clip created:
+  ID: clip_789
+  Duration: 60 seconds
+  Source: 14:23:00 - 14:24:00 UTC
+  Status: processing
+
+The clip will be available in 1-2 minutes at:
+  https://player.gvideo.io/clips/789
+
+Clips are saved permanently as VOD.
+You can share or embed them like regular videos.
+
+Create another: "Clip the last 30 seconds"
+View clips: "List all clips from today's stream"
+```
+
+## Monitor live broadcasts
+
+### View current statistics
+
+```
+How many people are watching my stream right now?
+```
+
+Response:
+
+```
+Live statistics for stream 45678 (Weekly Webinar):
+
+Current viewers: 1,847
+Peak viewers: 2,156 (at 14:15 UTC)
+Stream duration: 1 hour 23 minutes
+
+Viewer locations:
+  United States: 45%
+  Germany: 18%
+  United Kingdom: 12%
+  Other: 25%
+
+Quality distribution:
+  1080p: 62%
+  720p: 28%
+  480p: 8%
+  360p: 2%
+
+Stream health:
+  Ingest bitrate: 5,400 kbps (stable)
+  Dropped frames: 0%
+  Encoder: connected
+
+Everything looks healthy. Viewers are getting good quality.
+```
+
+### Check stream health
+
+```
+My viewers are complaining about buffering
+```
+
+Response:
+
+```
+Diagnosing stream 45678...
+
+Stream health analysis:
+
+Ingest (your encoder → Gcore):
+  Bitrate: 5,400 kbps (target: 6,000)
+  Dropped frames: 2.3% ⚠️
+  Connection: stable
+  Protocol: RTMP
+
+Issue detected: 2.3% dropped frames at source
+
+Possible causes:
+1. Encoder CPU overload
+   - Check CPU usage in OBS (should be <80%)
+   - Try faster encoding preset
+
+2. Network congestion
+   - Your upload: 5.4 Mbps used of [unknown] available
+   - Try reducing bitrate to 4,500 kbps
+
+3. Unstable connection
+   - Consider switching to SRT protocol
+   - SRT handles packet loss better than RTMP
+
+Recommended action:
+"Reduce stream bitrate to 4500 kbps"
+
+Or switch protocol:
+"Show SRT configuration for stream 45678"
+```
+
+## Schedule broadcasts
+
+```
+Schedule a stream for our product launch on April 15 at 2pm UTC
+```
+
+Response:
+
+```
+Creating scheduled broadcast...
+
+Broadcast scheduled:
+  Stream: Product Launch Event (ID: 45680)
+  Date: April 15, 2026
+  Time: 14:00 UTC
+  
+Pre-broadcast checklist:
+  - Stream will activate 30 minutes before scheduled time
+  - Encoder can connect early for testing
+  - Playback URL active but shows "Starting soon" slate
+
+Reminders:
+  - 24 hours before: email notification
+  - 1 hour before: stream ready for encoder connection
+  - 15 minutes before: final sound check recommended
+
+Share the playback URL now - viewers will see countdown:
+https://player.gvideo.io/streams/45680
+
+Embed code ready for your website.
+Edit schedule: "Change Product Launch stream to April 16 at 3pm UTC"
+```
+
+## Troubleshooting
+
+### Stream not starting
+
+```
+I started OBS but the stream isn't showing up
+```
+
+Response:
+
+```
+Troubleshooting stream connection...
+
+Checking stream 45678:
+  Status: waiting for encoder
+  Last connection attempt: none in last 5 minutes
+
+Common issues:
+
+1. Incorrect stream key
+   Your stream key: 45678?s=xyz789abc123
+   Verify this matches exactly in OBS Settings → Stream
+   
+2. Wrong server URL
+   Correct: rtmp://vp-push-ed1.gvideo.co/in
+   Check for typos or extra spaces
+
+3. Firewall blocking RTMP
+   RTMP uses port 1935
+   Ensure your firewall allows outbound on this port
+   
+4. Stream not enabled
+   Status in Gcore: enabled ✓
+
+5. OBS not actually streaming
+   Check OBS shows "LIVE" in bottom right
+   If "Connecting..." for >30 seconds, check network
+
+Test connection:
+  Try the test button in OBS Settings → Stream
+
+If RTMP fails, try SRT:
+  srt://vp-push-ed1.gvideo.co:5001?streamid=45678,s=xyz789abc123
+```
+
+### Poor video quality
+
+```
+My stream looks pixelated even though I set 1080p
+```
+
+Response:
+
+```
+Analyzing stream 45678 quality...
+
+Current ingest:
+  Resolution: 1920x1080 ✓
+  Bitrate: 2,500 kbps ⚠️
+  
+Issue: Bitrate too low for 1080p
+
+Recommended bitrates:
+  1080p60: 6,000-8,000 kbps
+  1080p30: 4,500-6,000 kbps
+  720p60: 4,000-5,000 kbps
+  720p30: 2,500-4,000 kbps
+
+Your 2,500 kbps is suitable for 720p, not 1080p.
+
+Solutions:
+
+Option 1: Increase bitrate (if upload allows)
+  In OBS: Settings → Output → Bitrate: 5000
+
+Option 2: Reduce resolution
+  In OBS: Settings → Video → Output Resolution: 1280x720
+  Better 720p quality than pixelated 1080p
+
+Option 3: Check encoder preset
+  Slower presets = better quality at same bitrate
+  OBS: Settings → Output → Encoder Preset: slow
+
+After changing: restart the stream for settings to apply.
+```
+
+<Info>
+For detailed live streaming setup, see [Getting started with live streaming](/streaming/live-streaming/create-a-live-stream). Encoder configuration is covered in [OBS setup](/streaming/live-streaming/broadcasting-software/obs) and [SRT protocol](/streaming/live-streaming/protocols/srt). Restreaming is documented in [Create a restream](/streaming/live-streaming/create-and-configure-a-restream-to-social-media).
+</Info>
