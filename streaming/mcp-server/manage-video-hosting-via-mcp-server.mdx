@@ -3,148 +3,286 @@ title: Manage Video Hosting via MCP Server
 sidebarTitle: Video Hosting
 ---
 
-Gcore MCP Server provides video-on-demand tools that AI clients can invoke through natural language. The server returns structured data that the AI client interprets and presents in readable format.
+Gcore MCP Server provides video-on-demand management through natural language. AI assistants can upload videos, organize libraries, create playlists, and generate subtitles.
 
 <Info>
 Before starting, [install and configure Gcore MCP Server](/account-settings/integrations/install-and-configure-gcore-mcp-server) with `GCORE_TOOLS="streaming.*"` to load streaming tools.
 </Info>
 
-## Available tools
+## How it works
 
-| Tool | Description |
-|------|-------------|
-| `streaming_videos_ls` | List all videos |
-| `streaming_videos_get` | Get video details by ID |
-| `streaming_videos_new` | Upload video from URL |
-| `streaming_videos_upd` | Update video metadata |
-| `streaming_videos_del` | Delete a video |
-| `streaming_playlists_ls` | List playlists |
-| `streaming_playlists_new` | Create a playlist |
-| `streaming_playlists_upd` | Update playlist content |
-| `streaming_playlists_del` | Delete a playlist |
-| `streaming_directories_ls` | List directories |
-| `streaming_directories_new` | Create a directory |
-| `streaming_ai_subtitles_new` | Generate AI subtitles |
-| `streaming_ai_translate_new` | Translate subtitles |
-| `streaming_statistics_get` | Get viewing statistics |
+When a request is made in natural language, the AI client calls the appropriate MCP tool and formats the JSON response for readability.
 
-## View videos
-
-List all videos:
+Example request:
 
 ```
 List my videos
 ```
 
-Get details for a specific video:
+The MCP server returns structured data:
+
+```json
+{
+  "id": 56789,
+  "name": "Product Tutorial",
+  "duration": 845,
+  "status": "ready",
+  "views": 12456
+}
+```
+
+The AI client presents this as readable text:
 
 ```
-Show details for video 56789
-```
+Found 24 videos:
 
-The response includes: video ID, name, duration, status (processing/ready), available qualities, view count, and embed URLs.
+1. Product Tutorial (ID: 56789)
+   Duration: 14:05
+   Views: 12,456
+   Status: ready
+   Qualities: 360p, 480p, 720p, 1080p
+
+2. Onboarding Webinar (ID: 56790)
+   Duration: 58:32
+   Views: 3,892
+   Status: ready
+
+3. Q1 Product Demo (ID: 56791)
+   Duration: 22:15
+   Status: processing (78%)
+```
 
 ## Upload videos
 
-Upload from URL:
-
 ```
-Upload video from https://example.com/video.mp4
+Upload video from https://example.com/training/module1.mp4
 ```
 
-Upload with metadata:
+Response:
 
 ```
-Upload video from https://example.com/demo.mp4 named "Product Demo" with tags demo, product
+Video upload started
+
+Source: https://example.com/training/module1.mp4
+Name: module1 (from filename)
+Status: downloading
+
+Processing pipeline:
+  1. Download: in progress
+  2. Transcode: pending
+  3. Ready: pending
+
+Estimated time: 10-15 minutes
+I'll let you know when it's ready.
 ```
 
-Check processing status:
+Check progress:
 
 ```
-Show processing status for video 56789
+What's the status of my video uploads?
+```
+
+Response:
+
+```
+Video processing status:
+
+Completed:
+  ✓ module1.mp4 → Product Tutorial (ID: 56789)
+  ✓ module2.mp4 → Advanced Features (ID: 56790)
+
+In progress:
+  ⟳ module3.mp4 - transcoding 720p (65%)
+  
+All videos will be ready in ~5 minutes.
 ```
 
 For upload options, see [Upload videos](/streaming/video-hosting/upload-a-video-and-embed-it-to-your-app).
 
 ## Organize library
 
-Create directories:
-
 ```
-Create directory named "Tutorials"
+Create folders for Tutorials, Webinars, and Product Demos
 ```
 
-Move videos:
+Response:
 
 ```
-Move video 56789 to Tutorials directory
+Directories created:
+  📁 Tutorials
+  📁 Webinars  
+  📁 Product Demos
+
+Move videos with: "Move Product Tutorial to Tutorials folder"
 ```
 
-Search videos:
-
 ```
-Find videos with tag "tutorial"
+Move all tutorial videos to the Tutorials folder
 ```
 
-## Playlists
-
-Create a playlist:
+Response:
 
 ```
-Create playlist "Training Series" with videos 56789, 56790, 56791
+Moved 6 videos to Tutorials:
+  ✓ Product Tutorial
+  ✓ Advanced Features
+  ✓ Getting Started
+  ✓ Tips and Tricks
+  ✓ Module 1
+  ✓ Module 2
+
+Tutorials folder: 6 videos, 2h 15m total
 ```
 
-Add video to playlist:
+## Create playlists
 
 ```
-Add video 56792 to playlist "Training Series"
+Create a playlist called "New Employee Training" with Onboarding, Company Overview, and Tools Setup videos
+```
+
+Response:
+
+```
+Playlist created: New Employee Training
+
+Videos (3):
+  1. Onboarding (25:30)
+  2. Company Overview (12:45)
+  3. Tools Setup (18:20)
+
+Total duration: 56 minutes
+
+Embed: https://player.gvideo.io/playlists/201
+
+Add more videos with:
+"Add Compliance Training to New Employee Training playlist"
 ```
 
 For playlist features, see [Playlists](/streaming/video-hosting/create-and-configure-playlists-for-videos).
 
-## AI subtitles
-
-Generate subtitles:
+## Generate subtitles
 
 ```
-Generate subtitles for video 56789
+Generate subtitles for Product Tutorial video
 ```
 
-Translate subtitles:
+Response:
 
 ```
-Translate subtitles for video 56789 to Spanish
+AI transcription started for Product Tutorial
+
+Processing:
+  - Extracting audio
+  - Running speech recognition
+  - Synchronizing timing
+
+Estimated time: 2-3 minutes for 14-minute video
+
+Subtitles will appear in player's caption menu when ready.
 ```
 
-For subtitle options, see [AI subtitles](/streaming/video-hosting/ai-for-video/generate-ai-subtitles-and-add-them-to-video).
-
-## View statistics
-
-Get viewing metrics:
+After completion:
 
 ```
-Show statistics for video 56789 for the last 30 days
+Subtitles ready for Product Tutorial
+
+Language: English (auto-detected)
+Segments: 127
+Confidence: 96%
+
+Viewers can now toggle captions in the player.
+
+Translate to other languages:
+"Translate subtitles for Product Tutorial to Spanish and German"
 ```
 
-Available metrics include view count, unique viewers, average watch time, completion rate, and geographic distribution.
+For AI subtitle options, see [Generate AI subtitles](/streaming/video-hosting/ai-for-video/generate-ai-subtitles-and-add-them-to-video).
 
-## Common requests
+## View analytics
 
-| Request | Tool called |
-|---------|-------------|
-| "List my videos" | `streaming_videos_ls` |
-| "Upload video from URL" | `streaming_videos_new` |
-| "Create playlist with videos" | `streaming_playlists_new` |
-| "Generate subtitles" | `streaming_ai_subtitles_new` |
-| "Show video statistics" | `streaming_statistics_get` |
-| "Delete video 123" | `streaming_videos_del` |
+```
+Show analytics for Product Tutorial this month
+```
+
+Response:
+
+```
+Product Tutorial - March 2026
+
+Views: 12,456 (↑23% vs February)
+Unique viewers: 8,234
+Average watch time: 11:42 (83% completion)
+
+Top locations:
+  United States: 45%
+  Germany: 18%
+  United Kingdom: 12%
+
+Devices:
+  Desktop: 62%
+  Mobile: 28%
+  Tablet: 10%
+
+Drop-off point: 8:45 (technical section)
+Consider adding chapter markers or shortening this section.
+```
+
+## Get embed code
+
+```
+Show embed code for Product Tutorial
+```
+
+Response:
+
+```
+Embed options for Product Tutorial:
+
+Responsive:
+<iframe src="https://player.gvideo.io/videos/56789" 
+        style="width:100%; aspect-ratio:16/9" 
+        allowfullscreen></iframe>
+
+With autoplay:
+https://player.gvideo.io/videos/56789?autoplay=1
+
+Start at timestamp:
+https://player.gvideo.io/videos/56789?t=120
+
+Direct HLS (for custom players):
+https://56789.gvideo.io/videos/56789/master.m3u8
+```
 
 ## Troubleshooting
 
-If a request fails, the AI client displays the error message. Common issues:
+```
+My video has been processing for 2 hours
+```
 
-- **Video not found**: Verify the video ID exists
-- **Still processing**: Video upload not yet complete
-- **Feature unavailable**: AI subtitles require feature activation
+Response:
 
-For operations not available through MCP, use the [Gcore Customer Portal](https://streaming.gcore.com) or [Streaming API](/api-reference/streaming).
+```
+Checking video status...
+
+Video: Conference Recording
+Size: 8.5 GB
+Duration: 3 hours 20 minutes
+Format: 4K H.265
+Status: transcoding 1080p (45%)
+
+This is expected for large 4K files:
+  - 4K = 4x more pixels than 1080p
+  - H.265 requires more processing
+  - 3+ hour duration
+
+Estimated completion: 1-2 more hours
+
+For faster processing next time:
+  - Upload in 1080p if 4K not needed
+  - Use H.264 codec
+  - Split long recordings into parts
+```
+
+<Info>
+For complete video hosting documentation, see [Upload a video](/streaming/video-hosting/upload-a-video-and-embed-it-to-your-app).
+</Info>

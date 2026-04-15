@@ -3,125 +3,217 @@ title: Manage Live Streaming via MCP Server
 sidebarTitle: Live Streaming
 ---
 
-Gcore MCP Server provides live streaming tools that AI clients can invoke through natural language. The server returns structured data that the AI client interprets and presents in readable format.
+Gcore MCP Server provides live streaming management through natural language. AI assistants can create streams, configure features, set up restreaming, and monitor broadcasts.
 
 <Info>
 Before starting, [install and configure Gcore MCP Server](/account-settings/integrations/install-and-configure-gcore-mcp-server) with `GCORE_TOOLS="streaming.*"` to load streaming tools.
 </Info>
 
-## Available tools
+## How it works
 
-| Tool | Description |
-|------|-------------|
-| `streaming_streams_ls` | List all live streams |
-| `streaming_streams_get` | Get stream details by ID |
-| `streaming_streams_new` | Create a new stream |
-| `streaming_streams_upd` | Update stream settings |
-| `streaming_streams_del` | Delete a stream |
-| `streaming_restreams_ls` | List restreams |
-| `streaming_restreams_new` | Create restream to external platform |
-| `streaming_restreams_del` | Delete a restream |
-| `streaming_broadcasts_ls` | List scheduled broadcasts |
-| `streaming_broadcasts_new` | Schedule a broadcast |
-| `streaming_statistics_get` | Get viewing statistics |
+When a request is made in natural language, the AI client calls the appropriate MCP tool and formats the JSON response for readability.
 
-## View streams
-
-List all live streams:
+Example request:
 
 ```
 List my live streams
 ```
 
-Get details for a specific stream:
+The MCP server returns structured data:
+
+```json
+{
+  "id": 12345,
+  "name": "Weekly Webinar",
+  "active": true,
+  "push_url": "rtmp://vp-push-ed1.gvideo.co/in",
+  "stream_key": "12345?s=abc123",
+  "hls_url": "https://12345.gvideo.io/cmaf/12345/master.m3u8"
+}
+```
+
+The AI client presents this as readable text:
 
 ```
-Show details for stream 12345
-```
+Found 2 live streams:
 
-The response includes: stream ID, name, status (active/ready/offline), push URL, stream key, playback URLs, and enabled features (recording, DVR, low latency).
+1. Weekly Webinar (ID: 12345)
+   Status: active
+   Push URL: rtmp://vp-push-ed1.gvideo.co/in
+   Stream key: 12345?s=abc123
+   Features: recording enabled, DVR enabled
+
+2. Product Demos (ID: 12346)
+   Status: offline
+   Last broadcast: March 20, 2026
+```
 
 ## Create a stream
 
 ```
-Create a live stream named "Weekly Webinar"
+Create a live stream for our company town hall
 ```
 
-The response includes push URL and stream key for encoder configuration. For encoder setup details, see [OBS configuration](/streaming/live-streaming/broadcasting-software/obs) or [SRT protocol](/streaming/live-streaming/protocols/srt).
-
-## Enable features
-
-Enable recording to save the stream as VOD:
+Response:
 
 ```
-Enable recording for stream 12345
+Stream created: Company Town Hall
+ID: 12347
+
+Encoder settings:
+  Server: rtmp://vp-push-ed1.gvideo.co/in
+  Stream key: 12347?s=xyz789
+
+Playback URL: https://player.gvideo.io/streams/12347
+
+Default settings applied:
+  - Low latency: enabled (2-3 second delay)
+  - Recording: disabled
+  - DVR: disabled
+
+Configure OBS or your encoder with these settings to start broadcasting.
 ```
 
-Enable DVR to allow viewers to pause and rewind:
+For encoder configuration details, see [OBS setup](/streaming/live-streaming/broadcasting-software/obs) or [SRT protocol](/streaming/live-streaming/protocols/srt).
+
+## Enable recording and DVR
 
 ```
-Enable DVR for stream 12345
+Enable recording and DVR for stream "Weekly Webinar"
 ```
 
-Clear DVR cache before a new broadcast:
+Response:
 
 ```
-Clear DVR cache for stream 12345
+Updated stream: Weekly Webinar
+
+Recording: enabled
+  - Stream will be saved as VOD after broadcast ends
+  - Available in Video Hosting within 5-15 minutes
+
+DVR: enabled  
+  - Viewers can pause and rewind up to 1 hour
+  - Takes ~10 minutes after stream starts to accumulate buffer
+
+Remember to clear DVR cache before each new broadcast to prevent 
+viewers from seeing previous content.
 ```
 
 For feature details, see [Recording](/streaming/live-streaming/record-your-live-streams-and-save-them-as-videos) and [DVR](/streaming/live-streaming/pause-and-rewind-the-live-streams).
 
-## Restreaming
+## Set up restreaming
 
-Create a restream to broadcast simultaneously on external platforms:
-
-```
-Create restream for stream 12345 to rtmp://a.rtmp.youtube.com/live2 with key xxxx-xxxx
-```
-
-List configured restreams:
+Broadcast simultaneously to YouTube, Twitch, or other platforms.
 
 ```
-List restreams for stream 12345
+Set up restream from "Weekly Webinar" to YouTube
+```
+
+Response:
+
+```
+To create a restream, I need the RTMP credentials from YouTube.
+
+In YouTube Studio:
+1. Go Live → Stream → copy Stream URL and Stream key
+
+Then tell me:
+"Create restream with URL rtmp://a.rtmp.youtube.com/live2 and key xxxx-xxxx"
+```
+
+After providing credentials:
+
+```
+Restream created for Weekly Webinar → YouTube
+
+When you start streaming:
+  - Gcore receives your stream
+  - Automatically forwards to YouTube
+  - Both platforms show your content simultaneously
+
+Status: ready (will activate when main stream starts)
 ```
 
 For platform setup, see [Restreaming](/streaming/live-streaming/create-and-configure-a-restream-to-social-media).
 
-## Schedule broadcasts
-
-Schedule a stream to start at a specific time:
+## Monitor a broadcast
 
 ```
-Schedule broadcast for stream 12345 on April 15 at 14:00 UTC
+How is the Weekly Webinar stream performing?
 ```
 
-## View statistics
-
-Get viewing metrics:
+Response:
 
 ```
-Show statistics for stream 12345 for the last 7 days
+Weekly Webinar - LIVE for 45 minutes
+
+Viewers: 234 current (peak: 312)
+
+Stream health:
+  Ingest bitrate: 5,200 kbps (stable)
+  Dropped frames: 0%
+  Quality: 1080p
+
+Viewer distribution:
+  1080p: 58%
+  720p: 32%
+  480p: 10%
+
+Restreams:
+  YouTube: connected, healthy
 ```
 
-Available metrics include viewer counts, peak concurrent viewers, watch time, and geographic distribution.
+## Create clips
 
-## Common requests
+Capture highlights during a live broadcast.
 
-| Request | Tool called |
-|---------|-------------|
-| "List my live streams" | `streaming_streams_ls` |
-| "Create stream named X" | `streaming_streams_new` |
-| "Enable recording for stream 123" | `streaming_streams_upd` |
-| "Create restream to YouTube" | `streaming_restreams_new` |
-| "Show stream statistics" | `streaming_statistics_get` |
-| "Delete stream 123" | `streaming_streams_del` |
+```
+Create a 60-second clip from the current stream
+```
+
+Response:
+
+```
+Clip created from Weekly Webinar
+
+Duration: 60 seconds
+Status: processing (ready in 1-2 minutes)
+
+Playback URL: https://player.gvideo.io/clips/789
+
+The clip is saved permanently as VOD.
+```
 
 ## Troubleshooting
 
-If a request fails, the AI client displays the error message. Common issues:
+```
+My stream isn't showing up after I started OBS
+```
 
-- **Stream not found**: Verify the stream ID exists
-- **Permission denied**: Check API token permissions
-- **Feature unavailable**: Some features require plan upgrade
+Response:
 
-For operations not available through MCP, use the [Gcore Customer Portal](https://streaming.gcore.com) or [Streaming API](/api-reference/streaming).
+```
+Checking stream "Weekly Webinar"...
+
+Status: waiting for encoder connection
+
+Troubleshooting steps:
+1. Verify stream key: 12345?s=abc123
+   - Check for typos or extra spaces in OBS
+
+2. Verify server URL: rtmp://vp-push-ed1.gvideo.co/in
+   - Ensure "in" is included at the end
+
+3. Check OBS is actually streaming
+   - Bottom right should show "LIVE" not "Connecting..."
+
+4. Firewall
+   - RTMP uses port 1935, ensure it's not blocked
+
+If using SRT instead:
+  srt://vp-push-ed1.gvideo.co:5001?streamid=12345,s=abc123
+```
+
+<Info>
+For complete live streaming documentation, see [Getting started with live streaming](/streaming/live-streaming/create-a-live-stream).
+</Info>
