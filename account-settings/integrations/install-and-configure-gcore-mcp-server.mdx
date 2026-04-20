@@ -47,7 +47,7 @@ Add the server to the AI client configuration file. The configuration includes e
 
 <Tabs>
   <Tab title="Claude Code">
-Edit `~/.claude.json`:
+Edit `~/.claude/settings.json` (macOS/Linux) or `%USERPROFILE%\.claude\settings.json` (Windows):
 
 ```json
 {
@@ -71,7 +71,7 @@ Edit `~/.claude.json`:
 Claude Code supports `GCORE_TOOLS=*` (all tools) due to its deferred schema loading.
   </Tab>
   <Tab title="Cursor IDE">
-Edit `~/.cursor/mcp.json`:
+Edit `~/.cursor/mcp.json` (macOS/Linux) or `%USERPROFILE%\.cursor\mcp.json` (Windows):
 
 ```json
 {
@@ -116,3 +116,115 @@ List my CDN resources
 ```
 
 A successful response confirms the server is configured correctly.
+
+## Configure Cloud defaults
+
+Cloud tools require `project_id` and `region_id` parameters. Pre-configure defaults to simplify requests.
+
+### Find project and region IDs
+
+1. Open the [Gcore Customer Portal](https://portal.gcore.com)
+2. Navigate to **Cloud** > **Projects** to view project IDs
+3. Select a project and navigate to any Cloud service to view region IDs in the URL
+
+Alternatively, use MCP Inspector or the AI client to discover IDs:
+
+```
+List my Cloud projects
+```
+
+```
+List available Cloud regions
+```
+
+### Add defaults to configuration
+
+Add `GCORE_CLOUD_PROJECT_ID` and `GCORE_CLOUD_REGION_ID` to the `env` section:
+
+```json
+{
+  "mcpServers": {
+    "gcore-mcp-server": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "gcore-mcp-server@git+https://github.com/G-Core/gcore-mcp-server.git",
+        "gcore-mcp-server"
+      ],
+      "env": {
+        "GCORE_API_KEY": "your-api-key",
+        "GCORE_TOOLS": "cloud.*",
+        "GCORE_CLOUD_PROJECT_ID": "1186668",
+        "GCORE_CLOUD_REGION_ID": "76"
+      }
+    }
+  }
+}
+```
+
+With defaults configured, requests like "Create a VM with 2 vCPUs" use the specified project and region automatically.
+
+## Windows installation
+
+On Windows, use PowerShell to install `uv` and configure the MCP server.
+
+### Install uv
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+After installation, restart the terminal or run `refreshenv` to update PATH.
+
+### Configuration paths
+
+- Claude Code: `%USERPROFILE%\.claude\settings.json`
+- Cursor IDE: `%USERPROFILE%\.cursor\mcp.json`
+
+Use forward slashes or escaped backslashes in JSON paths. The `uvx` command works the same on Windows as on macOS/Linux.
+
+## Troubleshooting
+
+### Server fails to start
+
+**Symptom**: AI client shows "Failed to connect to MCP server" or similar error.
+
+**Solutions**:
+- Verify `uv` is installed: run `uv --version` in terminal
+- Check the `uvx` command works: run the command from the config manually
+- Ensure the config file has valid JSON syntax
+
+### Tools not appearing
+
+**Symptom**: AI client connects but no Gcore tools are available.
+
+**Solutions**:
+- Check `GCORE_API_KEY` is set correctly (no extra spaces or quotes)
+- Verify the API token has not expired
+- For Cursor IDE, ensure `GCORE_TOOLS` pattern matches at least one tool
+
+### Authentication errors
+
+**Symptom**: Requests return "401 Unauthorized" or "Invalid API key".
+
+**Solutions**:
+- Verify the API token is correct and active
+- Check the token has permissions for the requested operation (see [API token permissions](/account-settings/integrations/gcore-mcp-server-overview#api-token-permissions))
+- Regenerate the API token if it may have been compromised
+
+### Cloud operations fail with "project not found"
+
+**Symptom**: Cloud requests return errors about missing project or region.
+
+**Solutions**:
+- Configure `GCORE_CLOUD_PROJECT_ID` and `GCORE_CLOUD_REGION_ID` in environment variables
+- Or specify project and region in each request: "List VMs in project 1186668, region Luxembourg"
+
+### Rate limiting
+
+**Symptom**: Requests fail with "429 Too Many Requests".
+
+**Solutions**:
+- Wait before retrying (typically 60 seconds)
+- Reduce request frequency in automated workflows
+- Contact Gcore support for rate limit increases if needed

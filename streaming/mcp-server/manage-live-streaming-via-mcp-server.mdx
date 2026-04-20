@@ -23,29 +23,32 @@ The MCP server returns structured data:
 
 ```json
 {
-  "id": 12345,
-  "name": "Weekly Webinar",
+  "id": 4166418,
+  "name": "MCP Documentation Test Stream",
+  "client_id": 1000503,
+  "live": false,
   "active": true,
-  "push_url": "rtmp://vp-push-ed1.gvideo.co/in",
-  "stream_key": "12345?s=abc123",
-  "hls_url": "https://12345.gvideo.io/cmaf/12345/master.m3u8"
+  "push_url": "rtmp://vp-push-ed2.gvideo.co/in/4166418?3c5867431632e1d749fe70d2652bcdaa",
+  "push_url_srt": "srt://vp-push-ed2-srt.gvideo.co:5001?streamid=4166418#3c5867431632e1d749fe70d2652bcdaa",
+  "hls_cmaf_url": "https://1000503.gvideo.io/cmaf/1000503_4166418/master.m3u8",
+  "iframe_url": "https://player.gvideo.co/streams/1000503_4166418",
+  "dvr_enabled": false,
+  "low_latency_enabled": true,
+  "transcoding_enabled": true
 }
 ```
 
 The AI client presents this as readable text:
 
 ```
-Found 2 live streams:
+Found 1 live stream:
 
-1. Weekly Webinar (ID: 12345)
-   Status: active
-   Push URL: rtmp://vp-push-ed1.gvideo.co/in
-   Stream key: 12345?s=abc123
-   Features: recording enabled, DVR enabled
-
-2. Product Demos (ID: 12346)
-   Status: offline
-   Last broadcast: March 20, 2026
+1. MCP Documentation Test Stream (ID: 4166418)
+   Status: active, not broadcasting
+   RTMP: rtmp://vp-push-ed2.gvideo.co/in/4166418?3c5867...
+   SRT: srt://vp-push-ed2-srt.gvideo.co:5001?streamid=4166418#3c5867...
+   Player: https://player.gvideo.co/streams/1000503_4166418
+   Features: low latency enabled, transcoding enabled
 ```
 
 ## Create a stream
@@ -54,24 +57,44 @@ Found 2 live streams:
 Create a live stream for our company town hall
 ```
 
-Response:
+The MCP server creates the stream and returns configuration:
+
+```json
+{
+  "id": 4166418,
+  "name": "Company Town Hall",
+  "active": true,
+  "live": false,
+  "push_url": "rtmp://vp-push-ed2.gvideo.co/in/4166418?3c5867431632e1d749fe70d2652bcdaa",
+  "backup_push_url": "rtmp://vp-push-anx1.gvideo.co/in/4166418b?3c5867431632e1d749fe70d2652bcdaa",
+  "push_url_srt": "srt://vp-push-ed2-srt.gvideo.co:5001?streamid=4166418#3c5867431632e1d749fe70d2652bcdaa",
+  "push_url_whip": "https://whip.gvideo.co/4166418_3c5867431632e1d749fe70d2652bcdaa/whip",
+  "hls_cmaf_url": "https://1000503.gvideo.io/cmaf/1000503_4166418/master.m3u8",
+  "iframe_url": "https://player.gvideo.co/streams/1000503_4166418",
+  "low_latency_enabled": true,
+  "dvr_enabled": false,
+  "transcoding_enabled": true
+}
+```
+
+The AI client presents this as:
 
 ```
-Stream created: Company Town Hall
-ID: 12347
+Stream created: Company Town Hall (ID: 4166418)
 
-Encoder settings:
-  Server: rtmp://vp-push-ed1.gvideo.co/in
-  Stream key: 12347?s=xyz789
+Encoder settings (RTMP):
+  Server: rtmp://vp-push-ed2.gvideo.co/in/4166418?3c5867...
+  Backup: rtmp://vp-push-anx1.gvideo.co/in/4166418b?3c5867...
 
-Playback URL: https://player.gvideo.io/streams/12347
+Encoder settings (SRT):
+  srt://vp-push-ed2-srt.gvideo.co:5001?streamid=4166418#3c5867...
 
-Default settings applied:
+Playback: https://player.gvideo.co/streams/1000503_4166418
+
+Default settings:
   - Low latency: enabled (2-3 second delay)
   - Recording: disabled
   - DVR: disabled
-
-Configure OBS or your encoder with these settings to start broadcasting.
 ```
 
 For encoder configuration details, see [OBS setup](/streaming/live-streaming/broadcasting-software/obs) or [SRT protocol](/streaming/live-streaming/protocols/srt).
@@ -190,28 +213,39 @@ The clip is saved permanently as VOD.
 My stream isn't showing up after I started OBS
 ```
 
-Response:
+The MCP server checks stream status:
+
+```json
+{
+  "id": 4166418,
+  "name": "Company Town Hall",
+  "live": false,
+  "active": true,
+  "push_url": "rtmp://vp-push-ed2.gvideo.co/in/4166418?3c5867431632e1d749fe70d2652bcdaa",
+  "push_url_srt": "srt://vp-push-ed2-srt.gvideo.co:5001?streamid=4166418#3c5867431632e1d749fe70d2652bcdaa",
+  "receiving_error": null
+}
+```
+
+The AI client interprets this as:
 
 ```
-Checking stream "Weekly Webinar"...
+Checking stream "Company Town Hall" (ID: 4166418)...
 
-Status: waiting for encoder connection
+Status: active but not receiving video (live: false)
 
 Troubleshooting steps:
-1. Verify stream key: 12345?s=abc123
-   - Check for typos or extra spaces in OBS
+1. Verify RTMP URL in OBS:
+   rtmp://vp-push-ed2.gvideo.co/in/4166418?3c5867431632e1d749fe70d2652bcdaa
 
-2. Verify server URL: rtmp://vp-push-ed1.gvideo.co/in
-   - Ensure "in" is included at the end
-
-3. Check OBS is actually streaming
+2. Check OBS is actually streaming
    - Bottom right should show "LIVE" not "Connecting..."
 
-4. Firewall
+3. Firewall settings
    - RTMP uses port 1935, ensure it's not blocked
 
-If using SRT instead:
-  srt://vp-push-ed1.gvideo.co:5001?streamid=12345,s=abc123
+Alternative with SRT (lower latency):
+   srt://vp-push-ed2-srt.gvideo.co:5001?streamid=4166418#3c5867431632e1d749fe70d2652bcdaa
 ```
 
 <Info>
