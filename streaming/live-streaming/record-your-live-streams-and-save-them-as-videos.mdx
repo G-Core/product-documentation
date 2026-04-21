@@ -3,11 +3,24 @@ title: Record your live streams and save them as videos
 sidebarTitle: Record
 ---
 
-## What is the record feature
+Gcore supports two recording methods for live streams:
 
-Record is a feature that allows you to record your live streams and store them in the Streaming storage. You can automatically record entire streams or manually record only desired fragments.
+| Method | Description | Availability |
+|--------|-------------|--------------|
+| **Transcoded recording** | Records the processed stream with all overlays, texts, and logos. Standard quality renditions are generated. | Available to all users |
+| **Original recording** | Records the raw RTMP/SRT source without transcoding. Preserves original quality, framerate, and codecs. | Premium feature (contact support to enable) |
 
-Recording and live transcoding are separate, independent workflows. Recording saves the incoming stream for later processing and export, while the live transcoder builds the live playback session from the source metadata read once when the encoder connects.
+<Tabs>
+<Tab title="Record transcoded stream">
+
+## What is transcoded recording
+
+Transcoded recording saves your live stream after processing. The recording includes any overlays, texts, or logos applied during the broadcast. Gcore generates multiple quality renditions for playback.
+
+Use transcoded recording when you need:
+- Standard VOD delivery with adaptive bitrate
+- Recordings that include visual overlays
+- Long-term storage (recordings persist indefinitely)
 
 ## How to record a live stream
 
@@ -50,13 +63,6 @@ auto_record: true
  ```
 
 The recording will be saved in the Streaming Storage.
-
-Details about additional recording options are available in the following guides:
-
-  * [How to record an original or transcoded stream with overlays.](/api-reference/streaming/streams/start-recording)
-  * [How to create an instant clip from a currently running live stream.](/api-reference/streaming/streams/create-clip)
-
-
 
 ## Where the records are kept
 
@@ -145,3 +151,73 @@ LATER VOD PROCESSING / EXPORT OF RECORDING
   may fail, enter Error status, or require trimming
   of the broken segment before reprocessing
 ```
+
+</Tab>
+<Tab title="Record original stream">
+
+## What is original recording
+
+Original recording saves the raw incoming stream (RTMP, SRT, or other protocol) without transcoding. The file preserves the original quality, framerate, codecs, and all source parameters exactly as sent by your encoder.
+
+<Warning>
+Original recording is a premium feature. Contact your account manager or [Gcore support](mailto:support@gcore.com) to enable it for your account.
+</Warning>
+
+## Benefits of original recording
+
+| Benefit | Description |
+|---------|-------------|
+| **Fast availability** | Original file is available for download approximately 30 seconds after the stream ends. No transcoding wait time. |
+| **Original quality** | Preserves source bitrate, resolution, framerate, and codec settings without re-encoding |
+| **Quick turnaround** | Ideal for video editors who need raw footage immediately after broadcast |
+
+## How to enable original recording
+
+Original recording is configured via API when creating or updating a stream. Set the `record_type` parameter:
+
+```json
+{
+  "name": "My live stream",
+  "record_type": "origin"
+}
+```
+
+| Value | Description |
+|-------|-------------|
+| `origin` | Records the raw RTMP/SRT source without transcoding |
+| `transcoded` | Records the processed stream with overlays (default) |
+
+For API details, see [Create stream](/api-reference/streaming/streams/create-stream) and [Start recording](/api-reference/streaming/streams/start-recording).
+
+## Where to find original recordings
+
+After recording completes, the original file URL is available in the `origin_url` field of the video entity. Retrieve it via the [Get video API](/api-reference/streaming/videos/get-video):
+
+```json
+{
+  "id": 12345,
+  "name": "Stream Record: My live stream, 2026-04-21 12:00:00",
+  "origin_url": "https://storage.gcore.com/original/12345.mp4",
+  ...
+}
+```
+
+## Storage limits
+
+<Warning>
+Original recordings are stored for **7 days only**. After 7 days, the original file is automatically deleted.
+
+Transcoded renditions are not affected and remain available indefinitely.
+</Warning>
+
+Download or transfer original files within the 7-day window if you need them for archival or editing.
+
+## Use cases
+
+- **Video editing**: Download raw MP4 immediately after broadcast for post-production
+- **Archival**: Preserve original quality footage before transcoding
+- **Quality control**: Review source stream quality without transcoding artifacts
+- **Compliance**: Maintain unmodified recordings for regulatory requirements
+
+</Tab>
+</Tabs>
