@@ -3,47 +3,85 @@ title: Cloud egress IP addresses
 sidebarTitle: Egress IP addresses
 ---
 
-Gcore Cloud services use specific IP addresses when making outbound (egress) connections to external systems. If your infrastructure restricts incoming connections by source IP, add these addresses to your allowlist.
+Gcore Cloud services use specific IP addresses for outbound (egress) traffic. The API returns both IPv4 and IPv6 address ranges in CIDR notation. If your infrastructure restricts incoming connections by source IP, add these ranges to your allowlist.
 
 ## When to allowlist Cloud IPs
 
-Cloud makes outbound connections in the following scenarios:
+Add Cloud egress IP ranges to your allowlist in these scenarios:
 
 | Scenario | Description |
 |----------|-------------|
-| **HTTP webhooks** | Cloud sends event notifications to your HTTP endpoints when certain actions occur (resource creation, status changes, etc.) |
-| **AMQP messaging** | Cloud connects to your AMQP message brokers for event streaming and message queue integration |
-| **Image downloads** | Cloud fetches custom images from your storage when creating Virtual Machines or Bare Metal servers |
+| **Image and asset delivery** | Cloud downloads images or assets from your infrastructure when creating resources. Add egress ranges to your firewall or object storage allowlist so Cloud can fetch files. |
+| **Webhooks and push integrations** | Cloud pushes events to your listener endpoint when you subscribe to the user-actions event log. Allowlist these ranges to accept traffic only from Cloud. |
+| **AMQP messaging** | Cloud connects to your AMQP message brokers for event streaming and queue integration. |
+| **Security and audit** | Use these ranges in SIEM rules or audit tools to verify that traffic originates from Gcore Cloud. |
 
-If your firewall or security groups block these connections, Cloud services cannot communicate with your systems.
+## Retrieve egress IP ranges
 
-## Retrieve egress IP addresses
+Fetch the current list of Cloud egress IP ranges using the public API. This endpoint requires no authentication.
 
-Fetch the current list of Cloud egress IP addresses using the public API:
+### Request
 
 ```sh
 curl -i -X GET https://api.gcore.com/cloud/public/v1/ipranges/egress
 ```
 
-The response contains a JSON array of IP addresses and CIDR ranges:
+### Response
+
+The response contains an array of CIDR blocks covering all Gcore Cloud regions:
 
 ```json
 {
-  "addresses": [
-    "192.0.2.1",
-    "192.0.2.2",
-    "198.51.100.0/24"
+  "ranges": [
+    "192.0.2.0/24",
+    "198.51.100.0/24",
+    "2001:db8::/32"
   ]
 }
 ```
 
-<Note>
-This endpoint requires no authentication. You can call it from scripts and automation tools without API keys.
-</Note>
+The list is global and covers all regions. Duplicate prefixes are not returned.
+
+### SDK examples
+
+**Python:**
+
+```python
+from gcore import Gcore
+
+client = Gcore()
+ip_ranges = client.cloud.ip_ranges.list()
+print(ip_ranges.ranges)
+```
+
+**Go:**
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+
+    "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/option"
+)
+
+func main() {
+    client := gcore.NewClient(
+        option.WithAPIKey("My API Key"),
+    )
+    ipRanges, err := client.Cloud.IPRanges.List(context.TODO())
+    if err != nil {
+        panic(err.Error())
+    }
+    fmt.Printf("%+v\n", ipRanges.Ranges)
+}
+```
 
 ## Automate allowlist updates
 
-Gcore continuously expands its network infrastructure. New IP addresses are added to the list 30-60 minutes before new servers go online.
+Gcore continuously expands its network. New IP ranges are added to the list before new infrastructure goes online.
 
 To prevent service disruptions, automate your allowlist updates:
 
@@ -51,7 +89,7 @@ To prevent service disruptions, automate your allowlist updates:
 #!/bin/bash
 # Fetch Cloud egress IPs and update firewall rules
 
-EGRESS_IPS=$(curl -s https://api.gcore.com/cloud/public/v1/ipranges/egress | jq -r '.addresses[]')
+EGRESS_IPS=$(curl -s https://api.gcore.com/cloud/public/v1/ipranges/egress | jq -r '.ranges[]')
 
 for ip in $EGRESS_IPS; do
   # Add to your firewall/security group
@@ -61,5 +99,9 @@ done
 ```
 
 <Warning>
-If you fail to add a new IP address to your allowlist, Cloud cannot reach your systems from servers using that address. Run your update script on a schedule (for example, hourly via cron).
+If you fail to add a new IP range to your allowlist, Cloud cannot reach your systems from infrastructure using that range. Run your update script on a schedule (for example, hourly via cron).
 </Warning>
+
+## API reference
+
+For complete API details, see [List cloud egress public IPs](/api-reference/cloud#tag/ip-ranges/GET/cloud/public/v1/ipranges/egress) in the Cloud API reference.
