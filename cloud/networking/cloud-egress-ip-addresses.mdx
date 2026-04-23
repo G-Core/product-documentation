@@ -3,24 +3,72 @@ title: Cloud egress IP addresses
 sidebarTitle: Egress IP addresses
 ---
 
-Gcore Cloud uses specific IP addresses for outbound (egress) traffic. If your systems restrict incoming connections, add these addresses to your allowlist.
+Gcore Cloud services use specific IP addresses when making outbound (egress) connections to external systems. If your infrastructure restricts incoming connections by source IP, add these addresses to your allowlist.
 
-## When to allowlist Cloud egress IPs
+## When to allowlist Cloud IPs
 
-Add Cloud egress IP addresses to your allowlist for:
+Cloud makes outbound connections in the following scenarios:
 
-- **HTTP webhooks** - Cloud sends notifications to your endpoints
-- **AMQP connections** - Cloud connects to your message brokers
-- **Image downloads** - Cloud fetches images from your servers
+| Scenario | Description |
+|----------|-------------|
+| **HTTP webhooks** | Cloud sends event notifications to your HTTP endpoints when certain actions occur (resource creation, status changes, etc.) |
+| **AMQP messaging** | Cloud connects to your AMQP message brokers for event streaming and message queue integration |
+| **Image downloads** | Cloud fetches custom images from your storage when creating Virtual Machines or Bare Metal servers |
 
-## Get the IP address list
+If your firewall or security groups block these connections, Cloud services cannot communicate with your systems.
 
-Fetch the current list of Cloud egress IP addresses:
+## Retrieve egress IP addresses
+
+Fetch the current list of Cloud egress IP addresses using the public API:
 
 ```sh
 curl -i -X GET https://api.gcore.com/cloud/public/v1/ipranges/egress
 ```
 
-<Info>
-Gcore expands the network continuously, so the list of IP addresses changes. Write a script that automatically updates your allowlist to prevent service disruptions when new addresses are added.
-</Info>
+The response contains a JSON array of IP addresses and CIDR ranges:
+
+```json
+{
+  "addresses": [
+    "192.0.2.1",
+    "192.0.2.2",
+    "198.51.100.0/24"
+  ]
+}
+```
+
+<Note>
+This endpoint requires no authentication. You can call it from scripts and automation tools without API keys.
+</Note>
+
+## Automate allowlist updates
+
+Gcore continuously expands its network infrastructure. New IP addresses are added to the list 30-60 minutes before new servers go online.
+
+To prevent service disruptions, automate your allowlist updates:
+
+```bash
+#!/bin/bash
+# Fetch Cloud egress IPs and update firewall rules
+
+EGRESS_IPS=$(curl -s https://api.gcore.com/cloud/public/v1/ipranges/egress | jq -r '.addresses[]')
+
+for ip in $EGRESS_IPS; do
+  # Add to your firewall/security group
+  # Example: iptables -A INPUT -s $ip -j ACCEPT
+  echo "Allowing: $ip"
+done
+```
+
+<Warning>
+If you fail to add a new IP address to your allowlist, Cloud cannot reach your systems from servers using that address. Run your update script on a schedule (for example, hourly via cron).
+</Warning>
+
+## Related endpoints
+
+For CDN egress IP addresses, use the CDN-specific endpoints:
+
+- `https://api.gcore.com/cdn/public-ip-list` - Individual IP addresses
+- `https://api.gcore.com/cdn/public-net-list` - Subnet ranges
+
+These return CDN edge server addresses, which differ from Cloud egress addresses.
