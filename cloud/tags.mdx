@@ -1,0 +1,102 @@
+---
+title: Tags
+sidebarTitle: Tags
+---
+
+Tags are key-value pairs attached to Cloud resources for organization and identification. Each tag consists of a key (like `env`) and a value (like `production`).
+
+## Add tags in the Gcore Customer Portal
+
+Add tags during resource creation or to existing resources. Tags are supported on Virtual Machines, Bare Metal servers, Volumes, Networks, Subnetworks, Load Balancers, Firewalls, Images, and File Shares.
+
+### During resource creation
+
+1. Navigate to the resource creation page (for example, **Cloud** > **Virtual Instances** > **Create Instance**).
+
+2. In the **Additional options** section, turn on the **Add tags** toggle.
+
+3. Enter a **Key** and **Value** for each tag.
+
+4. Click **Add tag** to add more tags if needed.
+
+5. Complete the resource creation.
+
+<Frame>
+<img src="/images/cloud-tags-create-resource.png" alt="Add tags toggle in the Additional options section during resource creation" />
+</Frame>
+
+### On existing resources
+
+1. Open the resource details page (for example, **Cloud** > **Networking** > **Load Balancers** > select a Load Balancer).
+
+2. Navigate to the **Tags** tab.
+
+3. Turn on **Add custom tags**, then enter key-value pairs.
+
+4. Click **Save changes**.
+
+<Frame>
+<img src="/images/cloud-tags-existing-resource.png" alt="Tags tab on an existing resource showing key-value pair fields" />
+</Frame>
+
+## Add tags via API
+
+Include tags in the `metadata` field when creating or updating resources via the [Gcore API](/api-reference/overview):
+
+```json
+{
+  "name": "my-instance",
+  "metadata": {
+    "env": "production",
+    "team": "backend"
+  }
+}
+```
+
+## Add tags via Terraform
+
+Specify tags in the `metadata_map` attribute when using the [Gcore Terraform provider](/cloud/manage-cloud-via-terraform):
+
+```hcl
+resource "gcore_instance" "example" {
+  name        = "my-instance"
+  flavor_id   = "g1-standard-2-4"
+  
+  metadata_map = {
+    env  = "production"
+    team = "backend"
+  }
+}
+```
+
+## Tag formatting rules
+
+| Parameter | Requirement |
+|-----------|-------------|
+| Key length | 3-255 characters |
+| Value length | 3-255 characters |
+| Forbidden characters | `=` in keys |
+| Whitespace | Leading and trailing spaces are trimmed |
+
+<Warning>
+Tag keys cannot contain the `=` character.
+</Warning>
+
+## Common tagging patterns
+
+| Pattern | Example tags |
+|---------|--------------|
+| Environment | `env:production`, `env:staging`, `env:development` |
+| Service | `service:authentication`, `service:payment` |
+| Ownership | `team:backend`, `owner:devops` |
+| Cost tracking | `cost-center:marketing`, `project:website-redesign` |
+
+## Use tags in cost reports
+
+Tags appear in the [Cost Report](/cloud/getting-started/view-statistics-on-expenses) table as a dedicated column. Filter and search resources by tag to analyze spending by environment, team, or project.
+
+When you export the detailed CSV report, the column contains all values assigned to each resource. Use this data to:
+
+- Calculate costs per environment (`env:production` vs `env:staging`)
+- Track spending by team or cost center
+- Identify untagged resources that need classification
