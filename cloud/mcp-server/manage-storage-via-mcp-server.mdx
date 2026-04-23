@@ -1,0 +1,601 @@
+---
+title: Manage Storage via MCP Server
+sidebarTitle: Storage
+---
+
+Gcore MCP Server provides storage management through natural language. AI assistants can create volumes, manage snapshots, and configure file shares.
+
+<Info>
+Before starting, [install and configure Gcore MCP Server](/account-settings/integrations/install-and-configure-gcore-mcp-server) with `GCORE_TOOLS="cloud.*"` to load Cloud tools including storage.
+</Info>
+
+## How it works
+
+When a request is made in natural language, the AI client resolves project and region context, calls the appropriate MCP tool, and presents the response in readable format.
+
+Example request:
+
+```
+List my volumes in Luxembourg
+```
+
+The AI client responds:
+
+```
+Found 1 volume in Luxembourg-2:
+
+1. mcp-test-volume (1 GB, standard)
+   Status: available
+   Attached to: none
+   IOPS: 10 base / 100 burst
+   Throughput: 10 MB/s base / 100 MB/s burst
+   Boot volume: no
+   Created: 2026-04-20
+```
+
+## Volumes
+
+Volumes provide block storage for Virtual Machines. Each VM requires a boot volume for the operating system, and additional data volumes can be attached for application storage.
+
+### List volumes
+
+Listing volumes shows all block storage in a project and region with their type, size, attachment status, and performance characteristics.
+
+```
+List my volumes
+```
+
+To see only unattached volumes (useful for identifying unused storage):
+
+```
+Show unattached volumes
+```
+
+Response:
+
+```
+Found 2 unattached volumes in Luxembourg-2:
+
+1. old-app-boot (20 GB, ssd_hiiops)
+   Created: 2026-01-15
+   Bootable: yes (Ubuntu 22.04)
+   
+2. backup-storage (500 GB, standard)
+   Created: 2026-02-15
+   Bootable: no
+
+Total unattached storage: 520 GB
+```
+
+### View volume details
+
+```
+Show details for volume web-server-boot
+```
+
+Response includes IOPS limits, attachment info, and image metadata for boot volumes:
+
+```
+Volume: web-server-boot
+ID: 6632cc34-ac83-4927-8e68-17d1f661ae3d
+Size: 50 GB
+Type: ssd_hiiops
+
+Performance limits:
+  IOPS: 3,000 base / 6,000 burst (2x for 10 minutes)
+  Throughput: 100 MB/s base / 200 MB/s burst
+
+Attachment:
+  Instance: web-server-01
+  Device: /dev/sda
+  Attached: 2026-03-01
+
+Boot volume: yes
+  OS: Ubuntu 22.04 (linux)
+  Architecture: x86_64
+
+Snapshots: 1 available
+```
+
+### Volume types
+
+Different volume types suit different workloads. The AI client shows available types when creating volumes.
+
+```
+What volume types are available in Luxembourg?
+```
+
+Response:
+
+```
+Volume types in Luxembourg-2:
+
+1. high_iops_ssd
+   IOPS: 60 per GB (max 9,000)
+   Throughput: 2.5 MB/s per GB (max 500 MB/s)
+   Use case: databases, latency-sensitive workloads
+
+2. standard
+   IOPS: 6 per GB (max 4,500)
+   Throughput: 0.4 MB/s per GB (max 300 MB/s)
+   Use case: general purpose, predictable I/O
+
+3. ssd_lowlatency
+   IOPS: up to 5,000
+   Latency: ~300 µs average
+   Use case: real-time data processing
+   Note: snapshots and resizing not supported
+```
+
+### Create a volume
+
+Creating a volume allocates block storage that can be attached to instances.
+
+```
+Create a 100 GB high IOPS SSD volume named database-storage
+```
+
+Response:
+
+```
+Creating volume database-storage...
+
+Volume created:
+  ID: 7a8b9c0d-1e2f-3a4b-5c6d-7e8f9a0b1c2d
+  Name: database-storage
+  Size: 100 GB
+  Type: high_iops_ssd
+  Status: available
+
+Performance:
+  IOPS: 6,000 base / 9,000 burst
+  Throughput: 250 MB/s base / 500 MB/s burst
+
+To attach: "Attach volume database-storage to instance db-server"
+```
+
+For boot volumes with an OS image:
+
+```
+Create a 20 GB standard volume from Ubuntu 22.04 image
+```
+
+Response:
+
+```
+Creating boot volume from image...
+
+Volume created:
+  ID: 8b9c0d1e-2f3a-4b5c-6d7e-8f9a0b1c2d3e
+  Size: 20 GB
+  Type: standard
+  Status: available
+  Bootable: yes
+  
+Image: ubuntu-22.04-x64
+  OS: Ubuntu 22.04 LTS
+  Architecture: x86_64
+
+To create VM: "Create instance from volume 8b9c0d1e..."
+```
+
+### Attach volumes to instances
+
+Attaching makes a volume available to the instance as a block device.
+
+```
+Attach volume database-storage to instance db-server
+```
+
+Response:
+
+```
+Attaching volume database-storage to db-server...
+
+Attached successfully:
+  Volume: database-storage
+  Instance: db-server
+  Device: /dev/vdb
+  
+The volume appears at /dev/vdb in the instance.
+Next steps in the instance:
+  1. Format: mkfs.ext4 /dev/vdb
+  2. Mount: mount /dev/vdb /data
+  3. Add to /etc/fstab for persistent mount
+```
+
+<Warning>
+After attaching, the volume must be formatted and mounted within the instance operating system. The MCP server handles the attachment; filesystem configuration requires connecting to the instance.
+</Warning>
+
+### Detach volumes
+
+Detaching disconnects a volume from an instance while preserving data.
+
+```
+Detach volume database-storage from instance db-server
+```
+
+Response:
+
+```
+Detaching volume database-storage...
+
+Detached successfully.
+Volume status: available
+
+The volume data is preserved and can be attached to another instance.
+```
+
+<Warning>
+Unmount the volume within the instance (`umount /data`) before detaching to prevent data corruption.
+</Warning>
+
+### Resize volumes
+
+Volumes can be expanded to accommodate growing data needs.
+
+```
+Resize volume database-storage to 200 GB
+```
+
+Response:
+
+```
+Resizing volume database-storage...
+
+Resize completed:
+  Previous size: 100 GB
+  New size: 200 GB
+  
+Performance updated:
+  IOPS: 9,000 base / 9,000 burst (max reached)
+  Throughput: 500 MB/s base / 500 MB/s burst (max reached)
+
+Next: Extend the filesystem in the instance to use the additional space.
+  Linux: resize2fs /dev/vdb
+  (or: xfs_growfs /data for XFS)
+```
+
+<Info>
+Volumes can only be increased in size, not decreased. SSD Low-Latency volumes do not support resizing. IOPS and throughput scale with size up to the type maximum.
+</Info>
+
+### Delete volumes
+
+```
+Delete volume old-backup
+```
+
+Response:
+
+```
+Deleting volume old-backup...
+
+Volume deleted.
+Released storage: 50 GB
+```
+
+<Warning>
+Attached volumes cannot be deleted. The AI client returns an error listing which instance the volume must be detached from first. Deleted volumes cannot be recovered.
+</Warning>
+
+## Snapshots
+
+Snapshots capture the state of a volume at a specific point in time, useful for backups, disaster recovery, and creating volume templates.
+
+### List snapshots
+
+```
+List my snapshots
+```
+
+Response:
+
+```
+Found 1 snapshot in Luxembourg-2:
+
+db-backup-20260319
+  Size: 100 GB
+  Source volume: postgres-data (ssd_hiiops)
+  Status: available
+  Created: 2026-03-19
+  Metadata:
+    - bootable: false
+    - app: postgresql
+```
+
+### View snapshot details
+
+```
+Show details for snapshot db-backup-20260319
+```
+
+Response:
+
+```
+Snapshot: db-backup-20260319
+ID: e6e94288-21dd-452d-b9ce-37d4d2bde3c3
+
+Source:
+  Volume: postgres-data
+  Volume ID: 6632cc34-ac83-4927-8e68-17d1f661ae3d
+  Volume type: ssd_hiiops
+
+Properties:
+  Size: 100 GB
+  Status: available
+  Bootable: no
+  App: postgresql
+
+Created: 2026-03-19T08:31:45
+
+To restore: "Create a volume from snapshot db-backup-20260319"
+```
+
+### Create a snapshot
+
+```
+Create a snapshot of volume postgres-data named daily-backup
+```
+
+Response:
+
+```
+Creating snapshot daily-backup...
+
+Snapshot created:
+  ID: f7a8b9c0-d1e2-f3a4-b5c6-d7e8f9a0b1c2
+  Name: daily-backup
+  Source: postgres-data
+  Size: 100 GB
+  Status: creating
+
+Snapshot will be available in 1-2 minutes.
+```
+
+<Info>
+For consistent snapshots of databases, stop writes or use application-level quiesce before creating the snapshot. The snapshot captures the volume state at creation time.
+</Info>
+
+### Create a volume from snapshot
+
+Restore data or create a copy from a snapshot:
+
+```
+Create a volume from snapshot daily-backup named restored-db
+```
+
+Response:
+
+```
+Creating volume from snapshot...
+
+Volume created:
+  ID: 1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d
+  Name: restored-db
+  Size: 10 GB
+  Type: standard (inherited from snapshot)
+  Status: available
+
+The volume contains all data from the snapshot point in time.
+```
+
+### Delete snapshots
+
+```
+Delete snapshot old-backup-snapshot
+```
+
+Response:
+
+```
+Deleting snapshot old-backup-snapshot...
+
+Snapshot deleted.
+Released storage: 10 GB
+
+Note: The source volume and any volumes created from this snapshot are not affected.
+```
+
+## File shares
+
+File shares provide NFS-based shared storage accessible from multiple instances simultaneously. Use file shares when multiple servers need access to the same data.
+
+### List file shares
+
+```
+List my file shares
+```
+
+Response:
+
+```
+Found 3 file shares in Luxembourg-2:
+
+1. test234 (10 GB, standard)
+   Status: available
+   Protocol: NFS
+   Network: test1 (subnet: subnet)
+   Mount point: 10.10.10.167:/shares/share-0a930cf1-e6e1-4415-b8a4-ec186550eb0d
+
+2. test1 (100 GB, standard)
+   Status: error_deleting
+   Protocol: NFS
+   Network: MOBILE_NET (subnet: internal_subnet)
+   
+3. test (100 GB, standard)
+   Status: deleting
+   Protocol: NFS
+   Network: test1 (subnet: test1)
+```
+
+### View file share details
+
+```
+Show details for file share test234
+```
+
+Response:
+
+```
+File share: test234
+ID: 337246b6-2483-4466-b22c-16ebea8874fd
+
+Size: 10 GB
+Type: standard
+Protocol: NFS
+Status: available
+
+Network configuration:
+  Network: test1
+  Subnet: subnet
+  
+Mount point: 10.10.10.167:/shares/share-0a930cf1-e6e1-4415-b8a4-ec186550eb0d
+
+Created: 2024-08-28
+
+To mount on Linux instance:
+  mount -t nfs 10.10.10.167:/shares/share-0a930cf1-e6e1-4415-b8a4-ec186550eb0d /mnt/shared
+```
+
+### Create a file share
+
+```
+Create a 50 GB file share named shared-data in network test1
+```
+
+Response:
+
+```
+Creating file share shared-data...
+
+File share created:
+  ID: 2b3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7e
+  Name: shared-data
+  Size: 50 GB
+  Protocol: NFS
+  Status: creating
+  
+Network: test1
+Subnet: subnet (auto-selected)
+
+The file share will be available in 2-3 minutes with mount point details.
+```
+
+<Info>
+File shares are attached to a specific network and accessible only from instances in that network. Ensure target instances are connected to the same network before mounting.
+</Info>
+
+### Resize file shares
+
+```
+Resize file share shared-data to 100 GB
+```
+
+Response:
+
+```
+Resizing file share shared-data...
+
+Resize completed:
+  Previous size: 50 GB
+  New size: 100 GB
+
+The additional space is immediately available. No remount required.
+```
+
+### Delete file shares
+
+```
+Delete file share old-share
+```
+
+Response:
+
+```
+Deleting file share old-share...
+
+File share deletion initiated.
+Status: deleting
+
+Ensure all instances have unmounted the share before deletion completes.
+```
+
+## Troubleshooting
+
+### Volume attachment fails
+
+Common causes and diagnostics:
+
+```
+Show details for volume database-storage
+```
+
+Check the response for:
+- **Status not "available"**: Volume may be attached elsewhere or in error state
+- **Region mismatch**: Volume and instance must be in the same region
+
+```
+Show details for instance db-server
+```
+
+Verify instance is running and not at maximum volume attachment limit.
+
+### Snapshot creation slow
+
+Large volumes with high I/O activity take longer to snapshot.
+
+```
+Show status of snapshot daily-backup
+```
+
+If stuck in "creating" for more than 30 minutes:
+- High write load on source volume can delay snapshot
+- Check volume status for errors
+
+### File share not accessible
+
+```
+Show details for file share shared-data
+```
+
+Verify:
+- Status is "available"
+- Instance is in the same network as the file share
+
+```
+Show network interfaces for instance web-server
+```
+
+Check if instance has interface in the file share's network.
+
+### Quota exceeded
+
+```
+Show my storage quota
+```
+
+Response:
+
+```
+Storage quota for project default (Luxembourg-2):
+
+Volumes:
+  Used: 12 of 50 volumes
+  Size: 320 GB of 1000 GB
+
+Snapshots:
+  Used: 1 of 50 snapshots
+  Size: 10 GB of 500 GB
+
+File shares:
+  Used: 3 of 10 shares
+  Size: 210 GB of 500 GB
+```
+
+Delete unused volumes, snapshots, or file shares to free quota.
+
+<Info>
+For detailed volume configuration, see [About volumes](/cloud/virtual-instances/volumes/about-volumes). Volume management is documented in [Create and configure volumes](/cloud/virtual-instances/volumes/create-and-configure-volumes). File share setup is covered in [About file shares](/cloud/file-shares/about-file-shares).
+</Info>

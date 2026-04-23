@@ -1,0 +1,507 @@
+---
+title: Manage AI/ML via MCP Server
+sidebarTitle: AI and ML
+---
+
+Gcore MCP Server provides AI and machine learning infrastructure management through natural language. AI assistants can manage GPU instances, deploy inference models, and monitor training workloads.
+
+<Info>
+Before starting, [install and configure Gcore MCP Server](/account-settings/integrations/install-and-configure-gcore-mcp-server) with `GCORE_TOOLS="cloud.*"` to load Cloud tools including AI/ML infrastructure.
+</Info>
+
+## How it works
+
+When a request is made in natural language, the AI client resolves project and region context, calls the appropriate MCP tool, and presents the response in readable format.
+
+Example request:
+
+```
+List my GPU instances
+```
+
+The AI client responds:
+
+```
+Found 2 GPU instances in Luxembourg-2:
+
+1. ml-training-01
+   Status: ACTIVE
+   Flavor: g2-gpu-16-64-a2-2 (16 vCPU, 64 GB RAM)
+   GPU: 2x NVIDIA A2
+   OS: Ubuntu 22.04
+
+2. render-workstation
+   Status: SHUTOFF
+   Flavor: g2w-gpu-8-32-a2-1 (8 vCPU, 32 GB RAM)
+   GPU: 1x NVIDIA A2
+   OS: Windows Server 2022
+```
+
+## GPU instances
+
+GPU instances provide dedicated graphics processing units for AI/ML training, inference, rendering, and high-performance computing workloads.
+
+### List GPU instances
+
+```
+List my GPU instances
+```
+
+The response shows all instances with GPU flavors, including GPU type, vCPU count, RAM, and current status.
+
+```
+Show GPU flavors available in Luxembourg
+```
+
+Response:
+
+```
+GPU flavors in Luxembourg-2:
+
+Linux flavors:
+  g2-gpu-8-32-a2-1    8 vCPU, 32 GB RAM, 1x NVIDIA A2
+  g2-gpu-16-64-a2-2   16 vCPU, 64 GB RAM, 2x NVIDIA A2
+  g2-gpu-32-128-a2-4  32 vCPU, 128 GB RAM, 4x NVIDIA A2
+  
+Windows flavors:
+  g2w-gpu-8-32-a2-1   8 vCPU, 32 GB RAM, 1x NVIDIA A2
+
+High-performance (H100):
+  Available in select regions. Contact support for access.
+```
+
+### Create a GPU instance
+
+Creating a GPU instance allocates dedicated GPU resources.
+
+```
+Create a GPU instance with 8 vCPUs, 32 GB RAM, and NVIDIA A2 running Ubuntu 22.04
+```
+
+Response:
+
+```
+Creating GPU instance...
+
+Instance created:
+  ID: 9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d
+  Name: gpu-instance-1
+  Status: BUILD
+  
+Configuration:
+  Flavor: g2-gpu-8-32-a2-1
+  GPU: 1x NVIDIA A2
+  vCPU: 8
+  RAM: 32 GB
+  OS: Ubuntu 22.04
+
+The instance will be ready in 2-3 minutes.
+GPU drivers are pre-installed on supported images.
+```
+
+For Windows with GPU:
+
+```
+Create a Windows Server 2022 instance with GPU for rendering
+```
+
+Response:
+
+```
+Creating Windows GPU instance...
+
+Instance created:
+  ID: 1b2c3d4e-5f6a-7b8c-9d0e-1f2a3b4c5d6e
+  Name: win-gpu-1
+  Status: BUILD
+  
+Configuration:
+  Flavor: g2w-gpu-8-32-a2-1
+  GPU: 1x NVIDIA A2
+  vCPU: 8
+  RAM: 32 GB
+  OS: Windows Server 2022
+
+Connect via RDP once the instance is ACTIVE.
+```
+
+<Info>
+GPU flavors have limited regional availability. The AI client suggests alternative regions when a requested GPU configuration is unavailable locally.
+</Info>
+
+### Manage GPU instance lifecycle
+
+GPU instances support the same lifecycle operations as standard instances.
+
+```
+Stop instance ml-training-01 to save costs
+```
+
+Response:
+
+```
+Stopping instance ml-training-01...
+
+Instance stopped.
+Status: SHUTOFF
+GPU resources released.
+
+Billing for compute pauses while stopped.
+Storage charges continue.
+
+To restart: "Start instance ml-training-01"
+```
+
+```
+Resize GPU instance ml-training-01 to 32 vCPUs and 128 GB RAM with 4 A2 GPUs
+```
+
+Response:
+
+```
+Resizing instance ml-training-01...
+
+This operation requires:
+1. Stop the instance (will be done automatically)
+2. Change flavor to g2-gpu-32-128-a2-4
+3. Restart the instance
+
+Proceed? (The AI waits for confirmation or proceeds based on context)
+
+Resize completed:
+  Previous: g2-gpu-16-64-a2-2 (2x A2)
+  New: g2-gpu-32-128-a2-4 (4x A2)
+  Status: ACTIVE
+```
+
+## GPU clusters
+
+GPU clusters provide multi-node GPU infrastructure for distributed training and large-scale inference. Available in Bare Metal and Virtual configurations.
+
+### List GPU clusters
+
+```
+List my GPU clusters
+```
+
+If no clusters exist:
+
+```
+No GPU clusters found in Luxembourg-2.
+
+To create a GPU Bare Metal cluster:
+"Create a GPU Bare Metal cluster with 4 H100 nodes"
+
+To create a GPU Virtual cluster:
+"Create a GPU Virtual cluster with 2 A100 nodes"
+```
+
+### Create a GPU Bare Metal cluster
+
+GPU Bare Metal clusters provide dedicated physical servers with direct GPU access.
+
+```
+Create a GPU Bare Metal cluster named ml-training with 4 H100 nodes
+```
+
+Response:
+
+```
+Creating GPU Bare Metal cluster ml-training...
+
+Cluster configuration:
+  Name: ml-training
+  Nodes: 4
+  GPU per node: 8x NVIDIA H100 80GB
+  Interconnect: 3.2 Tbit/s InfiniBand
+  RAM per node: 2TB
+  Storage per node: 8x 3.84TB NVMe
+
+Estimated provisioning time: 15-30 minutes
+
+Cluster creation initiated.
+ID: 2c3d4e5f-6a7b-8c9d-0e1f-2a3b4c5d6e7f
+
+Status updates:
+  - Allocating hardware...
+```
+
+<Info>
+GPU Bare Metal cluster creation involves physical server allocation and takes 15-30 minutes. The AI client monitors progress and reports when all nodes are ready.
+</Info>
+
+### Create a GPU Virtual cluster
+
+GPU Virtual clusters offer flexibility with faster provisioning.
+
+```
+Create a GPU Virtual cluster named inference-dev with 2 A100 nodes
+```
+
+Response:
+
+```
+Creating GPU Virtual cluster inference-dev...
+
+Cluster configuration:
+  Name: inference-dev
+  Nodes: 2
+  GPU per node: 8x NVIDIA A100 80GB
+  Interconnect: Ethernet
+
+Cluster creation initiated.
+ID: 3d4e5f6a-7b8c-9d0e-1f2a-3b4c5d6e7f8a
+
+Estimated time: 5-10 minutes
+```
+
+### Manage cluster nodes
+
+Once a cluster is created, individual nodes can be managed.
+
+```
+Get console access for node 1 in cluster ml-training
+```
+
+Response:
+
+```
+Console access for ml-training node 1:
+
+URL: https://console.gcore.com/vnc/...
+Token: abc123xyz
+Valid for: 10 minutes
+
+Open the URL in a browser to access the node console.
+```
+
+```
+Reboot all nodes in cluster ml-training
+```
+
+Response:
+
+```
+Rebooting all nodes in cluster ml-training...
+
+Node 1: rebooting
+Node 2: rebooting
+Node 3: rebooting
+Node 4: rebooting
+
+All nodes will be back online in approximately 5 minutes.
+```
+
+### Scale clusters
+
+```
+Add 2 more nodes to cluster ml-training
+```
+
+Response:
+
+```
+Scaling cluster ml-training...
+
+Current nodes: 4
+Adding: 2
+New total: 6
+
+Provisioning additional nodes...
+Estimated time: 15-20 minutes
+```
+
+## AI inference (Everywhere Inference)
+
+Everywhere Inference deploys trained AI models on edge inference nodes with automatic routing to the nearest endpoint.
+
+### List inference deployments
+
+```
+List my inference deployments
+```
+
+If no deployments exist:
+
+```
+No inference deployments found.
+
+Available actions:
+  - "Deploy Llama 2 70B model" (from catalog)
+  - "Deploy custom model from registry my-registry/model:v1"
+```
+
+### Deploy a model from catalog
+
+```
+Deploy Llama 2 70B with 3 replicas in Europe
+```
+
+Response:
+
+```
+Deploying Llama 2 70B...
+
+Configuration:
+  Model: meta-llama/Llama-2-70b-chat-hf
+  Replicas: 3
+  Regions: Luxembourg, Frankfurt, Amsterdam
+  GPU type: L40S (auto-selected for model size)
+
+Deployment initiated.
+ID: 4e5f6a7b-8c9d-0e1f-2a3b-4c5d6e7f8a9b
+
+Status: pulling model weights (this may take 10-15 minutes)
+
+Endpoint will be available at:
+https://llama2-70b-xxx.inference.gcore.com
+```
+
+### Deploy a custom model
+
+```
+Deploy my custom model from registry docker.io/myorg/sentiment:v2 in Luxembourg
+```
+
+Response:
+
+```
+Deploying custom model sentiment:v2...
+
+Configuration:
+  Image: docker.io/myorg/sentiment:v2
+  Replicas: 1
+  Region: Luxembourg
+
+Deployment initiated.
+ID: 5f6a7b8c-9d0e-1f2a-3b4c-5d6e7f8a9b0c
+
+Status: pulling container image
+
+Endpoint will be available at:
+https://sentiment-xxx.inference.gcore.com
+```
+
+### Check deployment status
+
+```
+Show status of deployment llama2-70b
+```
+
+Response:
+
+```
+Deployment: llama2-70b
+
+Status: running
+Replicas: 3/3 healthy
+
+Regions:
+  Luxembourg: 1 replica, healthy
+  Frankfurt: 1 replica, healthy
+  Amsterdam: 1 replica, healthy
+
+Endpoint: https://llama2-70b-xxx.inference.gcore.com
+Traffic: 1,250 requests/hour
+
+GPU utilization:
+  Luxembourg: 45%
+  Frankfurt: 62%
+  Amsterdam: 38%
+```
+
+### Scale deployments
+
+```
+Scale deployment llama2-70b to 5 replicas
+```
+
+Response:
+
+```
+Scaling deployment llama2-70b...
+
+Current replicas: 3
+Target replicas: 5
+Adding: 2 replicas (auto-placed in high-traffic regions)
+
+Scaling in progress...
+New replicas will be ready in 5-10 minutes.
+```
+
+## Troubleshooting
+
+### GPU flavor not available
+
+```
+Show GPU availability in all regions
+```
+
+Response:
+
+```
+GPU availability:
+
+Luxembourg-2:
+  A2: available
+  A100: limited
+  H100: contact support
+
+Frankfurt:
+  A2: available
+  A100: available
+  H100: limited
+
+Amsterdam:
+  A2: available
+  L40S: available
+
+Contact support for H100 or dedicated GPU allocations.
+```
+
+### Cluster creation fails
+
+Common causes:
+- Insufficient quota for GPU resources
+- Region capacity constraints
+
+```
+Show my GPU quota
+```
+
+Response:
+
+```
+GPU quota for project default:
+
+A2 GPUs: 4 used / 8 available
+A100 GPUs: 0 used / 0 available (contact support to enable)
+H100 GPUs: 0 used / 0 available (contact support to enable)
+
+To request quota increase: support@gcore.com
+```
+
+### Inference deployment not responding
+
+```
+Show logs for deployment sentiment-v2
+```
+
+Response:
+
+```
+Recent logs for sentiment-v2:
+
+[2026-04-15 10:30:15] Container started
+[2026-04-15 10:30:20] Loading model weights...
+[2026-04-15 10:30:45] Model loaded successfully
+[2026-04-15 10:31:00] Listening on port 8080
+[2026-04-15 10:35:22] ERROR: CUDA out of memory
+
+Issue: Model requires more GPU memory than allocated.
+Solution: Upgrade to larger GPU or reduce batch size.
+```
+
+<Info>
+For detailed GPU Cloud configuration, see [About GPU Cloud](/edge-ai/ai-infrastructure/about-gpu-cloud). Inference deployment is documented in [Deploy an AI model](/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model). GPU instance types are covered in [Types of Virtual Machines](/cloud/virtual-instances/types-of-virtual-machines).
+</Info>

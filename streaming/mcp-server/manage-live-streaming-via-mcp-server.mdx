@@ -1,0 +1,200 @@
+---
+title: Manage Live Streaming via MCP Server
+sidebarTitle: Live Streaming
+---
+
+Gcore MCP Server provides live streaming management through natural language. AI assistants can create streams, configure recording and DVR, set up restreaming, and monitor broadcasts.
+
+<Info>
+Before starting, [install and configure Gcore MCP Server](/account-settings/integrations/install-and-configure-gcore-mcp-server) with `GCORE_TOOLS="streaming.*"` to load streaming tools.
+</Info>
+
+## How it works
+
+When a request is made in natural language, the AI client calls the appropriate MCP tool, receives JSON data from the Gcore API, and presents it in readable format.
+
+Example request:
+
+```
+List my live streams
+```
+
+The AI client responds:
+
+```
+Found 1 live stream:
+
+1. MCP Documentation Test Stream (ID: 4166418)
+   Status: active, not broadcasting
+   RTMP: rtmp://vp-push-ed2.gvideo.co/in/4166418?3c5867...
+   SRT: srt://vp-push-ed2-srt.gvideo.co:5001?streamid=4166418#3c5867...
+   Player: https://player.gvideo.co/streams/1000503_4166418
+   Features: low latency enabled, transcoding enabled
+```
+
+## Create a stream
+
+```
+Create a live stream for our company town hall
+```
+
+Response:
+
+```
+Stream created: Company Town Hall (ID: 4166418)
+
+Encoder settings (RTMP):
+  Server: rtmp://vp-push-ed2.gvideo.co/in/4166418?3c5867...
+  Backup: rtmp://vp-push-anx1.gvideo.co/in/4166418b?3c5867...
+
+Encoder settings (SRT):
+  srt://vp-push-ed2-srt.gvideo.co:5001?streamid=4166418#3c5867...
+
+Playback: https://player.gvideo.co/streams/1000503_4166418
+
+Default settings:
+  - Low latency: enabled (2-3 second delay)
+  - Recording: disabled
+  - DVR: disabled
+```
+
+For encoder configuration details, see [OBS setup](/streaming/live-streaming/broadcasting-software/obs) or [SRT protocol](/streaming/live-streaming/protocols/srt).
+
+## Enable recording and DVR
+
+```
+Enable recording and DVR for stream "Weekly Webinar"
+```
+
+Response:
+
+```
+Updated stream: Weekly Webinar
+
+Recording: enabled
+  - Stream will be saved as VOD after broadcast ends
+  - Available in Video Hosting within 5-15 minutes
+
+DVR: enabled  
+  - Viewers can pause and rewind up to 1 hour
+  - Takes ~10 minutes after stream starts to accumulate buffer
+
+Remember to clear DVR cache before each new broadcast to prevent 
+viewers from seeing previous content.
+```
+
+For feature details, see [Recording](/streaming/live-streaming/record-your-live-streams-and-save-them-as-videos) and [DVR](/streaming/live-streaming/pause-and-rewind-the-live-streams).
+
+## Set up restreaming
+
+Broadcast simultaneously to YouTube, Twitch, or other platforms.
+
+```
+Set up restream from "Weekly Webinar" to YouTube
+```
+
+Response:
+
+```
+To create a restream, I need the RTMP credentials from YouTube.
+
+In YouTube Studio:
+1. Go Live > Stream > copy Stream URL and Stream key
+
+Then tell me:
+"Create restream with URL rtmp://a.rtmp.youtube.com/live2 and key xxxx-xxxx"
+```
+
+After providing credentials:
+
+```
+Restream created for Weekly Webinar > YouTube
+
+When you start streaming:
+  - Gcore receives your stream
+  - Automatically forwards to YouTube
+  - Both platforms show your content simultaneously
+
+Status: ready (will activate when main stream starts)
+```
+
+For platform setup, see [Restreaming](/streaming/live-streaming/create-and-configure-a-restream-to-social-media).
+
+## Monitor a broadcast
+
+```
+How is the Weekly Webinar stream performing?
+```
+
+Response:
+
+```
+Weekly Webinar - LIVE for 45 minutes
+
+Viewers: 234 current (peak: 312)
+
+Stream health:
+  Ingest bitrate: 5,200 kbps (stable)
+  Dropped frames: 0%
+  Quality: 1080p
+
+Viewer distribution:
+  1080p: 58%
+  720p: 32%
+  480p: 10%
+
+Restreams:
+  YouTube: connected, healthy
+```
+
+## Create clips
+
+Capture highlights during a live broadcast.
+
+```
+Create a 60-second clip from the current stream
+```
+
+Response:
+
+```
+Clip created from Weekly Webinar
+
+Duration: 60 seconds
+Status: processing (ready in 1-2 minutes)
+
+Playback URL: https://player.gvideo.io/clips/789
+
+The clip is saved permanently as VOD.
+```
+
+## Troubleshooting
+
+```
+My stream isn't showing up after I started OBS
+```
+
+Response:
+
+```
+Checking stream "Company Town Hall" (ID: 4166418)...
+
+Status: active but not receiving video (live: false)
+
+Troubleshooting steps:
+1. Verify RTMP URL in OBS matches:
+   rtmp://vp-push-ed2.gvideo.co/in/4166418?3c5867...
+
+2. Check OBS is actually streaming
+   - Bottom right should show "LIVE" not "Connecting..."
+
+3. Firewall settings
+   - RTMP uses port 1935, ensure it's not blocked
+
+Alternative with SRT (lower latency):
+   srt://vp-push-ed2-srt.gvideo.co:5001?streamid=4166418#3c5867...
+```
+
+<Info>
+For complete live streaming documentation, see [Getting started with live streaming](/streaming/live-streaming/create-a-live-stream).
+</Info>

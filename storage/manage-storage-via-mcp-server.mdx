@@ -1,0 +1,465 @@
+---
+title: Manage Object Storage via MCP Server
+sidebarTitle: Manage via MCP
+---
+
+Gcore MCP Server provides S3-compatible object storage management through natural language. AI assistants can create storage instances, manage buckets, configure access policies, and monitor usage.
+
+<Info>
+Before starting, [install and configure Gcore MCP Server](/account-settings/integrations/install-and-configure-gcore-mcp-server) with `GCORE_TOOLS="storage.*"` to load storage tools.
+</Info>
+
+## How it works
+
+When a request is made in natural language, the AI client calls the appropriate MCP tool and presents the response in readable format.
+
+Example request:
+
+```
+List my storage instances
+```
+
+The AI client responds:
+
+```
+Found 3 S3 storage instances:
+
+1. app-assets
+   Location: Luxembourg-2 (s-ed1)
+   Endpoint: s-ed1.cloud.gcore.lu
+   Status: active
+   Created: June 5, 2024
+
+2. media-uploads
+   Location: Chicago (s-drc2)
+   Endpoint: s-drc2.cloud.gcore.lu
+   Status: active
+   Created: March 15, 2024
+
+3. backup-archive
+   Location: Sines (s-ndp1-2)
+   Endpoint: sines-2.storage.gcore.dev
+   Status: active
+   Created: January 10, 2024
+```
+
+## Storage locations
+
+Gcore offers S3 storage in multiple regions. The AI assistant helps choose the right location based on requirements.
+
+```
+What storage locations are available?
+```
+
+Response:
+
+```
+Available S3 storage locations:
+
+Europe:
+  - Luxembourg-2 (s-ed1) - s-ed1.cloud.gcore.lu
+  - Sines-2 (s-ndp1-2) - sines-2.storage.gcore.dev [Fast tier]
+  - Sines-3 (s-ndp1-3) - sines-3.storage.gcore.dev [Fast tier]
+
+Americas:
+  - Chicago (s-drc2) - s-drc2.cloud.gcore.lu
+
+SFTP locations:
+  - Amsterdam - ams.origin.gcdn.co
+  - Miami - mia.origin.gcdn.co
+
+Recommendation: For CDN origin, choose a location close to the majority 
+of end users. For backup/archive, Sines Fast tier offers high throughput.
+```
+
+## Create storage for an application
+
+When setting up storage for a new application, the AI assistant guides through the complete workflow.
+
+```
+I need object storage for my web application to store user uploads. The app runs in Europe.
+```
+
+Response:
+
+```
+Let me set up S3 storage for your application.
+
+Creating storage instance in Luxembourg-2 (closest to European users)...
+
+Storage created:
+  Name: user-uploads
+  Location: Luxembourg-2 (s-ed1)
+  Endpoint: s-ed1.cloud.gcore.lu
+  Type: S3-compatible
+  Status: provisioning
+
+Credentials (save these securely):
+  Access Key: GCORE_ACCESS_KEY_EXAMPLE
+  Secret Key: ********************************
+
+The storage will be ready in 1-2 minutes.
+
+Next steps:
+1. Create a bucket for uploads
+2. Configure CORS if accessed from browser
+3. Set bucket policy (public/private)
+
+Would you like me to create a bucket now?
+```
+
+After confirmation:
+
+```
+Creating bucket for user uploads...
+
+Bucket created:
+  Name: uploads
+  Storage: user-uploads
+  Endpoint: https://s-ed1.cloud.gcore.lu/uploads
+
+Access: private (only authenticated requests)
+
+To upload files, use any S3-compatible client:
+
+  aws s3 cp file.jpg s3://uploads/ \
+    --endpoint-url https://s-ed1.cloud.gcore.lu
+
+Or configure your application with:
+  Endpoint: https://s-ed1.cloud.gcore.lu
+  Bucket: uploads
+  Region: s-ed1
+```
+
+## Configure CDN origin
+
+Object storage works well as a CDN origin for static assets. The AI assistant helps set up the integration.
+
+```
+I want to use storage as CDN origin for my website static files
+```
+
+Response:
+
+```
+Setting up storage as CDN origin involves two steps:
+
+Step 1: Storage setup
+I see you have storage "app-assets" in Luxembourg-2.
+This is a good choice for CDN origin (central European location).
+
+Step 2: CDN configuration
+To use this storage as CDN origin:
+
+  Origin URL: https://s-ed1.cloud.gcore.lu
+  Origin type: S3 bucket
+  Bucket name: [your bucket]
+  
+  For private buckets, you'll need:
+  - Access Key ID
+  - Secret Access Key
+
+Want me to:
+a) Create a new bucket specifically for CDN assets
+b) Show how to make an existing bucket public for CDN
+c) Set up CORS for browser access
+```
+
+### Make bucket public for CDN
+
+```
+Make bucket static-assets public so CDN can access it
+```
+
+Response:
+
+```
+Making bucket static-assets public...
+
+Bucket policy updated:
+  Bucket: static-assets
+  Access: public-read
+  
+Files are now accessible at:
+  https://s-ed1.cloud.gcore.lu/static-assets/[filename]
+
+Security note:
+  - Anyone can list and read objects
+  - Write operations still require authentication
+  - Consider using signed URLs for sensitive content
+
+For CDN integration, use this as your origin:
+  https://s-ed1.cloud.gcore.lu/static-assets
+```
+
+## Configure CORS for browser uploads
+
+When uploading directly from browser (bypassing your server), CORS must be configured.
+
+```
+Configure CORS for bucket uploads to allow uploads from my-app.com
+```
+
+Response:
+
+```
+Configuring CORS for bucket uploads...
+
+CORS policy applied:
+  Bucket: uploads
+  Allowed origins: https://my-app.com
+  Allowed methods: GET, PUT, POST, DELETE
+  Allowed headers: Content-Type, Authorization
+  Max age: 3600 seconds
+
+Browser uploads from my-app.com are now allowed.
+
+Example JavaScript upload:
+
+  const response = await fetch(presignedUrl, {
+    method: 'PUT',
+    body: file,
+    headers: { 'Content-Type': file.type }
+  });
+
+To add more origins: 
+"Add https://staging.my-app.com to CORS for bucket uploads"
+```
+
+## Monitor storage usage
+
+Track storage consumption and costs across buckets.
+
+```
+Show storage usage for all my buckets
+```
+
+Response:
+
+```
+Storage usage summary:
+
+Storage: app-assets (Luxembourg-2)
+  Bucket: uploads
+    Objects: 15,234
+    Size: 2.4 GB
+    Last modified: 2 hours ago
+    
+  Bucket: static-assets  
+    Objects: 892
+    Size: 156 MB
+    Public: yes
+
+Storage: backup-archive (Sines)
+  Bucket: db-backups
+    Objects: 45
+    Size: 89.2 GB
+    Lifecycle: delete after 30 days
+
+Total across all storages:
+  Objects: 16,171
+  Size: 91.8 GB
+  
+Estimated monthly cost: $4.59
+  Storage: $2.75 (91.8 GB × $0.03/GB)
+  Requests: ~$1.84 (based on last month)
+```
+
+### Find large or unused buckets
+
+```
+Which buckets are using the most storage?
+```
+
+Response:
+
+```
+Buckets by size (largest first):
+
+1. db-backups (backup-archive)
+   89.2 GB - 97% of total
+   45 objects, avg 2 GB each
+   Recommendation: Verify lifecycle policy is working
+
+2. uploads (app-assets)
+   2.4 GB - 2.6% of total
+   15,234 objects, avg 162 KB each
+   Last upload: 2 hours ago
+
+3. static-assets (app-assets)
+   156 MB - 0.2% of total
+   892 objects
+   Public bucket
+
+4. old-exports (app-assets)
+   12 MB - unused for 6 months
+   Recommendation: Consider deleting if no longer needed
+```
+
+## Set up lifecycle policies
+
+Automatically manage object retention and cleanup.
+
+```
+Set up automatic deletion of files older than 30 days in bucket temp-files
+```
+
+Response:
+
+```
+Configuring lifecycle policy for bucket temp-files...
+
+Lifecycle rule created:
+  Bucket: temp-files
+  Rule: Delete objects after 30 days
+  Applies to: all objects
+  Status: enabled
+
+Objects will be automatically deleted 30 days after upload.
+This helps control storage costs for temporary data.
+
+Current bucket contents:
+  - 234 objects older than 30 days (will be deleted in next cycle)
+  - 89 objects younger than 30 days (retained)
+
+Expected savings: ~$1.20/month based on current usage.
+```
+
+## SFTP storage
+
+For workflows requiring SFTP access (legacy systems, batch uploads), Gcore provides SFTP storage.
+
+```
+I need SFTP storage for batch file uploads from a legacy system
+```
+
+Response:
+
+```
+Creating SFTP storage instance...
+
+SFTP storage created:
+  Name: batch-uploads
+  Location: Amsterdam
+  Host: ams.origin.gcdn.co
+  Port: 22
+  Username: user_12345
+
+Authentication requires SSH key. Current keys: none
+
+To connect, first add an SSH key:
+"Add SSH key for SFTP storage batch-uploads"
+
+After adding a key, connect with:
+  sftp -i ~/.ssh/your_key user_12345@ams.origin.gcdn.co
+```
+
+### Add SSH key for SFTP
+
+```
+Add my SSH public key for SFTP access
+```
+
+Response:
+
+```
+To add an SSH key, I need the public key content.
+
+Paste your public key (starts with ssh-rsa, ssh-ed25519, etc.):
+```
+
+After providing key:
+
+```
+SSH key added:
+  Name: workstation-key
+  Type: ssh-ed25519
+  Fingerprint: SHA256:abc123...
+  
+Linked to SFTP storage: batch-uploads
+
+Connection test:
+  sftp -i ~/.ssh/id_ed25519 user_12345@ams.origin.gcdn.co
+
+Files uploaded via SFTP appear in the storage root directory.
+```
+
+## Troubleshooting
+
+### Access denied errors
+
+```
+I'm getting "Access Denied" when trying to upload to my bucket
+```
+
+Response:
+
+```
+Let me check your bucket configuration...
+
+Bucket: uploads
+Access: private
+CORS: configured for https://my-app.com
+
+Possible causes:
+
+1. Invalid credentials
+   Verify your access key and secret key are correct.
+   
+2. Wrong endpoint
+   Your bucket is in Luxembourg-2.
+   Correct endpoint: https://s-ed1.cloud.gcore.lu
+   
+3. Bucket name in path
+   S3 requests should include bucket in path:
+   PUT https://s-ed1.cloud.gcore.lu/uploads/file.jpg
+   
+4. Missing Content-Type header
+   Some operations require Content-Type header.
+
+5. CORS blocking browser requests
+   If uploading from browser, the origin must match CORS config.
+   Current allowed: https://my-app.com
+   
+Would you like me to test access with a specific operation?
+```
+
+### Bucket not found
+
+```
+My application says bucket doesn't exist but I just created it
+```
+
+Response:
+
+```
+Checking bucket status...
+
+Bucket "my-new-bucket" exists in storage app-assets.
+Status: active
+
+Common issues:
+
+1. Wrong endpoint
+   Your storage is in s-ed1 (Luxembourg-2).
+   Endpoint: https://s-ed1.cloud.gcore.lu
+   
+   If your app is configured with a different region endpoint,
+   it won't find the bucket.
+
+2. Propagation delay
+   New buckets are available immediately, but DNS caching
+   may cause brief delays. Wait 1-2 minutes and retry.
+
+3. Case sensitivity
+   Bucket names are case-sensitive.
+   Created: my-new-bucket
+   Ensure your app uses exact same case.
+
+Your bucket configuration looks correct. Verify the endpoint 
+in your application matches: s-ed1.cloud.gcore.lu
+```
+
+<Info>
+For S3 API compatibility details, see [Create an S3 storage](/storage/create-an-s3-or-sftp-storage). Client configuration is documented in [Connect AWS CLI and S3cmd](/storage/manage-object-storage/configure-aws-sli-s3cmd-and-aws-javascript-sdk/connect-aws-cli-s3cmd-and-aws-sdk). Billing information is available in [How storage is billed](/storage/how-storage-is-billed).
+</Info>

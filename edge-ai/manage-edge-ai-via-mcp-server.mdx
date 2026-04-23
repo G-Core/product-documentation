@@ -1,0 +1,541 @@
+---
+title: Manage Edge AI via MCP Server
+sidebarTitle: Manage via MCP
+---
+
+Gcore MCP Server provides Edge AI management through natural language. AI assistants can provision GPU infrastructure for model training and deploy inference endpoints - the same operations available in the Customer Portal or API.
+
+<Info>
+Before starting, [install and configure Gcore MCP Server](/account-settings/integrations/install-and-configure-gcore-mcp-server) with `GCORE_TOOLS="ai,ai_ml,gpu_baremetal,gpu_virtual"` to load Edge AI tools.
+</Info>
+
+## When to use Edge AI
+
+Edge AI covers two stages of the machine learning workflow:
+
+**Training** - GPU clusters for training models from scratch, fine-tuning existing models, or running computationally intensive experiments. Requires GPU Cloud infrastructure.
+
+**Inference** - Deploying trained models to serve predictions with low latency. Everywhere Inference distributes models across edge locations and routes requests to the nearest endpoint.
+
+## Training infrastructure with GPU Cloud
+
+GPU clusters provide the compute power for training machine learning models. Before creating a cluster, determine the requirements based on your workload.
+
+### Choose the right cluster type
+
+Three cluster types are available, each suited to different use cases:
+
+| Cluster type | Best for | Trade-offs |
+|--------------|----------|------------|
+| **Bare Metal** | Production training, long-running jobs | Highest performance, fixed configuration |
+| **Spot Bare Metal** | Fault-tolerant training, development | Up to 50% cheaper, can be interrupted with 24h notice |
+| **Virtual** | Development, variable workloads | Flexible (can resize), slightly lower performance |
+
+To understand what's available before provisioning:
+
+```
+What GPU cluster options do I have for training a large language model?
+```
+
+The AI assistant explains available configurations:
+
+```
+For LLM training, consider these options:
+
+Bare Metal with InfiniBand (recommended for distributed training):
+  - H100 cluster: 8x H100 80GB per node, 3.2 Tbit/s InfiniBand
+    Best for: Training models that don't fit on a single node
+    
+  - A100 cluster: 8x A100 80GB per node, 800 Gbit/s InfiniBand
+    Best for: Multi-node training with moderate communication needs
+
+Without InfiniBand:
+  - A100 Ethernet: 8x A100 80GB per node
+    Best for: Single-node training, independent batch jobs
+    
+  - L40S: 8x L40S 48GB per node
+    Best for: Fine-tuning smaller models, inference
+
+InfiniBand is essential for distributed training where gradients sync 
+frequently between nodes. For single-node work, Ethernet is sufficient.
+
+What size model are you training? I can recommend the right configuration.
+```
+
+### Provision a training cluster
+
+Once you've determined the requirements, create the cluster:
+
+```
+I need to train a 70B parameter model. Set up a cluster with 4 H100 nodes.
+```
+
+The AI assistant provisions the infrastructure:
+
+```
+Creating a 4-node H100 Bare Metal cluster for 70B model training...
+
+Configuration:
+  Nodes: 4
+  GPU per node: 8x NVIDIA H100 80GB (32 total H100 GPUs)
+  Total GPU memory: 2.56 TB
+  Interconnect: InfiniBand 3.2 Tbit/s
+  RAM per node: 2TB
+  Local storage: 6x 3.84TB NVMe per node
+
+This configuration supports:
+  - 70B parameter model with data parallelism across 4 nodes
+  - FSDP or DeepSpeed ZeRO-3 sharding strategies
+  - Mixed precision (bf16) training
+
+Provisioning time: 20-30 minutes
+The cluster will be ready with Ubuntu and NVIDIA drivers pre-installed.
+
+Cluster ID: f9a7de07-b480-4db8-bd39-5491aa8cb1c0
+
+I'll notify you when all nodes are online.
+```
+
+<Info>
+GPU cluster provisioning involves physical server allocation. Bare Metal clusters take 15-40 minutes; Virtual clusters are faster at 5-10 minutes.
+</Info>
+
+### Check cluster status
+
+During or after provisioning:
+
+```
+Is my training cluster ready?
+```
+
+Response:
+
+```
+Cluster f9a7de07 status:
+
+All 4 nodes are ACTIVE and healthy.
+
+Node connectivity:
+  Node 1: InfiniBand connected, 8 GPU ports active
+  Node 2: InfiniBand connected, 8 GPU ports active
+  Node 3: InfiniBand connected, 8 GPU ports active
+  Node 4: InfiniBand connected, 8 GPU ports active
+
+Network: gpu-cluster-ib-network-f9a7de07 (MTU 2044)
+
+The cluster is ready for workloads. Connect via SSH to any node 
+to start training. All nodes share the same SSH key configured 
+at creation.
+```
+
+### Scale during training
+
+If training requires more compute or you want to speed up convergence:
+
+```
+Training is going slower than expected. Add 2 more nodes to my cluster.
+```
+
+Response:
+
+```
+Scaling cluster to 6 nodes...
+
+Current: 4 nodes (32 H100 GPUs)
+Adding: 2 nodes (16 H100 GPUs)
+New total: 6 nodes (48 H100 GPUs)
+
+The new nodes will:
+  - Use the same OS image and configuration
+  - Join the InfiniBand network automatically
+  - Be ready in 15-20 minutes
+
+Note: You'll need to update your training script to use 6 nodes 
+instead of 4 (adjust world_size in distributed config).
+```
+
+### Save costs with Spot instances
+
+For fault-tolerant workloads that can handle interruptions:
+
+```
+Create a Spot Bare Metal cluster for experimentation - I can checkpoint frequently.
+```
+
+Response:
+
+```
+Creating Spot Bare Metal cluster...
+
+Spot pricing: up to 50% off standard Bare Metal rates
+Interruption policy: 24-hour notice before preemption
+
+Configuration:
+  Nodes: 2
+  GPU: 8x A100 80GB per node
+  
+Recommendations for Spot clusters:
+  - Checkpoint every 30-60 minutes
+  - Use distributed checkpointing (FSDP state_dict)
+  - Store checkpoints on file shares (not local NVMe)
+
+Cluster ID: 2c3d4e5f-6a7b-8c9d-0e1f-2a3b4c5d6e7f
+Provisioning in progress...
+```
+
+### Troubleshoot training issues
+
+When something goes wrong:
+
+```
+My training job crashed. Can you check if there's a hardware issue with node 3?
+```
+
+Response:
+
+```
+Checking node 3 health...
+
+Node 3 status: ACTIVE
+GPU status: All 8 GPUs healthy
+  GPU 0-7: Temperature normal (45-52°C), no ECC errors
+  
+Memory: 1.8TB / 2TB available
+Storage: 18TB / 23TB available on NVMe
+
+InfiniBand: Connected, no packet errors
+
+Hardware appears healthy. The crash is likely software-related.
+
+Would you like me to get console access so you can check logs directly?
+Or I can reboot the node if you suspect a transient issue.
+```
+
+### Clean up after training
+
+When training completes:
+
+```
+Training finished. Save my model checkpoints and delete the cluster.
+```
+
+Response:
+
+```
+Before deleting, let's ensure data is preserved:
+
+Local NVMe storage will be erased. Verify checkpoints are saved to 
+persistent storage (file shares or object storage).
+
+Current file shares attached to cluster:
+  - training-data (100GB, contains dataset)
+  - checkpoints (500GB, contains model weights)
+
+These file shares will persist after cluster deletion.
+
+Proceed with cluster deletion?
+
+[After confirmation]
+
+Deleting cluster f9a7de07...
+  - Terminating 4 nodes
+  - Releasing GPU resources
+  - InfiniBand network removed
+
+Cluster deleted. File shares preserved.
+Monthly GPU spend reduced by estimated $X,XXX.
+```
+
+## Deploy models with Everywhere Inference
+
+After training (or using a pre-trained model), deploy it for production inference. Everywhere Inference distributes your model across edge locations and routes requests to the nearest endpoint automatically.
+
+### Understand inference deployment
+
+```
+I have a trained model. How does Everywhere Inference work?
+```
+
+Response:
+
+```
+Everywhere Inference deploys your model to edge locations worldwide:
+
+1. You provide a model (from our catalog or your own container)
+2. We deploy replicas across regions you choose
+3. Users get a single endpoint (https://your-model.inference.gcore.com)
+4. Requests route automatically to the nearest healthy replica
+
+Benefits:
+  - Low latency: requests go to geographically closest GPU
+  - High availability: automatic failover if a region has issues
+  - Auto-scaling: replicas scale based on traffic
+
+Pricing: Pay per GPU-hour while replicas are running
+```
+
+### Deploy a model from catalog
+
+For common models, use the Gcore catalog:
+
+```
+Deploy Llama 3 70B for my application. I expect most traffic from Europe.
+```
+
+Response:
+
+```
+Deploying Llama 3 70B...
+
+Model: meta-llama/Llama-3-70b-instruct
+Size: 70B parameters, requires ~140GB GPU memory
+
+Configuration:
+  Replicas: 3 (distributed across Europe)
+  Regions: Luxembourg, Frankfurt, Amsterdam
+  GPU: 2x L40S per replica (96GB total, fits 70B in fp16)
+
+Deployment initiated.
+ID: 4e5f6a7b-8c9d-0e1f-2a3b
+
+Progress:
+  1. Pulling model weights (large model, 10-15 minutes)
+  2. Loading model into GPU memory
+  3. Starting inference server
+  4. Configuring anycast routing
+
+Your endpoint will be:
+https://llama3-70b-xxxx.inference.gcore.com
+
+I'll notify you when it's ready to receive requests.
+```
+
+### Deploy your own model
+
+For custom trained models:
+
+```
+Deploy my fine-tuned model from docker.io/mycompany/customer-support-bot:v2
+```
+
+Response:
+
+```
+Deploying custom model customer-support-bot:v2...
+
+I need a few details:
+
+1. GPU requirements - how much VRAM does your model need?
+   (7B model ~14GB, 13B ~26GB, 70B ~140GB)
+
+2. Regions - where are your users located?
+   (Europe, North America, Asia Pacific, or specific countries)
+
+3. Expected traffic - requests per second at peak?
+   (Determines initial replica count)
+```
+
+After providing details:
+
+```
+Deploying with your specifications:
+
+Container: docker.io/mycompany/customer-support-bot:v2
+GPU: 1x L40S (48GB) - sufficient for your 13B model
+Replicas: 2 (US East, Europe)
+
+Requirements for your container:
+  - Expose HTTP endpoint on port 8080
+  - Handle /health for health checks
+  - Accept POST /predict for inference
+
+Deployment ID: 5f6a7b8c-9d0e
+Endpoint: https://customer-support-xxxx.inference.gcore.com
+
+Container pulling in progress... Ready in 5-7 minutes.
+```
+
+### Monitor inference performance
+
+Once deployed:
+
+```
+How is my Llama deployment performing? Any issues?
+```
+
+Response:
+
+```
+Deployment llama3-70b-xxxx health report:
+
+Overall: Healthy (3/3 replicas active)
+
+Regional breakdown:
+  Luxembourg: 
+    Status: healthy
+    Latency: p50=95ms, p99=280ms
+    GPU utilization: 45%
+    Requests: 420/hour
+    
+  Frankfurt:
+    Status: healthy
+    Latency: p50=110ms, p99=350ms
+    GPU utilization: 62%
+    Requests: 580/hour (highest traffic)
+    
+  Amsterdam:
+    Status: healthy
+    Latency: p50=85ms, p99=240ms
+    GPU utilization: 38%
+    Requests: 250/hour
+
+No errors in the last 24 hours.
+
+Recommendation: Frankfurt is handling the most traffic. Consider adding 
+a replica there if GPU utilization exceeds 80% sustained.
+```
+
+### Scale for traffic
+
+When traffic increases:
+
+```
+We're launching a marketing campaign. Scale up my inference endpoint.
+```
+
+Response:
+
+```
+Scaling deployment llama3-70b-xxxx...
+
+Current: 3 replicas (Luxembourg, Frankfurt, Amsterdam)
+
+Traffic analysis from last 7 days:
+  - Peak hours: 14:00-20:00 UTC
+  - Highest region: Frankfurt (45% of requests)
+  - Current peak GPU utilization: 62%
+
+Recommendation for campaign:
+  - Add 1 replica in Frankfurt (high traffic region)
+  - Add 1 replica in London (reduce latency for UK users)
+  - New total: 5 replicas
+
+Estimated cost increase: ~40% higher GPU-hours
+
+Proceed with scaling? Or would you prefer a different configuration?
+
+[After confirmation]
+
+Scaling to 5 replicas...
+New replicas will be ready in 5-10 minutes.
+Auto-scaling tip: You can set up automatic scaling based on 
+GPU utilization thresholds.
+```
+
+### Update deployed models
+
+When you have a new model version:
+
+```
+Update my customer support bot to v3 - we fixed some issues.
+```
+
+Response:
+
+```
+Updating deployment customer-support-xxxx to v3...
+
+Update strategy: Rolling (zero downtime)
+
+Process:
+  1. Pull new image (docker.io/mycompany/customer-support-bot:v3)
+  2. Start new replica with v3
+  3. Wait for health check to pass
+  4. Route traffic to new replica
+  5. Drain and terminate old replica
+  6. Repeat for remaining replicas
+
+Current: 2 replicas running v2
+Progress: Updating replica 1 of 2...
+
+Update will complete in 5-7 minutes with no service interruption.
+```
+
+## Cost management
+
+### Understand your spending
+
+```
+How much am I spending on Edge AI?
+```
+
+Response:
+
+```
+Edge AI spending (current month):
+
+GPU Clusters:
+  training-cluster (deleted 3 days ago)
+    4x H100 nodes, ran for 72 hours
+    Cost: $X,XXX
+    
+Everywhere Inference:
+  llama3-70b-xxxx (running)
+    3 replicas, running for 15 days
+    Cost so far: $XXX
+    Projected month-end: $X,XXX
+    
+  customer-support-xxxx (running)
+    2 replicas, running for 8 days
+    Cost so far: $XXX
+
+Total month-to-date: $X,XXX
+Projected month-end: $X,XXX
+
+Cost optimization tips:
+  - customer-support-xxxx has low utilization (22%). 
+    Consider reducing to 1 replica during off-peak hours.
+  - Spot clusters can save 50% on training costs.
+```
+
+### Reduce inference costs
+
+```
+My inference costs are too high. What can I do?
+```
+
+Response:
+
+```
+Analyzing deployment llama3-70b-xxxx for cost optimization...
+
+Current cost: ~$X/hour (3 replicas, 2x L40S each)
+
+Options:
+
+1. Right-size GPU allocation
+   Your model uses 140GB VRAM. Currently using 2x L40S (96GB).
+   Alternative: 2x A100 80GB would give 160GB with better performance.
+   Impact: Similar cost but faster inference.
+
+2. Reduce replica count during off-peak
+   Traffic drops 70% between 02:00-08:00 UTC.
+   Scale to 1 replica during off-peak, back to 3 for peak.
+   Estimated savings: 25-30%
+
+3. Use smaller model for simple queries
+   If some requests are simple, route them to a 7B model.
+   Keep 70B for complex queries only.
+   Estimated savings: 40-50% depending on query distribution
+
+4. Enable request batching
+   Group concurrent requests to maximize GPU efficiency.
+   Works well if latency targets are >500ms.
+   Estimated savings: 10-20%
+
+Which approach would you like to explore?
+```
+
+<Info>
+For GPU configuration details, see [About GPU Cloud](/edge-ai/ai-infrastructure/about-gpu-cloud). Training cluster setup is documented in [Create a Bare Metal GPU cluster](/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster). Inference deployment is covered in [Deploy an AI model](/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model).
+</Info>
