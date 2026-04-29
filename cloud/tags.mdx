@@ -7,7 +7,7 @@ Tags are key-value pairs attached to Cloud resources for organization and identi
 
 ## Add tags in the Gcore Customer Portal
 
-Add tags during resource creation or to existing resources. Tags are supported on Virtual Machines, Bare Metal servers, Volumes, Networks, Subnetworks, Load Balancers, Firewalls, Images, and File Shares.
+Add tags during resource creation or to existing resources.
 
 ### During resource creation
 
@@ -39,19 +39,49 @@ Add tags during resource creation or to existing resources. Tags are supported o
 <img src="/images/cloud-tags-existing-resource.png" alt="Tags tab on an existing resource showing key-value pair fields" />
 </Frame>
 
+## Filter resources by tag
+
+### In the Customer Portal
+
+After adding tags to your resources, you can filter them in the Customer Portal:
+
+1. Navigate to the resource list page (for example, **Cloud** > **Virtual Instances**).
+
+2. Use the search field or available filters to search by tag key or value.
+
+### Via API
+
+Use the `tag_key_value` query parameter when listing resources:
+
+```
+GET /cloud/v1/instances/{project_id}?tag_key_value=env:production
+```
+
+You can filter by multiple tags by repeating the parameter:
+
+```
+GET /cloud/v1/instances/{project_id}?tag_key_value=env:production&tag_key_value=team:backend
+```
+
+This helps you quickly find all resources belonging to a specific environment, team, or project.
+
 ## Add tags via API
 
-Include tags in the `metadata` field when creating or updating resources via the [Gcore API](/api-reference/overview):
+Include tags in the `tags` field when creating or updating resources via the [Gcore API](/api-reference/overview):
 
 ```json
 {
   "name": "my-instance",
-  "metadata": {
+  "tags": {
     "env": "production",
     "team": "backend"
   }
 }
 ```
+
+<Note>
+The `metadata` field is deprecated. Use the `tags` field for new implementations.
+</Note>
 
 ## Add tags via Terraform
 
@@ -66,6 +96,93 @@ resource "gcore_instance" "example" {
     env  = "production"
     team = "backend"
   }
+}
+```
+
+## Add tags via SDK
+
+### Python SDK
+
+Use the [gcore-python](https://github.com/G-Core/gcore-python) SDK to create resources with tags:
+
+```python
+from gcore import Gcore
+from gcore.types.cloud.instance_create_params import (
+    InterfaceNewInterfaceExternalSerializerPydantic,
+    VolumeCreateInstanceCreateVolumeFromImageSerializer,
+)
+
+client = Gcore()
+
+instance = client.cloud.instances.create_and_poll(
+    name="my-instance",
+    flavor="g1-standard-1-2",
+    interfaces=[
+        InterfaceNewInterfaceExternalSerializerPydantic(type="external"),
+    ],
+    volumes=[
+        VolumeCreateInstanceCreateVolumeFromImageSerializer(
+            name="my-volume",
+            size=10,
+            type_name="standard",
+            source="image",
+            image_id="your-image-id",
+            boot_index=0,
+        ),
+    ],
+    tags={"env": "production", "team": "backend"},
+)
+```
+
+### Go SDK
+
+Use the [gcore-go](https://github.com/G-Core/gcore-go) SDK to create resources with tags:
+
+```go
+package main
+
+import (
+    "context"
+    "log"
+
+    "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/cloud"
+    "github.com/G-Core/gcore-go/option"
+    "github.com/G-Core/gcore-go/shared/constant"
+)
+
+func main() {
+    client := gcore.NewClient(
+        option.WithCloudProjectID(1),
+        option.WithCloudRegionID(1),
+    )
+
+    params := cloud.InstanceNewParams{
+        Name:   gcore.String("my-instance"),
+        Flavor: "g1-standard-1-2",
+        Interfaces: []cloud.InstanceNewParamsInterfaceUnion{
+            {OfExternal: &cloud.InstanceNewParamsInterfaceExternal{
+                Type: constant.ValueOf[constant.External](),
+            }},
+        },
+        Volumes: []cloud.InstanceNewParamsVolumeUnion{
+            {OfImage: &cloud.InstanceNewParamsVolumeImage{
+                Name:      gcore.String("my-volume"),
+                Size:      gcore.Int(10),
+                TypeName:  "standard",
+                Source:    constant.ValueOf[constant.Image](),
+                ImageID:   "your-image-id",
+                BootIndex: gcore.Int(0),
+            }},
+        },
+        Tags: map[string]string{"env": "production", "team": "backend"},
+    }
+
+    instance, err := client.Cloud.Instances.NewAndPoll(context.Background(), params)
+    if err != nil {
+        log.Fatalf("Error creating instance: %v", err)
+    }
+    log.Printf("Created instance: %s", instance.ID)
 }
 ```
 
