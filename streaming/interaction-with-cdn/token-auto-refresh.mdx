@@ -1,0 +1,718 @@
+---
+title: Auto-refresh video secure tokens
+sidebarTitle: Video token auto-refresh
+---
+
+<Info>
+This page extends the [Video secure token](/streaming/interaction-with-cdn/video-secure-token) guide. If you haven't set up secure tokens yet, start there first — it covers enabling the feature, the URL format, and token generation. This page picks up where that guide leaves off and shows how to keep tokens short-lived and auto-refreshed so viewers can't share links.
+</Info>
+
+Short-lived tokens are the most effective defence against link sharing during live events or pay-per-view streams. Set the token to expire in 60 seconds, refresh it automatically in the player before it expires, and anyone who copies the URL from the browser or network inspector will have a useless link within a minute — while your legitimate viewers experience uninterrupted playback.
+
+## The link-sharing problem
+
+A secure token embeds authentication directly in the HLS/DASH URL path:
+
+```
+https://cdn.example.com/videos/{id}/{token}/{expires}/master.m3u8
+```
+
+This URL is visible to any viewer who opens developer tools or copies the address from a player. With a 24-hour token, a paying subscriber can paste the link into a chat during a live broadcast, and anyone who follows it can watch for free for the full 24 hours.
+
+**The fix:** use short-lived tokens and refresh them automatically in the player. Copied URLs become invalid within seconds. Authorized viewers never notice the transition.
+
+![Secure token protection](/images/docs/streaming-platform/integrated-cdn/cdn-token-protected.png)
+
+
+## How auto-refresh works
+
+```
+   Player loads          ~10 s before expiry      Fresh token received
+   with 60-s URL
+        │                       │                         │
+   ─────┼───────────────────────┼─────────────────────────┼──────────────▶ time
+        │    seamless playback  │   background fetch      │   continues
+        │◄───────────────────────────────────────────────►│
+```
+
+1. The player loads with a signed URL containing a short-lived token (e.g., 60 s).
+2. A timer fires a few seconds before expiry.
+3. The player calls your backend and receives a fresh `{ token, expires, url }` response.
+4. The new `{token}/{expires}` path segments replace the old ones in every outgoing request.
+5. Playback continues without a visible interruption. The viewer's browser still shows a URL that will expire in seconds — sharing it is pointless.
+
+
+## Token modes
+
+There are two types of secure tokens you can use with auto-refresh:
+
+| Mode | Description | Best for |
+|------|-------------|---------|
+| **Plain token** | Valid from any IP. Shared URL is worthless within the TTL. | Users behind NAT, VPNs, or mobile networks where IP can change |
+| **IP-bound token** | Tied to the viewer's IP at generation time. Sharing fails even within the TTL. | Desktop viewers on stable connections; highest security |
+
+For maximum protection, use short-lived IP-bound tokens — a shared URL is both nearly expired and locked to the original viewer's IP. But keep in mind the tradeoff: the shorter the token lifetime, the more sensitive the system becomes to poor network conditions (see [Choosing a token lifetime](#choosing-a-token-lifetime) below).
+
+
+## Choosing a token lifetime
+
+The demo uses `expire=60` (60 seconds) to make refresh cycles easy to observe. In production, 60 seconds is very aggressive — use it only if link sharing during live events is a critical threat.
+
+The core tradeoff is: **shorter TTL = stronger protection, but less tolerance for slow networks**.
+
+On a poor mobile connection, a viewer's player may take several seconds to fetch a fresh token _and_ download the next media segment before the old token expires. If both operations don't complete within the token's lifetime, the CDN will reject the segment request with a 403/410 and playback will stall or error.
+
+| TTL | Protection level | Mobile friendliness | Typical use case |
+|-----|-----------------|---------------------|------------------|
+| 30–60 s | Maximum | Low — may cause issues on 3G/poor Wi-Fi | High-value live pay-per-view |
+| 300 s (5 min) | Strong | Good | Most live streaming scenarios |
+| 600 s (10 min) | Good | Excellent | VOD, audiences on mixed networks |
+| 3600 s (1 h) | Basic | No issues | Low-risk content, wide audience |
+| 86400 s (24 h) | Weak | No issues | Content with no DRM/age gating or time-limited access |
+
+<Info>
+A rule of thumb: set `refreshLeadSeconds` to at least 20-30% of the token lifetime. For a 300-second token, a lead of 60-90 seconds gives enough runway for the token fetch to complete even on a slow connection before the current token expires.
+</Info>
+
+## Frontend: player-side refresh logic
+
+Token refresh is a **client-side responsibility** — the CDN validates tokens but has no mechanism to issue new ones on behalf of viewers. Making this seamless requires two things working together:
+
+- **A backend endpoint** that generates fresh signed URLs on demand (your server holds the secret key and verifies that the user is still authorized).
+- **Player-side refresh logic** that calls your endpoint shortly before the current token expires and updates all outgoing URLs transparently — without stopping or reloading the stream.
+
+The CDN's role is to validate each request efficiently and enforce expiry precisely, making the short-TTL approach reliable at scale. The examples in this guide show how to implement both pieces.
+
+```
+┌── Browser ─────────────────────────────────────────────┐
+│                                                        │
+│  ┌── Video Player ──────────────────────────────────┐  │
+│  │                                                  │  │
+│  │  ┌────────────────┐  (1) GET /api/token          │  │   ┌──────────────────┐
+│  │  │ Token refresh  ├──────────────────────────────────────► Your backend    │
+│  │  │ timer / plugin │◄────────────────────────────────────  • verify user    │
+│  │  └───────┬────────┘  (2) { token, expires, url } │  │   │ • sign token     │
+│  │          │                                       │  │   └──────────────────┘
+│  │    (3) update {token}/{expires} in all URLs      │  │
+│  │          │                                       │  │
+│  │  ┌───────▼────────┐  (4) signed video URL        │  │   ┌──────────────────┐
+│  │  │ HLS/DASH       ├─────────────────────────────────────► Gcore CDN        │
+│  │  │ URL loader     │◄────────────────────────────────────  • validate token │
+│  │  └────────────────┘  (5) video segments          │  │   │ • serve content  │
+│  └──────────────────────────────────────────────────┘  │   └──────────────────┘
+└────────────────────────────────────────────────────────┘
+```
+
+
+## Backend: generating tokens
+
+Token generation must run on your server — the CDN secret key must never be sent to the browser. Your backend must verify that the requesting user has a valid session and the right to access the specific video _before_ generating a token.
+
+
+### What is Gcore FastEdge?
+
+[Gcore FastEdge](https://gcore.com/fastedge) is a serverless edge-compute platform that runs WebAssembly applications at CDN edge locations worldwide. Apps compile to WASM, start in microseconds with no cold starts, and respond in milliseconds. Billing is per request with no idle cost.
+
+For token signing — a stateless, CPU-bound computation — FastEdge is a natural fit: it runs close to the viewer, scales automatically to any load, and requires no dedicated infrastructure to manage.
+
+<Info>
+**Need user authentication?** The demo FastEdge app generates tokens for anyone who calls it — there is no login check. If you need to restrict access to authenticated users only (subscribers, paid accounts, ticket holders), you must implement your own backend endpoint that verifies the user's session or JWT before generating a token. FastEdge can still be used for that, but the authentication logic must be added to the app. Alternatively, use any backend stack you already have (Node.js, Python, Go, etc.) — the token generation formula is the same regardless of the platform.
+</Info>
+
+### Demo token API
+
+A working demo endpoint is available for testing and development:
+
+GET: [https://video-token-102748.fastedge.app/?video=iKbrdNMcS9ylGuw&type=vod&expire=60](https://video-token-102748.fastedge.app/?video=iKbrdNMcS9ylGuw&type=vod&expire=60)
+
+```
+GET https://video-token-102748.fastedge.app/
+    ?video=iKbrdNMcS9ylGuw   # video slug (VOD) or stream ID (Live)
+    &type=vod                # vod | live
+    &expire=60               # token lifetime in seconds
+```
+
+This FastEdge app is bound to the Gcore demo CDN resource and signs tokens for the `demo-protected.gvideo.io` domain only. Use it for testing and integration purposes — it cannot be used with your own CDN resource or content.
+
+Response:
+
+```json
+{
+  "token":     "rI1224fiE3USCa8q...",
+  "token_ip":  "9y9nJqRofJQw-DbX...",
+  "client_ip": "203.0.113.42",
+  "expires":   1700000060,
+  "url":       "https://demo-protected.gvideo.io/videos/2675_iKbrdNMcS9ylGuw/.../master.m3u8",
+  "url_ip":    "https://demo-protected-ip.gvideo.io/videos/2675_iKbrdNMcS9ylGuw/.../master.m3u8"
+}
+```
+
+| Field | Description |
+|-------|-------------|
+| `token` | Plain secure token — valid from any IP |
+| `token_ip` | IP-bound secure token — locked to `client_ip` |
+| `client_ip` | Viewer's IP as seen by the API (used for IP-bound tokens) |
+| `expires` | Unix timestamp when both tokens expire |
+| `url` | Ready-to-use HLS master playlist URL with plain token |
+| `url_ip` | Ready-to-use HLS master playlist URL with IP-bound token |
+
+<Warning>
+The demo endpoint has no authentication and serves a sample video only. Do not use it in production.
+</Warning>
+
+### FastEdge app source code
+
+The demo endpoint is a Rust WebAssembly application deployed on FastEdge. You can use it as a starting point for your own token API.
+
+```rust
+// ┌──────────────────────────────────────────────────────────────────────────┐
+// │ FastEdge token API — Gcore Secure Token generator                        │
+// │                                                                          │
+// │ PURPOSE                                                                  │
+// │   Generates signed HLS/DASH URLs for Gcore protected CDN resources.     │
+// │   Runs at the edge (no cold starts, <1 ms latency per request).          │
+// │                                                                          │
+// │ QUERY PARAMETERS                                                         │
+// │   video     — video slug (VOD) or stream ID (Live). Required.            │
+// │   type      — "vod" | "live". Default: "live".                           │
+// │   expire    — token lifetime in seconds, or absolute Unix timestamp.     │
+// │               Default: 3600 s.                                           │
+// │   client_ip — override client IP for IP-bound token. Default: auto.     │
+// │                                                                          │
+// │ ENVIRONMENT VARIABLES (set in the FastEdge dashboard)                   │
+// │   CLIENT_ID     — your Gcore account ID                                  │
+// │   SECRET_KEY    — CDN resource secret key                                │
+// │   CDN_DOMAIN    — CDN hostname for plain-token URLs                      │
+// │   CDN_DOMAIN_IP — CDN hostname for IP-bound-token URLs                  │
+// │                                                                          │
+// │ USAGE                                                                    │
+// │   This file is an example. Before generating a token, add your own      │
+// │   authentication check to verify the user is allowed to access          │
+// │   the requested video.                                                   │
+// └──────────────────────────────────────────────────────────────────────────┘
+
+use base64::Engine;
+use fastedge::body::Body;
+use fastedge::http::{Error, Request, Response, StatusCode};
+use std::time::{SystemTime, UNIX_EPOCH};
+
+fn get_query_param<'a>(query: &'a str, key: &str) -> Option<&'a str> {
+    query.split('&').find_map(|p| {
+        let mut kv = p.splitn(2, '=');
+        if kv.next() == Some(key) { kv.next() } else { None }
+    })
+}
+
+/// Generates a Gcore secure token.
+/// Formula: base64url( md5( "{client_id}_{video}_{secret}_{expires}_{ip}" ) )
+/// Pass ip = "" for plain tokens; pass the viewer's IP for IP-bound tokens.
+fn make_token(client_id: &str, video: &str, secret: &str, expires: u64, ip: &str) -> String {
+    let hash_input = format!("{}_{}_{}_{}_{}", client_id, video, secret, expires, ip);
+    let digest = md5::compute(hash_input.as_bytes());
+    let b64 = base64::engine::general_purpose::STANDARD.encode(digest.0);
+    b64.replace('+', "-").replace('/', "_").replace('=', "")
+}
+
+/// Builds the full HLS master playlist URL with the token embedded in the path:
+///   VOD:  https://domain/videos/{client_id}_{video}/{token}/{expires}/master.m3u8
+///   Live: https://domain/cmaf/{client_id}_{video}/{token}/{expires}/master.m3u8
+fn make_url(domain: &str, client_id: &str, video: &str, token: &str, expires: u64, stream_type: &str) -> String {
+    match stream_type {
+        "vod" => format!("https://{}/videos/{}_{}/{}/{}/master.m3u8", domain, client_id, video, token, expires),
+        _     => format!("https://{}/cmaf/{}_{}/{}/{}/master.m3u8",   domain, client_id, video, token, expires),
+    }
+}
+
+#[fastedge::http]
+fn main(req: Request<Body>) -> Result<Response<Body>, Error> {
+    let query = req.uri().query().unwrap_or("");
+
+    // Required: video slug (VOD) or stream ID (Live)
+    let video = match get_query_param(query, "video") {
+        Some(v) => v,
+        None => return Response::builder()
+            .status(StatusCode::BAD_REQUEST)
+            .header("Content-Type", "application/json")
+            .body(Body::from(r#"{"error":"missing required parameter: video"}"#)),
+    };
+
+    let stream_type = get_query_param(query, "type").unwrap_or("live");
+
+    // Configuration comes from FastEdge environment variables
+    let client_id  = std::env::var("CLIENT_ID").unwrap_or_else(|_| "your-account-id-here".to_string());
+    let secret     = std::env::var("SECRET_KEY").unwrap_or_else(|_| "your-secret-token-here".to_string());
+    let domain     = std::env::var("CDN_DOMAIN").unwrap_or_else(|_| "demo-protected.gvideo.io".to_string());
+    let domain_ip  = std::env::var("CDN_DOMAIN_IP").unwrap_or_else(|_| "demo-protected-ip.gvideo.io".to_string());
+
+    // Detect client IP from request headers (for IP-bound token generation).
+    // The caller can override with &client_ip= if the app sits behind a proxy.
+    let client_ip = get_query_param(query, "client_ip")
+        .map(|s| s.to_string())
+        .unwrap_or_else(|| {
+            req.headers()
+                .get("x-real-ip")
+                .or_else(|| req.headers().get("x-forwarded-for"))
+                .and_then(|v| v.to_str().ok())
+                .map(|s| s.split(',').next().unwrap_or("").trim().to_string())
+                .unwrap_or_else(|| "0.0.0.0".to_string())
+        });
+
+    // Parse expiry:
+    //   missing or <= 0       → now + 3600 s (default)
+    //   > 2026-01-01 (Unix)   → treat as an absolute timestamp
+    //   otherwise             → now + value seconds
+    let now = SystemTime::now().duration_since(UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
+    let expires = match get_query_param(query, "expire").and_then(|v| v.parse::<i64>().ok()) {
+        Some(v) if v > 1_735_689_600 => v as u64,  // absolute Unix timestamp
+        Some(v) if v > 0             => now + v as u64,
+        _                            => now + 3600,
+    };
+
+    // Generate plain token (empty IP string in the formula)
+    let token = make_token(&client_id, video, &secret, expires, "");
+    let url   = make_url(&domain, &client_id, video, &token, expires, stream_type);
+
+    // Generate IP-bound token (viewer's IP included in the formula)
+    let token_ip = make_token(&client_id, video, &secret, expires, &client_ip);
+    let url_ip   = make_url(&domain_ip, &client_id, video, &token_ip, expires, stream_type);
+
+    let json = format!(
+        r#"{{"token":"{}","token_ip":"{}","client_ip":"{}","expires":{},"url":"{}","url_ip":"{}"}}"#,
+        token, token_ip, client_ip, expires, url, url_ip
+    );
+
+    Response::builder()
+        .status(StatusCode::OK)
+        .header("Content-Type", "application/json")
+        .body(Body::from(json))
+}
+```
+
+<Warning>
+**Production requirement:** Add your own authentication check before generating a token. Verify that the requesting user has a valid session and is authorised to access the specific video. Without this check, any caller can request a token for any asset.
+
+If you need user authentication, implement your own backend that validates the session and returns the signed URL from the server — never expose the CDN secret key to the client.
+</Warning>
+
+## Player integration
+
+The examples below use the demo API. Replace `TOKEN_API_URL` with your own authenticated backend endpoint before deploying to production.
+
+Demo app for Gcore Video Player is available here: [https://g-core.github.io/gcore-videoplayer-js/example/protected-content.html](https://g-core.github.io/gcore-videoplayer-js/example/protected-content.html)
+
+![Token auto-refresh demo app](/images/docs/streaming-platform/integrated-cdn/cdn-token-demo.png)
+
+Below are 3 approaches for token auto-refresh implementation:
+
+- Gcore Video Player + plugin `TokenRefreshPlugin` (recommended)
+- HLS.js + custom URL loader
+- Dash.js + custom URL loader
+
+All three approaches share the same core mechanism: a URL rewriter replaces the `{token}/{expires}` path segments in every outgoing request, and a timer fetches a fresh token a few seconds before expiry. Playback is never interrupted.
+
+### Gcore Video Player (recommended)
+
+The Gcore Video Player (`@gcorevideo/player`) ships a built-in **TokenRefreshPlugin** that handles token rotation automatically. This is the easiest integration — no custom loaders or request interceptors are needed. Recommended for most use cases and for teams new to protected streaming.
+
+**GitHub:** [github.com/G-Core/gcore-videoplayer-js](https://github.com/G-Core/gcore-videoplayer-js)
+
+**How the plugin works:**
+1. Register `TokenRefreshPlugin` once before creating any `Player` instance.
+2. Pass a `getToken` function in the `tokenRefresh` config. The plugin calls it automatically a few seconds before expiry.
+3. The plugin injects a custom hls.js URL-rewriting loader internally. Every outgoing request — manifest, playlist, segment — uses the latest token. The player never stalls or reloads the source.
+
+```html
+<!DOCTYPE html>
+<!--
+  AI CONTEXT — Gcore Video Player with TokenRefreshPlugin
+  =========================================================
+  Protected HLS URL format (token embedded in path, NOT in query params):
+    https://cdn.example.com/videos/{id}/{token}/{expires}/master.m3u8
+
+  The token API (TOKEN_API_URL) returns:
+    { token, token_ip, client_ip, expires, url, url_ip }
+      url    — HLS master URL with plain token (any IP)
+      url_ip — HLS master URL with IP-bound token (tied to client_ip)
+
+  TokenRefreshPlugin reads the source URL once at startup to extract the
+  initial {token}/{expires} state, then replaces those path segments in
+  every subsequent request after each refresh cycle.
+
+  KEY POINTS FOR CODE GENERATION:
+  - Fetch initial token BEFORE constructing Player (source URL must be valid)
+  - Register TokenRefreshPlugin BEFORE other plugins (CorePlugin ordering)
+  - ipBound: false → use url / token; true → use url_ip / token_ip
+  - refreshLeadSeconds must be < token lifetime (expire param)
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://player.gvideo.co/v2/assets/latest/index.css" />
+</head>
+<body>
+  <div id="player" style="width:854px; height:480px;"></div>
+
+  <script type="module">
+    // Import from the CDN bundle.
+    // npm alternative: import { Player, … } from '@gcorevideo/player'
+    import {
+      Player,
+      MediaControl,
+      QualityLevels,
+      Spinner,
+      ErrorScreen,
+      TokenRefreshPlugin,
+    } from 'https://player.gvideo.co/v2/assets/latest/index.js'
+
+    // ── Token API ───────────────────────────────────────────────────────
+    // Replace with your own backend URL. Your server must:
+    //   1. Verify the user is authenticated and has access to this video.
+    //   2. Return the same JSON shape: { token, token_ip, client_ip, expires, url, url_ip }
+    const TOKEN_API_URL =
+      'https://video-token-102748.fastedge.app/?video=iKbrdNMcS9ylGuw&type=vod&expire=60'
+
+    async function getToken() {
+      const res = await fetch(TOKEN_API_URL)
+      if (!res.ok) throw new Error(`Token API returned ${res.status}`)
+      return res.json()
+    }
+
+    // ── Register plugins ────────────────────────────────────────────────
+    // Plugin registration is a class-level (static) operation that applies
+    // to every Player instance on the page. Guard against double-registration
+    // (e.g. hot-reload in dev or calling init() more than once).
+    //
+    // Register TokenRefreshPlugin FIRST — it is a CorePlugin that must
+    // intercept CORE_CONTAINERS_CREATED before any playback starts.
+    if (!Player.corePlugins.some(p => p.prototype?.name === 'token_refresh')) {
+      Player.registerPlugin(TokenRefreshPlugin)
+    }
+    if (!Player.corePlugins.some(p => p.prototype?.name === 'media_control')) {
+      Player.registerPlugin(MediaControl)
+      Player.registerPlugin(QualityLevels)
+      Player.registerPlugin(Spinner)
+      Player.registerPlugin(ErrorScreen)
+    }
+
+    // ── Fetch initial token ─────────────────────────────────────────────
+    // Must be done BEFORE constructing the Player. The Player source URL
+    // must already contain a valid {token}/{expires} path — TokenRefreshPlugin
+    // reads it once on startup to seed its internal state.
+    const tokenData = await getToken()
+
+    // ── Create player ───────────────────────────────────────────────────
+    const player = new Player({
+      sources: [{
+        // Use tokenData.url_ip here (and ipBound: true below) for IP-bound tokens.
+        source: tokenData.url,
+        mimeType: 'application/x-mpegURL',
+      }],
+      playbackType: 'vod',    // 'vod' | 'live'
+
+      tokenRefresh: {
+        // Called by the plugin ~refreshLeadSeconds before the current token
+        // expires. Must return Promise<{ token, token_ip, client_ip, expires, url, url_ip }>.
+        getToken,
+
+        // false → use plain token (url / token fields from the response)
+        // true  → use IP-bound token (url_ip / token_ip fields)
+        ipBound: false,
+
+        // Fetch the replacement token this many seconds before expiry.
+        // Must be less than the token lifetime set in TOKEN_API_URL (&expire=60).
+        // Recommended: 10 s for 60-s tokens, 30 s for 300-s tokens.
+        refreshLeadSeconds: 10,
+
+        // Optional: fired immediately after the plugin applies the new token.
+        // Playback is already using the new token at this point — this is
+        // purely for logging, analytics, or UI updates.
+        onTokenRefreshed(data) {
+          console.log('Token refreshed — next expiry:', new Date(data.expires * 1000))
+        },
+      },
+    })
+
+    // Mount the player. Must be the LAST step — attachTo() triggers Clappr's
+    // container setup, which fires CORE_CONTAINERS_CREATED and causes
+    // TokenRefreshPlugin to inject the URL-rewriting hls.js loader.
+    player.attachTo(document.getElementById('player'))
+  </script>
+</body>
+</html>
+```
+
+### hls.js
+
+For custom player builds, React/Vue/Angular integrations, or any setup that uses [hls.js](https://github.com/video-dev/hls.js) directly, configure a custom URL-rewriting loader and a refresh timer.
+
+**How it works:**
+- `TokenRewriteLoader` extends the default hls.js XHR loader. Before every request — master playlist, sub-playlists, media segments — it calls `rewriteUrl()` to replace the stale `{token}/{expires}` with the current values.
+- `tokenState` is a plain object shared between the loader and the refresh timer. The loader closure always reads the latest value.
+- A `setTimeout`-based scheduler triggers a refresh ~10 s before expiry and reschedules itself after each successful fetch.
+
+```html
+<!DOCTYPE html>
+<!--
+  AI CONTEXT — hls.js with custom token-rewriting loader
+  ========================================================
+  Protected HLS URL format:
+    https://cdn.example.com/videos/{id}/{token}/{expires}/master.m3u8
+
+  TOKEN_RE regex targets the {token}/{expires} pair embedded in the path.
+  hls.js derives all child URLs (sub-playlists, segments) from the master
+  via relative paths, so they all contain the same token/expires segments.
+  TokenRewriteLoader intercepts every request and rewrites the URL before
+  the XHR is opened.
+
+  KEY POINTS FOR CODE GENERATION:
+  - Seed tokenState BEFORE calling hls.loadSource()
+  - TokenRewriteLoader must extend Hls.DefaultConfig.loader
+  - scheduleRefresh() chains itself — no setInterval needed
+  - Use data.token_ip instead of data.token for IP-bound mode
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+  <video id="video" controls style="width:854px; height:480px; background:#000;"></video>
+
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js"></script>
+  <script>
+    // ── Configuration ─────────────────────────────────────────────────────
+    // Replace with your own authenticated backend endpoint.
+    // Must return: { token, token_ip, client_ip, expires, url, url_ip }
+    const TOKEN_API_URL =
+      'https://video-token-102748.fastedge.app/?video=iKbrdNMcS9ylGuw&type=vod&expire=60'
+
+    // ── Shared token state ────────────────────────────────────────────────
+    // A plain object so the loader closure always reads the current value
+    // even after multiple refresh cycles (closures capture the reference,
+    // not the value).
+    const tokenState = { token: '', expires: 0 }
+
+    // ── Token fetcher ─────────────────────────────────────────────────────
+    async function fetchToken() {
+      const res = await fetch(TOKEN_API_URL)
+      if (!res.ok) throw new Error(`Token API returned ${res.status}`)
+      return res.json()
+    }
+
+    // ── URL rewriter ──────────────────────────────────────────────────────
+    // Matches the {token}/{expires} pair embedded in Gcore CDN URLs.
+    // Regex breakdown:
+    //   \/                   leading slash
+    //   ([A-Za-z0-9_-]{6,})  base64url token (min 6 chars)
+    //   \/                   separator
+    //   (1\d{9,})            Unix timestamp starting with 1 (covers year 2001–2286)
+    //   \/                   trailing slash
+    const TOKEN_RE = /\/([A-Za-z0-9_-]{6,})\/(1\d{9,})\//
+
+    function rewriteUrl(url) {
+      return url.replace(TOKEN_RE, `/${tokenState.token}/${tokenState.expires}/`)
+    }
+
+    // ── Custom hls.js loader ──────────────────────────────────────────────
+    // Extends the built-in XHR loader. Intercepts every request (manifest,
+    // playlist, segment, key) and rewrites the URL before the connection
+    // is opened. This approach works with any hls.js version >= 1.0.
+    class TokenRewriteLoader extends Hls.DefaultConfig.loader {
+      load(context, config, callbacks) {
+        context.url = rewriteUrl(context.url)   // rewrite before XHR opens
+        super.load(context, config, callbacks)
+      }
+    }
+
+    // ── Refresh scheduler ─────────────────────────────────────────────────
+    // Uses setTimeout (not setInterval) to chain refreshes. This avoids
+    // drift if a fetch takes longer than expected.
+    const LEAD_SECONDS = 10   // fetch new token this many seconds before expiry
+    let refreshTimer = null
+
+    function scheduleRefresh(expires) {
+      clearTimeout(refreshTimer)
+      // Fire LEAD_SECONDS before expiry; minimum 1 s to avoid scheduling in the past.
+      const msUntilRefresh = Math.max(1000, (expires - Date.now() / 1000 - LEAD_SECONDS) * 1000)
+      refreshTimer = setTimeout(doRefresh, msUntilRefresh)
+    }
+
+    async function doRefresh() {
+      try {
+        const data = await fetchToken()
+        // Update shared state. The loader picks this up on the next request.
+        // Swap data.token → data.token_ip for IP-bound mode.
+        tokenState.token   = data.token
+        tokenState.expires = data.expires
+        console.log('Token refreshed — next expiry:', new Date(data.expires * 1000))
+        scheduleRefresh(data.expires)   // schedule the next refresh cycle
+      } catch (err) {
+        console.error('Token refresh failed:', err)
+        setTimeout(doRefresh, 5000)     // retry after 5 s on network error
+      }
+    }
+
+    // ── Player initialisation ─────────────────────────────────────────────
+    async function init() {
+      const data = await fetchToken()
+
+      // Seed shared state BEFORE loadSource() so the first request is
+      // already rewritten correctly.
+      tokenState.token   = data.token    // or data.token_ip for IP-bound
+      tokenState.expires = data.expires
+
+      const hls = new Hls({
+        loader: TokenRewriteLoader,    // inject the URL-rewriting loader
+        // Add other hls.js config options here as needed
+      })
+
+      hls.loadSource(data.url)         // protected HLS master playlist
+      hls.attachMedia(document.getElementById('video'))
+
+      scheduleRefresh(data.expires)    // start the refresh cycle
+    }
+
+    init().catch(err => console.error('Player init failed:', err))
+  </script>
+</body>
+</html>
+```
+
+### dash.js
+
+For MPEG-DASH streams, [dash.js](https://github.com/Dash-IF/dash.js) provides a `RequestModifier` extension that rewrites every URL before the request is dispatched. The refresh timer is identical to the hls.js approach.
+
+**How it works:**
+- The `RequestModifier` extension's `modifyRequest()` method is called by dash.js before every HTTP request — MPD manifest, segments, initialization chunks.
+- The same `TOKEN_RE` regex used in the hls.js example works for DASH URLs too, since Gcore uses the same `{token}/{expires}` path convention for both HLS and DASH.
+
+<Info>
+The demo token API returns HLS URLs ending in `master.m3u8`. For DASH, replace that suffix with `index.mpd` — the token and expires values are the same.
+</Info>
+
+```html
+<!DOCTYPE html>
+<!--
+  AI CONTEXT — dash.js with RequestModifier for token rewriting
+  ==============================================================
+  Protected DASH (MPEG-DASH) URL format:
+    https://cdn.example.com/cmaf/{id}/{token}/{expires}/index.mpd
+
+  TOKEN_RE and rewriteUrl() are identical to the hls.js example.
+  dash.js calls modifyRequest() before every HTTP request (MPD manifest,
+  segments, init chunks), so all requests are rewritten transparently.
+
+  KEY POINTS FOR CODE GENERATION:
+  - Call player.extend('RequestModifier', ...) BEFORE player.initialize()
+  - Convert HLS URL to DASH: replace 'master.m3u8' with 'index.mpd'
+  - Seed tokenState BEFORE player.initialize()
+  - Use data.token_ip instead of data.token for IP-bound mode
+  - player.extend() is compatible with dash.js v3.x and v4.x
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+  <video id="video" controls style="width:854px; height:480px; background:#000;"></video>
+
+  <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
+  <script>
+    // ── Configuration ─────────────────────────────────────────────────────
+    // Replace with your own authenticated backend endpoint.
+    // Must return: { token, token_ip, client_ip, expires, url, url_ip }
+    // Use type=live for Live streams; the token format is identical.
+    const TOKEN_API_URL =
+      'https://video-token-102748.fastedge.app/?video=iKbrdNMcS9ylGuw&type=live&expire=60'
+
+    // ── Shared token state ────────────────────────────────────────────────
+    const tokenState = { token: '', expires: 0 }
+
+    // ── Token fetcher ─────────────────────────────────────────────────────
+    async function fetchToken() {
+      const res = await fetch(TOKEN_API_URL)
+      if (!res.ok) throw new Error(`Token API returned ${res.status}`)
+      return res.json()
+    }
+
+    // ── URL rewriter ──────────────────────────────────────────────────────
+    // Same regex as the hls.js example — Gcore uses the same URL convention
+    // for both HLS and DASH (CMAF) streams.
+    const TOKEN_RE = /\/([A-Za-z0-9_-]{6,})\/(1\d{9,})\//
+
+    function rewriteUrl(url) {
+      return url.replace(TOKEN_RE, `/${tokenState.token}/${tokenState.expires}/`)
+    }
+
+    // ── Refresh scheduler ─────────────────────────────────────────────────
+    const LEAD_SECONDS = 10
+    let refreshTimer = null
+
+    function scheduleRefresh(expires) {
+      clearTimeout(refreshTimer)
+      const msUntilRefresh = Math.max(1000, (expires - Date.now() / 1000 - LEAD_SECONDS) * 1000)
+      refreshTimer = setTimeout(doRefresh, msUntilRefresh)
+    }
+
+    async function doRefresh() {
+      try {
+        const data = await fetchToken()
+        tokenState.token   = data.token    // or data.token_ip for IP-bound
+        tokenState.expires = data.expires
+        console.log('Token refreshed — next expiry:', new Date(data.expires * 1000))
+        scheduleRefresh(data.expires)
+      } catch (err) {
+        console.error('Token refresh failed:', err)
+        setTimeout(doRefresh, 5000)
+      }
+    }
+
+    // ── Player initialisation ─────────────────────────────────────────────
+    async function init() {
+      const data = await fetchToken()
+
+      // Seed shared state BEFORE initialize() so the first MPD request
+      // is already rewritten.
+      tokenState.token   = data.token    // or data.token_ip for IP-bound
+      tokenState.expires = data.expires
+
+      const player = dashjs.MediaPlayer().create()
+
+      // Register the RequestModifier BEFORE initialize() so it is active
+      // for the very first MPD fetch. The modifier is called for every HTTP
+      // request dash.js makes — manifest, segments, and init chunks.
+      player.extend('RequestModifier', function() {
+        return {
+          modifyRequest(config) {
+            if (config.url) config.url = rewriteUrl(config.url)
+            return config
+          }
+        }
+      }, true)
+
+      // The demo token API returns an HLS URL (master.m3u8).
+      // For DASH, change the suffix to index.mpd — the token and expires
+      // values embedded in the path are the same for both formats.
+      const dashUrl = data.url.replace('master.m3u8', 'index.mpd')
+
+      // initialize(videoElement, url, autoPlay)
+      player.initialize(document.getElementById('video'), dashUrl, true)
+
+      scheduleRefresh(data.expires)    // start the refresh cycle
+    }
+
+    init().catch(err => console.error('Player init failed:', err))
+  </script>
+</body>
+</html>
+```
+
+
+## Next steps
+
+- **Replace the demo endpoint** with your own authenticated backend that verifies user sessions before issuing tokens.
+- **IP-bound tokens:** use `tokenData.url_ip` as the source URL and `tokenData.token_ip` in the state; set `ipBound: true` in the Gcore Player `tokenRefresh` config.
+- **Tune timing:** the demo uses 60 s for visibility, but real-world deployments typically use 300–600 s (5–10 minutes). See [Choosing a token lifetime](#choosing-a-token-lifetime) for the full tradeoff table.
+- **Defense in depth:** combine short-lived tokens with geo-blocking and referrer validation on your [Custom CDN resource](/streaming/interaction-with-cdn/custom-cdn-resource).
