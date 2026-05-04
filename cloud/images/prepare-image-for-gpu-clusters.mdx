@@ -1,0 +1,260 @@
+---
+title: Prepare a custom image for GPU clusters
+sidebarTitle: Prepare for GPU clusters
+---
+
+When creating a GPU cluster, you can use Gcore's pre-built public images or upload your own custom image. This guide explains how to prepare a custom image with the required GPU drivers and networking configuration.
+
+## Use public images
+
+Gcore provides pre-built images with NVIDIA drivers, CUDA toolkit, and InfiniBand support already installed. These images are recommended for most use cases.
+
+Available public images for GPU clusters:
+
+| Image | Ubuntu | NVIDIA Driver | CUDA | InfiniBand |
+|-------|--------|---------------|------|------------|
+| Ubuntu 22.04-570-12.8-eni | 22.04 LTS | 570.211.01 | 12.8 | Yes |
+| Ubuntu 22.04-580-13.0-eni | 22.04 LTS | 580.126.20 | 13.0 | Yes |
+| Ubuntu 24.04-570-12.8-eni | 24.04 LTS | 570.211.01 | 12.8 | Yes |
+| Ubuntu 24.04-580-13.0-eni | 24.04 LTS | 580.126.20 | 13.0 | Yes |
+
+The `eni` suffix indicates the image includes InfiniBand drivers (MLNX_OFED), required for multi-node distributed training with high-speed interconnect.
+
+To use a public image, select **Public** in the Image section when [creating a Virtual GPU cluster](/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster) or [creating a Bare Metal GPU cluster](/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster).
+
+## Custom image requirements
+
+If you need specific software versions or configurations not available in public images, you can prepare and upload a custom image. Custom images must meet the following requirements:
+
+### Base requirements
+
+- **Operating system**: Ubuntu 22.04 LTS or 24.04 LTS (recommended)
+- **Format**: raw, qcow2, vhd, vhdx, vdi, or ami
+- **VirtIO drivers**: Required for Virtual GPU clusters
+- **cloud-init**: Required for instance configuration
+
+### GPU driver requirements
+
+Install NVIDIA drivers compatible with your workload:
+
+| Driver Version | CUDA Version | Recommended For |
+|----------------|--------------|-----------------|
+| 570.211.01 | 12.8 | Production workloads, stable APIs |
+| 580.126.20 | 13.0 | Latest features, newer CUDA versions |
+
+### InfiniBand requirements (for multi-node clusters)
+
+For clusters using InfiniBand interconnect, install MLNX_OFED (Mellanox OpenFabrics Enterprise Distribution) drivers.
+
+## Prepare a custom image
+
+### Step 1. Start with a base image
+
+Download Ubuntu Server 22.04 or 24.04 from the [official Ubuntu website](https://ubuntu.com/download/server).
+
+### Step 2. Install NVIDIA drivers
+
+1. Update the system:
+
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+
+2. Install required packages:
+
+```bash
+sudo apt install -y build-essential linux-headers-$(uname -r)
+```
+
+3. Add the NVIDIA repository and install drivers:
+
+```bash
+sudo apt install -y nvidia-driver-570
+```
+
+Replace `570` with your desired driver version.
+
+4. Reboot and verify:
+
+```bash
+sudo reboot
+nvidia-smi
+```
+
+The output should display the GPU model, driver version, and CUDA version.
+
+### Step 3. Install CUDA toolkit
+
+1. Download and install CUDA:
+
+```bash
+wget https://developer.download.nvidia.com/compute/cuda/12.8.0/local_installers/cuda_12.8.0_570.86.10_linux.run
+sudo sh cuda_12.8.0_570.86.10_linux.run --toolkit --silent
+```
+
+2. Add CUDA to your PATH by adding these lines to `/etc/profile.d/cuda.sh`:
+
+```bash
+export PATH=/usr/local/cuda/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+```
+
+3. Verify installation:
+
+```bash
+nvcc --version
+```
+
+### Step 4. Install InfiniBand drivers (optional)
+
+For multi-node clusters with InfiniBand interconnect:
+
+1. Download MLNX_OFED from the [NVIDIA Networking website](https://network.nvidia.com/products/infiniband-drivers/linux/mlnx_ofed/).
+
+2. Install the drivers:
+
+```bash
+tar -xvf MLNX_OFED_LINUX-*.tgz
+cd MLNX_OFED_LINUX-*
+sudo ./mlnxofedinstall --add-kernel-support
+```
+
+3. Load the drivers:
+
+```bash
+sudo /etc/init.d/openibd restart
+```
+
+4. Verify InfiniBand connectivity:
+
+```bash
+ibstat
+```
+
+The output should show the InfiniBand ports and their status.
+
+### Step 5. Install cloud-init
+
+```bash
+sudo apt install -y cloud-init
+sudo systemctl enable cloud-init
+```
+
+### Step 6. Clean up and prepare for upload
+
+1. Remove temporary files:
+
+```bash
+sudo apt clean
+sudo rm -rf /tmp/*
+```
+
+2. Clear cloud-init state:
+
+```bash
+sudo cloud-init clean
+```
+
+3. Zero out free space (optional, reduces image size):
+
+```bash
+sudo dd if=/dev/zero of=/EMPTY bs=1M || true
+sudo rm -f /EMPTY
+```
+
+4. Shutdown the system:
+
+```bash
+sudo shutdown -h now
+```
+
+## Upload the custom image
+
+1. Export the image in a supported format (raw or qcow2 recommended).
+
+2. Upload the image to a publicly accessible URL or object storage.
+
+3. In the Gcore Customer Portal, go to **Cloud** > **Images** and click **Import via URL**.
+
+4. Select the resource type:
+   - **Virtual GPU Clusters** for virtualized GPU instances
+   - **Baremetal GPU Clusters** for dedicated physical servers
+
+5. Complete the upload form with your image URL and settings.
+
+For detailed upload instructions, see [Upload an image to the storage](/cloud/images/upload-an-image-to-the-storage).
+
+## Verify the custom image
+
+After creating a cluster with your custom image:
+
+1. Connect to a node via SSH.
+
+2. Verify GPU detection:
+
+```bash
+nvidia-smi
+```
+
+Expected output shows the GPU model, driver version, and CUDA version:
+
+```
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 570.211.01             Driver Version: 570.211.01     CUDA Version: 12.8     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|=========================================+========================+======================|
+|   0  NVIDIA H100 80GB HBM3          On  |   00000000:14:00.0 Off |                    0 |
+| N/A   38C    P0             74W /  700W |       0MiB /  81559MiB |      0%      Default |
++-----------------------------------------+------------------------+----------------------+
+```
+
+3. For InfiniBand clusters, verify connectivity:
+
+```bash
+ibstat
+```
+
+Expected output shows InfiniBand adapters:
+
+```
+CA 'mlx5_ib0'
+    CA type: MT4126
+    Number of ports: 1
+    Firmware version: 28.43.1014
+    Port 1:
+        State: Active
+        Physical state: LinkUp
+        Rate: 400
+        Link layer: InfiniBand
+```
+
+<Note>
+On single-node clusters, the InfiniBand port state may show "Initializing" or "Polling" since there is no subnet manager. This is expected behavior. The adapters function correctly in multi-node clusters with proper InfiniBand fabric.
+</Note>
+
+4. Test CUDA functionality:
+
+```bash
+nvcc --version
+```
+
+## Troubleshooting
+
+### GPUs not detected
+
+- Verify NVIDIA drivers are installed: `dpkg -l | grep nvidia`
+- Check kernel modules are loaded: `lsmod | grep nvidia`
+- Review system logs: `dmesg | grep -i nvidia`
+
+### InfiniBand not working
+
+- Verify MLNX_OFED is installed: `ofed_info -s`
+- Check InfiniBand status: `ibstat`
+- Ensure the cluster flavor supports InfiniBand
+
+### cloud-init not running
+
+- Verify cloud-init is enabled: `systemctl status cloud-init`
+- Check cloud-init logs: `/var/log/cloud-init.log`
