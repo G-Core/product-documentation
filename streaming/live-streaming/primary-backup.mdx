@@ -1,8 +1,47 @@
 ---
 title: "Primary, Backup, and Global Ingest Points for PUSH and PULL"
-sidebarTitle: "Ingest & Backup"
+sidebarTitle: "Push, pull, backup"
 description: Multiple geo distributed ingest points and limits of getting original stream
 ---
+
+## Quick start: push a test live stream
+
+Use **PUSH** when your encoder, broadcast software, app, or automation agent sends the live stream to Gcore. Use **PULL** when Gcore must connect to your public origin URL and fetch the stream from your server.
+
+```text
+PUSH:
+Your encoder (ffmpeg/OBS/etc.)  --->  Gcore ingest  --->  Transcoding + CDN  --->  HTML player
+
+PULL:
+Your public origin URL  <---  Gcore ingest  --->  Transcoding + CDN  --->  HTML player
+```
+
+For a first quick test, use PUSH with RTMP: it is the most common encoder workflow and requires only an ingest URL. Replace the URL with your stream's `push_url` in the command below. It generates a test video pattern and a test audio tone, encodes them as H.264/AAC, and pushes the stream to Gcore:
+
+```sh
+ffmpeg -re \
+  -f lavfi -i testsrc2=size=1280x720:rate=30 \
+  -f lavfi -i sine=frequency=1000:sample_rate=48000 \
+  -c:v libx264 -preset veryfast -tune zerolatency -pix_fmt yuv420p \
+  -b:v 3000k -maxrate 3000k -bufsize 6000k -g 30 -keyint_min 30 \
+  -x264-params "scenecut=0:bframes=0" \
+  -c:a aac -b:a 128k -ar 48000 \
+  -f flv "rtmp://vp-push-ed1.gvideo.co/in/12345?aaabbbcccddd"
+```
+
+Expected result in the Control Panel:
+
+<Frame>
+![FFmpeg test stream execution result](/images/docs/streaming-platform/live-streaming/create-a-live-stream/streaming-ffmpeg-test.png)
+</Frame>
+
+For AI agents and automated backends, use this default flow:
+
+1. Create a live stream with `pull: false`, RTMP ingest, and a 720p H.264-compatible transcoding setup.
+2. Read `push_url` and `iframe_url` from the stream API response.
+3. Start ffmpeg with the command above and replace the example RTMP URL with `push_url`.
+4. Wait for the stream to become active (up to 15 seconds) and for playback initialization to finish.
+5. Return `iframe_url` to the user as the HTML player link.
 
 ## PUSH Ingest
 
@@ -12,6 +51,8 @@ Live ingesting is the process of sending a live video and audio stream from your
 The ingest point is the server endpoint that first receives the stream before it is processed (transcoded, packaged, or distributed via CDN).
 
 In PUSH mode, your encoder initiates the connection to the platform ingest server. You configure the encoder with a target URL and stream key, and the server listens for that incoming connection.
+
+The push token is the secret part of the ingest URL. It authenticates the stream source for RTMP/RTMPS, SRT, and WebRTC WHIP ingest. Only one push token exists for a stream at a time, and the token must be protected like any other credential. Anyone with a valid push URL can try to publish to that stream.
 
 Protocols supported for PUSH ingest typically include:
   - RTMP/RTMPS — Widely supported in encoders and streaming software.
@@ -34,13 +75,62 @@ Example of server response after sending a second stream:
 
 To use PUSH ingest, you must:
   1) Select one protocol (RTMP, SRT, or WebRTC WHIP).
-  2) Configure your encoder with the server ingest URL and your unique stream key.
+  2) Configure your encoder with the server ingest URL and your unique stream key or token.
   3) Ensure network/firewall allows outbound TCP (for RTMP/RTMPS) and UDP (for SRT, WebRTC).
 
 <Info>
 The origin stream provided by your encoder must strictly comply with the input parameters and codec requirements described in the [Input Parameters and Codecs](/streaming/live-streams-and-videos-protocols-and-codecs/input-parameters-and-codecs) documentation.  
 
 Only streams that follow these specifications (supported protocols, video/audio codecs, profiles, GOP structure, and bitrate constraints) can be accepted by the ingest servers and reliably transcoded for further distribution. Any deviation from the documented requirements may cause the connection to be rejected or lead to unstable transcoding and delivery.  
+</Info>
+
+
+### PUSH Link Formats
+
+PUSH ingest URLs are returned in the stream object and are also available in the control panel. Use the exact URL for the protocol selected in the stream settings:
+
+| Protocol | Field | Format |
+| --- | --- | --- |
+| RTMP/RTMPS | `push_url`, `backup_push_url` | `rtmp://rtmp.domain.com/in/{stream_id}?{push_token}` |
+| SRT | `push_url_srt`, `backup_push_url_srt` | `srt://srt.domain.com:5001?streamid={stream_id}#{push_token}` |
+| WebRTC WHIP | `push_url_whip` | `https://whip.domain.com/{stream_id}_{push_token}/whip` |
+
+Examples:
+
+```text
+rtmp://rtmp.domain.com/in/1234567?aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+srt://srt.domain.com:5001?streamid=1234567#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+https://whip.domain.com/1234567_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/whip
+```
+
+For enterprise projects, the ingest URL format can be adapted to existing business or encoder requirements. For example, if your current workflow already uses this style:
+
+```text
+rtmp(s)://<ip:port>/app/<uuid>
+```
+
+Gcore can provide a compatible format such as:
+
+```text
+rtmp://vp-push-anx1.gvideo.co/app/76ac4a8b-5ff3-9028-2a4b-a31a23e5900a
+```
+
+Contact your account manager or support team if you need a custom ingest URL format.
+
+
+### Reset the PUSH Token
+
+Reset the push token if it was exposed, shared with the wrong encoder, or needs to be rotated by your security process. After a reset:
+
+- The old token is immediately invalidated.
+- The new token is returned by the API and becomes available in the control panel.
+- Encoders that still use the old URL will be rejected.
+- The platform tries to terminate active primary and backup ingest connections automatically.
+
+Use the following API method: https://gcore.com/docs/api-reference/streaming/streams/reset-push-token
+
+<Info>
+Token reset affects active broadcasting. Plan token rotation during a maintenance window or be ready to restart the encoder with the new ingest URL.
 </Info>
 
 
