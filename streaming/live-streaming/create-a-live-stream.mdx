@@ -1,4 +1,4 @@
----
+﻿---
 title: Getting started with live streaming
 sidebarTitle: Getting started LIVE
 ---
@@ -205,6 +205,30 @@ To quickly embed the stream using the Gcore player:
 | **Iframe embed code** | Copy and paste this code into your website or CMS to embed the player directly. To change the player behavior (disable low latency, change colors, etc.), see [Customize appearance of the built-in player](/streaming/extra-features/customize-appearance-of-the-built-in-player). If something doesn't work in your player, contact [our support team](mailto:support@gcore.com). |
 
 That’s it. Your viewers can see the live stream.
+
+## Reset the push token
+
+The push token is the secret embedded in all ingest URLs that authenticates the encoder. It appears in RTMP, SRT, and WebRTC WHIP URLs:
+
+```
+rtmp://vp-push-ed1.gvideo.co/in/{stream_id}?{token}
+srt://vp-push-ed1-srt.gvideo.co:5001?streamid={stream_id}#{token}
+https://whip.gvideo.co/{stream_id}_{token}/whip
+```
+
+Reset the token when it is compromised or when revoking encoder access without deleting the stream.
+
+```http
+POST /streaming/streams/{stream_id}/reset_push_token
+```
+
+On reset, the old token is immediately invalidated and the response contains updated ingest URLs with the new token. Reconnect the encoder using those new URLs.
+
+<Warning>
+Token reset terminates all active ingest connections immediately--RTMP, SRT, and WebRTC WHIP are all affected. The stream goes offline until the encoder reconnects with the new token.
+</Warning>
+
+For the full request and response schema, see [Reset live stream push token](/api-reference/streaming/streams/reset-live-stream-push-token).
 
 {/* <Warning>
 **Warning**
