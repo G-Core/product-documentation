@@ -1,0 +1,171 @@
+---
+title: Manage CDN via MCP Server
+sidebarTitle: Manage via MCP
+---
+
+Gcore MCP Server provides CDN management through natural language. AI assistants can create CDN resources, configure caching, purge content, and manage SSL certificates.
+
+<Info>
+Before starting, [install and configure Gcore MCP Server](/account-settings/integrations/install-and-configure-gcore-mcp-server) with `GCORE_TOOLS="cdn.*"` to load CDN tools.
+</Info>
+
+## How it works
+
+When a request is made in natural language, the AI client calls the appropriate MCP tool, receives JSON data from the Gcore API, and presents it in readable format.
+
+Example request:
+
+```
+List my CDN resources
+```
+
+The AI client responds:
+
+```
+Found 1 CDN resource:
+
+1. cdn-mcp-test.example.com (ID: 968747)
+   Status: active
+   Origin: Origins for cdn-mcp-test.example.com
+   Protocol: HTTP
+   SSL: disabled
+   Cache TTL: 4 days
+   Created: 2026-04-20
+```
+
+## Available tools
+
+CDN tools follow the naming pattern `cdn_*`. Common operations:
+
+| Tool | Description |
+|------|-------------|
+| `cdn_cdn_resources_ls` | List all CDN resources |
+| `cdn_cdn_resources_get` | Get resource details by ID |
+| `cdn_cdn_resources_new` | Create a new resource |
+| `cdn_cdn_resources_upd` | Update resource settings |
+| `cdn_cdn_resources_del` | Delete a resource |
+| `cdn_cdn_resources_purge` | Purge cached content |
+| `cdn_ssl_certs_ls` | List SSL certificates |
+| `cdn_ssl_certs_new` | Upload SSL certificate |
+| `cdn_statistics_get_resource_usage_aggregated` | Get traffic statistics |
+
+## View CDN resources
+
+List all CDN resources:
+
+```
+List my CDN resources
+```
+
+Get details for a specific resource:
+
+```
+Show details for CDN resource 968747
+```
+
+The response includes: resource ID, CNAME, status (active/suspended/deleted), origin group, SSL configuration, cache settings, and enabled features like WAAP or websockets.
+
+## Create a CDN resource
+
+```
+Create a CDN resource for cdn.example.com with origin at origin.example.com
+```
+
+Required information:
+- **cname**: The delivery domain (e.g., cdn.example.com)
+- **origin**: The origin server address
+
+The AI client calls `cdn_cdn_resources_new` with these parameters. Upon success, the response includes the new resource ID and a reminder to configure DNS with a CNAME record pointing to the Gcore CDN endpoint.
+
+## Purge cache
+
+Clear all cached content for a resource:
+
+```
+Purge all cache for CDN resource 968747
+```
+
+Purge specific paths:
+
+```
+Purge /images/logo.png from CDN resource 968747
+```
+
+The `cdn_cdn_resources_purge` tool accepts a resource ID and an optional list of paths. Without paths, it purges all content.
+
+<Warning>
+Some resources have `can_purge_by_urls: false`, which means only full cache purge is available. Check resource details to verify purge capabilities.
+</Warning>
+
+## Manage SSL certificates
+
+List certificates:
+
+```
+Show my SSL certificates
+```
+
+The `cdn_ssl_certs_ls` tool returns certificate details including domain, type (Let's Encrypt or custom), expiration date, and status.
+
+Request a Let's Encrypt certificate:
+
+```
+Create a Let's Encrypt certificate for cdn.example.com
+```
+
+## View statistics
+
+Get traffic statistics:
+
+```
+Show CDN statistics for the last 7 days
+```
+
+The statistics tool requires date range and metrics parameters. The AI client typically requests common metrics like `total_bytes`, `requests`, `responses_2xx`, `responses_4xx`, and `responses_5xx`.
+
+For a specific resource:
+
+```
+Show traffic for CDN resource 968747 this week
+```
+
+## Update resource settings
+
+Modify cache duration:
+
+```
+Set cache TTL to 1 hour for CDN resource 968747
+```
+
+Enable or disable features:
+
+```
+Enable HTTPS redirect for CDN resource 968747
+```
+
+```
+Disable websockets for CDN resource 968747
+```
+
+The `cdn_cdn_resources_upd` tool updates the specified settings while preserving other configuration.
+
+## Common requests
+
+| Request | Tool called |
+|---------|-------------|
+| "List my CDN resources" | `cdn_cdn_resources_ls` |
+| "Show CDN resource 123456" | `cdn_cdn_resources_get` |
+| "Create CDN for cdn.site.com with origin backend.site.com" | `cdn_cdn_resources_new` |
+| "Purge cache for resource 123456" | `cdn_cdn_resources_purge` |
+| "Show my SSL certificates" | `cdn_ssl_certs_ls` |
+| "Delete CDN resource 123456" | `cdn_cdn_resources_del` |
+
+## Troubleshooting
+
+If a request fails, the AI client displays the error message from the MCP server. Common issues:
+
+- **Resource not found**: Verify the resource ID exists in the account
+- **Permission denied**: Check that the API token has CDN permissions
+- **Invalid parameters**: Review the request for typos or missing information
+
+For operations not available through MCP, use the [Gcore Customer Portal](https://portal.gcore.com) or [CDN API](/api-reference/cdn).

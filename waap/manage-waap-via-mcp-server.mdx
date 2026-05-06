@@ -1,0 +1,539 @@
+---
+title: Manage WAAP via MCP Server
+sidebarTitle: Manage via MCP
+---
+
+Gcore MCP Server provides Web Application and API Protection (WAAP) management through natural language. AI assistants can protect domains, investigate attacks, create security rules, and monitor threats.
+
+<Info>
+Before starting, [install and configure Gcore MCP Server](/account-settings/integrations/install-and-configure-gcore-mcp-server) with `GCORE_TOOLS="waap.*"` to load WAAP tools.
+</Info>
+
+## How it works
+
+When a request is made in natural language, the AI client calls the appropriate MCP tool and presents the response in readable format.
+
+Example request:
+
+```
+List my protected domains
+```
+
+The AI client responds:
+
+```
+Found 2 protected domains:
+
+1. shop.example.com
+   Status: monitoring (logging threats, not blocking)
+   Custom rules: 2 of 5 used
+   Advanced rules: 1 of 3 used
+   Created: October 21, 2025
+
+2. api.example.com
+   Status: blocking (active protection)
+   Custom rules: 3 of 5 used
+   Advanced rules: 2 of 3 used
+   Created: September 15, 2025
+   
+Recommendation: shop.example.com has been in monitoring mode 
+for 2 months. Review blocked events and consider switching to 
+blocking mode if no false positives detected.
+```
+
+## Protect a new domain
+
+When onboarding a new domain, the AI assistant guides through the complete setup.
+
+```
+I need to protect my e-commerce site shop.example.com with WAAP
+```
+
+Response:
+
+```
+Setting up WAAP protection for shop.example.com...
+
+Domain registered:
+  ID: 1456
+  Name: shop.example.com
+  Status: monitoring (default - safe for initial setup)
+  
+DNS Configuration Required:
+  Add this CNAME record at your DNS provider:
+  
+  shop.example.com  CNAME  shop-example-com.waap.gcore.com
+  
+  Or if using Gcore DNS: "Add CNAME for shop.example.com 
+  pointing to shop-example-com.waap.gcore.com"
+
+After DNS propagation (typically 5-30 minutes), traffic will 
+route through WAAP for inspection.
+
+Default protection enabled:
+  - WAF policies (OWASP Top 10)
+  - Protocol validation
+  - IP reputation filtering
+  - Known bot detection
+
+Next steps:
+1. Wait for DNS propagation
+2. Monitor traffic for 24-48 hours
+3. Review events for false positives
+4. Switch to blocking mode when confident
+
+Would you like me to configure additional protection like 
+rate limiting or geo-blocking?
+```
+
+### Switch to blocking mode
+
+After monitoring period:
+
+```
+Switch shop.example.com to blocking mode
+```
+
+Response:
+
+```
+Checking recent events before switching...
+
+Last 24 hours for shop.example.com:
+  Blocked events (would block in blocking mode): 234
+  - SQL injection attempts: 89
+  - XSS attempts: 45
+  - Bot traffic: 78
+  - Rate limit violations: 22
+  
+  False positives detected: 0
+  Legitimate traffic flagged: 0
+
+Safe to switch. Updating protection mode...
+
+Mode changed:
+  Previous: monitoring
+  Current: blocking
+  
+WAAP is now actively blocking detected threats.
+Blocked visitors see the default block page.
+
+Monitor for the next few hours. If legitimate users report 
+issues, you can switch back: "Switch shop.example.com to 
+monitoring mode"
+```
+
+## Investigate an attack
+
+When suspicious activity is detected, the AI assistant helps investigate.
+
+```
+Show me security events for api.example.com in the last hour
+```
+
+Response:
+
+```
+Security events for api.example.com (last hour):
+
+Total events: 1,247
+  Blocked: 892
+  Monitored: 355
+
+By threat type:
+  SQL Injection:     423 (34%)  - HIGH severity
+  Brute Force:       312 (25%)  - from login endpoint
+  Bot Traffic:       289 (23%)  - automated scanners
+  Rate Limit:        156 (13%)  - exceeding thresholds
+  XSS Attempts:       67 (5%)   - in form submissions
+
+Top attacking IPs:
+  1. 192.0.2.100 - 234 requests (scanner, Russia)
+  2. 198.51.100.50 - 189 requests (brute force, China)
+  3. 203.0.113.25 - 156 requests (bot, Unknown VPN)
+
+Attack pattern: Coordinated SQL injection targeting /api/search 
+endpoint with automated tools.
+
+Recommended actions:
+1. Block top attacking IPs
+2. Add rate limiting to /api/search endpoint
+3. Consider geo-blocking for high-risk regions
+
+Would you like me to implement any of these?
+```
+
+### Check IP reputation
+
+```
+Check the reputation of IP 192.0.2.100
+```
+
+Response:
+
+```
+IP Reputation: 192.0.2.100
+
+Risk Score: 87/100 (HIGH RISK)
+
+Location:
+  Country: Russia
+  City: Moscow
+  ISP: Example Hosting Provider
+  
+Threat Categories:
+  - Scanner (automated vulnerability scanning)
+  - Brute Force (credential stuffing attempts)
+  - Web Scraper (high-volume data extraction)
+
+Recent activity on your domains:
+  api.example.com: 234 blocked requests (last hour)
+    - 189 SQL injection attempts
+    - 45 brute force on /api/login
+
+Historical data:
+  First seen: 3 days ago
+  Total requests: 12,456
+  Block rate: 94%
+
+Recommendation: Block this IP. High confidence malicious actor.
+
+Block now? "Block IP 192.0.2.100 for all my domains"
+```
+
+## Create security rules
+
+### Rate limiting
+
+```
+Create a rate limiting rule: max 60 requests per minute per IP for api.example.com
+```
+
+Response:
+
+```
+Creating rate limiting rule...
+
+Rule created:
+  ID: rule_78901
+  Domain: api.example.com
+  Type: Rate Limit
+  
+Configuration:
+  Threshold: 60 requests per minute
+  Scope: per IP address
+  Action: block (returns 429 Too Many Requests)
+  
+The rule is active immediately. IPs exceeding 60 requests/minute 
+will be blocked for the remainder of that minute.
+
+Current rate limit rules (1 of 3 allowed):
+  - rule_78901: 60 req/min per IP (all endpoints)
+
+To create endpoint-specific limits:
+"Add rate limit of 10 requests per minute for /api/login endpoint"
+```
+
+### Geo-blocking
+
+```
+Block all traffic from Russia and China for shop.example.com
+```
+
+Response:
+
+```
+Creating geo-blocking rule...
+
+Rule created:
+  ID: rule_78902
+  Domain: shop.example.com
+  Type: Geo-Block
+  
+Configuration:
+  Blocked countries: Russia (RU), China (CN)
+  Action: block (returns 403 Forbidden)
+  
+Visitors from these countries will see the block page.
+
+Impact estimate (based on last 30 days):
+  Traffic from RU: 2.3% of total (mostly bot traffic)
+  Traffic from CN: 1.8% of total (mixed)
+  Blocked attacks from these regions: 67%
+
+If you have legitimate customers in these regions, consider:
+- Allowlisting specific IPs
+- Using challenge mode instead of block
+
+Modify: "Change geo-block rule to challenge mode instead of block"
+```
+
+### Block specific IPs
+
+```
+Block IP 192.0.2.100 and the entire 198.51.100.0/24 range
+```
+
+Response:
+
+```
+Adding IP blocks...
+
+Firewall rules created:
+
+1. Block IP 192.0.2.100
+   Rule ID: fw_12345
+   Scope: all domains
+   Action: block
+   
+2. Block range 198.51.100.0/24 (256 IPs)
+   Rule ID: fw_12346
+   Scope: all domains
+   Action: block
+
+Current firewall rules: 2 of 5 allowed
+
+These IPs are now blocked across all your protected domains.
+Requests from these addresses receive 403 Forbidden.
+
+To remove later: "Remove firewall rule fw_12345"
+```
+
+## Configure API protection
+
+For API endpoints, specialized protection prevents abuse.
+
+```
+Set up API protection for api.example.com with schema validation
+```
+
+Response:
+
+```
+Configuring API protection for api.example.com...
+
+API Protection enabled:
+  Base path: /api/
+  Discovery: enabled (learning endpoints)
+  
+Current settings:
+  - Schema validation: enabled
+  - Request size limit: 1 MB
+  - Parameter validation: enabled
+  
+API endpoints discovered (last 24h):
+  POST /api/login          - 12,456 requests
+  GET  /api/products       - 8,234 requests
+  POST /api/orders         - 2,156 requests
+  GET  /api/users/{id}     - 1,890 requests
+
+Recommendations:
+1. /api/login receives brute force attempts - add rate limit
+2. /api/products has unusual query patterns - review
+3. Consider uploading OpenAPI schema for strict validation
+
+Upload schema: "Upload OpenAPI spec for api.example.com"
+Add rate limit: "Limit /api/login to 5 requests per minute per IP"
+```
+
+## Monitor and analyze
+
+### Security dashboard
+
+```
+Show security summary for all my domains this week
+```
+
+Response:
+
+```
+Weekly Security Summary (March 24-30, 2026)
+
+Overall Statistics:
+  Total requests: 2.4M
+  Threats blocked: 34,567 (1.4%)
+  Legitimate traffic: 98.6%
+
+By Domain:
+  shop.example.com
+    Requests: 1.8M
+    Blocked: 12,345 (0.7%)
+    Top threat: Bot traffic (45%)
+    Status: blocking
+    
+  api.example.com  
+    Requests: 600K
+    Blocked: 22,222 (3.7%)
+    Top threat: SQL injection (38%)
+    Status: blocking
+
+Trends:
+  - Attack volume increased 23% vs last week
+  - New attack pattern: credential stuffing on /api/login
+  - 3 IPs added to global threat list
+
+Action items:
+  1. Review credential stuffing attacks on api.example.com
+  2. Consider adding CAPTCHA to login flow
+  3. 2 rules approaching quota limit
+```
+
+### Export events for analysis
+
+```
+Export blocked events from yesterday for compliance report
+```
+
+Response:
+
+```
+Exporting security events...
+
+Export ready:
+  Period: March 29, 2026 (00:00 - 23:59 UTC)
+  Events: 8,456 blocked requests
+  Format: CSV
+  
+Download: [events_2026-03-29.csv]
+
+Columns included:
+  - timestamp
+  - domain
+  - source_ip
+  - country
+  - request_path
+  - threat_type
+  - action_taken
+  - rule_matched
+
+For automated exports, use the Events API or schedule 
+daily reports in the Customer Portal.
+```
+
+## Custom block pages
+
+Customize what blocked visitors see.
+
+```
+Create a custom block page with our company branding
+```
+
+Response:
+
+```
+To create a custom block page, I need:
+
+1. Page title (e.g., "Access Denied")
+2. Message to display
+3. Support contact (optional)
+4. Company logo URL (optional)
+
+Example: "Create block page with title 'Security Check' and 
+message 'Your request was blocked for security reasons. 
+Contact support@example.com if this is an error.'"
+
+Current block pages:
+  - Default (system): applied to all domains
+  
+Custom pages available: 0 of 2 allowed
+```
+
+After providing details:
+
+```
+Custom block page created:
+  ID: page_567
+  Title: Security Check
+  Message: Your request was blocked for security reasons...
+  
+To apply to a domain:
+"Apply custom page page_567 to shop.example.com"
+
+Preview the page in the Customer Portal before applying 
+to production domains.
+```
+
+## Troubleshooting
+
+### Legitimate traffic being blocked
+
+```
+Users are reporting they can't access shop.example.com from their office
+```
+
+Response:
+
+```
+Let me investigate...
+
+Checking recent blocks for shop.example.com...
+
+Found potential issue:
+  IP 203.0.113.100 blocked 45 times in last hour
+  Reason: Rate limit exceeded (rule_78901)
+  
+This appears to be a corporate network (single IP for 
+multiple users behind NAT).
+
+Options:
+1. Allowlist this IP
+   "Add IP 203.0.113.100 to allowlist for shop.example.com"
+   
+2. Increase rate limit for this IP
+   "Create exception: 500 req/min for IP 203.0.113.100"
+   
+3. Adjust global rate limit
+   "Increase rate limit to 120 req/min per IP"
+
+Recommendation: Option 1 (allowlist) if this is a known 
+corporate customer. This bypasses rate limiting while 
+maintaining other protections.
+
+Which option would you like?
+```
+
+### False positives in WAF
+
+```
+Our checkout form is being blocked by WAF
+```
+
+Response:
+
+```
+Investigating WAF blocks on checkout...
+
+Found issue:
+  Path: /checkout/payment
+  Blocked: 234 requests today
+  Rule triggered: SQL Injection detection
+  
+False positive identified:
+  The payment form field "card_notes" contains user text 
+  that matches SQL injection patterns (e.g., users typing 
+  "don't charge until...")
+
+Solutions:
+
+1. Create WAF exception for this endpoint
+   "Disable SQL injection check for /checkout/payment path"
+   Risk: Low (payment data validated server-side)
+   
+2. Exclude specific parameter
+   "Exclude parameter 'card_notes' from WAF inspection"
+   Risk: Very low (only this field excluded)
+
+3. Adjust WAF sensitivity
+   "Set WAF to low sensitivity for shop.example.com"
+   Risk: Medium (may miss some attacks)
+
+Recommendation: Option 2 - exclude only the problematic 
+parameter while maintaining full protection elsewhere.
+
+Implement? "Exclude parameter 'card_notes' from WAF for 
+shop.example.com"
+```
+
+<Info>
+For detailed WAAP configuration, see [Configure WAAP for a domain](/waap/getting-started/configure-waap-for-a-domain). Security policies are documented in [WAAP policies](/waap/waap-policies). Custom rules are covered in [Custom rules](/waap/waap-rules/custom-rules).
+</Info>

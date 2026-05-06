@@ -1,0 +1,236 @@
+---
+title: Manage FastEdge via MCP Server
+sidebarTitle: Manage via MCP
+---
+
+Gcore MCP Server provides FastEdge management through natural language. AI assistants can create edge applications, manage secrets and KV stores, and view statistics.
+
+<Info>
+Before starting, [install and configure Gcore MCP Server](/account-settings/integrations/install-and-configure-gcore-mcp-server) with `GCORE_TOOLS="fastedge.*"` to load FastEdge tools.
+</Info>
+
+## How it works
+
+When a request is made in natural language, the AI client calls the appropriate MCP tool and presents the response in readable format.
+
+Example request:
+
+```
+List my FastEdge applications
+```
+
+The AI client responds:
+
+```
+Found 2 FastEdge applications:
+
+1. api-gateway (ID: 12345)
+   Status: active
+   URL: https://api-gateway.fastedge.gcore.dev
+   Binary: api-gateway-v2.wasm
+   
+2. image-optimizer (ID: 12346)
+   Status: active
+   URL: https://image-optimizer.fastedge.gcore.dev
+   Binary: image-optimizer-v1.wasm
+```
+
+## Available tools
+
+FastEdge tools follow the naming pattern `fastedge_*`. Main categories:
+
+| Tool | Description |
+|------|-------------|
+| `fastedge_apps_ls` | List all applications |
+| `fastedge_apps_get` | Get application details |
+| `fastedge_apps_new` | Create an application |
+| `fastedge_apps_upd` | Update application settings |
+| `fastedge_apps_del` | Delete an application |
+| `fastedge_apps_logs_ls` | View application logs |
+| `fastedge_binaries_ls` | List WebAssembly binaries |
+| `fastedge_binaries_get` | Get binary details |
+| `fastedge_binaries_del` | Delete a binary |
+| `fastedge_kv_stores_ls` | List key-value stores |
+| `fastedge_kv_stores_new` | Create a KV store |
+| `fastedge_kv_stores_del` | Delete a KV store |
+| `fastedge_secr_ls` | List secrets |
+| `fastedge_secr_new` | Create a secret |
+| `fastedge_secr_upd` | Update a secret |
+| `fastedge_secr_del` | Delete a secret |
+| `fastedge_templates_ls` | List available templates |
+| `fastedge_templates_get` | Get template details |
+| `fastedge_statistics_get_call_series` | Get request statistics |
+| `fastedge_statistics_get_duration_series` | Get latency statistics |
+
+## Manage applications
+
+List all FastEdge applications:
+
+```
+List my FastEdge applications
+```
+
+Get details for a specific application:
+
+```
+Show details for FastEdge application 12345
+```
+
+Create a new application:
+
+```
+Create a FastEdge application named api-gateway
+```
+
+The AI client calls `fastedge_apps_new` and returns the new application ID and URL.
+
+Stop or start an application:
+
+```
+Stop FastEdge application 12345
+```
+
+```
+Start FastEdge application 12345
+```
+
+## Deploy WebAssembly binaries
+
+List available binaries for an application:
+
+```
+Show binaries for FastEdge application 12345
+```
+
+Check binary details:
+
+```
+Show details for binary 67890
+```
+
+Delete an old binary version:
+
+```
+Delete binary 67890 from application 12345
+```
+
+<Info>
+Binary upload requires file access. Use the [Gcore Customer Portal](https://portal.gcore.com) or [FastEdge CLI](/fastedge/fastedge-cli) to upload new .wasm files.
+</Info>
+
+## Manage secrets
+
+Secrets store sensitive configuration values like API keys. List secrets for an application:
+
+```
+Show secrets for FastEdge application 12345
+```
+
+Create a new secret:
+
+```
+Create a secret named API_KEY with value sk-xxx for application 12345
+```
+
+Update an existing secret:
+
+```
+Update secret API_KEY to new value for application 12345
+```
+
+Delete a secret:
+
+```
+Delete secret API_KEY from application 12345
+```
+
+<Warning>
+Secret values are not returned in listings for security. The AI client shows secret names and metadata only.
+</Warning>
+
+## Manage key-value stores
+
+Key-value stores provide persistent storage for session data, caching, and counters.
+
+List all KV stores:
+
+```
+Show my FastEdge KV stores
+```
+
+Create a new store:
+
+```
+Create a KV store named session-cache
+```
+
+Associate a store with an application:
+
+```
+Link KV store session-cache to application 12345
+```
+
+## View statistics
+
+Get request statistics:
+
+```
+Show FastEdge statistics for the last 7 days
+```
+
+Get latency breakdown:
+
+```
+Show request duration statistics for application 12345
+```
+
+The `fastedge_statistics_get_call_series` tool returns request counts over time. The `fastedge_statistics_get_duration_series` tool returns execution time metrics.
+
+## Use templates
+
+List available starter templates:
+
+```
+Show FastEdge templates
+```
+
+Get template details:
+
+```
+Show details for the auth-jwt template
+```
+
+Templates provide pre-built code for common use cases like JWT validation, image resizing, geolocation, and A/B testing.
+
+## View logs
+
+Enable and view application logs:
+
+```
+Show logs for FastEdge application 12345
+```
+
+The `fastedge_apps_logs_ls` tool returns recent log entries. Logging must be enabled in the application settings to capture data.
+
+## Common requests
+
+| Request | Tool called |
+|---------|-------------|
+| "List my FastEdge applications" | `fastedge_apps_ls` |
+| "Show application 12345" | `fastedge_apps_get` |
+| "Create application named api-cache" | `fastedge_apps_new` |
+| "Delete application 12345" | `fastedge_apps_del` |
+| "Show my KV stores" | `fastedge_kv_stores_ls` |
+| "Create KV store named cache" | `fastedge_kv_stores_new` |
+| "Show secrets for application 12345" | `fastedge_secr_ls` |
+| "Show available templates" | `fastedge_templates_ls` |
+
+## Troubleshooting
+
+If a request fails, the AI client displays the error message. Common issues:
+
+- **Client not found**: FastEdge service is not activated for this account
+- **Application not found**: Verify the application ID exists
+- **Permission denied**: Check that the API token has FastEdge permissions
+
+For binary uploads and advanced configuration, use the [Gcore Customer Portal](https://portal.gcore.com) or [FastEdge CLI](/fastedge/fastedge-cli).
