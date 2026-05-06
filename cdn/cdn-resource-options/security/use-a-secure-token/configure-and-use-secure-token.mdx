@@ -5,18 +5,18 @@ sidebarTitle: Configure and use
 
 ## Configure secure token
 
-Do the first three steps in Gcore Customer Portal on the **Secure token** tab. 
+Do the first three steps in Gcore Customer Portal on the **Secure token** tab.
 
 
 <Frame>![Configure Secure Token](/images/docs/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token/mceclip4.png)</Frame>
 
 
 
-1\. Enable the "Secure token" option in the resource settings. 
+1\. Enable the "Secure token" option in the resource settings.
 
-2\. Enter a key that contains between 6 and 32 characters. 
+2\. Enter a key that contains between 6 and 32 characters.
 
-3\. If you want your content to be accessible from any IP address, leave the "Add a client's IP to the token" unchecked. If you want to make your content available only from one IP, check the checkbox (you will specify the allowlisted IP address later at Step 4). 
+3\. If you want your content to be accessible from any IP address, leave the "Add a client's IP to the token" unchecked. If you want to make your content available only from one IP, check the checkbox (you will specify the allowlisted IP address later at Step 4).
 
 4\. Do this step on your origin server. Insert a script on your website which generates secure links. The generated links should look like as below:
 
@@ -33,34 +33,172 @@ Where:
 
 
 
-We have prepared script templates for PHP, Python, and OpenSSL — just copy one of them from the "[Scripts for link generation](/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token#scripts-for-link-generation)" section below. The script will start creating secure links to the content. 
+We have prepared script templates for PHP, Python, and OpenSSL — just copy one of them from the "[Scripts for link generation](/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token#scripts-for-link-generation)" section below. The script will start creating secure links to the content.
 
-5\. Do this step on your origin server. Arrange the content on your website to allow access to the protected files only over a secured link — that is, rule out the delivery of the required content over a link without a secure token. 
+5\. Do this step on your origin server. Arrange the content on your website to allow access to the protected files only over a secured link — that is, rule out the delivery of the required content over a link without a secure token.
 
-Moreover, make sure our CDN can access the content on your origin server regardless of whether a key is present or not. 
+Moreover, make sure our CDN can access the content on your origin server regardless of whether a key is present or not.
 
-### Using "secure token" in conjunction with "query string forwarding" feature
+## How secure token URL matching works
 
-When "query string forwarding" feature is enabled, then the file name needs to be omitted from the script used for link generation. 
-In an example where we have the following URL: "example.com/images/moon.jpg" path should be configured as follows:
+Secure Token validates three things from the request URL:
 
-For PHP: 
+- `md5`: the token hash.
+- `expires`: the Unix timestamp until which the URL is valid.
+- Path: the file path or directory path that was used when the token was generated.
+
+The path is important. The CDN validates the token against the path used in the hash string. If the token was generated for an exact file, it works only for that file. If the token was generated for a directory and Query String Forwarding is enabled, it can work for files inside that directory and pass the same query parameters to related HLS or MPEG-DASH files.
+
+### Token for exact file
+
+Use an exact file token for standalone files such as images, archives, MP4 files or one protected video manifest when you do not need to authorize nested requests with the same token.
+
+Example protected file:
+
+```text
+/images/poster.jpeg
+```
+
+Generate the token with this path:
+
+```text
+/images/poster.jpeg
+```
+
+The user requests:
+
+```text
+https://cdn.example.com/images/poster.jpeg?md5=TOKEN&expires=1777545540
+```
+
+This token is valid only for `/images/poster.jpeg`. This token does not provide access to adjacent files, for example:
+
+```text
+https://cdn.example.com/images/poster.webp 403 Forbidden
+https://cdn.example.com/images/poster.png 403 Forbidden
+https://cdn.example.com/images/master.m3u8 403 Forbidden
+```
+
+### Token with Query String Forwarding
+
+Use a token with Query String Forwarding enabled for HLS and MPEG-DASH when the player must request a master manifest, nested rendition manifests, media segments, and subtitles under the same path.
+
+In this mode, do not include a filename in token generation. Generate the token for the full directory path only. For example, for files in:
+
+```text
+/videos/video-1/
+```
+
+use this path in the token generation script:
+
+For PHP:
 ```php
-$path = '/images/';
+$path = '/videos/video-1/';
 ```
 
 For Python:
 ```py
-path = "/images/"  
+path = "/videos/video-1/"
 ```
+
+This token works only for files directly inside `/videos/video-1/`. It does not work for files in subdirectories such as `/videos/video-1/360p/`. If your HLS or MPEG-DASH files are split across subdirectories, generate and use tokens for those directories separately or place the related manifests and segments under one directory.
+
+Example HLS files:
+
+```text
+/videos/video-1/master.m3u8
+/videos/video-1/rendition-1080.m3u8
+/videos/video-1/segment-001.ts
+/videos/video-1/segment-002.ts
+```
+
+Generate the token with the directory path:
+
+```text
+/videos/video-1/
+```
+
+The user requests only the master manifest with the token:
+
+```text
+https://cdn.example.com/videos/video-1/master.m3u8?md5=TOKEN&expires=1893456000
+```
+
+With [Query String Forwarding](/cdn/cdn-resource-options/query-string-forwarding) enabled, the CDN automatically inserts the same query parameters into related manifest body links. The video player then requests nested files with the forwarded token:
+
+```text
+https://cdn.example.com/videos/video-1/rendition-1080.m3u8?md5=TOKEN&expires=1893456000
+https://cdn.example.com/videos/video-1/segment-001.ts?md5=TOKEN&expires=1893456000
+https://cdn.example.com/videos/video-1/segment-002.ts?md5=TOKEN&expires=1893456000
+```
+
+For HLS and MPEG-DASH, configure a CDN-resource to use Query String Forwarding with:
+
+```json
+{
+  "forward_from_file_types": [
+    "m3u8",
+    "mpd"
+  ],
+  "forward_to_file_types": [
+    "ts",
+    "mp4",
+    "m3u8",
+    "m4s",
+    "vtt"
+  ],
+  "forward_only_keys": [
+    "md5",
+    "expires"
+  ]
+}
+```
+
+To check how Query String Forwarding works in real life, open this demo HLS manifest:
+
+- manifest URL: [master.m3u8](http://demo-files-protected.gvideo.io/coffee_run/master.m3u8?md5=eBx15p01_a9JNuo1iZpTfQ&expires=1893456000&other=parameter)
+- hls.js player demo: [master.m3u8](https://hlsjs.video-dev.org/demo/?src=https%3A%2F%2Fdemo-files-protected.gvideo.io%2Fcoffee_run%2Fmasterm3u8%3Fmd5%3DeBx15p01_a9JNuo1iZpTfQ%26expires%3D1893456000%26other%3Dparameter)
+
+It will open the master file with nested files (note that &other=parameter is not forwarded):
+```
+http://demo-files-protected.gvideo.io/coffee_run/master.m3u8?md5=eBx15p01_a9JNuo1iZpTfQ&expires=1893456000&other=parameter
+http://demo-files-protected.gvideo.io/coffee_run/index-svod720n-v1-a1.m3u8?expires=1893456000&md5=eBx15p01_a9JNuo1iZpTfQ
+http://demo-files-protected.gvideo.io/coffee_run/segment-1-svod720n-v1-a1.ts?expires=1893456000&md5=eBx15p01_a9JNuo1iZpTfQ
+http://demo-files-protected.gvideo.io/coffee_run/segment-2-svod720n-v1-a1.ts?expires=1893456000&md5=eBx15p01_a9JNuo1iZpTfQ
+```
+
+### Token in a path
+
+Tokens embedded into the URL path are not supported for now by CDN natively. This option is available for [Gcore Video Streaming](/streaming/interaction-with-cdn/video-secure-token.mdx):
+
+```text
+https://cdn.example.com/secure/TOKEN/1777545540/coffee_run/master.m3u8
+https://cdn.example.com/secure/TOKEN/1777545540/coffee_run/rendition-1080.m3u8
+https://cdn.example.com/secure/TOKEN/1777545540/coffee_run/segment-001.ts
+```
+
+Example of token in path for Gcore Video Streaming:
+
+```text
+https://demo-protected.gvideo.io/videos/2675_pG8TfmKx2LU2qs/rI1224fiE3USCa8qYnMuGQ/1861919999/master.m3u8
+```
+
+Where:
+
+- `https://demo-protected.gvideo.io` is the CDN URL,
+- `/videos/2675_pG8TfmKx2LU2qs/` is the video ID,
+- `rI1224fiE3USCa8qYnMuGQ` is the token,
+- `1861919999` is the expiration time in the UNIX timestamp format until which the link is considered valid.
+
+
 
 ## Scripts for link generation
 
 ### Generate links with a secure token in PHP
 
-Below is the script for creating temporary links with the IP-based access restriction. The files will be accessible only from an allowlisted IP address and only until the link expires. 
-    
-    
+Below is the script for creating temporary links with the IP-based access restriction. The files will be accessible only from an allowlisted IP address and only until the link expires.
+
+
 ```php
 <?php
 $secret = 'secret_key';
@@ -77,8 +215,8 @@ $url = "http://cdn.site.com{$path}?md5={$md5}&expires={$expires}";
  echo "\n";
 ```
 
-Below is the script for creating temporary links without any IP-based access restriction. The files will be accessible from any IP address, but only until the link expires. 
-    
+Below is the script for creating temporary links without any IP-based access restriction. The files will be accessible from any IP address, but only until the link expires.
+
 
 ```
 <?php
@@ -97,58 +235,58 @@ $url = "http://cdn.site.com{$path}?md5={$md5}&expires={$expires}";
 
 In these scripts:
 
-  * _$secret_ is the secret key, 
-  * _$path_ is the path to the file, 
-  * _$ip_ is the IP address that is allowed to access the content, 
-  * _$expires_ is the link expiry time (in seconds), 
+  * _$secret_ is the secret key,
+  * _$path_ is the path to the file,
+  * _$ip_ is the IP address that is allowed to access the content,
+  * _$expires_ is the link expiry time (in seconds),
   * _$url_ is the address of the file.
 
 
 
 ### Generate links with a secure token in Python
 
-The script for creating temporary links with the IP-based access restriction. The files will be accessible only from an allowlisted IP address and only until the link expires. 
-    
+The script for creating temporary links with the IP-based access restriction. The files will be accessible only from an allowlisted IP address and only until the link expires.
+
 
 ```py
 import base64
 from hashlib import md5
 from time import time
-secret = 'secret_key'  
-path = "/images/1.jpg"  
-ip = '1.2.3.4' 
+secret = 'secret_key'
+path = "/images/1.jpg"
+ip = '1.2.3.4'
 # TTL of URL (in sec)
 ttl = 100000
 expires = int(time()) + ttl#Token generation
 token_hash = md5(f"{expires}{path}{ip} {secret}".encode()).digest()
 token = base64.b64encode(token_hash).decode().replace("\n", "").replace("+", "-").replace("/", "_").replace("=", "")
 secured_url = f"http://cdn.site.com{path}?md5={token}&expires={expires}"# File's URL
-print(secured_url) 
+print(secured_url)
 ```
 
-Below is the script for creating temporary links without any IP-based access restriction. The files will be accessible from any IP address, but only until the link expires. 
-    
+Below is the script for creating temporary links without any IP-based access restriction. The files will be accessible from any IP address, but only until the link expires.
+
 ```py
 import base64
 from hashlib import md5
 from time import time
-secret = 'secret_key'  
-path = "/images/1.jpg"  
+secret = 'secret_key'
+path = "/images/1.jpg"
 # TTL of URL (in sec)
 ttl = 100000
 expires = int(time()) + ttl#Token generation
 token_hash = md5(f"{expires}{path} {secret}".encode()).digest()
 token = base64.b64encode(token_hash).decode().replace("\n", "").replace("+", "-").replace("/", "_").replace("=", "")
 secured_url = f"http://cdn.site.com{path}?md5={token}&expires={expires}"# File's URL
-print(secured_url) 
+print(secured_url)
 ```
 
-In these scripts: 
+In these scripts:
 
-  * _secret_ is the secret key, 
-  * _path_ is the path to the file, 
-  * _ip_ is the IP address that is allowed to access the content, 
-  * _expires_ is the link expiry time (in seconds), 
+  * _secret_ is the secret key,
+  * _path_ is the path to the file,
+  * _ip_ is the IP address that is allowed to access the content,
+  * _expires_ is the link expiry time (in seconds),
   * _secured_url_ is the link to the file.
 
 
@@ -156,14 +294,14 @@ In these scripts:
 ### Generate a secure token in OpenSSL
 
 The script for creating a secure token that limits the link lifespan and allows access only to an allowlisted IP:
-    
+
 ```
 echo -n '2147483647/images/1.jpg1.2.3.4 secret_key' | openssl md5 -binary | openssl base64 | tr +/ -_ | tr -d =
 '2147483647/images/1.jpg1.2.3.4 secret_key' = '{expires}{path}{ip} {secret_key}'
 ```
 
 The script for creating a secure token that only limits the link lifespan:
-    
+
 ```
 echo -n '2147483647/images/1.jpg secret_key' | openssl md5 -binary | openssl base64 | tr +/ -_ | tr -d =
 '2147483647/images/1.jpg secret_key' = '{expires}{path} {secret_key}'
@@ -171,8 +309,8 @@ echo -n '2147483647/images/1.jpg secret_key' | openssl md5 -binary | openssl bas
 
 In these scripts:
 
-  * _2147483647/images/1.jpg_ is the path to the file, 
-  * _1.2.3.4_ is the IP address that is allowed to access the content, 
+  * _2147483647/images/1.jpg_ is the path to the file,
+  * _1.2.3.4_ is the IP address that is allowed to access the content,
   * _secret_key_ is a secret key you specified at Step 2 of the [Configure Secure Token](/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token#configure-secure-token) instruction.
 
 

@@ -206,7 +206,18 @@ Your account can have several CDN resources leading to the same content (origin)
 
 ## How to enable the secure token feature?
 
-Contact [Gcore Support](mailto:support@gcore.com) or follow the [Custom CDN resource](/streaming/interaction-with-cdn/custom-cdn-resource) guide. Support will help configure `Streaming Rules` to route your streaming content correctly.
+Secure token can be enabled **only on a custom CDN resource**. You cannot enable it on the default Video Streaming domain.
+
+To enable secure token:
+
+1. Activate the **CDN** product on a **paid tariff**
+2. Create a new **custom CDN resource** for your streaming origin
+3. Enable **secure token** in that custom CDN resource
+4. Follow the [Custom CDN resource](/streaming/interaction-with-cdn/custom-cdn-resource) guide and contact [Gcore Support](mailto:support@gcore.com)
+
+Support will help configure `Streaming Rules` to route your streaming content correctly.
+
+![Custom CDN resources](/images/docs/streaming-platform/integrated-cdn/cdn-resources.png)
 
 
 ## Secure token for HLS/DASH
@@ -214,12 +225,12 @@ Contact [Gcore Support](mailto:support@gcore.com) or follow the [Custom CDN reso
 Secure token – protected temporary links have the following format:
 
 ```sh
-https://domain.com/videos|cmaf|mpegts/{client_id}_{video_id}/{token}/{expiration}/manifest.m3u8
+https://domain.com/videos|cmaf|mpegts/{account_id}_{video_id}/{token}/{expiration}/manifest.m3u8
  ```
 
 Where:
   * `videos` – for VOD, `cmaf|mpegts` – for LIVE
-  * `{client_id}` is your account ID
+  * `{account_id}` is your account ID
   * `{video_id}` is the identifier of the video or live stream
   * `{token}` is the MD5 hash of the video and other attributes
   * `{expiration}` is a Unix timestamp (in seconds) that defines until when the link remains valid
@@ -229,17 +240,17 @@ For Gcore Video on Demand (VOD) and Gcore Live Streaming, a relative path is use
 
 Examples of templates of protected links for VOD:
 
-  * `https://domain.com/videos/{client_id}_{video_slug}/{token}/{expiration}/`**manifest.m3u8**
-  * `https://domain.com/videos/{client_id}_{video_slug}/{token}/{expiration}/`**segment-1-svod720n-v1-a1.ts**
-  * `https://domain.com/videos/{client_id}_{video_slug}/{token}/{expiration}/`**720.mp4**
+  * `https://domain.com/videos/{account_id}_{video_slug}/{token}/{expiration}/`**manifest.m3u8**
+  * `https://domain.com/videos/{account_id}_{video_slug}/{token}/{expiration}/`**segment-1-svod720n-v1-a1.ts**
+  * `https://domain.com/videos/{account_id}_{video_slug}/{token}/{expiration}/`**720.mp4**
 
 
 
 Examples of templates of protected links for LIVE:
 
-  * `https://domain.com/cmaf/{client_id}_{stream_id}/{token}/{expiration}/`**master.m3u8**
-  * `https://domain.com/cmaf/{client_id}_{stream_id}/{token}/{expiration}/`**index.mpd**
-  * `https://domain.com/cmaf/{client_id}_{stream_id}/{token}/{expiration}/`**004chunk-stream4-10000000-05213.m4s?part=4**
+  * `https://domain.com/cmaf/{account_id}_{stream_id}/{token}/{expiration}/`**master.m3u8**
+  * `https://domain.com/cmaf/{account_id}_{stream_id}/{token}/{expiration}/`**index.mpd**
+  * `https://domain.com/cmaf/{account_id}_{stream_id}/{token}/{expiration}/`**004chunk-stream4-10000000-05213.m4s?part=4**
 
 
 ## Advanced secure token for MP4
@@ -253,7 +264,7 @@ When distributing MP4 files separately from ABR, use an MP4 advanced secure toke
 
 Advanced secure token for MP4 – protected temporary links have the following format:
 ```sh
-https://domain.com/videos/client_id_video_id/filename.mp4?md5={token}&expires={expiration}
+https://domain.com/videos/account_id_video_id/filename.mp4?md5={token}&expires={expiration}
  ```
 
 Where:
@@ -274,6 +285,14 @@ expires = 1861919999 # Sunday, December 31, 2028 23:59:59 GMT
  ```
 
 
+## Preventing link sharing with auto-refreshed tokens
+
+Setting a long expiration solves the "session resumed after pause" problem, but it creates a different risk: a viewer can share the signed URL during a live event, and anyone with that link can watch for as long as the token remains valid.
+
+The solution is to use short-lived tokens (60 seconds or less) and refresh them automatically in the player. Viewers on your platform get uninterrupted playback; anyone who copies the URL gets a 403/410 error within a minute.
+
+See **[Auto-refresh secure tokens](/streaming/interaction-with-cdn/token-auto-refresh)** for step-by-step integration examples using the Gcore Video Player, hls.js, and dash.js — including a ready-to-deploy Gcore FastEdge token API written in Rust.
+
 ## How to create protected links with the secure token
 
 ### Create secure token for HLS/DASH
@@ -281,16 +300,16 @@ expires = 1861919999 # Sunday, December 31, 2028 23:59:59 GMT
 Pattern to generate token:
 1) Tokens without user ip:
 ```
-${client_id}_${video_id}_${secret}_${expires}_
+${account_id}_${video_id}_${secret}_${expires}_
 ```
 2) Tokens with user ip:
 ```
-${client_id}_${video_id}_${secret}_${expires}_${user_ip}
+${account_id}_${video_id}_${secret}_${expires}_${user_ip}
 ```
 
 | Parameter     | Required | Description                                                                |
 |---------------|----------|----------------------------------------------------------------------------|
-| **client_id** | yes      | URL of the MP4 file                                                        |
+| **account_id** | yes      | Your account ID                                                             |
 | **video_id**  | yes      | Video_Slug or Stream_ID identifier                                         |
 | **secret**    | yes      | Secret phrase                                                              |
 | **expires**   | yes      | Expiration time (Unix timestamp, UTC)                                      |
@@ -304,29 +323,29 @@ ${client_id}_${video_id}_${secret}_${expires}_${user_ip}
     from hashlib import md5
     from time import time
 
-    def gethash(client_id, video_id, secret, expires):
-      hash_body = "%s_%s_%s_%s_" % (client_id, video_id, secret, expires)   # set of unique parameters of video
+    def gethash(account_id, video_id, secret, expires):
+      hash_body = "%s_%s_%s_%s_" % (account_id, video_id, secret, expires)   # set of unique parameters of video
       hash_md5 =  base64.b64encode(                                         # get MD5 hash from parameters of video
           md5(hash_body.encode()).digest()
         ).decode().replace("+", "-").replace("/", "_").replace("=", "")   # preparation for use in URL
       return hash_md5
 
-    client_id = "2675"       # enter your account ID here
+    account_id = "2675"      # enter your account ID here
     secret = ""              # enter your secret key from CDN-resource here
 
     #VOD
     video_slug = "3dk4NsRt6vWsffEr"     # enter your video's slug here
     expires = int(time()) + 24*60*60    # 24 hours, unixtime in seconds
 
-    token = gethash(client_id, video_slug, secret, expires)
-    print(f"https://demo-protected.gvideo.io/videos/{client_id}_{video_slug}/{token}/{expires}/master.m3u8")
+    token = gethash(account_id, video_slug, secret, expires)
+    print(f"https://demo-protected.gvideo.io/videos/{account_id}_{video_slug}/{token}/{expires}/master.m3u8")
 
     #LIVE
     stream_id = "201693"                      # enter your live stream id here
     expires = int(time()) + 24*60*60    # 24 hours, unixtime in seconds
 
-    token = gethash(client_id, stream_id, secret, expires)
-    print(f"https://demo-protected.gvideo.io/cmaf/{client_id}_{stream_id}/{token}/{expires}/master.m3u8")
+    token = gethash(account_id, stream_id, secret, expires)
+    print(f"https://demo-protected.gvideo.io/cmaf/{account_id}_{stream_id}/{token}/{expires}/master.m3u8")
     ```
   </Tab>
   <Tab title="Go">
