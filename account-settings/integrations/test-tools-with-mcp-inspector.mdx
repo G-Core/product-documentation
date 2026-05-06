@@ -15,6 +15,10 @@ npx @modelcontextprotocol/inspector
 
 The inspector starts at `http://localhost:6274` and opens a browser window automatically.
 
+<Info>
+If the Inspector shows a blank white page after starting, the browser has cached a different version of the UI. Open the Inspector in a private/incognito window or press `Ctrl+Shift+R` to force a cache reload.
+</Info>
+
 ## Connect to Gcore MCP Server
 
 MCP Inspector supports two connection methods: stdio transport through the UI configuration, and HTTP transport for debugging scenarios where server logs need monitoring.
@@ -46,6 +50,12 @@ uvx
 
 5. Click **Connect**.
 
+<Info>
+`McpError: MCP error -32001: Request timed out` appears when the Inspector UI cannot reach its proxy process on port 6277. This is a known issue with MCP Inspector v0.21+ on Windows where the proxy process fails to start. Use the HTTP transport method instead — instructions below.
+</Info>
+
+<Frame>![MCP Inspector showing connection error: McpError MCP error -32001 Request timed out](/images/docs/account-settings/integrations/test-tools-with-mcp-inspector/connection-error.png)</Frame>
+
 ### HTTP transport
 
 HTTP mode allows monitoring server logs in a separate terminal.
@@ -70,6 +80,8 @@ http://localhost:8000/sse
 
 After connecting, the Inspector displays three tabs: Tools (available MCP tools), Resources (MCP resources if configured), and Prompts (MCP prompts if configured). Selecting a tool reveals its description, input schema with required and optional parameters, and a test interface for manual execution.
 
+<Frame>![MCP Inspector Tools tab showing available Gcore DNS tools with descriptions](/images/docs/account-settings/integrations/test-tools-with-mcp-inspector/tools-list.png)</Frame>
+
 The tool list reflects the `GCORE_TOOLS` filter. Setting `GCORE_TOOLS="cdn.*"` shows CDN-related tools, while `GCORE_TOOLS="cloud.instances.*"` displays Cloud instance tools. Multiple products can be combined with `GCORE_TOOLS="cdn.*,dns.*"`.
 
 <Warning>
@@ -78,11 +90,13 @@ Setting `GCORE_TOOLS=*` loads all 720 tools. The Inspector interface may become 
 
 ## Execute tools manually
 
-Tool execution requires selecting a tool from the list, filling parameter values according to the input schema, and clicking **Execute**. The Results panel displays the JSON response from the server.
+Tool execution requires selecting a tool from the list, filling parameter values according to the input schema, and clicking **Run Tool**. The Results panel displays the JSON response from the server.
 
-Listing CDN resources demonstrates a parameterless call: connect with `GCORE_TOOLS="cdn.*"`, select `cdn.cdn_resources.list` from the tools list, and execute without parameters. The response contains an array of CDN resource objects with their configuration details.
+Listing DNS zones demonstrates a parameterless call: connect with `GCORE_TOOLS="dns.*"`, select `dns_zones_ls` from the tools list, and click **Run Tool** without entering any parameters. The response contains an array of DNS zone objects with their names, status, and record counts.
 
-Retrieving DNS zone details demonstrates a parameterized call: connect with `GCORE_TOOLS="dns.*"`, select `dns.zones.get`, enter the zone name in the parameter field, and execute. The response contains the zone configuration including records, TTL settings, and status.
+<Frame>![MCP Inspector showing dns_zones_ls tool execution with JSON response containing zone details](/images/docs/account-settings/integrations/test-tools-with-mcp-inspector/executing-tool.png)</Frame>
+
+Retrieving DNS zone details demonstrates a parameterized call: select `dns_zones_get`, enter the zone name in the parameter field, and click **Run Tool**. The response contains the zone configuration including records, TTL settings, and status.
 
 ## Understand tool schemas
 
@@ -92,7 +106,11 @@ Schema exploration helps understand exact parameter names and formats before con
 
 ## Debug execution errors
 
-The Inspector displays the full JSON-RPC request sent to the server, the response with results or errors, and execution timing. This visibility helps diagnose issues that produce generic errors in AI clients.
+The Inspector displays the full JSON-RPC request sent to the server, the response with results or errors, and execution timing. The server log panel shows all HTTP requests made to the Gcore API, including the endpoint called and the response status code.
+
+<Frame>![MCP Inspector server log showing Connected status and INFO logs with HTTP requests to Gcore API](/images/docs/account-settings/integrations/test-tools-with-mcp-inspector/server-output.png)</Frame>
+
+This visibility helps diagnose issues that produce generic errors in AI clients.
 
 <Warning>
 Authentication errors (401) indicate an invalid or expired API key—generate a new token in the [Gcore Customer Portal](/account-settings/api-tokens). Permission errors (403) indicate the token lacks required permissions for the operation. Resource not found errors (404) indicate incorrect parameter values such as nonexistent IDs or zone names. Validation errors indicate missing required parameters or incorrect types—check the tool schema for the expected format.

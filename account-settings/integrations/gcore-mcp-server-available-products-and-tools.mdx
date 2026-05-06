@@ -3,70 +3,127 @@ title: Available products and tools
 sidebarTitle: Available products and tools
 ---
 
-Gcore MCP Server organizes tools by product category, following a hierarchical naming pattern: `<product>.<resource>.<operation>`. The pattern `cdn.cdn_resources.list` lists CDN resources, `dns.zones.create` creates a DNS zone, and `cloud.instances.create` provisions a virtual machine.
+Gcore MCP Server organizes tools by product and resource using the naming pattern `<product>.<resource>.<operation>`: `cdn.cdn_resources.list` lists CDN resources, `dns.zones.create` creates a DNS zone, and `cloud.instances.create` provisions a virtual machine.
+
+Use the filter pattern from the **Pattern** column to load tools for a specific product. See [Filter tools](/account-settings/integrations/filter-tools-with-gcore-tools) for syntax details.
 
 ## CDN
 
-Content Delivery Network tools accelerate static and dynamic content delivery. The filter pattern `cdn.*` exposes approximately 85 tools.
+Filter pattern: `cdn.*` — approximately 85 tools.
 
-CDN resources include `cdn_resources` (CDN resource configuration), `origin_groups` (origin server groups), `certificates` (SSL/TLS certificates), `rule_templates` (caching and behavior rules), and `shields` (origin shielding locations). Each resource supports standard operations: list, create, get, update, and delete where applicable.
-
-Listing CDN resources requires no parameters and returns all resources in the account. Creating a CDN resource requires `cname` (the domain name) and `origin_group` (the origin group ID), with optional `origin_protocol` for HTTP or HTTPS. Cache purging uses the `cdn.cdn_resources.purge` tool with `resource_id` and `paths` parameters—use `/*` to purge all cached content.
+| Resource | Operations | Key parameters |
+|----------|-----------|----------------|
+| `cdn_resources` | list, get, create, update, delete, purge | `cname`, `origin_group_id` |
+| `origin_groups` | list, get, create, update, delete | `name`, `sources` |
+| `certificates` | list, get, create, delete | `name`, `cert`, `private_key` |
+| `rule_templates` | list, get, create, update, delete | `name`, `rules` |
+| `shields` | list | — |
 
 ## Cloud
 
-Cloud infrastructure services span compute, storage, networking, security, and management. The filter pattern `cloud.*` exposes approximately 350 tools—the largest product category.
+Filter pattern: `cloud.*` — approximately 350 tools. The largest product category.
 
-Compute resources include `instances` (virtual machines with start, stop, and resize operations), `baremetal` (bare metal servers with power management), `gpu_baremetal` (GPU bare metal clusters), and `gpu_virtual` (GPU virtual clusters).
+### Compute
 
-Storage resources include `volumes` (block storage with attach and detach operations), `volume_snapshots` (volume snapshots), and `file_shares` (shared file systems).
+| Resource | Operations | Key parameters |
+|----------|-----------|----------------|
+| `instances` | list, get, create, delete, start, stop, reboot, resize | `project_id`, `region_id`, `name`, `flavor`, `image_id` |
+| `baremetal` | list, get, create, delete, reinstall, power | `project_id`, `region_id`, `name`, `flavor` |
+| `gpu_baremetal` | list, get, create, delete, node operations | `project_id`, `region_id`, `name` |
+| `gpu_virtual` | list, get, create, delete, scale | `project_id`, `region_id`, `name` |
 
-Networking resources include `networks` (virtual networks), `floating_ips` (public IP addresses with assign and unassign operations), `load_balancers` (load balancer configuration), and `security_groups` (firewall rules with add_rule and remove_rule operations).
+### Storage
 
-Security resources include `ssh_keys` (SSH public keys) and `secrets` (secret storage). Management resources include `projects`, `regions`, and `quotas`.
+| Resource | Operations | Key parameters |
+|----------|-----------|----------------|
+| `volumes` | list, get, create, delete, attach, detach, extend | `project_id`, `region_id`, `size`, `type_name` |
+| `volume_snapshots` | list, get, create, delete | `project_id`, `region_id`, `volume_id` |
+| `file_shares` | list, get, create, delete | `project_id`, `region_id`, `name`, `size` |
 
-Instance operations require `project_id` and `region_id` parameters. Creating an instance additionally requires `name`, `flavor`, either `image_id` or `volume_id` as boot source, and network configuration.
+### Networking
+
+| Resource | Operations | Key parameters |
+|----------|-----------|----------------|
+| `networks` | list, get, create, delete | `project_id`, `region_id`, `name` |
+| `floating_ips` | list, get, create, delete, assign, unassign | `project_id`, `region_id` |
+| `load_balancers` | list, get, create, delete | `project_id`, `region_id`, `name` |
+| `security_groups` | list, get, create, delete, add_rule, remove_rule | `project_id`, `region_id`, `name` |
+
+### Security and management
+
+| Resource | Operations | Key parameters |
+|----------|-----------|----------------|
+| `ssh_keys` | list, get, create, delete | `name`, `public_key` |
+| `secrets` | list, get, create, delete | `project_id`, `region_id`, `name` |
+| `projects` | list, get | — |
+| `regions` | list, get | — |
+| `quotas` | get | `project_id`, `region_id` |
+
+<Info>
+Cloud tools require `project_id` and `region_id` for most operations. Configure defaults via `GCORE_CLOUD_PROJECT_ID` and `GCORE_CLOUD_REGION_ID` environment variables to avoid specifying them in every request.
+</Info>
 
 ## DNS
 
-Managed DNS service tools operate on a global Anycast network. The filter pattern `dns.*` exposes approximately 35 tools.
+Filter pattern: `dns.*` — approximately 35 tools.
 
-DNS resources include `zones` (DNS zones), `zones.records` (DNS records within zones), and `locations` (DNS server locations). Zone creation requires the `name` parameter with the zone name such as `example.com`. Record creation requires `zone_name`, `name`, `type` (A, AAAA, CNAME, MX, TXT, or other record types), `content`, and optionally `ttl` in seconds.
+| Resource | Operations | Key parameters |
+|----------|-----------|----------------|
+| `zones` | list, get, create, delete, enable, disable, export, import | `name` |
+| `zones.rrsets` | list, get, create, update, delete | `zone_name`, `name`, `type` |
+| `network_mappings` | list, get, create, update, delete | `name` |
+| `locations` | list | — |
 
 ## FastEdge
 
-Edge computing platform tools for serverless applications. The filter pattern `fastedge.*` exposes approximately 20 tools.
+Filter pattern: `fastedge.*` — approximately 20 tools.
 
-FastEdge resources include `apps` (edge applications) and `deployments` (application deployments).
+| Resource | Operations | Key parameters |
+|----------|-----------|----------------|
+| `apps` | list, get, create, update, delete | `name`, `binary` |
+| `deployments` | list, get, create | `app_id` |
 
 ## IAM
 
-Identity and Access Management tools. The filter pattern `iam.*` exposes approximately 20 tools.
+Filter pattern: `iam.*` — approximately 20 tools.
 
-IAM resources include `users` (account users), `roles` (access roles), and `api_keys` (API tokens).
+| Resource | Operations | Key parameters |
+|----------|-----------|----------------|
+| `users` | list, get, create, update, delete | `email`, `role` |
+| `roles` | list, get | — |
+| `api_keys` | list, get, create, delete | `name`, `expiry` |
 
 ## Storage
 
-S3-compatible object storage service tools. The filter pattern `storage.*` exposes approximately 40 tools.
+Filter pattern: `storage.*` — approximately 40 tools.
 
-Storage resources include `buckets` (storage buckets), `bucket.objects` (objects within buckets with upload and download operations), `bucket.cors` (CORS configuration), and `bucket.lifecycle` (lifecycle rules). Bucket creation requires `name` and `location` parameters.
+| Resource | Operations | Key parameters |
+|----------|-----------|----------------|
+| `buckets` | list, get, create, delete | `name`, `location` |
+| `bucket.objects` | list, get, upload, download, delete | `bucket_name`, `key` |
+| `bucket.cors` | get, set, delete | `bucket_name` |
+| `bucket.lifecycle` | get, set, delete | `bucket_name` |
 
 ## Streaming
 
-Video streaming platform tools for live and VOD content. The filter pattern `streaming.*` exposes approximately 60 tools.
+Filter pattern: `streaming.*` — approximately 60 tools.
 
-Streaming resources include `streams` (live streams), `vods` (video on demand), and `encoding` (encoding profiles).
+| Resource | Operations | Key parameters |
+|----------|-----------|----------------|
+| `streams` | list, get, create, update, delete | `name` |
+| `vods` | list, get, create, update, delete | `name` |
+| `encoding` | list, get | — |
 
 ## WAAP
 
-Web Application and API Protection tools. The filter pattern `waap.*` exposes approximately 80 tools.
+Filter pattern: `waap.*` — approximately 80 tools.
 
-WAAP resources include `domains` (protected domains), `policies` (security policies), and `rules` (custom rules).
-
-## Tool discovery
-
-Exact tool names can be discovered using [MCP Inspector](/account-settings/integrations/test-tools-with-mcp-inspector). Start the inspector with a product pattern such as `GCORE_TOOLS="cdn.*"` and browse the Tools panel to view all available tools with their parameter schemas.
+| Resource | Operations | Key parameters |
+|----------|-----------|----------------|
+| `domains` | list, get, create, update, delete | `name` |
+| `policies` | list, get, create, update, delete | `domain_id`, `name` |
+| `rules` | list, get, create, update, delete | `domain_id`, `name`, `conditions` |
 
 <Info>
-Tool counts are approximate and may change as the [Gcore API](https://api.gcore.com/docs) evolves. The [Gcore Python SDK](https://github.com/G-Core/gcore-python) provides equivalent functionality for direct API access.
+Tool counts are approximate and may change as the [Gcore API](https://api.gcore.com/docs) evolves. Use [MCP Inspector](/account-settings/integrations/test-tools-with-mcp-inspector) to browse exact tool names and parameter schemas for any product.
 </Info>
