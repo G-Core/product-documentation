@@ -9,6 +9,21 @@ Terraform is a declarative command-line utility used to manage the infrastructur
 
 To work with Terraform, you create a configuration file where you specify the changes you want to make to your Cloud resources, for example, to create a Virtual Machine or a Managed Kubernetes cluster. Then you run the Terraform command to make changes. The utility reads the configuration file and sends the necessary API requests. The required Cloud settings are then applied.
 
+## Provider versions
+
+The Gcore Terraform provider is published under the `G-Core/gcore` namespace on the Terraform Registry. Two major versions are currently available:
+
+| Version | Status | Latest release | Recommended for |
+|---------|--------|----------------|-----------------|
+| v0 | Stable | 0.34.0 | Production use |
+| v2 | Alpha | 2.0.0-alpha.6 | Experimentation only |
+
+Because both versions share the same registry namespace, using an open-ended version constraint such as `>= 0.34.0` in your configuration may cause Terraform to resolve the v2 alpha in future runs. Pin the provider version explicitly to avoid unintended upgrades.
+
+**v0** is the current production-ready provider. It supports all resources described in this article and is the recommended choice for any live workload.
+
+**v2** is a ground-up rewrite of the provider based on OpenAPI spec-driven code generation. It introduces a new authentication method, a redesigned provider configuration, and a different resource schema. Breaking changes are expected between alpha releases. See [Try provider v2 (alpha)](#try-provider-v2-alpha) if you want to test it.
+
 ## Install Terraform and integrate it with our cloud
 
 1. Download a Terraform package suitable for your OS from the [official Terraform website](https://terraform.io/downloads).
@@ -16,29 +31,32 @@ To work with Terraform, you create a configuration file where you specify the ch
 3. Unzip the Terraform archive in the new folder.
 4. Add the directory of the unzipped Terraform archive to the PATH environment variable.
 5. Create a configuration file in the Terraform folder and name it **main.tf**.
-6. Find out the latest version of the Terraform provider on [the page](https://registry.terraform.io/providers/G-Core/gcore/latest) and generate a permanent API token using [the guide](/account-settings/api-tokens), if you don't have one yet.
+6. Generate a permanent API token using [the guide](/account-settings/api-tokens) if you don't have one yet.
 7. Add the following code to main.tf:
 
-```js
+```hcl
 terraform {
   required_version = ">=0.13.0"
   required_providers {
     gcore = {
-      source = "G-Core/gcore"
-      version = ">=0.32.5"
-   }
+      source  = "G-Core/gcore"
+      version = "0.34.0"
+    }
   }
 }
 
-provider gcore {
-  permanent_api_token = "123$61b8e1e7a68c"
+provider "gcore" {
+  permanent_api_token = "251$d33611b35f26d8"
 }
 ```
 
-Enter your values instead:
+Replace `251$d33611b35f26d8` with your permanent API token. Check the [Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/latest) for the latest v0 release and update the version accordingly.
 
-- 0.32.5—the Terraform provider version
-- 123\$61b8e1e7a68c—the permanent API token
+<Note>
+**Note**
+
+Pin the provider to an exact version or use a pessimistic constraint (`~> 0.34`) instead of `>=`. An open-ended constraint may resolve to the v2 alpha, which has a different resource schema and is incompatible with v0 configurations.
+</Note>
 
 8. Open the command line, access the Terraform folder, and run the following command:
 
@@ -54,7 +72,54 @@ You'll get the output:
 
 This means Terraform has been successfully downloaded and installed, and you can start working with it.
 
+## Try provider v2 (alpha)
+
+Provider v2 is a complete rewrite of the Gcore Terraform provider, generated from the Gcore OpenAPI specification using [Stainless](https://www.stainless.com/). It uses a different authentication method and provider configuration compared to v0.
+
+<Warning>
+**Warning**
+
+v2 is an alpha release. Breaking changes between releases are expected. Do not use v2 in production environments. Report issues on the [GitHub repository](https://github.com/G-Core/terraform-provider-gcore/issues).
+</Warning>
+
+To try v2, replace your provider configuration in `main.tf` with the following:
+
+```hcl
+terraform {
+  required_version = ">= 1.11"
+  required_providers {
+    gcore = {
+      source  = "G-Core/gcore"
+      version = "2.0.0-alpha.6"
+    }
+  }
+}
+
+provider "gcore" {
+  api_key          = "My API Key"
+  cloud_project_id = 0
+  cloud_region_id  = 0
+}
+```
+
+Key differences from v0:
+
+- Requires Terraform CLI 1.11 or later (v0 requires 0.13.0 or later).
+- Authentication uses `api_key` instead of `permanent_api_token`.
+- `cloud_project_id` and `cloud_region_id` are configured at the provider level rather than per resource.
+- The version must be pinned exactly (`2.0.0-alpha.6`) to avoid unintended upgrades to future alpha releases.
+
+The API key can also be set via the `GCORE_API_KEY` environment variable. Similarly, `cloud_project_id` and `cloud_region_id` accept `GCORE_CLOUD_PROJECT_ID` and `GCORE_CLOUD_REGION_ID` environment variables.
+
+Available resources and data sources for v2 are documented on the [Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/2.0.0-alpha.6/docs). Additional examples are available in the [v2 branch on GitHub](https://github.com/G-Core/terraform-provider-gcore/tree/v2).
+
 ## Manage cloud resources via Terraform
+
+<Info>
+**Info**
+
+All examples in this section use provider v0. Provider v2 resources are under active development—refer to the [Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/2.0.0-alpha.6/docs) for the current v2 resource list.
+</Info>
 
 If you have already worked with Terraform, you can use this abridged guide on how to manage Gcore Cloud resources:
 
