@@ -1,0 +1,45 @@
+name: Generate llms.txt files
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "**/*.mdx"
+      - "docs.json"
+      - "scripts/generate_llms_txt.py"
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate llms.txt files
+        run: |
+          python scripts/generate_llms_txt.py \
+            --repo . \
+            --base-url https://gcore.com/docs
+
+      - name: Commit updated llms.txt files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add '**/llms.txt' llms.txt
+          if git diff --staged --quiet; then
+            echo "No changes to llms.txt files"
+          else
+            git commit -m "chore: regenerate llms.txt files [skip ci]"
+            git push
+          fi
