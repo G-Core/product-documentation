@@ -45,7 +45,7 @@ Check your encoder's latency and settings. See the relevant sections in the docu
 
 When you see this picture, it means there is packet loss in the network from your encoder to our ingester.
 
-![Picture is falling apart](/images/docs/streaming-platform/live-streaming/falling-apart.jpg)
+![Picture is falling apart](/images/docs/streaming-platform/live-streaming/falling-apart.png)
 
 _Possible cause_: Packet loss during delivery from your encoder via SRT.
 _Suggested solution_: Try sending from another network of another provider, and also reduce the bitrate of the master stream plus set SRT latency explicitly.
@@ -74,5 +74,85 @@ Advanced solution:
  - Verify that your master stream is configured with the recommended low-latency encoding parameters. See section [RTMP](/streaming/live-streaming/protocols/rtmp).
  - Validate that PTS and DTS values in the master stream follow a continuous and monotonic timeline [PTS/DTS timestamps](/streaming/live-streaming/pts-dts).
 
+## Live stream is 10-12 fps, but recording looks fine
 
+The live player may show 10-12 fps or another unexpectedly low frame rate, while the saved recording still looks smooth.
+
+_Possible cause_: The encoder connected while already sending reduced source FPS, or with unstable timestamps and buffering. At the beginning of the live session, the transcoder reads FPS once from the incoming stream metadata. This value is not re-detected later, and Gcore does not upscale it to 50 or 60 fps during the current session. Recording is a separate workflow, so it may still look correct even when the live session started from degraded source metadata.
+
+```text
+CUSTOMER ENCODER
+  sends live stream + source metadata
+  example at connection time: fps=12
+            |
+            | 1. live session starts
+            v
+INGEST / SESSION INIT
+  reads source metadata once
+  locks session parameters for transcoding
+            |
+            | 2. transcoding starts with locked fps=12
+            v
+LIVE TRANSCODER
+  keeps using fps=12 for the whole current session
+  does not re-read metadata later
+  does not auto-convert 12 fps -> 50 fps
+            |
+            +------------------> LIVE PLAYBACK
+            |
+            +------------------> RECORDING WORKFLOW
+                                   saved separately
+```
+
+If the encoder later becomes healthy and starts sending 50 fps,
+the current live transcoding session still keeps the old locked fps.
+
+Only a new customer-side reconnect creates a new session:
+
+```text
+CUSTOMER RECONNECTS ENCODER
+            |
+            v
+NEW SESSION INIT
+  reads source metadata again
+  example now: fps=50
+            |
+            v
+NEW LIVE TRANSCODING SESSION
+  starts with fps=50
+```
+
+_Suggested solution_:
+- Check the stream monitoring graphs in the Customer Portal. FPS, bitrate, and keyframe interval should be stable from the beginning of the session.
+- Verify that the encoder is configured with a fixed FPS value rather than auto or variable behavior.
+- Check encoder CPU load, dropped frames, and sender logs.
+- Use the recommended low-latency encoder settings, including fixed GOP and monotonic timestamps.
+- If the encoder settings were corrected after the stream had already started, the customer must reconnect the live stream from the encoder side so the transcoder starts a new session and reads the correct FPS metadata again.
+
+Read more:
+- [RTMP](/streaming/live-streaming/protocols/rtmp)
+- [SRT](/streaming/live-streaming/protocols/srt)
+- [PTS/DTS timestamps](/streaming/live-streaming/pts-dts)
+- [Record live streams](/streaming/live-streaming/record-your-live-streams-and-save-them-as-videos)
+
+## Smart TV playback issues
+
+Samsung Tizen and LG WebOS, as well as older SmartTV platforms, are often limited in hardware performance. Some advanced streaming functions may not work as reliably as on PCs or mobile devices.
+
+### Low-latency on old models
+Low-latency (LL-HLS/LL-DASH) is not suitable for many older TV models. If you encounter playback issues, use **classic HLS MPEG-TS** for maximum compatibility.
+
+### Let's Encrypt certificate compatibility
+By default, Gcore CDN resources use Let's Encrypt certificates. Some older Smart TV models do not trust this CA. If your broadcast doesn't play on specific TVs, we recommend uploading your own commercial SSL certificate to the CDN resource.
+
+### MPEG-DASH drift on Smart TVs
+Our tests show that the number-based `SegmentTemplate` can be unreliable for long-duration (24/7) live streaming on Smart TVs. Clock drift between the encoder and player can cause segments to fall out of sync.
+
+**Recommended Solution**: Use the **time-based SegmentTimeline** template in your `.mpd` manifests. This ensures stable playback by accurately aligning segment requests with the transmuxer clock.
+
+## HTTP 404 Not Found error
+
+A 404 error typically indicates that the master stream is missing (not pushed from the encoder), or the initial segments haven't been generated yet (transcoding delay). Check extra header "X-Err-Code" for more details.
+
+For a complete list of 404 error sub-codes and other responses, please refer to our [HTTP status codes](/streaming/faq/http-status-codes) guide.
 

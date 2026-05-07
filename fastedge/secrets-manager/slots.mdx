@@ -1,0 +1,63 @@
+---
+title: Secrets Slots
+sidebarTitle: Secrets Slots
+---
+
+Secrets Slots is a mechanism by which you can empower secret rotation.
+
+When requesting a secret within an application ( get_secret ) the encrypted secret provided will always be the slot with the maximum slot index.
+
+So adding a new encrypted value with a higher slot index, will update the secret at runtime without having to delete / replace old secret values.
+
+### Slots and secret rollover
+
+Using `get_effective_at` to access different slots within a given secret and how to use slots.
+
+<Info>
+**Info**
+
+For more information regarding secret usage in applications see the [JavaScript SDK](https://g-core.github.io/FastEdge-sdk-js/reference/fastedge/secret/get-secret/) and the [Rust SDK](https://docs.rs/fastedge/latest/fastedge/secret/index.html)
+
+</Info>
+
+The following are examples of slots usage to manage secret rollover within your own applications. This could be achieved in many
+different ways.
+
+##### **Example 1** (Slots as indices)
+
+Validating a token against a specific version of a secret.
+
+Having created a secret:
+
+<Frame>
+  ![Secret Slots Indices
+  Example](/images/docs/fastedge/secret-manager/slots-example-indices.png)
+</Frame>
+
+It would now be easy enough to also provide the `slot` value within the tokens claims as to which
+password it should validate against. This would allow you to slowly rollover from one password to
+another and keep all users able to refresh their tokens without issues, as each users token also
+carries the data to know which password was still in use when it was issued.
+
+It always returns `effectiveAt >= secret_slots.slot`
+
+So a request to:
+
+- `secret::get_effective_at("token-secret", 0)` would return `original_password`
+- `secret::get_effective_at("token-secret", 3)` would return `original_password`
+- `secret::get_effective_at("token-secret", 5)` would return `updated_password`
+- `secret::get_effective_at("token-secret", 7)` would return `updated_password`
+
+This `>=` logic makes it very easy to implement the following example.
+
+##### **Example 2** (Slots as timestamps)
+
+Validating a token against a specific version of a secret using timestamps:
+
+<Frame>
+  ![Secret Slots Timestamp
+  Example](/images/docs/fastedge/secret-manager/slots-example-timestamps.png)
+</Frame>
+
+As you can see any token being validated with an `iat` claim time before 1741790697 would use the
+`original_password` and any token after this time would start to use the `new_password`

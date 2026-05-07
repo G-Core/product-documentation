@@ -1,0 +1,117 @@
+---
+title: Filter tools with GCORE_TOOLS
+sidebarTitle: Filter tools
+---
+
+Most AI clients cannot process hundreds of tools simultaneously. The `GCORE_TOOLS` environment variable controls which tools are exposed by the server, reducing context consumption and improving tool selection accuracy.
+
+## Tool filtering overview
+
+Gcore MCP Server provides approximately 720 tools covering the full API surface. Loading all tools consumes significant context window space, leaving less room for conversation. When too many similar tools are available, models may select incorrect tools or produce slower responses due to schema processing overhead.
+
+Claude Code handles large tool sets through deferred loading—tool schemas load on demand rather than at startup. Other clients require explicit filtering to function properly.
+
+## Filter syntax
+
+The `GCORE_TOOLS` variable accepts predefined toolset names, wildcard patterns, and exact tool names. These can be combined in a single value separated by commas.
+
+Predefined toolsets are named collections of related tools:
+
+```bash
+GCORE_TOOLS="instances"
+GCORE_TOOLS="instances,management"
+```
+
+Wildcard patterns match tools by name prefix using `*`:
+
+```bash
+GCORE_TOOLS="cdn.*"
+GCORE_TOOLS="cloud.instances.*"
+GCORE_TOOLS="dns.records.*"
+```
+
+Exact tool names specify individual tools:
+
+```bash
+GCORE_TOOLS="cloud.instances.create,cloud.instances.delete"
+```
+
+Mixed configurations combine toolsets and patterns:
+
+```bash
+GCORE_TOOLS="instances,management,cloud.gpu_baremetal.clusters.*"
+```
+
+## Predefined toolsets
+
+Gcore MCP Server includes predefined toolsets that group related operations. Using toolsets simplifies configuration compared to listing individual tools.
+
+| Toolset | Description | Included tools |
+|---------|-------------|----------------|
+| `management` | Account and project operations | Project list, region list, client info |
+| `instances` | Virtual machine operations | Create, delete, start, stop, resize |
+| `baremetal` | Bare metal servers | Create, delete, reinstall, power |
+| `gpu_baremetal` | GPU bare metal clusters | Cluster management, node operations |
+| `gpu_virtual` | GPU virtual clusters | Virtual GPU cluster operations |
+| `networking` | Network resources | Networks, subnets, floating IPs, load balancers |
+| `security` | Security resources | Security groups, SSH keys, secrets |
+| `storage` | Storage resources | Volumes, snapshots, file shares |
+| `ai` | AI clusters | AI cluster management |
+| `ai_ml` | AI/ML inference | Inference deployment, model management |
+| `billing` | Billing information | Cost reports, usage data |
+| `containers` | Container registries | Registry and image management |
+| `cleanup` | Deletion operations | Resource cleanup tools |
+| `list` | Read-only operations | All list/get operations |
+
+## Pattern matching
+
+Patterns use `*` as a wildcard to match tool name prefixes. The pattern `cdn.*` matches all CDN tools including `cdn.cdn_resources.list`, `cdn.cdn_resources.create`, and `cdn.origins.list`. More specific patterns like `cdn.cdn_resources.*` match only the CDN resource tools, excluding origin and other CDN tools.
+
+| Pattern | Matches |
+|---------|---------|
+| `cdn.*` | All CDN tools |
+| `cdn.cdn_resources.*` | CDN resource tools only |
+| `cloud.instances.*` | Cloud instance tools |
+| `cloud.*` | All cloud service tools |
+| `dns.records.create` | Single specific tool |
+| `*` | All tools |
+
+Multiple products combine with commas: `GCORE_TOOLS="cdn.*,dns.*"` exposes all CDN and DNS tools. Nested filtering narrows scope: `GCORE_TOOLS="cloud.gpu_baremetal.clusters.*"` exposes GPU bare metal cluster tools without including other cloud tools.
+
+## Default behavior
+
+When `GCORE_TOOLS` is not set, the server applies default toolsets based on transport mode. Stdio transport defaults to the `management` toolset, while HTTP transport defaults to `management,instances`. These defaults provide minimal tools for basic exploration without overwhelming the client.
+
+| Transport | Default tools |
+|-----------|---------------|
+| stdio | `management` toolset |
+| HTTP | `management,instances` toolsets |
+
+## Priority and combination
+
+When combining toolsets and patterns, toolset tools are included first, pattern-matched tools are added second, and duplicates are removed. Toolset definitions take precedence over pattern matches.
+
+With `GCORE_TOOLS="instances,cloud.volumes.*"`, all `instances` toolset tools load first, then volume tools from the pattern are added. If the same tool appears in both, it appears once in the final set.
+
+## Configuration examples
+
+| Use case | Configuration |
+|----------|--------------|
+| CDN management | `GCORE_TOOLS="cdn.*"` |
+| DNS management | `GCORE_TOOLS="dns.*"` |
+| Cloud infrastructure | `GCORE_TOOLS="management,instances,storage,networking"` |
+| GPU cluster operations | `GCORE_TOOLS="management,gpu_baremetal"` |
+
+<Warning>
+Setting `GCORE_TOOLS=*` exposes all 720 tools. Use this configuration with Claude Code where deferred loading prevents context overflow. Other clients may fail or become unresponsive with this setting.
+</Warning>
+
+## Verify active tools
+
+After configuring, verify which tools are exposed using [MCP Inspector](/account-settings/integrations/test-tools-with-mcp-inspector). Connect with the desired `GCORE_TOOLS` value and view the Tools panel to count and verify the tool list.
+
+Server logs also indicate loaded tools at startup. Running `GCORE_TOOLS="cdn.*" gcore-mcp-server 2>&1 | head -50` displays startup messages including the tool count.
+
+<Warning>
+Patterns are case-sensitive and must match actual tool names. If no tools appear, check the pattern syntax and use MCP Inspector to discover correct tool names. The product prefix matters—`cdn` differs from `cloud` in the tool namespace.
+</Warning>

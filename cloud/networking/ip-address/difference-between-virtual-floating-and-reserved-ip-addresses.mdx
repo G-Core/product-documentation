@@ -1,27 +1,42 @@
 ---
-title: Difference between virtual, floating, and reserved IP addresses
-sidebarTitle: Difference between virtual, floating, and reserved IP addresses
+title: "Difference between virtual, floating, and reserved IP addresses"
+sidebarTitle: "IP address types"
 ---
 
-Cloud IP addresses serve different purposes based on their type. Virtual, floating, and reserved IPs provide flexibility for high availability, external access, and network management. The table below outlines their key differences and use cases.
+Gcore Cloud provides several IP address types in addition to the public IP automatically assigned to a Virtual Machine (VM). Each type serves a different purpose depending on networking and availability requirements.
 
-| **Type of an IP address** | **Use cases**                                                                                                                                                                                                             | **Intended for**                                                                           | **Subnet**                     |
-|---------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|--------------------------------|
-| Virtual IP           | - Assign to multiple Virtual Machines for fault tolerance<br/>- Use as a secondary address for a network interface<br/>- Automatically assigned as a Virtual IP for Load Balancers<br/>- A virtual IP is a subtype of a Reserved IP | Virtual Machines                                                                           | Public or private             |
-| Floating IP          | - Provide public access to a Virtual Machine in a private subnet via DNAT<br/>- Assign to any Virtual Machine, Bare Metal server, or Load Balancer                                                                           | Private ports of Virtual Machines, Bare Metal servers, and Load Balancers                  | Public (mapped via DNAT)       |
-| Reserved IP          | - Pre-allocate an IP for future use<br/>- Assign to any Virtual Machine, Bare Metal server, or Load Balancer at any time<br/>- Can be converted into a Virtual IP if needed                                                   | Virtual Machines, Bare Metal servers, and Load Balancers                                   | Public or private             |
+## Comparison
 
-  
-## Cloud IPs
+|  | Floating IP | Reserved IP | Virtual IP |
+| --- | --- | --- | --- |
+| What it is | Public IP mapped to a private IP using network address translation (DNAT) | Pre-allocated IP reserved in a regional pool, not assigned to a compute instance | A Reserved IP shared across multiple VMs |
+| Assigned to | VMs, Bare Metal, Load Balancers (private interfaces) | VMs, Bare Metal, Load Balancers | Multiple VMs |
+| Subnet | Public (via DNAT) | Public or private | Public or private |
+| Failover | No, but can be reassigned via [API](https://gcore.com/docs/api-reference/cloud/floating-ips/update-floating-ip) or [Customer Portal](https://gcore.com/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address#assign-a-floating-ip-to-a-virtual-machine) | No (manual reassignment) | Yes (shared ownership enables failover) |
+| Requires private network | Yes | No | No |
+| Billed when unassigned | No, it exists only when assigned | Yes | Yes |
+| Bare Metal support | Yes | Yes | No |
 
-All IP addresses on the Cloud platform are native and correspond to the exact physical location where the server is deployed. This results in low latency, optimized routing, and improved performance for cloud services.
+## How to choose
 
-When a public IP is assigned, it comes from a shared regional pool and remains static for the lifetime of the network interface. However, if the interface is deleted and re-created, the public IP is released back into the pool and replaced with a new one.
+If a VM has a public interface and requires external access, no additional configuration is needed. The platform assigns one public IP per VM.
 
-Read more about each IP type in the following articles:
+If a VM runs in a private subnet and requires external access, use a floating IP. It maps a public IP to the private IP without changing the VM configuration.
 
-[Create and configure a floating IP address](/cloud/networking/ip-address/create-and-configure-a-floating-ip-address)
+If an IP address must remain available for later use or reassignment, use a reserved IP. It stays allocated until released.
 
-[Create and configure a virtual IP address](/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address)
+If multiple VMs must share the same IP for high availability, use a virtual IP. A failover mechanism such as Keepalived controls which node is active.
 
-[Create and configure a reserved IP address](/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address)
+If additional public IPs are required on a VM, attach floating IPs. For Bare Metal servers, contact [support](https://support.gcore.com/).
+
+## Notes on public IP assignment
+
+All Gcore Cloud IP addresses are native and correspond to the physical location of the deployed resource. This minimizes latency and optimizes routing.
+
+Public IPs are allocated from a shared regional pool and remain assigned for the lifetime of the network interface. If the interface is deleted, the IP is released and a new one is assigned. To retain an IP address, convert it to a reserved IP before deleting the interface.
+
+## Related articles
+
+- [Create and configure a floating IP address](/cloud/networking/ip-address/create-and-configure-a-floating-ip-address)
+- [Create and configure a virtual IP address](/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address)
+- [Create and configure a reserved IP address](/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address)

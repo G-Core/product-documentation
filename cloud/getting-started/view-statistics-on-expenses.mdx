@@ -5,8 +5,8 @@ sidebarTitle: Cost reports
 
 You can check information about Cloud resource usage and associated costs on the following pages: 
 
-  * **Cost Report** : view costs for the Cloud resources you've used. This report shows data based on the Pay-As-You-Go pricing model and doesn't include any costs associated with the prepaid resources (active commit features). 
-  * **Reservation Cost Report** : check monthly resource usage and costs for both consumed and pre-paid resources.
+  * **Cost Report** : view costs for all Cloud resources you've used. This report calculates all costs using the Pay-As-You-Go pricing model. If you have active resource commitments, the prices shown in this report won't reflect your actual costs because commit discounts are not applied.
+  * **Reservation Cost Report** : check monthly resource usage and costs that account for your resource commitments. This report shows how much of your committed resources you've consumed, whether you've fully utilized your commits, and any overcommit costs incurred when usage exceeded the reserved amount.
 
 
 
@@ -19,7 +19,7 @@ Consider that statistics for the last hour might contain incomplete data. For ac
 <Info>
 **Info**
 
-This report doesn't contain information about prepaid resources. If you have any resource reservations, check the [Reservation Cost Report](/cloud/getting-started/view-statistics-on-expenses#reservation-cost-report) for accurate cost data.
+This report calculates all costs using Pay-As-You-Go rates and doesn't account for resource commitments. If you have active commits, the prices shown here won't reflect your actual costs. Check the [Reservation Cost Report](/cloud/getting-started/view-statistics-on-expenses#reservation-cost-report) for accurate cost data that includes commit discounts.
 </Info>
 
 This report contains data about each Cloud resource you've used, which also allows you to forecast pay-as-you-go expenses more accurately. 
@@ -76,6 +76,7 @@ Under the graph, there is a table with more detailed information about resources
   * Resource type 
   * Region 
   * Project 
+  * Tags
   * Usage 
   * First seen date 
   * Last seen date 
@@ -139,21 +140,23 @@ To export billing report for the selected period, click **Export CSV** in the to
     ---|---  
     Service | A name of the Cloud resource that you've used.  
     UUID | A universally unique identifier assigned to the resource. Some resources, like IP addresses, don't have a UUID as they're already unique.  
-    Feature | If a resource has multiple configurations (flavors), such as [different volume types](/cloud/virtual-instances/volumes/about-volumes#available-volume-types), it'll be specified in this column.  
+    Feature | Billing identifier of a billable resource that combines the resource type, configuration, region, and pricing model. Every resource has a feature value, even resources with a single configuration like IP addresses.  
     Tags | If you added any tags to the resource, they'll appear in this column. This column also presents system-generated tags.  
     Service_name | Name of the service, which is also displayed in the **Name** field in the UI. For example, the name of a Virtual Machine.  
     Region_id | ID of a region where the resource has been created. You can check the ID via [API](https://api.gcore.com/docs/cloud#tag/Regions).  
     Region_name | Name of a geographical location of the data center where the resource has been created.  
     Project_id | ID of a project where the resource has been created. Your project ID is displayed on the **Projects** page, in the [grid view](/cloud/getting-started/projects/create-a-project#view-projects-in-different-layouts).  
     Project_name | Name of a project where the resource has been created.  
-    Period_from | The start date of the resource usage.  
-    Period_to | The end date of the resource usage.  
+    First_seen | The date when the resource was first detected in the billing system during the selected period. This helps identify when a resource started generating costs.  
+    Last_seen | The date when the resource was last detected in the billing system during the selected period. This helps identify when a resource stopped generating costs, though it doesn't necessarily indicate the resource was deleted.  
+    Period_from | The start date of the reporting period for which the resource usage is calculated. This reflects the selected date range, not when the resource was created.  
+    Period_to | The end date of the reporting period for which the resource usage is calculated. This reflects the selected date range, not when the resource was stopped or deleted.  
     Units | The consumption measurement unit. It can be represented as the usage time, such as gbminutes, minutes, milliseconds (MLS), or as the number of consumed resources, measured in bytes or GBS.  
     Value | The numerical measurement of resource usage.  
-    Error | Any errors associated with the resource usage during the specified period.  
+    Error | Any errors associated with the costs incurred during the specified period.  
     Cost | Cost of the resource for the specified period.  
     Currency | The type of currency in which the cost is calculated.  
-    Attached_to | A Cloud product to which the resource has been connected. For instance, it can be an ID of a Virtual Machine that the volume has been attached to.  
+    Attached_to | A Cloud product to which the resource has been connected. For example, it can be an ID of a Virtual Machine that the volume has been attached to.  
     Port_id | A unique identifier for a network virtual port of a VM. It's used to associate IP addresses and traffic with specific network connections. 
   </Tab>
   <Tab title="Summary CSV report">
@@ -162,14 +165,14 @@ To export billing report for the selected period, click **Export CSV** in the to
     **Column** | **Description**  
     ---|---  
     Type | The Cloud resource that you've used.  
-    Feature | If a resource has multiple configurations (flavors), such as [different volume types](/cloud/virtual-instances/volumes/about-volumes#available-volume-types), it'll be specified in this column.  
+    Feature | Billing identifier of a billable resource that combines the resource type, configuration, region, and pricing model. Every resource has a feature value, even resources with a single configuration like IP addresses.  
     Region_id | ID of a region where the resource has been created. You can check the ID via [API](https://api.gcore.com/docs/cloud#tag/Regions).  
     Region_name | Name of a geographical location of the data center where the resource has been created.  
-    Period_from | The start date of the resource usage.  
-    Period_to | The end date of the resource usage.  
+    Period_from | The start date of the reporting period for which the resource usage is calculated. This reflects the selected date range, not when the resource was created.  
+    Period_to | The end date of the reporting period for which the resource usage is calculated. This reflects the selected date range, not when the resource was stopped or deleted.  
     Units | The consumption measurement unit. It can be represented as the usage time, such as gbminutes, minutes, milliseconds (MLS), or as the number of consumed resources, measured in bytes or GBS.  
     Value | The numerical measurement of resource usage.  
-    Error | Any errors associated with the resource usage during the specified period.  
+    Error | Any errors associated with the costs incurred during the specified period.  
     Cost | Cost of the resource during the specified period.  
     Currency | The type of currency in which the cost is calculated.  
   </Tab>
@@ -177,9 +180,13 @@ To export billing report for the selected period, click **Export CSV** in the to
 
 ## Reservation Cost Report
 
-This report presents information about your prepaid and [reserved](/cloud/getting-started/resource-reservation/about-resource-reservation) resources, active commits, and costs for pay-as-you-go services. 
+This report presents monthly information about your prepaid and [reserved](/cloud/getting-started/resource-reservation/about-resource-reservation) resources. Unlike the Cost Report, this report accounts for your active resource commitments and shows:
 
-Contrary to the Cost Report, the Reservation Cost Report doesn't show statistics for individual resources and you can only view total data collected for each month. 
+* How much of your committed resources you've consumed
+* Whether you've fully utilized your commits
+* Any overcommit costs incurred when usage exceeded the reserved amount
+
+The Reservation Cost Report doesn't show statistics for individual resources and only displays aggregated data for each month. 
 
 You can filter cost data by: 
 
@@ -242,7 +249,7 @@ The following table explains what information is included in the **Totals** file
 **Column** | **Description**  
 ---|---  
 Type | The Cloud resource that you've reserved for usage.  
-Feature | If a resource has multiple configurations (flavors), such as [different volume types](/cloud/virtual-instances/volumes/about-volumes#available-volume-types), it'll be specified in this column.  
+Feature | Billing identifier of a billable resource that combines the resource type, configuration, region, and pricing model. Every resource has a feature value, even resources with a single configuration like IP addresses.  
 Region_id | ID of a region where the resource has been reserved. You can check the ID via [API](https://api.gcore.com/docs/cloud#tag/Regions).  
 Region_name | Name of a geographical location of the data center where the resource has been reserved.  
 Period | The timeframe for the displayed statistics.  
@@ -251,5 +258,5 @@ Value | Total consumed value.
 Commit value | Total amount of resources that have been reserved.  
 Commit cost | The cost for a reserved amount of cloud resources.  
 Overcommit cost | Additional charges incurred after the resource usage exceeded the committed (reserved) amount.  
-Error | Any errors associated with the reserved resource during the specified period.  
+Error | Any errors associated with the costs incurred during the specified period.  
 Currency | The type of currency in which the cost is calculated.

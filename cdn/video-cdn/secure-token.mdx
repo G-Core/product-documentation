@@ -1,0 +1,117 @@
+---
+title: Secure Token for Video CDN
+sidebarTitle: Secure token for video
+description: Protect HLS and MPEG-DASH video delivery with CDN secure tokens and query string forwarding
+---
+
+## Secure token for video delivery
+
+Video CDN can protect ABR video streaming protocols such as HLS and MPEG-DASH. For this workflow, enable two CDN resource options:
+
+- **Secure Token**: validates temporary access to the video URL.
+- **Query String Forwarding**: forwards token parameters from the master manifest to nested manifests, segments, and subtitles.
+
+## Secure Token
+
+Enable **Secure Token** option in a CDN-resource settings when you need to protect HLS or MPEG-DASH video from copied links, unpaid access, or long-term sharing. A secure token adds temporary access parameters to the video URL, for example:
+
+```text
+http://demo-files-protected.gvideo.io/coffee_run/master.m3u8?md5=eBx15p01_a9JNuo1iZpTfQ&expires=1893456000&other=parameter
+```
+
+When the token is valid, CDN returns video manifests and segments with `200 OK`. When the token expires, CDN returns `403 Forbidden` or `410 Gone`, so the file cannot be downloaded with the expired URL anymore.
+
+<Frame>![Expired secure token returns 410 for a video segment](/images/docs/cdn/video-cdn/cdn-token-410.png)</Frame>
+
+## Query String Forwarding
+
+HLS and MPEG-DASH are not single-file downloads. The player first requests a master manifest, then follows links inside it to rendition manifests, segments, subtitles, and other related files.
+
+For protected video in ABR streaming using protocols HLS or MPEG-DASH enable **Query String Forwarding** so CDN forwards the token parameters from the master manifest request to related files.
+
+## Recommended settings for HLS and MPEG-DASH
+
+For HLS and MPEG-DASH video protected by Secure Token, configure Query String Forwarding with these values:
+
+| Field | Values |
+| --- | --- |
+| Forward from file types | `m3u8`, `mpd` |
+| Forward to file types | `m3u8`, `ts`, `mp4`, `m4s`, `vtt` |
+| Forward only keys | `md5`, `expires` |
+
+Use `m3u8` for HLS manifests and `mpd` for MPEG-DASH manifests. Use `ts`, `mp4`, `m4s`, and `vtt` for common nested media and subtitle files. Add other file extensions (e.g. `m4a`, `m4v`, etc.) if your manifests reference them and they also need the same query parameters.
+
+With Query String Forwarding enabled, a request to:
+
+```text
+/coffee_run/master.m3u8?md5=TOKEN&expires=EXPIRY
+```
+
+is propagated to all nested manifests and segments inside the manifest body automatically.
+
+<Frame>![Query string parameters are inserted into manifest body links automatically](/images/docs/cdn/video-cdn/cdn-token-forwarding-body.png)</Frame>
+
+As the result, the video player doesn't need to operate with tokens for each file, as it reads data from modified manifests instead.
+
+<Frame>![Query string parameters are forwarded from the master manifest to nested manifests and segments](/images/docs/cdn/video-cdn/cdn-token-forwarding-query.png)</Frame>
+
+
+
+## Token path rule
+
+For requests with enabled Secure Token and Query String Forwarding, generate the token for the directory path, not for the exact manifest filename.
+**So the single token will cover all files inside the specified directory.**
+
+Example:
+
+```text
+/coffee_run/
+```
+
+not separately for each file:
+
+```text
+/coffee_run/master.m3u8
+/coffee_run/index-svod720n-v1-a1.m3u8
+/coffee_run/segment-1-svod720n-v1-a1.ts
+/coffee_run/master.mpd
+/coffee_run/dash-init-f1-v1-x3.m4s
+/coffee_run/dash-segment-1-f1-v1-x3.m4s
+...
+```
+
+The token works for all files inside the directory `/coffee_run/`. But it does not cover subdirectories.
+
+For full setup instructions, see [Configure and use Secure Token](/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token) and [Query String Forwarding](/cdn/cdn-resource-options/query-string-forwarding).
+
+## Demo links
+
+Use these links to check how Secure Token and Query String Forwarding work with a real HLS stream:
+
+- Manifest URL: [master.m3u8](http://demo-files-protected.gvideo.io/coffee_run/master.m3u8?md5=eBx15p01_a9JNuo1iZpTfQ&expires=1893456000&other=parameter)
+- hls.js player demo: [open protected HLS stream](https://hlsjs.video-dev.org/demo/?src=https%3A%2F%2Fdemo-files-protected.gvideo.io%2Fcoffee_run%2Fmaster.m3u8%3Fmd5%3DeBx15p01_a9JNuo1iZpTfQ%26expires%3D1893456000%26other%3Dparameter)
+- MPEG-DASH manifest URL: [master.mpd](https://demo-files-protected.gvideo.io/coffee_run/master.mpd?md5=eBx15p01_a9JNuo1iZpTfQ&expires=1893456000&other=parameter)
+- dash.js player demo: [open protected MPEG-DASH stream](https://reference.dashif.org/dash.js/nightly/samples/dash-if-reference-player/index.html?autoplay=true&loop=true&stream=https%3A%2F%2Fdemo-files-protected.gvideo.io%2Fcoffee_run%2Fmaster.mpd%3Fmd5%3DeBx15p01_a9JNuo1iZpTfQ%26expires%3D1893456000%26other%3Dparameter)
+
+Links to demo files are valid until January 1, 2030.
+
+Screenshot:
+
+<Frame>![Protected MPEG-DASH stream opened in dash.js player](/images/docs/cdn/video-cdn/cdn-token-dashjs.png)</Frame>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="CDN logs" icon="file-text" href="/cdn/logs/log-viewer-view-and-download-cdn-resource-logs">
+    View CDN requests and status codes to debug token validation and segment access
+  </Card>
+  <Card title="Improve video delivery speed" icon="gauge" href="/cdn/video-cdn/improve-video-delivery-speed">
+    Optimize cache hit ratio and delivery performance for video streaming
+  </Card>
+  <Card title="Auto-refresh secure tokens" icon="clock" href="/cdn/video-cdn/secure-token-auto-refresh">
+    Refresh short-lived tokens in the player for uninterrupted protected playback
+  </Card>
+  <Card title="Create a video CDN resource" icon="rocket" href="/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-video-streaming">
+    Complete setup instructions to create a CDN resource for video streaming
+  </Card>
+</CardGroup>

@@ -1,0 +1,121 @@
+---
+title: Explore and debug tools with MCP Inspector
+sidebarTitle: MCP Inspector
+---
+
+MCP Inspector provides a web interface for exploring and testing MCP server tools without an AI client. The interface displays available tools with their parameters and allows manual execution to verify behavior before integrating with Claude Code or other clients.
+
+## Start MCP Inspector
+
+MCP Inspector runs via npx and requires Node.js 18 or later. Verify the installation with `node --version`, then start the inspector:
+
+```bash
+npx @modelcontextprotocol/inspector
+```
+
+The inspector starts at `http://localhost:6274` and opens a browser window automatically.
+
+<Info>
+If the Inspector shows a blank white page after starting, the browser has cached a different version of the UI. Open the Inspector in a private/incognito window or press `Ctrl+Shift+R` to force a cache reload.
+</Info>
+
+## Connect to Gcore MCP Server
+
+MCP Inspector supports two connection methods: stdio transport through the UI configuration, and HTTP transport for debugging scenarios where server logs need monitoring.
+
+### Stdio transport
+
+The stdio method launches the server directly from the Inspector interface.
+
+1. Set **Transport Type** to `STDIO`.
+
+2. Enter the command:
+
+```
+uvx
+```
+
+3. Enter the arguments:
+
+```
+--from gcore-mcp-server@git+https://github.com/G-Core/gcore-mcp-server.git gcore-mcp-server
+```
+
+4. Expand **Environment Variables** and add:
+
+| Variable | Value |
+|----------|-------|
+| `GCORE_API_KEY` | [API token](/account-settings/api-tokens) |
+| `GCORE_TOOLS` | `cdn.*` (or other [filter pattern](/account-settings/integrations/filter-tools-with-gcore-tools)) |
+
+5. Click **Connect**.
+
+<Info>
+`McpError: MCP error -32001: Request timed out` appears when the Inspector UI cannot reach its proxy process on port 6277. This is a known issue with MCP Inspector v0.21+ on Windows where the proxy process fails to start. Use the HTTP transport method instead — instructions below.
+</Info>
+
+<Frame>![MCP Inspector showing connection error: McpError MCP error -32001 Request timed out](/images/docs/account-settings/integrations/test-tools-with-mcp-inspector/connection-error.png)</Frame>
+
+### HTTP transport
+
+HTTP mode allows monitoring server logs in a separate terminal.
+
+1. Start the server with HTTP transport:
+
+```bash
+GCORE_API_KEY=your-key GCORE_TOOLS="cdn.*" gcore-mcp-server --http
+```
+
+2. In the Inspector, set **Transport Type** to `SSE`.
+
+3. Enter the URL:
+
+```
+http://localhost:8000/sse
+```
+
+4. Click **Connect**.
+
+## Explore available tools
+
+After connecting, the Inspector displays three tabs: Tools (available MCP tools), Resources (MCP resources if configured), and Prompts (MCP prompts if configured). Selecting a tool reveals its description, input schema with required and optional parameters, and a test interface for manual execution.
+
+<Frame>![MCP Inspector Tools tab showing available Gcore DNS tools with descriptions](/images/docs/account-settings/integrations/test-tools-with-mcp-inspector/tools-list.png)</Frame>
+
+The tool list reflects the `GCORE_TOOLS` filter. Setting `GCORE_TOOLS="cdn.*"` shows CDN-related tools, while `GCORE_TOOLS="cloud.instances.*"` displays Cloud instance tools. Multiple products can be combined with `GCORE_TOOLS="cdn.*,dns.*"`.
+
+<Warning>
+Setting `GCORE_TOOLS=*` loads all 720 tools. The Inspector interface may become slow or unresponsive with this configuration. Filter to specific products for responsive navigation.
+</Warning>
+
+## Execute tools manually
+
+Tool execution requires selecting a tool from the list, filling parameter values according to the input schema, and clicking **Run Tool**. The Results panel displays the JSON response from the server.
+
+Listing DNS zones demonstrates a parameterless call: connect with `GCORE_TOOLS="dns.*"`, select `dns_zones_ls` from the tools list, and click **Run Tool** without entering any parameters. The response contains an array of DNS zone objects with their names, status, and record counts.
+
+<Frame>![MCP Inspector showing dns_zones_ls tool execution with JSON response containing zone details](/images/docs/account-settings/integrations/test-tools-with-mcp-inspector/executing-tool.png)</Frame>
+
+Retrieving DNS zone details demonstrates a parameterized call: select `dns_zones_get`, enter the zone name in the parameter field, and click **Run Tool**. The response contains the zone configuration including records, TTL settings, and status.
+
+## Understand tool schemas
+
+Tool schemas define the expected input format and appear in the **Input Schema** section when selecting a tool. Each field includes its data type (string, number, object, or array), whether it is required, a description of its purpose, and default values if applicable. Expanding nested objects reveals all available configuration options.
+
+Schema exploration helps understand exact parameter names and formats before constructing requests in Claude Code or other clients.
+
+## Debug execution errors
+
+The Inspector displays the full JSON-RPC request sent to the server, the response with results or errors, and execution timing. The server log panel shows all HTTP requests made to the Gcore API, including the endpoint called and the response status code.
+
+<Frame>![MCP Inspector server log showing Connected status and INFO logs with HTTP requests to Gcore API](/images/docs/account-settings/integrations/test-tools-with-mcp-inspector/server-output.png)</Frame>
+
+This visibility helps diagnose issues that produce generic errors in AI clients.
+
+<Warning>
+Authentication errors (401) indicate an invalid or expired API key—generate a new token in the [Gcore Customer Portal](/account-settings/api-tokens). Permission errors (403) indicate the token lacks required permissions for the operation. Resource not found errors (404) indicate incorrect parameter values such as nonexistent IDs or zone names. Validation errors indicate missing required parameters or incorrect types—check the tool schema for the expected format.
+</Warning>
+
+## Practical applications
+
+MCP Inspector serves as a reference tool when documenting or integrating Gcore MCP Server. Exploring tools reveals exact names, parameter requirements, types, and response structures. Testing [filter patterns](/account-settings/integrations/filter-tools-with-gcore-tools) confirms that `GCORE_TOOLS` values match the intended tool set before configuring production clients. When Claude Code reports errors, replicating the tool call in the Inspector reveals the exact request and full error response for debugging.

@@ -3,27 +3,69 @@ title: "Query String Forwarding: forward parameters to sub-requests"
 sidebarTitle: Query String Forwarding
 ---
 
-## Option setting
+## What is Query String Forwarding?
 
-The "Query String Forwarding" option allows you to control the forwarding of parameters from main request to any nested ones. 
-Mainly used for HLS streaming, for passing secure token hash from main manifest(playlist), to playlists (different quality for example) and chunks. 
+Query String Forwarding copies selected query string parameters from a parent file request to nested file requests. It is mainly used for HLS and MPEG-DASH video, where a viewer requests a master manifest first, and that manifest references rendition manifests, media segments, subtitles, or other related files.
 
-To configure the Query String Forwarding via the Gcore Customer Portal:
+For example, a viewer can request a protected HLS master manifest with a secure token:
 
-1\. Go to CDN and select the CDN resource you want to configure.
+```text
+https://demo-files-protected.gvideo.io/coffee_run/master.m3u8?md5=n9cVLrZoiK0wj-CANW3fyw&expires=1777545540
+```
+
+With enabled Query String Forwarding the CDN automatically inserts the forwarded query string parameters into manifest bodies. For secure token parameters like `md5` and `expires` are required.
+
+<Frame>![Query string parameters are inserted into manifest body links automatically](/images/docs/cdn/video-cdn/cdn-token-forwarding-body.png)</Frame>
+
+As the result, the video player doesn't need to operate with tokens for each file, as it reads data from modified manifests instead.
+
+<Frame>![Query string parameters are forwarded from the master manifest to nested manifests and segments](/images/docs/cdn/video-cdn/cdn-token-forwarding-query.png)</Frame>
 
 
-<Frame>![CDN_resource.png](/images/docs/cdn/cdn-resource-options/network-limits-set-the-content-delivery-speed-to-end-users/12392392470929.png)</Frame>
+## Configure in the Customer Portal
 
+To configure Query String Forwarding in the Gcore Customer Portal:
 
+1. Go to **CDN** and select the CDN resource you want to configure.
 
-2\. In the sidebar, under the "Content" section, click **Query String Forwarding**.
+<Frame>![CDN resource list](/images/docs/cdn/cdn-resource-options/network-limits-set-the-content-delivery-speed-to-end-users/12392392470929.png)</Frame>
 
+2. In the sidebar, under the **Content** section, click **Query String Forwarding**.
+3. Enable the option.
+4. In **Forward from file types**, add `m3u8` and `mpd`.
+5. In **Forward to file types**, add `ts`, `mp4`, `m3u8`, `m4s`, and `vtt`.
+6. In **Forward only keys**, add `md5` and `expires`.
+7. Save the CDN resource.
 
-This option has 2 input fields.
+## Configure by API
 
-- Forward from files type "This field specifies playlist file types, such as HLS and DASH, for extracting and forwarding parameters to referenced media chunks."
-- Forward to files types "This field specifies the media chunk file types that receive parameters from playlist files, ensuring streaming session integrity."
+Use the same values when updating a CDN resource by API.
 
-Typically, you would add ".m3u8" extension in the first field, while second one would contain ".ts". (Extensions may differ depending on your needs)
-    
+<Accordion title="AI agent instruction: CDN resource update JSON">
+When automating CDN resource setup, enable Query String Forwarding and pass this JSON object in the CDN resource update payload:
+
+```json
+{
+  "enabled": true,
+  "forward_from_file_types": [
+    "m3u8",
+    "mpd"
+  ],
+  "forward_to_file_types": [
+    "ts",
+    "mp4",
+    "m3u8",
+    "m4s",
+    "vtt"
+  ],
+  "forward_only_keys": [
+    "md5",
+    "expires"
+  ]
+}
+```
+</Accordion>
+
+## Recommended settings for HLS and MPEG-DASH
+
+For video-specific setup, recommended file types, and Secure Token path rules, see [Secure token for video](/cdn/video-cdn/secure-token#recommended-settings-for-hls-and-mpeg-dash).
