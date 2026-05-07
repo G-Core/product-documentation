@@ -32,12 +32,15 @@ Nodes display **Ready** status when fully provisioned.
 
 The cluster overview page displays cluster status, networking configuration, and provides access to management tabs.
 
-<img src="/images/docs/edge-ai/managed-kubernetes/cluster-overview.png" alt="Cluster overview page showing status, networking info, and management tabs" />
+<Frame>
+  <img src="/images/docs/edge-ai/managed-kubernetes/cluster-overview.png" alt="Cluster overview page showing status, networking info, and management tabs" />
+</Frame>
 
 | Tab | Description |
 |-----|-------------|
 | Pools | View and manage node pools, add new pools |
-| Logging | Configure log collection to OpenSearch Dashboards (paid feature) |
+| Logging | Configure log collection to OpenSearch Dashboards (paid feature; not available in all regions) |
+| Advanced DDoS Protection | Enable Advanced DDoS Protection for cluster nodes (not available in all regions) |
 | Advanced settings | OIDC authentication and Cluster Autoscaler configuration |
 | User Actions | Audit log of cluster operations |
 
@@ -54,7 +57,9 @@ Pool details reveal node configuration, status, and scaling settings. To view de
 
 The expanded view displays the pool name, autoscaling limits (min/max nodes), instance flavor configuration, volume type and size, and current status (Ready, Scaling Up, or Scaling Down).
 
-<img src="/images/docs/edge-ai/managed-kubernetes/pool-details-expanded.png" alt="Pool details showing node information, OS version, region, and IP address" />
+<Frame>
+  <img src="/images/docs/edge-ai/managed-kubernetes/pool-details-expanded.png" alt="Pool details showing node information, OS version, region, and IP address" />
+</Frame>
 
 ### Scale node pools
 
@@ -62,12 +67,15 @@ Node pools scale automatically based on configured limits. To manually adjust sc
 
 1. Navigate to the **Pools** tab.
 2. Expand the target pool.
-3. Adjust the **Minimum nodes** or **Maximum nodes** count.
-4. Click **Save changes**.
+3. Click the options menu (three dots) next to the pool and select **Edit Pool Settings**.
+4. Adjust the **Minimum nodes** or **Maximum nodes** count.
+5. Click **Save**.
 
 The cluster autoscaler respects these limits when adding or removing nodes based on workload demand.
 
-<img src="/images/docs/edge-ai/managed-kubernetes/edit-pool-settings.png" alt="Edit pool settings showing minimum and maximum nodes, labels, taints, and autohealing options" />
+<Frame>
+  <img src="/images/docs/edge-ai/managed-kubernetes/edit-pool-settings.png" alt="Edit pool settings showing minimum and maximum nodes, labels, taints, and autohealing options" />
+</Frame>
 
 ### Add a GPU node pool
 
@@ -88,11 +96,15 @@ Add GPU nodes to an existing cluster for AI/ML workloads:
 
 7. (Optional) Add **labels** for node selection in pod specs.
 8. (Optional) Add **taints** to dedicate nodes to GPU workloads.
-9. Click **Save**.
+9. Click **Add pool**.
 
-<img src="/images/docs/edge-ai/managed-kubernetes/add-gpu-pool.png" alt="Add GPU pool dialog showing GPU Bare metal instances selection and H100 flavor options" />
+<Frame>
+  <img src="/images/docs/edge-ai/managed-kubernetes/add-gpu-pool.png" alt="Add GPU pool dialog showing GPU Bare metal instances selection and H100 flavor options" />
+</Frame>
 
 <Info>
+**Info**
+
 GPU node pools may take several minutes to provision. Monitor the pool status in the Pools tab.
 </Info>
 
@@ -119,7 +131,15 @@ spec:
 
 ### Delete a node pool
 
-Removing a pool terminates all nodes and evicts running pods. Pods are rescheduled to other available nodes if resources permit. To delete a pool:
+Removing a pool terminates all nodes in that pool. Running pods are evicted and rescheduled to other available nodes if resources permit.
+
+<Warning>
+**Warning**
+
+Pool deletion is irreversible. All nodes in the pool are terminated. Ensure workloads running on the pool are either migrated or no longer needed before proceeding.
+</Warning>
+
+To delete a pool:
 
 1. Navigate to the **Pools** tab.
 2. Locate the pool to delete.
@@ -149,7 +169,9 @@ The Cluster Autoscaler automatically adjusts cluster size based on workload dema
 
 4. Click **Save changes**.
 
-<img src="/images/docs/edge-ai/managed-kubernetes/autoscaler-settings.png" alt="Cluster Autoscaler settings showing scan interval, expander, and scale-down parameters" />
+<Frame>
+  <img src="/images/docs/edge-ai/managed-kubernetes/autoscaler-settings.png" alt="Cluster Autoscaler settings showing scan interval, expander, and scale-down parameters" />
+</Frame>
 
 Autoscaling operates within the min/max limits configured for each pool. If the autoscaler cannot provision enough capacity, increase maximum nodes in the affected pool.
 
@@ -166,9 +188,13 @@ To enable logging:
 
 Access logs through the OpenSearch Dashboards link provided in the Logging tab.
 
-<img src="/images/docs/edge-ai/managed-kubernetes/logging-tab.png" alt="Logging tab with Enable Logging toggle and OpenSearch Dashboards description" />
+<Frame>
+  <img src="/images/docs/edge-ai/managed-kubernetes/logging-tab.png" alt="Logging tab with Enable Logging toggle and OpenSearch Dashboards description" />
+</Frame>
 
 <Info>
+**Info**
+
 Logging is a paid feature. Charges apply based on log volume and retention period.
 </Info>
 
@@ -179,35 +205,40 @@ OIDC authentication enables Single Sign-On (SSO) for Kubernetes API access throu
 1. Navigate to the **Advanced settings** tab.
 2. Expand **OIDC authentication**.
 3. Configure the identity provider settings:
-   - **Issuer URL**: The OIDC issuer endpoint (e.g., `https://login.example.com`)
-   - **Client ID**: Application client ID from the identity provider
-   - **Username claim**: JWT claim to use as the username (default: `sub`)
-   - **Username prefix**: Prefix added to usernames (default: `oidc`)
-   - **Groups claim** (optional): JWT claim containing group membership
-   - **Groups prefix**: Prefix added to group names (default: `oidc`)
-   - **Signing algorithms**: JWT signing algorithms to accept (default: RS256)
-   - **Set required claims**: Enable to require specific claims in tokens
+
+| Field | Description |
+|-------|-------------|
+| Issuer URL | The OIDC issuer endpoint (e.g., `https://example.com`) |
+| Client ID | Application client ID from the identity provider |
+| Groups claim (optional) | JWT claim containing group membership |
+| Groups prefix | Prefix added to group names (default: `oidc`) |
+| Set required claims | Enable to require specific claims in tokens |
+| Signing algorithms (optional) | JWT signing algorithms to accept (default: RS256) |
+| Username claim | JWT claim to use as the username (default: `sub`) |
+| Username prefix | Prefix added to usernames (default: `oidc`) |
 4. Click **Save changes**.
 
-<img src="/images/docs/edge-ai/managed-kubernetes/oidc-settings.png" alt="OIDC authentication settings showing Issuer URL, Client ID, and claim configuration" />
+<Frame>
+  <img src="/images/docs/edge-ai/managed-kubernetes/oidc-settings.png" alt="OIDC authentication settings showing Issuer URL, Client ID, and claim configuration" />
+</Frame>
 
 After configuration, cluster access is available through identity provider credentials.
 
 ## Upgrade Kubernetes version
 
-Upgrade to newer Kubernetes versions for security patches and new features.
+Upgrade to newer Kubernetes versions for security patches and new features. When a newer version is available, an upgrade option appears in the cluster overview next to the **Kubernetes Version** field.
 
 1. In the cluster overview, locate the **Kubernetes Version** field.
-2. Click **Change** to view available versions.
+2. Click the version or the upgrade prompt to view available versions.
 3. Select the target version from the dropdown.
 4. Confirm the upgrade.
-
-<img src="/images/docs/edge-ai/managed-kubernetes/kubernetes-version-upgrade.png" alt="Kubernetes version upgrade showing available versions dropdown" />
 
 The upgrade process drains and replaces nodes sequentially to minimize disruption, maintaining workload availability throughout.
 
 <Warning>
-Review Kubernetes release notes before upgrading. Some versions may deprecate APIs used by existing workloads.
+**Warning**
+
+Review Kubernetes release notes before upgrading. Some versions deprecate APIs used by existing workloads.
 </Warning>
 
 ## View audit log
@@ -220,7 +251,9 @@ To filter the audit log:
 2. Use filters to narrow results by resource name, action type, resource type, or date range.
 3. Review the list of operations.
 
-<img src="/images/docs/edge-ai/managed-kubernetes/user-actions-tab.png" alt="User Actions audit log showing date, action, resource, event, and changed by columns" />
+<Frame>
+  <img src="/images/docs/edge-ai/managed-kubernetes/user-actions-tab.png" alt="User Actions audit log showing date, action, resource, event, and changed by columns" />
+</Frame>
 
 ## Delete the cluster
 
@@ -232,5 +265,7 @@ Cluster deletion removes all nodes, pools, and associated resources. External re
 4. Click **Yes, delete**.
 
 <Warning>
-Cluster deletion is irreversible. Export kubeconfig, backup any required data, and document cluster configuration before deleting.
+**Warning**
+
+Cluster deletion is irreversible. Export kubeconfig, back up any required data, and document cluster configuration before deleting.
 </Warning>

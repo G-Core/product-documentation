@@ -9,12 +9,9 @@ Unlike traditional Kubernetes deployments that require manual control plane mana
 
 ## Cluster architecture
 
-Each Kubernetes cluster consists of:
+Each Kubernetes cluster consists of a control plane managed by Gcore and one or more worker node pools. The control plane handles scheduling, the API server, and cluster state. Worker node pools are groups of nodes with identical configuration where workloads run.
 
-- **Control plane**: Managed by Gcore, handles scheduling, API server, and cluster state
-- **Worker node pools**: Groups of nodes with identical configuration where workloads run
-
-Node pools can contain different instance types within the same cluster. For example, a cluster might have one pool of standard virtual machines for general workloads and another pool of GPU bare metal nodes for training jobs.
+Node pools can contain different instance types within the same cluster—one pool of standard virtual machines for general workloads and another pool of GPU bare metal nodes for training jobs.
 
 All nodes in a pool share the same configuration: instance type, volume settings, and network configuration. The cluster autoscaler can add or remove nodes within each pool based on demand.
 
@@ -37,7 +34,9 @@ To create a Managed Kubernetes cluster in GPU Cloud:
 2. In the sidebar, select **Managed Kubernetes**.
 3. Click **Create Cluster**.
 
-<img src="/images/docs/edge-ai/managed-kubernetes/managed-kubernetes-overview.png" alt="Managed Kubernetes page in GPU Cloud showing clusters list and Create Cluster button" />
+<Frame>
+  <img src="/images/docs/edge-ai/managed-kubernetes/managed-kubernetes-overview.png" alt="Managed Kubernetes page in GPU Cloud showing clusters list and Create Cluster button" />
+</Frame>
 
 ### Step 1. Select region
 
@@ -47,11 +46,15 @@ In the **Region** section, select the data center location for the cluster. Regi
 - **Asia-Pacific**: Incheon
 - **EMEA**: Chester, London-2, Luxembourg-2, Luxembourg-3, Sines-2, Sines-3
 
-<img src="/images/docs/edge-ai/managed-kubernetes/step1-region.png" alt="Region selection showing available data centers grouped by Americas, Asia-Pacific, and EMEA" />
+<Frame>
+  <img src="/images/docs/edge-ai/managed-kubernetes/step1-region.png" alt="Region selection showing available data centers grouped by Americas, Asia-Pacific, and EMEA" />
+</Frame>
 
 GPU bare metal availability and supported features such as VAST Storage integration vary by region.
 
 <Info>
+**Info**
+
 Changing the region after configuring other settings resets all form values.
 </Info>
 
@@ -59,7 +62,7 @@ Changing the region after configuring other settings resets all form values.
 
 In the **Kubernetes cluster version** dropdown, select the desired version.
 
-The latest stable version is selected by default. Kubernetes versions follow the standard release cycle. Newer versions include the latest features and security patches. The version can be upgraded after cluster creation through the cluster overview page.
+The latest stable version is selected by default. Kubernetes versions follow the standard release cycle. Newer versions include the latest features and security patches. The version can be upgraded after cluster creation through the [cluster overview page](/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster#upgrade-kubernetes-version).
 
 ### Step 3. Configure node pools
 
@@ -80,28 +83,32 @@ Node pools define the worker nodes where workloads run. Each pool has its own in
 | GPU Bare metal instances | NVIDIA H100 GPU servers with NVMe storage | Model training, inference at scale |
 
 <Note>
+**Note**
+
 Bare metal instances are not available in all regions. If the option is greyed out, switch to a region that supports bare metal, such as Luxembourg-2.
 </Note>
 
 5. Select a **Flavor**. Each flavor card displays specifications, storage, and hourly pricing. For GPU Bare metal instances, the flavor includes built-in NVMe storage—no separate volume configuration is required.
 
-<img src="/images/docs/edge-ai/managed-kubernetes/gpu-flavors-dropdown.png" alt="GPU Bare metal flavor selection showing H100 specifications and pricing" />
+<Frame>
+  <img src="/images/docs/edge-ai/managed-kubernetes/gpu-flavors-dropdown.png" alt="GPU Bare metal flavor selection showing H100 specifications and pricing" />
+</Frame>
 
-6. For Virtual and Bare metal instance types, configure the boot volume:
-   - **Volume type**: High IOPS SSD or SSD Low-Latency
-   - **Size**: Minimum 50 GiB
+6. For Virtual and Bare metal instance types, configure the boot volume: select **Volume type** (High IOPS SSD or SSD Low-Latency) and set **Size** to a minimum of 50 GiB.
 
 7. Select a **Placement policy**. Anti-affinity soft distributes nodes across different physical hosts when possible.
 
-8. Configure optional node settings:
-   - **Add labels**: Kubernetes labels for node selection in pod specs
-   - **Add taints**: Prevent pods from scheduling on nodes unless they tolerate the taint
-   - **Autohealing nodes**: Automatically replace unhealthy nodes (enabled by default)
-   - **Public IPv4 address**: Assign public IPs to nodes for direct internet access
+8. (Optional) Configure node settings:
+   - Use **Add labels** to set Kubernetes labels for node selection in pod specs.
+   - Use **Add taints** to prevent pods from scheduling on nodes that do not tolerate the taint.
+   - **Autohealing nodes** is enabled by default and automatically replaces unhealthy nodes.
+   - Enable **Public IPv4 address** to assign public IPs to nodes for direct internet access.
 
 9. To configure advanced pool settings such as container runtime capabilities, environment variables, and resource limits, click the **...** menu in the pool header and select **Configure settings**.
 
 <Warning>
+**Warning**
+
 Advanced pool settings cannot be changed after cluster creation. GPU bare metal nodes may be deleted and recreated during scaling or maintenance. Use external storage such as Object Storage, NFS, or managed databases for persistent data.
 </Warning>
 
@@ -109,7 +116,11 @@ Advanced pool settings cannot be changed after cluster creation. GPU bare metal 
 
 The Container Network Interface (CNI) provider manages pod networking within the cluster.
 
-<img src="/images/docs/edge-ai/managed-kubernetes/step4-cni.png" alt="CNI provider section with Calico and Cilium options, CIDR configuration, and network monitoring settings" />
+<Frame>
+  <img src="/images/docs/edge-ai/managed-kubernetes/step4-cni.png" alt="CNI provider section with Calico and Cilium options, CIDR configuration, and network monitoring settings" />
+</Frame>
+
+1. Select a **CNI provider**:
 
 | Provider | Description |
 |----------|-------------|
@@ -117,22 +128,22 @@ The Container Network Interface (CNI) provider manages pod networking within the
 | Cilium | Modern eBPF-based CNI with advanced observability (default) |
 
 <Info>
+**Info**
+
 The CNI provider cannot be changed after cluster creation. Choose based on long-term requirements.
 </Info>
 
-Configure network ranges within the same section:
+2. Configure network ranges. The **Pod CIDR** sets the IP range for pods (default: 172.16.0.0/17), the **Service CIDR** sets the range for Kubernetes services (default: 172.24.0.0/17), and the **Node mask size** controls the subnet size allocated to each node (default: /24).
 
-- **Pod CIDR**: IP range for pods (default: 172.16.0.0/17)
-- **Service CIDR**: IP range for Kubernetes services (default: 172.24.0.0/17)
-- **Node mask size**: Subnet size allocated to each node (default: /24)
-
-When Cilium is selected, the **Enable Hubble for network monitoring** option adds network observability and flow visibility. IPv6 dual-stack is available as a Beta feature in supported regions.
+3. (Optional) If Cilium is selected, enable **Hubble for network monitoring** to add network observability and flow visibility. IPv6 dual-stack is available as a Beta feature in supported regions.
 
 ### Step 5. Configure network settings
 
 In the **Network settings** section, configure the private network interface for cluster nodes.
 
-<img src="/images/docs/edge-ai/managed-kubernetes/step5-network.png" alt="Network settings showing network and subnetwork selection dropdowns" />
+<Frame>
+  <img src="/images/docs/edge-ai/managed-kubernetes/step5-network.png" alt="Network settings showing network and subnetwork selection dropdowns" />
+</Frame>
 
 1. Select an existing **Network** or click **Add a new network** to create one.
 2. Select a **Subnetwork** within the chosen network.
@@ -148,6 +159,8 @@ In the **Cluster name** field, enter a name or use the auto-generated default.
 The **Logging** section enables log collection to OpenSearch Dashboards for debugging and monitoring. Logging is a paid feature.
 
 <Note>
+**Note**
+
 Logging is not available in all regions. In GPU-focused regions such as Sines-3, the section displays "Logging is currently not supported in this region."
 </Note>
 
@@ -157,25 +170,25 @@ Toggle **Enable Logging** to enable it when available, then configure the log to
 
 In regions where VAST Storage integration is available, the **VAST Storage integration** section displays an **Enable VAST Storage** toggle.
 
-<img src="/images/docs/edge-ai/managed-kubernetes/vast-storage-logging.png" alt="VAST Storage integration section showing the Enable VAST Storage toggle" />
+<Frame>
+  <img src="/images/docs/edge-ai/managed-kubernetes/vast-storage-logging.png" alt="VAST Storage integration section showing the Enable VAST Storage toggle" />
+</Frame>
 
 <Note>
-VAST Storage integration is available in select GPU regions. Contact Gcore support to confirm availability and enable it for your account before creating a cluster.
+**Note**
+
+VAST Storage integration is available in select GPU regions. Contact Gcore support to confirm availability before creating a cluster.
 </Note>
 
 ### Step 9. Configure advanced settings
 
-The **Advanced settings** section contains optional cluster-level configuration:
-
-**OIDC authentication**: Enable Single Sign-On for the Kubernetes API using an external identity provider such as Okta, Azure AD, or Keycloak. Configure the issuer URL, client ID, and claim settings.
-
-**Cluster Autoscaler**: Configure autoscaling behavior including scan intervals, scale-down thresholds, scale-up delays, and node grace periods.
+The **Advanced settings** section contains optional cluster-level configuration. Enable **OIDC authentication** to set up Single Sign-On for the Kubernetes API using an external identity provider such as Okta, Azure AD, or Keycloak—configure the issuer URL, client ID, and claim settings. The **Cluster Autoscaler** section lets you tune autoscaling behavior, including scan intervals, scale-down thresholds, scale-up delays, and node grace periods.
 
 ### Step 10. Create the cluster
 
 Review the **Estimated cost** panel on the right to verify monthly and hourly pricing for all configured resources, including 17% VAT.
 
-If your account lacks sufficient quota, the portal displays "You need to request quota increase to create this resource" and the **Create Cluster** button is greyed out. Click **Send quota request** to submit a quota increase request, then create the cluster once the request is approved.
+If the account lacks sufficient quota, the portal displays "You need to request quota increase to create this resource" and the **Create Cluster** button is greyed out. Click **Send quota request** to submit a quota increase request, then create the cluster once approved.
 
 Click **Create Cluster** to begin provisioning.
 
@@ -203,5 +216,3 @@ kubectl get nodes
 ```
 
 Nodes display **Ready** status when fully provisioned.
-
-For detailed cluster management including adding GPU node pools, configuring autoscaling parameters, upgrading Kubernetes versions, and viewing audit logs, see [Manage a GPU Kubernetes cluster](/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster).
