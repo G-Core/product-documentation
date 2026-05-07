@@ -72,10 +72,10 @@ def read_frontmatter(mdx_path: Path) -> dict[str, str]:
     """
     Read YAML frontmatter from an MDX file.
 
-    Returns a dict with keys: title, sidebarTitle, description.
+    Returns a dict with keys: title, sidebarTitle, ai-navigation.
     Missing keys are returned as empty strings.
     """
-    result: dict[str, str] = {"title": "", "sidebarTitle": "", "description": ""}
+    result: dict[str, str] = {"title": "", "sidebarTitle": "", "ai-navigation": ""}
     if not mdx_path.exists():
         return result
     try:
@@ -95,7 +95,7 @@ def read_frontmatter(mdx_path: Path) -> dict[str, str]:
         return result
     fm_block = content[3:end]
     for line in fm_block.splitlines():
-        for key in ("title", "sidebarTitle", "description"):
+        for key in ("title", "sidebarTitle", "ai-navigation"):
             pattern = rf"^{key}:\s*['\"]?(.+?)['\"]?\s*$"
             m = re.match(pattern, line.strip())
             if m:
@@ -152,7 +152,7 @@ def build_section_lines(
         mdx_file = repo_root / (node + ".mdx")
         fm = read_frontmatter(mdx_file)
         title = fm.get("title") or fm.get("sidebarTitle") or node.split("/")[-1]
-        description = fm.get("description", "")
+        description = fm.get("ai-navigation", "")
         url = page_to_url(node, base_url)
         if description:
             lines.append(f"- [{title}]({url}): {description}")
