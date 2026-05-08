@@ -1,22 +1,22 @@
 ---
-title: "How low latency streaming works"
-sidebarTitle: "Low latency streaming"
+title: "How low-latency streaming works"
+sidebarTitle: "Low-latency streaming"
 description: "Achieve ~2–5s latency with unified LL-HLS and LL-DASH support"
 ---
 
-## Low latency for LIVE streams
+## Low-latency LIVE streams
 
 Gcore offers specific latency numbers to customers, providing advanced low-latency streaming options:
 
 | Protocol | Format | Latency | Latency Level | Details |
 | :--- | :--- | :--- | :--- | :--- |
-| **LL-DASH** | CMAF | **2–4 seconds** | Low Latency | Chunked download of partially ready files from origin, quick segments download. |
-| **LL-HLS** | CMAF | **3–5 seconds** | Low Latency | Quick segments and parts download, manifest blocking. |
+| **LL-DASH** | CMAF | **2–4 seconds** | Low latency | Chunked download of partially ready files from origin, quick segments download. |
+| **LL-HLS** | CMAF | **3–5 seconds** | Low latency | Quick segments and parts download, manifest blocking. |
 | **HLS** | MPEG-TS | **~9 seconds** | Reduced Latency | Reduced chunk sizes and optimizations for fast manifest and file delivery. |
 
 Traditionally, other providers may continue to provide old regular HLS MPEG-TS, and traditional streaming with 20–30 seconds latency.
 
-## What is low-latency?
+## What is low latency?
 
 Streaming latency is the timespan between the moment a frame is captured and when that frame is displayed on the viewers' screens. Latency occurs because each stream is processed several times during broadcasting to be delivered worldwide:
 
@@ -27,7 +27,7 @@ Streaming latency is the timespan between the moment a frame is captured and whe
 Each step affects latency, so the total timespan can increase to 30–40 seconds, especially if the streaming processing isn't optimized. For some companies (such as sports or metaverse events, or news releases), such latency is too large, and it's crucial to reduce it.
 
 <Frame>
-  ![Example of how low latency works](/images/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-low-latency-streaming-works/low-latency-casino.gif)
+  ![Example of how low-latency streaming works](/images/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-low-latency-streaming-works/low-latency-football.gif)
 </Frame>
 
 ## How does Gcore provide low latency?
@@ -36,15 +36,15 @@ The Gcore Video Streaming receives live streams in RTMP or SRT protocols; transc
 
 | Protocol | Name | Details |
 | :--- | :--- | :--- |
-| **LL-HLS** | Low Latency HTTP Live Streaming | Based on constantly changed manifests with extra information about last parts to be downloaded. Requires full speed of downloading when files are ready on origin. Requires manifest blocking on the server. |
-| **LL-DASH** | Low Latency MPEG-DASH | Based on partially completed files that must be continuously downloaded from the origin, it is distributed as new portions of data are received from the file. |
+| **LL-HLS** | Low-Latency HTTP Live Streaming | Based on constantly changed manifests with extra information about last parts to be downloaded. Requires full speed of downloading when files are ready on origin. Requires manifest blocking on the server. |
+| **LL-DASH** | Low-Latency MPEG-DASH | Based on partially completed files that must be continuously downloaded from the origin, it is distributed as new portions of data are received from the file. |
 
 Both protocols use **CMAF** (Common Media Application Format) as a base. CMAF uses a standardized **fragmented MP4 (fMP4)** container to divide media into small chunks (video fragments) that can be individually addressed and transferred.
 
 This allows for:
   -   **Faster Delivery:** Small chunks can be sent over HTTP networks immediately as they are encoded, without waiting for the full segment to complete.
   -   **Compatibility:** A single set of media files works for both HLS and DASH players, reducing storage and encoding costs.
-  -   **Low Latency:** Enables "Chunked Encoding" where playback can begin while the file is still being downloaded.
+  -   **Low latency:** Enables "Chunked Encoding" where playback can begin while the file is still being downloaded.
 
 
 ## Gcore's Implementation: Unified Pipeline & Chunked-Proxy
@@ -78,16 +78,41 @@ Standard CDNs typically wait for a file to be completely downloaded from the ori
 </Tip>
 
 
-## How to use low latency streaming
+## How to use low-latency streaming
 
-Low Latency streaming is enabled by default. It means your live streams are transcoded to HLS, LL-HLS, and LL-DASH protocols automatically.
+Low-latency streaming is enabled by default. Gcore prepares three playback outputs simultaneously for each live stream. You don't need to create separate streams for these modes. Copy the dedicated playback URL for the protocol you need from the Customer Portal or request it via API.
 
-Links for embedding the live stream to your own player contain the _/cmaf/_ part and look as follows:
-- LL-HLS, CMAF (low latency): `https://demo.gvideo.io/cmaf/2675_19146/master.m3u8`
-- LL-DASH, CMAF (low latency): `https://demo.gvideo.io/cmaf/2675_19146/index.mpd`
-- Traditional HLS, MPEG TS (no low latency): `https://demo.gvideo.io/mpegts/2675_19146/master_mpegts.m3u8`
+### Customer Portal
 
-Demo player with low latency enabled live stream:
+In the Customer Portal, open your live stream and copy one of these links from **Links for export**:
+| Customer Portal field | Protocol | Use case |
+| :--- | :--- | :--- |
+| 1) **MPEG-DASH manifest URL** | LL-DASH CMAF | Web, Android, dash.js, ExoPlayer |
+| 2) **HLS manifest URL** | LL-HLS CMAF | Modern HLS players, iOS, Safari, hls.js |
+| 3) **HLS non-low-latency manifest URL** | Legacy HLS MPEG-TS | Older devices and maximum compatibility |
+<Frame>
+![Low-latency streaming links for live streams](/images/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-low-latency-streaming-works/low-latency-links.png)
+</Frame>
+
+### API
+
+Via API, use the [Get live stream](/api-reference/streaming/streams/get-live-stream) endpoint:
+
+```http
+GET https://api.gcore.com/streaming/streams/{stream_id}
+```
+
+Use these response fields:
+
+| API field | Protocol | Example |
+| :--- | :--- | :--- |
+| `hls_cmaf_url` | LL-HLS (HLS CMAF) | `https://demo.gvideo.io/cmaf/2675_19146/master.m3u8` |
+| `dash_url` | LL-DASH (MPEG-DASH CMAF) | `https://demo.gvideo.io/cmaf/2675_19146/index.mpd` |
+| `hls_mpegts_url` | Legacy HLS (MPEG-TS) | `https://demo.gvideo.io/mpegts/2675_19146/master_mpegts.m3u8` |
+
+LL-HLS and LL-DASH links contain the `/cmaf/` path and are used for low-latency playback. Legacy HLS links contain the `/mpegts/` path and are used when compatibility is more important than latency.
+
+Demo player with a low-latency live stream enabled:
 <iframe
   src="https://player.gvideo.co/broadcasts/2675_21606"
   width="100%"
@@ -103,19 +128,13 @@ Direct link to the player: https://player.gvideo.co/broadcasts/2675_21606
 
 Some legacy devices or software require MPEG-TS (.ts) segments for streaming. To ensure full backward compatibility with HLS across all devices and infrastructures, we offer MPEG-TS streaming options.
 
-We produce low-latency and non-low-latency streams in parallel, so you don't have to create a stream specifically for cases when the connection is unstable or a device doesn't support low-latency. Both formats share the same segment sizes, manifest lengths for DVR functionality, and other related capabilities.
-
-<Tip>
-  **Tip**
-
-  For modern devices, we recommend using the HLS manifest URL (`hls_cmaf_url`). It's more efficient and is highly compatible with streaming devices.
-</Tip>
+We produce low-latency and non-low-latency streams in parallel, so you don't have to create a stream specifically for cases when the connection is unstable or a device doesn't support low-latency playback. Both formats share the same segment sizes, manifest lengths for DVR functionality, and other related capabilities.
 
 You can get the non-low-latency in the same Links for export section in the Customer Portal:
 
 1. On the [Video Streaming](https://portal.gcore.com/streaming/streaming/list) page, find the needed video.
 
-2. In the **Links for export** section, copy the link in the **HLS non-low-latency manifest URL** field. This link contains non low-latency HLSv3 and MPEG TS files as chunks.
+2. In the **Links for export** section, copy the link in the **HLS non-low-latency manifest URL** field. This link contains non-low-latency HLSv3 and MPEG TS files as chunks.
 
 <Frame>
   ![HLS non-low-latency link example](/images/docs/streaming-platform/live-streams-and-videos-protocols-and-codecs/how-low-latency-streaming-works/export-non-low-latency-link.png)
@@ -124,9 +143,9 @@ You can get the non-low-latency in the same Links for export section in the Cust
 For details on how to get the streams via API, check our [API documentation](/api-reference/streaming/streams/get-all-live-streams).
 
 
-## Tips for low latency ingest
+## Tips for low-latency ingest
 
-Low‑latency ingest is all about minimising buffering across the capture–encode–transmit pipeline.  
+Low-latency ingest is all about minimising buffering across the capture–encode–transmit pipeline.
 Each step introduces delay: encoders buffer frames to make better compression decisions, the network adds jitter, and downstream transcoders and segmenters wait for clean GOP boundaries.  
 
 To achieve sub‑second latency you must tune the encoder and pipeline for **real‑time** operation:
@@ -136,7 +155,7 @@ To achieve sub‑second latency you must tune the encoder and pipeline for **rea
  - **Minimise muxing and packet buffers.**  Add flags such as `-flags low_delay`, `-fflags +nobuffer+flush_packets`, `-max_delay 0`, and `-muxdelay 0` so that packets are flushed immediately rather than accumulated. These options are especially important for protocols like RTMP or SRT that otherwise buffer data internally.
  - **Use SRT latency and mode parameters.**  When streaming over **SRT** you must specify an application‑layer buffer in the URI.  It should be large enough to cover the round‑trip time plus any network jitter.
 
-Below is a recommended FFmpeg command that follows these guidelines to push a low‑latency test stream over SRT.  
+Below is a recommended FFmpeg command that follows these guidelines to push a low-latency test stream over SRT.
 It generates a SMPTE colour‑bar video and sine‑wave audio, encodes them with x264 using the `zerolatency` tune, enforces a 1‑second GOP, and sends the output as an MPEG‑TS stream via SRT.  The `latency` parameter is given in microseconds (1.5 s), and `mode=caller` instructs the encoder to initiate the SRT connection:
 
 ```sh
@@ -152,19 +171,248 @@ ffmpeg -re \
 ```
 
 
-## iOS, Android playback
+## Low-latency playback problems and solutions
 
-iOS and Android Playback Support for LL-HLS and LL-DASH.
+Low-latency playback is stable only when the encoder, packager, CDN, and player all keep the same timing model. The stream can be delivered correctly by the CDN and still become unstable if the player tries to stay too close to the live edge or catches up too aggressively after a delay.
+
+The most common symptoms are:
+
+- Playback starts at low latency, then gradually drifts to a higher delay.
+- A single slow segment causes a stall, and the extra latency remains after playback resumes.
+- The player oscillates between stall and catch-up instead of returning smoothly to the target latency.
+- The same stream is stable in the Gcore built-in player but unstable in a custom hls.js, dash.js, native, or TV player.
+
+### Why a slow segment can permanently increase latency
+
+When a live player stalls, the live edge continues to move forward, but the viewer's playback position does not:
+
+```text
+Before stall:
+
+Live edge      |-------------------------------> advances normally
+Player         |-------------------------->      plays normally
+Latency        <---------- target --------->
+
+During stall:
+
+Live edge      |------------------------------------> keeps advancing
+Player         |--------------------------X          stopped
+Latency        <-------------- larger -------------->
+```
+
+For example, if a segment is delayed by 1 second and the player buffer reaches zero, playback stalls for about 1 second. That 1 second is added to the live latency. The delay does not disappear automatically, because after playback resumes the live edge still advances at 1.0x speed.
+
+### Root cause example: delayed segment at a loop boundary
+
+If you test with FFmpeg by looping a finite file and using `-codec copy`, the loop boundary can create a short source-side pause. At the boundary, FFmpeg must detect the end of the input, reopen or rewind the file, and hand frames to the packager again. If this happens while the CMAF packager is building a segment, the packager cannot emit the next chunk until enough frames arrive.
+
+This creates a concentrated delay in the last chunks of one segment instead of a uniform slowdown across the whole stream:
+
+```text
+Encoder/FFmpeg          Packager                 CDN edge                 Player
+     |                     |                       |                       |
+     | frames              |                       |                       |
+     |-------------------->| segment N chunks      |                       |
+     |                     |---------------------->| chunked delivery       |
+     |                     |                       |---------------------->|
+     | loop boundary pause |                       |                       |
+     |.................    | waits for frames      | waits for chunks      | buffer drains
+     | frames resume       |                       |                       |
+     |-------------------->| final chunks          |                       |
+     |                     |---------------------->| delayed chunks         |
+     |                     |                       |---------------------->| stall risk
+```
+
+The CDN can deliver the chunks as soon as they exist, but it cannot deliver chunks that the origin has not produced yet. The fix is to avoid artificial ingest pauses and configure the player so one slow segment does not trigger a stall cascade.
+
+For test loops, prefer re-encoding with stable real-time settings instead of `-codec copy`, or use a long continuous source file. For production streams, keep a fixed GOP, disable B-frames, and monitor ingest jitter and encoder CPU load.
+
+### Why aggressive catch-up can make stalls repeat
+
+Many low-latency players increase playback speed after they fall behind the live edge. This is useful, but an aggressive catch-up rate can drain the buffer faster than the stream can refill it.
+
+Suppose a 6-second segment is normally delivered in 5.6 seconds, and one slow segment is delivered in 6.85 seconds:
+
+| Player speed | Normal segment, 5.6 s wall time | Slow segment, 6.85 s wall time | Result |
+| :--- | :--- | :--- | :--- |
+| **1.0x** | Receives 6 s, consumes 5.6 s | Receives 6 s, consumes 6.85 s | Usually recovers if there is enough buffer |
+| **1.1x** | Receives 6 s, consumes 6.16 s | Receives 6 s, consumes 7.53 s | Buffer dips, but can recover on faster segments |
+| **1.5x** | Receives 6 s, consumes 8.4 s | Receives 6 s, consumes 10.27 s | Buffer drains quickly and another stall is likely |
+
+At 1.5x speed, a 6-second segment must arrive in less than `6 / 1.5 = 4` seconds to avoid draining the buffer. If the stream normally arrives in about 5.6 seconds, 1.5x catch-up is mathematically incompatible with stable playback. Use a lower catch-up cap such as 1.05x or 1.1x.
+
+## Latency and stability selection dilemma
+
+Lower latency means the player keeps less media in buffer. This reduces delay, but leaves less time to absorb encoder jitter, network jitter, CDN cache misses, device CPU spikes, ABR switches, and slow segment generation. Higher latency means more buffered media and more stable playback, but the viewer is farther behind the live event.
+
+```text
+Lower delay                                      Higher stability
+
+2-3 s               5 s                6-8 s              9+ s
+|--------------------|------------------|------------------|
+Ultra-low latency    Balanced LL        Stable LL          Legacy/reliable
+Small buffer         Moderate buffer    Larger buffer      Largest buffer
+More stall risk      Recommended start  Fewer stalls       Highest delay
+```
+
+Use these starting values for non-Gcore built-in players:
+
+| Use case | Target live delay | Catch-up max speed | Buffer target | Recommended protocol |
+| :--- | :--- | :--- | :--- | :--- |
+| **Interactive events** such as auctions, betting, watch parties | 2-3 s | 1.05x-1.1x | 2-4 s | LL-DASH or LL-HLS CMAF |
+| **Balanced live streaming** for most events | 4-5 s | 1.05x-1.1x | 4-6 s | LL-DASH or LL-HLS CMAF |
+| **Unstable networks or long-tail devices** | 6-7 s | 1.02x-1.05x | 8-12 s | LL-DASH, LL-HLS, or HLS CMAF |
+| **Maximum compatibility** | 9+ s | Disable or 1.02x | 12+ s | HLS MPEG-TS |
+
+<Tip>
+  **Tip**
+
+  Start with a 4-second live delay and a maximum catch-up speed of 1.1x. Reduce the delay only after you confirm that real viewers do not experience rebuffering. Increase the delay to 6-8 seconds for unstable networks, overloaded encoders, older Smart TVs, or custom players that cannot hold low-latency mode reliably.
+</Tip>
+
+## Best practices for popular players
+
+The Gcore built-in player is already tuned for low-latency playback. If you use your own player, configure these behaviors explicitly:
+
+1. Use CMAF low-latency URLs: `.../cmaf/.../master.m3u8` for LL-HLS or `.../cmaf/.../index.mpd` for LL-DASH.
+2. Keep a real buffer headroom. Do not set the live delay to the manifest minimum unless your ingest and viewers' networks are consistently stable.
+3. Cap catch-up speed. Avoid 1.5x catch-up for streams that normally deliver 6-second media in more than 4 seconds. Use 1.05x-1.1x.
+4. Prefer smooth proportional catch-up. For dash.js 5.1.1, use the LoL+ catch-up mode value `liveCatchupModeLoLP` with a low playback-rate cap.
+5. Do not speed up playback when the forward buffer is thin. For dash.js, set `playbackBufferMin` so catch-up starts only after the player has enough buffer.
+6. Recover to live after repeated stalls. If latency grows too far from the target, seek to `liveEdge - targetDelay` instead of relying only on `playbackRate > 1`.
+7. Configure retries for manifest, segment, and low-latency chunk requests. Temporary 404/412/timeout responses can happen near the live edge when a player asks for data before it is ready.
+8. Monitor `currentTime`, live edge, buffer length, playback rate, dropped frames, and rebuffer events. Tune latency from real playback data, not from manifest values only.
+
+The player tuning flow should look like this:
+
+```text
+Choose protocol
+  |
+  |-- iOS/tvOS Safari or AVPlayer: LL-HLS
+  |-- Chrome/Edge/Firefox/Android app/TV app: LL-DASH or LL-HLS
+  |
+Set target live delay
+  |
+  |-- 2-3 s for minimum delay
+  |-- 4 s for balanced playback
+  |-- 6-8 s for stability
+  |
+Cap catch-up speed
+  |
+  |-- 1.05x-1.1x recommended
+  |-- avoid 1.5x unless segments arrive much faster than real time
+  |
+Test real stalls and adjust
+```
+
+## Player setup and device support
+
+Use this section when you embed Gcore low-latency streams into a custom web, mobile, desktop, or TV player.
+
+### hls.js
+
+Use [hls.js](https://github.com/video-dev/hls.js) for LL-HLS playback in browsers that do not use native HLS playback. The most important settings are `lowLatencyMode`, target live delay, maximum live latency, and catch-up speed.
+
+Recommended low-latency setup:
+
+```js
+const hls = new Hls({
+  lowLatencyMode: true,
+
+  // Target latency in seconds. Prefer 3-4s when encoder timing is not
+  // perfectly stable.
+  liveSyncDuration: 4,
+
+  // Keep low-latency buffers small, but not zero.
+  maxBufferLength: 2,
+  maxMaxBufferLength: 4,
+
+  // Prevent catch-up from draining buffer aggressively.
+  maxLiveSyncPlaybackRate: 1.1,
+})
+
+hls.attachMedia(video)
+hls.loadSource('https://demo.gvideo.io/cmaf/2675_19146/master.m3u8')
+```
+
+Do not allow aggressive 1.5x catch-up for low-latency HLS. It can drain the buffer faster than the stream refills it when the encoder or CDN has periodic segment delay. Start with `maxLiveSyncPlaybackRate: 1.1`; reduce it to `1.05` if viewers still rebuffer during catch-up.
+
+### dash.js
+
+Use [dash.js](https://github.com/Dash-IF/dash.js) for LL-DASH playback in browsers and apps with MSE or MMS support. Configure the target live delay, LoL+ catch-up mode, buffer threshold, and drift handling before calling `initialize()`.
+
+Recommended low-latency setup for dash.js 5.1.1:
+
+```js
+const dash = dashjs.MediaPlayer().create()
+
+dash.updateSettings({
+  streaming: {
+    delay: {
+      // Target latency in seconds. Use 3-4s for unstable looped/live inputs;
+      // 1-2s leaves almost no room for encoder or CDN jitter.
+      liveDelay: 4,
+      useSuggestedPresentationDelay: false,
+    },
+    liveCatchup: {
+      // dash.js 5.1.1 expects this exact value.
+      mode: 'liveCatchupModeLoLP',
+
+      // Do not accelerate when forward buffer is thin.
+      playbackBufferMin: 2,
+
+      // Limit catch-up speed. Avoid 1.5x for streams with periodic segment
+      // delay.
+      playbackRate: {
+        min: -0.2,
+        max: 0.1, // max playback rate = 1.10x
+      },
+
+      // Optional: when latency is too far from target, dash.js can seek
+      // instead of trying to recover only by faster playback.
+      maxDrift: 3,
+    },
+  },
+})
+
+dash.initialize(video, 'https://demo.gvideo.io/cmaf/2675_19146/index.mpd', true)
+```
+
+The `streaming.delay.liveDelay` value overrides the manifest target when `useSuggestedPresentationDelay` is `false`. Use `liveDelay: 4` as a stable default; use `3` only when ingest timing and last-mile networks are stable.
+
+If playback is already far behind live and stalls repeatedly, do not rely only on faster playback. Seek to the live target:
+
+```js
+function resyncDashToLive(dash) {
+  const currentTime = dash.time()
+  const liveLatency = dash.getCurrentLiveLatency()
+  const targetDelay = dash.getTargetLiveDelay()
+
+  if (!Number.isFinite(liveLatency) || !Number.isFinite(targetDelay)) return
+
+  const liveEdge = currentTime + liveLatency
+  const seekTo = liveEdge - targetDelay
+
+  if (seekTo > currentTime) {
+    dash.setPlaybackRate(1)
+    dash.seek(seekTo)
+  }
+}
+```
+
+Call this recovery function when the measured live latency is several seconds above the target and the player keeps stalling. This moves playback to `liveEdge - targetDelay` instead of repeatedly buffering while staying far behind live.
+
+Avoid the default 1.5x catch-up ceiling for streams that normally deliver segments close to real time. If a 6-second segment arrives in 5.6 seconds, 1.5x catch-up consumes 8.4 seconds of media during that time and can cause repeated stalls. A 1.1x cap consumes 6.16 seconds, which is much easier for the buffer to survive.
 
 ### iOS
 Low-Latency HLS is natively supported starting from iOS 14 and tvOS 14, including Safari and AVPlayer. Earlier versions fall back to standard HLS and cannot achieve true low latency.
 
-iOS Safari with LL-DASH? One more thing to note about LL-DASH is that it's starting to be supported on MacOS/iPadOS and iOS too. MSE (Media Source Extensions) is supported by MacOS old versions, and iPadOS 13+. Finally thanks to Apple for starting to support MMS (Managed Media Source) in iOS version 17.1 (https://webkit.org/blog/14735/webkit-features-in-safari-17-1/). Guys at dash.js have supported this feature as well.
+iOS Safari with LL-DASH? One more thing to note about LL-DASH is that it's starting to be supported on MacOS/iPadOS and iOS too. MSE (Media Source Extensions) is supported by MacOS old versions, and iPadOS 13+. Apple added MMS (Managed Media Source) support in iOS 17.1 (https://webkit.org/blog/14735/webkit-features-in-safari-17-1/), and dash.js supports this feature as well.
 Thus, for iOS you can use the following:
- - iOS 17.1+ with MMS support – LL-DASH with 2,0 sec low latency.
- - iOS 14.0+ with LL-HLS support – LL-HLS with 3,0 sec low latency.
- - iOS 10.0+ with HLS CMAF support – LL-HLS but with ±9 sec reduced latency.
- - other iOS devices – traditional HLS MPEGTS with ±9 sec reduced latency.
+ - iOS 17.1+ with MMS support: LL-DASH with approximately 2-second low latency.
+ - iOS 14.0+ with LL-HLS support: LL-HLS with approximately 3-second low latency.
+ - iOS 10.0+ with HLS CMAF support: HLS CMAF with approximately 9-second reduced latency.
+ - Other iOS devices: traditional HLS MPEG-TS with approximately 9-second reduced latency.
 
 ### Android
 LL-DASH is supported through ExoPlayer 2.12+ with low-latency mode enabled; LL-HLS playback depends on HLS implementation of specific player you use.

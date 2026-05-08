@@ -1,184 +1,127 @@
 ---
-title: "Accepted input parameters of your live streams and videos"
+title: "Accepted input parameters for live streams and videos"
 sidebarTitle: "Input parameters"
-description: "List of input parameters for transcoding original videos"
+description: "Input requirements for live stream ingest and VOD transcoding"
 ---
 
-## Live and VOD
+## Input requirements
 
-Gcore Video Streaming supports:
+Gcore Streaming accepts two types of video input:
 
-- Receiving live streams from [your server (PULL) or a dedicated publishing point (PUSH)](/streaming/live-streaming/create-a-live-stream) using numerous protocols including RTMP(S) and SRT. All supported live protocols are listed in the table below. The stream is transcoded and sent with [adaptive streaming](/streaming/live-streams-and-videos-protocols-and-codecs/output-parameters-and-codecs) via CDN in HLS/MPEG-DASH (CMAF low latency) formats.
-- Videos uploaded in almost any containers. Video is transcoded to ABR, and then is sent with [adaptive streaming](/streaming/live-streams-and-videos-protocols-and-codecs/output-parameters-and-codecs) via CDN.
+- **Live streams**: an ongoing stream sent to Gcore by PUSH or pulled by Gcore from your source. Live input must stay stable because transcoding happens in real time.
+- **VOD files**: uploaded video files that Gcore processes after upload. VOD input can use many containers and codecs, but the source parameters should stay consistent through the file to avoid transcoding errors.
 
-## Recommended Video Parameters
+After ingest or upload, Gcore transcodes the source into [adaptive bitrate streaming outputs](/streaming/live-streams-and-videos-protocols-and-codecs/output-parameters-and-codecs) and delivers them through CDN.
 
-We recommend the following parameters for streams:
+## Live stream input
 
-<table>
-  <thead>
-    <tr>
-      <th>Parameters</th>
-      <th colspan="3">Value</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td rowspan="6">Video bitrate and resolution<sup>*</sup></td>
-      <td>Quality</td>
-      <td>Resolution</td>
-      <td>Video bitrate range</td>
-    </tr>
-    <tr>
-      <td>4k</td>
-      <td>3840x2160</td>
-      <td>20,000–51,000 Kbps (60 fps), 13,000–34,000 Kbps (30 fps)</td>
-    </tr>
-    <tr>
-      <td>1440</td>
-      <td>2560x1440</td>
-      <td>9,000–18,000 Kbps (60 fps), 6,000–13,000 Kbps (30 fps)</td>
-    </tr>
-    <tr>
-      <td>1080</td>
-      <td>1920x1080</td>
-      <td>4,500–9,000 Kbps (60 fps), 3,000–6,000 Kbps (30 fps)</td>
-    </tr>
-    <tr>
-      <td>720</td>
-      <td>1280x720</td>
-      <td>2,250–6,000 Kbps (60 fps), 1,500–4,000 Kbps (30 fps)</td>
-    </tr>
-    <tr>
-      <td>480</td>
-      <td>854x480</td>
-      <td>500–2,000 Kbps</td>
-    </tr>
-    <tr>
-      <td>Frame rate</td>
-      <td colspan="3">Up to 60 fps</td>
-    </tr>
-    <tr>
-      <td>Video codecs<sup>*</sup></td>
-      <td colspan="3">See below</td>
-    </tr>
-    <tr>
-      <td>VOD max original file size</td>
-      <td colspan="3">Up to 30GB</td>
-    </tr>
-    <tr>
-      <td>VOD containers</td>
-      <td colspan="3">
-        3g2, 3gp, asf, avi, dif, dv, flv, f4v, m4v, mov, mp4, mpeg, mpg,<br />
-        mts, m2t, m2ts, qt, wmv, vob, mkv, ogv, webm, vob, ogg, mxf,<br />
-        quicktime, x-ms-wmv, mpeg-tts, vnd.dlna.mpeg-tts
-      </td>
-    </tr>
-    <tr>
-      <td>LIVE ingest protocols</td>
-      <td colspan="3">RTMP, RTMPS, SRT, RTSP, HLS PULL, WebRTC</td>
-    </tr>
-    <tr>
-      <td>LIVE keyframe frequency</td>
-      <td colspan="3">1–2s</td>
-    </tr>
-    <tr>
-      <td>Bitrate encoding</td>
-      <td colspan="3">CBR</td>
-    </tr>
-    <tr>
-      <td>Pixel aspect ratio</td>
-      <td colspan="3">Square</td>
-    </tr>
-    <tr>
-      <td>Chroma subsampling</td>
-      <td colspan="3">4:2:0</td>
-    </tr>
-    <tr>
-      <td>Parameter stability</td>
-      <td colspan="3">Video parameters must remain consistent for the whole stream or file. Mid-stream or mid-file changes of pixel format, color range, codec profile, chroma format, or similar properties may cause transcoding to fail.</td>
-    </tr>
-    <tr>
-      <td rowspan="2">Audio channels</td>
-      <td>LIVE</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <td>VOD</td>
-      <td>Many</td>
-    </tr>
-    <tr>
-      <td>Audio codecs<sup>*</sup></td>
-      <td colspan="3">AAC</td>
-    </tr>
-    <tr>
-      <td>Audio bitrate</td>
-      <td colspan="3">128 Kbps stereo</td>
-    </tr>
-    <tr>
-      <td>Audio sample rate</td>
-      <td colspan="3">44.1 / 48 kHz</td>
-    </tr>
-    <tr>
-      <td rowspan="2">Subtitles</td>
-      <td>LIVE</td>
-      <td>No</td>
-    </tr>
-    <tr>
-      <td>VOD</td>
-      <td>Many. SRT, WebVTT</td>
-    </tr>
-  </tbody>
-</table>
+For Live, you must produce and send the master stream to Gcore with the correct parameters. Configure OBS, FFmpeg, a hardware encoder, or your own encoding pipeline to push or expose the stream with the parameters below. Gcore receives this master stream and transcodes it for HLS and MPEG-DASH delivery.
 
-If the recommended parameters do not suit your stream (codecs, custom FPS, ProRes, High 4:4:4, etc.), write to us in the chat, send an email to [support@gcore.com](mailto:support@gcore.com), or contact your manager to find the solution.
+Recommended parameters for the master Live stream:
 
-For VOD and live-derived recordings, it is not enough that the source starts with supported parameters. These parameters must stay stable for the full duration. For example, a source that changes from `yuv420p` to `yuvj420p` near the end may be accepted initially but later fail during transcoding.
+| Parameter | Recommendation |
+|-----------|----------------|
+| Ingest protocols | RTMP, RTMPS, SRT, RTSP, HLS PULL, WebRTC |
+| Video codec | H.264 for the safest ingest path. Other codecs require validation for the selected protocol and workflow. |
+| Audio codec | AAC |
+| Frame rate | Up to 60 fps |
+| Keyframe interval | 1-2 seconds |
+| Bitrate mode | CBR |
+| Pixel aspect ratio | Square |
+| Chroma subsampling | 4:2:0 |
+| Audio channels | 1 audio track |
+| Audio-only input | Not supported for Live streams |
+| Audio bitrate | 128 Kbps stereo |
+| Audio sample rate | 44.1 or 48 kHz |
+| Subtitles | Not supported for Live input |
 
-<sup>*</sup> Please note that RTMP has protocol limitations. See information about this protocol for Live Streams below.
+Recommended bitrate ranges for Live:
 
-## **Supported Input Video Codecs**
+| Quality | Resolution | Video bitrate range |
+|---------|------------|---------------------|
+| 4K | 3840x2160 | 20,000-51,000 Kbps at 60 fps, 13,000-34,000 Kbps at 30 fps |
+| 1440p | 2560x1440 | 9,000-18,000 Kbps at 60 fps, 6,000-13,000 Kbps at 30 fps |
+| 1080p | 1920x1080 | 4,500-9,000 Kbps at 60 fps, 3,000-6,000 Kbps at 30 fps |
+| 720p | 1280x720 | 2,250-6,000 Kbps at 60 fps, 1,500-4,000 Kbps at 30 fps |
+| 480p | 854x480 | 500-2,000 Kbps |
 
-To ensure successful transcoding, your source video must use one of the supported input codecs listed below. If a video is uploaded or streamed with an unsupported codec, the transcoding process will fail, and an error will be returned.
+<Note>
+Live stream parameters must remain stable during the broadcast. Mid-stream changes to codec, profile, resolution, frame rate, pixel format, color range, chroma format, or audio layout can interrupt ingest or transcoding.
+</Note>
 
-These input codecs are validated during the initial processing stage before any adaptive bitrate (ABR) renditions are created. 
+<Tip>
+For Live ingest setup and backup workflows, see [Ingest and backup](/streaming/live-streaming/primary-backup).
+</Tip>
 
-| **Codec** | **Sampling Depth** | **BPP**   | **Format**              | **Max Resolution** |
-| :-------- | :----------------- | :-------- | :---------------------- | :----------------- |
-| MPEG2     | 4:2:0              | 8         | Progressive, Interlaced | FHD                |
-| AVC       | 4:2:0              | 8         | Progressive, Interlaced | 4K                 |
-| HEVC      | 4:2:0              | 8, 10, 12 | Progressive             | 8K                 |
-| HEVC      | 4:2:2              | 8, 10, 12 | Progressive             | 8K                 |
-| HEVC      | 4:4:4              | 8, 10, 12 | Progressive             | 5K                 |
-| VP9       | 4:2:0              | 8, 10, 12 | Progressive             | 8K                 |
-| VP9       | 4:4:4              | 8, 10, 12 | Progressive             | 5K                 |
-| AV1       | 4:2:0              | 8, 10     | Progressive             | 8K                 |
+## VOD source files
 
-<sup>*</sup> Please note that RTMP has protocol limitations. See information about this protocol in [RTMP section](/streaming/live-streaming/protocols/rtmp).
+For VOD, the customer manages the source file before upload: container, codec, audio tracks, subtitles, and source consistency. Gcore processes the uploaded source and creates ABR renditions for playback.
 
-## LIVE stream ingest protocols
+Recommended VOD input:
 
-We support next procotols:
+| Parameter | Recommendation |
+|-----------|----------------|
+| Max original file size | Up to 30 GB |
+| Video codec | Use a supported input codec from the table below |
+| Audio codec | AAC is recommended |
+| Frame rate | Up to 60 fps |
+| Pixel aspect ratio | Square |
+| Chroma subsampling | 4:2:0 is recommended for broad compatibility |
+| Audio tracks | Multiple audio tracks are supported |
+| Audio-only files | Supported |
+| Audio bitrate | 128 Kbps stereo is recommended |
+| Audio sample rate | 44.1 or 48 kHz |
+| Subtitles | SRT and WebVTT are supported |
 
-- RTMP/S (Real-Time Messaging Protocol) is a protocol for transmitting audio, video, and data over the Internet between a player and a server, supporting low-latency communication for real-time streaming. RTMPS is a variation of RTMP but incorporates SSL usage.
-- SRT (Secure Reliable Transport) is an open-source video transport protocol for delivering high-quality, secure, low-latency video across unreliable networks.
-- WebRTC (Web Real-Time Communication) is a protocol designed for low-latency audio and video delivery over browsers and apps. It is supported only as an ingest format for bridge WebRTC to HLS/DASH. PUSH only.
-- HLS PULL is a protocol of pulling (downloading) already prepared HLS stream from your encoder publicly open in the Internet, passing or transmuxing into another necessary protocol of delivery over CDN. PULL only.
-- RTSP (Real Time Streaming Protocol) is a communication protocol used to control servers that stream media content. RTSP uses the Real-time Transport Protocol (RTP) with Real-time Control Protocol (RTCP) to deliver media streams.
+Supported VOD containers:
+
+```text
+3g2, 3gp, asf, avi, dif, dv, flv, f4v, m4v, mov, mp4, mpeg, mpg,
+mts, m2t, m2ts, qt, wmv, vob, mkv, ogv, webm, ogg, mxf,
+quicktime, x-ms-wmv, mpeg-tts, vnd.dlna.mpeg-tts
+```
+
+For VOD and live-derived recordings, it is not enough that the source starts with supported parameters. These parameters must stay stable for the full duration. For example, a source that changes from `yuv420p` to `yuvj420p` near the end can be accepted initially but fail later during transcoding.
+
+<Tip>
+For VOD upload options, see [Upload video via API](/streaming/video-hosting/upload-video-via-api).
+</Tip>
+
+## Supported input video codecs
+
+To ensure successful transcoding, your source video must use one of the supported input codecs listed below. If a video is uploaded or streamed with an unsupported codec, transcoding can fail.
+
+These input codecs are validated during the initial processing stage before any adaptive bitrate renditions are created.
+
+| Codec | Sampling depth | BPP | Format | Max resolution |
+| :---- | :------------- | :-- | :----- | :------------- |
+| MPEG2 | 4:2:0 | 8 | Progressive, interlaced | FHD |
+| AVC | 4:2:0 | 8 | Progressive, interlaced | 4K |
+| HEVC | 4:2:0 | 8, 10, 12 | Progressive | 8K |
+| HEVC | 4:2:2 | 8, 10, 12 | Progressive | 8K |
+| HEVC | 4:4:4 | 8, 10, 12 | Progressive | 5K |
+| VP9 | 4:2:0 | 8, 10, 12 | Progressive | 8K |
+| VP9 | 4:4:4 | 8, 10, 12 | Progressive | 5K |
+| AV1 | 4:2:0 | 8, 10 | Progressive | 8K |
+
+<Note>
+RTMP has protocol limitations. For details, see [RTMP](/streaming/live-streaming/protocols/rtmp).
+</Note>
+
+If the recommended parameters do not fit your workflow, contact [support@gcore.com](mailto:support@gcore.com) or your manager. Gcore can review custom codecs, FPS values, ProRes, High 4:4:4, and other advanced requirements.
+
+## Live ingest protocols
 
 You can use PUSH or PULL methods where applicable.
 
-*Note: "HLS over HTTP PUT" protocol is not supported.*
+| Protocol | Method | Usage |
+|----------|--------|-------|
+| RTMP / RTMPS | PUSH/PULL | Common live contribution protocol. RTMPS adds SSL encryption. |
+| SRT | PUSH/PULL | Secure, reliable, low-latency contribution over unreliable networks. |
+| WebRTC WHIP | PUSH | Browser and app ingest for very low-latency workflows. Used as ingest only, then bridged to HLS or DASH delivery. |
+| HLS PULL | PULL | Gcore pulls an already prepared HLS stream from your publicly reachable encoder or origin. |
+| RTSP | PULL | Used to pull media streams from RTSP-compatible sources. |
 
-
-## Live Ingest
-
-Read more on the page [Ingest & Backup](/streaming/live-streaming/primary-backup)
-
-
-## VOD Upload
-
-Read more on the page [Upload Video](/streaming/video-hosting/upload-video-via-api)
-
-
-
+<Note>
+HLS over HTTP PUT is not supported.
+</Note>

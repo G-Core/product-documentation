@@ -6,14 +6,26 @@ description: "List of output parameters after transcoding"
 
 ## Protocols
 
-Our platform supports simultaneous output in all three popular streaming formats: **HLS MPEG-TS**, **HLS CMAF**, and **MPEG-DASH**. This means you can easily choose the link format best suited to your players or devices — no need to configure separate pipelines.
+Gcore Video Streaming provides Live and VOD outputs in the main HTTP streaming formats: 
+
+- **HLS MPEG-TS**, 
+- **HLS CMAF**, 
+- **MPEG-DASH**,
+- and MP4. 
+
+You can use the format that best matches your players, target devices, latency goals, and codec set.
+
+For VOD, these protocols are used to deliver adaptive bitrate playback from uploaded and transcoded videos. For Live, they are used to deliver adaptive bitrate playback of an ongoing broadcast with regular or low-latency.
 
 ### HLS MPEG-TS
 
-This is the traditional format for HLS, using `.ts` segments. It's ideal for legacy devices and software.
+HLS MPEG-TS is the traditional HLS format that uses `.ts` segments. It is the safest compatibility option for Live and VOD playback, especially on older devices, set-top boxes, Smart TVs, and legacy players.
 
-- **Latency**: Regular, ~10 sec
-- **Use case**: Compatibility with older players
+- **Segment format**: MPEG-TS (`.ts`)
+- **Best for**: Maximum compatibility and H.264 fallback playback
+- **Live latency**: Regular latency, usually higher than low-latency CMAF workflows
+- **VOD usage**: Reliable HLS playback for broadly compatible H.264 renditions
+- **Codec fit**: H.264 with AAC audio
 - **Example manifest**:
 
   ```
@@ -25,12 +37,15 @@ This is the traditional format for HLS, using `.ts` segments. It's ideal for leg
   segment0.ts
   ```
 
-### HLS CMAF (Low Latency)
+### HLS CMAF
 
-This is the modern low-latency version of HLS using `.m4s` fragmented MP4 (fMP4) segments. Chunks are small (0.5–1s), making it suitable for real-time streaming.
+HLS CMAF uses fragmented MP4 (`.m4s`) chunks. It is recommended for modern HLS playback and is required when HLS needs to carry newer codecs such as HEVC or AV1. For Live, CMAF can also be used for low-latency playback.
 
-- **Latency**: Low, ~3 sec
-- **Recommended for**: All modern HLS-compatible devices
+- **Segment format**: Fragmented MP4 (`.m4s`)
+- **Best for**: Modern HLS playback, Apple devices, HEVC and AV1 delivery, and low-latency Live
+- **Live latency**: Low latency when configured with partial segments
+- **VOD usage**: Modern HLS playback for H.264, HEVC, and AV1 renditions
+- **Codec fit**: H.264, HEVC, AV1, and AAC audio
 - **Example manifest**:
 
   ```
@@ -43,12 +58,15 @@ This is the modern low-latency version of HLS using `.m4s` fragmented MP4 (fMP4)
   #EXT-X-PART:DURATION=0.5,URI="seg1_part_0.m4s",INDEPENDENT=YES
   ```
 
-### MPEG-DASH (Low Latency)
+### MPEG-DASH
 
-Our MPEG-DASH output uses **SegmentTimeline** / **Time-Based Template** with `.m4s` fMP4 chunks. Chunks are ±2–4 seconds by default. You can request ±2 sec mode for lower latency.
+MPEG-DASH is widely used for Android, web players, Smart TVs, and advanced player workflows. It can be used for both VOD and Live, including low-latency Live. DASH commonly uses fragmented MP4 (`.m4s`) chunks, and can also be used with WebM chunks for VP9 workflows.
 
-- **Latency**: Low, ~3 sec
-- **Delivery**: Using chunk transfer for real-time playback
+- **Segment format**: Fragmented MP4 (`.m4s`) or WebM chunks, depending on codec and workflow
+- **Best for**: Android, web players, Smart TVs, multi-codec VOD, and low-latency Live
+- **Live latency**: Low latency when configured with short segments and chunked delivery
+- **VOD usage**: Adaptive bitrate playback with H.264, HEVC, AV1, or VP9
+- **Codec fit**: H.264, HEVC, AV1, VP9, and AAC audio
 - **Example MPD structure**:
 
   ```xml
@@ -77,16 +95,22 @@ Transcoding with adaptive bitrate streaming (ABR) works like this:
 
 Discover in an article how we [lowered the bitrate](https://gcore.com/blog/how-we-lowered-the-bitrate-for-live-and-vod-streaming-by-32-5-without-sacrificing-quality) for Live and VOD streaming by 32.5% without sacrificing quality.
 
+For large VOD libraries, codec choice can also reduce delivery costs. Enterprise customers can use [HEVC, AV1, and VP9 multi-codec VOD](/streaming/video-hosting/multi-codec) with premium transcoding to create more efficient renditions from H.264 libraries and reduce CDN traffic at comparable visual quality.
+
 ## Audio and video codecs
 
-A transcoded video stream has the following codecs by default:
+By default, Gcore transcodes video to H.264 with AAC audio. This output gives the broadest compatibility across browsers, mobile devices, Smart TVs, set-top boxes, and players.
 
-- **Audio** : AAC, 44.1KHz, stereo
-- **Video** : H264 (H265, AV1), 30FPS, ABR
+Default output:
 
-## Output parameters after transcoding
+- **Video**: H.264, 30 FPS, adaptive bitrate streaming (ABR)
+- **Audio**: AAC, 44.1 kHz, stereo
 
-The table below shows the available output quality levels after transcoding. Video and audio parameters are optimized for adaptive bitrate streaming, providing smooth playback across devices and network conditions.
+Premium encoding can add more efficient codecs such as **HEVC**, **AV1**, and **VP9**. These codecs are useful for large VOD libraries, premium-quality catalogs, and workflows where lower delivered bitrate can reduce CDN traffic at comparable visual quality. For details, see [HEVC, AV1, and VP9 multi-codec VOD](/streaming/video-hosting/multi-codec).
+
+## ABR output parameters after transcoding
+
+The table below shows the default H.264 output resolutions after transcoding. Video and audio parameters are optimized for adaptive bitrate streaming, providing smooth playback across devices and network conditions.
 
 | **Video Quality** | **Resolution** | **FPS** | **Video bitrate, Mbps** | **Audio bitrate, Mbps** |
 | ----------------- | -------------- | ------- | ----------------------- | ----------------------- |
@@ -111,11 +135,20 @@ We use variable bitrate (VBR) for encoding video. The table above shows average 
 
 ### Custom quality sets
 
-We provide an optimized set of quality presets designed for smooth streaming across all devices. These settings balance quality and bandwidth efficiency, making them ideal for most users. However, if you have specific requirements—such as higher audio quality, cost reduction by removing unnecessary renditions, AV1 encoding, or custom settings for individual videos—you have full control over your transcoding presets.
+We provide an optimized set of quality presets designed for smooth streaming across many devices. These settings balance quality and bandwidth efficiency, making them suitable for most users. In addition to premium encoding, Gcore can review and implement custom preset requirements, such as:
+
+- Higher or lower bitrate targets
+- Different ABR ladders for specific devices or regions
+- HEVC, AV1, VP9, or mixed-codec outputs
+- Cost reduction by removing unnecessary renditions
+- Higher audio quality or different audio settings
+- Custom settings for individual videos or selected libraries
 
 Each video can have its own unique quality settings, so you're not limited to a single configuration. Default and custom presets work together, giving you the flexibility to fine-tune streaming quality as needed. Check out the [API documentation](/api-reference/streaming/qualitysets/get-all-quality-sets) to explore available custom quality sets. If you need assistance, our [support team](mailto:support@gcore.com) is always ready to help you customize the best option for your needs.
 
-## How to apply 2K/4K\+ and custom advanced settings
+Gcore uses modern NVIDIA and Intel GPU encoding and decoding hardware in multiple regions worldwide. This helps process large transcoding workloads quickly and makes premium multi-codec preparation practical for large VOD libraries.
+
+## How to apply 2K/4K\+ and premium transcoding
 
 Some settings require manual control. If you need them, contact the Gcore [support team](mailto:support@gcore.com) or your manager.
 
@@ -135,7 +168,45 @@ Additionally, you can ask to activate the following settings:
 
 ## Demo
 
-You can try out our low-latency streaming in action on the demo page:\
-👉 [Live Streaming Demo](https://gcore.com/streaming-platform/features-demo/low-latency)
+### VOD demo
 
-There, you'll see an embedded video player that shows real-time latency, playback stats, and protocol behavior. It's a quick way to test how HLS and MPEG-DASH perform under normal and low-latency conditions.
+You can check a multi-codec VOD demo:
+
+<iframe
+  title="Multi-codec VOD demo player"
+  src="https://player.gvideo.co/videos/2675_1HlbGeRCqFdFJb2S"
+  width="100%"
+  height="420"
+  allow="autoplay; fullscreen; picture-in-picture"
+  allowFullScreen
+/>
+
+This demo video contains H.264, HEVC, and AV1 renditions, AAC audio, and English subtitles. Video qualities include 360p, 468p, 720p, 1080p, and 4K variants.
+
+Direct links:
+
+- [HTML player](https://player.gvideo.co/videos/2675_1HlbGeRCqFdFJb2S)
+- [HLS master manifest](https://demo-public.gvideo.io/videos/2675_1HlbGeRCqFdFJb2S/master.m3u8)
+- [MPEG-DASH manifest](https://demo-public.gvideo.io/videos/2675_1HlbGeRCqFdFJb2S/master.mpd)
+
+### Live demo
+
+You can try our live streaming 1080p H.264 output in the embedded player:
+
+<iframe
+  title="Live streaming demo player"
+  src="https://player.gvideo.co/broadcasts/2675_21606?no_low_latency"
+  width="100%"
+  height="420"
+  allow="autoplay; fullscreen; picture-in-picture"
+  allowFullScreen
+/>
+
+The player shows live stream playback behavior for Gcore output protocols.
+
+Direct links:
+
+- [HTML player](https://player.gvideo.co/broadcasts/2675_21606?no_low_latency)
+- [MPEG-DASH, CMAF (low latency)](https://demo.gvideo.io/cmaf/2675_19146/index.mpd)
+- [LL HLS, CMAF (low latency)](https://demo.gvideo.io/cmaf/2675_19146/master.m3u8)
+- [Traditional HLS, MPEG-TS (no low latency)](https://demo.gvideo.io/mpegts/2675_19146/master_mpegts.m3u8)
