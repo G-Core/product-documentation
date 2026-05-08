@@ -210,13 +210,20 @@ def build_product_llms(
 
 def build_root_llms(
     product_entries: list[tuple[str, str, int]],
+    product_bodies: list[tuple[str, list[str]]],
     base_url: str,
 ) -> str:
     """
-    Build the root llms.txt as a short index pointing to per-product files.
+    Build the root llms.txt with all articles from all products.
+
+    The file starts with a short header and product index for quick navigation,
+    then lists all pages grouped by product section. This ensures an AI agent
+    reading only the root file gets complete discoverability without needing
+    to follow per-product links.
 
     Args:
         product_entries: List of (group_name, product_prefix, page_count).
+        product_bodies: List of (group_name, body_lines) for each product.
         base_url: Base URL for building product index URLs.
 
     Returns:
@@ -229,13 +236,14 @@ def build_root_llms(
         f"MCP Server: {base_url}/account-settings/integrations/gcore-mcp-server-overview.md",
         "GitHub repo (raw MDX): https://github.com/G-Core/product-documentation",
         "",
-        "## Product indexes",
-        "",
     ]
-    for group_name, product_prefix, count in product_entries:
-        url = f"{base_url.rstrip('/')}/{product_prefix}/llms.txt"
-        lines.append(f"- [{group_name}]({url}) — {count} pages")
-    lines.append("")
+
+    for group_name, body_lines in product_bodies:
+        lines.append(f"## {group_name}")
+        lines.append("")
+        lines.extend(body_lines)
+        lines.append("")
+
     return "\n".join(lines)
 
 
@@ -277,6 +285,7 @@ def main() -> int:
         return 1
 
     product_entries: list[tuple[str, str, int]] = []
+    product_bodies: list[tuple[str, list[str]]] = []
 
     for group in doc_tab.get("groups", []):
         group_name: str = group.get("group", "Unknown")
@@ -297,7 +306,12 @@ def main() -> int:
         write_or_print(output_path, content, dry_run)
         product_entries.append((group_name, product_prefix, page_count))
 
-    root_content = build_root_llms(product_entries, base_url)
+        body_lines = build_section_lines(group, repo_root, base_url, depth=0)
+        while body_lines and body_lines[0] == "":
+            body_lines.pop(0)
+        product_bodies.append((group_name, body_lines))
+
+    root_content = build_root_llms(product_entries, product_bodies, base_url)
     root_path = repo_root / "llms.txt"
     write_or_print(root_path, root_content, dry_run)
 
