@@ -30,6 +30,7 @@ log = logging.getLogger(__name__)
 BASE_URL_DEFAULT = "https://gcore.com/docs"
 DOCS_JSON_NAME = "docs.json"
 DOCUMENTATION_TAB = "Documentation"
+PRODUCT_DESCRIPTIONS_FILE = "scripts/llms_product_descriptions.json"
 
 
 def parse_args() -> argparse.Namespace:
@@ -178,16 +179,21 @@ def build_product_llms(
     group: dict,
     repo_root: Path,
     base_url: str,
+    product_descriptions: dict[str, str],
 ) -> tuple[str, Optional[str]]:
     """
     Build llms.txt content for one top-level product group.
 
-    Preserves section hierarchy from docs.json as ## headers.
+    Preserves section hierarchy from docs.json as ## headers. Inserts
+    the product description (if present in the JSON config) right under
+    the H1 heading so that agents fetching only the per-product file
+    still get the same semantic summary.
 
     Args:
         group: The top-level group dict from docs.json.
         repo_root: Root path of the product-documentation repo.
         base_url: Base URL for building page URLs.
+        product_descriptions: Mapping of group name to short description.
 
     Returns:
         Tuple of (file_content, product_prefix).
@@ -197,9 +203,13 @@ def build_product_llms(
     page_count = len(collect_pages(group))
 
     header = [f"# Gcore {group_name}", ""]
+    description = product_descriptions.get(group_name)
+    if description:
+        header.append(description)
+        header.append("")
+
     body_lines = build_section_lines(group, repo_root, base_url, depth=0)
 
-    # Remove leading blank line if first body line is a section header
     while body_lines and body_lines[0] == "":
         body_lines.pop(0)
 
@@ -208,23 +218,49 @@ def build_product_llms(
     return content, product_prefix
 
 
+def load_product_descriptions(repo_root: Path) -> dict[str, str]:
+    """
+    Load top-level product descriptions from the JSON config file.
+
+    Args:
+        repo_root: Root path of the product-documentation repo.
+
+    Returns:
+        Mapping of top-level group name to a short agent-oriented
+        description. Empty dict if the file is missing or invalid.
+    """
+    config_path = repo_root / PRODUCT_DESCRIPTIONS_FILE
+    if not config_path.exists():
+        log.warning("Product descriptions config not found at %s", config_path)
+        return {}
+    try:
+        return json.loads(config_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as exc:
+        log.warning("Failed to read product descriptions config: %s", exc)
+        return {}
+
+
 def build_root_llms(
     product_entries: list[tuple[str, str, int]],
     product_bodies: list[tuple[str, list[str]]],
     base_url: str,
+    product_descriptions: dict[str, str],
 ) -> str:
     """
     Build the root llms.txt with all articles from all products.
 
-    The file starts with a short header and product index for quick navigation,
-    then lists all pages grouped by product section. This ensures an AI agent
-    reading only the root file gets complete discoverability without needing
-    to follow per-product links.
+    The file starts with a short header, then lists all pages grouped by
+    product section. Each top-level product section starts with a short
+    agent-oriented description (loaded from the JSON config) followed by
+    the full article list. This gives an AI agent reading only the root
+    file complete discoverability and a quick semantic summary of each
+    product before scanning its articles.
 
     Args:
         product_entries: List of (group_name, product_prefix, page_count).
         product_bodies: List of (group_name, body_lines) for each product.
         base_url: Base URL for building product index URLs.
+        product_descriptions: Mapping of group name to short description.
 
     Returns:
         Content of the root llms.txt file.
@@ -241,6 +277,10 @@ def build_root_llms(
     for group_name, body_lines in product_bodies:
         lines.append(f"## {group_name}")
         lines.append("")
+        description = product_descriptions.get(group_name)
+        if description:
+            lines.append(description)
+            lines.append("")
         lines.extend(body_lines)
         lines.append("")
 
@@ -284,6 +324,8 @@ def main() -> int:
         log.error("Tab '%s' not found in docs.json", DOCUMENTATION_TAB)
         return 1
 
+    product_descriptions = load_product_descriptions(repo_root)
+
     product_entries: list[tuple[str, str, int]] = []
     product_bodies: list[tuple[str, list[str]]] = []
 
@@ -296,7 +338,9 @@ def main() -> int:
             continue
 
         log.info("Processing group '%s': %d pages", group_name, page_count)
-        content, product_prefix = build_product_llms(group, repo_root, base_url)
+        content, product_prefix = build_product_llms(
+            group, repo_root, base_url, product_descriptions
+        )
 
         if not product_prefix:
             log.warning("Cannot determine prefix for group '%s', skipping", group_name)
@@ -311,7 +355,9 @@ def main() -> int:
             body_lines.pop(0)
         product_bodies.append((group_name, body_lines))
 
-    root_content = build_root_llms(product_entries, product_bodies, base_url)
+    root_content = build_root_llms(
+        product_entries, product_bodies, base_url, product_descriptions
+    )
     root_path = repo_root / "llms.txt"
     write_or_print(root_path, root_content, dry_run)
 
