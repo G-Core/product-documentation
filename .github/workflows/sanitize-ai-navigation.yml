@@ -1,0 +1,54 @@
+name: Sanitize ai-navigation YAML
+
+on:
+  push:
+    branches: ["**"]
+    paths: ["**/*.mdx"]
+  pull_request:
+    paths: ["**/*.mdx"]
+
+jobs:
+  sanitize:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fix ai-navigation YAML special characters
+        run: |
+          python3 - <<'EOF'
+          import re, pathlib, sys
+
+          root = pathlib.Path(".")
+          fixed = []
+          for f in root.rglob("*.mdx"):
+              text = f.read_text(encoding="utf-8")
+              def fix(m):
+                  return "ai-navigation: " + re.sub(r"[:#]", " -", m.group(1))
+              new = re.sub(r"^ai-navigation: (.+)$", fix, text, flags=re.MULTILINE)
+              if new != text:
+                  f.write_text(new, encoding="utf-8")
+                  fixed.append(str(f))
+
+          if fixed:
+              print(f"Fixed {len(fixed)} files:")
+              for name in fixed:
+                  print(f"  {name}")
+          else:
+              print("No issues found.")
+          EOF
+
+      - name: Commit fixes if any
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git diff --quiet && echo "Nothing to commit" || (
+            git add -A
+            git commit -m "Auto-fix: sanitize ai-navigation YAML special characters"
+            git push
+          )
