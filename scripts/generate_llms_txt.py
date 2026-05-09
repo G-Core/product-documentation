@@ -17,6 +17,7 @@ Usage:
 
 Output:
     {repo}/llms.txt                    - root index linking to per-product files
+    {repo}/llms-full.txt               - all articles across all products in one file
     {repo}/{product}/llms.txt          - per-product page list with sections
 """
 
@@ -271,9 +272,41 @@ def build_product_llms(
     return content, product_prefix, summary
 
 
+def build_full_llms(
+    product_contents: list[tuple[str, str]],
+    total_pages: int,
+) -> str:
+    """
+    Build llms-full.txt - all products and all articles in one file.
+
+    Intended for offline indexing, bulk vectorization, or large-context retrieval.
+    Contains the same content as all per-product llms.txt files concatenated.
+
+    Args:
+        product_contents: List of (group_name, per-product llms.txt content).
+        total_pages: Total number of articles across all products.
+
+    Returns:
+        Content of the llms-full.txt file.
+    """
+    header = [
+        "# Gcore Docs - Full Index",
+        "",
+        f"> Complete article index across all Gcore products. {total_pages} articles.",
+        "> Use this file for offline indexing, bulk vectorization, or large-context retrieval.",
+        "",
+    ]
+    sections = []
+    for _, content in product_contents:
+        sections.append(content.rstrip("\n"))
+
+    return "\n".join(header) + "\n---\n\n".join(sections) + "\n"
+
+
 def build_root_llms(
     product_entries: list[tuple[str, str, int, str]],
     base_url: str,
+    full_url: str,
 ) -> str:
     """
     Build the root llms.txt as a curated product meta-index.
@@ -284,13 +317,14 @@ def build_root_llms(
 
     Per the llms.txt spec, the file contains:
     - H1 with site name
-    - Blockquote with summary
+    - Blockquote with summary and link to llms-full.txt
     - H2 section with product index (links to per-product llms.txt)
     - H2 Optional section with agent integration links
 
     Args:
         product_entries: List of (group_name, product_prefix, page_count, summary).
         base_url: Base URL for building product index URLs.
+        full_url: URL of the llms-full.txt file for inclusion in the blockquote.
 
     Returns:
         Content of the root llms.txt file.
@@ -303,6 +337,8 @@ def build_root_llms(
         "",
         f"> Official documentation for Gcore products: {product_names}.",
         "> Each product section has a dedicated llms.txt with the full article index.",
+        f"> For the complete article archive in a single file, use [llms-full.txt]({full_url}).",
+        "> Intended for offline indexing, bulk vectorization, or large-context retrieval.",
         "",
         "## Products",
         "",
@@ -322,6 +358,8 @@ def build_root_llms(
         f"- [Gcore MCP Server]({mcp_url}): Connect AI agents (Claude Code, Cursor IDE)"
         " to Gcore via MCP to manage Cloud, CDN, DNS, and other products through"
         " natural language commands.",
+        f"- [Full article index]({full_url}): All articles across all products in one file."
+        " Use for offline indexing, bulk vectorization, or large-context retrieval.",
     ]
 
     return "\n".join(lines) + "\n"
@@ -389,6 +427,7 @@ def main() -> int:
         return 1
 
     product_entries: list[tuple[str, str, int, str]] = []
+    product_contents: list[tuple[str, str]] = []
     missing_nav: list[str] = []
     total_pages = 0
 
@@ -412,9 +451,15 @@ def main() -> int:
         output_path = repo_root / product_prefix / "llms.txt"
         write_or_print(output_path, content, dry_run)
         product_entries.append((group_name, product_prefix, page_count, summary))
+        product_contents.append((group_name, content))
         total_pages += page_count
 
-    root_content = build_root_llms(product_entries, base_url)
+    full_url = f"{base_url.rstrip('/')}/llms-full.txt"
+    full_content = build_full_llms(product_contents, total_pages)
+    full_path = repo_root / "llms-full.txt"
+    write_or_print(full_path, full_content, dry_run)
+
+    root_content = build_root_llms(product_entries, base_url, full_url)
     root_path = repo_root / "llms.txt"
     check_root_size(root_content, root_path)
     write_or_print(root_path, root_content, dry_run)
