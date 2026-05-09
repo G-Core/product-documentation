@@ -34,8 +34,7 @@ log = logging.getLogger(__name__)
 BASE_URL_DEFAULT = "https://gcore.com/docs"
 DOCS_JSON_NAME = "docs.json"
 DOCUMENTATION_TAB = "Documentation"
-MCP_ARTICLE_PATH = "account-settings/integrations/gcore-mcp-server-overview"
-GITHUB_REPO_URL = "https://github.com/G-Core/product-documentation"
+MCP_ARTICLE_PATH = "developer-tools/mcp-server/gcore-mcp-server-overview"
 
 ROOT_SIZE_WARN = 50_000
 ROOT_SIZE_ERROR = 100_000
@@ -323,7 +322,6 @@ def build_root_llms(
         f"- [Gcore MCP Server]({mcp_url}): Connect AI agents (Claude Code, Cursor IDE)"
         " to Gcore via MCP to manage Cloud, CDN, DNS, and other products through"
         " natural language commands.",
-        f"- [GitHub source]({GITHUB_REPO_URL}): Raw MDX source for all documentation pages.",
     ]
 
     return "\n".join(lines) + "\n"
