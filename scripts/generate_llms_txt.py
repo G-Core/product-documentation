@@ -3,16 +3,21 @@ Generate per-product llms.txt files from docs.json navigation structure.
 
 Reads docs.json from the product-documentation repo, extracts page paths
 per top-level product group preserving section hierarchy, reads MDX frontmatter
-for titles and descriptions, and writes per-product llms.txt files plus an
-updated root llms.txt index.
+for titles and descriptions, and writes per-product llms.txt files plus a
+root llms.txt product index.
+
+Root llms.txt is a curated meta-index (one entry per product) kept under
+50,000 characters so it is not truncated by agent platforms. Per-product
+llms.txt files contain the full article list with ai-navigation descriptions.
 
 Usage:
-    python scripts/generate_llms_txt.py \
-        --repo C:/Projects/product-documentation-test2/product-documentation \
+    python scripts/generate_llms_txt.py \\
+        --repo C:/Projects/product-documentation \\
         --base-url https://gcore.com/docs
 
 Output:
-    {repo}/llms.txt                    - root index with links to product files
+    {repo}/llms.txt                    - root index linking to per-product files
+    {repo}/llms-full.txt               - all articles across all products in one file
     {repo}/{product}/llms.txt          - per-product page list with sections
 """
 
@@ -30,7 +35,10 @@ log = logging.getLogger(__name__)
 BASE_URL_DEFAULT = "https://gcore.com/docs"
 DOCS_JSON_NAME = "docs.json"
 DOCUMENTATION_TAB = "Documentation"
-PRODUCT_DESCRIPTIONS_FILE = "scripts/llms_product_descriptions.json"
+MCP_ARTICLE_PATH = "developer-tools/mcp-server/gcore-mcp-server-overview"
+
+ROOT_SIZE_WARN = 50_000
+ROOT_SIZE_ERROR = 100_000
 
 
 def parse_args() -> argparse.Namespace:
@@ -80,7 +88,7 @@ def read_frontmatter(mdx_path: Path) -> dict[str, str]:
     if not mdx_path.exists():
         return result
     try:
-        content = mdx_path.read_text(encoding="utf-8")
+        content = mdx_path.read_text(encoding="utf-8-sig")
     except OSError as exc:
         log.warning("Cannot read %s: %s", mdx_path, exc)
         return result
@@ -105,13 +113,14 @@ def read_frontmatter(mdx_path: Path) -> dict[str, str]:
 
 
 def page_to_url(page_path: str, base_url: str) -> str:
-    """Convert a page path (e.g. 'cloud/virtual-instances/create-an-instance') to URL."""
+    """Convert a page path to a .md URL for direct Markdown delivery."""
     return f"{base_url.rstrip('/')}/{page_path}.md"
 
 
 def get_product_prefix(node: object) -> Optional[str]:
     """
     Determine the top-level directory prefix for a group by scanning all pages.
+
     Returns the first path component that appears most frequently.
     """
     pages = collect_pages(node)
@@ -126,11 +135,45 @@ def get_product_prefix(node: object) -> Optional[str]:
     return max(prefixes, key=lambda k: prefixes[k])
 
 
+def derive_product_summary(group: dict, repo_root: Path) -> str:
+    """
+    Derive a one-line product summary for use in the root index and blockquote.
+
+    Tries, in order:
+    1. ai-navigation of the product's root overview page (first string page in group).
+    2. Comma-separated list of sub-group names from docs.json.
+
+    Args:
+        group: Top-level group dict from docs.json.
+        repo_root: Root path of the product-documentation repo.
+
+    Returns:
+        A non-empty summary string.
+    """
+    pages = group.get("pages", [])
+
+    for item in pages:
+        if isinstance(item, str):
+            mdx_path = repo_root / (item + ".mdx")
+            fm = read_frontmatter(mdx_path)
+            nav = fm.get("ai-navigation", "")
+            if nav:
+                return nav
+            break
+
+    sub_groups = [item["group"] for item in pages if isinstance(item, dict) and "group" in item]
+    if sub_groups:
+        return ", ".join(sub_groups) + "."
+
+    return group.get("group", "")
+
+
 def build_section_lines(
     node: object,
     repo_root: Path,
     base_url: str,
     depth: int = 0,
+    missing_nav: Optional[list[str]] = None,
 ) -> list[str]:
     """
     Recursively build llms.txt lines from a navigation node.
@@ -139,10 +182,11 @@ def build_section_lines(
     pages become list entries with title and description.
 
     Args:
-        node: A navigation node — string (page path), dict (group), or list.
+        node: A navigation node - string (page path), dict (group), or list.
         repo_root: Root path of the product-documentation repo.
         base_url: Base URL for building page URLs.
         depth: Current nesting depth (0 = top-level product group).
+        missing_nav: Optional list to collect paths missing ai-navigation.
 
     Returns:
         List of formatted text lines.
@@ -151,14 +195,21 @@ def build_section_lines(
 
     if isinstance(node, str):
         mdx_file = repo_root / (node + ".mdx")
+        if not mdx_file.exists():
+            log.warning("MDX file not found, skipping: %s", mdx_file)
+            return lines
         fm = read_frontmatter(mdx_file)
         title = fm.get("title") or fm.get("sidebarTitle") or node.split("/")[-1]
         description = fm.get("ai-navigation", "")
         url = page_to_url(node, base_url)
+        if not url.endswith(".md"):
+            log.warning("URL does not end with .md, check page_to_url: %s", url)
         if description:
             lines.append(f"- [{title}]({url}): {description}")
         else:
             lines.append(f"- [{title}]({url})")
+            if missing_nav is not None:
+                missing_nav.append(node)
 
     elif isinstance(node, dict):
         group_name = node.get("group", "")
@@ -166,11 +217,15 @@ def build_section_lines(
         if group_name and depth > 0:
             lines.append(f"\n## {group_name}")
         for item in pages:
-            lines.extend(build_section_lines(item, repo_root, base_url, depth + 1))
+            lines.extend(
+                build_section_lines(item, repo_root, base_url, depth + 1, missing_nav)
+            )
 
     elif isinstance(node, list):
         for item in node:
-            lines.extend(build_section_lines(item, repo_root, base_url, depth))
+            lines.extend(
+                build_section_lines(item, repo_root, base_url, depth, missing_nav)
+            )
 
     return lines
 
@@ -179,112 +234,159 @@ def build_product_llms(
     group: dict,
     repo_root: Path,
     base_url: str,
-    product_descriptions: dict[str, str],
-) -> tuple[str, Optional[str]]:
+    missing_nav: list[str],
+) -> tuple[str, Optional[str], str]:
     """
     Build llms.txt content for one top-level product group.
 
-    Preserves section hierarchy from docs.json as ## headers. Inserts
-    the product description (if present in the JSON config) right under
-    the H1 heading so that agents fetching only the per-product file
-    still get the same semantic summary.
+    Includes a spec-compliant blockquote summary between H1 and page list.
 
     Args:
         group: The top-level group dict from docs.json.
         repo_root: Root path of the product-documentation repo.
         base_url: Base URL for building page URLs.
-        product_descriptions: Mapping of group name to short description.
+        missing_nav: Accumulator for pages missing ai-navigation.
 
     Returns:
-        Tuple of (file_content, product_prefix).
+        Tuple of (file_content, product_prefix, product_summary).
     """
     group_name: str = group.get("group", "Unknown")
     product_prefix = get_product_prefix(group)
     page_count = len(collect_pages(group))
 
-    header = [f"# Gcore {group_name}", ""]
-    description = product_descriptions.get(group_name)
-    if description:
-        header.append(description)
-        header.append("")
-
-    body_lines = build_section_lines(group, repo_root, base_url, depth=0)
+    summary = derive_product_summary(group, repo_root)
+    body_lines = build_section_lines(group, repo_root, base_url, depth=0, missing_nav=missing_nav)
 
     while body_lines and body_lines[0] == "":
         body_lines.pop(0)
 
-    content = "\n".join(header + body_lines) + "\n"
+    lines = [
+        f"# Gcore {group_name}",
+        "",
+        f"> {summary}",
+        "",
+    ]
+    lines.extend(body_lines)
+    content = "\n".join(lines) + "\n"
     log.info("  Built %s/llms.txt: %d pages", product_prefix or group_name, page_count)
-    return content, product_prefix
+    return content, product_prefix, summary
 
 
-def load_product_descriptions(repo_root: Path) -> dict[str, str]:
+def build_full_llms(
+    product_contents: list[tuple[str, str]],
+    total_pages: int,
+) -> str:
     """
-    Load top-level product descriptions from the JSON config file.
+    Build llms-full.txt - all products and all articles in one file.
+
+    Intended for offline indexing, bulk vectorization, or large-context retrieval.
+    Contains the same content as all per-product llms.txt files concatenated.
 
     Args:
-        repo_root: Root path of the product-documentation repo.
+        product_contents: List of (group_name, per-product llms.txt content).
+        total_pages: Total number of articles across all products.
 
     Returns:
-        Mapping of top-level group name to a short agent-oriented
-        description. Empty dict if the file is missing or invalid.
+        Content of the llms-full.txt file.
     """
-    config_path = repo_root / PRODUCT_DESCRIPTIONS_FILE
-    if not config_path.exists():
-        log.warning("Product descriptions config not found at %s", config_path)
-        return {}
-    try:
-        return json.loads(config_path.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError) as exc:
-        log.warning("Failed to read product descriptions config: %s", exc)
-        return {}
+    header = [
+        "# Gcore Docs - Full Index",
+        "",
+        f"> Complete article index across all Gcore products. {total_pages} articles.",
+        "> Use this file for offline indexing, bulk vectorization, or large-context retrieval.",
+        "",
+    ]
+    sections = []
+    for _, content in product_contents:
+        sections.append(content.rstrip("\n"))
+
+    return "\n".join(header) + "\n---\n\n".join(sections) + "\n"
 
 
 def build_root_llms(
-    product_entries: list[tuple[str, str, int]],
-    product_bodies: list[tuple[str, list[str]]],
+    product_entries: list[tuple[str, str, int, str]],
     base_url: str,
-    product_descriptions: dict[str, str],
+    full_url: str,
 ) -> str:
     """
-    Build the root llms.txt with all articles from all products.
+    Build the root llms.txt as a curated product meta-index.
 
-    The file starts with a short header, then lists all pages grouped by
-    product section. Each top-level product section starts with a short
-    agent-oriented description (loaded from the JSON config) followed by
-    the full article list. This gives an AI agent reading only the root
-    file complete discoverability and a quick semantic summary of each
-    product before scanning its articles.
+    The root file links to per-product llms.txt files instead of listing all
+    articles directly. This keeps the root under the 50,000 character threshold
+    above which agent platforms may truncate the file.
+
+    Per the llms.txt spec, the file contains:
+    - H1 with site name
+    - Blockquote with summary and link to llms-full.txt
+    - H2 section with product index (links to per-product llms.txt)
+    - H2 Optional section with agent integration links
 
     Args:
-        product_entries: List of (group_name, product_prefix, page_count).
-        product_bodies: List of (group_name, body_lines) for each product.
+        product_entries: List of (group_name, product_prefix, page_count, summary).
         base_url: Base URL for building product index URLs.
-        product_descriptions: Mapping of group name to short description.
+        full_url: URL of the llms-full.txt file for inclusion in the blockquote.
 
     Returns:
         Content of the root llms.txt file.
     """
+    mcp_url = page_to_url(MCP_ARTICLE_PATH, base_url)
+    product_names = ", ".join(e[0] for e in product_entries)
+
     lines = [
         "# Gcore Docs",
         "",
-        "Documentation for Gcore Cloud, CDN, DNS, Storage, FastEdge, and other products.",
-        f"MCP Server: {base_url}/account-settings/integrations/gcore-mcp-server-overview.md",
-        "GitHub repo (raw MDX): https://github.com/G-Core/product-documentation",
+        f"> Official documentation for Gcore products: {product_names}.",
+        "> Each product section has a dedicated llms.txt with the full article index.",
+        f"> For the complete article archive in a single file, use [llms-full.txt]({full_url}).",
+        "> Intended for offline indexing, bulk vectorization, or large-context retrieval.",
+        "",
+        "## Products",
         "",
     ]
 
-    for group_name, body_lines in product_bodies:
-        lines.append(f"## {group_name}")
-        lines.append("")
-        description = product_descriptions.get(group_name)
-        if description:
-            lines.append(description)
-            lines.append("")
-        lines.extend(body_lines)
-        lines.append("")
+    for group_name, product_prefix, page_count, summary in product_entries:
+        product_llms_url = f"{base_url.rstrip('/')}/{product_prefix}/llms.txt"
+        short_summary = summary.rstrip(".")
+        lines.append(
+            f"- [{group_name}]({product_llms_url}): {short_summary} ({page_count} articles)."
+        )
 
-    return "\n".join(lines)
+    lines += [
+        "",
+        "## Optional",
+        "",
+        f"- [Gcore MCP Server]({mcp_url}): Connect AI agents (Claude Code, Cursor IDE)"
+        " to Gcore via MCP to manage Cloud, CDN, DNS, and other products through"
+        " natural language commands.",
+        f"- [Full article index]({full_url}): All articles across all products in one file."
+        " Use for offline indexing, bulk vectorization, or large-context retrieval.",
+    ]
+
+    return "\n".join(lines) + "\n"
+
+
+def check_root_size(content: str, path: Path) -> None:
+    """
+    Warn if root llms.txt exceeds recommended size thresholds.
+
+    Args:
+        content: Root file content.
+        path: Path for logging context.
+    """
+    size = len(content)
+    if size > ROOT_SIZE_ERROR:
+        log.warning(
+            "Root %s is %d characters (>%d). Major agent platforms may truncate it."
+            " Consider splitting into per-product files.",
+            path, size, ROOT_SIZE_ERROR,
+        )
+    elif size > ROOT_SIZE_WARN:
+        log.warning(
+            "Root %s is %d characters (>%d). Approaching truncation risk.",
+            path, size, ROOT_SIZE_WARN,
+        )
+    else:
+        log.info("Root size: %d characters (within safe threshold).", size)
 
 
 def write_or_print(path: Path, content: str, dry_run: bool) -> None:
@@ -297,7 +399,7 @@ def write_or_print(path: Path, content: str, dry_run: bool) -> None:
     else:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content, encoding="utf-8")
-        log.info("Written: %s (%d lines)", path, content.count("\n"))
+        log.info("Written: %s (%d chars, %d lines)", path, len(content), content.count("\n"))
 
 
 def main() -> int:
@@ -324,10 +426,10 @@ def main() -> int:
         log.error("Tab '%s' not found in docs.json", DOCUMENTATION_TAB)
         return 1
 
-    product_descriptions = load_product_descriptions(repo_root)
-
-    product_entries: list[tuple[str, str, int]] = []
-    product_bodies: list[tuple[str, list[str]]] = []
+    product_entries: list[tuple[str, str, int, str]] = []
+    product_contents: list[tuple[str, str]] = []
+    missing_nav: list[str] = []
+    total_pages = 0
 
     for group in doc_tab.get("groups", []):
         group_name: str = group.get("group", "Unknown")
@@ -338,8 +440,8 @@ def main() -> int:
             continue
 
         log.info("Processing group '%s': %d pages", group_name, page_count)
-        content, product_prefix = build_product_llms(
-            group, repo_root, base_url, product_descriptions
+        content, product_prefix, summary = build_product_llms(
+            group, repo_root, base_url, missing_nav
         )
 
         if not product_prefix:
@@ -348,20 +450,34 @@ def main() -> int:
 
         output_path = repo_root / product_prefix / "llms.txt"
         write_or_print(output_path, content, dry_run)
-        product_entries.append((group_name, product_prefix, page_count))
+        product_entries.append((group_name, product_prefix, page_count, summary))
+        product_contents.append((group_name, content))
+        total_pages += page_count
 
-        body_lines = build_section_lines(group, repo_root, base_url, depth=0)
-        while body_lines and body_lines[0] == "":
-            body_lines.pop(0)
-        product_bodies.append((group_name, body_lines))
+    full_url = f"{base_url.rstrip('/')}/llms-full.txt"
+    full_content = build_full_llms(product_contents, total_pages)
+    full_path = repo_root / "llms-full.txt"
+    write_or_print(full_path, full_content, dry_run)
 
-    root_content = build_root_llms(
-        product_entries, product_bodies, base_url, product_descriptions
-    )
+    root_content = build_root_llms(product_entries, base_url, full_url)
     root_path = repo_root / "llms.txt"
+    check_root_size(root_content, root_path)
     write_or_print(root_path, root_content, dry_run)
 
-    log.info("Done. Generated %d product files + root llms.txt", len(product_entries))
+    missing_count = len(missing_nav)
+    if missing_count:
+        log.warning(
+            "ai-navigation missing: %d/%d pages. Files: %s",
+            missing_count, total_pages,
+            ", ".join(missing_nav[:10]) + ("..." if missing_count > 10 else ""),
+        )
+    else:
+        log.info("ai-navigation coverage: %d/%d pages (100%%).", total_pages, total_pages)
+
+    log.info(
+        "Done. %d products, %d total pages, %d missing ai-navigation.",
+        len(product_entries), total_pages, missing_count,
+    )
     return 0
 
 
