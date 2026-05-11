@@ -1,0 +1,112 @@
+---
+title: Deploy a custom model
+sidebarTitle: Deploy a custom model
+ai-navigation: Deploy a custom AI model to Gcore Everywhere Inference using a Docker container image from a public or private registry, with configurable compute resources, routing regions, autoscaling, health checks, and optional API key authentication.
+---
+
+If the [Application Catalog](/edge-ai/everywhere-inference/application-catalog) does not include the model you need, you can deploy any Docker container image from a public or private registry.
+
+Before you start, make sure your container image meets the Everywhere Inference requirements — refer to [Prepare a custom model for deployment](/edge-ai/everywhere-inference/ai-models/prepare-a-custom-ai-model-for-deployment).
+
+<Info>
+**Info**
+
+You might have to [request a quota increase](/edge-ai/everywhere-inference/quotas/request-quota-increase) before deploying a new model.
+</Info>
+
+## Step 1. Open the deployment form
+
+1\. In the Gcore Customer Portal, navigate to **Everywhere Inference** > **Deployments**.
+
+<Frame>![Deployments page showing Deploy application from catalog and Deploy custom inference buttons](/images/docs/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model/deploy-an-ai-model-1.png)</Frame>
+
+2\. Click **Deploy custom inference** in the top-right corner.
+
+The **Deploy custom model** form opens.
+
+## Step 2. Configure the model image
+
+Under **Model image**, configure the container image source.
+
+**Public registry**: Select **Public**, then enter the **Model image URL (docker tag)** and the **Container port** where the model listens for requests.
+
+<Frame>![Model image section with Public registry type selected](/images/docs/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model/deploy-an-ai-model-4.png)</Frame>
+
+**Private registry**: Select **Private**, select the registry from the **Registry** dropdown, then enter the **Model image URL (docker tag)** and the **Container port**.
+
+<Frame>![Model image section with Private registry type selected, showing Registry dropdown](/images/docs/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model/deploy-an-ai-model-8.png)</Frame>
+
+If you haven't added a private registry yet, click **+ Add registry** and configure it. Refer to [Add a registry](/edge-ai/everywhere-inference/container-image-registries/add-a-registry) for instructions.
+
+(Optional) Enable the **Set startup command** toggle to specify a command that runs when the container starts.
+
+## Step 3. Select pod configuration
+
+Under **Pod configuration**, select the compute resources for the deployment:
+
+- **Flavor type** — select **CPU-optimized** or **GPU-optimized**.
+- **Flavor** — select the hardware configuration from the dropdown.
+
+The following flavor parameters are recommended based on model size:
+
+| **Billion parameters** | **Recommended flavor** |
+|---|---|
+| < 21 | 1 x L40S 48 GB |
+| 21–41 | 2 x L40S 48 GB |
+| > 41 | 4 x L40S 48 GB |
+
+## Step 4. Set up routing placement
+
+Under **Routing placement**, select the regions where the model will run. You can select up to six regions.
+
+<Frame>![Routing placement and Autoscaling limits sections](/images/docs/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model/deploy-an-ai-model-5.png)</Frame>
+
+## Step 5. Configure autoscaling
+
+Under **Autoscaling limits**, configure pod scaling:
+
+- **All selected regions** — applies the same autoscaling settings to all selected regions.
+- **Custom** — applies different settings per region.
+- **Minimum pods** — the minimum number of pods to maintain during low-traffic periods.
+- **Maximum pods** — the maximum number of pods that can be provisioned during peak traffic.
+- **Cooldown period** — the time (in seconds) the autoscaler waits after a scaling event before making another adjustment.
+- **Pod lifetime** — the time (in seconds) before an idle pod is deleted after its last request.
+
+<Info>
+**Info**
+
+A pod with a lifetime of zero seconds will take approximately one minute to scale down.
+</Info>
+
+Under **Autoscaling triggers**, define the conditions that trigger pod provisioning. By default, CPU utilization and GPU utilization triggers are included with an 80% threshold. Click **Add trigger** to add more triggers.
+
+<Frame>![Autoscaling triggers and Health checks sections](/images/docs/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model/deploy-an-ai-model-6.png)</Frame>
+
+## Step 6 (optional). Configure health checks
+
+Under **Health checks**, enable probes to monitor container availability:
+
+- **Liveness probe** — restarts the container if it becomes unresponsive.
+- **Readiness probe** — removes the container from load balancing until it is ready to serve traffic.
+- **Startup probe** — delays other probes until the container finishes starting up.
+
+## Step 7. Set deployment details
+
+Under **Deployment details**, enter a deployment name. You can also add an optional description.
+
+<Frame>![Deployment details and Additional options sections](/images/docs/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model/deploy-an-ai-model-7.png)</Frame>
+
+## Step 8 (optional). Set additional options
+
+Under **Additional options**:
+
+- Enable **Set environment variables** to pass key-value pairs to the container at runtime.
+- Enable **Enable API Key authentication** to restrict access using [API keys](/edge-ai/everywhere-inference/api-keys/create-inference-deployment-with-auth).
+
+Multiple API keys can be associated with a single deployment, and the same API key can be attached to multiple deployments.
+
+## Step 9. Finalize the deployment
+
+Review the estimated cost in the right panel, then click **Deploy model**.
+
+After the deployment is created, Gcore redirects you to the **Deployments** page where you can monitor the deployment status.
