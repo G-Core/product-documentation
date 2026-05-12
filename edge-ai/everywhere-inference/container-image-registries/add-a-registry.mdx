@@ -1,46 +1,53 @@
 ---
 title: Add a container image registry
 sidebarTitle: Add a registry
-ai-navigation: Add custom private and public container image registries to Everywhere Inference by configuring registry name, URL, username, and password in the Gcore Customer Portal, supporting Docker Hub, Huggingface, and other registry services for AI model deployments.
+ai-navigation: Add a private container image registry to Gcore Everywhere Inference. Covers what a registry is, how credentials work, registry URLs for Docker Hub, Hugging Face, and GitHub Container Registry, and how the registry connects to a deployment.
 ---
 
-Everywhere Inference supports custom private and public registries in addition to Gcore ones, so you can manage your model images with any service you like.
+A container image registry is a server that stores Docker images. When deploying a custom model, Everywhere Inference pulls the container image from the registry at pod startup. For public registries, no credentials are required. For private registries, Gcore needs stored credentials to authenticate the pull request — that is what a registry record provides.
 
-## Step 1. Initialize a new registry addition
+Each registry record stores the hostname of the registry and the credentials (username + password or access token) Gcore uses on the deployment's behalf. The credentials are not embedded in the deployment configuration — Gcore resolves them from the registry record at pod startup. This means updating credentials in the registry record takes effect on the next pod pull without changing the deployment itself.
 
-You can initialize a new registry by following these two steps.
+## When to add a registry
 
-1\. In the Gcore Customer Portal, navigate to **Everywhere Inference** > **Registries**.
+A registry record is required when the container image is stored in a private repository. If the image is publicly accessible (no login required to pull it), set **Registry type** to **Public** in the deployment form — no registry record is needed.
 
+Private images are common when:
 
-<Frame>![Add a registry](/images/docs/edge-ai/everywhere-inference/container-image-registries/add-a-registry/add-a-registry-1.png)</Frame>
+- The model weights or fine-tuning data are proprietary and must not be publicly accessible.
+- The image is stored in an organization's private Docker Hub, GitHub Container Registry, or Hugging Face repository.
+- The registry is a self-hosted instance not exposed to the public internet.
 
+## Add a registry
 
+Navigate to **Everywhere Inference > Registries** in the Gcore Customer Portal and click **Add registry**.
 
-2\. Click **Add registry** in the top right of the screen.
+<Frame>![Registries page with Add registry button](/images/docs/edge-ai/everywhere-inference/container-image-registries/add-a-registry/add-a-registry-1.png)</Frame>
 
+Fill in the four fields in the **Add registry** dialog and click **Add**.
 
-<Frame>![Add a registry](/images/docs/edge-ai/everywhere-inference/container-image-registries/add-a-registry/add-a-registry-2.png)</Frame>
+<Frame>![Add registry dialog filled with Docker Hub example values](/images/docs/edge-ai/everywhere-inference/container-image-registries/add-a-registry/add-a-registry-3.png)</Frame>
 
+| Field | What to enter |
+|---|---|
+| **Image registry name** | A label used to identify this registry in the deployment form. Choose a name that reflects the registry host or the team that owns it. |
+| **Image registry URL** | The hostname of the registry — the domain part only, without `https://` or any path. See the table below for common values. |
+| **Image registry username** | The username for registry authentication. For token-based registries, this is often the account name or a fixed string. |
+| **Image registry password** | An access token or password. Use an access token rather than an account password — tokens can be scoped and rotated without changing the account credentials. |
 
+<Info>
+The registry URL is the hostname only. The full image pull address is formed by combining the registry URL with the image path entered in the **Model image URL** field when creating a deployment: `registry.hub.docker.com/myorg/mymodel:v1.2`.
+</Info>
 
-This will open the Add registry dialog, where you can add the authentication credentials for the registry you want to add.
+## Registry URLs and credentials
 
-## Step 2. Enter registry configuration
+The table below lists authentication details for commonly used registries:
 
-Enter the registry's name, URL, username, and password.
+| Registry | Image registry URL | Username | Password |
+|---|---|---|---|
+| Docker Hub | `registry.hub.docker.com` | Docker Hub account name | [Access token](https://hub.docker.com/settings/security) — use a token, not the account password |
+| Hugging Face | `registry.huggingface.co` | Any non-empty string | [Access token](https://huggingface.co/settings/tokens) with **read** scope |
+| GitHub Container Registry | `ghcr.io` | GitHub account name | [Personal access token](https://github.com/settings/tokens) with `read:packages` scope |
+| GitLab Container Registry | `registry.gitlab.com` | GitLab account name | Personal access token or deploy token with `read_registry` scope |
 
-<Tip>
-**Tip**
-
-The URL for the Huggingface registry is "". You can create an access token in the [Huggingface settings](https://huggingface.co/settings/tokens). Use "username" as the Image registry username and the access token as the Image registry password.
-</Tip> 
-<Frame>![Add a registry](/images/docs/edge-ai/everywhere-inference/container-image-registries/add-a-registry/add-a-registry-3.png)</Frame>
-
-
-
-## Step 3. Finalize registry addition
-
-After you enter all registry details, click **Add**. Your new registry's name should appear in the list of registries.
-
-You can now select the registry for a custom AI model deployment. To learn how to deploy a custom AI model, read [our guide](/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model).
+After the registry is added, it appears in the list and becomes available in the **Registry** dropdown when [deploying a custom model](/edge-ai/everywhere-inference/ai-models/deploy-a-custom-model).
