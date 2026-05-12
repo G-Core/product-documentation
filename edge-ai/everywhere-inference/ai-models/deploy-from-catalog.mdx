@@ -4,50 +4,80 @@ sidebarTitle: Deploy from catalog
 ai-navigation: Deploy a pre-built open-source AI model from the Gcore Everywhere Inference Application Catalog by selecting an application, choosing compute resources and regions, and configuring deployment settings in the Create Deployment form.
 ---
 
-The Application Catalog provides pre-built open-source AI models that you can deploy in a few clicks without building or configuring a container image. For a full list of available models, see the [Application Catalog](/edge-ai/everywhere-inference/application-catalog).
+The [Application Catalog](/edge-ai/everywhere-inference/application-catalog) provides pre-built open-source AI models that you can deploy without building or configuring a container image.
 
 <Info>
-**Info**
-
-You might have to [request a quota increase](/edge-ai/everywhere-inference/quotas/request-quota-increase) before deploying a new model.
+[Request a quota increase](/edge-ai/everywhere-inference/quotas/request-quota-increase) if the account quota is insufficient for the selected flavor.
 </Info>
 
-## Start a deployment
+## Step 1. Open the Create Deployment form
 
 There are two ways to open the **Create Deployment** form:
 
-- **From the Deployments page**: navigate to **Everywhere Inference** > **Deployments** and click **Deploy application from catalog**.
-- **From the Application Catalog**: open a model detail page and click **Deploy Application**. The form opens with the selected model pre-filled.
+- Navigate to **Everywhere Inference** > **Deployments** and click **Deploy application from catalog**.
+- Open a model detail page in the Application Catalog and click **Deploy Application**. The form opens with the selected model pre-filled.
 
-<Frame>![Deployments page showing the Deploy application from catalog button](/images/docs/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model/deploy-an-ai-model-1.png)</Frame>
+<Frame>![Deployments page showing the Deploy application from catalog and Deploy custom inference buttons](/images/docs/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model/deploy-an-ai-model-1.png)</Frame>
 
-## Configure the deployment
+## Step 2. Select an application
 
-1\. In the **Create Deployment** form, under **Deployment Configuration**, click the **Application** dropdown and select the model you want to deploy.
+Under **Deployment Configuration**, click the **Application** dropdown and select the model to deploy.
 
-<Frame>![Create Deployment form with empty Application dropdown](/images/docs/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model/deploy-an-ai-model-2.png)</Frame>
+<Frame>![Create Deployment form — Deployment Configuration and Routing placement sections](/images/docs/edge-ai/everywhere-inference/ai-models/deploy-from-catalog/deploy-from-catalog-1.png)</Frame>
 
-<Frame>![Application dropdown open showing the list of available models](/images/docs/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model/deploy-an-ai-model-3.png)</Frame>
+## Step 3. Select regions
 
-2\. Under **Routing placement**, click **Select region** and choose the regions where the model will run. You can select up to six regions.
+Under **Routing placement**, click **Select region** and select up to six regions where the model will run.
 
-3\. Under **Application modules**, configure compute resources:
+## Step 4. Configure application modules
 
+Under **Application modules**, configure the main module:
+
+- **Expose** — controls whether the module endpoint is publicly accessible. Enabled by default.
 - **Flavor type** — select **CPU-optimized** or **GPU-optimized** depending on the model requirements.
 - **Flavor** — select the hardware configuration from the dropdown (for example, 1xA100 / 16 vCPU / 232 GiB RAM).
 - **Minimum pods** — the minimum number of pods to keep running during low-traffic periods.
-- **Maximum pods** — the maximum number of pods that can be provisioned during peak traffic.
+- **Maximum pods** — the maximum number of pods Gcore provisions during peak traffic.
+
+Under **Parameters**, adjust inference settings for the model:
+
+- **Chunked prefill** — splits long prompts into smaller chunks for processing. Default: `true`.
+- **CPU Cache** — caches KV tensors in CPU memory when GPU memory is full. Default: `true`.
+- **Prefix caching** — reuses cached KV state for repeated prompt prefixes. Default: `true`.
+
+<Frame>![Application modules section showing Parameters and Open WebUI module](/images/docs/edge-ai/everywhere-inference/ai-models/deploy-from-catalog/deploy-from-catalog-2.png)</Frame>
 
 <Info>
-**Info**
-
-The main application module is pre-selected and required. The **Expose** toggle controls whether the module endpoint is publicly accessible.
+The main application module cannot be removed.
 </Info>
 
-4\. Under **Deployment details**, enter a name for the deployment.
+Some models include optional modules listed below the main module card. **Open WebUI** is a browser-based chat interface that lets users interact with the deployed model without writing code. To enable it, toggle it on.
 
-5\. (Optional) Under **Additional options**, enable the **Enable API Key authentication** toggle to restrict access using [API keys](/edge-ai/everywhere-inference/api-keys/create-inference-deployment-with-auth).
+When enabled, Open WebUI runs as a separate module with its own compute settings:
 
-6\. Review the estimated cost in the right panel, then click **Deploy model**.
+- **Expose** — controls whether the Open WebUI endpoint is publicly accessible.
+- **Flavor type** — select **CPU-optimized** or **GPU-optimized**.
+- **Flavor** — select the hardware configuration for the Open WebUI module.
+- **Minimum pods** and **Maximum pods** — set the pod scaling range for the module.
 
-After the deployment is created, Gcore redirects you to the **Deployments** page where you can monitor the deployment status.
+<Frame>![Open WebUI module enabled showing Expose, Flavor type, Flavor, and pod count settings](/images/docs/edge-ai/everywhere-inference/ai-models/deploy-from-catalog/deploy-from-catalog-webui.png)</Frame>
+
+<Info>
+Each enabled module consumes one inference instance from the quota.
+</Info>
+
+## Step 5. Name the deployment
+
+Under **Deployment details**, enter a name for the deployment. Use only letters and numbers — hyphens are not allowed in deployment names.
+
+## Step 6. Set additional options
+
+(Optional) Enable the **Enable API Key authentication** toggle to restrict access using [API keys](/edge-ai/everywhere-inference/api-keys/create-inference-deployment-with-auth).
+
+<Frame>![Additional options section with Enable API Key authentication toggle enabled and API key selector](/images/docs/edge-ai/everywhere-inference/ai-models/deploy-from-catalog/deploy-from-catalog-additional-options.png)</Frame>
+
+## Step 7. Deploy
+
+Review the estimated cost in the right panel, then click **Deploy model**.
+
+Gcore creates the deployment and opens the **Deployments** page, where the deployment status is visible.
