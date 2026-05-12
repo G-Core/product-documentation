@@ -1,0 +1,478 @@
+---
+title: Translate text with Llama 3.2
+sidebarTitle: Translate text
+ai-navigation: Use a deployed Llama 3.2 model on Gcore Everywhere Inference to translate text between languages. Covers the system prompt pattern, request parameters, curl, Python, and JavaScript code examples, edge case handling, and output style control.
+---
+
+[Llama 3.2](https://ai.meta.com/blog/llama-3-2-connect-2024-vision-edge-mobile/) supports multilingual input and output across eight languages: English, French, German, Spanish, Italian, Portuguese, Hindi, and Thai. This article covers using a deployed Llama 3.2 model on [Gcore](https://gcore.com) Everywhere Inference to translate text via the API. The endpoint URL is available on the **Overview** tab of the deployment detail page.
+
+<Info>
+Translation quality scales with model size. Llama 3.2 1B is suitable for short strings — UI labels, notifications, and short paragraphs — and performs best on European languages. Hindi and Thai, and any content longer than a paragraph, benefit from a larger variant: Llama 3.2 3B or Llama 3.3 70B.
+</Info>
+
+Unlike dedicated translation APIs, LLM-based translation is instruction-driven — the model uses a system prompt to determine source language, target language, and output format. This gives full control over output style, register (formal vs informal), and what gets returned, but requires explicit prompt structure to avoid the model adding commentary or returning bilingual output.
+
+## Use cases
+
+LLM-based translation fits use cases where output style, register, or context must be controlled through instructions — capabilities that are not available in purpose-built translation APIs. Practical scenarios where this approach is the right architectural choice:
+
+- **Brand-consistent UI copy.** Pass a system prompt that specifies tone, formality level, and brand terminology. The output matches the style guide rather than producing a generic machine translation.
+- **Domain-specific content.** Technical documentation, cloud console labels, and API error messages contain abbreviations and product names that general-purpose translation APIs treat as translatable strings. A system prompt can instruct the model to leave specific terms untouched.
+- **Context-aware short strings.** A string like "Cancel" or "Apply" translates differently as a button label versus a legal clause. Passing the context in the system prompt produces more appropriate output.
+- **Unified inference infrastructure.** If the application already uses [Everywhere Inference](/edge-ai/everywhere-inference) for other tasks, translation runs on the same endpoint, the same billing, and the same deployment — no additional vendor or API key to manage.
+- **Prototype and low-volume pipelines.** For internal tools, admin panels, or early-stage products with moderate request volume, a single Llama deployment covers translation alongside other model tasks.
+
+## Translation prompt pattern
+
+A well-formed system prompt for translation has three explicit constraints: the source language, the target language, and a return-only instruction. The return-only instruction is critical — without it, the model tends to include the original text, explanatory notes, or formatting that breaks downstream parsing:
+
+```
+You are a professional translator.
+The user will give you a text in <source language>.
+Translate it to <target language>.
+Return only the translated text.
+Do not include the original text, notes, or any other content.
+```
+
+Omitting the source language causes the model to infer it, which increases the chance of misclassification on short strings or mixed-language input.
+
+## Request parameters
+
+The translation request follows the standard Chat Completions format. Two parameters have translation-specific behavior worth noting: `temperature` directly affects terminology consistency across repeated calls, and `max_tokens` must account for the fact that translation length is not proportional to source length — Portuguese and German expansions of English strings can reach 130–150% of the original token count.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `model` | string | Model identifier. Use the exact `id` value from `/v1/models`, e.g. `meta-llama/Llama-3.2-1B-Instruct`. |
+| `messages` | array | The `system` role carries the translation instructions; the `user` role carries the text to translate. |
+| `temperature` | float | Controls output randomness. Translation tasks require a low value (`0.1`) — higher values introduce paraphrasing and inconsistent terminology across repeated calls. |
+| `max_tokens` | integer | Maximum tokens in the generated output. Translation length is not 1:1 with source length — some languages are significantly more verbose. Set this to at least 2× the source token count to avoid mid-sentence truncation. |
+
+## Single-language translation
+
+The following examples send an English UI string to the model with a French translation instruction. The `translate` function in Python and JavaScript accepts the target language as a parameter, making it reusable across all supported languages without duplicating the client setup.
+
+<CodeGroup>
+
+```bash curl
+curl -X POST "<ENDPOINT_URL>/v1/chat/completions" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "meta-llama/Llama-3.2-1B-Instruct",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are a professional translator. The user will give you a text in English. Translate it to French. Return only the translated text. Do not include the original text, notes, or any other content."
+      },
+      {
+        "role": "user",
+        "content": "Welcome to Gcore. Your account has been created successfully."
+      }
+    ],
+    "max_tokens": 200,
+    "temperature": 0.1
+  }'
+```
+
+```python Python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="<ENDPOINT_URL>/v1",
+    api_key="none",
+)
+
+def translate(text: str, target_lang: str) -> str:
+    response = client.chat.completions.create(
+        model="meta-llama/Llama-3.2-1B-Instruct",
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    f"You are a professional translator. "
+                    f"The user will give you a text in English. "
+                    f"Translate it to {target_lang}. "
+                    f"Return only the translated text. "
+                    f"Do not include the original text, notes, or any other content."
+                ),
+            },
+            {"role": "user", "content": text},
+        ],
+        max_tokens=200,
+        temperature=0.1,
+    )
+    return response.choices[0].message.content.strip()
+
+source = "Welcome to Gcore. Your account has been created successfully."
+print(translate(source, "French"))
+```
+
+```javascript JavaScript
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  baseURL: "<ENDPOINT_URL>/v1",
+  apiKey: "none",
+});
+
+async function translate(text, targetLang) {
+  const response = await client.chat.completions.create({
+    model: "meta-llama/Llama-3.2-1B-Instruct",
+    messages: [
+      {
+        role: "system",
+        content:
+          `You are a professional translator. ` +
+          `The user will give you a text in English. ` +
+          `Translate it to ${targetLang}. ` +
+          `Return only the translated text. ` +
+          `Do not include the original text, notes, or any other content.`,
+      },
+      { role: "user", content: text },
+    ],
+    max_tokens: 200,
+    temperature: 0.1,
+  });
+  return response.choices[0].message.content.trim();
+}
+
+const source = "Welcome to Gcore. Your account has been created successfully.";
+console.log(await translate(source, "French"));
+```
+
+</CodeGroup>
+
+## Multi-language translation
+
+Each language requires a separate API call — the model does not support multi-target translation in a single request. Loop over the target language list and call the same endpoint for each:
+
+<CodeGroup>
+
+```bash curl
+languages=("French" "German" "Spanish" "Italian" "Portuguese")
+source="Welcome to Gcore. Your account has been created successfully."
+
+for lang in "${languages[@]}"; do
+  echo -n "$lang: "
+  curl -s -X POST "<ENDPOINT_URL>/v1/chat/completions" \
+    -H "Content-Type: application/json" \
+    -d "{
+      \"model\": \"meta-llama/Llama-3.2-1B-Instruct\",
+      \"messages\": [
+        {
+          \"role\": \"system\",
+          \"content\": \"You are a professional translator. The user will give you a text in English. Translate it to $lang. Return only the translated text. Do not include the original text, notes, or any other content.\"
+        },
+        {\"role\": \"user\", \"content\": \"$source\"}
+      ],
+      \"max_tokens\": 200,
+      \"temperature\": 0.1
+    }" | jq -r '.choices[0].message.content'
+done
+```
+
+```python Python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="<ENDPOINT_URL>/v1",
+    api_key="none",
+)
+
+def translate(text: str, target_lang: str) -> str:
+    response = client.chat.completions.create(
+        model="meta-llama/Llama-3.2-1B-Instruct",
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    f"You are a professional translator. "
+                    f"The user will give you a text in English. "
+                    f"Translate it to {target_lang}. "
+                    f"Return only the translated text. "
+                    f"Do not include the original text, notes, or any other content."
+                ),
+            },
+            {"role": "user", "content": text},
+        ],
+        max_tokens=200,
+        temperature=0.1,
+    )
+    return response.choices[0].message.content.strip()
+
+source = "Welcome to Gcore. Your account has been created successfully."
+languages = ["French", "German", "Spanish", "Italian", "Portuguese"]
+
+for lang in languages:
+    print(f"{lang}: {translate(source, lang)}")
+```
+
+```javascript JavaScript
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  baseURL: "<ENDPOINT_URL>/v1",
+  apiKey: "none",
+});
+
+async function translate(text, targetLang) {
+  const response = await client.chat.completions.create({
+    model: "meta-llama/Llama-3.2-1B-Instruct",
+    messages: [
+      {
+        role: "system",
+        content:
+          `You are a professional translator. ` +
+          `The user will give you a text in English. ` +
+          `Translate it to ${targetLang}. ` +
+          `Return only the translated text. ` +
+          `Do not include the original text, notes, or any other content.`,
+      },
+      { role: "user", content: text },
+    ],
+    max_tokens: 200,
+    temperature: 0.1,
+  });
+  return response.choices[0].message.content.trim();
+}
+
+const source = "Welcome to Gcore. Your account has been created successfully.";
+const languages = ["French", "German", "Spanish", "Italian", "Portuguese"];
+
+for (const lang of languages) {
+  console.log(`${lang}: ${await translate(source, lang)}`);
+}
+```
+
+</CodeGroup>
+
+## Output validation
+
+Even with an explicit system prompt, the model may occasionally return output that includes the original text, adds a "Translation:" prefix, or produces a response significantly longer than the source. A defensive wrapper validates the output before using it:
+
+<CodeGroup>
+
+```bash curl
+translate() {
+  local text="$1"
+  local target_lang="$2"
+  local word_count=$(echo "$text" | wc -w)
+  local max_tokens=$(( word_count * 4 > 100 ? word_count * 4 : 100 ))
+
+  result=$(curl -s -X POST "<ENDPOINT_URL>/v1/chat/completions" \
+    -H "Content-Type: application/json" \
+    -d "{
+      \"model\": \"meta-llama/Llama-3.2-1B-Instruct\",
+      \"messages\": [
+        {
+          \"role\": \"system\",
+          \"content\": \"You are a professional translator. The user will give you a text in English. Translate it to $target_lang. Return only the translated text. Do not include the original text, notes, or any other content.\"
+        },
+        {\"role\": \"user\", \"content\": \"$text\"}
+      ],
+      \"max_tokens\": $max_tokens,
+      \"temperature\": 0.1
+    }" | jq -r '.choices[0].message.content')
+
+  # Strip common prefixes the model sometimes adds
+  result=$(echo "$result" | sed 's/^[Tt]ranslation[[:space:]]*:[[:space:]]*//' \
+                          | sed 's/^[Oo]utput[[:space:]]*:[[:space:]]*//')
+
+  # If the result contains the original text, retry with a stricter prompt
+  if echo "$result" | grep -qi "$text"; then
+    result=$(curl -s -X POST "<ENDPOINT_URL>/v1/chat/completions" \
+      -H "Content-Type: application/json" \
+      -d "{
+        \"model\": \"meta-llama/Llama-3.2-1B-Instruct\",
+        \"messages\": [
+          {
+            \"role\": \"system\",
+            \"content\": \"Translate the following text to $target_lang. Return the $target_lang translation only. Do not write anything else.\"
+          },
+          {\"role\": \"user\", \"content\": \"$text\"}
+        ],
+        \"max_tokens\": $max_tokens,
+        \"temperature\": 0
+      }" | jq -r '.choices[0].message.content')
+  fi
+
+  echo "$result"
+}
+
+translate "Welcome to Gcore. Your account has been created successfully." "French"
+```
+
+```python Python
+import re
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="<ENDPOINT_URL>/v1",
+    api_key="none",
+)
+
+MODEL = "meta-llama/Llama-3.2-1B-Instruct"
+
+
+def translate(text: str, target_lang: str) -> str:
+    word_count = len(text.split())
+    max_tokens = max(100, word_count * 4)
+
+    response = client.chat.completions.create(
+        model=MODEL,
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    f"You are a professional translator. "
+                    f"The user will give you a text in English. "
+                    f"Translate it to {target_lang}. "
+                    f"Return only the translated text. "
+                    f"Do not include the original text, notes, or any other content."
+                ),
+            },
+            {"role": "user", "content": text},
+        ],
+        max_tokens=max_tokens,
+        temperature=0.1,
+    )
+
+    result = response.choices[0].message.content.strip()
+
+    # Strip common prefixes the model sometimes adds
+    result = re.sub(r"^(Translation|Translated text|Output)\s*:\s*", "", result, flags=re.IGNORECASE)
+
+    # If the result contains the original text, the model likely returned bilingual output
+    if text.lower() in result.lower():
+        return _translate_strict(text, target_lang, max_tokens)
+
+    return result
+
+
+def _translate_strict(text: str, target_lang: str, max_tokens: int) -> str:
+    response = client.chat.completions.create(
+        model=MODEL,
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    f"Translate the following text to {target_lang}. "
+                    f"Return the {target_lang} translation only. "
+                    f"Do not write anything else."
+                ),
+            },
+            {"role": "user", "content": text},
+        ],
+        max_tokens=max_tokens,
+        temperature=0,
+    )
+    return response.choices[0].message.content.strip()
+
+
+print(translate("Welcome to Gcore. Your account has been created successfully.", "French"))
+```
+
+```javascript JavaScript
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  baseURL: "<ENDPOINT_URL>/v1",
+  apiKey: "none",
+});
+
+async function translate(text, targetLang, model = "meta-llama/Llama-3.2-1B-Instruct") {
+  const maxTokens = Math.max(100, text.split(/\s+/).length * 4);
+
+  const response = await client.chat.completions.create({
+    model,
+    messages: [
+      {
+        role: "system",
+        content:
+          `You are a professional translator. ` +
+          `The user will give you a text in English. ` +
+          `Translate it to ${targetLang}. ` +
+          `Return only the translated text. ` +
+          `Do not include the original text, notes, or any other content.`,
+      },
+      { role: "user", content: text },
+    ],
+    max_tokens: maxTokens,
+    temperature: 0.1,
+  });
+
+  let result = response.choices[0].message.content.trim();
+
+  // Strip common prefixes the model sometimes adds
+  result = result.replace(/^(Translation|Translated text|Output)\s*:\s*/i, "");
+
+  // If the result contains the original text, retry with a stricter prompt
+  if (result.toLowerCase().includes(text.toLowerCase())) {
+    return translateStrict(text, targetLang, model, maxTokens);
+  }
+
+  return result;
+}
+
+async function translateStrict(text, targetLang, model, maxTokens) {
+  const response = await client.chat.completions.create({
+    model,
+    messages: [
+      {
+        role: "system",
+        content:
+          `Translate the following text to ${targetLang}. ` +
+          `Return the ${targetLang} translation only. ` +
+          `Do not write anything else.`,
+      },
+      { role: "user", content: text },
+    ],
+    max_tokens: maxTokens,
+    temperature: 0,
+  });
+  return response.choices[0].message.content.trim();
+}
+
+const result = await translate(
+  "Welcome to Gcore. Your account has been created successfully.",
+  "French"
+);
+console.log(result);
+```
+
+</CodeGroup>
+
+## Output style and context
+
+The system prompt accepts arbitrary natural language instructions, which enables output style control that dedicated translation APIs do not support natively.
+
+**Formal vs informal register:**
+
+```
+Translate it to French using formal language (vous, not tu).
+```
+
+**Domain-specific terminology:**
+
+```
+Translate it to German. This is a cloud infrastructure interface.
+Use technical terminology. Do not translate product names or abbreviations.
+```
+
+**UI element context** — short strings like "Cancel" or "Submit" can be ambiguous without context:
+
+```
+Translate it to Spanish. The text is a button label in a web application.
+Keep it short and imperative.
+```
+
+**Strings with interpolated variables** — instruct the model to preserve placeholders unchanged:
+
+```
+Translate it to Portuguese. Preserve any content in curly braces exactly as-is
+({user_name}, {count}, etc.). Do not translate or modify these placeholders.
+```
+
+The same approach applies to HTML strings: instruct the model to return valid HTML and not modify tag names, attributes, or entity references — only the visible text content.
+
+The [deployment detail page](/edge-ai/everywhere-inference/ai-models/manage-ai-model-deployments) provides the endpoint URL, monitoring charts, and per-request logs for debugging unexpected output.
+
