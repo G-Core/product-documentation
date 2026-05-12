@@ -1,60 +1,119 @@
 ---
-title: Create an inference deployment with authorization
-sidebarTitle: Create an inference deployment with authorization
-ai-navigation: Create an inference deployment with authorization enabled by setting the authorization option during deployment, then retrieve the auto-generated API Key via the Gcore Inference API endpoint and include it in the Authorization header for all subsequent API requests.
+title: Inference deployment with API key authentication
+sidebarTitle: Inference deployment with API key authentication
+ai-navigation: Set up API key authentication for an Everywhere Inference deployment by creating a project-level API key, linking it to a deployment, and including the key in the X-API-Key header of every inference request.
 ---
 
-To ensure that only authenticated clients can access your AI models, you must deploy an inference instance with authorization enabled.
+API key authentication restricts access to a deployment endpoint. Without it, anyone with the endpoint URL can query the model. With authentication enabled, every request must include a valid `X-API-Key` header — requests without a valid key receive an HTTP 401 response.
 
-## Step 1. Enable authorization
+API keys are managed at the project level in Everywhere Inference > API Keys. A single key can be linked to multiple deployments, and a deployment can have multiple keys linked simultaneously.
 
-When deploying an AI model, set the `auth_enabled` option to `true`. This means an API Key will be automatically generated and linked to the deployment.
+## API key creation
 
-## Step 2. Retrieve the API key
+In the [Gcore Customer Portal](https://portal.gcore.com/), navigate to **Everywhere Inference** > **API Keys** and click **Create API Key**.
 
-Once the deployment is created with authentication enabled, you can retrieve the API Key via the designated API endpoint.
+<Frame>![API Keys page](/images/docs/edge-ai/everywhere-inference/api-keys/create-inference-deployment-with-auth/create-auth-1.png)</Frame>
 
-### API request
+The **Add API Key** dialog opens. Fill in the fields:
 
-The API key can be retrieved via [this endpoint](https://api.gcore.com/docs/cloud#tag/Everywhere-Inference/operation/InferenceInstanceApikeySecretHandlerV3.get). 
+- **Name** — a label to identify the key across deployments.
+- **Description** — optional note describing the key's purpose or owner.
+- **Expires at** — set a fixed expiration date or leave as **Never expire** for a permanent key.
 
-<Info>
-**Info**
+<Frame>![Add API Key dialog](/images/docs/edge-ai/everywhere-inference/api-keys/create-inference-deployment-with-auth/create-auth-2.png)</Frame>
 
-The API Key is only available through this endpoint. Store it securely.
-</Info>
+Click **Add**. The key value appears once — copy it immediately and store it securely. It cannot be retrieved later.
 
-## Step 3. Use the API key for authorization
+<Frame>![API key value shown once after creation](/images/docs/edge-ai/everywhere-inference/api-keys/create-inference-deployment-with-auth/create-auth-3.png)</Frame>
 
-Once you have retrieved the API Key, include it in your API requests using the `X-API-Key` header.
+## Deployment authentication
 
-### Example using OpenAI python client library
+API key authentication is configured during deployment. The steps below use **meta-llama/Llama-3.2-1B-Instruct** deployed from the [Application Catalog](/edge-ai/everywhere-inference/ai-models/deploy-from-catalog). The same **Additional options** section is available when deploying a [custom model](/edge-ai/everywhere-inference/ai-models/deploy-a-custom-model).
 
-Here's an example demonstrating how to use the API key for authorization:
+### Step 1. Deployment form
 
-```python
-from openai import OpenAI
+In the Gcore Customer Portal, navigate to **Everywhere Inference** > **Application Catalog**, select a model, and click **Deploy Application**. The Create Deployment form opens.
 
-def get_llm_response(message: str) -> str:
-    client = OpenAI(api_key=LLM_KEY, base_url=f"{LLM_API}/v1")
+### Step 2. Additional options
 
-    response = client.chat.completions.create(
-        model="meta-llama/Llama-3.3-70B-Instruct",
-        messages=[
-            {"role": "user", "content": message},
-        ],
-        extra_headers={"X-API-Key": LLM_KEY},
-    )
-    return response.choices[0].message.content
+Scroll to the **Additional options** section and enable the **Enable API Key authentication** toggle. A dropdown labeled **API keys** appears, showing all keys created in the project. Select one or more keys to link to this deployment.
 
-if __name__ == "__main__":
-    print(get_llm_response("Why is the sky blue?"))
+<Frame>![Enable API Key authentication toggle with key selected](/images/docs/edge-ai/everywhere-inference/api-keys/create-inference-deployment-with-auth/create-auth-4.png)</Frame>
+
+Complete the remaining deployment fields (region, flavor, deployment name) and click **Deploy model**. Once the deployment reaches **Deployed** status, the endpoint accepts only requests that include a linked key.
+
+## Authenticated requests
+
+Include the API key in the `X-API-Key` header on every request. The endpoint rejects requests that omit the header or provide a key not linked to the deployment.
+
+<CodeGroup>
+```bash curl
+ENDPOINT_URL="https://model-<deployment-name>.<project>.ai.gcore.dev"
+API_KEY="<api-key>"
+MODEL="meta-llama/Llama-3.2-1B-Instruct"
+
+curl "${ENDPOINT_URL}/v1/chat/completions" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: ${API_KEY}" \
+  -d '{
+    "model": "'"${MODEL}"'",
+    "messages": [{"role": "user", "content": "Explain gradient descent in two sentences."}]
+  }'
 ```
 
-<Info>
-**Info**
+```python Python
+from openai import OpenAI
 
-For Gcore deployments with authorization enabled, the `X-API-Key` header is mandatory in all API requests.
+ENDPOINT_URL = "https://model-<deployment-name>.<project>.ai.gcore.dev"
+API_KEY = "<api-key>"
+MODEL = "meta-llama/Llama-3.2-1B-Instruct"
+
+client = OpenAI(
+    base_url=f"{ENDPOINT_URL}/v1",
+    api_key="unused",
+)
+
+response = client.chat.completions.create(
+    model=MODEL,
+    messages=[{"role": "user", "content": "Explain gradient descent in two sentences."}],
+    extra_headers={"X-API-Key": API_KEY},
+)
+
+print(response.choices[0].message.content)
+```
+
+```javascript JavaScript
+const ENDPOINT_URL = "https://model-<deployment-name>.<project>.ai.gcore.dev";
+const API_KEY = "<api-key>";
+const MODEL = "meta-llama/Llama-3.2-1B-Instruct";
+
+const response = await fetch(`${ENDPOINT_URL}/v1/chat/completions`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "X-API-Key": API_KEY,
+  },
+  body: JSON.stringify({
+    model: MODEL,
+    messages: [{ role: "user", content: "Explain gradient descent in two sentences." }],
+  }),
+});
+
+const data = await response.json();
+console.log(data.choices[0].message.content);
+```
+</CodeGroup>
+
+<Info>
+The OpenAI Python client requires a non-empty `api_key` parameter even when the endpoint does not validate it. Pass any string, and provide the actual key via `extra_headers`.
 </Info>
 
-To learn more about deploying AI models, refer to [our dedicated guide](/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model).
+## API Keys authentication tab
+
+The **API Keys authentication** tab on the deployment detail page shows which keys are currently linked and allows adding or removing keys without redeploying. Changes take effect on the next request after saving.
+
+<Frame>![API Keys authentication tab on deployment detail page](/images/docs/edge-ai/everywhere-inference/api-keys/create-inference-deployment-with-auth/create-auth-5.png)</Frame>
+
+To add a key, open the **API keys** dropdown and select a key from the project-level list. To unlink a key, deselect it from the same dropdown. Click **Save changes** to apply.
+
+Disabling the **Enable API Key authentication** toggle on this tab removes the authentication requirement from the deployment entirely — all requests are accepted regardless of headers.
