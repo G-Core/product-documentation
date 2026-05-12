@@ -4,11 +4,11 @@ sidebarTitle: "Prepare a custom AI model for deployment"
 ai-navigation: Prepare custom AI models for deployment by containerizing with vLLM or Diffusers, optimizing via quantization and pruning, building Docker images from Hugging Face models, and pushing to a container registry for inference serving.
 ---
 
-This guide covers preparing, containerizing, and deploying AI models. It explains how to package models into containers, push them to a registry, and deploy them for text-based inference with vLLM or image generation with Diffusers.
+Gcore Everywhere Inference runs custom AI models from container images. This article covers containerizing a model with vLLM or Diffusers, pushing the image to a registry, and deploying it.
 
 ## Train, test, and optimize the model for inference
 
-Before packaging a model into a container, it must be trained, validated, and optimized for inference. This includes training on relevant data, verifying accuracy, and applying optimization techniques such as quantization, pruning, or distillation to reduce computational overhead.
+Before packaging a model into a container, train, validate, and optimize it for inference. Apply techniques such as quantization, pruning, or distillation to reduce computational load.
 
 ## Containerization
 
@@ -16,13 +16,13 @@ To deploy an AI model, it must be packaged into a container image that meets ind
 
 ### vLLM
 
-vLLM is a fast and easy-to-use library for large language model inference and serving, optimized for efficient execution. It features PagedAttention for memory efficiency, continuous batching, and acceleration via CUDA/HIP graphs and FlashAttention. With support for speculative decoding, chunked prefill, and multiple quantization formats (GPTQ, AWQ, INT4, INT8, FP8), vLLM is well-suited for scalable LLM deployment.
+vLLM is a library for large language model inference and serving. It features PagedAttention for memory efficiency, continuous batching, and acceleration via CUDA/HIP graphs and FlashAttention. It supports speculative decoding, chunked prefill, and multiple quantization formats (GPTQ, AWQ, INT4, INT8, FP8).
 
-#### 1. Choose a base image
+#### Step 1. Choose a base image
 
-vLLM integrates with Hugging Face and other model repositories, making it ideal for tasks like chatbots, summarization, and code generation. The latest vLLM images are available in the [Docker Hub repository](https://hub.docker.com/r/vllm/vllm-openai/tags).
+vLLM integrates with Hugging Face and other model repositories. The latest vLLM images are available in the [Docker Hub repository](https://hub.docker.com/r/vllm/vllm-openai/tags).
 
-Use the official vLLM base image that supports the required model architecture for deployment:
+Use the official vLLM base image that supports the required model architecture:
 
 ```docker
 FROM vllm/vllm-openai:latest 
@@ -30,7 +30,7 @@ FROM vllm/vllm-openai:latest
 
 For custom models, modify the image during the build process.
 
-#### 2. Modify and build the image
+#### Step 2. Modify and build the image
 
 To include a specific model from Hugging Face, update the container with the required model and build the image:
 
@@ -40,40 +40,40 @@ RUN huggingface-cli download state-spaces/mamba-130m-hf
 ENTRYPOINT ["vllm", "serve", "state-spaces/mamba-130m-hf", "--host", "0.0.0.0", "--port", "80"]
 ```
 
-Then, build the container:
+Then build the container:
 
 ```bash
 docker build -t <IMAGE>:<TAG> .
 ```
 
-![Build the specific model from Hugging Face](/images/prepare-ai-model-1.png)
+<Frame>![Build the specific model from Hugging Face](/images/prepare-ai-model-1.png)</Frame>
 
-If you are building on macOS with Apple Silicon (M chips), use:
+On macOS with Apple Silicon (M chips), use:
 
 ```bash
 docker buildx build --platform linux/amd64 -t <IMAGE>:<TAG> .
 ```
 
-This forces the build to use the `linux/amd64` architecture, preventing potential compatibility issues when running on x86-64 cloud servers.
+This forces the `linux/amd64` architecture, preventing compatibility issues on x86-64 servers.
 
-#### 3. Push to registry
+#### Step 3. Push to registry
 
-After building the image, push it to a registry for deployment:
+After building the image, push it to a registry:
 
 ```bash
 docker tag <IMAGE> <REGISTRY>/<REPOSITORY>:<TAG>
 docker push <REGISTRY>/<REPOSITORY>:<TAG>
 ```
 
-![Tag and push the image to a registry](/images/prepare-ai-model-2.png)
+<Frame>![Tag and push the image to a registry](/images/prepare-ai-model-2.png)</Frame>
 
-This process embeds the model in the container, making it available for inference. You can also use the [Gcore Container Registry](https://gcore.com/docs/cloud/container-registry/create-container-registry) to store and manage your images for seamless deployment.
+The model is now embedded in the container and available for inference. The [Gcore Container Registry](/cloud/container-registry/create-container-registry) can be used to store and manage images for deployment.
 
 #### Configuration options
 
-vLLM provides various options to fine-tune performance and behavior. Some notable configurations include:
+vLLM provides options to adjust performance and behavior. Notable configurations include:
 
-| Paramter                  | Example                                                                                                                           | Description                                                                                                                                                                                                            |
+| Parameter                 | Example                                                                                                                           | Description                                                                                                                                                                                                            |
 | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `--trust-remote-code`     | `vllm serve state-spaces/mamba-130m-hf --trust-remote-code --host 0.0.0.0 --port 80`                                              | Allows running models that rely on custom Python code from Hugging Face’s Model Hub. By default, this setting is False, meaning vLLM will not execute any remote code unless explicitly allowed.                       |
 | `--max-model-len`         | `vllm serve state-spaces/mamba-130m-hf --max-model-len 2048 --host 0.0.0.0 --port 80`                                             | Sets the maximum number of tokens the model can process in a single request. This helps control memory usage and ensures proper processing of long texts.                                                              |
@@ -82,15 +82,15 @@ vLLM provides various options to fine-tune performance and behavior. Some notabl
 | `--served-model-name`     | `vllm serve state-spaces/mamba-130m-hf --served-model-name custom-model --host 0.0.0.0 --port 80`                                 | Specifies a custom name for the deployed model, making it easier to reference in API requests.                                                                                                                         |
 | `--enable-reasoning`      | `vllm serve deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B --enable-reasoning --reasoning-parser deepseek_r1 --host 0.0.0.0 --port 80` | Enables reasoning mode, allowing models to provide intermediate reasoning steps for better insight into the decision-making process. Requires `--reasoning-parser` to extract reasoning content from the model output. |
 
-These parameters can be combined in a single command. The[ vLLM documentation](https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html#cli-reference) provides a full list of configuration options and CLI commands.
+Combine these parameters in a single command. The [vLLM documentation](https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html#cli-reference) provides a full list of configuration options and CLI commands.
 
 ### Diffusers
 
-Diffusers is a library for running diffusion-based image generation models. Unlike vLLM, which provides a standardized inference system, it lacks a built-in serving interface, requiring additional code for integration. The environment must include CUDA, cuDNN, and PyTorch for smooth deployment. The models can be retrieved from the[ Hugging Face model hub](https://huggingface.co/models).
+Diffusers is a library for running diffusion-based image generation models. Unlike vLLM, it lacks a built-in serving interface, so inference code must be implemented separately. The environment must include CUDA, cuDNN, and PyTorch. Models are available on the [Hugging Face model hub](https://huggingface.co/models).
 
-#### 1. Choose a base image
+#### Step 1. Choose a base image
 
-Instead of building from scratch, use official images of the[ NVIDIA NGC AI Catalog](https://catalog.ngc.nvidia.com/) or[ PyTorch](https://hub.docker.com/r/pytorch/pytorch/tags).
+Instead of building from scratch, use official images from the [NVIDIA NGC AI Catalog](https://catalog.ngc.nvidia.com/) or [PyTorch](https://hub.docker.com/r/pytorch/pytorch/tags).
 
 The following Dockerfile starts with a PyTorch base image and installs Diffusers:
 
@@ -101,7 +101,7 @@ RUN pip install diffusers
 
 At this stage, the container does not yet have inference functionality.
 
-#### 2. Implement an inference API
+#### Step 2. Implement an inference API
 
 An API must be implemented since diffusers don’t include a built-in inference server. The following script loads a Stable Diffusion model, accepts a text prompt via API, and returns a generated image.
 
@@ -135,9 +135,9 @@ async def generate_image(request: Request):
 
 This API allows applications to send HTTP requests for on-demand image generation.
 
-#### 3. Create a Dockerfile
+#### Step 3. Create a Dockerfile
 
-The Dockerfile should include Diffusers and the API service. If authentication is required for specific models, provide the necessary token.
+The Dockerfile includes Diffusers and the API service. If the model requires authentication, provide the token in the Dockerfile.
 
 ```docker
 FROM pytorch/pytorch:2.6.0-cuda11.8-cudnn9-devel 
@@ -149,7 +149,7 @@ CMD ["uvicorn", "inference:app", "--host", "0.0.0.0", "--port", "80"]
 
 This setup prepares the model and API server to start automatically after deployment.
 
-#### 4. Push to registry
+#### Step 4. Push to registry
 
 After building the container, push it to a registry for deployment:
 
@@ -159,7 +159,7 @@ docker tag <IMAGE> <REGISTRY>/<REPOSITORY>
 docker push <REGISTRY>/<REPOSITORY>
 ```
 
-![Tag and push the image with diffusers library to a registry](/images/prepare-ai-model-3.png)
+<Frame>![Tag and push the image with diffusers library to a registry](/images/prepare-ai-model-3.png)</Frame>
 
 <Tip>
   Assign a new tag when updating the container to prevent Kubernetes from using outdated images.
@@ -167,8 +167,8 @@ docker push <REGISTRY>/<REPOSITORY>
 
 ## Deployment
 
-After uploading the container to a registry, you can deploy it. During this process, enter the model image URL from the registry. If the registry is public, use the model image URL directly. If the registry is private, provide authentication credentials, including the URL, username, and password. Find more details in the guide on [adding a container image registry](https://gcore.com/docs/edge-ai/everywhere-inference/container-image-registries/add-a-registry).
+After uploading the container to a registry, deploy it using the [Deploy a custom model](/edge-ai/everywhere-inference/ai-models/deploy-a-custom-model) guide. During deployment, enter the model image URL from the registry. For a private registry, provide authentication credentials — URL, username, and password — as described in [adding a container image registry](/edge-ai/everywhere-inference/container-image-registries/add-a-registry).
 
-![Enter the model image url](/images/prepare-ai-model-4.png)
+<Frame>![Custom model deployment form showing the Image URL field](/images/prepare-ai-model-4.png)</Frame>
 
-After deployment, you will receive an endpoint to send requests and receive responses from the model. Additional instructions are included in the inference instance [deployment guide](https://gcore.com/docs/edge-ai/everywhere-inference/ai-models/deploy-an-ai-model).
+The deployment provides an endpoint for sending requests to the model.
