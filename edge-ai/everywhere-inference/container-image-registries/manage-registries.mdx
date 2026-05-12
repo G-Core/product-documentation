@@ -1,28 +1,39 @@
 ---
 title: Manage container image registries
 sidebarTitle: Manage registries
-ai-navigation: Manage container image registries in Gcore Everywhere Inference by viewing registry names and URLs, editing authentication credentials, and deleting registries via the Customer Portal Registries interface.
+ai-navigation: View, edit, and delete container image registries in Gcore Everywhere Inference. Covers how registries are used in deployments, editing authentication credentials, and deleting a registry.
 ---
 
-The overview of your registries is available in the Gcore Customer Portal under **Everywhere Inference > Registries**.
+The **Registries** page in the Gcore Customer Portal lists all container image registries added to the project. Each registry stores the credentials Gcore uses to pull private container images when starting deployment pods. Navigate to **Everywhere Inference > Registries** to open the list.
 
+The registry table has two columns: **Image registry name** and **Image registry url**. The URL identifies the registry host, and the name is the label shown in the deployment form when selecting a registry.
 
-<Frame>![Manage registries](/images/docs/edge-ai/everywhere-inference/container-image-registries/manage-registries/manage-registries-1.png)</Frame>
+<Frame>![Registries list](/images/docs/edge-ai/everywhere-inference/container-image-registries/manage-registries/manage-registries-1.png)</Frame>
 
+## Registry in a deployment
 
+Registries are referenced when [deploying a custom container image](/edge-ai/everywhere-inference/ai-models/deploy-a-custom-model) from a private source. In the **Deploy custom model** form, set **Registry type** to **Private** — a **Registry** dropdown appears showing all registries added to the project. Select the registry that hosts the image, then enter the full image URL in the **Model image URL** field.
 
-The registry list contains the **Image registry names** and **URLs** of registries that you can use to deploy custom AI models.
+<Frame>![Deploy custom model form with Private registry type selected and Registry dropdown showing docs-test-registry](/images/docs/edge-ai/everywhere-inference/container-image-registries/manage-registries/manage-registries-4.png)</Frame>
 
-## Modify a registry
+Gcore uses the stored credentials to authenticate against the registry host and pull the image when the pod starts. The credentials are not embedded in the deployment — they are resolved at pod startup from the registry record.
 
-To edit or delete a registry, click the action menu of a registry on the right side of the table.
+<Frame>![Registry dropdown open showing the available registry](/images/docs/edge-ai/everywhere-inference/container-image-registries/manage-registries/manage-registries-5.png)</Frame>
 
+## Registry credentials
 
-<Frame>![Manage registries](/images/docs/edge-ai/everywhere-inference/container-image-registries/manage-registries/manage-registries-2.png)</Frame>
+Only authentication credentials can be updated on an existing registry. The registry name and URL are immutable — to use a different registry host, delete the registry and [add a new one](/edge-ai/everywhere-inference/container-image-registries/add-a-registry).
 
+To open the action menu, click the three-dot button on the right side of the registry row and select **Edit**.
 
+<Frame>![Registry action menu with Edit and Delete options](/images/docs/edge-ai/everywhere-inference/container-image-registries/manage-registries/manage-registries-2.png)</Frame>
 
-Clicking the **Edit** button opens the Edit registry dialog, where you can enter the authentication credentials for the registry you want to add.
+The **Edit registry** dialog opens. Enter the updated **Username** and **Password** and click **Save**. The new credentials take effect on the next pod pull — running pods are not affected until they restart.
 
+<Frame>![Edit registry dialog with Username and Password fields](/images/docs/edge-ai/everywhere-inference/container-image-registries/manage-registries/manage-registries-3.png)</Frame>
 
-<Frame>![Manage registries](/images/docs/edge-ai/everywhere-inference/container-image-registries/manage-registries/manage-registries-3.png)</Frame>
+## Registry deletion
+
+Deleting a registry removes the stored credentials from the project. Running deployments that already pulled the image continue operating. New pods — including autoscaled pods and pod restarts — will fail to pull the image until the registry is re-added with valid credentials.
+
+To delete a registry, click the three-dot button on the right side of the row and select **Delete**. Confirm the deletion in the dialog that appears.
