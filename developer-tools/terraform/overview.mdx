@@ -10,15 +10,43 @@ Terraform replaces manual steps in the [Gcore Customer Portal](https://portal.gc
 
 A provider is a plugin that translates Terraform configuration into API calls — it defines the resource types available for use, such as Virtual Machines, networks, and DNS zones. Two major versions of the Gcore provider are published; the right one depends on whether the project is new or existing:
 
-|  | v0 | v2 |
+|  | v2 | v0 |
 |--|----|----|
-| **Status** | Stable | Alpha |
-| **Authentication** | `permanent_api_token` | `api_key` |
-| **Terraform CLI** | >= 0.13.0 | >= 1.11 |
-| **API coverage** | Manual updates | Tracks Gcore API automatically |
-| **Recommended for** | Existing projects | New projects |
+| **Status** | Alpha | Stable |
+| **Authentication** | `api_key` | `permanent_api_token` |
+| **Terraform CLI** | >= 1.11 | >= 0.13.0 |
+| **API coverage** | Tracks Gcore API automatically | Manual updates |
+| **Recommended for** | New projects | Existing projects |
 
 Specify the version in the configuration to avoid unintended upgrades, because v0 and v2 use different, incompatible configuration formats. New projects start with v2, while existing v0 projects continue using v0 until [migration](/developer-tools/terraform/migrate-v0-to-v2) is practical.
+
+## Provider v2 configuration
+
+Provider v2 is a ground-up rewrite of the Gcore Terraform provider, auto-generated from the Gcore OpenAPI specification. It is designed to replace v0 — covering more resources, using consistent naming, and tracking the Gcore API automatically. Provider v2 uses `api_key` for authentication instead of `permanent_api_token`. Add the following to `main.tf`:
+
+```hcl
+terraform {
+  required_version = ">= 1.11"
+  required_providers {
+    gcore = {
+      source  = "G-Core/gcore"
+      version = "= 2.0.0-alpha.6" # check Terraform Registry for current version
+    }
+  }
+}
+
+provider "gcore" {
+  api_key = "YOUR_API_KEY"
+}
+```
+
+Replace `YOUR_API_KEY` with a permanent API token.
+
+<Info>
+v2 is in active development. Check [Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/latest) for the current alpha version and pin to that exact version to control when updates are applied. Submit bug reports on the [GitHub issues page](https://github.com/G-Core/terraform-provider-gcore/issues).
+</Info>
+
+Full configuration details and usage examples are in the [v2&nbsp;documentation](https://registry.terraform.io/providers/G-Core/gcore/latest/docs). For existing v0 projects, migration requires manual configuration updates — follow the [migration guide](/developer-tools/terraform/migrate-v0-to-v2).
 
 ## Provider v0 configuration
 
@@ -46,34 +74,6 @@ Replace `YOUR_PERMANENT_API_TOKEN` with a [permanent API token](/account-setting
 The `~> 0.34` notation keeps Terraform on the latest v0 patch release. To lock to an exact release, use `version = "0.34.0"` instead.
 </Info>
 
-## Provider v2 configuration
-
-Provider v2 uses `api_key` for authentication instead of `permanent_api_token`. Add the following to `main.tf`:
-
-```hcl
-terraform {
-  required_version = ">= 1.11"
-  required_providers {
-    gcore = {
-      source  = "G-Core/gcore"
-      version = "= 2.0.0-alpha.6"
-    }
-  }
-}
-
-provider "gcore" {
-  api_key = "YOUR_API_KEY"
-}
-```
-
-Replace `YOUR_API_KEY` with a permanent API token.
-
-<Info>
-v2 is in active development. Pin to an exact version (`= 2.0.0-alpha.6`) to control when updates are applied, and submit bug reports on the [GitHub issues page](https://github.com/G-Core/terraform-provider-gcore/issues).
-</Info>
-
-Full configuration details and usage examples are in the [v2&nbsp;documentation](https://registry.terraform.io/providers/G-Core/gcore/2.0.0-alpha.6/docs). For existing v0 projects, migration requires manual configuration updates — follow the [migration guide](/developer-tools/terraform/migrate-v0-to-v2).
-
 ## Manage Gcore resources
 
-The v0 provider supports [Cloud resources](/cloud/manage-cloud-via-terraform) — Virtual Machines, Bare Metal servers, Kubernetes clusters, Load Balancers, and networks — and [CDN resources](/cdn/terraform/manage-a-cdn-resource-with-terraform). For v2, the full resource reference is on the [Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/2.0.0-alpha.6/docs).
+The v0 provider supports [Cloud resources](/cloud/manage-cloud-via-terraform) — Virtual Machines, Bare Metal servers, Kubernetes clusters, Load Balancers, and networks — and [CDN resources](/cdn/terraform/manage-a-cdn-resource-with-terraform). For v2, the full resource reference is on the [Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/latest/docs).
