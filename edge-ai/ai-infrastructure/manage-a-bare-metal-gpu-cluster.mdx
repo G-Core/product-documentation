@@ -34,7 +34,7 @@ The page is organized into tabs: **Overview**, **Power**, **Networking**, **Tags
 The **Overview** tab lists all nodes (servers) in the cluster. Each node entry shows the node name, flavor, assigned IP addresses, status, timestamps, cost, and other metadata. The table supports filtering by name, date range, and status.
 
 <Info>
-All nodes in a cluster share the same configuration (image, network settings, file shares) defined at cluster creation.
+All nodes in a cluster share the same configuration (image, network settings, file shares) defined at cluster creation. These settings cannot be changed after the cluster is created.
 </Info>
 
 ## Resize a cluster
@@ -52,8 +52,12 @@ To resize a cluster:
 New nodes inherit the cluster's original configuration defined at creation time. The maximum number of nodes is limited by the current stock availability in the selected region.
 
 <Info>
-While a cluster is in the Resizing state, most management actions are unavailable.
+While a cluster is in the Resizing state, most management actions are unavailable. Bare Metal GPU nodes, especially H100 configurations, may take 15–40 minutes to provision.
 </Info>
+
+<Warning>
+Scaling down to zero nodes is not allowed and returns an error. A cluster must contain at least one node. To remove the cluster entirely, use the **Delete** tab.
+</Warning>
 
 <Warning>
 When scaling down, the system removes a random node from the cluster. To delete a specific node, use the per-node delete action instead of resize.
@@ -88,6 +92,7 @@ To control a single node:
    - **Soft reboot**: Graceful restart of the operating system
    - **Hard reboot**: If soft reboot fails, force restart the node
    - **Rebuild**: Reinstall the original operating system image used at cluster creation. All data on local storage is deleted.
+   - **Replace**: Delete the current node and provision a new one with the same configuration (flavor, image, network settings). Available in the UI and via the [Replace bare metal GPU cluster server](/api-reference/cloud/gpu-bare-metal/replace-bare-metal-gpu-cluster-server) API endpoint. Use this to recover a node stuck in a failed state without changing the cluster setup.
 
 <Frame>![Node actions menu showing power and management options](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/node-actions-menu.png)</Frame>
 
@@ -135,7 +140,7 @@ To add network interfaces on a specific node:
 4. Configure the interface type (public or private) and IP allocation settings as supported by the service.
 
 <Info>
-InfiniBand interfaces are managed automatically and cannot be modified or deleted. This prevents accidental disruption of inter-node communication.
+Only network interfaces can be modified on individual nodes after cluster creation. Image and storage configuration cannot be changed at the node level. InfiniBand interfaces are managed automatically and cannot be modified or deleted.
 </Info>
 
 ## Console access
@@ -196,12 +201,15 @@ To delete a cluster:
 Cluster deletion is irreversible. Data on local NVMe storage cannot be recovered.
 </Warning>
 
-## Limitations
+## Automating cluster management
 
-Current limitations for cluster management:
+The [Gcore Customer Portal](https://portal.gcore.com) is suitable for managing individual clusters. For automated workflows—such as CI/CD pipelines, infrastructure-as-code, or batch provisioning—use the GPU Bare Metal API.
 
-- **Provisioning time**: Bare Metal GPU servers, especially H100 configurations, may take 15-40 minutes to provision due to hardware preparation.
-- **Configuration immutability**: Cluster-level configuration is fixed at creation time. Image, file share integration, and network settings cannot be changed after cluster creation.
-- **Node-level settings**: Only network interfaces can be modified on individual nodes. Image and storage cannot be changed.
-- **Resize behavior**: Scaling down removes a random node. Use per-node delete for targeted removal.
-- **State-based restrictions**: Management actions are restricted while the cluster is in transitional states (for example, Resizing).
+The API allows:
+
+- Starting, stopping, and rebooting cluster nodes
+- Resizing clusters and replacing individual nodes
+- Managing network interfaces on cluster servers
+- Deleting clusters and individual nodes programmatically
+
+The [GPU Bare Metal API reference](/api-reference/cloud/gpu-bare-metal/create-bare-metal-gpu-cluster) provides endpoint details and code examples.
