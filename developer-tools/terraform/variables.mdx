@@ -1,0 +1,396 @@
+---
+title: "Use variables and organize a Terraform project"
+sidebarTitle: "Variables and project structure"
+---
+
+Hardcoding values directly in `main.tf` works for a quick test but breaks down as soon as a project grows: credentials end up in source control, switching between environments requires editing source files, and configuration becomes hard to review. Terraform input variables solve all three problems.
+
+This guide covers:
+
+- How to define variables and split configuration across multiple files
+- All four ways to assign values to variables
+- How to protect sensitive values
+- How to expose outputs
+- How to validate input and inspect variables interactively
+
+## Recommended project structure
+
+Instead of one monolithic `main.tf`, split configuration into purpose-specific files. Terraform loads all `.tf` files in a directory automatically, so the split is purely organizational.
+
+```
+gcore-terraform/
+├── providers.tf        # terraform block, required_providers, provider config
+├── variables.tf        # all variable declarations
+├── main.tf             # resources and data sources
+├── outputs.tf          # output values
+├── terraform.tfvars    # variable values (not committed to version control)
+└── .terraform.lock.hcl # committed to version control
+```
+
+<Info>
+`terraform.tfvars` often contains API keys and other secrets. Add it to `.gitignore`. Commit `.terraform.lock.hcl` to lock provider versions for the whole team.
+</Info>
+
+### providers.tf
+
+Move the provider configuration out of `main.tf` so it is easy to find and update:
+
+```hcl
+terraform {
+  required_version = ">= 1.11"
+  required_providers {
+    gcore = {
+      source  = "G-Core/gcore"
+      version = "= 2.0.0-alpha.6"
+    }
+  }
+}
+
+provider "gcore" {
+  api_key = var.api_key
+}
+```
+
+The `api_key` value now comes from a variable instead of being hardcoded.
+
+## Define variables
+
+All variable declarations go in `variables.tf`. A variable block has four optional fields:
+
+```hcl
+variable "project_name" {
+  description = "Name of the Gcore project to look up."
+  type        = string
+  default     = "Default"
+}
+```
+
+| Field | Purpose |
+|-------|---------|
+| `description` | Documents what the variable is for. Shown when running `terraform plan` and in generated documentation. |
+| `type` | Constrains the accepted value type. Terraform rejects a wrong type before connecting to any API. |
+| `default` | Makes the variable optional. If omitted, Terraform requires a value to be supplied. |
+| `sensitive` | When `true`, masks the value in all command output and state display. |
+
+### Variable types
+
+Terraform supports simple types and collection types.
+
+**Simple types**
+
+```hcl
+variable "api_key" {
+  type      = string
+  sensitive = true
+}
+
+variable "instance_count" {
+  type    = number
+  default = 2
+}
+
+variable "enable_monitoring" {
+  type    = bool
+  default = false
+}
+```
+
+**Collection types**
+
+```hcl
+variable "allowed_regions" {
+  description = "List of Gcore regions to deploy into."
+  type        = list(string)
+  default     = ["Luxembourg-2", "Amsterdam"]
+}
+
+variable "tags" {
+  description = "Tags applied to all resources."
+  type        = map(string)
+  default     = {
+    environment = "dev"
+    team        = "platform"
+  }
+}
+```
+
+Reference individual elements in configuration:
+
+```hcl
+# first region from the list
+region = var.allowed_regions[0]
+
+# value from a map
+environment_label = var.tags["environment"]
+```
+
+### Sensitive variables
+
+Mark variables that hold secrets with `sensitive = true`:
+
+```hcl
+variable "api_key" {
+  description = "Gcore permanent API token."
+  type        = string
+  sensitive   = true
+}
+```
+
+Terraform masks the value everywhere — in plan output, apply output, and the interactive console:
+
+```
+$ echo 'var.api_key' | terraform console
+(sensitive value)
+```
+
+The actual value is still stored in `terraform.tfstate`. Do not commit the state file to version control.
+
+### Input validation
+
+Add a `validation` block to catch bad values before Terraform makes any API call:
+
+```hcl
+variable "instance_count" {
+  description = "Number of instances to provision."
+  type        = number
+  default     = 1
+
+  validation {
+    condition     = var.instance_count >= 1 && var.instance_count <= 10
+    error_message = "instance_count must be between 1 and 10."
+  }
+}
+```
+
+If the value fails the condition, Terraform prints the error message and stops:
+
+```
+│ Error: Invalid value for variable
+│
+│   on variables.tf line 1:
+│    1: variable "instance_count" {
+│
+│ instance_count must be between 1 and 10.
+```
+
+## Assign values to variables
+
+Terraform resolves variable values in this order (later sources override earlier ones):
+
+| Priority | Method | Best for |
+|----------|--------|---------|
+| 1 (lowest) | `default` in variable block | Safe fallback values |
+| 2 | `terraform.tfvars` | Local development |
+| 3 | Named `.tfvars` file with `-var-file` | Multiple environments |
+| 4 | `-var` flag | One-off overrides |
+| 5 (highest) | `TF_VAR_*` environment variable | CI/CD pipelines, secrets managers |
+
+### terraform.tfvars
+
+Create `terraform.tfvars` in the project directory. Terraform loads it automatically without any flags:
+
+```hcl
+api_key      = "YOUR_API_KEY"
+project_name = "Default"
+```
+
+Run `terraform plan` — Terraform reads the file automatically:
+
+```
+$ terraform plan
+
+data.gcore_cloud_project.project: Reading...
+data.gcore_cloud_project.project: Read complete after 1s [name=Default]
+
+Changes to Outputs:
+  + project_id   = 1186668
+  + project_name = "Default"
+```
+
+### Named .tfvars files for multiple environments
+
+For separate environments (dev, staging, production), create one `.tfvars` file per environment:
+
+```
+gcore-terraform/
+├── dev.tfvars
+├── staging.tfvars
+└── production.tfvars
+```
+
+`staging.tfvars`:
+
+```hcl
+api_key      = "YOUR_API_KEY"
+project_name = "Staging"
+region_name  = "Amsterdam"
+```
+
+Pass the file explicitly with `-var-file`:
+
+```bash
+terraform plan -var-file="staging.tfvars"
+terraform apply -var-file="production.tfvars"
+```
+
+### -var flag
+
+Override a single variable without editing any file:
+
+```bash
+terraform plan -var="project_name=Staging"
+```
+
+Use multiple `-var` flags to override several variables at once:
+
+```bash
+terraform plan -var="project_name=Staging" -var="region_name=Amsterdam"
+```
+
+The `-var` flag takes the highest priority among file-based methods — it overrides values from `.tfvars` files.
+
+### TF_VAR_ environment variables
+
+Any variable named `example` can be set via the environment variable `TF_VAR_example`. This is the preferred method in CI/CD pipelines and secret managers where writing files is impractical.
+
+<Tabs>
+  <Tab title="PowerShell">
+    ```powershell
+    $env:TF_VAR_api_key = "YOUR_API_KEY"
+    $env:TF_VAR_project_name = "Default"
+    terraform plan
+    ```
+  </Tab>
+  <Tab title="Bash / Zsh">
+    ```bash
+    export TF_VAR_api_key="YOUR_API_KEY"
+    export TF_VAR_project_name="Default"
+    terraform plan
+    ```
+  </Tab>
+</Tabs>
+
+Terraform picks up the values without any flags or files.
+
+## Define outputs
+
+Outputs expose values from the Terraform state — useful for reading resource IDs after apply, or for passing values between configurations. All output declarations go in `outputs.tf`:
+
+```hcl
+output "project_id" {
+  description = "Numeric ID of the Gcore project."
+  value       = data.gcore_cloud_project.project.id
+}
+
+output "project_name" {
+  description = "Name of the resolved Gcore project."
+  value       = data.gcore_cloud_project.project.name
+}
+```
+
+After `terraform apply`, outputs print automatically:
+
+```
+Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+project_id   = 1186668
+project_name = "Default"
+```
+
+Print outputs at any time without re-running apply:
+
+```bash
+terraform output
+```
+
+```
+project_id   = 1186668
+project_name = "Default"
+```
+
+For scripting and automation, use JSON format:
+
+```bash
+terraform output -json
+```
+
+```json
+{
+  "project_id": {
+    "sensitive": false,
+    "type": "number",
+    "value": 1186668
+  },
+  "project_name": {
+    "sensitive": false,
+    "type": "string",
+    "value": "Default"
+  }
+}
+```
+
+Mark an output as sensitive to prevent it from printing in plain text:
+
+```hcl
+output "api_key_used" {
+  value     = var.api_key
+  sensitive = true
+}
+```
+
+## Inspect variables interactively
+
+`terraform console` opens an interactive REPL that evaluates expressions against the current configuration and state. Use it to check variable values and test expressions before using them in resources.
+
+```bash
+terraform console
+```
+
+```
+> var.project_name
+"Default"
+> var.api_key
+(sensitive value)
+> var.allowed_regions[0]
+"Luxembourg-2"
+> var.tags["environment"]
+"dev"
+```
+
+Type `exit` or press `Ctrl+D` to close the console.
+
+<Info>
+`terraform console` loads the configuration once at startup. After editing `.tf` files, exit and restart the console to see updated values.
+</Info>
+
+## .gitignore recommendations
+
+```gitignore
+# Provider binary and plugins
+.terraform/
+
+# State files — may contain secrets
+*.tfstate
+*.tfstate.backup
+
+# Override files
+*.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Crash logs
+crash.log
+crash.*.log
+```
+
+Commit `.terraform.lock.hcl` — it locks provider versions for the team and does not contain secrets.
+
+## Next steps
+
+- [Get started with Terraform](/developer-tools/terraform/get-started): install Terraform and run a first configuration end-to-end.
+- [Manage Cloud resources via Terraform](/cloud/manage-cloud-via-terraform): provision Virtual Machines, Kubernetes clusters, and networks using real Gcore resources.
+- [Gcore Terraform provider v2 on Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/2.0.0-alpha.6/docs): full resource reference with attribute documentation.
