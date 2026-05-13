@@ -1,0 +1,632 @@
+---
+title: Manage Cloud resources via Terraform
+sidebarTitle: Terraform (v2)
+ai-navigation: Create and manage Gcore Cloud resources—Virtual Machines, Bare Metal servers, Kubernetes clusters, Load Balancers, networks, volumes, security groups, and IP addresses—using Terraform provider v2.
+---
+
+The Gcore Terraform provider v2 supports the following Cloud resources: Virtual Machines, Bare Metal servers, Kubernetes clusters, Load Balancers, networks, volumes, security groups, floating IPs, and reserved IPs.
+
+Provider v2 uses numeric `project_id` and `region_id` fields directly in each resource instead of data source lookups. For provider installation and authentication, see the [Terraform overview](/developer-tools/terraform/overview).
+
+<Info>
+**Project and region IDs** are account-specific. Find your project ID and region IDs in the Customer Portal URL: `portal.gcore.com/cloud/project/<project_id>/region/<region_id>/...`. Image IDs, flavor names, and Bare Metal image IDs are region-specific — use the [Images API](https://api.gcore.com/docs/cloud#tag/Images/operation/ImageListV1ProjectsProjectIdRegionsRegionIdImagesGet) or the Portal to look them up for your region. The examples below use Luxembourg-2 (region ID `76`).
+</Info>
+
+## Workflow
+
+Add resource configuration to `main.tf`, then run:
+
+```sh
+terraform plan
+```
+
+Review the output, then apply:
+
+```sh
+terraform apply
+```
+
+Enter `yes` when prompted. The full attribute reference for each resource is on the [Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/latest/docs).
+
+## SSH keys
+
+An SSH key is required to access Linux instances and Bare Metal servers.
+
+```terraform
+resource "gcore_cloud_ssh_key" "deployer" {
+  project_id = 1
+  name       = "deployer-key"
+  public_key = "ssh-ed25519 AAAAC3... deployer@workstation"
+}
+```
+
+Generate a key pair locally with `ssh-keygen -t ed25519`, then paste the `.pub` file contents into `public_key`. To share the key with all users in the project, set `shared_in_project = true`.
+
+```sh
+terraform import gcore_cloud_ssh_key.deployer '<project_id>/<ssh_key_id>'
+```
+
+## Security groups
+
+Security groups control inbound and outbound traffic to instances. Each group contains rules added as separate resources.
+
+```terraform
+resource "gcore_cloud_security_group" "web" {
+  project_id = 1
+  region_id  = 1
+  name       = "web-server"
+}
+
+resource "gcore_cloud_security_group_rule" "ssh" {
+  project_id     = 1
+  region_id      = 1
+  group_id       = gcore_cloud_security_group.web.id
+  direction      = "ingress"
+  ethertype      = "IPv4"
+  protocol       = "tcp"
+  port_range_min = 22
+  port_range_max = 22
+}
+
+resource "gcore_cloud_security_group_rule" "http" {
+  project_id     = 1
+  region_id      = 1
+  group_id       = gcore_cloud_security_group.web.id
+  direction      = "ingress"
+  ethertype      = "IPv4"
+  protocol       = "tcp"
+  port_range_min = 80
+  port_range_max = 80
+}
+
+resource "gcore_cloud_security_group_rule" "https" {
+  project_id     = 1
+  region_id      = 1
+  group_id       = gcore_cloud_security_group.web.id
+  direction      = "ingress"
+  ethertype      = "IPv4"
+  protocol       = "tcp"
+  port_range_min = 443
+  port_range_max = 443
+}
+```
+
+`direction` accepts `ingress` or `egress`. `ethertype` accepts `IPv4` or `IPv6`. To allow all protocols, omit `protocol`, `port_range_min`, and `port_range_max`. Reference the security group ID in instance `interfaces` or the top-level `security_groups` block.
+
+```sh
+terraform import gcore_cloud_security_group.web '<project_id>/<region_id>/<security_group_id>'
+```
+
+## Networking
+
+### Network and subnet
+
+```terraform
+resource "gcore_cloud_network" "network" {
+  project_id = 1
+  region_id  = 1
+  name       = "my-network"
+  type       = "vxlan"
+}
+
+resource "gcore_cloud_network_subnet" "subnet" {
+  project_id      = 1
+  region_id       = 1
+  name            = "my-subnet"
+  cidr            = "192.168.10.0/24"
+  network_id      = gcore_cloud_network.network.id
+  dns_nameservers = ["8.8.4.4", "1.1.1.1"]
+  enable_dhcp     = true
+  gateway_ip      = "192.168.10.1"
+}
+```
+
+`type` accepts `vxlan` (default) or `vlan`. Bare Metal servers require `vlan`. To add static routes, add `host_routes` blocks with `destination` (CIDR) and `nexthop` (IP).
+
+```sh
+terraform import gcore_cloud_network.network '<project_id>/<region_id>/<network_id>'
+terraform import gcore_cloud_network_subnet.subnet '<project_id>/<region_id>/<subnet_id>'
+```
+
+### Reserved fixed IP
+
+A reserved fixed IP persists independently of instances and can be reattached to a new resource after it is destroyed.
+
+```terraform
+resource "gcore_cloud_reserved_fixed_ip" "external" {
+  project_id = 1
+  region_id  = 1
+  type       = "external"
+  is_vip     = false
+}
+```
+
+`type` accepts:
+
+| Value | Description |
+| --- | --- |
+| `external` | Public IP from the default external network |
+| `subnet` | IP from a specific subnet — also specify `network_id` and `subnet_id` |
+| `any_subnet` | IP from any subnet of a network — also specify `network_id` |
+| `ip_address` | Specific IP address — also specify `network_id`, `subnet_id`, `ip_address` |
+| `port` | Wrap an existing port — also specify `port_id` |
+
+Set `is_vip = true` to use the IP as a Virtual IP shared between multiple instances.
+
+```sh
+terraform import gcore_cloud_reserved_fixed_ip.external '<project_id>/<region_id>/<port_id>'
+```
+
+### Floating IP
+
+A floating IP provides a stable public address that can be moved between resources.
+
+```terraform
+resource "gcore_cloud_floating_ip" "web_ip" {
+  project_id       = 1
+  region_id        = 1
+  port_id          = gcore_cloud_reserved_fixed_ip.external.port_id
+  fixed_ip_address = gcore_cloud_reserved_fixed_ip.external.fixed_ip_address
+}
+```
+
+Omit `port_id` and `fixed_ip_address` to allocate an unattached floating IP for later use.
+
+```sh
+terraform import gcore_cloud_floating_ip.web_ip '<project_id>/<region_id>/<floating_ip_id>'
+```
+
+## Volumes
+
+```terraform
+resource "gcore_cloud_volume" "boot_volume" {
+  project_id = 1
+  region_id  = 1
+  name       = "my-boot-volume"
+  source     = "image"
+  image_id   = "65c211dc-5fdd-4592-9ce2-1f596c7c39e2" # ubuntu-24.04-x64 in Luxembourg-2
+  size       = 20
+  type_name  = "ssd_hiiops"
+}
+```
+
+`source` accepts `image`, `snapshot`, or `new-volume`. When using `snapshot`, `type_name` defaults to the source snapshot's volume type. `type_name` accepts: `standard`, `ssd_hiiops`, `ssd_local`, `ssd_lowlatency`, `cold`, `ultra`.
+
+To create a standalone data volume (not from an image):
+
+```terraform
+resource "gcore_cloud_volume" "data_volume" {
+  project_id = 1
+  region_id  = 1
+  name       = "my-data-volume"
+  source     = "new-volume"
+  size       = 50
+  type_name  = "standard"
+}
+```
+
+```sh
+terraform import gcore_cloud_volume.boot_volume '<project_id>/<region_id>/<volume_id>'
+```
+
+## Virtual Machines
+
+### Instance with a public interface
+
+```terraform
+resource "gcore_cloud_ssh_key" "my_key" {
+  project_id = 1
+  name       = "my-keypair"
+  public_key = "ssh-ed25519 ...your public key... user@example.com"
+}
+
+resource "gcore_cloud_volume" "boot_volume" {
+  project_id = 1
+  region_id  = 76
+  name       = "my-boot-volume"
+  source     = "image"
+  image_id   = "65c211dc-5fdd-4592-9ce2-1f596c7c39e2" # ubuntu-24.04-x64 in Luxembourg-2
+  size       = 20
+  type_name  = "ssd_hiiops"
+}
+
+resource "gcore_cloud_instance" "web" {
+  project_id   = 1
+  region_id    = 1
+  flavor       = "g1-standard-2-4"
+  name         = "my-instance"
+  ssh_key_name = gcore_cloud_ssh_key.my_key.name
+
+  volumes = [{ volume_id = gcore_cloud_volume.boot_volume.id }]
+
+  interfaces = [{
+    type      = "external"
+    ip_family = "ipv4"
+  }]
+}
+```
+
+Interface `type` accepts `external`, `subnet`, `any_subnet`, or `reserved_fixed_ip`. For `subnet`, also specify `network_id` and `subnet_id`. For `reserved_fixed_ip`, specify `port_id`. `ip_family` accepts `ipv4`, `ipv6`, or `dual`.
+
+Key optional fields on `gcore_cloud_instance`:
+
+| Field | Description |
+| --- | --- |
+| `security_groups` | List of security group IDs applied to all interfaces |
+| `user_data` | base64-encoded cloud-init script |
+| `username` / `password_wo` | Create a user at boot (Linux); set Admin password (Windows) |
+| `vm_state` | `active` to start, `stopped` to keep the instance off |
+| `tags` | Map of key-value labels |
+
+### Instance with two interfaces
+
+```terraform
+resource "gcore_cloud_instance" "app" {
+  project_id   = 1
+  region_id    = 1
+  flavor       = "g1-standard-2-4"
+  name         = "my-instance"
+  ssh_key_name = gcore_cloud_ssh_key.my_key.name
+
+  volumes = [{ volume_id = gcore_cloud_volume.boot_volume.id }]
+
+  interfaces = [
+    {
+      type      = "external"
+      ip_family = "ipv4"
+    },
+    {
+      type       = "subnet"
+      network_id = gcore_cloud_network.network.id
+      subnet_id  = gcore_cloud_network_subnet.subnet.id
+    },
+  ]
+}
+```
+
+### Instance with floating IP
+
+This configuration attaches a reserved IP with a floating IP to the instance.
+
+```terraform
+resource "gcore_cloud_reserved_fixed_ip" "fixed_ip" {
+  project_id = 1
+  region_id  = 1
+  type       = "subnet"
+  network_id = gcore_cloud_network.network.id
+  subnet_id  = gcore_cloud_network_subnet.subnet.id
+}
+
+resource "gcore_cloud_floating_ip" "floating_ip" {
+  project_id       = 1
+  region_id        = 1
+  fixed_ip_address = gcore_cloud_reserved_fixed_ip.fixed_ip.fixed_ip_address
+  port_id          = gcore_cloud_reserved_fixed_ip.fixed_ip.port_id
+}
+
+resource "gcore_cloud_instance" "web" {
+  project_id   = 1
+  region_id    = 1
+  flavor       = "g1-standard-2-4"
+  name         = "my-instance"
+  ssh_key_name = gcore_cloud_ssh_key.my_key.name
+
+  volumes = [{ volume_id = gcore_cloud_volume.boot_volume.id }]
+
+  interfaces = [{
+    type    = "reserved_fixed_ip"
+    port_id = gcore_cloud_reserved_fixed_ip.fixed_ip.port_id
+
+    floating_ip = {
+      source               = "existing"
+      existing_floating_id = gcore_cloud_floating_ip.floating_ip.id
+    }
+  }]
+}
+```
+
+To create a new floating IP inline without a separate resource, set `floating_ip.source = "new"` and omit `existing_floating_id`.
+
+### Windows instance
+
+```terraform
+resource "gcore_cloud_volume" "boot_volume_windows" {
+  project_id = 1
+  region_id  = 76
+  name       = "my-windows-boot-volume"
+  source     = "image"
+  image_id   = "f9edd0c5-74a9-46de-a954-74949d84d995" # windows-server-2022 in Luxembourg-2
+  size       = 50
+  type_name  = "ssd_hiiops"
+}
+
+resource "gcore_cloud_instance" "windows" {
+  project_id        = 1
+  region_id         = 76
+  flavor            = "g1w-standard-4-8"
+  name              = "my-windows-instance"
+  password_wo       = "my-s3cR3tP@ssw0rd"
+  password_wo_version = 1
+
+  volumes = [{ volume_id = gcore_cloud_volume.boot_volume_windows.id }]
+
+  interfaces = [{
+    type      = "external"
+    ip_family = "ipv4"
+  }]
+}
+```
+
+`password_wo` requires Terraform 1.11 or later (write-only argument). Increment `password_wo_version` to change the password after the instance is created. Use `user_data` with a base64-encoded PowerShell script to add additional users.
+
+```sh
+terraform import gcore_cloud_instance.web '<project_id>/<region_id>/<instance_id>'
+```
+
+## Bare Metal servers
+
+### Server with a public interface
+
+```terraform
+resource "gcore_cloud_ssh_key" "my_key" {
+  project_id = 1
+  name       = "my-keypair"
+  public_key = "ssh-ed25519 ...your public key... user@example.com"
+}
+
+resource "gcore_cloud_baremetal_server" "server" {
+  project_id   = 1
+  region_id    = 1
+  flavor       = "bm1-infrastructure-small"
+  name         = "my-bare-metal"
+  image_id     = "0f25a566-91a4-4507-aa42-bdd732fb998d"
+  ssh_key_name = gcore_cloud_ssh_key.my_key.name
+
+  interfaces = [{
+    type      = "external"
+    ip_family = "ipv4"
+  }]
+}
+```
+
+### Server with two interfaces
+
+Private networks for Bare Metal require `type = "vlan"` on the network resource.
+
+```terraform
+resource "gcore_cloud_network" "network" {
+  project_id = 1
+  region_id  = 1
+  name       = "my-network"
+  type       = "vlan"
+}
+
+resource "gcore_cloud_network_subnet" "subnet" {
+  project_id      = 1
+  region_id       = 1
+  name            = "my-subnet"
+  cidr            = "192.168.10.0/24"
+  network_id      = gcore_cloud_network.network.id
+  dns_nameservers = ["8.8.4.4", "1.1.1.1"]
+}
+
+resource "gcore_cloud_baremetal_server" "server" {
+  project_id   = 1
+  region_id    = 1
+  flavor       = "bm1-infrastructure-small"
+  name         = "my-bare-metal"
+  image_id     = "0f25a566-91a4-4507-aa42-bdd732fb998d"
+  ssh_key_name = gcore_cloud_ssh_key.my_key.name
+
+  interfaces = [
+    {
+      type      = "external"
+      ip_family = "ipv4"
+    },
+    {
+      type       = "subnet"
+      network_id = gcore_cloud_network.network.id
+      subnet_id  = gcore_cloud_network_subnet.subnet.id
+    },
+  ]
+}
+```
+
+### Windows Bare Metal server
+
+```terraform
+resource "gcore_cloud_baremetal_server" "windows_server" {
+  project_id          = 1
+  region_id           = 1
+  flavor              = "bm1-infrastructure-small"
+  name                = "my-windows-bare-metal"
+  image_id            = "408a0e4d-6a28-4bae-93fa-f738d964f555"
+  password_wo         = "my-s3cR3tP@ssw0rd"
+  password_wo_version = 1
+
+  interfaces = [{
+    type      = "external"
+    ip_family = "ipv4"
+  }]
+}
+```
+
+Interface `type` for Bare Metal accepts the same values as for instances: `external`, `subnet`, `any_subnet`, `reserved_fixed_ip`. Use `port_group` to group interfaces into trunks on servers that support bonding.
+
+```sh
+terraform import gcore_cloud_baremetal_server.server '<project_id>/<region_id>/<server_id>'
+```
+
+## Load Balancers
+
+A load balancer consists of a balancer resource, one or more listeners, and one or more pools. The following configuration creates a TCP load balancer with a health monitor and a backend member.
+
+```terraform
+resource "gcore_cloud_load_balancer" "lb" {
+  project_id = 1
+  region_id  = 1
+  name       = "my-load-balancer"
+  flavor     = "lb1-1-2"
+}
+
+resource "gcore_cloud_load_balancer_listener" "tcp_80" {
+  project_id       = 1
+  region_id        = 1
+  load_balancer_id = gcore_cloud_load_balancer.lb.id
+  name             = "tcp-80"
+  protocol         = "TCP"
+  protocol_port    = 80
+}
+
+resource "gcore_cloud_load_balancer_pool" "tcp_80" {
+  project_id       = 1
+  region_id        = 1
+  load_balancer_id = gcore_cloud_load_balancer.lb.id
+  listener_id      = gcore_cloud_load_balancer_listener.tcp_80.id
+  name             = "tcp-pool"
+  protocol         = "TCP"
+  lb_algorithm     = "ROUND_ROBIN"
+
+  healthmonitor = {
+    type        = "PING"
+    delay       = 10
+    max_retries = 5
+    timeout     = 5
+  }
+
+  members = [
+    {
+      address       = "192.168.10.10"
+      protocol_port = 80
+      subnet_id     = gcore_cloud_network_subnet.subnet.id
+      weight        = 1
+    }
+  ]
+}
+
+output "lb_ip" {
+  value = gcore_cloud_load_balancer.lb.vip_address
+}
+```
+
+Listener `protocol` accepts `HTTP`, `HTTPS`, `TCP`, `UDP`, `TERMINATED_HTTPS`, or `PROMETHEUS`. For `TERMINATED_HTTPS`, specify `secret_id` with the ID of a PKCS12 certificate stored in Secrets Manager.
+
+Pool `lb_algorithm` accepts `ROUND_ROBIN`, `LEAST_CONNECTIONS`, or `SOURCE_IP`. Pool members are identified by either `subnet_id` (IP-based routing) or `instance_id` (instance-aware routing).
+
+Health monitor `type` accepts `HTTP`, `HTTPS`, `PING`, `TCP`, `TLS-HELLO`, `UDP-CONNECT`, or `K8S`.
+
+To add a floating IP to the load balancer VIP:
+
+```terraform
+resource "gcore_cloud_floating_ip" "lb_fip" {
+  project_id       = 1
+  region_id        = 1
+  fixed_ip_address = gcore_cloud_load_balancer.lb.vip_address
+  port_id          = gcore_cloud_load_balancer.lb.vip_port_id
+}
+```
+
+To pin the VIP address across destroy/recreate cycles, create a `gcore_cloud_reserved_fixed_ip` first and reference it with `vip_port_id` on the load balancer.
+
+```sh
+terraform import gcore_cloud_load_balancer.lb '<project_id>/<region_id>/<load_balancer_id>'
+terraform import gcore_cloud_load_balancer_listener.tcp_80 '<project_id>/<region_id>/<listener_id>'
+terraform import gcore_cloud_load_balancer_pool.tcp_80 '<project_id>/<region_id>/<pool_id>'
+```
+
+## Kubernetes clusters
+
+### Cluster in a private network
+
+```terraform
+resource "gcore_cloud_network" "network" {
+  project_id = 1
+  region_id  = 1
+  name       = "my-network"
+}
+
+resource "gcore_cloud_network_subnet" "subnet" {
+  project_id = 1
+  region_id  = 1
+  name       = "my-subnet"
+  cidr       = "192.168.10.0/24"
+  network_id = gcore_cloud_network.network.id
+}
+
+resource "gcore_cloud_ssh_key" "keypair" {
+  project_id = 1
+  name       = "my-keypair"
+  public_key = "ssh-ed25519 ...your public key... user@example.com"
+}
+
+resource "gcore_cloud_k8s_cluster" "cluster" {
+  project_id    = 1
+  region_id     = 1
+  name          = "my-k8s-cluster"
+  fixed_network = gcore_cloud_network.network.id
+  fixed_subnet  = gcore_cloud_network_subnet.subnet.id
+  keypair       = gcore_cloud_ssh_key.keypair.name
+  version       = "v1.31.9"
+
+  pools = [{
+    name               = "my-k8s-pool"
+    flavor_id          = "g1-standard-2-4"
+    servergroup_policy = "soft-anti-affinity"
+    min_node_count     = 1
+    max_node_count     = 3
+    boot_volume_size   = 10
+    boot_volume_type   = "standard"
+  }]
+}
+```
+
+Key pool fields:
+
+| Field | Description |
+| --- | --- |
+| `flavor_id` | Flavor for worker nodes |
+| `servergroup_policy` | Placement policy: `affinity`, `anti-affinity`, `soft-anti-affinity` |
+| `min_node_count` / `max_node_count` | Autoscaler range. Set both equal to disable autoscaling |
+| `boot_volume_type` | `standard`, `ssd_hiiops`, `cold`, or `ultra` |
+| `is_public_ipv4` | Assign public IPv4 to each node (default: `false`) |
+| `auto_healing_enabled` | Automatically replace unhealthy nodes |
+
+### Cluster with Cilium CNI
+
+This configuration uses Cilium with Direct Server Return (DSR) mode, which preserves the client's source IP — useful for logging, security, and latency-sensitive workloads.
+
+```terraform
+resource "gcore_cloud_k8s_cluster" "cluster_cilium" {
+  project_id    = 1
+  region_id     = 1
+  name          = "my-k8s-cluster"
+  fixed_network = gcore_cloud_network.network.id
+  fixed_subnet  = gcore_cloud_network_subnet.subnet.id
+  keypair       = gcore_cloud_ssh_key.keypair.name
+  version       = "v1.33.3"
+
+  cni = {
+    cloud_k8s_cluster_provider = "cilium"
+    cilium = {
+      lb_mode      = "dsr"
+      routing_mode = "native"
+    }
+  }
+
+  pools = [{
+    name               = "pool-1"
+    flavor_id          = "g1-standard-2-4"
+    servergroup_policy = "anti-affinity"
+    min_node_count     = 1
+    max_node_count     = 3
+    boot_volume_size   = 10
+    boot_volume_type   = "standard"
+  }]
+}
+```
+
+`cni.cloud_k8s_cluster_provider` accepts `calico` (default) or `cilium`. Cilium `lb_mode` accepts `snat`, `dsr`, or `hybrid`. `routing_mode` accepts `tunnel` (default) or `native`.
+
+```sh
+terraform import gcore_cloud_k8s_cluster.cluster '<project_id>/<region_id>/<cluster_name>'
+```
