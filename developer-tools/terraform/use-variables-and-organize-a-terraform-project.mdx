@@ -23,9 +23,9 @@ gcore-terraform/
 `terraform.tfvars` often contains API keys and other secrets. Add it to `.gitignore`. Commit `.terraform.lock.hcl` to lock provider versions for the whole team.
 </Info>
 
-### providers.tf
+### Provider configuration
 
-Move the provider configuration out of `main.tf` so it is easy to find and update:
+Move the provider configuration out of `main.tf` into a dedicated `providers.tf` so it is easy to find and update:
 
 ```hcl
 terraform {
@@ -177,7 +177,7 @@ Terraform resolves variable values in this order (later sources override earlier
 | 4 | `-var` flag | One-off overrides |
 | 5 (highest) | `TF_VAR_*` environment variable | CI/CD pipelines, secrets managers |
 
-### terraform.tfvars
+### Auto-loaded file
 
 Create `terraform.tfvars` in the project directory. Terraform loads it automatically without any flags:
 
@@ -199,7 +199,7 @@ Changes to Outputs:
   + project_name = "Default"
 ```
 
-### Named .tfvars files for multiple environments
+### Files per deployment stage
 
 For separate environments (dev, staging, production), create one `.tfvars` file per environment:
 
@@ -225,7 +225,7 @@ terraform plan -var-file="staging.tfvars"
 terraform apply -var-file="production.tfvars"
 ```
 
-### -var flag
+### Command-line override
 
 Override a single variable without editing any file:
 
@@ -241,7 +241,7 @@ terraform plan -var="project_name=Staging" -var="region_name=Amsterdam"
 
 The `-var` flag takes the highest priority among file-based methods — it overrides values from `.tfvars` files.
 
-### TF_VAR_ environment variables
+### CI/CD injection
 
 Any variable named `example` can be set via the environment variable `TF_VAR_example`. This is the preferred method in CI/CD pipelines and secret managers where writing files is impractical.
 
