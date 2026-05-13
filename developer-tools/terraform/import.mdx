@@ -3,52 +3,42 @@ title: "Import existing Gcore infrastructure into Terraform"
 sidebarTitle: "Import existing infrastructure"
 ---
 
-Terraform is not limited to resources it creates. Infrastructure that already exists — built through the Gcore Customer Portal, via the API, or by a previous tool — can be brought under Terraform management without recreating it. This process is called **import**.
+Terraform is not limited to resources it creates. Infrastructure that already exists — whether created manually in the [Gcore Customer Portal](https://portal.gcore.com), through the API, or by another Terraform configuration — can be brought under Terraform management without being recreated. This process is called `import` and is commonly used when teams migrate existing environments to infrastructure-as-code, recover from lost state files, or reorganize infrastructure between configurations.
 
-## When to use import
+## Import process
 
-Common scenarios:
-
-- A team member created resources manually in the portal and now the project is switching to infrastructure-as-code.
-- A Terraform state file was lost or corrupted. The infrastructure still exists, but Terraform has no record of it.
-- Existing resources need to be moved to a different Terraform configuration or workspace.
-
-## How import works
-
-Without import, Terraform does not know about resources that exist outside its state file. Running `terraform plan` would show those resources as `+ create` — meaning Terraform wants to create a duplicate. Import solves this:
+Without import, Terraform does not know about resources outside its state file, so `terraform plan` shows them as `+ create` — meaning it would create duplicates. Import solves this:
 
 1. Terraform reads the resource's current state from the Gcore API using the resource ID.
 2. It writes that state into `terraform.tfstate`.
 3. From that point, `terraform plan` compares the configuration against the recorded state and reports only the actual differences.
 
-## Before starting
+## Prepare for import
 
-Every import requires two things:
+Every import requires a resource type and a resource ID; find both in the **Import** section of each resource's page on the [Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/2.0.0-alpha.6/docs).
 
 | What | Example |
 |------|---------|
-| The **resource type** as used in Terraform | `gcore_cloud_project`, `gcore_cloud_network` |
-| The **resource ID** in the format the provider expects | `1186668` for a project, `1186668/76/abc-uuid` for a network |
+| The resource type as used in Terraform | `gcore_cloud_project`, `gcore_cloud_network` |
+| The resource ID in the format the provider expects | `1186668` for a project, `1186668/76/abc-uuid` for a network |
 
-The ID format is resource-specific. Find it in the **Import** section of each resource's page on the [Gcore Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/2.0.0-alpha.6/docs).
+Terraform offers two import methods — choose based on scope and team workflow:
 
-## Two methods
-
-Terraform offers two ways to import:
-
-| | `terraform import` command | `import` block |
+| | `terraform import` | `import` block |
 |---|---|---|
-| **Availability** | All Terraform versions | Terraform 1.5+ |
+| **Availability** | All Terraform CLI versions | Terraform CLI 1.5+ |
 | **Modifies `.tf` files** | No | No (but can generate config) |
 | **Visible in `terraform plan`** | No | Yes |
-| **Can be committed to VCS** | No | Yes |
+| **Can be committed to version control** | No | Yes |
 | **Best for** | Quick one-off imports | Team workflows, IaC pipelines |
 
-## Method 1: terraform import command
+## Run an import command
+
+The `terraform import` command binds an existing resource to a resource block in the configuration and writes its state immediately. It works with all Terraform CLI versions and requires no changes to `.tf` files beyond adding the resource block.
 
 ### Step 1. Write a resource block
 
-Create a resource block in the `.tf` configuration. At minimum, include the required fields. The exact list of required fields is in the resource's schema on Terraform Registry.
+Create a resource block in the `.tf` configuration with at minimum the required fields, listed in the resource's schema on [Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/2.0.0-alpha.6/docs).
 
 For a Gcore project:
 
@@ -58,29 +48,7 @@ resource "gcore_cloud_project" "default" {
 }
 ```
 
-### Step 2. Run terraform plan (before import)
-
-Running `terraform plan` before importing shows the problem clearly: Terraform does not know the resource exists and plans to create a new one:
-
-```
-$ terraform plan
-
-Terraform will perform the following actions:
-
-  # gcore_cloud_project.default will be created
-  + resource "gcore_cloud_project" "default" {
-      + client_id   = (known after apply)
-      + id          = (known after apply)
-      + name        = "Default"
-      ...
-    }
-
-Plan: 1 to add, 0 to change, 0 to destroy.
-```
-
-Do not apply this plan. Import the existing resource first.
-
-### Step 3. Run terraform import
+### Step 2. Run terraform import
 
 The import command format is:
 
@@ -108,7 +76,9 @@ The resources that were imported are shown above. These resources are now in
 your Terraform state and will henceforth be managed by Terraform.
 ```
 
-### Step 4. Run terraform plan after import
+### Step 3. Run terraform plan after import
+
+Run plan to verify there is no attribute drift between the configuration and the imported state:
 
 ```bash
 terraform plan
@@ -125,7 +95,7 @@ and found no differences, so no changes are needed.
 
 If `terraform plan` still shows changes, the resource block in `.tf` has attributes that do not match the imported state. Update the configuration until `terraform plan` reports no changes.
 
-## Method 2: import block (Terraform 1.5+)
+## Add an import block to configuration
 
 The `import` block is the recommended approach for team environments. It makes the import operation visible in `terraform plan`, so the intent is reviewable before state is modified.
 
@@ -147,6 +117,8 @@ import {
 The `to` field must match the `<resource_type>.<local_name>` of the resource block.
 
 ### Step 2. Run terraform plan
+
+Run plan to preview the full resource state before the import is applied:
 
 ```bash
 terraform plan
@@ -172,9 +144,11 @@ Terraform will perform the following actions:
 Plan: 1 to import, 0 to add, 0 to change, 0 to destroy.
 ```
 
-The plan shows exactly what will be imported — no surprises. Review it before applying.
+The plan shows the full resource state that will be written to the state file.
 
 ### Step 3. Apply
+
+After reviewing the plan, apply to write the resource into state:
 
 ```bash
 terraform apply
@@ -191,9 +165,11 @@ After a successful import, remove the `import` block from the configuration — 
 
 ## Generate configuration automatically
 
-When importing a resource that has many attributes, writing the resource block manually is tedious. Use the `-generate-config-out` flag to generate the block automatically.
+When importing a resource that has many attributes, writing the resource block manually is time-consuming. Use the `-generate-config-out` flag to generate the block automatically.
 
 ### Step 1. Write only the import block (no resource block)
+
+Add only an `import` block — no resource block. Terraform generates it automatically in the next step:
 
 ```hcl
 import {
@@ -203,6 +179,8 @@ import {
 ```
 
 ### Step 2. Run terraform plan with -generate-config-out
+
+Pass the flag to specify the output file name. Terraform generates the resource block and writes it to that file:
 
 <Tabs>
   <Tab title="PowerShell">
@@ -253,15 +231,15 @@ resource "gcore_cloud_project" "default" {
 }
 ```
 
-The generated file includes all attributes. Prune it to only the required fields and those whose values differ from defaults. Move the final configuration into the main `.tf` files, then delete `generated.tf`.
+Remove read-only and default-value attributes from `generated.tf`, then move the pruned configuration into the main `.tf` files and delete `generated.tf`.
 
 <Info>
 Config generation is marked experimental. The generated output may include read-only attributes that Terraform does not accept as input. Remove any attribute that the provider schema marks as read-only (`client_id`, `created_at`, `id`, `is_default`, `state` in this example) before running `terraform apply`.
 </Info>
 
-## Find the import ID for Gcore resources
+## Import ID reference
 
-The import ID format varies by resource. The table below shows common Gcore resources:
+The import ID format varies by resource. Common Gcore resources:
 
 | Resource | Import ID format | Example |
 |----------|-----------------|---------|
@@ -274,9 +252,7 @@ The import ID format varies by resource. The table below shows common Gcore reso
 | `gcore_cloud_load_balancer` | `<project_id>/<region_id>/<lb_id>` | `1186668/76/mno-uuid` |
 | `gcore_dns_zone` | `<zone_name>` | `example.com` |
 
-Find the project and region IDs in the Gcore Customer Portal or by querying `data "gcore_cloud_project"` and `data "gcore_cloud_region"` data sources. Find resource UUIDs in the portal URL or via the Gcore API.
-
-Always check the **Import** section of the specific resource page on [Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/2.0.0-alpha.6/docs) for the exact format.
+Find project and region IDs in the [Gcore Customer Portal](https://portal.gcore.com) or via the `data "gcore_cloud_project"` and `data "gcore_cloud_region"` data sources; resource UUIDs appear in the portal URL and in Gcore API responses. Check the **Import** section of the specific resource page on [Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/2.0.0-alpha.6/docs) for the exact format.
 
 ## Inspect and manage state
 
@@ -323,8 +299,3 @@ Successfully removed 1 resource instance(s).
 `terraform state rm` removes the resource from Terraform's tracking only. The actual Gcore resource is not deleted. Use it to stop managing a resource with Terraform without destroying it.
 </Warning>
 
-## Next steps
-
-- [Use variables and organize a Terraform project](/developer-tools/terraform/variables): parameterize the configuration after import.
-- [Manage Cloud resources via Terraform](/cloud/manage-cloud-via-terraform): reference for Cloud resource types and their attributes.
-- [Gcore Terraform provider v2 on Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/2.0.0-alpha.6/docs): import ID formats and full schema for every resource.
