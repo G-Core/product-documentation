@@ -3,17 +3,13 @@ title: "Get started with Terraform"
 sidebarTitle: "Get started"
 ---
 
-Terraform manages infrastructure as code through configuration files—a [Gcore account](https://portal.gcore.com), a [permanent API token](/account-settings/api-tokens), and a terminal (PowerShell on Windows, Terminal on macOS or Linux) are the only requirements. No prior Terraform experience is needed.
+Terraform replaces manual steps in the [Gcore Customer Portal](https://portal.gcore.com) with repeatable configuration files, allowing the same configuration to provision identical infrastructure every time. Getting started requires only a Gcore account, an API token, and a terminal—no prior Terraform experience required.
 
 ## Step 1. Install Terraform
 
-Terraform is a command-line tool — it has no graphical interface. All interaction happens in a terminal window.
+Terraform is a command-line tool for Windows, macOS, and Linux. After installation, all interaction happens through a terminal window—there is no application to launch.
 
-<Frame>
-  <img src="/images/docs/developer-tools/terraform/terraform-install-page.png" alt="Terraform install page on developer.hashicorp.com showing download options for macOS, Windows, and Linux" />
-</Frame>
-
-The fastest way to install Terraform is through a package manager. If a package manager is not available, download the binary manually.
+The fastest way to install Terraform is through a package manager; if one is not available, download the binary manually from the tabs below.
 
 <Tabs>
   <Tab title="Windows (Chocolatey)">
@@ -48,7 +44,7 @@ The fastest way to install Terraform is through a package manager. If a package 
        - Under **User variables**, select **Path** and click **Edit**.
        - Click **New** and paste the path `C:\tools\terraform\`.
        - Click **OK** to save.
-    5. Open a **new** PowerShell window and verify:
+    5. Open a new PowerShell window and verify:
 
     ```powershell
     terraform version
@@ -121,14 +117,12 @@ All subsequent commands in this guide run from inside this directory.
 
 ## Step 3. Get a Gcore API token
 
-The Gcore provider v2 authenticates with a permanent API token. To generate one:
+The Gcore provider v2 authenticates with a permanent [API token](/account-settings/api-tokens). To generate one:
 
-1. Open the [Gcore Customer Portal](https://portal.gcore.com) and go to **Profile** > **API Tokens**.
+1. Open the Customer Portal and go to **Profile** > **API Tokens**.
 2. Click **Create API token**.
 3. Set an expiration date and assign the required permissions.
 4. Copy the token — it is shown only once.
-
-For more details, see [API tokens](/account-settings/api-tokens).
 
 <Warning>
 Store the API token securely. Anyone with the token can authenticate and perform actions in the Gcore API.
@@ -167,7 +161,7 @@ Replace `YOUR_API_KEY` with the token copied in Step 3.
 | `provider "gcore"` | Configures the provider instance — here, the API key for authentication. |
 
 <Warning>
-Use an exact version pin (`= 2.0.0-alpha.6`) for alpha releases. The pessimistic constraint operator (`~>`) does not resolve pre-release versions. Check the [Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/latest) for the latest release and update the version when upgrading.
+Use an exact version pin (`= 2.0.0-alpha.6`) for alpha releases, as the `~>` constraint does not apply to pre-release versions. Check the [Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/latest) for the latest release before upgrading.
 </Warning>
 
 ### Keep the API key out of source files
@@ -225,9 +219,9 @@ After initialization, two items appear in the project folder:
 
 ## Step 6. Add a resource or data source
 
-A **resource** creates or manages infrastructure — a virtual machine, a network, a DNS record. A **data source** reads existing infrastructure without changing it.
+A resource creates or manages infrastructure — a virtual machine, a network, a DNS record. A data source reads existing infrastructure without changing it.
 
-The following example reads an existing Gcore project by name. It is a safe first configuration that queries the API without creating or modifying anything:
+The following example reads an existing Gcore project by name — a safe first step that queries the API without touching any infrastructure:
 
 ```hcl
 data "gcore_cloud_project" "default" {
@@ -243,9 +237,7 @@ output "project_id" {
 
 Add this to `main.tf` after the provider block.
 
-### How the data source is referenced
-
-The `data` block has the format `data "<type>" "<local_name>"`. The type `gcore_cloud_project` tells Terraform which API to call. The local name `default` is just a label used to reference the result elsewhere in the configuration — `data.gcore_cloud_project.default.id` returns the project's numeric ID.
+The `output` block at the bottom prints the result after `terraform apply`. It references the data source as `data.gcore_cloud_project.default.id` — `gcore_cloud_project` is the type, `default` is the local name from the block above, and `id` is the attribute to read.
 
 ## Step 7. Preview changes
 
@@ -268,27 +260,17 @@ You can apply this plan to save these new output values to the Terraform
 state, without changing any real infrastructure.
 ```
 
-The `+` prefix marks a new output value being recorded. No infrastructure is created or modified.
+The `+` prefix marks a new output value being recorded — the project ID will be saved to state on apply.
 
 ## Step 8. Apply the configuration
 
-Run `terraform apply` to execute the plan. Terraform prints the same summary as `plan` and asks for confirmation before proceeding.
+Run `terraform apply` to execute the plan. Terraform prints the same summary as `plan`, asks for confirmation, then applies:
 
 ```bash
 terraform apply
 ```
 
-Type `yes` when prompted:
-
-```
-Do you want to perform these actions?
-  Terraform will perform the actions described above.
-  Only 'yes' will be accepted to approve.
-
-  Enter a value: yes
-```
-
-Expected output after confirmation:
+Expected output:
 
 ```
 Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
@@ -302,16 +284,11 @@ Terraform has successfully queried the Gcore API and returned the project ID.
 
 ## What happened behind the scenes
 
-After `terraform apply`, a `terraform.tfstate` file appears in the project directory. This is the **state file** — Terraform's record of what resources it manages and their current attributes.
+After `terraform apply`, a `terraform.tfstate` file appears in the project directory. This is the state file — Terraform's record of what resources it manages and their current attributes.
 
-On each subsequent `terraform apply`, Terraform compares the desired state described in `.tf` files against the recorded state and applies only the difference. This is what makes Terraform idempotent — running it multiple times with the same configuration produces the same result.
+On each subsequent `terraform apply`, Terraform compares the desired state described in `.tf` files against the recorded state and applies only the difference, so running the same configuration multiple times always produces the same result.
 
 <Info>
 Do not edit `terraform.tfstate` manually. If the state becomes inconsistent, use `terraform state` subcommands (`list`, `show`, `rm`, `mv`) to inspect and correct it.
 </Info>
 
-## Next steps
-
-- [Manage Cloud resources via Terraform](/cloud/manage-cloud-via-terraform): provision Virtual Machines, Bare Metal servers, Kubernetes clusters, and Load Balancers.
-- [Gcore Terraform provider v2 on Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/2.0.0-alpha.6/docs): full list of available resources and data sources with examples.
-- [Provider v2 GitHub repository](https://github.com/G-Core/terraform-provider-gcore/tree/v2): source code, changelog, and issue tracker.
