@@ -1,16 +1,14 @@
 ---
 title: Manage Cloud resources via Terraform
 sidebarTitle: Terraform provider v2
-ai-navigation: Create and manage Gcore Cloud resources—Virtual Machines, Bare Metal servers, Kubernetes clusters, Load Balancers, networks, volumes, security groups, and IP addresses—using Terraform provider v2.
+ai-navigation: Create and manage Gcore Cloud resources — Virtual Machines, Bare Metal servers, Kubernetes clusters, Load Balancers, networks, volumes, security groups, and IP addresses — using Terraform provider v2.
 ---
 
-The Gcore Terraform provider v2 supports the following Cloud resources: Virtual Machines, Bare Metal servers, Kubernetes clusters, Load Balancers, networks, volumes, security groups, floating IPs, and reserved IPs.
+The Gcore Terraform provider v2 lets you provision and manage the full Cloud infrastructure lifecycle — from networks and volumes to Kubernetes clusters and Load Balancers — using declarative configuration files.
 
-Provider v2 uses numeric `project_id` and `region_id` fields directly in each resource instead of data source lookups. For provider installation and authentication, see the [Terraform overview](/developer-tools/terraform/overview).
+The following resources are supported: Virtual Machines, Bare Metal servers, Kubernetes clusters, Load Balancers, networks, volumes, security groups, floating IPs, and reserved IPs.
 
-<Info>
-**Project and region IDs** are account-specific. Find your project ID and region IDs in the Customer Portal URL: `portal.gcore.com/cloud/project/<project_id>/region/<region_id>/...`. Image IDs, flavor names, and Bare Metal image IDs are region-specific — use the [Images API](https://api.gcore.com/docs/cloud#tag/Images/operation/ImageListV1ProjectsProjectIdRegionsRegionIdImagesGet) or the Portal to look them up for your region. The examples below use Luxembourg-2 (region ID `76`).
-</Info>
+Provider v2 uses numeric `project_id` and `region_id` fields directly in each resource instead of data source lookups. Existing v0 configurations can be [migrated to v2](/developer-tools/terraform/migrate-v0-to-v2). Provider installation and authentication are covered in the [Terraform overview](/developer-tools/terraform/overview).
 
 ## Workflow
 
@@ -91,7 +89,15 @@ resource "gcore_cloud_security_group_rule" "https" {
 }
 ```
 
-`direction` accepts `ingress` or `egress`. `ethertype` accepts `IPv4` or `IPv6`. To allow all protocols, omit `protocol`, `port_range_min`, and `port_range_max`. Reference the security group ID in instance `interfaces` or the top-level `security_groups` block.
+Configure each rule:
+
+- `direction` accepts `ingress` (inbound) or `egress` (outbound).
+- `ethertype` accepts `IPv4` or `IPv6`.
+- `protocol` accepts `tcp`, `udp`, `icmp`, `icmpv6`, `ospf`, `vrrp`, or `any`. To allow all protocols, omit `protocol`, `port_range_min`, and `port_range_max`.
+- `port_range_min` and `port_range_max` define the port range. Set both to the same value to allow a single port.
+- `group_id` references the parent security group.
+
+Reference the security group ID in instance `interfaces` or the top-level `security_groups` block.
 
 ```sh
 terraform import gcore_cloud_security_group.web '<project_id>/<region_id>/<security_group_id>'
@@ -99,7 +105,11 @@ terraform import gcore_cloud_security_group.web '<project_id>/<region_id>/<secur
 
 ## Networking
 
+The following resources configure private networks, subnets, and IP addresses.
+
 ### Network and subnet
+
+The following configuration creates a private network and a subnet within it.
 
 ```terraform
 resource "gcore_cloud_network" "network" {
@@ -178,6 +188,8 @@ terraform import gcore_cloud_floating_ip.web_ip '<project_id>/<region_id>/<float
 
 ## Volumes
 
+The following configuration creates a boot volume from an image.
+
 ```terraform
 resource "gcore_cloud_volume" "boot_volume" {
   project_id = 1
@@ -211,7 +223,11 @@ terraform import gcore_cloud_volume.boot_volume '<project_id>/<region_id>/<volum
 
 ## Virtual Machines
 
+The following examples create Virtual Machine instances with different network configurations.
+
 ### Instance with a public interface
+
+The following configuration creates an instance with a public IPv4 interface.
 
 ```terraform
 resource "gcore_cloud_ssh_key" "my_key" {
@@ -260,6 +276,8 @@ Key optional fields on `gcore_cloud_instance`:
 
 ### Instance with two interfaces
 
+The following configuration attaches a public interface and a private subnet interface to an instance.
+
 ```terraform
 resource "gcore_cloud_instance" "app" {
   project_id   = 1
@@ -283,6 +301,13 @@ resource "gcore_cloud_instance" "app" {
   ]
 }
 ```
+
+The `interfaces` array accepts multiple entries. The order determines attachment order on the instance. Each entry requires `type`; additional fields depend on the type:
+
+- `external` — public interface. Specify `ip_family`: `ipv4`, `ipv6`, or `dual`.
+- `subnet` — private subnet interface. Specify `network_id` and `subnet_id`.
+- `any_subnet` — picks any subnet in the network. Specify `network_id`.
+- `reserved_fixed_ip` — attaches a pre-reserved IP. Specify `port_id`.
 
 ### Instance with floating IP
 
@@ -329,6 +354,8 @@ To create a new floating IP inline without a separate resource, set `floating_ip
 
 ### Windows instance
 
+The following configuration creates a Windows Server instance with a public interface.
+
 ```terraform
 resource "gcore_cloud_volume" "boot_volume_windows" {
   project_id = 1
@@ -365,7 +392,11 @@ terraform import gcore_cloud_instance.web '<project_id>/<region_id>/<instance_id
 
 ## Bare Metal servers
 
+The following examples provision Bare Metal servers with different interface configurations.
+
 ### Server with a public interface
+
+The following configuration provisions a Bare Metal server with a public IPv4 interface.
 
 ```terraform
 resource "gcore_cloud_ssh_key" "my_key" {
@@ -389,9 +420,21 @@ resource "gcore_cloud_baremetal_server" "server" {
 }
 ```
 
+Configure the Bare Metal server:
+
+- Specify `flavor` — the Bare Metal flavor ID. Available flavors are region-specific; check the Portal or API for the target region.
+- Specify `image_id` — the Bare Metal image ID. Use the [Images API](https://api.gcore.com/docs/cloud#tag/Images/operation/ImageListV1ProjectsProjectIdRegionsRegionIdImagesGet) or the Portal to look up available images for the target region.
+- Specify `ssh_key_name` — the name of an SSH key resource in the same project.
+- Configure `interfaces`. Interface `type` accepts `external`, `subnet`, `any_subnet`, or `reserved_fixed_ip`. For `subnet`, also specify `network_id` and `subnet_id`. `ip_family` accepts `ipv4`, `ipv6`, or `dual`.
+- (optional) Specify `name`.
+- (optional) Specify `region_id` or `region_name`.
+- (optional) Specify `project_id` or `project_name`.
+- (optional) Specify `app_config` to set parameters for a marketplace application template.
+- (optional) Specify `metadata` as a map of key-value labels.
+
 ### Server with two interfaces
 
-Private networks for Bare Metal require `type = "vlan"` on the network resource.
+Private networks for Bare Metal require `type = "vlan"` on the network resource. The configuration below attaches both a public interface and a private VLAN interface to the server.
 
 ```terraform
 resource "gcore_cloud_network" "network" {
@@ -432,7 +475,11 @@ resource "gcore_cloud_baremetal_server" "server" {
 }
 ```
 
+The first interface provides public connectivity. The second attaches the server to the private VLAN subnet. Add more entries to the `interfaces` array to attach additional networks. Interface order determines attachment order on the server.
+
 ### Windows Bare Metal server
+
+The following configuration provisions a Bare Metal server running Windows Server.
 
 ```terraform
 resource "gcore_cloud_baremetal_server" "windows_server" {
@@ -536,7 +583,11 @@ terraform import gcore_cloud_load_balancer_pool.tcp_80 '<project_id>/<region_id>
 
 ## Kubernetes clusters
 
+The following examples create managed Kubernetes clusters with different network configurations.
+
 ### Cluster in a private network
+
+The following configuration creates a Kubernetes cluster with a private network and a single node pool.
 
 ```terraform
 resource "gcore_cloud_network" "network" {

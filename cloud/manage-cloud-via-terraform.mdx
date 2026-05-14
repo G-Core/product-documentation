@@ -4,144 +4,163 @@ sidebarTitle: Terraform provider v0
 ai-navigation: Create and manage Gcore Cloud resources — Virtual Machines, Bare Metal servers, Kubernetes clusters, Load Balancers, and networks — using Terraform provider v0.
 ---
 
-The Gcore Terraform provider v0 supports the following Cloud resources: Virtual Machines, Bare Metal servers, Kubernetes clusters, Load Balancers, networks, volumes, snapshots, server groups, and reserved IP addresses.
+With the Gcore Terraform provider v0, teams define Cloud resources — Virtual Machines, Kubernetes clusters, networks, and more — in configuration files, then apply them consistently across environments without clicking through the Portal.
+
+The following resources are supported: Virtual Machines, Bare Metal servers, Kubernetes clusters, Load Balancers, networks, volumes, snapshots, server groups, and reserved IP addresses.
 
 Provider installation and authentication are covered in the [Terraform overview](/developer-tools/terraform/overview). The v2 provider with expanded resource support is available in [Terraform v2](/cloud/manage-cloud-via-terraform-v2). To migrate an existing v0 configuration, follow the [migration guide](/developer-tools/terraform/migrate-v0-to-v2).
 
-Add resource configuration to `main.tf`, then run `terraform plan` to preview changes and `terraform apply` to apply them. The [getting started guide](/developer-tools/terraform/get-started-with-terraform) covers the full workflow.
+## Workflow
 
-### Create a Bare Metal server
+Add resource configuration to `main.tf`, then run:
 
-The following configuration creates a Bare Metal server using the Gcore Terraform provider.
+```sh
+terraform plan
+```
+
+Review the output, then apply:
+
+```sh
+terraform apply
+```
+
+Enter `yes` when prompted. The [getting started guide](/developer-tools/terraform/get-started-with-terraform) covers the full workflow.
+
+## Networking
+
+The following resources configure private networks, subnets, and IP addresses.
+
+### Create a network and subnetwork
+
+The following configuration creates a network and an optional subnetwork within it.
 
 1. Open the `main.tf` file with the Gcore provider configuration.
 2. Copy the code below to the file and customize the highlighted values:
 
 ```hcl
-data "gcore_project" "project" {
-  name = "Default"
-}
-
-data "gcore_region" "region" {
-  name = "Luxembourg-2"
-}
-
-data "gcore_image" "ubuntu" {
-  name       = "ubuntu-24.04-x64-ironic"
-  is_baremetal = true
-  project_id = data.gcore_project.project.id
-  region_id  = data.gcore_region.region.id
-}
-
-resource "gcore_baremetal" "bm" {
-  name       = "baremetal_example"
-  flavor_id  = "bm1-infrastructure-small"
-  image_id   = data.gcore_image.ubuntu.id
-  interface {
-      type = "external"            
-  }
+resource "gcore_network" "network" {
+  name       = "network_example"
+  type       = "vlan"
 }
 ```
 
-3. Configure the Bare Metal server.
+3. Configure the network.
 
-- Specify "flavor_id".
-- Configure "interface".
-
-Select the interface "type": "external", "subnet", "any_subnet", or "reserved_fixed_ip".
-
-- For "subnet" type, specify the "network_id" and "subnetwork_id".
-- For "any_subnet" type, specify the "network_id".
-- For "reserved_fixed_ip" type, specify the "port_id".
-- (optional) Specify "order" to set the order in which interfaces will be attached.
-- (optional) Specify "app_config" to set parameters for the application template from the marketplace.
-- (optional) Specify the "image_id" or "apptemplate_id".
-- (optional) Specify the "keypair_name".
-- (optional) Specify the "name" of the server.
+- Specify "name".
+- (optional) Add `create_router = "false"` to remove the external router from the network. Otherwise, the external router will be added by default.
+- (optional) Add `type = "vlan"`. Otherwise, a "vxlan" network will be created by default.
 - (optional) Specify the "region_id" or "region_name".
 - (optional) Specify the "project_id" or "project_name".
-- (optional) Specify the "metadata_map": "key" and "value".
-- (optional) Specify "username" and/or "password".
 
-4. Save changes in the file.
-5. Run the following command from the Terraform directory to preview the changes:
+4. To skip the subnetwork, stop here. To create a subnetwork, add the code below and customize the highlighted values:
 
-```sh
-terraform plan
+```hcl
+resource "gcore_subnet" "subnet" {
+  name            = "subnet_example"
+  cidr            = "192.168.10.0/24"
+  network_id      = gcore_network.network.id
+}
 ```
 
-If the code contains an error, the output will show it.
+5. Configure the subnetwork.
 
-6. Run the following command to apply the changes:
+- Specify the "name" of the subnetwork.
+- Specify the "cidr".
+  - Select the IP address from the ranges: 10.0.0.0–10.255.255.255, 172.16.0.0–172.31.255.255, and 192.168.0.0–192.168.255.255.
+  - Select the subnet mask from 16 to 24.
+- Specify the "network_id" of the network in which the subnet will be created.
+- (optional) Add `connect_to_network_router = "true"` to make the subnetwork accessible through an external router. To disable this, add `connect_to_network_router = "false"`. The default value is "true".
+- (optional) Add the "gateway_ip" of an external router, if any.
+- (optional) Specify "dns_nameservers".
+- (optional) Add "host_routes".
+  - Specify the "destination", the CIDR of the target subnetwork.
+  - Specify the "nexthop", the IPv4 address to forward traffic to if its destination IP matches the "destination" CIDR.
+- (optional) Add "enable_dhcp = false" to disable DHCP. Otherwise, DHCP is enabled by default. For IPv6 networks, DHCP can be enabled or disabled at creation time — changing this setting later requires recreating the subnetwork.
+- (optional) Specify the "region_id" and "region_name".
+- (optional) Specify the "project_id" and "project_name".
 
-```sh
-terraform apply
-```
+### Reserve an IP address
 
-When prompted, enter `yes` to confirm.
-
-### Create a GPU Bare Metal image
-
-The following configuration uploads a custom image for use with GPU Bare Metal instances.
+The following configuration reserves a fixed IP address for use with instances or load balancers.
 
 1. Open the `main.tf` file with the Gcore provider configuration.
 2. Copy the code below to the file and customize the highlighted values:
 
 ```hcl
-resource "gcore_gpu_baremetal_image" "example" {
-  project_id   = data.gcore_project.project.id
-  region_id    = data.gcore_region.region.id
-  name         = "my-cirros-image"
-  url          = "http://mirror.noris.net/cirros/0.4.0/cirros-0.4.0-x86_64-disk.img"
-  architecture = "x86_64"
-  os_type      = "linux"
-  ssh_key      = "allow"
+resource "gcore_reservedfixedip" "fixed_ip" {
+  project_id   = 1
+  region_id    = 1
+  type         = "external"
+  is_vip       = false
 }
 ```
 
-3. Configure the Bare Metal image.
+3. Configure the reserved IP address.
 
-Required attributes:
+- Specify the "type": "subnet", "any_subnet", "external", or "ip_address".
+- Specify whether to use the reserved IP address as a [virtual IP address](/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address) (VIP) ("is_vip = true") or not ("is_vip = false").
+- (optional) Add "allowed_access_pairs" to assign one VIP to multiple machines. Specify the "ip_address" and "mac_address".
+- (optional) Specify the "network_id" and/or "subnet_id" to attach the IP address to a specific network or subnetwork.
+- (optional) Specify the "region_id" or "region_name".
+- (optional) Specify the "project_id" or "project_name".
 
-- "name" for the image.
-- "url" where the image is located.
+## Volumes
 
-Optional attributes:
+The following resources create and manage block storage volumes.
 
-- "project_id" - The ID of the project. Conflicts with "project_name".
-- "project_name" - The name of the project. Conflicts with "project_id".
-- "region_id" - The ID of the region. Conflicts with "region_name".
-- "region_name" - The name of the region. Conflicts with "region_id".
-- "ssh_key" - SSH key permission setting. Valid values are:
-  - "allow" - (Default) Allow SSH key usage
-  - "deny" - Deny SSH key usage
-  - "required" - Require SSH key
-- "cow_format" - When set to "true", the image cannot be deleted until all volumes created from it are deleted.
-- "architecture" - CPU architecture type. Valid values are:
-  - "x86_64" - (Default) x86 64-bit architecture
-  - "aarch64" - ARM 64-bit architecture
-- "os_type" - The type of operating system.
-- "os_distro" - The distribution of the operating system (e.g., "ubuntu", "centos").
-- "os_version" - The version of the operating system.
-- "hw_firmware_type" - The type of firmware used for booting.
-- "metadata" - A map of metadata key-value pairs to associate with the image.
+### Create a volume
 
-4. Save changes in the file.
-5. Run the following command from the Terraform directory to preview the changes:
+The following configuration creates a standalone volume that can be attached to instances.
 
-```sh
-terraform plan
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize:
+
+```hcl
+resource "gcore_volume" "volume" {
+  project_id = 1
+  region_id  = 1
+  name       = "volume_example"
+  type_name  = "standard"
+  size       = 1
+}
 ```
 
-If the code contains an error, the output will show it.
+3. Configure the volume.
 
-6. Run the following command to apply the changes:
+- Specify "name".
+- Specify the "snapshot_id" or "image_id".
+- (optional) Specify the "size" of the volume in GB.
+- (optional) Select the "type_name": "standard", "ssd_hiiops", "cold", or "ultra".
+- (optional) Specify the "region_id" or "region_name".
+- (optional) Specify the "project_id" or "project_name".
 
-```sh
-terraform apply
+### Create a snapshot
+
+The following configuration creates a snapshot of an existing volume.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the highlighted values:
+
+```hcl
+resource "gcore_snapshot" "snapshot" {
+  project_id  = 1
+  region_id   = 1
+  name        = "snapshot_example"
+  volume_id   = gcore_volume.volume.id
+}
 ```
 
-When prompted, enter `yes` to confirm.
+3. Configure the snapshot.
+
+- Specify "name".
+- Specify the "volume_id".
+- (optional) Add a "description".
+- (optional) Specify the "region_id" and "region_name".
+- (optional) Specify the "project_id" and "project_name".
+
+## Virtual Machines
+
+The following resources create Virtual Machine instances and placement groups.
 
 ### Create a Virtual Machine
 
@@ -225,22 +244,135 @@ resource "gcore_instance" "v" {
 - (optional) Specify the "project_id" or "project_name".
 - (optional) Specify the "security_group" to add firewalls.
 
-5. Save changes in the file.
-6. Run the following command from the Terraform directory to preview the expected changes:
+### Create a server group
 
-```sh
-terraform plan
+The following configuration creates a server group with an affinity or anti-affinity placement policy.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the highlighted values:
+
+```hcl
+resource "gcore_servergroup" "default" {
+  name       = "server_group_example"
+  policy     = "affinity"
+  region_id  = 1
+  project_id = 1
+}
 ```
 
-If the code contains an error, the output will describe it.
+3. Configure the server group.
 
-7. Run the following command to apply the changes:
+- Specify "name".
+- Select the `policy`: use "affinity" to run servers on one physical server or "anti-affinity" to distribute servers across different physical servers.
+- (optional) Specify the "region_id" or "region_name".
+- (optional) Specify the "project_id" or "project_name".
 
-```sh
-terraform apply
+## Bare Metal servers
+
+The following resources provision Bare Metal servers and custom images.
+
+### Create a Bare Metal server
+
+The following configuration creates a Bare Metal server using the Gcore Terraform provider.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the highlighted values:
+
+```hcl
+data "gcore_project" "project" {
+  name = "Default"
+}
+
+data "gcore_region" "region" {
+  name = "Luxembourg-2"
+}
+
+data "gcore_image" "ubuntu" {
+  name       = "ubuntu-24.04-x64-ironic"
+  is_baremetal = true
+  project_id = data.gcore_project.project.id
+  region_id  = data.gcore_region.region.id
+}
+
+resource "gcore_baremetal" "bm" {
+  name       = "baremetal_example"
+  flavor_id  = "bm1-infrastructure-small"
+  image_id   = data.gcore_image.ubuntu.id
+  interface {
+      type = "external"            
+  }
+}
 ```
 
-When prompted, enter `yes` to confirm.
+3. Configure the Bare Metal server.
+
+- Specify "flavor_id".
+- Configure "interface".
+
+Select the interface "type": "external", "subnet", "any_subnet", or "reserved_fixed_ip".
+
+- For "subnet" type, specify the "network_id" and "subnetwork_id".
+- For "any_subnet" type, specify the "network_id".
+- For "reserved_fixed_ip" type, specify the "port_id".
+- (optional) Specify "order" to set the order in which interfaces will be attached.
+- (optional) Specify "app_config" to set parameters for the application template from the marketplace.
+- (optional) Specify the "image_id" or "apptemplate_id".
+- (optional) Specify the "keypair_name".
+- (optional) Specify the "name" of the server.
+- (optional) Specify the "region_id" or "region_name".
+- (optional) Specify the "project_id" or "project_name".
+- (optional) Specify the "metadata_map": "key" and "value".
+- (optional) Specify "username" and/or "password".
+
+### Create a GPU Bare Metal image
+
+The following configuration uploads a custom image for use with GPU Bare Metal instances.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the highlighted values:
+
+```hcl
+resource "gcore_gpu_baremetal_image" "example" {
+  project_id   = data.gcore_project.project.id
+  region_id    = data.gcore_region.region.id
+  name         = "my-cirros-image"
+  url          = "http://mirror.noris.net/cirros/0.4.0/cirros-0.4.0-x86_64-disk.img"
+  architecture = "x86_64"
+  os_type      = "linux"
+  ssh_key      = "allow"
+}
+```
+
+3. Configure the Bare Metal image.
+
+Required attributes:
+
+- "name" for the image.
+- "url" where the image is located.
+
+Optional attributes:
+
+- "project_id" - The ID of the project. Conflicts with "project_name".
+- "project_name" - The name of the project. Conflicts with "project_id".
+- "region_id" - The ID of the region. Conflicts with "region_name".
+- "region_name" - The name of the region. Conflicts with "region_id".
+- "ssh_key" - SSH key permission setting. Valid values are:
+  - "allow" - (Default) Allow SSH key usage
+  - "deny" - Deny SSH key usage
+  - "required" - Require SSH key
+- "cow_format" - When set to "true", the image cannot be deleted until all volumes created from it are deleted.
+- "architecture" - CPU architecture type. Valid values are:
+  - "x86_64" - (Default) x86 64-bit architecture
+  - "aarch64" - ARM 64-bit architecture
+- "os_type" - The type of operating system.
+- "os_distro" - The distribution of the operating system (e.g., "ubuntu", "centos").
+- "os_version" - The version of the operating system.
+- "hw_firmware_type" - The type of firmware used for booting.
+- "metadata" - A map of metadata key-value pairs to associate with the image.
+
+## Kubernetes clusters
+
+The following resources create and configure managed Kubernetes clusters.
 
 ### Create a managed Kubernetes cluster
 
@@ -305,23 +437,6 @@ resource "gcore_k8sv2" "cluster" {
   - Specify the "node_count". This is the initial number of nodes to be deployed.
   - (optional) Specify the "boot_volume_size" in GB.
   - (optional) Select "boot_volume_type": "standard", "ssd_hiiops", "cold", or "ultra".
-
-4. Save changes in the file.
-5. Run the following command from the Terraform directory to preview the expected changes:
-
-```sh
-terraform plan
-```
-
-If the code contains an error, the output will show it.
-
-6. Run the following command to apply the changes:
-
-```sh
-terraform apply
-```
-
-When prompted, enter `yes` to confirm.
 
 ### Create a Kubernetes cluster with Cilium load balancer and DSR
 
@@ -397,22 +512,9 @@ resource "gcore_k8sv2" "cluster" {
   - boot_volume_size: Cluster pool boot volume size. Applies to VM pools. Changing the value of this attribute will trigger recreation of the cluster pool.
   - boot_volume_type: Cluster pool boot volume type. Applies to VM pools. Available values are "standard", "ssd_hiiops", "cold", and "ultra". Changing the value of this attribute will trigger recreation of the cluster pool.
 
-4. Save changes in the file.
-5. Run the following command from the Terraform directory to preview the expected changes:
+## Load Balancers
 
-```sh
-terraform plan
-```
-
-If the code contains an error, the output will show it.
-
-6. Run the following command to apply the changes:
-
-```sh
-terraform apply
-```
-
-When prompted, enter `yes` to confirm.
+A Load Balancer consists of a balancer resource, one or more listeners, a pool, and members.
 
 ### Create a Load Balancer
 
@@ -512,252 +614,3 @@ resource "gcore_lbmember" "lbm" {
 - Specify the "protocol_port".
 - Specify the "instance_id" or "subnet_id".
 - (optional) Specify member "weight" from 0 to 256.
-
-7. Save changes in the file.
-8. Run the following command from the Terraform directory to preview the expected changes:
-
-```sh
-terraform plan
-```
-
-If the code contains an error, the output will show it.
-
-9. Run the following command to apply the changes:
-
-```sh
-terraform apply
-```
-
-When prompted, enter `yes` to confirm.
-
-### Create a network and subnetwork
-
-The following configuration creates a network and an optional subnetwork within it.
-
-1. Open the `main.tf` file with the Gcore provider configuration.
-2. Copy the code below to the file and customize the highlighted values:
-
-```hcl
-resource "gcore_network" "network" {
-  name       = "network_example"
-  type       = "vlan"
-}
-```
-
-3. Configure the network.
-
-- Specify "name".
-- (optional) Add `create_router = "false"` to remove the external router from the network. Otherwise, the external router will be added by default.
-- (optional) Add `type = "vlan"`. Otherwise, a "vxlan" network will be created by default.
-- (optional) Specify the "region_id" or "region_name".
-- (optional) Specify the "project_id" or "project_name".
-
-4. To skip the subnetwork, proceed to step 6. To create a subnetwork, add the code below and customize the highlighted values:
-
-```hcl
-resource "gcore_subnet" "subnet" {
-  name            = "subnet_example"
-  cidr            = "192.168.10.0/24"
-  network_id      = gcore_network.network.id
-}
-```
-
-5. Configure the subnetwork.
-
-- Specify the "name" of the subnetwork.
-- Specify the "cidr".
-  - Select the IP address from the ranges: 10.0.0.0–10.255.255.255, 172.16.0.0–172.31.255.255, and 192.168.0.0–192.168.255.255.
-  - Select the subnet mask from 16 to 24.
-- Specify the "network_id" of the network in which the subnet will be created.
-- (optional) Add `connect_to_network_router = "true"` to make the subnetwork accessible through an external router. To disable this, add `connect_to_network_router = "false"`. The default value is "true".
-- (optional) Add the "gateway_ip" of an external router, if any.
-- (optional) Specify "dns_nameservers".
-- (optional) Add "host_routes".
-  - Specify the "destination", the CIDR of the target subnetwork.
-  - Specify the "nexthop", the IPv4 address to forward traffic to if its destination IP matches the "destination" CIDR.
-- (optional) Add "enable_dhcp = false" to disable DHCP. Otherwise, DHCP is enabled by default. For IPv6 networks, DHCP can be enabled or disabled at creation time — changing this setting later requires recreating the subnetwork.
-- (optional) Specify the "region_id" and "region_name".
-- (optional) Specify the "project_id" and "project_name".
-
-6. Save changes in the file.
-7. Run the following command from the Terraform directory to preview the expected changes:
-
-```sh
-terraform plan
-```
-
-If the code contains an error, the output will show it.
-
-8. Run the following command to apply the changes:
-
-```sh
-terraform apply
-```
-
-When prompted, enter `yes` to confirm.
-
-### Create a server group
-
-The following configuration creates a server group with an affinity or anti-affinity placement policy.
-
-1. Open the `main.tf` file with the Gcore provider configuration.
-2. Copy the code below to the file and customize the highlighted values:
-
-```hcl
-resource "gcore_servergroup" "default" {
-  name       = "server_group_example"
-  policy     = "affinity"
-  region_id  = 1
-  project_id = 1
-}
-```
-
-3. Configure the server group.
-
-- Specify "name".
-- Select the `policy`: use "affinity" to run servers on one physical server or "anti-affinity" to distribute servers across different physical servers.
-- (optional) Specify the "region_id" or "region_name".
-- (optional) Specify the "project_id" or "project_name".
-
-4. Save changes in the file.
-5. Run the following command from the Terraform directory to preview the expected changes:
-
-```sh
-terraform plan
-```
-
-If the code contains an error, the output will show it.
-
-6. Run the following command to apply the changes:
-
-```sh
-terraform apply
-```
-
-When prompted, enter `yes` to confirm.
-
-### Create a volume
-
-The following configuration creates a standalone volume that can be attached to instances.
-
-1. Open the `main.tf` file with the Gcore provider configuration.
-2. Copy the code below to the file and customize:
-
-```hcl
-resource "gcore_volume" "volume" {
-  project_id = 1
-  region_id  = 1
-  name       = "volume_example"
-  type_name  = "standard"
-  size       = 1
-}
-```
-
-3. Configure the volume.
-
-- Specify "name".
-- Specify the "snapshot_id" or "image_id".
-- (optional) Specify the "size" of the volume in GB.
-- (optional) Select the "type_name": "standard", "ssd_hiiops", "cold", or "ultra".
-- (optional) Specify the "region_id" or "region_name".
-- (optional) Specify the "project_id" or "project_name".
-
-4. Save changes in the file.
-5. Run the following command from the Terraform directory to preview the expected changes:
-
-```sh
-terraform plan
-```
-
-If the code contains an error, the output will show it.
-
-6. Run the following command to apply the changes:
-
-```sh
-terraform apply
-```
-
-When prompted, enter `yes` to confirm.
-
-### Create a snapshot
-
-The following configuration creates a snapshot of an existing volume.
-
-1. Open the `main.tf` file with the Gcore provider configuration.
-2. Copy the code below to the file and customize the highlighted values:
-
-```hcl
-resource "gcore_snapshot" "snapshot" {
-  project_id  = 1
-  region_id   = 1
-  name        = "snapshot_example"
-  volume_id   = gcore_volume.volume.id
-}
-```
-
-3. Configure the snapshot.
-
-- Specify "name".
-- Specify the "volume_id".
-- (optional) Add a "description".
-- (optional) Specify the "region_id" and "region_name".
-- (optional) Specify the "project_id" and "project_name".
-
-4. Save changes in the file.
-5. Run the following command from the Terraform directory to preview the expected changes:
-
-```sh
-terraform plan
-```
-
-If the code contains an error, the output will describe it.
-
-6. Run the following command to apply the changes:
-
-```sh
-terraform apply
-```
-
-When prompted, enter `yes` to confirm.
-
-### Reserve an IP address
-
-The following configuration reserves a fixed IP address for use with instances or load balancers.
-
-1. Open the `main.tf` file with the Gcore provider configuration.
-2. Copy the code below to the file and customize the highlighted values:
-
-```hcl
-resource "gcore_reservedfixedip" "fixed_ip" {
-  project_id   = 1
-  region_id    = 1
-  type         = "external"
-  is_vip       = false
-}
-```
-
-3. Configure the reserved IP address.
-
-- Specify the "type": "subnet", "any_subnet", "external", or "ip_address".
-- Specify whether to use the reserved IP address as a [virtual IP address](/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address) (VIP) ("is_vip = true") or not ("is_vip = false").
-- (optional) Add "allowed_access_pairs" to assign one VIP to multiple machines. Specify the "ip_address" and "mac_address".
-- (optional) Specify the "network_id" and/or "subnet_id" to attach the IP address to a specific network or subnetwork.
-- (optional) Specify the "region_id" or "region_name".
-- (optional) Specify the "project_id" or "project_name".
-
-4. Save changes in the file.
-5. Run the following command from the Terraform directory to preview the expected changes:
-
-```sh
-terraform plan
-```
-
-If the code contains an error, the output will describe it.
-
-6. Run the following command to apply the changes:
-
-```sh
-terraform apply
-```
-
-When prompted, enter `yes` to confirm.
