@@ -13,7 +13,7 @@ It operates on the IP-related information we collect from our network to give yo
   The IP Spotlight feature is available on the **Enterprise** plan. To enable it for your domain, contact our [sales team](https://gcore.com/waap-contact-sales).
 </Info>
 
-## Analyze an IP
+## Analyze an IP address
 
 IP Spotlight provides IP details as its source, total number of requests, destinations, whois data, and whether it has been involved in any malicious activity against other domains within our network.
 
@@ -23,122 +23,71 @@ To check an IP address, follow these steps:
 
 2. In the dropdown at the top-right of the page, select the IP address that you want to inspect.
 
+3. Optionally, use the time filter buttons (**24h**, **7d**, **30d**) to set the time range for the displayed data.
+
 <Frame>
   ![IP Spotlight](/images/docs/waap/threat-intelligence/ip-spotlight/ip-spotlight-ip-addresses.png)
 </Frame>
 
-5. All collected information about the address will appear on the **Global Activity** and **Domain Activity** tabs
+Once you select an IP, the page displays a summary of traffic statistics and detailed threat information for that address.
 
-## Inspect global and domain activity
+## Understand the traffic at a glance
 
-We analyze IP addresses past activities in two areas: activity across the whole Gcore network (global activity) and interactions specific to your domains (domain activity).
+The stats bar at the top of the page answers the first question you need when investigating an IP: *how much activity are we dealing with, and how much of it is malicious?*
 
-### Global activity
+- **Total requests** — the full volume of traffic from this IP in the selected period.
+- **Detected attacks** — how many of those requests were flagged as attack attempts.
+- **Prevented attacks** — how many were actively blocked by your WAAP policy.
+- **Passed requests** — how many got through, either because they were legitimate or because no rule matched.
 
-The **Global activity** tab shows generic IP information and insights gathered from other domains on our platform. This data is more aggregate than the domain activity.
+A high ratio of detected to prevented attacks may indicate gaps in your WAF configuration that are worth investigating.
 
-#### IP threat summary
-
-In this section, you can find out if we detected any threats to resources in our network in the past.
-
-The section includes the following details:
-
-- The risk assessment score, which has five levels:
-  - **No risk**
-  - **Low risk**
-  - **Medium risk**
-  - **High risk**
-  - **Extreme risk**
-- Total number of requests
-- Number of blocked requests
-- Number of unique sessions
-- Information if the IP address was used for botnet attacks
-- The threats and services the IP is known for. The information will be presented as tags associated with the IP addresses, such as SQL injection, injection attacks, or headless browsers.
-
-<Frame>
-  ![IP Spotlight](/images/docs/waap/ip-security/ip-spotlight/ip-spotlight-3.png)
-</Frame>
-
-#### IP risk assessment
-
-We query multiple external and internal databases to retrieve and store information about an IP address. This allows IP Spotlight to provide a risk assessment and score related to the IPs' threat level. This score, ranging from Low to Extreme, allows you to determine what actions to take against any flagged IP that sends requests to your domain.
-
-The High and Extreme risk scores are typically assigned to addresses that exist on external block lists, participate in DDoS attacks, or make a higher number of requests than usual.
-
+## Assess the threat level
+The **Threat Summary** is where you get the full picture of what this IP has been doing — on your domains and across the Gcore network.
+| Field | What it tells you |
+|---|---|
+| **IP** | The address under investigation. |
+| **Risk Assessment** | The overall threat score: **No risk**, **Low**, **Medium**, **High**, or **Extreme**. Scores are based on internal and external threat intelligence sources, including blocklists and observed behavior. |
+| **Tags** | Behavioral labels that describe what kind of activity the IP is known for — for example, `injectionattack`, `multiplerepeatedrequests`, or `headlessbrowser`. These are useful when writing targeted WAF rules. |
+| **Attack Types** | The number of distinct attack categories triggered by this IP. A high number suggests a broad, multi-vector threat actor. |
+| **Domains** | How many of your domains this IP has targeted. If it's hitting multiple domains, it may be a coordinated attack rather than organic traffic. |
+| **Paths** | The variety of URL paths requested. High path counts can indicate scanning or enumeration behavior. |
+| **User Agents** | How many different user agents this IP has used. Frequent agent switching is a common evasion technique. |
+| **Sessions** | Total number of sessions originating from this IP. |
 <Info>
   **Info**
-
-  If the IP is no longer associated with malicious activity, its score might decrease from extreme to **Low** or even **No risk** over time.
+  Risk Assessment scores are not permanent. If an IP stops engaging in malicious activity, its score decreases over time.
 </Info>
 
-#### WhoIs
+## Spot patterns over time
 
-This section provides information from the [global WHOIS database](https://who.is/). It includes details like the name and type of organization that owns the address, its location, related IP ranges, contact information for reporting abuse, and registry details.
-
-<Frame>
-  ![IP Spotlight](/images/docs/waap/ip-security/ip-spotlight/ip-spotlight-4.png)
-</Frame>
-
-#### Top 10 attack targets
-
-This section provides you with a map that shows the targets of past attacks originating from the scanned address. It also includes a list of the top 10 targets of these attacks.
+The **Traffic Timeline** shows the request volume from this IP over the selected period. Use it to answer questions like:
+- Was this a single burst of activity, or is traffic ongoing?
+- Does the pattern align with a known attack window?
+- Is traffic increasing, decreasing, or cyclical?
+A sustained or recurring spike is a strong signal that blocking the IP or creating a rate-limiting rule is warranted.
 
 <Frame>
-  ![IP Spotlight](/images/docs/waap/ip-security/ip-spotlight/ip-spotlight-5.png)
+  ![Traffic Timeline](/images/docs/waap/threat-intelligence/ip-spotlight/ip-spotlight-traffic-timeline.png)
 </Frame>
 
-#### Attack distribution over time
+## Understand what the IP is targeting
 
-This section displays a graph with the number of blocked requests that are filtered by the triggered WAF policy.
+The **Top activity** section breaks down the IP's behavior into four categories. Together, they tell you *what* the IP is after and *how* it's going about it.
+- **Top Rules** — which of your WAF rules this IP is triggering most. This helps you see if your existing policies are already catching the threat, and which rules may need tuning.
+- **Top User Agents** — the clients or tools the IP is using. A list dominated by automation frameworks like `python-requests` or `curl` is a red flag for scripted attacks.
+- **Top Domains** — which of your domains are being targeted. If multiple domains appear, the IP may be indiscriminately scanning your infrastructure.
+- **Top Paths** — the most requested URL paths. Repeated access to `/login`, `/api/`, or `/admin` paths is a common sign of credential stuffing or vulnerability probing.
 
-### Domain activity
+### Detailed attack breakdown
 
-<Info>
-  **Info**
+The **Top Attacks** table drills into the specific attack types triggered by this IP, including which domains and paths were targeted and the total event count. Use this table to understand the scope of the threat and decide whether to tighten an existing rule or create a new one.
 
-  To view this information, you need to have WAAP enabled for your domain.
-</Info>
+### User agent analysis
 
-The data displayed on the **Domain activity** tab contains details about IP activity on your domain. Select a domain you want to analyze from the dropdown menu.
+The **Top User Agents** table shows every client signature used by this IP, along with the number of requests, attacks, sessions, and affected domains and paths per agent. If you see a legitimate user agent alongside obvious bots, the IP may be rotating agents to evade detection.
 
-<Frame>
-  ![IP Spotlight](/images/docs/waap/ip-security/ip-spotlight/ip-spotlight-6.png)
-</Frame>
+### Domain and path exposure
 
-#### Overview
+The **Top Domains** and **Top Paths** tables give you a precise view of your exposure: which resources are being probed and how frequently. This information is useful for scoping a targeted block rule or adjusting rate limits on specific endpoints.
 
-In this section, you can find the following information about the address' activity on your domain:
-
-- Total number of requests
-- Number of blocked requests
-- Number of unique sessions
-
-#### Top 10 triggered policies
-
-This section provides a list and donut chart of policies applied to the IP and a graph displaying how many times each policy triggered.
-
-<Frame>
-  ![IP Spotlight](/images/docs/waap/ip-security/ip-spotlight/ip-spotlight-7.png)
-</Frame>
-
-#### Top 10 visited URLs
-
-This section provides you with top 10 URL paths visited by the IP address, along with the number of times these URLs were requested.
-
-#### Top 10 sessions
-
-This section contains a table displaying information about the top 10 sessions from the specified IP to your domain.
-
-You can check the session ID, the date the session took place, the time-to-live (TTL) of the request, if it was blocked, and the session duration.
-
-<Frame>
-  ![IP Spotlight](/images/docs/waap/ip-security/ip-spotlight/ip-spotlight-8.png)
-</Frame>
-
-#### Top 10 user agents
-
-Here, you find a table with information about the top 10 user agents that accessed your domain from the specified IP.
-
-<Frame>
-  ![IP Spotlight](/images/docs/waap/ip-security/ip-spotlight/ip-spotlight-9.png)
-</Frame>
