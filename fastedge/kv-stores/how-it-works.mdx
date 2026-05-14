@@ -26,3 +26,19 @@ Traditional edge computing platforms place data stores at regional POP locations
 - **Better performance**: Optimize for the 99% use case (reads) while accepting slightly slower writes
 
 This architecture is perfect for frequently-read, infrequently-written data. Ideal use cases include configuration data, feature flags, content fragments, and blocklist/allowlist checks based on IP addresses, IP subnets, ASNs, and similar criteria.
+
+## When to use Edge Storage vs Cache
+
+Edge Storage and [Cache](/fastedge/cache) solve different problems. Edge Storage is the right choice when you need durable, globally consistent data that is created and managed ahead of time. Cache is the right choice when you need fast, POP-local state at runtime — for example, counters or memoized values that do not need to be shared between POPs.
+
+| | Edge Storage (KV) | Cache |
+|---|---|---|
+| Scope | Globally replicated to all POPs | Single POP |
+| Consistency | Eventual (1–2 seconds globally) | Strong (within a POP) |
+| Durability | Durable, backed by a central database | Transient, evictable |
+| Provisioning | Created in the Customer Portal and linked to your application | None — available at runtime on paid plans |
+| Writes from the API | Yes | No (runtime only) |
+| Atomic counters | No | Yes (`incr`, `decr`) |
+| Typical workloads | Configuration, feature flags, lookup tables, blocklists, sorted sets, Bloom filters | Rate limits, response memoization, idempotency keys, per-request deduplication |
+
+The two can be used together: store the source of truth in Edge Storage and use Cache to memoize derived results or to enforce per-POP rate limits.

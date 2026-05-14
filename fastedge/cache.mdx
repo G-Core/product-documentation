@@ -1,0 +1,54 @@
+---
+title: Cache
+sidebarTitle: Cache
+ai-navigation: Cache is a POP-local, strongly consistent key-value store available to FastEdge applications at runtime for transient state such as rate-limit counters, response memoization, and idempotency checks. It is distinct from Edge Storage, which is globally replicated and durable.
+---
+
+Cache is a fast key-value store co-located with each FastEdge POP (Point of Presence). It is intended for transient, request-time state — counters, memoized computations, idempotency tokens — and is available to every FastEdge application on a paid plan at runtime without needing to be created or linked in advance.
+
+## How it works
+
+**POP-local scope**: Cache data lives inside a single POP. Writes are not replicated to other POPs, and a value written in one POP is not visible from another. Within a POP, reads and writes are strongly consistent.
+
+**Transient storage**: Entries are evictable and carry no durability guarantee. Values may disappear before their expiration if the POP is under memory pressure. Cache is not a substitute for persistent storage.
+
+**Atomic counters**: Integer counters can be incremented and decremented atomically within a POP. This makes Cache suitable for primitives such as rate limiting and fixed-window throttling.
+
+**Coalesced population**: A `getOrSet` operation prevents duplicate work within a single WASM instance — concurrent callers for the same key share one populator execution.
+
+## When to use Cache vs Edge Storage
+
+Cache and [Edge Storage](/fastedge/kv-stores/how-it-works) solve different problems. Use this table to decide which one fits your workload.
+
+| | Cache | Edge Storage (KV) |
+|---|---|---|
+| Scope | Single POP | Globally replicated to all POPs |
+| Consistency | Strong (within a POP) | Eventual (1–2 seconds globally) |
+| Durability | Transient, evictable | Durable, backed by a central database |
+| Provisioning | None — available at runtime on paid plans | Created in the Customer Portal and linked to your application |
+| Writes from the API | No (runtime only) | Yes |
+| Atomic counters | Yes (`incr`, `decr`) | No |
+| Typical workloads | Rate limits, response memoization, idempotency keys, per-request deduplication | Configuration, feature flags, lookup tables, blocklists, sorted sets, Bloom filters |
+
+A common pattern is to use both together: store the source of truth in Edge Storage and use Cache to memoize derived results or to enforce per-POP rate limits.
+
+## API surface
+
+The Cache API is exposed to FastEdge applications via the SDK. The available operations are:
+
+- **Reading and writing**: `get`, `set`, `delete`, `exists`
+- **Atomic operations and TTL**: `incr`, `decr` (JS only), `expire`
+- **Get-or-populate**: `getOrSet` (JS only) for read-through caching with coalesced population
+
+Expiration is specified per write as a TTL (`ttl`, `ttlMs`) or an absolute deadline (`expiresAt`). Entries with no expiration remain until evicted.
+
+## Accessing Cache in applications
+
+For more information regarding Cache usage in applications, see the [JavaScript SDK](https://g-core.github.io/FastEdge-sdk-js/reference/fastedge/cache/) and the [Rust SDK](https://docs.rs/fastedge/latest/fastedge/cache/).
+
+<Info>
+**Info**
+
+Cache does not need to be created or linked to your application. It is available to every FastEdge application on a paid plan at runtime by importing the cache module from the SDK.
+
+</Info>
