@@ -1,43 +1,23 @@
 ---
 title: Manage Cloud resources via Terraform
-sidebarTitle: Terraform
-ai-navigation: Create and manage Gcore Cloud resources—Virtual Machines, Bare Metal servers, Kubernetes clusters, Load Balancers, and networks—using Terraform provider v0.
+sidebarTitle: Terraform provider v0
+ai-navigation: Create and manage Gcore Cloud resources — Virtual Machines, Bare Metal servers, Kubernetes clusters, Load Balancers, and networks — using Terraform provider v0.
 ---
 
-The Gcore Terraform provider v0 supports the following Cloud resources: Virtual Machines, Bare Metal servers, Kubernetes clusters, Load Balancers, networks, volumes, snapshots, server groups, and reserved IP addresses. The [Terraform page](/developer-tools/terraform/overview) covers installation and provider configuration.
+The Gcore Terraform provider v0 supports the following Cloud resources: Virtual Machines, Bare Metal servers, Kubernetes clusters, Load Balancers, networks, volumes, snapshots, server groups, and reserved IP addresses.
 
-<Info>
-**Info**
+Provider installation and authentication are covered in the [Terraform overview](/developer-tools/terraform/overview). The v2 provider with expanded resource support is available in [Terraform v2](/cloud/manage-cloud-via-terraform-v2). To migrate an existing v0 configuration, follow the [migration guide](/developer-tools/terraform/migrate-v0-to-v2).
 
-All examples use provider v0. Provider v2 resources are under active development; the current v2 resource list is in the [v2 documentation on Terraform Registry.](https://registry.terraform.io/providers/G-Core/gcore/2.0.0-alpha.6/docs)
-</Info>
-
-Provider v2 is a ground-up rewrite of the Gcore Terraform provider, auto-generated from the OpenAPI spec. It supports `terraform import` for most resources. The [Terraform page](/developer-tools/terraform/overview) covers v2 installation, authentication, and a full comparison with v0.
-
-For those already familiar with Terraform, the abridged workflow is:
-
-1. Go to the Terraform documentation, click **Resources**, and copy the necessary code to main.tf.
-2. Customize values in the code.
-3. Run the following command to preview the expected changes:
-
-```sh
-terraform plan
-```
-
-4. Run the following command to apply these changes:
-
-```sh
-terraform apply
-```
+Add resource configuration to `main.tf`, then run `terraform plan` to preview changes and `terraform apply` to apply them. The [getting started guide](/developer-tools/terraform/get-started-with-terraform) covers the full workflow.
 
 ### Create a Bare Metal server
 
 The following configuration creates a Bare Metal server using the Gcore Terraform provider.
 
-1. Open the **main.tf** file with the Gcore provider configuration.
+1. Open the `main.tf` file with the Gcore provider configuration.
 2. Copy the code below to the file and customize the highlighted values:
 
-```js
+```hcl
 data "gcore_project" "project" {
   name = "Default"
 }
@@ -104,10 +84,10 @@ When prompted, enter `yes` to confirm.
 
 The following configuration uploads a custom image for use with GPU Bare Metal instances.
 
-1. Open the **main.tf** file with the Gcore provider configuration.
+1. Open the `main.tf` file with the Gcore provider configuration.
 2. Copy the code below to the file and customize the highlighted values:
 
-```js
+```hcl
 resource "gcore_gpu_baremetal_image" "example" {
   project_id   = data.gcore_project.project.id
   region_id    = data.gcore_region.region.id
@@ -167,10 +147,10 @@ When prompted, enter `yes` to confirm.
 
 The following configuration creates a Virtual Machine with a reserved IP, boot volume, and floating IP attached.
 
-1. Open the main.tf file with the Gcore provider configuration.
+1. Open the `main.tf` file with the Gcore provider configuration.
 2. Copy the code to the file and customize the highlighted values:
 
-```js
+```hcl
 resource "gcore_network" "network" {
   name       = "my-network"
   type       = "vxlan"
@@ -221,7 +201,7 @@ resource "gcore_instance" "v" {
 }
 ```
 
-3. Configure resources required for the Virtual Machine: [a reserved IP address](/cloud/manage-cloud-via-terraform#reserve-an-ip-address), [network](/cloud/manage-cloud-via-terraform#create-a-network-and-subnetwork), [subnetwork](/cloud/manage-cloud-via-terraform#create-a-network-and-subnetwork), [volume](/cloud/manage-cloud-via-terraform#create-a-volume).
+3. Configure resources required for the Virtual Machine: [reserved IP](/cloud/manage-cloud-via-terraform#reserve-an-ip-address), [network and subnetwork](/cloud/manage-cloud-via-terraform#create-a-network-and-subnetwork), [volume](/cloud/manage-cloud-via-terraform#create-a-volume).
 4. Configure the Virtual Machine.
 
 - Specify "flavor_id".
@@ -229,7 +209,7 @@ resource "gcore_instance" "v" {
   - For "subnet" type, specify the "network_id" and "subnetwork_id".
   - For "any_subnet" type, specify the "network_id".
   - For "reserved_fixed_ip" type, specify the "port_id".
-  - (optional) Add is_parent = "true" to ensure the interface cannot be detached and is always connected first.
+  - (optional) Add is_parent = "true" to prevent the interface from being detached and to set it as the first attached interface.
   - (optional) Specify order to set the order in which interfaces will be attached.
 - Configure "volume".
   - Specify "source = existing-volume" and the "volume_id". Optionally, specify the size of the existing volume in GB.
@@ -266,10 +246,10 @@ When prompted, enter `yes` to confirm.
 
 The following configuration creates a Kubernetes cluster with a private network, subnet, and a single node pool.
 
-1. Open the main.tf file with the Gcore provider configuration.
+1. Open the `main.tf` file with the Gcore provider configuration.
 2. Copy the code below to the file and customize the highlighted values:
 
-```js
+```hcl
 resource "gcore_network" "network" {
   name       = "my-network"
   type       = "vxlan"
@@ -310,7 +290,7 @@ resource "gcore_k8sv2" "cluster" {
 
 - Specify "name".
 - Specify the "fixed_network" of the cluster.
-- Specify the "fixed_subnet" and make sure the subnet has a router.
+- Specify the "fixed_subnet"; the subnet must have a router.
 - Specify the "keypair".
 - (optional) Specify the "region_id" or "region_name".
 - (optional) Specify the "project_id" or "project_name".
@@ -345,12 +325,12 @@ When prompted, enter `yes` to confirm.
 
 ### Create a Kubernetes cluster with Cilium load balancer and DSR
 
-This configuration uses Cilium with Direct Server Return (DSR) mode, which preserves the client's source IP—useful for logging, security, and latency-sensitive applications.
+This configuration uses Cilium with Direct Server Return (DSR) mode, which preserves the client's source IP — useful for logging, security, and latency-sensitive applications.
 
-1. Open the main.tf file with the Gcore provider configuration.
+1. Open the `main.tf` file with the Gcore provider configuration.
 2. Copy the code below to the file and customize the highlighted values:
 
-```js
+```hcl
 resource "gcore_network" "network" {
   name       = "my-network"
   type       = "vxlan"
@@ -373,7 +353,7 @@ resource "gcore_k8sv2" "cluster" {
   name          = "my-k8s-cluster"
   fixed_network = gcore_network.network.id
   fixed_subnet  = gcore_subnet.subnet.id
-  keypair       = "qa-new-preprod-tk"
+  keypair       = "your-keypair-name"
   version       = "v1.33.6"
 
   cni {
@@ -434,14 +414,14 @@ terraform apply
 
 When prompted, enter `yes` to confirm.
 
-### Create a load balancer
+### Create a Load Balancer
 
 The following configuration creates a Load Balancer with a listener, pool, and member.
 
-1. Open the main.tf file with the Gcore provider configuration.
+1. Open the `main.tf` file with the Gcore provider configuration.
 2. Copy the code below to the file and customize the highlighted values:
 
-```js
+```hcl
 resource "gcore_loadbalancerv2" "lb" {
   project_id = 1
   region_id  = 1
@@ -460,8 +440,8 @@ resource "gcore_lbpool" "pl" {
   name            = "test_pool"
   protocol        = "HTTP"
   lb_algorithm    = "LEAST_CONNECTIONS"
-  loadbalancer_id = gcore_loadbalancer.lb.id
-  listener_id     = gcore_loadbalancer.lb.listener.id
+  loadbalancer_id = gcore_loadbalancerv2.lb.id
+  listener_id     = gcore_lblistener.listener.id
   health_monitor {
     type        = "PING"
     delay       = 60
@@ -554,10 +534,10 @@ When prompted, enter `yes` to confirm.
 
 The following configuration creates a network and an optional subnetwork within it.
 
-1. Open the main.tf file with the Gcore provider configuration.
+1. Open the `main.tf` file with the Gcore provider configuration.
 2. Copy the code below to the file and customize the highlighted values:
 
-```js
+```hcl
 resource "gcore_network" "network" {
   name       = "network_example"
   type       = "vlan"
@@ -574,7 +554,7 @@ resource "gcore_network" "network" {
 
 4. To skip the subnetwork, proceed to step 6. To create a subnetwork, add the code below and customize the highlighted values:
 
-```js
+```hcl
 resource "gcore_subnet" "subnet" {
   name            = "subnet_example"
   cidr            = "192.168.10.0/24"
@@ -595,7 +575,7 @@ resource "gcore_subnet" "subnet" {
 - (optional) Add "host_routes".
   - Specify the "destination", the CIDR of the target subnetwork.
   - Specify the "nexthop", the IPv4 address to forward traffic to if its destination IP matches the "destination" CIDR.
-- (optional) Add "enable_dhcp = false" to disable DHCP. Otherwise, DHCP is enabled by default. For IPv6 networks, DHCP can be enabled or disabled at creation time—changing this setting later requires recreating the subnetwork.
+- (optional) Add "enable_dhcp = false" to disable DHCP. Otherwise, DHCP is enabled by default. For IPv6 networks, DHCP can be enabled or disabled at creation time — changing this setting later requires recreating the subnetwork.
 - (optional) Specify the "region_id" and "region_name".
 - (optional) Specify the "project_id" and "project_name".
 
@@ -620,10 +600,10 @@ When prompted, enter `yes` to confirm.
 
 The following configuration creates a server group with an affinity or anti-affinity placement policy.
 
-1. Open the main.tf file with the Gcore provider configuration.
+1. Open the `main.tf` file with the Gcore provider configuration.
 2. Copy the code below to the file and customize the highlighted values:
 
-```js
+```hcl
 resource "gcore_servergroup" "default" {
   name       = "server_group_example"
   policy     = "affinity"
@@ -660,10 +640,10 @@ When prompted, enter `yes` to confirm.
 
 The following configuration creates a standalone volume that can be attached to instances.
 
-1. Open the main.tf file with the Gcore provider configuration.
+1. Open the `main.tf` file with the Gcore provider configuration.
 2. Copy the code below to the file and customize:
 
-```js
+```hcl
 resource "gcore_volume" "volume" {
   project_id = 1
   region_id  = 1
@@ -703,10 +683,10 @@ When prompted, enter `yes` to confirm.
 
 The following configuration creates a snapshot of an existing volume.
 
-1. Open the main.tf file with the Gcore provider configuration.
+1. Open the `main.tf` file with the Gcore provider configuration.
 2. Copy the code below to the file and customize the highlighted values:
 
-```js
+```hcl
 resource "gcore_snapshot" "snapshot" {
   project_id  = 1
   region_id   = 1
@@ -744,10 +724,10 @@ When prompted, enter `yes` to confirm.
 
 The following configuration reserves a fixed IP address for use with instances or load balancers.
 
-1. Open the main.tf file with the Gcore provider configuration.
+1. Open the `main.tf` file with the Gcore provider configuration.
 2. Copy the code below to the file and customize the highlighted values:
 
-```js
+```hcl
 resource "gcore_reservedfixedip" "fixed_ip" {
   project_id   = 1
   region_id    = 1
@@ -759,7 +739,7 @@ resource "gcore_reservedfixedip" "fixed_ip" {
 3. Configure the reserved IP address.
 
 - Specify the "type": "subnet", "any_subnet", "external", or "ip_address".
-- Specify whether to use the reserved IP address as a virtual IP (VIP) address ("is_vip = true") or not ("is_vip = false"). For details, see [Create and configure a virtual IP address.](/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address)
+- Specify whether to use the reserved IP address as a [virtual IP address](/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address) (VIP) ("is_vip = true") or not ("is_vip = false").
 - (optional) Add "allowed_access_pairs" to assign one VIP to multiple machines. Specify the "ip_address" and "mac_address".
 - (optional) Specify the "network_id" and/or "subnet_id" to attach the IP address to a specific network or subnetwork.
 - (optional) Specify the "region_id" or "region_name".
