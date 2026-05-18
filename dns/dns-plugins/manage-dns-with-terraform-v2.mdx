@@ -1,0 +1,273 @@
+---
+title: Manage DNS zones and records with Terraform provider v2
+sidebarTitle: Terraform provider v2
+ai-navigation: Create and manage Gcore Managed DNS zones and records using Terraform provider v2 gcore_dns_zone and gcore_dns_zone_rrset resources, supporting A, AAAA, CNAME, MX, TXT, SRV, CAA record types, DNSSEC, SOA parameters, and geo-balancing with pickers and JSON-encoded meta values.
+---
+
+This guide covers the Gcore-specific Terraform resources for managing DNS zones and records using provider v2. It assumes that Terraform is already installed and the Gcore provider v2 is configured. If not, complete [Get started with Terraform](/developer-tools/terraform/get-started-with-terraform) first.
+
+<Warning>
+Provider v2 is currently in pre-release (`2.0.0-alpha`). It is not recommended for production workloads until v2 reaches general availability. Check the [Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/latest) for the current version and release status.
+</Warning>
+
+<Info>
+Migrating from provider v0? The DNS record resource is renamed from `gcore_dns_zone_record` to `gcore_dns_zone_rrset`, and the import ID separator changes from `:` to `/`. See [Migrate from v0 to v2](/developer-tools/terraform/migrate-v0-to-v2) for the full reference.
+</Info>
+
+## Create a DNS zone
+
+The `gcore_dns_zone` resource manages DNS zones in Gcore. The `name` field is required; all other fields are optional.
+
+### Basic zone
+
+```hcl
+resource "gcore_dns_zone" "example" {
+  name = "example.com"
+}
+```
+
+### Zone with SOA parameters
+
+You can customize the SOA record timing by specifying `refresh`, `retry`, `expiry`, and `nx_ttl`:
+
+```hcl
+resource "gcore_dns_zone" "example" {
+  name    = "example.com"
+  enabled = true
+  refresh = 3600
+  retry   = 1800
+  expiry  = 604800
+  nx_ttl  = 300
+}
+```
+
+| Field | Description | Default |
+|-------|-------------|---------|
+| `enabled` | Whether records resolve on DNS servers | `true` |
+| `refresh` | How often secondary servers check for zone changes (seconds) | 5400 |
+| `retry` | How long secondary servers wait before retrying a failed refresh (seconds) | 3600 |
+| `expiry` | How long secondary servers serve the zone without a successful refresh (seconds) | 1209600 |
+| `nx_ttl` | TTL for negative responses (NXDOMAIN) (seconds) | varies |
+
+```sh
+terraform import gcore_dns_zone.example example.com
+```
+
+## Add DNS records
+
+The `gcore_dns_zone_rrset` resource manages individual DNS record sets. Required fields are `zone_name`, `rrset_name`, `rrset_type`, and `resource_records`.
+
+Each entry in `resource_records` has a required `content` field, which is a **list of strings**. The number and meaning of list elements depends on the record type.
+
+### A record
+
+Each A record entry has a single element in `content`: the IPv4 address.
+
+```hcl
+resource "gcore_dns_zone_rrset" "a" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = gcore_dns_zone.example.name
+  rrset_type = "A"
+  ttl        = 300
+
+  resource_records = [
+    { content = ["203.0.113.1"] },
+    { content = ["203.0.113.2"] },
+  ]
+}
+```
+
+```sh
+terraform import gcore_dns_zone_rrset.a example.com/example.com/A
+```
+
+### CNAME record
+
+```hcl
+resource "gcore_dns_zone_rrset" "www" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = "www.example.com"
+  rrset_type = "CNAME"
+  ttl        = 300
+
+  resource_records = [
+    { content = ["example.com."] },
+  ]
+}
+```
+
+```sh
+terraform import gcore_dns_zone_rrset.www example.com/www.example.com/CNAME
+```
+
+### MX record
+
+MX `content` must have exactly two elements: the priority and the mail server hostname (with trailing dot).
+
+```hcl
+resource "gcore_dns_zone_rrset" "mx" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = gcore_dns_zone.example.name
+  rrset_type = "MX"
+  ttl        = 3600
+
+  resource_records = [
+    { content = ["10", "mail.example.com."] },
+    { content = ["20", "mail-backup.example.com."] },
+  ]
+}
+```
+
+```sh
+terraform import gcore_dns_zone_rrset.mx example.com/example.com/MX
+```
+
+### TXT record
+
+```hcl
+resource "gcore_dns_zone_rrset" "spf" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = gcore_dns_zone.example.name
+  rrset_type = "TXT"
+  ttl        = 3600
+
+  resource_records = [
+    { content = ["v=spf1 include:_spf.google.com ~all"] },
+  ]
+}
+```
+
+```sh
+terraform import gcore_dns_zone_rrset.spf example.com/example.com/TXT
+```
+
+### CAA record
+
+CAA `content` must have exactly three elements: flags, tag, and the CA value (without quotes).
+
+```hcl
+resource "gcore_dns_zone_rrset" "caa" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = gcore_dns_zone.example.name
+  rrset_type = "CAA"
+  ttl        = 3600
+
+  resource_records = [
+    { content = ["0", "issue", "letsencrypt.org"] },
+  ]
+}
+```
+
+```sh
+terraform import gcore_dns_zone_rrset.caa example.com/example.com/CAA
+```
+
+## Configure geo-balancing
+
+Geo-balancing routes DNS queries to the nearest or most appropriate server based on the client's location. Configure it with a `pickers` block on the RRset and `meta` values on each record.
+
+`meta` values are a map of strings. Array-type values (`latlong`, `continents`, `countries`) must be JSON-encoded using the `jsonencode()` function.
+
+```hcl
+resource "gcore_dns_zone_rrset" "geo_a" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = gcore_dns_zone.example.name
+  rrset_type = "A"
+  ttl        = 120
+
+  pickers = [{
+    type   = "geodistance"
+    limit  = 1
+    strict = true
+  }]
+
+  resource_records = [
+    {
+      content = ["203.0.113.1"]
+      meta = {
+        latlong    = jsonencode([52.3676, 4.9041])
+        continents = jsonencode(["EU"])
+        countries  = jsonencode(["NL"])
+      }
+    },
+    {
+      content = ["198.51.100.10"]
+      meta = {
+        latlong    = jsonencode([40.7128, -74.0060])
+        continents = jsonencode(["NA"])
+        countries  = jsonencode(["US"])
+      }
+    },
+  ]
+}
+```
+
+The `geodistance` picker returns the record closest to the client's geographic location. `limit = 1` returns one record per query. When `strict = true`, no records are returned if no entries match — instead of falling back to the full set.
+
+### Available picker types
+
+| Type | Description |
+|------|-------------|
+| `geodistance` | Returns the record closest to the client |
+| `geodns` | Routes based on GeoDNS country/region assignment |
+| `country` | Filters by country code in record meta |
+| `continent` | Filters by continent code in record meta |
+| `asn` | Filters by autonomous system number |
+| `ip` | Filters by client IP range |
+| `weighted_shuffle` | Weighted random selection |
+| `first_n` | Returns the first N records |
+| `default` | Returns all records (passthrough) |
+
+<Info>
+For more details on geo-balancing options, refer to [Configure weight balancing and geobalancing](/dns/dns-records/configure-weight-balancing-and-geobalancing).
+</Info>
+
+## Failover and health checks
+
+<Warning>
+Health check filtering (`is_healthy` picker) is not supported by provider v2 at this time. To configure DNS failover, use [provider v0](/dns/dns-plugins/manage-dns-with-terraform) or manage health checks through the [Gcore Customer Portal](https://portal.gcore.com) or [API](https://api.gcore.com/docs/dns).
+</Warning>
+
+## Preview and apply changes
+
+After configuring your DNS zones and records:
+
+- Run `terraform plan` to preview what Terraform will change.
+- Run `terraform apply` to apply the changes. Terraform will prompt you to confirm by typing "yes".
+- Run `terraform destroy` to remove all DNS resources managed by your configuration.
+
+<Warning>
+Running `terraform destroy` will permanently delete all DNS zones and records managed by your configuration. This action cannot be undone.
+</Warning>
+
+## Import existing DNS resources
+
+If you already have DNS zones and records in the Gcore Customer Portal, import them into Terraform state to manage them going forward.
+
+To import an existing DNS zone:
+
+```shell
+terraform import gcore_dns_zone.example example.com
+```
+
+To import an existing DNS record set, use the format `zone_name/rrset_name/rrset_type`:
+
+```shell
+terraform import gcore_dns_zone_rrset.a example.com/example.com/A
+```
+
+<Tip>
+After importing, run `terraform plan` to verify the configuration matches the imported state. Update your `.tf` files to resolve any reported differences before running `terraform apply`.
+</Tip>
+
+## Related documentation
+
+- [Get started with Terraform](/developer-tools/terraform/get-started-with-terraform)
+- [Migrate from Gcore Terraform provider v0 to v2](/developer-tools/terraform/migrate-v0-to-v2)
+- [Manage DNS with Terraform (provider v0)](/dns/dns-plugins/manage-dns-with-terraform)
+- [Gcore Terraform provider documentation](https://registry.terraform.io/providers/G-Core/gcore/latest/docs)
+- [Managing API tokens](/account-settings/api-tokens)
+- [Manage a DNS zone](/dns/manage-a-dns-zone)
+- [DNS records](/dns/dns-records)
+- [Configure weight balancing and geobalancing](/dns/dns-records/configure-weight-balancing-and-geobalancing)
+- [Configure and use DNS failover](/dns/dns-failover/configure-and-use-dns-failover)
