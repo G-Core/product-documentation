@@ -538,6 +538,74 @@ The **Logs uploader** screen has three tabs:
   </Accordion>
 </AccordionGroup>
 
+### WAAP log fields
+
+If your CDN resource has [WAAP](/waap) enabled, the Logs uploader automatically appends WAAP security event fields to each request log line, alongside the CDN fields described above. You receive a single merged log entry per request, so the CDN access data and the matching WAAP security verdict arrive correlated and on the same delivery channel as your existing CDN logs - no separate file, no extra configuration on your side.
+
+<Note>
+  **Eligibility.** WAAP fields are added only for resources that have WAAP enabled and use the current edge protection architecture. For resources without WAAP, the existing CDN log line is unchanged.
+</Note>
+
+<Note>
+  **DDoS protection logs are not exported through the Logs uploader.** Only per-request WAAP security events are included. DDoS attack analytics remain available through the WAAP API and dashboard.
+</Note>
+
+<AccordionGroup>
+  <Accordion title="WAAP fields">
+    The following fields are appended to each request log line when WAAP is enabled on the resource.
+
+    | **Field**                          | **Log value example**           | **Description**                                                                                                                                          |
+    | :--------------------------------- | :------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
+    | `$waap_id`                         | `7f3c1e92-...`                  | Unique WAAP request identifier. Use it to correlate a log line with the [WAAP Request Details API](/api-reference/waap/analytics/get-request-details). |
+    | `$waap_decision`                   | `blocked`                       | Final security decision computed by WAAP at the edge. See **Decision and optional action values** below for the full value list and semantics.            |
+    | `$waap_optional_action`            | `captcha`                       | Additional action that was returned to the client alongside the decision (CAPTCHA or non-interactive challenge). See **Decision and optional action values** below. |
+    | `$waap_passed_incident_id`         | `9a8b4f70-...`                  | Identifier of a previous WAAP incident that the request passed (for example, after a successful CAPTCHA solve in an earlier request from the same session). Empty if not applicable. |
+    | `$waap_request_type`               | `regular`                       | WAAP request classification (for example, `regular`, `injected`).                                                                                        |
+    | `$waap_country`                    | `DE`                            | Country of the client IP, resolved by WAAP (Alpha-2 ISO 3166 code).                                                                                      |
+    | `$waap_organization`               | `Deutsche Telekom AG`           | Network organization that owns the client IP, resolved by WAAP.                                                                                          |
+    | `$waap_range`                      | `203.0.113.0/24`                | Network range associated with the client IP.                                                                                                             |
+    | `$waap_session_id`                 | `8c1f0d2a-...`                  | WAAP session identifier. Groups successive requests that WAAP attributes to the same client.                                                             |
+    | `$waap_session_request_number`     | `42`                            | Sequence number of this request within the WAAP session.                                                                                                 |
+    | `$waap_conviction_action`          | `block`                         | Action prescribed by the matched rule. Possible values include `allow`, `block`, `monitor`, `captcha`, `handshake`. Empty if no rule matched.            |
+    | `$waap_conviction_rule_id`         | `100245`                        | ID of the WAAP rule that matched the request.                                                                                                            |
+    | `$waap_conviction_rule_name`       | `SQLi attempt`                  | Human-readable name of the matched WAAP rule.                                                                                                            |
+    | `$waap_conviction_scope`           | `policy`                        | Scope at which the rule was applied (for example, `policy`, `global`, `custom`).                                                                          |
+    | `$waap_conviction_reference_id`    | `signature:sqli-101`            | Reference identifier of the conviction (rule signature, tag, or template reference).                                                                     |
+    | `$waap_conviction_incident_id`     | `4d2e8b1c-...`                  | Identifier of the WAAP incident raised for this request.                                                                                                 |
+    | `$waap_conviction_template`        | `OWASP CRS`                     | Template or ruleset family the matched rule belongs to.                                                                                                  |
+
+    <Tip>
+      All WAAP fields are best-effort: a field is empty (`""`) when WAAP did not compute a value for the request (for example, no rule matched, or the request was served before WAAP analysis completed). Treat empty values as "not applicable", not "zero".
+    </Tip>
+  </Accordion>
+  <Accordion title="Decision and optional action values">
+    The `$waap_decision` field gives the final security verdict that WAAP applied at the edge:
+
+    | **Value**     | **Meaning**                                                                                                                                                |
+    | :------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+    | `passed`      | Request was allowed because it matched a previously cleared WAAP incident (for example, the client had already solved a CAPTCHA for an earlier request in the same session). The original incident identifier is exported in `$waap_passed_incident_id`. |
+    | `allowed`     | Request was explicitly allowed by a matched WAAP rule.                                                                                                       |
+    | `monitored`   | Request was logged in monitor mode without applying the rule action. Useful for shadow testing rules before enforcement.                                     |
+    | `blocked`     | Request was blocked at the edge, or a challenge was issued and is pending client resolution (see the note below).                                            |
+    | empty (`""`)  | No WAAP verdict was produced for this request (for example, traffic that did not go through WAAP analysis).                                                  |
+
+    The `$waap_optional_action` field describes any additional action applied alongside the decision:
+
+    | **Value**     | **Meaning**                                                                                                                                                |
+    | :------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+    | `captcha`     | A CAPTCHA challenge was served to the client.                                                                                                                |
+    | `challenge`   | A non-interactive challenge was issued (for example, a JavaScript or cookie handshake).                                                                      |
+    | empty (`""`)  | No additional action was applied.                                                                                                                            |
+
+    <Note>
+      **Challenged requests are recorded as `blocked`.** Logs are written at the edge as soon as the response is sent, before WAAP knows whether the client will solve the challenge. When the client passes the challenge, subsequent requests from the same session are exported with `$waap_decision="passed"` and `$waap_passed_incident_id` pointing back to the original incident, so you can trace the final outcome by joining the two log lines on the session identifier. The full per-incident result is also available through the [WAAP Request Details API](/api-reference/waap/analytics/get-request-details).
+    </Note>
+  </Accordion>
+  <Accordion title="Log schema versioning">
+    Each exported log line carries a schema version field that identifies the JSON payload version (for example, `"v":"5"`). The version is incremented whenever fields are added, renamed, or removed. We add new fields in a backwards-compatible way where possible (existing field names and positions are preserved), so most schema changes do not require parser updates on your side. Breaking changes are announced in advance through the standard CDN update notifications. Pin your downstream parsers (SIEM, ETL) to a known version and check the `v` value to detect schema changes safely.
+  </Accordion>
+</AccordionGroup>
+
 ### How near real time log exporting works
 
 The **Time interval** setting in a Policy defines the frequency with which the logs are archived and exported. This interval is 5 minutes by default and can be set to between 5 and 60 minutes.

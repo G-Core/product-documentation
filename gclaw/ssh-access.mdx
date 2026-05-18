@@ -1,0 +1,112 @@
+---
+title: SSH access to the Gclaw VM
+ai-navigation: Obtain SSH access to a Gclaw dedicated VM by generating an SSH key pair locally, asking the Gclaw assistant to append the public key to ~/.ssh/authorized_keys on the instance, retrieving the VM IP address with ip -4 a, and connecting as the ubuntu user.
+sidebarTitle: SSH access
+---
+
+Gclaw exposes a dedicated VM where the OpenClaw agent runs. Direct SSH access can be useful for inspecting workspace files, copying data off the VM, or running commands that are easier from a terminal than from the chat interface. Access is granted by asking the Gclaw assistant to add an SSH public key to the `ubuntu` user's `authorized_keys` file.
+
+<Warning>
+**Warning**
+
+SSH access grants full control over the dedicated VM, including the ability to read and modify all agent state, configuration, and credentials. Protect the corresponding private key the same way you would protect a server administrator credential.
+</Warning>
+
+## Prerequisites
+
+- A running Gclaw instance reachable through the [Gcore Customer Portal](https://portal.gcore.com/) or a connected channel (Telegram, Discord, or another configured platform).
+- A local machine with `ssh` and `ssh-keygen` available.
+
+## Step 1. Generate an SSH key pair
+
+On the local machine, generate a new key pair dedicated to the Gclaw VM. Using a separate key makes it easier to revoke access later without affecting other servers.
+
+```bash
+ssh-keygen -t ed25519 -C "gclaw-vm" -f ~/.ssh/gclaw_ed25519
+```
+
+When prompted, set a passphrase or leave it empty. Two files are created:
+
+- `~/.ssh/gclaw_ed25519` — the private key. Keep this file local.
+- `~/.ssh/gclaw_ed25519.pub` — the public key. Share this with Gclaw in the next step.
+
+Print the public key so it can be copied:
+
+```bash
+cat ~/.ssh/gclaw_ed25519.pub
+```
+
+The output is a single line beginning with `ssh-ed25519` and ending with the comment `gclaw-vm`.
+
+<Warning>
+**Warning**
+
+Only share the `.pub` file. The private key (no extension) must never be sent to the assistant or pasted into any chat.
+</Warning>
+
+## Step 2. Ask Gclaw to authorize the key
+
+Open the Gclaw chat in the [Gcore Customer Portal](https://portal.gcore.com/), or use a connected channel such as Telegram or Discord. Send the public key to the assistant with a request to append it to the `ubuntu` user's `authorized_keys` file:
+
+> "Please add the following SSH public key to `~/.ssh/authorized_keys` for the ubuntu user:
+>
+> `ssh-ed25519 AAAA... gclaw-vm`"
+
+The assistant appends the key to `/home/ubuntu/.ssh/authorized_keys`, creating the file with the correct permissions if it does not already exist. Ask the assistant to confirm the contents of the file before continuing.
+
+<Tip>
+**Tip**
+
+Authorized keys persist across instance restarts but are lost when the instance is recreated. After a recreate, repeat this step to restore SSH access.
+</Tip>
+
+## Step 3. Retrieve the VM IP address
+
+Ask the assistant to print the VM's IPv4 address:
+
+> "Run `ip -4 a` and show me the output."
+
+The assistant executes the command and returns the network interface details. Locate the public IPv4 address assigned to the primary interface (typically `eth0` or `ens3`) and copy it for the next step.
+
+## Step 4. Connect to the VM
+
+From the local machine, connect as the `ubuntu` user, pointing `ssh` at the private key created in Step 1. Replace `<IP>` with the address from the previous step.
+
+```bash
+ssh -i ~/.ssh/gclaw_ed25519 ubuntu@<IP>
+```
+
+On first connection, `ssh` prompts to accept the VM's host key fingerprint. After accepting, a shell session opens on the VM as the `ubuntu` user.
+
+<Tip>
+**Tip**
+
+To avoid retyping the key path and user, add a host entry to `~/.ssh/config`:
+
+```
+Host gclaw
+    HostName <IP>
+    User ubuntu
+    IdentityFile ~/.ssh/gclaw_ed25519
+```
+
+After saving, connect with `ssh gclaw`.
+</Tip>
+
+## Revoke SSH access
+
+To remove SSH access, ask the assistant to delete the corresponding line from `/home/ubuntu/.ssh/authorized_keys`:
+
+> "Remove the SSH public key with comment `gclaw-vm` from `~/.ssh/authorized_keys`."
+
+After confirming the change, delete the local key pair if it is no longer needed:
+
+```bash
+rm ~/.ssh/gclaw_ed25519 ~/.ssh/gclaw_ed25519.pub
+```
+
+## Troubleshooting
+
+- **Permission denied (publickey)**: Verify that the public key in `authorized_keys` matches the local `.pub` file exactly and that the private key path passed with `-i` is correct. Ask the assistant to print the contents of `~/.ssh/authorized_keys` for comparison.
+- **Connection timed out**: Confirm the IP address with `ip -4 a` again. The VM IP can change after a recreate.
+- **Host key changed warning**: If the instance was recreated, the VM host key is regenerated. Remove the stale entry with `ssh-keygen -R <IP>` before reconnecting.

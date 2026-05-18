@@ -1,0 +1,456 @@
+---
+title: "Migrate from Gcore Terraform provider v0 to v2"
+sidebarTitle: "Migrate from v0 to v2"
+---
+
+The Gcore Terraform provider v2 is a complete rewrite generated from the Gcore OpenAPI specification, covering more resources and using more consistent attribute names. Migrating from v0 to v2 requires manual configuration updates because the two versions use incompatible resource names, attribute names, and authentication configuration.
+
+
+## Before migrating
+
+v2 uses `api_key` instead of `permanent_api_token` for authentication, adds a `cloud_` prefix to all Cloud resource types, and changes the import ID separator from `:` to `/`. The reference tables for resource type renames and attribute changes are in the steps below where they are needed.
+
+### Resources without a v2 equivalent
+
+The following v0 resources do not yet have a v2 equivalent. Keep them on v0, or manage them through the [Gcore Customer Portal](https://portal.gcore.com) and [API](https://api.gcore.com/docs) until v2 support is added:
+
+- `gcore_snapshot`
+- `gcore_lifecyclepolicy`
+- `gcore_storage_s3` / `gcore_storage_s3_bucket`
+- `gcore_storage_sftp`
+- `gcore_faas_function` / `gcore_faas_key` / `gcore_faas_namespace`
+- `gcore_laas_topic`
+- `gcore_postgres_cluster`
+- `gcore_ddos_protection`
+- `gcore_port_security` / `gcore_port_allowed_address_pairs`
+- `gcore_registry_credential`
+
+Projects using any of these resources cannot fully migrate to v2 today because running two provider versions in the same configuration is complex. Wait until v2 covers all required resources before migrating.
+
+## Migration approach
+
+There is no automated migration tool, so the process is manual:
+
+1. Back up the current state file.
+2. Remove each resource from Terraform state (without deleting it from Gcore).
+3. Update all `.tf` files to use v2 resource types and provider configuration.
+4. Run `terraform init -upgrade` to install the v2 provider.
+5. Re-import each resource under its new v2 resource type.
+6. Run `terraform plan` and resolve any attribute drift.
+
+The infrastructure itself is never recreated — only the Terraform resource type that tracks each existing Gcore resource changes.
+
+## Migrate each resource
+
+The steps below use an SSH key pair as a concrete case. Apply the same steps to every other resource in the project — only the resource type and import ID format differ.
+
+### Starting point: v0 configuration
+
+The project has two files: `providers.tf` with the provider block and `main.tf` with a single SSH key resource.
+
+`providers.tf`:
+
+```hcl
+terraform {
+  required_version = ">= 0.13.0"
+  required_providers {
+    gcore = {
+      source  = "G-Core/gcore"
+      version = "~> 0.34"
+    }
+  }
+}
+
+provider "gcore" {
+  permanent_api_token = var.api_token
+}
+```
+
+`main.tf`:
+
+```hcl
+resource "gcore_keypair" "demo" {
+  project_id  = var.project_id
+  public_key  = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMzSiHhVTBaHerNPgRLHm+tQhvTtnOsZQEfgHMPmCxFZ demo"
+  sshkey_name = "terraform-migration-demo"
+}
+```
+
+Before starting, verify what Terraform currently tracks. The `id` value from `terraform state show` is the import ID needed in [Step 6](#step-6-import-each-resource-under-its-v2-type):
+
+```
+$ terraform state list
+
+gcore_keypair.demo
+```
+
+```
+$ terraform state show gcore_keypair.demo
+
+# gcore_keypair.demo:
+resource "gcore_keypair" "demo" {
+    fingerprint = "11:b6:c5:77:48:14:82:9c:85:6b:80:46:b0:c8:7f:10"
+    id          = "e82f4f48-9534-490e-bcf1-c164aae5255f"
+    project_id  = 1186668
+    public_key  = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMzSiHhVTBaHerNPgRLHm+tQhvTtnOsZQEfgHMPmCxFZ demo"
+    sshkey_id   = "e82f4f48-9534-490e-bcf1-c164aae5255f"
+    sshkey_name = "terraform-migration-demo"
+}
+```
+
+### Step 1. Back up the state
+
+Copy the state file before making any changes — if something goes wrong during migration, restoring this backup returns Terraform to its v0 state without touching the actual infrastructure:
+
+<Tabs>
+  <Tab title="PowerShell">
+    ```powershell
+    Copy-Item terraform.tfstate terraform.tfstate.v0backup
+    ```
+  </Tab>
+  <Tab title="Bash / Zsh">
+    ```bash
+    cp terraform.tfstate terraform.tfstate.v0backup
+    ```
+  </Tab>
+</Tabs>
+
+To restore:
+
+<Tabs>
+  <Tab title="PowerShell">
+    ```powershell
+    Copy-Item terraform.tfstate.v0backup terraform.tfstate
+    ```
+  </Tab>
+  <Tab title="Bash / Zsh">
+    ```bash
+    cp terraform.tfstate.v0backup terraform.tfstate
+    ```
+  </Tab>
+</Tabs>
+
+### Step 2. Remove resources from state
+
+Run `terraform state list` to see all tracked resources, then remove each one with `terraform state rm`. This removes resources from Terraform tracking only — the actual infrastructure in Gcore is not affected.
+
+```bash
+terraform state list
+```
+
+```
+gcore_keypair.demo
+gcore_network.main
+gcore_subnet.main
+```
+
+```bash
+terraform state rm gcore_keypair.demo
+terraform state rm gcore_network.main
+terraform state rm gcore_subnet.main
+# repeat for every resource in the list
+```
+
+Each removal confirms success:
+
+```
+Removed gcore_keypair.demo
+Successfully removed 1 resource instance(s).
+```
+
+<Info>
+Only the local state file is modified; no Gcore API calls are made.
+</Info>
+
+### Step 3. Update providers.tf
+
+Replace the v0 provider block with v2:
+
+**v0:**
+
+```hcl
+terraform {
+  required_version = ">= 0.13.0"
+  required_providers {
+    gcore = {
+      source  = "G-Core/gcore"
+      version = "~> 0.34"
+    }
+  }
+}
+
+provider "gcore" {
+  permanent_api_token = var.api_token
+}
+```
+
+**v2:**
+
+```hcl
+terraform {
+  required_version = ">= 1.11"
+  required_providers {
+    gcore = {
+      source  = "G-Core/gcore"
+      version = "= 2.0.0-alpha.6"
+    }
+  }
+}
+
+provider "gcore" {
+  api_key = var.api_key
+}
+```
+
+Also update the variable that holds the token. If `var.api_token` was used in v0, rename it to `var.api_key` (or keep the existing name — the variable name is flexible; only the provider attribute must change to `api_key`).
+
+To use an environment variable instead, update the name:
+
+<Tabs>
+  <Tab title="PowerShell">
+    ```powershell
+    # v0: $env:GCORE_PERMANENT_TOKEN = "YOUR_TOKEN"
+    # v2:
+    $env:GCORE_API_KEY = "YOUR_TOKEN"
+    ```
+  </Tab>
+  <Tab title="Bash / Zsh">
+    ```bash
+    # v0: export GCORE_PERMANENT_TOKEN="YOUR_TOKEN"
+    # v2:
+    export GCORE_API_KEY="YOUR_TOKEN"
+    ```
+  </Tab>
+</Tabs>
+
+### Step 4. Update resource blocks in .tf files
+
+Rename each resource type and update attributes that changed. Use the reference tables to find the v2 name for every v0 resource type and attribute.
+
+<AccordionGroup>
+
+<Accordion title="Cloud resource type renames">
+
+| v0 resource | v2 resource |
+|------------|------------|
+| `gcore_keypair` | `gcore_cloud_ssh_key` |
+| `gcore_instance` / `gcore_instancev2` | `gcore_cloud_instance` |
+| `gcore_network` | `gcore_cloud_network` |
+| `gcore_subnet` | `gcore_cloud_network_subnet` |
+| `gcore_router` | `gcore_cloud_network_router` |
+| `gcore_volume` | `gcore_cloud_volume` |
+| `gcore_loadbalancer` / `gcore_loadbalancerv2` | `gcore_cloud_load_balancer` |
+| `gcore_lblistener` | `gcore_cloud_load_balancer_listener` |
+| `gcore_lbpool` | `gcore_cloud_load_balancer_pool` |
+| `gcore_lbmember` | `gcore_cloud_load_balancer_pool_member` |
+| `gcore_k8sv2` | `gcore_cloud_k8s_cluster` |
+| `gcore_securitygroup` | `gcore_cloud_security_group` |
+| `gcore_secret` | `gcore_cloud_secret` |
+| `gcore_reservedfixedip` | `gcore_cloud_reserved_fixed_ip` |
+| `gcore_floatingip` | `gcore_cloud_floating_ip` |
+| `gcore_servergroup` | `gcore_cloud_placement_group` |
+| `gcore_baremetal` | `gcore_cloud_baremetal_server` |
+| `gcore_file_share` | `gcore_cloud_file_share` |
+| `gcore_gpu_virtual_cluster` | `gcore_cloud_gpu_virtual_cluster` |
+
+</Accordion>
+
+<Accordion title="CDN resource type renames">
+
+| v0 resource | v2 resource |
+|------------|------------|
+| `gcore_cdn_resource` | `gcore_cdn_resource` (unchanged) |
+| `gcore_cdn_rule_template` | `gcore_cdn_rule_template` (unchanged) |
+| `gcore_cdn_origingroup` | `gcore_cdn_origin_group` |
+| `gcore_cdn_rule` | `gcore_cdn_resource_rule` |
+| `gcore_cdn_sslcert` | `gcore_cdn_certificate` |
+| `gcore_cdn_cacert` | `gcore_cdn_trusted_ca_certificate` |
+
+</Accordion>
+
+<Accordion title="DNS, FastEdge, WAAP resource type renames">
+
+| v0 resource | v2 resource |
+|------------|------------|
+| `gcore_dns_zone` | `gcore_dns_zone` (unchanged) |
+| `gcore_dns_zone_record` | `gcore_dns_zone_rrset` |
+| `gcore_dns_network_mapping` | `gcore_dns_network_mapping` (unchanged) |
+| `gcore_fastedge_app` | `gcore_fastedge_app` (unchanged) |
+| `gcore_fastedge_binary` | `gcore_fastedge_binary` (unchanged) |
+| `gcore_fastedge_secret` | `gcore_fastedge_secret` (unchanged) |
+| `gcore_fastedge_template` | `gcore_fastedge_template` (unchanged) |
+| `gcore_waap_domain` | `gcore_waap_domain` (unchanged) |
+| `gcore_storage_sftp_key` | `gcore_storage_ssh_key` |
+
+</Accordion>
+
+<Accordion title="Key attribute renames">
+
+| Resource | v0 attribute | v2 attribute |
+|---------|-------------|-------------|
+| `gcore_keypair` → `gcore_cloud_ssh_key` | `sshkey_name` | `name` |
+| `gcore_keypair` → `gcore_cloud_ssh_key` | `sshkey_id` (computed) | `id` (computed) |
+| `gcore_keypair` → `gcore_cloud_ssh_key` | `project_id`, `public_key`, `fingerprint` | unchanged |
+| `gcore_network` → `gcore_cloud_network` | `name`, `type`, `region_id`, `project_id`, `create_router` | unchanged |
+| `gcore_subnet` → `gcore_cloud_network_subnet` | `name`, `cidr`, `network_id`, `region_id`, `project_id` | unchanged |
+| `gcore_subnet` → `gcore_cloud_network_subnet` | `dns_nameservers` | unchanged |
+| `gcore_volume` → `gcore_cloud_volume` | `name`, `size`, `type_name`, `region_id`, `project_id` | unchanged |
+
+For a complete schema comparison, review the resource pages on [Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore) and select the version in use.
+
+</Accordion>
+
+</AccordionGroup>
+
+SSH key — resource type and `sshkey_name` renamed to `name`:
+
+```hcl
+# v0
+resource "gcore_keypair" "demo" {
+  project_id  = var.project_id
+  public_key  = "ssh-ed25519 AAAA... demo"
+  sshkey_name = "terraform-migration-demo"
+}
+
+# v2 — resource type and sshkey_name → name
+resource "gcore_cloud_ssh_key" "demo" {
+  project_id = var.project_id
+  public_key = "ssh-ed25519 AAAA... demo"
+  name       = "terraform-migration-demo"
+}
+```
+
+Network — only the resource type changes, all attributes remain the same:
+
+```hcl
+# v0
+resource "gcore_network" "main" {
+  name       = "production"
+  type       = "vxlan"
+  region_id  = var.region_id
+  project_id = var.project_id
+}
+
+# v2 — only the resource type changes; all attributes remain the same
+resource "gcore_cloud_network" "main" {
+  name       = "production"
+  type       = "vxlan"
+  region_id  = var.region_id
+  project_id = var.project_id
+}
+```
+
+Any references to the old resource type in other resources must also be updated. For example, if a subnet referenced `gcore_network.main.id`, it now references `gcore_cloud_network.main.id`.
+
+### Step 5. Run terraform init -upgrade
+
+Install the v2 provider:
+
+```bash
+terraform init -upgrade
+```
+
+```
+Initializing provider plugins found in the configuration...
+- Finding g-core/gcore versions matching "2.0.0-alpha.6"...
+- Installing g-core/gcore v2.0.0-alpha.6...
+- Installed g-core/gcore v2.0.0-alpha.6 (signed by a HashiCorp partner, key ID 7DC84F37C1A1C035)
+...
+Terraform has been successfully initialized!
+```
+
+### Step 6. Import each resource under its v2 type
+
+The resource ID is the same UUID the resource had in v0 — find it in the state backup created in Step 1 by looking for the `"id"` field, or in the Customer Portal URL. Use `terraform import` with the v2 format (`/` separator instead of `:` for Cloud resources):
+
+```bash
+terraform import gcore_cloud_ssh_key.demo '1186668/e82f4f48-9534-490e-bcf1-c164aae5255f'
+```
+
+```
+gcore_cloud_ssh_key.demo: Importing from ID "1186668/e82f4f48-9534-490e-bcf1-c164aae5255f"...
+gcore_cloud_ssh_key.demo: Import prepared!
+  Prepared gcore_cloud_ssh_key for import
+gcore_cloud_ssh_key.demo: Refreshing state... [id=e82f4f48-9534-490e-bcf1-c164aae5255f]
+
+Import successful!
+
+The resources that were imported are shown above. These resources are now in
+your Terraform state and will henceforth be managed by Terraform.
+```
+
+Repeat for every resource in the project.
+
+#### Import ID formats for common Cloud resources
+
+Common Cloud resource import ID formats:
+
+| v2 resource | Import ID format |
+|------------|-----------------|
+| `gcore_cloud_ssh_key` | `<project_id>/<ssh_key_id>` |
+| `gcore_cloud_network` | `<project_id>/<region_id>/<network_id>` |
+| `gcore_cloud_network_subnet` | `<project_id>/<region_id>/<subnet_id>` |
+| `gcore_cloud_instance` | `<project_id>/<region_id>/<instance_id>` |
+| `gcore_cloud_volume` | `<project_id>/<region_id>/<volume_id>` |
+| `gcore_cloud_load_balancer` | `<project_id>/<region_id>/<lb_id>` |
+| `gcore_cloud_k8s_cluster` | `<project_id>/<region_id>/<cluster_id>` |
+| `gcore_cloud_security_group` | `<project_id>/<region_id>/<sg_id>` |
+| `gcore_cloud_floating_ip` | `<project_id>/<region_id>/<fip_id>` |
+| `gcore_cloud_reserved_fixed_ip` | `<project_id>/<region_id>/<rfip_id>` |
+
+Verify the exact format in the **Import** section of each resource's page on Terraform Registry.
+
+### Step 7. Run terraform plan
+
+After importing all resources, run `terraform plan` to check for attribute drift — differences between the imported state and the local configuration:
+
+```bash
+terraform plan
+```
+
+If migration is complete and all attributes match:
+
+```
+gcore_cloud_ssh_key.demo: Refreshing state... [id=e82f4f48-9534-490e-bcf1-c164aae5255f]
+
+No changes. Your infrastructure matches the configuration.
+
+Terraform has compared your real infrastructure against your configuration
+and found no differences, so no changes are needed.
+```
+
+If `terraform plan` shows changes, the resource block in the `.tf` file has attributes whose values do not match what the Gcore API returned after import. Update those attributes until `terraform plan` reports no changes. Common causes:
+
+- An attribute set in v0 has a different name in v2 (see the attribute rename table above).
+- A v2 computed attribute is now read-only and must be removed from the resource block.
+- A v0 attribute was silently ignored but v2 enforces it strictly.
+
+<Warning>
+Do not run `terraform apply` until `terraform plan` shows no unintended changes. Applying a plan with unexpected changes may modify or destroy live infrastructure.
+</Warning>
+
+## Migrating data sources
+
+Data source types also changed. Update all `data` blocks alongside the resource blocks:
+
+<Accordion title="Data source rename reference">
+
+| v0 data source | v2 data source |
+|---------------|---------------|
+| `data "gcore_project"` | `data "gcore_cloud_project"` |
+| `data "gcore_region"` | `data "gcore_cloud_region"` |
+| `data "gcore_image"` | `data "gcore_cloud_image"` |
+| `data "gcore_network"` | `data "gcore_cloud_network"` |
+| `data "gcore_subnet"` | `data "gcore_cloud_network_subnet"` |
+| `data "gcore_volume"` | `data "gcore_cloud_volume"` |
+| `data "gcore_instance"` | `data "gcore_cloud_instance"` |
+| `data "gcore_k8s"` | `data "gcore_cloud_k8s_cluster"` |
+| `data "gcore_loadbalancer"` | `data "gcore_cloud_load_balancer"` |
+| `data "gcore_securitygroup"` | `data "gcore_cloud_security_group"` |
+| `data "gcore_floatingip"` | `data "gcore_cloud_floating_ip"` |
+
+</Accordion>
+
+Data sources do not have state entries, so they do not need to be removed from state or re-imported. Rename them in the `.tf` files and update any references.
+
+

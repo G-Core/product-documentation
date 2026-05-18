@@ -1,0 +1,72 @@
+---
+title: Overview
+sidebarTitle: Overview
+ai-navigation: Install the Gcore Terraform provider, configure v0 and v2 authentication, and manage Cloud and CDN resources via infrastructure-as-code.
+---
+
+Terraform replaces manual steps in the [Gcore Customer Portal](https://portal.gcore.com) with version-controlled configuration files. Describe the desired infrastructure once, and Terraform creates, updates, or deletes Cloud and CDN resources automatically through the Gcore API.
+
+## Gcore provider
+
+A provider is a plugin that translates Terraform configuration into API calls — it defines the resource types available for use, such as Virtual Machines, networks, and DNS zones. Two major versions of the Gcore provider are published; the right one depends on whether the project is new or existing:
+
+|  | v2 | v0 |
+|--|----|----|
+| **Authentication** | `api_key` | `permanent_api_token` |
+| **Terraform CLI** | >= 1.11 | >= 0.13.0 |
+| **API coverage** | Tracks Gcore API automatically | Manual updates |
+| **Recommended for** | New projects | Existing projects |
+
+Specify the version in the configuration to avoid unintended upgrades — v0 and v2 use different, incompatible configuration formats.
+
+## Provider configuration
+
+[Install Terraform](/developer-tools/terraform/get-started-with-terraform) first, then add the provider block to `main.tf`:
+
+<Tabs>
+  <Tab title="Provider v2">
+    Provider v2 uses `api_key` for authentication and is auto-generated from the Gcore OpenAPI specification.
+
+    ```hcl
+    terraform {
+      required_version = ">= 1.11"
+      required_providers {
+        gcore = {
+          source  = "G-Core/gcore"
+          version = "= 2.0.0-alpha.6" # see Terraform Registry for latest
+        }
+      }
+    }
+
+    provider "gcore" {
+      api_key = "YOUR_API_KEY"
+    }
+    ```
+
+  </Tab>
+  <Tab title="Provider v0">
+    Provider v0 uses `permanent_api_token` for authentication.
+
+    ```hcl
+    terraform {
+      required_version = ">=0.13.0"
+      required_providers {
+        gcore = {
+          source  = "G-Core/gcore"
+          version = "~> 0.34"
+        }
+      }
+    }
+
+    provider "gcore" {
+      permanent_api_token = "YOUR_API_KEY"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+Replace `YOUR_API_KEY` with a [permanent API token](/account-settings/api-tokens). For existing v0 projects, follow the [migration guide](/developer-tools/terraform/migrate-v0-to-v2) to move to v2.
+
+## Manage Gcore resources
+
+The v0 provider supports [Cloud resources](/cloud/manage-cloud-via-terraform) — Virtual Machines, Bare Metal servers, Kubernetes clusters, Load Balancers, and networks — and [CDN resources](/cdn/terraform/manage-a-cdn-resource-with-terraform). For v2, the full resource reference is on the [Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/latest/docs).
