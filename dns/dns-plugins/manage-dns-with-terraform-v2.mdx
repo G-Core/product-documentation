@@ -4,7 +4,7 @@ sidebarTitle: Terraform provider v2
 ai-navigation: Create and manage Gcore Managed DNS zones and records using Terraform provider v2 gcore_dns_zone and gcore_dns_zone_rrset resources, supporting A, AAAA, CNAME, MX, TXT, SRV, CAA record types, DNSSEC, SOA parameters, and geo-balancing with pickers and JSON-encoded meta values.
 ---
 
-The Gcore Terraform provider v2 lets you manage Gcore Managed DNS — zones, records, and geo-balancing — using declarative configuration files.
+The Gcore Terraform provider v2 manages Gcore Managed DNS — zones, records, and geo-balancing — through declarative configuration files.
 
 The following resources are supported: DNS zones with SOA and DNSSEC configuration, A, AAAA, CNAME, MX, TXT, SRV, CAA records, and geo-balancing with geographic filtering.
 
@@ -28,13 +28,15 @@ Review the output, then apply:
 terraform apply
 ```
 
-Enter `yes` when prompted. The [getting started guide](/developer-tools/terraform/get-started-with-terraform) covers the full workflow.
+Enter `yes` when prompted. The [setup guide](/developer-tools/terraform/get-started-with-terraform) covers the full workflow.
 
 ## Create a DNS zone
 
 The `gcore_dns_zone` resource manages DNS zones in Gcore. The `name` field is required; all other fields are optional.
 
 ### Basic zone
+
+The minimum configuration requires only the zone name.
 
 ```hcl
 resource "gcore_dns_zone" "example" {
@@ -43,6 +45,8 @@ resource "gcore_dns_zone" "example" {
 ```
 
 ### Zone with SOA parameters
+
+The following configuration enables zone resolution and sets the SOA timing and contact fields.
 
 ```hcl
 resource "gcore_dns_zone" "example" {
@@ -75,9 +79,11 @@ terraform import gcore_dns_zone.example example.com
 
 The `gcore_dns_zone_rrset` resource manages individual DNS record sets. Required fields are `zone_name`, `rrset_name`, `rrset_type`, and `resource_records`.
 
-Each entry in `resource_records` has a required `content` field, which is a **list of strings**. The number and meaning of list elements depends on the record type.
+Each entry in `resource_records` has a required `content` field, which is a list of strings. The number and meaning of list elements depends on the record type.
 
 ### A record
+
+An A record maps a hostname to one or more IPv4 addresses. Each address is a separate entry in `resource_records`.
 
 ```hcl
 resource "gcore_dns_zone_rrset" "a" {
@@ -106,6 +112,8 @@ terraform import gcore_dns_zone_rrset.a example.com/example.com/A
 ```
 
 ### CNAME record
+
+A CNAME record creates an alias that points one hostname to another.
 
 ```hcl
 resource "gcore_dns_zone_rrset" "www" {
@@ -153,6 +161,8 @@ terraform import gcore_dns_zone_rrset.mx example.com/example.com/MX
 
 ### TXT record
 
+A TXT record holds arbitrary text, commonly used for SPF, DKIM, and domain verification strings.
+
 ```hcl
 resource "gcore_dns_zone_rrset" "spf" {
   zone_name  = gcore_dns_zone.example.name
@@ -197,7 +207,7 @@ terraform import gcore_dns_zone_rrset.caa example.com/example.com/CAA
 
 Geo-balancing routes DNS queries to the nearest or most appropriate server. Configure it with a `pickers` block on the RRset and `meta` values on each record.
 
-`meta` values are strings. Array-type values (`latlong`, `continents`, `countries`) must be JSON-encoded using the `jsonencode()` function.
+`meta` values are strings, so array-type values (`latlong`, `continents`, `countries`) must be JSON-encoded using the `jsonencode()` function.
 
 ```hcl
 resource "gcore_dns_zone_rrset" "geo_a" {
@@ -243,11 +253,11 @@ Configure geo-balancing.
   - (optional) `continents` — `jsonencode(["EU"])` — two-letter continent code.
   - (optional) `countries` — `jsonencode(["NL"])` — two-letter country code.
 
-For more information, refer to [Configure weight balancing and geobalancing](/dns/dns-records/configure-weight-balancing-and-geobalancing).
+See [geobalancing](/dns/dns-records/configure-weight-balancing-and-geobalancing) for additional filter types and meta field reference.
 
 ## Import existing DNS resources
 
-If you already have DNS zones and records in the Gcore Customer Portal, import them into Terraform state to manage them going forward.
+To import existing DNS zones and records from the [Gcore Customer Portal](https://portal.gcore.com) into Terraform state, add the corresponding resource blocks to `main.tf` and run the import commands below.
 
 To import an existing DNS zone:
 
@@ -262,16 +272,13 @@ terraform import gcore_dns_zone_rrset.a example.com/example.com/A
 ```
 
 <Tip>
-After importing, run `terraform plan` to verify the configuration matches the imported state. Update your `main.tf` file to resolve any reported differences before running `terraform apply`.
+After importing, run `terraform plan` to verify the configuration matches the imported state. Update `main.tf` to resolve any reported differences before running `terraform apply`.
 </Tip>
 
 ## Related documentation
 
-- [Get started with Terraform](/developer-tools/terraform/get-started-with-terraform)
-- [Migrate from Gcore Terraform provider v0 to v2](/developer-tools/terraform/migrate-v0-to-v2)
-- [Gcore Terraform provider documentation](https://registry.terraform.io/providers/G-Core/gcore/latest/docs)
-- [Managing API tokens](/account-settings/api-tokens)
-- [Manage a DNS zone](/dns/manage-a-dns-zone)
+- [Provider docs](https://registry.terraform.io/providers/G-Core/gcore/latest/docs)
+- [API tokens](/account-settings/api-tokens)
+- [DNS zones](/dns/manage-a-dns-zone)
 - [DNS records](/dns/dns-records)
-- [Configure weight balancing and geobalancing](/dns/dns-records/configure-weight-balancing-and-geobalancing)
-- [Configure and use DNS failover](/dns/dns-failover/configure-and-use-dns-failover)
+- [DNS failover](/dns/dns-failover/configure-and-use-dns-failover)

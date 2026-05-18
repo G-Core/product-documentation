@@ -24,13 +24,15 @@ Review the output, then apply:
 terraform apply
 ```
 
-Enter `yes` when prompted. The [getting started guide](/developer-tools/terraform/get-started-with-terraform) covers the full workflow.
+Enter `yes` when prompted. The [setup guide](/developer-tools/terraform/get-started-with-terraform) covers the full workflow.
 
 ## Create a DNS zone
 
 The `gcore_dns_zone` resource manages DNS zones in Gcore.
 
 ### Add a basic zone
+
+The minimum configuration requires only the zone name.
 
 1. Open the `main.tf` file with the Gcore provider configuration.
 2. Copy the code below to the file and customize the values:
@@ -42,6 +44,8 @@ resource "gcore_dns_zone" "example_zone" {
 ```
 
 ### Configure optional zone settings
+
+The following configuration enables DNSSEC and sets the SOA timing, contact, and primary server fields.
 
 1. Open the `main.tf` file with the Gcore provider configuration.
 2. Copy the code below to the file and customize the highlighted values:
@@ -73,7 +77,7 @@ resource "gcore_dns_zone" "example_zone" {
 - (optional) Specify `primary_server` — the primary master name server for the zone.
 
 <Tip>
-You can configure webhook notifications for zone changes using the `meta` block:
+Webhook notifications for zone changes can be configured using the `meta` block:
 
 ```hcl
 meta = {
@@ -88,6 +92,8 @@ meta = {
 The `gcore_dns_zone_record` resource manages individual DNS records within a zone. Required fields are `zone`, `domain`, `type`, and at least one `resource_record` block. The `ttl` field is optional.
 
 ### A record
+
+An A record maps a hostname to one or more IPv4 addresses.
 
 1. Open the `main.tf` file with the Gcore provider configuration.
 2. Copy the code below to the file and customize the values:
@@ -118,6 +124,8 @@ resource "gcore_dns_zone_record" "example_a" {
 
 ### CNAME record
 
+A CNAME record creates an alias that points one hostname to another.
+
 1. Open the `main.tf` file with the Gcore provider configuration.
 2. Copy the code below to the file and customize the values:
 
@@ -143,6 +151,8 @@ resource "gcore_dns_zone_record" "www" {
 - (optional) Specify `ttl`.
 
 ### MX record
+
+An MX record specifies mail servers for the domain, each with a priority value.
 
 1. Open the `main.tf` file with the Gcore provider configuration.
 2. Copy the code below to the file and customize the values:
@@ -172,6 +182,8 @@ resource "gcore_dns_zone_record" "mx" {
 
 ### TXT record
 
+A TXT record holds arbitrary text, commonly used for SPF, DKIM, and domain verification.
+
 1. Open the `main.tf` file with the Gcore provider configuration.
 2. Copy the code below to the file and customize the values:
 
@@ -197,6 +209,8 @@ resource "gcore_dns_zone_record" "spf" {
 
 ### CAA record
 
+A CAA record specifies which certificate authorities are allowed to issue certificates for the domain.
+
 1. Open the `main.tf` file with the Gcore provider configuration.
 2. Copy the code below to the file and customize the values:
 
@@ -221,6 +235,8 @@ resource "gcore_dns_zone_record" "caa" {
 - (optional) Specify `ttl`.
 
 ## Configure geo-balancing
+
+Geo-balancing returns different IP addresses based on the client's geographic location, using `filter` and `meta` blocks within a record.
 
 1. Open the `main.tf` file with the Gcore provider configuration.
 2. Copy the code below to the file and customize the values:
@@ -268,9 +284,11 @@ resource "gcore_dns_zone_record" "geo_a" {
   - (optional) Specify `continents` — list of continent codes (`europe`, `north_america`, `south_america`, `asia`, `africa`, `oceania`).
   - (optional) Specify `countries` — list of two-letter country codes.
 
-For more information, refer to [Configure weight balancing and geobalancing](/dns/dns-records/configure-weight-balancing-and-geobalancing).
+See [geobalancing](/dns/dns-records/configure-weight-balancing-and-geobalancing) for additional filter types and meta field reference.
 
 ## Set up failover with health checks
+
+Health checks automatically remove unhealthy records from DNS responses, directing traffic only to reachable endpoints.
 
 1. Open the `main.tf` file with the Gcore provider configuration.
 2. Copy the code below to the file and customize the values:
@@ -320,11 +338,11 @@ resource "gcore_dns_zone_record" "failover_a" {
   - Specify `timeout` — response timeout from 1 to 10 seconds.
   - (optional, HTTP only) Specify `host`, `method`, `url`, `http_status_code`, and `tls`.
 
-For more information, refer to [Configure and use DNS failover](/dns/dns-failover/configure-and-use-dns-failover).
+See [DNS failover](/dns/dns-failover/configure-and-use-dns-failover) for health check protocols and configuration options.
 
 ## Import existing DNS resources
 
-If you already have DNS zones and records configured in the Gcore Customer Portal, you can import them into your Terraform state.
+To import existing DNS zones and records from the [Gcore Customer Portal](https://portal.gcore.com) into Terraform state, add the corresponding resource blocks to `main.tf` and run the import commands below.
 
 To import an existing DNS zone:
 
@@ -339,17 +357,13 @@ terraform import gcore_dns_zone_record.example_a example.com:example.com:A
 ```
 
 <Tip>
-After importing resources, run `terraform plan` to verify that your configuration matches the imported state. If there are differences, update your `main.tf` file to match the actual resource settings.
+After importing, run `terraform plan` to verify the configuration matches the imported state. If there are differences, update `main.tf` to match the actual resource settings.
 </Tip>
 
 ## Related documentation
 
-- [Get started with Terraform](/developer-tools/terraform/get-started-with-terraform)
-- [Migrate from Gcore Terraform provider v0 to v2](/developer-tools/terraform/migrate-v0-to-v2)
-- [Gcore Terraform provider documentation](https://registry.terraform.io/providers/G-Core/gcore/latest/docs)
-- [Managing API tokens](/account-settings/api-tokens)
-- [Manage a DNS zone](/dns/manage-a-dns-zone)
+- [Provider docs](https://registry.terraform.io/providers/G-Core/gcore/latest/docs)
+- [API tokens](/account-settings/api-tokens)
+- [DNS zones](/dns/manage-a-dns-zone)
 - [DNS records](/dns/dns-records)
-- [Getting started with DNSSEC](/dns/getting-started-with-dnssec)
-- [Configure weight balancing and geobalancing](/dns/dns-records/configure-weight-balancing-and-geobalancing)
-- [Configure and use DNS failover](/dns/dns-failover/configure-and-use-dns-failover)
+- [DNSSEC](/dns/getting-started-with-dnssec)
