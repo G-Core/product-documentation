@@ -1,0 +1,320 @@
+---
+title: Manage DNS zones and records via Terraform v2
+sidebarTitle: Terraform provider v2
+ai-navigation: Create and manage Gcore Managed DNS zones and records using Terraform provider v2 gcore_dns_zone and gcore_dns_zone_rrset resources, supporting A, AAAA, CNAME, MX, TXT, SRV, CAA record types, DNSSEC, SOA parameters, and geo-balancing with pickers and JSON-encoded meta values.
+---
+
+The Gcore Terraform provider&nbsp;v2 manages Gcore Managed DNS — zones, records, and geo-balancing — through declarative configuration files.
+
+The following resources are supported: DNS zones with SOA and DNSSEC configuration, A, AAAA, CNAME, MX, TXT, SRV, CAA records, and geo-balancing with geographic filtering.
+
+Provider&nbsp;v2 uses `api_key` for authentication and `gcore_dns_zone_rrset` for DNS records; installation is in the [Terraform overview](/developer-tools/terraform/overview), and existing v0&nbsp;configurations can be updated with the [migration guide](/developer-tools/terraform/migrate-v0-to-v2).
+
+<Warning>
+Provider v2 is currently in pre-release (`2.0.0-alpha`). Check the [Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/latest) for the current version and release status.
+</Warning>
+
+## Workflow
+
+Add resource configuration to `main.tf`, then run:
+
+```sh
+terraform plan
+```
+
+Review the output, then apply:
+
+```sh
+terraform apply
+```
+
+## Create a DNS zone
+
+The `gcore_dns_zone` resource manages DNS zones in Gcore. The `name` field is required; all other fields are optional.
+
+### Basic zone
+
+The minimum configuration requires only the zone name.
+
+```hcl
+resource "gcore_dns_zone" "example" {
+  name = "example.com"
+}
+```
+
+### Zone with SOA parameters
+
+The following configuration enables zone resolution and sets the SOA timing and contact fields.
+
+```hcl
+resource "gcore_dns_zone" "example" {
+  name           = "example.com"
+  enabled        = true
+  contact        = "admin@example.com"
+  refresh        = 3600
+  retry          = 1800
+  expiry         = 604800
+  nx_ttl         = 300
+  primary_server = "ns1.example.com"
+}
+```
+
+| Field | Description | Default |
+|-------|-------------|---------|
+| `enabled` | Whether records resolve on DNS servers | `true` |
+| `contact` | Administrator email address recorded in the SOA record | account default |
+| `refresh` | How often secondary servers check for zone changes (seconds) | 5400 |
+| `retry` | How long secondary servers wait before retrying a failed refresh (seconds) | 3600 |
+| `expiry` | How long secondary servers serve the zone without a successful refresh (seconds) | 1209600 |
+| `nx_ttl` | TTL for negative responses (NXDOMAIN) (seconds) | varies |
+| `primary_server` | Primary master name server for the zone | account default |
+
+```sh
+terraform import gcore_dns_zone.example example.com
+```
+
+## Add DNS records
+
+The `gcore_dns_zone_rrset` resource manages individual DNS record sets. Required fields are `zone_name`, `rrset_name`, `rrset_type`, and `resource_records`.
+
+Each entry in `resource_records` has a required `content` field, which is a list of strings. The number and meaning of list elements depends on the record type.
+
+### A record
+
+An A record maps a hostname to one or more IPv4 addresses. Each address is a separate entry in `resource_records`.
+
+```hcl
+resource "gcore_dns_zone_rrset" "a" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = gcore_dns_zone.example.name
+  rrset_type = "A"
+  ttl        = 300
+
+  resource_records = [
+    { content = ["203.0.113.1"] },
+    { content = ["203.0.113.2"] },
+  ]
+}
+```
+
+Configure the record.
+
+- Specify `zone_name` — the DNS zone name.
+- Specify `rrset_name` — the full record name (for the zone apex, use the zone name).
+- Specify `rrset_type = "A"`.
+- Add one entry per IP address in `resource_records`. Each entry's `content` is a single-element list with the IPv4 address.
+- (optional) Specify `ttl`.
+
+```sh
+terraform import gcore_dns_zone_rrset.a example.com/example.com/A
+```
+
+### AAAA record
+
+An AAAA record maps a hostname to one or more IPv6 addresses. Each address is a separate entry in `resource_records`.
+
+```hcl
+resource "gcore_dns_zone_rrset" "aaaa" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = gcore_dns_zone.example.name
+  rrset_type = "AAAA"
+  ttl        = 300
+
+  resource_records = [
+    { content = ["2001:db8::1"] },
+    { content = ["2001:db8::2"] },
+  ]
+}
+```
+
+- Each entry's `content` is a single-element list with the IPv6 address.
+
+```sh
+terraform import gcore_dns_zone_rrset.aaaa example.com/example.com/AAAA
+```
+
+### CNAME record
+
+A CNAME record creates an alias that points one hostname to another.
+
+```hcl
+resource "gcore_dns_zone_rrset" "www" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = "www.example.com"
+  rrset_type = "CNAME"
+  ttl        = 300
+
+  resource_records = [
+    { content = ["example.com."] },
+  ]
+}
+```
+
+- Specify `rrset_name` — the alias name.
+- Specify `content` — the target domain with a trailing dot.
+
+```sh
+terraform import gcore_dns_zone_rrset.www example.com/www.example.com/CNAME
+```
+
+### MX record
+
+MX `content` must have exactly two elements: the priority and the mail server hostname (with trailing dot).
+
+```hcl
+resource "gcore_dns_zone_rrset" "mx" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = gcore_dns_zone.example.name
+  rrset_type = "MX"
+  ttl        = 3600
+
+  resource_records = [
+    { content = ["10", "mail.example.com."] },
+    { content = ["20", "mail-backup.example.com."] },
+  ]
+}
+```
+
+- Add one entry per mail server. Each `content` list has two elements: `["<priority>", "<hostname>."]`.
+
+```sh
+terraform import gcore_dns_zone_rrset.mx example.com/example.com/MX
+```
+
+### TXT record
+
+A TXT record holds arbitrary text, commonly used for SPF, DKIM, and domain verification strings.
+
+```hcl
+resource "gcore_dns_zone_rrset" "spf" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = gcore_dns_zone.example.name
+  rrset_type = "TXT"
+  ttl        = 3600
+
+  resource_records = [
+    { content = ["v=spf1 include:_spf.google.com ~all"] },
+  ]
+}
+```
+
+```sh
+terraform import gcore_dns_zone_rrset.spf example.com/example.com/TXT
+```
+
+### CAA record
+
+CAA `content` must have exactly three elements: flags, tag, and the CA value.
+
+```hcl
+resource "gcore_dns_zone_rrset" "caa" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = gcore_dns_zone.example.name
+  rrset_type = "CAA"
+  ttl        = 3600
+
+  resource_records = [
+    { content = ["0", "issue", "letsencrypt.org"] },
+  ]
+}
+```
+
+- Each `content` list has three elements: `["<flags>", "<tag>", "<value>"]`. Tag accepts `issue`, `issuewild`, or `iodef`.
+
+```sh
+terraform import gcore_dns_zone_rrset.caa example.com/example.com/CAA
+```
+
+### SRV record
+
+An SRV record specifies the location of a service, including its priority, weight, port, and target hostname.
+
+```hcl
+resource "gcore_dns_zone_rrset" "srv" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = "_sip._tcp.example.com"
+  rrset_type = "SRV"
+  ttl        = 300
+
+  resource_records = [
+    { content = ["10", "20", "5060", "sip.example.com."] },
+  ]
+}
+```
+
+- Specify `rrset_name` — the service name in the format `_service._proto.example.com`.
+- SRV `content` must have exactly four elements: priority, weight, port, and target hostname (with trailing dot).
+
+```sh
+terraform import gcore_dns_zone_rrset.srv example.com/_sip._tcp.example.com/SRV
+```
+
+## Configure geo-balancing
+
+Geo-balancing routes DNS queries to the nearest or most appropriate server. Configure it with a `pickers` block on the RRset and `meta` values on each record.
+
+`meta` values are strings, so array-type values (`latlong`, `continents`, `countries`) must be JSON-encoded using the `jsonencode()` function.
+
+```hcl
+resource "gcore_dns_zone_rrset" "geo_a" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = gcore_dns_zone.example.name
+  rrset_type = "A"
+  ttl        = 120
+
+  pickers = [{
+    type   = "geodistance"
+    limit  = 1
+    strict = true
+  }]
+
+  resource_records = [
+    {
+      content = ["203.0.113.1"]
+      meta = {
+        latlong    = jsonencode([52.3676, 4.9041])
+        continents = jsonencode(["EU"])
+        countries  = jsonencode(["NL"])
+      }
+    },
+    {
+      content = ["198.51.100.10"]
+      meta = {
+        latlong    = jsonencode([40.7128, -74.0060])
+        continents = jsonencode(["NA"])
+        countries  = jsonencode(["US"])
+      }
+    },
+  ]
+}
+```
+
+Configure geo-balancing.
+
+- Add a `pickers` block. Specify `type` — the filter algorithm. Available types: `geodistance`, `geodns`, `country`, `continent`, `asn`, `ip`, `weighted_shuffle`, `first_n`, `default`.
+- (optional) Specify `limit` — maximum records returned per query. Set to `0` for no limit.
+- (optional) Add `strict = true` to return no records if none match, instead of falling back to all records.
+- Add `meta` inside each `resource_records` entry to associate geographic data with that IP:
+  - `latlong` — `jsonencode([latitude, longitude])`, used by the `geodistance` picker.
+  - (optional) `continents` — `jsonencode(["EU"])` — two-letter continent code.
+  - (optional) `countries` — `jsonencode(["NL"])` — two-letter country code as defined in the [geobalancing](/dns/dns-records/configure-weight-balancing-and-geobalancing) article.
+
+## Import existing DNS resources
+
+To import existing DNS zones and records from the [Gcore Customer Portal](https://portal.gcore.com) into Terraform state, add the corresponding resource blocks to `main.tf` and run the import commands below.
+
+To import an existing DNS zone:
+
+```shell
+terraform import gcore_dns_zone.example example.com
+```
+
+To import an existing DNS record set, use the format `zone_name/rrset_name/rrset_type`:
+
+```shell
+terraform import gcore_dns_zone_rrset.a example.com/example.com/A
+```
+
+<Tip>
+After importing, run `terraform plan` to verify the configuration matches the imported state. Update `main.tf` to resolve any reported differences before running `terraform apply`.
+</Tip>
