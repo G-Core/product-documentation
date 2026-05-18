@@ -4,11 +4,31 @@ sidebarTitle: Terraform provider v2
 ai-navigation: Create and manage Gcore Managed DNS zones and records using Terraform provider v2 gcore_dns_zone and gcore_dns_zone_rrset resources, supporting A, AAAA, CNAME, MX, TXT, SRV, CAA record types, DNSSEC, SOA parameters, and geo-balancing with pickers and JSON-encoded meta values.
 ---
 
-This guide covers the Gcore-specific Terraform resources for managing DNS zones and records using provider v2. It assumes that Terraform is already installed and the Gcore provider v2 is configured. If not, complete [Get started with Terraform](/developer-tools/terraform/get-started-with-terraform) first.
+The Gcore Terraform provider v2 lets you manage Gcore Managed DNS — zones, records, and geo-balancing — using declarative configuration files.
+
+The following resources are supported: DNS zones with SOA and DNSSEC configuration, A, AAAA, CNAME, MX, TXT, SRV, CAA records, and geo-balancing with geographic filtering.
+
+Provider v2 uses `api_key` for authentication and `gcore_dns_zone_rrset` for DNS records instead of the v0 `gcore_dns_zone_record`. Provider installation and authentication are covered in the [Terraform overview](/developer-tools/terraform/overview). To migrate an existing v0 configuration, follow the [migration guide](/developer-tools/terraform/migrate-v0-to-v2).
 
 <Warning>
 Provider v2 is currently in pre-release (`2.0.0-alpha`). Check the [Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/latest) for the current version and release status.
 </Warning>
+
+## Workflow
+
+Add resource configuration to `main.tf`, then run:
+
+```sh
+terraform plan
+```
+
+Review the output, then apply:
+
+```sh
+terraform apply
+```
+
+Enter `yes` when prompted. The [getting started guide](/developer-tools/terraform/get-started-with-terraform) covers the full workflow.
 
 ## Create a DNS zone
 
@@ -59,8 +79,6 @@ Each entry in `resource_records` has a required `content` field, which is a **li
 
 ### A record
 
-Each A record entry has a single element in `content`: the IPv4 address.
-
 ```hcl
 resource "gcore_dns_zone_rrset" "a" {
   zone_name  = gcore_dns_zone.example.name
@@ -74,6 +92,14 @@ resource "gcore_dns_zone_rrset" "a" {
   ]
 }
 ```
+
+Configure the record.
+
+- Specify `zone_name` — the DNS zone name.
+- Specify `rrset_name` — the full record name (for the zone apex, use the zone name).
+- Specify `rrset_type = "A"`.
+- Add one entry per IP address in `resource_records`. Each entry's `content` is a single-element list with the IPv4 address.
+- (optional) Specify `ttl`.
 
 ```sh
 terraform import gcore_dns_zone_rrset.a example.com/example.com/A
@@ -93,6 +119,9 @@ resource "gcore_dns_zone_rrset" "www" {
   ]
 }
 ```
+
+- Specify `rrset_name` — the alias name.
+- Specify `content` — the target domain with a trailing dot.
 
 ```sh
 terraform import gcore_dns_zone_rrset.www example.com/www.example.com/CNAME
@@ -115,6 +144,8 @@ resource "gcore_dns_zone_rrset" "mx" {
   ]
 }
 ```
+
+- Add one entry per mail server. Each `content` list has two elements: `["<priority>", "<hostname>."]`.
 
 ```sh
 terraform import gcore_dns_zone_rrset.mx example.com/example.com/MX
@@ -156,13 +187,15 @@ resource "gcore_dns_zone_rrset" "caa" {
 }
 ```
 
+- Each `content` list has three elements: `["<flags>", "<tag>", "<value>"]`. Tag accepts `issue`, `issuewild`, or `iodef`.
+
 ```sh
 terraform import gcore_dns_zone_rrset.caa example.com/example.com/CAA
 ```
 
 ## Configure geo-balancing
 
-Geo-balancing routes DNS queries to the nearest or most appropriate server based on the client's location. Configure it with a `pickers` block on the RRset and `meta` values on each record.
+Geo-balancing routes DNS queries to the nearest or most appropriate server. Configure it with a `pickers` block on the RRset and `meta` values on each record.
 
 `meta` values are strings. Array-type values (`latlong`, `continents`, `countries`) must be JSON-encoded using the `jsonencode()` function.
 
@@ -200,37 +233,17 @@ resource "gcore_dns_zone_rrset" "geo_a" {
 }
 ```
 
-The `geodistance` picker returns the record closest to the client's geographic location. `limit = 1` returns one record per query. When `strict = true`, no records are returned if no entries match — instead of falling back to the full set.
+Configure geo-balancing.
 
-### Available picker types
+- Add a `pickers` block. Specify `type` — the filter algorithm. Available types: `geodistance`, `geodns`, `country`, `continent`, `asn`, `ip`, `weighted_shuffle`, `first_n`, `default`.
+- (optional) Specify `limit` — maximum records returned per query. Set to `0` for no limit.
+- (optional) Add `strict = true` to return no records if none match, instead of falling back to all records.
+- Add `meta` inside each `resource_records` entry to associate geographic data with that IP:
+  - `latlong` — `jsonencode([latitude, longitude])`, used by the `geodistance` picker.
+  - (optional) `continents` — `jsonencode(["EU"])` — two-letter continent code.
+  - (optional) `countries` — `jsonencode(["NL"])` — two-letter country code.
 
-| Type | Description |
-|------|-------------|
-| `geodistance` | Returns the record closest to the client |
-| `geodns` | Routes based on GeoDNS country/region assignment |
-| `country` | Filters by country code in record meta |
-| `continent` | Filters by continent code in record meta |
-| `asn` | Filters by autonomous system number |
-| `ip` | Filters by client IP range |
-| `weighted_shuffle` | Weighted random selection |
-| `first_n` | Returns the first N records |
-| `default` | Returns all records (passthrough) |
-
-<Info>
-For more details on geo-balancing options, refer to [Configure weight balancing and geobalancing](/dns/dns-records/configure-weight-balancing-and-geobalancing).
-</Info>
-
-## Preview and apply changes
-
-After configuring your DNS zones and records:
-
-- Run `terraform plan` to preview what Terraform will change.
-- Run `terraform apply` to apply the changes. Terraform will prompt you to confirm by typing "yes".
-- Run `terraform destroy` to remove all DNS resources managed by your configuration.
-
-<Warning>
-Running `terraform destroy` will permanently delete all DNS zones and records managed by your configuration. This action cannot be undone.
-</Warning>
+For more information, refer to [Configure weight balancing and geobalancing](/dns/dns-records/configure-weight-balancing-and-geobalancing).
 
 ## Import existing DNS resources
 
@@ -249,7 +262,7 @@ terraform import gcore_dns_zone_rrset.a example.com/example.com/A
 ```
 
 <Tip>
-After importing, run `terraform plan` to verify the configuration matches the imported state. Update your `.tf` files to resolve any reported differences before running `terraform apply`.
+After importing, run `terraform plan` to verify the configuration matches the imported state. Update your `main.tf` file to resolve any reported differences before running `terraform apply`.
 </Tip>
 
 ## Related documentation

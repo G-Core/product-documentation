@@ -4,7 +4,27 @@ sidebarTitle: Terraform provider v0
 ai-navigation: Create and manage Gcore Managed DNS zones and records using Terraform gcore_dns_zone and gcore_dns_zone_record resources, supporting A, AAAA, CNAME, MX, TXT, SRV, CAA record types, DNSSEC, SOA parameters, webhook notifications, and geo-balancing with continent and country blocks.
 ---
 
-This guide covers the Gcore-specific Terraform resources for managing DNS zones and records. It assumes that Terraform is already installed and the Gcore provider is configured. If not, complete [Get started with Terraform](/developer-tools/terraform/get-started-with-terraform) first.
+With the Gcore Terraform provider v0, teams define DNS zones and records in configuration files, then apply them consistently across environments without managing DNS through the Portal.
+
+The following resources are supported: DNS zones with SOA and DNSSEC configuration, A, AAAA, CNAME, MX, TXT, SRV, CAA records, geo-balancing with geographic filtering, and DNS failover with health checks.
+
+Provider installation and authentication are covered in the [Terraform overview](/developer-tools/terraform/overview). The v2 provider is available in [Terraform provider v2](/dns/dns-plugins/manage-dns-with-terraform-v2). To migrate an existing v0 configuration, follow the [migration guide](/developer-tools/terraform/migrate-v0-to-v2).
+
+## Workflow
+
+Add resource configuration to `main.tf`, then run:
+
+```sh
+terraform plan
+```
+
+Review the output, then apply:
+
+```sh
+terraform apply
+```
+
+Enter `yes` when prompted. The [getting started guide](/developer-tools/terraform/get-started-with-terraform) covers the full workflow.
 
 ## Create a DNS zone
 
@@ -12,7 +32,8 @@ The `gcore_dns_zone` resource manages DNS zones in Gcore.
 
 ### Add a basic zone
 
-To create a DNS zone, add the following block to your _main.tf_ file:
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the values:
 
 ```hcl
 resource "gcore_dns_zone" "example_zone" {
@@ -22,14 +43,14 @@ resource "gcore_dns_zone" "example_zone" {
 
 ### Configure optional zone settings
 
-You can customize zone behavior with additional settings. The following example enables DNSSEC and configures SOA parameters:
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the highlighted values:
 
 ```hcl
 resource "gcore_dns_zone" "example_zone" {
-  name    = "example.com"
-  dnssec  = true
-  enabled = true
-
+  name           = "example.com"
+  dnssec         = true
+  enabled        = true
   contact        = "admin@example.com"
   refresh        = 3600
   retry          = 1800
@@ -38,6 +59,18 @@ resource "gcore_dns_zone" "example_zone" {
   primary_server = "ns1.example.com."
 }
 ```
+
+3. Configure the zone.
+
+- Specify `name`.
+- (optional) Add `enabled = true` to allow records to resolve on DNS servers.
+- (optional) Add `dnssec = true` to enable DNSSEC signing for the zone.
+- (optional) Specify `contact` — the administrator email recorded in the SOA record.
+- (optional) Specify `refresh` — how often secondary servers check for zone changes (seconds).
+- (optional) Specify `retry` — how long secondary servers wait before retrying a failed refresh (seconds).
+- (optional) Specify `expiry` — how long secondary servers serve the zone without a successful refresh (seconds).
+- (optional) Specify `nx_ttl` — TTL for negative responses (seconds).
+- (optional) Specify `primary_server` — the primary master name server for the zone.
 
 <Tip>
 You can configure webhook notifications for zone changes using the `meta` block:
@@ -56,7 +89,8 @@ The `gcore_dns_zone_record` resource manages individual DNS records within a zon
 
 ### A record
 
-An A record maps a domain to one or more IPv4 addresses:
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the values:
 
 ```hcl
 resource "gcore_dns_zone_record" "example_a" {
@@ -74,9 +108,18 @@ resource "gcore_dns_zone_record" "example_a" {
 }
 ```
 
+3. Configure the record.
+
+- Specify `zone` — the DNS zone name.
+- Specify `domain` — the full record name (for the zone apex, use the zone name).
+- Specify `type = "A"`.
+- Add one `resource_record` block per IP address. Specify `content` — the IPv4 address.
+- (optional) Specify `ttl`.
+
 ### CNAME record
 
-A CNAME record creates an alias that points one domain to another:
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the values:
 
 ```hcl
 resource "gcore_dns_zone_record" "www" {
@@ -91,9 +134,18 @@ resource "gcore_dns_zone_record" "www" {
 }
 ```
 
+3. Configure the record.
+
+- Specify `zone`.
+- Specify `domain` — the alias name.
+- Specify `type = "CNAME"`.
+- Specify `content` — the target domain with a trailing dot.
+- (optional) Specify `ttl`.
+
 ### MX record
 
-An MX record specifies mail servers for the domain. The content includes a priority value followed by the mail server hostname:
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the values:
 
 ```hcl
 resource "gcore_dns_zone_record" "mx" {
@@ -111,9 +163,17 @@ resource "gcore_dns_zone_record" "mx" {
 }
 ```
 
+3. Configure the record.
+
+- Specify `zone` and `domain`.
+- Specify `type = "MX"`.
+- Add one `resource_record` block per mail server. Specify `content` as `"<priority> <hostname>."` — priority and hostname separated by a space, hostname with a trailing dot.
+- (optional) Specify `ttl`.
+
 ### TXT record
 
-A TXT record holds arbitrary text data, commonly used for SPF, DKIM, and domain verification:
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the values:
 
 ```hcl
 resource "gcore_dns_zone_record" "spf" {
@@ -128,9 +188,17 @@ resource "gcore_dns_zone_record" "spf" {
 }
 ```
 
+3. Configure the record.
+
+- Specify `zone` and `domain`.
+- Specify `type = "TXT"`.
+- Specify `content` — the text value, such as an SPF, DKIM, or domain verification string.
+- (optional) Specify `ttl`.
+
 ### CAA record
 
-A CAA record specifies which certificate authorities are allowed to issue certificates for the domain:
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the values:
 
 ```hcl
 resource "gcore_dns_zone_record" "caa" {
@@ -145,9 +213,17 @@ resource "gcore_dns_zone_record" "caa" {
 }
 ```
 
+3. Configure the record.
+
+- Specify `zone` and `domain`.
+- Specify `type = "CAA"`.
+- Specify `content` as `"<flags> <tag> \"<value>\""` — flags, tag (`issue`, `issuewild`, or `iodef`), and the CA value in quotes.
+- (optional) Specify `ttl`.
+
 ## Configure geo-balancing
 
-You can distribute DNS traffic geographically using `filter` and `meta` blocks within a record. This allows you to return different IP addresses based on the geographic location of the requesting client. For more information, refer to [Configure weight balancing and geobalancing](/dns/dns-records/configure-weight-balancing-and-geobalancing).
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the values:
 
 ```hcl
 resource "gcore_dns_zone_record" "geo_a" {
@@ -182,11 +258,22 @@ resource "gcore_dns_zone_record" "geo_a" {
 }
 ```
 
-The `geodistance` filter returns the record closest to the client's location. Setting `limit = 1` means only one record is returned per query. When `strict = true`, the filter returns no results if no records match the filter criteria instead of falling back to all records.
+3. Configure geo-balancing.
+
+- Add a `filter` block. Specify `type` — the filter algorithm (`geodistance`, `geodns`, `country`, `continent`, `asn`, `ip`, `weighted_shuffle`, `first_n`, or `default`).
+- (optional) Specify `limit` — the maximum number of records returned per query. Set to `0` for no limit.
+- (optional) Add `strict = true` to return no records if none match the filter, instead of falling back to all records.
+- Add `meta` inside each `resource_record` to associate geographic data with that IP.
+  - Specify `latlong` — `[latitude, longitude]` coordinates used by the `geodistance` filter.
+  - (optional) Specify `continents` — list of continent codes (`europe`, `north_america`, `south_america`, `asia`, `africa`, `oceania`).
+  - (optional) Specify `countries` — list of two-letter country codes.
+
+For more information, refer to [Configure weight balancing and geobalancing](/dns/dns-records/configure-weight-balancing-and-geobalancing).
 
 ## Set up failover with health checks
 
-Health checks automatically remove unhealthy records from DNS responses, ensuring traffic is only directed to healthy endpoints. For more information, refer to [Configure and use DNS failover](/dns/dns-failover/configure-and-use-dns-failover).
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the values:
 
 ```hcl
 resource "gcore_dns_zone_record" "failover_a" {
@@ -222,23 +309,22 @@ resource "gcore_dns_zone_record" "failover_a" {
 }
 ```
 
-Available health check protocols: HTTP, TCP, UDP, and ICMP. The `frequency` parameter accepts values from 10 to 3600 seconds, and `timeout` accepts values from 1 to 10 seconds.
+3. Configure the health check.
 
-## Preview and apply changes
+- Add `filter { type = "is_healthy" }` to exclude unhealthy records from DNS responses.
+- Add `enabled = true` inside each `resource_record` to include it in health check rotation.
+- Add a `meta { failover { } }` block to the record and configure the health check:
+  - Specify `protocol` — `HTTP`, `TCP`, `UDP`, or `ICMP`.
+  - Specify `port`.
+  - Specify `frequency` — check interval from 10 to 3600 seconds.
+  - Specify `timeout` — response timeout from 1 to 10 seconds.
+  - (optional, HTTP only) Specify `host`, `method`, `url`, `http_status_code`, and `tls`.
 
-After configuring your DNS zones and records:
-
-- Run `terraform plan` to preview what Terraform will change.
-- Run `terraform apply` to apply the changes. Terraform will prompt you to confirm by typing "yes".
-- Run `terraform destroy` to remove all DNS resources managed by your configuration.
-
-<Warning>
-Running `terraform destroy` will permanently delete all DNS zones and records managed by your configuration. This action cannot be undone.
-</Warning>
+For more information, refer to [Configure and use DNS failover](/dns/dns-failover/configure-and-use-dns-failover).
 
 ## Import existing DNS resources
 
-If you already have DNS zones and records configured in the Gcore Customer Portal, you can import them into your Terraform state to manage them with Terraform going forward.
+If you already have DNS zones and records configured in the Gcore Customer Portal, you can import them into your Terraform state.
 
 To import an existing DNS zone:
 
@@ -253,7 +339,7 @@ terraform import gcore_dns_zone_record.example_a example.com:example.com:A
 ```
 
 <Tip>
-After importing resources, run `terraform plan` to verify that your configuration matches the imported state. If there are differences, update your _main.tf_ file to match the actual resource settings.
+After importing resources, run `terraform plan` to verify that your configuration matches the imported state. If there are differences, update your `main.tf` file to match the actual resource settings.
 </Tip>
 
 ## Related documentation
