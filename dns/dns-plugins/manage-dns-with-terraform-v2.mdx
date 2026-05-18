@@ -109,6 +109,30 @@ Configure the record.
 terraform import gcore_dns_zone_rrset.a example.com/example.com/A
 ```
 
+### AAAA record
+
+An AAAA record maps a hostname to one or more IPv6 addresses. Each address is a separate entry in `resource_records`.
+
+```hcl
+resource "gcore_dns_zone_rrset" "aaaa" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = gcore_dns_zone.example.name
+  rrset_type = "AAAA"
+  ttl        = 300
+
+  resource_records = [
+    { content = ["2001:db8::1"] },
+    { content = ["2001:db8::2"] },
+  ]
+}
+```
+
+- Each entry's `content` is a single-element list with the IPv6 address.
+
+```sh
+terraform import gcore_dns_zone_rrset.aaaa example.com/example.com/AAAA
+```
+
 ### CNAME record
 
 A CNAME record creates an alias that points one hostname to another.
@@ -199,6 +223,30 @@ resource "gcore_dns_zone_rrset" "caa" {
 
 ```sh
 terraform import gcore_dns_zone_rrset.caa example.com/example.com/CAA
+```
+
+### SRV record
+
+An SRV record specifies the location of a service, including its priority, weight, port, and target hostname.
+
+```hcl
+resource "gcore_dns_zone_rrset" "srv" {
+  zone_name  = gcore_dns_zone.example.name
+  rrset_name = "_sip._tcp.example.com"
+  rrset_type = "SRV"
+  ttl        = 300
+
+  resource_records = [
+    { content = ["10", "20", "5060", "sip.example.com."] },
+  ]
+}
+```
+
+- Specify `rrset_name` — the service name in the format `_service._proto.example.com`.
+- SRV `content` must have exactly four elements: priority, weight, port, and target hostname (with trailing dot).
+
+```sh
+terraform import gcore_dns_zone_rrset.srv example.com/_sip._tcp.example.com/SRV
 ```
 
 ## Configure geo-balancing
