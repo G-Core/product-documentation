@@ -7,12 +7,8 @@ ai-navigation: Create and manage Gcore Managed DNS zones and records using Terra
 This guide covers the Gcore-specific Terraform resources for managing DNS zones and records using provider v2. It assumes that Terraform is already installed and the Gcore provider v2 is configured. If not, complete [Get started with Terraform](/developer-tools/terraform/get-started-with-terraform) first.
 
 <Warning>
-Provider v2 is currently in pre-release (`2.0.0-alpha`). It is not recommended for production workloads until v2 reaches general availability. Check the [Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/latest) for the current version and release status.
+Provider v2 is currently in pre-release (`2.0.0-alpha`). Check the [Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/latest) for the current version and release status.
 </Warning>
-
-<Info>
-Migrating from provider v0? The DNS record resource is renamed from `gcore_dns_zone_record` to `gcore_dns_zone_rrset`, and the import ID separator changes from `:` to `/`. See [Migrate from v0 to v2](/developer-tools/terraform/migrate-v0-to-v2) for the full reference.
-</Info>
 
 ## Create a DNS zone
 
@@ -28,26 +24,28 @@ resource "gcore_dns_zone" "example" {
 
 ### Zone with SOA parameters
 
-You can customize the SOA record timing by specifying `refresh`, `retry`, `expiry`, and `nx_ttl`:
-
 ```hcl
 resource "gcore_dns_zone" "example" {
-  name    = "example.com"
-  enabled = true
-  refresh = 3600
-  retry   = 1800
-  expiry  = 604800
-  nx_ttl  = 300
+  name           = "example.com"
+  enabled        = true
+  contact        = "admin@example.com"
+  refresh        = 3600
+  retry          = 1800
+  expiry         = 604800
+  nx_ttl         = 300
+  primary_server = "ns1.example.com"
 }
 ```
 
 | Field | Description | Default |
 |-------|-------------|---------|
 | `enabled` | Whether records resolve on DNS servers | `true` |
+| `contact` | Administrator email address recorded in the SOA record | account default |
 | `refresh` | How often secondary servers check for zone changes (seconds) | 5400 |
 | `retry` | How long secondary servers wait before retrying a failed refresh (seconds) | 3600 |
 | `expiry` | How long secondary servers serve the zone without a successful refresh (seconds) | 1209600 |
 | `nx_ttl` | TTL for negative responses (NXDOMAIN) (seconds) | varies |
+| `primary_server` | Primary master name server for the zone | account default |
 
 ```sh
 terraform import gcore_dns_zone.example example.com
@@ -143,7 +141,7 @@ terraform import gcore_dns_zone_rrset.spf example.com/example.com/TXT
 
 ### CAA record
 
-CAA `content` must have exactly three elements: flags, tag, and the CA value (without quotes).
+CAA `content` must have exactly three elements: flags, tag, and the CA value.
 
 ```hcl
 resource "gcore_dns_zone_rrset" "caa" {
@@ -166,7 +164,7 @@ terraform import gcore_dns_zone_rrset.caa example.com/example.com/CAA
 
 Geo-balancing routes DNS queries to the nearest or most appropriate server based on the client's location. Configure it with a `pickers` block on the RRset and `meta` values on each record.
 
-`meta` values are a map of strings. Array-type values (`latlong`, `continents`, `countries`) must be JSON-encoded using the `jsonencode()` function.
+`meta` values are strings. Array-type values (`latlong`, `continents`, `countries`) must be JSON-encoded using the `jsonencode()` function.
 
 ```hcl
 resource "gcore_dns_zone_rrset" "geo_a" {
@@ -222,12 +220,6 @@ The `geodistance` picker returns the record closest to the client's geographic l
 For more details on geo-balancing options, refer to [Configure weight balancing and geobalancing](/dns/dns-records/configure-weight-balancing-and-geobalancing).
 </Info>
 
-## Failover and health checks
-
-<Warning>
-Health check filtering (`is_healthy` picker) is not supported by provider v2 at this time. To configure DNS failover, use [provider v0](/dns/dns-plugins/manage-dns-with-terraform) or manage health checks through the [Gcore Customer Portal](https://portal.gcore.com) or [API](https://api.gcore.com/docs/dns).
-</Warning>
-
 ## Preview and apply changes
 
 After configuring your DNS zones and records:
@@ -264,7 +256,6 @@ After importing, run `terraform plan` to verify the configuration matches the im
 
 - [Get started with Terraform](/developer-tools/terraform/get-started-with-terraform)
 - [Migrate from Gcore Terraform provider v0 to v2](/developer-tools/terraform/migrate-v0-to-v2)
-- [Manage DNS with Terraform (provider v0)](/dns/dns-plugins/manage-dns-with-terraform)
 - [Gcore Terraform provider documentation](https://registry.terraform.io/providers/G-Core/gcore/latest/docs)
 - [Managing API tokens](/account-settings/api-tokens)
 - [Manage a DNS zone](/dns/manage-a-dns-zone)
