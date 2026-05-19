@@ -3,9 +3,9 @@ title: Manage a GPU Kubernetes cluster
 sidebarTitle: Manage a cluster
 ---
 
-Gcore manages the Kubernetes control plane. Cluster operators are responsible for node pools, workload scheduling, storage configuration, access control, and keeping the cluster version current.
+Gcore manages the Kubernetes control plane, while cluster operators are responsible for node pools, workload scheduling, storage configuration, access control, and keeping the cluster version current.
 
-This guide covers the main day-to-day operations: connecting with kubectl, managing node pools and autoscaling, configuring storage and logging, setting up OIDC authentication, upgrading the cluster version, and deleting the cluster when it is no longer needed.
+Day-to-day operations covered here include connecting with kubectl, managing node pools and autoscaling, configuring storage and logging, setting up OIDC authentication, upgrading the cluster version, and deleting the cluster.
 
 ## Connect to the cluster
 
@@ -51,7 +51,7 @@ NAME                STATUS   ROLES    AGE   VERSION
 ndp1-c3-168-10-78   Ready    <none>   12d   v1.35.3
 ```
 
-Nodes show **Ready** status when fully provisioned. kubectl must be within one minor version of the cluster — for example, kubectl v1.34 or v1.36 works with a v1.35 cluster. A version mismatch beyond that range produces a warning but commands still execute.
+Nodes show Ready status when fully provisioned. kubectl must be within one minor version of the cluster — for example, kubectl v1.34 or v1.36 works with a v1.35 cluster. A version mismatch beyond that range produces a warning but commands still execute.
 
 <Info>
 Kubeconfig certificates are renewed automatically every two years. A notification appears in the portal and is sent by email two weeks before expiry. Download a fresh kubeconfig after renewal.
@@ -79,10 +79,10 @@ Node pools group worker nodes with identical configuration. Each pool can have a
 
 ### View pool details
 
+The expanded pool card shows the pool name, autoscaling status, instance flavor, volume configuration, node list, and current status.
+
 1. Navigate to the **Pools** tab.
 2. Click a pool to expand its details.
-
-The expanded view shows the pool name, autoscaling status, instance flavor, volume configuration, node list, and current status.
 
 <Frame>
   <img src="/images/docs/edge-ai/managed-kubernetes/manage-a-gpu-kubernetes-cluster/pool-details-expanded.png" alt="Pool details showing node configuration, status, and node list" />
@@ -159,7 +159,7 @@ spec:
     pool: gpu-pool
 ```
 
-GPU bare metal nodes require the NVIDIA device plugin to expose GPU resources to the Kubernetes scheduler. The plugin runs as a DaemonSet on GPU nodes. Verify it is running before scheduling GPU workloads:
+GPU bare metal nodes require the NVIDIA device plugin to expose GPU resources to the Kubernetes scheduler. The plugin runs as a DaemonSet on GPU nodes; verify it is running before scheduling GPU workloads:
 
 ```bash
 kubectl get daemonset -n kube-system nvidia-device-plugin-daemonset
@@ -235,7 +235,7 @@ Pool deletion is irreversible. All nodes in the pool are terminated. Migrate wor
 The Cluster Autoscaler adjusts cluster size based on workload demand. When pods are pending due to insufficient resources, the autoscaler adds nodes. When nodes are underutilized, it removes them. Autoscaling operates within the min/max limits set per pool.
 
 <Info>
-The Cluster Autoscaler scales based on CPU and memory utilization only. For GPU utilization-based autoscaling, configure [KEDA (Kubernetes Event-Driven Autoscaling)](https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/configure-gpu-autoscaling-for-kubernetes).
+The Cluster Autoscaler scales based on CPU and memory utilization only. For GPU utilization-based autoscaling, configure [KEDA](https://gcore.com/docs/cloud/kubernetes/clusters/autoscaling/configure-gpu-autoscaling-for-kubernetes).
 </Info>
 
 To configure autoscaling behavior:
@@ -312,7 +312,7 @@ kubectl version
 kubectl get nodes
 ```
 
-Ensure all nodes show the same version as the control plane before starting the upgrade. Review the [Kubernetes changelog](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/) for deprecated APIs that may affect running workloads.
+Verify that all nodes show the same version as the control plane before starting the upgrade. Review the [changelog](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/) for deprecated APIs that may affect running workloads.
 
 Rolling upgrades require quota for one additional node of the same flavor during the process. For a 10-node pool, quota for 11 nodes is needed temporarily.
 
@@ -338,9 +338,9 @@ After the control plane upgrades, update the local kubectl client if the version
 kubectl version
 ```
 
-**Update the Cluster Autoscaler**
+#### Update the Cluster Autoscaler
 
-The Cluster Autoscaler image must match the cluster's Kubernetes minor version. Find the latest release for the new version on the [Cluster Autoscaler releases page](https://github.com/kubernetes/autoscaler/releases), then update the image:
+The Cluster Autoscaler image must match the cluster's Kubernetes minor version. Find the latest release for the new version on the [releases page](https://github.com/kubernetes/autoscaler/releases), then update the image:
 
 ```bash
 kubectl -n kube-system set image deployment.apps/cluster-autoscaler \
@@ -355,9 +355,9 @@ Verify the rollout completed:
 kubectl -n kube-system rollout status deployment/cluster-autoscaler
 ```
 
-**Update the NVIDIA device plugin (GPU bare metal pools only)**
+#### Update the NVIDIA device plugin (GPU bare metal pools only)
 
-The NVIDIA device plugin DaemonSet must be updated after a cluster upgrade to maintain GPU resource scheduling. Find the latest compatible release on the [NVIDIA k8s-device-plugin releases page](https://github.com/NVIDIA/k8s-device-plugin/releases), then apply it:
+The NVIDIA device plugin DaemonSet must be updated after a cluster upgrade to maintain GPU resource scheduling. Find the latest compatible release on the [releases page](https://github.com/NVIDIA/k8s-device-plugin/releases), then apply it:
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/NVIDIA/k8s-device-plugin/v<X.X.X>/deployments/static/nvidia-device-plugin.yml

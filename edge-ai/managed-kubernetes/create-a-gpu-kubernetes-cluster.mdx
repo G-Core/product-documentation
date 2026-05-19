@@ -18,11 +18,13 @@ Some settings — CNI provider, advanced pool settings, and network ranges — c
 
 ## Cluster architecture
 
-Each cluster consists of a Kubernetes control plane managed by Gcore and one or more worker node pools that run in the project. The control plane handles the API server, scheduler, and cluster state. Node pools are groups of worker nodes with identical configuration where workloads run.
+Each cluster consists of a Kubernetes control plane managed by Gcore and one or more worker node pools that run in the project. The control plane handles the API server, scheduler, and cluster state, while node pools are groups of worker nodes with identical configuration where workloads run.
 
 Pools within the same cluster can have different instance types: one pool of virtual machines for general services and another pool of GPU bare metal nodes for model training and inference. All nodes in a pool share the same configuration — instance type, volume settings, and network interface. The cluster autoscaler adds or removes nodes within each pool based on demand, within the configured min/max limits.
 
 ## Create a Kubernetes cluster
+
+The creation form walks through region, version, node pools, networking, SSH key, logging, and advanced settings in sequence.
 
 <Info>
 The cluster creation form requires a configured network, subnet, and SSH key before it can be submitted. Setting these up before opening the form avoids navigating away mid-creation. Networks and subnets can be prepared under **GPU Cloud** > **Networking** > **Networks**; SSH keys under **GPU Cloud** > **SSH Keys**.
@@ -44,7 +46,7 @@ In the **Region** section, select the data center location for the cluster. Regi
   <img src="/images/docs/edge-ai/managed-kubernetes/create-a-gpu-kubernetes-cluster/step1-region.png" alt="Region selection showing available data centers grouped by geography" />
 </Frame>
 
-GPU bare metal nodes and features such as VAST Storage integration are not available in all regions. Check regional availability before selecting a region if these are required.
+GPU bare metal nodes and features such as VAST Storage integration are not available in all regions, so check regional availability before selecting if these are required.
 
 <Info>
 Changing the region after configuring other settings resets all form values.
@@ -89,7 +91,7 @@ Bare metal instances are not available in all regions. If the option is unavaila
 8. (Optional) Configure additional node settings:
    - **Add labels** — Kubernetes labels attached to all nodes in the pool. Labels are used in pod specs to target specific pools with `nodeSelector` or node affinity rules.
    - **Add taints** — taints prevent pods from being scheduled on pool nodes unless the pod explicitly tolerates the taint. Use taints to dedicate GPU pools exclusively to GPU workloads.
-   - **Autohealing nodes** — enabled by default. The cluster monitors node health using Kubernetes node conditions and automatically drains and replaces nodes that become unhealthy.
+   - **Autohealing nodes** — enabled by default; the cluster monitors node health using Kubernetes node conditions and automatically drains and replaces nodes that become unhealthy.
    - **Public IPv4 address** — assigns a public IP to each node. Required if nodes need direct inbound internet access outside of load balancers.
 
 9. To configure container runtime settings, environment variables, and resource limits, click the **...** menu in the pool header and select **Configure settings**.
@@ -182,11 +184,11 @@ The **Estimated cost** panel on the right shows monthly and hourly pricing for a
 
 If the account lacks sufficient quota, the portal shows a quota warning and the **Create Cluster** button is disabled. Click **Send quota request** to request an increase, then return to create the cluster once approved.
 
-Click **Create Cluster** to begin provisioning. Cluster provisioning time depends on the number and type of nodes. When complete, the cluster status changes from **Creating** to **Provisioned**.
+Click **Create Cluster** to begin provisioning. Cluster provisioning time depends on the number and type of nodes. When complete, the cluster status changes from Creating to Provisioned.
 
 ## After cluster creation
 
-When the cluster reaches **Provisioned** status, the cluster appears in the Managed Kubernetes list with a green **Provisioned** badge.
+When the cluster reaches Provisioned status, it appears in the Managed Kubernetes list with a green Provisioned badge.
 
 <Frame>
   <img src="/images/docs/edge-ai/managed-kubernetes/create-a-gpu-kubernetes-cluster/cluster-list-provisioned.png" alt="Managed Kubernetes clusters list showing doc-cluster in Provisioned status" />
@@ -194,11 +196,11 @@ When the cluster reaches **Provisioned** status, the cluster appears in the Mana
 
 Click the cluster name to open the overview page. It shows the cluster status, Kubernetes version, networking configuration (network name, subnetwork, CNI provider), and management tabs for pools, logging, DDoS protection, advanced settings, and audit logs.
 
-GPU bare metal nodes may take longer to provision than virtual instances. Node status is visible in the **Pools** tab — nodes transition from **Not Ready** to **Ready** as they complete initialization.
+GPU bare metal nodes may take longer to provision than virtual instances, so monitor progress in the **Pools** tab — nodes transition from Not Ready to Ready as they complete initialization.
 
 ## Connect to the cluster
 
-The kubeconfig file enables kubectl connections to the cluster. Download it after the cluster reaches **Provisioned** status:
+The kubeconfig file enables kubectl connections to the cluster. Download it after the cluster reaches Provisioned status:
 
 1. Navigate to the cluster overview page.
 2. Click **Kubernetes config**.
@@ -240,4 +242,4 @@ NAME                STATUS   ROLES    AGE   VERSION
 ndp1-c3-168-10-78   Ready    <none>   12d   v1.35.3
 ```
 
-A node in **Ready** status is fully provisioned and available for workloads. Nodes that remain **NotReady** after several minutes may still be initializing — GPU bare metal nodes typically take longer than virtual instances.
+A node in Ready status is fully provisioned and available for workloads. Nodes that remain NotReady after several minutes may still be initializing — GPU bare metal nodes typically take longer than virtual instances.
