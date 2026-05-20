@@ -24,14 +24,27 @@ jobs:
 
           root = pathlib.Path(".")
           fixed = []
+          encoding_errors = []
           for f in root.rglob("*.mdx"):
-              text = f.read_text(encoding="utf-8")
+              try:
+                  text = f.read_text(encoding="utf-8")
+              except UnicodeDecodeError as e:
+                  encoding_errors.append((str(f), str(e)))
+                  continue
               def fix(m):
                   return "ai-navigation: " + re.sub(r"[:#]", " -", m.group(1))
               new = re.sub(r"^ai-navigation: (.+)$", fix, text, flags=re.MULTILINE)
               if new != text:
                   f.write_text(new, encoding="utf-8")
                   fixed.append(str(f))
+
+          if encoding_errors:
+              print("ERROR: the following .mdx files are not valid UTF-8.", file=sys.stderr)
+              print("Most likely cause: file was saved by PowerShell Set-Content without -Encoding UTF8.", file=sys.stderr)
+              print("Fix: re-save the file explicitly as UTF-8 (without BOM).", file=sys.stderr)
+              for path, detail in encoding_errors:
+                  print(f"  {path}: {detail}", file=sys.stderr)
+              sys.exit(1)
 
           if fixed:
               print(f"Fixed {len(fixed)} files:")
