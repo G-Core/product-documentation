@@ -107,21 +107,26 @@ A dedicated public network provides an individual address pool, allowing multipl
 
 ### Interface order and routing priority
 
-When adding multiple interfaces, the order determines how the OS assigns routing metrics after the server starts. The interface added first gets the lowest metric — meaning the highest routing priority — and that order is fixed at creation time.
+Bare Metal servers use LACP bonding: all physical ports are aggregated into a single bond (`bond0`). Each sub-interface you add in the creation form becomes a logical port on top of that bond.
 
-After the server is created, the **Networking** tab shows the interfaces in the same order as they were added during setup.
+- **Sub-Interface 1** (public) is served directly by `bond0`.
+- **Sub-Interface 2** (private) is served by a VLAN sub-interface named `bond0.<vlan_id>` (for example, `bond0.2853`).
 
-In the OS, the routing table reflects this through metric values. Lower metric means higher priority. For a server with a public interface added first (metric 100) and a private interface added second (metric 200):
+After the server is created, the **Networking** tab shows the sub-interfaces in the same order as they were added during setup. Running `ip a` in the OS confirms the mapping:
+
+<Frame>
+  ![Diagram showing how Sub-Interface 1 and Sub-Interface 2 in the creation form map to the Networking tab entries and to bond0 and bond0.2853 in the OS](/images/docs/cloud/bare-metal-servers/create-a-bare-metal-server/bm-network-interface-order-diagram.png)
+</Frame>
 
 ```bash
-$ ip route
-default via 192.168.0.1 dev ens3 proto dhcp src 85.234.66.94 metric 100
-default via 10.0.0.1 dev ens4 proto dhcp src 172.19.78.149 metric 200
-192.168.0.0/24 dev ens3 proto kernel scope link src 85.234.66.94
-10.0.0.0/24 dev ens4 proto kernel scope link src 172.19.78.149
+$ ip a
+5: bond0: ... state UP
+    inet 85.234.84.212/24 brd 85.234.84.255 scope global bond0
+6: bond0.2853@bond0: ... state UP
+    inet 10.0.0.212/24 metric 100 brd 10.0.0.255 scope global dynamic bond0.2853
 ```
 
-The OS routes outbound traffic through the public interface by default. The interface order cannot be changed after the server is created.
+The private sub-interface gets `metric 100`, which means the OS prefers the public interface for outbound traffic by default. The sub-interface order cannot be changed after the server is created.
 
 ## Step 6. Configure access
 
