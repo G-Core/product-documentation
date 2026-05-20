@@ -1,6 +1,6 @@
 ---
-title: "Use variables and organize a Terraform project"
-sidebarTitle: "Variables and project structure"
+title: "Manage a Terraform project"
+sidebarTitle: "Project setup and rollback"
 ---
 
 Hardcoding values directly in `main.tf` works for a quick test but breaks down as soon as a project grows: credentials end up in source control, switching between environments requires editing source files, and configuration becomes hard to review. Terraform input variables solve all three problems by separating values from logic — secrets stay out of source files, environments switch by swapping a single `.tfvars` file, and the configuration itself stays readable.
@@ -380,4 +380,43 @@ crash.*.log
 ```
 
 Commit `.terraform.lock.hcl` — it locks provider versions for the team and does not contain secrets.
+
+## Tag configuration versions
+
+Tagging significant commits gives rollbacks a reliable target. Tag each release or major configuration change after applying it:
+
+```bash
+git tag -a v1.0.1 -m "Release version 1.0.1 with updated resource configuration"
+git push origin main --tags
+```
+
+List all available tags at any time:
+
+```bash
+git tag
+```
+
+Test rollback procedures periodically so the process is already verified before a real incident occurs.
+
+## Roll back the configuration
+
+Configuration changes can sometimes cause unexpected behavior. A rollback strategy allows quick reversion to the last known good state, minimizing downtime.
+
+### Step 1. Identify the target version
+
+Run `git log` or `git tag` to browse available checkpoints and identify the version to restore.
+
+### Step 2. Check out the version
+
+```bash
+git checkout tags/v1.0.0
+```
+
+### Step 3. Apply the rollback
+
+```bash
+terraform apply
+```
+
+The infrastructure is now running the configuration from the selected version.
 

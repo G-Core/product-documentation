@@ -1,0 +1,448 @@
+---
+title: Manage CDN resources with Terraform v2
+sidebarTitle: Manage via Terraform v2
+ai-navigation: Create and manage Gcore CDN resources using Terraform provider v2 (2.0.0-alpha). Covers origin groups with host and S3 sources using list syntax, CDN resources with map-style options, SSL certificates with write-only fields, CA certificates, CDN resource rules, and rule templates. Uses gcore_cdn_origin_group, gcore_cdn_resource, gcore_cdn_certificate, gcore_cdn_trusted_ca_certificate, gcore_cdn_resource_rule, gcore_cdn_rule_template resources. Key v2 changes from v0 include map-syntax options, write-only S3 credentials, and renamed certificate fields.
+---
+
+The Gcore Terraform provider v2 manages CDN resources using a modernized schema with cleaner attribute names, write-only credential fields, and a map-based options syntax.
+
+The following resources are supported: origin groups, CDN resources with delivery options, SSL certificates, CA certificates, rules, and rule templates.
+
+<Note>
+Provider v2 is currently in alpha (`2.0.0-alpha`). Breaking changes may occur between releases. For production workloads, use the [v0 provider](/cdn/terraform/manage-cdn-via-terraform) until v2 reaches general availability.
+</Note>
+
+Provider installation and authentication are covered in the [Terraform overview](/developer-tools/terraform/overview); for migration from v0, use the [migration guide](/developer-tools/terraform/migrate-v0-to-v2).
+
+## Key differences from provider v0
+
+Provider v2 introduces changes to resource names, authentication, options syntax, and credential handling compared to v0.
+
+| Area | Provider v0 | Provider v2 |
+|---|---|---|
+| Authentication | `permanent_api_token` | `api_key` |
+| SSL certificate resource | `gcore_cdn_sslcert` | `gcore_cdn_certificate` |
+| CA certificate resource | `gcore_cdn_cacert` | `gcore_cdn_trusted_ca_certificate` |
+| Rule resource | `gcore_cdn_rule` | `gcore_cdn_resource_rule` |
+| Origin group sources | Nested `origin {}` blocks | `sources = [{}]` list attribute |
+| Delivery options | `options { block {} }` nested blocks | `options = { key = {} }` map attribute |
+| S3 credentials | Stored in state | Write-only (not stored in state) |
+| SSL cert fields | `cert`, `private_key` | `ssl_certificate_wo`, `ssl_private_key_wo` |
+
+Resources not yet available in v2: `gcore_cdn_applied_preset`, `gcore_cdn_client_config`, `gcore_cdn_originshielding`, and `gcore_cdn_logs_uploader_*`.
+
+## Workflow
+
+Add resource configuration to `main.tf`, configure the provider with `api_key`, then run:
+
+```bash
+terraform plan
+```
+
+Review the output, then apply:
+
+```bash
+terraform apply
+```
+
+## Provider configuration
+
+Configure the provider block in `main.tf` with the `api_key` attribute.
+
+```hcl
+terraform {
+  required_providers {
+    gcore = {
+      source  = "G-Core/gcore"
+      version = "2.0.0-alpha.7"
+    }
+  }
+}
+
+provider "gcore" {
+  api_key = var.api_key
+}
+```
+
+Provider v2 uses `api_key` instead of `permanent_api_token`. The value is a Gcore API token.
+
+## Manage origin groups
+
+An origin group defines the servers the CDN pulls content from. In v2, sources are specified as a list attribute rather than nested blocks.
+
+### Create an origin group with host origins
+
+In v2, origins are defined as a `sources` list attribute rather than nested blocks.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below and customize the values:
+
+```hcl
+resource "gcore_cdn_origin_group" "example" {
+  name     = "example-group"
+  use_next = true
+  sources = [
+    {
+      source  = "origin.example.com"
+      enabled = true
+    },
+    {
+      source  = "backup.example.com"
+      enabled = true
+      backup  = true
+    }
+  ]
+}
+```
+
+3. Configure the origin group.
+
+- Specify `name` — the display name in the Customer Portal.
+- Set `use_next`:
+  - `true` — if the first active origin fails, CDN tries remaining active origins in order, then backup origins.
+  - `false` — if the first active origin fails, CDN skips remaining active origins and immediately uses backup origins.
+- For each object in `sources`:
+  - Specify `source` — the domain or IP of the origin. The domain must resolve in DNS.
+  - Set `enabled = true` to make the origin active.
+  - (optional) Set `backup = true` to designate the origin as a backup.
+  - (optional) Set `host_header_override` — custom `Host` header for this specific origin.
+- (optional) Set `proxy_next_upstream` — a list of conditions that trigger failover to the next origin. Accepted values: `error`, `timeout`, `invalid_header`, `http_403`, `http_404`, `http_429`, `http_500`, `http_502`, `http_503`, `http_504`. Default: `["error", "timeout"]`.
+
+### Create an origin group with an S3 origin
+
+S3 credentials in v2 are write-only — they are sent to the API on creation but never stored in Terraform state. Increment `s3_credentials_version` each time credentials are rotated to force Terraform to re-send them.
+
+1. Open the `main.tf` file.
+2. Copy the code below and customize the values:
+
+```hcl
+resource "gcore_cdn_origin_group" "s3_example" {
+  name                   = "s3-example-group"
+  use_next               = false
+  s3_credentials_version = 1
+
+  sources = [
+    {
+      enabled     = true
+      origin_type = "s3"
+      config = {
+        s3_type              = "amazon"
+        s3_bucket_name       = "my-bucket"
+        s3_region            = "us-east-1"
+        s3_access_key_id     = "AKIAIOSFODNN7EXAMPLE"
+        s3_secret_access_key = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+      }
+    }
+  ]
+}
+```
+
+3. Configure the S3 origin.
+
+- Set `s3_credentials_version` — an integer incremented each time credentials are rotated, which forces Terraform to re-send the write-only values. Required when any source has `origin_type = "s3"`.
+- For each S3 source object in `sources`:
+  - Set `origin_type = "s3"`.
+  - In the nested `config` object:
+    - Set `s3_type`: `"amazon"` for Amazon S3, `"other"` for S3-compatible storage.
+    - Specify `s3_bucket_name`.
+    - Specify `s3_region` — required when `s3_type = "amazon"`.
+    - Specify `s3_storage_hostname` — required when `s3_type = "other"`.
+    - Specify `s3_access_key_id` and `s3_secret_access_key` — these are write-only and will not appear in Terraform state.
+
+<Tip>
+To rotate S3 credentials, update `s3_access_key_id` and `s3_secret_access_key`, then increment `s3_credentials_version`. Terraform will detect the version change and re-send the credentials to the API.
+</Tip>
+
+## Manage CDN resources
+
+A CDN resource maps a custom domain to an origin group and controls how content is delivered. In v2, delivery options use a map attribute syntax instead of nested blocks.
+
+### Create a basic CDN resource
+
+The following configuration creates a CDN resource that serves content from an origin group over HTTPS.
+
+```hcl
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+}
+```
+
+Configure the CDN resource:
+
+- Specify `cname` — the custom domain for content delivery. After applying, create a CNAME DNS record pointing this domain to the Gcore CDN zone shown in the Portal setup guide.
+- Specify either `origin_group` (ID of an origin group) or `origin` (a single origin domain or IP).
+- Set `origin_protocol`:
+  - `"MATCH"` — CDN uses the same protocol as the client request.
+  - `"HTTP"` — CDN always requests the origin over HTTP.
+  - `"HTTPS"` — CDN always requests the origin over HTTPS.
+- (optional) Add `secondary_hostnames` — a set of additional CNAMEs.
+- (optional) Add `name` — a display name for the resource in the Portal.
+- (optional) Add `description` — a free-text label.
+- (optional) Set `active = false` to suspend delivery. Defaults to `true`.
+
+### Configure delivery options
+
+In provider v2, delivery options use a map attribute syntax (`options = { ... }`) instead of nested blocks. Each option is a key-value pair where the value is an object.
+
+```hcl
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+
+  options = {
+    edge_cache_settings = {
+      enabled = true
+      value   = "86400s"
+      custom_values = {
+        "403" = "1000s"
+        "404" = "50s"
+      }
+    }
+
+    browser_cache_settings = {
+      enabled = true
+      value   = "3600s"
+    }
+
+    gzip_on = {
+      enabled = true
+      value   = true
+    }
+
+    redirect_http_to_https = {
+      enabled = true
+      value   = true
+    }
+
+    allowed_http_methods = {
+      enabled = true
+      value   = ["GET", "HEAD"]
+    }
+
+    cors = {
+      enabled = true
+      value   = ["*"]
+      always  = true
+    }
+
+    tls_versions = {
+      enabled = true
+      value   = ["TLSv1.2", "TLSv1.3"]
+    }
+  }
+}
+```
+
+<Note>
+In v2, setting an option to `null` removes it from the CDN resource. Options not listed in the `options` map are not modified — they inherit account-level defaults.
+</Note>
+
+The following table lists commonly used options. The full list is in the [Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cdn_resource).
+
+| Option | Description |
+|---|---|
+| `edge_cache_settings` | CDN caching duration. `value` sets default TTL; `custom_values` sets per-status-code TTL. |
+| `browser_cache_settings` | Client-side `Cache-Control` header TTL. |
+| `gzip_on` | Gzip compression. Set `value = true`. |
+| `brotli_compression` | Brotli compression. Set `value` to a list of MIME types. |
+| `redirect_http_to_https` | Redirect HTTP to HTTPS. Set `value = true`. |
+| `tls_versions` | Restrict accepted TLS versions. Set `value` to a list: `["TLSv1.2", "TLSv1.3"]`. |
+| `cors` | CORS. Set `value` to a list of allowed origins; use `["*"]` for all. |
+| `allowed_http_methods` | Restrict allowed HTTP methods. Set `value` to a list. |
+| `country_acl` | Allow or deny access by country. Set `policy_type` and `excepted_values`. |
+| `ip_address_acl` | Allow or deny access by IP. Set `policy_type` and `excepted_values`. |
+| `referrer_acl` | Allow or deny access by referrer. Set `policy_type` and `excepted_values`. |
+| `user_agent_acl` | Allow or deny access by user agent. |
+| `secure_key` | Token authentication. Set `key` and `type`. |
+| `stale` | Serve stale content on specified conditions (e.g., `["http_500", "updating"]`). |
+| `host_header` | Override the `Host` header sent to the origin. |
+| `sni` | SNI settings. Set `sni_type` to `"dynamic"` or `"custom"`. |
+| `rewrite` | URL rewriting. Set `body` with rewrite pattern and `flag`. |
+| `static_request_headers` | Add headers to origin requests. Set `value` to a map. |
+| `static_response_headers` | Add headers to CDN responses. Set `value` to a list of objects. |
+| `response_headers_hiding_policy` | Hide response headers from clients. |
+| `request_limiter` | Rate limiting. Set `rate` and `rate_unit`. |
+| `limit_bandwidth` | Bandwidth throttling. Set `limit_type`, `speed`, and `buffer`. |
+| `follow_origin_redirect` | Follow redirects from the origin. Set `codes` to a list of redirect codes. |
+| `websockets` | Enable WebSocket pass-through. Set `value = true`. |
+| `http3_enabled` | Enable HTTP/3. Set `value = true`. |
+| `image_stack` | Image optimization. Set `quality`, `avif_enabled`, `webp_enabled`. |
+| `proxy_connect_timeout` | Timeout for connecting to the origin (e.g., `"4s"`). |
+| `proxy_read_timeout` | Timeout for reading from the origin (e.g., `"10s"`). |
+
+### Enable SSL delivery
+
+Set `ssl_enabled` and reference the certificate ID to deliver content over HTTPS.
+
+```hcl
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origin_group.example.id
+  origin_protocol = "HTTPS"
+  ssl_enabled     = true
+  ssl_data        = gcore_cdn_certificate.example.id
+}
+```
+
+- Set `ssl_enabled = true` to deliver content over HTTPS.
+- Set `ssl_data` to the ID of a `gcore_cdn_certificate` resource.
+
+### Enable origin SSL verification
+
+Set `proxy_ssl_enabled` to verify the origin server's SSL certificate before serving content.
+
+```hcl
+resource "gcore_cdn_resource" "example" {
+  cname             = "cdn.example.com"
+  origin_group      = gcore_cdn_origin_group.example.id
+  origin_protocol   = "HTTPS"
+  proxy_ssl_enabled = true
+  proxy_ssl_ca      = gcore_cdn_trusted_ca_certificate.example.id
+  proxy_ssl_data    = gcore_cdn_certificate.client_cert.id
+}
+```
+
+- `proxy_ssl_enabled = true` — verifies the origin server's SSL certificate.
+- `proxy_ssl_ca` — ID of the CA certificate used to verify the origin. References `gcore_cdn_trusted_ca_certificate`.
+- `proxy_ssl_data` — ID of a client certificate presented to the origin for mTLS. Must be a manually uploaded `gcore_cdn_certificate` (not automated).
+
+## Manage SSL certificates
+
+SSL certificates secure the connection between CDN edge servers and clients. In v2, certificate fields are renamed and manual certificates use write-only attributes.
+
+### Issue a Let's Encrypt certificate automatically
+
+The `gcore_cdn_certificate` resource with `automated = true` requests and renews a Let's Encrypt certificate automatically.
+
+```hcl
+resource "gcore_cdn_certificate" "example" {
+  name      = "example-cert"
+  automated = true
+}
+```
+
+- Specify `name` — must be unique within the account.
+- Set `automated = true` to request a Let's Encrypt certificate.
+
+After applying, Terraform populates read-only attributes: `cert_subject_cn`, `cert_subject_alt`, `cert_issuer`, `validity_not_before`, `validity_not_after`.
+
+<Note>
+Let's Encrypt validates domain ownership before issuing the certificate, so the CNAME DNS record for the CDN domain must already point to Gcore CDN before applying.
+</Note>
+
+### Upload a custom SSL certificate
+
+Certificate and private key are write-only in v2 — sent to the API but never stored in state. Increment `ssl_certificate_wo_version` each time the certificate is rotated to force Terraform to re-send it.
+
+```hcl
+resource "gcore_cdn_certificate" "custom" {
+  name                       = "my-custom-cert"
+  ssl_certificate_wo         = file("cert.pem")
+  ssl_private_key_wo         = file("key.pem")
+  ssl_certificate_wo_version = 1
+}
+```
+
+- `ssl_certificate_wo` — the public certificate in PEM format. Include the full chain.
+- `ssl_private_key_wo` — the private key in PEM format.
+- `ssl_certificate_wo_version` — increment this value to force Terraform to re-send the certificate to the API. Required when using write-only certificate fields.
+- (optional) Set `validate_root_ca = true` to verify that the certificate chain is trusted by a CA.
+
+<Tip>
+To rotate a certificate, update `ssl_certificate_wo` and `ssl_private_key_wo`, then increment `ssl_certificate_wo_version`. Terraform detects the version change and re-uploads the certificate.
+</Tip>
+
+## Manage CA certificates for origin verification
+
+A CA certificate (`gcore_cdn_trusted_ca_certificate`) is used to verify the origin server's SSL certificate or to authenticate mutual TLS connections.
+
+```hcl
+resource "gcore_cdn_trusted_ca_certificate" "example" {
+  name            = "my-origin-ca"
+  ssl_certificate = file("ca.pem")
+}
+```
+
+- Specify `name` — must be unique within the account.
+- Specify `ssl_certificate` — the CA certificate in PEM format. Each certificate in the chain must end with a newline character.
+
+After applying, Terraform populates: `cert_subject_cn`, `cert_subject_alt`, `cert_issuer`, `validity_not_before`, `validity_not_after`.
+
+## Manage CDN resource rules
+
+A CDN resource rule (`gcore_cdn_resource_rule`) applies a separate set of delivery options to requests matching a path pattern. Rules override the CDN resource options for matched paths.
+
+### Create a rule
+
+The following configuration creates a rule that applies extended caching and gzip compression to requests matching `/images/*.png`.
+
+```hcl
+resource "gcore_cdn_resource_rule" "images" {
+  resource_id = gcore_cdn_resource.example.id
+  name        = "PNG images"
+  rule        = "/images/*.png"
+  rule_type   = 0
+
+  options = {
+    edge_cache_settings = {
+      enabled = true
+      value   = "604800s"
+    }
+    gzip_on = {
+      enabled = true
+      value   = true
+    }
+  }
+}
+```
+
+Configure the rule:
+
+- Specify `resource_id` — the ID of the CDN resource the rule belongs to.
+- Specify `name` — the display name in the Customer Portal.
+- Specify `rule` — the path pattern. Must start with `/`.
+- Set `rule_type`:
+  - `0` — path pattern with wildcards (e.g., `/images/*.png`).
+  - `1` — regular expression (must start with `^/`).
+- (optional) Add an `options` map with the same options available on the CDN resource.
+- (optional) Set `active = false` to disable the rule without deleting it.
+- (optional) Set `weight` — rule execution priority. Lower number = higher priority.
+- (optional) Set `origin_group` — ID of an alternative origin group for requests matched by this rule.
+- (optional) Set `override_origin_protocol` — override the origin protocol for matched requests (`"HTTP"`, `"HTTPS"`, or `"MATCH"`).
+
+## Manage rule templates
+
+A rule template (`gcore_cdn_rule_template`) is a reusable rule configuration not tied to a specific CDN resource.
+
+```hcl
+resource "gcore_cdn_rule_template" "static_assets" {
+  name      = "static-assets-template"
+  rule      = "/static/*"
+  rule_type = 0
+
+  options = {
+    edge_cache_settings = {
+      enabled = true
+      value   = "604800s"
+    }
+    gzip_on = {
+      enabled = true
+      value   = true
+    }
+  }
+}
+```
+
+Configure the rule template:
+
+- (optional) Specify `name` — the template display name.
+- Specify `rule` — the path pattern.
+- Set `rule_type` — `0` for path patterns, `1` for regular expressions.
+- Add an `options` map with the delivery options to apply.
+- (optional) Set `weight` — execution priority.
+- (optional) Set `override_origin_protocol` — override the origin protocol.
+
+After applying, Terraform populates: `client` (account ID), `default` (whether it is a system template), `template` (always `true` for templates), and `deleted`.
