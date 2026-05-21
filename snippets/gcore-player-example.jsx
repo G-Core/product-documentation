@@ -1,14 +1,12 @@
-import { useEffect, useId, useRef } from "react";
-
 export const GcorePlayerExample = ({ source }) => {
   const resolvedSource =
     source ||
     "https://demo-public.gvideo.io/videos/2675_w6nGXEimHz4Z6t1j/master.m3u8";
-  const reactId = useId();
-  const containerRef = useRef(null);
-  const playerIdRef = useRef(`gcore-player-${reactId.replace(/[:]/g, "-")}`);
+  const reactId = React.useId();
+  const containerRef = React.useRef(null);
+  const playerIdRef = React.useRef(`gcore-player-${reactId.replace(/[:]/g, "-")}`);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!containerRef.current) {
       return;
     }
