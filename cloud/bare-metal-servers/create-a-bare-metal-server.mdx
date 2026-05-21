@@ -105,12 +105,12 @@ For a **private** interface, also configure a network and subnetwork:
 
 A dedicated public network provides an individual address pool, allowing multiple public IPs on a single network port — useful for high-traffic applications, load distribution, or virtualization scenarios where each workload needs a distinct public IP.
 
-### Interface order and routing priority
+### Interface order
 
 Bare Metal servers use LACP bonding: all physical ports are aggregated into a single bond (`bond0`). Each sub-interface you add in the creation form becomes a logical port on top of that bond.
 
-- **Sub-Interface 1** (public) is served directly by `bond0`.
-- **Sub-Interface 2** (private) is served by a VLAN sub-interface named `bond0.<vlan_id>` (for example, `bond0.2853`).
+- **Sub-Interface 1** (public) maps to `bond0`.
+- **Sub-Interface 2** (private) maps to a VLAN sub-interface named `bond0.<vlan_id>` (for example, `bond0.2853`).
 
 After the server is created, the **Networking** tab shows the sub-interfaces in the same order as they were added during setup. Running `ip a` in the OS confirms the mapping:
 
@@ -121,17 +121,17 @@ After the server is created, the **Networking** tab shows the sub-interfaces in 
 ```bash
 $ ip a
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 ...
-2: enp1s0f0: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 9000 ... master bond0
-3: enp1s0f1: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 9000 ... master bond0
+2: enp1s0f0: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 ... master bond0
+4: enp1s0f1: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 ... master bond0
 5: bond0: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP
-    link/ether b4:96:91:cd:b8:c4 brd ff:ff:ff:ff:ff:ff
-    inet 85.234.84.212/24 brd 85.234.84.255 scope global bond0
+    link/ether 7c:c2:55:6c:ad:b0 brd ff:ff:ff:ff:ff:ff
+    inet 85.234.84.162/24 brd 85.234.84.255 scope global bond0
 6: bond0.2853@bond0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP
-    link/ether b4:96:91:cd:b8:c4 brd ff:ff:ff:ff:ff:ff
-    inet 10.0.0.212/24 metric 100 brd 10.0.0.255 scope global dynamic bond0.2853
+    link/ether 7c:c2:55:6c:ad:b0 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.0.125/24 brd 10.0.0.255 scope global dynamic bond0.2853
 ```
 
-The private sub-interface gets `metric 100`, which means the OS prefers the public interface (`bond0`) for outbound traffic by default. The sub-interface order cannot be changed after the server is created.
+In this example, Sub-Interface 1 (`bond0`) is the public interface and Sub-Interface 2 (`bond0.2853`) is the private interface. The sub-interface order cannot be changed after the server is created.
 
 ## Step 6. Configure access
 
