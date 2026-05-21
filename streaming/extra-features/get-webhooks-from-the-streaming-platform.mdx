@@ -1,7 +1,7 @@
 ﻿---
 title: Webhooks on system state changes
 sidebarTitle: Webhooks
-ai-navigation: Configure webhooks for Video Streaming system state changes on Live streams, VOD videos, VOD deletes, and Restreamings entities via HTTP POST callbacks with payload fields including stream id, live status, backup_live, recording, pull origin type, uri, and stream_source_type.
+ai-navigation: Configure webhooks for Video Streaming system state changes on Live streams, VOD videos, VOD deletes, and Restreamings entities via HTTP POST callbacks with payload fields including stream id, live status, backup_live, recording, transcoding readiness, pull origin type, uri, and stream_source_type.
 ---
 
 ## Webhook types
@@ -19,10 +19,11 @@ A single universal endpoint is used for all types of webhooks.
 ```
 
 Supported entities:
-	1. Live streams – `type: stream`
-	2. VOD videos – `type: vod`
-  4. VOD delete – `type: video_delete`
-	3. Restreamings – `type: restream`
+  1. Live streams – `type: stream`
+  2. VOD videos:
+      - on state change – `type: video`
+      - on delete – `type: video_delete`
+  3. Restreamings – `type: restream`
 
 
 The webhook will contain main fields of the entity for which the event occurred. This allows you to not pull the API to get additional data each time.
@@ -33,9 +34,26 @@ The webhook will contain main fields of the entity for which the event occurred.
 When the state of a live stream changes, the system triggers a webhook with type `stream`. The payload contains a message.stream object with stream properties.
 
 **Behavior:**
-  - A webhook is fired on key state changes, such as a stream going live or stopping.
-  - The payload allows you to track whether a stream is active, its source, and related metadata.
+  - A webhook is fired on key state changes, such as ingest start, transcoding start, or stream stop.
+  - The payload allows you to track whether a stream is active, whether playback output is ready, its source, and related metadata.
   - Both PUSH and PULL origins are supported.
+
+**Live stream lifecycle:**
+
+For live streams, `type: stream` webhooks can be sent at different stages of the stream lifecycle:
+
+| Stage | live/backup_live | transcoding | recording | Description |
+|-------|------|-------------|-------------|-----------|
+| Primary ingest starts | `true` | `false` | `false` | Primary source connects; ingest is active, but playback might still be preparing, users will see 404 still. |
+| Transcoding starts | `true` | `true` | `false` | Playback output is ready with status 200 OK; use this stage to show or activate a player for users. |
+| Recording starts | `true` | `true` | `true` | The live stream is being recorded. |
+| Stream stops | `false` | `false` | `false` | Final stage: the stream source disconnects or the broadcast ends, so the stream is not active. |
+
+<Info>
+  Use `live: true` (or `backup_live: true`) to track active ingest. Use `transcoding: true` to track when the live stream is ready for playback.
+  
+  Read more in the article [Ingest & Backup](/streaming/live-streaming/primary-backup#stream-availability).
+</Info>
 
 **Fields:**
 | Field               | Type    | Description                                                                |
@@ -44,21 +62,16 @@ When the state of a live stream changes, the system triggers a webhook with type
 | **live**            | bool    | `true` if the stream is currently active, `false` if it has stopped        |
 | **backup_live**     | bool    | `true` if the backup source is currently active                            |
 | **recording**       | bool    | `true` if the stream is being recorded                                     |
+| **transcoding**     | bool    | `true` if transcoding has started and playback output is ready, `false` by default |
 | **client_user_id**  | string  | Optional client-defined user ID, `null` if not provided                    |
 | **client_entity_data** | string | Optional client metadata associated with the stream, `null` if not provided |
 | **pull**            | bool    | `true` if the stream is pulled from an external origin, `false` if pushed  |
 | **uri**             | string  | The source URI of the stream:                                              |
 | **stream_source_type** | string | Type of the stream source: `rtmp`, `srt`, `webrtc`, `https`              |
 
-<Info>
-  Stream segments become available in the CDN (and player) within ~2–5 seconds after the `type: stream (live=true)` webhook is issued.
-  
-  Read more in the article [Ingest & Backup](/streaming/live-streaming/primary-backup#stream-availability).
-</Info>
-
 **Example:**
 
-Started stream:
+Stream is ready for playback:
 ```json
 {
   "type": "stream",
@@ -68,17 +81,18 @@ Started stream:
       "live": true,
       "backup_live": false,
       "recording": false,
-      "client_user_id": null,
-      "client_entity_data": null,
+      "client_user_id": 10000001,
+      "client_entity_data": "{ 'seq_id': '1234567890', 'name': 'John Doe', 'iat': 1516239022 }",
       "pull": false,
       "uri": "srt://vp-push-ed1-srt.gvideo.co:5001?streamid=12345#aaabbbcccddd",
-      "stream_source_type": "srt"
+      "stream_source_type": "srt",
+      "transcoding": true
     }
   }
 }
 ```
 
-Stoped stream:
+Stopped stream:
 ```json
 {
   "type": "stream",
@@ -88,11 +102,12 @@ Stoped stream:
       "live": false,
       "backup_live": false,
       "recording": false,
-      "client_user_id": null,
-      "client_entity_data": null,
+      "client_user_id": 10000001,
+      "client_entity_data": "{ 'seq_id': '1234567890', 'name': 'John Doe', 'iat': 1516239022 }",
       "pull": true,
       "uri": "https://.../master.m3u8",
-      "stream_source_type": "https"
+      "stream_source_type": "https",
+      "transcoding": false
     }
   }
 }
@@ -101,13 +116,26 @@ Stoped stream:
 
 ## Webhooks for VOD
 
+VOD webhooks use `type: video` for create and status updates, and `type: video_delete` when a video is deleted.
+
+| Webhook type | Status | Description |
+|--------------|--------|-------------|
+| `video` | `empty` | Video entity is created, but the source file is still being received. |
+| `video` | `pending` | Source file has been received and is being transcoded. |
+| `video` | `viewable` | Playback is already available (not all qualities and codecs are ready, so transcoding is still ongoing). |
+| `video` | `ready` | All qualities and codecs are processed and available for playback. |
+| `video` | `error` | Upload or processing failed; check the `error` field. |
+| `video_delete` | Current video status | Video entity was deleted. |
+
+Read more about VOD statuses in [Video Lifecycle and Statuses](/streaming/video-hosting/vod-status).
+
 ### VOD create and update
 
 A webhook with type `video` fires when a VOD file is created, processed, or becomes playable. Use the payload to track processing progress and available renditions.
 
 **Behavior:**
-  - Sent on key status changes of a video: empty → pending → viewable → ready or error.  ￼
-  - converted_videos[].status reflects per-rendition progress like processing or complete.  ￼
+  - Sent on key status changes of a video: empty → pending → viewable → ready or error.
+  - converted_videos[].status reflects per-rendition progress like processing or complete.
 
 **Fields:**
 | Field                | Type        | Description                                                                |
@@ -198,7 +226,7 @@ A webhook with type `video_delete` notify your system that a VOD entity was dele
 | **id**         | integer     | VideoID                                                                     |
 | **slug**       | string      | Public identifier used in playback URLs                                     |
 | **name**       | string      | Video name                                                                  |
-| **status**     | string      | Processing status of the video (e.g. `viewable`, `ready`)                   |
+| **status**     | string      | Processing status of the video                   |
 | **deleted_at** | timestamp   | ISO-8601 UTC timestamp of when the deletion was committed in the system     |
 
 **Example:**
@@ -223,6 +251,11 @@ A webhook with type `video_delete` notify your system that a VOD entity was dele
 
 When a restream changes state (for example, starts or stops), the system sends a webhook with type `restream`. 
 The payload contains a message.restream object.
+
+| Stage | live | Description |
+|-------|------|-------------|
+| Restream starts | `true` | Restream is active and sends the source live stream to the destination. |
+| Restream stops | `false` | Final stage: restream is not active and no longer sends content to the destination. |
 
 **Behavior:**
   - Fired whenever a restream goes live or stops.
@@ -292,8 +325,9 @@ The message template: _"Good afternoon! Please configure the Video Streaming web
 
 3\. We will notify you when we configure the webhook integration.
 
-
+<Note>
 **Testing:**
 
 Also you can easily create and inspect webhook requests using web site https://webhook.site. 
 For example, the temporary link look like `https://webhook.site/56ce9331-4ec4-4fa1-bf23-4c4e14276f24` to capture and display incoming webhook payloads for debugging. Create your own and send it to us to set up. 
+</Note>

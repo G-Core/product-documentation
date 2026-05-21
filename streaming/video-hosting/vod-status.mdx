@@ -1,17 +1,25 @@
 ---
 title: "Video Lifecycle and Statuses"
-sidebarTitle: "Status"
+sidebarTitle: "Status VOD"
 ai-navigation: Track video and rendition statuses throughout the VOD lifecycle - empty, uploading, processing, ready, and failed states; renditions transition from transcoding to finished or failed with mp4_url availability and HLS/DASH manifest updates via the videos API.
 ---
 
 ## VOD Status
 
 When a video is uploaded and processed, the status field reflects the current state of the file:
-  - `Empty` – Video entity created, but no source file has been uploaded yet. For prolonged delays, inspect the error field.
-  - `Pending` – Source file uploaded and queued for processing.
-  - `Viewable` – **Playback available already**. At least one rendition is available for playback, but not all target renditions are complete.
-  - `Ready` – Playback in all qualities. All renditions have been successfully processed and are available for playback.
-  - `Error` – Processing failed. Details available in the `error` field.
+
+Workflow: 
+```
+    Empty -> Pending -> Viewable -> Ready
+    [Any status] -> Error
+```
+| Status | Manifest HTTP status | Description |
+|--------|----------------------|-------------|
+| `Empty` | `404` | Video entity created, but no source file has been uploaded yet. For prolonged delays, inspect the error field. |
+| `Pending` | `404` | Source file uploaded and queued for processing. Transcoding is queued or already started. No final file is available yet, so manifest will return 404. |
+| `Viewable` | `200` | **Playback available already**. At least one rendition is available for playback, but not all target renditions are complete. |
+| `Ready` | `200` | **Playback in all qualities**. All renditions and codecs have been successfully processed and are available for playback. |
+| `Error` | `404` | Processing failed. Details available in the `error` field. |
 
 <Info>
 **When playback starts:**
@@ -23,11 +31,7 @@ So no waiting for `Ready` is required to start playback.
 </Info>
 
 
-Workflow: 
-```
-    Empty -> Pending -> Viewable -> Ready
-    [Any status] -> Error
-```
+
 
 
 Example of a response for a video under processing:
