@@ -1,96 +1,88 @@
 ---
 title: "Create a Bare Metal server"
 sidebarTitle: "Create a Bare Metal server"
-ai-navigation: Create a Bare Metal server on dedicated physical hardware by selecting region, image template, and server type (Basic, High-Frequency, Infrastructure) in the Gcore Cloud portal, with quota increase required for physical server provisioning.
+ai-navigation: Create a Bare Metal server on dedicated physical hardware by selecting region, OS image, and server type (High frequency, Infrastructure, or Storage) in the Gcore Cloud portal. Bare Metal servers require a quota increase before provisioning.
 ---
 
-Bare Metal server in the cloud is a machine deployed on dedicated physical hardware for a single tenant.
-
-Physical servers are being managed from the regular Cloud interface, but the virtualization software is not installed on the servers.
-
-## What is the difference between a Virtual Server and a Bare Metal?
-
-A Virtual Server in the cloud does not interact directly with a physical computer; it uses a software layer called a hypervisor. The hypervisor allocates physical computing resources such as CPU, RAM, and Storage for each Virtual Machine (VM). The computing resources for these VMs are allocated from the shared physical hardware on which the created Virtual Server data is deployed. The hypervisor acts as a traffic cop of sorts, directing and allocating the Bare Metal's resources to each of the various new virtual machines, ensuring they don't disrupt each other.
-
-The disadvantage of a Virtual Server is limited performance, which can be critical for some applications.
-
-**Bare Metal** is considered to be a more high-performance solution.
-
-In this case, all physical server resources are allocated to a single user and can provide better performance than a comparable Virtual Server. Resources are not shared, as in the case of Virtual Machine, and the hypervisor level is not required, which allows the application to allocate more computing resources.
-
-Please note that due to the features of the Bare Metal infrastructure, creating a compatible custom image requires a special program to build the image for a physical server and code from a dedicated repository.
-
-We have prepared very detailed instructions with all the necessary files available via the [link](https://github.com/G-Core/baremetal-dib-elements).
-
-## Create a Bare Metal server
-
-Physical machines are created inside the project. You can use the default project or create a new one (for more information, see the article "How to create and delete a project").
+A Bare Metal server is a physical machine allocated entirely to a single tenant, with no hypervisor layer. All CPU, RAM, and storage resources are dedicated — not shared with other users.
 
 <Info>
   **Info**
 
-  **Note**\! By default, physical servers are not available for ordering. To create a physical server, you need to request a [quota increase](/cloud/getting-started/request-a-quota-increase).
+  Bare Metal servers require a quota increase before creation. Select a region and server type in the creation form, then click **Send quota request** in the **Quota Increase Required** block. Requests are typically reviewed within 5 minutes, with a 95% approval rate.
 </Info>
 
-Quotas of physical machines are carried out according to the server types: "Basic", "High-Frequency", and "Infrastructure". For more information on how to increase your quota, see [this guide](/cloud/getting-started/request-a-quota-increase).
+## Step 1. Open the creation page
 
-To create a Bare Metal:
-
-1. In the Gcore Customer Portal, navigate to **Cloud** \> **Bare Metal**.
-
-2. Click **Create Bare Metal**.
+In the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard), navigate to **Cloud** > **Bare Metal** and click **Create Bare Metal**.
 
 <Frame>
   ![Bare metal page in Gcore Customer Portal](/images/docs/cloud/bare-metal-servers/create-a-bare-metal-server/bare-metal-page.png)
 </Frame>
 
-3. Select the region.
+## Step 2. Select a region
 
-4. Select the image to install. You can choose a system from the prepared templates or from custom images that you've previously uploaded. You can find more information about uploading the images in the article ["Upload an image to the storage"](/cloud/images/upload-an-image-to-the-storage). Consider that only prepared images can be used for Bare Metal servers.
+Choose the region where the server will be deployed.
+
+## Step 3. Select an image
+
+Select the architecture — **x86-64** or **ARM** — then choose an OS image from one of three tabs:
+
+- **Distributions** — prepared OS templates (Ubuntu, CentOS, Debian, Windows, and others).
+- **Marketplace** — pre-configured application images.
+- **Custom Images** — images previously uploaded to the account. Only images built for Bare Metal servers are compatible; standard VM images do not work. Build requirements are covered in [image upload](/cloud/images/upload-an-image-to-the-storage).
 
 <Frame>
   ![A menu with available OS images](/images/docs/cloud/bare-metal-servers/create-a-bare-metal-server/select-image.png)
 </Frame>
 
-5. Select the server type. Currently, "High-Frequency" and "Infrastructure" servers are available.
+## Step 4. Select a server type
+
+Server types are grouped into three categories:
+
+- **High frequency** — high clock-speed CPUs for latency-sensitive workloads.
+- **Infrastructure** — high core count and NVMe storage for compute-intensive tasks.
+- **Storage** — large-capacity drives for data-heavy workloads.
 
 <Frame>
   ![A menu with available server types](/images/docs/cloud/bare-metal-servers/create-a-bare-metal-server/server-type.png)
 </Frame>
 
-6. Add network interfaces. You can create a public and private interface.
+All types require a quota. After selecting a type, a **Quota Increase Required** block appears with a **Send quota request** button. The remaining sections of the form unlock once the quota is approved.
 
-Note that after creating a Bare Metal server, you won't be able to attach an external network to it. Additionally, you can't attach more than six networks to the server.
+## Step 5. Configure network interfaces
 
-Configure the network interface:
+After quota approval, configure network interfaces. Up to six networks can be attached. An external network cannot be added after the server is created.
 
 1. Select the **Network type**: **Public**, **Private**, or **Dedicated public**.
 
 2. In the **IP Family** section, select the IP version: **IPv4**, **IPv6**, or **Dual (IPv4 + IPv6)**.
 
-3. (Optional) Enable **Use reserved IP** to assign a [reserved IP address](/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address) to your Bare Metal.
+3. (Optional) Enable **Use reserved IP** to assign a [reserved IP address](/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address) to the server.
 
 4. (Optional) Enable **Advanced DDoS Protection** for enhanced security.
 
-![Network interfaces configuration](/images/docs/cloud/bare-metal-servers/create-a-bare-metal-server/bm-network-section.png)
+<Frame>
+  ![Network interfaces configuration](/images/docs/cloud/bare-metal-servers/create-a-bare-metal-server/bm-network-section.png)
+</Frame>
 
-If you select a **private** interface, configure a network and a subnetwork according to the following steps.
+For a **private** interface, also configure a network and subnetwork:
 
 <Info>
   **Info**
 
-  If you need both a public and private interface, disable the default gateway on the private network's subnetwork and assign a floating IP to the private interface.
+  With both a public and a private interface, disable the default gateway on the private subnetwork and assign a floating IP to the private interface to avoid routing conflicts.
 </Info>
 
 <Tabs>
   <Tab title="Configure a network">
-    If you previously [created networks](/cloud/networking/create-and-manage-a-network), select the needed network from the dropdown. To add a new network, click **Private network** radio button and configure the network as follows.
+    Select an existing network from the dropdown, or click the **Private network** radio button to create a new one:
 
     1. Enter the network name.
 
-    2. Ensure that the **Bare Metal network** toggle is enabled. This is required to connect Bare Metal servers to the network.
+    2. Confirm that the **Bare Metal network** toggle is enabled — this is required to connect Bare Metal servers to the network.
 
-    3. (Optional) Turn on the **Add tags** toggle to add metadata to the network.
+    3. (Optional) Enable **Add tags** to attach metadata to the network.
 
     4. Click **Create network**.
 
@@ -102,67 +94,72 @@ If you select a **private** interface, configure a network and a subnetwork acco
     <Info>
       **Info**
 
-      If your Bare Metal server has several subnetworks, [ensure that only one subnetwork is routable](/cloud/networking/create-and-manage-a-subnetwork#set-up-the-default-gateway). Otherwise, there will be a conflict with the default gateway on the server, and you might not be able to connect to the Bare Metal.
+      With multiple subnetworks, set only one as [routable](/cloud/networking/create-and-manage-a-subnetwork#set-up-the-default-gateway). Multiple routable subnetworks cause default gateway conflicts that prevent connecting to the server.
     </Info>
-    If you previously [created subnetworks](/cloud/networking/create-and-manage-a-subnetwork), select the needed subnetwork from the dropdown. If you choose **Automatic**, the system will use one of the existing subnetworks, which has most available resources.
 
-    To add a new subnetwork, click **Add a new subnetwork** and configure according to the following instructions: [Create a subnetwork](/cloud/networking/create-and-manage-a-subnetwork#create-a-subnetwork).
+    Select an existing subnetwork from the dropdown. Choosing **Automatic** assigns the subnetwork with the most available resources.
+
+    To create a new subnetwork, click **Add a new subnetwork** and follow the steps in [Create a subnetwork](/cloud/networking/create-and-manage-a-subnetwork#create-a-subnetwork).
   </Tab>
 </Tabs>
 
-A dedicated network provides an individual pool of addresses, allowing multiple public IPs to be assigned to a single network port. This setup is ideal for high-traffic applications, workload distribution, or virtualization, where each Virtual Machine requires a unique public IP. You can assign IPs statically through the Cloud interface or dynamically from inside the OS, giving you more flexibility in managing network configurations.
+A dedicated public network provides an individual address pool, allowing multiple public IPs on a single network port — useful for high-traffic applications, load distribution, or virtualization scenarios where each workload needs a distinct public IP.
 
-7. Add an SSH key or generate a new one for a remote connection to a server. For more information about adding a key, read the article [Connect to your Bare Metal via SSH](/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh). You can connect via SSH to all machines except Windows servers.
+### Interface order
+
+Bare Metal servers use LACP bonding: all physical ports are aggregated into a single bond (`bond0`). Each sub-interface you add in the creation form becomes a logical port on top of that bond.
+
+- **Sub-Interface 1** (public) maps to `bond0`.
+- **Sub-Interface 2** (private) maps to a VLAN sub-interface named `bond0.<vlan_id>` (for example, `bond0.2853`).
+
+After the server is created, the **Networking** tab shows the sub-interfaces in the same order as they were added during setup. Running `ip a` in the OS confirms the mapping:
+
+<Frame>
+  ![Diagram showing how Sub-Interface 1 and Sub-Interface 2 in the creation form map to the Networking tab entries and to bond0 and bond0.2853 in the OS](/images/docs/cloud/bare-metal-servers/create-a-bare-metal-server/bm-network-interface-order-diagram.png)
+</Frame>
+
+```bash
+$ ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 ...
+2: enp1s0f0: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 ... master bond0
+4: enp1s0f1: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 ... master bond0
+5: bond0: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP
+    link/ether 7c:c2:55:6c:ad:b0 brd ff:ff:ff:ff:ff:ff
+    inet 85.234.84.162/24 brd 85.234.84.255 scope global bond0
+6: bond0.2853@bond0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP
+    link/ether 7c:c2:55:6c:ad:b0 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.0.125/24 brd 10.0.0.255 scope global dynamic bond0.2853
+```
+
+In this example, Sub-Interface 1 (`bond0`) is the public interface and Sub-Interface 2 (`bond0.2853`) is the private interface. The order you set at creation also determines routing priority: the first sub-interface has higher priority for outbound traffic than subsequent ones. The sub-interface order cannot be changed after the server is created.
+
+## Step 6. Configure access
+
+Select an SSH key for Linux servers, or set a password for Windows servers.
 
 <Frame>
   ![A menu with SSH keys settings settings](/images/docs/cloud/bare-metal-servers/create-a-bare-metal-server/ssh-keys.png)
 </Frame>
 
-If you select Windows OS, you should set a password for the Admin user. It can contain Latin letters (`a-zA-Z`), numbers (`0-9`) and special characters (`!#$%&'()*+,-./:;<=>?@[]^_{|}~`). Valid length is from 8 to 16 characters. You can connect to the Windows server [from the Gcore Customer Portal](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel) or from your computer using the RDP protocol.
+To add a new key, follow the steps in [Connect via SSH](/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh).
+
+For Windows servers, the password must be 8–16 characters and may contain Latin letters (`a-zA-Z`), digits (`0-9`), and special characters (`!#$%&'()*+,-./:;<=>?@[]^_{|}~`). Connect via [the portal console](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel) or RDP.
 
 <Frame>
   ![A menu with access settings](/images/docs/cloud/bare-metal-servers/create-a-bare-metal-server/access.png)
 </Frame>
 
-8. In **Additional options**, you can add metadata for processing by a `cloud-init` agent running on a Virtual Machine. To do it insert your script in the **User data** field.
+## Step 7. Configure additional options
+
+In the **Additional options** section, optionally provide a `cloud-init` script in the **User data** field to automate initial configuration — install packages, create users, or run commands on first boot.
 
 <Frame>
   ![A menu with user data settings](/images/docs/cloud/bare-metal-servers/create-a-bare-metal-server/user-data.png)
 </Frame>
 
-For example, you may insert a script that will allow connecting to a Linux server directly [from the Gcore Customer Portal](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel) or [via SSH](/cloud/bare-metal-servers/connect-to-your-bare-metal-server-via-ssh) (this script is not needed to connect to a Windows server). Enter this code with the password chosen by you into the **User data** field:
+## Step 8. Set quantity and name
 
-```yaml
-#cloud-config 
-password: **your password** 
-chpasswd: { expire: False } 
-ssh_pwauth: True
-```
-
-Using the specified password you will be able to connect to the server. It is not necessary to specify the password explicitly, you can enter its hash (the same password, only in a converted form; the system will be able to read it, but for a person, it looks like a random set of symbols). Then, even if someone gets into the system, he or she won't know the password — only the hash will be stored inside. And the system will open its doors only to the user who knows the password.
-
-To generate a hash, you can use the Python script:
-
-```py
-#!/usr/bin/env python3 
-# based on [https://stackoverflow.com/a/17992126/117471](https://stackoverflow.com/a/17992126/117471) 
-# pip3 install passlib 
-import sys 
-from getpass import getpass 
-from passlib.hash import sha512_crypt 
-passwd = input() if not sys.stdin.isatty() else getpass() 
-print(sha512_crypt.hash(passwd, rounds = 5000 ))
-```
-
-9. Tags are key-value pairs that form the metadata of the machine description. Also, you can tag your server. To do it, activate the **Tags** option, and set the necessary ones.
-
-<Frame>
-  ![A menu with tag settings](/images/docs/cloud/bare-metal-servers/create-a-bare-metal-server/tags.png)
-</Frame>
-
-10. If you want to create multiple Bare Metal machines with the same configuration, specify the number you want (the maximum is limited by your [quotas](/cloud/getting-started/request-a-quota-increase)) and add names (only Latin characters, underscores, spaces, and dots are allowed).
-
-To complete the configuration, click **Create server**, and then the server will be deployed in the cloud.
+Specify the number of servers (up to 10, subject to quota) and the name template. Click **Create Server** — the server provisions in the cloud.
 
 <Frame>
   ![A menu with an option to choose a number of servers](/images/docs/cloud/bare-metal-servers/create-a-bare-metal-server/servers-number.png)
@@ -182,11 +179,9 @@ Each interface block shows the sub-interfaces assigned to that bond — a sub-in
 
 To add a sub-interface to a bond, click **Add Sub-Interface** in the corresponding interface block and configure the network settings.
 
-## Limitations of Bare Metal servers
+## Limitations
 
-There are several important limitations for Bare Metal servers:
-
-- You can't add an external volume to the server
-- You can't change the volume configuration
-- It's not possible to add more than 6 networks to the server
-- Once a Bare Metal server is deployed, the private network interface can be attached or detached only manually via the OS.
+- External volumes cannot be attached to Bare Metal servers.
+- Volume configuration cannot be changed after provisioning.
+- No more than six networks can be attached.
+- After deployment, private network interfaces can only be attached or detached manually via the OS.
