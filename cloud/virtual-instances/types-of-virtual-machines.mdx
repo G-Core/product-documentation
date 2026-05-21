@@ -30,11 +30,10 @@ The following table summarizes the network bandwidth and traffic policy for VMs:
 | **VM type** | **Network speed** | **Incoming traffic** | **Outgoing traffic** |
 | --- | --- | --- | --- |
 | Basic VM | Up to 200 Mbps | Free, unlimited | Free, unlimited |
-| Other VMs (Standard,<br />CPU, Memory,<br />GPU, High-frequency,<br />TPM) | Up to 1 Gbps | Free, unlimited | Free, unlimited |
+| Standard, CPU, Memory,<br />GPU, High-frequency, TPM | Up to 1 Gbps | Free, unlimited | Free, unlimited |
+| Network optimised (gX-net) | Up to 10 Gbps | Free, unlimited | Free, unlimited |
 
-Bandwidth values indicate the maximum achievable speed. Actual throughput may vary depending on network conditions and workload. Gcore does not apply artificial throttling.
-
-For workloads that require high and consistent bandwidth (10 Gbps or higher), use Bare Metal servers with dedicated network configurations.
+Bandwidth values indicate the maximum achievable speed for standard flavors. Network optimised VMs have bandwidth enforced through QoS policies. Actual throughput for standard VMs may vary depending on network conditions and workload.
 
 <Info>
   **Info**
@@ -486,20 +485,36 @@ Virtual Machines with a **Trusted Platform Module** (TPM) are suitable for a div
 
 ## Network optimised
 
-Virtual Machines designed for workloads that require high network throughput and low latency. Network optimised VMs provide guaranteed bandwidth through QoS policies: 5&nbsp;Gbps for smaller configurations and 10&nbsp;Gbps for larger configurations, compared to up to 1&nbsp;Gbps on standard flavors.
+Virtual Machines designed for workloads that require high network throughput and low latency. Network optimised VMs provide up to 5&nbsp;Gbps for smaller configurations and up to 10&nbsp;Gbps for larger configurations, compared to up to 1&nbsp;Gbps on standard flavors.
 
-These VMs run on dedicated infrastructure with hardware-level network acceleration, delivering near bare-metal networking performance while maintaining full security feature support including security groups and anti-spoofing protection.
+These VMs run on dedicated hypervisor nodes with hardware-level SR-IOV network offloading, delivering near bare-metal networking performance while maintaining full security feature support including security groups and anti-spoofing protection.
+
+All network optimised flavors have multi-queue virtio networking enabled, which distributes packet processing across multiple vCPUs. This significantly increases throughput on larger flavors.
+
+GPU and AI VM flavors (`gX-ai`) also run on the same network-optimised infrastructure and benefit from the same networking capabilities.
+
+**QoS tiers**
+
+| **Flavor size** | **Bandwidth** | **Burst** |
+| --- | --- | --- |
+| Up to 8 vCPU / 32 GB RAM | 5 Gbps | +1 Gbps |
+| 16 vCPU / 32 GB RAM and larger | 10 Gbps | +2 Gbps |
 
 **Use cases**
 
+- **High-throughput load balancers**: Services handling large volumes of concurrent connections or high-bandwidth traffic, such as media streaming, CDN origin, or API gateways.
 - **Network appliances and virtual routers**: Workloads that need to route, inspect, or transform large amounts of traffic without CPU becoming a bottleneck.
 - **Real-time data pipelines and streaming analytics**: Applications requiring consistent low-latency packet delivery, such as financial data processing or log ingestion at scale.
 - **Game servers and multiplayer backends**: Latency-sensitive applications where packet rate and jitter matter as much as raw bandwidth.
 - **VPN concentrators and security gateways**: Services terminating many VPN tunnels or performing deep packet inspection at line rate.
 
+**Limitations**
+
+- VxLAN-encapsulated networks receive partial hardware offload. VLAN-backed networks achieve close to 100% hardware offload.
+
 <Tabs>
   <Tab title="G3A">
-    Machines powered with **AMD EPYC processors**. Flavors up to 8 vCPU / 32 GB RAM use the 5 Gbps tier; larger flavors use 10 Gbps.
+    Machines powered with **AMD EPYC™ 4th Gen** processors. Flavors up to 8 vCPU / 32 GB RAM use the 5 Gbps tier; larger flavors use 10 Gbps.
 
     #### Linux-based VMs
 
