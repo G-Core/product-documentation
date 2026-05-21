@@ -50,17 +50,133 @@ The certificate issuance may take up to 30 minutes after the resource is created
 
 ### Issuance with the DNS-01 challenge
 
-We use the [HTTP-01 challenge](https://letsencrypt.org/docs/challenge-types/#http-01-challenge) by default to validate your ownership of the domain to which you want to issue the Let's Encrypt certificate. But sometimes, this challenge type isn't suitable. For example, if you use [multi-CDNs](https://gcore.com/cdn/multi-cdn) with a balancer, CNAME may answer with the non-Gcore value, and the Let's Encrypt certificate issuance can fail. 
+We use the [HTTP-01 challenge](https://letsencrypt.org/docs/challenge-types/#http-01-challenge) by default to validate your ownership of the domain to which you want to issue the Let's Encrypt certificate. But sometimes, this challenge type isn't suitable. For example, if you use [multi-CDNs](https://gcore.com/cdn/multi-cdn) with a balancer, CNAME may answer with the non-Gcore value, and the Let's Encrypt certificate issuance can fail.
 
-To avoid this problem and make the process more flexible, we have added support for the DNS-01 challenge. You can read more about the principles of its operation [in the official documentation](https://letsencrypt.org/docs/challenge-types/#dns-01-challenge).
+To avoid this problem and make the process more flexible, we have added support for the DNS-01 challenge. You can read more about the principles of its operation [in the official Let's Encrypt documentation](https://letsencrypt.org/docs/challenge-types/#dns-01-challenge).
 
-To use the DNS-01 challenge, you need to:
+Before you begin, make sure you have the following:
 
-1\. Activate [Gcore Managed DNS](https://gcore.com/dns) in your personal account.
+- A CDN resource with the custom domain(s) already configured.
+- [Gcore Managed DNS](https://gcore.com/dns) active on your account.
+- Access to the authoritative DNS provider hosting your domain zone.
+- A Gcore API token with permission to modify the CDN resource.
 
-2\. Delegate your custom domain name to Gcore's name servers (_ns1.gcorelabs.net_ and _ns2.gcdn.services_).
+#### Step 1. Activate Gcore Managed DNS
 
-3\. Enable the `use_dns01_le_challenge` option. Check our [API documentation](/api-reference/cdn/lets-encrypt-certificates/issue-lets-encrypt-certificate#issue-lets-encrypt-certificate) for help with this.
+Activate [Gcore Managed DNS](https://gcore.com/dns) in your personal account.
+
+#### Step 2. Delegate your domain to Gcore nameservers
+
+You have two options depending on how much control you want to transfer to Gcore:
+
+- **Full zone delegation**: delegate your entire DNS zone to Gcore nameservers (*ns1.gcorelabs.net* and *ns2.gcdn.services*). Choose this if you already manage your zone in Gcore DNS or don't mind moving it.
+- **Partial delegation**: delegate only the `_acme-challenge.*` subdomains to Gcore. Choose this if you can't or don't want to move your full DNS zone — this is the minimum-privilege approach and is fully compliant with [RFC 8555 §8.4](https://www.rfc-editor.org/rfc/rfc8555#section-8.4).
+
+**To set up partial delegation:**
+
+1\. In your DNS provider, add NS records pointing `_acme-challenge.<hostname>` to Gcore's nameservers:
+
+| Name | TTL | Type | Value |
+|---|---|---|---|
+| `_acme-challenge.www.example.com` | 300 | NS | `ns1.gcorelabs.net.` |
+| `_acme-challenge.www.example.com` | 300 | NS | `ns2.gcdn.services.` |
+
+Add a pair of NS records for each custom domain on your CDN resource. For example, for a resource serving three hostnames:
+
+```
+_acme-challenge.www.example.com. IN NS ns1.gcorelabs.net.
+_acme-challenge.www.example.com. IN NS ns2.gcdn.services.
+_acme-challenge.app.example.com. IN NS ns1.gcorelabs.net.
+_acme-challenge.app.example.com. IN NS ns2.gcdn.services.
+_acme-challenge.api.example.com. IN NS ns1.gcorelabs.net.
+_acme-challenge.api.example.com. IN NS ns2.gcdn.services.
+```
+
+<Note>
+**Note**
+
+If a hostname (such as `www.example.com`) is itself a separately delegated zone with its own nameservers, create the NS records inside that child zone — not in the apex zone.
+
+</Note>
+
+2\. Verify the delegation. Don't rely on a recursive resolver, as it can return cached results. Query the authoritative nameservers of the parent zone directly:
+
+```
+# Find the authoritative nameservers for the parent zone
+dig +short NS example.com
+
+# Query one of those nameservers directly for the _acme-challenge delegation
+dig @ns.example-dns.com NS _acme-challenge.www.example.com
+```
+
+A correct delegation returns `status: NOERROR` with both `ns1.gcorelabs.net.` and `ns2.gcdn.services.` in the ANSWER or AUTHORITY section. If you get `NXDOMAIN` or `NOERROR` with no NS records, go back and confirm the records were saved correctly in your DNS provider.
+
+To trace the full delegation chain from the root:
+
+```
+dig +trace _acme-challenge.www.example.com NS
+```
+
+3\. Check your CAA records. CAA records are inherited from the parent zone, so if your domain publishes any, they must permit Let's Encrypt:
+
+```
+dig CAA example.com
+```
+
+If no CAA record exists, any CA is allowed and no action is needed. If a CAA record is present, make sure it includes `letsencrypt.org`:
+
+```
+example.com. IN CAA 0 issue "letsencrypt.org"
+```
+
+#### Step 3. Enable the DNS-01 challenge
+
+Enable the `use_dns01_le_challenge` option on your CDN resource via the [API](/api-reference/cdn/lets-encrypt-certificates/issue-lets-encrypt-certificate#issue-lets-encrypt-certificate). Replace `{resource_id}` with your CDN resource ID and `<api-key>` with your Gcore API token:
+
+```bash
+curl --request PATCH \
+  --url https://api.gcore.com/cdn/resources/{resource_id} \
+  --header 'Authorization: APIKey <api-key>' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "options": {
+      "use_dns01_le_challenge": {
+        "enabled": true,
+        "value": true
+      }
+    }
+  }'
+```
+
+To confirm the option was saved:
+
+```bash
+curl --request GET \
+  --url https://api.gcore.com/cdn/resources/{resource_id} \
+  --header 'Authorization: APIKey <api-key>' \
+  | jq '.options.use_dns01_le_challenge'
+```
+
+The expected response:
+
+```json
+{
+  "enabled": true,
+  "value": true
+}
+```
+
+After this call, trigger or retry Let's Encrypt issuance from the **SSL** section of your CDN resource in the Gcore portal. Gcore will validate via DNS-01 through the delegated `_acme-challenge.*` subdomains — no production traffic needs to flow through Gcore.
+
+#### Troubleshoot the DNS-01 challenge
+
+| Symptom | Cause and fix |
+|---|---|
+| `SERVFAIL` with EDE 22 "delegation" on `_acme-challenge.*` | Gcore isn't yet authoritative for that subdomain zone. Re-check Step 2. |
+| `REFUSED` from `ns1.gcorelabs.net` or `ns2.gcdn.services` | The `_acme-challenge.<hostname>` zone isn't provisioned in Gcore DNS. Wait a few minutes and retry. |
+| Issuance still uses HTTP-01 after the API call | The option may not have saved. Run the GET call from Step 3 to confirm the value. |
+| Cloudflare proxying the zone | Set **CNAME Flattening** to **Flatten CNAME at root**, not **Flatten all CNAMEs**. |
+| DNSSEC enabled at the parent zone | The delegation point must not carry a DS record unless Gcore also signs the child zone. Remove it or contact your DNS provider. |
 
 ### Notes regarding issuing
 
