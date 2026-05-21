@@ -202,14 +202,26 @@ The diagram below shows how the selection order in the creation form carries thr
 In the OS, the routing table reflects this order through metric values. Lower metric means higher priority:
 
 ```bash
-$ ip route
-default via 192.168.0.1 dev ens3 proto dhcp src 85.234.66.94 metric 100
-default via 10.0.0.1 dev ens4 proto dhcp src 172.19.78.149 metric 200
-192.168.0.0/24 dev ens3 proto kernel scope link src 85.234.66.94
-10.0.0.0/24 dev ens4 proto kernel scope link src 172.19.78.149
+$ ip route show
+default via 85.234.84.1 dev enp3s0 proto dhcp src 85.234.84.186 metric 1000
+default via 10.0.0.1 dev enp4s0 proto dhcp src 10.0.0.132 metric 2000
+10.0.0.0/24 dev enp4s0 proto kernel scope link src 10.0.0.132 metric 2000
+85.234.84.0/24 dev enp3s0 proto kernel scope link src 85.234.84.186 metric 1000
+
+$ ip addr show enp3s0
+2: enp3s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 ...
+    inet 85.234.84.186/24 metric 1000 brd 85.234.84.255 scope global dynamic enp3s0
+
+$ ip addr show enp4s0
+3: enp4s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 ...
+    inet 10.0.0.132/24 metric 2000 brd 10.0.0.255 scope global dynamic enp4s0
 ```
 
-In this example, `ens3` (Interface 1, public) has metric 100 and `ens4` (Interface 2, private) has metric 200. The OS routes outbound traffic through the public interface by default. The interface order cannot be changed after the instance is created.
+<Frame>
+  ![Terminal output showing ip route and ip addr commands: enp3s0 public interface has metric 1000, enp4s0 private interface has metric 2000](/images/docs/cloud/virtual-instances/create-an-instance/vm-ip-route-metrics.png)
+</Frame>
+
+In this example, `enp3s0` (Interface 1, public) has metric 1000 and `enp4s0` (Interface 2, private) has metric 2000. The OS routes outbound traffic through the public interface by default. The interface order cannot be changed after the instance is created.
 
 ## Step 6. Configure firewall settings
 
