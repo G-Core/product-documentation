@@ -1,39 +1,30 @@
 (function () {
   'use strict';
 
-  var POLL_DURATION_MS = 2000;
   var rafId = null;
-  var pollDeadline = 0;
 
   function scrollSidebarToActive() {
     var sidebarContent = document.getElementById('sidebar-content');
-    if (!sidebarContent) return false;
+    if (!sidebarContent) return;
     var active = sidebarContent.querySelector('li[data-active]');
     if (active) {
       active.scrollIntoView({ block: 'center', behavior: 'instant' });
-      return true;
-    }
-    return false;
-  }
-
-  function poll() {
-    rafId = null;
-    if (scrollSidebarToActive()) return;
-    if (Date.now() < pollDeadline) {
-      rafId = requestAnimationFrame(poll);
     }
   }
 
-  // Extend the polling window and ensure exactly one rAF loop is running.
-  function startPolling() {
-    pollDeadline = Date.now() + POLL_DURATION_MS;
-    if (rafId === null) {
-      rafId = requestAnimationFrame(poll);
-    }
+  // Schedule one scroll per animation frame. Coalesces bursts of mutations
+  // (e.g. from React hydration or prefetching) into a single rAF call,
+  // without a debounce that would block the scroll until mutations stop.
+  function scheduleScroll() {
+    if (rafId !== null) return;
+    rafId = requestAnimationFrame(function () {
+      rafId = null;
+      scrollSidebarToActive();
+    });
   }
 
   function attachSidebarObserver(sidebarContent) {
-    var observer = new MutationObserver(startPolling);
+    var observer = new MutationObserver(scheduleScroll);
     observer.observe(sidebarContent, {
       childList: true,
       subtree: true,
@@ -43,7 +34,7 @@
   }
 
   function init() {
-    startPolling();
+    scrollSidebarToActive();
     var sidebarContent = document.getElementById('sidebar-content');
     if (sidebarContent) {
       attachSidebarObserver(sidebarContent);
@@ -53,6 +44,7 @@
         if (sidebar) {
           bodyObserver.disconnect();
           attachSidebarObserver(sidebar);
+          scrollSidebarToActive();
         }
       });
       bodyObserver.observe(document.body, { childList: true, subtree: true });
