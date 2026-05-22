@@ -2,6 +2,8 @@
   'use strict';
 
   var POLL_DURATION_MS = 2000;
+  var rafId = null;
+  var pollDeadline = 0;
 
   function scrollSidebarToActive() {
     var sidebarContent = document.getElementById('sidebar-content');
@@ -14,22 +16,24 @@
     return false;
   }
 
-  // Poll every animation frame until the active item appears or the deadline passes.
-  // This catches data-active as soon as React hydration sets it, without waiting for
-  // an arbitrary debounce delay.
-  function pollUntilActive(deadline) {
+  function poll() {
+    rafId = null;
     if (scrollSidebarToActive()) return;
-    if (Date.now() < deadline) {
-      requestAnimationFrame(function () { pollUntilActive(deadline); });
+    if (Date.now() < pollDeadline) {
+      rafId = requestAnimationFrame(poll);
+    }
+  }
+
+  // Extend the polling window and ensure exactly one rAF loop is running.
+  function startPolling() {
+    pollDeadline = Date.now() + POLL_DURATION_MS;
+    if (rafId === null) {
+      rafId = requestAnimationFrame(poll);
     }
   }
 
   function attachSidebarObserver(sidebarContent) {
-    var observer = new MutationObserver(function () {
-      // Restart polling on every sidebar mutation so SPA navigations are handled
-      // with the same low-latency approach as initial load.
-      pollUntilActive(Date.now() + POLL_DURATION_MS);
-    });
+    var observer = new MutationObserver(startPolling);
     observer.observe(sidebarContent, {
       childList: true,
       subtree: true,
@@ -39,8 +43,7 @@
   }
 
   function init() {
-    pollUntilActive(Date.now() + POLL_DURATION_MS);
-
+    startPolling();
     var sidebarContent = document.getElementById('sidebar-content');
     if (sidebarContent) {
       attachSidebarObserver(sidebarContent);
