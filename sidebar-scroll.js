@@ -8,7 +8,15 @@
     if (!sidebarContent) return;
     var active = sidebarContent.querySelector('li[data-active]');
     if (active) {
-      active.scrollIntoView({ block: 'center', behavior: 'instant' });
+      var activeRect = active.getBoundingClientRect();
+      var sidebarRect = sidebarContent.getBoundingClientRect();
+      // Scroll only the sidebar container, not the page.
+      sidebarContent.scrollTop =
+        sidebarContent.scrollTop +
+        activeRect.top -
+        sidebarRect.top -
+        sidebarRect.height / 2 +
+        activeRect.height / 2;
     }
   }
 
