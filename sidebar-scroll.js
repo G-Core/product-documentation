@@ -1,27 +1,35 @@
 (function () {
   'use strict';
 
+  var POLL_DURATION_MS = 2000;
+
   function scrollSidebarToActive() {
     var sidebarContent = document.getElementById('sidebar-content');
-    if (!sidebarContent) return;
+    if (!sidebarContent) return false;
     var active = sidebarContent.querySelector('li[data-active]');
     if (active) {
       active.scrollIntoView({ block: 'center', behavior: 'instant' });
+      return true;
+    }
+    return false;
+  }
+
+  // Poll every animation frame until the active item appears or the deadline passes.
+  // This catches data-active as soon as React hydration sets it, without waiting for
+  // an arbitrary debounce delay.
+  function pollUntilActive(deadline) {
+    if (scrollSidebarToActive()) return;
+    if (Date.now() < deadline) {
+      requestAnimationFrame(function () { pollUntilActive(deadline); });
     }
   }
 
-  function debounce(fn, ms) {
-    var timer = null;
-    return function () {
-      clearTimeout(timer);
-      timer = setTimeout(fn, ms);
-    };
-  }
-
-  var debouncedScroll = debounce(scrollSidebarToActive, 100);
-
   function attachSidebarObserver(sidebarContent) {
-    var observer = new MutationObserver(debouncedScroll);
+    var observer = new MutationObserver(function () {
+      // Restart polling on every sidebar mutation so SPA navigations are handled
+      // with the same low-latency approach as initial load.
+      pollUntilActive(Date.now() + POLL_DURATION_MS);
+    });
     observer.observe(sidebarContent, {
       childList: true,
       subtree: true,
@@ -31,7 +39,8 @@
   }
 
   function init() {
-    scrollSidebarToActive();
+    pollUntilActive(Date.now() + POLL_DURATION_MS);
+
     var sidebarContent = document.getElementById('sidebar-content');
     if (sidebarContent) {
       attachSidebarObserver(sidebarContent);
@@ -41,7 +50,6 @@
         if (sidebar) {
           bodyObserver.disconnect();
           attachSidebarObserver(sidebar);
-          scrollSidebarToActive();
         }
       });
       bodyObserver.observe(document.body, { childList: true, subtree: true });
