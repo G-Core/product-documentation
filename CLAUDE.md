@@ -299,7 +299,7 @@ The review orchestrator runs 5 sequential steps with grep checks. Run all 5 befo
 - Link text: 1–2 words maximum
 - Link each URL once per article. Subsequent mentions are plain text.
 - No standalone "See [X]" or "Learn more in [X]" sentences. Embed links into content sentences.
-- First mention of the Customer Portal: `[Gcore Customer Portal](https://portal.gcore.com)`. All later: "the Customer Portal" (plain text, no link).
+- First mention of the Customer Portal in each article: `[Gcore Customer Portal](https://portal.gcore.com)` — always hyperlinked, always this exact text. All subsequent mentions in the same article: plain text "the Customer Portal" — no link, no "Gcore" prefix.
 
 **Voice:**
 - No "you" or "your" in prose — use imperative (no subject) or neutral third person
