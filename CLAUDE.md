@@ -308,6 +308,8 @@ The review orchestrator runs 5 sequential steps with grep checks. Run all 5 befo
 
 **Content quality — anti-patterns caught in review (do not repeat):**
 
+- **Every article opens with its own unique sentence — never a template.** The opener must state what THIS specific article covers, not what APIs are in general. "The Gcore API provides programmatic access..." is a template that says nothing specific. The opener for an authentication article should be about tokens. The opener for a pagination article should be about pagination. If the same sentence could appear in three different articles, it belongs in none of them.
+- **No corporate filler language.** "Programmatic access", "leverage", "utilize", "seamlessly", "robust", "scalable" — these words add no information. Write what the thing actually does: not "provides programmatic access to infrastructure" but "creates VMs and configures networks from a terminal". Say what the reader will do, not what the product theoretically enables.
 - **No stub sections.** A section heading followed by one thin sentence is a stub. If a section cannot be explained in at least 2–3 meaningful sentences, either expand it or fold it into a neighbouring section.
 - **No "read when needed" or similar meta-labels.** Never tell the reader how or when to read. Present content directly and let them decide. Labels like "Reference guides (read when needed):" are condescending.
 - **No "X vs Y" headings between our own products.** "API vs other tools" implies competition between Gcore's own tools. If a comparison is genuinely useful, frame it as "Related tools" or remove it entirely.
