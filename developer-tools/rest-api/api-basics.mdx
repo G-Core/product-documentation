@@ -1,0 +1,188 @@
+---
+title: "API basics"
+sidebarTitle: "API basics"
+ai-navigation: Foundational concepts for calling the Gcore API from a terminal, including how to install and use curl, how to read JSON responses, how to store the API token as an environment variable, and what HTTP status codes mean.
+---
+
+Gcore API calls are HTTP requests sent from a terminal or a script. Three things are needed before making the first call: a terminal application, the `curl` command-line tool, and an understanding of JSON — the format the API uses for both requests and responses. Environment variables and HTTP status codes are also covered below.
+
+## Choosing a tool
+
+Different tools suit different workflows. All of them call the same Gcore API endpoints — the choice is about comfort and use case:
+
+| Tool | Interface | Best for |
+|------|-----------|----------|
+| curl | Terminal | Universal, pre-installed, used in all examples in these guides |
+| HTTPie | Terminal | Cleaner syntax than curl, color-formatted output |
+| Postman | GUI app | Visual exploration, no terminal needed, import the full API spec |
+| VS Code REST Client | IDE | `.http` files alongside code in VS Code |
+| Python / Go SDK | Code | Production automation, any complexity |
+| JavaScript fetch | Code | Node.js services, browser integrations |
+
+For those new to APIs: Postman removes the need to learn terminal syntax — the GUI has fields for everything. For those already comfortable in a terminal: curl is pre-installed on most systems and needs no setup.
+
+Full setup instructions for each tool are in [Tools](/developer-tools/rest-api/tools).
+
+These guides use curl in all code examples because it runs on every operating system without additional installation.
+
+## Tools needed
+
+A terminal and curl are required to follow the curl examples. Python is needed only for SDK examples.
+
+### Terminal
+
+A terminal is a text-based interface where commands are typed and executed. It's where all curl commands in these guides are run.
+
+| Operating system | How to open |
+|-----------------|-------------|
+| macOS | Press **⌘ Space**, type `Terminal`, press Enter. Or open **Applications → Utilities → Terminal**. |
+| Windows | Press **Win**, type `Windows Terminal` or `PowerShell`, press Enter. On older systems: `Command Prompt`. |
+| Linux | Usually **Ctrl+Alt+T**, or search for "Terminal" in the applications menu. |
+
+Once a terminal is open, commands are typed at the prompt (usually a `$` or `>` symbol) and run by pressing Enter.
+
+### curl
+
+`curl` is a command-line tool for making HTTP requests. It comes pre-installed on macOS and most Linux distributions. On Windows, it has been pre-installed since Windows 10 version 1803.
+
+To check if `curl` is available, open a terminal and run:
+
+```bash
+curl --version
+```
+
+If the output starts with `curl 7.x.x` or `curl 8.x.x`, it is installed. If the command is not found:
+
+- On Windows: download the installer from [curl.se/windows](https://curl.se/windows), or install via winget: `winget install curl`
+- On macOS: install [Homebrew](https://brew.sh), then run `brew install curl`
+- On Linux (Debian/Ubuntu): run `sudo apt-get install curl`
+
+### Python (optional)
+
+Python is needed only for the Python SDK examples. All guides show `curl` and Python SDK tabs — curl works without any additional installation.
+
+To check if Python is installed:
+
+```bash
+python3 --version
+```
+
+The output should be `Python 3.8` or higher. To install Python, download it from [python.org](https://www.python.org/downloads/) or use a package manager.
+
+Install the Gcore SDK with:
+
+```bash
+pip install gcore
+```
+
+---
+
+## curl command structure
+
+Every `curl` command in these guides follows the same pattern:
+
+```bash
+curl -X POST "https://api.gcore.com/cloud/v1/volumes/{YOUR_PROJECT_ID}/{YOUR_REGION_ID}" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "my-volume", "source": "new-volume", "type_name": "standard", "size": 20}'
+```
+
+Breaking this down:
+
+| Part | What it does |
+|------|-------------|
+| `curl` | The tool being run |
+| `-X POST` | The HTTP method: `GET` (read), `POST` (create), `DELETE` (remove), `PATCH` (update) |
+| `"https://api.gcore.com/..."` | The API endpoint URL |
+| `\` | Line continuation — the command continues on the next line |
+| `-H "Authorization: APIKey ..."` | A header: extra information sent with the request. The `Authorization` header carries the API token. |
+| `-H "Content-Type: application/json"` | Tells the server the request body is JSON |
+| `-d '...'` | The request body — data sent to the server (only for POST/PATCH requests) |
+
+For a `GET` request (reading data), `-X GET`, `-H "Content-Type: ..."`, and `-d` are not needed:
+
+```bash
+curl "https://api.gcore.com/cloud/v1/projects" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+`-X GET` is the default, so it can be omitted.
+
+---
+
+## JSON responses
+
+The Gcore API responds in JSON — a text format that represents structured data. Every response is either a single object (`{...}`) or a list of objects (`[...]`).
+
+Example response from listing projects:
+
+```json
+{
+  "count": 1,
+  "results": [
+    {
+      "id": 1234567,
+      "name": "Default",
+      "is_default": true,
+      "state": "ACTIVE"
+    }
+  ]
+}
+```
+
+Reading this:
+- `"count": 1` — there is 1 project total
+- `"results": [...]` — an array containing the projects
+- `"id": 1234567` — the project's numeric ID
+- `"name": "Default"` — the project's display name
+
+When a guide says "save the `id` from the response", it means: find the `id` field in the terminal output and use that number in the next command.
+
+---
+
+## Environment variables
+
+An environment variable stores a value in the terminal session. Instead of pasting the API token into every command, it is set once and reused:
+
+```bash
+# Set the variable (run this once per terminal session)
+export GCORE_API_KEY="29841\$c767b250..."
+
+# Use it in any command (the shell substitutes $GCORE_API_KEY with the token value)
+curl "https://api.gcore.com/iam/clients/me" -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<Warning>
+Environment variables are session-scoped — closing the terminal window loses all variables set with `export`, so the next session requires setting them again. To persist across sessions on macOS/Linux, add the `export` line to `~/.zshrc` (or `~/.bashrc`) and restart the terminal. On Windows PowerShell, add it to the profile file.
+</Warning>
+
+<Warning>
+Gcore API tokens contain a `$` character, which in bash triggers variable substitution inside double-quoted strings and silently truncates the token. Escape the `$` with a backslash when setting the variable:
+
+```bash
+# Wrong — shell expands $c767... as a variable name, truncating the token
+export GCORE_API_KEY="29841$c767b250..."
+
+# Correct — backslash escapes the dollar sign
+export GCORE_API_KEY="29841\$c767b250..."
+```
+
+When using `$GCORE_API_KEY` later in commands, no escaping is needed — the variable already holds the full token value.
+</Warning>
+
+---
+
+## HTTP status codes
+
+The first thing the API sends back is a status code — a three-digit number indicating whether the request succeeded:
+
+| Code | Meaning |
+|------|---------|
+| `200` / `201` | Success — the request worked |
+| `400` | Bad request — the request body has errors |
+| `401` | Unauthorized — the token is missing, wrong, or expired |
+| `403` | Forbidden — the token does not have permission for this operation |
+| `404` | Not found — the resource does not exist or is in a different region |
+| `429` | Too many requests — slow down and retry |
+| `500` | Server error — a temporary Gcore-side problem, retry after a few seconds |
