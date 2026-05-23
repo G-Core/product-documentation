@@ -1,0 +1,179 @@
+---
+title: "Make the first Gcore API call"
+sidebarTitle: "First API call"
+---
+
+Three things are needed before making any Cloud API call: an API token, a project ID, and a region ID. This guide walks through obtaining all three and making a first verified request.
+
+## Step 1. Create an API token
+
+Create a permanent API token in the [Gcore Customer Portal](https://portal.gcore.com) under **Profile → API tokens**. Copy the token immediately — it is shown only once.
+
+Set it as an environment variable. Gcore tokens contain a `$` character, which must be escaped when setting the variable:
+
+```bash
+export GCORE_API_KEY="29841\$c767..."   # escape the $ with a backslash
+```
+
+Verify it works:
+
+```bash
+curl "https://api.gcore.com/iam/clients/me" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+A `200 OK` response with account details confirms the token is valid. Full authentication details are in [Authentication](/developer-tools/rest-api/authentication).
+
+## Step 2. Get the project ID
+
+All Cloud API endpoints require a `project_id` in the path. List the projects in the account:
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/projects" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    projects = client.cloud.projects.list()
+    for p in projects.results:
+        print(p.id, p.name, "default:", p.is_default)
+    ```
+  </Tab>
+</Tabs>
+
+```json
+{
+  "count": 1,
+  "results": [
+    {
+      "id": 1186668,        // → save as PROJECT_ID
+      "name": "Default",
+      "is_default": true,
+      "state": "ACTIVE"
+    }
+  ]
+}
+```
+
+```bash
+export PROJECT_ID=1186668
+```
+
+Most accounts have a single default project. Multiple projects are used to isolate environments (production, staging) or separate billing.
+
+## Step 3. Choose a region
+
+Most Cloud resources exist within a specific region. List available regions to find the right one:
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/regions?limit=50" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    regions = client.cloud.regions.list(limit=50)
+    for r in regions.results:
+        if r.state == "ACTIVE" and r.has_kvm:
+            print(r.id, r.display_name, r.access_level)
+    ```
+  </Tab>
+</Tabs>
+
+Response (excerpt):
+
+```json
+{
+  "results": [
+    {
+      "id": 148,
+      "display_name": "Luxembourg-3",
+      "state": "ACTIVE",
+      "access_level": "core",
+      "zone": "EMEA",
+      "has_kvm": true,
+      "has_baremetal": true,
+      "has_k8s": false,
+      "has_dbaas": false,
+      "has_sfs": true,
+      "available_volume_types": ["ssd_hiiops", "standard", "ssd_lowlatency"]
+    }
+  ]
+}
+```
+
+Key fields for choosing a region:
+
+| Field | Meaning |
+|-------|---------|
+| `access_level` | `"core"` — latest hardware, high scalability. `"edge"` — lower cost, less capacity. |
+| `has_kvm` | `true` — Virtual Machines are available |
+| `has_baremetal` | `true` — Bare Metal servers are available |
+| `has_k8s` | `true` — Managed Kubernetes is available |
+| `has_dbaas` | `true` — Managed PostgreSQL is available |
+| `has_sfs` | `true` — File Shares are available |
+| `available_volume_types` | List of supported volume types in this region |
+
+Pick a region close to the end users, then filter by the capabilities needed. Skip regions with `"state": "DELETED"`.
+
+```bash
+export REGION_ID=148
+```
+
+## Step 4. Make a resource call
+
+With project and region IDs set, list the Virtual Machines in that region:
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    instances = client.cloud.instances.list(
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+    )
+    print(f"{instances.count} instances in region")
+    ```
+  </Tab>
+</Tabs>
+
+```json
+{
+  "count": 0,
+  "results": []
+}
+```
+
+An empty list on a new project is expected. The response structure is the same for all list endpoints: `count` holds the total, `results` holds the page.
+
+## Base URLs by product
+
+The same token works across all Gcore products. The base URL changes by product:
+
+| Product | Base URL |
+|---------|----------|
+| Cloud (VM, BM, K8s, LB, ...) | `https://api.gcore.com/cloud` |
+| IAM (users, tokens) | `https://api.gcore.com/iam` |
+| CDN | `https://api.gcore.com/cdn` |
+| Managed DNS | `https://api.gcore.com/dns` |
+| Object Storage | `https://api.gcore.com/storage` |
+| FastEdge | `https://api.gcore.com/fastedge` |
+| Streaming | `https://api.gcore.com/streaming` |
+| WAAP | `https://api.gcore.com/waap` |
+| DDoS Protection | `https://api.gcore.com/security/iaas` |
+
+With a project and region identified, deploy infrastructure using the [Cloud Via API guides](/cloud/via-api/deploy-vm-from-scratch). Resource creation is asynchronous — see [Async operations](/developer-tools/rest-api/async-operations) for the task polling pattern. The full endpoint listing is in the [API reference](/api-reference/quick-access).

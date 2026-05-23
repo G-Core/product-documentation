@@ -1,0 +1,146 @@
+---
+title: "Gcore API SDKs"
+sidebarTitle: "SDKs"
+---
+
+Gcore publishes official SDKs for Python and Go. Both are auto-generated from the OpenAPI specification, which means method names and parameter names match the API reference exactly.
+
+## Python SDK
+
+**Package:** `gcore` on [PyPI](https://pypi.org/project/gcore/)  
+**Source:** [gcore-python](https://github.com/G-Core/gcore-python) on GitHub
+
+### Install
+
+```bash
+pip install gcore
+```
+
+### Initialize the client
+
+Always read the API key from an environment variable — never hardcode it:
+
+```python
+import os
+from gcore import Gcore
+
+client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+```
+
+### First call
+
+```python
+# Verify authentication
+me = client.iam.clients.me()
+print(me.id, me.email)
+
+# List projects
+for project in client.cloud.projects.list().results:
+    print(project.id, project.name)
+
+# List regions
+for region in client.cloud.regions.list().results:
+    if region.state == "ACTIVE" and region.has_kvm:
+        print(region.id, region.display_name)
+```
+
+### Method naming pattern
+
+SDK methods map directly to API endpoints:
+
+| Endpoint | SDK method |
+|----------|------------|
+| `GET /cloud/v1/instances/{project_id}/{region_id}` | `client.cloud.instances.list(project_id=..., region_id=...)` |
+| `POST /cloud/v2/instances/{project_id}/{region_id}` | `client.cloud.instances.create(project_id=..., region_id=..., ...)` |
+| `GET /cloud/v1/instances/{project_id}/{region_id}/{instance_id}` | `client.cloud.instances.get(instance_id=..., project_id=..., region_id=...)` |
+| `DELETE /cloud/v1/instances/{project_id}/{region_id}/{instance_id}` | `client.cloud.instances.delete(instance_id=..., project_id=..., region_id=...)` |
+| `POST /cloud/v2/volumes/{project_id}/{region_id}/{volume_id}/attach` | `client.cloud.volumes.attach_to_instance(volume_id=..., ...)` |
+
+### Async and sync support
+
+The `gcore` package supports both sync and async usage:
+
+```python
+# Sync (default)
+from gcore import Gcore
+client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+
+# Async
+import asyncio
+from gcore import AsyncGcore
+
+async def main():
+    async with AsyncGcore(api_key=os.environ["GCORE_API_KEY"]) as client:
+        me = await client.iam.clients.me()
+        print(me.email)
+
+asyncio.run(main())
+```
+
+---
+
+## Go SDK
+
+**Module:** `github.com/G-Core/gcore-go`  
+**Source:** [gcore-go](https://github.com/G-Core/gcore-go) on GitHub
+
+### Install
+
+```bash
+go get github.com/G-Core/gcore-go
+```
+
+### Initialize the client
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/option"
+)
+
+func main() {
+    client := gcore.NewClient(
+        option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
+    )
+}
+```
+
+### First call
+
+```go
+// List instances
+page, err := client.Cloud.Instances.List(context.TODO(), cloud.InstanceListParams{
+    ProjectID: gcore.Int(1186668),
+    RegionID:  gcore.Int(148),
+})
+if err != nil {
+    panic(err)
+}
+for _, inst := range page.Results {
+    fmt.Println(inst.ID, inst.Name)
+}
+```
+
+---
+
+## SDK vs curl
+
+| Situation | Recommendation |
+|-----------|---------------|
+| Scripting, automation, CI/CD | Python SDK or Go SDK |
+| One-off inspection, debugging | `curl` |
+| Shell scripts | `curl` |
+| Production services | Python SDK (sync or async) or Go SDK |
+| Terraform-managed infrastructure | [Terraform provider](/developer-tools/terraform/overview) |
+
+---
+
+## SDK coverage
+
+Both SDKs cover the same API surface: Cloud (instances, volumes, networking, Kubernetes, load balancers, etc.), IAM, CDN, DNS, Object Storage, FastEdge, Streaming, and WAAP.
+
+All 298 Cloud API endpoints have auto-generated SDK methods. The SDK methods in the [API reference](/api-reference/cloud) code samples show the exact method names for each endpoint.
