@@ -7,8 +7,6 @@ Write operations in the Gcore Cloud API are asynchronous — the API returns a t
 
 This applies to every operation that changes infrastructure state: creating instances, volumes, networks, load balancers, Kubernetes clusters, and more.
 
-## The three-step pattern
-
 1. Make the request. A write call returns a task ID immediately:
 
 ```json
@@ -37,7 +35,7 @@ Tasks move through four states from creation to completion:
 | `FINISHED` | Operation completed successfully |
 | `ERROR` | Operation failed — check `error` field |
 
-## Full task response
+## Task response
 
 A finished `create_vm` task response shows the complete structure, including the `created_resources` field where the new resource IDs are found:
 
@@ -61,7 +59,7 @@ A finished `create_vm` task response shows the complete structure, including the
 
 The resource ID is in the `created_resources` field under the resource type key. Only the types that were actually created contain non-empty arrays — all others are empty lists.
 
-## Recommended polling intervals
+## Polling intervals
 
 Polling too frequently wastes API quota; polling too rarely delays pipelines. These intervals balance the two:
 
@@ -75,8 +73,7 @@ Polling too frequently wastes API quota; polling too rarely delays pipelines. Th
 | Delete Bare Metal server | 60–120 seconds | 30 seconds |
 | Create Kubernetes cluster | 5–15 minutes | 30 seconds |
 
-
-## Polling in code
+## Poll the task
 
 <Tabs>
   <Tab title="curl (shell loop)">
@@ -152,4 +149,3 @@ Filter by `state` (`NEW`, `RUNNING`, `FINISHED`, `ERROR`) and `task_type` (e.g.,
 <Info>
 Tasks are associated with a specific project and region, whereas the task endpoint `GET /cloud/v1/tasks/{task_id}` does not require project_id or region_id in the path — a task ID is globally unique.
 </Info>
-
