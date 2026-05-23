@@ -46,11 +46,11 @@ client = Gcore(api_key=os.environ["GCORE_API_KEY"])
 
 ### First call
 
-These three calls verify authentication, list projects, and list regions with VM support:
+These calls verify authentication, list projects, and list regions with VM support:
 
 ```python
 # Verify authentication
-me = client.iam.clients.me()
+me = client.iam.get_account_overview()
 print(me.id, me.email)
 
 # List projects
@@ -73,7 +73,37 @@ SDK methods map directly to API endpoints:
 | `POST /cloud/v2/instances/{project_id}/{region_id}` | `client.cloud.instances.create(project_id=..., region_id=..., ...)` |
 | `GET /cloud/v1/instances/{project_id}/{region_id}/{instance_id}` | `client.cloud.instances.get(instance_id=..., project_id=..., region_id=...)` |
 | `DELETE /cloud/v1/instances/{project_id}/{region_id}/{instance_id}` | `client.cloud.instances.delete(instance_id=..., project_id=..., region_id=...)` |
+| `GET /cloud/v1/flavors/{project_id}/{region_id}` | `client.cloud.instances.flavors.list(project_id=..., region_id=...)` |
 | `POST /cloud/v2/volumes/{project_id}/{region_id}/{volume_id}/attach` | `client.cloud.volumes.attach_to_instance(volume_id=..., ...)` |
+| `GET /cloud/v1/tasks/{task_id}` | `client.cloud.tasks.get(task_id)` |
+
+### Polling task completion
+
+The SDK includes a built-in blocking poll — no manual loop needed:
+
+```python
+result = client.cloud.instances.create(
+    project_id=int(os.environ["PROJECT_ID"]),
+    region_id=int(os.environ["REGION_ID"]),
+    flavor="g1-standard-2-4",
+    ssh_key_name="my-key",
+    interfaces=[{"type": "external"}],
+    volumes=[{"source": "image", "image_id": os.environ["IMAGE_ID"],
+               "size": 20, "boot_index": 0}],
+    name="my-vm",
+)
+
+# tasks.poll() blocks until state is FINISHED or ERROR
+task = client.cloud.tasks.poll(
+    result.tasks[0],
+    polling_interval_seconds=5,
+    polling_timeout_seconds=300,
+)
+
+# Access created resource IDs via attributes, not dict keys
+instance_id = task.created_resources.instances[0]
+volume_id   = task.created_resources.volumes[0]
+```
 
 ### Async and sync support
 
@@ -90,7 +120,7 @@ from gcore import AsyncGcore
 
 async def main():
     async with AsyncGcore(api_key=os.environ["GCORE_API_KEY"]) as client:
-        me = await client.iam.clients.me()
+        me = await client.iam.get_account_overview()
         print(me.email)
 
 asyncio.run(main())
@@ -123,6 +153,7 @@ import (
     "os"
 
     "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/cloud"
     "github.com/G-Core/gcore-go/option"
 )
 
