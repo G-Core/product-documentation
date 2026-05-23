@@ -44,10 +44,42 @@ If the terminal shows an error message instead, check [Authentication errors](/d
 
 Cloud API URLs include a project ID — a number that identifies the account's project. List the projects to find it:
 
-```bash
-curl "https://api.gcore.com/cloud/v1/projects" \
-  -H "Authorization: APIKey $GCORE_API_KEY"
-```
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/projects" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    projects = client.cloud.projects.list()
+    for p in projects.results:
+        print(p.id, p.name, p.is_default)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    projects, err := client.Cloud.Projects.List(context.TODO(), cloud.ProjectListParams{})
+    if err != nil { panic(err) }
+    for _, p := range projects.Results {
+        fmt.Println(p.ID, p.Name, p.IsDefault)
+    }
+    ```
+  </Tab>
+  <Tab title="JavaScript">
+    ```javascript
+    const res = await fetch("https://api.gcore.com/cloud/v1/projects", {
+      headers: { Authorization: `APIKey ${process.env.GCORE_API_KEY}` },
+    });
+    const { results } = await res.json();
+    results.forEach(p => console.log(p.id, p.name));
+    ```
+  </Tab>
+</Tabs>
 
 The terminal outputs:
 
@@ -79,10 +111,43 @@ Most accounts have one project named "Default", while multiple projects are used
 
 Cloud resources — VMs, volumes, networks — exist in a specific region (a data center location), and different regions support different features. List all available regions:
 
-```bash
-curl "https://api.gcore.com/cloud/v1/regions?limit=50" \
-  -H "Authorization: APIKey $GCORE_API_KEY"
-```
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/regions?limit=50" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    regions = client.cloud.regions.list(limit=50)
+    for r in regions.results:
+        if r.state == "ACTIVE":
+            print(r.id, r.display_name, r.access_level)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    regions, err := client.Cloud.Regions.List(context.TODO(), cloud.RegionListParams{
+        Limit: gcore.Int(50),
+    })
+    if err != nil { panic(err) }
+    for _, r := range regions.Results {
+        fmt.Println(r.ID, r.DisplayName, r.State)
+    }
+    ```
+  </Tab>
+  <Tab title="JavaScript">
+    ```javascript
+    const res = await fetch("https://api.gcore.com/cloud/v1/regions?limit=50", {
+      headers: { Authorization: `APIKey ${process.env.GCORE_API_KEY}` },
+    });
+    const { results } = await res.json();
+    results.filter(r => r.state === "ACTIVE")
+           .forEach(r => console.log(r.id, r.display_name));
+    ```
+  </Tab>
+</Tabs>
 
 The terminal outputs a list of regions. Each entry looks like:
 
@@ -123,10 +188,45 @@ Replace `148` with the chosen region's `id`.
 
 With all three variables set, run a real Cloud API call — list all VMs in the project and region:
 
-```bash
-curl "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID" \
-  -H "Authorization: APIKey $GCORE_API_KEY"
-```
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    instances = client.cloud.instances.list(
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+    )
+    print(f"{instances.count} instances")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    var projectID int64 = 1234567
+    var regionID  int64 = 148
+    instances, err := client.Cloud.Instances.List(context.TODO(), cloud.InstanceListParams{
+        ProjectID: gcore.Int(projectID),
+        RegionID:  gcore.Int(regionID),
+    })
+    if err != nil { panic(err) }
+    fmt.Printf("%d instances\n", instances.Count)
+    ```
+  </Tab>
+  <Tab title="JavaScript">
+    ```javascript
+    const res = await fetch(
+      `https://api.gcore.com/cloud/v1/instances/${process.env.PROJECT_ID}/${process.env.REGION_ID}`,
+      { headers: { Authorization: `APIKey ${process.env.GCORE_API_KEY}` } }
+    );
+    const data = await res.json();
+    console.log(`${data.count} instances`);
+    ```
+  </Tab>
+</Tabs>
 
 The terminal outputs:
 

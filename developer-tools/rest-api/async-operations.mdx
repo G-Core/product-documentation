@@ -98,25 +98,53 @@ Polling too frequently wastes API quota; polling too rarely delays pipelines. Th
 
     client = Gcore(api_key=os.environ["GCORE_API_KEY"])
 
-    def wait_for_task(task_id: str, interval: int = 5) -> dict:
-        while True:
-            task = client.cloud.tasks.get(task_id)
-            if task.state == "FINISHED":
-                return task.created_resources
-            if task.state == "ERROR":
-                raise RuntimeError(f"Task {task_id} failed: {task.error}")
-            time.sleep(interval)
-
-    # Usage
-    result = client.cloud.instances.create(
-        project_id=int(os.environ["PROJECT_ID"]), region_id=int(os.environ["REGION_ID"]),
-        flavor="g1-standard-2-4",
-        interfaces=[{"type": "external"}],
-        volumes=[{"source": "image", "image_id": "{IMAGE_ID}", "size": 20, "boot_index": 0}],
-        name_templates=["vm-{ip_octets}"],
+    # Built-in blocking poll — no manual loop needed
+    task = client.cloud.tasks.poll(
+        "{TASK_ID}",
+        polling_interval_seconds=5,
+        polling_timeout_seconds=300,
     )
-    resources = wait_for_task(result.tasks[0])
-    instance_id = resources["instances"][0]
+    instance_id = task.created_resources.instances[0]
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    import "time"
+
+    taskID := "{TASK_ID}"
+    for {
+        task, err := client.Cloud.Tasks.Get(context.TODO(), taskID)
+        if err != nil { panic(err) }
+        if task.State == "FINISHED" {
+            instanceID := task.CreatedResources.Instances[0]
+            fmt.Println("Instance:", instanceID)
+            break
+        }
+        if task.State == "ERROR" {
+            panic("Task failed: " + *task.Error)
+        }
+        time.Sleep(5 * time.Second)
+    }
+    ```
+  </Tab>
+  <Tab title="JavaScript">
+    ```javascript
+    async function pollTask(taskId, intervalMs = 5000) {
+      const headers = { Authorization: `APIKey ${process.env.GCORE_API_KEY}` };
+      while (true) {
+        const res = await fetch(
+          `https://api.gcore.com/cloud/v1/tasks/${taskId}`,
+          { headers }
+        );
+        const task = await res.json();
+        if (task.state === "FINISHED") return task.created_resources;
+        if (task.state === "ERROR") throw new Error(task.error);
+        await new Promise(r => setTimeout(r, intervalMs));
+      }
+    }
+
+    const resources = await pollTask("{TASK_ID}");
+    console.log("Instance:", resources.instances[0]);
     ```
   </Tab>
 </Tabs>

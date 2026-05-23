@@ -95,8 +95,7 @@ Page 2 response (limit=5, offset=5):
 
     client = Gcore(api_key=os.environ["GCORE_API_KEY"])
 
-    limit = 100
-    offset = 0
+    limit, offset = 100, 0
     all_instances = []
 
     while True:
@@ -107,12 +106,55 @@ Page 2 response (limit=5, offset=5):
             offset=offset,
         )
         all_instances.extend(page.results)
-
         offset += limit
         if offset >= page.count:
             break
 
-    print(f"Total instances: {len(all_instances)}")
+    print(f"Total: {len(all_instances)}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    var projectID int64 = 1234567
+    var regionID  int64 = 148
+    var limit int64 = 100
+    var offset int64 = 0
+    var all []cloud.Instance
+
+    for {
+        page, err := client.Cloud.Instances.List(context.TODO(), cloud.InstanceListParams{
+            ProjectID: gcore.Int(projectID),
+            RegionID:  gcore.Int(regionID),
+            Limit:     gcore.Int(limit),
+            Offset:    gcore.Int(offset),
+        })
+        if err != nil { panic(err) }
+        all = append(all, page.Results...)
+        offset += limit
+        if offset >= int64(page.Count) { break }
+    }
+    fmt.Printf("Total: %d\n", len(all))
+    ```
+  </Tab>
+  <Tab title="JavaScript">
+    ```javascript
+    const BASE = "https://api.gcore.com";
+    const headers = { Authorization: `APIKey ${process.env.GCORE_API_KEY}` };
+    const PROJECT_ID = process.env.PROJECT_ID;
+    const REGION_ID  = process.env.REGION_ID;
+
+    let offset = 0, limit = 100, all = [];
+    while (true) {
+      const res = await fetch(
+        `${BASE}/cloud/v1/instances/${PROJECT_ID}/${REGION_ID}?limit=${limit}&offset=${offset}`,
+        { headers }
+      );
+      const { count, results } = await res.json();
+      all = all.concat(results);
+      offset += limit;
+      if (offset >= count) break;
+    }
+    console.log(`Total: ${all.length}`);
     ```
   </Tab>
 </Tabs>
