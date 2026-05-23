@@ -3,135 +3,110 @@ title: "Authenticate to the Gcore API"
 sidebarTitle: "Authentication"
 ---
 
-Every request to the Gcore API requires a permanent API token sent in the `Authorization` header. The same token and header format work across all Gcore products — Cloud, CDN, DNS, Storage, and others.
+Every Gcore API request requires a permanent API token. The token goes in the `Authorization` header and works across all products — Cloud, CDN, DNS, Storage, and others.
 
-## Create a permanent API token
+## Step 1. Create a token
 
-Tokens are created in the [Gcore Customer Portal](https://portal.gcore.com) under **Profile → API tokens**.
+1. Open the [Gcore Customer Portal](https://portal.gcore.com) and sign in.
+2. Click the account icon in the top-right corner and go to **Profile**.
+3. Select the **API tokens** tab.
+4. Click **Create token**.
+5. Give the token a name, choose a role (use `Administrators` for full access), and set an expiration date if needed.
+6. Click **Create**. A dialog shows the token value — **copy it now**. It will not be shown again.
 
 <Info>
-The token value is shown only once at creation time. Copy it immediately and store it securely — it cannot be retrieved later.
+The token value is shown only once. Store it somewhere secure (a password manager or secrets vault) before closing the dialog.
 </Info>
 
-When creating a token, configure two settings:
+## Step 2. Set the token as an environment variable
 
-| Setting | Recommendation |
-|---------|---------------|
-| **Role** | Use `Administrators` for full API access. Use `Users` to restrict to read-only and limited write operations. A token cannot have a higher role than the user who creates it. |
-| **Expiration** | Set an expiration date for tokens used in CI/CD pipelines or by third parties. Use "Never expire" only for long-lived automation that is actively monitored. |
+Store the token in an environment variable so it can be used in every command without re-typing or hardcoding it in scripts.
 
-The account limit is 50 tokens. Tokens nearing expiry trigger email notifications at 7 days and 1 day before the expiry date.
-
-The full token management guide is in [API tokens](/account-settings/api-tokens).
-
-## Send the token in requests
-
-Add the token to every request as the `Authorization` header with the `APIKey` scheme:
+Open a terminal and run:
 
 ```bash
-curl "https://api.gcore.com/iam/clients/me" \
-  -H "Authorization: APIKey {YOUR_TOKEN}"
+export GCORE_API_KEY="29841\$c767..."
 ```
 
-The header name is case-insensitive — `Authorization`, `authorization`, and `AUTHORIZATION` all work. The `APIKey` scheme prefix is required; `Bearer` does not work and returns a token validation error.
+Replace `29841\$c767...` with the actual token value copied in Step 1.
 
-### Set the token as an environment variable
-
-Never hardcode a token in a script or source file. Set it as an environment variable instead:
+<Warning>
+Gcore tokens contain a `$` character. In bash, `$` inside a double-quoted string triggers variable expansion and silently truncates the token. Escape the dollar sign with a backslash (`\$`) when setting the variable:
 
 ```bash
-export GCORE_API_KEY="{YOUR_TOKEN}"
+# Wrong — token gets truncated at the $ character
+export GCORE_API_KEY="29841$c767b250..."
 
+# Correct
+export GCORE_API_KEY="29841\$c767b250..."
+```
+
+After setting the variable, `$GCORE_API_KEY` in commands refers to the full token — no escaping needed from that point on.
+</Warning>
+
+<Info>
+Environment variables are session-scoped — they disappear when the terminal is closed. To persist the variable across sessions, add the `export` line to `~/.zshrc` (macOS/Linux) or the PowerShell profile file (Windows).
+
+Not sure what these concepts mean? [API basics](/developer-tools/rest-api/api-basics) covers terminals and environment variables from scratch.
+</Info>
+
+## Step 3. Verify the token
+
+Run this command to confirm the token is valid:
+
+```bash
 curl "https://api.gcore.com/iam/clients/me" \
   -H "Authorization: APIKey $GCORE_API_KEY"
 ```
 
-<Warning>
-Gcore API tokens always contain a dollar sign (`$`). When the token is used directly inside a double-quoted string in bash, the shell treats everything after `$` as a variable name and silently truncates the token.
-
-**Broken** — shell expands `$c767...` as a variable:
-```bash
-# Token: 29841$c767b250...
-curl ... -H "Authorization: APIKey 29841$c767b250..."
-# Sent as: Authorization: APIKey 29841  ← truncated at $
-```
-
-**Fixed** — use an environment variable (recommended):
-```bash
-export GCORE_API_KEY="29841\$c767b250..."  # escape $ in the export
-curl ... -H "Authorization: APIKey $GCORE_API_KEY"
-```
-
-Or escape the dollar sign directly: `29841\$c767b250...`
-</Warning>
-
-## Verify authentication
-
-Call `/iam/clients/me` to confirm the token is valid and see which account it belongs to:
-
-<Tabs>
-  <Tab title="curl">
-    ```bash
-    curl "https://api.gcore.com/iam/clients/me" \
-      -H "Authorization: APIKey $GCORE_API_KEY"
-    ```
-  </Tab>
-  <Tab title="Python SDK">
-    ```python
-    import os
-    from gcore import Gcore
-
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
-    me = client.iam.clients.me()
-    print(me.id, me.email)
-    ```
-  </Tab>
-</Tabs>
-
-Response:
+A successful response looks like:
 
 ```json
 {
   "id": 1000503,
   "email": "user@example.com",
   "status": "active",
-  "currentUser": 1023101,
-  "users": [
-    {
-      "id": 1023101,
-      "name": "Sergey Kostichev",
-      "groups": [{"id": 1, "name": "Administrators"}]
-    }
-  ]
+  "currentUser": 1023101
 }
 ```
 
-`id` is the account (client) ID. `currentUser` is the user ID within the account. Both are needed for some IAM API calls.
+If the response shows `"status": "active"` and contains an email address, the token is working.
 
-## Authentication errors
+## Common authentication errors
 
-| HTTP status | Message | Cause |
-|-------------|---------|-------|
-| `401` | `Authentication credentials were not provided.` | No `Authorization` header present |
-| `401` | `Bad permanent token: {partial_token}` | Token truncated at `$` — shell variable expansion issue |
-| `401` | `Token is invalid or expired` | Token was deleted or has expired |
-| `401` | `Given token not valid for any token type` | Using `Bearer` scheme instead of `APIKey` |
-| `403` | `You do not have permission to perform this action.` | Token role is insufficient for the requested operation |
+If the command returns an error instead, the table below shows the most common causes:
 
-## Token scope and roles
+| Error message | Cause | Fix |
+|---------------|-------|-----|
+| `Authentication credentials were not provided.` | No `Authorization` header sent | Check that `-H "Authorization: APIKey $GCORE_API_KEY"` is present |
+| `Bad permanent token: 29841` | Token was truncated at the `$` character | Escape the `$` when setting the variable: `29841\$c767...` |
+| `Token is invalid or expired` | Token was deleted or has passed its expiry date | Create a new token in the portal |
+| `Given token not valid for any token type` | Using `Bearer` instead of `APIKey` | The scheme must be `APIKey`, not `Bearer` |
 
-A token inherits the role assigned at creation:
+The `Authorization` header name is case-insensitive — `Authorization`, `authorization`, and `AUTHORIZATION` all work. The `APIKey` prefix is not optional.
 
-- **Administrators** — full read and write access to all resources in the account
-- **Users** — read access to most resources; write access restricted to their own resources
-- **Engineers** — technical operations without billing and user management access
+---
 
-The token cannot perform actions that the creating user's own role does not permit.
+## Token roles
+
+When creating a token, a role is assigned that controls what the token can do:
+
+| Role | Access level |
+|------|-------------|
+| **Administrators** | Full read and write access to all resources |
+| **Engineers** | Technical operations; no billing or user management |
+| **Users** | Read access to most resources; limited write access |
+
+A token cannot have a higher role than the user who created it. For automation that creates and deletes infrastructure, `Administrators` is typically required.
+
+## Token expiration and limits
+
+- Maximum 50 tokens per account.
+- Tokens expiring within 7 days trigger email notifications at 7 days and 1 day before expiry.
+- To rotate a token, create a new one first, update all integrations, then delete the old one.
+
+The full token management guide — including how to share tokens between users and filter by role — is in [API tokens](/account-settings/api-tokens).
 
 ## SSO accounts
 
-When a user authenticates via SAML SSO, the identity provider controls access to the portal — but permanent API tokens operate independently. Revoking SSO access does not invalidate existing tokens. To block API access for an SSO user, delete their tokens manually in the [API tokens](/account-settings/api-tokens) section.
-
-## API reference
-
-Full IAM token management endpoints are in the [IAM API reference](/api-reference/iam).
+When signing in via SAML SSO, the identity provider controls portal access but permanent API tokens operate independently. Revoking a user's SSO access does not invalidate their tokens. To block API access for an SSO user, delete their tokens manually in the [API tokens](/account-settings/api-tokens) section.

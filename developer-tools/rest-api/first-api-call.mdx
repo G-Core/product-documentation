@@ -3,57 +3,60 @@ title: "Make the first Gcore API call"
 sidebarTitle: "First API call"
 ---
 
-Three things are needed before making any Cloud API call: an API token, a project ID, and a region ID. This guide walks through obtaining all three and making a first verified request.
+Three values are needed before any Cloud API call works: an API token, a project ID, and a region ID. This page walks through obtaining all three and ends with a verified working request.
 
-## Step 1. Create an API token
+<Info>
+**Before starting:** a terminal must be open and `curl` must be installed. If either is unfamiliar, read [API basics](/developer-tools/rest-api/api-basics) first — it covers both in a few minutes.
+</Info>
 
-Create a permanent API token in the [Gcore Customer Portal](https://portal.gcore.com) under **Profile → API tokens**. Copy the token immediately — it is shown only once.
+## Step 1. Set up the API token
 
-Set it as an environment variable. Gcore tokens contain a `$` character, which must be escaped when setting the variable:
+If the token has not been created yet, follow [Authentication](/developer-tools/rest-api/authentication) to create one in the Customer Portal and copy the value.
+
+Then set it as an environment variable in the terminal:
 
 ```bash
-export GCORE_API_KEY="29841\$c767..."   # escape the $ with a backslash
+export GCORE_API_KEY="29841\$c767..."
 ```
 
-Verify it works:
+Replace `29841\$c767...` with the actual token. The backslash before `$` is intentional — Gcore tokens contain a dollar sign, and escaping it prevents the shell from misreading the token.
+
+Verify the variable was set correctly:
 
 ```bash
 curl "https://api.gcore.com/iam/clients/me" \
   -H "Authorization: APIKey $GCORE_API_KEY"
 ```
 
-A `200 OK` response with account details confirms the token is valid. Full authentication details are in [Authentication](/developer-tools/rest-api/authentication).
+The terminal will display a response. A working token returns something like:
 
-## Step 2. Get the project ID
+```json
+{
+  "id": 1000503,
+  "email": "user@example.com",
+  "status": "active"
+}
+```
 
-All Cloud API endpoints require a `project_id` in the path. List the projects in the account:
+If the terminal shows an error message instead, check [Authentication errors](/developer-tools/rest-api/authentication#common-authentication-errors).
 
-<Tabs>
-  <Tab title="curl">
-    ```bash
-    curl "https://api.gcore.com/cloud/v1/projects" \
-      -H "Authorization: APIKey $GCORE_API_KEY"
-    ```
-  </Tab>
-  <Tab title="Python SDK">
-    ```python
-    import os
-    from gcore import Gcore
+## Step 2. Find the project ID
 
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
-    projects = client.cloud.projects.list()
-    for p in projects.results:
-        print(p.id, p.name, "default:", p.is_default)
-    ```
-  </Tab>
-</Tabs>
+Cloud API URLs include a project ID — a number that identifies the account's project. List the projects to find it:
+
+```bash
+curl "https://api.gcore.com/cloud/v1/projects" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+The terminal outputs:
 
 ```json
 {
   "count": 1,
   "results": [
     {
-      "id": 1186668,        // → save as PROJECT_ID
+      "id": 1186668,
       "name": "Default",
       "is_default": true,
       "state": "ACTIVE"
@@ -62,94 +65,70 @@ All Cloud API endpoints require a `project_id` in the path. List the projects in
 }
 ```
 
+Find the `"id"` value in the `results` array — that number is the project ID. Copy it and set it as a variable:
+
 ```bash
 export PROJECT_ID=1186668
 ```
 
-Most accounts have a single default project. Multiple projects are used to isolate environments (production, staging) or separate billing.
+Replace `1186668` with the actual ID from the response.
+
+Most accounts have one project named "Default". Multiple projects are used to separate environments (production, staging) or billing.
 
 ## Step 3. Choose a region
 
-Most Cloud resources exist within a specific region. List available regions to find the right one:
+Cloud resources — VMs, volumes, networks — exist in a specific region (a data center location). Different regions support different features. List all available regions:
 
-<Tabs>
-  <Tab title="curl">
-    ```bash
-    curl "https://api.gcore.com/cloud/v1/regions?limit=50" \
-      -H "Authorization: APIKey $GCORE_API_KEY"
-    ```
-  </Tab>
-  <Tab title="Python SDK">
-    ```python
-    regions = client.cloud.regions.list(limit=50)
-    for r in regions.results:
-        if r.state == "ACTIVE" and r.has_kvm:
-            print(r.id, r.display_name, r.access_level)
-    ```
-  </Tab>
-</Tabs>
+```bash
+curl "https://api.gcore.com/cloud/v1/regions?limit=50" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
 
-Response (excerpt):
+The terminal outputs a list of regions. Each entry looks like:
 
 ```json
 {
-  "results": [
-    {
-      "id": 148,
-      "display_name": "Luxembourg-3",
-      "state": "ACTIVE",
-      "access_level": "core",
-      "zone": "EMEA",
-      "has_kvm": true,
-      "has_baremetal": true,
-      "has_k8s": false,
-      "has_dbaas": false,
-      "has_sfs": true,
-      "available_volume_types": ["ssd_hiiops", "standard", "ssd_lowlatency"]
-    }
-  ]
+  "id": 148,
+  "display_name": "Luxembourg-3",
+  "state": "ACTIVE",
+  "access_level": "core",
+  "zone": "EMEA",
+  "has_kvm": true,
+  "has_baremetal": true,
+  "has_k8s": false,
+  "available_volume_types": ["ssd_hiiops", "standard", "ssd_lowlatency"]
 }
 ```
 
-Key fields for choosing a region:
+The fields that matter for choosing:
 
 | Field | Meaning |
 |-------|---------|
-| `access_level` | `"core"` — latest hardware, high scalability. `"edge"` — lower cost, less capacity. |
-| `has_kvm` | `true` — Virtual Machines are available |
-| `has_baremetal` | `true` — Bare Metal servers are available |
-| `has_k8s` | `true` — Managed Kubernetes is available |
-| `has_dbaas` | `true` — Managed PostgreSQL is available |
-| `has_sfs` | `true` — File Shares are available |
-| `available_volume_types` | List of supported volume types in this region |
+| `display_name` | Human-readable location name |
+| `state` | Only use regions where `state` is `"ACTIVE"` |
+| `access_level` | `"core"` = latest hardware; `"edge"` = lower cost |
+| `has_kvm` | `true` means VMs are available |
+| `has_k8s` | `true` means Managed Kubernetes is available |
+| `has_dbaas` | `true` means Managed PostgreSQL is available |
 
-Pick a region close to the end users, then filter by the capabilities needed. Skip regions with `"state": "DELETED"`.
+Find a region close to the target users, confirm it has `"has_kvm": true` for VM workloads, and note its `"id"`. Then set it:
 
 ```bash
 export REGION_ID=148
 ```
 
+Replace `148` with the chosen region's `id`.
+
 ## Step 4. Make a resource call
 
-With project and region IDs set, list the Virtual Machines in that region:
+With all three variables set, run a real Cloud API call — list all VMs in the project and region:
 
-<Tabs>
-  <Tab title="curl">
-    ```bash
-    curl "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID" \
-      -H "Authorization: APIKey $GCORE_API_KEY"
-    ```
-  </Tab>
-  <Tab title="Python SDK">
-    ```python
-    instances = client.cloud.instances.list(
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
-    )
-    print(f"{instances.count} instances in region")
-    ```
-  </Tab>
-</Tabs>
+```bash
+curl "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+The terminal outputs:
 
 ```json
 {
@@ -158,22 +137,26 @@ With project and region IDs set, list the Virtual Machines in that region:
 }
 ```
 
-An empty list on a new project is expected. The response structure is the same for all list endpoints: `count` holds the total, `results` holds the page.
+An empty list on a new project is expected — no VMs have been created yet. The important thing is that the request returned `200 OK` with a valid JSON structure. That confirms the token, project ID, and region ID are all correct and working together.
 
-## Base URLs by product
+## The three variables explained
 
-The same token works across all Gcore products. The base URL changes by product:
+These three environment variables appear in every Cloud API call throughout these guides:
 
-| Product | Base URL |
-|---------|----------|
-| Cloud (VM, BM, K8s, LB, ...) | `https://api.gcore.com/cloud` |
-| IAM (users, tokens) | `https://api.gcore.com/iam` |
-| CDN | `https://api.gcore.com/cdn` |
-| Managed DNS | `https://api.gcore.com/dns` |
-| Object Storage | `https://api.gcore.com/storage` |
-| FastEdge | `https://api.gcore.com/fastedge` |
-| Streaming | `https://api.gcore.com/streaming` |
-| WAAP | `https://api.gcore.com/waap` |
-| DDoS Protection | `https://api.gcore.com/security/iaas` |
+```bash
+export GCORE_API_KEY="..."    # Who is making the request (authentication)
+export PROJECT_ID=1186668     # Which project the resource belongs to
+export REGION_ID=148          # Which data center location to use
+```
 
-With a project and region identified, deploy infrastructure using the [Cloud Via API guides](/cloud/via-api/deploy-vm-from-scratch). Resource creation is asynchronous — see [Async operations](/developer-tools/rest-api/async-operations) for the task polling pattern. The full endpoint listing is in the [API reference](/api-reference/quick-access).
+The API URL always follows this pattern:
+
+```
+https://api.gcore.com/cloud/v1/{resource_type}/{PROJECT_ID}/{REGION_ID}
+```
+
+For example:
+- `https://api.gcore.com/cloud/v1/instances/1186668/148` — VMs in project 1186668, region 148
+- `https://api.gcore.com/cloud/v1/volumes/1186668/148` — volumes in the same project and region
+
+With these in place, the next step is to create a resource. Follow the [Cloud Via API guides](/cloud/via-api/deploy-vm-from-scratch) to deploy a VM, set up a network, or configure other infrastructure. Resource creation is asynchronous — the response returns a task ID, not the finished resource. [Async operations](/developer-tools/rest-api/async-operations) explains how that works.
