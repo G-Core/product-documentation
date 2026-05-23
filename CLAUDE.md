@@ -306,6 +306,16 @@ The review orchestrator runs 5 sequential steps with grep checks. Run all 5 befo
 - Forbidden words: just, simply, obviously, clearly, ensure, be sure, make sure, etc., platform
 - Consistent tutorial voice throughout: direct, action-oriented
 
+**Content quality — anti-patterns caught in review (do not repeat):**
+
+- **No stub sections.** A section heading followed by one thin sentence is a stub. If a section cannot be explained in at least 2–3 meaningful sentences, either expand it or fold it into a neighbouring section.
+- **No "read when needed" or similar meta-labels.** Never tell the reader how or when to read. Present content directly and let them decide. Labels like "Reference guides (read when needed):" are condescending.
+- **No "X vs Y" headings between our own products.** "API vs other tools" implies competition between Gcore's own tools. If a comparison is genuinely useful, frame it as "Related tools" or remove it entirely.
+- **No orphaned link paragraphs.** A paragraph whose sole purpose is to say "more info is in [X]" adds no value. Embed reference links as the natural last sentence of the relevant section.
+- **Section intros must explain WHY, not just WHAT.** "One API token works across all products. Each product has its own base URL:" tells the reader nothing useful. "Each Gcore product has a dedicated base URL. The same permanent API token authenticates to all of them — no separate credentials per product:" explains the benefit and the constraint.
+- **Numbered lists must be truly sequential.** Using `—` as a step number in a table looks like a rendering bug. If steps 6–8 are less critical than 1–5, make that clear through description, not through broken numbering.
+- **Every table needs a real intro sentence.** Not "Each product has its own base URL:" (obvious from the table itself), but a sentence that provides context a reader cannot get by just scanning the table.
+
 ---
 
 ## Article template
