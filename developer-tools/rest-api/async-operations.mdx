@@ -9,7 +9,7 @@ This pattern applies to every operation that changes infrastructure state: creat
 
 ## The three-step pattern
 
-**Step 1 — Make the request.** A write call returns a task ID immediately:
+1. Make the request. A write call returns a task ID immediately:
 
 ```json
 {
@@ -17,16 +17,18 @@ This pattern applies to every operation that changes infrastructure state: creat
 }
 ```
 
-**Step 2 — Poll the task.** Call `GET /cloud/v1/tasks/{task_id}` repeatedly until the `state` field is no longer `RUNNING`:
+2. Poll the task. Call `GET /cloud/v1/tasks/{task_id}` repeatedly until the `state` field is no longer `RUNNING`:
 
 ```bash
 curl "https://api.gcore.com/cloud/v1/tasks/{TASK_ID}" \
   -H "Authorization: APIKey $GCORE_API_KEY"
 ```
 
-**Step 3 — Extract the result.** When `state` is `FINISHED`, find the created resource ID in `created_resources`.
+3. Extract the result. When `state` is `FINISHED`, find the created resource ID in `created_resources`.
 
 ## Task states
+
+Tasks move through four states from creation to completion:
 
 | State | Meaning |
 |-------|---------|
@@ -36,6 +38,8 @@ curl "https://api.gcore.com/cloud/v1/tasks/{TASK_ID}" \
 | `ERROR` | Operation failed — check `error` field |
 
 ## Full task response
+
+A finished `create_vm` task response shows the complete structure, including the `created_resources` field where the new resource IDs are found:
 
 ```json
 {
@@ -59,6 +63,8 @@ The resource ID is in the `created_resources` field under the resource type key.
 
 ## Recommended polling intervals
 
+Polling too frequently wastes API quota; polling too rarely delays pipelines. These intervals balance the two:
+
 | Operation | Typical duration | Poll every |
 |-----------|-----------------|------------|
 | Create VM | 15–30 seconds | 5 seconds |
@@ -69,7 +75,6 @@ The resource ID is in the `created_resources` field under the resource type key.
 | Delete Bare Metal server | 60–120 seconds | 30 seconds |
 | Create Kubernetes cluster | 5–15 minutes | 30 seconds |
 
-Polling too frequently wastes rate limit budget. Polling too rarely delays pipelines.
 
 ## Polling in code
 
@@ -150,4 +155,4 @@ Tasks are associated with a specific project and region. The task endpoint `GET 
 
 ## API reference
 
-Full task management endpoints are in the [Cloud API reference](/api-reference/cloud).
+Full task management endpoints are in the [API reference](/api-reference/cloud).
