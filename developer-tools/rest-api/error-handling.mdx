@@ -4,7 +4,7 @@ sidebarTitle: "Error handling"
 ai-navigation: Gcore API error responses contain a machine-readable error type, a human-readable message, and a request ID; covers ValidationError, NotFoundError, QuotaLimitExceed, ForbiddenError, HTTP status codes, and retry strategy.
 ---
 
-All Gcore API errors share a consistent JSON structure ΓÇö every response includes an `exception_class`, a human-readable `message`, and a `request_id`.
+All Gcore API errors share a consistent JSON structure — every response includes an `exception_class`, a human-readable `message`, and a `request_id`.
 
 ## Error response structure
 
@@ -28,7 +28,7 @@ Every error response has the same shape:
 |-------|---------------|-------------|
 | `exception_class` | Yes | Machine-readable error type |
 | `message` | Yes | Human-readable description |
-| `request_id` | Yes | Unique ID for this request ΓÇö include when contacting support |
+| `request_id` | Yes | Unique ID for this request — include when contacting support |
 | `info` | No | Extra structured data for specific error types (quotas, invalid fields) |
 | `invalid_fields` | No | Field-level validation errors |
 
@@ -99,7 +99,7 @@ The request would exceed a project or account quota.
 
 ### ForbiddenError
 
-The request is structurally valid but cannot be fulfilled ΓÇö typically because a flavor has reached regional capacity.
+The request is structurally valid but cannot be fulfilled — typically because a flavor has reached regional capacity.
 
 ```json
 {
@@ -109,9 +109,9 @@ The request is structurally valid but cannot be fulfilled ΓÇö typically becau
 }
 ```
 
-`ForbiddenError` is not a permissions error ΓÇö it means the physical resource is temporarily unavailable. Try a different region or a different flavor.
+`ForbiddenError` is not a permissions error — it means the physical resource is temporarily unavailable. Try a different region or a different flavor.
 
-### HTTPError ΓÇö Method Not Allowed
+### HTTPError — Method Not Allowed
 
 The HTTP method used is not supported by this endpoint. Most often caused by sending a `GET` to an endpoint that only accepts `POST`, or vice versa.
 
@@ -132,9 +132,9 @@ All authentication errors return HTTP `401`. The message text identifies the spe
 | Message | Cause |
 |---------|-------|
 | `Authentication credentials were not provided.` | No `Authorization` header |
-| `Bad permanent token: {partial_key}` | Token truncated at `$` ΓÇö shell expansion issue |
+| `Bad permanent token: {partial_key}` | Token truncated at `$` — shell expansion issue |
 | `Token is invalid or expired` | Token deleted or past expiry date |
-| `Given token not valid for any token type` | Wrong auth scheme ΓÇö use `APIKey`, not `Bearer` |
+| `Given token not valid for any token type` | Wrong auth scheme — use `APIKey`, not `Bearer` |
 
 
 ## HTTP status codes
@@ -150,11 +150,11 @@ Every error response includes an HTTP status code that identifies the error cate
 | `405` | `HTTPError` |
 | `409` | `ConflictError` (resource already exists) |
 | `429` | Rate limit exceeded |
-| `500` | Internal server error ΓÇö transient, retry with backoff |
+| `500` | Internal server error — transient, retry with backoff |
 
 ## Retry strategy
 
-Not every error is worth retrying ΓÇö the table below distinguishes fixable request problems from transient server conditions. Every response contains a `request_id`; include it when contacting [Gcore support](https://gcore.com/contact-us) to identify the request in the infrastructure logs.
+Not every error is worth retrying — the table below distinguishes fixable request problems from transient server conditions. Every response contains a `request_id`; include it when contacting [Gcore support](https://gcore.com/contact-us) to identify the request in the infrastructure logs.
 
 | Error type | Safe to retry? | Action |
 |------------|---------------|--------|
@@ -163,5 +163,5 @@ Not every error is worth retrying ΓÇö the table below distinguishes fixable r
 | `QuotaLimitExceed` | No | Request quota increase |
 | `ForbiddenError` (capacity) | Yes, in different region/flavor | Choose different region |
 | `HTTPError 405` | No | Fix the HTTP method |
-| `500` | Yes, with exponential backoff | Wait 1ΓÇô5s and retry up to 3 times |
+| `500` | Yes, with exponential backoff | Wait 1–5s and retry up to 3 times |
 | `429` | Yes, after waiting | Respect `Retry-After` header if present |

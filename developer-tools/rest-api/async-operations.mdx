@@ -4,7 +4,7 @@ sidebarTitle: "Async operations"
 ai-navigation: Gcore Cloud API write operations return a task ID while the operation runs in the background; explains how to poll the task endpoint for completion, read the created resource ID from the response, and handle errors and timeouts.
 ---
 
-Write operations in the Gcore Cloud API are asynchronous ΓÇö the API returns a task ID immediately, while the actual operation runs in the background. The created resource ID is only available after polling the task to completion.
+Write operations in the Gcore Cloud API are asynchronous — the API returns a task ID immediately, while the actual operation runs in the background. The created resource ID is only available after polling the task to completion.
 
 This applies to every operation that changes infrastructure state: creating instances, volumes, networks, load balancers, Kubernetes clusters, and more.
 
@@ -34,7 +34,7 @@ Tasks move through four states from creation to completion:
 | `NEW` | Task queued, not yet started |
 | `RUNNING` | Operation in progress |
 | `FINISHED` | Operation completed successfully |
-| `ERROR` | Operation failed ΓÇö check `error` field |
+| `ERROR` | Operation failed — check `error` field |
 
 ## Task response
 
@@ -49,7 +49,7 @@ A finished `create_vm` task response shows the complete structure, including the
   "created_on": "2026-05-23T05:07:31",
   "finished_on": "2026-05-23T05:07:50",
   "created_resources": {
-    "instances": ["169942e0-9b53-42df-95ef-1a8b6525c2bd"],  // ΓåÆ resource ID
+    "instances": ["169942e0-9b53-42df-95ef-1a8b6525c2bd"],  // → resource ID
     "volumes":   ["726ecfcc-7fd0-4e30-a86e-7892524aa483"],
     "floatingips": [],
     "networks": [],
@@ -58,7 +58,7 @@ A finished `create_vm` task response shows the complete structure, including the
 }
 ```
 
-The resource ID is in the `created_resources` field under the resource type key. Only the types that were actually created contain non-empty arrays ΓÇö all others are empty lists.
+The resource ID is in the `created_resources` field under the resource type key. Only the types that were actually created contain non-empty arrays — all others are empty lists.
 
 ## Polling intervals
 
@@ -66,13 +66,13 @@ Polling too frequently wastes API quota; polling too rarely delays pipelines. Th
 
 | Operation | Typical duration | Poll every |
 |-----------|-----------------|------------|
-| Create VM | 15ΓÇô30 seconds | 5 seconds |
-| Create volume | 5ΓÇô15 seconds | 5 seconds |
-| Create network / subnet | 5ΓÇô10 seconds | 5 seconds |
-| Create load balancer | 30ΓÇô90 seconds | 10 seconds |
-| Delete VM | 15ΓÇô70 seconds | 5 seconds |
-| Delete Bare Metal server | 60ΓÇô120 seconds | 30 seconds |
-| Create Kubernetes cluster | 5ΓÇô15 minutes | 30 seconds |
+| Create VM | 15–30 seconds | 5 seconds |
+| Create volume | 5–15 seconds | 5 seconds |
+| Create network / subnet | 5–10 seconds | 5 seconds |
+| Create load balancer | 30–90 seconds | 10 seconds |
+| Delete VM | 15–70 seconds | 5 seconds |
+| Delete Bare Metal server | 60–120 seconds | 30 seconds |
+| Create Kubernetes cluster | 5–15 minutes | 30 seconds |
 
 ## Poll the task
 
@@ -99,7 +99,7 @@ Polling too frequently wastes API quota; polling too rarely delays pipelines. Th
 
     client = Gcore(api_key=os.environ["GCORE_API_KEY"])
 
-    # Built-in blocking poll ΓÇö no manual loop needed
+    # Built-in blocking poll — no manual loop needed
     task = client.cloud.tasks.poll(
         "{TASK_ID}",
         polling_interval_seconds=5,
@@ -162,7 +162,7 @@ When `state` is `ERROR`, the `error` field contains the failure reason:
 }
 ```
 
-On error, no resources from that task are created ΓÇö there is nothing to clean up from the failed task itself.
+On error, no resources from that task are created — there is nothing to clean up from the failed task itself.
 
 ## List recent tasks
 
@@ -176,5 +176,5 @@ curl "https://api.gcore.com/cloud/v1/tasks?limit=20&state=RUNNING" \
 Filter by `state` (`NEW`, `RUNNING`, `FINISHED`, `ERROR`) and `task_type` (e.g., `create_vm`, `delete_vm`, `create_volume`).
 
 <Info>
-Tasks are associated with a specific project and region, whereas the task endpoint `GET /cloud/v1/tasks/{task_id}` does not require project_id or region_id in the path ΓÇö a task ID is globally unique.
+Tasks are associated with a specific project and region, whereas the task endpoint `GET /cloud/v1/tasks/{task_id}` does not require project_id or region_id in the path — a task ID is globally unique.
 </Info>
