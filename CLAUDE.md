@@ -362,6 +362,7 @@ Read the full article once as a medium-technical reader encountering it for the 
 ---
 title: "{Verb} {object} via API"
 sidebarTitle: "{Short verb phrase}"
+ai-navigation: {Plain text description of what the article covers — for AI agent sitemap reading. See rules below.}
 ---
 
 {Opening sentence: what is built and in how many API calls. No "This guide...".}
@@ -421,6 +422,53 @@ The full parameter list is in the [API reference](https://api.gcore.com/docs/clo
 ```bash
 ssh -i ~/.ssh/key user@{IP_ADDRESS}
 ```
+```
+
+---
+
+## Frontmatter fields
+
+Every article must have all three frontmatter fields. The `ai-navigation` field is mandatory — do not publish an article without it.
+
+```yaml
+---
+title: "Deploy a Linux VM via API"       # Full title shown in browser tab
+sidebarTitle: "Deploy a VM"              # Short label in sidebar
+ai-navigation: Plain text description.   # For AI agent sitemap reading — see rules below
+---
+```
+
+### ai-navigation rules
+
+The `ai-navigation` value is read by AI agents scanning the sitemap. It must be one plain English sentence describing what the article covers.
+
+**Required:**
+- One sentence, ending with a period
+- Plain English only — no technical jargon or code references
+- Mention the key topics covered: what the reader learns or does
+
+**Strictly forbidden — these break the YAML parser and crash the Mintlify build:**
+- Curly braces: `{task_id}` `{variable}` — even inside apparent text context
+- Slashes: `/cloud/v1/tasks` — no URL paths
+- Colons followed by space inside the value: `state: FINISHED`
+- Backticks, square brackets, pipe characters
+
+**Safe to use:**
+- Commas, periods, hyphens, parentheses
+- Semicolons (used in existing articles)
+- Capitalized product names: Cloud, CDN, DNS, Kubernetes
+- Descriptive technical terms without symbols: "task ID", "project ID", "environment variable"
+
+**Good examples** (from existing articles in the repo):
+```
+ai-navigation: Install the Gcore Terraform provider, configure v0 and v2 authentication, and manage Cloud and CDN resources via infrastructure-as-code.
+ai-navigation: Create, use, or delete permanent API tokens with configurable expiration dates, role-based access control, and APIKey authorization header for automated API requests to Gcore services.
+```
+
+**Bad examples** (will break build):
+```
+ai-navigation: Poll GET /cloud/v1/tasks/{task_id} until state is FINISHED.   ← slashes + curly braces
+ai-navigation: Configure the Authorization: APIKey header.                    ← colon followed by space
 ```
 
 ---
