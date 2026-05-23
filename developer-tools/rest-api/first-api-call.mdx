@@ -1,0 +1,162 @@
+---
+title: "Make the first Gcore API call"
+sidebarTitle: "First API call"
+---
+
+Three values are needed before any Cloud API call works: an API token, a project ID, and a region ID.
+
+<Info>
+A terminal must be open and `curl` must be installed. If either is unfamiliar, read [API basics](/developer-tools/rest-api/api-basics) first — it covers both in a few minutes.
+</Info>
+
+## Step 1. Set up the API token
+
+If the token has not been created yet, follow [Authentication](/developer-tools/rest-api/authentication) to create one in the [Gcore Customer Portal](https://portal.gcore.com) and copy the value.
+
+Then set it as an environment variable in the terminal:
+
+```bash
+export GCORE_API_KEY="29841\$c767..."
+```
+
+Replace `29841\$c767...` with the actual token. The backslash before `$` is intentional — Gcore tokens contain a dollar sign, and escaping it prevents the shell from misreading the token.
+
+Verify the variable was set correctly:
+
+```bash
+curl "https://api.gcore.com/iam/clients/me" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+The terminal will display a response. A working token returns something like:
+
+```json
+{
+  "id": 7350925,
+  "email": "user@example.com",
+  "status": "active"
+}
+```
+
+If the terminal shows an error message instead, check [Authentication errors](/developer-tools/rest-api/authentication#common-authentication-errors).
+
+## Step 2. Find the project ID
+
+Cloud API URLs include a project ID — a number that identifies the account's project. List the projects to find it:
+
+```bash
+curl "https://api.gcore.com/cloud/v1/projects" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+The terminal outputs:
+
+```json
+{
+  "count": 1,
+  "results": [
+    {
+      "id": 1234567,
+      "name": "Default",
+      "is_default": true,
+      "state": "ACTIVE"
+    }
+  ]
+}
+```
+
+Find the `"id"` value in the `results` array — that number is the project ID. Copy it and set it as a variable:
+
+```bash
+export PROJECT_ID=1234567
+```
+
+Replace `1234567` with the actual ID from the response.
+
+Most accounts have one project named "Default", while multiple projects are used to separate environments (production, staging) or billing.
+
+## Step 3. Choose a region
+
+Cloud resources — VMs, volumes, networks — exist in a specific region (a data center location), and different regions support different features. List all available regions:
+
+```bash
+curl "https://api.gcore.com/cloud/v1/regions?limit=50" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+The terminal outputs a list of regions. Each entry looks like:
+
+```json
+{
+  "id": 148,
+  "display_name": "Luxembourg-3",
+  "state": "ACTIVE",
+  "access_level": "core",
+  "zone": "EMEA",
+  "has_kvm": true,
+  "has_baremetal": true,
+  "has_k8s": false,
+  "available_volume_types": ["ssd_hiiops", "standard", "ssd_lowlatency"]
+}
+```
+
+The fields that matter for choosing:
+
+| Field | Meaning |
+|-------|---------|
+| `display_name` | Human-readable location name |
+| `state` | Only use regions where `state` is `"ACTIVE"` |
+| `access_level` | `"core"` = latest hardware; `"edge"` = lower cost |
+| `has_kvm` | `true` means VMs are available |
+| `has_k8s` | `true` means Managed Kubernetes is available |
+| `has_dbaas` | `true` means Managed PostgreSQL is available |
+
+Find a region close to the target users, confirm it has `"has_kvm": true` for VM workloads, and note its `"id"`. Then set it:
+
+```bash
+export REGION_ID=148
+```
+
+Replace `148` with the chosen region's `id`.
+
+## Step 4. Make a resource call
+
+With all three variables set, run a real Cloud API call — list all VMs in the project and region:
+
+```bash
+curl "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+The terminal outputs:
+
+```json
+{
+  "count": 0,
+  "results": []
+}
+```
+
+An empty list is expected on a new project — no VMs have been created yet. A `200 OK` response with valid JSON confirms the token, project ID, and region ID are all correct.
+
+## The three variables explained
+
+These three environment variables appear in every Cloud API call throughout these guides:
+
+```bash
+export GCORE_API_KEY="..."    # Who is making the request (authentication)
+export PROJECT_ID=1234567     # Which project the resource belongs to
+export REGION_ID=148          # Which data center location to use
+```
+
+The API URL always follows this pattern:
+
+```
+https://api.gcore.com/cloud/v1/{resource_type}/{PROJECT_ID}/{REGION_ID}
+```
+
+For example:
+- `https://api.gcore.com/cloud/v1/instances/{YOUR_PROJECT_ID}/{YOUR_REGION_ID}` — VMs in the configured project and region
+- `https://api.gcore.com/cloud/v1/volumes/{YOUR_PROJECT_ID}/{YOUR_REGION_ID}` — volumes in the same project and region
+
+Resource creation is asynchronous — the response returns a task ID, not the finished resource.
