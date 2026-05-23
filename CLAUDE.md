@@ -275,36 +275,61 @@ When an endpoint returns `{"tasks": [...]}`, immediately follow with:
 
 ### Phase 4 — Review (mandatory)
 
-After drafting, run the sequential review process from:
-`C:\Projects\docops-agent2\.continue\guides\review-process.md`
+**Do not skip this phase. Do not summarise the rules from memory. Open each file, read it, run its checks, fix everything, then move to the next file — in exactly this order.**
 
-The review orchestrator runs 5 sequential steps with grep checks. Run all 5 before declaring an article done.
+#### Step 1 — Read `C:\Projects\docops-agent2\.continue\guides\style-rules-structure.md`, then run:
 
-#### Critical rules summary (violations that fail the review)
+```
+grep "^## What |^## How |^## Why |^## When "
+grep "^## Next steps|^## Prerequisites|^## Requirements|^## Related documentation|^## See also|^## What"
+grep "^This guide covers|^This article|^In this |^This tutorial|^This section"
+```
+Manual: scan every `##` and `###` — verify a prose sentence follows before any code block or table.
 
-**Structure:**
-- Heading case: sentence case only ("Add an SSH key", not "Add an SSH Key")
-- Heading length: 5–8 words max
+Key rules from this file:
+- Sentence case headings: "Add an SSH key" not "Add an SSH Key"
 - No headings starting with What, How, Why, When
-- No sections named: Prerequisites, Next steps, What's next, Requirements, Related documentation, See also
-- Every heading must be followed by a prose sentence before any code block or table
-- No meta-preamble openers: "This guide covers...", "This article explains...", "In this tutorial..."
+- No sections: Prerequisites, Next steps, What's next, Requirements, Related documentation, See also
+- Every heading → prose sentence → then code or table
+- **Opening paragraph must start with the subject matter, not describe the document.** Banned openers: "This guide covers...", "This article explains...", "This section describes...", "In this tutorial...". Start with what the thing IS or DOES.
 
-**Formatting:**
-- Bold only for: UI button names, UI field names, UI section names. Never for emphasis or concepts.
-- Em-dash always spaced: ` — ` not `—`
-- Response excerpts: inline `// comment` on the relevant line, not prose after the block
+#### Step 2 — Read `C:\Projects\docops-agent2\.continue\guides\style-rules-formatting.md`, then run:
 
-**Links:**
+```
+grep "\*\*[^*]+\*\*"   ← bold only for UI buttons/fields/sections; never for emphasis
+grep "[^ \n]—"         ← unspaced em-dashes
+```
+Manual: after any table or code block introducing 3+ terms, verify an orienting sentence precedes the next block.
+
+#### Step 3 — Read `C:\Projects\docops-agent2\.continue\guides\style-rules-links.md`, then run:
+
+```
+grep "\[[^\]]{15,}\]\("     ← link text over ~2 words
+grep "For more details|^See \[|Learn more in|Refer to \[|For more information"
+```
+Manual: list every URL — if it appears more than once, all occurrences after the first must be plain text.
+
+Key rules from this file:
 - Link text: 1–2 words maximum
-- Link each URL once per article. Subsequent mentions are plain text.
-- No standalone "See [X]" or "Learn more in [X]" sentences. Embed links into content sentences.
-- First mention of the Customer Portal in each article: `[Gcore Customer Portal](https://portal.gcore.com)` — always hyperlinked, always this exact text. All subsequent mentions in the same article: plain text "the Customer Portal" — no link, no "Gcore" prefix.
+- First mention of Customer Portal: `[Gcore Customer Portal](https://portal.gcore.com)`. All later: "the Customer Portal" (no link, no "Gcore" prefix)
+- No sentence whose only purpose is to host a link. Embed links into sentences that already carry meaning.
 
-**Voice:**
-- No "you" or "your" in prose — use imperative (no subject) or neutral third person
+#### Step 4 — Read `C:\Projects\docops-agent2\.continue\guides\style-rules-voice.md`, then run:
+
+```
+grep "\bjust\b|\bsimply\b|\bobviously\b|\bclearly\b|\bensure\b|\bbe sure\b|\bmake sure\b|\betc\b|\bplatform\b"
+grep "\byou\b|\byour\b"   ← fix in prose; skip code blocks and terminal output
+```
+Manual: read adjacent sentence pairs — join cause-effect or contrast pairs with a connector.
+
+Key rules from this file:
+- No "you" or "your" in prose — use imperative or neutral third person
 - Forbidden words: just, simply, obviously, clearly, ensure, be sure, make sure, etc., platform
-- Consistent tutorial voice throughout: direct, action-oriented
+- No corporate filler: "programmatic access", "leverage", "seamlessly", "robust" — say what the thing actually does
+
+#### Step 5 — Final read
+
+Read the full article once as a medium-technical reader encountering it for the first time. Fix anything that causes a pause, requires re-reading, or sounds mechanical.
 
 **Content quality — anti-patterns caught in review (do not repeat):**
 
