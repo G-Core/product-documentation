@@ -340,4 +340,40 @@ Default SSH users by OS:
 | Rocky Linux | `rocky` |
 | Fedora | `fedora` |
 
-The instance is now running. Add [block storage](/cloud/via-api/deploy-vm-with-block-storage) for persistent storage that survives instance deletion, or restrict inbound traffic with [security group rules](/cloud/via-api/configure-firewall).
+The instance is now running. Add [block storage](/cloud/via-api/deploy-vm-with-block-storage) for persistent storage that survives instance deletion, or restrict inbound traffic with [firewall rules](/cloud/via-api/configure-firewall).
+
+## Clean up
+
+To delete the instance and its boot volume, pass the volume ID in the `volumes` query parameter. This removes both in a single call.
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE \
+      "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID/$INSTANCE_ID?volumes=$BOOT_VOLUME_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    client.cloud.instances.delete(
+        instance_id=os.environ["INSTANCE_ID"],
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+        volumes=os.environ["BOOT_VOLUME_ID"],
+    )
+    ```
+  </Tab>
+</Tabs>
+
+```json
+{
+  "tasks": ["ef3b0d34-..."]
+}
+```
+
+Poll `GET /cloud/v1/tasks/{task_id}` until `state` is `FINISHED`. The boot volume ID is available in the instance details under `volumes[0].id`.
+
+<Info>
+If a floating IP was assigned to the instance, add `delete_floatings=true` to the query string to release it at the same time: `?volumes={id}&delete_floatings=true`.
+</Info>

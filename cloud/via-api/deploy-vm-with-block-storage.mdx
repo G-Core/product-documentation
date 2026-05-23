@@ -1,0 +1,356 @@
+---
+title: "Deploy a VM with persistent block storage via API"
+sidebarTitle: "Deploy a VM with block storage"
+---
+
+A block volume attached to a VM stores data independently of the instance lifecycle — the volume persists after the instance is deleted and can be reattached to any VM in the same region. This guide creates a VM, creates a separate data volume, attaches it, and mounts it inside the OS in 6 API calls.
+
+<Info>
+A permanent [API token](/account-settings/api-tokens) is required, along with a project ID and region ID. Retrieve them from the [Gcore Customer Portal](https://portal.gcore.com) or by calling `GET /cloud/v1/projects` and `GET /cloud/v1/regions`.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export PROJECT_ID="{YOUR_PROJECT_ID}"
+export REGION_ID="{YOUR_REGION_ID}"
+```
+
+## Step 1. Create the instance
+
+Create a VM with a boot volume. The data volume is created separately in the next step.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `interfaces[].type` | Yes | `"external"` assigns a public IP automatically. |
+| `volumes[].boot_index` | Yes | `0` marks this as the primary boot volume. |
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v2/instances/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "my-vm",
+        "flavor": "g1-standard-2-4",
+        "ssh_key_name": "my-key",
+        "interfaces": [{"type": "external"}],
+        "volumes": [{
+          "source": "image",
+          "image_id": "{IMAGE_ID}",
+          "size": 20,
+          "boot_index": 0
+        }]
+      }'
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    result = client.cloud.instances.create(
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+        name="my-vm",
+        flavor="g1-standard-2-4",
+        ssh_key_name="my-key",
+        interfaces=[{"type": "external"}],
+        volumes=[{
+            "source": "image",
+            "image_id": os.environ["IMAGE_ID"],
+            "size": 20,
+            "boot_index": 0,
+        }],
+    )
+    vm_task_id = result.tasks[0]
+    ```
+  </Tab>
+</Tabs>
+
+```json
+{
+  "tasks": ["7bf90275-17aa-40f6-b91d-a351196de85c"]  // → save as VM_TASK_ID
+}
+```
+
+If an SSH key or image ID is needed, follow the first two steps in the [deployment guide](/cloud/via-api/deploy-vm-from-scratch). The full parameter list is in the [API reference](https://api.gcore.com/docs/cloud#tag/Instances/operation/InstanceCreateSetV2.post).
+
+## Step 2. Create the data volume
+
+Create a blank volume to use as persistent data storage. Volume creation and instance creation are independent and can run concurrently.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `source` | Yes | `"new-volume"` creates a blank volume. Use `"snapshot"` to restore from a snapshot. |
+| `type_name` | Yes | Volume type. Use `"standard"` for general workloads. See available types below. |
+| `size` | Yes | Volume size in GB. Must not exceed the project's total volume quota. |
+
+Available volume types (availability varies by region):
+
+| Type | IOPS | Use case |
+|------|------|----------|
+| `standard` | Up to 4,500 | General-purpose workloads |
+| `ssd_hiiops` | Up to 9,000 | Latency-sensitive, transactional |
+| `ssd_lowlatency` | Up to 5,000 / ~300 µs | Real-time data processing |
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/volumes/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "data-volume",
+        "source": "new-volume",
+        "type_name": "standard",
+        "size": 20
+      }'
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    vol_result = client.cloud.volumes.create(
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+        name="data-volume",
+        source="new-volume",
+        type_name="standard",
+        size=20,
+    )
+    vol_task_id = vol_result.tasks[0]
+    ```
+  </Tab>
+</Tabs>
+
+```json
+{
+  "tasks": ["c2dac8be-a630-4b99-b454-40bbdf4f73eb"]  // → save as VOL_TASK_ID
+}
+```
+
+<Warning>
+Volume size counts toward the project's total volume quota. If the quota is exceeded, the request returns a `QuotaLimitExceed` error showing `current_usage`, `requested_usage`, and `limit` in GB. Submit a [quota request](/cloud/getting-started/request-a-quota-increase) if needed.
+</Warning>
+
+The full parameter list is in the [API reference](https://api.gcore.com/docs/cloud#tag/Volumes/operation/VolumeViewSet.post).
+
+## Step 3. Wait for both resources to be ready
+
+Poll both tasks every 5 seconds until `state` is `FINISHED`.
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    # Poll VM task
+    curl "https://api.gcore.com/cloud/v1/tasks/$VM_TASK_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+
+    # Poll volume task
+    curl "https://api.gcore.com/cloud/v1/tasks/$VOL_TASK_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    import time
+
+    def wait_for_task(task_id):
+        while True:
+            task = client.cloud.tasks.get(task_id)
+            if task.state == "FINISHED":
+                return task.created_resources
+            if task.state == "ERROR":
+                raise RuntimeError(task.error)
+            time.sleep(5)
+
+    vm_resources = wait_for_task(vm_task_id)
+    vol_resources = wait_for_task(vol_task_id)
+
+    instance_id = vm_resources["instances"][0]
+    volume_id = vol_resources["volumes"][0]
+    ```
+  </Tab>
+</Tabs>
+
+VM task when ready:
+
+```json
+{
+  "state": "FINISHED",
+  "created_resources": {
+    "instances": ["0df44042-6d4c-45fc-8d62-761e08624438"]  // → save as INSTANCE_ID
+  }
+}
+```
+
+Volume task when ready:
+
+```json
+{
+  "state": "FINISHED",
+  "created_resources": {
+    "volumes": ["174e92a6-0ed9-468a-a34b-5b6c75bcf7fe"]  // → save as VOLUME_ID
+  }
+}
+```
+
+```bash
+export INSTANCE_ID="{INSTANCE_ID}"
+export VOLUME_ID="{VOLUME_ID}"
+```
+
+## Step 4. Attach the volume to the instance
+
+Attach the data volume to the running instance. The OS will detect the new block device immediately — no reboot required.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `instance_id` | Yes | The instance UUID from the previous step. |
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v2/volumes/$PROJECT_ID/$REGION_ID/$VOLUME_ID/attach" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{\"instance_id\": \"$INSTANCE_ID\"}"
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    attach_result = client.cloud.volumes.attach_to_instance(
+        volume_id=os.environ["VOLUME_ID"],
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+        instance_id=os.environ["INSTANCE_ID"],
+    )
+    attach_task_id = attach_result.tasks[0]
+    ```
+  </Tab>
+</Tabs>
+
+```json
+{
+  "tasks": ["fab37e26-8b1e-4d84-8221-5dac49b8ab9b"]  // → save as ATTACH_TASK_ID
+}
+```
+
+Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. When done, retrieve the volume details to confirm attachment and get the device path:
+
+```bash
+curl "https://api.gcore.com/cloud/v1/volumes/$PROJECT_ID/$REGION_ID/$VOLUME_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+```json
+{
+  "status": "in-use",
+  "attachments": [
+    {
+      "server_id": "0df44042-6d4c-45fc-8d62-761e08624438",
+      "device": "/dev/sdc",      // → the block device path inside the OS
+      "attachment_id": "17d7d05e-20a8-4acd-a8e2-52e553e1386b"
+    }
+  ]
+}
+```
+
+## Step 5. Format and mount the volume
+
+Connect to the instance via SSH, then prepare and mount the volume.
+
+```bash
+# Get the instance's public IP
+curl "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID/$INSTANCE_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" | grep -o '"addr":"[^"]*"'
+
+# Connect
+ssh -i ~/.ssh/my-key ubuntu@{PUBLIC_IP}
+```
+
+Inside the instance, run:
+
+```bash
+# 1. Verify the disk is visible
+lsblk
+
+# 2. Format the volume (run only once — this erases all data)
+sudo mkfs.ext4 /dev/sdc
+
+# 3. Create a mount point
+sudo mkdir -p /mnt/data
+
+# 4. Mount the volume
+sudo mount /dev/sdc /mnt/data
+
+# 5. Verify the mount
+df -h /mnt/data
+```
+
+Expected `df` output:
+
+```
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sdc         20G   24K   19G   1% /mnt/data
+```
+
+### Make the mount persistent across reboots
+
+Device names like `/dev/sdc` can change between reboots. Use the UUID instead:
+
+```bash
+# Get the volume UUID
+sudo blkid /dev/sdc
+# /dev/sdc: UUID="a1b2c3d4-..." TYPE="ext4"
+
+# Add to /etc/fstab
+echo "UUID=a1b2c3d4-...  /mnt/data  ext4  defaults,nofail  0  2" | sudo tee -a /etc/fstab
+```
+
+The `nofail` option prevents a boot failure if the volume is detached before the instance starts.
+
+The volume is now mounted and will survive reboots. To add more storage, repeat Steps 2–5 — multiple data volumes can be attached to a single instance.
+
+## Clean up
+
+Delete resources in order: detach the data volume, then delete the instance, then delete the volume.
+
+**Step 1 — Detach the data volume:**
+
+```bash
+curl -X POST \
+  "https://api.gcore.com/cloud/v2/volumes/$PROJECT_ID/$REGION_ID/$VOLUME_ID/detach" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "{\"instance_id\": \"$INSTANCE_ID\"}"
+```
+
+Poll until `FINISHED` before continuing.
+
+**Step 2 — Delete the instance and its boot volume:**
+
+```bash
+curl -X DELETE \
+  "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID/$INSTANCE_ID?volumes=$BOOT_VOLUME_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+**Step 3 — Delete the data volume:**
+
+```bash
+curl -X DELETE \
+  "https://api.gcore.com/cloud/v1/volumes/$PROJECT_ID/$REGION_ID/$VOLUME_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+```json
+{
+  "tasks": ["..."]
+}
+```
+
+<Warning>
+Billing for a volume continues until it is deleted, even when detached from an instance. Detaching a volume does not stop charges.
+</Warning>

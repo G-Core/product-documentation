@@ -1,0 +1,328 @@
+---
+title: "Set up a private network between VMs via API"
+sidebarTitle: "Set up a private network"
+---
+
+A private network connects VMs over an isolated Layer 2 segment — traffic between them never leaves the data center and is not routed through the public internet. This guide creates a network, subnet, and two VMs in that subnet in 6 API calls.
+
+<Info>
+A permanent [API token](/account-settings/api-tokens) is required, along with a project ID and region ID. Retrieve them from the [Gcore Customer Portal](https://portal.gcore.com) or by calling `GET /cloud/v1/projects` and `GET /cloud/v1/regions`.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export PROJECT_ID="{YOUR_PROJECT_ID}"
+export REGION_ID="{YOUR_REGION_ID}"
+```
+
+## Step 1. Create a private network
+
+A network is the top-level isolation boundary. When a network is created, a router with SNAT is automatically provisioned — VMs in the network can reach the internet through the router without a public IP.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | A label for the network. Use Latin letters, numbers, hyphens. |
+| `type` | No | Defaults to `vxlan` for VMs. Use `vlan` for Bare Metal servers only. |
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/networks/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"name": "private-net"}'
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    result = client.cloud.networks.create(
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+        name="private-net",
+    )
+    net_task_id = result.tasks[0]
+    ```
+  </Tab>
+</Tabs>
+
+```json
+{
+  "tasks": ["90268884-00f3-4a5b-8bc4-047ade9d08f9"]  // → save as NET_TASK_ID
+}
+```
+
+Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`:
+
+```json
+{
+  "state": "FINISHED",
+  "created_resources": {
+    "networks": ["7b8dccfc-9341-46c7-ab2f-5faa086355c3"]  // → save as NETWORK_ID
+  }
+}
+```
+
+```bash
+export NETWORK_ID="{NETWORK_ID}"
+```
+
+The full parameter list is in the [API reference](https://api.gcore.com/docs/cloud#tag/Networks/operation/NetworkViewSet.post).
+
+## Step 2. Create a subnet
+
+A subnet defines the IP address range assigned to VMs in the network.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `network_id` | Yes | The network ID from Step 1. |
+| `cidr` | Yes | IP range in CIDR notation. Must be within `10.0.0.0/8`, `172.16.0.0/12`, or `192.168.0.0/16`. Mask between `/16` and `/29`. |
+| `enable_dhcp` | No | Defaults to `true`. Leave enabled unless assigning static IPs manually. |
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/subnets/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{
+        \"name\": \"private-subnet\",
+        \"network_id\": \"$NETWORK_ID\",
+        \"cidr\": \"10.0.1.0/24\",
+        \"enable_dhcp\": true
+      }"
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    sub_result = client.cloud.networks.subnets.create(
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+        name="private-subnet",
+        network_id=os.environ["NETWORK_ID"],
+        cidr="10.0.1.0/24",
+        enable_dhcp=True,
+    )
+    sub_task_id = sub_result.tasks[0]
+    ```
+  </Tab>
+</Tabs>
+
+```json
+{
+  "tasks": ["912e7c2c-af1d-4206-82aa-9dba536d169f"]  // → save as SUB_TASK_ID
+}
+```
+
+Poll until `FINISHED`:
+
+```json
+{
+  "state": "FINISHED",
+  "created_resources": {
+    "subnets": ["3261c52c-f05a-4fcd-867c-625839be52c4"]  // → save as SUBNET_ID
+  }
+}
+```
+
+```bash
+export SUBNET_ID="{SUBNET_ID}"
+```
+
+Once the subnet is created, it is automatically attached to the router that was provisioned in Step 1. No explicit router configuration is needed.
+
+<Tip>
+To verify the auto-created router and confirm the subnet is attached, call `GET /cloud/v1/routers/{project_id}/{region_id}`. The response shows the router's external gateway IP and the subnet in its `interfaces` list.
+</Tip>
+
+## Step 3. Create the first VM
+
+Create a VM with both a private interface (for internal communication) and an external interface (for SSH access and internet connectivity).
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `interfaces[0]` | Yes | Private interface. Use `"type": "subnet"` with the network and subnet IDs. |
+| `interfaces[1]` | No | External interface. Adds a public IP for SSH access. Omit for backend-only VMs. |
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v2/instances/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{
+        \"name\": \"vm-1\",
+        \"flavor\": \"g1-standard-2-4\",
+        \"ssh_key_name\": \"my-key\",
+        \"interfaces\": [
+          {
+            \"type\": \"subnet\",
+            \"network_id\": \"$NETWORK_ID\",
+            \"subnet_id\": \"$SUBNET_ID\"
+          },
+          {
+            \"type\": \"external\"
+          }
+        ],
+        \"volumes\": [{
+          \"source\": \"image\",
+          \"image_id\": \"{IMAGE_ID}\",
+          \"size\": 20,
+          \"boot_index\": 0
+        }]
+      }"
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    vm1 = client.cloud.instances.create(
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+        name="vm-1",
+        flavor="g1-standard-2-4",
+        ssh_key_name="my-key",
+        interfaces=[
+            {
+                "type": "subnet",
+                "network_id": os.environ["NETWORK_ID"],
+                "subnet_id": os.environ["SUBNET_ID"],
+            },
+            {"type": "external"},
+        ],
+        volumes=[{
+            "source": "image",
+            "image_id": os.environ["IMAGE_ID"],
+            "size": 20,
+            "boot_index": 0,
+        }],
+    )
+    vm1_task_id = vm1.tasks[0]
+    ```
+  </Tab>
+</Tabs>
+
+```json
+{
+  "tasks": ["a1b2c3d4-..."]  // → save as VM1_TASK_ID
+}
+```
+
+Poll until `FINISHED` and extract the instance ID from `created_resources.instances[0]`.
+
+## Step 4. Create the second VM
+
+Repeat Step 3 with a different name:
+
+```bash
+# Same request as Step 3, change the name
+"name": "vm-2"
+```
+
+After both tasks are `FINISHED`, retrieve each instance to find the assigned private IP addresses:
+
+```bash
+curl "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID/{INSTANCE_ID}" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+The private IPs are in `addresses` under the network name (e.g., `"private-net"`):
+
+```json
+{
+  "addresses": {
+    "private-net": [
+      {"addr": "10.0.1.5", "type": "fixed"}   // → VM1 private IP
+    ],
+    "pub_net": [
+      {"addr": "85.234.84.X", "type": "fixed"} // → public IP for SSH
+    ]
+  }
+}
+```
+
+```bash
+export VM1_PRIVATE_IP="10.0.1.5"
+export VM2_PRIVATE_IP="10.0.1.6"
+```
+
+## Step 5. Verify connectivity
+
+SSH into the first VM and ping the second using its private IP:
+
+```bash
+# Connect to vm-1 via its public IP
+ssh -i ~/.ssh/my-key ubuntu@{VM1_PUBLIC_IP}
+
+# From inside vm-1, ping vm-2's private IP
+ping -c 4 10.0.1.6
+```
+
+Expected output:
+
+```
+PING 10.0.1.6 (10.0.1.6) 56(84) bytes of data.
+64 bytes from 10.0.1.6: icmp_seq=1 ttl=64 time=0.4 ms
+64 bytes from 10.0.1.6: icmp_seq=2 ttl=64 time=0.3 ms
+
+--- 10.0.1.6 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss
+```
+
+Sub-millisecond round-trip times confirm both VMs are on the same network segment.
+
+<Info>
+The default security group allows ICMP between VMs. If ping fails, check `GET /cloud/v1/instances/{project_id}/{region_id}/{instance_id}` and verify `security_groups` is not empty. If it is, attach the default group using `POST /cloud/v1/instances/{project_id}/{region_id}/{instance_id}/addsecuritygroup`.
+</Info>
+
+The private network is ready. To isolate backend services completely, remove the external interface and route all external access through a [load balancer](/cloud/via-api/deploy-load-balanced-app) or a single bastion VM.
+
+## Clean up
+
+Delete resources in dependency order: instances first, then the network layer.
+
+**Step 1 — Delete both instances** (pass each boot volume ID to delete it in the same call):
+
+```bash
+# Delete vm-1
+curl -X DELETE \
+  "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID/$VM1_ID?volumes=$VM1_BOOT_VOL" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+
+# Delete vm-2
+curl -X DELETE \
+  "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID/$VM2_ID?volumes=$VM2_BOOT_VOL" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+Poll both tasks to `FINISHED` before deleting network resources.
+
+**Step 2 — Delete the subnet:**
+
+```bash
+curl -X DELETE \
+  "https://api.gcore.com/cloud/v1/subnets/$PROJECT_ID/$REGION_ID/$SUBNET_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+**Step 3 — Delete the router:**
+
+```bash
+curl -X DELETE \
+  "https://api.gcore.com/cloud/v1/routers/$PROJECT_ID/$REGION_ID/$ROUTER_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+**Step 4 — Delete the network:**
+
+```bash
+curl -X DELETE \
+  "https://api.gcore.com/cloud/v1/networks/$PROJECT_ID/$REGION_ID/$NETWORK_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<Warning>
+The network cannot be deleted while instances, subnets, or ports are still attached to it. If the delete returns an error, check that all instances in the network have been deleted and all subnets removed first.
+</Warning>

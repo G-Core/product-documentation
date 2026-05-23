@@ -105,6 +105,13 @@ Always use the latest non-deprecated API version (`v2` over `v1` when both exist
 - The default security group is applied automatically and allows SSH (port 22) and ICMP inbound.
 - Default SSH user for Ubuntu: `ubuntu`. Debian: `debian`. CentOS: `centos`. Rocky: `rocky`. Fedora: `fedora`.
 - Task completion for VM creation: 15–30 seconds.
+- **Bare Metal servers require a quota request** before the first server can be created. Default quota is 0. Check with `POST /cloud/v1/bminstances/{project_id}/{region_id}/check_limits`. BM quota with `limit > 0` exists in region 148 (Luxembourg-3) on the test account.
+- **BM images are separate from VM images**: BM-compatible images have an `-ironic` suffix (e.g., `ubuntu-24.04-x64-ironic`) and `is_baremetal: true`. They are NOT returned by `GET /cloud/v1/images` — they cannot be listed via API. Find them in the Customer Portal under Bare Metal → create form → Distributions, or use a known image ID directly.
+- **BM creation time: 4–5 minutes** (not 30 seconds like VMs).
+- BM servers have **no security groups** — `security_groups: []`. All ports are open by default.
+- BM uses **local storage only** — `volumes: []`. No block volumes can be attached.
+- BM network interface is **bond0** (LACP-bonded), not eth0. Sub-interfaces appear as `bond0.<vlan_id>`.
+- BM `available_flavors` (`POST /cloud/v1/bminstances/{project_id}/{region_id}/available_flavors`) validates image+flavor compatibility — use it to confirm an image works before creating.
 
 ---
 
