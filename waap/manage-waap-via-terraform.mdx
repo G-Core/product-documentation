@@ -1,0 +1,504 @@
+---
+title: Manage WAAP via Terraform v0
+sidebarTitle: Manage via Terraform v0
+ai-navigation: Create and manage Gcore WAAP resources — domains, security policies, custom rules, advanced rules, firewall rules, API paths, and custom response pages — using Terraform provider v0.
+---
+
+With the Gcore Terraform provider v0, teams define WAAP configuration — domains, security policies, and access rules — in configuration files, then apply them consistently across environments without clicking through the Portal.
+
+The following resources are supported: WAAP domains, security policies, custom rules, advanced rules, firewall rules, API paths, custom response pages, and security insight silence rules.
+
+Provider installation and authentication are covered in the [Terraform overview](/developer-tools/terraform/overview). WAAP resources require provider v0 with `permanent_api_token` authentication.
+
+## Workflow
+
+Add resource configuration to `main.tf`, then run:
+
+```sh
+terraform plan
+```
+
+Review the output, then apply:
+
+```sh
+terraform apply
+```
+
+Enter `yes` when prompted. The [getting started guide](/developer-tools/terraform/get-started-with-terraform) covers the full workflow.
+
+## Domains
+
+A WAAP domain is the root resource that all other WAAP resources depend on. It is linked to a CDN resource and controls the operating mode and protection settings for a domain.
+
+### Create a WAAP domain
+
+The following configuration creates a CDN resource with WAAP enabled and attaches a WAAP domain to it.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the highlighted values:
+
+```hcl
+resource "gcore_cdn_resource" "example" {
+  cname  = "app.example.com"
+  origin = "origin.example.com"
+  options {
+    waap { value = true }
+  }
+}
+
+resource "gcore_waap_domain" "domain" {
+  name   = gcore_cdn_resource.example.cname
+  status = "monitor"
+
+  settings {
+    ddos {
+      global_threshold = 2000
+      burst_threshold  = 1000
+    }
+
+    api {
+      api_urls = [
+        "https://app.example.com/api/v1",
+        "https://app.example.com/api/v2"
+      ]
+    }
+  }
+
+  api_discovery_settings {
+    description_file_location            = "https://app.example.com/openapi.json"
+    description_file_scan_enabled        = true
+    description_file_scan_interval_hours = 24
+    traffic_scan_enabled                 = true
+    traffic_scan_interval_hours          = 6
+  }
+}
+```
+
+3. Configure the CDN resource.
+
+- Specify `cname` — the domain name to protect.
+- Specify `origin` — the origin server hostname or IP address.
+- Keep `waap { value = true }` to enable WAAP on this CDN resource.
+
+4. Configure the WAAP domain.
+
+- `name` — must match the CDN resource `cname`.
+- `status` — set to `"monitor"` to inspect traffic without blocking, or `"active"` to enforce protection. Start with `"monitor"` to validate your configuration before going live.
+- (optional) Add `settings.ddos` to configure DDoS protection thresholds:
+  - `global_threshold` — maximum number of requests per second across all IPs before rate limiting applies.
+  - `burst_threshold` — maximum number of requests per second from a single IP before it is rate limited.
+- (optional) Add `settings.api` to define API endpoints:
+  - `api_urls` — list of URL patterns treated as API endpoints. JavaScript injection and CAPTCHA are disabled for these paths.
+  - `is_api` — set to `true` to treat the entire domain as an API domain. If set, `api_urls` is ignored.
+- (optional) Add `api_discovery_settings` to enable automated API Discovery:
+  - `description_file_location` — URL of the OpenAPI specification file (YAML or JSON, versions 2, 3, or 3.1).
+  - `description_file_scan_enabled` — enable periodic scanning of the specification file.
+  - `description_file_scan_interval_hours` — scan interval in hours.
+  - `traffic_scan_enabled` — enable traffic-based API discovery.
+  - `traffic_scan_interval_hours` — traffic scan interval in hours.
+
+<Info>
+After creation, switch `status` from `"monitor"` to `"active"` only after reviewing traffic in the [Events](/waap/analytics/events) page and confirming that legitimate requests are not blocked.
+</Info>
+
+<Warning>
+After a WAAP domain is created, it takes a few seconds to propagate before rules can be attached to it. If you define the domain and its rules in the same configuration and run `terraform apply` for the first time, the rule creation may fail with a 429 error ("domain is still being propagated"). Running `terraform apply` a second time resolves this — Terraform picks up where it left off and creates the remaining resources.
+</Warning>
+
+## Security policies
+
+Security policies are built-in rule sets that cover common attack categories: WAF, protocol validation, bot protection, IP reputation, and more. Each policy can be enabled or disabled per domain.
+
+### Enable or disable security policies
+
+The following configuration enables and disables specific security policies for a domain.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the highlighted values:
+
+```hcl
+data "gcore_waap_domain_policy" "sql_injection" {
+  domain_id = gcore_waap_domain.domain.id
+  name      = "SQL injection"
+  group     = "WAF"
+}
+
+data "gcore_waap_domain_policy" "xss" {
+  domain_id = gcore_waap_domain.domain.id
+  name      = "Cross-site scripting (XSS)"
+  group     = "WAF"
+}
+
+resource "gcore_waap_policy" "domain_policies" {
+  domain_id = gcore_waap_domain.domain.id
+
+  policies = {
+    "${data.gcore_waap_domain_policy.sql_injection.id}" = true
+    "${data.gcore_waap_domain_policy.xss.id}"           = true
+
+    # Policy IDs can also be specified directly.
+    # Retrieve the full list from the WAAP API:
+    # GET /waap/v1/domains/{domain_id}/rule-sets
+    S3008701 = true   # Shellshock exploit
+    S3008702 = false  # Remote file inclusion (RFI) - disabled
+  }
+}
+```
+
+3. Configure the policy resource.
+
+- `domain_id` — the ID of the WAAP domain.
+- `policies` — a map of policy IDs to boolean values. `true` enables the policy, `false` disables it.
+  - Use the `gcore_waap_domain_policy` data source to look up a policy by `name` and `group` instead of hardcoding the ID.
+  - Policy IDs are domain-specific and can be retrieved from the WAAP API: `GET /waap/v1/domains/{domain_id}/rule-sets`. The IDs are in the `rules[].id` field.
+
+<Info>
+Only policies explicitly listed in the `policies` map are modified. Policies not listed retain their current state.
+</Info>
+
+## Custom rules
+
+Custom rules match incoming requests against conditions and apply an action when all conditions are met. Up to 5 conditions can be combined in a single rule.
+
+### Create a custom rule
+
+The following configuration creates a rule that blocks requests from a specific IP address.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the highlighted values:
+
+```hcl
+resource "gcore_waap_custom_rule" "block_ip" {
+  domain_id   = gcore_waap_domain.domain.id
+  name        = "Block suspicious IP"
+  enabled     = true
+  description = "Block requests from a known malicious IP"
+
+  action {
+    block {
+      status_code     = 403
+      action_duration = "24h"
+    }
+  }
+
+  conditions {
+    ip {
+      ip_address = "203.0.113.42"
+    }
+  }
+}
+```
+
+3. Configure the rule.
+
+- `domain_id` — the ID of the WAAP domain.
+- `name` — a descriptive name for the rule.
+- `enabled` — set to `true` to activate the rule immediately.
+- (optional) `description` — additional context for the rule.
+
+4. Configure the action (one of the following):
+
+- `block` — block the request.
+  - `status_code` — HTTP status code returned to the client. Must be one of: `403`, `405`, `418`, `429`. Default: `403`.
+  - `action_duration` — how long subsequent requests from the same source remain blocked. Format: a number followed by `s` (seconds), `m` (minutes), `h` (hours), or `d` (days). Example: `12h`.
+- `allow` — allow the request, bypassing all other security checks.
+- `captcha` — present a CAPTCHA challenge.
+- `handshake` — perform automatic browser validation (JS challenge).
+- `monitor` — log the request without taking action.
+- `tag` — attach user-defined tags to the request for analytics.
+
+5. Configure conditions (at least one required, up to 5 total). All conditions must match for the rule to trigger.
+
+Available condition types:
+
+| Condition | Key field(s) | Match types |
+|-----------|-------------|-------------|
+| `ip` | `ip_address` | exact |
+| `ip_range` | `lower_bound`, `upper_bound` | range |
+| `url` | `url` | `Exact`, `Contains`, `Regex` |
+| `user_agent` | `user_agent` | `Exact`, `Contains` |
+| `header` | `header`, `value` | `Exact`, `Contains` |
+| `header_exists` | `header` | presence check |
+| `http_method` | `http_method` | exact (`GET`, `POST`, etc.) |
+| `country` | `country_code` | ISO 3166-1 alpha-2 list |
+| `content_type` | `content_type` | list |
+| `file_extension` | `file_extension` | list |
+| `organization` | `organization` | exact |
+| `owner_types` | `owner_types` | list (`COMMERCIAL`, `ISP`, etc.) |
+| `request_rate` | `path_pattern`, `requests`, `time` | rate threshold |
+| `tags` | `tags` | system tag IDs |
+| `user_defined_tags` | `tags` | user-defined tag names |
+
+All conditions support an optional `negation = true` field to invert the match.
+
+<Info>
+When multiple custom rules match the same request, the action with the highest priority takes effect. Priority order (highest first): Allow > Block > Captcha > JS Challenge > Monitor. Tag actions run first and do not stop rule evaluation.
+</Info>
+
+### Create a rate-limiting rule
+
+The following configuration blocks requests from a single IP that exceed a rate threshold.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the highlighted values:
+
+```hcl
+resource "gcore_waap_custom_rule" "rate_limit" {
+  domain_id = gcore_waap_domain.domain.id
+  name      = "Rate limit API endpoint"
+  enabled   = true
+
+  action {
+    block {
+      status_code     = 429
+      action_duration = "10m"
+    }
+  }
+
+  conditions {
+    request_rate {
+      path_pattern = "^/api/"
+      requests     = 100
+      time         = 60
+      http_methods = ["GET", "POST"]
+    }
+  }
+}
+```
+
+3. Configure the `request_rate` condition.
+
+- `path_pattern` — a regular expression matching the URL path.
+- `requests` — number of requests within the time window that triggers the condition.
+- `time` — time window in seconds.
+- (optional) `http_methods` — restrict the rate check to specific HTTP methods.
+- (optional) `ips` — restrict the rate check to specific source IPs.
+- (optional) `user_defined_tag` — restrict the rate check to requests carrying a specific user-defined tag.
+
+## Advanced rules
+
+<Info>
+Advanced rules require an Enterprise WAAP plan. If your account does not include this feature, the API returns a 401 error. Contact [Gcore support](https://gcore.com/docs/support) to upgrade.
+</Info>
+
+Advanced rules use an expression language to match requests with greater precision than custom rules. The expression is evaluated per request, and the rule fires when it returns true.
+
+### Create an advanced rule
+
+The following configuration blocks requests from a specific IP in the access phase.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the highlighted values:
+
+```hcl
+resource "gcore_waap_advanced_rule" "block_expression" {
+  domain_id   = gcore_waap_domain.domain.id
+  name        = "Block specific IP in access phase"
+  enabled     = true
+  description = "Block a known bad actor by IP"
+  phase       = "access"
+  source      = "request.ip == '203.0.113.99'"
+
+  action {
+    block {
+      status_code     = 403
+      action_duration = "1h"
+    }
+  }
+}
+```
+
+3. Configure the rule.
+
+- `source` — the match expression. Uses request object fields such as `request.ip`, `request.uri`, `request.method`, `request.headers['name']`. Refer to the [advanced rule objects](/waap/waap-rules/advanced-rules/advanced-rule-objects) reference for the full expression syntax.
+- `phase` — the processing phase. Use `"access"` to evaluate the rule before the request is forwarded to the origin.
+- `action` — same action types as custom rules: `block`, `allow`, `captcha`, `handshake`, `monitor`, `tag`.
+
+## Firewall rules
+
+Firewall rules are IP-focused access controls. They support a single condition per rule and are simpler than custom rules.
+
+### Create a firewall rule
+
+The following configuration blocks a range of IP addresses.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the highlighted values:
+
+```hcl
+resource "gcore_waap_firewall_rule" "block_ip_range" {
+  domain_id   = gcore_waap_domain.domain.id
+  name        = "Block IP range"
+  description = "Block a suspicious IP range"
+  enabled     = true
+
+  action {
+    block {
+      status_code     = 403
+      action_duration = "12h"
+    }
+  }
+
+  conditions {
+    ip_range {
+      lower_bound = "192.168.1.1"
+      upper_bound = "192.168.1.254"
+    }
+  }
+}
+```
+
+3. Configure the rule.
+
+- `domain_id` — the ID of the WAAP domain.
+- `name` — a descriptive name.
+- `enabled` — set to `true` to activate the rule.
+- `action` — `block` or `allow`. Supports the same `status_code` and `action_duration` fields as custom rules.
+- `conditions` — one condition block. Supports `ip`, `ip_range`, `country`, `url`, `user_agent`, `header`, `header_exists`, `http_method`, and `request_rate`. All condition types support `negation = true`.
+
+<Info>
+Use firewall rules for simple IP allowlists and blocklists. For multi-condition logic or rate limiting, use [custom rules](#custom-rules) instead.
+</Info>
+
+## API paths
+
+<Info>
+API paths and API Discovery require an Enterprise WAAP plan. If your account does not include this feature, the API returns a 401 error. Contact [Gcore support](https://gcore.com/docs/support) to upgrade.
+</Info>
+
+API paths define individual endpoints for the [API Discovery and Protection](/waap/api-discovery-and-protection) feature. Defining paths explicitly lets WAAP enforce API-specific protection independently of traffic-based discovery.
+
+### Add an API path
+
+The following configuration registers a single API endpoint for a domain.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the highlighted values:
+
+```hcl
+resource "gcore_waap_api_path" "get_items" {
+  domain_id   = gcore_waap_domain.domain.id
+  path        = "/v1/items/{id}"
+  method      = "GET"
+  http_scheme = "HTTPS"
+  api_version = "v1"
+  tags        = ["catalog", "public"]
+  api_groups  = ["items"]
+}
+```
+
+3. Configure the API path.
+
+- `domain_id` — the ID of the WAAP domain.
+- `path` — the API path. Use curly braces for dynamic path segments, for example `/v1/items/{id}`.
+- `method` — the HTTP method. Must be one of: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `TRACE`, `HEAD`, `OPTIONS`.
+- `http_scheme` — the scheme. Must be `HTTP` or `HTTPS`.
+- (optional) `api_version` — the API version string, for example `"v1"`.
+- (optional) `tags` — a list of tags to associate with the path.
+- (optional) `api_groups` — a list of API group names to associate with the path.
+- (optional) `status` — the discovery status. Must be one of: `CONFIRMED_API`, `POTENTIAL_API`, `NOT_API`, `DELISTED_API`. Use `CONFIRMED_API` for manually defined paths.
+
+## Custom response pages
+
+Custom response pages replace the default WAAP challenge and block pages with branded content. A page set is created once and assigned to one or more domains.
+
+### Create a custom page set
+
+The following configuration creates a page set with custom block and CAPTCHA pages.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the highlighted values:
+
+```hcl
+resource "gcore_waap_custom_page_set" "pages" {
+  name    = "brand-pages"
+  domains = [gcore_waap_domain.domain.id]
+
+  block {
+    enabled = true
+    header  = "Access Denied"
+    title   = "This request has been blocked"
+    text    = "If you believe this is a mistake, contact support."
+  }
+
+  captcha {
+    enabled = true
+    header  = "Security Check"
+    title   = "Please confirm you are human"
+    text    = "Complete the challenge below to continue."
+    error   = "CAPTCHA validation failed. Please try again."
+  }
+
+  handshake {
+    enabled = true
+    header  = "Verifying your browser"
+    title   = "Please wait..."
+  }
+}
+```
+
+3. Configure the page set.
+
+- `name` — a unique name for the page set.
+- `domains` — a list of WAAP domain IDs to assign this page set to.
+
+4. Configure page types. Each type is an optional block with `enabled = true` to activate it:
+
+| Block | Displayed when |
+|-------|---------------|
+| `block` | A request is blocked by a rule |
+| `block_csrf` | A request is blocked due to a CSRF violation |
+| `captcha` | A CAPTCHA challenge is presented |
+| `cookie_disabled` | Cookies are disabled in the client browser |
+| `handshake` | A JS challenge (browser validation) is presented |
+| `javascript_disabled` | JavaScript is disabled in the client browser |
+
+Each page block supports:
+
+- `header` — text displayed in the page header.
+- `title` — text displayed as the page title (not available for `cookie_disabled` and `javascript_disabled`).
+- `text` — body text.
+- `logo` — base64-encoded image (`data:image/png;base64,...`). Supported formats: JPEG, PNG, JPG. Maximum dimensions: 450 x 130 px.
+- `error` — error message text (available for `captcha` only).
+
+## Security insight silence rules
+
+<Info>
+Security Insights require an Enterprise WAAP plan. If your account does not include this feature, the API returns a 401 error. Contact [Gcore support](https://gcore.com/docs/support) to upgrade.
+</Info>
+
+Security insights are alerts generated when WAAP detects configuration issues or patterns that indicate a security risk. Silence rules suppress specific insight types to reduce noise for known or accepted conditions.
+
+### Create a silence rule
+
+The following configuration silences a specific insight type for a limited period.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the highlighted values:
+
+```hcl
+data "gcore_waap_security_insight_type" "attack_on_disabled_policy" {
+  name = "Attack on disabled policy"
+}
+
+resource "gcore_waap_security_insight_silence" "silence" {
+  domain_id    = gcore_waap_domain.domain.id
+  insight_type = data.gcore_waap_security_insight_type.attack_on_disabled_policy.id
+  comment      = "Policy disabled intentionally for testing"
+  author       = "ops-team"
+  labels = {
+    environment = "staging"
+    reason      = "planned-test"
+  }
+  expire_at = "2026-12-31T00:00:00Z"
+}
+```
+
+3. Configure the silence rule.
+
+- `domain_id` — the ID of the WAAP domain.
+- `insight_type` — the slug of the insight type to silence. Use the `gcore_waap_security_insight_type` data source to look up a type by name, or retrieve the slug from the WAAP API at `/v1/security-insights/types`.
+- `comment` — a description of why the insight is being silenced.
+- `author` — the name or identifier of the person or team creating the silence.
+- `labels` — a map of key-value string pairs for additional context (for example, environment, ticket ID).
+- (optional) `expire_at` — the date and time when the silence expires, in ISO 8601 format (`YYYY-MM-DDTHH:MM:SSZ`). If omitted, the silence does not expire.
