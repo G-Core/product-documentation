@@ -1,0 +1,214 @@
+---
+title: Manage Storage via Terraform v0
+sidebarTitle: Manage via Terraform v0
+ai-navigation: Create and manage Gcore Object Storage and SFTP storage resources — S3 storages, buckets, SFTP storages, and SSH keys — using Terraform provider v0.
+---
+
+With the Gcore Terraform provider v0, teams define Object Storage and SFTP storage resources in configuration files and provision them consistently without clicking through the Portal.
+
+The following resources are supported: S3 Object Storage instances, S3 buckets, SFTP storage instances, and SSH keys for SFTP authentication.
+
+Provider installation and authentication are covered in the [Terraform overview](/developer-tools/terraform/overview). Storage resources require provider v0 with `permanent_api_token` authentication.
+
+## Workflow
+
+Add resource configuration to `main.tf`, then run:
+
+```sh
+terraform plan
+```
+
+Review the output, then apply:
+
+```sh
+terraform apply
+```
+
+Enter `yes` when prompted. The [getting started guide](/developer-tools/terraform/get-started-with-terraform) covers the full workflow.
+
+## S3 Object Storage
+
+S3 Object Storage is S3-compatible storage for backups, static files, and AI/ML workloads. Each storage instance has its own access and secret keys. Buckets are created inside a storage instance.
+
+### Create an S3 storage
+
+The following configuration creates an S3 storage instance.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the highlighted values:
+
+```hcl
+resource "gcore_storage_s3" "main" {
+  name     = "my-s3-storage"
+  location = "s-ed1"
+}
+
+output "s3_access_key" {
+  value     = gcore_storage_s3.main.generated_access_key
+  sensitive = true
+}
+
+output "s3_secret_key" {
+  value     = gcore_storage_s3.main.generated_secret_key
+  sensitive = true
+}
+
+output "s3_endpoint" {
+  value = gcore_storage_s3.main.generated_s3_endpoint
+}
+```
+
+3. Configure the storage.
+
+- `name` — a unique name for the storage instance.
+- `location` — the data center location. Use the identifiers from the table below:
+
+| Storage type | Location | `location` value |
+|---|---|---|
+| S3 Standard | Luxembourg-2 | `s-ed1` |
+| S3 Standard | Chicago | `s-drc2` |
+| S3 Fast | Sines-2 | `s-ndp1-2` |
+| S3 Fast | Sines-3 | `s-ndp1-3` |
+| S3 Fast | London-2 | `s-ndlo-2` |
+
+<Info>
+After creation, the access key and secret key are generated automatically. They are available as `generated_access_key` and `generated_secret_key` attributes and can be exported using `output` blocks as shown above. Store them securely — they grant full access to the storage.
+</Info>
+
+4. Available read-only attributes after creation:
+
+- `generated_access_key` — S3 access key for authentication.
+- `generated_secret_key` — S3 secret key for authentication.
+- `generated_endpoint` — the S3-compatible endpoint URL.
+- `generated_s3_endpoint` — the S3 endpoint hostname (for use with S3-compatible clients).
+- `generated_http_endpoint` — the HTTP endpoint for public access.
+
+Use these attributes to configure downstream resources, such as application environment variables or CDN origin groups.
+
+### Create an S3 bucket
+
+The following configuration creates a bucket inside an existing S3 storage.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the highlighted values:
+
+```hcl
+resource "gcore_storage_s3_bucket" "backups" {
+  name       = "backups"
+  storage_id = gcore_storage_s3.main.storage_id
+}
+
+resource "gcore_storage_s3_bucket" "assets" {
+  name       = "assets"
+  storage_id = gcore_storage_s3.main.storage_id
+}
+```
+
+3. Configure the bucket.
+
+- `name` — the bucket name. Must be globally unique across all Gcore accounts, not just within a storage instance. Use lowercase letters, numbers, and hyphens.
+- `storage_id` — the numeric ID of the parent S3 storage. Use `gcore_storage_s3.main.storage_id` to reference the storage created in the same configuration, or supply the ID directly if the storage already exists.
+
+<Info>
+A single storage instance supports up to 1000 buckets. For optimal performance, keep the number of objects per bucket under 100,000 and distribute data across multiple buckets.
+</Info>
+
+## SFTP Storage
+
+SFTP storage provides file-based access over the SFTP protocol. Authentication uses either an SSH key or a password. SSH keys must be created separately and referenced when creating the storage.
+
+### Create an SSH key
+
+SSH keys are managed independently of storage instances. Create a key first, then reference its ID when creating SFTP storage.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the highlighted values:
+
+```hcl
+resource "gcore_storage_sftp_key" "deploy_key" {
+  name = "deploy-key"
+  key  = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC..."
+}
+```
+
+3. Configure the SSH key.
+
+- `name` — a descriptive name for the key. Use letters, numbers, underscores, and dashes. Maximum 128 characters.
+- `key` — the full public key string, including the key type prefix (for example, `ssh-rsa ...` or `ssh-ed25519 ...`).
+
+<Info>
+Only the public key is stored. Keep the corresponding private key secure on the machine that will connect to the SFTP storage.
+</Info>
+
+### Create an SFTP storage
+
+The following configuration creates an SFTP storage with SSH key authentication.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the highlighted values:
+
+```hcl
+resource "gcore_storage_sftp" "files" {
+  name       = "my-sftp-storage"
+  location   = "mia"
+  ssh_key_id = [gcore_storage_sftp_key.deploy_key.key_id]
+}
+
+output "sftp_endpoint" {
+  value = gcore_storage_sftp.files.generated_sftp_endpoint
+}
+```
+
+3. Configure the storage.
+
+- `name` — a unique name for the SFTP storage instance.
+- `location` — the data center location code for the SFTP storage (for example, `"mia"` for Miami). Available locations are shown in the [Gcore Customer Portal](https://storage.gcore.com/storage/list) when creating a storage.
+- (optional) `ssh_key_id` — a list of SSH key IDs to authorize for this storage. Up to 5 keys can be attached. Use `gcore_storage_sftp_key.deploy_key.key_id` to reference a key created in the same configuration.
+- (optional) `password` — set a password for password-based SFTP authentication. Omit this field if using SSH keys only.
+- (optional) `http_servername_alias` — a custom domain alias for HTTP access to the storage. After setting this, add a CNAME record in your DNS pointing to `<storage_name>.<host>`.
+- (optional) `http_expires_header_value` — sets the value of the `Expires` HTTP header for objects served over HTTP. Default is one year.
+
+4. Available read-only attributes after creation:
+
+- `generated_sftp_endpoint` — the SFTP connection hostname. Connect using port `2200`: `sftp -P 2200 <storage_name>@<generated_sftp_endpoint>`.
+- `generated_http_endpoint` — the HTTP endpoint for browsing or downloading files over HTTP.
+
+<Info>
+After storage creation or settings updates (adding keys or changing password), provisioning may take a few minutes. The storage status is shown as orange (processing) until it turns green (ready).
+</Info>
+
+<Warning>
+The SFTP key must be deleted after the SFTP storage that uses it. If Terraform attempts to delete the key while the storage still exists, it returns a 409 error. To delete all resources cleanly, run `terraform destroy` twice, or configure `depends_on` so the key is destroyed last.
+</Warning>
+
+### Create an SFTP storage with multiple keys
+
+The following configuration attaches two SSH keys to a single SFTP storage.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below to the file and customize the highlighted values:
+
+```hcl
+resource "gcore_storage_sftp_key" "ci_key" {
+  name = "ci-pipeline-key"
+  key  = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI..."
+}
+
+resource "gcore_storage_sftp_key" "admin_key" {
+  name = "admin-key"
+  key  = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC..."
+}
+
+resource "gcore_storage_sftp" "shared" {
+  name       = "shared-sftp"
+  location   = "mia"
+  ssh_key_id = [
+    gcore_storage_sftp_key.ci_key.key_id,
+    gcore_storage_sftp_key.admin_key.key_id,
+  ]
+}
+```
+
+3. Configure the SSH key IDs list.
+
+- `ssh_key_id` — a list of one or more SSH key IDs. Both keys will be authorized to connect to the storage.
