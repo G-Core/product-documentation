@@ -3,15 +3,11 @@ title: "Deploy a Bare Metal server via API"
 sidebarTitle: "Deploy a Bare Metal server"
 ---
 
-A Bare Metal server is a physical machine allocated entirely to one tenant — no hypervisor, no shared resources. Provisioning takes 4–5 minutes and requires a quota allocation before the first server can be created.
+A Bare Metal server is a physical machine allocated entirely to one tenant — no hypervisor, no shared resources. Provisioning takes 4–5 minutes.
 
 <Info>
 A permanent [API token](/account-settings/api-tokens) is required, along with a project ID and region ID. Retrieve them from the [Gcore Customer Portal](https://portal.gcore.com) or by calling `GET /cloud/v1/projects` and `GET /cloud/v1/regions`.
 </Info>
-
-<Warning>
-Bare Metal servers require a quota allocation before the first server can be created — the default is 0. Run [Step 1](#step-1-check-your-bare-metal-quota) before proceeding, and if the limit is 0, submit a quota request first.
-</Warning>
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
@@ -19,45 +15,7 @@ export PROJECT_ID="{YOUR_PROJECT_ID}"
 export REGION_ID="{YOUR_REGION_ID}"
 ```
 
-## Step 1. Check bare metal quota
-
-Bare Metal has a separate quota from virtual machines. Check the current limit before attempting to create a server.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `flavor` | Yes | The flavor to check. Use a flavor from Step 2. |
-| `interfaces` | Yes | Planned network config — same as what will be used in creation. |
-
-<Tabs>
-  <Tab title="curl">
-    ```bash
-    curl -X POST "https://api.gcore.com/cloud/v1/bminstances/$PROJECT_ID/$REGION_ID/check_limits" \
-      -H "Authorization: APIKey $GCORE_API_KEY" \
-      -H "Content-Type: application/json" \
-      -d '{"flavor": "bm1-hf-medium", "interfaces": [{"type": "external"}]}'
-    ```
-  </Tab>
-  <Tab title="Python SDK">
-    ```python
-    import os
-    from gcore import Gcore
-
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
-    ```
-  </Tab>
-</Tabs>
-
-```json
-{
-  "baremetal_hf_count_limit": 1,    // → 0 means no quota; request an increase first
-  "baremetal_hf_count_usage": 0,
-  "baremetal_hf_count_requested": 1
-}
-```
-
-If `baremetal_hf_count_limit` is `0`, submit a [quota request](/cloud/getting-started/request-a-quota-increase) before continuing — requests are typically reviewed within 5 minutes.
-
-## Step 2. List available flavors
+## Step 1. List available flavors
 
 Bare Metal flavors describe the physical hardware: CPU model, core count, RAM, local disk, and network speed.
 
@@ -107,7 +65,7 @@ Bare Metal flavors describe the physical hardware: CPU model, core count, RAM, l
 export FLAVOR_ID="bm1a-hf-1x7950x-128-2x960gb-2x10nic"
 ```
 
-## Step 3. Find a bare metal OS image
+## Step 2. Find a bare metal OS image
 
 Bare Metal servers use a separate image pool from virtual machines. BM images are identified by an `-ironic` suffix in the name and `"is_baremetal": true` in the response. They are not returned by the standard images list — retrieve a known image ID directly or identify it from the Customer Portal under **Bare Metal → Distributions**.
 
@@ -156,7 +114,7 @@ Image confirmation response:
 export IMAGE_ID="{IMAGE_ID}"
 ```
 
-## Step 4. Create the bare metal server
+## Step 3. Create the bare metal server
 
 The request body requires a flavor, image, SSH key, and at least one network interface.
 
@@ -166,8 +124,8 @@ An SSH key must already exist in the project. Add one with `POST /cloud/v1/ssh_k
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| `flavor` | Yes | Flavor ID from Step 2. |
-| `image_id` | Yes | BM image ID from Step 3. Cannot use standard VM images. |
+| `flavor` | Yes | Flavor ID from Step 1. |
+| `image_id` | Yes | BM image ID from Step 2. Cannot use standard VM images. |
 | `ssh_key_name` | Yes | Name of an existing SSH key in the project. |
 | `interfaces[].type` | Yes | `"external"` assigns a public IP. `"subnet"` attaches to a private network. |
 
@@ -213,7 +171,7 @@ The `name_templates` field follows a region-specific pattern. If the creation re
 </Info>
 
 
-## Step 5. Wait for provisioning
+## Step 4. Wait for provisioning
 
 Bare Metal provisioning takes 4–5 minutes. Poll `GET /cloud/v1/tasks/{task_id}` every 30 seconds until `state` is `FINISHED`.
 
@@ -255,7 +213,7 @@ Bare Metal provisioning takes 4–5 minutes. Poll `GET /cloud/v1/tasks/{task_id}
 export SERVER_ID="{SERVER_ID}"
 ```
 
-## Step 6. Get the server details
+## Step 5. Get the server details
 
 Retrieve the server to confirm it is `ACTIVE` and find the assigned public IP address.
 
@@ -309,9 +267,9 @@ Bare Metal servers have no security groups — `security_groups: []` — so all 
 `volumes: []` is expected because Bare Metal servers use local NVMe storage — external block volumes cannot be attached and all data lives on the physical drives included with the server.
 </Info>
 
-## Step 7. Connect via SSH
+## Step 6. Connect via SSH
 
-Use the public IP from Step 6.
+Use the public IP from Step 5.
 
 ```bash
 ssh -i ~/.ssh/my-key ubuntu@203.0.113.10
