@@ -4,7 +4,7 @@ sidebarTitle: "Deploy a Bare Metal server"
 ai-navigation: Deploy a Gcore Bare Metal server via API by selecting a flavor and OS image, creating the server, polling the provisioning task, and connecting via SSH.
 ---
 
-A Bare Metal server is a physical machine allocated entirely to one tenant — no hypervisor, no shared resources. Provisioning takes 4–5 minutes.
+A Bare Metal server is a physical machine allocated entirely to one tenant  -  no hypervisor, no shared resources. Provisioning takes 4-5 minutes.
 
 <Info>
 A permanent [API token](/developer-tools/rest-api/authentication) is required, along with a project ID and region ID. Retrieve them from the [Gcore Customer Portal](https://portal.gcore.com) or by calling <code>GET&nbsp;/cloud/v1/projects</code> and <code>GET&nbsp;/cloud/v1/regions</code>.
@@ -45,7 +45,7 @@ Bare Metal flavors describe the physical hardware: CPU model, core count, RAM, l
 {
   "results": [
     {
-      "flavor_id": "bm1a-hf-1x7950x-128-2x960gb-2x10nic",  // → save as FLAVOR_ID
+      "flavor_id": "bm1a-hf-1x7950x-128-2x960gb-2x10nic",  // save as FLAVOR_ID
       "vcpus": 32,
       "ram": 131072,
       "hardware_description": {
@@ -60,7 +60,7 @@ Bare Metal flavors describe the physical hardware: CPU model, core count, RAM, l
 }
 ```
 
-`capacity` shows the number of available physical machines in the region — a value of `0` means the flavor is temporarily unavailable.
+`capacity` shows the number of available physical machines in the region  -  a value of `0` means the flavor is temporarily unavailable.
 
 ```bash
 export FLAVOR_ID="bm1a-hf-1x7950x-128-2x960gb-2x10nic"
@@ -68,7 +68,7 @@ export FLAVOR_ID="bm1a-hf-1x7950x-128-2x960gb-2x10nic"
 
 ## Step 2. Find a bare metal OS image
 
-Bare Metal servers use a separate image pool from virtual machines. BM images are identified by an `-ironic` suffix in the name and `"is_baremetal": true` in the response. They are not returned by the standard images list — retrieve a known image ID directly or identify it from the Customer Portal under **Bare Metal → Distributions**.
+Bare Metal servers use a separate image pool from virtual machines. BM images are identified by an `-ironic` suffix in the name and `"is_baremetal": true` in the response. They are not returned by the standard images list  -  retrieve a known image ID directly or identify it from the Customer Portal under **Bare Metal → Distributions**.
 
 <Tabs>
   <Tab title="curl">
@@ -163,18 +163,18 @@ An SSH key must already exist in the project. Add one with <code>POST&nbsp;/clou
 
 ```json
 {
-  "tasks": ["d4a4b10e-5d22-4c23-8e09-f7a3e1c1a999"]  // → save as TASK_ID
+  "tasks": ["d4a4b10e-5d22-4c23-8e09-f7a3e1c1a999"]  // save as TASK_ID
 }
 ```
 
 <Info>
-The `name_templates` field follows a region-specific pattern. If the creation returns "name templates are not allowed", the error message lists the allowed values for that region — for example, `"lux-b2-{ip_octets}"` in Luxembourg-3.
+The `name_templates` field follows a region-specific pattern. If the creation returns "name templates are not allowed", the error message lists the allowed values for that region  -  for example, `"lux-b2-{ip_octets}"` in Luxembourg-3.
 </Info>
 
 
 ## Step 4. Wait for provisioning
 
-Bare Metal provisioning takes 4–5 minutes. Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 30 seconds until `state` is `FINISHED`.
+Bare Metal provisioning takes 4-5 minutes. Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 30 seconds until `state` is `FINISHED`.
 
 <Tabs>
   <Tab title="curl">
@@ -205,7 +205,7 @@ Bare Metal provisioning takes 4–5 minutes. Poll <code>GET&nbsp;/cloud/v1/tasks
   "created_on": "2026-05-21T13:23:13",
   "finished_on": "2026-05-21T13:27:40",
   "created_resources": {
-    "instances": ["a3b4c5d6-e7f8-4abc-def0-123456789012"]  // → save as SERVER_ID
+    "instances": ["a3b4c5d6-e7f8-4abc-def0-123456789012"]  // save as SERVER_ID
   }
 }
 ```
@@ -252,7 +252,7 @@ Retrieve the server to confirm it is `ACTIVE` and find the assigned public IP ad
   },
   "addresses": {
     "pub_net": [
-      {"addr": "203.0.113.10", "type": "fixed"}  // → public IP for SSH
+      {"addr": "203.0.113.10", "type": "fixed"}  // public IP for SSH
     ]
   },
   "security_groups": [],
@@ -261,11 +261,11 @@ Retrieve the server to confirm it is `ACTIVE` and find the assigned public IP ad
 ```
 
 <Info>
-Bare Metal servers have no security groups — `security_groups: []` — so all ports are accessible by default. To restrict traffic, configure OS-level firewall rules with `ufw` or `iptables` after connecting.
+Bare Metal servers have no security groups  -  `security_groups: []`  -  so all ports are accessible by default. To restrict traffic, configure OS-level firewall rules with `ufw` or `iptables` after connecting.
 </Info>
 
 <Info>
-`volumes: []` is expected because Bare Metal servers use local NVMe storage — external block volumes cannot be attached and all data lives on the physical drives included with the server.
+`volumes: []` is expected because Bare Metal servers use local NVMe storage  -  external block volumes cannot be attached and all data lives on the physical drives included with the server.
 </Info>
 
 ## Step 6. Connect via SSH
@@ -276,7 +276,7 @@ Use the public IP from Step 5.
 ssh -i ~/.ssh/my-key ubuntu@203.0.113.10
 ```
 
-The network interface inside the OS is `bond0`, not `eth0` — Bare Metal uses LACP bonding across physical ports:
+The network interface inside the OS is `bond0`, not `eth0`  -  Bare Metal uses LACP bonding across physical ports:
 
 ```bash
 $ ip a
@@ -290,7 +290,7 @@ The server is ready. To add more public IPs to the same server, see [reserved IP
 
 ## Clean up
 
-Bare Metal deletion is asynchronous and takes 3–5 minutes — the server must be fully deprovisioned before the hardware is released.
+Bare Metal deletion is asynchronous and takes 3-5 minutes  -  the server must be fully deprovisioned before the hardware is released.
 
 <Tabs>
   <Tab title="curl">
@@ -317,8 +317,8 @@ Bare Metal deletion is asynchronous and takes 3–5 minutes — the server must 
 }
 ```
 
-Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 30 seconds until `state` is `FINISHED` — after deletion, <code>GET&nbsp;/cloud/v1/bminstances/{project_id}/{region_id}</code> returns `"count": 0`.
+Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 30 seconds until `state` is `FINISHED`  -  after deletion, <code>GET&nbsp;/cloud/v1/bminstances/{project_id}/{region_id}</code> returns `"count": 0`.
 
 <Info>
-Local NVMe storage is wiped when the server is deleted — there is no separate volume to delete, as all data on the physical drives is removed during deprovisioning.
+Local NVMe storage is wiped when the server is deleted  -  there is no separate volume to delete, as all data on the physical drives is removed during deprovisioning.
 </Info>
