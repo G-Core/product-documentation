@@ -1,0 +1,307 @@
+---
+title: "Deploy a Kubernetes cluster via API"
+sidebarTitle: "Deploy a Kubernetes cluster"
+ai-navigation: Create a managed Kubernetes cluster by selecting a version and node flavor, polling the creation task, downloading the kubeconfig, and verifying the cluster with kubectl.
+---
+
+A managed Kubernetes cluster on Gcore Cloud is provisioned in 6 API calls: list available versions, list node flavors, create the cluster, poll the task, download the kubeconfig, and verify the nodes are ready.
+
+<Info>
+A permanent [API token](/account-settings/api-tokens) is required, along with a project ID and region ID. Retrieve them from the [Gcore Customer Portal](https://portal.gcore.com) or by calling `GET /cloud/v1/projects` and `GET /cloud/v1/regions`. Use a region where Kubernetes is available — check the `has_k8s` field in the regions list, or confirm quota by calling `POST /cloud/v2/k8s/clusters/{project_id}/{region_id}/check_limits` and verifying the response is an empty object.
+</Info>
+
+Set these as environment variables for use throughout the guide:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export PROJECT_ID="{YOUR_PROJECT_ID}"
+export REGION_ID="{YOUR_REGION_ID}"
+```
+
+## Step 1. List available Kubernetes versions
+
+Each region offers a set of supported Kubernetes versions. The list changes as new versions are released and older ones are retired.
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -s "https://api.gcore.com/cloud/v2/k8s/$PROJECT_ID/$REGION_ID/create_versions" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    versions = client.cloud.k8s.list_versions(
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+    )
+    for v in versions.results:
+        print(v.version)
+    ```
+  </Tab>
+</Tabs>
+
+```json
+{
+  "count": 4,
+  "results": [
+    {"version": "v1.32.13"},
+    {"version": "v1.33.10"},
+    {"version": "v1.34.6"},
+    {"version": "v1.35.3"}
+  ]
+}
+```
+
+Pick a version and save it:
+
+```bash
+export K8S_VERSION="v1.32.13"
+```
+
+## Step 2. List available node flavors
+
+Node flavors determine the CPU and RAM of each worker node. Kubernetes-specific flavors are listed separately from VM flavors.
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -s "https://api.gcore.com/cloud/v1/k8s/$PROJECT_ID/$REGION_ID/flavors" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    flavors = client.cloud.k8s.flavors.list(
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+    )
+    for f in flavors.results:
+        print(f.flavor_id, f.vcpus, "vCPU", f.ram // 1024, "GB")
+    ```
+  </Tab>
+</Tabs>
+
+```json
+{
+  "count": 54,
+  "results": [
+    {"flavor_id": "g2-standard-2-4",  "vcpus": 2,  "ram": 4096},
+    {"flavor_id": "g2-standard-4-8",  "vcpus": 4,  "ram": 8192},
+    {"flavor_id": "g2-standard-8-16", "vcpus": 8,  "ram": 16384},
+    ...
+  ]
+}
+```
+
+Pick a flavor and save it:
+
+```bash
+export FLAVOR_ID="g2-standard-2-4"
+```
+
+## Step 3. Create the cluster
+
+A cluster is defined by its version, an SSH keypair for node access, and at least one node pool. The pool specifies the node flavor, volume type, and scaling bounds.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Cluster name, unique within the region |
+| `version` | Yes | Kubernetes version from Step 1 |
+| `keypair` | Yes | SSH key name for node access. Retrieve from `GET /cloud/v1/ssh_keys/{project_id}` |
+| `pools[].name` | Yes | Pool name, 2–20 lowercase chars, pattern `[a-z][a-z0-9-]+[a-z0-9]` |
+| `pools[].flavor_id` | Yes | Node flavor from Step 2 |
+| `pools[].min_node_count` | Yes | Minimum nodes (autoscaler lower bound) |
+| `pools[].max_node_count` | No | Maximum nodes (autoscaler upper bound) |
+| `pools[].servergroup_policy` | Yes | Node distribution policy: `soft-anti-affinity` spreads nodes across hosts where possible |
+| `pools[].boot_volume_type` | Yes | `ssd_hiiops` or `standard` |
+| `pools[].boot_volume_size` | Yes | Boot volume size in GiB, minimum 10 |
+| `pools[].is_public_ipv4` | No | `true` to assign public IPv4 to each node. Required unless a private network is specified |
+| `cni.provider` | No | Network plugin: `calico` (default) or `cilium` |
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -s -X POST "https://api.gcore.com/cloud/v2/k8s/clusters/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "my-cluster",
+        "version": "'"$K8S_VERSION"'",
+        "keypair": "{YOUR_SSH_KEY_NAME}",
+        "pools": [
+          {
+            "name": "default-pool",
+            "flavor_id": "'"$FLAVOR_ID"'",
+            "min_node_count": 1,
+            "max_node_count": 3,
+            "servergroup_policy": "soft-anti-affinity",
+            "boot_volume_type": "ssd_hiiops",
+            "boot_volume_size": 50,
+            "is_public_ipv4": true
+          }
+        ],
+        "cni": {"provider": "calico"}
+      }'
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    task_id_list = client.cloud.k8s.clusters.create(
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+        name="my-cluster",
+        version=os.environ["K8S_VERSION"],
+        keypair="{YOUR_SSH_KEY_NAME}",
+        pools=[{
+            "name": "default-pool",
+            "flavor_id": os.environ["FLAVOR_ID"],
+            "min_node_count": 1,
+            "max_node_count": 3,
+            "servergroup_policy": "soft-anti-affinity",
+            "boot_volume_type": "ssd_hiiops",
+            "boot_volume_size": 50,
+            "is_public_ipv4": True,
+        }],
+        cni={"provider": "calico"},
+    )
+    print(task_id_list.tasks[0])
+    ```
+  </Tab>
+</Tabs>
+
+```json
+{
+  "tasks": ["6fc18ce7-2988-41a5-99c0-86e88d548283"]  // → save as TASK_ID
+}
+```
+
+```bash
+export TASK_ID="{TASK_ID}"
+```
+
+## Step 4. Poll the task
+
+Cluster creation takes about 2–3 minutes. Poll the task every 5 seconds until `state` is `FINISHED`.
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -s "https://api.gcore.com/cloud/v1/tasks/$TASK_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    task = client.cloud.tasks.poll(
+        task_id_list.tasks[0],
+        polling_interval_seconds=5,
+        polling_timeout_seconds=300,
+    )
+    cluster_name = "my-cluster"
+    print("Cluster ready:", cluster_name)
+    ```
+  </Tab>
+</Tabs>
+
+While provisioning, the response shows:
+
+```json
+{
+  "id": "6fc18ce7-2988-41a5-99c0-86e88d548283",
+  "state": "RUNNING",
+  "task_type": "create_k8s_cluster_v2"
+}
+```
+
+When complete:
+
+```json
+{
+  "id": "6fc18ce7-2988-41a5-99c0-86e88d548283",
+  "state": "FINISHED",
+  "created_resources": {
+    "k8s_clusters": ["1231e6b9-c728-4d81-a77d-80ed18154aee"]  // → cluster UUID
+  }
+}
+```
+
+## Step 5. Download the kubeconfig
+
+The kubeconfig file contains the cluster API server address, CA certificate, and client credentials for kubectl. It expires after two years — download a fresh copy from this endpoint if access stops working.
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    CLUSTER_NAME="my-cluster"
+
+    curl -s "https://api.gcore.com/cloud/v2/k8s/clusters/$PROJECT_ID/$REGION_ID/$CLUSTER_NAME/config" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    kubeconfig = client.cloud.k8s.clusters.kubeconfig.get(
+        cluster_name="my-cluster",
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+    )
+    print(kubeconfig.config)  # full YAML string
+    ```
+  </Tab>
+</Tabs>
+
+```json
+{
+  "config": "apiVersion: v1\nclusters:\n- cluster:\n    certificate-authority-data: ...\n    server: https://{REGION_ID}-{PROJECT_ID}-my-cluster.mkaas.k1.{region}.cloud.gcore.dev:443\n  name: my-cluster\n...",
+  "host": "https://{REGION_ID}-{PROJECT_ID}-my-cluster.mkaas.k1.{region}.cloud.gcore.dev:443",
+  "created_at": "2026-05-27T08:04:02Z",
+  "expires_at": "2028-05-26T08:04:02Z"   // → renew before this date
+}
+```
+
+Save the `config` field to `~/.kube/config`:
+
+```bash
+curl -s "https://api.gcore.com/cloud/v2/k8s/clusters/$PROJECT_ID/$REGION_ID/$CLUSTER_NAME/config" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  | python3 -c "import sys,json; print(json.load(sys.stdin)['config'])" \
+  > ~/.kube/config
+```
+
+Install [kubectl](https://kubernetes.io/docs/tasks/tools/) if not already present.
+
+## Step 6. Verify the cluster
+
+Confirm the node is ready and deploy a test workload.
+
+```bash
+kubectl get nodes
+```
+
+```
+NAME                     STATUS   ROLES    AGE   VERSION
+lux-c2-10-20-30-40       Ready    <none>   2m    v1.32.13
+```
+
+Deploy an nginx pod to confirm the cluster can schedule workloads:
+
+```bash
+kubectl run nginx --image=nginx --port=80
+kubectl get pods
+```
+
+```
+NAME    READY   STATUS    RESTARTS   AGE
+nginx   1/1     Running   0          30s
+```
+
+The cluster is operational.
