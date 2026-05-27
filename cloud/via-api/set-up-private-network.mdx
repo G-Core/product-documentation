@@ -4,7 +4,7 @@ sidebarTitle: "Set up a private network"
 ai-navigation: Create a Gcore Cloud private network with a subnet and router via API, deploy two VMs on it, and verify private connectivity between instances.
 ---
 
-A private network connects VMs over an isolated Layer 2 segment â€” traffic between them never leaves the data center and is not routed through the public internet. Setting up the network, subnet, and two VMs inside it takes 6 API calls.
+A private network connects VMs over an isolated Layer 2 segment — traffic between them never leaves the data center and is not routed through the public internet. Setting up the network, subnet, and two VMs inside it takes 6 API calls.
 
 <Info>
 A permanent [API token](/developer-tools/rest-api/authentication) is required, along with a project ID and region ID. Retrieve them from the [Gcore Customer Portal](https://portal.gcore.com) or by calling <code>GET&nbsp;/cloud/v1/projects</code> and <code>GET&nbsp;/cloud/v1/regions</code>.
@@ -18,7 +18,7 @@ export REGION_ID="{YOUR_REGION_ID}"
 
 ## Step 1. Create a private network
 
-A network is the top-level isolation boundary. When a network is created, a router with SNAT is automatically provisioned â€” VMs in the network can reach the internet through the router without a public IP.
+A network is the top-level isolation boundary. When a network is created, a router with SNAT is automatically provisioned — VMs in the network can reach the internet through the router without a public IP.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
@@ -52,7 +52,7 @@ A network is the top-level isolation boundary. When a network is created, a rout
 
 ```json
 {
-  "tasks": ["d4a4b10e-5d22-4c23-8e09-f7a3e1c1a999"]  // â†’ save as NET_TASK_ID
+  "tasks": ["d4a4b10e-5d22-4c23-8e09-f7a3e1c1a999"]  // → save as NET_TASK_ID
 }
 ```
 
@@ -62,7 +62,7 @@ Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `stat
 {
   "state": "FINISHED",
   "created_resources": {
-    "networks": ["b39792c3-3160-4356-912e-ba396c95cdcf"]  // â†’ save as NETWORK_ID
+    "networks": ["b39792c3-3160-4356-912e-ba396c95cdcf"]  // → save as NETWORK_ID
   }
 }
 ```
@@ -113,7 +113,7 @@ A subnet defines the IP address range assigned to VMs in the network.
 
 ```json
 {
-  "tasks": ["f1e2d3c4-b5a6-4789-ab12-cd34ef567890"]  // â†’ save as SUB_TASK_ID
+  "tasks": ["f1e2d3c4-b5a6-4789-ab12-cd34ef567890"]  // → save as SUB_TASK_ID
 }
 ```
 
@@ -123,7 +123,7 @@ Poll until `FINISHED`:
 {
   "state": "FINISHED",
   "created_resources": {
-    "subnets": ["ee2402d0-f0cd-4503-9b75-69be1d11c5f1"]  // â†’ save as SUBNET_ID
+    "subnets": ["ee2402d0-f0cd-4503-9b75-69be1d11c5f1"]  // → save as SUBNET_ID
   }
 }
 ```
@@ -132,10 +132,10 @@ Poll until `FINISHED`:
 export SUBNET_ID="{SUBNET_ID}"
 ```
 
-Once the subnet is created, it is automatically attached to the router provisioned in Step 1 â€” no explicit router configuration is needed.
+Once the subnet is created, it is automatically attached to the router provisioned in Step 1 — no explicit router configuration is needed.
 
 <Tip>
-To verify the auto-created router and confirm the subnet is attached, call <code>GET&nbsp;/cloud/v1/routers/{project_id}/{region_id}</code> â€” the response shows the router's external gateway IP and the subnet in its `interfaces` list.
+To verify the auto-created router and confirm the subnet is attached, call <code>GET&nbsp;/cloud/v1/routers/{project_id}/{region_id}</code> — the response shows the router's external gateway IP and the subnet in its `interfaces` list.
 </Tip>
 
 ## Step 3. Create the first VM
@@ -206,7 +206,7 @@ Create a VM with both a private interface (for internal communication) and an ex
 
 ```json
 {
-  "tasks": ["a1b2c3d4-..."]  // â†’ save as VM1_TASK_ID
+  "tasks": ["a1b2c3d4-..."]  // → save as VM1_TASK_ID
 }
 ```
 
@@ -214,7 +214,7 @@ Poll until `FINISHED` and extract the instance ID from `created_resources.instan
 
 ## Step 4. Create the second VM
 
-The second VM uses the same request as Step 3 â€” change only the `name` field. Both VMs land on the same subnet and receive private IPs from the same `10.0.1.0/24` range.
+The second VM uses the same request as Step 3 — change only the `name` field. Both VMs land on the same subnet and receive private IPs from the same `10.0.1.0/24` range.
 
 ```bash
 # Same request as Step 3, change the name
@@ -234,10 +234,10 @@ The private IPs are in `addresses` under the network name (e.g., `"private-net"`
 {
   "addresses": {
     "private-net": [
-      {"addr": "10.0.1.5", "type": "fixed"}   // â†’ VM1 private IP
+      {"addr": "10.0.1.5", "type": "fixed"}   // → VM1 private IP
     ],
     "pub_net": [
-      {"addr": "203.0.113.X", "type": "fixed"} // â†’ public IP for SSH
+      {"addr": "203.0.113.X", "type": "fixed"} // → public IP for SSH
     ]
   }
 }
@@ -274,10 +274,10 @@ PING 10.0.1.6 (10.0.1.6) 56(84) bytes of data.
 Sub-millisecond round-trip times confirm both VMs are on the same network segment.
 
 <Info>
-The default security group allows ICMP between VMs â€” if ping fails, check <code>GET&nbsp;/cloud/v1/instances/{project_id}/{region_id}/{instance_id}</code> and verify `security_groups` is not empty. If it is, attach the default group using <code>POST&nbsp;/cloud/v1/instances/{project_id}/{region_id}/{instance_id}/addsecuritygroup</code>.
+The default security group allows ICMP between VMs — if ping fails, check <code>GET&nbsp;/cloud/v1/instances/{project_id}/{region_id}/{instance_id}</code> and verify `security_groups` is not empty. If it is, attach the default group using <code>POST&nbsp;/cloud/v1/instances/{project_id}/{region_id}/{instance_id}/addsecuritygroup</code>.
 </Info>
 
-The private network is ready â€” to isolate backend services completely, remove the external interface and route all external access through a [load balancer](/cloud/via-api/deploy-load-balanced-app) or a single bastion VM.
+The private network is ready — to isolate backend services completely, remove the external interface and route all external access through a [load balancer](/cloud/via-api/deploy-load-balanced-app) or a single bastion VM.
 
 ## Clean up
 
