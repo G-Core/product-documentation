@@ -1,10 +1,10 @@
----
+﻿---
 title: "Create a Bare Metal server"
 sidebarTitle: "Create a Bare Metal server"
-ai-navigation: Create a Bare Metal server on dedicated physical hardware via Customer Portal by selecting region, OS, and server type, or deploy via REST API by selecting a flavor and image, polling the provisioning task, and connecting via SSH.
+ai-navigation: Create a Bare Metal server on dedicated physical hardware via Customer Portal or REST API.
 ---
 
-import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+import { MethodSwitch, MethodSection, ApiH2, ApiH3 } from "/snippets/method-switch.jsx";
 
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
@@ -208,7 +208,7 @@ export PROJECT_ID="{YOUR_PROJECT_ID}"
 export REGION_ID="{YOUR_REGION_ID}"
 ```
 
-## Step 1. List available flavors
+<ApiH2>Step 1. List available flavors</ApiH2>
 
 Bare Metal flavors describe the physical hardware: CPU model, core count, RAM, local disk, and network speed.
 
@@ -260,7 +260,7 @@ The API returns:
 export FLAVOR_ID="bm1a-hf-1x7950x-128-2x960gb-2x10nic"
 ```
 
-## Step 2. Find a bare metal OS image
+<ApiH2>Step 2. Find a bare metal OS image</ApiH2>
 
 Bare Metal servers use a separate image pool from virtual machines. BM images are identified by an `-ironic` suffix in the name and `"is_baremetal": true` in the response. They are not returned by the standard images list - retrieve a known image ID directly or identify it from the Customer Portal under **Bare Metal > Distributions**.
 
@@ -309,7 +309,7 @@ Image confirmation response:
 export IMAGE_ID="{IMAGE_ID}"
 ```
 
-## Step 3. Create the bare metal server
+<ApiH2>Step 3. Create the bare metal server</ApiH2>
 
 The request body requires a flavor, image, SSH key, and at least one network interface.
 
@@ -367,7 +367,7 @@ The API returns:
 The `name_templates` field follows a region-specific pattern. If the creation returns "name templates are not allowed", the error message lists the allowed values for that region - for example, `"lux-b2-{ip_octets}"` in Luxembourg-3.
 </Info>
 
-## Step 4. Wait for provisioning
+<ApiH2>Step 4. Wait for provisioning</ApiH2>
 
 Bare Metal provisioning takes 4-5 minutes. Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 30 seconds until `state` is `FINISHED`.
 
@@ -411,7 +411,7 @@ The API returns:
 export SERVER_ID="{SERVER_ID}"
 ```
 
-## Step 5. Get the server details
+<ApiH2>Step 5. Get the server details</ApiH2>
 
 Retrieve the server to confirm it is `ACTIVE` and find the assigned public IP address.
 
@@ -467,7 +467,7 @@ Bare Metal servers have no security groups - `security_groups: []` - so all port
 `volumes: []` is expected because Bare Metal servers use local NVMe storage - external block volumes cannot be attached and all data lives on the physical drives included with the server.
 </Info>
 
-## Step 6. Connect via SSH
+<ApiH2>Step 6. Connect via SSH</ApiH2>
 
 Use the public IP from Step 5.
 
@@ -485,7 +485,7 @@ $ ip a
 
 `bond0` is the public interface. `bond0.<vlan_id>` sub-interfaces appear if private networks were attached at creation.
 
-## Clean up
+<ApiH2>Clean up</ApiH2>
 
 Bare Metal deletion is asynchronous and takes 3-5 minutes - the server must be fully deprovisioned before the hardware is released.
 
