@@ -1,0 +1,203 @@
+---
+title: Copy resources across environments
+sidebarTitle: Copy resources
+ai-navigation: Replicate Gcore infrastructure across preproduction and production environments using Terraform variables, tfvars files, and workspaces. Applies to CDN, Cloud, and DNS resources with both provider v0 and v2.
+---
+
+Use Terraform variables and workspaces to maintain identical resource configurations across environments such as preproduction and production. This workflow applies to all Gcore Terraform resources and is compatible with both provider v0 and v2.
+
+<Tip>
+Configure [API keys](/account-settings/api-tokens#create-a-permanent-api-token) and [initialize Terraform](/developer-tools/terraform/get-started-with-terraform) before proceeding.
+</Tip>
+
+## Step 1. Define variables
+
+Create a `variables.tf` file to declare the parameters that differ between environments. The following variables are common across all products:
+
+```hcl
+// variables.tf
+variable "api_token" {
+  description = "API token for access to your Gcore account"
+  type        = string
+  sensitive   = true
+}
+
+variable "api_endpoint" {
+  description = "Gcore API URL"
+  type        = string
+}
+```
+
+Add the resource-specific variable for the target product:
+
+<Tabs>
+  <Tab title="CDN">
+    ```hcl
+    variable "cdn_resource_cname" {
+      description = "Custom domain of the CDN resource"
+      type        = string
+    }
+    ```
+  </Tab>
+  <Tab title="Cloud">
+    ```hcl
+    variable "network_name" {
+      description = "Name of the Cloud network"
+      type        = string
+    }
+    ```
+  </Tab>
+  <Tab title="DNS">
+    ```hcl
+    variable "zone_name" {
+      description = "DNS zone name"
+      type        = string
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Step 2. Configure environment variables
+
+Create a separate `.tfvars` file for each environment. The common fields are identical across products:
+
+```hcl
+api_token    = "your-api-token"
+api_endpoint = "https://api.gcore.com"
+```
+
+Add the resource-specific value for each environment:
+
+<Tabs>
+  <Tab title="CDN">
+    ```hcl
+    // preprod.tfvars
+    api_token          = "your-preprod-api-token"
+    api_endpoint       = "https://api.gcore.com"
+    cdn_resource_cname = "preprod.example.com"
+    ```
+
+    ```hcl
+    // production.tfvars
+    api_token          = "your-production-api-token"
+    api_endpoint       = "https://api.gcore.com"
+    cdn_resource_cname = "prod.example.com"
+    ```
+  </Tab>
+  <Tab title="Cloud">
+    ```hcl
+    // preprod.tfvars
+    api_token    = "your-preprod-api-token"
+    api_endpoint = "https://api.gcore.com"
+    network_name = "preprod-network"
+    ```
+
+    ```hcl
+    // production.tfvars
+    api_token    = "your-production-api-token"
+    api_endpoint = "https://api.gcore.com"
+    network_name = "prod-network"
+    ```
+  </Tab>
+  <Tab title="DNS">
+    ```hcl
+    // preprod.tfvars
+    api_token    = "your-preprod-api-token"
+    api_endpoint = "https://api.gcore.com"
+    zone_name    = "preprod.example.com"
+    ```
+
+    ```hcl
+    // production.tfvars
+    api_token    = "your-production-api-token"
+    api_endpoint = "https://api.gcore.com"
+    zone_name    = "prod.example.com"
+    ```
+  </Tab>
+</Tabs>
+
+## Step 3. Write the resource configuration
+
+Add the following to `main.tf`. The provider block is identical for all products:
+
+```hcl
+terraform {
+  required_providers {
+    gcore = {
+      source  = "G-Core/gcore"
+      version = ">= 0.8.20"
+    }
+  }
+}
+
+provider "gcore" {
+  permanent_api_token = var.api_token
+  api_endpoint        = var.api_endpoint
+}
+```
+
+Add the resource block for the target product:
+
+<Tabs>
+  <Tab title="CDN">
+    ```hcl
+    resource "gcore_cdn_resource" "example" {
+      cname  = var.cdn_resource_cname
+      origin = "example.com"
+    }
+    ```
+  </Tab>
+  <Tab title="Cloud">
+    ```hcl
+    resource "gcore_network" "example" {
+      name = var.network_name
+    }
+    ```
+  </Tab>
+  <Tab title="DNS">
+    ```hcl
+    resource "gcore_dns_zone" "example" {
+      name = var.zone_name
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Step 4. Initialize Terraform
+
+From the project directory, run:
+
+```bash
+terraform init
+```
+
+This downloads the Gcore provider and prepares the working directory.
+
+## Step 5. Use Terraform workspaces
+
+Terraform workspaces manage multiple environments from the same configuration — each workspace maintains an independent state file, so changes in `preprod` do not affect `production`.
+
+Create workspaces for preproduction and production:
+
+```bash
+terraform workspace new preprod
+terraform workspace new production
+```
+
+## Step 6. Apply the configuration
+
+Switch to the preproduction workspace and apply the configuration:
+
+```bash
+terraform workspace select preprod
+terraform apply -var-file=preprod.tfvars
+```
+
+Then switch to the production workspace and apply the configuration there as well:
+
+```bash
+terraform workspace select production
+terraform apply -var-file=production.tfvars
+```
+
+The same configuration now runs in both environments, with each workspace tracking its own state independently.
