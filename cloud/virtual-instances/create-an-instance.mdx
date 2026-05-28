@@ -341,13 +341,7 @@ After that, the server will be automatically moved to the **Power on** status. Y
 Creating a Linux VM via the REST API takes three calls: list available images, list flavors, then submit the create request. The instance is reachable via SSH within about 30 seconds of the task finishing.
 
 <Info>
-A permanent [API token](/account-settings/api-tokens) is required, along with a project ID and region ID.
-
-- **Project ID**: visible in the Customer Portal on the **Projects** page - switch to grid view to see IDs next to each project name.
-- **Region ID**: use the [list regions](https://gcore.com/docs/api-reference/cloud/regions/list-regions) reference page to find the numeric ID for the region.
-- To retrieve both programmatically, see [list projects](https://gcore.com/docs/api-reference/cloud/projects/list-projects) and list regions.
-
-An SSH key must already be registered in the project. To add one, see the [SSH key](#add-an-ssh-key) section below.
+A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://gcore.com/docs/api-reference/cloud/projects/list-projects) and [region ID](https://gcore.com/docs/api-reference/cloud/regions/list-regions). If no SSH key exists in the project yet, [add one](#add-an-ssh-key) before running the examples.
 </Info>
 
 Open a bash terminal and set these as environment variables before running the examples:
@@ -358,7 +352,153 @@ export PROJECT_ID="{YOUR_PROJECT_ID}"
 export REGION_ID="{YOUR_REGION_ID}"
 ```
 
-## Step 1. Choose an OS image
+## Quickstart
+
+Complete scripts for the full flow. See the step-by-step section below for details on each call.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(
+        api_key=os.environ["GCORE_API_KEY"],
+        cloud_project_id=int(os.environ["PROJECT_ID"]),
+        cloud_region_id=int(os.environ["REGION_ID"]),
+    )
+
+    # Step 1. Find Ubuntu 22.04 image
+    images = client.cloud.instances.images.list()
+    image = next(img for img in images.results if "ubuntu-22.04" in img.name and "x64" in img.name)
+    print(f"Image: {image.name} ({image.id}), min_disk={image.min_disk} GiB")
+
+    # Step 2. Pick a flavor
+    flavors = client.cloud.instances.flavors.list()
+    flavor = next(f for f in flavors.results if f.flavor_id == "g1-standard-2-4")
+    print(f"Flavor: {flavor.flavor_id} ({flavor.vcpus} vCPU / {flavor.ram // 1024} GB RAM)")
+
+    # Step 3. Create instance and wait (create_and_poll polls automatically)
+    instance = client.cloud.instances.create_and_poll(
+        name="my-vm",
+        flavor=flavor.flavor_id,
+        ssh_key_name="my-key",
+        interfaces=[{"type": "external"}],
+        volumes=[{
+            "source": "image",
+            "image_id": image.id,
+            "size": max(20, image.min_disk),
+            "boot_index": 0,
+        }],
+    )
+    print(f"Instance ID: {instance.id}, Status: {instance.status}")
+
+    # Step 5. Get public IP
+    for ifaces in instance.addresses.values():
+        for iface in ifaces:
+            print(f"Public IP: {iface.addr}")
+
+    # Step 6. Connect via SSH
+    for ifaces in instance.addresses.values():
+        for iface in ifaces:
+            print(f"ssh ubuntu@{iface.addr}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strings"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        client := gcore.NewClient(
+            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
+        )
+
+        // Step 1. Find Ubuntu 22.04 image
+        imageList, err := client.Cloud.Instances.Images.List(context.TODO(), cloud.InstanceImageListParams{
+            ProjectID: gcore.Int(1),
+            RegionID:  gcore.Int(1),
+        })
+        if err != nil {
+            panic(err.Error())
+        }
+        var imageID string
+        for _, img := range imageList.Results {
+            if strings.Contains(img.Name, "ubuntu-22.04") && strings.Contains(img.Name, "x64") {
+                imageID = img.ID
+                fmt.Printf("Image: %s (%s)\n", img.Name, img.ID)
+                break
+            }
+        }
+
+        // Step 2. Pick a flavor
+        flavorList, err := client.Cloud.Instances.Flavors.List(context.TODO(), cloud.InstanceFlavorListParams{
+            ProjectID: gcore.Int(1),
+            RegionID:  gcore.Int(1),
+        })
+        if err != nil {
+            panic(err.Error())
+        }
+        flavorID := "g1-standard-2-4"
+        for _, f := range flavorList.Results {
+            if f.FlavorID == flavorID {
+                fmt.Printf("Flavor: %s (%d vCPU / %d MB RAM)\n", f.FlavorID, f.Vcpus, f.Ram)
+                break
+            }
+        }
+
+        // Step 3. Create instance and wait (NewAndPoll polls automatically)
+        instance, err := client.Cloud.Instances.NewAndPoll(context.TODO(), cloud.InstanceNewParams{
+            ProjectID:    gcore.Int(1),
+            RegionID:     gcore.Int(1),
+            Flavor:       flavorID,
+            NameTemplate: gcore.String("my-vm-{ip_octets}"),
+            SSHKeyName:   gcore.String("my-key"),
+            Interfaces: []cloud.InstanceNewParamsInterfaceUnion{{
+                OfExternal: &cloud.InstanceNewParamsInterfaceExternal{},
+            }},
+            Volumes: []cloud.InstanceNewParamsVolumeUnion{{
+                OfImage: &cloud.InstanceNewParamsVolumeImage{
+                    ImageID:   imageID,
+                    Size:      gcore.Int(20),
+                    BootIndex: gcore.Int(0),
+                },
+            }},
+        })
+        if err != nil {
+            panic(err.Error())
+        }
+        fmt.Printf("Instance ID: %s, Status: %s\n", instance.ID, instance.Status)
+
+        // Step 5. Get public IP
+        // Step 6. Connect via SSH
+        for _, addrs := range instance.Addresses {
+            for _, addr := range addrs {
+                fmt.Printf("ssh ubuntu@%s\n", addr.Addr)
+            }
+        }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+Each step below explains what the call does, which parameters matter, and what the response looks like. Use this section to understand the flow or to debug a specific step.
+
+<Accordion title="Show all steps">
+
+### Step 1. Choose an OS image
 
 The image determines the operating system and sets the minimum boot volume size for Step 3.
 
@@ -411,25 +551,25 @@ The image determines the operating system and sets the minimum boot volume size 
     curl "https://api.gcore.com/cloud/v1/images/$PROJECT_ID/$REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
+
+    Response:
+
+    ```json
+    {
+      "results": [
+        {
+          "id": "e460e48c-6836-447e-bc9c-16fc4225d318",   // save as IMAGE_ID
+          "name": "ubuntu-22.04-x64",
+          "os_distro": "ubuntu",
+          "os_version": "22.04",
+          "architecture": "x86_64",
+          "min_disk": 5
+        }
+      ]
+    }
+    ```
   </Tab>
 </Tabs>
-
-The API returns:
-
-```json
-{
-  "results": [
-    {
-      "id": "e460e48c-6836-447e-bc9c-16fc4225d318",
-      "name": "ubuntu-22.04-x64",
-      "os_distro": "ubuntu",
-      "os_version": "22.04",
-      "architecture": "x86_64",
-      "min_disk": 5
-    }
-  ]
-}
-```
 
 Save the `id` of the chosen image. The `min_disk` value is the minimum boot volume size in GiB.
 
@@ -437,9 +577,9 @@ Save the `id` of the chosen image. The `min_disk` value is the minimum boot volu
 export IMAGE_ID="{IMAGE_ID}"
 ```
 
-## Step 2. Choose a flavor
+### Step 2. Choose a flavor
 
-A flavor sets the vCPU count and RAM for the VM. Flavor IDs are strings, not UUIDs.
+A [flavor](https://gcore.com/docs/api-reference/cloud/flavors/list-flavors) sets the vCPU count and RAM for the VM. IDs are region-specific - run this call to see what's available in your region.
 
 <Tabs>
   <Tab title="Python SDK">
@@ -466,25 +606,25 @@ A flavor sets the vCPU count and RAM for the VM. Flavor IDs are strings, not UUI
     curl "https://api.gcore.com/cloud/v1/flavors/$PROJECT_ID/$REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
+
+    Response:
+
+    ```json
+    {
+      "results": [
+        {"flavor_id": "g1-standard-2-4", "vcpus": 2, "ram": 4096},
+        {"flavor_id": "g1-standard-4-8", "vcpus": 4, "ram": 8192}
+      ]
+    }
+    ```
   </Tab>
 </Tabs>
-
-The API returns:
-
-```json
-{
-  "results": [
-    {"flavor_id": "g1-standard-2-4", "vcpus": 2, "ram": 4096},
-    {"flavor_id": "g1-standard-4-8", "vcpus": 4, "ram": 8192}
-  ]
-}
-```
 
 ```bash
 export FLAVOR_ID="g1-standard-2-4"
 ```
 
-## Step 3. Create the instance
+### Step 3. Create the instance
 
 The instance is created with a public interface - `"type": "external"` assigns a public IPv4 address automatically, without a separate floating IP.
 
@@ -518,23 +658,28 @@ The instance is created with a public interface - `"type": "external"` assigns a
   </Tab>
   <Tab title="Go SDK">
     ```go
-    taskIDList, err := client.Cloud.Instances.New(context.TODO(), cloud.InstanceNewParams{
-        ProjectID: gcore.Int(1),
-        RegionID:  gcore.Int(1),
-        Flavor:    "g1-standard-2-4",
+    instance, err := client.Cloud.Instances.NewAndPoll(context.TODO(), cloud.InstanceNewParams{
+        ProjectID:    gcore.Int(1),
+        RegionID:     gcore.Int(1),
+        Flavor:       os.Getenv("FLAVOR_ID"),
+        NameTemplate: gcore.String("my-vm-{ip_octets}"),
+        SSHKeyName:   gcore.String("my-key"),
         Interfaces: []cloud.InstanceNewParamsInterfaceUnion{{
             OfExternal: &cloud.InstanceNewParamsInterfaceExternal{},
         }},
         Volumes: []cloud.InstanceNewParamsVolumeUnion{{
             OfImage: &cloud.InstanceNewParamsVolumeImage{
-                ImageID: "e460e48c-6836-447e-bc9c-16fc4225d318",
+                ImageID:   os.Getenv("IMAGE_ID"),
+                Size:      gcore.Int(20),
+                BootIndex: gcore.Int(0),
             },
         }},
     })
     if err != nil {
         panic(err.Error())
     }
-    fmt.Printf("%+v\n", taskIDList.Tasks)
+    // instance is ACTIVE when NewAndPoll returns
+    instanceID := instance.ID
     ```
   </Tab>
   <Tab title="curl">
@@ -557,62 +702,59 @@ The instance is created with a public interface - `"type": "external"` assigns a
         ]
       }'
     ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["d4a4b10e-5d22-4c23-8e09-f7a3e1c1a999"]   // save as TASK_ID
+    }
+    ```
   </Tab>
 </Tabs>
 
-The API returns:
+### Step 4. Wait for the instance to be ready
 
-```json
-{
-  "tasks": ["d4a4b10e-5d22-4c23-8e09-f7a3e1c1a999"]   // save as TASK_ID
-}
-```
-
-## Step 4. Wait for the instance to be ready
-
-Instance creation is asynchronous. For curl, poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. The Python SDK `create_and_poll()` in Step 3 handles this automatically.
+Instance creation is asynchronous. The Python SDK `create_and_poll()` and the Go SDK `NewAndPoll()` in Step 3 handle polling automatically and return only when the instance is ACTIVE. For curl, poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`.
 
 <Tabs>
   <Tab title="Python SDK">
-    ```python
-    # create_and_poll() in Step 3 polls automatically.
-    # instance is already ACTIVE when Step 3 returns.
-    ```
+    `create_and_poll()` in Step 3 polls automatically. `instance` is ACTIVE when Step 3 returns.
+  </Tab>
+  <Tab title="Go SDK">
+    `NewAndPoll()` in Step 3 polls automatically. `instance` is ACTIVE when Step 3 returns.
   </Tab>
   <Tab title="curl">
     ```bash
     curl "https://api.gcore.com/cloud/v1/tasks/$TASK_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
+
+    While provisioning:
+
+    ```json
+    {"state": "RUNNING", "task_type": "create_vm"}
+    ```
+
+    When complete:
+
+    ```json
+    {
+      "state": "FINISHED",
+      "created_resources": {
+        "instances": ["169942e0-9b53-42df-95ef-1a8b6525c2bd"],   // save as INSTANCE_ID
+        "volumes": ["726ecfcc-7fd0-4e30-a86e-7892524aa483"]
+      }
+    }
+    ```
   </Tab>
 </Tabs>
-
-While provisioning:
-
-```json
-{
-  "state": "RUNNING",
-  "task_type": "create_vm"
-}
-```
-
-When complete:
-
-```json
-{
-  "state": "FINISHED",
-  "created_resources": {
-    "instances": ["169942e0-9b53-42df-95ef-1a8b6525c2bd"],   // save as INSTANCE_ID
-    "volumes": ["726ecfcc-7fd0-4e30-a86e-7892524aa483"]
-  }
-}
-```
 
 ```bash
 export INSTANCE_ID="{INSTANCE_ID}"
 ```
 
-## Step 5. Get the public IP address
+### Step 5. Get the public IP address
 
 The `addresses` field on the instance object contains the public IP assigned at creation.
 
@@ -646,28 +788,25 @@ The `addresses` field on the instance object contains the public IP assigned at 
     curl "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID/$INSTANCE_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
+
+    Response:
+
+    ```json
+    {
+      "status": "ACTIVE",
+      "addresses": {
+        "pub_net": [
+          {"addr": "203.0.113.42", "type": "fixed"}
+        ]
+      }
+    }
+    ```
   </Tab>
 </Tabs>
 
-The API returns:
-
-```json
-{
-  "status": "ACTIVE",
-  "addresses": {
-    "pub_net": [
-      {
-        "addr": "203.0.113.42",
-        "type": "fixed"
-      }
-    ]
-  }
-}
-```
-
 The keys in `addresses` are network names that vary by region (typically `"pub_net"` for public interfaces), so iterate over all keys when parsing programmatically.
 
-## Step 6. Connect via SSH
+### Step 6. Connect via SSH
 
 Connect using the public IP from Step 5. Replace `ubuntu` with the default user for the chosen OS image.
 
@@ -685,60 +824,9 @@ ssh -i ~/.ssh/my-key ubuntu@203.0.113.42
 
 The default security group is applied automatically, allowing inbound SSH (port 22) and ICMP.
 
-## Clean up
+</Accordion>
 
-To delete the instance and its boot volume in a single call, pass the volume ID in the `volumes` query parameter.
-
-<Tabs>
-  <Tab title="Python SDK">
-    ```python
-    boot_volume_id = instance.volumes[0].id
-    client.cloud.instances.delete_and_poll(
-        instance_id=instance.id,
-        volumes=boot_volume_id,
-    )
-    ```
-  </Tab>
-  <Tab title="Go SDK">
-    ```go
-    taskIDList, err := client.Cloud.Instances.Delete(
-        context.TODO(),
-        "instance_id",
-        cloud.InstanceDeleteParams{
-            ProjectID: gcore.Int(1),
-            RegionID:  gcore.Int(1),
-        },
-    )
-    if err != nil {
-        panic(err.Error())
-    }
-    fmt.Printf("%+v\n", taskIDList.Tasks)
-    ```
-  </Tab>
-  <Tab title="curl">
-    ```bash
-    curl -X DELETE \
-      "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID/$INSTANCE_ID?volumes=$BOOT_VOLUME_ID" \
-      -H "Authorization: APIKey $GCORE_API_KEY"
-    ```
-  </Tab>
-</Tabs>
-
-The API returns:
-
-```json
-{
-  "tasks": ["ef3b0d34-..."]
-}
-```
-
-For curl, poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. If a floating IP was assigned to the instance, add `delete_floatings=true` to the query string.
-
-## Advanced options
-
-The steps below cover less common scenarios that are not required for the basic flow.
-
-### Add an SSH key
+## Add an SSH key
 
 If the project does not yet have an SSH key, register one before creating the instance. The create call references the key by name, not by ID.
 
@@ -779,29 +867,104 @@ If the project does not yet have an SSH key, register one before creating the in
         "public_key": "ssh-ed25519 AAAA... user@host"
       }'
     ```
+
+    Response:
+
+    ```json
+    {
+      "id": "36a7a97a-0672-4911-8f2b-92cd4e5b0d91",
+      "name": "my-key",
+      "state": "ACTIVE"
+    }
+    ```
   </Tab>
 </Tabs>
 
-The API returns:
-
-```json
-{
-  "id": "36a7a97a-0672-4911-8f2b-92cd4e5b0d91",
-  "name": "my-key",
-  "state": "ACTIVE"
-}
-```
-
 When `public_key` is omitted, the response includes a `private_key` field - save it immediately, as it is not shown again.
 
-### Filter images by OS
+## Filter images by OS
 
-To list only Gcore-managed public images, add the `visibility=public` parameter:
+To list only Gcore-managed public images, add the `visibility=public` parameter.
 
-```bash
-curl "https://api.gcore.com/cloud/v1/images/$PROJECT_ID/$REGION_ID?visibility=public" \
-  -H "Authorization: APIKey $GCORE_API_KEY"
-```
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    images = client.cloud.instances.images.list(visibility="public")
+    for img in images.results:
+        print(img.id, img.name, img.os_distro, img.os_version)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    imageList, err := client.Cloud.Instances.Images.List(context.TODO(), cloud.InstanceImageListParams{
+        ProjectID:  gcore.Int(1),
+        RegionID:   gcore.Int(1),
+        Visibility: cloud.InstanceImageListParamsVisibilityPublic,
+    })
+    if err != nil {
+        panic(err.Error())
+    }
+    for _, img := range imageList.Results {
+        fmt.Printf("%s %s\n", img.ID, img.Name)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/images/$PROJECT_ID/$REGION_ID?visibility=public" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+</Tabs>
+
+## Clean up
+
+To delete the instance and its boot volume in a single call, pass the volume ID in the `volumes` query parameter.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    boot_volume_id = instance.volumes[0].id
+    client.cloud.instances.delete_and_poll(
+        instance_id=instance.id,
+        volumes=boot_volume_id,
+    )
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    taskIDList, err := client.Cloud.Instances.Delete(
+        context.TODO(),
+        "instance_id",
+        cloud.InstanceDeleteParams{
+            ProjectID: gcore.Int(1),
+            RegionID:  gcore.Int(1),
+        },
+    )
+    if err != nil {
+        panic(err.Error())
+    }
+    fmt.Printf("%+v\n", taskIDList.Tasks)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE \
+      "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID/$INSTANCE_ID?volumes=$BOOT_VOLUME_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["ef3b0d34-..."]}
+    ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`.
+  </Tab>
+</Tabs>
+
+If a floating IP was assigned to the instance, add `delete_floatings=true` to the query string.
 
   </MethodSection>
 </MethodSwitch>
