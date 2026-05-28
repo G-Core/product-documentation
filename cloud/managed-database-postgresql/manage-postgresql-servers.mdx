@@ -1,16 +1,13 @@
-﻿---
+---
 title: Manage a PostgreSQL server
 sidebarTitle: Manage PostgreSQL servers
-ai-navigation: Create a PostgreSQL server in Gcore Database for PostgreSQL by selecting region, PostgreSQL version, compute flavor, storage volume type and size, and optionally enabling High Availability with asynchronous or synchronous replication mode.
+ai-navigation: Create a PostgreSQL server in Gcore Managed Database via Customer Portal by selecting region, version, flavor, and storage, or via REST API by activating the service, creating a cluster, and connecting with psql.
 ---
-import { MethodTabs } from "/snippets/method-tabs.jsx";
 
-<MethodTabs methods={[
-  { label: "Cloud UI", href: "/cloud/managed-database-postgresql/manage-postgresql-servers" },
-  { label: "REST API", href: "/cloud/api/managed-database-postgresql/manage-postgresql-servers" },
-  { label: "Terraform", soon: true },
-  { label: "CLI", soon: true }
-]} />
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
 ## Create a server
 
@@ -18,7 +15,7 @@ This guide describes how to create a PostgreSQL server.
 
 ### Before you begin
 
-Before you begin, make sure you have enough quotas to create a PostgreSQL cluster. 
+Before you begin, make sure you have enough quotas to create a PostgreSQL cluster.
 
 1\. Go to **Cloud Management**, then **Quotas Viewer** and select the region.
 
@@ -36,7 +33,7 @@ Before you begin, make sure you have enough quotas to create a PostgreSQL cluste
 
 
 
-Your request will be processed within fifteen minutes and the number of quotas will be increased. 
+Your request will be processed within fifteen minutes and the number of quotas will be increased.
 
 ### Create a server
 
@@ -68,7 +65,7 @@ Your request will be processed within fifteen minutes and the number of quotas w
 
 
 
-5\. In **Storage**, choose the volume type and size. 
+5\. In **Storage**, choose the volume type and size.
 
 
 <Frame>![manage postgresql choose volume](/images/docs/cloud/database-for-postgresql/manage-postgresql-servers/manage-postgresql-70.png)</Frame>
@@ -109,7 +106,7 @@ Choose Public network and configure the Access control list to limit the access 
 
 9\. In **Server details**, specify the server name and database name.
 
-**Note** : The database size limit is 100 GB. This limit is for the beta stage only. If you need a more extensive database size during beta—please get in touch with [support](mailto:support@gcore.com).
+**Note** : The database size limit is 100 GB. This limit is for the beta stage only. If you need a more extensive database size during beta - please get in touch with [support](mailto:support@gcore.com).
 
 
 <Frame>![manage postgresql specify server details](/images/docs/cloud/database-for-postgresql/manage-postgresql-servers/manage-postgresql-120.png)</Frame>
@@ -133,7 +130,7 @@ This guide explains how to obtain the password to start using your Postgres serv
 
 
 
-3\. Copy and save the password now. Once you close the window you will not be able to recover it. 
+3\. Copy and save the password now. Once you close the window you will not be able to recover it.
 
 **Note** : If you forget your password, you can only reset it. A new password will be generated, and the previous one will be deactivated.
 
@@ -147,7 +144,7 @@ If your current PostgreSQL version is not the latest one, you can upgrade it.
 
 2\. On the **Overview** tab, click **Update** in the General info section.
 
-**Note** : if you use the latest version, the button will be absent. 
+**Note** : if you use the latest version, the button will be absent.
 
 
 <Frame>![manage postgresql update version](/images/docs/cloud/database-for-postgresql/manage-postgresql-servers/manage-postgresql-140.png)</Frame>
@@ -195,7 +192,7 @@ Before you connect to your PostgreSQL server, make sure to do the following:
 
 
   * Endpoint. You can find it in the "Connection details"
-  * Username. You can find it in the "Connection detais"
+  * Username. You can find it in the "Connection details"
   * Port. You can find it by copying the connection strings in the "Connection details"
   * Password. You should have got it separately after creating a server. If you forgot your password, [reset it](/cloud/managed-database-postgresql/manage-postgresql-servers#get-your-credentials).
 
@@ -203,13 +200,13 @@ Before you connect to your PostgreSQL server, make sure to do the following:
 
 2\. Make sure your client computer is in the access control list of the PostgreSQL server. It means that the external IP address of PC which is trying to connect to PostgreSQL should be in allowlist (ACL).
 
-3\. Determine what tool you will use to connect to your server. 
+3\. Determine what tool you will use to connect to your server.
 
   * psql (Postgres Terminal Monitor): The command-line PostgreSQL client, that allows you to enter, edit, and execute SQL commands directly from your terminal or command prompt.
 
   * Native Frontend Tools (e.g., pgaccess, pgAdmin, ApplixWare): They provide graphical user interfaces (GUIs) for PostgreSQL database management. These tools offer a more user-friendly and visual way to create and manipulate databases.
 
-  * Programming Languages (e.g., Perl, Tcl): These languages have supported interfaces for PostgreSQL. You can use these languages to write scripts or applications that connect to PostgreSQL databases programmatically. Some of the languages have convenient and powerful GUI toolkits which can help you construct custom applications. For example, pgaccess, mentioned above, is one of such applications written in Tcl/Tk. 
+  * Programming Languages (e.g., Perl, Tcl): These languages have supported interfaces for PostgreSQL. You can use these languages to write scripts or applications that connect to PostgreSQL databases programmatically. Some of the languages have convenient and powerful GUI toolkits which can help you construct custom applications. For example, pgaccess, mentioned above, is one of such applications written in Tcl/Tk.
 
   * C Programming with LIBPQ: If you're a C programmer, you can use the LIBPQ subroutine library to write C programs that connect to PostgreSQL databases. This allows you to submit SQL commands from your C program, retrieve results, and manage database interactions programmatically. The detailed information on using LIBPQ can be found in "[The PostgreSQL Programmer's Guide](https://www.postgresql.org/docs/7.3/programmer.html)."
 
@@ -224,7 +221,7 @@ Before you connect to your PostgreSQL server, make sure to do the following:
 
 ```sh
 psql -h hostname -p port -d dbname -U username
- ```
+```
 
 Replace `hostname`, `port`, `dbname`, and `username` with your custom values.
 
@@ -259,6 +256,303 @@ For more details, refer to the [PostgreSQL official documentation](https://www.p
 
 
 
-6\. Click **Save**. 
+6\. Click **Save**.
 
 7\. Locate the server you've added in the left-side menu and click it to access. For more details, refer to the [pgAdmin official documentation](https://www.pgadmin.org/docs/).
+
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+
+Gcore Managed PostgreSQL provisions a fully managed database cluster with automatic backups and optional High Availability replication. Four API calls create the cluster, poll the creation task, retrieve the connection string, and expose credentials for a psql session.
+
+<Info>
+A permanent [API token](/developer-tools/rest-api/authentication) is required, along with a project ID and region ID from the [Gcore Customer Portal](https://portal.gcore.com). Managed PostgreSQL is available in Frankfurt-2, Luxembourg-2, Singapore, Sines-2, and Sines-3. Before the first cluster creation in a region, activate the service with a one-time PUT call described in Step 1.
+</Info>
+
+Open a bash terminal and set these as environment variables before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export PROJECT_ID="{YOUR_PROJECT_ID}"
+export REGION_ID="{YOUR_REGION_ID}"
+```
+
+## Step 1. Activate the PostgreSQL service
+
+The Managed PostgreSQL service requires a one-time activation per project and region before any clusters can be created.
+
+```bash
+curl -s -X PUT "https://api.gcore.com/cloud/v1/dbaas/status/$PROJECT_ID/$REGION_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"is_initialized": true}'
+```
+
+The API returns:
+
+```json
+{
+  "is_initialized": true
+}
+```
+
+To check whether activation is already done, call <code>GET&nbsp;/cloud/v1/dbaas/status/{project_id}/{region_id}</code> - if `is_initialized` is already `true`, skip this step.
+
+## Step 2. Create the cluster
+
+A single create call provisions the database server, configures network access, creates an initial user, and creates the first database.
+
+| Parameter | Required | Description |
+|---|---|---|
+| `cluster_name` | Yes | Cluster identifier. Pattern `^[a-z0-9]([-a-z0-9]*[a-z0-9])?$`, max 50 characters |
+| `pg_server_configuration.version` | Yes | PostgreSQL major version. Supported values: `"15"`, `"14"`, `"13"` |
+| `pg_server_configuration.pg_conf` | Yes | Custom `postgresql.conf` settings as a string. Pass `""` to use defaults |
+| `flavor.cpu` | Yes | Number of vCPUs allocated to the instance |
+| `flavor.memory_gib` | Yes | RAM in GiB |
+| `storage.type` | Yes | Block storage type. Use `ssd-hiiops` for best performance |
+| `storage.size_gib` | Yes | Storage size in GiB. Maximum 100 GiB |
+| `network.acl` | Yes | Allowed source IP addresses in CIDR notation. Use the connecting machine's public IP |
+| `high_availability` | Yes | Set to `null` for a single-node cluster, or `{"replication_mode": "sync"}` or `{"replication_mode": "async"}` for three-node HA |
+| `users[].name` | No | Initial database user. Lowercase letters only |
+| `users[].role_attributes` | No | PostgreSQL role attributes. Include `"CREATEDB"` to allow creating databases from psql |
+| `databases[].name` | No | Initial database name. Lowercase letters only. Must reference a user in `users[]` as `owner` |
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -s -X POST "https://api.gcore.com/cloud/v1/dbaas/postgres/clusters/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "cluster_name": "my-postgres",
+        "pg_server_configuration": {
+          "version": "15",
+          "pg_conf": ""
+        },
+        "flavor": {
+          "cpu": 2,
+          "memory_gib": 4
+        },
+        "storage": {
+          "type": "ssd-hiiops",
+          "size_gib": 10
+        },
+        "network": {
+          "network_type": "public",
+          "acl": ["{YOUR_IP_ADDRESS}/32"]
+        },
+        "high_availability": null,
+        "users": [
+          {"name": "dbuser", "role_attributes": ["INHERIT", "LOGIN", "CREATEDB"]}
+        ],
+        "databases": [
+          {"name": "mydb", "owner": "dbuser"}
+        ]
+      }'
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    task_id_list = client.cloud.databases.postgres.clusters.create(
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+        cluster_name="my-postgres",
+        pg_server_configuration={"version": "15", "pg_conf": ""},
+        flavor={"cpu": 2, "memory_gib": 4},
+        storage={"type": "ssd-hiiops", "size_gib": 10},
+        network={
+            "network_type": "public",
+            "acl": ["{YOUR_IP_ADDRESS}/32"],
+        },
+        high_availability=None,
+        users=[{"name": "dbuser", "role_attributes": ["INHERIT", "LOGIN", "CREATEDB"]}],
+        databases=[{"name": "mydb", "owner": "dbuser"}],
+    )
+    print(task_id_list.tasks[0])
+    ```
+  </Tab>
+</Tabs>
+
+The API returns:
+
+```json
+{
+  "tasks": ["bce1a2e8-d40b-4aca-bbad-fa2c3580cf20"]
+}
+```
+
+```bash
+export TASK_ID="{TASK_ID}"
+```
+
+## Step 3. Poll the task
+
+Cluster creation takes 3-5 minutes. Poll every 5 seconds until `state` is `FINISHED`.
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -s "https://api.gcore.com/cloud/v1/tasks/$TASK_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    task = client.cloud.tasks.poll(
+        task_id_list.tasks[0],
+        polling_interval_seconds=5,
+        polling_timeout_seconds=600,
+    )
+    print("Cluster ready:", task.created_resources.postgresql_clusters[0])
+    ```
+  </Tab>
+</Tabs>
+
+When complete:
+
+```json
+{
+  "id": "bce1a2e8-d40b-4aca-bbad-fa2c3580cf20",
+  "state": "FINISHED",
+  "created_resources": {
+    "postgresql_clusters": ["my-postgres"]
+  }
+}
+```
+
+## Step 4. Get the connection string
+
+The cluster detail response includes the host, network configuration, and a connection string template in `network.connection_string`. The password field is masked - retrieve it in Step 5.
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    CLUSTER_NAME="my-postgres"
+
+    curl -s "https://api.gcore.com/cloud/v1/dbaas/postgres/clusters/$PROJECT_ID/$REGION_ID/$CLUSTER_NAME" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    cluster = client.cloud.databases.postgres.clusters.get(
+        cluster_name="my-postgres",
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+    )
+    print("Status:", cluster.status)
+    print("Host:", cluster.network.host)
+    print("Connection string:", cluster.network.connection_string)
+    ```
+  </Tab>
+</Tabs>
+
+The API returns:
+
+```json
+{
+  "cluster_name": "my-postgres",
+  "status": "READY",
+  "network": {
+    "network_type": "public",
+    "acl": ["{YOUR_IP_ADDRESS}/32"],
+    "host": "my-postgres-67d2e3927a98d77e71c4804f40c4ce1dd68f010d27b11a.pg.k1.frankfurt-2.cloud.gcore.dev",
+    "connection_string": "postgres://dbuser:*****@my-postgres-67d2e3927a98d77e71c4804f40c4ce1dd68f010d27b11a.pg.k1.frankfurt-2.cloud.gcore.dev:5432/mydb"
+  },
+  "flavor": {"cpu": 2, "memory_gib": 4},
+  "storage": {"size_gib": 10, "type": "ssd-hiiops"},
+  "pg_server_configuration": {"version": "15"},
+  "users": [{"name": "dbuser", "is_secret_revealed": false}],
+  "databases": [{"name": "mydb", "owner": "dbuser"}]
+}
+```
+
+```bash
+export CLUSTER_NAME="my-postgres"
+export PG_HOST="my-postgres-67d2e3927a98d77e71c4804f40c4ce1dd68f010d27b11a.pg.k1.frankfurt-2.cloud.gcore.dev"
+```
+
+## Step 5. Retrieve credentials
+
+The credentials endpoint reveals the user password. It can only be called once per user - the password is not stored by Gcore afterward. The second call returns an error.
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    USERNAME="dbuser"
+
+    curl -s "https://api.gcore.com/cloud/v1/dbaas/postgres/clusters/$PROJECT_ID/$REGION_ID/$CLUSTER_NAME/users/$USERNAME/credentials" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    creds = client.cloud.databases.postgres.clusters.user_credentials.get(
+        username="dbuser",
+        cluster_name="my-postgres",
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+    )
+    print(creds.username)
+    print(creds.password)  # save immediately - second call raises an error
+    ```
+  </Tab>
+</Tabs>
+
+The API returns:
+
+```json
+{
+  "username": "dbuser",
+  "password": "8T8WieWrkMSvrHlLlnAVtJDV4Vhyxz7..."
+}
+```
+
+<Warning>
+Calling this endpoint a second time returns: `"Requested credentials already revealed. You must regenerate credentials"`. To reset the password, call <code>POST&nbsp;/cloud/v1/dbaas/postgres/clusters/{project_id}/{region_id}/{cluster_name}/users/{username}/credentials</code>.
+</Warning>
+
+## Step 6. Connect with psql
+
+With the host and password from the previous steps, open a psql session. Set the password via the `PGPASSWORD` environment variable to avoid an interactive prompt.
+
+```bash
+export PGPASSWORD="{PASSWORD}"
+
+psql -h $PG_HOST -p 5432 -U dbuser -d mydb
+```
+
+```
+psql (15.x)
+SSL connection (protocol: TLSv1.3, ...)
+Type "help" for help.
+
+mydb=#
+```
+
+Verify the connection and create a table:
+
+```sql
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+\dt
+```
+
+```
+        List of relations
+ Schema | Name  | Type  | Owner
+--------+-------+-------+--------
+ public | users | table | dbuser
+(1 row)
+```
+
+  </MethodSection>
+</MethodSwitch>

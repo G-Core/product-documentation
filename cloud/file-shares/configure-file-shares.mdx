@@ -1,16 +1,13 @@
-﻿---
+---
 title: "Configuring file shares"
 sidebarTitle: "Configure"
-ai-navigation: Create NFS-based file shares with Standard (Ceph-backed) or VAST (high-performance) types, mount to Linux VMs or bare-metal servers, configure Network and Access rules, and set up NFS client support on Ubuntu, Debian, or CentOS.
+ai-navigation: Create NFS-based file shares and mount them to Linux VMs via Customer Portal using Standard or VAST types with network and access rules, or via REST API by provisioning a private network, file share, and VM, then mounting with nfs-common.
 ---
-import { MethodTabs } from "/snippets/method-tabs.jsx";
 
-<MethodTabs methods={[
-  { label: "Cloud UI", href: "/cloud/file-shares/configure-file-shares" },
-  { label: "REST API", href: "/cloud/api/file-shares/configure-file-shares" },
-  { label: "Terraform", soon: true },
-  { label: "CLI", soon: true }
-]} />
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
 Create NFS-based file shares and mount them to Linux virtual machines, bare metal servers, or GPU clusters.
 
@@ -129,7 +126,7 @@ Replace `/mount/path` with the absolute local directory path where the file shar
 
 When VAST share type is selected, controls in **Network settings** and **Access** panels are disabled, and the network is assigned automatically.
 
-The access rules cannot be configured manually — the VAST share is always available in read/write mode within its assigned network only. This network is not visible in the general **Network** tab. It is only available when attaching interfaces to a resource (VM, Bare Metal, or GPU cluster).
+The access rules cannot be configured manually - the VAST share is always available in read/write mode within its assigned network only. This network is not visible in the general **Network** tab. It is only available when attaching interfaces to a resource (VM, Bare Metal, or GPU cluster).
 
 VAST file shares always use read/write access; access rules are not supported.
 
@@ -391,3 +388,484 @@ This process is the same for both Standard and VAST-based file shares:
 <Frame>
   ![Overview tab](/images/docs/cloud/file-shares/5-1.png)
 </Frame>
+
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+
+A Standard NFS file share provides shared persistent storage accessible from any VM on the same private subnet. Six API calls create the network, file share, and VM; one mount command connects the share to the instance filesystem.
+
+<Info>
+A permanent [API token](/developer-tools/rest-api/authentication) is required, along with a project ID and region ID from the [Gcore Customer Portal](https://portal.gcore.com). NFS file shares are available in most Gcore Cloud regions. To confirm availability for a specific region, call <code>GET&nbsp;/cloud/v1/regions</code> and check that `has_sfs` is `true`.
+</Info>
+
+Open a bash terminal and set these as environment variables before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export PROJECT_ID="{YOUR_PROJECT_ID}"
+export REGION_ID="{YOUR_REGION_ID}"
+```
+
+## Step 1. Create a private network
+
+A private network isolates traffic between the file share and the VMs that mount it.
+
+| Parameter | Required | Description |
+|---|---|---|
+| `name` | Yes | Network name |
+| `create_router` | No | Set to `true` to create a virtual router automatically - required when adding subnets later |
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -s -X POST "https://api.gcore.com/cloud/v1/networks/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "my-network",
+        "create_router": true
+      }'
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    task_id_list = client.cloud.networks.create(
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+        name="my-network",
+        create_router=True,
+    )
+    print(task_id_list.tasks[0])
+    ```
+  </Tab>
+</Tabs>
+
+The API returns:
+
+```json
+{
+  "tasks": ["668e75b8-..."]
+}
+```
+
+Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`, then read the network ID:
+
+```json
+{
+  "state": "FINISHED",
+  "created_resources": {
+    "networks": ["6880a081-..."]
+  }
+}
+```
+
+## Step 2. Create a subnet
+
+A subnet assigns the address range that the file share and VMs will use. The file share and any VM that mounts it must share the same subnet.
+
+| Parameter | Required | Description |
+|---|---|---|
+| `network_id` | Yes | ID of the network from Step 1 |
+| `cidr` | Yes | IPv4 CIDR block for the subnet |
+| `enable_dhcp` | No | Enables automatic IP assignment for VMs on this subnet. Defaults to `true` |
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -s -X POST "https://api.gcore.com/cloud/v1/subnets/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "my-subnet",
+        "cidr": "192.168.100.0/24",
+        "network_id": "{NETWORK_ID}",
+        "enable_dhcp": true
+      }'
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    task_id_list = client.cloud.subnets.create(
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+        name="my-subnet",
+        cidr="192.168.100.0/24",
+        network_id="{NETWORK_ID}",
+        enable_dhcp=True,
+    )
+    print(task_id_list.tasks[0])
+    ```
+  </Tab>
+</Tabs>
+
+The API returns:
+
+```json
+{
+  "tasks": ["921b0e4d-..."]
+}
+```
+
+Poll the task until `FINISHED`, then save the subnet ID:
+
+```json
+{
+  "state": "FINISHED",
+  "created_resources": {
+    "subnets": ["a87cedcc-..."]
+  }
+}
+```
+
+## Step 3. Create the file share
+
+A single create call provisions the NFS share on the private network and sets the initial access rules.
+
+| Parameter | Required | Description |
+|---|---|---|
+| `name` | Yes | Share name. Pattern `^[a-zA-Z0-9][a-zA-Z 0-9._\-]{1,61}[a-zA-Z0-9._]$` |
+| `protocol` | Yes | Must be `"NFS"` for Standard shares |
+| `size` | Yes | Share size in GiB. Minimum: 1 |
+| `network.network_id` | Yes | ID of the private network from Step 1 |
+| `network.subnet_id` | No | Subnet ID - if omitted, a subnet is selected automatically |
+| `access[].access_mode` | Yes | `"rw"` (read-write) or `"ro"` (read-only) |
+| `access[].ip_address` | Yes | Source IP address or CIDR that may mount the share |
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -s -X POST "https://api.gcore.com/cloud/v1/file_shares/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "my-share",
+        "protocol": "NFS",
+        "size": 5,
+        "network": {
+          "network_id": "{NETWORK_ID}",
+          "subnet_id": "{SUBNET_ID}"
+        },
+        "access": [
+          {"access_mode": "rw", "ip_address": "192.168.100.0/24"}
+        ]
+      }'
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    task_id_list = client.cloud.file_shares.create(
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+        name="my-share",
+        protocol="NFS",
+        size=5,
+        network={
+            "network_id": "{NETWORK_ID}",
+            "subnet_id": "{SUBNET_ID}",
+        },
+        access=[
+            {"access_mode": "rw", "ip_address": "192.168.100.0/24"},
+        ],
+    )
+    print(task_id_list.tasks[0])
+    ```
+  </Tab>
+</Tabs>
+
+The API returns:
+
+```json
+{
+  "tasks": ["390170eb-..."]
+}
+```
+
+File share creation typically takes 20-40 seconds. Poll the task until `FINISHED`:
+
+```json
+{
+  "state": "FINISHED",
+  "created_resources": {
+    "file_shares": ["6b3b713e-..."]
+  }
+}
+```
+
+## Step 4. Retrieve the connection point
+
+The connection point is the NFS server address and share path used in the mount command. It becomes available once the share reaches `available` status.
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -s "https://api.gcore.com/cloud/v1/file_shares/$PROJECT_ID/$REGION_ID/{FILE_SHARE_ID}" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    share = client.cloud.file_shares.get(
+        file_share_id="{FILE_SHARE_ID}",
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+    )
+    print(share.connection_point)
+    ```
+  </Tab>
+</Tabs>
+
+The API returns:
+
+```json
+{
+  "id": "6b3b713e-...",
+  "status": "available",
+  "connection_point": "192.168.100.58:/shares/share-416d581b-...",
+  "size": 5,
+  "protocol": "NFS",
+  "network_id": "6880a081-...",
+  "subnet_id": "a87cedcc-..."
+}
+```
+
+The `connection_point` value follows the format `{NFS_SERVER_IP}:/shares/{SHARE_PATH}`. Copy the full string - it is used verbatim in the mount command.
+
+## Step 5. Create a VM on the same network
+
+The VM must join the private subnet to reach the file share's NFS server IP. A floating IP is added so the instance is accessible via SSH from outside the private network.
+
+| Parameter | Required | Description |
+|---|---|---|
+| `flavor` | Yes | Instance flavor name - list available flavors with <code>GET&nbsp;/cloud/v1/flavors/{project_id}/{region_id}</code> |
+| `interfaces[].type` | Yes | Use `"subnet"` to place the instance on the private subnet |
+| `interfaces[].network_id` | Yes | Must match the network used for the file share |
+| `interfaces[].subnet_id` | Yes | Must match the subnet used for the file share |
+| `interfaces[].floating_ip.source` | No | Set to `"new"` to allocate and attach a floating IP automatically |
+| `keypair_name` | Yes | Name of an SSH key pair registered in the project - used to connect to the instance after creation |
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -s -X POST "https://api.gcore.com/cloud/v2/instances/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "flavor": "{FLAVOR_NAME}",
+        "name": "{INSTANCE_NAME}",
+        "interfaces": [
+          {
+            "type": "subnet",
+            "network_id": "{NETWORK_ID}",
+            "subnet_id": "{SUBNET_ID}",
+            "floating_ip": {"source": "new"}
+          }
+        ],
+        "volumes": [
+          {
+            "source": "image",
+            "image_id": "{IMAGE_ID}",
+            "size": 20,
+            "boot_index": 0,
+            "delete_on_termination": true
+          }
+        ],
+        "keypair_name": "{KEY_NAME}"
+      }'
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    task_id_list = client.cloud.instances.create(
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+        flavor="{FLAVOR_NAME}",
+        name="{INSTANCE_NAME}",
+        interfaces=[
+            {
+                "type": "subnet",
+                "network_id": "{NETWORK_ID}",
+                "subnet_id": "{SUBNET_ID}",
+                "floating_ip": {"source": "new"},
+            }
+        ],
+        volumes=[
+            {
+                "source": "image",
+                "image_id": "{IMAGE_ID}",
+                "size": 20,
+                "boot_index": 0,
+                "delete_on_termination": True,
+            }
+        ],
+        keypair_name="{KEY_NAME}",
+    )
+    print(task_id_list.tasks[0])
+    ```
+  </Tab>
+</Tabs>
+
+The API returns:
+
+```json
+{
+  "tasks": ["f0b4df4f-..."]
+}
+```
+
+Poll the task until `FINISHED`, then read the instance ID and floating IP:
+
+```json
+{
+  "state": "FINISHED",
+  "created_resources": {
+    "instances": ["6549750d-..."]
+  }
+}
+```
+
+Retrieve the floating IP from the instance details:
+
+```bash
+curl -s "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID/{INSTANCE_ID}" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  | grep -o '"addr":"[^"]*"'
+```
+
+Image selection, flavor lookup, and SSH key registration are covered in the [VM guide](/cloud/virtual-instances/create-an-instance).
+
+## Step 6. Mount the file share
+
+Connect to the VM via SSH and mount the NFS share. The `nfs-common` package provides the NFS client utilities required to mount Standard file shares.
+
+Connect to the VM:
+
+```bash
+ssh ubuntu@{FLOATING_IP}
+```
+
+Install the NFS client:
+
+For Ubuntu or Debian:
+
+```bash
+sudo apt-get install -y nfs-common
+```
+
+For CentOS or Rocky Linux:
+
+```bash
+sudo yum install -y nfs-utils
+```
+
+Create a mount point and mount the share:
+
+```bash
+sudo mkdir -p /mnt/share
+sudo mount -t nfs {CONNECTION_POINT} /mnt/share
+```
+
+Replace `{CONNECTION_POINT}` with the full value from Step 4, for example:
+
+```bash
+sudo mount -t nfs 192.168.100.58:/shares/share-416d581b-1784-454c-adf8-d2dc75886625 /mnt/share
+```
+
+Verify the share is mounted and accessible:
+
+```bash
+df -h /mnt/share
+echo "test" | sudo tee /mnt/share/test.txt && cat /mnt/share/test.txt
+```
+
+```
+Filesystem                                                         Size  Used Avail Use% Mounted on
+192.168.100.58:/shares/share-416d581b-1784-454c-adf8-d2dc75886625  4.9G     0  4.6G   0% /mnt/share
+test
+```
+
+To make the mount persistent across reboots, add it to `/etc/fstab`:
+
+```bash
+echo "{CONNECTION_POINT} /mnt/share nfs defaults 0 0" | sudo tee -a /etc/fstab
+```
+
+## Step 7. Resize the file share
+
+Standard file shares must be unmounted before resizing. The new size must be larger than the current size - downsizing is not supported.
+
+Unmount the share first:
+
+```bash
+sudo umount /mnt/share
+```
+
+Then extend the share:
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -s -X POST "https://api.gcore.com/cloud/v1/file_shares/$PROJECT_ID/$REGION_ID/{FILE_SHARE_ID}/extend" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"size": 10}'
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    task_id_list = client.cloud.file_shares.resize(
+        file_share_id="{FILE_SHARE_ID}",
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+        size=10,
+    )
+    print(task_id_list.tasks[0])
+    ```
+  </Tab>
+</Tabs>
+
+The API returns:
+
+```json
+{
+  "tasks": ["bd7e55a5-..."]
+}
+```
+
+Poll the task until `FINISHED`, then remount the share:
+
+```bash
+sudo mount -t nfs {CONNECTION_POINT} /mnt/share
+df -h /mnt/share
+```
+
+```
+Filesystem                                                         Size  Used Avail Use% Mounted on
+192.168.100.58:/shares/share-416d581b-1784-454c-adf8-d2dc75886625  9.8G     0  9.3G   0% /mnt/share
+```
+
+  </MethodSection>
+</MethodSwitch>
