@@ -402,7 +402,7 @@ You can also use the **Actions** dropdown to delete multiple volumes at once. Fo
 </MethodSection>
 <MethodSection id="api" label="REST API">
 
-Volumes in Gcore Cloud are block storage devices that attach to Virtual Machines over the network. This guide covers creating a blank volume, attaching and detaching it from a VM, resizing it, and deleting it - all through the REST API.
+Volumes in Gcore Cloud are block storage devices that attach to Virtual Machines over the network and provide persistent storage that survives VM restarts. The REST API covers the full lifecycle: creating a blank volume, attaching and detaching it from a VM, resizing it, and deleting it.
 
 <Info>
 A permanent [API token](/account-settings/api-tokens) is required, along with a project ID and region ID. Retrieve them from the Customer Portal or by calling <code>GET&nbsp;/cloud/v1/projects</code> and <code>GET&nbsp;/cloud/v1/regions</code>.
@@ -521,11 +521,11 @@ The API returns:
 }
 ```
 
-Poll until `FINISHED`. The volume `status` field changes to `in-use` once attached.
+For curl, poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. The volume `status` field changes to `in-use` once attached.
 
 ## Detach from a Virtual Machine
 
-Boot volumes cannot be detached from a running VM. Only regular (non-boot) volumes can be detached. Detaching does not delete the volume - it remains available for reattachment.
+Only regular (non-boot) volumes can be detached, because boot volumes cannot be removed from a running VM. Detaching does not delete the volume - it remains available for reattachment.
 
 <Tabs>
   <Tab title="curl">
@@ -557,11 +557,11 @@ The API returns:
 }
 ```
 
-Poll until `FINISHED`. The volume `status` returns to `available`.
+For curl, poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. The volume `status` returns to `available`.
 
 ## Resize a volume
 
-Volume size can only be increased, not decreased. The new size must be greater than the current size. Resizing does not require detaching - it can be done while the volume is attached.
+Volume size can only be increased, not decreased. Resizing does not require detaching - it can be done while the volume is attached.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
@@ -598,7 +598,7 @@ The API returns:
 }
 ```
 
-Poll until `FINISHED`. After resizing, extend the filesystem inside the OS to use the new space (for example, `resize2fs` for ext4 or `xfs_growfs` for XFS).
+For curl, poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. After resizing, extend the filesystem inside the OS to use the new space (for example, `resize2fs` for ext4 or `xfs_growfs` for XFS).
 
 <Warning>
 If the volume has snapshots, resizing it prevents reverting to those snapshots. Only new snapshots taken after the resize can be used for reversion.
@@ -635,7 +635,7 @@ The API returns:
 }
 ```
 
-Poll until `FINISHED`. Deleting a volume stops billing for that volume immediately.
+For curl, poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. Billing for the volume stops immediately after deletion.
 
 </MethodSection>
 </MethodSwitch>
