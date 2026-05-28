@@ -337,13 +337,13 @@ Create two VMs that will serve as backends. Both need public interfaces so the l
   </Tab>
   <Tab title="Python SDK">
     ```python
-    import os, time
+    import os
     from gcore import Gcore
 
     client = Gcore(api_key=os.environ["GCORE_API_KEY"])
 
     def create_vm(name):
-        r = client.cloud.instances.create(
+        inst = client.cloud.instances.create_and_poll(
             project_id=int(os.environ["PROJECT_ID"]),
             region_id=int(os.environ["REGION_ID"]),
             name=name,
@@ -353,16 +353,8 @@ Create two VMs that will serve as backends. Both need public interfaces so the l
             volumes=[{"source": "image", "image_id": os.environ["IMAGE_ID"],
                       "size": 20, "boot_index": 0}],
         )
-        task = client.cloud.tasks.poll(r.tasks[0], polling_interval_seconds=5,
-                                       polling_timeout_seconds=120)
-        vm_id = task.created_resources.instances[0]
-        inst = client.cloud.instances.get(
-            instance_id=vm_id,
-            project_id=int(os.environ["PROJECT_ID"]),
-            region_id=int(os.environ["REGION_ID"]),
-        )
         pub_ip = next(iter(inst.addresses.values()))[0].addr
-        return vm_id, pub_ip
+        return inst.id, pub_ip
 
     vm1_id, vm1_ip = create_vm("backend-1")
     vm2_id, vm2_ip = create_vm("backend-2")
@@ -443,15 +435,14 @@ Creating the load balancer without specifying a network assigns a public VIP aut
   </Tab>
   <Tab title="Python SDK">
     ```python
-    r = client.cloud.load_balancers.create(
+    lb = client.cloud.load_balancers.create_and_poll(
         project_id=int(os.environ["PROJECT_ID"]),
         region_id=int(os.environ["REGION_ID"]),
         name="my-lb",
         flavor=os.environ["LB_FLAVOR"],
     )
-    task = client.cloud.tasks.poll(r.tasks[0], polling_interval_seconds=10,
-                                   polling_timeout_seconds=300)
-    lb_id = task.created_resources.loadbalancers[0]
+    lb_id = lb.id
+    print(f"VIP: {lb.vip_address}")
     ```
   </Tab>
 </Tabs>
@@ -464,7 +455,7 @@ The API returns:
 }
 ```
 
-Poll every 10 seconds until `FINISHED` - load balancer provisioning takes 2-3 minutes. Retrieve the VIP address:
+For curl, poll every 10 seconds until `FINISHED` - load balancer provisioning takes 2-3 minutes. Then retrieve the VIP address:
 
 ```bash
 curl "https://api.gcore.com/cloud/v1/loadbalancers/$PROJECT_ID/$REGION_ID/$LB_ID" \
@@ -510,7 +501,7 @@ A listener watches for incoming connections on a specific protocol and port, the
   </Tab>
   <Tab title="Python SDK">
     ```python
-    r = client.cloud.load_balancers.listeners.create(
+    listener = client.cloud.load_balancers.listeners.create_and_poll(
         project_id=int(os.environ["PROJECT_ID"]),
         region_id=int(os.environ["REGION_ID"]),
         load_balancer_id=lb_id,
@@ -518,9 +509,7 @@ A listener watches for incoming connections on a specific protocol and port, the
         protocol="HTTP",
         protocol_port=80,
     )
-    task = client.cloud.tasks.poll(r.tasks[0], polling_interval_seconds=5,
-                                   polling_timeout_seconds=120)
-    listener_id = task.created_resources.listeners[0]
+    listener_id = listener.id
     ```
   </Tab>
 </Tabs>
@@ -565,7 +554,7 @@ A pool groups the backend VMs. The load balancer distributes requests across poo
   </Tab>
   <Tab title="Python SDK">
     ```python
-    r = client.cloud.load_balancers.pools.create(
+    pool = client.cloud.load_balancers.pools.create_and_poll(
         project_id=int(os.environ["PROJECT_ID"]),
         region_id=int(os.environ["REGION_ID"]),
         name="http-pool",
@@ -574,9 +563,7 @@ A pool groups the backend VMs. The load balancer distributes requests across poo
         listener_id=listener_id,
         load_balancer_id=lb_id,
     )
-    task = client.cloud.tasks.poll(r.tasks[0], polling_interval_seconds=5,
-                                   polling_timeout_seconds=120)
-    pool_id = task.created_resources.pools[0]
+    pool_id = pool.id
     ```
   </Tab>
 </Tabs>
@@ -679,7 +666,7 @@ curl -X DELETE \
   -H "Authorization: APIKey $GCORE_API_KEY"
 ```
 
-Poll both delete tasks to `FINISHED` before deprovisioning is complete.
+For curl, poll both delete tasks to `FINISHED` before deprovisioning is complete.
 
   </MethodSection>
 </MethodSwitch>

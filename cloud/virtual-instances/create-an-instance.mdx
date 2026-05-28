@@ -532,7 +532,7 @@ The instance is created with a public network interface - `type: "external"` ass
   </Tab>
   <Tab title="Python SDK">
     ```python
-    task_id_list = client.cloud.instances.create(
+    instance = client.cloud.instances.create_and_poll(
         project_id=int(os.environ["PROJECT_ID"]),
         region_id=int(os.environ["REGION_ID"]),
         name="my-vm",
@@ -546,7 +546,7 @@ The instance is created with a public network interface - `type: "external"` ass
             "boot_index": 0,
         }],
     )
-    task_id = task_id_list.tasks[0]
+    instance_id = instance.id
     ```
   </Tab>
 </Tabs>
@@ -576,16 +576,8 @@ Instance creation is asynchronous. Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}
   </Tab>
   <Tab title="Python SDK">
     ```python
-    import time
-
-    while True:
-        task = client.cloud.tasks.get(task_id)
-        if task.state == "FINISHED":
-            instance_id = task.created_resources.instances[0]
-            break
-        if task.state == "ERROR":
-            raise RuntimeError(task.error)
-        time.sleep(5)
+    # create_and_poll() in step 4 polls automatically.
+    # instance is already ACTIVE when step 4 returns - skip to step 6.
     ```
   </Tab>
 </Tabs>
@@ -628,14 +620,10 @@ With the instance in `ACTIVE` state, retrieve its public IP from the `addresses`
   </Tab>
   <Tab title="Python SDK">
     ```python
-    instance = client.cloud.instances.get(
-        instance_id=os.environ["INSTANCE_ID"],
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
-    )
-    for network_name, ifaces in instance.addresses.items():
+    # instance.addresses is populated on the object returned by create_and_poll()
+    for ifaces in instance.addresses.values():
         for iface in ifaces:
-            print(f"{network_name}: {iface['addr']}")
+            print(f"IP: {iface.addr}")
     ```
   </Tab>
 </Tabs>
@@ -697,11 +685,12 @@ To delete the instance and its boot volume, pass the volume ID in the `volumes` 
   </Tab>
   <Tab title="Python SDK">
     ```python
-    client.cloud.instances.delete(
-        instance_id=os.environ["INSTANCE_ID"],
+    boot_volume_id = instance.volumes[0].id
+    client.cloud.instances.delete_and_poll(
+        instance_id=instance.id,
         project_id=int(os.environ["PROJECT_ID"]),
         region_id=int(os.environ["REGION_ID"]),
-        volumes=os.environ["BOOT_VOLUME_ID"],
+        volumes=boot_volume_id,
     )
     ```
   </Tab>
@@ -715,7 +704,7 @@ The API returns:
 }
 ```
 
-Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> until `state` is `FINISHED`. The boot volume ID is available in the instance details under `volumes[0].id`.
+For curl, poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> until `state` is `FINISHED`. The boot volume ID is available in the instance details under `volumes[0].id`.
 
 <Info>
 If a floating IP was assigned to the instance, add `delete_floatings=true` to the query string to release it at the same time: `?volumes={id}&delete_floatings=true`.

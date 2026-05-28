@@ -255,12 +255,12 @@ A network is the top-level isolation boundary. When a network is created, a rout
     from gcore import Gcore
 
     client = Gcore(api_key=os.environ["GCORE_API_KEY"])
-    result = client.cloud.networks.create(
+    network = client.cloud.networks.create_and_poll(
         project_id=int(os.environ["PROJECT_ID"]),
         region_id=int(os.environ["REGION_ID"]),
         name="private-net",
     )
-    net_task_id = result.tasks[0]
+    network_id = network.id
     ```
   </Tab>
 </Tabs>
@@ -273,7 +273,7 @@ The API returns:
 }
 ```
 
-Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`:
+For curl, poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`:
 
 ```json
 {
@@ -314,15 +314,15 @@ A subnet defines the IP address range assigned to VMs in the network.
   </Tab>
   <Tab title="Python SDK">
     ```python
-    sub_result = client.cloud.networks.subnets.create(
+    subnet = client.cloud.networks.subnets.create_and_poll(
         project_id=int(os.environ["PROJECT_ID"]),
         region_id=int(os.environ["REGION_ID"]),
         name="private-subnet",
-        network_id=os.environ["NETWORK_ID"],
+        network_id=network_id,
         cidr="10.0.1.0/24",
         enable_dhcp=True,
     )
-    sub_task_id = sub_result.tasks[0]
+    subnet_id = subnet.id
     ```
   </Tab>
 </Tabs>
@@ -335,7 +335,7 @@ The API returns:
 }
 ```
 
-Poll until `FINISHED`:
+For curl, poll until `FINISHED`:
 
 ```json
 {
@@ -396,7 +396,7 @@ Create a VM with both a private interface (for internal communication) and an ex
   </Tab>
   <Tab title="Python SDK">
     ```python
-    vm1 = client.cloud.instances.create(
+    vm1 = client.cloud.instances.create_and_poll(
         project_id=int(os.environ["PROJECT_ID"]),
         region_id=int(os.environ["REGION_ID"]),
         name="vm-1",
@@ -405,8 +405,8 @@ Create a VM with both a private interface (for internal communication) and an ex
         interfaces=[
             {
                 "type": "subnet",
-                "network_id": os.environ["NETWORK_ID"],
-                "subnet_id": os.environ["SUBNET_ID"],
+                "network_id": network_id,
+                "subnet_id": subnet_id,
             },
             {"type": "external"},
         ],
@@ -417,7 +417,7 @@ Create a VM with both a private interface (for internal communication) and an ex
             "boot_index": 0,
         }],
     )
-    vm1_task_id = vm1.tasks[0]
+    vm1_id = vm1.id
     ```
   </Tab>
 </Tabs>
@@ -430,7 +430,7 @@ The API returns:
 }
 ```
 
-Poll until `FINISHED` and extract the instance ID from `created_resources.instances[0]`.
+For curl, poll until `FINISHED` and extract the instance ID from `created_resources.instances[0]`.
 
 ## Step 4. Create the second VM
 
@@ -517,7 +517,7 @@ curl -X DELETE \
   -H "Authorization: APIKey $GCORE_API_KEY"
 ```
 
-Poll both tasks to `FINISHED` before deleting network resources.
+For curl, poll both tasks to `FINISHED` before deleting network resources.
 
 2. Delete the subnet:
 
