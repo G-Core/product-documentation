@@ -1,7 +1,7 @@
 ---
 title: "SRT"
 sidebarTitle: "SRT"
-ai-navigation: Configure SRT (Secure Reliable Transport) UDP-based protocol for live streaming ingestion with encoder settings including video codec, bitrate, latency window, keyframe interval, CPU preset, profile, tune, and x264/x265 options; obtain ingest URLs with server location, port 5001, stream key, and backup URL via portal or API for SRT PUSH workflows.
+ai-navigation: Configure SRT (Secure Reliable Transport) UDP-based protocol for live streaming ingestion with encoder settings including video codec, bitrate, latency window, keyframe interval, CPU preset, profile, tune, and x264/x265 options; obtain ingest URLs with server location, port 5001, stream key, and backup URL via portal or API; configure optional passphrase protection via API for SRT PUSH workflows.
 ---
 
 ## Main principles
@@ -97,6 +97,50 @@ Example of the API response:
 ```
 
 Read more in [the API documentation](/api-reference/streaming/streams/create-live-stream).
+
+
+### Protect SRT ingest with a passphrase
+
+For SRT PUSH streams, you can require a passphrase on the ingest connection. When `srt_passphrase` is set for a live stream, your encoder must send the same passphrase while connecting to the SRT ingest URL. The incoming MPEG-TS stream is then AES-encrypted by SRT between the sender and the Gcore ingester.
+
+This protects the ingest path from your encoder to Gcore. It does not encrypt playback URLs and does not replace viewer-side access protection.
+
+Passphrase requirements:
+- 10 to 80 characters
+- ASCII letters, digits, and punctuation only
+- No spaces or non-ASCII characters
+
+Set the passphrase via the API:
+
+```http
+PATCH /streaming/streams/{stream_id}
+```
+
+```json
+{
+  "stream": {
+    "srt_passphrase": "01234567890"
+  }
+}
+```
+
+To disable passphrase protection, update `srt_passphrase` to `null`.
+
+Then send the same passphrase from your encoder. In FFmpeg, pass it as a separate output option:
+
+```sh
+ffmpeg -hide_banner -re -i file.mp4 -c copy -passphrase 01234567890 -f mpegts \
+  "srt://vp-push-ed2-srt.gvideo.co:5001?streamid=123#abc719"
+```
+
+Or add it to the SRT URL:
+
+```sh
+ffmpeg -hide_banner -re -i file.mp4 -c copy -f mpegts \
+  "srt://vp-push-ed2-srt.gvideo.co:5001?streamid=123#abc719&passphrase=01234567890"
+```
+
+If the passphrase in the stream settings and the passphrase sent by the encoder do not match, the SRT ingest connection is rejected.
 
 
 ## SRT PULL
