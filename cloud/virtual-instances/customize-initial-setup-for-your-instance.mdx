@@ -1,239 +1,254 @@
 ---
 title: Customize the initial setup for your Virtual Machine
 sidebarTitle: Customize initial setup
-ai-navigation: Configure Virtual Machine initial setup using User Data field with cloud-init YAML syntax to set passwords, create users, configure groups, add SSH keys, install packages, and configure network interfaces via Gcore portal, API, or Terraform.
+ai-navigation: Configure Virtual Machine initial setup at boot using cloud-init YAML directives via Customer Portal, REST API, or Terraform by encoding the script in base64 and passing it in the user_data field.
 ---
 
-## Why automate the initial setup?
+import { MethodSwitch, MethodSection } from "/snippets/method-switch";
 
-Automating the initial setup saves time and effort, eliminates manual tasks, reduces errors, ensures consistency, enables scalability, and allows you to focus on more valuable tasks. This is where the **User Data** field in the Virtual Machine setup page can assist you. By using the **User Data** field, you can:
+The **User Data** field on the Virtual Machine creation page accepts a [cloud-init](https://cloudinit.readthedocs.io/en/latest/) YAML document that runs when the VM boots for the first time. Use it to set passwords, create users, add SSH keys, install packages, write files, and configure network interfaces - without logging in to the VM afterward.
 
-  * Set a password for a VM 
-  * Create a user
-  * Configure groups
-  * Add an SSH key
-  * Add repositories and Install packages
-  * Write files
-  * Configure network interfaces
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
 
+By default, the **User Data** field is disabled for new Virtual Machines. Enable it by switching on the toggle and adding the cloud-init YAML content in the text box.
 
+<Frame>![User Data content](/images/docs/cloud/virtual-instances/customize-initial-setup-for-your-instance/user-data-from-ui.png)</Frame>
 
-You can access and use the User Data field in three ways:
+</MethodSection>
+<MethodSection id="api" label="REST API">
 
-### From the customer portal
+The `user_data` field in the instance creation request accepts a base64-encoded cloud-init YAML string. The encoding step is required - the API rejects plain-text YAML.
 
-By default, the **User Data** field is disabled for new Virtual Machines (VMs). Enable it by switching on the toggle and adding your User Data content in the textbox.
+<Info>
+A permanent [API token](/account-settings/api-tokens) is required, along with a project ID, region ID, image ID, and flavor ID. Retrieve them from the Customer Portal or by calling <code>GET&nbsp;/cloud/v1/projects</code>, <code>GET&nbsp;/cloud/v1/regions</code>, <code>GET&nbsp;/cloud/v1/images/{project_id}/{region_id}?visibility=public</code>, and <code>GET&nbsp;/cloud/v1/flavors/{project_id}/{region_id}</code>.
+</Info>
 
+Open a bash terminal and set these as environment variables before running the examples:
 
-<Frame>![User Data conten](/images/docs/cloud/virtual-instances/customize-initial-setup-for-your-instance/user-data-from-ui.png)</Frame>
-
-
-
-### From Gcore's API
-
-To add the User Data field when creating a new VM via [Gcore API](https://api.gcore.com/docs/cloud#tag/Instances/operation/InstanceCreateSetV2.post), provide your User Data content in `base64` format via `user_data` in the payload request.
-
-Let's say you want to add the User Data field as below:
-
-```yaml
-#cloud-config
-password: your_password
-chpasswd: { expire:False }
-ssh_pwauth: True
-power_state:
- mode: reboot
- timeout: 30
- condition: True
- ```
-
-First, you must encode this content in `base64` format. You can use the `base64` command line tool to do so.
-
-```sh
-echo -n '#cloud-config
-password: your_password
-chpasswd: { expire:False }
-ssh_pwauth: True
-power_state:
- mode: reboot
- timeout: 30
- condition: True' | base64
- ```
-
-The encoded `base64` result should look similar to this:
-
-```sh
-I2Nsb3VkLWNvbmZpZwpwYXNzd29yZDogeW91cl9wYXNzd29yZApjaHBhc3N3ZDogeyBleHBpcmU6RmFsc2UgfQpzc2hfcHdhdXRoOiBUcnVlCnBvd2VyX3N0YXRlOgogIG1vZGU6IHJlYm9vdAogIHRpbWVvdXQ6IDMwCiAgY29uZGl0aW9uOiBUcnVl
- ```
-
-Then, make an API request with the `user_data` field provided in the payload to create a new VM:
-
-```sh
-curl 'https://api.gcore.com/cloud/v2/instances/{projectId}/{regionId}' 
-...
-\--data-raw {
-"user_data":"I2Nsb3VkLWNvbmZpZwpwYXNzd29yZDogeW91cl9wYXNzd29yZApjaHBhc3N3ZDogeyBleHBpcmU6RmFsc2UgfQpzc2hfcHdhdXRoOiBUcnVlCnBvd2VyX3N0YXRlOgogIG1vZGU6IHJlYm9vdAogIHRpbWVvdXQ6IDMwCiAgY29uZGl0aW9uOiBUcnVl",...}
-...
- ```
-
-### From Terraform
-
-A new Virtual Machine with the User Data field setup can also be created using [Terraform](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/data-sources/instance). Encode your User Data field value to `base64` format first, then provide the encoded value to the `user_data` field in the Terraform definition file as below:
-
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export PROJECT_ID="{YOUR_PROJECT_ID}"
+export REGION_ID="{YOUR_REGION_ID}"
+export IMAGE_ID="{YOUR_IMAGE_ID}"
+export FLAVOR_ID="{YOUR_FLAVOR_ID}"
 ```
-resource "gcore_instance" "instance" {
 
- region_id = your_region_id
- project_id = your_project_id
+## Step 1. Write the cloud-init YAML
 
- name = "your_instance_name"
- ...
- 
- user_data = "I2Nsb3VkLWNvbmZpZwpwYXNzd29yZDogeW91cl9wYXNzd29yZApjaHBhc3N3ZDogeyBleHBpcmU6RmFsc2UgfQpzc2hfcHdhdXRoOiBUcnVlCnBvd2VyX3N0YXRlOgogIG1vZGU6IHJlYm9vdAogIHRpbWVvdXQ6IDMwCiAgY29uZGl0aW9uOiBUcnVl"
+Create a YAML file with the cloud-init directives to run at boot. The file must start with the `#cloud-config` header on the first line.
 
- ...
+The example below writes a file to `/tmp` to confirm initialization ran:
+
+```yaml
+#cloud-config
+write_files:
+  - path: /tmp/cloud-init-ok.txt
+    content: |
+      cloud-init ran successfully
+    permissions: '0644'
+```
+
+Save this as `user-data.yaml`. The [cloud-init directives](#cloud-init-directives) section lists all available options.
+
+## Step 2. Encode to base64
+
+The `user_data` field requires the YAML encoded as a single-line base64 string.
+
+```bash
+USER_DATA_B64=$(base64 -w 0 user-data.yaml)
+echo "$USER_DATA_B64"
+```
+
+The `-w 0` flag disables line-wrapping. On macOS, use `base64 -i user-data.yaml` instead.
+
+## Step 3. Create the instance
+
+Pass the encoded string in the `user_data` field of the [instance creation](https://api.gcore.com/docs/cloud#tag/Instances/operation/InstanceCreateSetV2.post) request.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `user_data` | No | Base64-encoded cloud-init YAML. Runs on first boot only. |
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v2/instances/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name_templates": ["lux-c2-{ip_octets}"],
+        "flavor": "'"$FLAVOR_ID"'",
+        "user_data": "'"$USER_DATA_B64"'",
+        "interfaces": [{"type": "external"}],
+        "volumes": [{
+          "source": "image",
+          "image_id": "'"$IMAGE_ID"'",
+          "size": 20,
+          "boot_index": 0
+        }]
+      }'
+    ```
+  </Tab>
+  <Tab title="Python SDK">
+    ```python
+    import base64
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+
+    with open("user-data.yaml", "rb") as f:
+        user_data_b64 = base64.b64encode(f.read()).decode()
+
+    instance = client.cloud.instances.create_and_poll(
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+        name_template="lux-c2-{ip_octets}",
+        flavor=os.environ["FLAVOR_ID"],
+        user_data=user_data_b64,
+        interfaces=[{"type": "external"}],
+        volumes=[{
+            "source": "image",
+            "image_id": os.environ["IMAGE_ID"],
+            "size": 20,
+            "boot_index": 0,
+        }],
+    )
+    instance_id = instance.id
+    print(f"Instance: {instance.id}  status: {instance.status}")
+    ```
+  </Tab>
+</Tabs>
+
+The API returns:
+
+```json
+{
+  "tasks": ["b63f0fff-5d22-4c23-8e09-f7a3e1c1a999"]
 }
- ```
+```
 
-The User Data field features were built based on `cloud-init`, an industry-standard multi-distribution method for cross-platform cloud VM initialization. 
+For curl, poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`, then read the instance ID from `created_resources.instances[0]`.
 
-## What is cloud-init?
+## Step 4. Verify cloud-init ran
 
-`Cloud-init` is an industry-standard software for automating the initialization of cloud Virtual Machines. You can use `cloud-init` to perform a number of initial tasks when your VM is booted for the first time, such as installing packages, running a shell script, or configuring the network interfaces.
+After the instance is active, connect via SSH using the public IP from the Customer Portal or from the `addresses` field in the instance GET response, then check the sentinel file:
 
-`Cloud-init` supports all major Linux distributions:
+```bash
+ssh ubuntu@{INSTANCE_IP} cat /tmp/cloud-init-ok.txt
+```
 
-  * Alpine Linux
-  * ArchLinux
-  * Debian
-  * DragonFlyBSD
-  * Fedora
-  * FreeBSD
-  * Gentoo Linux
-  * NetBSD
-  * OpenBSD
-  * Photon OS
-  * RHEL/CentOS/AlmaLinux/Rocky Linux/EuroLinux
-  * SLES/openSUSE
-  * Ubuntu
+The expected output is:
+
+```text
+cloud-init ran successfully
+```
+
+If the file is absent, check the [cloud-init logs](#check-cloud-init-logs) section for diagnostic commands.
+
+</MethodSection>
+</MethodSwitch>
+
+## Terraform
+
+The `gcore_instance` resource accepts the same base64-encoded string in the `user_data` attribute. Encode the YAML with the `base64` CLI tool first, then set the result directly in the configuration:
+
+```hcl
+resource "gcore_instance" "instance" {
+  region_id  = var.region_id
+  project_id = var.project_id
+  name       = "my-instance"
+  # ... other required fields ...
+  user_data = "I2Nsb3VkLWNvbmZpZwp3cml0ZV9maWxlczo..."
+}
+```
 
 
+## cloud-init directives
 
-It uses a YAML-based syntax, allowing the desired setup to be easily represented. 
+cloud-init is the standard initialization system for cloud Virtual Machines, supported by all major Linux distributions including Ubuntu, Debian, CentOS, Rocky Linux, AlmaLinux, Fedora, and others. It runs on the first boot, reads the `user_data` document, and executes the declared directives.
 
-## Set a password for a Virtual Machine
+Every cloud-init document must begin with `#cloud-config` as its first line.
 
-By default, Gcore Virtual Machine does not allow SSH authentication using username and password alone; only machines with a matching SSH key are allowed to access the VM. 
+## Set a password for a virtual machine
 
-To override this default configuration, set `ssh_pwauth: True` in the **User Data** field. Below is an example configuration of how to set your Virtual Machine to be accessible using a default username and password.
+By default, Gcore Virtual Machines allow SSH access with an SSH key only - password authentication is disabled. To enable password login, add `ssh_pwauth: True`:
 
 ```yaml
-#cloud-config 
+#cloud-config
 password: your_password
-chpasswd: { expire: False } 
+chpasswd: { expire: False }
 ssh_pwauth: True
-power_state:
- mode: reboot
- timeout: 30
- condition: True
- ```
-
-  * The `password` field sets the password value for your Virtual Machine's default username. Depending on the VM image, the username may vary. For example, if you create a Virtual Machine using the Ubuntu distro, your default username will be `ubuntu`
-
-  * With the `chpasswd: { expire: False }` configuration, you do not need to change the password of your default user after you access the VM
-
-  * `ssh_pwauth: True` allows your Virtual Machine to be accessible using a username and password
-
-  * The `power_state` block option tells `cloud-init` to wait 30 seconds for the `cloud-init` process to finish before shutting down the system
-
-
-
-
-After the Virtual Machine is up and running, you can access the VM using the ssh command below:
-
-```sh
-ssh your_default_username@your_instance_ip_address
- ```
-
-Provide your password value; you should now be able to access the Virtual Machine.
-
-## Create a user
-
-With the **User data** field, you can create a new user in the Virtual Machine. 
-
-Let's say you want to create a user called `guest` with the same password as the first user. Here's the example of a `cloud-init` script for creating this `guest` user:
-
-```yaml
-#cloud-config
-...
-#cloud-config
-...
-users:
-  - name:             	guest
-    sudo:                 ALL=(ALL) NOPASSWD:ALL
-    passwd:           	SHA-512_encrypted_value_of_guest_password
-    groups:           	users,admin
-    lock_passwd:      	false
-    shell:                /bin/bash
 power_state:
   mode: reboot
   timeout: 30
   condition: True
 ```
 
-Description of configuration parameters:
+- `password` sets the value for the VM's default OS user. The default username depends on the image: `ubuntu` for Ubuntu, `centos` for CentOS, `debian` for Debian.
+- `chpasswd: { expire: False }` skips the forced password change on first login.
+- `ssh_pwauth: True` enables password-based SSH authentication.
+- `power_state` instructs cloud-init to reboot the VM after initialization completes, which is required for the SSH configuration to take effect.
 
-  * `sudo`: Gives superuser rights to the guest user by setting the value `ALL=(ALL) NOPASSWD:ALL`. 
+After the VM is running, connect with:
 
-  * `passwd`: Provides an encrypted value of your password according to the SHA-512 encryption method. To generate the SHA-512 encrypted value, you can use the `mkpasswd` command line tool:
+```bash
+ssh {DEFAULT_USERNAME}@{INSTANCE_IP}
+```
 
+## Create a user
 
+A new OS user can be created at boot using the `users` directive:
 
+```yaml
+#cloud-config
+users:
+  - name: guest
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    passwd: {SHA-512_ENCRYPTED_VALUE}
+    groups: users,admin
+    lock_passwd: false
+    shell: /bin/bash
+power_state:
+  mode: reboot
+  timeout: 30
+  condition: True
+```
 
-```sh
-mkpasswd -m sha512crypt guest
- ```
+- `sudo` grants superuser rights. `ALL=(ALL) NOPASSWD:ALL` allows all commands without a password prompt.
+- `passwd` takes a SHA-512-encrypted value. Generate it with `mkpasswd -m sha512crypt guest`.
+- `groups` lists OS groups the user joins. Groups must exist before the user is added - see the [user groups](#configure-user-groups) section.
+- `lock_passwd: false` allows password login for this user.
+- `shell` sets the default shell for the user.
 
-  * `groups`: Lists all groups the `guest` user will belong to. In this configuration, the user will be automatically added to the `users` and `admin` groups. If you want to add the user to other groups, first [make sure that these groups exist](/cloud/virtual-instances/customize-initial-setup-for-your-instance#check-user-groups). 
+After the VM is ready, connect as the new user:
 
-  * `lock_passwd`: When set to `false`, this value allows you to access the Virtual Machine with a username and password.
-
-  * `shell`: When set to `bin/bash`, this value defines the default shell as `bash` for the `guest` user.
-
-
-
-
-After you configure user data, wait a few minutes for your Virtual Machine to launch and use the `guest` user to access the VM:
-
-1\. Run the following command: `ssh guest@your_instance_ip`.
-
-2\. Type `guest` and press **Enter**.
-
-You should now be able to log in to your guest user account.
+```bash
+ssh guest@{INSTANCE_IP}
+```
 
 <Info>
-**Info**
-
-To check for the groups that the `guest` user belongs to, run the command `groups`. You should see the `users` and `admin` groups listed, indicating that the `guest` user belongs to the `users` and `admin` groups.
+To verify group membership after connecting, run `groups`. The output should include `users` and `admin`.
 </Info>
 
 ## Enable root user
 
-When creating a Virtual Machine, you can enable user access to the root by adding the following line to the **User data** field:
+Root login is disabled by default. To enable root access at boot time, add:
 
 ```yaml
 #cloud-config
-disable_root: false 
- ```
+disable_root: false
+```
 
-For details on how to enable user access to root after creating a Virtual Machine, [read our guide](/cloud/virtual-instances/enable-root-user-on-a-linux-vm#enable-root-user-via-terminal). 
+To enable root access on an already-running VM, follow the [root user](/cloud/virtual-instances/enable-root-user-on-a-linux-vm#enable-root-user-via-terminal) guide.
 
 ## Configure user groups
 
-You can also configure user groups, such as creating a new one. For example, you can create a new user group called `regular-users` by adding the below line to the **User Data** field:
+New OS groups can be created at boot using the `groups` directive:
 
 ```yaml
 #cloud-config
-...
 groups:
   - regular-users
 power_state:
@@ -242,44 +257,36 @@ power_state:
   condition: True
 ```
 
-After your VM is ready, access it via ssh and run the following command to list all user groups in the system:
+After connecting to the VM, verify the group was created:
 
-```sh
+```bash
 compgen -g
 ```
 
-The `regular-users` group should be displayed at the bottom of the result.
+The `regular-users` group appears at the bottom of the output.
 
 ## Add an SSH key
 
-There are times when you want your new Virtual Machine to be accessible from other machines. For example, some of your colleagues may also want to use your VM, or you might want to set up a cluster of Virtual Machines to create an Apache Hadoop or Apache Spark cluster. To do so, you need to add the public SSH keys of other machines to the **User Data** field. 
-
-Below is an example of how to add a public SSH key of another machine to the new Virtual Machine:
+Additional public SSH keys can be added to the VM at boot, granting access to other machines or team members:
 
 ```yaml
 #cloud-config
-...
 ssh_authorized_keys:
-  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDLoSbgtCDju1vmEOws3cBpU5BDZJ3iwuHb0HnNaxJDDU72TYp4DZRxhkSy7KAGCnGl1x1et3i8TR9HeYLzF4B6+lBkHL3cfxuKqrTr7bYUNmmhxMj1THdH5lyS5ezYQGsd/QUryPNw9mbl1WrWu7sbyihF+B9+tHDoJ7owUehgHEG90XNJRFFe/ZHU+wHzJIRpQxFtdfZghwSBfRGJLTL6/nJtO39P7nAen48vH4iSzJYwsNtrWLG7Sr4kU6q8UJD+lCJ2IIumr6p66W9wh7IwgPED5ABQziSFCRXbeZIraaFvAhsV0r90u9t8cR8Yf2hU1rKcEaPRxYFC3IrrY94GnjTnzSE9p9a8DnF4G28/DHSMiTQd5yJKlED/n0piHMEMiJUpAruz3eHTqBz4T8taSZGuoqG4S6qrow6zigfesrWTmqegGUcQDdkTxj6DA5xtK2IIQSTsatQ9+7ggUIOFKGjoSKFxj2rJfxBjFS4pYFjOQBTdzz6ZCJjaMkhTXK8= account-name@hostname
+  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDLoSbg...
 ```
 
-Once the Virtual Machine is up and running, you can view the content of `authorized_keys` by running the below command:
+After the VM is running, verify the key was added:
 
-```sh
+```bash
 cat ~/.ssh/authorized_keys
 ```
 
-You should see the configured ssh-rsa key listed in the result. The other machines should also be able to access this Virtual Machine via SSH.
+## Install packages
 
-## Add repositories and install packages
-
-When using the Virtual Machine, the default installed packages are usually not sufficient for you to perform your tasks. For example, if you're a software engineer, you need to use docker to build the application image, or use `nmap` and `traceroute` to debug your application network. 
-
-Adding the below configuration into your **User Data** field helps you install the `docker`, `nmap`, and `traceroute` tools when the VM boots up.
+Packages available in the default OS repository need only to appear in the `packages` list. For packages requiring a third-party repository, declare the repository under `apt.sources` first:
 
 ```yaml
 #cloud-config
-...
 apt:
   sources:
     docker.list:
@@ -290,8 +297,6 @@ package_upgrade: true
 packages:
   - apt-transport-https
   - ca-certificates
-  - gnupg-agent
-  - software-properties-common
   - gnupg
   - docker-ce
   - docker-ce-cli
@@ -303,204 +308,81 @@ power_state:
   condition: True
 ```
 
-With packages that are available in the default VM repository like `nmap` and `traceroute`, you only need to include them in the `packages` block. However, with packages that are **not** available in the default instance repository— like `docker-ce` and `docker-ce-cli`—you need to add the Docker repository first using `apt sources`.
-
-After installing, restart the Virtual Machine so that these packages are added to the system path. Including the `power_state` block at the end of the **User Data** field is helpful because it allows you to use these tools as soon as the Virtual Machine is ready.
+`package_update` and `package_upgrade` refresh and upgrade the package index before installing. The `power_state` block restarts the VM after installation so the packages are available immediately on the path.
 
 ## Write files
 
-Sometimes it may be helpful to have existing files for usage after the Virtual Machine is ready. For example, you could have a YAML file that contains example scripts for working with Docker. Using the feature below, you can create a file named `useful-docker-script.yaml` in the `/root` directory.
+Arbitrary files can be written at boot using the `write_files` directive:
 
 ```yaml
 #cloud-config
-...
 write_files:
-  - path: /root/useful-docker-script.yaml
+  - path: /root/setup.sh
     content: |
-    # This script is for building the   
-# docker Image in order to push it later to your DockerHub 
-docker build -t dockerhub-username/docker-image-name . 
-
-# This script is for logging in to your DockerHub
-      docker login
-
-    # This script is for pushing the image to your DockerHub space
-      docker push dockerhub-username/docker-image-name
+      #!/bin/bash
+      echo "VM initialized"
+    permissions: '0755'
 ```
 
-Access the Virtual Machine once it is available, and run the following command to check whether the new file `useful-docker-script.yaml` has been created:
+After connecting, verify the file was created:
 
-```sh
-cd /root
-ls
-```
-
-You should see a result similar to the below:
-
-```sh
-useful-docker-script.yaml
-```
-
-Run the following command to view the content of the file `useful-docker-script.yaml`.
-
-```sh
-cat useful-docker-script.yaml
-```
-
-You should see a similar output to this:
-
-```sh
-# This script is for building the
-# docker Image in order to push it later to your DockerHub
-  docker build -t dockerhub-username/docker-image-name .
-
-  # This script is for logging in to your DockerHub
-  docker login
-
-  # This script is for pushing the image to your DockerHub space
-  docker push dockerhub-username/docker-image-name
+```bash
+ls /root/setup.sh
+cat /root/setup.sh
 ```
 
 ## Configure network interfaces
 
-You can also configure network interfaces using the **User Data** field. For example, you can add a static IP address to your Virtual Machine network interface. Having a static IP address offers benefits such as:
-
-  * Allowing you to host a web server using the static IP
-  * Allowing other Virtual Machines access to your VM reliably using the static IP
-
-
-
-When your Virtual Machine is created, `cloud-init` will generate a new file named `50-cloud-init.yaml` in the `/etc/netplan` directory and create a new network interface based on that file. To add a static IP address to the network interface, you need to create another file in the `/etc/netplan` other than `50-cloud-init.yaml`. When `cloud-init` creates the network interface, it will try to merge the content of these two configuration files. As a result, the static IP address will be added to the network interface. Below is an example content of the `50-cloud-init.yaml` file.
-
-```yaml
-network:
-    version: 2
-    renderer: networkd
-    ethernets:
-        enp3s0:
-            dhcp4: true
-            match:
-                macaddress: fa:16:3e:1f:37:3c
-            mtu: 1500
-            set-name: enp3s0
-```
-
-To add a static IP to the `enp3s0` network interface, you can add the below content to the User Data field.
+A static IP address can be added to a network interface by writing a second netplan configuration file at boot. When the VM starts, cloud-init writes `/etc/netplan/50-cloud-init.yaml` for the DHCP interface. A second file placed in `/etc/netplan` is merged with it at reboot, applying the static address:
 
 ```yaml
 #cloud-config
-...
 write_files:
   - content: |
-        network:
-            version: 2
-            renderer: networkd
-            ethernets:
-              enp3s0:
-                addresses:
-                - 192.170.1.25/24
-                - 2020:1::1/64
-                nameservers:
-                  addresses:
-                  - 8.8.8.8
-                  - 8.8.4.4
+      network:
+        version: 2
+        renderer: networkd
+        ethernets:
+          enp3s0:
+            addresses:
+              - 192.170.1.25/24
+              - 2020:1::1/64
+            nameservers:
+              addresses:
+                - 8.8.8.8
+                - 8.8.4.4
     path: /etc/netplan/00-add-static-ip.yaml
-    permissions: 0644
+    permissions: '0644'
 power_state:
   mode: reboot
   timeout: 30
   condition: True
 ```
 
-`Cloud-init` will execute two steps based on this configuration.
+After the VM reboots, verify the static address was applied:
 
-  * First, `cloud-init` will create a new file named `00-add-static-ip.yaml` in `/etc/netplan` with instructions to add static IP addresses for both IPv4 (192.170.1.25) and IPv6 (2020:1::1.) The permission of the file is 0644, which means it is readable by any user and writable by `cloud-init`.
-
-  * When the Virtual Machine is rebooted (using the `power_state` block configuration), `cloud-init` will try to merge the network configuration for both `00-add-static-ip.yaml` and `50-cloud-init.yaml` files so that you can add static IP addresses to the `enp3s0` network interface.
-
-
-
-
-Access the Virtual Machine once it is ready, and run the following command:
-
-```sh
+```bash
 ip a
 ```
 
-You should see something similar to this:
+The `enp3s0` interface should show both the static IPv4 address `192.170.1.25` and IPv6 address `2020:1::1` alongside the DHCP-assigned address.
 
-```sh
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-    inet6 ::1/128 scope host
-       valid_lft forever preferred_lft forever
-2: enp3s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
-    link/ether fa:16:3e:6f:bc:a4 brd ff:ff:ff:ff:ff:ff
-    inet 192.170.1.25/24 brd 192.168.1.255 scope global enp3s0
-       valid_lft forever preferred_lft forever
-    inet 95.85.94.142/24 metric 100 brd 95.85.94.255 scope global dynamic enp3s0
-       valid_lft 86289sec preferred_lft 86289sec
-    inet6 2020:1::1/64 scope global
-       valid_lft forever preferred_lft forever
-    inet6 fe80::f816:3eff:fe6f:bca4/64 scope link
-       valid_lft forever preferred_lft forever
-```
+## Check cloud-init logs
 
-Notice in the enp3s0 interface, the static IP address for IPv4 is `192.170.1.25` and for IPv6 it is `2020:1::1`.
+When cloud-init directives do not apply as expected, two log files inside the VM contain diagnostic information.
 
-## Check Cloud-Init logs for errors
+### cloud-init log
 
-If you encounter any issues with `cloud-init`, you can check the logs to identify the problem. There are two main log files on your instances.
+`/var/log/cloud-init.log` records the full execution trace, including errors:
 
-### Cloud-init log
-
-The `cloud-init` log is located at `/var/log/cloud-init.log` and contains detailed information about the `cloud-init` process, including any errors that occur.
-
-To view the `cloud-init` log, run the following command:
-
-```sh
+```bash
 cat /var/log/cloud-init.log
 ```
 
-You should see the log output similar to this:
+### cloud-init output log
 
-```sh
-2025-02-25 13:47:57,223 - util.py[DEBUG]: Cloud-init v. 24.4~3+really24.3.1-0ubuntu4 running 'init-local' at Tue, 25 Feb 2025 13:47:57 +0000. Up 10.68 seconds.
-2025-02-25 13:47:57,227 - stages.py[DEBUG]: Using distro class <class 'cloudinit.distros.ubuntu.Distro'>
-2025-02-25 13:47:57,228 - main.py[INFO]: PID [1] started cloud-init 'init-local'.
-2025-02-25 13:47:57,228 - main.py[DEBUG]: No kernel command line url found.
-2025-02-25 13:47:57,228 - main.py[DEBUG]: Closing stdin
-2025-02-25 13:47:57,231 - util.py[DEBUG]: Writing to /var/log/cloud-init.log - ab: [640] 0 bytes
-2025-02-25 13:47:57,232 - util.py[DEBUG]: Changing the ownership of /var/log/cloud-init.log to 102:4
-2025-02-25 13:47:57,232 - util.py[DEBUG]: Writing to /var/lib/cloud/data/python-version - wb: [644] 4 bytes
-2025-02-25 13:47:57,233 - util.py[DEBUG]: Attempting to remove /var/lib/cloud/instance/boot-finished
-...
-```
+`/var/log/cloud-init-output.log` captures stdout and stderr from the scripts cloud-init ran:
 
-### Cloud-init output log
-
-The `cloud-init-output` log is located at `/var/log/cloud-init-output.log` and contains the output of the scripts the `cloud-init` process runs.
-
-To view the `cloud-init-output` log, run the following command:
-
-```sh
+```bash
 cat /var/log/cloud-init-output.log
-```
-
-You should see the log output similar to this:
-
-```sh
-Cloud-init v. 24.4~3+really24.3.1-0ubuntu4 running 'init-local' at Tue, 25 Feb 2025 13:47:57 +0000. Up 10.68 seconds.
-Cloud-init v. 24.4~3+really24.3.1-0ubuntu4 running 'init' at Tue, 25 Feb 2025 13:47:59 +0000. Up 13.00 seconds.
-ci-info: +++++++++++++++++++++++++++++++++++++++Net device info+++++++++++++++++++++++++++++++++++++++
-ci-info: +--------+------+------------------------------+---------------+--------+-------------------+
-ci-info: | Device |  Up  |           Address            |      Mask     | Scope  |     Hw-Address    |
-ci-info: +--------+------+------------------------------+---------------+--------+-------------------+
-ci-info: | enp3s0 | True |        11.222.111.222        | 255.255.255.0 | global | aa:bb:cc:dd:ee:ff |
-ci-info: | enp3s0 | True | fe80::f816:3eff:fe25:e835/64 |       .       |  link  | aa:bb:cc:dd:ee:ff |
-ci-info: |   lo   | True |          127.0.0.1           |   255.0.0.0   |  host  |         .         |
-ci-info: |   lo   | True |           ::1/128            |       .       |  host  |         .         |
-...
 ```
