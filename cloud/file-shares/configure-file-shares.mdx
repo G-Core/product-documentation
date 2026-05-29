@@ -392,10 +392,10 @@ This process is the same for both Standard and VAST-based file shares:
   </MethodSection>
   <MethodSection id="api" label="REST API">
 
-A Standard NFS file share provides shared persistent storage accessible from any VM on the same private subnet. Six API calls create the network, file share, and VM; one mount command connects the share to the instance filesystem.
+NFS file shares provide shared persistent storage accessible from any VM on the same private subnet. The steps below create a network, subnet, and NFS file share, then retrieve the connection point used to mount the share.
 
 <Info>
-A permanent [API token](/developer-tools/rest-api/authentication) is required, along with a project ID and region ID from the [Gcore Customer Portal](https://portal.gcore.com). NFS file shares are available in most Gcore Cloud regions. To confirm availability for a specific region, call <code>GET&nbsp;/cloud/v1/regions</code> and check that `has_sfs` is `true`.
+A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/GetProjectList.get) and [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/GetRegionList.get) from a region where `has_sfs` is `true` - call <code>GET&nbsp;/cloud/v1/regions</code> to check.
 </Info>
 
 Open a bash terminal and set these as environment variables before running the examples:
@@ -406,16 +406,203 @@ export PROJECT_ID="{YOUR_PROJECT_ID}"
 export REGION_ID="{YOUR_REGION_ID}"
 ```
 
-## Step 1. Create a private network
+## Quickstart
+
+The scripts below create a private network, subnet, and 5 GiB NFS file share, then print the connection point for mounting.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(
+        api_key=os.environ["GCORE_API_KEY"],
+        cloud_project_id=int(os.environ["PROJECT_ID"]),
+        cloud_region_id=int(os.environ["REGION_ID"]),
+    )
+
+    # Step 1. Create a private network
+    network = client.cloud.networks.create_and_poll(name="my-network", create_router=True)
+    print(f"Network ID: {network.id}")
+
+    # Step 2. Create a subnet
+    subnet = client.cloud.networks.subnets.create_and_poll(
+        network_id=network.id,
+        name="my-subnet",
+        cidr="192.168.100.0/24",
+    )
+    print(f"Subnet ID: {subnet.id}")
+
+    # Step 3. Create the file share
+    task_id_list = client.cloud.file_shares.create(
+        name="my-share",
+        protocol="NFS",
+        size=5,
+        network={"network_id": network.id, "subnet_id": subnet.id},
+        access=[{"access_mode": "rw", "ip_address": "192.168.100.0/24"}],
+    )
+    task = client.cloud.tasks.poll(task_id_list.tasks[0])
+    share_id = task.created_resources.file_shares[0]
+    print(f"File share ID: {share_id}")
+
+    # Step 4. Retrieve the connection point
+    share = client.cloud.file_shares.get(file_share_id=share_id)
+    print(f"Connection point: {share.connection_point}")
+    print(f"Mount with: sudo mount -t nfs {share.connection_point} /mnt/share")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/packages/param"
+        "github.com/G-Core/gcore-go/shared/constant"
+    )
+
+    func main() {
+        projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
+
+        client := gcore.NewClient(
+            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
+            option.WithCloudProjectID(projectID),
+            option.WithCloudRegionID(regionID),
+        )
+        ctx := context.Background()
+
+        // Step 1. Create a private network
+        network, err := client.Cloud.Networks.NewAndPoll(ctx, cloud.NetworkNewParams{
+            Name:         "my-network",
+            CreateRouter: param.NewOpt(true),
+        })
+        if err != nil {
+            log.Fatal(err)
+        }
+        fmt.Printf("Network ID: %s\n", network.ID)
+
+        // Step 2. Create a subnet
+        subnet, err := client.Cloud.Networks.Subnets.NewAndPoll(ctx, cloud.NetworkSubnetNewParams{
+            Name:      "my-subnet",
+            Cidr:      "192.168.100.0/24",
+            NetworkID: network.ID,
+        })
+        if err != nil {
+            log.Fatal(err)
+        }
+        fmt.Printf("Subnet ID: %s\n", subnet.ID)
+
+        // Step 3. Create the file share
+        share, err := client.Cloud.FileShares.NewAndPoll(ctx, cloud.FileShareNewParams{
+            OfCreateStandardFileShareSerializer: &cloud.FileShareNewParamsBodyCreateStandardFileShareSerializer{
+                Name: "my-share",
+                Network: cloud.FileShareNewParamsBodyCreateStandardFileShareSerializerNetwork{
+                    NetworkID: network.ID,
+                    SubnetID:  param.NewOpt(subnet.ID),
+                },
+                Size:     5,
+                Protocol: constant.ValueOf[constant.Nfs](),
+                Access: []cloud.FileShareNewParamsBodyCreateStandardFileShareSerializerAccess{
+                    {AccessMode: "rw", IPAddress: "192.168.100.0/24"},
+                },
+            },
+        })
+        if err != nil {
+            log.Fatal(err)
+        }
+        fmt.Printf("File share ID: %s\n", share.ID)
+
+        // Step 4. Retrieve the connection point
+        details, err := client.Cloud.FileShares.Get(ctx, share.ID, cloud.FileShareGetParams{})
+        if err != nil {
+            log.Fatal(err)
+        }
+        fmt.Printf("Connection point: %s\n", details.ConnectionPoint)
+        fmt.Printf("Mount with: sudo mount -t nfs %s /mnt/share\n", details.ConnectionPoint)
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+Each step below explains what the call does, which parameters matter, and what the response looks like. Use this section to understand the flow or to debug a specific step.
+
+<Accordion title="Show all steps">
+
+### Step 1. Create a private network
 
 A private network isolates traffic between the file share and the VMs that mount it.
 
 | Parameter | Required | Description |
 |---|---|---|
 | `name` | Yes | Network name |
-| `create_router` | No | Set to `true` to create a virtual router automatically - required when adding subnets later |
+| `create_router` | No | Set to `true` to attach a virtual router - required when adding subnets later |
 
 <Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(
+        api_key=os.environ["GCORE_API_KEY"],
+        cloud_project_id=int(os.environ["PROJECT_ID"]),
+        cloud_region_id=int(os.environ["REGION_ID"]),
+    )
+    network = client.cloud.networks.create_and_poll(name="my-network", create_router=True)
+    print(network.id)  # save as NETWORK_ID
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/packages/param"
+    )
+
+    func main() {
+        projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
+
+        client := gcore.NewClient(
+            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
+            option.WithCloudProjectID(projectID),
+            option.WithCloudRegionID(regionID),
+        )
+        ctx := context.Background()
+
+        network, err := client.Cloud.Networks.NewAndPoll(ctx, cloud.NetworkNewParams{
+            Name:         "my-network",
+            CreateRouter: param.NewOpt(true),
+        })
+        if err != nil {
+            log.Fatal(err)
+        }
+        fmt.Println(network.ID) // save as NETWORK_ID
+    }
+    ```
+  </Tab>
   <Tab title="curl">
     ```bash
     curl -s -X POST "https://api.gcore.com/cloud/v1/networks/$PROJECT_ID/$REGION_ID" \
@@ -426,44 +613,31 @@ A private network isolates traffic between the file share and the VMs that mount
         "create_router": true
       }'
     ```
-  </Tab>
-  <Tab title="Python SDK">
-    ```python
-    import os
-    from gcore import Gcore
 
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
-    task_id_list = client.cloud.networks.create(
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
-        name="my-network",
-        create_router=True,
-    )
-    print(task_id_list.tasks[0])
+    Response:
+
+    ```json
+    {
+      "tasks": ["668e75b8-..."]
+    }
+    ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`, then read the network ID:
+
+    ```json
+    {
+      "state": "FINISHED",
+      "created_resources": {
+        "networks": ["6880a081-..."]
+      }
+    }
     ```
   </Tab>
 </Tabs>
 
-The API returns:
+The full parameter list is in the [networks](https://api.gcore.com/docs/cloud#tag/Networks/operation/NetworkCreateV1.post) API reference.
 
-```json
-{
-  "tasks": ["668e75b8-..."]
-}
-```
-
-Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`, then read the network ID:
-
-```json
-{
-  "state": "FINISHED",
-  "created_resources": {
-    "networks": ["6880a081-..."]
-  }
-}
-```
-
-## Step 2. Create a subnet
+### Step 2. Create a subnet
 
 A subnet assigns the address range that the file share and VMs will use. The file share and any VM that mounts it must share the same subnet.
 
@@ -471,9 +645,34 @@ A subnet assigns the address range that the file share and VMs will use. The fil
 |---|---|---|
 | `network_id` | Yes | ID of the network from Step 1 |
 | `cidr` | Yes | IPv4 CIDR block for the subnet |
-| `enable_dhcp` | No | Enables automatic IP assignment for VMs on this subnet. Defaults to `true` |
+| `enable_dhcp` | No | Enables automatic IP assignment for VMs on this subnet - defaults to `true` |
 
 <Tabs>
+  <Tab title="Python SDK">
+    ```python
+    # client initialized in Step 1
+    subnet = client.cloud.networks.subnets.create_and_poll(
+        network_id="{NETWORK_ID}",
+        name="my-subnet",
+        cidr="192.168.100.0/24",
+    )
+    print(subnet.id)  # save as SUBNET_ID
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    // client and ctx initialized in Step 1
+    subnet, err := client.Cloud.Networks.Subnets.NewAndPoll(ctx, cloud.NetworkSubnetNewParams{
+        Name:      "my-subnet",
+        Cidr:      "192.168.100.0/24",
+        NetworkID: "{NETWORK_ID}",
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Println(subnet.ID) // save as SUBNET_ID
+    ```
+  </Tab>
   <Tab title="curl">
     ```bash
     curl -s -X POST "https://api.gcore.com/cloud/v1/subnets/$PROJECT_ID/$REGION_ID" \
@@ -486,60 +685,84 @@ A subnet assigns the address range that the file share and VMs will use. The fil
         "enable_dhcp": true
       }'
     ```
-  </Tab>
-  <Tab title="Python SDK">
-    ```python
-    import os
-    from gcore import Gcore
 
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
-    task_id_list = client.cloud.subnets.create(
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
-        name="my-subnet",
-        cidr="192.168.100.0/24",
-        network_id="{NETWORK_ID}",
-        enable_dhcp=True,
-    )
-    print(task_id_list.tasks[0])
+    Response:
+
+    ```json
+    {
+      "tasks": ["921b0e4d-..."]
+    }
+    ```
+
+    Poll the task every 5 seconds until `FINISHED`, then save the subnet ID:
+
+    ```json
+    {
+      "state": "FINISHED",
+      "created_resources": {
+        "subnets": ["a87cedcc-..."]
+      }
+    }
     ```
   </Tab>
 </Tabs>
 
-The API returns:
+The full parameter list is in the [subnets](https://api.gcore.com/docs/cloud#tag/Subnets/operation/SubnetCreateV1.post) API reference.
 
-```json
-{
-  "tasks": ["921b0e4d-..."]
-}
-```
+### Step 3. Create the file share
 
-Poll the task until `FINISHED`, then save the subnet ID:
-
-```json
-{
-  "state": "FINISHED",
-  "created_resources": {
-    "subnets": ["a87cedcc-..."]
-  }
-}
-```
-
-## Step 3. Create the file share
-
-A single create call provisions the NFS share on the private network and sets the initial access rules.
+A single create call provisions the NFS share on the private network and sets the initial access rules. File share creation typically takes 60-90 seconds.
 
 | Parameter | Required | Description |
 |---|---|---|
-| `name` | Yes | Share name. Pattern `^[a-zA-Z0-9][a-zA-Z 0-9._\-]{1,61}[a-zA-Z0-9._]$` |
+| `name` | Yes | Share name |
 | `protocol` | Yes | Must be `"NFS"` for Standard shares |
-| `size` | Yes | Share size in GiB. Minimum: 1 |
+| `size` | Yes | Share size in GiB - minimum 1 |
 | `network.network_id` | Yes | ID of the private network from Step 1 |
 | `network.subnet_id` | No | Subnet ID - if omitted, a subnet is selected automatically |
 | `access[].access_mode` | Yes | `"rw"` (read-write) or `"ro"` (read-only) |
 | `access[].ip_address` | Yes | Source IP address or CIDR that may mount the share |
 
 <Tabs>
+  <Tab title="Python SDK">
+    ```python
+    # client initialized in Step 1
+    task_id_list = client.cloud.file_shares.create(
+        name="my-share",
+        protocol="NFS",
+        size=5,
+        network={"network_id": "{NETWORK_ID}", "subnet_id": "{SUBNET_ID}"},
+        access=[{"access_mode": "rw", "ip_address": "192.168.100.0/24"}],
+    )
+    task = client.cloud.tasks.poll(task_id_list.tasks[0])
+    share_id = task.created_resources.file_shares[0]
+    print(share_id)  # save as FILE_SHARE_ID
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    // client and ctx initialized in Step 1
+    // param and constant are from github.com/G-Core/gcore-go/packages/param and shared/constant
+    share, err := client.Cloud.FileShares.NewAndPoll(ctx, cloud.FileShareNewParams{
+        OfCreateStandardFileShareSerializer: &cloud.FileShareNewParamsBodyCreateStandardFileShareSerializer{
+            Name: "my-share",
+            Network: cloud.FileShareNewParamsBodyCreateStandardFileShareSerializerNetwork{
+                NetworkID: "{NETWORK_ID}",
+                SubnetID:  param.NewOpt("{SUBNET_ID}"),
+            },
+            Size:     5,
+            Protocol: constant.ValueOf[constant.Nfs](),
+            Access: []cloud.FileShareNewParamsBodyCreateStandardFileShareSerializerAccess{
+                {AccessMode: "rw", IPAddress: "192.168.100.0/24"},
+            },
+        },
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Println(share.ID) // save as FILE_SHARE_ID
+    ```
+  </Tab>
   <Tab title="curl">
     ```bash
     curl -s -X POST "https://api.gcore.com/cloud/v1/file_shares/$PROJECT_ID/$REGION_ID" \
@@ -558,108 +781,156 @@ A single create call provisions the NFS share on the private network and sets th
         ]
       }'
     ```
-  </Tab>
-  <Tab title="Python SDK">
-    ```python
-    import os
-    from gcore import Gcore
 
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
-    task_id_list = client.cloud.file_shares.create(
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
-        name="my-share",
-        protocol="NFS",
-        size=5,
-        network={
-            "network_id": "{NETWORK_ID}",
-            "subnet_id": "{SUBNET_ID}",
-        },
-        access=[
-            {"access_mode": "rw", "ip_address": "192.168.100.0/24"},
-        ],
-    )
-    print(task_id_list.tasks[0])
+    Response:
+
+    ```json
+    {
+      "tasks": ["390170eb-..."]
+    }
+    ```
+
+    Poll the task every 5 seconds until `FINISHED` (typically 60-90 seconds):
+
+    ```json
+    {
+      "state": "FINISHED",
+      "created_resources": {
+        "file_shares": ["6b3b713e-..."]
+      }
+    }
     ```
   </Tab>
 </Tabs>
 
-The API returns:
+The full parameter list is in the [file shares](https://api.gcore.com/docs/cloud#tag/File-Shares/operation/FileShareCreate.post) API reference.
 
-```json
-{
-  "tasks": ["390170eb-..."]
-}
-```
-
-File share creation typically takes 20-40 seconds. Poll the task until `FINISHED`:
-
-```json
-{
-  "state": "FINISHED",
-  "created_resources": {
-    "file_shares": ["6b3b713e-..."]
-  }
-}
-```
-
-## Step 4. Retrieve the connection point
+### Step 4. Retrieve the connection point
 
 The connection point is the NFS server address and share path used in the mount command. It becomes available once the share reaches `available` status.
 
 <Tabs>
+  <Tab title="Python SDK">
+    ```python
+    # client initialized in Step 1
+    share = client.cloud.file_shares.get(file_share_id="{FILE_SHARE_ID}")
+    print(share.connection_point)  # save as CONNECTION_POINT
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    // client and ctx initialized in Step 1
+    details, err := client.Cloud.FileShares.Get(ctx, "{FILE_SHARE_ID}", cloud.FileShareGetParams{})
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Println(details.ConnectionPoint) // save as CONNECTION_POINT
+    ```
+  </Tab>
   <Tab title="curl">
     ```bash
     curl -s "https://api.gcore.com/cloud/v1/file_shares/$PROJECT_ID/$REGION_ID/{FILE_SHARE_ID}" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
-  </Tab>
-  <Tab title="Python SDK">
-    ```python
-    import os
-    from gcore import Gcore
 
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
-    share = client.cloud.file_shares.get(
-        file_share_id="{FILE_SHARE_ID}",
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
-    )
-    print(share.connection_point)
+    Response:
+
+    ```json
+    {
+      "id": "6b3b713e-...",
+      "status": "available",
+      "connection_point": "192.168.100.58:/shares/share-416d581b-...",
+      "size": 5,
+      "protocol": "NFS",
+      "network_id": "6880a081-...",
+      "subnet_id": "a87cedcc-..."
+    }
     ```
   </Tab>
 </Tabs>
 
-The API returns:
-
-```json
-{
-  "id": "6b3b713e-...",
-  "status": "available",
-  "connection_point": "192.168.100.58:/shares/share-416d581b-...",
-  "size": 5,
-  "protocol": "NFS",
-  "network_id": "6880a081-...",
-  "subnet_id": "a87cedcc-..."
-}
-```
-
 The `connection_point` value follows the format `{NFS_SERVER_IP}:/shares/{SHARE_PATH}`. Copy the full string - it is used verbatim in the mount command.
 
-## Step 5. Create a VM on the same network
+### Step 5. Create a VM on the same network
 
-The VM must join the private subnet to reach the file share's NFS server IP. A floating IP is added so the instance is accessible via SSH from outside the private network.
+The VM must join the private subnet to reach the file share NFS server IP. A [floating IP](/cloud/networking/ip-address/create-and-configure-a-floating-ip-address) is added so the instance is accessible via SSH from outside the private network.
 
 | Parameter | Required | Description |
 |---|---|---|
-| `flavor` | Yes | Instance flavor name - list available flavors with <code>GET&nbsp;/cloud/v1/flavors/{project_id}/{region_id}</code> |
+| `flavor` | Yes | Instance [flavor](https://api.gcore.com/docs/cloud#tag/Flavors/operation/FlavorListV1.get) name - IDs are region-specific |
 | `interfaces[].type` | Yes | Use `"subnet"` to place the instance on the private subnet |
 | `interfaces[].network_id` | Yes | Must match the network used for the file share |
 | `interfaces[].subnet_id` | Yes | Must match the subnet used for the file share |
 | `interfaces[].floating_ip.source` | No | Set to `"new"` to allocate and attach a floating IP automatically |
-| `keypair_name` | Yes | Name of an SSH key pair registered in the project - used to connect to the instance after creation |
+| `keypair_name` | Yes | Name of an SSH key pair registered in the project |
 
 <Tabs>
+  <Tab title="Python SDK">
+    ```python
+    # client initialized in Step 1
+    task_id_list = client.cloud.instances.create(
+        flavor="{FLAVOR_NAME}",
+        name="{INSTANCE_NAME}",
+        interfaces=[
+            {
+                "type": "subnet",
+                "network_id": "{NETWORK_ID}",
+                "subnet_id": "{SUBNET_ID}",
+                "floating_ip": {"source": "new"},
+            }
+        ],
+        volumes=[
+            {
+                "source": "image",
+                "image_id": "{IMAGE_ID}",
+                "size": 20,
+                "boot_index": 0,
+                "delete_on_termination": True,
+            }
+        ],
+        keypair_name="{KEY_NAME}",
+    )
+    task = client.cloud.tasks.poll(task_id_list.tasks[0])
+    instance_id = task.created_resources.instances[0]
+    print(instance_id)  # save as INSTANCE_ID
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    // client and ctx initialized in Step 1
+    // gcore is the root package: github.com/G-Core/gcore-go
+    instanceResult, err := client.Cloud.Instances.NewAndPoll(ctx, cloud.InstanceNewParams{
+        Name:   gcore.String("{INSTANCE_NAME}"),
+        Flavor: "{FLAVOR_NAME}",
+        Interfaces: []cloud.InstanceNewParamsInterfaceUnion{
+            {
+                OfSubnet: &cloud.InstanceNewParamsInterfaceSubnet{
+                    NetworkID: "{NETWORK_ID}",
+                    SubnetID:  "{SUBNET_ID}",
+                    FloatingIP: cloud.InstanceNewParamsInterfaceSubnetFloatingIPUnion{
+                        OfNew: &cloud.InstanceNewParamsInterfaceSubnetFloatingIPNew{},
+                    },
+                },
+            },
+        },
+        Volumes: []cloud.InstanceNewParamsVolumeUnion{
+            {
+                OfImage: &cloud.InstanceNewParamsVolumeImage{
+                    ImageID:             "{IMAGE_ID}",
+                    BootIndex:           gcore.Int(0),
+                    Size:                gcore.Int(20),
+                    DeleteOnTermination: gcore.Bool(true),
+                },
+            },
+        },
+        SSHKeyName: gcore.String("{KEY_NAME}"),
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Printf("Instance ID: %s\n", instanceResult.ID)
+    ```
+  </Tab>
   <Tab title="curl">
     ```bash
     curl -s -X POST "https://api.gcore.com/cloud/v2/instances/$PROJECT_ID/$REGION_ID" \
@@ -688,72 +959,28 @@ The VM must join the private subnet to reach the file share's NFS server IP. A f
         "keypair_name": "{KEY_NAME}"
       }'
     ```
-  </Tab>
-  <Tab title="Python SDK">
-    ```python
-    import os
-    from gcore import Gcore
 
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
-    task_id_list = client.cloud.instances.create(
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
-        flavor="{FLAVOR_NAME}",
-        name="{INSTANCE_NAME}",
-        interfaces=[
-            {
-                "type": "subnet",
-                "network_id": "{NETWORK_ID}",
-                "subnet_id": "{SUBNET_ID}",
-                "floating_ip": {"source": "new"},
-            }
-        ],
-        volumes=[
-            {
-                "source": "image",
-                "image_id": "{IMAGE_ID}",
-                "size": 20,
-                "boot_index": 0,
-                "delete_on_termination": True,
-            }
-        ],
-        keypair_name="{KEY_NAME}",
-    )
-    print(task_id_list.tasks[0])
+    Response:
+
+    ```json
+    {
+      "tasks": ["f0b4df4f-..."]
+    }
+    ```
+
+    Poll the task every 5 seconds until `FINISHED`, then read the instance ID from `created_resources.instances[0]`. Retrieve the floating IP:
+
+    ```bash
+    curl -s "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID/{INSTANCE_ID}" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      | grep -o '"addr":"[^"]*"'
     ```
   </Tab>
 </Tabs>
 
-The API returns:
-
-```json
-{
-  "tasks": ["f0b4df4f-..."]
-}
-```
-
-Poll the task until `FINISHED`, then read the instance ID and floating IP:
-
-```json
-{
-  "state": "FINISHED",
-  "created_resources": {
-    "instances": ["6549750d-..."]
-  }
-}
-```
-
-Retrieve the floating IP from the instance details:
-
-```bash
-curl -s "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID/{INSTANCE_ID}" \
-  -H "Authorization: APIKey $GCORE_API_KEY" \
-  | grep -o '"addr":"[^"]*"'
-```
-
 Image selection, flavor lookup, and SSH key registration are covered in the [VM guide](/cloud/virtual-instances/create-an-instance).
 
-## Step 6. Mount the file share
+### Step 6. Mount the file share
 
 Connect to the VM via SSH and mount the NFS share. The `nfs-common` package provides the NFS client utilities required to mount Standard file shares.
 
@@ -809,7 +1036,9 @@ To make the mount persistent across reboots, add it to `/etc/fstab`:
 echo "{CONNECTION_POINT} /mnt/share nfs defaults 0 0" | sudo tee -a /etc/fstab
 ```
 
-## Step 7. Resize the file share
+</Accordion>
+
+## Resize the file share
 
 Standard file shares must be unmounted before resizing. The new size must be larger than the current size - downsizing is not supported.
 
@@ -822,6 +1051,27 @@ sudo umount /mnt/share
 Then extend the share:
 
 <Tabs>
+  <Tab title="Python SDK">
+    ```python
+    # client initialized in Step 1
+    resize_tasks = client.cloud.file_shares.resize(file_share_id="{FILE_SHARE_ID}", size=10)
+    client.cloud.tasks.poll(resize_tasks.tasks[0])
+    resized = client.cloud.file_shares.get(file_share_id="{FILE_SHARE_ID}")
+    print(resized.size)  # 10
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    // client and ctx initialized in Step 1
+    resized, err := client.Cloud.FileShares.ResizeAndPoll(ctx, "{FILE_SHARE_ID}", cloud.FileShareResizeParams{
+        Size: 10,
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Printf("New size: %d GiB\n", resized.Size)
+    ```
+  </Tab>
   <Tab title="curl">
     ```bash
     curl -s -X POST "https://api.gcore.com/cloud/v1/file_shares/$PROJECT_ID/$REGION_ID/{FILE_SHARE_ID}/extend" \
@@ -829,33 +1079,18 @@ Then extend the share:
       -H "Content-Type: application/json" \
       -d '{"size": 10}'
     ```
-  </Tab>
-  <Tab title="Python SDK">
-    ```python
-    import os
-    from gcore import Gcore
 
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
-    task_id_list = client.cloud.file_shares.resize(
-        file_share_id="{FILE_SHARE_ID}",
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
-        size=10,
-    )
-    print(task_id_list.tasks[0])
+    Response:
+
+    ```json
+    {
+      "tasks": ["bd7e55a5-..."]
+    }
     ```
   </Tab>
 </Tabs>
 
-The API returns:
-
-```json
-{
-  "tasks": ["bd7e55a5-..."]
-}
-```
-
-Poll the task until `FINISHED`, then remount the share:
+Poll the task every 5 seconds until `FINISHED`, then remount the share:
 
 ```bash
 sudo mount -t nfs {CONNECTION_POINT} /mnt/share
@@ -866,6 +1101,52 @@ df -h /mnt/share
 Filesystem                                                         Size  Used Avail Use% Mounted on
 192.168.100.58:/shares/share-416d581b-1784-454c-adf8-d2dc75886625  9.8G     0  9.3G   0% /mnt/share
 ```
+
+## Clean up
+
+Delete the file share, subnet, and network when no longer needed:
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    # client initialized in Step 1
+    del_tasks = client.cloud.file_shares.delete(file_share_id="{FILE_SHARE_ID}")
+    client.cloud.tasks.poll(del_tasks.tasks[0])
+
+    del_subnet_tasks = client.cloud.networks.subnets.delete(subnet_id="{SUBNET_ID}")
+    client.cloud.tasks.poll(del_subnet_tasks.tasks[0])
+
+    del_net_tasks = client.cloud.networks.delete(network_id="{NETWORK_ID}")
+    client.cloud.tasks.poll(del_net_tasks.tasks[0])
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    // client and ctx initialized in Step 1
+    if err := client.Cloud.FileShares.DeleteAndPoll(ctx, "{FILE_SHARE_ID}", cloud.FileShareDeleteParams{}); err != nil {
+        log.Fatal(err)
+    }
+    if _, err := client.Cloud.Networks.Subnets.Delete(ctx, "{SUBNET_ID}", cloud.NetworkSubnetDeleteParams{}); err != nil {
+        log.Fatal(err)
+    }
+    if _, err := client.Cloud.Networks.Delete(ctx, "{NETWORK_ID}", cloud.NetworkDeleteParams{}); err != nil {
+        log.Fatal(err)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s -X DELETE "https://api.gcore.com/cloud/v1/file_shares/$PROJECT_ID/$REGION_ID/{FILE_SHARE_ID}" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+
+    curl -s -X DELETE "https://api.gcore.com/cloud/v1/subnets/$PROJECT_ID/$REGION_ID/{SUBNET_ID}" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+
+    curl -s -X DELETE "https://api.gcore.com/cloud/v1/networks/$PROJECT_ID/$REGION_ID/{NETWORK_ID}" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+</Tabs>
 
   </MethodSection>
 </MethodSwitch>
