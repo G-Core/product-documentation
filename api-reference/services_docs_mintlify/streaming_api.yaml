@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Streaming API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: '2026-05-29T07:13:07.930567+00:00'
+  version: '2026-05-29T09:03:57.688810+00:00'
 servers:
 - url: https://api.gcore.com
 tags:
@@ -2172,6 +2172,23 @@ paths:
 
 
         Source stream parameters (bitrate, codecs, resolution) are sent "as is". Ensure they match the destination requirements.
+
+          
+
+
+        For **SRT restreams**, specify `&latency=N` explicitly in the SRT target URL instead of relying on a default value. It helps size the recovery buffer for round-trip time, jitter, and packet loss on the route to the target site.
+        Selecting the right latency is crucial for delivering a smooth live stream. It depends on the geographic distance and network conditions between Gcore and your target platform, especially if they located on different continents.
+
+        ```text
+        | Network Conditions      | Recommended Latency |
+        |-------------------------|---------------------|
+        | Cross-region            | 1-2 seconds         |
+        | Public internet         | 2-5 seconds         |
+        ```
+
+        Your target SRT server can accept latency format in seconds, milliseconds, or microseconds. Find out what format your target SRT server accepts in its documentation.
+
+        Learn more about SRT latency in product documentation.
       operationId: post_restreams
       requestBody:
         content:
@@ -5801,6 +5818,22 @@ components:
             values:
             - true – stream is received by PULL method. Use this when need to get stream from external server.
             - false – stream is received by PUSH method. Use this when need to send stream from end-device to our Streaming Platform, i.e. from your encoder, mobile app or OBS Studio.
+        srt_passphrase:
+          type: string
+          default: null
+          nullable: true
+          minLength: 10
+          maxLength: 80
+          pattern: ^[!-~]+$
+          example: your_secret_passphrase
+          description: |-
+            Passphrase for encrypted SRT PUSH ingest.
+
+            If set, the sender must use the same passphrase when pushing to primary `push_url_srt` or backup `backup_push_url_srt` ingest points.
+
+            The passphrase must be 10–80 characters long and may contain only printable ASCII characters: English letters, digits, and punctuation. Whitespace and non-ASCII characters are not allowed.
+
+            To clear the passphrase, update the stream with `"srt_passphrase": null`.
         uri:
           type: string
           default: null
@@ -5901,12 +5934,13 @@ components:
             - vr360tb – display stream in 3D 360° mode Top-Bottom
       example:
         name: Live stream by user e4d0f942-f35d
-        pull: true
+        pull: false
         active: true
         auto_record: false
         client_user_id: 1001
-        uri: srt://domain.com:5000/?streamid=12345
+        uri: null
         html_overlay: false
+        srt_passphrase: your_secret_passphrase
         token: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
     createVideo:
       required:
@@ -7611,16 +7645,23 @@ components:
 
               SRT is designed as a low-latency transport protocol, but real networks are not always stable and in some cases the end-to-end path from the venue to the ingest point can be long. For this reason, it is important to configure the latency parameter carefully to match the actual network conditions. 
 
-              Small latency values may lead to packet loss when jitter or retransmissions occur, while very large values introduce unnecessary end-to-end delay. 
+              Small latency values may lead to packet loss when jitter or retransmissions occur, while larger values give SRT more time for retransmission and make delivery more reliable at the cost of higher end-to-end delay. For streams sent over the public internet, latency values of 2 seconds or more are a good starting point.
 
                 
               *Incorrect or low default value is one of the most common reasons for packet loss, frames loss, and bad picture.*
                 
 
 
-              We therefore recommend setting latency manually rather than relying on the default, to ensure the buffer is correctly sized for your environment. A practical range is 400–2000 ms, with the exact value chosen based on RTT, jitter, and expected packet loss. 
+              We therefore recommend setting latency manually rather than relying on the default, to ensure the buffer is correctly sized for your environment. Choose the value based on RTT, jitter, expected packet loss, and acceptable delay. Read more in the Product Documentation for exact values and use cases.
 
               Be sure to check and test SRT settings on your sender side. The default values do not take into account your specific scenarios and do not work well. If necessary, ask us and we will help you.
+
+                
+
+
+              **SRT passphrase encryption**
+
+              `srt_passphrase` is accepted only for SRT PUSH ingest. If it is configured for the stream, provide the same passphrase in your sender. The incoming SRT stream is AES-encrypted between the sender and ingester.
 
                 
 
@@ -7841,6 +7882,7 @@ components:
           live: true
           backup_live: false
           token: 08cd54f0
+          srt_passphrase: your_secret_passphrase
           push_url: rtmp://vp-push-anx2.domain.com/in/123?08cd54f0
           backup_push_url: rtmp://vp-push-ed1.domain.com/in/123b?08cd54f0
           push_url_srt: srt://vp-push-anx2-srt.domain.com:5001?streamid=123#08cd54f0
