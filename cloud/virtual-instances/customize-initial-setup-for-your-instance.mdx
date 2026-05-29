@@ -4,12 +4,12 @@ sidebarTitle: Customize initial setup
 ai-navigation: Configure Virtual Machine initial setup at boot using cloud-init YAML directives via Customer Portal, REST API, or Terraform by encoding the script in base64 and passing it in the user_data field.
 ---
 
-import { MethodSwitch, MethodSection } from "/snippets/method-switch";
-
-The **User Data** field on the Virtual Machine creation page accepts a [cloud-init](https://cloudinit.readthedocs.io/en/latest/) YAML document that runs when the VM boots for the first time. Use it to set passwords, create users, add SSH keys, install packages, write files, and configure network interfaces - without logging in to the VM afterward.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <MethodSwitch>
 <MethodSection id="portal" label="Customer Portal">
+
+The **User Data** field on the Virtual Machine creation page accepts a [cloud-init](https://cloudinit.readthedocs.io/en/latest/) YAML document that runs when the VM boots for the first time. Use it to set passwords, create users, add SSH keys, install packages, write files, and configure network interfaces — without logging in to the VM afterward.
 
 By default, the **User Data** field is disabled for new Virtual Machines. Enable it by switching on the toggle and adding the cloud-init YAML content in the text box.
 
@@ -18,13 +18,13 @@ By default, the **User Data** field is disabled for new Virtual Machines. Enable
 </MethodSection>
 <MethodSection id="api" label="REST API">
 
-The `user_data` field in the instance creation request accepts a base64-encoded cloud-init YAML string. The encoding step is required - the API rejects plain-text YAML.
+The `user_data` field in the instance creation request accepts a base64-encoded cloud-init YAML string. The encoding step is required — the API rejects plain-text YAML.
 
 <Info>
-A permanent [API token](/account-settings/api-tokens) is required, along with a project ID, region ID, image ID, and flavor ID. Retrieve them from the Customer Portal or by calling <code>GET&nbsp;/cloud/v1/projects</code>, <code>GET&nbsp;/cloud/v1/regions</code>, <code>GET&nbsp;/cloud/v1/images/{project_id}/{region_id}?visibility=public</code>, and <code>GET&nbsp;/cloud/v1/flavors/{project_id}/{region_id}</code>.
+A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/GetProjectList.get), [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/GetRegionList.get), [image ID](https://api.gcore.com/docs/cloud#tag/Images/operation/ImageListV1.get), and [flavor ID](https://api.gcore.com/docs/cloud#tag/Flavors/operation/FlavorListV2.get).
 </Info>
 
-Open a bash terminal and set these as environment variables before running the examples:
+Open a terminal and set these as environment variables before running the examples:
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
@@ -34,11 +34,128 @@ export IMAGE_ID="{YOUR_IMAGE_ID}"
 export FLAVOR_ID="{YOUR_FLAVOR_ID}"
 ```
 
-## Step 1. Write the cloud-init YAML
+## Quickstart
 
-Create a YAML file with the cloud-init directives to run at boot. The file must start with the `#cloud-config` header on the first line.
+The scripts below base64-encode a cloud-init YAML document that writes a sentinel file to `/tmp`, create a VM with that script, and print the instance ID.
 
-The example below writes a file to `/tmp` to confirm initialization ran:
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import base64
+    import os
+    from gcore import Gcore
+
+    # Step 1. Initialize the client.
+    client = Gcore(
+        api_key=os.environ["GCORE_API_KEY"],
+        cloud_project_id=int(os.environ["PROJECT_ID"]),
+        cloud_region_id=int(os.environ["REGION_ID"]),
+    )
+
+    # Step 2. Write the cloud-init YAML.
+    cloud_init_yaml = """\
+#cloud-config
+write_files:
+  - path: /tmp/cloud-init-ok.txt
+    content: |
+      cloud-init ran successfully
+    permissions: '0644'
+"""
+
+    # Step 3. Encode to base64.
+    user_data_b64 = base64.b64encode(cloud_init_yaml.encode()).decode()
+    print(f"user_data: {user_data_b64}")
+
+    # Step 4. Create the instance with user_data.
+    instance = client.cloud.instances.create_and_poll(
+        name="my-vm",
+        flavor=os.environ["FLAVOR_ID"],
+        user_data=user_data_b64,
+        interfaces=[{"type": "external"}],
+        volumes=[{
+            "source": "image",
+            "image_id": os.environ["IMAGE_ID"],
+            "size": 20,
+            "boot_index": 0,
+        }],
+    )
+    print(f"Instance: {instance.id}  status: {instance.status}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "encoding/base64"
+        "fmt"
+        "log"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        // Step 1. Initialize the client.
+        projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
+        client := gcore.NewClient(
+            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
+            option.WithCloudProjectID(projectID),
+            option.WithCloudRegionID(regionID),
+        )
+        ctx := context.Background()
+
+        // Step 2. Write the cloud-init YAML.
+        cloudInitYAML := "#cloud-config\n" +
+            "write_files:\n" +
+            "  - path: /tmp/cloud-init-ok.txt\n" +
+            "    content: |\n" +
+            "      cloud-init ran successfully\n" +
+            "    permissions: '0644'\n"
+
+        // Step 3. Encode to base64.
+        userDataB64 := base64.StdEncoding.EncodeToString([]byte(cloudInitYAML))
+        fmt.Printf("user_data: %s\n", userDataB64)
+
+        // Step 4. Create the instance with user_data.
+        instance, err := client.Cloud.Instances.NewAndPoll(ctx, cloud.InstanceNewParams{
+            Flavor:   os.Getenv("FLAVOR_ID"),
+            Name:     gcore.String("my-vm"),
+            UserData: gcore.String(userDataB64),
+            Interfaces: []cloud.InstanceNewParamsInterfaceUnion{{
+                OfExternal: &cloud.InstanceNewParamsInterfaceExternal{},
+            }},
+            Volumes: []cloud.InstanceNewParamsVolumeUnion{{
+                OfImage: &cloud.InstanceNewParamsVolumeImage{
+                    ImageID:   os.Getenv("IMAGE_ID"),
+                    Size:      gcore.Int(20),
+                    BootIndex: gcore.Int(0),
+                },
+            }},
+        })
+        if err != nil {
+            log.Fatalf("create instance: %v", err)
+        }
+        fmt.Printf("Instance: %s  status: %s\n", instance.ID, instance.Status)
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+Each step below explains what the call does, which parameters matter, and what the response looks like. Use this section to understand the flow or to debug a specific step.
+
+<Accordion title="Show all steps">
+
+### Step 1. Write the cloud-init YAML
+
+Every cloud-init document must begin with `#cloud-config` as its first line. The example below writes a file to `/tmp` to confirm initialization ran:
 
 ```yaml
 #cloud-config
@@ -49,35 +166,145 @@ write_files:
     permissions: '0644'
 ```
 
-Save this as `user-data.yaml`. The [cloud-init directives](#cloud-init-directives) section lists all available options.
+Save this file as `user-data.yaml`. The [cloud-init directives](#cloud-init-directives) section lists all available options.
 
-## Step 2. Encode to base64
+### Step 2. Encode to base64
 
 The `user_data` field requires the YAML encoded as a single-line base64 string.
 
-```bash
-USER_DATA_B64=$(base64 -w 0 user-data.yaml)
-echo "$USER_DATA_B64"
-```
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import base64
 
-The `-w 0` flag disables line-wrapping. On macOS, use `base64 -i user-data.yaml` instead.
+    with open("user-data.yaml", "rb") as f:
+        user_data_b64 = base64.b64encode(f.read()).decode()
+    print(user_data_b64)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    import (
+        "encoding/base64"
+        "fmt"
+        "os"
+    )
 
-## Step 3. Create the instance
+    data, _ := os.ReadFile("user-data.yaml")
+    userDataB64 := base64.StdEncoding.EncodeToString(data)
+    fmt.Println(userDataB64)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    USER_DATA_B64=$(base64 -w 0 user-data.yaml)
+    echo "$USER_DATA_B64"
+    ```
+
+    The `-w 0` flag disables line-wrapping. On macOS, use `base64 -i user-data.yaml` instead.
+  </Tab>
+</Tabs>
+
+### Step 3. Create the instance
 
 Pass the encoded string in the `user_data` field of the [instance creation](https://api.gcore.com/docs/cloud#tag/Instances/operation/InstanceCreateSetV2.post) request.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| `user_data` | No | Base64-encoded cloud-init YAML. Runs on first boot only. |
+| `user_data` | No | Base64-encoded cloud-init YAML; runs on first boot only. |
+| `flavor` | Yes | [Flavor](https://api.gcore.com/docs/cloud#tag/Flavors/operation/FlavorListV2.get) ID; IDs are region-specific. |
+| `boot_index` | Yes | Set to `0` for the primary boot volume. |
 
 <Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import base64
+    import os
+    from gcore import Gcore
+
+    client = Gcore(
+        api_key=os.environ["GCORE_API_KEY"],
+        cloud_project_id=int(os.environ["PROJECT_ID"]),
+        cloud_region_id=int(os.environ["REGION_ID"]),
+    )
+
+    with open("user-data.yaml", "rb") as f:
+        user_data_b64 = base64.b64encode(f.read()).decode()
+
+    instance = client.cloud.instances.create_and_poll(
+        name="my-vm",
+        flavor=os.environ["FLAVOR_ID"],
+        user_data=user_data_b64,
+        interfaces=[{"type": "external"}],
+        volumes=[{
+            "source": "image",
+            "image_id": os.environ["IMAGE_ID"],
+            "size": 20,
+            "boot_index": 0,
+        }],
+    )
+    print(f"Instance: {instance.id}  status: {instance.status}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "encoding/base64"
+        "fmt"
+        "log"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
+        client := gcore.NewClient(
+            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
+            option.WithCloudProjectID(projectID),
+            option.WithCloudRegionID(regionID),
+        )
+        ctx := context.Background()
+
+        data, _ := os.ReadFile("user-data.yaml")
+        userDataB64 := base64.StdEncoding.EncodeToString(data)
+
+        instance, err := client.Cloud.Instances.NewAndPoll(ctx, cloud.InstanceNewParams{
+            Flavor:   os.Getenv("FLAVOR_ID"),
+            Name:     gcore.String("my-vm"),
+            UserData: gcore.String(userDataB64),
+            Interfaces: []cloud.InstanceNewParamsInterfaceUnion{{
+                OfExternal: &cloud.InstanceNewParamsInterfaceExternal{},
+            }},
+            Volumes: []cloud.InstanceNewParamsVolumeUnion{{
+                OfImage: &cloud.InstanceNewParamsVolumeImage{
+                    ImageID:   os.Getenv("IMAGE_ID"),
+                    Size:      gcore.Int(20),
+                    BootIndex: gcore.Int(0),
+                },
+            }},
+        })
+        if err != nil {
+            log.Fatalf("create instance: %v", err)
+        }
+        fmt.Printf("Instance: %s  status: %s\n", instance.ID, instance.Status)
+    }
+    ```
+  </Tab>
   <Tab title="curl">
     ```bash
     curl -X POST "https://api.gcore.com/cloud/v2/instances/$PROJECT_ID/$REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
-        "name_templates": ["lux-c2-{ip_octets}"],
+        "name": "my-vm",
         "flavor": "'"$FLAVOR_ID"'",
         "user_data": "'"$USER_DATA_B64"'",
         "interfaces": [{"type": "external"}],
@@ -89,49 +316,20 @@ Pass the encoded string in the `user_data` field of the [instance creation](http
         }]
       }'
     ```
-  </Tab>
-  <Tab title="Python SDK">
-    ```python
-    import base64
-    import os
-    from gcore import Gcore
 
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+    The API returns:
 
-    with open("user-data.yaml", "rb") as f:
-        user_data_b64 = base64.b64encode(f.read()).decode()
-
-    instance = client.cloud.instances.create_and_poll(
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
-        name_template="lux-c2-{ip_octets}",
-        flavor=os.environ["FLAVOR_ID"],
-        user_data=user_data_b64,
-        interfaces=[{"type": "external"}],
-        volumes=[{
-            "source": "image",
-            "image_id": os.environ["IMAGE_ID"],
-            "size": 20,
-            "boot_index": 0,
-        }],
-    )
-    instance_id = instance.id
-    print(f"Instance: {instance.id}  status: {instance.status}")
+    ```json
+    {
+      "tasks": ["b63f0fff-5d22-4c23-8e09-f7a3e1c1a999"]
+    }
     ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`, then read the instance ID from `created_resources.instances[0]`.
   </Tab>
 </Tabs>
 
-The API returns:
-
-```json
-{
-  "tasks": ["b63f0fff-5d22-4c23-8e09-f7a3e1c1a999"]
-}
-```
-
-For curl, poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`, then read the instance ID from `created_resources.instances[0]`.
-
-## Step 4. Verify cloud-init ran
+### Step 4. Verify cloud-init ran
 
 After the instance is active, connect via SSH using the public IP from the Customer Portal or from the `addresses` field in the instance GET response, then check the sentinel file:
 
@@ -146,6 +344,8 @@ cloud-init ran successfully
 ```
 
 If the file is absent, check the [cloud-init logs](#check-cloud-init-logs) section for diagnostic commands.
+
+</Accordion>
 
 </MethodSection>
 </MethodSwitch>
