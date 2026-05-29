@@ -4,7 +4,7 @@ sidebarTitle: Create and configure
 ai-navigation: Create and configure block storage volumes in Gcore Cloud via Customer Portal or REST API, including creating, attaching, detaching, resizing, and deleting volumes.
 ---
 
-import { MethodSwitch, MethodSection } from "/snippets/method-switch";
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <MethodSwitch>
 <MethodSection id="portal" label="Customer Portal">
@@ -402,10 +402,10 @@ You can also use the **Actions** dropdown to delete multiple volumes at once. Fo
 </MethodSection>
 <MethodSection id="api" label="REST API">
 
-Volumes in Gcore Cloud are block storage devices that attach to Virtual Machines over the network and provide persistent storage that survives VM restarts. The REST API covers the full lifecycle: creating a blank volume, attaching and detaching it from a VM, resizing it, and deleting it.
+Volumes are persistent network-attached disks for Virtual Machines. Data survives VM reboots, and a volume can be detached from one VM and re-attached to another in the same region.
 
 <Info>
-A permanent [API token](/account-settings/api-tokens) is required, along with a project ID and region ID. Retrieve them from the Customer Portal or by calling <code>GET&nbsp;/cloud/v1/projects</code> and <code>GET&nbsp;/cloud/v1/regions</code>.
+A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/GetProjectList.get) and [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/GetRegionList.get).
 </Info>
 
 Open a bash terminal and set these as environment variables before running the examples:
@@ -414,11 +414,148 @@ Open a bash terminal and set these as environment variables before running the e
 export GCORE_API_KEY="{YOUR_API_KEY}"
 export PROJECT_ID="{YOUR_PROJECT_ID}"
 export REGION_ID="{YOUR_REGION_ID}"
+export INSTANCE_ID="{YOUR_INSTANCE_ID}"
 ```
 
-## Create a volume
+Set `INSTANCE_ID` to the UUID of an existing VM in the same region; it is needed only for the attach and detach steps.
 
-A volume must be in the same region as the Virtual Machine it will attach to. The `source: "new-volume"` field creates blank storage; use `"snapshot"` to restore from an existing [snapshot](/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system).
+## Quickstart
+
+The scripts below create a 10 GiB standard volume, attach it to the VM identified by `INSTANCE_ID`, resize it to 20 GiB, then detach and delete it.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    # Step 1. Initialize the client.
+    client = Gcore(
+        api_key=os.environ["GCORE_API_KEY"],
+        cloud_project_id=int(os.environ["PROJECT_ID"]),
+        cloud_region_id=int(os.environ["REGION_ID"]),
+    )
+
+    # Step 2. Create a 10 GiB standard volume.
+    volume = client.cloud.volumes.create_and_poll(
+        name="data-volume",
+        source="new-volume",
+        size=10,
+        type_name="standard",
+    )
+    volume_id = volume.id
+    print(f"Volume: {volume_id}")
+
+    # Step 3. Attach the volume to an existing VM.
+    instance_id = os.environ["INSTANCE_ID"]
+    client.cloud.volumes.attach_to_instance_and_poll(
+        volume_id,
+        instance_id=instance_id,
+    )
+    print(f"Attached to {instance_id}")
+
+    # Step 4. Detach the volume from the VM.
+    client.cloud.volumes.detach_from_instance_and_poll(
+        volume_id,
+        instance_id=instance_id,
+    )
+    print("Detached")
+
+    # Step 5. Resize the volume to 20 GiB.
+    volume = client.cloud.volumes.resize_and_poll(volume_id, size=20)
+    print(f"Resized to {volume.size} GiB")
+
+    # Step 6. Delete the volume.
+    client.cloud.volumes.delete_and_poll(volume_id)
+    print("Deleted")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        // Step 1. Initialize the client.
+        projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
+        client := gcore.NewClient(
+            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
+            option.WithCloudProjectID(projectID),
+            option.WithCloudRegionID(regionID),
+        )
+        ctx := context.Background()
+
+        // Step 2. Create a 10 GiB standard volume.
+        volume, err := client.Cloud.Volumes.NewAndPoll(ctx, cloud.VolumeNewParams{
+            OfNewVolume: &cloud.VolumeNewParamsBodyNewVolume{
+                Name:     "data-volume",
+                Size:     10,
+                TypeName: "standard",
+            },
+        })
+        if err != nil {
+            log.Fatalf("create volume: %v", err)
+        }
+        volumeID := volume.ID
+        fmt.Printf("Volume: %s\n", volumeID)
+
+        // Step 3. Attach the volume to an existing VM.
+        instanceID := os.Getenv("INSTANCE_ID")
+        if err = client.Cloud.Volumes.AttachToInstanceAndPoll(ctx, volumeID, cloud.VolumeAttachToInstanceParams{
+            InstanceID: instanceID,
+        }); err != nil {
+            log.Fatalf("attach volume: %v", err)
+        }
+        fmt.Printf("Attached to %s\n", instanceID)
+
+        // Step 4. Detach the volume from the VM.
+        if err = client.Cloud.Volumes.DetachFromInstanceAndPoll(ctx, volumeID, cloud.VolumeDetachFromInstanceParams{
+            InstanceID: instanceID,
+        }); err != nil {
+            log.Fatalf("detach volume: %v", err)
+        }
+        fmt.Println("Detached")
+
+        // Step 5. Resize the volume to 20 GiB.
+        resized, err := client.Cloud.Volumes.ResizeAndPoll(ctx, volumeID, cloud.VolumeResizeParams{
+            Size: 20,
+        })
+        if err != nil {
+            log.Fatalf("resize volume: %v", err)
+        }
+        fmt.Printf("Resized to %d GiB\n", resized.Size)
+
+        // Step 6. Delete the volume.
+        if err = client.Cloud.Volumes.DeleteAndPoll(ctx, volumeID, cloud.VolumeDeleteParams{}); err != nil {
+            log.Fatalf("delete volume: %v", err)
+        }
+        fmt.Println("Deleted")
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+Each step below explains what the call does, which parameters matter, and what the response looks like. Use this section to understand the flow or to debug a specific step.
+
+<Accordion title="Show all steps">
+
+### Step 1. Create a volume
+
+A [volume](https://api.gcore.com/docs/cloud#tag/Volumes/operation/VolumeCreate.post) must be in the same region as the VM it will attach to. Use `source: "new-volume"` for blank storage, or `"snapshot"` to restore from an existing [snapshot](/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system).
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
@@ -428,6 +565,66 @@ A volume must be in the same region as the Virtual Machine it will attach to. Th
 | `type_name` | No | `"standard"` (default), `"ssd_hiiops"`, `"cold"`, or `"ultra"`. Available types vary by region. |
 
 <Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(
+        api_key=os.environ["GCORE_API_KEY"],
+        cloud_project_id=int(os.environ["PROJECT_ID"]),
+        cloud_region_id=int(os.environ["REGION_ID"]),
+    )
+    volume = client.cloud.volumes.create_and_poll(
+        name="data-volume",
+        source="new-volume",
+        size=10,
+        type_name="standard",
+    )
+    volume_id = volume.id
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
+        client := gcore.NewClient(
+            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
+            option.WithCloudProjectID(projectID),
+            option.WithCloudRegionID(regionID),
+        )
+        ctx := context.Background()
+
+        volume, err := client.Cloud.Volumes.NewAndPoll(ctx, cloud.VolumeNewParams{
+            OfNewVolume: &cloud.VolumeNewParamsBodyNewVolume{
+                Name:     "data-volume",
+                Size:     10,
+                TypeName: "standard",
+            },
+        })
+        if err != nil {
+            log.Fatalf("create volume: %v", err)
+        }
+        volumeID := volume.ID
+        fmt.Printf("Volume: %s\n", volumeID)
+    }
+    ```
+  </Tab>
   <Tab title="curl">
     ```bash
     curl -X POST "https://api.gcore.com/cloud/v1/volumes/$PROJECT_ID/$REGION_ID" \
@@ -440,58 +637,63 @@ A volume must be in the same region as the Virtual Machine it will attach to. Th
         "type_name": "standard"
       }'
     ```
-  </Tab>
-  <Tab title="Python SDK">
-    ```python
-    import os
-    from gcore import Gcore
 
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
-    volume = client.cloud.volumes.create_and_poll(
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
-        name="data-volume",
-        source="new-volume",
-        size=10,
-        type_name="standard",
-    )
-    volume_id = volume.id
+    Response:
+
+    ```json
+    {"tasks": ["278b11f6-e93b-48b6-b6fc-d045cb00156c"]}
+    ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`:
+
+    ```json
+    {
+      "state": "FINISHED",
+      "created_resources": {
+        "volumes": ["3298c2d7-aed9-4000-a784-9f066b0843b2"]
+      }
+    }
+    ```
+
+    Save the volume ID and export it:
+
+    ```bash
+    export VOLUME_ID="{VOLUME_ID}"
     ```
   </Tab>
 </Tabs>
 
-The API returns:
+The SDK methods poll automatically and return the created volume object; read the ID from `volume.id`.
 
-```json
-{
-  "tasks": ["b63f0fff-5d22-4c23-8e09-f7a3e1c1a999"]
-}
-```
+### Step 2. Attach to a Virtual Machine
 
-For curl, poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`, then read the volume ID from `created_resources.volumes[0]`:
-
-```json
-{
-  "state": "FINISHED",
-  "created_resources": {
-    "volumes": ["8f91a111-88e5-402d-a1e3-83988d9b1bb9"]
-  }
-}
-```
-
-```bash
-export VOLUME_ID="{VOLUME_ID}"
-```
-
-## Attach to a Virtual Machine
-
-A volume can only be attached to a VM in the same region. One VM can have multiple volumes attached simultaneously.
+A volume can be attached to one VM at a time; both must be in the same region. Once attached, the OS sees the volume as a new block device, such as `/dev/sdb`.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| `instance_id` | Yes | UUID of the VM to attach to. |
+| `instance_id` | Yes | UUID of the target VM. |
 
 <Tabs>
+  <Tab title="Python SDK">
+    ```python
+    # client initialized in Step 1
+    client.cloud.volumes.attach_to_instance_and_poll(
+        volume_id,
+        instance_id=os.environ["INSTANCE_ID"],
+    )
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    // client and ctx initialized in Step 1
+    err := client.Cloud.Volumes.AttachToInstanceAndPoll(ctx, volumeID, cloud.VolumeAttachToInstanceParams{
+        InstanceID: os.Getenv("INSTANCE_ID"),
+    })
+    if err != nil {
+        log.Fatalf("attach volume: %v", err)
+    }
+    ```
+  </Tab>
   <Tab title="curl">
     ```bash
     curl -X POST \
@@ -500,34 +702,42 @@ A volume can only be attached to a VM in the same region. One VM can have multip
       -H "Content-Type: application/json" \
       -d '{"instance_id": "'"$INSTANCE_ID"'"}'
     ```
+
+    Response:
+
+    ```json
+    {"tasks": ["c74f1abc-6d3e-4f2a-9b1e-7a83c2d15f4e"]}
+    ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. The volume `status` changes to `"in-use"` once attached.
   </Tab>
+</Tabs>
+
+### Step 3. Detach from a Virtual Machine
+
+Only non-boot volumes can be detached. Detaching preserves all data; the volume reverts to `"available"` status and can be re-attached to any VM in the same region.
+
+<Tabs>
   <Tab title="Python SDK">
     ```python
-    client.cloud.volumes.attach_to_instance_and_poll(
-        volume_id=volume_id,
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
+    # client initialized in Step 1
+    client.cloud.volumes.detach_from_instance_and_poll(
+        volume_id,
         instance_id=os.environ["INSTANCE_ID"],
     )
     ```
   </Tab>
-</Tabs>
-
-The API returns:
-
-```json
-{
-  "tasks": ["c74f1abc-..."]
-}
-```
-
-For curl, poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. The volume `status` field changes to `in-use` once attached.
-
-## Detach from a Virtual Machine
-
-Only regular (non-boot) volumes can be detached, because boot volumes cannot be removed from a running VM. Detaching does not delete the volume - it remains available for reattachment.
-
-<Tabs>
+  <Tab title="Go SDK">
+    ```go
+    // client and ctx initialized in Step 1
+    err := client.Cloud.Volumes.DetachFromInstanceAndPoll(ctx, volumeID, cloud.VolumeDetachFromInstanceParams{
+        InstanceID: os.Getenv("INSTANCE_ID"),
+    })
+    if err != nil {
+        log.Fatalf("detach volume: %v", err)
+    }
+    ```
+  </Tab>
   <Tab title="curl">
     ```bash
     curl -X POST \
@@ -536,38 +746,45 @@ Only regular (non-boot) volumes can be detached, because boot volumes cannot be 
       -H "Content-Type: application/json" \
       -d '{"instance_id": "'"$INSTANCE_ID"'"}'
     ```
-  </Tab>
-  <Tab title="Python SDK">
-    ```python
-    client.cloud.volumes.detach_from_instance_and_poll(
-        volume_id=volume_id,
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
-        instance_id=os.environ["INSTANCE_ID"],
-    )
+
+    Response:
+
+    ```json
+    {"tasks": ["d85e2cde-4f3a-5b1c-8d2e-9c74f3a26e5d"]}
     ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`.
   </Tab>
 </Tabs>
 
-The API returns:
+### Step 4. Resize a volume
 
-```json
-{
-  "tasks": ["d85e2cde-..."]
-}
-```
-
-For curl, poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. The volume `status` returns to `available`.
-
-## Resize a volume
-
-Volume size can only be increased, not decreased. Resizing does not require detaching - it can be done while the volume is attached.
+Volume size can only be increased, not decreased. Resizing works while the volume is attached to a running VM - no downtime required.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
 | `size` | Yes | New size in GiB. Must be greater than the current size. |
 
 <Tabs>
+  <Tab title="Python SDK">
+    ```python
+    # client initialized in Step 1
+    volume = client.cloud.volumes.resize_and_poll(volume_id, size=20)
+    print(f"New size: {volume.size} GiB")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    // client and ctx initialized in Step 1
+    resized, err := client.Cloud.Volumes.ResizeAndPoll(ctx, volumeID, cloud.VolumeResizeParams{
+        Size: 20,
+    })
+    if err != nil {
+        log.Fatalf("resize volume: %v", err)
+    }
+    fmt.Printf("New size: %d GiB\n", resized.Size)
+    ```
+  </Tab>
   <Tab title="curl">
     ```bash
     curl -X POST \
@@ -576,66 +793,61 @@ Volume size can only be increased, not decreased. Resizing does not require deta
       -H "Content-Type: application/json" \
       -d '{"size": 20}'
     ```
-  </Tab>
-  <Tab title="Python SDK">
-    ```python
-    volume = client.cloud.volumes.resize_and_poll(
-        volume_id=volume_id,
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
-        size=20,
-    )
-    print(f"New size: {volume.size} GiB")
+
+    Response:
+
+    ```json
+    {"tasks": ["e91f3abc-7d4e-5c2f-9a3b-8b85c4d37f6e"]}
     ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`.
   </Tab>
 </Tabs>
 
-The API returns:
-
-```json
-{
-  "tasks": ["e91f3abc-..."]
-}
-```
-
-For curl, poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. After resizing, extend the filesystem inside the OS to use the new space (for example, `resize2fs` for ext4 or `xfs_growfs` for XFS).
+After resizing, extend the filesystem inside the OS to claim the new space - for example, `resize2fs` for ext4 or `xfs_growfs` for XFS.
 
 <Warning>
-If the volume has snapshots, resizing it prevents reverting to those snapshots. Only new snapshots taken after the resize can be used for reversion.
+If the volume has snapshots, resizing it prevents reverting to those snapshots. Only snapshots taken after the resize can be used for reversion.
 </Warning>
 
-## Delete a volume
+</Accordion>
 
-Only detached volumes can be deleted. Boot volumes are deleted automatically when the VM is deleted (pass `?volumes={volume_id}` to the instance delete call to include the boot volume).
+## Clean up
+
+Only detached volumes can be deleted. Boot volumes are deleted together with the VM when the instance delete call is issued.
 
 <Tabs>
+  <Tab title="Python SDK">
+    ```python
+    # client initialized in Step 1
+    client.cloud.volumes.delete_and_poll(volume_id)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    // client and ctx initialized in Step 1
+    err := client.Cloud.Volumes.DeleteAndPoll(ctx, volumeID, cloud.VolumeDeleteParams{})
+    if err != nil {
+        log.Fatalf("delete volume: %v", err)
+    }
+    ```
+  </Tab>
   <Tab title="curl">
     ```bash
     curl -X DELETE \
       "https://api.gcore.com/cloud/v1/volumes/$PROJECT_ID/$REGION_ID/$VOLUME_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
-  </Tab>
-  <Tab title="Python SDK">
-    ```python
-    client.cloud.volumes.delete_and_poll(
-        volume_id=volume_id,
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
-    )
+
+    Response:
+
+    ```json
+    {"tasks": ["f02g4bcd-8e5f-6d3a-0b4c-9c96d5e48g7f"]}
     ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. Billing for the volume stops immediately after deletion.
   </Tab>
 </Tabs>
-
-The API returns:
-
-```json
-{
-  "tasks": ["f02g4bcd-..."]
-}
-```
-
-For curl, poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. Billing for the volume stops immediately after deletion.
 
 </MethodSection>
 </MethodSwitch>
