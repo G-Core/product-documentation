@@ -112,7 +112,7 @@ To configure a listener:
 
 2. Enter the listener's name.
 
-3. Select the required protocol: TCP, UDP, HTTP, Terminated HTTPS, and Prometheus. You can configure multiple TLS certificates for Terminated HTTPS and Prometheus.
+3. Select the required protocol: TCP, UDP, HTTP, HTTPS, Terminated HTTPS, or Prometheus. You can configure multiple TLS certificates for Terminated HTTPS and Prometheus.
 
 4. Specify a port that the Load Balancer will listen on for incoming traffic. You can keep a default port for some protocols or specify the needed port from 1 to 65535.
 
@@ -192,10 +192,50 @@ Configure a pool—a list of VMs to which the listener will redirect incoming tr
      PROXY and PROXY V2 require the listener to use the TCP protocol. Your backend application must be configured to parse Proxy Protocol headers. Selecting PROXY or PROXY V2 on a pool whose members do not expect these headers will cause connection failures.
    </Info>
 
-4. Select **App Cookie** and fill in the "Cookie" field. [A special module](https://code.google.com/p/nginx-sticky-module/) creates a cookie and then uses it to forward requests to the same server.
+4. (Optional) Configure **Sticky Sessions** to route repeated requests from the same client to the same backend instance. In the **Sticky Sessions** dropdown, select the session persistence method:
+
+- **None** — no session persistence, requests are distributed according to the selected algorithm.
+- **App Cookie** — the Load Balancer uses an existing application cookie to route requests. Fill in the **Cookie** field with the cookie name. [A special module](https://code.google.com/p/nginx-sticky-module/) creates a cookie and then uses it to forward requests to the same server.
+- **HTTP Cookie** — the Load Balancer generates and manages its own session cookie automatically.
 
 <Frame>
   ![Pool configuration](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-pool-conf-lb.png)
+</Frame>
+
+#### Instances
+
+<Frame>
+  ![Add Virtual Machine](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-instance-lb.png)
+</Frame>
+
+Click **Add Instance** to add the backend servers that will receive traffic from this pool.
+
+1. Select Custom IP, Virtual Machine, or Bare Metal and the appropriate configuration.
+
+2. Specify the instance's port and weight. Weight controls how much traffic is directed to each instance relative to others in the pool.
+
+#### Health check
+
+<Frame>
+  ![Configure Health Check](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-instance-conf-lb.png)
+</Frame>
+
+1. Select the protocol for checking: TCP, Ping, or HTTP.
+
+2. Specify check interval (sec)—time between health check requests.
+
+3. Specify response time (sec)—the time to wait for a response from a server.
+
+4. Specify unhealthy threshold—the number of consecutive failed checks after which traffic will no longer be sent to the instance.
+
+5. Specify healthy threshold—the number of consecutive successful checks after which the instance will be considered ready to receive traffic.
+
+#### Timeouts
+
+Specify client data, member connect and member data timeouts in msec.
+
+<Frame>
+  ![Configure timeouts](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-timeouts-lb.png)
 </Frame>
 
 #### Sharing a pool across multiple listeners
@@ -219,42 +259,6 @@ To configure a shared pool:
 
   When deleting a listener that uses a shared pool, do not use the `delete_default_pool` option. This would delete the pool and affect all other listeners using it. Instead, manage the pool separately.
 </Warning>
-
-### Virtual Machine
-
-<Frame>
-  ![Add Virtual Machine](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-instance-lb.png)
-</Frame>
-
-Click **Add Instance** to add Virtual Machines that will participate in the traffic distribution for the configured listener.
-
-1. Select Custom IP, Virtual Machine, or Bare Metal and appropriate configurations.
-
-2. Specify its port and weight in the distribution.
-
-### Health check
-
-<Frame>
-  ![Configure Health Check](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-instance-conf-lb.png)
-</Frame>
-
-1. Select the protocol for checking: TCP, Ping, HTTP and appropriate configurations.
-
-2. Specify check interval (sec)—time between sent requests.
-
-3. Specify response time (sec)—the time to wait for a response from a server.
-
-4. Specify unhealthy threshold—the number of failed requests after which traffic will no longer be sent to the Virtual Machine.
-
-5. Specify healthy thresholds—the number of successful requests after which the Virtual Machine will be considered ready to receive traffic.
-
-### Timeouts
-
-Specify client data, member connect and member data timeouts in msec.
-
-<Frame>
-  ![Configure timeouts](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-timeouts-lb.png)
-</Frame>
 
 Each terminated HTTPS listener requires a default TLS certificate. Additional SNI certificates can also be configured, allowing multiple certificates to be assigned to the same listener.
 
