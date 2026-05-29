@@ -1,10 +1,10 @@
----
+﻿---
 title: Add and configure a firewall
 sidebarTitle: Firewall
 ai-navigation: Create and configure security groups and firewall rules for Virtual Machines via Customer Portal or REST API.
 ---
 
-import { MethodSwitch, MethodSection, ApiH2, ApiH3 } from "/snippets/method-switch.jsx";
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
@@ -171,187 +171,322 @@ For more information, [contact the support team](https://gcore.com/contact-us) f
   </MethodSection>
   <MethodSection id="api" label="REST API">
 
-A security group acts as a firewall for virtual machines, controlling which inbound and outbound traffic is allowed. This guide creates a security group, adds rules for common services, and attaches it to a VM in 4 API calls.
+A [security group](https://gcore.com/docs/api-reference/cloud/security-groups/create-security-group) controls which traffic is allowed in and out of a virtual machine. The steps below create a group with SSH, HTTP, HTTPS, and ICMP inbound rules, then attach it to a VM.
 
 <Info>
-A permanent [API token](/developer-tools/rest-api/authentication) is required, along with a project ID and region ID. Retrieve them from the [Gcore Customer Portal](https://portal.gcore.com) or by calling <code>GET&nbsp;/cloud/v1/projects</code> and <code>GET&nbsp;/cloud/v1/regions</code>.
+A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://gcore.com/docs/api-reference/cloud/projects/list-projects) and [region ID](https://gcore.com/docs/api-reference/cloud/regions/list-regions).
 </Info>
 
-Open a bash terminal and set these as environment variables before running the examples:
+Set these environment variables before running the examples:
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
 export PROJECT_ID="{YOUR_PROJECT_ID}"
 export REGION_ID="{YOUR_REGION_ID}"
+export INSTANCE_ID="{YOUR_INSTANCE_ID}"
 ```
 
-<ApiH2>Step 1. Create a security group</ApiH2>
+## Quickstart
 
-A new security group starts empty for inbound traffic and includes a full set of default egress rules covering all protocols. Add inbound rules in the next step.
+The scripts below create a security group with SSH, HTTP, HTTPS, and ICMP inbound rules, then attach it to a running VM.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+    from gcore.types.cloud import security_group_create_params
+
+    client = Gcore(
+        api_key=os.environ["GCORE_API_KEY"],
+        cloud_project_id=int(os.environ["PROJECT_ID"]),
+        cloud_region_id=int(os.environ["REGION_ID"]),
+    )
+
+    # Step 1. Create security group with inbound rules
+    sg = client.cloud.security_groups.create_and_poll(
+        name="web-firewall",
+        rules=[
+            security_group_create_params.Rule(direction="ingress", protocol="tcp", port_range_min=80, port_range_max=80, remote_ip_prefix="0.0.0.0/0"),
+            security_group_create_params.Rule(direction="ingress", protocol="tcp", port_range_min=443, port_range_max=443, remote_ip_prefix="0.0.0.0/0"),
+            security_group_create_params.Rule(direction="ingress", protocol="tcp", port_range_min=22, port_range_max=22, remote_ip_prefix="0.0.0.0/0"),
+            security_group_create_params.Rule(direction="ingress", protocol="icmp", remote_ip_prefix="0.0.0.0/0"),
+        ],
+    )
+    print(f"Security group: {sg.name} ({sg.id})")
+
+    # Step 2. Verify rules
+    ingress_rules = [r for r in sg.security_group_rules if r.direction == "ingress"]
+    print(f"Ingress rules: {len(ingress_rules)}")
+
+    # Step 3. Attach to a running VM
+    client.cloud.instances.assign_security_group(
+        instance_id=os.environ["INSTANCE_ID"],
+        name=sg.name,
+    )
+    print("Security group attached.")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        client := gcore.NewClient(
+            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
+        )
+        projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
+        regionID, _  := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
+
+        // Step 1. Create security group with inbound rules
+        sg, err := client.Cloud.SecurityGroups.NewAndPoll(context.TODO(), cloud.SecurityGroupNewParams{
+            ProjectID: gcore.Int(projectID),
+            RegionID:  gcore.Int(regionID),
+            Name:      "web-firewall",
+            Rules: []cloud.SecurityGroupNewParamsRule{
+                {Direction: "ingress", Protocol: "tcp", PortRangeMin: gcore.Int(80), PortRangeMax: gcore.Int(80), RemoteIPPrefix: gcore.String("0.0.0.0/0")},
+                {Direction: "ingress", Protocol: "tcp", PortRangeMin: gcore.Int(443), PortRangeMax: gcore.Int(443), RemoteIPPrefix: gcore.String("0.0.0.0/0")},
+                {Direction: "ingress", Protocol: "tcp", PortRangeMin: gcore.Int(22), PortRangeMax: gcore.Int(22), RemoteIPPrefix: gcore.String("0.0.0.0/0")},
+                {Direction: "ingress", Protocol: "icmp", RemoteIPPrefix: gcore.String("0.0.0.0/0")},
+            },
+        })
+        if err != nil {
+            panic(err.Error())
+        }
+        fmt.Printf("Security group: %s (%s)\n", sg.Name, sg.ID)
+
+        // Step 2. Verify rules
+        ingress := 0
+        for _, r := range sg.SecurityGroupRules {
+            if r.Direction == "ingress" {
+                ingress++
+            }
+        }
+        fmt.Printf("Ingress rules: %d\n", ingress)
+
+        // Step 3. Attach to a running VM
+        err = client.Cloud.Instances.AssignSecurityGroup(context.TODO(), os.Getenv("INSTANCE_ID"), cloud.InstanceAssignSecurityGroupParams{
+            ProjectID: gcore.Int(projectID),
+            RegionID:  gcore.Int(regionID),
+            Name:      gcore.String("web-firewall"),
+        })
+        if err != nil {
+            panic(err.Error())
+        }
+        fmt.Println("Security group attached.")
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+Each step below explains what the call does, which parameters matter, and what the response looks like.
+
+<Accordion title="Show all steps">
+
+### Step 1. Create a security group
+
+A security group starts empty for inbound traffic and automatically includes default egress rules that allow all outbound traffic. Rules can be passed at creation time to avoid separate calls.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
-| `name` | Yes | Used later to attach the group to a VM. |
+| `name` | Yes | Used to attach the group to a running VM by name. |
+| `rules` | No | Inbound or outbound rules to add at creation. Can also be added after creation. |
+| `direction` | Yes (per rule) | `"ingress"` for inbound, `"egress"` for outbound. |
+| `protocol` | No | `"tcp"`, `"udp"`, `"icmp"`, or omit for all protocols. Lowercase only. |
+| `port_range_min` / `port_range_max` | No | Port range (1-65535). Omit for ICMP. |
+| `remote_ip_prefix` | No | Source CIDR. `"0.0.0.0/0"` allows all addresses. |
 
 <Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+    from gcore.types.cloud import security_group_create_params
+
+    client = Gcore(
+        api_key=os.environ["GCORE_API_KEY"],
+        cloud_project_id=int(os.environ["PROJECT_ID"]),
+        cloud_region_id=int(os.environ["REGION_ID"]),
+    )
+
+    sg = client.cloud.security_groups.create_and_poll(
+        name="web-firewall",
+        rules=[
+            security_group_create_params.Rule(direction="ingress", protocol="tcp", port_range_min=80, port_range_max=80, remote_ip_prefix="0.0.0.0/0"),
+            security_group_create_params.Rule(direction="ingress", protocol="tcp", port_range_min=443, port_range_max=443, remote_ip_prefix="0.0.0.0/0"),
+            security_group_create_params.Rule(direction="ingress", protocol="tcp", port_range_min=22, port_range_max=22, remote_ip_prefix="0.0.0.0/0"),
+            security_group_create_params.Rule(direction="ingress", protocol="icmp", remote_ip_prefix="0.0.0.0/0"),
+        ],
+    )
+    sg_id = sg.id
+    print(f"Security group: {sg.name} ({sg_id})")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    sg, err := client.Cloud.SecurityGroups.NewAndPoll(context.TODO(), cloud.SecurityGroupNewParams{
+        ProjectID: gcore.Int(projectID),
+        RegionID:  gcore.Int(regionID),
+        Name:      "web-firewall",
+        Rules: []cloud.SecurityGroupNewParamsRule{
+            {Direction: "ingress", Protocol: "tcp", PortRangeMin: gcore.Int(80), PortRangeMax: gcore.Int(80), RemoteIPPrefix: gcore.String("0.0.0.0/0")},
+            {Direction: "ingress", Protocol: "tcp", PortRangeMin: gcore.Int(443), PortRangeMax: gcore.Int(443), RemoteIPPrefix: gcore.String("0.0.0.0/0")},
+            {Direction: "ingress", Protocol: "tcp", PortRangeMin: gcore.Int(22), PortRangeMax: gcore.Int(22), RemoteIPPrefix: gcore.String("0.0.0.0/0")},
+            {Direction: "ingress", Protocol: "icmp", RemoteIPPrefix: gcore.String("0.0.0.0/0")},
+        },
+    })
+    if err != nil {
+        panic(err.Error())
+    }
+    sgID := sg.ID
+    fmt.Printf("Security group: %s (%s)\n", sg.Name, sgID)
+    ```
+  </Tab>
   <Tab title="curl">
     ```bash
     curl -X POST "https://api.gcore.com/cloud/v2/security_groups/$PROJECT_ID/$REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
-      -d '{"name": "web-firewall"}'
-    ```
-  </Tab>
-  <Tab title="Python SDK">
-    ```python
-    import os
-    from gcore import Gcore
-
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
-    sg = client.cloud.security_groups.create_and_poll(
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
-        name="web-firewall",
-    )
-    sg_id = sg.id
-    ```
-  </Tab>
-</Tabs>
-
-The API returns:
-
-```json
-{
-  "tasks": ["d4a4b10e-..."]
-}
-```
-
-```bash
-export SG_ID="{SG_ID}"
-```
-
-<Info>
-Use <code>POST&nbsp;/cloud/v2/security_groups/...</code> - the v1 endpoint is deprecated.
-</Info>
-
-<ApiH2>Step 2. Add inbound rules</ApiH2>
-
-Each rule opens a specific port or protocol for incoming traffic. Protocol names must be lowercase.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `direction` | Yes | `"ingress"` for inbound, `"egress"` for outbound. |
-| `protocol` | No | `"tcp"`, `"udp"`, `"icmp"`, or omit for all protocols. Lowercase only. |
-| `port_range_min` / `port_range_max` | No | Port range (1-65535). Omit for protocols without ports such as ICMP. |
-| `ethertype` | No | `"IPv4"` or `"IPv6"`. Defaults to `"IPv4"`. |
-| `remote_ip_prefix` | No | CIDR to restrict traffic source. `"0.0.0.0/0"` allows all IPs. |
-
-<Tabs>
-  <Tab title="curl">
-    ```bash
-    # HTTP (port 80)
-    curl -X POST \
-      "https://api.gcore.com/cloud/v2/security_groups/$PROJECT_ID/$REGION_ID/$SG_ID/rules" \
-      -H "Authorization: APIKey $GCORE_API_KEY" \
-      -H "Content-Type: application/json" \
       -d '{
-        "direction": "ingress",
-        "protocol": "tcp",
-        "port_range_min": 80,
-        "port_range_max": 80,
-        "ethertype": "IPv4",
-        "remote_ip_prefix": "0.0.0.0/0"
+        "name": "web-firewall",
+        "rules": [
+          {"direction": "ingress", "protocol": "tcp", "port_range_min": 80, "port_range_max": 80, "ethertype": "IPv4", "remote_ip_prefix": "0.0.0.0/0"},
+          {"direction": "ingress", "protocol": "tcp", "port_range_min": 443, "port_range_max": 443, "ethertype": "IPv4", "remote_ip_prefix": "0.0.0.0/0"},
+          {"direction": "ingress", "protocol": "tcp", "port_range_min": 22, "port_range_max": 22, "ethertype": "IPv4", "remote_ip_prefix": "0.0.0.0/0"},
+          {"direction": "ingress", "protocol": "icmp", "ethertype": "IPv4", "remote_ip_prefix": "0.0.0.0/0"}
+        ]
       }'
-
-    # Repeat for HTTPS (443), SSH (22), and ICMP (omit port fields, set protocol: "icmp")
     ```
-  </Tab>
-  <Tab title="Python SDK">
-    ```python
-    rules = [
-        {"protocol": "tcp",  "port_range_min": 80,   "port_range_max": 80,   "desc": "HTTP"},
-        {"protocol": "tcp",  "port_range_min": 443,  "port_range_max": 443,  "desc": "HTTPS"},
-        {"protocol": "tcp",  "port_range_min": 22,   "port_range_max": 22,   "desc": "SSH"},
-        {"protocol": "icmp", "port_range_min": None, "port_range_max": None, "desc": "ICMP"},
-    ]
 
-    for rule in rules:
-        kwargs = {
-            "group_id": sg_id,
-            "project_id": int(os.environ["PROJECT_ID"]),
-            "region_id":  int(os.environ["REGION_ID"]),
-            "direction": "ingress",
-            "ethertype":  "IPv4",
-            "remote_ip_prefix": "0.0.0.0/0",
-            "protocol": rule["protocol"],
-        }
-        if rule["port_range_min"]:
-            kwargs["port_range_min"] = rule["port_range_min"]
-            kwargs["port_range_max"] = rule["port_range_max"]
+    Response:
 
-        client.cloud.security_groups.rules.create_and_poll(**kwargs)
-        print(f"Added {rule['desc']} rule")
+    ```json
+    {
+      "tasks": ["d4a4b10e-..."]
+    }
+    ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`, then save the security group ID from `created_resources.security_groups[0]`:
+
+    ```bash
+    export SG_ID="{SG_ID}"
     ```
   </Tab>
 </Tabs>
 
-<Warning>
-Outbound traffic on port 25 (SMTP) is blocked at the infrastructure level and cannot be opened via security group rules. Contact [Gcore support](https://gcore.com/contact-us) to unblock it with a business justification.
-</Warning>
+### Step 2. Verify the security group
 
-<ApiH2>Step 3. Verify the security group</ApiH2>
-
-Retrieve the security group to confirm all rules were applied.
+Retrieve the security group to confirm all rules were applied correctly. The [security groups API](https://gcore.com/docs/api-reference/cloud/security-groups) also supports listing all groups, updating rules in bulk, copying a group, and reverting to the default configuration.
 
 <Tabs>
+  <Tab title="Python SDK">
+    ```python
+    sg = client.cloud.security_groups.get(group_id=sg_id)
+    for rule in sg.security_group_rules:
+        if rule.direction == "ingress":
+            print(rule.direction, rule.protocol, rule.port_range_min)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    fetched, err := client.Cloud.SecurityGroups.Get(context.TODO(), sgID, cloud.SecurityGroupGetParams{
+        ProjectID: gcore.Int(projectID),
+        RegionID:  gcore.Int(regionID),
+    })
+    if err != nil {
+        panic(err.Error())
+    }
+    for _, r := range fetched.SecurityGroupRules {
+        if r.Direction == "ingress" {
+            fmt.Printf("ingress: %s port %d-%d\n", r.Protocol, r.PortRangeMin, r.PortRangeMax)
+        }
+    }
+    ```
+  </Tab>
   <Tab title="curl">
     ```bash
     curl "https://api.gcore.com/cloud/v1/securitygroups/$PROJECT_ID/$REGION_ID/$SG_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
-  </Tab>
-  <Tab title="Python SDK">
-    ```python
-    sg = client.cloud.security_groups.get(
-        group_id=sg_id,
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
-    )
-    for rule in sg.security_group_rules:
-        print(rule.direction, rule.protocol, rule.port_range_min)
+
+    Response:
+
+    ```json
+    {
+      "id": "1578bb84-...",
+      "name": "web-firewall",
+      "security_group_rules": [
+        {"direction": "ingress", "protocol": "tcp", "port_range_min": 80, "port_range_max": 80},
+        {"direction": "ingress", "protocol": "tcp", "port_range_min": 443, "port_range_max": 443},
+        {"direction": "ingress", "protocol": "tcp", "port_range_min": 22, "port_range_max": 22},
+        {"direction": "ingress", "protocol": "icmp"},
+        "...default egress rules..."
+      ]
+    }
     ```
   </Tab>
 </Tabs>
 
-The API returns:
+A new security group is automatically populated with default egress rules that allow all outbound traffic. These do not need to be added manually.
 
-```json
-{
-  "id": "1578bb84-...",
-  "name": "web-firewall",
-  "security_group_rules": [
-    {"direction": "ingress", "protocol": "tcp",  "port_range_min": 80},
-    {"direction": "ingress", "protocol": "tcp",  "port_range_min": 443},
-    {"direction": "ingress", "protocol": "tcp",  "port_range_min": 22},
-    {"direction": "ingress", "protocol": "icmp"},
-    "...39 default egress rules..."
-  ]
-}
-```
-
-<Info>
-A new security group is automatically populated with 39 default egress rules covering all standard protocols. These allow all outbound traffic except port 25 and do not need to be added manually.
-</Info>
-
-<ApiH2>Step 4. Attach the security group to a VM</ApiH2>
+### Step 3. Attach the security group to a VM
 
 There are two ways to attach a security group: at VM creation or to a running instance.
 
-<ApiH3>Attach at VM creation</ApiH3>
-
-Pass the security group UUID in the `security_groups` field:
+At VM creation, pass the security group UUID in the `security_groups` field:
 
 <Tabs>
+  <Tab title="Python SDK">
+    ```python
+    instance = client.cloud.instances.create_and_poll(
+        name="my-vm",
+        flavor="g2-standard-2-4",
+        ssh_key_name="my-key",
+        interfaces=[{"type": "external"}],
+        volumes=[{"source": "image", "image_id": os.environ["IMAGE_ID"], "size": 20, "boot_index": 0}],
+        security_groups=[{"id": sg_id}],
+    )
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    instance, err := client.Cloud.Instances.NewAndPoll(context.TODO(), cloud.InstanceNewParams{
+        ProjectID:  gcore.Int(projectID),
+        RegionID:   gcore.Int(regionID),
+        Flavor:     "g2-standard-2-4",
+        Name:       gcore.String("my-vm"),
+        SSHKeyName: gcore.String("my-key"),
+        Interfaces: []cloud.InstanceNewParamsInterfaceUnion{{
+            OfExternal: &cloud.InstanceNewParamsInterfaceExternal{},
+        }},
+        Volumes: []cloud.InstanceNewParamsVolumeUnion{{
+            OfImage: &cloud.InstanceNewParamsVolumeImage{
+                ImageID:   os.Getenv("IMAGE_ID"),
+                Size:      gcore.Int(20),
+                BootIndex: gcore.Int(0),
+            },
+        }},
+        SecurityGroups: []cloud.InstanceNewParamsSecurityGroup{{ID: sgID}},
+    })
+    if err != nil {
+        panic(err.Error())
+    }
+    fmt.Printf("Instance: %s\n", instance.ID)
+    ```
+  </Tab>
   <Tab title="curl">
     ```bash
     curl -X POST "https://api.gcore.com/cloud/v2/instances/$PROJECT_ID/$REGION_ID" \
@@ -359,36 +494,39 @@ Pass the security group UUID in the `security_groups` field:
       -H "Content-Type: application/json" \
       -d '{
         "name": "my-vm",
-        "flavor": "g1-standard-2-4",
+        "flavor": "g2-standard-2-4",
         "ssh_key_name": "my-key",
         "interfaces": [{"type": "external"}],
-        "volumes": [{"source": "image", "image_id": "{IMAGE_ID}", "size": 20, "boot_index": 0}],
+        "volumes": [{"source": "image", "image_id": "'"$IMAGE_ID"'", "size": 20, "boot_index": 0}],
         "security_groups": [{"id": "'"$SG_ID"'"}]
       }'
     ```
   </Tab>
+</Tabs>
+
+To a running instance, use the group name (not the UUID):
+
+<Tabs>
   <Tab title="Python SDK">
     ```python
-    r = client.cloud.instances.create(
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
-        name="my-vm",
-        flavor="g1-standard-2-4",
-        ssh_key_name="my-key",
-        interfaces=[{"type": "external"}],
-        volumes=[{"source": "image", "image_id": os.environ["IMAGE_ID"],
-                  "size": 20, "boot_index": 0}],
-        security_groups=[{"id": sg_id}],
+    client.cloud.instances.assign_security_group(
+        instance_id=os.environ["INSTANCE_ID"],
+        name=sg.name,
     )
     ```
   </Tab>
-</Tabs>
-
-<ApiH3>Attach to a running instance</ApiH3>
-
-To add a security group to a VM that is already running, use the group name (not the UUID):
-
-<Tabs>
+  <Tab title="Go SDK">
+    ```go
+    err = client.Cloud.Instances.AssignSecurityGroup(context.TODO(), os.Getenv("INSTANCE_ID"), cloud.InstanceAssignSecurityGroupParams{
+        ProjectID: gcore.Int(projectID),
+        RegionID:  gcore.Int(regionID),
+        Name:      gcore.String("web-firewall"),
+    })
+    if err != nil {
+        panic(err.Error())
+    }
+    ```
+  </Tab>
   <Tab title="curl">
     ```bash
     curl -X POST \
@@ -398,31 +536,119 @@ To add a security group to a VM that is already running, use the group name (not
       -d '{"name": "web-firewall"}'
     ```
   </Tab>
+</Tabs>
+
+
+</Accordion>
+
+## Add a rule to an existing security group
+
+To add a rule after the security group is created, call the [rules endpoint](https://gcore.com/docs/api-reference/cloud/security-groups/create-security-group-rule) with the group ID.
+
+<Tabs>
   <Tab title="Python SDK">
     ```python
-    client.cloud.instances.assign_security_group(
-        instance_id=os.environ["INSTANCE_ID"],
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
-        name="web-firewall",   # name string, not UUID
+    rule = client.cloud.security_groups.rules.create_and_poll(
+        group_id=sg_id,
+        direction="ingress",
+        protocol="tcp",
+        port_range_min=8080,
+        port_range_max=8080,
+        remote_ip_prefix="0.0.0.0/0",
     )
+    print(f"Rule added: {rule.id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    rule, err := client.Cloud.SecurityGroups.Rules.NewAndPoll(context.TODO(), sgID, cloud.SecurityGroupRuleNewParams{
+        ProjectID:      gcore.Int(projectID),
+        RegionID:       gcore.Int(regionID),
+        Direction:      "ingress",
+        Protocol:       "tcp",
+        PortRangeMin:   gcore.Int(8080),
+        PortRangeMax:   gcore.Int(8080),
+        RemoteIPPrefix: gcore.String("0.0.0.0/0"),
+    })
+    if err != nil {
+        panic(err.Error())
+    }
+    fmt.Printf("Rule added: %s\n", rule.ID)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST \
+      "https://api.gcore.com/cloud/v2/security_groups/$PROJECT_ID/$REGION_ID/$SG_ID/rules" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "direction": "ingress",
+        "protocol": "tcp",
+        "port_range_min": 8080,
+        "port_range_max": 8080,
+        "ethertype": "IPv4",
+        "remote_ip_prefix": "0.0.0.0/0"
+      }'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["a7b3c9e1-..."]
+    }
     ```
   </Tab>
 </Tabs>
 
-<Info>
-The `security_groups` field at instance creation takes the UUID (`{"id": "..."}`), while `assign_security_group` takes the group name string. Both refer to the same security group.
-</Info>
+<Warning>
+Outbound traffic on port 25 (SMTP) is blocked at the infrastructure level and cannot be opened via security group rules. Contact [Gcore support](https://gcore.com/contact-us) to unblock it.
+</Warning>
 
-<ApiH2>Clean up</ApiH2>
+## Clean up
 
-Detach the security group from all instances before deleting it, otherwise the request returns an error.
+Detach the security group from all instances before deleting it, otherwise the delete request returns an error.
 
-```bash
-curl -X DELETE \
-  "https://api.gcore.com/cloud/v1/securitygroups/$PROJECT_ID/$REGION_ID/$SG_ID" \
-  -H "Authorization: APIKey $GCORE_API_KEY"
-```
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    client.cloud.instances.unassign_security_group(
+        instance_id=os.environ["INSTANCE_ID"],
+        name=sg.name,
+    )
+    client.cloud.security_groups.delete(group_id=sg_id)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    client.Cloud.Instances.UnassignSecurityGroup(context.TODO(), os.Getenv("INSTANCE_ID"), cloud.InstanceUnassignSecurityGroupParams{
+        ProjectID: gcore.Int(projectID),
+        RegionID:  gcore.Int(regionID),
+        Name:      gcore.String("web-firewall"),
+    })
+    client.Cloud.SecurityGroups.Delete(context.TODO(), sgID, cloud.SecurityGroupDeleteParams{
+        ProjectID: gcore.Int(projectID),
+        RegionID:  gcore.Int(regionID),
+    })
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # Detach from VM
+    curl -X POST \
+      "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID/$INSTANCE_ID/delsecuritygroup" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"name": "web-firewall"}'
+
+    # Delete the security group
+    curl -X DELETE \
+      "https://api.gcore.com/cloud/v1/securitygroups/$PROJECT_ID/$REGION_ID/$SG_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+</Tabs>
 
   </MethodSection>
 </MethodSwitch>
