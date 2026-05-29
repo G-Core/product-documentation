@@ -3,16 +3,6 @@ title: Create a GPU Kubernetes cluster
 sidebarTitle: Create a cluster
 ---
 
-Managed Kubernetes in GPU Cloud provides a fully managed Kubernetes environment optimized for GPU workloads. Gcore manages the Kubernetes control plane — the API server, scheduler, controller manager, and etcd — so teams can focus on deploying workloads rather than maintaining infrastructure.
-
-A single cluster can include virtual instances, bare metal servers, and GPU bare metal nodes, with independent autoscaling per pool. Clusters integrate with Gcore services including Object Storage, VAST Storage, and OpenSearch Dashboards for log collection. Available GPU models and bare metal options vary by region.
-
-## Cluster architecture
-
-Each cluster consists of a Kubernetes control plane managed by Gcore and one or more worker node pools that run in the project. The control plane handles the API server, scheduler, and cluster state, while node pools are groups of worker nodes with identical configuration where workloads run.
-
-Pools within the same cluster can have different instance types: one pool of virtual machines for general services and another pool of GPU bare metal nodes for model training and inference. All nodes in a pool share the same configuration — instance type, volume settings, and network interface. The cluster autoscaler adds or removes nodes within each pool based on demand, within the configured min/max limits.
-
 ## Create a Kubernetes cluster
 
 The creation form walks through region, version, node pools, networking, SSH key, logging, and advanced settings in sequence.
@@ -31,7 +21,7 @@ The cluster creation form requires a configured network, subnet, and SSH key bef
 
 ### Step 1. Select region
 
-In the **Region** section, select the data center location for the cluster. Region choice affects GPU model availability, VAST Storage support, logging availability, and network latency for workloads.
+In the **Region** section, select the data center location for the cluster. Region choice affects GPU model availability, VAST Storage support, and network latency for workloads.
 
 <Frame>
   <img src="/images/docs/edge-ai/managed-kubernetes/create-a-gpu-kubernetes-cluster/step1-region.png" alt="Region selection showing available data centers grouped by geography" />
@@ -75,7 +65,7 @@ Bare metal instances are not available in all regions. If the option is unavaila
   <img src="/images/docs/edge-ai/managed-kubernetes/create-a-gpu-kubernetes-cluster/gpu-flavors-dropdown.png" alt="GPU Bare metal flavor selection showing available GPU configurations and pricing" />
 </Frame>
 
-6. For Virtual and Bare metal instance types, configure the boot volume: select a **Volume type** and set **Size** to a minimum of 50 GiB. High IOPS SSD is recommended for workloads with frequent disk reads and writes.
+6. For Virtual and Bare metal instance types, configure the boot volume: select a **Volume type** and set **Size** to a minimum of 50 GiB. High IOPS SSD reduces latency for I/O-intensive workloads.
 
 7. Select a **Placement policy**. Anti-affinity soft instructs the scheduler to place nodes on different physical hosts when possible, reducing the impact of a single host failure on pool availability. If the cluster does not have enough physical hosts to honor the policy, nodes are still scheduled.
 
@@ -104,7 +94,7 @@ The Container Network Interface (CNI) provider manages pod-to-pod and pod-to-ser
 | Provider | When to use |
 |----------|-------------|
 | Calico | Familiar iptables-based networking; broad compatibility with existing tooling |
-| Cilium (default) | eBPF-based networking with higher throughput and built-in flow observability via Hubble; recommended for GPU workloads |
+| Cilium (default) | eBPF-based networking with higher throughput and built-in flow observability via Hubble |
 
 <Info>
 The CNI provider cannot be changed after cluster creation.
@@ -146,7 +136,7 @@ In the **Cluster name** field, enter a name or use the auto-generated default. T
 
 ### Step 8. Configure logging
 
-The **Logging** section enables log collection from cluster nodes and workloads, storing them in OpenSearch Dashboards for analysis and debugging. Logging is a paid feature and is not available in all regions.
+The **Logging** section enables log collection from cluster nodes and workloads, storing them in OpenSearch Dashboards for analysis and debugging. Logging is a paid feature.
 
 <Frame>
   <img src="/images/docs/edge-ai/managed-kubernetes/create-a-gpu-kubernetes-cluster/step8-logging.png" alt="Logging section with the Enable Logging toggle" />
@@ -154,9 +144,6 @@ The **Logging** section enables log collection from cluster nodes and workloads,
 
 Toggle **Enable Logging** to enable it, then configure the log topic. Logging can also be enabled after creation from the **Logging** tab on the cluster overview page, but configuring it at creation reduces setup steps after provisioning.
 
-<Note>
-In regions where logging is not supported, the section displays a message indicating unavailability.
-</Note>
 
 ### Step 9. Configure advanced settings
 
