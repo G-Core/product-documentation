@@ -167,10 +167,10 @@ In the top-right corner of the screen, click **Create container**. After a few m
 Container as a Service (CaaS) runs Docker images on a managed Kubernetes backend and exposes each deployment at a public HTTPS endpoint. A public image such as `nginx:latest` requires no registry setup - just two API calls to deploy.
 
 <Info>
-A permanent [API token](/developer-tools/rest-api/authentication) is required, along with a [project ID](https://gcore.com/docs/api-reference/cloud/projects/list-projects) and [region ID](https://gcore.com/docs/api-reference/cloud/regions/list-regions). CaaS is available in Luxembourg-2 (ID: 76) and Frankfurt-2 (ID: 180). The Python and Go SDKs do not yet support CaaS - all examples use curl.
+A permanent [API token](/developer-tools/rest-api/authentication) is required, along with a [project ID](https://gcore.com/docs/api-reference/cloud/projects/list-projects) and [region ID](https://gcore.com/docs/api-reference/cloud/regions/list-regions). CaaS is available in Luxembourg-2 (ID: 76) and Frankfurt-2 (ID: 180). The Gcore Python and Go SDKs do not yet support CaaS. The Python examples use the `requests` library (`pip install requests`); the Go examples use the standard `net/http` package.
 </Info>
 
-Open a bash terminal and set these as environment variables before running the examples:
+Set the following environment variables before running the examples:
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
@@ -182,29 +182,94 @@ export REGION_ID="76"  # Luxembourg-2; use 180 for Frankfurt-2
 
 Flavors define the CPU and RAM allocation for each container pod. Choose the smallest flavor that meets the application's requirements.
 
-```bash
-curl -s "https://api.gcore.com/cloud/v1/caas/flavors/$PROJECT_ID/$REGION_ID" \
-  -H "Authorization: APIKey $GCORE_API_KEY"
-```
+<Tabs>
+  <Tab title="Python">
+    ```python
+    import os
+    import requests  # pip install requests
 
-The API returns:
+    API_KEY = os.environ["GCORE_API_KEY"]
+    PROJECT_ID = os.environ["PROJECT_ID"]
+    REGION_ID = os.environ["REGION_ID"]
+    HDR = {"Authorization": f"APIKey {API_KEY}"}
 
-```json
-{
-  "count": 7,
-  "results": [
-    {"name": "80mCPU-128MiB",   "cpu": 80,   "ram": 128},
-    {"name": "160mCPU-256MiB",  "cpu": 160,  "ram": 256},
-    {"name": "330mCPU-512MiB",  "cpu": 330,  "ram": 512},
-    {"name": "580mCPU-1024MiB", "cpu": 580,  "ram": 1024},
-    {"name": "1140mCPU-2048MiB","cpu": 1140, "ram": 2048},
-    {"name": "1700mCPU-3072MiB","cpu": 1700, "ram": 3072},
-    {"name": "2260mCPU-4096MiB","cpu": 2260, "ram": 4096}
-  ]
-}
-```
+    resp = requests.get(
+        f"https://api.gcore.com/cloud/v1/caas/flavors/{PROJECT_ID}/{REGION_ID}",
+        headers=HDR,
+    )
+    resp.raise_for_status()
+    for f in resp.json()["results"]:
+        print(f["name"], "-", f["cpu"], "mCPU,", f["ram"], "MiB")
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```go
+    package main
 
-Save the chosen flavor name:
+    import (
+        "bytes"
+        "encoding/json"
+        "fmt"
+        "io"
+        "net/http"
+        "os"
+        "time"
+    )
+
+    func main() {
+        apiKey := os.Getenv("GCORE_API_KEY")
+        projectID := os.Getenv("PROJECT_ID")
+        regionID := os.Getenv("REGION_ID")
+        client := &http.Client{}
+
+        req, _ := http.NewRequest("GET",
+            fmt.Sprintf("https://api.gcore.com/cloud/v1/caas/flavors/%s/%s", projectID, regionID),
+            nil)
+        req.Header.Set("Authorization", "APIKey "+apiKey)
+        resp, _ := client.Do(req)
+        body, _ := io.ReadAll(resp.Body)
+        resp.Body.Close()
+
+        var flavorsResp struct {
+            Results []struct {
+                Name string `json:"name"`
+                CPU  int    `json:"cpu"`
+                RAM  int    `json:"ram"`
+            } `json:"results"`
+        }
+        json.Unmarshal(body, &flavorsResp)
+        for _, f := range flavorsResp.Results {
+            fmt.Printf("%s - %d mCPU, %d MiB\n", f.Name, f.CPU, f.RAM)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s "https://api.gcore.com/cloud/v1/caas/flavors/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "count": 7,
+      "results": [
+        {"name": "80mCPU-128MiB",    "cpu": 80,   "ram": 128},
+        {"name": "160mCPU-256MiB",   "cpu": 160,  "ram": 256},
+        {"name": "330mCPU-512MiB",   "cpu": 330,  "ram": 512},
+        {"name": "580mCPU-1024MiB",  "cpu": 580,  "ram": 1024},
+        {"name": "1140mCPU-2048MiB", "cpu": 1140, "ram": 2048},
+        {"name": "1700mCPU-3072MiB", "cpu": 1700, "ram": 3072},
+        {"name": "2260mCPU-4096MiB", "cpu": 2260, "ram": 4096}
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+Save the chosen flavor name for the next step:
 
 ```bash
 export FLAVOR="80mCPU-128MiB"
@@ -222,31 +287,83 @@ CaaS pulls the image, starts pods, and assigns a public HTTPS endpoint. The cont
 | `flavor` | Yes | Flavor name from Step 1 |
 | `scale.min` | Yes | Minimum running pods. Set to `0` to scale to zero when idle |
 | `scale.max` | Yes | Maximum pods for autoscaling |
-| `timeout` | No | Seconds before an idle pod scales down (when `scale.min = 0`). Maximum 180. Ignored when `scale.min >= 1` |
+| `timeout` | No | Seconds before an idle pod scales down (when `scale.min = 0`). Maximum 180 |
 
-```bash
-curl -s -X POST "https://api.gcore.com/cloud/v1/caas/$PROJECT_ID/$REGION_ID/containers" \
-  -H "Authorization: APIKey $GCORE_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "my-nginx",
-    "image": "nginx:latest",
-    "listening_port": 80,
-    "flavor": "'"$FLAVOR"'",
-    "scale": {"min": 1, "max": 2},
-    "timeout": 180
-  }'
-```
+<Tabs>
+  <Tab title="Python">
+    ```python
+    FLAVOR = "80mCPU-128MiB"  # from Step 1
 
-The API returns:
+    resp = requests.post(
+        f"https://api.gcore.com/cloud/v1/caas/{PROJECT_ID}/{REGION_ID}/containers",
+        headers=HDR,
+        json={
+            "name": "my-nginx",
+            "image": "nginx:latest",
+            "listening_port": 80,
+            "flavor": FLAVOR,
+            "scale": {"min": 1, "max": 2},
+            "timeout": 180,
+        },
+    )
+    resp.raise_for_status()
+    task_id = resp.json()["tasks"][0]
+    print("Task ID:", task_id)
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```go
+        flavor := "80mCPU-128MiB" // from Step 1
 
-```json
-{
-  "tasks": ["dd52d84a-b49b-43f1-93d1-06bd928a8f26"]
-}
-```
+        payload, _ := json.Marshal(map[string]any{
+            "name":           "my-nginx",
+            "image":          "nginx:latest",
+            "listening_port": 80,
+            "flavor":         flavor,
+            "scale":          map[string]int{"min": 1, "max": 2},
+            "timeout":        180,
+        })
+        req, _ = http.NewRequest("POST",
+            fmt.Sprintf("https://api.gcore.com/cloud/v1/caas/%s/%s/containers", projectID, regionID),
+            bytes.NewReader(payload))
+        req.Header.Set("Authorization", "APIKey "+apiKey)
+        req.Header.Set("Content-Type", "application/json")
+        resp, _ = client.Do(req)
+        body, _ = io.ReadAll(resp.Body)
+        resp.Body.Close()
 
-Save the task ID:
+        var taskResp struct{ Tasks []string `json:"tasks"` }
+        json.Unmarshal(body, &taskResp)
+        taskID := taskResp.Tasks[0]
+        fmt.Println("Task ID:", taskID)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s -X POST "https://api.gcore.com/cloud/v1/caas/$PROJECT_ID/$REGION_ID/containers" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "my-nginx",
+        "image": "nginx:latest",
+        "listening_port": 80,
+        "flavor": "'"$FLAVOR"'",
+        "scale": {"min": 1, "max": 2},
+        "timeout": 180
+      }'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["dd52d84a-b49b-43f1-93d1-06bd928a8f26"]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+Save the task ID for the next step:
 
 ```bash
 export TASK_ID="dd52d84a-b49b-43f1-93d1-06bd928a8f26"
@@ -256,31 +373,64 @@ export TASK_ID="dd52d84a-b49b-43f1-93d1-06bd928a8f26"
 
 Container provisioning typically takes 30-60 seconds. Poll every 5 seconds until `state` is `FINISHED`.
 
-```bash
-curl -s "https://api.gcore.com/cloud/v1/tasks/$TASK_ID" \
-  -H "Authorization: APIKey $GCORE_API_KEY"
-```
+<Tabs>
+  <Tab title="Python">
+    ```python
+    import time
 
-While provisioning:
+    while True:
+        resp = requests.get(
+            f"https://api.gcore.com/cloud/v1/tasks/{task_id}",
+            headers=HDR,
+        )
+        resp.raise_for_status()
+        state = resp.json()["state"]
+        print("State:", state)
+        if state == "FINISHED":
+            break
+        time.sleep(5)
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```go
+        for {
+            req, _ = http.NewRequest("GET",
+                fmt.Sprintf("https://api.gcore.com/cloud/v1/tasks/%s", taskID),
+                nil)
+            req.Header.Set("Authorization", "APIKey "+apiKey)
+            resp, _ = client.Do(req)
+            body, _ = io.ReadAll(resp.Body)
+            resp.Body.Close()
 
-```json
-{
-  "id": "dd52d84a-b49b-43f1-93d1-06bd928a8f26",
-  "state": "RUNNING"
-}
-```
+            var status struct{ State string `json:"state"` }
+            json.Unmarshal(body, &status)
+            fmt.Println("State:", status.State)
+            if status.State == "FINISHED" {
+                break
+            }
+            time.Sleep(5 * time.Second)
+        }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s "https://api.gcore.com/cloud/v1/tasks/$TASK_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
 
-When complete:
+    Response when complete:
 
-```json
-{
-  "id": "dd52d84a-b49b-43f1-93d1-06bd928a8f26",
-  "state": "FINISHED",
-  "created_resources": {
-    "caas_containers": ["my-nginx"]
-  }
-}
-```
+    ```json
+    {
+      "id": "dd52d84a-b49b-43f1-93d1-06bd928a8f26",
+      "state": "FINISHED",
+      "created_resources": {
+        "caas_containers": ["my-nginx"]
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
 
 `caas_containers` returns the container name (not a UUID). Use it in subsequent calls.
 
@@ -288,45 +438,92 @@ When complete:
 
 Retrieve the container to find the public endpoint and confirm it is ready.
 
-```bash
-curl -s "https://api.gcore.com/cloud/v1/caas/$PROJECT_ID/$REGION_ID/containers/my-nginx" \
-  -H "Authorization: APIKey $GCORE_API_KEY"
-```
+<Tabs>
+  <Tab title="Python">
+    ```python
+    resp = requests.get(
+        f"https://api.gcore.com/cloud/v1/caas/{PROJECT_ID}/{REGION_ID}/containers/my-nginx",
+        headers=HDR,
+    )
+    resp.raise_for_status()
+    container = resp.json()
+    print("Status:", container["status"])
+    print("Endpoint:", container["address"])
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```go
+        req, _ = http.NewRequest("GET",
+            fmt.Sprintf("https://api.gcore.com/cloud/v1/caas/%s/%s/containers/my-nginx", projectID, regionID),
+            nil)
+        req.Header.Set("Authorization", "APIKey "+apiKey)
+        resp, _ = client.Do(req)
+        body, _ = io.ReadAll(resp.Body)
+        resp.Body.Close()
 
-The API returns:
+        var container struct {
+            Status  string `json:"status"`
+            Address string `json:"address"`
+        }
+        json.Unmarshal(body, &container)
+        fmt.Println("Status:", container.Status)
+        fmt.Println("Endpoint:", container.Address)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s "https://api.gcore.com/cloud/v1/caas/$PROJECT_ID/$REGION_ID/containers/my-nginx" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
 
-```json
-{
-  "name": "my-nginx",
-  "image": "nginx:latest",
-  "listening_port": 80,
-  "flavor": "80mCPU-128MiB",
-  "status": "Ready",
-  "address": "https://my-nginx-76-1186668-caas.caas.k1.luxembourg-2.cloud.gcore.dev/",
-  "deploy_status": {"total": 2, "ready": 1},
-  "scale": {"min": 1, "max": 2, "cooldown_period": 60}
-}
-```
+    Response:
 
-Save the endpoint address:
-
-```bash
-export CONTAINER_ADDRESS="https://my-nginx-76-1186668-caas.caas.k1.luxembourg-2.cloud.gcore.dev/"
-```
+    ```json
+    {
+      "name": "my-nginx",
+      "image": "nginx:latest",
+      "listening_port": 80,
+      "flavor": "80mCPU-128MiB",
+      "status": "Ready",
+      "address": "https://my-nginx-76-1186668-caas.caas.k1.luxembourg-2.cloud.gcore.dev/",
+      "deploy_status": {"total": 2, "ready": 1},
+      "scale": {"min": 1, "max": 2, "cooldown_period": 60}
+    }
+    ```
+  </Tab>
+</Tabs>
 
 ## Step 5. Verify the endpoint
 
 Send a request to confirm the container is serving traffic.
 
-```bash
-curl -s -o /dev/null -w "%{http_code}" "$CONTAINER_ADDRESS"
-```
+<Tabs>
+  <Tab title="Python">
+    ```python
+    resp = requests.get(container["address"])
+    print("HTTP status:", resp.status_code)
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```go
+        resp, _ = http.Get(container.Address)
+        fmt.Println("HTTP status:", resp.StatusCode)
+        resp.Body.Close()
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s -o /dev/null -w "%{http_code}" \
+      "https://my-nginx-76-1186668-caas.caas.k1.luxembourg-2.cloud.gcore.dev/"
+    ```
 
-The response code:
+    Response:
 
-```
-200
-```
+    ```
+    200
+    ```
+  </Tab>
+</Tabs>
 
 ## Use a private registry
 
@@ -341,22 +538,82 @@ A Container Registry stores the Docker image before CaaS pulls it.
 | `name` | Yes | Registry name, lowercase letters and hyphens. Becomes part of the registry URL |
 | `storage_limit` | No | Maximum storage in GiB. Defaults to 10 |
 
-```bash
-curl -s -X POST "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID" \
-  -H "Authorization: APIKey $GCORE_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"name": "my-registry", "storage_limit": 10}'
-```
+<Tabs>
+  <Tab title="Python">
+    ```python
+    resp = requests.post(
+        f"https://api.gcore.com/cloud/v1/registries/{PROJECT_ID}/{REGION_ID}",
+        headers=HDR,
+        json={"name": "my-registry", "storage_limit": 10},
+    )
+    resp.raise_for_status()
+    registry = resp.json()
+    REGISTRY_ID = registry["id"]
+    REGISTRY_URL = registry["url"].rstrip("/")
+    print("Registry URL:", REGISTRY_URL)
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```go
+    package main
 
-The API returns:
+    import (
+        "bytes"
+        "encoding/json"
+        "fmt"
+        "io"
+        "net/http"
+        "os"
+        "strings"
+        "time"
+    )
 
-```json
-{
-  "id": 606,
-  "name": "my-registry",
-  "url": "registry.luxembourg-2.cloud.gcore.dev/1000503-1186668-76-my-registry/"
-}
-```
+    func main() {
+        apiKey := os.Getenv("GCORE_API_KEY")
+        projectID := os.Getenv("PROJECT_ID")
+        regionID := os.Getenv("REGION_ID")
+        client := &http.Client{}
+
+        payload, _ := json.Marshal(map[string]any{"name": "my-registry", "storage_limit": 10})
+        req, _ := http.NewRequest("POST",
+            fmt.Sprintf("https://api.gcore.com/cloud/v1/registries/%s/%s", projectID, regionID),
+            bytes.NewReader(payload))
+        req.Header.Set("Authorization", "APIKey "+apiKey)
+        req.Header.Set("Content-Type", "application/json")
+        resp, _ := client.Do(req)
+        body, _ := io.ReadAll(resp.Body)
+        resp.Body.Close()
+
+        var registry struct {
+            ID  int    `json:"id"`
+            URL string `json:"url"`
+        }
+        json.Unmarshal(body, &registry)
+        registryID := registry.ID
+        registryURL := strings.TrimSuffix(registry.URL, "/")
+        fmt.Printf("Registry ID: %d, URL: %s\n", registryID, registryURL)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s -X POST "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"name": "my-registry", "storage_limit": 10}'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "id": 606,
+      "name": "my-registry",
+      "url": "registry.luxembourg-2.cloud.gcore.dev/1000503-1186668-76-my-registry/"
+    }
+    ```
+  </Tab>
+</Tabs>
 
 ```bash
 export REGISTRY_ID="606"
@@ -372,21 +629,63 @@ A registry user provides Docker login credentials. The `secret` is returned only
 | `name` | Yes | Username suffix, lowercase alphanumeric, max 16 characters |
 | `duration` | Yes | Credential lifetime in days. Use `-1` for no expiration |
 
-```bash
-curl -s -X POST "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID/$REGISTRY_ID/users" \
-  -H "Authorization: APIKey $GCORE_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"name": "pusher", "duration": -1}'
-```
+<Tabs>
+  <Tab title="Python">
+    ```python
+    resp = requests.post(
+        f"https://api.gcore.com/cloud/v1/registries/{PROJECT_ID}/{REGION_ID}/{REGISTRY_ID}/users",
+        headers=HDR,
+        json={"name": "pusher", "duration": -1},
+    )
+    resp.raise_for_status()
+    user = resp.json()
+    DOCKER_USERNAME = user["name"]
+    DOCKER_PASSWORD = user["secret"]
+    print("Username:", DOCKER_USERNAME)
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```go
+        payload, _ = json.Marshal(map[string]any{"name": "pusher", "duration": -1})
+        req, _ = http.NewRequest("POST",
+            fmt.Sprintf("https://api.gcore.com/cloud/v1/registries/%s/%s/%d/users",
+                projectID, regionID, registryID),
+            bytes.NewReader(payload))
+        req.Header.Set("Authorization", "APIKey "+apiKey)
+        req.Header.Set("Content-Type", "application/json")
+        resp, _ = client.Do(req)
+        body, _ = io.ReadAll(resp.Body)
+        resp.Body.Close()
 
-The API returns:
+        var regUser struct {
+            Name   string `json:"name"`
+            Secret string `json:"secret"`
+        }
+        json.Unmarshal(body, &regUser)
+        dockerUsername := regUser.Name
+        dockerPassword := regUser.Secret
+        fmt.Println("Username:", dockerUsername)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s -X POST \
+      "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID/$REGISTRY_ID/users" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"name": "pusher", "duration": -1}'
+    ```
 
-```json
-{
-  "name": "r_1000503-1186668-76-my-registry+pusher",
-  "secret": "gVa7zL5meW9cBOJLGiQx9AcvPFSehcgg"
-}
-```
+    Response:
+
+    ```json
+    {
+      "name": "r_1000503-1186668-76-my-registry+pusher",
+      "secret": "gVa7zL5meW9cBOJLGiQx9AcvPFSehcgg"
+    }
+    ```
+  </Tab>
+</Tabs>
 
 <Warning>
 The `secret` field cannot be retrieved after this response. Save it immediately. If lost, delete the user and create a new one.
@@ -420,27 +719,71 @@ A pull secret stores registry credentials inside the CaaS region, letting CaaS a
 | `login` | Yes | Full Docker username from Step 2 |
 | `password` | Yes | Secret from Step 2 |
 
-```bash
-curl -s -X POST "https://api.gcore.com/cloud/v1/caas/secrets/$PROJECT_ID/$REGION_ID" \
-  -H "Authorization: APIKey $GCORE_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d "{
-    \"name\": \"my-registry-secret\",
-    \"registry\": \"registry.luxembourg-2.cloud.gcore.dev\",
-    \"login\": \"$DOCKER_USERNAME\",
-    \"password\": \"$DOCKER_PASSWORD\"
-  }"
-```
+<Tabs>
+  <Tab title="Python">
+    ```python
+    resp = requests.post(
+        f"https://api.gcore.com/cloud/v1/caas/secrets/{PROJECT_ID}/{REGION_ID}",
+        headers=HDR,
+        json={
+            "name": "my-registry-secret",
+            "registry": "registry.luxembourg-2.cloud.gcore.dev",
+            "login": DOCKER_USERNAME,
+            "password": DOCKER_PASSWORD,
+        },
+    )
+    resp.raise_for_status()
+    PULL_SECRET_NAME = resp.json()["name"]
+    print("Pull secret:", PULL_SECRET_NAME)
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```go
+        payload, _ = json.Marshal(map[string]any{
+            "name":     "my-registry-secret",
+            "registry": "registry.luxembourg-2.cloud.gcore.dev",
+            "login":    dockerUsername,
+            "password": dockerPassword,
+        })
+        req, _ = http.NewRequest("POST",
+            fmt.Sprintf("https://api.gcore.com/cloud/v1/caas/secrets/%s/%s", projectID, regionID),
+            bytes.NewReader(payload))
+        req.Header.Set("Authorization", "APIKey "+apiKey)
+        req.Header.Set("Content-Type", "application/json")
+        resp, _ = client.Do(req)
+        body, _ = io.ReadAll(resp.Body)
+        resp.Body.Close()
 
-The API returns:
+        var secret struct{ Name string `json:"name"` }
+        json.Unmarshal(body, &secret)
+        pullSecretName := secret.Name
+        fmt.Println("Pull secret:", pullSecretName)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s -X POST "https://api.gcore.com/cloud/v1/caas/secrets/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{
+        \"name\": \"my-registry-secret\",
+        \"registry\": \"registry.luxembourg-2.cloud.gcore.dev\",
+        \"login\": \"$DOCKER_USERNAME\",
+        \"password\": \"$DOCKER_PASSWORD\"
+      }"
+    ```
 
-```json
-{
-  "name": "my-registry-secret",
-  "registry": "registry.luxembourg-2.cloud.gcore.dev",
-  "login": "r_1000503-1186668-76-my-registry+pusher"
-}
-```
+    Response:
+
+    ```json
+    {
+      "name": "my-registry-secret",
+      "registry": "registry.luxembourg-2.cloud.gcore.dev",
+      "login": "r_1000503-1186668-76-my-registry+pusher"
+    }
+    ```
+  </Tab>
+</Tabs>
 
 ```bash
 export PULL_SECRET_NAME="my-registry-secret"
@@ -450,20 +793,78 @@ export PULL_SECRET_NAME="my-registry-secret"
 
 Pass the pull secret name and the full private image path in the container spec.
 
-```bash
-curl -s -X POST "https://api.gcore.com/cloud/v1/caas/$PROJECT_ID/$REGION_ID/containers" \
-  -H "Authorization: APIKey $GCORE_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d "{
-    \"name\": \"my-nginx\",
-    \"image\": \"$REGISTRY_URL/nginx:latest\",
-    \"listening_port\": 80,
-    \"flavor\": \"80mCPU-128MiB\",
-    \"scale\": {\"min\": 1, \"max\": 2},
-    \"timeout\": 180,
-    \"pull_secret\": \"$PULL_SECRET_NAME\"
-  }"
-```
+<Tabs>
+  <Tab title="Python">
+    ```python
+    resp = requests.post(
+        f"https://api.gcore.com/cloud/v1/caas/{PROJECT_ID}/{REGION_ID}/containers",
+        headers=HDR,
+        json={
+            "name": "my-nginx",
+            "image": f"{REGISTRY_URL}/nginx:latest",
+            "listening_port": 80,
+            "flavor": "80mCPU-128MiB",
+            "scale": {"min": 1, "max": 2},
+            "timeout": 180,
+            "pull_secret": PULL_SECRET_NAME,
+        },
+    )
+    resp.raise_for_status()
+    task_id = resp.json()["tasks"][0]
+    print("Task ID:", task_id)
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```go
+        payload, _ = json.Marshal(map[string]any{
+            "name":           "my-nginx",
+            "image":          registryURL + "/nginx:latest",
+            "listening_port": 80,
+            "flavor":         "80mCPU-128MiB",
+            "scale":          map[string]int{"min": 1, "max": 2},
+            "timeout":        180,
+            "pull_secret":    pullSecretName,
+        })
+        req, _ = http.NewRequest("POST",
+            fmt.Sprintf("https://api.gcore.com/cloud/v1/caas/%s/%s/containers", projectID, regionID),
+            bytes.NewReader(payload))
+        req.Header.Set("Authorization", "APIKey "+apiKey)
+        req.Header.Set("Content-Type", "application/json")
+        resp, _ = client.Do(req)
+        body, _ = io.ReadAll(resp.Body)
+        resp.Body.Close()
+
+        var taskResp2 struct{ Tasks []string `json:"tasks"` }
+        json.Unmarshal(body, &taskResp2)
+        taskID = taskResp2.Tasks[0]
+        fmt.Println("Task ID:", taskID)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s -X POST "https://api.gcore.com/cloud/v1/caas/$PROJECT_ID/$REGION_ID/containers" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{
+        \"name\": \"my-nginx\",
+        \"image\": \"$REGISTRY_URL/nginx:latest\",
+        \"listening_port\": 80,
+        \"flavor\": \"80mCPU-128MiB\",
+        \"scale\": {\"min\": 1, \"max\": 2},
+        \"timeout\": 180,
+        \"pull_secret\": \"$PULL_SECRET_NAME\"
+      }"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["bf1bbc44-3a20-4c90-bbb9-3781e208fd16"]
+    }
+    ```
+  </Tab>
+</Tabs>
 
 Poll the task and retrieve the endpoint as in [Step 3](#step-3-poll-the-task) and [Step 4](#step-4-get-container-details) of the basic flow.
 
@@ -471,25 +872,100 @@ Poll the task and retrieve the endpoint as in [Step 3](#step-3-poll-the-task) an
 
 Delete the container when it is no longer needed:
 
-```bash
-curl -s -X DELETE \
-  "https://api.gcore.com/cloud/v1/caas/$PROJECT_ID/$REGION_ID/containers/my-nginx" \
-  -H "Authorization: APIKey $GCORE_API_KEY"
-```
+<Tabs>
+  <Tab title="Python">
+    ```python
+    resp = requests.delete(
+        f"https://api.gcore.com/cloud/v1/caas/{PROJECT_ID}/{REGION_ID}/containers/my-nginx",
+        headers=HDR,
+    )
+    resp.raise_for_status()
+    task_id = resp.json()["tasks"][0]
+    print("Delete task:", task_id)
+    # Poll task_id until FINISHED (same as Step 3)
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```go
+        req, _ = http.NewRequest("DELETE",
+            fmt.Sprintf("https://api.gcore.com/cloud/v1/caas/%s/%s/containers/my-nginx",
+                projectID, regionID),
+            nil)
+        req.Header.Set("Authorization", "APIKey "+apiKey)
+        resp, _ = client.Do(req)
+        body, _ = io.ReadAll(resp.Body)
+        resp.Body.Close()
 
-The API returns a task ID. Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> until `state` is `FINISHED`.
+        var delTask struct{ Tasks []string `json:"tasks"` }
+        json.Unmarshal(body, &delTask)
+        fmt.Println("Delete task:", delTask.Tasks[0])
+        // Poll delTask.Tasks[0] until FINISHED (same as Step 3)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s -X DELETE \
+      "https://api.gcore.com/cloud/v1/caas/$PROJECT_ID/$REGION_ID/containers/my-nginx" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["2b7eb0dd-360f-4a35-9b85-4bf8336a3171"]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> until `state` is `FINISHED`.
 
 To remove a private registry and its user, delete the registry user first, then the registry:
 
-```bash
-curl -s -X DELETE \
-  "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID/$REGISTRY_ID/users/pusher" \
-  -H "Authorization: APIKey $GCORE_API_KEY"
+<Tabs>
+  <Tab title="Python">
+    ```python
+    requests.delete(
+        f"https://api.gcore.com/cloud/v1/registries/{PROJECT_ID}/{REGION_ID}/{REGISTRY_ID}/users/pusher",
+        headers=HDR,
+    ).raise_for_status()
 
-curl -s -X DELETE \
-  "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID/$REGISTRY_ID" \
-  -H "Authorization: APIKey $GCORE_API_KEY"
-```
+    requests.delete(
+        f"https://api.gcore.com/cloud/v1/registries/{PROJECT_ID}/{REGION_ID}/{REGISTRY_ID}",
+        headers=HDR,
+    ).raise_for_status()
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```go
+        req, _ = http.NewRequest("DELETE",
+            fmt.Sprintf("https://api.gcore.com/cloud/v1/registries/%s/%s/%d/users/pusher",
+                projectID, regionID, registryID),
+            nil)
+        req.Header.Set("Authorization", "APIKey "+apiKey)
+        client.Do(req)
+
+        req, _ = http.NewRequest("DELETE",
+            fmt.Sprintf("https://api.gcore.com/cloud/v1/registries/%s/%s/%d",
+                projectID, regionID, registryID),
+            nil)
+        req.Header.Set("Authorization", "APIKey "+apiKey)
+        client.Do(req)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s -X DELETE \
+      "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID/$REGISTRY_ID/users/pusher" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+
+    curl -s -X DELETE \
+      "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID/$REGISTRY_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+</Tabs>
 
   </MethodSection>
 </MethodSwitch>
