@@ -461,8 +461,10 @@ An SSH key must already exist in the project. Add one following the [SSH guide](
 | `flavor` | Yes | Flavor ID from Step 1. |
 | `image_id` | Yes | BM image ID from Step 2. Standard VM images are not compatible. |
 | `name` | Yes | Server name. On reseller accounts, use `name_templates` with a region-specific pattern - the error message lists the allowed values for that region. |
-| `ssh_key_name` | Yes | Name of an existing SSH key in the project. |
+| `ssh_key_name` | Yes | Name of an existing SSH key in the project. Required for Linux images. |
 | `interfaces[].type` | Yes | `"external"` assigns a public IP. `"subnet"` attaches a private network. |
+| `password` | No | For Windows images: sets the Admin user password. For Linux: sets the default user password when no SSH key is used. |
+| `user_data` | No | Base64-encoded [cloud-init](https://cloudinit.readthedocs.io/en/latest/) script applied on first boot. Ignored when `password` is set. |
 
 <Tabs>
   <Tab title="Python SDK">
@@ -622,6 +624,170 @@ $ ip a
 ```
 
 `bond0` is the public interface. `bond0.<vlan_id>` sub-interfaces appear when private networks are attached at creation.
+
+## Attach a private network interface
+
+To connect a server to a private network, add an interface with `"type": "subnet"` and provide the `network_id` and `subnet_id`. The network must have Bare Metal support enabled - create one following the [network guide](/cloud/networking/create-and-manage-a-network) and check the **Bare Metal network** option. Both public and private interfaces can be added at creation time; the interface order determines routing priority.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    server = client.cloud.baremetal.servers.create_and_poll(
+        flavor=os.environ["FLAVOR_ID"],
+        image_id=os.environ["IMAGE_ID"],
+        name="my-bm-server",
+        ssh_key_name="my-key",
+        interfaces=[
+            {"type": "external"},
+            {
+                "type": "subnet",
+                "network_id": os.environ["NETWORK_ID"],
+                "subnet_id": os.environ["SUBNET_ID"],
+            },
+        ],
+    )
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    server, err := client.Cloud.Baremetal.Servers.NewAndPoll(ctx, cloud.BaremetalServerNewParams{
+        ProjectID: gcore.Int(projectID),
+        RegionID:  gcore.Int(regionID),
+        Flavor:    os.Getenv("FLAVOR_ID"),
+        ImageID:   gcore.String(os.Getenv("IMAGE_ID")),
+        Name:      gcore.String("my-bm-server"),
+        SSHKeyName: gcore.String("my-key"),
+        Interfaces: []cloud.BaremetalServerNewParamsInterfaceUnion{
+            {
+                OfExternal: &cloud.BaremetalServerNewParamsInterfaceExternal{
+                    Type: constant.External("external"),
+                },
+            },
+            {
+                OfSubnet: &cloud.BaremetalServerNewParamsInterfaceSubnet{
+                    Type:      constant.Subnet("subnet"),
+                    NetworkID: os.Getenv("NETWORK_ID"),
+                    SubnetID:  os.Getenv("SUBNET_ID"),
+                },
+            },
+        },
+    })
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/bminstances/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{
+        \"flavor\": \"$FLAVOR_ID\",
+        \"image_id\": \"$IMAGE_ID\",
+        \"name\": \"my-bm-server\",
+        \"ssh_key_name\": \"my-key\",
+        \"interfaces\": [
+          {\"type\": \"external\"},
+          {
+            \"type\": \"subnet\",
+            \"network_id\": \"$NETWORK_ID\",
+            \"subnet_id\": \"$SUBNET_ID\"
+          }
+        ]
+      }"
+    ```
+  </Tab>
+</Tabs>
+
+Inside the OS, the public interface maps to `bond0` and the private interface to `bond0.<vlan_id>`. With both interfaces present, disable the default gateway on the private subnet to avoid routing conflicts.
+
+## Multi-bond network configuration
+
+Standard BM servers aggregate all physical ports into a single LACP bond (`bond0`). Multi-bond separates traffic across multiple independent bonds, isolating networks at the hardware level for higher availability and throughput. Multi-bond must be enabled for the server by [Gcore support](https://gcore.com/contact-us) before provisioning.
+
+Once enabled, control bond assignment with the `port_group` parameter on each interface. Interfaces sharing the same `port_group` value are placed on the same trunk port. Each distinct value creates a separate trunk.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    server = client.cloud.baremetal.servers.create_and_poll(
+        flavor=os.environ["FLAVOR_ID"],
+        image_id=os.environ["IMAGE_ID"],
+        name="my-bm-server",
+        ssh_key_name="my-key",
+        interfaces=[
+            {"type": "external", "port_group": 1},
+            {
+                "type": "subnet",
+                "network_id": os.environ["NETWORK_ID"],
+                "subnet_id": os.environ["SUBNET_ID"],
+                "port_group": 2,
+            },
+        ],
+    )
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    server, err := client.Cloud.Baremetal.Servers.NewAndPoll(ctx, cloud.BaremetalServerNewParams{
+        ProjectID: gcore.Int(projectID),
+        RegionID:  gcore.Int(regionID),
+        Flavor:    os.Getenv("FLAVOR_ID"),
+        ImageID:   gcore.String(os.Getenv("IMAGE_ID")),
+        Name:      gcore.String("my-bm-server"),
+        SSHKeyName: gcore.String("my-key"),
+        Interfaces: []cloud.BaremetalServerNewParamsInterfaceUnion{
+            {
+                OfExternal: &cloud.BaremetalServerNewParamsInterfaceExternal{
+                    Type:      constant.External("external"),
+                    PortGroup: gcore.Int(1),
+                },
+            },
+            {
+                OfSubnet: &cloud.BaremetalServerNewParamsInterfaceSubnet{
+                    Type:      constant.Subnet("subnet"),
+                    NetworkID: os.Getenv("NETWORK_ID"),
+                    SubnetID:  os.Getenv("SUBNET_ID"),
+                    PortGroup: gcore.Int(2),
+                },
+            },
+        },
+    })
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/bminstances/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{
+        \"flavor\": \"$FLAVOR_ID\",
+        \"image_id\": \"$IMAGE_ID\",
+        \"name\": \"my-bm-server\",
+        \"ssh_key_name\": \"my-key\",
+        \"interfaces\": [
+          {\"type\": \"external\", \"port_group\": 1},
+          {
+            \"type\": \"subnet\",
+            \"network_id\": \"$NETWORK_ID\",
+            \"subnet_id\": \"$SUBNET_ID\",
+            \"port_group\": 2
+          }
+        ]
+      }"
+    ```
+  </Tab>
+</Tabs>
+
+After provisioning, retrieve the server details with <code>GET&nbsp;/cloud/v1/bminstances/{project_id}/{region_id}/{server_id}</code> - each trunk appears as a separate interface block in the `addresses` map.
+
+## Limitations
+
+These constraints apply to all Bare Metal servers regardless of the provisioning method.
+
+- External block volumes cannot be attached. All storage is the local NVMe included with the server.
+- Local storage configuration (RAID, disk layout) cannot be changed after provisioning.
+- No more than six network interfaces can be attached at creation time.
+- Private network interfaces added after deployment must be configured manually inside the OS - they are not managed by the Gcore control plane.
+- The interface order set at creation determines routing priority and cannot be changed after provisioning.
 
 ## Clean up
 
