@@ -164,10 +164,10 @@ In the top-right corner of the screen, click **Create container**. After a few m
   </MethodSection>
   <MethodSection id="api" label="REST API">
 
-Container as a Service (CaaS) runs Docker images on a managed Kubernetes backend and exposes each deployment at a public HTTPS endpoint, without cluster administration. Five API calls and three Docker commands provision a private Container Registry, push an image, and start the container.
+Container as a Service (CaaS) runs Docker images on a managed Kubernetes backend and exposes each deployment at a public HTTPS endpoint. A public image such as `nginx:latest` requires no registry setup - just two API calls to deploy.
 
 <Info>
-A permanent [API token](/developer-tools/rest-api/authentication) is required, along with a project ID and region ID. Retrieve them from the [Gcore Customer Portal](https://portal.gcore.com) or by calling <code>GET&nbsp;/cloud/v1/projects</code> and <code>GET&nbsp;/cloud/v1/regions</code>. Container Registry and CaaS must be in a region that supports both services - Luxembourg-2 supports both.
+A permanent [API token](/developer-tools/rest-api/authentication) is required, along with a [project ID](https://gcore.com/docs/api-reference/cloud/projects/list-projects) and [region ID](https://gcore.com/docs/api-reference/cloud/regions/list-regions). CaaS is available in Luxembourg-2 (ID: 76) and Frankfurt-2 (ID: 180). The Python and Go SDKs do not yet support CaaS - all examples use curl.
 </Info>
 
 Open a bash terminal and set these as environment variables before running the examples:
@@ -175,46 +175,178 @@ Open a bash terminal and set these as environment variables before running the e
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
 export PROJECT_ID="{YOUR_PROJECT_ID}"
-export REGION_ID="{YOUR_REGION_ID}"
+export REGION_ID="76"  # Luxembourg-2; use 180 for Frankfurt-2
 ```
 
-## Step 1. Create a Container Registry
+## Step 1. List available flavors
 
-A Container Registry stores the Docker image before CaaS pulls it. The registry is regional - create it in the same region as the CaaS container.
+Flavors define the CPU and RAM allocation for each container pod. Choose the smallest flavor that meets the application's requirements.
+
+```bash
+curl -s "https://api.gcore.com/cloud/v1/caas/flavors/$PROJECT_ID/$REGION_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+The API returns:
+
+```json
+{
+  "count": 7,
+  "results": [
+    {"name": "80mCPU-128MiB",   "cpu": 80,   "ram": 128},
+    {"name": "160mCPU-256MiB",  "cpu": 160,  "ram": 256},
+    {"name": "330mCPU-512MiB",  "cpu": 330,  "ram": 512},
+    {"name": "580mCPU-1024MiB", "cpu": 580,  "ram": 1024},
+    {"name": "1140mCPU-2048MiB","cpu": 1140, "ram": 2048},
+    {"name": "1700mCPU-3072MiB","cpu": 1700, "ram": 3072},
+    {"name": "2260mCPU-4096MiB","cpu": 2260, "ram": 4096}
+  ]
+}
+```
+
+Save the chosen flavor name:
+
+```bash
+export FLAVOR="80mCPU-128MiB"
+```
+
+## Step 2. Create a container
+
+CaaS pulls the image, starts pods, and assigns a public HTTPS endpoint. The container name appears in the endpoint URL.
 
 | Parameter | Required | Description |
 |---|---|---|
-| `name` | Yes | Registry name. Lowercase letters, numbers, and hyphens. Used as part of the registry URL |
-| `storage_limit` | No | Maximum storage in GiB. Defaults to 10 if omitted |
+| `name` | Yes | Alphanumeric, dots, hyphens; cannot start or end with `.` or `-`; max 43 characters. Appears in the public endpoint URL |
+| `image` | Yes | Docker image reference. Use `nginx:latest` for public images or a full registry path for private ones |
+| `listening_port` | Yes | Port the container process listens on |
+| `flavor` | Yes | Flavor name from Step 1 |
+| `scale.min` | Yes | Minimum running pods. Set to `0` to scale to zero when idle |
+| `scale.max` | Yes | Maximum pods for autoscaling |
+| `timeout` | No | Seconds before an idle pod scales down (when `scale.min = 0`). Maximum 180. Ignored when `scale.min >= 1` |
 
-<Tabs>
-  <Tab title="curl">
-    ```bash
-    curl -s -X POST "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID" \
-      -H "Authorization: APIKey $GCORE_API_KEY" \
-      -H "Content-Type: application/json" \
-      -d '{
-        "name": "my-registry",
-        "storage_limit": 10
-      }'
-    ```
-  </Tab>
-  <Tab title="Python SDK">
-    ```python
-    import os
-    from gcore import Gcore
+```bash
+curl -s -X POST "https://api.gcore.com/cloud/v1/caas/$PROJECT_ID/$REGION_ID/containers" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my-nginx",
+    "image": "nginx:latest",
+    "listening_port": 80,
+    "flavor": "'"$FLAVOR"'",
+    "scale": {"min": 1, "max": 2},
+    "timeout": 180
+  }'
+```
 
-    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
-    registry = client.cloud.registries.create(
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
-        name="my-registry",
-        storage_limit=10,
-    )
-    print(registry.id, registry.url)
-    ```
-  </Tab>
-</Tabs>
+The API returns:
+
+```json
+{
+  "tasks": ["dd52d84a-b49b-43f1-93d1-06bd928a8f26"]
+}
+```
+
+Save the task ID:
+
+```bash
+export TASK_ID="dd52d84a-b49b-43f1-93d1-06bd928a8f26"
+```
+
+## Step 3. Poll the task
+
+Container provisioning typically takes 30-60 seconds. Poll every 5 seconds until `state` is `FINISHED`.
+
+```bash
+curl -s "https://api.gcore.com/cloud/v1/tasks/$TASK_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+While provisioning:
+
+```json
+{
+  "id": "dd52d84a-b49b-43f1-93d1-06bd928a8f26",
+  "state": "RUNNING"
+}
+```
+
+When complete:
+
+```json
+{
+  "id": "dd52d84a-b49b-43f1-93d1-06bd928a8f26",
+  "state": "FINISHED",
+  "created_resources": {
+    "caas_containers": ["my-nginx"]
+  }
+}
+```
+
+`caas_containers` returns the container name (not a UUID). Use it in subsequent calls.
+
+## Step 4. Get container details
+
+Retrieve the container to find the public endpoint and confirm it is ready.
+
+```bash
+curl -s "https://api.gcore.com/cloud/v1/caas/$PROJECT_ID/$REGION_ID/containers/my-nginx" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+The API returns:
+
+```json
+{
+  "name": "my-nginx",
+  "image": "nginx:latest",
+  "listening_port": 80,
+  "flavor": "80mCPU-128MiB",
+  "status": "Ready",
+  "address": "https://my-nginx-76-1186668-caas.caas.k1.luxembourg-2.cloud.gcore.dev/",
+  "deploy_status": {"total": 2, "ready": 1},
+  "scale": {"min": 1, "max": 2, "cooldown_period": 60}
+}
+```
+
+Save the endpoint address:
+
+```bash
+export CONTAINER_ADDRESS="https://my-nginx-76-1186668-caas.caas.k1.luxembourg-2.cloud.gcore.dev/"
+```
+
+## Step 5. Verify the endpoint
+
+Send a request to confirm the container is serving traffic.
+
+```bash
+curl -s -o /dev/null -w "%{http_code}" "$CONTAINER_ADDRESS"
+```
+
+The response code:
+
+```
+200
+```
+
+## Use a private registry
+
+To run an image stored in a private [Container Registry](https://gcore.com/docs/cloud/container-registry/create-a-registry), complete the following steps before creating the container. Both Container Registry and CaaS must be in the same region - Luxembourg-2 supports both.
+
+### Step 1. Create a Container Registry
+
+A Container Registry stores the Docker image before CaaS pulls it.
+
+| Parameter | Required | Description |
+|---|---|---|
+| `name` | Yes | Registry name, lowercase letters and hyphens. Becomes part of the registry URL |
+| `storage_limit` | No | Maximum storage in GiB. Defaults to 10 |
+
+```bash
+curl -s -X POST "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "my-registry", "storage_limit": 10}'
+```
 
 The API returns:
 
@@ -222,109 +354,69 @@ The API returns:
 {
   "id": 606,
   "name": "my-registry",
-  "storage_limit": 10,
-  "storage_used": 0,
   "url": "registry.luxembourg-2.cloud.gcore.dev/1000503-1186668-76-my-registry/"
 }
 ```
 
 ```bash
-export REGISTRY_ID="{REGISTRY_ID}"
+export REGISTRY_ID="606"
 export REGISTRY_URL="registry.luxembourg-2.cloud.gcore.dev/1000503-1186668-76-my-registry"
 ```
 
-## Step 2. Create a registry user
+### Step 2. Create a registry user
 
-A registry user provides the credentials for `docker login`. The `secret` field is returned only once at creation time - copy it before proceeding.
+A registry user provides Docker login credentials. The `secret` is returned only once - copy it immediately.
 
 | Parameter | Required | Description |
 |---|---|---|
-| `name` | Yes | Username suffix. Lowercase alphanumeric, max 16 characters. The full Docker login username will be `r_{client}-{project}-{region}-{registry}+{name}` |
+| `name` | Yes | Username suffix, lowercase alphanumeric, max 16 characters |
 | `duration` | Yes | Credential lifetime in days. Use `-1` for no expiration |
 
-<Tabs>
-  <Tab title="curl">
-    ```bash
-    curl -s -X POST "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID/$REGISTRY_ID/users" \
-      -H "Authorization: APIKey $GCORE_API_KEY" \
-      -H "Content-Type: application/json" \
-      -d '{
-        "name": "pusher",
-        "duration": -1
-      }'
-    ```
-  </Tab>
-  <Tab title="Python SDK">
-    ```python
-    registry_user = client.cloud.registries.users.create(
-        registry_id=int(os.environ["REGISTRY_ID"]),
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
-        name="pusher",
-        duration=-1,
-    )
-    print(registry_user.name)    # full Docker login username
-    print(registry_user.secret)  # copy now - not retrievable later
-    ```
-  </Tab>
-</Tabs>
+```bash
+curl -s -X POST "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID/$REGISTRY_ID/users" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "pusher", "duration": -1}'
+```
 
 The API returns:
 
 ```json
 {
-  "id": 727,
   "name": "r_1000503-1186668-76-my-registry+pusher",
-  "read_only": false,
-  "duration": -1,
   "secret": "gVa7zL5meW9cBOJLGiQx9AcvPFSehcgg"
 }
 ```
+
+<Warning>
+The `secret` field cannot be retrieved after this response. Save it immediately. If lost, delete the user and create a new one.
+</Warning>
 
 ```bash
 export DOCKER_USERNAME="r_1000503-1186668-76-my-registry+pusher"
 export DOCKER_PASSWORD="{secret_from_response}"
 ```
 
-<Warning>
-The `secret` field is not stored and cannot be retrieved after this response. Save it immediately. If lost, delete the user and create a new one.
-</Warning>
+### Step 3. Push an image
 
-## Step 3. Push an image
-
-Log in to the registry, tag a local image with the registry path, and push it. These commands require [Docker](https://docs.docker.com/get-started/get-docker/) installed locally.
+Log in to the registry, tag a local image, and push it. Requires [Docker](https://docs.docker.com/get-started/get-docker/) installed locally.
 
 ```bash
-# Log in to the registry
 echo "$DOCKER_PASSWORD" | docker login "$REGISTRY_URL" \
-  --username "$DOCKER_USERNAME" \
-  --password-stdin
-```
+  --username "$DOCKER_USERNAME" --password-stdin
 
-```
-Login Succeeded
-```
-
-```bash
-# Tag the image with the full registry path
 docker tag nginx:latest "$REGISTRY_URL/nginx:latest"
-
-# Push to the registry
 docker push "$REGISTRY_URL/nginx:latest"
 ```
 
-```
-latest: digest: sha256:abc123... size: 1234
-```
+### Step 4. Create a pull secret
 
-## Step 4. Create a pull secret
-
-A pull secret stores the registry credentials in the CaaS region, allowing CaaS to pull the private image during container startup. The secret name is referenced by name when creating the container.
+A pull secret stores registry credentials inside the CaaS region, letting CaaS authenticate when pulling the private image.
 
 | Parameter | Required | Description |
 |---|---|---|
-| `name` | Yes | Secret name, pattern `^[a-z][-a-z0-9]{0,24}[a-z0-9]$`. Used as reference in the container spec |
-| `registry` | Yes | Registry hostname without the path (for example, `registry.luxembourg-2.cloud.gcore.dev`) |
+| `name` | Yes | Secret identifier referenced in the container spec. Pattern `^[a-z][-a-z0-9]{0,24}[a-z0-9]$` |
+| `registry` | Yes | Registry hostname without path |
 | `login` | Yes | Full Docker username from Step 2 |
 | `password` | Yes | Secret from Step 2 |
 
@@ -346,8 +438,7 @@ The API returns:
 {
   "name": "my-registry-secret",
   "registry": "registry.luxembourg-2.cloud.gcore.dev",
-  "login": "r_1000503-1186668-76-my-registry+pusher",
-  "updated_at": "2026-05-27T09:51:00Z"
+  "login": "r_1000503-1186668-76-my-registry+pusher"
 }
 ```
 
@@ -355,19 +446,9 @@ The API returns:
 export PULL_SECRET_NAME="my-registry-secret"
 ```
 
-## Step 5. Create a container
+### Step 5. Create a container with pull secret
 
-CaaS provisions a pod, pulls the image from the private registry using the pull secret, and exposes the container at a public HTTPS endpoint.
-
-| Parameter | Required | Description |
-|---|---|---|
-| `name` | Yes | Container name. Pattern `^[a-zA-Z0-9][a-zA-Z0-9.-]+[a-zA-Z0-9]$`, max 43 characters. Included in the public endpoint URL |
-| `image` | Yes | Full image path including registry hostname: `{REGISTRY_URL}/nginx:latest` |
-| `listening_port` | Yes | Port the container listens on. Must match the application's exposed port |
-| `flavor` | Yes | CPU and memory allocation. Run <code>GET&nbsp;/cloud/v1/caas/flavors/{project_id}/{region_id}</code> to list available options |
-| `scale.min` | Yes | Minimum number of running pods |
-| `scale.max` | Yes | Maximum number of pods for autoscaling |
-| `pull_secret` | Yes | Pull secret name from Step 4. Required for private registry images |
+Pass the pull secret name and the full private image path in the container spec.
 
 ```bash
 curl -s -X POST "https://api.gcore.com/cloud/v1/caas/$PROJECT_ID/$REGION_ID/containers" \
@@ -379,76 +460,36 @@ curl -s -X POST "https://api.gcore.com/cloud/v1/caas/$PROJECT_ID/$REGION_ID/cont
     \"listening_port\": 80,
     \"flavor\": \"80mCPU-128MiB\",
     \"scale\": {\"min\": 1, \"max\": 2},
+    \"timeout\": 180,
     \"pull_secret\": \"$PULL_SECRET_NAME\"
   }"
 ```
 
-The API returns:
+Poll the task and retrieve the endpoint as in [Step 3](#step-3-poll-the-task) and [Step 4](#step-4-get-container-details) of the basic flow.
 
-```json
-{
-  "tasks": ["bf1bbc44-3a20-4c90-bbb9-3781e208fd16"]
-}
-```
+## Clean up
+
+Delete the container when it is no longer needed:
 
 ```bash
-export TASK_ID="{TASK_ID}"
-```
-
-Poll the task every 5 seconds until `state` is `FINISHED`:
-
-```bash
-curl -s "https://api.gcore.com/cloud/v1/tasks/$TASK_ID" \
+curl -s -X DELETE \
+  "https://api.gcore.com/cloud/v1/caas/$PROJECT_ID/$REGION_ID/containers/my-nginx" \
   -H "Authorization: APIKey $GCORE_API_KEY"
 ```
 
-```json
-{
-  "id": "bf1bbc44-3a20-4c90-bbb9-3781e208fd16",
-  "state": "FINISHED",
-  "created_resources": {
-    "caas_containers": ["my-nginx"]
-  }
-}
-```
+The API returns a task ID. Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> until `state` is `FINISHED`.
 
-Retrieve the container to get the public endpoint URL:
+To remove a private registry and its user, delete the registry user first, then the registry:
 
 ```bash
-CONTAINER_NAME="my-nginx"
-curl -s "https://api.gcore.com/cloud/v1/caas/$PROJECT_ID/$REGION_ID/containers/$CONTAINER_NAME" \
+curl -s -X DELETE \
+  "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID/$REGISTRY_ID/users/pusher" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+
+curl -s -X DELETE \
+  "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID/$REGISTRY_ID" \
   -H "Authorization: APIKey $GCORE_API_KEY"
 ```
-
-The API returns:
-
-```json
-{
-  "name": "my-nginx",
-  "image": "registry.luxembourg-2.cloud.gcore.dev/1000503-1186668-76-my-registry/nginx:latest",
-  "listening_port": 80,
-  "flavor": "80mCPU-128MiB",
-  "status": "Ready",
-  "address": "https://my-nginx-76-1186668-caas.caas.k1.luxembourg-2.cloud.gcore.dev/",
-  "deploy_status": {"total": 2, "ready": 1},
-  "scale": {"min": 1, "max": 2, "cooldown_period": 60}
-}
-```
-
-## Step 6. Verify the endpoint
-
-Send a request to the address from the container response. The endpoint is public and requires no authentication by default.
-
-```bash
-curl -s -o /dev/null -w "%{http_code}" \
-  "https://my-nginx-76-1186668-caas.caas.k1.luxembourg-2.cloud.gcore.dev/"
-```
-
-```
-200
-```
-
-The container is running and serving traffic.
 
   </MethodSection>
 </MethodSwitch>
