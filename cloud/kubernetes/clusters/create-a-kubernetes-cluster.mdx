@@ -1,8 +1,13 @@
 ---
 title: Create a Kubernetes cluster
 sidebarTitle: Create
-ai-navigation: Create a Kubernetes cluster by selecting region, version, and configuring node pools with flavor (Standard, vCPU, Memory, High Frequency), disk type (High IOPS SSD, Standard, SSD Low Latency), disk size in GiB, minimum/maximum nodes for autoscaling, and worker node type (Virtual Machine or Bare Metal).
+ai-navigation: Create a Kubernetes cluster by selecting region, version, and configuring node pools with flavor (Standard, vCPU, Memory, High Frequency), disk type (High IOPS SSD, Standard, SSD Low Latency), disk size in GiB, minimum/maximum nodes for autoscaling, and worker node type (Virtual Machine or Bare Metal). Includes REST API, Python SDK, and Go SDK examples.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
 
 ## Step 1. Initiate the process
 
@@ -233,3 +238,607 @@ You can also configure cluster autoscaler settings that will apply to the entire
 Check the cluster settings on the right side of the screen. If everything is correct, click **Create cluster**. 
 
 The cluster will be created in just a few minutes!
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+A Kubernetes cluster consists of a control plane managed by Gcore and one or more node pools running workloads. The API flow creates a private network, provisions the cluster into that network, and returns a kubeconfig file for `kubectl` access.
+
+<Info>
+A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get), a [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get), and the name of an existing [SSH key](/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh) uploaded to the project.
+</Info>
+
+Open a bash terminal and set these as environment variables before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export PROJECT_ID="{YOUR_PROJECT_ID}"
+export REGION_ID="{YOUR_REGION_ID}"
+export SSH_KEY_NAME="{YOUR_SSH_KEY_NAME}"
+```
+
+## Quickstart
+
+The scripts below create a private network and subnet, provision a single-node Kubernetes cluster, and save the kubeconfig to a local file. Cluster creation takes approximately 5-20 minutes.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(
+        api_key=os.environ["GCORE_API_KEY"],
+        cloud_project_id=int(os.environ["PROJECT_ID"]),
+        cloud_region_id=int(os.environ["REGION_ID"]),
+    )
+
+    # Step 1. Find the latest available Kubernetes version
+    versions = client.cloud.k8s.list_versions()
+    k8s_version = max(v.version for v in versions.results)
+    print(f"Kubernetes version: {k8s_version}")
+
+    # Step 2. Create a private network with a router
+    network = client.cloud.networks.create_and_poll(
+        name="k8s-network",
+        create_router=True,
+    )
+    print(f"Network: {network.id}")
+
+    # Step 3. Create a subnet
+    subnet = client.cloud.networks.subnets.create_and_poll(
+        name="k8s-subnet",
+        network_id=network.id,
+        cidr="10.0.0.0/24",
+        enable_dhcp=True,
+        connect_to_network_router=True,
+        dns_nameservers=["8.8.8.8", "8.8.4.4"],
+    )
+    print(f"Subnet: {subnet.id}")
+
+    # Step 4. Create the Kubernetes cluster
+    cluster_name = "my-k8s-cluster"
+    task = client.cloud.k8s.clusters.create(
+        keypair=os.environ["SSH_KEY_NAME"],
+        name=cluster_name,
+        version=k8s_version,
+        fixed_network=network.id,
+        fixed_subnet=subnet.id,
+        pods_ip_pool="172.16.0.0/18",
+        services_ip_pool="172.24.0.0/18",
+        pools=[{
+            "name": "default-pool",
+            "flavor_id": "g2-standard-2-4",  # region-specific
+            "min_node_count": 1,
+            "max_node_count": 3,
+            "boot_volume_size": 10,
+            "boot_volume_type": "ssd_hiiops",
+            "servergroup_policy": "anti-affinity",
+            "auto_healing_enabled": True,
+        }],
+    )
+    result = client.cloud.tasks.poll(task.tasks[0])
+    print(f"Cluster ID: {result.created_resources.k8s_clusters[0]}")
+
+    # Step 5. Download the kubeconfig
+    kc = client.cloud.k8s.clusters.kubeconfig.get(cluster_name)
+    with open("kubeconfig.yaml", "w") as f:
+        f.write(kc.config)
+    print(f"Kubeconfig saved. API server: {kc.host}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        client := gcore.NewClient(
+            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
+        )
+        ctx := context.Background()
+        projectID := gcore.Int(int64(mustAtoi(os.Getenv("PROJECT_ID"))))
+        regionID  := gcore.Int(int64(mustAtoi(os.Getenv("REGION_ID"))))
+
+        // Step 1. Find the latest available Kubernetes version
+        versions, err := client.Cloud.K8S.ListVersions(ctx, cloud.K8SListVersionsParams{
+            ProjectID: projectID,
+            RegionID:  regionID,
+        })
+        if err != nil {
+            panic(err)
+        }
+        k8sVersion := versions.Results[len(versions.Results)-1].Version
+        fmt.Printf("Kubernetes version: %s\n", k8sVersion)
+
+        // Step 2. Create a private network with a router
+        network, err := client.Cloud.Networks.NewAndPoll(ctx, cloud.NetworkNewParams{
+            ProjectID:    projectID,
+            RegionID:     regionID,
+            Name:         "k8s-network",
+            CreateRouter: gcore.Bool(true),
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("Network: %s\n", network.ID)
+
+        // Step 3. Create a subnet
+        subnet, err := client.Cloud.Networks.Subnets.NewAndPoll(ctx, cloud.NetworkSubnetNewParams{
+            ProjectID:              projectID,
+            RegionID:               regionID,
+            Name:                   "k8s-subnet",
+            NetworkID:              network.ID,
+            Cidr:                   "10.0.0.0/24",
+            EnableDhcp:             gcore.Bool(true),
+            ConnectToNetworkRouter: gcore.Bool(true),
+            DNSNameservers:         []string{"8.8.8.8", "8.8.4.4"},
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("Subnet: %s\n", subnet.ID)
+
+        // Step 4. Create the Kubernetes cluster
+        clusterName := "my-k8s-cluster"
+        cluster, err := client.Cloud.K8S.Clusters.NewAndPoll(ctx, cloud.K8SClusterNewParams{
+            ProjectID:       projectID,
+            RegionID:        regionID,
+            Keypair:         os.Getenv("SSH_KEY_NAME"),
+            Name:            clusterName,
+            Version:         k8sVersion,
+            FixedNetwork:    gcore.String(network.ID),
+            FixedSubnet:     gcore.String(subnet.ID),
+            PodsIPPool:      gcore.String("172.16.0.0/18"),
+            ServicesIPPool:  gcore.String("172.24.0.0/18"),
+            Pools: []cloud.K8SClusterNewParamsPool{{
+                Name:               "default-pool",
+                FlavorID:           "g2-standard-2-4",  // region-specific
+                MinNodeCount:       1,
+                MaxNodeCount:       gcore.Int(int64(3)),
+                BootVolumeSize:     gcore.Int(int64(10)),
+                BootVolumeType:     "ssd_hiiops",
+                ServergroupPolicy:  "anti-affinity",
+                AutoHealingEnabled: gcore.Bool(true),
+            }},
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("Cluster: %s  status: %s\n", cluster.Name, cluster.Status)
+
+        // Step 5. Download the kubeconfig
+        kc, err := client.Cloud.K8S.Clusters.Kubeconfig.Get(ctx, clusterName, cloud.K8SClusterKubeconfigGetParams{
+            ProjectID: projectID,
+            RegionID:  regionID,
+        })
+        if err != nil {
+            panic(err)
+        }
+        if err := os.WriteFile("kubeconfig.yaml", []byte(kc.Config), 0600); err != nil {
+            panic(err)
+        }
+        fmt.Printf("Kubeconfig saved. API server: %s\n", kc.Host)
+    }
+
+    func mustAtoi(s string) int {
+        var n int
+        fmt.Sscanf(s, "%d", &n)
+        return n
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+<p>Each step below explains what the call does, which parameters matter, and what the response looks like.</p>
+
+<Accordion title="Show all steps">
+
+### Step 1. List available Kubernetes versions
+
+The available K8s versions change as Gcore adds new releases and retires old ones. Retrieve the current list before creating a cluster so the version string is valid.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    versions = client.cloud.k8s.list_versions()
+    for v in versions.results:
+        print(v.version)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    versions, err := client.Cloud.K8S.ListVersions(ctx, cloud.K8SListVersionsParams{
+        ProjectID: projectID,
+        RegionID:  regionID,
+    })
+    for _, v := range versions.Results {
+        fmt.Println(v.Version)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v2/k8s/$PROJECT_ID/$REGION_ID/create_versions" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    The API returns:
+
+    ```json
+    {
+      "count": 4,
+      "results": [
+        { "version": "v1.32.13" },
+        { "version": "v1.33.10" },
+        { "version": "v1.34.6" },
+        { "version": "v1.35.3" }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+A [K8s versions](https://api.gcore.com/docs/cloud#tag/Kubernetes/operation/K8sClusterCreateVersionViewSet.get) list is also available in the API reference.
+
+### Step 2. Create a network
+
+Kubernetes clusters require a private network and subnet for inter-node communication. Creating the network with `create_router: true` automatically provisions a router and connects the subnet to the internet through it.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Network name |
+| `create_router` | Yes | Set to `true` to create a router so nodes can reach the internet |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    network = client.cloud.networks.create_and_poll(
+        name="k8s-network",
+        create_router=True,
+    )
+    print(f"Network ID: {network.id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    network, err := client.Cloud.Networks.NewAndPoll(ctx, cloud.NetworkNewParams{
+        ProjectID:    projectID,
+        RegionID:     regionID,
+        Name:         "k8s-network",
+        CreateRouter: gcore.Bool(true),
+    })
+    fmt.Printf("Network ID: %s\n", network.ID)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/networks/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"name": "k8s-network", "create_router": true}'
+    ```
+
+    The API returns a task ID:
+
+    ```json
+    {
+      "tasks": ["6adbfb62-21fc-4432-9cc4-e3bb7cc6c061"]
+    }
+    ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. Extract `created_resources.networks[0]` as `NETWORK_ID`.
+  </Tab>
+</Tabs>
+
+### Step 3. Create a subnet
+
+The subnet defines the IP address range for cluster nodes. Set `connect_to_network_router` to `true` so the subnet is attached to the router created in the previous step.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `cidr` | Yes | IP range for node addresses, e.g. `10.0.0.0/24` |
+| `network_id` | Yes | ID of the network created in Step 2 |
+| `connect_to_network_router` | Yes | Attach the subnet to the network router for internet access |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    subnet = client.cloud.networks.subnets.create_and_poll(
+        name="k8s-subnet",
+        network_id=network.id,
+        cidr="10.0.0.0/24",
+        enable_dhcp=True,
+        connect_to_network_router=True,
+        dns_nameservers=["8.8.8.8", "8.8.4.4"],
+    )
+    print(f"Subnet ID: {subnet.id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    subnet, err := client.Cloud.Networks.Subnets.NewAndPoll(ctx, cloud.NetworkSubnetNewParams{
+        ProjectID:              projectID,
+        RegionID:               regionID,
+        Name:                   "k8s-subnet",
+        NetworkID:              network.ID,
+        Cidr:                   "10.0.0.0/24",
+        EnableDhcp:             gcore.Bool(true),
+        ConnectToNetworkRouter: gcore.Bool(true),
+        DNSNameservers:         []string{"8.8.8.8", "8.8.4.4"},
+    })
+    fmt.Printf("Subnet ID: %s\n", subnet.ID)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/subnets/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "k8s-subnet",
+        "network_id": "$NETWORK_ID",
+        "cidr": "10.0.0.0/24",
+        "enable_dhcp": true,
+        "connect_to_network_router": true,
+        "dns_nameservers": ["8.8.8.8", "8.8.4.4"]
+      }'
+    ```
+
+    The API returns a task ID. Poll until `FINISHED` and extract `created_resources.subnets[0]` as `SUBNET_ID`.
+  </Tab>
+</Tabs>
+
+### Step 4. Create the cluster
+
+A cluster requires a node pool with at least one node. The pool defines the VM flavor, disk type, autoscaling limits, and server placement policy.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Cluster name. Used in all subsequent API calls |
+| `version` | Yes | Kubernetes version string from Step 1 |
+| `keypair` | Yes | SSH key name for node access |
+| `fixed_network` | Yes | Network ID from Step 2 |
+| `fixed_subnet` | Yes | Subnet ID from Step 3 |
+| `pools[].flavor_id` | Yes | Node VM flavor. Flavor IDs are region-specific - use <code>GET&nbsp;/cloud/v1/k8s/{project_id}/{region_id}/flavors</code> to list available options |
+| `pools[].min_node_count` | Yes | Minimum nodes for autoscaling |
+| `pools[].servergroup_policy` | Yes | Node placement policy: `anti-affinity` (nodes on different hypervisors), `soft-anti-affinity`, or `affinity` |
+| `pods_ip_pool` | No | CIDR for pod IPs. Default for Calico: `172.16.0.0/18`. Cannot overlap with `10.255.255.0/24` or `192.168.128.0/17` |
+| `services_ip_pool` | No | CIDR for service IPs. Default for Calico: `172.24.0.0/18` |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    task = client.cloud.k8s.clusters.create(
+        keypair=os.environ["SSH_KEY_NAME"],
+        name="my-k8s-cluster",
+        version=k8s_version,
+        fixed_network=network.id,
+        fixed_subnet=subnet.id,
+        pods_ip_pool="172.16.0.0/18",
+        services_ip_pool="172.24.0.0/18",
+        pools=[{
+            "name": "default-pool",
+            "flavor_id": "g2-standard-2-4",  # region-specific
+            "min_node_count": 1,
+            "max_node_count": 3,
+            "boot_volume_size": 10,
+            "boot_volume_type": "ssd_hiiops",
+            "servergroup_policy": "anti-affinity",
+            "auto_healing_enabled": True,
+        }],
+    )
+    result = client.cloud.tasks.poll(task.tasks[0])
+    print(f"Cluster ID: {result.created_resources.k8s_clusters[0]}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    cluster, err := client.Cloud.K8S.Clusters.NewAndPoll(ctx, cloud.K8SClusterNewParams{
+        ProjectID:      projectID,
+        RegionID:       regionID,
+        Keypair:        os.Getenv("SSH_KEY_NAME"),
+        Name:           "my-k8s-cluster",
+        Version:        k8sVersion,
+        FixedNetwork:   gcore.String(network.ID),
+        FixedSubnet:    gcore.String(subnet.ID),
+        PodsIPPool:     gcore.String("172.16.0.0/18"),
+        ServicesIPPool: gcore.String("172.24.0.0/18"),
+        Pools: []cloud.K8SClusterNewParamsPool{{
+            Name:               "default-pool",
+            FlavorID:           "g2-standard-2-4",  // region-specific
+            MinNodeCount:       1,
+            MaxNodeCount:       gcore.Int(int64(3)),
+            BootVolumeSize:     gcore.Int(int64(10)),
+            BootVolumeType:     "ssd_hiiops",
+            ServergroupPolicy:  "anti-affinity",
+            AutoHealingEnabled: gcore.Bool(true),
+        }},
+    })
+    fmt.Printf("Cluster: %s  status: %s\n", cluster.Name, cluster.Status)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v2/k8s/clusters/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "my-k8s-cluster",
+        "version": "v1.32.13",
+        "keypair": "my-ssh-key",
+        "fixed_network": "$NETWORK_ID",
+        "fixed_subnet": "$SUBNET_ID",
+        "pods_ip_pool": "172.16.0.0/18",
+        "services_ip_pool": "172.24.0.0/18",
+        "pools": [{
+          "name": "default-pool",
+          "flavor_id": "g2-standard-2-4",
+          "min_node_count": 1,
+          "max_node_count": 3,
+          "boot_volume_size": 10,
+          "boot_volume_type": "ssd_hiiops",
+          "servergroup_policy": "anti-affinity",
+          "auto_healing_enabled": true
+        }]
+      }'
+    ```
+
+    The API returns:
+
+    ```json
+    {
+      "tasks": ["61ee06b0-4705-4616-bb19-245bc510a8d0"]   // save as TASK_ID
+    }
+    ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. Cluster creation takes approximately 5-20 minutes. When complete:
+
+    ```json
+    {
+      "state": "FINISHED",
+      "created_resources": {
+        "k8s_clusters": ["f345e6c8-fe55-47df-bc7e-2c3c5a496ff2"]
+      }
+    }
+    ```
+
+    Use the cluster name `my-k8s-cluster` (not the UUID) in all subsequent API calls.
+  </Tab>
+</Tabs>
+
+The full [create cluster](https://api.gcore.com/docs/cloud#tag/Kubernetes/operation/K8sClustersViewSetV2.post) and [list flavors](https://api.gcore.com/docs/cloud#tag/Kubernetes/operation/K8sFlavorsViewSet.get) references are in the API docs.
+
+### Step 5. Get the kubeconfig
+
+After the cluster reaches `Provisioned` status, retrieve the kubeconfig file. Save it locally and point `kubectl` to it to start managing workloads.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    kc = client.cloud.k8s.clusters.kubeconfig.get("my-k8s-cluster")
+    with open("kubeconfig.yaml", "w") as f:
+        f.write(kc.config)
+    print(f"API server: {kc.host}")
+    print(f"Expires: {kc.expires_at}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    kc, err := client.Cloud.K8S.Clusters.Kubeconfig.Get(ctx, "my-k8s-cluster",
+        cloud.K8SClusterKubeconfigGetParams{
+            ProjectID: projectID,
+            RegionID:  regionID,
+        })
+    if err := os.WriteFile("kubeconfig.yaml", []byte(kc.Config), 0600); err != nil {
+        panic(err)
+    }
+    fmt.Printf("API server: %s\n", kc.Host)
+    fmt.Printf("Expires: %s\n", kc.ExpiresAt)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v2/k8s/clusters/$PROJECT_ID/$REGION_ID/my-k8s-cluster/config" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    The API returns:
+
+    ```json
+    {
+      "host": "https://148-1186668-my-k8s-cluster.mkaas.k1.luxembourg-3.cloud.gcore.dev:443",
+      "config": "apiVersion: v1\nclusters:\n- cluster:\n    certificate-authority-data: ...",
+      "client_certificate": "LS0tLS1CRUdJTi...",
+      "client_key": "LS0tLS1CRUdJTi...",
+      "cluster_ca_certificate": "LS0tLS1CRUdJTi...",
+      "created_at": "2026-05-30T19:45:51Z",
+      "expires_at": "2028-05-29T19:45:51Z"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+Save the `config` field to a YAML file and export the path:
+
+```bash
+export KUBECONFIG=./kubeconfig.yaml
+kubectl get nodes
+```
+
+The [kubectl guide](/cloud/kubernetes/clusters/connect/install-kubectl-and-connect-to-a-kubernetes-cluster) covers installing kubectl and configuring access from the kubeconfig file.
+
+</Accordion>
+
+## Clean up
+
+To delete the cluster and the network resources created for it, run the following. Delete the cluster first - it holds references to the subnet and network.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+
+    # Delete the cluster first (it holds references to the network resources)
+    task = client.cloud.k8s.clusters.delete("my-k8s-cluster")
+    client.cloud.tasks.poll(task.tasks[0])
+    print("Cluster deleted")
+
+    # Delete the network (also removes the subnet and router)
+    network_id = os.environ["NETWORK_ID"]  # saved from Step 2
+    client.cloud.networks.delete_and_poll(network_id)
+    print("Network deleted")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    networkID := os.Getenv("NETWORK_ID") // saved from Step 2
+
+    // Delete the cluster first
+    err := client.Cloud.K8S.Clusters.DeleteAndPoll(ctx, "my-k8s-cluster",
+        cloud.K8SClusterDeleteParams{
+            ProjectID: projectID,
+            RegionID:  regionID,
+        })
+    if err != nil {
+        panic(err)
+    }
+    fmt.Println("Cluster deleted")
+
+    // Delete the network (also removes the subnet and router)
+    err = client.Cloud.Networks.DeleteAndPoll(ctx, networkID, cloud.NetworkDeleteParams{
+        ProjectID: projectID,
+        RegionID:  regionID,
+    })
+    if err != nil {
+        panic(err)
+    }
+    fmt.Println("Network deleted")
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # Delete the cluster first
+    curl -X DELETE "https://api.gcore.com/cloud/v2/k8s/clusters/$PROJECT_ID/$REGION_ID/my-k8s-cluster" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+
+    # Poll until FINISHED, then delete the network (removes subnet and router too)
+    curl -X DELETE "https://api.gcore.com/cloud/v1/networks/$PROJECT_ID/$REGION_ID/$NETWORK_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
