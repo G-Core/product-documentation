@@ -1,8 +1,13 @@
 ﻿---
 title: "Create and configure a reserved IP address"
 sidebarTitle: "Reserved IP address"
-ai-navigation: Create and assign reserved IP addresses to Virtual Machines, Bare Metal servers, or Load Balancers with configurable network type (Public, Private, Dedicated public), IP family (IPv4, IPv6, Dual), and optional custom IP selection within subnetworks.
+ai-navigation: Reserve a public or private fixed IP address in Gcore Cloud via the Customer Portal or REST API, and use the port ID to assign it to a Virtual Machine, Bare Metal server, or Load Balancer.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
 
 A reserved IP is a dedicated address that can be assigned to a [Virtual Machine](/cloud/virtual-instances/create-an-instance), [Bare Metal server](/cloud/bare-metal-servers/create-a-bare-metal-server), or [Load Balancer](/cloud/networking/create-and-configure-a-load-balancer). It exists independently of resources, can be pre-configured in DNS or firewall rules, and remains valid when reassigned. A reserved IP can also be used as a [Virtual IP address](/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address).
 
@@ -254,3 +259,356 @@ After verifying that the IP is no longer attached to any resource, it can be del
 <Frame>
   ![Delete a reserved IP button](/images/docs/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address/delete-reserved-ip.png)
 </Frame>
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+<Info>
+A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get) and a [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get).
+</Info>
+
+Open a terminal and set these variables before running the examples:
+
+```bash
+export GCORE_API_KEY="<your-api-token>"
+export PROJECT_ID="<your-project-id>"
+export REGION_ID="<your-region-id>"
+```
+
+## Quickstart
+
+The scripts below reserve a public IPv4 address, retrieve its details, and then delete it.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    PROJECT_ID = int(os.environ["PROJECT_ID"])
+    REGION_ID = int(os.environ["REGION_ID"])
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+
+    # Step 1. Reserve a public IP address
+    rip = client.cloud.reserved_fixed_ips.create_and_poll(
+        type="external",
+        ip_family="ipv4",
+        project_id=PROJECT_ID,
+        region_id=REGION_ID,
+    )
+    print(f"Reserved: {rip.fixed_ip_address}  port_id: {rip.port_id}  status: {rip.status}")
+
+    # Step 2. Get the reserved IP details
+    rip = client.cloud.reserved_fixed_ips.get(
+        rip.port_id,
+        project_id=PROJECT_ID,
+        region_id=REGION_ID,
+    )
+    print(f"is_external: {rip.is_external}  reservation: {rip.reservation.status}")
+
+    # Step 3. Delete the reserved IP
+    client.cloud.reserved_fixed_ips.delete_and_poll(
+        rip.port_id,
+        project_id=PROJECT_ID,
+        region_id=REGION_ID,
+    )
+    print("Reserved IP deleted.")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/shared/constant"
+    )
+
+    func main() {
+        projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
+
+        client := gcore.NewClient(
+            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
+            option.WithCloudProjectID(projectID),
+            option.WithCloudRegionID(regionID),
+        )
+        ctx := context.Background()
+
+        // Step 1. Reserve a public IP address
+        rip, err := client.Cloud.ReservedFixedIPs.NewAndPoll(ctx, cloud.ReservedFixedIPNewParams{
+            OfExternal: &cloud.ReservedFixedIPNewParamsBodyExternal{
+                IPFamily: cloud.InterfaceIPFamilyIpv4,
+                Type:     constant.ValueOf[constant.External](),
+            },
+        })
+        if err != nil {
+            log.Fatalf("create: %v", err)
+        }
+        fmt.Printf("Reserved: %s  port_id: %s  status: %s\n", rip.FixedIPAddress, rip.PortID, rip.Status)
+
+        // Step 2. Get the reserved IP details
+        rip, err = client.Cloud.ReservedFixedIPs.Get(ctx, rip.PortID, cloud.ReservedFixedIPGetParams{})
+        if err != nil {
+            log.Fatalf("get: %v", err)
+        }
+        fmt.Printf("is_external: %t  reservation: %s\n", rip.IsExternal, rip.Reservation.Status)
+
+        // Step 3. Delete the reserved IP
+        if err = client.Cloud.ReservedFixedIPs.DeleteAndPoll(ctx, rip.PortID, cloud.ReservedFixedIPDeleteParams{}); err != nil {
+            log.Fatalf("delete: %v", err)
+        }
+        fmt.Println("Reserved IP deleted.")
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+<p>Each step below explains what the call does, which parameters matter, and what the response looks like.</p>
+
+<Accordion title="Show all steps">
+
+### Step 1. Reserve a public IP address
+
+Reserving a public IP allocates a static address from the region pool exclusively for this project — no other account can claim it.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `type` | Yes | `"external"` for a public IP; `"subnet"` or `"any_subnet"` for a private IP |
+| `ip_family` | No | `"ipv4"` (default), `"ipv6"`, or `"dual"` |
+| `is_vip` | No | Set to `true` to create the IP as a [Virtual IP address](/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address) |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+
+    rip = client.cloud.reserved_fixed_ips.create_and_poll(
+        type="external",
+        ip_family="ipv4",
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+    )
+    print(f"IP: {rip.fixed_ip_address}  port_id: {rip.port_id}  status: {rip.status}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    rip, err := client.Cloud.ReservedFixedIPs.NewAndPoll(ctx, cloud.ReservedFixedIPNewParams{
+        OfExternal: &cloud.ReservedFixedIPNewParamsBodyExternal{
+            IPFamily: cloud.InterfaceIPFamilyIpv4,
+            Type:     constant.ValueOf[constant.External](),
+        },
+    })
+    if err != nil {
+        log.Fatalf("create: %v", err)
+    }
+    fmt.Printf("IP: %s  port_id: %s  status: %s\n", rip.FixedIPAddress, rip.PortID, rip.Status)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/reserved_fixed_ips/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"type": "external", "ip_family": "ipv4"}'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["27ed1ca3-54a8-4a63-81b0-ef651a326757"]
+    }
+    ```
+
+    Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`:
+
+    ```json
+    {
+      "id": "27ed1ca3-54a8-4a63-81b0-ef651a326757",
+      "state": "FINISHED",
+      "created_resources": {
+        "ports": ["f7a67158-3e88-4893-95df-998eb5d49a16"]
+      }
+    }
+    ```
+
+    Save `created_resources.ports[0]` as `PORT_ID` — this is the identifier used in all subsequent calls for this reserved IP.
+  </Tab>
+</Tabs>
+
+### Step 2. Get reserved IP details
+
+Retrieving the reserved IP confirms the allocated address and shows its current assignment status.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    rip = client.cloud.reserved_fixed_ips.get(
+        os.environ["PORT_ID"],
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+    )
+    print(f"IP: {rip.fixed_ip_address}  is_external: {rip.is_external}  reservation: {rip.reservation.status}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    rip, err = client.Cloud.ReservedFixedIPs.Get(ctx, rip.PortID, cloud.ReservedFixedIPGetParams{})
+    if err != nil {
+        log.Fatalf("get: %v", err)
+    }
+    fmt.Printf("IP: %s  is_external: %t  reservation: %s\n",
+        rip.FixedIPAddress, rip.IsExternal, rip.Reservation.Status)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/reserved_fixed_ips/$PROJECT_ID/$REGION_ID/$PORT_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "port_id": "f7a67158-3e88-4893-95df-998eb5d49a16",
+      "name": "reserved_fixed_ip_85.234.84.235",
+      "status": "DOWN",
+      "fixed_ip_address": "85.234.84.235",
+      "is_external": true,
+      "is_vip": false,
+      "reservation": {
+        "status": "available",
+        "resource_type": null,
+        "resource_id": null
+      },
+      "network_id": "4e16750d-2656-4038-9411-3c7f06c62643",
+      "subnet_id": "f12223d3-dc23-4833-8f35-9aa88f823de8"
+    }
+    ```
+
+    `reservation.status` is `"available"` when the IP is not attached to any resource. Once assigned, it changes to `"attached"` and `resource_type` and `resource_id` are populated.
+  </Tab>
+</Tabs>
+
+</Accordion>
+
+## Reserve a private IP address
+
+A private reserved IP is allocated within a specific subnet and assigned a fixed address from that subnet's CIDR range. Add `SUBNET_ID` to the environment variables from above:
+
+```bash
+export SUBNET_ID="<your-subnet-id>"
+```
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    rip = client.cloud.reserved_fixed_ips.create_and_poll(
+        type="subnet",
+        subnet_id=os.environ["SUBNET_ID"],
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+    )
+    print(f"Private IP: {rip.fixed_ip_address}  port_id: {rip.port_id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    rip, err := client.Cloud.ReservedFixedIPs.NewAndPoll(ctx, cloud.ReservedFixedIPNewParams{
+        OfSubnet: &cloud.ReservedFixedIPNewParamsBodySubnet{
+            SubnetID: os.Getenv("SUBNET_ID"),
+            Type:     constant.ValueOf[constant.Subnet](),
+        },
+    })
+    if err != nil {
+        log.Fatalf("create private: %v", err)
+    }
+    fmt.Printf("Private IP: %s  port_id: %s\n", rip.FixedIPAddress, rip.PortID)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/reserved_fixed_ips/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{\"type\": \"subnet\", \"subnet_id\": \"$SUBNET_ID\"}"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["f84f8a0d-d315-4426-b73b-e7479327ae92"]
+    }
+    ```
+
+    Poll the task until `FINISHED`. The private IP address is in `created_resources.ports[0]`.
+  </Tab>
+</Tabs>
+
+To reserve a specific IP address within a subnet, use `type: "ip_address"` with both `network_id` and `ip_address` fields. To allocate from any available subnet of a network without specifying one, use `type: "any_subnet"` with `network_id`.
+
+## Use a reserved IP with a Virtual Machine
+
+The reserved IP's `port_id` is the identifier passed when adding a network interface to a Virtual Machine. During VM creation, supply the `port_id` in the interface configuration instead of `subnet_id`. After creation, adding the port to a running VM requires attaching a new interface through the [instance API](https://api.gcore.com/docs/cloud#tag/Instances).
+
+## Clean up
+
+Deleting a reserved IP releases the address and stops billing. The IP must not be attached to any resource before deletion.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    client.cloud.reserved_fixed_ips.delete_and_poll(
+        os.environ["PORT_ID"],
+        project_id=int(os.environ["PROJECT_ID"]),
+        region_id=int(os.environ["REGION_ID"]),
+    )
+    print("Reserved IP deleted.")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    if err = client.Cloud.ReservedFixedIPs.DeleteAndPoll(ctx, rip.PortID, cloud.ReservedFixedIPDeleteParams{}); err != nil {
+        log.Fatalf("delete: %v", err)
+    }
+    fmt.Println("Reserved IP deleted.")
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/cloud/v1/reserved_fixed_ips/$PROJECT_ID/$REGION_ID/$PORT_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["8c40dd47-1490-4dde-9cd5-0daee5a567a9"]
+    }
+    ```
+
+    Poll the task until `state` is `FINISHED`. The IP is permanently released and no longer billed.
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
