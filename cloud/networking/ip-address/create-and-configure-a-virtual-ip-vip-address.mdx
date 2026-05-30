@@ -1,8 +1,14 @@
 ---
 title: Create and configure a virtual IP address
 sidebarTitle: Virtual IP address
-ai-navigation: Create and reserve virtual IP addresses (VIP) as public or private secondary addresses for Virtual Machines using Reserved IPs in Cloud Networking, with optional manual IP assignment from CIDR ranges and VRRP-based failover via Keepalived for fault-tolerant systems.
+ai-navigation: Reserve a virtual IP address (VIP) via API or Customer Portal, connect VM ports to share the address, enable or disable VIP mode on existing reserved IPs, and configure VRRP-based failover using Keepalived.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+
+<MethodSection id="portal" label="Customer Portal">
 
 ## What is a virtual IP address?
 
@@ -182,3 +188,602 @@ Go back to the **Control Panel**, make sure the values are correct and click **A
 8\. Click **OK**.
 
 The VIP has been configured. To verify it, [connect to your Virtual Machine via SSH](/cloud/virtual-instances/connect/connect-to-your-instance-via-ssh) using your VIP. If the connection fails, there may be an error in the IP assignment command or the IP address may not have been added inside your system. Repeat the Steps.
+
+</MethodSection>
+
+<MethodSection id="api" label="REST API">
+
+<Info>
+A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get) and a [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get).
+</Info>
+
+Set these environment variables before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export PROJECT_ID="{YOUR_PROJECT_ID}"
+export REGION_ID="{YOUR_REGION_ID}"
+export PORT_ID="{VM_PORT_ID}"   # VM's network interface port ID — see Step 2
+```
+
+## Quickstart
+
+The scripts below reserve a public virtual IP address, connect one VM's network port to it, then remove the connection and delete the VIP.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(
+        api_key=os.environ["GCORE_API_KEY"],
+        cloud_project_id=int(os.environ["PROJECT_ID"]),
+        cloud_region_id=int(os.environ["REGION_ID"]),
+    )
+
+    port_id = os.environ["PORT_ID"]
+
+    # Step 1. Reserve a public virtual IP address
+    vip = client.cloud.reserved_fixed_ips.create_and_poll(
+        type="external",
+        ip_family="ipv4",
+        is_vip=True,
+    )
+    print(f"VIP: port_id={vip.port_id}  address={vip.fixed_ip_address}")
+
+    # Step 2. List VM ports eligible to share this VIP
+    candidates = client.cloud.reserved_fixed_ips.vip.candidate_ports.list(vip.port_id)
+    print(f"Candidate VM ports: {candidates.count}")
+
+    # Step 3. Connect a VM port to the VIP
+    result = client.cloud.reserved_fixed_ips.vip.connected_ports.add(
+        vip.port_id,
+        port_ids=[port_id],
+    )
+    print(f"Connected VMs: {result.count}")
+
+    # Step 4. List VMs connected to the VIP
+    connected = client.cloud.reserved_fixed_ips.vip.connected_ports.list(vip.port_id)
+    for vm in connected.results:
+        print(f"  VM: {vm.instance_name}  port_id: {vm.port_id}")
+
+    # Step 5. Disconnect all VMs from the VIP
+    client.cloud.reserved_fixed_ips.vip.connected_ports.replace(
+        vip.port_id,
+        port_ids=[],
+    )
+
+    # Step 6. Disable VIP mode (required before deletion)
+    client.cloud.reserved_fixed_ips.vip.toggle(vip.port_id, is_vip=False)
+
+    # Step 7. Delete the reserved IP
+    client.cloud.reserved_fixed_ips.delete_and_poll(vip.port_id)
+    print("VIP deleted.")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/packages/param"
+        "github.com/G-Core/gcore-go/shared/constant"
+    )
+
+    func main() {
+        projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
+        portID := os.Getenv("PORT_ID")
+
+        client := gcore.NewClient(
+            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
+            option.WithCloudProjectID(projectID),
+            option.WithCloudRegionID(regionID),
+        )
+        ctx := context.Background()
+
+        // Step 1. Reserve a public virtual IP address
+        vip, err := client.Cloud.ReservedFixedIPs.NewAndPoll(ctx, cloud.ReservedFixedIPNewParams{
+            OfExternal: &cloud.ReservedFixedIPNewParamsBodyExternal{
+                IsVip:    param.NewOpt(true),
+                IPFamily: cloud.InterfaceIPFamilyIpv4,
+                Type:     constant.ValueOf[constant.External](),
+            },
+        })
+        if err != nil {
+            log.Fatalf("create VIP: %v", err)
+        }
+        fmt.Printf("VIP: port_id=%s  address=%s\n", vip.PortID, vip.FixedIPAddress)
+
+        // Step 2. List VM ports eligible to share this VIP
+        candidates, err := client.Cloud.ReservedFixedIPs.Vip.CandidatePorts.List(ctx,
+            vip.PortID,
+            cloud.ReservedFixedIPVipCandidatePortListParams{},
+        )
+        if err != nil {
+            log.Fatalf("list candidates: %v", err)
+        }
+        fmt.Printf("Candidate VM ports: %d\n", candidates.Count)
+
+        // Step 3. Connect a VM port to the VIP
+        result, err := client.Cloud.ReservedFixedIPs.Vip.ConnectedPorts.Add(ctx,
+            vip.PortID,
+            cloud.ReservedFixedIPVipConnectedPortAddParams{PortIDs: []string{portID}},
+        )
+        if err != nil {
+            log.Fatalf("add connected port: %v", err)
+        }
+        fmt.Printf("Connected VMs: %d\n", result.Count)
+
+        // Step 4. List VMs connected to the VIP
+        connected, err := client.Cloud.ReservedFixedIPs.Vip.ConnectedPorts.List(ctx,
+            vip.PortID,
+            cloud.ReservedFixedIPVipConnectedPortListParams{},
+        )
+        if err != nil {
+            log.Fatalf("list connected: %v", err)
+        }
+        for _, vm := range connected.Results {
+            fmt.Printf("  VM: %s  port_id: %s\n", vm.InstanceName, vm.PortID)
+        }
+
+        // Step 5. Disconnect all VMs from the VIP
+        if _, err = client.Cloud.ReservedFixedIPs.Vip.ConnectedPorts.Replace(ctx,
+            vip.PortID,
+            cloud.ReservedFixedIPVipConnectedPortReplaceParams{PortIDs: []string{}},
+        ); err != nil {
+            log.Fatalf("disconnect VMs: %v", err)
+        }
+
+        // Step 6. Disable VIP mode (required before deletion)
+        if _, err = client.Cloud.ReservedFixedIPs.Vip.Toggle(ctx,
+            vip.PortID,
+            cloud.ReservedFixedIPVipToggleParams{IsVip: false},
+        ); err != nil {
+            log.Fatalf("toggle VIP off: %v", err)
+        }
+
+        // Step 7. Delete the reserved IP
+        if err = client.Cloud.ReservedFixedIPs.DeleteAndPoll(ctx,
+            vip.PortID, cloud.ReservedFixedIPDeleteParams{},
+        ); err != nil {
+            log.Fatalf("delete VIP: %v", err)
+        }
+        fmt.Println("VIP deleted.")
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+<p>Each step below explains what the call does, which parameters matter, and what the response looks like. Use this section to understand the flow or to debug a specific step.</p>
+
+<Accordion title="Show all steps">
+
+### Step 1. Reserve a virtual IP address
+
+Reserving a public IP with `is_vip: true` creates a port that can be shared across multiple VM interfaces — the VIP flag enables connecting more than one port to the same address.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `type` | Yes | `"external"` for a public IP, `"subnet"` for a private IP |
+| `ip_family` | No | `"ipv4"` (default), `"ipv6"`, or `"dual"` |
+| `is_vip` | No | Set to `true` to create the reserved IP as a VIP immediately |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(
+        api_key=os.environ["GCORE_API_KEY"],
+        cloud_project_id=int(os.environ["PROJECT_ID"]),
+        cloud_region_id=int(os.environ["REGION_ID"]),
+    )
+
+    vip = client.cloud.reserved_fixed_ips.create_and_poll(
+        type="external",
+        ip_family="ipv4",
+        is_vip=True,
+    )
+    print(f"port_id={vip.port_id}  address={vip.fixed_ip_address}  is_vip={vip.is_vip}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    vip, err := client.Cloud.ReservedFixedIPs.NewAndPoll(ctx, cloud.ReservedFixedIPNewParams{
+        OfExternal: &cloud.ReservedFixedIPNewParamsBodyExternal{
+            IsVip:    param.NewOpt(true),
+            IPFamily: cloud.InterfaceIPFamilyIpv4,
+            Type:     constant.ValueOf[constant.External](),
+        },
+    })
+    if err != nil {
+        log.Fatalf("create VIP: %v", err)
+    }
+    fmt.Printf("port_id=%s  address=%s  is_vip=%t\n", vip.PortID, vip.FixedIPAddress, vip.IsVip)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/reserved_fixed_ips/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"type": "external", "ip_family": "ipv4", "is_vip": true}'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["28cfde66-33c5-4ace-b97a-d7869df10154"]
+    }
+    ```
+
+    Poll <code>GET&nbsp;https://api.gcore.com/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. Save `created_resources.ports[0]` as `VIP_PORT_ID`.
+
+    ```json
+    {
+      "state": "FINISHED",
+      "created_resources": {
+        "ports": ["6a6eb2dc-8647-4fb4-8497-9b8ba301b9ec"]
+      }
+    }
+    ```
+
+    Then retrieve the VIP details:
+
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/reserved_fixed_ips/$PROJECT_ID/$REGION_ID/$VIP_PORT_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "port_id": "6a6eb2dc-8647-4fb4-8497-9b8ba301b9ec",
+      "fixed_ip_address": "85.234.84.202",
+      "is_vip": true,
+      "status": "DOWN",
+      "reservation": {
+        "status": "attached"
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+The `reservation.status` of `"attached"` confirms VIP mode is active. Additional creation options such as specifying a private network or a fixed IP address are described in the [reserved IPs API](https://api.gcore.com/docs/cloud#tag/Reserved-Fixed-IPs/operation/ReservedFixedIPCreateV1.post).
+
+### Step 2. Find a VM's port ID
+
+Each VM network interface has a `port_id`. Supply this ID when connecting the VM to the VIP.
+
+<Tabs>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response (excerpt):
+
+    ```json
+    {
+      "results": [
+        {
+          "id": "a1b2c3d4-...",
+          "name": "my-vm",
+          "addresses": {
+            "pub_net": [
+              {
+                "addr": "95.85.95.10",
+                "type": "fixed",
+                "port_id": "f1e2d3c4-b5a6-7890-abcd-ef1234567890"
+              }
+            ]
+          }
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+Save the `port_id` from the relevant network interface as `PORT_ID`. Use the port on the same network as the VIP.
+
+### Step 3. Connect a VM to the VIP
+
+Adding a VM's port to the VIP makes both the VM's own IP and the VIP reachable on that interface. Multiple VM ports can share one VIP.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `port_ids` | Yes | Array of VM port IDs to add to the VIP |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    result = client.cloud.reserved_fixed_ips.vip.connected_ports.add(
+        vip.port_id,
+        port_ids=[os.environ["PORT_ID"]],
+    )
+    print(f"Connected VMs: {result.count}")
+    for vm in result.results:
+        print(f"  VM: {vm.instance_name}  port_id: {vm.port_id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    result, err := client.Cloud.ReservedFixedIPs.Vip.ConnectedPorts.Add(ctx,
+        vip.PortID,
+        cloud.ReservedFixedIPVipConnectedPortAddParams{
+            PortIDs: []string{os.Getenv("PORT_ID")},
+        },
+    )
+    if err != nil {
+        log.Fatalf("add connected port: %v", err)
+    }
+    fmt.Printf("Connected VMs: %d\n", result.Count)
+    for _, vm := range result.Results {
+        fmt.Printf("  VM: %s  port_id: %s\n", vm.InstanceName, vm.PortID)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cloud/v1/reserved_fixed_ips/$PROJECT_ID/$REGION_ID/$VIP_PORT_ID/connected_devices" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"port_ids": ["f1e2d3c4-b5a6-7890-abcd-ef1234567890"]}'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "count": 1,
+      "results": [
+        {
+          "instance_id": "a1b2c3d4-...",
+          "instance_name": "my-vm",
+          "port_id": "f1e2d3c4-b5a6-7890-abcd-ef1234567890",
+          "ip_assignments": [
+            { "ip_address": "10.0.0.5" }
+          ]
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+To replace all connected VMs at once, use `PUT /connected_devices` (curl) or `connected_ports.replace()` (SDK) with the full `port_ids` list.
+
+After connecting a VM's port, configure the VIP address on that VM's OS using `ip addr add` (Linux) or the Network Adapter settings (Windows) — the steps are in the Customer Portal tab under **Configure a virtual IP address for non-Windows Virtual Machines**.
+
+### Step 4. List connected VMs
+
+Listing connected VMs confirms which ports share the VIP and returns the instance name alongside each port ID.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    connected = client.cloud.reserved_fixed_ips.vip.connected_ports.list(vip.port_id)
+    print(f"Total connected: {connected.count}")
+    for vm in connected.results:
+        print(f"  VM: {vm.instance_name}  port_id: {vm.port_id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    connected, err := client.Cloud.ReservedFixedIPs.Vip.ConnectedPorts.List(ctx,
+        vip.PortID,
+        cloud.ReservedFixedIPVipConnectedPortListParams{},
+    )
+    if err != nil {
+        log.Fatalf("list connected: %v", err)
+    }
+    fmt.Printf("Total connected: %d\n", connected.Count)
+    for _, vm := range connected.Results {
+        fmt.Printf("  VM: %s  port_id: %s\n", vm.InstanceName, vm.PortID)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/reserved_fixed_ips/$PROJECT_ID/$REGION_ID/$VIP_PORT_ID/connected_devices" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "count": 1,
+      "results": [
+        {
+          "instance_id": "a1b2c3d4-...",
+          "instance_name": "my-vm",
+          "port_id": "f1e2d3c4-b5a6-7890-abcd-ef1234567890"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</Accordion>
+
+## Enable or disable VIP mode
+
+An existing [reserved IP](/cloud/networking/ip-address/create-and-configure-a-reserved-ip-address) can be promoted to a VIP at any time by setting `is_vip: true`. Setting it back to `false` removes VIP mode and disconnects any ports connected to the VIP.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(
+        api_key=os.environ["GCORE_API_KEY"],
+        cloud_project_id=int(os.environ["PROJECT_ID"]),
+        cloud_region_id=int(os.environ["REGION_ID"]),
+    )
+
+    vip_port_id = "..."  # port_id from Step 1 or from listing reserved IPs
+
+    # Enable VIP mode
+    updated = client.cloud.reserved_fixed_ips.vip.toggle(vip_port_id, is_vip=True)
+    print(f"is_vip={updated.is_vip}  reservation_status={updated.reservation.status}")
+
+    # Disable VIP mode
+    updated = client.cloud.reserved_fixed_ips.vip.toggle(vip_port_id, is_vip=False)
+    print(f"is_vip={updated.is_vip}  reservation_status={updated.reservation.status}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    vipPortID := "..."  // port_id from Step 1 or from listing reserved IPs
+
+    // Enable VIP mode
+    updated, err := client.Cloud.ReservedFixedIPs.Vip.Toggle(ctx,
+        vipPortID,
+        cloud.ReservedFixedIPVipToggleParams{IsVip: true},
+    )
+    if err != nil {
+        log.Fatalf("toggle on: %v", err)
+    }
+    fmt.Printf("is_vip=%t  reservation_status=%s\n", updated.IsVip, updated.Reservation.Status)
+
+    // Disable VIP mode
+    updated, err = client.Cloud.ReservedFixedIPs.Vip.Toggle(ctx,
+        vipPortID,
+        cloud.ReservedFixedIPVipToggleParams{IsVip: false},
+    )
+    if err != nil {
+        log.Fatalf("toggle off: %v", err)
+    }
+    fmt.Printf("is_vip=%t  reservation_status=%s\n", updated.IsVip, updated.Reservation.Status)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # Enable VIP mode
+    curl -X PATCH "https://api.gcore.com/cloud/v1/reserved_fixed_ips/$PROJECT_ID/$REGION_ID/$VIP_PORT_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"is_vip": true}'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "port_id": "6a6eb2dc-8647-4fb4-8497-9b8ba301b9ec",
+      "fixed_ip_address": "85.234.84.202",
+      "is_vip": true,
+      "reservation": {
+        "status": "attached"
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+When `is_vip` is `true`, `reservation.status` becomes `"attached"`. When `false`, it reverts to `"available"`. The toggle is synchronous — no polling needed.
+
+## Clean up
+
+Deleting a VIP requires disabling VIP mode first. The API rejects the delete request if `is_vip` is still `true`.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    # Disconnect all VMs first
+    client.cloud.reserved_fixed_ips.vip.connected_ports.replace(
+        vip.port_id,
+        port_ids=[],
+    )
+
+    # Disable VIP mode
+    client.cloud.reserved_fixed_ips.vip.toggle(vip.port_id, is_vip=False)
+
+    # Delete the reserved IP
+    client.cloud.reserved_fixed_ips.delete_and_poll(vip.port_id)
+    print("VIP deleted.")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    // Disconnect all VMs first
+    if _, err = client.Cloud.ReservedFixedIPs.Vip.ConnectedPorts.Replace(ctx,
+        vip.PortID,
+        cloud.ReservedFixedIPVipConnectedPortReplaceParams{PortIDs: []string{}},
+    ); err != nil {
+        log.Fatalf("disconnect: %v", err)
+    }
+
+    // Disable VIP mode
+    if _, err = client.Cloud.ReservedFixedIPs.Vip.Toggle(ctx,
+        vip.PortID,
+        cloud.ReservedFixedIPVipToggleParams{IsVip: false},
+    ); err != nil {
+        log.Fatalf("toggle off: %v", err)
+    }
+
+    // Delete the reserved IP
+    if err = client.Cloud.ReservedFixedIPs.DeleteAndPoll(ctx,
+        vip.PortID, cloud.ReservedFixedIPDeleteParams{},
+    ); err != nil {
+        log.Fatalf("delete: %v", err)
+    }
+    fmt.Println("VIP deleted.")
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # Disconnect all VMs
+    curl -X PUT "https://api.gcore.com/cloud/v1/reserved_fixed_ips/$PROJECT_ID/$REGION_ID/$VIP_PORT_ID/connected_devices" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"port_ids": []}'
+
+    # Disable VIP mode
+    curl -X PATCH "https://api.gcore.com/cloud/v1/reserved_fixed_ips/$PROJECT_ID/$REGION_ID/$VIP_PORT_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"is_vip": false}'
+
+    # Delete the reserved IP
+    curl -X DELETE "https://api.gcore.com/cloud/v1/reserved_fixed_ips/$PROJECT_ID/$REGION_ID/$VIP_PORT_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["a4e8004b-cc6b-4861-9e45-d86c77ff031a"]
+    }
+    ```
+
+    Poll <code>GET&nbsp;https://api.gcore.com/cloud/v1/tasks/{task_id}</code> until `state` is `FINISHED`.
+  </Tab>
+</Tabs>
+
+</MethodSection>
+
+</MethodSwitch>
