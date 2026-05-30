@@ -352,17 +352,27 @@ The [snapshot](https://api.gcore.com/docs/cloud#tag/Snapshots/operation/Snapshot
 
 ### Step 3. Poll the task
 
-Both SDK methods (`create_and_poll` / `NewAndPoll`) block until the snapshot is ready. When using curl, poll the task endpoint (`GET /cloud/v1/tasks/$TASK_ID`) every 5 seconds until `state` is `FINISHED`.
+Both SDK methods block until the snapshot reaches `available` status and return a typed snapshot object — `id`, `status`, `size`, `volume_id`, and `created_at` are available immediately on the returned value. When using curl, poll the task endpoint every 5 seconds until `state` is `FINISHED`, then read the snapshot ID from `created_resources.snapshots[0]`.
 
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    # create_and_poll handles polling automatically — no extra code needed.
+    # create_and_poll blocks until the snapshot is ready and returns a Snapshot object.
+    print(f"ID: {snapshot.id}")
+    print(f"Status: {snapshot.status}")
+    print(f"Size: {snapshot.size} GiB")
+    print(f"Volume ID: {snapshot.volume_id}")
+    print(f"Created at: {snapshot.created_at}")
     ```
   </Tab>
   <Tab title="Go SDK">
     ```go
-    // NewAndPoll handles polling automatically — no extra code needed.
+    // NewAndPoll blocks until the snapshot is ready and returns *cloud.Snapshot.
+    fmt.Printf("ID: %s\n", snapshot.ID)
+    fmt.Printf("Status: %s\n", snapshot.Status)
+    fmt.Printf("Size: %d GiB\n", snapshot.Size)
+    fmt.Printf("Volume ID: %s\n", snapshot.VolumeID)
+    fmt.Printf("Created at: %s\n", snapshot.CreatedAt)
     ```
   </Tab>
   <Tab title="curl">
@@ -395,8 +405,6 @@ Both SDK methods (`create_and_poll` / `NewAndPoll`) block until the snapshot is 
     ```
   </Tab>
 </Tabs>
-
-Save the snapshot ID from `created_resources.snapshots[0]` for subsequent requests.
 
 ### Step 4. Get snapshot details
 
