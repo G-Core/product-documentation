@@ -352,27 +352,33 @@ The [snapshot](https://api.gcore.com/docs/cloud#tag/Snapshots/operation/Snapshot
 
 ### Step 3. Poll the task
 
-Both SDK methods block until the snapshot reaches `available` status and return a typed snapshot object — `id`, `status`, `size`, `volume_id`, and `created_at` are available immediately on the returned value. When using curl, poll the task endpoint every 5 seconds until `state` is `FINISHED`, then read the snapshot ID from `created_resources.snapshots[0]`.
+Creating a snapshot is asynchronous — the API returns a task ID immediately, and the snapshot becomes available only after the task finishes. Both SDK methods handle this automatically: `create_and_poll` and `NewAndPoll` block the program until the task completes and then return a fully populated snapshot object. No manual polling loop is needed. The returned object has `id`, `status`, `size`, `volume_id`, and `created_at` available immediately — use `snapshot.id` in all subsequent calls.
+
+When using curl, there is no built-in polling, so the GET request below must be repeated every 5 seconds until `state` changes to `FINISHED`.
 
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    # create_and_poll blocks until the snapshot is ready and returns a Snapshot object.
-    print(f"ID: {snapshot.id}")
-    print(f"Status: {snapshot.status}")
-    print(f"Size: {snapshot.size} GiB")
-    print(f"Volume ID: {snapshot.volume_id}")
-    print(f"Created at: {snapshot.created_at}")
+    # create_and_poll returned only after the snapshot reached "available" status.
+    # The snapshot object is fully populated — print key fields to confirm.
+    print(f"Snapshot ready.")
+    print(f"  ID:         {snapshot.id}")
+    print(f"  Status:     {snapshot.status}")
+    print(f"  Size:       {snapshot.size} GiB")
+    print(f"  Volume ID:  {snapshot.volume_id}")
+    print(f"  Created at: {snapshot.created_at}")
     ```
   </Tab>
   <Tab title="Go SDK">
     ```go
-    // NewAndPoll blocks until the snapshot is ready and returns *cloud.Snapshot.
-    fmt.Printf("ID: %s\n", snapshot.ID)
-    fmt.Printf("Status: %s\n", snapshot.Status)
-    fmt.Printf("Size: %d GiB\n", snapshot.Size)
-    fmt.Printf("Volume ID: %s\n", snapshot.VolumeID)
-    fmt.Printf("Created at: %s\n", snapshot.CreatedAt)
+    // NewAndPoll returned only after the snapshot reached "available" status.
+    // The *cloud.Snapshot is fully populated — print key fields to confirm.
+    fmt.Println("Snapshot ready.")
+    fmt.Printf("  ID:         %s\n", snapshot.ID)
+    fmt.Printf("  Status:     %s\n", snapshot.Status)
+    fmt.Printf("  Size:       %d GiB\n", snapshot.Size)
+    fmt.Printf("  Volume ID:  %s\n", snapshot.VolumeID)
+    fmt.Printf("  Created at: %s\n", snapshot.CreatedAt)
     ```
   </Tab>
   <Tab title="curl">
