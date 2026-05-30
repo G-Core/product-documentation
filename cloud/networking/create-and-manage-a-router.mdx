@@ -1,8 +1,14 @@
 ---
 title: Create and manage a router
 sidebarTitle: Router
-ai-navigation: Create and configure Cloud Router with static routes, SNAT, subnets, and route tables to dynamically exchange routes between networks and control traffic flow using destination prefixes and next hop IP addresses.
+ai-navigation: Create and configure Cloud Router with static routes, SNAT, and subnet interfaces via the Customer Portal or REST API using POST /cloud/v1/routers to dynamically exchange routes between networks.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+
+<MethodSection id="portal" label="Customer Portal">
 
 Cloud Router enables you to dynamically exchange routes between networks. You can find the list of routers in networking settings, on the **Routers** page.
 
@@ -135,3 +141,440 @@ To configure a static route:
 6\. Click **Save Static Routes**.
 
 By default, subnets within the same network can communicate. This is because the default network router automatically unites all subnets within the network, enabling internal communication. However, traffic between different networks requires an explicit static route via a router.
+
+</MethodSection>
+
+<MethodSection id="api" label="REST API">
+
+<Info>A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get), a [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get), and the ID of an existing [subnet](/cloud/networking/create-and-manage-a-subnetwork) to attach to the router.</Info>
+
+Set these variables before running the examples:
+
+```bash
+export GCORE_API_KEY="your_api_key"
+export PROJECT_ID="1234567"
+export REGION_ID="148"
+export SUBNET_ID="your_subnet_id"
+```
+
+## Quickstart
+
+The scripts below create a router with SNAT enabled, attach a subnet, verify the result, then delete the router.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore(
+    api_key=os.environ["GCORE_API_KEY"],
+    cloud_project_id=int(os.environ["PROJECT_ID"]),
+    cloud_region_id=int(os.environ["REGION_ID"]),
+)
+
+# Step 1. Create a router with SNAT enabled.
+task = client.cloud.networks.routers.create(
+    name="my-router",
+    external_gateway_info={"type": "default", "enable_snat": True},
+)
+router_id = client.cloud.tasks.poll(task.tasks[0]).created_resources.routers[0]
+print(f"Router ID: {router_id}")
+
+# Step 2. Attach a subnet.
+router = client.cloud.networks.routers.attach_subnet(
+    router_id,
+    subnet_id=os.environ["SUBNET_ID"],
+)
+print(f"Attached subnet, interfaces: {len(router.interfaces)}")
+
+# Step 3. Get router details.
+router = client.cloud.networks.routers.get(router_id)
+print(f"Status: {router.status}  SNAT: {router.external_gateway_info.enable_snat}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "log"
+    "os"
+    "strconv"
+
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/cloud"
+    "github.com/G-Core/gcore-go/option"
+)
+
+func main() {
+    projectID, err := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
+    if err != nil {
+        log.Fatalf("parse PROJECT_ID: %v", err)
+    }
+    regionID, err := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
+    if err != nil {
+        log.Fatalf("parse REGION_ID: %v", err)
+    }
+
+    client := gcore.NewClient(
+        option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
+        option.WithCloudProjectID(projectID),
+        option.WithCloudRegionID(regionID),
+    )
+    ctx := context.Background()
+
+    // Step 1. Create a router with SNAT enabled.
+    router, err := client.Cloud.Networks.Routers.NewAndPoll(ctx, cloud.NetworkRouterNewParams{
+        Name: "my-router",
+        ExternalGatewayInfo: cloud.NetworkRouterNewParamsExternalGatewayInfoUnion{
+            OfRouterExternalDefaultGwSerializer: &cloud.NetworkRouterNewParamsExternalGatewayInfoRouterExternalDefaultGwSerializer{
+                Type:       "default",
+                EnableSnat: gcore.Bool(true),
+            },
+        },
+    })
+    if err != nil {
+        log.Fatalf("create router: %v", err)
+    }
+    fmt.Printf("Router ID: %s\n", router.ID)
+
+    // Step 2. Attach a subnet.
+    router, err = client.Cloud.Networks.Routers.AttachSubnet(ctx, router.ID, cloud.NetworkRouterAttachSubnetParams{
+        SubnetID: os.Getenv("SUBNET_ID"),
+    })
+    if err != nil {
+        log.Fatalf("attach subnet: %v", err)
+    }
+    fmt.Printf("Attached subnet, interfaces: %d\n", len(router.Interfaces))
+
+    // Step 3. Get router details.
+    router, err = client.Cloud.Networks.Routers.Get(ctx, router.ID, cloud.NetworkRouterGetParams{})
+    if err != nil {
+        log.Fatalf("get router: %v", err)
+    }
+    fmt.Printf("Status: %s\n", router.Status)
+}
+```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+<p>Each step below explains what the call does, which parameters matter, and what the response looks like. Use this section to understand the flow or to debug a specific step.</p>
+
+<Accordion title="Show all steps">
+
+### Step 1. Create a router
+
+Provisions a new router; pass `external_gateway_info` with `type: "default"` to enable SNAT and give instances in private subnets access to the internet through this router.
+
+| Parameter | Required | Description |
+|---|---|---|
+| `name` | Yes | Name for the router. |
+| `external_gateway_info.type` | No | Set to `"default"` to auto-select the external network for this region. Omit to create a router without internet access. |
+| `external_gateway_info.enable_snat` | No | Set to `true` to enable SNAT. Required when `type` is `"default"`. |
+| `interfaces` | No | List of subnets to attach at creation, each as `{"subnet_id": "..."}`. |
+| `routes` | No | List of static routes at creation, each as `{"destination": "CIDR", "nexthop": "IP"}`. |
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+task = client.cloud.networks.routers.create(
+    name="my-router",
+    external_gateway_info={"type": "default", "enable_snat": True},
+)
+router_id = client.cloud.tasks.poll(task.tasks[0]).created_resources.routers[0]
+print(f"Router ID: {router_id}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+router, err := client.Cloud.Networks.Routers.NewAndPoll(ctx, cloud.NetworkRouterNewParams{
+    Name: "my-router",
+    ExternalGatewayInfo: cloud.NetworkRouterNewParamsExternalGatewayInfoUnion{
+        OfRouterExternalDefaultGwSerializer: &cloud.NetworkRouterNewParamsExternalGatewayInfoRouterExternalDefaultGwSerializer{
+            Type:       "default",
+            EnableSnat: gcore.Bool(true),
+        },
+    },
+})
+if err != nil {
+    log.Fatalf("create router: %v", err)
+}
+fmt.Printf("Router ID: %s\n", router.ID)
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X POST "https://api.gcore.com/cloud/v1/routers/${PROJECT_ID}/${REGION_ID}" \
+  -H "Authorization: APIKey ${GCORE_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my-router",
+    "external_gateway_info": { "type": "default", "enable_snat": true }
+  }'
+```
+
+Response:
+
+```json
+{
+  "tasks": ["d8de6c30-6502-45a1-94b0-790709e40e78"]
+}
+```
+
+Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. The router ID is in `created_resources.routers[0]`.
+
+```json
+{
+  "state": "FINISHED",
+  "created_resources": {
+    "routers": ["da5b9588-cecc-4111-a318-3ad04da05900"]
+  }
+}
+```
+  </Tab>
+</Tabs>
+
+### Step 2. Attach a subnet
+
+Connects a subnet to the router so instances in that subnet can use the router for traffic forwarding. The router assigns an interface IP from within the subnet range automatically.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+router = client.cloud.networks.routers.attach_subnet(
+    router_id,
+    subnet_id=os.environ["SUBNET_ID"],
+)
+print(f"Interfaces: {len(router.interfaces)}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+router, err = client.Cloud.Networks.Routers.AttachSubnet(ctx, router.ID, cloud.NetworkRouterAttachSubnetParams{
+    SubnetID: os.Getenv("SUBNET_ID"),
+})
+if err != nil {
+    log.Fatalf("attach subnet: %v", err)
+}
+fmt.Printf("Interfaces: %d\n", len(router.Interfaces))
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X POST "https://api.gcore.com/cloud/v1/routers/${PROJECT_ID}/${REGION_ID}/${ROUTER_ID}/attach" \
+  -H "Authorization: APIKey ${GCORE_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{ "subnet_id": "'${SUBNET_ID}'" }'
+```
+
+Response:
+
+```json
+{
+  "id": "da5b9588-cecc-4111-a318-3ad04da05900",
+  "name": "my-router",
+  "status": "ACTIVE",
+  "interfaces": [
+    {
+      "port_id": "43421eaf-b298-4bab-b9c4-c8cf296246f7",
+      "ip_assignments": [
+        { "subnet_id": "a87cedcc-ac14-4133-a26e-8da113a522b2", "ip_address": "192.168.100.236" }
+      ],
+      "network_id": "6880a081-5f09-4437-9942-3eabee038666"
+    }
+  ],
+  "routes": [],
+  "external_gateway_info": { "enable_snat": true }
+}
+```
+  </Tab>
+</Tabs>
+
+### Step 3. Get router details
+
+Returns the full router object including attached interfaces, configured routes, SNAT status, and external gateway information.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+router = client.cloud.networks.routers.get(router_id)
+print(f"Status: {router.status}  SNAT: {router.external_gateway_info.enable_snat}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+router, err = client.Cloud.Networks.Routers.Get(ctx, router.ID, cloud.NetworkRouterGetParams{})
+if err != nil {
+    log.Fatalf("get router: %v", err)
+}
+fmt.Printf("Status: %s\n", router.Status)
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X GET "https://api.gcore.com/cloud/v1/routers/${PROJECT_ID}/${REGION_ID}/${ROUTER_ID}" \
+  -H "Authorization: APIKey ${GCORE_API_KEY}"
+```
+
+Response:
+
+```json
+{
+  "id": "da5b9588-cecc-4111-a318-3ad04da05900",
+  "name": "my-router",
+  "status": "ACTIVE",
+  "external_gateway_info": {
+    "network_id": "4e16750d-2656-4038-9411-3c7f06c62643",
+    "enable_snat": true,
+    "external_fixed_ips": [
+      { "subnet_id": "78bf97c9-32c4-4dff-9fcf-2bdcf7e7a542", "ip_address": "109.61.46.198" }
+    ]
+  },
+  "interfaces": [
+    {
+      "ip_assignments": [
+        { "subnet_id": "a87cedcc-ac14-4133-a26e-8da113a522b2", "ip_address": "192.168.100.236" }
+      ],
+      "network_id": "6880a081-5f09-4437-9942-3eabee038666"
+    }
+  ],
+  "routes": []
+}
+```
+  </Tab>
+</Tabs>
+
+</Accordion>
+
+## Add static routes
+
+Static routes direct traffic from the router to a destination CIDR through a specified next-hop IP. The `PATCH` call replaces the full routes list — include all routes on every update.
+
+| Parameter | Description |
+|---|---|
+| `destination` | Target network in CIDR notation, e.g. `10.10.0.0/24`. |
+| `nexthop` | IP address of the next-hop device within an attached subnet. |
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+task = client.cloud.networks.routers.update(
+    router_id,
+    routes=[{"destination": "10.10.0.0/24", "nexthop": "192.168.100.1"}],
+)
+client.cloud.tasks.poll(task.tasks[0])
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+router, err = client.Cloud.Networks.Routers.UpdateAndPoll(ctx, router.ID, cloud.NetworkRouterUpdateParams{
+    Routes: []cloud.NetworkRouterUpdateParamsRoute{
+        {Destination: "10.10.0.0/24", Nexthop: "192.168.100.1"},
+    },
+})
+if err != nil {
+    log.Fatalf("update routes: %v", err)
+}
+fmt.Printf("Routes set: %d\n", len(router.Routes))
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X PATCH "https://api.gcore.com/cloud/v1/routers/${PROJECT_ID}/${REGION_ID}/${ROUTER_ID}" \
+  -H "Authorization: APIKey ${GCORE_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "routes": [
+      { "destination": "10.10.0.0/24", "nexthop": "192.168.100.1" }
+    ]
+  }'
+```
+
+Response:
+
+```json
+{
+  "tasks": ["7282ccc2-7da8-452e-86d2-5254fed23321"]
+}
+```
+
+Poll `GET /cloud/v1/tasks/{task_id}` until `state` is `FINISHED`, then call `GET /cloud/v1/routers/{id}` to confirm the routes are applied.
+  </Tab>
+</Tabs>
+
+<Warning>A subnet cannot be detached while a static route uses a next-hop IP within that subnet's range. Clear the routes list first by sending an empty `routes` array before detaching the subnet.</Warning>
+
+## Clean up
+
+Detach the subnet before deleting the router. If static routes reference the subnet's IP range, clear them first by sending an empty `routes` array via `PATCH`.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+# Clear routes first (required if a nexthop IP belongs to the subnet).
+task = client.cloud.networks.routers.update(router_id, routes=[])
+client.cloud.tasks.poll(task.tasks[0])
+
+# Detach the subnet.
+client.cloud.networks.routers.detach_subnet(router_id, subnet_id=os.environ["SUBNET_ID"])
+
+# Delete the router.
+task = client.cloud.networks.routers.delete(router_id)
+client.cloud.tasks.poll(task.tasks[0])
+print(f"Deleted router {router_id}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+// Clear routes first (required if a nexthop IP belongs to the subnet).
+if _, err = client.Cloud.Networks.Routers.UpdateAndPoll(ctx, router.ID, cloud.NetworkRouterUpdateParams{
+    Routes: []cloud.NetworkRouterUpdateParamsRoute{},
+}); err != nil {
+    log.Fatalf("clear routes: %v", err)
+}
+
+// Detach the subnet.
+if _, err = client.Cloud.Networks.Routers.DetachSubnet(ctx, router.ID, cloud.NetworkRouterDetachSubnetParams{
+    SubnetID: cloud.SubnetIDParam{SubnetID: os.Getenv("SUBNET_ID")},
+}); err != nil {
+    log.Fatalf("detach subnet: %v", err)
+}
+
+// Delete the router.
+if err = client.Cloud.Networks.Routers.DeleteAndPoll(ctx, router.ID, cloud.NetworkRouterDeleteParams{}); err != nil {
+    log.Fatalf("delete router: %v", err)
+}
+fmt.Println("Router deleted.")
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+# Detach the subnet.
+curl -X POST "https://api.gcore.com/cloud/v1/routers/${PROJECT_ID}/${REGION_ID}/${ROUTER_ID}/detach" \
+  -H "Authorization: APIKey ${GCORE_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{ "subnet_id": "'${SUBNET_ID}'" }'
+
+# Delete the router.
+curl -X DELETE "https://api.gcore.com/cloud/v1/routers/${PROJECT_ID}/${REGION_ID}/${ROUTER_ID}" \
+  -H "Authorization: APIKey ${GCORE_API_KEY}"
+```
+
+Response:
+
+```json
+{
+  "tasks": ["b972d19f-1dba-4478-ba97-9a4483ee865a"]
+}
+```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+
+</MethodSwitch>
