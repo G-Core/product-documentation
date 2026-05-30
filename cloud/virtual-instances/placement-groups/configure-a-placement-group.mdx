@@ -1,8 +1,14 @@
 ---
 title: Configure a placement group
 sidebarTitle: Configure
-ai-navigation: Create and manage Virtual Machine placement groups with affinity, anti-affinity, or soft anti-affinity policies to control VM co-location on physical hardware for performance optimization or fault tolerance.
+ai-navigation: Create and manage Virtual Machine placement groups via the Customer Portal or REST API, covering affinity and anti-affinity policies, VM assignment during creation, and moving VMs between groups.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+
+<MethodSection id="portal" label="Customer Portal">
 
 ## Create a placement group
 
@@ -10,7 +16,7 @@ In the "Placement Groups" section, create a new group. Give it a name and select
 
 
 <Accordion title="Types of placement groups">
-You can place your Virtual Machine in one of three types of groups:
+Virtual Machines can be placed in one of three types of groups:
 
  * **Affinity** groups assemble Virtual Machines on the same hardware. Machines launched in one affinity group will exchange data faster because they are located on the same server.
 
@@ -32,15 +38,522 @@ When creating a Virtual Machine, in the "Additional options" section, move the "
 
 ## Add a previously created Virtual Machine to a group
 
-In the Virtual Machine menu, open the "Placement Group" tab. Select the previously created group where you want to add the VM to, or create a new one. Click "Add".
+In the Virtual Machine menu, open the "Placement Group" tab. Select a previously created group to add the VM to, or create a new one. Click "Add".
 
 
 <Frame>![Placement Group](/images/docs/cloud/virtual-instances/placement-groups/configure-a-placement-group/image-9.png)</Frame>
 
 ## Move a Virtual Machine from one group to another
 
-In the Virtual Machine menu, open the "Placement Group" tab. Remove a machine from one group and add it to another —you can add it to a new one or to a previously created one.
+In the Virtual Machine menu, open the "Placement Group" tab. Remove a machine from one group and add it to another — a new group or a previously created one.
 
 <Frame>![Placement Group](/images/docs/cloud/virtual-instances/placement-groups/configure-a-placement-group/image-10.png)</Frame>
 
 <Frame>![Placement Group](/images/docs/cloud/virtual-instances/placement-groups/configure-a-placement-group/image-11.png)</Frame>
+
+</MethodSection>
+
+<MethodSection id="api" label="REST API">
+
+Placement groups control how VMs are distributed across physical hosts — grouping them together for low-latency communication or spreading them apart for fault tolerance.
+
+<Info>
+A permanent [API token](/account-settings/api-tokens) is required, along with a project ID and region ID.
+</Info>
+
+Set environment variables before running any of the examples below:
+
+```bash
+export GCORE_API_KEY="YOUR_API_KEY"
+export PROJECT_ID="YOUR_PROJECT_ID"
+export REGION_ID="YOUR_REGION_ID"
+```
+
+## Quickstart
+
+The scripts below create an anti-affinity placement group, launch a VM assigned to it, verify the placement, then clean up both resources. To add an existing VM to a group instead of creating one, see Step 4 in the step-by-step section.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(
+        api_key=os.environ["GCORE_API_KEY"],
+        cloud_project_id=int(os.environ["PROJECT_ID"]),
+        cloud_region_id=int(os.environ["REGION_ID"]),
+    )
+
+    # Step 1. Create a placement group.
+    group = client.cloud.placement_groups.create(
+        name="my-group",
+        policy="anti-affinity",
+    )
+    group_id = group.servergroup_id
+    print(f"Group ID: {group_id}  policy: {group.policy}")
+
+    # Step 2. Create a VM assigned to the group.
+    # Flavor and image IDs are region-specific — list available values first.
+    instance = client.cloud.instances.create_and_poll(
+        flavor="g2-standard-2-4",
+        name="my-vm",
+        volumes=[{
+            "source": "image",
+            "image_id": "YOUR_IMAGE_ID",
+            "boot_index": 0,
+            "size": 20,
+            "type_name": "standard",
+        }],
+        interfaces=[{"type": "external"}],
+        servergroup_id=group_id,
+    )
+    instance_id = instance.id
+    print(f"Instance ID: {instance_id}  status: {instance.status}")
+
+    # Step 3. Verify the VM appears in the group.
+    details = client.cloud.placement_groups.get(group_id=group_id)
+    for vm in details.instances:
+        print(f"  VM in group: {vm.instance_id}  {vm.instance_name}")
+
+    # Step 4. Remove the VM from the group.
+    client.cloud.instances.remove_from_placement_group_and_poll(
+        instance_id=instance_id,
+    )
+    print("Removed VM from group")
+
+    # Step 5. Delete the placement group.
+    task = client.cloud.placement_groups.delete(group_id=group_id)
+    client.cloud.tasks.poll(task.tasks[0])
+    print(f"Deleted group {group_id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
+        client := gcore.NewClient(
+            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
+            option.WithCloudProjectID(projectID),
+            option.WithCloudRegionID(regionID),
+        )
+        ctx := context.Background()
+
+        // Step 1. Create a placement group.
+        group, err := client.Cloud.PlacementGroups.New(ctx, cloud.PlacementGroupNewParams{
+            Name:   "my-group",
+            Policy: cloud.PlacementGroupNewParamsPolicyAntiAffinity,
+        })
+        if err != nil {
+            log.Fatal(err)
+        }
+        groupID := group.ServergroupID
+        fmt.Printf("Group ID: %s  policy: %s\n", groupID, group.Policy)
+
+        // Step 2. Create a VM assigned to the group.
+        // Flavor and image IDs are region-specific — list available values first.
+        instance, err := client.Cloud.Instances.NewAndPoll(ctx, cloud.InstanceNewParams{
+            Flavor:        "g2-standard-2-4",
+            Name:          gcore.String("my-vm"),
+            ServergroupID: gcore.String(groupID),
+            Volumes: []cloud.InstanceNewParamsVolumeUnion{
+                {OfImage: &cloud.InstanceNewParamsVolumeImage{
+                    ImageID:   "YOUR_IMAGE_ID",
+                    BootIndex: gcore.Int(0),
+                    Size:      gcore.Int(20),
+                    TypeName:  "standard",
+                }},
+            },
+            Interfaces: []cloud.InstanceNewParamsInterfaceUnion{
+                {OfExternal: &cloud.InstanceNewParamsInterfaceExternal{Type: "external"}},
+            },
+        })
+        if err != nil {
+            log.Fatal(err)
+        }
+        instanceID := instance.ID
+        fmt.Printf("Instance ID: %s  status: %s\n", instanceID, instance.Status)
+
+        // Step 3. Verify the VM appears in the group.
+        details, err := client.Cloud.PlacementGroups.Get(ctx, groupID, cloud.PlacementGroupGetParams{})
+        if err != nil {
+            log.Fatal(err)
+        }
+        for _, vm := range details.Instances {
+            fmt.Printf("  VM in group: %s  %s\n", vm.InstanceID, vm.InstanceName)
+        }
+
+        // Step 4. Remove the VM from the group.
+        if _, err = client.Cloud.Instances.RemoveFromPlacementGroupAndPoll(
+            ctx, instanceID, cloud.InstanceRemoveFromPlacementGroupParams{},
+        ); err != nil {
+            log.Fatal(err)
+        }
+        fmt.Println("Removed VM from group")
+
+        // Step 5. Delete the placement group.
+        if err = client.Cloud.PlacementGroups.DeleteAndPoll(
+            ctx, groupID, cloud.PlacementGroupDeleteParams{},
+        ); err != nil {
+            log.Fatal(err)
+        }
+        fmt.Printf("Deleted group %s\n", groupID)
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+Each step below explains what the call does, which parameters matter, and what the response looks like.
+
+<Accordion title="Show all steps">
+
+### Step 1. Create a placement group
+
+A [placement group](https://api.gcore.com/docs/cloud#tag/Placement-groups) defines the policy that controls how VMs assigned to it are distributed across physical hosts.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | A label for the group. |
+| `policy` | Yes | `affinity` places VMs on the same host; `anti-affinity` places them on different hosts; `soft-anti-affinity` attempts separation but allows sharing when resources are constrained. |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    group = client.cloud.placement_groups.create(
+        name="my-group",
+        policy="anti-affinity",
+    )
+    group_id = group.servergroup_id
+    print(f"Group ID: {group_id}  policy: {group.policy}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    group, err := client.Cloud.PlacementGroups.New(ctx, cloud.PlacementGroupNewParams{
+        Name:   "my-group",
+        Policy: cloud.PlacementGroupNewParamsPolicyAntiAffinity,
+    })
+    groupID := group.ServergroupID
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/servergroups/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"name": "my-group", "policy": "anti-affinity"}'
+    ```
+
+    The API returns the group object immediately — no polling needed:
+
+    ```json
+    {
+      "project_id": 1186668,
+      "region_id": 148,
+      "region": "Luxembourg-3",
+      "servergroup_id": "390bf8f5-c2e6-490a-b8a6-b80341a61d18",
+      "policy": "anti-affinity",
+      "name": "my-group",
+      "instances": []
+    }
+    ```
+
+    Save the `servergroup_id` — it is needed in subsequent steps.
+  </Tab>
+</Tabs>
+
+### Step 2. Create a VM assigned to the group
+
+Passing `servergroup_id` in the instance creation request assigns the VM to the group at launch time. The scheduler places the VM according to the group policy — on the same host as other group members (affinity) or on a different host (anti-affinity).
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `servergroup_id` | Yes | The `servergroup_id` returned in Step 1. |
+| `flavor` | Yes | Flavor ID — region-specific; list available flavors via <code>GET&nbsp;/cloud/v1/flavors/{project_id}/{region_id}</code>. |
+| `image_id` | Yes | Public image ID — region-specific; list available images via <code>GET&nbsp;/cloud/v1/images/{project_id}/{region_id}?visibility=public</code>. |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    instance = client.cloud.instances.create_and_poll(
+        flavor="g2-standard-2-4",
+        name="my-vm",
+        volumes=[{
+            "source": "image",
+            "image_id": "YOUR_IMAGE_ID",
+            "boot_index": 0,
+            "size": 20,
+            "type_name": "standard",
+        }],
+        interfaces=[{"type": "external"}],
+        servergroup_id=group_id,
+    )
+    instance_id = instance.id
+    print(f"Instance ID: {instance_id}  status: {instance.status}")
+    ```
+
+    `create_and_poll` blocks until the VM reaches `ACTIVE` status and returns the full instance object.
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    instance, err := client.Cloud.Instances.NewAndPoll(ctx, cloud.InstanceNewParams{
+        Flavor:        "g2-standard-2-4",
+        Name:          gcore.String("my-vm"),
+        ServergroupID: gcore.String(groupID),
+        Volumes: []cloud.InstanceNewParamsVolumeUnion{
+            {OfImage: &cloud.InstanceNewParamsVolumeImage{
+                ImageID:   "YOUR_IMAGE_ID",
+                BootIndex: gcore.Int(0),
+                Size:      gcore.Int(20),
+                TypeName:  "standard",
+            }},
+        },
+        Interfaces: []cloud.InstanceNewParamsInterfaceUnion{
+            {OfExternal: &cloud.InstanceNewParamsInterfaceExternal{Type: "external"}},
+        },
+    })
+    instanceID := instance.ID
+    ```
+
+    `NewAndPoll` blocks until the VM is `ACTIVE` and returns the instance with `ID` and `Status`.
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v2/instances/$PROJECT_ID/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "flavor": "g2-standard-2-4",
+        "name": "my-vm",
+        "volumes": [{
+          "source": "image",
+          "image_id": "YOUR_IMAGE_ID",
+          "boot_index": 0,
+          "size": 20,
+          "type_name": "standard"
+        }],
+        "interfaces": [{"type": "external"}],
+        "servergroup_id": "GROUP_ID"
+      }'
+    ```
+
+    The API returns a task ID:
+
+    ```json
+    {
+      "tasks": ["b63f0fff-8b45-4b6d-a712-example00001"]
+    }
+    ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. The instance ID is in `created_resources.instances[0]`.
+  </Tab>
+</Tabs>
+
+### Step 3. Get group details
+
+Retrieving a group shows which VMs are currently assigned to it and confirms that the placement policy applied correctly.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    details = client.cloud.placement_groups.get(group_id=group_id)
+    print(f"Policy: {details.policy}  members: {len(details.instances)}")
+    for vm in details.instances:
+        print(f"  {vm.instance_id}  {vm.instance_name}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    details, err := client.Cloud.PlacementGroups.Get(ctx, groupID, cloud.PlacementGroupGetParams{})
+    fmt.Printf("Policy: %s  members: %d\n", details.Policy, len(details.Instances))
+    for _, vm := range details.Instances {
+        fmt.Printf("  %s  %s\n", vm.InstanceID, vm.InstanceName)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/servergroups/$PROJECT_ID/$REGION_ID/$GROUP_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    The API returns:
+
+    ```json
+    {
+      "project_id": 1186668,
+      "region_id": 148,
+      "region": "Luxembourg-3",
+      "servergroup_id": "390bf8f5-c2e6-490a-b8a6-b80341a61d18",
+      "policy": "anti-affinity",
+      "name": "my-group",
+      "instances": [
+        {
+          "instance_id": "7710bd12-3c1c-4566-b2d0-76e3ff51a1a3",
+          "instance_name": "my-vm"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Step 4. Add an existing VM to the group
+
+An existing VM can be moved into a placement group without recreating it. The scheduler migrates the VM to a host that satisfies the group policy if necessary.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `instance_id` | Yes | The ID of the VM to add. |
+| `servergroup_id` | Yes | The target placement group ID. |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    client.cloud.instances.add_to_placement_group_and_poll(
+        instance_id=instance_id,
+        servergroup_id=group_id,
+    )
+    print("VM added to group")
+    ```
+
+    `add_to_placement_group_and_poll` polls until the operation completes and returns the updated instance object.
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    if _, err = client.Cloud.Instances.AddToPlacementGroupAndPoll(
+        ctx, instanceID, cloud.InstanceAddToPlacementGroupParams{
+            ServergroupID: groupID,
+        },
+    ); err != nil {
+        log.Fatal(err)
+    }
+    fmt.Println("VM added to group")
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST \
+      "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID/$INSTANCE_ID/put_into_servergroup" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"servergroup_id": "GROUP_ID"}'
+    ```
+
+    The API returns a task ID:
+
+    ```json
+    {
+      "tasks": ["b63f0fff-8b45-4b6d-a712-example00002"]
+    }
+    ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`.
+  </Tab>
+</Tabs>
+
+### Step 5. Remove a VM from the group
+
+Removing a VM from a placement group releases the placement constraint. The VM keeps running on its current host — it is not migrated.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    client.cloud.instances.remove_from_placement_group_and_poll(
+        instance_id=instance_id,
+    )
+    print("VM removed from group")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    if _, err = client.Cloud.Instances.RemoveFromPlacementGroupAndPoll(
+        ctx, instanceID, cloud.InstanceRemoveFromPlacementGroupParams{},
+    ); err != nil {
+        log.Fatal(err)
+    }
+    fmt.Println("VM removed from group")
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST \
+      "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID/$INSTANCE_ID/remove_from_servergroup" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    The API returns a task ID:
+
+    ```json
+    {
+      "tasks": ["b63f0fff-8b45-4b6d-a712-example00003"]
+    }
+    ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`.
+  </Tab>
+</Tabs>
+
+</Accordion>
+
+## Clean up
+
+Deleting a placement group does not delete the VMs in it — the VMs keep running without a placement constraint. Remove VMs from the group first if the group has an active policy that should no longer apply.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    task = client.cloud.placement_groups.delete(group_id=group_id)
+    client.cloud.tasks.poll(task.tasks[0])
+    print(f"Deleted group {group_id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    if err = client.Cloud.PlacementGroups.DeleteAndPoll(
+        ctx, groupID, cloud.PlacementGroupDeleteParams{},
+    ); err != nil {
+        log.Fatal(err)
+    }
+    fmt.Printf("Deleted group %s\n", groupID)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE \
+      "https://api.gcore.com/cloud/v1/servergroups/$PROJECT_ID/$REGION_ID/$GROUP_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    The API returns a task ID:
+
+    ```json
+    {
+      "tasks": ["f95daa1e-cd16-4ec5-b43b-example00004"]
+    }
+    ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`.
+  </Tab>
+</Tabs>
+
+</MethodSection>
+
+</MethodSwitch>
