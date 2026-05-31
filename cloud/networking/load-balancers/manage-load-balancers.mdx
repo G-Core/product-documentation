@@ -480,112 +480,7 @@ export REGION_ID="{YOUR_REGION_ID}"
 export LB_ID="{YOUR_LOAD_BALANCER_ID}"
 ```
 
-## Quickstart
-
-The scripts below list all load balancers, fetch details for one, and rename it.
-
-<Tabs>
-  <Tab title="Python SDK">
-    ```python
-    import os
-    from gcore import Gcore
-
-    client = Gcore(
-        api_key=os.environ["GCORE_API_KEY"],
-        cloud_project_id=int(os.environ["PROJECT_ID"]),
-        cloud_region_id=int(os.environ["REGION_ID"]),
-    )
-    lb_id = os.environ["LB_ID"]
-
-    # Step 1. List load balancers
-    page = client.cloud.load_balancers.list()
-    for lb in page.results:
-        print(f"  {lb.id}  {lb.name}  {lb.operating_status}  {lb.vip_address}")
-
-    # Step 2. Get load balancer details
-    lb = client.cloud.load_balancers.get(load_balancer_id=lb_id)
-    print(f"flavor: {lb.flavor.flavor_name}  provisioning: {lb.provisioning_status}")
-    print(f"listeners: {len(lb.listeners)}  tags: {lb.tags_v2}")
-
-    # Step 3. Rename the load balancer and update tags
-    updated = client.cloud.load_balancers.update(
-        load_balancer_id=lb_id,
-        name="my-lb-production",
-        tags={"env": "production", "owner": "platform-team"},
-    )
-    print(f"renamed to: {updated.name}")
-    ```
-  </Tab>
-  <Tab title="Go SDK">
-    ```go
-    package main
-
-    import (
-        "context"
-        "fmt"
-        "log"
-        "os"
-        "strconv"
-
-        gcore "github.com/G-Core/gcore-go"
-        "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
-    )
-
-    func main() {
-        projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
-        regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
-        lbID := os.Getenv("LB_ID")
-
-        client := gcore.NewClient(
-            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
-            option.WithCloudProjectID(projectID),
-            option.WithCloudRegionID(regionID),
-        )
-        ctx := context.Background()
-
-        // Step 1. List load balancers
-        page, err := client.Cloud.LoadBalancers.List(ctx, cloud.LoadBalancerListParams{})
-        if err != nil {
-            log.Fatal(err)
-        }
-        for _, lb := range page.Results {
-            fmt.Printf("  %s  %s  %s  %s\n", lb.ID, lb.Name, lb.OperatingStatus, lb.VipAddress)
-        }
-
-        // Step 2. Get load balancer details
-        lb, err := client.Cloud.LoadBalancers.Get(ctx, lbID, cloud.LoadBalancerGetParams{})
-        if err != nil {
-            log.Fatal(err)
-        }
-        fmt.Printf("flavor: %s  provisioning: %s\n", lb.Flavor.FlavorName, lb.ProvisioningStatus)
-        fmt.Printf("listeners: %d\n", len(lb.Listeners))
-
-        // Step 3. Rename the load balancer and update tags
-        tagVal := func(s string) *string { return &s }
-        updated, err := client.Cloud.LoadBalancers.Update(ctx, lbID, cloud.LoadBalancerUpdateParams{
-            Name: gcore.String("my-lb-production"),
-            Tags: cloud.TagUpdateMap{
-                "env":   tagVal("production"),
-                "owner": tagVal("platform-team"),
-            },
-        })
-        if err != nil {
-            log.Fatal(err)
-        }
-        fmt.Printf("renamed to: %s\n", updated.Name)
-    }
-    ```
-  </Tab>
-</Tabs>
-
-## Step-by-step
-
-<p>Each step below explains what the call does, which parameters matter, and what the response looks like.</p>
-
-<Accordion title="Show all steps">
-
-### Step 1. List load balancers
+## List load balancers
 
 Listing returns all load balancers in the region with their operating status, provisioning status, and VIP address.
 
@@ -609,6 +504,27 @@ Listing returns all load balancers in the region with their operating status, pr
   </Tab>
   <Tab title="Go SDK">
     ```go
+    import (
+        "context"
+        "fmt"
+        "log"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
+    regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
+    client := gcore.NewClient(
+        option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
+        option.WithCloudProjectID(projectID),
+        option.WithCloudRegionID(regionID),
+    )
+    ctx := context.Background()
+
     page, err := client.Cloud.LoadBalancers.List(ctx, cloud.LoadBalancerListParams{})
     if err != nil {
         log.Fatal(err)
@@ -625,14 +541,14 @@ Listing returns all load balancers in the region with their operating status, pr
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
-    The API returns:
+    Response:
 
     ```json
     {
       "count": 2,
       "results": [
         {
-          "id": "ae7def79-f507-4306-93be-7784edad9211",   // save as LB_ID
+          "id": "ae7def79-f507-4306-93be-7784edad9211",
           "name": "my-load-balancer",
           "vip_address": "85.234.84.175",
           "operating_status": "ONLINE",
@@ -646,13 +562,22 @@ Listing returns all load balancers in the region with their operating status, pr
   </Tab>
 </Tabs>
 
-### Step 2. Get load balancer details
+## Get load balancer details
 
 Fetching a single load balancer returns the full configuration including flavor, VRRP IPs, listener list, tags, and logging settings.
 
 <Tabs>
   <Tab title="Python SDK">
     ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(
+        api_key=os.environ["GCORE_API_KEY"],
+        cloud_project_id=int(os.environ["PROJECT_ID"]),
+        cloud_region_id=int(os.environ["REGION_ID"]),
+    )
+
     lb = client.cloud.load_balancers.get(load_balancer_id=os.environ["LB_ID"])
     print(f"name: {lb.name}")
     print(f"flavor: {lb.flavor.flavor_name}  vCPU: {lb.flavor.vcpus}  RAM: {lb.flavor.ram} MB")
@@ -685,7 +610,7 @@ Fetching a single load balancer returns the full configuration including flavor,
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
-    The API returns:
+    Response:
 
     ```json
     {
@@ -708,9 +633,9 @@ Fetching a single load balancer returns the full configuration including flavor,
   </Tab>
 </Tabs>
 
-### Step 3. Rename a load balancer and update tags
+## Rename a load balancer and update tags
 
-A single PATCH request accepts any combination of `name` and `tags` - omitted fields remain unchanged. The operation returns a task ID and completes in under 30 seconds.
+A single PATCH request accepts any combination of `name` and `tags` — omitted fields remain unchanged. The operation returns a task ID and completes in under 30 seconds.
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
@@ -720,6 +645,15 @@ A single PATCH request accepts any combination of `name` and `tags` - omitted fi
 <Tabs>
   <Tab title="Python SDK">
     ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(
+        api_key=os.environ["GCORE_API_KEY"],
+        cloud_project_id=int(os.environ["PROJECT_ID"]),
+        cloud_region_id=int(os.environ["REGION_ID"]),
+    )
+
     updated = client.cloud.load_balancers.update(
         load_balancer_id=os.environ["LB_ID"],
         name="my-lb-production",
@@ -759,15 +693,17 @@ A single PATCH request accepts any combination of `name` and `tags` - omitted fi
       }'
     ```
 
-    The API returns a task ID — poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`:
+    Response:
 
     ```json
     { "tasks": ["4acb6832-e3ef-4166-9d01-7a8b90986697"] }
     ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`.
   </Tab>
 </Tabs>
 
-### Step 4. Initiate a failover
+## Initiate a failover
 
 Failover redirects traffic to a standby load balancer instance when the active one fails or degrades. All active connections are terminated during the switchover, which takes 1-2 minutes.
 
@@ -782,11 +718,17 @@ Failover terminates all existing connections. Schedule it during a maintenance w
 <Tabs>
   <Tab title="Python SDK">
     ```python
-    t = client.cloud.load_balancers.failover(load_balancer_id=os.environ["LB_ID"])
-    task_id = t.tasks[0]
-    print(f"failover task: {task_id}")
+    import os
+    from gcore import Gcore
 
-    client.cloud.tasks.poll(task_id)
+    client = Gcore(
+        api_key=os.environ["GCORE_API_KEY"],
+        cloud_project_id=int(os.environ["PROJECT_ID"]),
+        cloud_region_id=int(os.environ["REGION_ID"]),
+    )
+
+    t = client.cloud.load_balancers.failover(load_balancer_id=os.environ["LB_ID"])
+    client.cloud.tasks.poll(t.tasks[0])
     print("Failover complete.")
     ```
   </Tab>
@@ -798,10 +740,7 @@ Failover terminates all existing connections. Schedule it during a maintenance w
     if err != nil {
         log.Fatal(err)
     }
-    taskID := t.Tasks[0]
-    fmt.Printf("failover task: %s\n", taskID)
-
-    if err = client.Cloud.Tasks.Poll(ctx, taskID); err != nil {
+    if err = client.Cloud.Tasks.Poll(ctx, t.Tasks[0]); err != nil {
         log.Fatal(err)
     }
     fmt.Println("Failover complete.")
@@ -815,15 +754,15 @@ Failover terminates all existing connections. Schedule it during a maintenance w
       -d '{}'
     ```
 
-    The API returns a task ID — poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. Failover takes 1-2 minutes:
+    Response:
 
     ```json
     { "tasks": ["d68abcfd-80ad-416a-840e-861f0c26d11c"] }
     ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. Failover takes 1-2 minutes.
   </Tab>
 </Tabs>
-
-</Accordion>
 
 ## Delete a load balancer
 
@@ -832,6 +771,15 @@ Deleting a load balancer removes it and its configuration permanently. The opera
 <Tabs>
   <Tab title="Python SDK">
     ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(
+        api_key=os.environ["GCORE_API_KEY"],
+        cloud_project_id=int(os.environ["PROJECT_ID"]),
+        cloud_region_id=int(os.environ["REGION_ID"]),
+    )
+
     client.cloud.load_balancers.delete_and_poll(load_balancer_id=os.environ["LB_ID"])
     print("Load balancer deleted.")
     ```
@@ -852,11 +800,13 @@ Deleting a load balancer removes it and its configuration permanently. The opera
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
-    The API returns a task ID — poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`:
+    Response:
 
     ```json
     { "tasks": ["89316ade-d4af-4b07-97b5-acf2e3df6148"] }
     ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`.
   </Tab>
 </Tabs>
 
