@@ -47,9 +47,9 @@ export REGION_ID="148"
 export INSTANCE_ID="your_instance_id"
 ```
 
-## Quickstart
+## List instances
 
-The scripts below retrieve the status of all Virtual Machines in a region and the status of a specific VM by ID.
+Retrieves all Virtual Machines in the project and region; the `status` field in each result reflects the current operational state.
 
 <Tabs>
   <Tab title="Python SDK">
@@ -63,19 +63,12 @@ client = Gcore(
     cloud_region_id=int(os.environ["REGION_ID"]),
 )
 
-# Step 1. List all instances and their statuses.
 for instance in client.cloud.instances.list():
     print(f"{instance.name}: {instance.status}")
-
-# Step 2. Get the status of a specific instance.
-instance = client.cloud.instances.get(instance_id=os.environ["INSTANCE_ID"])
-print(f"{instance.name}: {instance.status}")
 ```
   </Tab>
   <Tab title="Go SDK">
 ```go
-package main
-
 import (
     "context"
     "fmt"
@@ -88,62 +81,21 @@ import (
     "github.com/G-Core/gcore-go/option"
 )
 
-func main() {
-    projectID, err := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
-    if err != nil {
-        log.Fatalf("parse PROJECT_ID: %v", err)
-    }
-    regionID, err := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
-    if err != nil {
-        log.Fatalf("parse REGION_ID: %v", err)
-    }
-
-    client := gcore.NewClient(
-        option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
-        option.WithCloudProjectID(projectID),
-        option.WithCloudRegionID(regionID),
-    )
-    ctx := context.Background()
-
-    // Step 1. List all instances and their statuses.
-    page, err := client.Cloud.Instances.List(ctx, cloud.InstanceListParams{})
-    if err != nil {
-        log.Fatalf("list instances: %v", err)
-    }
-    for _, inst := range page.Results {
-        fmt.Printf("%s: %s\n", inst.Name, inst.Status)
-    }
-
-    // Step 2. Get the status of a specific instance.
-    instance, err := client.Cloud.Instances.Get(ctx, os.Getenv("INSTANCE_ID"), cloud.InstanceGetParams{})
-    if err != nil {
-        log.Fatalf("get instance: %v", err)
-    }
-    fmt.Printf("%s: %s\n", instance.Name, instance.Status)
+projectID, err := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
+if err != nil {
+    log.Fatalf("parse PROJECT_ID: %v", err)
 }
-```
-  </Tab>
-</Tabs>
+regionID, err := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
+if err != nil {
+    log.Fatalf("parse REGION_ID: %v", err)
+}
+client := gcore.NewClient(
+    option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
+    option.WithCloudProjectID(projectID),
+    option.WithCloudRegionID(regionID),
+)
+ctx := context.Background()
 
-## Step-by-step
-
-<p>Each step below explains what the call does, which parameters matter, and what the response looks like. Use this section to understand the flow or to debug a specific step.</p>
-
-<Accordion title="Show all steps">
-
-### Step 1. List all instances in the region
-
-Retrieves all Virtual Machines in the project and region; the `status` field in each result reflects the current operational state.
-
-<Tabs>
-  <Tab title="Python SDK">
-```python
-for instance in client.cloud.instances.list():
-    print(f"{instance.name}: {instance.status}")
-```
-  </Tab>
-  <Tab title="Go SDK">
-```go
 page, err := client.Cloud.Instances.List(ctx, cloud.InstanceListParams{})
 if err != nil {
     log.Fatalf("list instances: %v", err)
@@ -176,7 +128,7 @@ Response:
   </Tab>
 </Tabs>
 
-### Step 2. Get the status of a specific instance
+## Get instance details
 
 Fetches full details for a single VM; read the `status` field for the current operational state and `task_state` if a background operation is in progress.
 
@@ -215,8 +167,6 @@ Response:
 ```
   </Tab>
 </Tabs>
-
-</Accordion>
 
 ## Status values
 
