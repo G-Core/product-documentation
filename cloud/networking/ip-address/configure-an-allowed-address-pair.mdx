@@ -19,185 +19,10 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 export PROJECT_ID="{YOUR_PROJECT_ID}"
 export REGION_ID="{YOUR_REGION_ID}"
 export INSTANCE_ID="{YOUR_INSTANCE_ID}"
-export PORT_ID="{YOUR_PORT_ID}"        # private interface port ID — see Step 1
+export PORT_ID="{YOUR_PORT_ID}"        # private interface port ID
 ```
 
-## Quickstart
-
-The scripts below set two allowed address pairs on a private interface port, poll the task until it completes, verify the result, then remove all pairs.
-
-<Tabs>
-  <Tab title="Python">
-    ```python
-    import os
-    import time
-    import requests
-
-    API_KEY = os.environ["GCORE_API_KEY"]
-    PROJECT_ID = os.environ["PROJECT_ID"]
-    REGION_ID = os.environ["REGION_ID"]
-    INSTANCE_ID = os.environ["INSTANCE_ID"]
-    PORT_ID = os.environ["PORT_ID"]
-
-    session = requests.Session()
-    session.headers.update({"Authorization": f"APIKey {API_KEY}"})
-    base = f"https://api.gcore.com/cloud"
-
-    # Step 1. Set allowed address pairs
-    resp = session.put(
-        f"{base}/v2/ports/{PROJECT_ID}/{REGION_ID}/{PORT_ID}/allow_address_pairs",
-        json={
-            "allowed_address_pairs": [
-                {"ip_address": "192.168.123.20", "mac_address": "00:16:3e:f2:87:16"},
-                {"ip_address": "192.168.0.0/24"},
-            ]
-        },
-    )
-    resp.raise_for_status()
-    task_id = resp.json()["tasks"][0]
-    print(f"Task: {task_id}")
-
-    # Step 2. Poll until FINISHED
-    while True:
-        state = session.get(f"{base}/v1/tasks/{task_id}").json()["state"]
-        if state == "FINISHED":
-            break
-        time.sleep(5)
-    print("Pairs applied.")
-
-    # Step 3. Verify
-    ifaces = session.get(
-        f"{base}/v1/instances/{PROJECT_ID}/{REGION_ID}/{INSTANCE_ID}/interfaces"
-    ).json()["results"]
-    for iface in ifaces:
-        if iface["port_id"] == PORT_ID:
-            for pair in iface["allowed_address_pairs"]:
-                print(f"  ip={pair['ip_address']}  mac={pair['mac_address']}")
-
-    # Step 4. Remove all pairs
-    resp = session.put(
-        f"{base}/v2/ports/{PROJECT_ID}/{REGION_ID}/{PORT_ID}/allow_address_pairs",
-        json={"allowed_address_pairs": []},
-    )
-    resp.raise_for_status()
-    task_id = resp.json()["tasks"][0]
-    while True:
-        state = session.get(f"{base}/v1/tasks/{task_id}").json()["state"]
-        if state == "FINISHED":
-            break
-        time.sleep(5)
-    print("Pairs removed.")
-    ```
-  </Tab>
-  <Tab title="Go">
-    ```go
-    package main
-
-    import (
-        "bytes"
-        "encoding/json"
-        "fmt"
-        "io"
-        "log"
-        "net/http"
-        "os"
-        "time"
-    )
-
-    var (
-        apiKey     = os.Getenv("GCORE_API_KEY")
-        projectID  = os.Getenv("PROJECT_ID")
-        regionID   = os.Getenv("REGION_ID")
-        instanceID = os.Getenv("INSTANCE_ID")
-        portID     = os.Getenv("PORT_ID")
-        base       = "https://api.gcore.com/cloud"
-    )
-
-    func do(method, url string, body any) map[string]any {
-        var r io.Reader
-        if body != nil {
-            b, _ := json.Marshal(body)
-            r = bytes.NewReader(b)
-        }
-        req, _ := http.NewRequest(method, url, r)
-        req.Header.Set("Authorization", "APIKey "+apiKey)
-        if body != nil {
-            req.Header.Set("Content-Type", "application/json")
-        }
-        resp, err := http.DefaultClient.Do(req)
-        if err != nil {
-            log.Fatal(err)
-        }
-        defer resp.Body.Close()
-        var result map[string]any
-        json.NewDecoder(resp.Body).Decode(&result)
-        return result
-    }
-
-    func pollTask(taskID string) {
-        for {
-            r := do("GET", fmt.Sprintf("%s/v1/tasks/%s", base, taskID), nil)
-            if r["state"] == "FINISHED" {
-                return
-            }
-            time.Sleep(5 * time.Second)
-        }
-    }
-
-    func main() {
-        // Step 1. Set allowed address pairs
-        result := do("PUT",
-            fmt.Sprintf("%s/v2/ports/%s/%s/%s/allow_address_pairs", base, projectID, regionID, portID),
-            map[string]any{
-                "allowed_address_pairs": []map[string]any{
-                    {"ip_address": "192.168.123.20", "mac_address": "00:16:3e:f2:87:16"},
-                    {"ip_address": "192.168.0.0/24"},
-                },
-            },
-        )
-        tasks := result["tasks"].([]any)
-        taskID := tasks[0].(string)
-        fmt.Printf("Task: %s\n", taskID)
-
-        // Step 2. Poll until FINISHED
-        pollTask(taskID)
-        fmt.Println("Pairs applied.")
-
-        // Step 3. Verify
-        ifaces := do("GET",
-            fmt.Sprintf("%s/v1/instances/%s/%s/%s/interfaces", base, projectID, regionID, instanceID),
-            nil,
-        )
-        for _, iface := range ifaces["results"].([]any) {
-            m := iface.(map[string]any)
-            if m["port_id"] == portID {
-                for _, pair := range m["allowed_address_pairs"].([]any) {
-                    p := pair.(map[string]any)
-                    fmt.Printf("  ip=%s  mac=%s\n", p["ip_address"], p["mac_address"])
-                }
-            }
-        }
-
-        // Step 4. Remove all pairs
-        result = do("PUT",
-            fmt.Sprintf("%s/v2/ports/%s/%s/%s/allow_address_pairs", base, projectID, regionID, portID),
-            map[string]any{"allowed_address_pairs": []any{}},
-        )
-        tasks = result["tasks"].([]any)
-        pollTask(tasks[0].(string))
-        fmt.Println("Pairs removed.")
-    }
-    ```
-  </Tab>
-</Tabs>
-
-## Step-by-step
-
-<p>Each step below explains what the call does, which parameters matter, and what the response looks like. Use this section to understand the flow or to debug a specific step.</p>
-
-<Accordion title="Show all steps">
-
-### Step 1. Find the port ID of a private interface
+## Find the port ID
 
 Each VM network interface has a `port_id`. Allowed address pairs are applied per port, and only ports on private (non-external) networks support this feature.
 
@@ -222,20 +47,32 @@ Each VM network interface has a `port_id`. Allowed address pairs are applied per
   </Tab>
   <Tab title="Go">
     ```go
-    resp, _ := http.Get(
-        fmt.Sprintf(
-            "https://api.gcore.com/cloud/v1/instances/%s/%s/%s/interfaces",
-            projectID, regionID, instanceID,
-        ),
+    import (
+        "encoding/json"
+        "fmt"
+        "net/http"
+        "os"
     )
-    // add Authorization header as shown in the Quickstart do() helper
+
+    apiKey     := os.Getenv("GCORE_API_KEY")
+    projectID  := os.Getenv("PROJECT_ID")
+    regionID   := os.Getenv("REGION_ID")
+    instanceID := os.Getenv("INSTANCE_ID")
+
+    req, _ := http.NewRequest("GET",
+        fmt.Sprintf("https://api.gcore.com/cloud/v1/instances/%s/%s/%s/interfaces",
+            projectID, regionID, instanceID),
+        nil,
+    )
+    req.Header.Set("Authorization", "APIKey "+apiKey)
+    resp, _ := http.DefaultClient.Do(req)
     defer resp.Body.Close()
+
     var result map[string]any
     json.NewDecoder(resp.Body).Decode(&result)
     for _, iface := range result["results"].([]any) {
         m := iface.(map[string]any)
-        assignments := m["ip_assignments"].([]any)
-        ip := assignments[0].(map[string]any)["ip_address"]
+        ip := m["ip_assignments"].([]any)[0].(map[string]any)["ip_address"]
         fmt.Printf("port_id=%s  ip=%s\n", m["port_id"], ip)
     }
     ```
@@ -254,13 +91,11 @@ Each VM network interface has a `port_id`. Allowed address pairs are applied per
       "results": [
         {
           "port_id": "0e8c936b-37c1-4bf1-a878-9a8275899af6",
-          "network_id": "4e16750d-2656-4038-9411-3c7f06c62643",
           "ip_assignments": [{ "ip_address": "85.234.84.77" }],
           "allowed_address_pairs": []
         },
         {
           "port_id": "ecbc365f-1344-4a7d-b88a-c55864ea76ef",
-          "network_id": "1e7d9980-089a-45c9-9f38-6eaddf19c24e",
           "ip_assignments": [{ "ip_address": "10.200.1.179" }],
           "allowed_address_pairs": []
         }
@@ -270,9 +105,9 @@ Each VM network interface has a `port_id`. Allowed address pairs are applied per
   </Tab>
 </Tabs>
 
-Save the `port_id` of the private interface (the one with a private IP range such as `10.x.x.x` or `192.168.x.x`) as `PORT_ID`. The external interface with a public IP does not support allowed address pairs.
+Save the `port_id` of the private interface (the one with a private IP range such as `10.x.x.x` or `192.168.x.x`) as `PORT_ID`. The external interface with a public IP does not support allowed address pairs. The same endpoint also shows `allowed_address_pairs` on each interface, so you can use it to verify the result after setting pairs.
 
-### Step 2. Set allowed address pairs
+## Set allowed address pairs
 
 The `PUT` request replaces the entire list of allowed address pairs for the port. To add one pair without losing existing ones, include all current pairs in the request body alongside the new entry.
 
@@ -286,8 +121,16 @@ Up to 10 pairs are allowed per port.
 <Tabs>
   <Tab title="Python">
     ```python
+    import os
+    import time
+    import requests
+
+    session = requests.Session()
+    session.headers.update({"Authorization": f"APIKey {os.environ['GCORE_API_KEY']}"})
+    base = "https://api.gcore.com/cloud"
+
     resp = session.put(
-        f"https://api.gcore.com/cloud/v2/ports"
+        f"{base}/v2/ports"
         f"/{os.environ['PROJECT_ID']}/{os.environ['REGION_ID']}"
         f"/{os.environ['PORT_ID']}/allow_address_pairs",
         json={
@@ -299,23 +142,64 @@ Up to 10 pairs are allowed per port.
     )
     resp.raise_for_status()
     task_id = resp.json()["tasks"][0]
-    print(f"Task: {task_id}")
+
+    while True:
+        state = session.get(f"{base}/v1/tasks/{task_id}").json()["state"]
+        if state == "FINISHED":
+            break
+        time.sleep(5)
+    print("Pairs applied.")
     ```
   </Tab>
   <Tab title="Go">
     ```go
-    result := do("PUT",
-        fmt.Sprintf("%s/v2/ports/%s/%s/%s/allow_address_pairs", base, projectID, regionID, portID),
-        map[string]any{
-            "allowed_address_pairs": []map[string]any{
-                {"ip_address": "192.168.123.20", "mac_address": "00:16:3e:f2:87:16"},
-                {"ip_address": "192.168.0.0/24"},
-            },
-        },
+    import (
+        "bytes"
+        "encoding/json"
+        "fmt"
+        "net/http"
+        "os"
+        "time"
     )
-    tasks := result["tasks"].([]any)
-    taskID := tasks[0].(string)
-    fmt.Printf("Task: %s\n", taskID)
+
+    apiKey    := os.Getenv("GCORE_API_KEY")
+    projectID := os.Getenv("PROJECT_ID")
+    regionID  := os.Getenv("REGION_ID")
+    portID    := os.Getenv("PORT_ID")
+    base      := "https://api.gcore.com/cloud"
+
+    body, _ := json.Marshal(map[string]any{
+        "allowed_address_pairs": []map[string]any{
+            {"ip_address": "192.168.123.20", "mac_address": "00:16:3e:f2:87:16"},
+            {"ip_address": "192.168.0.0/24"},
+        },
+    })
+    req, _ := http.NewRequest("PUT",
+        fmt.Sprintf("%s/v2/ports/%s/%s/%s/allow_address_pairs", base, projectID, regionID, portID),
+        bytes.NewReader(body),
+    )
+    req.Header.Set("Authorization", "APIKey "+apiKey)
+    req.Header.Set("Content-Type", "application/json")
+    resp, _ := http.DefaultClient.Do(req)
+    defer resp.Body.Close()
+
+    var result map[string]any
+    json.NewDecoder(resp.Body).Decode(&result)
+    taskID := result["tasks"].([]any)[0].(string)
+
+    for {
+        r, _ := http.NewRequest("GET", fmt.Sprintf("%s/v1/tasks/%s", base, taskID), nil)
+        r.Header.Set("Authorization", "APIKey "+apiKey)
+        tr, _ := http.DefaultClient.Do(r)
+        var ts map[string]any
+        json.NewDecoder(tr.Body).Decode(&ts)
+        tr.Body.Close()
+        if ts["state"] == "FINISHED" {
+            break
+        }
+        time.Sleep(5 * time.Second)
+    }
+    fmt.Println("Pairs applied.")
     ```
   </Tab>
   <Tab title="curl">
@@ -345,82 +229,10 @@ Up to 10 pairs are allowed per port.
     ```
 
     Poll <code>GET&nbsp;https://api.gcore.com/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. The operation typically completes in under 10 seconds.
-
-    ```json
-    {
-      "state": "FINISHED"
-    }
-    ```
   </Tab>
 </Tabs>
 
 When `mac_address` is omitted, the API assigns the port's default MAC address to that entry automatically.
-
-### Step 3. Verify the allowed address pairs
-
-After the task completes, retrieve the interface details to confirm the pairs are active.
-
-<Tabs>
-  <Tab title="Python">
-    ```python
-    ifaces = session.get(
-        f"https://api.gcore.com/cloud/v1/instances"
-        f"/{os.environ['PROJECT_ID']}/{os.environ['REGION_ID']}"
-        f"/{os.environ['INSTANCE_ID']}/interfaces"
-    ).json()["results"]
-    for iface in ifaces:
-        if iface["port_id"] == os.environ["PORT_ID"]:
-            for pair in iface["allowed_address_pairs"]:
-                print(f"  ip={pair['ip_address']}  mac={pair['mac_address']}")
-    ```
-  </Tab>
-  <Tab title="Go">
-    ```go
-    ifaces := do("GET",
-        fmt.Sprintf("%s/v1/instances/%s/%s/%s/interfaces", base, projectID, regionID, instanceID),
-        nil,
-    )
-    for _, iface := range ifaces["results"].([]any) {
-        m := iface.(map[string]any)
-        if m["port_id"] == portID {
-            for _, pair := range m["allowed_address_pairs"].([]any) {
-                p := pair.(map[string]any)
-                fmt.Printf("  ip=%s  mac=%s\n", p["ip_address"], p["mac_address"])
-            }
-        }
-    }
-    ```
-  </Tab>
-  <Tab title="curl">
-    ```bash
-    curl "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID/$INSTANCE_ID/interfaces" \
-      -H "Authorization: APIKey $GCORE_API_KEY"
-    ```
-
-    Response (excerpt — the relevant interface):
-
-    ```json
-    {
-      "port_id": "ecbc365f-1344-4a7d-b88a-c55864ea76ef",
-      "ip_assignments": [{ "ip_address": "10.200.1.179" }],
-      "allowed_address_pairs": [
-        {
-          "ip_address": "192.168.123.20",
-          "mac_address": "00:16:3e:f2:87:16"
-        },
-        {
-          "ip_address": "192.168.0.0/24",
-          "mac_address": "fa:16:3e:8f:c8:c3"
-        }
-      ]
-    }
-    ```
-  </Tab>
-</Tabs>
-
-The second entry shows the auto-assigned MAC (`fa:16:3e:8f:c8:c3`), which is the port's own MAC address.
-
-</Accordion>
 
 ## Remove allowed address pairs
 
@@ -429,25 +241,74 @@ To remove all allowed address pairs from a port, send the same `PUT` request wit
 <Tabs>
   <Tab title="Python">
     ```python
+    import os
+    import time
+    import requests
+
+    session = requests.Session()
+    session.headers.update({"Authorization": f"APIKey {os.environ['GCORE_API_KEY']}"})
+    base = "https://api.gcore.com/cloud"
+
     resp = session.put(
-        f"https://api.gcore.com/cloud/v2/ports"
+        f"{base}/v2/ports"
         f"/{os.environ['PROJECT_ID']}/{os.environ['REGION_ID']}"
         f"/{os.environ['PORT_ID']}/allow_address_pairs",
         json={"allowed_address_pairs": []},
     )
     resp.raise_for_status()
     task_id = resp.json()["tasks"][0]
-    # poll until FINISHED (same loop as Step 2)
+
+    while True:
+        state = session.get(f"{base}/v1/tasks/{task_id}").json()["state"]
+        if state == "FINISHED":
+            break
+        time.sleep(5)
+    print("Pairs removed.")
     ```
   </Tab>
   <Tab title="Go">
     ```go
-    result := do("PUT",
-        fmt.Sprintf("%s/v2/ports/%s/%s/%s/allow_address_pairs", base, projectID, regionID, portID),
-        map[string]any{"allowed_address_pairs": []any{}},
+    import (
+        "bytes"
+        "encoding/json"
+        "fmt"
+        "net/http"
+        "os"
+        "time"
     )
-    tasks := result["tasks"].([]any)
-    pollTask(tasks[0].(string))
+
+    apiKey    := os.Getenv("GCORE_API_KEY")
+    projectID := os.Getenv("PROJECT_ID")
+    regionID  := os.Getenv("REGION_ID")
+    portID    := os.Getenv("PORT_ID")
+    base      := "https://api.gcore.com/cloud"
+
+    body, _ := json.Marshal(map[string]any{"allowed_address_pairs": []any{}})
+    req, _ := http.NewRequest("PUT",
+        fmt.Sprintf("%s/v2/ports/%s/%s/%s/allow_address_pairs", base, projectID, regionID, portID),
+        bytes.NewReader(body),
+    )
+    req.Header.Set("Authorization", "APIKey "+apiKey)
+    req.Header.Set("Content-Type", "application/json")
+    resp, _ := http.DefaultClient.Do(req)
+    defer resp.Body.Close()
+
+    var result map[string]any
+    json.NewDecoder(resp.Body).Decode(&result)
+    taskID := result["tasks"].([]any)[0].(string)
+
+    for {
+        r, _ := http.NewRequest("GET", fmt.Sprintf("%s/v1/tasks/%s", base, taskID), nil)
+        r.Header.Set("Authorization", "APIKey "+apiKey)
+        tr, _ := http.DefaultClient.Do(r)
+        var ts map[string]any
+        json.NewDecoder(tr.Body).Decode(&ts)
+        tr.Body.Close()
+        if ts["state"] == "FINISHED" {
+            break
+        }
+        time.Sleep(5 * time.Second)
+    }
     fmt.Println("Pairs removed.")
     ```
   </Tab>
@@ -466,6 +327,8 @@ To remove all allowed address pairs from a port, send the same `PUT` request wit
       "tasks": ["62f3e5e4-c0db-4473-832d-f72b001ad8c2"]
     }
     ```
+
+    Poll <code>GET&nbsp;https://api.gcore.com/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`.
   </Tab>
 </Tabs>
 
