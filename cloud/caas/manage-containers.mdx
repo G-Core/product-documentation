@@ -136,175 +136,21 @@ export REGION_ID="{YOUR_REGION_ID}"
 export CONTAINER_NAME="{YOUR_CONTAINER_NAME}"
 ```
 
-## Quickstart
+## Get container status
 
-The script below checks status, updates the container configuration, stops and restarts it, then retrieves the latest log entries.
+Returns the full container configuration along with the current status and the public HTTPS endpoint.
 
 <Tabs>
   <Tab title="Python">
 ```python
 import os
-import time
 import requests
 
 API_KEY        = os.environ["GCORE_API_KEY"]
 PROJECT_ID     = os.environ["PROJECT_ID"]
 REGION_ID      = os.environ["REGION_ID"]
 CONTAINER_NAME = os.environ["CONTAINER_NAME"]
-BASE = f"https://api.gcore.com/cloud/v1/caas/{PROJECT_ID}/{REGION_ID}/containers"
-HEADERS = {
-    "Authorization": f"APIKey {API_KEY}",
-    "Content-Type": "application/json",
-}
-
-def poll_task(task_id):
-    while True:
-        state = requests.get(
-            f"https://api.gcore.com/cloud/v1/tasks/{task_id}",
-            headers={"Authorization": f"APIKey {API_KEY}"},
-        ).json()["state"]
-        if state == "FINISHED":
-            return
-        time.sleep(5)
-
-# Get status.
-c = requests.get(f"{BASE}/{CONTAINER_NAME}", headers=HEADERS).json()
-print(f"Status: {c['status']}  Address: {c['address']}")
-
-# Update configuration.
-r = requests.patch(f"{BASE}/{CONTAINER_NAME}", headers=HEADERS, json={
-    "flavor": "160mCPU-256MiB",
-    "scale":  {"min": 1, "max": 2},
-    "envs":   {"APP_ENV": "production"},
-})
-poll_task(r.json()["tasks"][0])
-
-# Stop.
-r = requests.patch(f"{BASE}/{CONTAINER_NAME}", headers=HEADERS,
-                   json={"is_disabled": True})
-poll_task(r.json()["tasks"][0])
-
-# Start.
-r = requests.patch(f"{BASE}/{CONTAINER_NAME}", headers=HEADERS,
-                   json={"is_disabled": False})
-poll_task(r.json()["tasks"][0])
-
-# Get logs.
-for entry in requests.get(
-    f"{BASE}/{CONTAINER_NAME}/logs?limit=10", headers=HEADERS
-).json()["logs"]:
-    print(entry["time"], entry["message"])
-```
-  </Tab>
-  <Tab title="Go">
-```go
-package main
-
-import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"io"
-	"log"
-	"net/http"
-	"os"
-	"time"
-)
-
-var (
-	apiKey        = os.Getenv("GCORE_API_KEY")
-	projectID     = os.Getenv("PROJECT_ID")
-	regionID      = os.Getenv("REGION_ID")
-	containerName = os.Getenv("CONTAINER_NAME")
-	baseURL       = fmt.Sprintf(
-		"https://api.gcore.com/cloud/v1/caas/%s/%s/containers",
-		projectID, regionID,
-	)
-)
-
-func call(method, url string, body any) map[string]any {
-	var r io.Reader
-	if body != nil {
-		b, _ := json.Marshal(body)
-		r = bytes.NewReader(b)
-	}
-	req, _ := http.NewRequest(method, url, r)
-	req.Header.Set("Authorization", "APIKey "+apiKey)
-	if body != nil {
-		req.Header.Set("Content-Type", "application/json")
-	}
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer resp.Body.Close()
-	var out map[string]any
-	json.NewDecoder(resp.Body).Decode(&out)
-	return out
-}
-
-func pollTask(id string) {
-	for {
-		r := call("GET", "https://api.gcore.com/cloud/v1/tasks/"+id, nil)
-		if r["state"] == "FINISHED" {
-			return
-		}
-		time.Sleep(5 * time.Second)
-	}
-}
-
-func main() {
-	// Get status.
-	c := call("GET", baseURL+"/"+containerName, nil)
-	fmt.Printf("Status: %s  Address: %s\n", c["status"], c["address"])
-
-	// Update configuration.
-	r := call("PATCH", baseURL+"/"+containerName, map[string]any{
-		"flavor": "160mCPU-256MiB",
-		"scale":  map[string]any{"min": 1, "max": 2},
-		"envs":   map[string]any{"APP_ENV": "production"},
-	})
-	pollTask(r["tasks"].([]any)[0].(string))
-
-	// Stop.
-	r = call("PATCH", baseURL+"/"+containerName, map[string]any{"is_disabled": true})
-	pollTask(r["tasks"].([]any)[0].(string))
-
-	// Start.
-	r = call("PATCH", baseURL+"/"+containerName, map[string]any{"is_disabled": false})
-	pollTask(r["tasks"].([]any)[0].(string))
-
-	// Get logs.
-	logs := call("GET", baseURL+"/"+containerName+"/logs?limit=10", nil)
-	for _, e := range logs["logs"].([]any) {
-		entry := e.(map[string]any)
-		fmt.Println(entry["time"], entry["message"])
-	}
-}
-```
-  </Tab>
-</Tabs>
-
-## Step-by-step
-
-<p>Each step below explains what the call does, which parameters matter, and what the response looks like.</p>
-
-<Accordion title="Show all steps">
-
-### Step 1. Get container status and details
-
-This call returns the full container configuration along with the current status and the public HTTPS endpoint.
-
-<Tabs>
-  <Tab title="Python">
-```python
-import os, requests
-
-API_KEY        = os.environ["GCORE_API_KEY"]
-PROJECT_ID     = os.environ["PROJECT_ID"]
-REGION_ID      = os.environ["REGION_ID"]
-CONTAINER_NAME = os.environ["CONTAINER_NAME"]
-BASE = f"https://api.gcore.com/cloud/v1/caas/{PROJECT_ID}/{REGION_ID}/containers"
+BASE    = f"https://api.gcore.com/cloud/v1/caas/{PROJECT_ID}/{REGION_ID}/containers"
 HEADERS = {"Authorization": f"APIKey {API_KEY}"}
 
 c = requests.get(f"{BASE}/{CONTAINER_NAME}", headers=HEADERS).json()
@@ -315,6 +161,18 @@ print(f"Flavor:  {c['flavor']}")
   </Tab>
   <Tab title="Go">
 ```go
+import (
+    "encoding/json"
+    "fmt"
+    "net/http"
+    "os"
+)
+
+apiKey        := os.Getenv("GCORE_API_KEY")
+projectID     := os.Getenv("PROJECT_ID")
+regionID      := os.Getenv("REGION_ID")
+containerName := os.Getenv("CONTAINER_NAME")
+
 req, _ := http.NewRequest("GET",
     fmt.Sprintf("https://api.gcore.com/cloud/v1/caas/%s/%s/containers/%s",
         projectID, regionID, containerName), nil)
@@ -366,7 +224,7 @@ Response:
 
 The [get container](https://api.gcore.com/docs/cloud#tag/Container-as-a-Service/operation/ContainerHandler.get) endpoint also returns `deploy_status.ready`, which shows how many pods are currently running.
 
-### Step 2. Update container configuration
+## Update container configuration
 
 Send a PATCH request with any combination of updatable fields. All fields are optional — include only the ones to change.
 
@@ -382,13 +240,15 @@ Send a PATCH request with any combination of updatable fields. All fields are op
 <Tabs>
   <Tab title="Python">
 ```python
-import os, time, requests
+import os
+import time
+import requests
 
 API_KEY        = os.environ["GCORE_API_KEY"]
 PROJECT_ID     = os.environ["PROJECT_ID"]
 REGION_ID      = os.environ["REGION_ID"]
 CONTAINER_NAME = os.environ["CONTAINER_NAME"]
-BASE = f"https://api.gcore.com/cloud/v1/caas/{PROJECT_ID}/{REGION_ID}/containers"
+BASE    = f"https://api.gcore.com/cloud/v1/caas/{PROJECT_ID}/{REGION_ID}/containers"
 HEADERS = {"Authorization": f"APIKey {API_KEY}", "Content-Type": "application/json"}
 
 r = requests.patch(f"{BASE}/{CONTAINER_NAME}", headers=HEADERS, json={
@@ -397,7 +257,6 @@ r = requests.patch(f"{BASE}/{CONTAINER_NAME}", headers=HEADERS, json={
     "envs":   {"APP_ENV": "production", "LOG_LEVEL": "info"},
 })
 task_id = r.json()["tasks"][0]
-print(f"Task: {task_id}")
 
 while True:
     state = requests.get(
@@ -407,16 +266,55 @@ while True:
     if state == "FINISHED":
         break
     time.sleep(5)
+print("Updated.")
 ```
   </Tab>
   <Tab title="Go">
 ```go
-r := call("PATCH", baseURL+"/"+containerName, map[string]any{
+import (
+    "bytes"
+    "encoding/json"
+    "fmt"
+    "net/http"
+    "os"
+    "time"
+)
+
+apiKey        := os.Getenv("GCORE_API_KEY")
+projectID     := os.Getenv("PROJECT_ID")
+regionID      := os.Getenv("REGION_ID")
+containerName := os.Getenv("CONTAINER_NAME")
+url           := fmt.Sprintf("https://api.gcore.com/cloud/v1/caas/%s/%s/containers/%s",
+    projectID, regionID, containerName)
+
+body, _ := json.Marshal(map[string]any{
     "flavor": "160mCPU-256MiB",
     "scale":  map[string]any{"min": 1, "max": 2},
     "envs":   map[string]any{"APP_ENV": "production", "LOG_LEVEL": "info"},
 })
-pollTask(r["tasks"].([]any)[0].(string))
+req, _ := http.NewRequest("PATCH", url, bytes.NewReader(body))
+req.Header.Set("Authorization", "APIKey "+apiKey)
+req.Header.Set("Content-Type", "application/json")
+resp, _ := http.DefaultClient.Do(req)
+defer resp.Body.Close()
+
+var r map[string]any
+json.NewDecoder(resp.Body).Decode(&r)
+taskID := r["tasks"].([]any)[0].(string)
+
+for {
+    tr, _ := http.NewRequest("GET", "https://api.gcore.com/cloud/v1/tasks/"+taskID, nil)
+    tr.Header.Set("Authorization", "APIKey "+apiKey)
+    tResp, _ := http.DefaultClient.Do(tr)
+    var ts map[string]any
+    json.NewDecoder(tResp.Body).Decode(&ts)
+    tResp.Body.Close()
+    if ts["state"] == "FINISHED" {
+        break
+    }
+    time.Sleep(5 * time.Second)
+}
+fmt.Println("Updated.")
 ```
   </Tab>
   <Tab title="curl">
@@ -435,7 +333,7 @@ until [ "$(curl -s "https://api.gcore.com/cloud/v1/tasks/$TASK" \
 done
 ```
 
-The PATCH response contains the task ID to poll:
+Response:
 
 ```json
 {"tasks": ["43b8aefe-050f-49f6-90ec-6d9251b7091a"]}
@@ -447,22 +345,81 @@ Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `stat
 
 The complete list of patchable fields is in the [update container](https://api.gcore.com/docs/cloud#tag/Container-as-a-Service/operation/ContainerHandler.patch) endpoint spec.
 
-### Step 3. Stop the container
+## Stop a container
 
 Send `is_disabled: true` as the sole field in the PATCH body. Combining it with other fields in the same request returns a 405 error.
 
 <Tabs>
   <Tab title="Python">
 ```python
+import os
+import time
+import requests
+
+API_KEY        = os.environ["GCORE_API_KEY"]
+PROJECT_ID     = os.environ["PROJECT_ID"]
+REGION_ID      = os.environ["REGION_ID"]
+CONTAINER_NAME = os.environ["CONTAINER_NAME"]
+BASE    = f"https://api.gcore.com/cloud/v1/caas/{PROJECT_ID}/{REGION_ID}/containers"
+HEADERS = {"Authorization": f"APIKey {API_KEY}", "Content-Type": "application/json"}
+
 r = requests.patch(f"{BASE}/{CONTAINER_NAME}", headers=HEADERS,
                    json={"is_disabled": True})
-poll_task(r.json()["tasks"][0])
+task_id = r.json()["tasks"][0]
+
+while True:
+    state = requests.get(
+        f"https://api.gcore.com/cloud/v1/tasks/{task_id}",
+        headers={"Authorization": f"APIKey {API_KEY}"},
+    ).json()["state"]
+    if state == "FINISHED":
+        break
+    time.sleep(5)
+print("Container stopped.")
 ```
   </Tab>
   <Tab title="Go">
 ```go
-r = call("PATCH", baseURL+"/"+containerName, map[string]any{"is_disabled": true})
-pollTask(r["tasks"].([]any)[0].(string))
+import (
+    "bytes"
+    "encoding/json"
+    "fmt"
+    "net/http"
+    "os"
+    "time"
+)
+
+apiKey        := os.Getenv("GCORE_API_KEY")
+projectID     := os.Getenv("PROJECT_ID")
+regionID      := os.Getenv("REGION_ID")
+containerName := os.Getenv("CONTAINER_NAME")
+url           := fmt.Sprintf("https://api.gcore.com/cloud/v1/caas/%s/%s/containers/%s",
+    projectID, regionID, containerName)
+
+body, _ := json.Marshal(map[string]any{"is_disabled": true})
+req, _ := http.NewRequest("PATCH", url, bytes.NewReader(body))
+req.Header.Set("Authorization", "APIKey "+apiKey)
+req.Header.Set("Content-Type", "application/json")
+resp, _ := http.DefaultClient.Do(req)
+defer resp.Body.Close()
+
+var r map[string]any
+json.NewDecoder(resp.Body).Decode(&r)
+taskID := r["tasks"].([]any)[0].(string)
+
+for {
+    tr, _ := http.NewRequest("GET", "https://api.gcore.com/cloud/v1/tasks/"+taskID, nil)
+    tr.Header.Set("Authorization", "APIKey "+apiKey)
+    tResp, _ := http.DefaultClient.Do(tr)
+    var ts map[string]any
+    json.NewDecoder(tResp.Body).Decode(&ts)
+    tResp.Body.Close()
+    if ts["state"] == "FINISHED" {
+        break
+    }
+    time.Sleep(5 * time.Second)
+}
+fmt.Println("Container stopped.")
 ```
   </Tab>
   <Tab title="curl">
@@ -473,28 +430,93 @@ TASK=$(curl -s -X PATCH \
   -H "Content-Type: application/json" \
   -d '{"is_disabled": true}' \
   | python3 -c "import sys,json; print(json.load(sys.stdin)['tasks'][0])")
+
+until [ "$(curl -s "https://api.gcore.com/cloud/v1/tasks/$TASK" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  | python3 -c "import sys,json; print(json.load(sys.stdin)['state'])")" = "FINISHED" ]; do
+  sleep 5
+done
 ```
   </Tab>
 </Tabs>
 
 After the task finishes, the container status changes to `"Disabled"`.
 
-### Step 4. Start the container
+## Start a container
 
 Send `is_disabled: false` as the sole field in the PATCH body to bring the container back.
 
 <Tabs>
   <Tab title="Python">
 ```python
+import os
+import time
+import requests
+
+API_KEY        = os.environ["GCORE_API_KEY"]
+PROJECT_ID     = os.environ["PROJECT_ID"]
+REGION_ID      = os.environ["REGION_ID"]
+CONTAINER_NAME = os.environ["CONTAINER_NAME"]
+BASE    = f"https://api.gcore.com/cloud/v1/caas/{PROJECT_ID}/{REGION_ID}/containers"
+HEADERS = {"Authorization": f"APIKey {API_KEY}", "Content-Type": "application/json"}
+
 r = requests.patch(f"{BASE}/{CONTAINER_NAME}", headers=HEADERS,
                    json={"is_disabled": False})
-poll_task(r.json()["tasks"][0])
+task_id = r.json()["tasks"][0]
+
+while True:
+    state = requests.get(
+        f"https://api.gcore.com/cloud/v1/tasks/{task_id}",
+        headers={"Authorization": f"APIKey {API_KEY}"},
+    ).json()["state"]
+    if state == "FINISHED":
+        break
+    time.sleep(5)
+print("Container started.")
 ```
   </Tab>
   <Tab title="Go">
 ```go
-r = call("PATCH", baseURL+"/"+containerName, map[string]any{"is_disabled": false})
-pollTask(r["tasks"].([]any)[0].(string))
+import (
+    "bytes"
+    "encoding/json"
+    "fmt"
+    "net/http"
+    "os"
+    "time"
+)
+
+apiKey        := os.Getenv("GCORE_API_KEY")
+projectID     := os.Getenv("PROJECT_ID")
+regionID      := os.Getenv("REGION_ID")
+containerName := os.Getenv("CONTAINER_NAME")
+url           := fmt.Sprintf("https://api.gcore.com/cloud/v1/caas/%s/%s/containers/%s",
+    projectID, regionID, containerName)
+
+body, _ := json.Marshal(map[string]any{"is_disabled": false})
+req, _ := http.NewRequest("PATCH", url, bytes.NewReader(body))
+req.Header.Set("Authorization", "APIKey "+apiKey)
+req.Header.Set("Content-Type", "application/json")
+resp, _ := http.DefaultClient.Do(req)
+defer resp.Body.Close()
+
+var r map[string]any
+json.NewDecoder(resp.Body).Decode(&r)
+taskID := r["tasks"].([]any)[0].(string)
+
+for {
+    tr, _ := http.NewRequest("GET", "https://api.gcore.com/cloud/v1/tasks/"+taskID, nil)
+    tr.Header.Set("Authorization", "APIKey "+apiKey)
+    tResp, _ := http.DefaultClient.Do(tr)
+    var ts map[string]any
+    json.NewDecoder(tResp.Body).Decode(&ts)
+    tResp.Body.Close()
+    if ts["state"] == "FINISHED" {
+        break
+    }
+    time.Sleep(5 * time.Second)
+}
+fmt.Println("Container started.")
 ```
   </Tab>
   <Tab title="curl">
@@ -505,15 +527,21 @@ TASK=$(curl -s -X PATCH \
   -H "Content-Type: application/json" \
   -d '{"is_disabled": false}' \
   | python3 -c "import sys,json; print(json.load(sys.stdin)['tasks'][0])")
+
+until [ "$(curl -s "https://api.gcore.com/cloud/v1/tasks/$TASK" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  | python3 -c "import sys,json; print(json.load(sys.stdin)['state'])")" = "FINISHED" ]; do
+  sleep 5
+done
 ```
   </Tab>
 </Tabs>
 
 After the task finishes, the container status returns to `"Ready"`.
 
-### Step 5. Get container logs
+## Get container logs
 
-This call returns the most recent log lines from all running container pods. Logs are removed when the container is deleted.
+Returns the most recent log lines from all running container pods. Logs are removed when the container is deleted.
 
 | Parameter | Description |
 |-----------|-------------|
@@ -522,6 +550,16 @@ This call returns the most recent log lines from all running container pods. Log
 <Tabs>
   <Tab title="Python">
 ```python
+import os
+import requests
+
+API_KEY        = os.environ["GCORE_API_KEY"]
+PROJECT_ID     = os.environ["PROJECT_ID"]
+REGION_ID      = os.environ["REGION_ID"]
+CONTAINER_NAME = os.environ["CONTAINER_NAME"]
+BASE    = f"https://api.gcore.com/cloud/v1/caas/{PROJECT_ID}/{REGION_ID}/containers"
+HEADERS = {"Authorization": f"APIKey {API_KEY}"}
+
 r = requests.get(f"{BASE}/{CONTAINER_NAME}/logs?limit=20", headers=HEADERS)
 for entry in r.json()["logs"]:
     print(entry["time"], entry["message"])
@@ -529,8 +567,28 @@ for entry in r.json()["logs"]:
   </Tab>
   <Tab title="Go">
 ```go
-logs := call("GET", baseURL+"/"+containerName+"/logs?limit=20", nil)
-for _, e := range logs["logs"].([]any) {
+import (
+    "encoding/json"
+    "fmt"
+    "net/http"
+    "os"
+)
+
+apiKey        := os.Getenv("GCORE_API_KEY")
+projectID     := os.Getenv("PROJECT_ID")
+regionID      := os.Getenv("REGION_ID")
+containerName := os.Getenv("CONTAINER_NAME")
+
+req, _ := http.NewRequest("GET",
+    fmt.Sprintf("https://api.gcore.com/cloud/v1/caas/%s/%s/containers/%s/logs?limit=20",
+        projectID, regionID, containerName), nil)
+req.Header.Set("Authorization", "APIKey "+apiKey)
+resp, _ := http.DefaultClient.Do(req)
+defer resp.Body.Close()
+
+var result map[string]any
+json.NewDecoder(resp.Body).Decode(&result)
+for _, e := range result["logs"].([]any) {
     entry := e.(map[string]any)
     fmt.Println(entry["time"], entry["message"])
 }
@@ -566,27 +624,26 @@ Response:
 
 The [get logs](https://api.gcore.com/docs/cloud#tag/Container-as-a-Service/operation/LogsContainerHandler.get) endpoint supports a `limit` query parameter to control how many entries are returned.
 
-</Accordion>
-
-## Clean up
+## Delete a container
 
 Deleting a container permanently removes it and all its logs. The delete operation returns a task ID.
 
 <Tabs>
   <Tab title="Python">
 ```python
-import os, time, requests
+import os
+import time
+import requests
 
 API_KEY        = os.environ["GCORE_API_KEY"]
 PROJECT_ID     = os.environ["PROJECT_ID"]
 REGION_ID      = os.environ["REGION_ID"]
 CONTAINER_NAME = os.environ["CONTAINER_NAME"]
-BASE = f"https://api.gcore.com/cloud/v1/caas/{PROJECT_ID}/{REGION_ID}/containers"
+BASE    = f"https://api.gcore.com/cloud/v1/caas/{PROJECT_ID}/{REGION_ID}/containers"
 HEADERS = {"Authorization": f"APIKey {API_KEY}"}
 
 r = requests.delete(f"{BASE}/{CONTAINER_NAME}", headers=HEADERS)
 task_id = r.json()["tasks"][0]
-print(f"Delete task: {task_id}")
 
 while True:
     state = requests.get(
@@ -600,8 +657,42 @@ print("Container deleted.")
   </Tab>
   <Tab title="Go">
 ```go
-r := call("DELETE", baseURL+"/"+containerName, nil)
-pollTask(r["tasks"].([]any)[0].(string))
+import (
+    "encoding/json"
+    "fmt"
+    "net/http"
+    "os"
+    "time"
+)
+
+apiKey        := os.Getenv("GCORE_API_KEY")
+projectID     := os.Getenv("PROJECT_ID")
+regionID      := os.Getenv("REGION_ID")
+containerName := os.Getenv("CONTAINER_NAME")
+
+req, _ := http.NewRequest("DELETE",
+    fmt.Sprintf("https://api.gcore.com/cloud/v1/caas/%s/%s/containers/%s",
+        projectID, regionID, containerName), nil)
+req.Header.Set("Authorization", "APIKey "+apiKey)
+resp, _ := http.DefaultClient.Do(req)
+defer resp.Body.Close()
+
+var r map[string]any
+json.NewDecoder(resp.Body).Decode(&r)
+taskID := r["tasks"].([]any)[0].(string)
+
+for {
+    tr, _ := http.NewRequest("GET", "https://api.gcore.com/cloud/v1/tasks/"+taskID, nil)
+    tr.Header.Set("Authorization", "APIKey "+apiKey)
+    tResp, _ := http.DefaultClient.Do(tr)
+    var ts map[string]any
+    json.NewDecoder(tResp.Body).Decode(&ts)
+    tResp.Body.Close()
+    if ts["state"] == "FINISHED" {
+        break
+    }
+    time.Sleep(5 * time.Second)
+}
 fmt.Println("Container deleted.")
 ```
   </Tab>
@@ -611,7 +702,6 @@ TASK=$(curl -s -X DELETE \
   "https://api.gcore.com/cloud/v1/caas/$PROJECT_ID/$REGION_ID/containers/$CONTAINER_NAME" \
   -H "Authorization: APIKey $GCORE_API_KEY" \
   | python3 -c "import sys,json; print(json.load(sys.stdin)['tasks'][0])")
-echo "Delete task: $TASK"
 
 until [ "$(curl -s "https://api.gcore.com/cloud/v1/tasks/$TASK" \
   -H "Authorization: APIKey $GCORE_API_KEY" \
