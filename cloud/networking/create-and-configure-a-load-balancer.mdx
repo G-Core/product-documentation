@@ -1,7 +1,7 @@
 ---
 title: "Create and configure a load balancer"
 sidebarTitle: "Create load balancer"
-ai-navigation: Create a load balancer with an HTTP listener, pool, and backend members to distribute traffic across Virtual Machines via the Gcore REST API.
+ai-navigation: Create and configure a Load Balancer with region selection, computing configuration (vCPU, GiB), network type (Public, Private), IP family (IPv4, IPv6, Dual), reserved IP assignment, preferred connectivity method (L2 or L3), listeners, and pools via Customer Portal or REST API.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -117,7 +117,7 @@ To configure a listener:
 
 2. Enter the listener's name.
 
-3. Select the required protocol: TCP, UDP, HTTP, Terminated HTTPS, and Prometheus. You can configure multiple TLS certificates for Terminated HTTPS and Prometheus.
+3. Select the required protocol: TCP, UDP, HTTP, HTTPS, Terminated HTTPS, or Prometheus. You can configure multiple TLS certificates for Terminated HTTPS and Prometheus.
 
 4. Specify a port that the Load Balancer will listen on for incoming traffic. You can keep a default port for some protocols or specify the needed port from 1 to 65535.
 
@@ -179,13 +179,29 @@ Configure a pool - a list of VMs to which the listener will redirect incoming tr
 
 2. Select the balancing algorithm:
 
-- **Round robin** - requests are distributed across servers within a cluster one by one: the first request is sent to the first server, the second request is sent to the second server, and so on in a circle.
-- **Least Connection** - new requests are sent to a server with the fewest active connections.
-- **Source IP** - a client's IP address is used to determine which server receives the request.
+- **Round robin** — requests are distributed across servers within a cluster one by one: the first request is sent to the first server, the second request is sent to the second server, and so on in a circle.
+- **Least Connection** — new requests are sent to a server with the fewest active connections.
+- **Source IP** — a client's IP address is used to determine which server receives the request.
 
-3. A protocol will be automatically selected based on the listener's settings: the HTTP listener can communicate with servers via the HTTP protocol.
+3. Select a pool protocol — the protocol the Load Balancer uses to communicate with backend servers. The available options are: **HTTP**, **HTTPS**, **TCP**, **PROXY**, and **PROXY V2**. The pool protocol is independent from the listener protocol and should match what your backend application expects.
 
-4. Select **App Cookie** and fill in the "Cookie" field. [A special module](https://code.google.com/p/nginx-sticky-module/) creates a cookie and then uses it to forward requests to the same server.
+<Frame>
+  ![Pool protocol dropdown showing PROXY and PROXY V2 options](/images/docs/cloud/networking/create-and-configure-a-load-balancer/pool-protocol-dropdown.png)
+</Frame>
+
+   To preserve the original client IP address on the backend, select **PROXY** (Proxy Protocol v1, text-based) or **PROXY V2** (Proxy Protocol v2, binary). When either option is selected, the Load Balancer prepends a Proxy Protocol header to each TCP connection, allowing backend servers to read the real client IP instead of the Load Balancer's IP.
+
+   <Info>
+     **Info**
+
+     PROXY and PROXY V2 require the listener to use the TCP protocol. Your backend application must be configured to parse Proxy Protocol headers. Selecting PROXY or PROXY V2 on a pool whose members do not expect these headers will cause connection failures.
+   </Info>
+
+4. (Optional) Configure **Sticky Sessions** to route repeated requests from the same client to the same backend instance. In the **Sticky Sessions** dropdown, select the session persistence method:
+
+- **None** — no session persistence, requests are distributed according to the selected algorithm.
+- **App Cookie** — the Load Balancer uses an existing application cookie to route requests. Fill in the **Cookie** field with the cookie name. [A special module](https://code.google.com/p/nginx-sticky-module/) creates a cookie and then uses it to forward requests to the same server.
+- **HTTP Cookie** — the Load Balancer generates and manages its own session cookie automatically.
 
 <Frame>
   ![Pool configuration](/images/docs/cloud/networking/create-and-configure-a-load-balancer/step-4-pool-conf-lb.png)
