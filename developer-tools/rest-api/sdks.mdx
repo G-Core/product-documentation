@@ -10,6 +10,8 @@ Gcore publishes official SDKs for Python and Go, both auto-generated from the Op
 
 Package: `gcore` on [PyPI](https://pypi.org/project/gcore/) · Source: [gcore-python](https://github.com/G-Core/gcore-python) on GitHub
 
+The package supports both **synchronous** (`Gcore`) and **asynchronous** (`AsyncGcore`) usage. All examples in this section use the sync client. See [Async and sync support](#async-and-sync-support) for the async equivalent.
+
 ### Requirements
 
 Python 3.8 or higher is required. Check the installed version:
@@ -80,7 +82,23 @@ SDK methods map directly to API endpoints:
 
 ### Polling task completion
 
-The SDK includes a built-in blocking poll — no manual loop needed:
+Cloud API write operations return a task ID. The recommended approach is to use the built-in `_and_poll` convenience methods available on most resources — they create the resource and block until it is ready:
+
+```python
+instance = client.cloud.instances.create_and_poll(
+    project_id=int(os.environ["PROJECT_ID"]),
+    region_id=int(os.environ["REGION_ID"]),
+    flavor="g1-standard-2-4",
+    ssh_key_name="my-key",
+    interfaces=[{"type": "external"}],
+    volumes=[{"source": "image", "image_id": os.environ["IMAGE_ID"],
+               "size": 20, "boot_index": 0}],
+    name="my-vm",
+)
+print(instance.id)
+```
+
+When `_and_poll` is not available for a resource, use `tasks.poll()` directly as an alternative:
 
 ```python
 result = client.cloud.instances.create(
