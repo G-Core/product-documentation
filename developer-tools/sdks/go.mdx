@@ -1,12 +1,12 @@
 ---
 title: "Go SDK"
 sidebarTitle: "Go"
-ai-navigation: Official Gcore Go SDK installation, client initialization, first API calls, request parameters with param.Opt and omitzero semantics, auto-paging list iterators, error handling, retries, timeouts, and middleware support.
+ai-navigation: Official Gcore Go SDK for REST API access - installation, client initialization, param.Opt and omitzero request field semantics, auto-paging list iterators, error handling with errors.As, retries, per-request and per-retry timeouts, middleware, and accessing raw HTTP response data.
 ---
 
-Module: [`github.com/G-Core/gcore-go`](https://pkg.go.dev/github.com/G-Core/gcore-go) · Source: [gcore-go](https://github.com/G-Core/gcore-go) on GitHub
+The `gcore-go` module provides typed access to the full Gcore REST API from Go 1.22+. Generated from the OpenAPI specification using [Stainless](https://www.stainless.com/), all request structs use Go's type system with `omitzero` semantics from Go 1.24 `encoding/json`. All responses are strongly typed structs with a `.JSON` metadata field for optional field inspection.
 
-The Go SDK is generated from the OpenAPI specification using [Stainless](https://www.stainless.com/). All request structs use Go's type system with `omitzero` semantics; all responses are strongly typed structs with a `.JSON` metadata field.
+Module: [`github.com/G-Core/gcore-go`](https://pkg.go.dev/github.com/G-Core/gcore-go) · Source: [gcore-go](https://github.com/G-Core/gcore-go) on GitHub
 
 ## Requirements
 
@@ -26,7 +26,7 @@ go get -u 'github.com/G-Core/gcore-go@v0.48.0'
 
 ## Initialize the client
 
-The client reads the API key from the `GCORE_API_KEY` environment variable by default:
+`gcore.NewClient()` returns a value type (`gcore.Client`), not a pointer. The client reads the API key from the `GCORE_API_KEY` environment variable by default:
 
 ```go
 package main
@@ -70,22 +70,77 @@ for _, inst := range page.Results {
 
 ## Request parameters
 
-Required primitive fields use the tag `` `api:"required"` `` and are always serialized. Optional fields are wrapped in `param.Opt[T]` and use the provided constructors:
+Required primitive fields carry the tag `` `api:"required"` `` and are always serialized, even when zero. Optional fields are wrapped in `param.Opt[T]` and set using the provided constructors:
 
 ```go
-params := cloud.InstanceCreateParams{
-    ProjectID: projectID,                   // required int64
-    RegionID:  regionID,                    // required int64
-    Flavor:    "g1-standard-2-4",           // required string
-    Name:      gcore.String("my-vm"),       // optional string
+params := cloud.InstanceNewParams{
+    ProjectID: projectID,                   // required int64 - always serialized
+    RegionID:  regionID,                    // required int64 - always serialized
+    Flavor:    "g2-standard-2-4",           // required string
+    Name:      gcore.String("my-vm"),       // optional - use gcore.String(), gcore.Int(), etc.
 }
 ```
 
-To send `null` for an optional field:
+To send `null` for an optional field instead of omitting it:
 
 ```go
 params.Name = param.Null[string]()
 ```
+
+<Warning>
+Flavor IDs are region-specific. Run <code>client.Cloud.Instances.Flavors.List(ctx, params)</code> to see what flavors are available in a given region before creating an instance.
+</Warning>
+
+## Task polling
+
+Cloud API write operations return a task ID. Use `NewAndPoll` methods where available - they submit the request and block until the resource is ready:
+
+```go
+projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
+regionID, _  := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
+imageID := os.Getenv("IMAGE_ID")
+
+instance, err := client.Cloud.Instances.NewAndPoll(context.TODO(), cloud.InstanceNewParams{
+    ProjectID: projectID,
+    RegionID:  regionID,
+    Flavor:    "g2-standard-2-4",
+    Name:      gcore.String("my-vm"),
+    Interfaces: []cloud.InstanceNewParamsInterface{
+        {Type: cloud.InstanceNewParamsInterfaceTypeExternal},
+    },
+    Volumes: []cloud.InstanceNewParamsVolume{{
+        Source:    cloud.InstanceNewParamsVolumeSourceImage,
+        ImageID:   gcore.String(imageID),
+        Size:      gcore.Int(20),
+        BootIndex: gcore.Int(0),
+    }},
+})
+if err != nil {
+    panic(err)
+}
+fmt.Println(instance.ID)
+```
+
+When `NewAndPoll` is not available for a resource, poll with `client.Cloud.Tasks.Poll` directly:
+
+```go
+taskList, err := client.Cloud.SomeResource.New(context.TODO(), params)
+if err != nil {
+    panic(err)
+}
+
+task, err := client.Cloud.Tasks.Poll(context.TODO(), taskList.Tasks[0])
+if err != nil {
+    panic(err)
+}
+
+// task.CreatedResources is a typed struct
+fmt.Println(task.CreatedResources.Instances[0])
+```
+
+<Warning>
+`task.CreatedResources` is a typed struct. Access fields as `task.CreatedResources.Instances[0]`, not as a map. The `client.Cloud.Tasks.Get(ctx, taskID)` method takes only the task ID string - no project or region parameters.
+</Warning>
 
 ## Pagination
 
@@ -143,18 +198,17 @@ if err != nil {
 
 ## Retries and timeouts
 
-The client retries connection errors, 408, 409, 429, and 5xx errors twice by default. Requests do not have a default timeout — use `context` to set one:
+The client retries connection errors, 408, 409, 429, and 5xx errors twice by default. Requests have no default timeout - use `context` to set one:
 
 ```go
-// Set a 5-minute timeout for the request including all retries
+// Set a 5-minute budget for the request including all retries
 ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 defer cancel()
 
 client.Cloud.Projects.New(
     ctx,
     cloud.ProjectNewParams{Name: "my-project"},
-    // Per-retry timeout
-    option.WithRequestTimeout(20*time.Second),
+    option.WithRequestTimeout(20*time.Second), // per-retry timeout
 )
 ```
 
@@ -170,7 +224,7 @@ client.Cloud.Projects.New(ctx, params, option.WithMaxRetries(5))
 
 ## Middleware
 
-Apply custom middleware to all requests using `option.WithMiddleware`:
+Apply custom logic to all requests using `option.WithMiddleware`:
 
 ```go
 func Logger(req *http.Request, next option.MiddlewareNext) (*http.Response, error) {
@@ -186,9 +240,11 @@ client := gcore.NewClient(
 )
 ```
 
+When multiple middleware functions are provided, they run left to right. Client-level middleware runs before per-request middleware.
+
 ## Accessing raw response data
 
-Use `option.WithResponseInto()` to capture the raw HTTP response:
+Use `option.WithResponseInto()` to capture the raw HTTP response alongside the parsed result:
 
 ```go
 var response *http.Response
@@ -198,4 +254,5 @@ project, err := client.Cloud.Projects.New(
     option.WithResponseInto(&response),
 )
 fmt.Printf("Status: %d\n", response.StatusCode)
+fmt.Printf("Headers: %+v\n", response.Header)
 ```
