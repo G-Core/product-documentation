@@ -147,7 +147,7 @@ An environment variable stores a value in the terminal session. Instead of pasti
 
 ```bash
 # Set the variable (run this once per terminal session)
-export GCORE_API_KEY="29841_c767b250..."
+export GCORE_API_KEY="29841\$c767b250..."
 
 # Use it in any command (the shell substitutes $GCORE_API_KEY with the token value)
 curl "https://api.gcore.com/iam/clients/me" -H "Authorization: APIKey $GCORE_API_KEY"
@@ -155,6 +155,20 @@ curl "https://api.gcore.com/iam/clients/me" -H "Authorization: APIKey $GCORE_API
 
 <Warning>
 Environment variables are session-scoped — closing the terminal window loses all variables set with `export`, so the next session requires setting them again. To persist across sessions on macOS/Linux, add the `export` line to `~/.zshrc` (or `~/.bashrc`) and restart the terminal. On Windows PowerShell, add it to the profile file.
+</Warning>
+
+<Warning>
+Gcore API tokens contain a `$` character, which in bash triggers variable substitution inside double-quoted strings and silently truncates the token. Escape the `$` with a backslash when setting the variable:
+
+```bash
+# Wrong — shell expands $c767... as a variable name, truncating the token
+export GCORE_API_KEY="29841$c767b250..."
+
+# Correct — backslash escapes the dollar sign
+export GCORE_API_KEY="29841\$c767b250..."
+```
+
+When using `$GCORE_API_KEY` later in commands, no escaping is needed — the variable already holds the full token value.
 </Warning>
 
 ---
