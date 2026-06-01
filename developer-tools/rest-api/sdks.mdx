@@ -126,12 +126,17 @@ volume_id   = task.created_resources.volumes[0]
 
 ### Async and sync support
 
-The `gcore` package supports both sync and async usage:
+Use `Gcore` (sync) for scripts, CLI tools, and sequential automation. Use `AsyncGcore` when running multiple API calls concurrently or integrating with async frameworks such as FastAPI or aiohttp.
+
+Both clients have identical method signatures — the only difference is `await` and the `async with` context manager:
 
 ```python
-# Sync (default)
+# Sync
 from gcore import Gcore
+
 client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+me = client.iam.get_account_overview()
+print(me.email)
 
 # Async
 import asyncio
@@ -141,6 +146,31 @@ async def main():
     async with AsyncGcore(api_key=os.environ["GCORE_API_KEY"]) as client:
         me = await client.iam.get_account_overview()
         print(me.email)
+
+asyncio.run(main())
+```
+
+The main advantage of the async client is concurrent execution with `asyncio.gather()`. The example below creates three networks in parallel instead of sequentially:
+
+```python
+import asyncio, os
+from gcore import AsyncGcore
+
+PROJECT_ID = int(os.environ["PROJECT_ID"])
+REGION_ID  = int(os.environ["REGION_ID"])
+
+async def main():
+    async with AsyncGcore(api_key=os.environ["GCORE_API_KEY"]) as client:
+        results = await asyncio.gather(
+            client.cloud.networks.create(
+                project_id=PROJECT_ID, region_id=REGION_ID, name="net-a"),
+            client.cloud.networks.create(
+                project_id=PROJECT_ID, region_id=REGION_ID, name="net-b"),
+            client.cloud.networks.create(
+                project_id=PROJECT_ID, region_id=REGION_ID, name="net-c"),
+        )
+        for r in results:
+            print(r.tasks[0])
 
 asyncio.run(main())
 ```
