@@ -50,11 +50,16 @@ jobs:
 
       - name: Run normalize_images (own branch)
         if: github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          CHANGED_FILES: ${{ steps.changed.outputs.files }}
+          PR_IMAGES: ${{ steps.changed.outputs.images }}
         run: |
+          readarray -t files <<< "$CHANGED_FILES"
+          readarray -t images <<< "$PR_IMAGES"
           python scripts/normalize_images.py \
             --repo . \
-            --changed-files ${{ steps.changed.outputs.files }} \
-            --pr-images ${{ steps.changed.outputs.images }}
+            --changed-files "${files[@]}" \
+            --pr-images "${images[@]}"
 
       - name: Regenerate llms.txt (own branch)
         if: github.event.pull_request.head.repo.full_name == github.repository
@@ -101,11 +106,16 @@ jobs:
 
       - name: Run normalize_images (fork companion)
         if: github.event.pull_request.head.repo.full_name != github.repository
+        env:
+          CHANGED_FILES: ${{ steps.changed.outputs.files }}
+          PR_IMAGES: ${{ steps.changed.outputs.images }}
         run: |
+          readarray -t files <<< "$CHANGED_FILES"
+          readarray -t images <<< "$PR_IMAGES"
           python scripts/normalize_images.py \
             --repo . \
-            --changed-files ${{ steps.changed.outputs.files }} \
-            --pr-images ${{ steps.changed.outputs.images }}
+            --changed-files "${files[@]}" \
+            --pr-images "${images[@]}"
 
       - name: Regenerate llms.txt (fork companion)
         if: github.event.pull_request.head.repo.full_name != github.repository
