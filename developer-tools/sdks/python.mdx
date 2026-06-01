@@ -1,0 +1,232 @@
+---
+title: "Python SDK"
+sidebarTitle: "Python"
+ai-navigation: Official Gcore Python SDK installation, client initialization, first API calls, method naming patterns, task polling with create_and_poll, automatic pagination, error handling, retries, timeouts, and async usage with AsyncGcore.
+---
+
+Package: [`gcore`](https://pypi.org/project/gcore/) on PyPI · Source: [gcore-python](https://github.com/G-Core/gcore-python) on GitHub
+
+The Python SDK supports both **synchronous** (`Gcore`) and **asynchronous** ([`AsyncGcore`](#async-usage)) clients, both powered by [httpx](https://github.com/encode/httpx). All request parameters are typed as `TypedDict`; all responses are [Pydantic](https://docs.pydantic.dev) models with full editor autocomplete.
+
+## Requirements
+
+Python 3.9 or higher.
+
+```bash
+python3 --version
+```
+
+## Install
+
+```bash
+pip install gcore
+```
+
+Using a virtual environment avoids dependency conflicts:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate   # On Windows: .venv\Scripts\activate
+pip install gcore
+```
+
+## Initialize the client
+
+Always read the API key from an environment variable — never hardcode it in source files:
+
+```python
+import os
+from gcore import Gcore
+
+client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+```
+
+## First call
+
+These calls verify authentication, list projects, and list active regions with VM support:
+
+```python
+# Verify authentication
+me = client.iam.get_account_overview()
+print(me.id, me.email)
+
+# List projects
+for project in client.cloud.projects.list():
+    print(project.id, project.name)
+
+# List regions
+for region in client.cloud.regions.list():
+    if region.state == "ACTIVE" and region.has_kvm:
+        print(region.id, region.display_name)
+```
+
+## Method naming pattern
+
+SDK methods map directly to API endpoints:
+
+| Endpoint | SDK method |
+|----------|------------|
+| `GET /cloud/v1/instances/{project_id}/{region_id}` | `client.cloud.instances.list(project_id=..., region_id=...)` |
+| `POST /cloud/v2/instances/{project_id}/{region_id}` | `client.cloud.instances.create(project_id=..., region_id=..., ...)` |
+| `GET /cloud/v1/instances/{project_id}/{region_id}/{instance_id}` | `client.cloud.instances.get(instance_id=..., project_id=..., region_id=...)` |
+| `DELETE /cloud/v1/instances/{project_id}/{region_id}/{instance_id}` | `client.cloud.instances.delete(instance_id=..., project_id=..., region_id=...)` |
+| `GET /cloud/v1/flavors/{project_id}/{region_id}` | `client.cloud.instances.flavors.list(project_id=..., region_id=...)` |
+| `POST /cloud/v2/volumes/{project_id}/{region_id}/{volume_id}/attach` | `client.cloud.volumes.attach_to_instance(volume_id=..., ...)` |
+| `GET /cloud/v1/tasks/{task_id}` | `client.cloud.tasks.get(task_id)` |
+
+The [API reference](/api-reference/cloud) code samples show the exact SDK method for every endpoint.
+
+## Polling task completion
+
+Cloud API write operations return a task ID. Use `_and_poll` convenience methods where available — they create the resource and block until it is ready:
+
+```python
+instance = client.cloud.instances.create_and_poll(
+    project_id=int(os.environ["PROJECT_ID"]),
+    region_id=int(os.environ["REGION_ID"]),
+    flavor="g1-standard-2-4",
+    ssh_key_name="my-key",
+    interfaces=[{"type": "external"}],
+    volumes=[{"source": "image", "image_id": os.environ["IMAGE_ID"],
+               "size": 20, "boot_index": 0}],
+    name="my-vm",
+)
+print(instance.id)
+```
+
+When `_and_poll` is not available for a resource, use `tasks.poll()` directly:
+
+```python
+result = client.cloud.instances.create(...)
+
+task = client.cloud.tasks.poll(
+    result.tasks[0],
+    polling_interval_seconds=5,
+    polling_timeout_seconds=300,
+)
+
+instance_id = task.created_resources.instances[0]
+volume_id   = task.created_resources.volumes[0]
+```
+
+## Pagination
+
+List methods return auto-paginating iterators — no manual page requests needed:
+
+```python
+# Iterate all projects across all pages automatically
+for project in client.cloud.projects.list():
+    print(project.id, project.name)
+```
+
+For manual control:
+
+```python
+first_page = client.cloud.projects.list(limit=10, offset=0)
+for project in first_page.results:
+    print(project.id)
+
+if first_page.has_next_page():
+    next_page = first_page.get_next_page()
+```
+
+## Error handling
+
+All errors inherit from `gcore.APIError`:
+
+```python
+import gcore
+from gcore import Gcore
+
+client = Gcore()
+
+try:
+    client.cloud.projects.create(name="my-project")
+except gcore.APIConnectionError as e:
+    print("Connection failed:", e.__cause__)
+except gcore.RateLimitError:
+    print("Rate limited — back off and retry")
+except gcore.APIStatusError as e:
+    print(e.status_code, e.response)
+```
+
+| Status code | Exception |
+|-------------|-----------|
+| 400 | `BadRequestError` |
+| 401 | `AuthenticationError` |
+| 403 | `PermissionDeniedError` |
+| 404 | `NotFoundError` |
+| 429 | `RateLimitError` |
+| 5xx | `InternalServerError` |
+| — | `APIConnectionError` |
+
+## Retries and timeouts
+
+The client retries connection errors, 408, 409, 429, and 5xx errors twice by default with exponential backoff. Default timeout is 2 minutes.
+
+```python
+from gcore import Gcore
+
+# Disable retries globally
+client = Gcore(max_retries=0)
+
+# Override per request
+client.with_options(max_retries=5).cloud.projects.create(name="my-project")
+
+# Set timeout (seconds)
+client = Gcore(timeout=20.0)
+```
+
+## Async usage
+
+Use `AsyncGcore` for concurrent operations or when integrating with async frameworks such as FastAPI or aiohttp. All method signatures are identical — add `await` and use `async with`:
+
+```python
+import asyncio, os
+from gcore import AsyncGcore
+
+async def main():
+    async with AsyncGcore(api_key=os.environ["GCORE_API_KEY"]) as client:
+        me = await client.iam.get_account_overview()
+        print(me.email)
+
+asyncio.run(main())
+```
+
+The main advantage of the async client is running multiple API calls concurrently with `asyncio.gather()`:
+
+```python
+import asyncio, os
+from gcore import AsyncGcore
+
+PROJECT_ID = int(os.environ["PROJECT_ID"])
+REGION_ID  = int(os.environ["REGION_ID"])
+
+async def main():
+    async with AsyncGcore(api_key=os.environ["GCORE_API_KEY"]) as client:
+        results = await asyncio.gather(
+            client.cloud.networks.create(
+                project_id=PROJECT_ID, region_id=REGION_ID, name="net-a"),
+            client.cloud.networks.create(
+                project_id=PROJECT_ID, region_id=REGION_ID, name="net-b"),
+            client.cloud.networks.create(
+                project_id=PROJECT_ID, region_id=REGION_ID, name="net-c"),
+        )
+        for r in results:
+            print(r.tasks[0])
+
+asyncio.run(main())
+```
+
+For improved concurrency performance, install `aiohttp` as the HTTP backend:
+
+```bash
+pip install gcore[aiohttp]
+```
+
+```python
+from gcore import AsyncGcore, DefaultAioHttpClient
+
+async with AsyncGcore(http_client=DefaultAioHttpClient()) as client:
+    ...
+```

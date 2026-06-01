@@ -1,0 +1,201 @@
+---
+title: "Go SDK"
+sidebarTitle: "Go"
+ai-navigation: Official Gcore Go SDK installation, client initialization, first API calls, request parameters with param.Opt and omitzero semantics, auto-paging list iterators, error handling, retries, timeouts, and middleware support.
+---
+
+Module: [`github.com/G-Core/gcore-go`](https://pkg.go.dev/github.com/G-Core/gcore-go) · Source: [gcore-go](https://github.com/G-Core/gcore-go) on GitHub
+
+The Go SDK is generated from the OpenAPI specification using [Stainless](https://www.stainless.com/). All request structs use Go's type system with `omitzero` semantics; all responses are strongly typed structs with a `.JSON` metadata field.
+
+## Requirements
+
+Go 1.22 or higher.
+
+## Install
+
+```bash
+go get github.com/G-Core/gcore-go
+```
+
+To pin a specific version:
+
+```bash
+go get -u 'github.com/G-Core/gcore-go@v0.48.0'
+```
+
+## Initialize the client
+
+The client reads the API key from the `GCORE_API_KEY` environment variable by default:
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+
+    "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/cloud"
+    "github.com/G-Core/gcore-go/option"
+)
+
+func main() {
+    client := gcore.NewClient(
+        option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
+    )
+}
+```
+
+## First call
+
+List all instances in a project and region:
+
+```go
+projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
+regionID, _  := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
+
+page, err := client.Cloud.Instances.List(context.TODO(), cloud.InstanceListParams{
+    ProjectID: gcore.Int(projectID),
+    RegionID:  gcore.Int(regionID),
+})
+if err != nil {
+    panic(err)
+}
+for _, inst := range page.Results {
+    fmt.Println(inst.ID, inst.Name)
+}
+```
+
+## Request parameters
+
+Required primitive fields use the tag `` `api:"required"` `` and are always serialized. Optional fields are wrapped in `param.Opt[T]` and use the provided constructors:
+
+```go
+params := cloud.InstanceCreateParams{
+    ProjectID: projectID,                   // required int64
+    RegionID:  regionID,                    // required int64
+    Flavor:    "g1-standard-2-4",           // required string
+    Name:      gcore.String("my-vm"),       // optional string
+}
+```
+
+To send `null` for an optional field:
+
+```go
+params.Name = param.Null[string]()
+```
+
+## Pagination
+
+Use `ListAutoPaging()` to iterate across all pages automatically:
+
+```go
+iter := client.Cloud.Projects.ListAutoPaging(context.TODO(), cloud.ProjectListParams{
+    Limit: gcore.Int(10),
+})
+for iter.Next() {
+    project := iter.Current()
+    fmt.Printf("%+v\n", project)
+}
+if err := iter.Err(); err != nil {
+    panic(err)
+}
+```
+
+For manual page control:
+
+```go
+page, err := client.Cloud.Projects.List(context.TODO(), cloud.ProjectListParams{
+    Limit: gcore.Int(10),
+})
+for page != nil {
+    for _, project := range page.Results {
+        fmt.Println(project.ID, project.Name)
+    }
+    page, err = page.GetNextPage()
+}
+if err != nil {
+    panic(err)
+}
+```
+
+## Error handling
+
+Use `errors.As` to inspect API errors:
+
+```go
+import "errors"
+
+_, err := client.Cloud.Projects.New(context.TODO(), cloud.ProjectNewParams{
+    Name: "my-project",
+})
+if err != nil {
+    var apierr *gcore.Error
+    if errors.As(err, &apierr) {
+        fmt.Println(string(apierr.DumpRequest(true)))
+        fmt.Println(string(apierr.DumpResponse(true)))
+    }
+    panic(err)
+}
+```
+
+## Retries and timeouts
+
+The client retries connection errors, 408, 409, 429, and 5xx errors twice by default. Requests do not have a default timeout — use `context` to set one:
+
+```go
+// Set a 5-minute timeout for the request including all retries
+ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+defer cancel()
+
+client.Cloud.Projects.New(
+    ctx,
+    cloud.ProjectNewParams{Name: "my-project"},
+    // Per-retry timeout
+    option.WithRequestTimeout(20*time.Second),
+)
+```
+
+Disable or configure retries:
+
+```go
+// Globally
+client := gcore.NewClient(option.WithMaxRetries(0))
+
+// Per request
+client.Cloud.Projects.New(ctx, params, option.WithMaxRetries(5))
+```
+
+## Middleware
+
+Apply custom middleware to all requests using `option.WithMiddleware`:
+
+```go
+func Logger(req *http.Request, next option.MiddlewareNext) (*http.Response, error) {
+    start := time.Now()
+    res, err := next(req)
+    fmt.Printf("%s %s %v\n", req.Method, req.URL, time.Since(start))
+    return res, err
+}
+
+client := gcore.NewClient(
+    option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
+    option.WithMiddleware(Logger),
+)
+```
+
+## Accessing raw response data
+
+Use `option.WithResponseInto()` to capture the raw HTTP response:
+
+```go
+var response *http.Response
+project, err := client.Cloud.Projects.New(
+    context.TODO(),
+    cloud.ProjectNewParams{Name: "my-project"},
+    option.WithResponseInto(&response),
+)
+fmt.Printf("Status: %d\n", response.StatusCode)
+```
