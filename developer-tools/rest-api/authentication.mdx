@@ -1,7 +1,7 @@
 ---
 title: "Authenticate to the Gcore API"
 sidebarTitle: "Authentication"
-ai-navigation: Create a permanent API token in the Gcore Customer Portal, store it as an environment variable, verify the token, and understand token roles, expiry limits, and SSO account behavior.
+ai-navigation: Create a permanent API token in the Gcore Customer Portal, store it as an environment variable with correct dollar sign escaping, verify the token, and understand token roles, expiry limits, and SSO account behavior.
 ---
 
 Every Gcore API request requires a permanent API token. The token goes in the `Authorization` header and works across all products — Cloud, CDN, DNS, Storage, and others.
@@ -26,10 +26,24 @@ Store the token in an environment variable so it can be used in every command wi
 Open a terminal and run:
 
 ```bash
-export GCORE_API_KEY="29841_c767..."
+export GCORE_API_KEY="29841\$c767..."
 ```
 
-Replace `29841_c767...` with the actual token value copied in Step 1.
+Replace `29841\$c767...` with the actual token value copied in Step 1.
+
+<Warning>
+Gcore tokens contain a `$` character. In bash, `$` inside a double-quoted string triggers variable expansion and silently truncates the token. Escape the dollar sign with a backslash (`\$`) when setting the variable:
+
+```bash
+# Wrong — token gets truncated at the $ character
+export GCORE_API_KEY="29841$c767b250..."
+
+# Correct
+export GCORE_API_KEY="29841\$c767b250..."
+```
+
+After setting the variable, `$GCORE_API_KEY` in commands refers to the full token — no escaping needed from that point on.
+</Warning>
 
 <Info>
 Environment variables are session-scoped — they disappear when the terminal is closed, so to persist across sessions, add the `export` line to `~/.zshrc` (macOS/Linux) or the PowerShell profile file (Windows).
@@ -105,7 +119,7 @@ If the command returns an error instead, the table below shows the most common c
 | Error message | Cause | Fix |
 |---------------|-------|-----|
 | `Authentication credentials were not provided.` | No `Authorization` header sent | Check that `-H "Authorization: APIKey $GCORE_API_KEY"` is present |
-| `Bad permanent token: 29841` | Token value is incomplete | Verify the full token value was copied correctly in Step 1 |
+| `Bad permanent token: 29841` | Token was truncated at the `$` character | Escape the `$` when setting the variable: `29841\$c767...` |
 | `Token is invalid or expired` | Token was deleted or has passed its expiry date | Create a new token in the portal |
 | `Given token not valid for any token type` | Using `Bearer` instead of `APIKey` | The scheme must be `APIKey`, not `Bearer` |
 
