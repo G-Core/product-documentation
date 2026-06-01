@@ -2,8 +2,9 @@
 normalize_images.py — Normalize image naming convention in product-documentation.
 
 Convention:
-    images/docs/{product}/{article-slug}/{article-slug}-image{N}.{ext}
+    images/docs/{product}/{article-slug}/image{N}.{ext}
     where N is the 1-based order of first appearance in the corresponding MDX article.
+    The article slug is carried by the folder; the filename itself is just imageN.
 
 Actions performed:
   - Rename non-conforming images based on their position in the MDX article.
@@ -56,8 +57,8 @@ _IMAGE_REF_PATTERNS = [
     re.compile(r'href=["\']([^"\']*?/images/docs/[^"\']+)["\']'),   # href="/images/..."
 ]
 
-# Pattern matching the current convention: slug-imageN.ext
-_CONVENTION_RE = re.compile(r'^(.+)-image(\d+)(\.[^.]+)$')
+# Pattern matching the current convention: imageN.ext
+_CONVENTION_RE = re.compile(r'^image(\d+)(\.[^.]+)$')
 
 
 # ── Data ────────────────────────────────────────────────────────────────────
@@ -226,7 +227,6 @@ def compute_plan(
         mdx_rel = mdx.relative_to(repo_root)
         canonical_folder_rel = image_folder_for_mdx(mdx_rel)
         canonical_folder_abs = repo_root / canonical_folder_rel
-        article_slug = mdx.stem
 
         # Get images ordered by appearance in MDX.
         ordered_refs = build_mdx_image_order(mdx)
@@ -263,7 +263,7 @@ def compute_plan(
             if img_abs is None:
                 continue
             ext = img_abs.suffix.lower()
-            new_name = f"{article_slug}-image{idx}{ext}"
+            new_name = f"image{idx}{ext}"
             new_abs = canonical_folder_abs / new_name
             old_rel = str(img_abs.relative_to(repo_root)).replace("\\", "/")
             new_rel = str(new_abs.relative_to(repo_root)).replace("\\", "/")
