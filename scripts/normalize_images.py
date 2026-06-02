@@ -1,18 +1,15 @@
 """
-normalize_images.py — Normalize image naming convention in product-documentation.
+normalize_images.py — Enforce image folder hygiene in product-documentation.
 
 Convention:
-    images/docs/{product}/{article-slug}/image{N}.{ext}
-    where N is the 1-based order of first appearance in the corresponding MDX article.
-    The article slug is carried by the folder; the filename itself is just imageN.
+    images/docs/{product}/{article-slug}/
+    Images keep their original filenames (descriptive names chosen by the author).
 
 Actions performed:
-  - Rename non-conforming images based on their position in the MDX article.
-  - Renumber images so numbering is sequential with no gaps.
-  - Move images that belong to a different article folder based on MDX references.
+  - Move images to the canonical folder for their MDX article when misplaced.
   - Delete images not referenced by any MDX (orphaned), unless they were
     added in the current PR (--pr-images) — those get a grace period.
-  - Update all image references in MDX files after renames/moves.
+  - Update all image references in MDX files after moves.
 
 Usage:
     # Dry-run: preview all changes without writing anything
@@ -56,9 +53,6 @@ _IMAGE_REF_PATTERNS = [
     re.compile(r'src=["\']([^"\']*?/images/docs/[^"\']+)["\']'),    # src="/images/..."
     re.compile(r'href=["\']([^"\']*?/images/docs/[^"\']+)["\']'),   # href="/images/..."
 ]
-
-# Pattern matching the current convention: imageN.ext
-_CONVENTION_RE = re.compile(r'^image(\d+)(\.[^.]+)$')
 
 
 # ── Data ────────────────────────────────────────────────────────────────────
@@ -228,53 +222,28 @@ def compute_plan(
         canonical_folder_rel = image_folder_for_mdx(mdx_rel)
         canonical_folder_abs = repo_root / canonical_folder_rel
 
-        # Get images ordered by appearance in MDX.
-        ordered_refs = build_mdx_image_order(mdx)
-        # Only keep refs that fall inside the canonical folder (or current folder).
-        def _in_our_folder(ref: str) -> bool:
-            return (
-                ref.startswith(str(canonical_folder_rel).replace("\\", "/") + "/")
-                or ref.startswith(
-                    str(folder.relative_to(repo_root)).replace("\\", "/") + "/"
-                )
-            )
-        ordered_refs = [r for r in ordered_refs if _in_our_folder(r)]
-
-        # Build ordered list of actual file paths (some may not exist yet if MDX is ahead).
-        ordered_abs: list[Optional[Path]] = []
-        for ref in ordered_refs:
-            candidate = repo_root / ref
-            ordered_abs.append(candidate if candidate.exists() else None)
-
-        # Collect images in folder that are NOT in ordered_refs (orphaned or misplaced).
-        referenced_abs = {p for p in ordered_abs if p is not None}
+        # Process each image: move to canonical folder if misplaced, delete if orphaned.
         for img in images_in_folder:
             img_rel = str(img.relative_to(repo_root)).replace("\\", "/")
-            if img not in referenced_abs:
+
+            if img_rel not in ref_map:
                 if img_rel in pr_images:
-                    # Grace period: newly added, not yet in MDX — skip.
                     log.info("SKIP newly added (not yet in MDX): %s", img_rel)
                 else:
                     log.info("DELETE orphaned (unreferenced): %s", img_rel)
                     ops.append(ImageOp("delete", img, None))
-
-        # Assign canonical names based on position in article.
-        for idx, img_abs in enumerate(ordered_abs, start=1):
-            if img_abs is None:
                 continue
-            ext = img_abs.suffix.lower()
-            new_name = f"image{idx}{ext}"
-            new_abs = canonical_folder_abs / new_name
-            old_rel = str(img_abs.relative_to(repo_root)).replace("\\", "/")
+
+            # Image is referenced — move to canonical folder if needed, keeping filename.
+            new_abs = canonical_folder_abs / img.name
             new_rel = str(new_abs.relative_to(repo_root)).replace("\\", "/")
 
-            if img_abs == new_abs:
-                continue  # Already correct.
+            if img == new_abs:
+                continue  # Already in correct location.
 
-            kind = "move" if img_abs.parent != new_abs.parent else "rename"
-            log.info("%s: %s → %s", kind.upper(), old_rel, new_rel)
-            ops.append(ImageOp(kind, img_abs, new_abs))
-            rename_map[old_rel] = new_rel
+            log.info("MOVE: %s → %s", img_rel, new_rel)
+            ops.append(ImageOp("move", img, new_abs))
+            rename_map[img_rel] = new_rel
 
     return ops, rename_map
 
