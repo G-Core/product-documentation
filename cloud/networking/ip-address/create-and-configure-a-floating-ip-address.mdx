@@ -1,8 +1,13 @@
 ---
 title: "Create and configure a floating IP address"
 sidebarTitle: "Floating IP address"
-ai-navigation: Create and assign floating IP addresses to Virtual Machines, Bare Metal servers, and Load Balancers in Gcore Cloud; configure routable private subnets with enabled router gateway to forward incoming traffic while outgoing traffic uses private IP addresses.
+ai-navigation: Reserve a floating IP address in Gcore Cloud and assign it to a Virtual Machine, Bare Metal server, or Load Balancer using the Customer Portal or REST API.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
 
 ## What is a floating IP address?
 
@@ -31,7 +36,7 @@ If your instance has multiple private IPv4 addresses within a routable private s
 <Warning>
   **Warning**
 
-  Changing the subnet gateway or disabling it may cause loss of connectivity between the private IP and the Floating IP (if they exist). 
+  Changing the subnet gateway or disabling it may cause loss of connectivity between the private IP and the Floating IP (if they exist). 
 </Warning>
 
 1. Open the **Networking** section, select the required network, and navigate to your equipment's subnet settings.
@@ -127,3 +132,359 @@ In the "Floating IPs" section, click the selector next to the desired address an
 <Frame>
   ![floating-ip-12.png](/images/docs/cloud/networking/ip-address/create-and-configure-a-floating-ip-address/12392700821393.png)
 </Frame>
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+Keep services reachable even when infrastructure changes by assigning and reassigning a floating IP address to a Virtual Machine.
+
+<Info>
+A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get) and a [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get).
+</Info>
+
+Open a terminal and set these variables before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+```
+
+## Quickstart
+
+The scripts below reserve a floating IP and assign it to an existing Virtual Machine's private interface, then unassign and delete it. The VM's subnet must be [routable](/cloud/networking/create-and-manage-a-subnetwork#network-routing) for assignment to work.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    PROJECT_ID = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
+    REGION_ID = int(os.environ["GCORE_CLOUD_REGION_ID"])
+    PORT_ID = os.environ["PORT_ID"]
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+
+    # Step 1. Reserve a floating IP
+    fip = client.cloud.floating_ips.create_and_poll(
+        project_id=PROJECT_ID,
+        region_id=REGION_ID,
+    )
+    print(f"Reserved: {fip.floating_ip_address}  ID: {fip.id}  status: {fip.status}")
+
+    # Step 2. Assign to a Virtual Machine
+    fip = client.cloud.floating_ips.assign(
+        fip.id,
+        port_id=PORT_ID,
+        project_id=PROJECT_ID,
+        region_id=REGION_ID,
+    )
+    print(f"Assigned: {fip.floating_ip_address}  status: {fip.status}")
+
+    # Step 3. Unassign from the Virtual Machine
+    fip = client.cloud.floating_ips.unassign(
+        fip.id,
+        project_id=PROJECT_ID,
+        region_id=REGION_ID,
+    )
+    print(f"Unassigned: status {fip.status}")
+
+    # Step 4. Delete the floating IP
+    client.cloud.floating_ips.delete_and_poll(
+        fip.id,
+        project_id=PROJECT_ID,
+        region_id=REGION_ID,
+    )
+    print("Floating IP deleted.")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+    )
+
+    func main() {
+        portID := os.Getenv("PORT_ID")
+
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        // Step 1. Reserve a floating IP
+        fip, err := client.Cloud.FloatingIPs.NewAndPoll(ctx, cloud.FloatingIPNewParams{})
+        if err != nil {
+            log.Fatalf("create: %v", err)
+        }
+        fmt.Printf("Reserved: %s  ID: %s  status: %s\n", fip.FloatingIPAddress, fip.ID, fip.Status)
+
+        // Step 2. Assign to a Virtual Machine
+        fip, err = client.Cloud.FloatingIPs.Assign(ctx, fip.ID, cloud.FloatingIPAssignParams{
+            PortID: portID,
+        })
+        if err != nil {
+            log.Fatalf("assign: %v", err)
+        }
+        fmt.Printf("Assigned: %s  status: %s\n", fip.FloatingIPAddress, fip.Status)
+
+        // Step 3. Unassign from the Virtual Machine
+        fip, err = client.Cloud.FloatingIPs.Unassign(ctx, fip.ID, cloud.FloatingIPUnassignParams{})
+        if err != nil {
+            log.Fatalf("unassign: %v", err)
+        }
+        fmt.Printf("Unassigned: status %s\n", fip.Status)
+
+        // Step 4. Delete the floating IP
+        if err = client.Cloud.FloatingIPs.DeleteAndPoll(ctx, fip.ID, cloud.FloatingIPDeleteParams{}); err != nil {
+            log.Fatalf("delete: %v", err)
+        }
+        fmt.Println("Floating IP deleted.")
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+<p>Each step below explains what the call does, which parameters matter, and what the response looks like.</p>
+
+<Accordion title="Show all steps">
+
+### Step 1. Reserve a floating IP
+
+Allocating a floating IP reserves a public address from the region pool without attaching it to any resource.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+
+    fip = client.cloud.floating_ips.create_and_poll(
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+    print(f"ID: {fip.id}  address: {fip.floating_ip_address}  status: {fip.status}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    fip, err := client.Cloud.FloatingIPs.NewAndPoll(ctx, cloud.FloatingIPNewParams{})
+    if err != nil {
+        log.Fatalf("create: %v", err)
+    }
+    fmt.Printf("ID: %s  address: %s  status: %s\n", fip.ID, fip.FloatingIPAddress, fip.Status)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/floatingips/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{}'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["6c9d3adb-8ece-4403-af51-14b011a8332f"]
+    }
+    ```
+
+    Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`:
+
+    ```json
+    {
+      "id": "6c9d3adb-8ece-4403-af51-14b011a8332f",
+      "state": "FINISHED",
+      "created_resources": {
+        "floatingips": ["a4c44f3c-5f2c-45d2-a5f1-8c694d9a72ef"]
+      }
+    }
+    ```
+
+    Save `created_resources.floatingips[0]` as `FIP_ID`. A newly reserved floating IP has `status: DOWN` — it becomes `ACTIVE` after assignment to a Virtual Machine.
+  </Tab>
+</Tabs>
+
+### Step 2. Find the port ID of the VM's interface
+
+The port ID is the UUID of the Virtual Machine's private network interface — required for assignment in the next step.
+
+Retrieve it from the instance details:
+
+```bash
+curl "https://api.gcore.com/cloud/v1/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$INSTANCE_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+In the response, look for `addresses.{network_name}[].port_id`:
+
+```json
+{
+  "addresses": {
+    "my-private-network": [
+      {
+        "addr": "192.168.100.5",
+        "port_id": "b1e2c3d4-...",
+        "subnet_id": "a87cedcc-..."
+      }
+    ]
+  }
+}
+```
+
+Save the `port_id` value as `PORT_ID`. The VM's subnet must have **Enable router gateway** turned on — without it, the assignment succeeds but traffic does not reach the VM.
+
+### Step 3. Assign to a Virtual Machine
+
+Linking the floating IP to the port makes the address reachable from the Internet; incoming packets are forwarded to the VM's private interface while outbound traffic continues to use the private IP.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `port_id` | Yes | UUID of the VM's private network interface (from Step 2) |
+| `fixed_ip_address` | No | Specific private IP if the port has multiple addresses |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    fip = client.cloud.floating_ips.assign(
+        os.environ["FIP_ID"],
+        port_id=os.environ["PORT_ID"],
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+    print(f"status: {fip.status}  fixed_ip: {fip.fixed_ip_address}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    fip, err = client.Cloud.FloatingIPs.Assign(ctx, fip.ID, cloud.FloatingIPAssignParams{
+        PortID: os.Getenv("PORT_ID"),
+    })
+    if err != nil {
+        log.Fatalf("assign: %v", err)
+    }
+    fmt.Printf("status: %s  fixed_ip: %v\n", fip.Status, fip.FixedIPAddress)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cloud/v2/floatingips/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$FIP_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{\"port_id\": \"$PORT_ID\"}"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["8f1a2b3c-..."]
+    }
+    ```
+
+    Poll the task until `FINISHED`. When complete, the floating IP `status` changes to `ACTIVE` and `port_id` is set to the VM's interface UUID.
+  </Tab>
+</Tabs>
+
+### Step 4. Unassign from a Virtual Machine
+
+Detaching releases the floating IP from the port; the address remains reserved and available for reassignment to another resource.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    fip = client.cloud.floating_ips.unassign(
+        os.environ["FIP_ID"],
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+    print(f"status: {fip.status}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    fip, err = client.Cloud.FloatingIPs.Unassign(ctx, fip.ID, cloud.FloatingIPUnassignParams{})
+    if err != nil {
+        log.Fatalf("unassign: %v", err)
+    }
+    fmt.Printf("status: %s\n", fip.Status)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cloud/v2/floatingips/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$FIP_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"port_id": null}'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["9d2e3f4a-..."]
+    }
+    ```
+
+    Poll the task until `FINISHED`. The floating IP `status` returns to `DOWN` and `port_id` becomes `null`.
+  </Tab>
+</Tabs>
+
+</Accordion>
+
+## Clean up
+
+Deleting a floating IP releases the address and stops billing for it.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    client.cloud.floating_ips.delete_and_poll(
+        os.environ["FIP_ID"],
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+    print("Floating IP deleted.")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    if err = client.Cloud.FloatingIPs.DeleteAndPoll(ctx, fip.ID, cloud.FloatingIPDeleteParams{}); err != nil {
+        log.Fatalf("delete: %v", err)
+    }
+    fmt.Println("Floating IP deleted.")
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/cloud/v1/floatingips/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$FIP_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["0bef145b-f0f2-4070-9231-dc6fdcbf570b"]
+    }
+    ```
+
+    Poll the task until `state` is `FINISHED`. The floating IP is permanently removed and no longer billed.
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
