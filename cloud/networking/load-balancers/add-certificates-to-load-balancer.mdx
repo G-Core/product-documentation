@@ -1,18 +1,23 @@
 ---
 title: Add TLS certificates to a load balancer
 sidebarTitle: Add TLS certificates to a load balancer
-ai-navigation: Configure multiple TLS certificates on Gcore Load Balancer listeners using Server Name Indication (SNI) to serve different certificates per domain; add certificates to Secrets Manager, then attach them to Terminated HTTPS or Prometheus protocol listeners during Load Balancer creation or modification.
+ai-navigation: Upload TLS certificates to Gcore Secrets Manager and attach them to TERMINATED HTTPS load balancer listeners to enable SNI-based multi-domain termination; create listeners with a default certificate and add per-domain SNI certificates via the REST API.
 ---
 
-You can configure multiple TLS (Transport Layer Security) certificates for a single Load Balancer, which allows you to host several secure websites on a single IP address. 
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-Instead of configuring separate Load Balancers for each website, you can configure just one Load Balancer and add multiple TLS certificates to it. The Load Balancer will serve the correct certificate based on the requested domain name, and everything will be managed in one place. 
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
+
+You can configure multiple TLS (Transport Layer Security) certificates for a single Load Balancer, which allows you to host several secure websites on a single IP address.
+
+Instead of configuring separate Load Balancers for each website, you can configure just one Load Balancer and add multiple TLS certificates to it. The Load Balancer will serve the correct certificate based on the requested domain name, and everything will be managed in one place.
 
 ## How it works
 
-Our listeners support Server Name Indication (SNI) extension to handle multiple TLS certificates. Based on the SNI information provided by the client, the listener selects the appropriate TLS certificate for encrypting the connection. Once the TLS connection is terminated at the listener, the Load Balancer inspects the decrypted traffic and routes it to the proper server. 
+Our listeners support Server Name Indication (SNI) extension to handle multiple TLS certificates. Based on the SNI information provided by the client, the listener selects the appropriate TLS certificate for encrypting the connection. Once the TLS connection is terminated at the listener, the Load Balancer inspects the decrypted traffic and routes it to the proper server.
 
-Each listener can also be configured with its own TLS certificate, corresponding to a specific hostname or domain. 
+Each listener can also be configured with its own TLS certificate, corresponding to a specific hostname or domain.
 
 ## Add multiple certificates
 
@@ -20,11 +25,11 @@ You can add multiple certificates to listeners that use the Terminated HTTPS and
 
 ### 1\. Add certificates to the Secrets Manager
 
-To get started, you need to add the required certificates to Gcore Secrets Manager. If you don't have any certificates created, To get started, you need to add the required certificates to Gcore Secrets Manager. If you don't have any certificates created, follow the instructions from our [guide on configuring secrets for HTTPS Load Balancers](/cloud/secrets-manager/upload-a-pkcs12-file). 
+To get started, you need to add the required certificates to Gcore Secrets Manager. If you don't have any certificates created, To get started, you need to add the required certificates to Gcore Secrets Manager. If you don't have any certificates created, follow the instructions from our [guide on configuring secrets for HTTPS Load Balancers](/cloud/secrets-manager/upload-a-pkcs12-file).
 
 ### 2\. Add certificates to a listener
 
-After you configure the certificates, you need to add them to the relevant listener. This can be done during Load Balancer creation or in the settings of an existing Load Balancer. 
+After you configure the certificates, you need to add them to the relevant listener. This can be done during Load Balancer creation or in the settings of an existing Load Balancer.
 
 <Info>
 **Info**
@@ -34,83 +39,672 @@ You can't delete a secret that's being used by a Load Balancer's listener. This 
 
 <Tabs>
   <Tab title="During Load Balancer creation">
-    Create a new Load Balancer [according to the instructions](/cloud/networking/create-and-configure-a-load-balancer). In step 5, configure a new listener as follows: 
+    Create a new Load Balancer [according to the instructions](/cloud/networking/create-and-configure-a-load-balancer). In step 5, configure a new listener as follows:
 
     1\. Give your listener a name.
 
-    2\. Select a protocol with the supported TLS encryption: **Terminated HTTPS** or **Prometheus**. 
+    2\. Select a protocol with the supported TLS encryption: **Terminated HTTPS** or **Prometheus**.
 
-    3\. Use a default port or specify a custom port from 1 to 65535. 
+    3\. Use a default port or specify a custom port from 1 to 65535.
 
-    <Frame>![Create a listener dialog](/images/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/add-certificates-to-load-balancer-image1.png)</Frame>
+    <Frame>![Create a listener dialog](/images/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/add-listener-name-port.png)</Frame>
 
     4\. (Optional) To identify the origin of the user's IP address connecting to a web server via a Load balancer, enable the **Add headers X-Forwarded-For, X-Forwarded-Port, X-Forwarded-Proto to requests** toggle.
 
-    5\. Choose the default TLS Certificate. It's the main certificate that will be used when there's no configured certificate for a domain. 
+    5\. Choose the default TLS Certificate. It's the main certificate that will be used when there's no configured certificate for a domain.
 
-    6\. Select the CNI Certificates stored in the Secret Manager. 
+    6\. Select the CNI Certificates stored in the Secret Manager.
 
     7\. Set the connection limit - a maximum number of simultaneous connections that can be handled by the listener.
 
-    <Frame>![Create a listener dialog](/images/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/add-certificates-to-load-balancer-image2.png)</Frame>
+    <Frame>![Create a listener dialog](/images/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/add-listener-headers-cni.png)</Frame>
 
-    8\. (Optional) Add allowed CIDR ranges to define which IP addresses can access your content. All IP addresses that don't belong to the specified range will be denied access. 
+    8\. (Optional) Add allowed CIDR ranges to define which IP addresses can access your content. All IP addresses that don't belong to the specified range will be denied access.
 
-    9\. (Optional) Configure Basic Authentication for HTTP traffic to protect your resource from unauthorized access. Click **Add user** to specify who can access your resource only by logging in with the following credentials: 
+    9\. (Optional) Configure Basic Authentication for HTTP traffic to protect your resource from unauthorized access. Click **Add user** to specify who can access your resource only by logging in with the following credentials:
 
-      * **Enter username** : specify a username that needs to be entered on the login screen. 
+      * **Enter username** : specify a username that needs to be entered on the login screen.
 
       * **Password** : specify a password or provide an encrypted password.
 
 
-    10\. Click **Create Listener**. 
+    10\. Click **Create Listener**.
 
-    After you configure the listener, proceed with the rest of the steps described in the [Create a Load Balancer](/cloud/networking/create-and-configure-a-load-balancer) guide to finish the balancer's creation. 
+    After you configure the listener, proceed with the rest of the steps described in the [Create a Load Balancer](/cloud/networking/create-and-configure-a-load-balancer) guide to finish the balancer's creation.
 
-    <Frame>![Create a listener dialog](/images/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/add-certificates-to-load-balancer-image3.png)</Frame>
+    <Frame>![Create a listener dialog](/images/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/create-listener.png)</Frame>
   </Tab>
   <Tab title="From the Load Balancer settings">
-    If you already have a Load Balancer and don't want to create a new one to terminate SSL connections, update the existing Load Balancer as follows: 
+    If you already have a Load Balancer and don't want to create a new one to terminate SSL connections, update the existing Load Balancer as follows:
 
-    1\. In the Gcore Customer Portal, navigate to the **Cloud** page and click **Networking**. 
+    1\. In the Gcore Customer Portal, navigate to the **Cloud** page and click **Networking**.
 
     2\. Open the **Load Balancers** page.
 
-    <Frame>![Load Balancers page in Customer Portal](/images/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/add-certificates-to-load-balancer-image4.png)</Frame>
+    <Frame>![Load Balancers page in Customer Portal](/images/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/load-balancers-page.png)</Frame>
 
-    3\. Find the Load Balancer you want to configure and click its name to open it. 
+    3\. Find the Load Balancer you want to configure and click its name to open it.
 
-    4\. Navigate to the **Listeners** tab and click **Add listener**. 
+    4\. Navigate to the **Listeners** tab and click **Add listener**.
 
-    <Frame>![Listener tab in the Load Balancer settings](/images/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/add-certificates-to-load-balancer-image5.png)</Frame>
+    <Frame>![Listener tab in the Load Balancer settings](/images/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/listeners-tab.png)</Frame>
 
     5\. To configure a new listener, follow the same instructions as in the "Add certificates during Load Balancer creation" step.
   </Tab>
 </Tabs>
 
-
-
 ## Create an encrypted password
 
-When configuring basic authentication for HTTP traffic, you have the option to specify an encrypted password for a user. 
+When configuring basic authentication for HTTP traffic, you have the option to specify an encrypted password for a user.
 
-You can use any preferred encryption method or generate a hashed password using the [MKPasswd](https://www.unix.com/man-page/linux/1/mkpasswd/) utility. 
+You can use any preferred encryption method or generate a hashed password using the [MKPasswd](https://www.unix.com/man-page/linux/1/mkpasswd/) utility.
 
-To generate a password hash using a dockerized version of MKPasswd: 
+To generate a password hash using a dockerized version of MKPasswd:
 
-1\. Check the available encryption types: 
+1\. Check the available encryption types:
 
 ```sh
-docker run --rm yardalgedal/mkpasswd -m help 
+docker run --rm yardalgedal/mkpasswd -m help
  ```
 
-2\. Choose your preferred encryption method and generate the password hash. For example, to create a password hash using the bcrypt method, run: 
+2\. Choose your preferred encryption method and generate the password hash. For example, to create a password hash using the bcrypt method, run:
 
 ```sh
-docker run --rm yardalgedal/mkpasswd -m bcrypt mypassword 
+docker run --rm yardalgedal/mkpasswd -m bcrypt mypassword
  ```
 
 3\. Insert the hash into the **Encrypted password** field:
 
 
-<Frame>![Encrypted password in listener settings](/images/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/add-certificates-to-load-balancer-image6.png)</Frame>
+<Frame>![Encrypted password in listener settings](/images/docs/cloud/networking/load-balancers/add-certificates-to-load-balancer/encrypted-password-field.png)</Frame>
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+TLS termination on a load balancer requires two resources: a certificate stored in Secrets Manager and a `TERMINATED_HTTPS` listener that references it. A listener accepts one default certificate and any number of SNI certificates - the load balancer selects the correct certificate for each connection based on the domain name in the TLS handshake.
+
+<Info>
+A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get) and [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get).
+</Info>
+
+Open a bash terminal and set these as environment variables before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export LB_ID="{YOUR_LOAD_BALANCER_ID}"
+```
+
+<Info>
+**LB\_ID** is the UUID of an existing load balancer. To create one or find its ID, see [Create and configure a load balancer](/cloud/networking/create-and-configure-a-load-balancer).
+</Info>
+
+## Quickstart
+
+The scripts below upload a TLS certificate to Secrets Manager and create a `TERMINATED_HTTPS` listener on an existing load balancer, then attach a second SNI certificate for an additional domain.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+    from gcore.types.cloud import secret_upload_tls_certificate_params
+
+    client = Gcore()
+    lb_id = os.environ["LB_ID"]
+
+    # Step 1. Upload the default TLS certificate to Secrets Manager
+    cert_pem = open("/path/to/certificate.pem").read()
+    key_pem = open("/path/to/private-key.pem").read()
+    chain_pem = open("/path/to/chain.pem").read()
+
+    secret = client.cloud.secrets.upload_tls_certificate_and_poll(
+        name="my-lb-cert",
+        payload=secret_upload_tls_certificate_params.Payload(
+            certificate=cert_pem,
+            private_key=key_pem,
+            certificate_chain=chain_pem,
+        ),
+    )
+    print(f"Secret: {secret.id}  status: {secret.status}")
+
+    # Step 2. Create a TERMINATED_HTTPS listener with the certificate
+    listener = client.cloud.load_balancers.listeners.create_and_poll(
+        load_balancer_id=lb_id,
+        name="my-https-listener",
+        protocol="TERMINATED_HTTPS",
+        protocol_port=443,
+        secret_id=secret.id,
+    )
+    print(f"Listener: {listener.id}  protocol: {listener.protocol}  port: {listener.protocol_port}")
+
+    # Step 3. Upload an SNI certificate for an additional domain
+    sni_cert_pem = open("/path/to/sni-certificate.pem").read()
+    sni_key_pem = open("/path/to/sni-private-key.pem").read()
+    sni_chain_pem = open("/path/to/sni-chain.pem").read()
+
+    sni_secret = client.cloud.secrets.upload_tls_certificate_and_poll(
+        name="my-sni-cert",
+        payload=secret_upload_tls_certificate_params.Payload(
+            certificate=sni_cert_pem,
+            private_key=sni_key_pem,
+            certificate_chain=sni_chain_pem,
+        ),
+    )
+    print(f"SNI secret: {sni_secret.id}")
+
+    # Step 4. Add the SNI certificate to the listener
+    tasks = client.cloud.load_balancers.listeners.update(
+        listener_id=listener.id,
+        sni_secret_id=[sni_secret.id],
+    )
+    task = client.cloud.tasks.poll(tasks.tasks[0])
+    print(f"SNI update: {task.state}")
+
+    updated = client.cloud.load_balancers.listeners.get(listener_id=listener.id)
+    print(f"SNI certificates: {updated.sni_secret_id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+    	"context"
+    	"fmt"
+    	"log"
+    	"os"
+    	gcore "github.com/G-Core/gcore-go"
+    	"github.com/G-Core/gcore-go/cloud"
+    )
+
+    func readFile(path string) string {
+    	data, err := os.ReadFile(path)
+    	if err != nil {
+    		log.Fatal(err)
+    	}
+    	return string(data)
+    }
+
+    func main() {
+    	lbID := os.Getenv("LB_ID")
+
+    	client := gcore.NewClient()
+    	ctx := context.Background()
+
+    	// Step 1. Upload the default TLS certificate to Secrets Manager
+    	secret, err := client.Cloud.Secrets.UploadTlsCertificateAndPoll(ctx, cloud.SecretUploadTlsCertificateParams{
+    		Name: "my-lb-cert",
+    		Payload: cloud.SecretUploadTlsCertificateParamsPayload{
+    			Certificate:      readFile("/path/to/certificate.pem"),
+    			PrivateKey:       readFile("/path/to/private-key.pem"),
+    			CertificateChain: readFile("/path/to/chain.pem"),
+    		},
+    	})
+    	if err != nil {
+    		log.Fatal(err)
+    	}
+    	fmt.Printf("Secret: %s  status: %s\n", secret.ID, secret.Status)
+
+    	// Step 2. Create a TERMINATED_HTTPS listener with the certificate
+    	listener, err := client.Cloud.LoadBalancers.Listeners.NewAndPoll(ctx, cloud.LoadBalancerListenerNewParams{
+    		LoadBalancerID: lbID,
+    		Name:           "my-https-listener",
+    		Protocol:       cloud.LbListenerProtocolTerminatedHTTPS,
+    		ProtocolPort:   443,
+    		SecretID:       cloud.LoadBalancerListenerNewParamsSecretID(secret.ID),
+    	})
+    	if err != nil {
+    		log.Fatal(err)
+    	}
+    	fmt.Printf("Listener: %s  protocol: %s  port: %d\n",
+    		listener.ID, listener.Protocol, listener.ProtocolPort)
+
+    	// Step 3. Upload an SNI certificate for an additional domain
+    	sniSecret, err := client.Cloud.Secrets.UploadTlsCertificateAndPoll(ctx, cloud.SecretUploadTlsCertificateParams{
+    		Name: "my-sni-cert",
+    		Payload: cloud.SecretUploadTlsCertificateParamsPayload{
+    			Certificate:      readFile("/path/to/sni-certificate.pem"),
+    			PrivateKey:       readFile("/path/to/sni-private-key.pem"),
+    			CertificateChain: readFile("/path/to/sni-chain.pem"),
+    		},
+    	})
+    	if err != nil {
+    		log.Fatal(err)
+    	}
+    	fmt.Printf("SNI secret: %s\n", sniSecret.ID)
+
+    	// Step 4. Add the SNI certificate to the listener
+    	updated, err := client.Cloud.LoadBalancers.Listeners.UpdateAndPoll(ctx, listener.ID, cloud.LoadBalancerListenerUpdateParams{
+    		SniSecretID: []string{sniSecret.ID},
+    	})
+    	if err != nil {
+    		log.Fatal(err)
+    	}
+    	fmt.Printf("SNI certificates: %v\n", updated.SniSecretID)
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+<p>Each step below explains what the call does, which parameters matter, and what the response looks like.</p>
+
+<Accordion title="Show all steps">
+
+### Step 1. Upload a TLS certificate to Secrets Manager
+
+Certificates are stored in Gcore Secrets Manager before being referenced by a load balancer listener. Each certificate requires three PEM-encoded fields: the certificate itself, the private key, and the certificate chain.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Display name for the certificate in Secrets Manager |
+| `payload.certificate` | Yes | SSL certificate in PEM format |
+| `payload.private_key` | Yes | Private key in PEM format |
+| `payload.certificate_chain` | Yes | Intermediate and root CA certificates in PEM format; use the certificate itself for self-signed certs |
+| `expiration` | No | ISO 8601 datetime after which the secret expires; omit for no expiration |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+    from gcore.types.cloud import secret_upload_tls_certificate_params
+
+    client = Gcore()
+
+    cert_pem = open("/path/to/certificate.pem").read()
+    key_pem = open("/path/to/private-key.pem").read()
+    chain_pem = open("/path/to/chain.pem").read()
+
+    secret = client.cloud.secrets.upload_tls_certificate_and_poll(
+        name="my-lb-cert",
+        expiration="2030-12-31T23:59:59",
+        payload=secret_upload_tls_certificate_params.Payload(
+            certificate=cert_pem,
+            private_key=key_pem,
+            certificate_chain=chain_pem,
+        ),
+    )
+    print(f"Secret ID: {secret.id}  status: {secret.status}  type: {secret.secret_type}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    secret, err := client.Cloud.Secrets.UploadTlsCertificateAndPoll(ctx, cloud.SecretUploadTlsCertificateParams{
+    	Name: "my-lb-cert",
+    	Payload: cloud.SecretUploadTlsCertificateParamsPayload{
+    		Certificate:      readFile("/path/to/certificate.pem"),
+    		PrivateKey:       readFile("/path/to/private-key.pem"),
+    		CertificateChain: readFile("/path/to/chain.pem"),
+    	},
+    })
+    if err != nil {
+    	log.Fatal(err)
+    }
+    fmt.Printf("Secret ID: %s  status: %s\n", secret.ID, secret.Status)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # Read PEM files and escape newlines for JSON
+    CERT_PEM=$(awk '{printf "%s\\n", $0}' /path/to/certificate.pem)
+    KEY_PEM=$(awk '{printf "%s\\n", $0}' /path/to/private-key.pem)
+    CHAIN_PEM=$(awk '{printf "%s\\n", $0}' /path/to/chain.pem)
+
+    curl -X POST "https://api.gcore.com/cloud/v2/secrets/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{
+        \"name\": \"my-lb-cert\",
+        \"expiration\": \"2030-12-31T23:59:59\",
+        \"payload\": {
+          \"certificate\": \"$CERT_PEM\",
+          \"private_key\": \"$KEY_PEM\",
+          \"certificate_chain\": \"$CHAIN_PEM\"
+        }
+      }"
+    ```
+
+    The API returns a task ID:
+
+    ```json
+    {
+      "tasks": ["9d5289af-7a66-4419-ae20-8c0521b7f145"]   // save as TASK_ID
+    }
+    ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`:
+
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/tasks/$TASK_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    When complete:
+
+    ```json
+    {
+      "state": "FINISHED",
+      "created_resources": {
+        "secrets": ["04c518a0-738e-4fc6-b045-32a779ef83b3"]   // save as SECRET_ID
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+The [secrets API](https://api.gcore.com/docs/cloud#tag/Secrets/operation/SecretsViewSetV2.post) confirms creation with `status: ACTIVE` and `secret_type: certificate`.
+
+### Step 2. List certificates in Secrets Manager
+
+Listing secrets returns all certificates stored in the current project and region.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    page = client.cloud.secrets.list()
+    for s in page.results:
+        print(f"  {s.id}  {s.name}  {s.status}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    secrets, err := client.Cloud.Secrets.List(ctx, cloud.SecretListParams{})
+    if err != nil {
+    	log.Fatal(err)
+    }
+    for _, s := range secrets.Results {
+    	fmt.Printf("  %s  %s  %s\n", s.ID, s.Name, s.Status)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/secrets/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    The API returns:
+
+    ```json
+    {
+      "count": 1,
+      "results": [
+        {
+          "id": "04c518a0-738e-4fc6-b045-32a779ef83b3",
+          "name": "my-lb-cert",
+          "status": "ACTIVE",
+          "secret_type": "certificate",
+          "created": "2026-05-30T19:06:26",
+          "expiration": "2030-12-31T23:59:59"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+The [secrets API](https://api.gcore.com/docs/cloud#tag/Secrets/operation/SecretListViewSet.get) returns all secrets regardless of type; filter by `secret_type: certificate` for TLS certificates.
+
+### Step 3. Create a listener with the TLS certificate
+
+A `TERMINATED_HTTPS` listener decrypts TLS traffic at the load balancer and forwards plain HTTP to backend pool members. The `secret_id` sets the default certificate - the one used when no SNI match is found.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `load_balancer_id` | Yes | ID of the existing load balancer |
+| `name` | Yes | Listener name |
+| `protocol` | Yes | Must be `TERMINATED_HTTPS` for TLS termination |
+| `protocol_port` | Yes | Port number (1-65535); use `443` for standard HTTPS |
+| `secret_id` | Yes | ID of the default TLS certificate from Secrets Manager |
+| `sni_secret_id` | No | List of additional certificate IDs for SNI-based selection |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    listener = client.cloud.load_balancers.listeners.create_and_poll(
+        load_balancer_id=lb_id,
+        name="my-https-listener",
+        protocol="TERMINATED_HTTPS",
+        protocol_port=443,
+        secret_id=secret.id,
+    )
+    print(f"Listener: {listener.id}  status: {listener.provisioning_status}")
+    print(f"Default certificate: {listener.secret_id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    listener, err := client.Cloud.LoadBalancers.Listeners.NewAndPoll(ctx, cloud.LoadBalancerListenerNewParams{
+    	LoadBalancerID: lbID,
+    	Name:           "my-https-listener",
+    	Protocol:       cloud.LbListenerProtocolTerminatedHTTPS,
+    	ProtocolPort:   443,
+    	SecretID:       cloud.LoadBalancerListenerNewParamsSecretID(secret.ID),
+    })
+    if err != nil {
+    	log.Fatal(err)
+    }
+    fmt.Printf("Listener: %s  status: %s\n", listener.ID, listener.ProvisioningStatus)
+    fmt.Printf("Default certificate: %s\n", listener.SecretID)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/lblisteners/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{
+        \"load_balancer_id\": \"$LB_ID\",
+        \"name\": \"my-https-listener\",
+        \"protocol\": \"TERMINATED_HTTPS\",
+        \"protocol_port\": 443,
+        \"secret_id\": \"$SECRET_ID\"
+      }"
+    ```
+
+    The API returns a task ID:
+
+    ```json
+    {
+      "tasks": ["4cd68984-9e6b-4633-bc69-c862cca8abf7"]   // save as TASK_ID
+    }
+    ```
+
+    Poll every 5 seconds until `state` is `FINISHED`. The completed task contains the new listener ID:
+
+    ```json
+    {
+      "state": "FINISHED",
+      "created_resources": {
+        "listeners": ["38db0600-8173-4386-8cf6-3ab143bbf1c8"]   // save as LISTENER_ID
+      }
+    }
+    ```
+
+    Verify the result:
+
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/lblisteners/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$LISTENER_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    ```json
+    {
+      "id": "38db0600-8173-4386-8cf6-3ab143bbf1c8",
+      "name": "my-https-listener",
+      "protocol": "TERMINATED_HTTPS",
+      "protocol_port": 443,
+      "secret_id": "04c518a0-738e-4fc6-b045-32a779ef83b3",
+      "sni_secret_id": [],
+      "provisioning_status": "ACTIVE",
+      "operating_status": "ONLINE"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+The [create listener](https://api.gcore.com/docs/cloud#tag/Load-Balancer-Listeners/operation/LoadBalancerListenerViewSet.post) endpoint also supports the `PROMETHEUS` protocol for TLS-secured metrics endpoints.
+
+### Step 4. Add SNI certificates to an existing listener
+
+SNI certificates let a single listener serve different TLS certificates for different domain names. The load balancer matches the domain in the client's TLS handshake against the Subject Alternative Names (SANs) of each SNI certificate and serves the matching one; the default certificate from `secret_id` is used as fallback.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `sni_secret_id` | Yes | List of certificate IDs to use for SNI matching; replaces the current SNI list |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    # Upload the SNI certificate first (same as Step 1)
+    sni_secret = client.cloud.secrets.upload_tls_certificate_and_poll(
+        name="my-sni-cert",
+        payload=secret_upload_tls_certificate_params.Payload(
+            certificate=open("/path/to/sni-certificate.pem").read(),
+            private_key=open("/path/to/sni-private-key.pem").read(),
+            certificate_chain=open("/path/to/sni-chain.pem").read(),
+        ),
+    )
+
+    tasks = client.cloud.load_balancers.listeners.update(
+        listener_id=listener.id,
+        sni_secret_id=[sni_secret.id],
+    )
+    task = client.cloud.tasks.poll(tasks.tasks[0])
+    print(f"Update status: {task.state}")
+
+    updated = client.cloud.load_balancers.listeners.get(listener_id=listener.id)
+    print(f"SNI certificates: {updated.sni_secret_id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    // Upload the SNI certificate first (same as Step 1)
+    sniSecret, err := client.Cloud.Secrets.UploadTlsCertificateAndPoll(ctx, cloud.SecretUploadTlsCertificateParams{
+    	Name: "my-sni-cert",
+    	Payload: cloud.SecretUploadTlsCertificateParamsPayload{
+    		Certificate:      readFile("/path/to/sni-certificate.pem"),
+    		PrivateKey:       readFile("/path/to/sni-private-key.pem"),
+    		CertificateChain: readFile("/path/to/sni-chain.pem"),
+    	},
+    })
+    if err != nil {
+    	log.Fatal(err)
+    }
+
+    updated, err := client.Cloud.LoadBalancers.Listeners.UpdateAndPoll(ctx, listenerID, cloud.LoadBalancerListenerUpdateParams{
+    	SniSecretID: []string{sniSecret.ID},
+    })
+    if err != nil {
+    	log.Fatal(err)
+    }
+    fmt.Printf("SNI certificates: %v\n", updated.SniSecretID)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cloud/v2/lblisteners/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$LISTENER_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{\"sni_secret_id\": [\"$SNI_SECRET_ID\"]}"
+    ```
+
+    The API returns a task ID:
+
+    ```json
+    {
+      "tasks": ["f910e568-4f04-4a9c-9924-d1ddb438b897"]
+    }
+    ```
+
+    Poll every 5 seconds until `state` is `FINISHED`. Verify the result:
+
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/lblisteners/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$LISTENER_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    ```json
+    {
+      "id": "38db0600-8173-4386-8cf6-3ab143bbf1c8",
+      "protocol": "TERMINATED_HTTPS",
+      "secret_id": "04c518a0-738e-4fc6-b045-32a779ef83b3",
+      "sni_secret_id": ["a2395dad-02a6-4313-bbc4-38f0f0954011"]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+To add more SNI certificates later, include all existing IDs plus the new ones in `sni_secret_id` - the field replaces the full list, not appends to it. The [update listener](https://api.gcore.com/docs/cloud#tag/Load-Balancer-Listeners/operation/LoadBalancerListenerUpdateViewSet.patch) endpoint also accepts `secret_id` to replace the default certificate.
+
+</Accordion>
+
+## Clean up
+
+Delete the listener before the secret. A secret that is in use by a listener cannot be deleted - the API returns a `ValidationError`.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    # Delete the listener first
+    client.cloud.load_balancers.listeners.delete_and_poll(listener_id=listener.id)
+    print("Listener deleted.")
+
+    # Then delete the secrets
+    task_list = client.cloud.secrets.delete(secret_id=secret.id)
+    client.cloud.tasks.poll(task_list.tasks[0])
+    print("Default certificate deleted.")
+
+    task_list = client.cloud.secrets.delete(secret_id=sni_secret.id)
+    client.cloud.tasks.poll(task_list.tasks[0])
+    print("SNI certificate deleted.")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    // Delete the listener first
+    if err := client.Cloud.LoadBalancers.Listeners.DeleteAndPoll(ctx, listenerID,
+        cloud.LoadBalancerListenerDeleteParams{}); err != nil {
+        log.Fatal(err)
+    }
+    fmt.Println("Listener deleted.")
+
+    // Then delete the secrets
+    if err := client.Cloud.Secrets.DeleteAndPoll(ctx, secret.ID,
+        cloud.SecretDeleteParams{}); err != nil {
+        log.Fatal(err)
+    }
+    fmt.Println("Default certificate deleted.")
+
+    if err := client.Cloud.Secrets.DeleteAndPoll(ctx, sniSecret.ID,
+        cloud.SecretDeleteParams{}); err != nil {
+        log.Fatal(err)
+    }
+    fmt.Println("SNI certificate deleted.")
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # Delete the listener first
+    curl -X DELETE "https://api.gcore.com/cloud/v1/lblisteners/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$LISTENER_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Poll until the delete task finishes. Then delete the secrets:
+
+    ```bash
+    curl -X DELETE "https://api.gcore.com/cloud/v1/secrets/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$SECRET_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+
+    curl -X DELETE "https://api.gcore.com/cloud/v1/secrets/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$SNI_SECRET_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>

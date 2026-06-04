@@ -1,0 +1,158 @@
+name: Normalize image names and update llms.txt
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "images/docs/**"
+      - "**/*.mdx"
+      - "docs.json"
+
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    # Skip runs triggered by this Action's own commits to avoid infinite loops.
+    if: github.actor != 'github-actions[bot]'
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Enable long paths (required on Windows, harmless on Linux)
+        run: git config --global core.longpaths true
+
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          # For own-branch PRs: check out the actual branch so we can push back.
+          # For fork PRs: check out the merge commit (read-only).
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Detect changed files
+        id: changed
+        run: |
+          CHANGED=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }})
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          # Also collect images that were added in this PR (grace period — not deleted if unreferenced).
+          ADDED_IMAGES=$(echo "$CHANGED" | grep -E '\.(png|jpg|jpeg|gif|webp|svg)$' || true)
+          echo "images<<EOF" >> $GITHUB_OUTPUT
+          echo "$ADDED_IMAGES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Run normalize_images (own branch)
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          CHANGED_FILES: ${{ steps.changed.outputs.files }}
+          PR_IMAGES: ${{ steps.changed.outputs.images }}
+        run: |
+          readarray -t files <<< "$CHANGED_FILES"
+          readarray -t images <<< "$PR_IMAGES"
+          python scripts/normalize_images.py \
+            --repo . \
+            --changed-files "${files[@]}" \
+            --pr-images "${images[@]}"
+
+      - name: Regenerate llms.txt (own branch)
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          pip install -q pyyaml
+          python scripts/generate_llms_txt.py \
+            --repo . \
+            --base-url https://gcore.com/docs
+
+      - name: Commit all changes back to branch
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Nothing to commit — already up to date."
+          else
+            git commit -m "chore: normalize images and update llms.txt"
+            git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          fi
+
+      # ── Fork PR: create a companion PR with normalized images ────────────────
+
+      - name: Checkout main (for companion branch)
+        if: github.event.pull_request.head.repo.full_name != github.repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Merge fork PR into companion branch
+        if: github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          BRANCH="fix/image-normalize-pr-${{ github.event.number }}"
+          git checkout -b "$BRANCH"
+
+          # Merge the fork's PR head (read-only merge commit already fetched).
+          git fetch origin refs/pull/${{ github.event.number }}/head:pr-head --depth=1
+          git merge pr-head --no-edit --strategy-option=theirs || true
+
+      - name: Run normalize_images (fork companion)
+        if: github.event.pull_request.head.repo.full_name != github.repository
+        env:
+          CHANGED_FILES: ${{ steps.changed.outputs.files }}
+          PR_IMAGES: ${{ steps.changed.outputs.images }}
+        run: |
+          readarray -t files <<< "$CHANGED_FILES"
+          readarray -t images <<< "$PR_IMAGES"
+          python scripts/normalize_images.py \
+            --repo . \
+            --changed-files "${files[@]}" \
+            --pr-images "${images[@]}"
+
+      - name: Regenerate llms.txt (fork companion)
+        if: github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          pip install -q pyyaml
+          python scripts/generate_llms_txt.py \
+            --repo . \
+            --base-url https://gcore.com/docs
+
+      - name: Create companion PR for fork
+        if: github.event.pull_request.head.repo.full_name != github.repository
+        uses: peter-evans/create-pull-request@v6
+        id: companion
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: fix/image-normalize-pr-${{ github.event.number }}
+          delete-branch: true
+          title: "chore: normalize images for PR #${{ github.event.number }}"
+          body: |
+            Auto-generated companion PR for #${{ github.event.number }}.
+
+            Renames and renumbers images from the fork PR to match the convention:
+            `images/docs/{product}/{article-slug}/{article-slug}-imageN.ext`
+
+            **Merge order:** merge this PR **after** #${{ github.event.number }} is merged.
+          commit-message: "chore: normalize image names from fork PR #${{ github.event.number }} [skip ci]"
+
+      - name: Comment on fork PR about companion
+        if: |
+          github.event.pull_request.head.repo.full_name != github.repository &&
+          steps.companion.outputs.pull-request-number != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `**Image normalization:** companion PR #${{ steps.companion.outputs.pull-request-number }} has been created with renamed images.\n\nPlease merge companion PR **after** this PR is merged.`
+            })

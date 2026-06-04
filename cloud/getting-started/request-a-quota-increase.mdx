@@ -1,69 +1,301 @@
 ---
-title: Request a quota increase
+title: Manage resource quotas
 sidebarTitle: Quotas
-ai-navigation: Request quota increases for Gcore Cloud resources including Virtual Machines, vCPUs, RAM, Storage, Network Service, Load Balancer Service, Kubernetes Service, AI, Functions Service, Logging Service, and Database Service via the Quotas Viewer in Customer Portal by selecting region, resource category, desired amount, and submitting with support comment for review within two business days.
+ai-navigation: Check current quota limits and usage for Cloud resources by region, and request quota increases via the Customer Portal Quotas Viewer or the Gcore REST API using Python SDK, Go SDK, or curl.
 ---
 
-## Overview
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-On the Quotas Viewer page, you can find how much of the available resources (Virtual Machines shared count, vCPUs count, RAM size, etc.) you're currently using, check resource limits, and request more resources. We'll review your request for up to two business days.
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
 
-<Info>
-**Info**
+Each Gcore Cloud region enforces per-account quotas on resource counts. The Quotas Viewer shows current usage against limits and lets you submit an increase request. Limit changes don't affect billing - only consumed resources are charged.
 
-Limit changes don't affect your payments. We charge only for the used resources.
-</Info>
+Categories covered:
 
-Categories group the resources for which there are quotas:
+- Computer Service
+- Storage
+- Network Service
+- Load Balancer Service
+- Kubernetes Service
+- AI
+- Functions Service
+- Logging Service
+- Database Service
 
-  * Computer Service
-  * Storage
-  * Network Service
-  * Load Balancer Service
-  * Kubernetes Service
-  * AI
-  * Functions Service
-  * Logging Service
-  * Database Service
+## Check quota
 
-
-
-## How to send a request
-
-1\. In the Gcore Customer Portal, navigate to Quotas Viewer in the Cloud Management section and select the region where you want to request a quota increase.
+1\. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **Quotas Viewer** in the Cloud Management section and select the region.
 
 <Tip>
-**Tip**
+Some resources may only be available in specific regions.
+</Tip>
 
-Some resources may only be available in some regions.
-</Tip> 
-<Frame>![Region selection](/images/docs/cloud/getting-started/request-a-quota-increase/request-a-quota-increase-image1.png)</Frame>
+<Frame>![Region selection](/images/docs/cloud/getting-started/request-a-quota-increase/request-quotas-10.png)</Frame>
 
-
-
-2\. Select the desired quota category to open the list of included resources or type the name in the search bar. Set the desired amount of resources requested by clicking plus or minus on the right, or write the number manually. An orange circle appears next to the line where you changed the number of resources.
+2\. Select a quota category to expand its resource list, or search by name. Adjust the desired amount using the plus/minus controls or by typing a number directly. An orange dot marks each line you changed.
 
 <Info>
-**Info**
+Multiple categories and multiple regions can be combined in a single request. Set amounts in one region, then switch to another and repeat.
+</Info>
 
-You can increase the number of resources in several categories per request. If you want to request an increase in the quota in several regions at once, specify the number of resources in one region (e.g., Amsterdam) and then choose another region (e.g., Frankfurt) and identify resources there.
-</Info> 
-<Frame>![Category selection](/images/docs/cloud/getting-started/request-a-quota-increase/request-a-quota-increase-image2.png)</Frame>
+<Frame>![Category selection](/images/docs/cloud/getting-started/request-a-quota-increase/request-quotas-20.png)</Frame>
 
+3\. Review the **Selected resources** block on the right to confirm quantities across all regions.
 
+<Frame>![Final check](/images/docs/cloud/getting-started/request-a-quota-increase/request-quotas-30.png)</Frame>
 
-3\. Check whether the number of quotas in all regions (if you have selected several) is correct in the Selected resources block on the right. If something is wrong, correct it right in the block.
+4\. Add a comment explaining the use case, then click **Send request**.
 
+<Frame>![The field for the explanation comment](/images/docs/cloud/getting-started/request-a-quota-increase/request-quotas-40.png)</Frame>
 
-<Frame>![Final check](/images/docs/cloud/getting-started/request-a-quota-increase/request-a-quota-increase-image3.png)</Frame>
+A maximum of ten unprocessed requests can be open at a time. Contact support if the limit is reached.
 
+</MethodSection>
+<MethodSection id="api" label="REST API">
 
+Each Gcore Cloud region enforces per-account quotas on resource counts - Virtual Machines, Bare Metal servers, load balancers, Kubernetes clusters, and others. The API lets you check current usage and submit an increase request programmatically.
 
-4\. Leave a comment for our technical support — write what you are requesting resources for and click Send request.
+<Info>
+A permanent [API token](/developer-tools/rest-api/authentication) is required. To find numeric region IDs, use [list regions](https://gcore.com/docs/api-reference/cloud/regions/list-regions).
+</Info>
 
+Set these as environment variables before running the examples:
 
-<Frame>![The field for the explanation comment](/images/docs/cloud/getting-started/request-a-quota-increase/request-a-quota-increase-image4.png)</Frame>
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export REGION_ID="{YOUR_REGION_ID}"
+```
 
+## Check quota
 
+The regional quotas endpoint returns both the limit (maximum allowed) and the current usage for every resource category. It requires an account-level client ID in addition to the region ID.
 
-Note that you can send only ten quota requests not processed by the support team. Not processed requests mean that requests are in progress: not approved or rejected. You will see an error if there are more than ten quota requests. In this case, please get in touch with the support team.
+Retrieve the client ID first:
+
+```bash
+curl -s https://api.gcore.com/iam/clients/me \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['id'])"
+```
+
+Then fetch the quotas:
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+
+    me = client.iam.get_account_overview()
+    quotas = client.cloud.quotas.get_by_region(
+        client_id=me.id,
+        region_id=int(os.environ["REGION_ID"]),
+    )
+
+    # Virtual Machines
+    print(f"VMs (basic):           {quotas.shared_vm_count_usage} / {quotas.shared_vm_count_limit}")
+    print(f"vCPUs:                 {quotas.cpu_count_usage} / {quotas.cpu_count_limit}")
+    print(f"RAM (MiB):             {quotas.ram_usage} / {quotas.ram_limit}")
+
+    # Bare Metal
+    print(f"BM high-frequency:     {quotas.baremetal_hf_count_usage} / {quotas.baremetal_hf_count_limit}")
+    print(f"BM basic:              {quotas.baremetal_basic_count_usage} / {quotas.baremetal_basic_count_limit}")
+    print(f"BM storage:            {quotas.baremetal_storage_count_usage} / {quotas.baremetal_storage_count_limit}")
+    print(f"BM network:            {quotas.baremetal_network_count_usage} / {quotas.baremetal_network_count_limit}")
+    print(f"BM infrastructure:     {quotas.baremetal_infrastructure_count_usage} / {quotas.baremetal_infrastructure_count_limit}")
+
+    # Networking
+    print(f"Load balancers:        {quotas.loadbalancer_count_usage} / {quotas.loadbalancer_count_limit}")
+    print(f"Floating IPs:          {quotas.floating_count_usage} / {quotas.floating_count_limit}")
+    print(f"Networks:              {quotas.network_count_usage} / {quotas.network_count_limit}")
+
+    # Kubernetes
+    print(f"K8s clusters:          {quotas.cluster_count_usage} / {quotas.cluster_count_limit}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/packages/param"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        ctx := context.Background()
+
+        regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
+
+        me, err := client.Iam.GetAccountOverview(ctx)
+        if err != nil {
+            fmt.Fprintf(os.Stderr, "get account overview: %v\n", err)
+            os.Exit(1)
+        }
+
+        quotas, err := client.Cloud.Quotas.GetByRegion(ctx, cloud.QuotaGetByRegionParams{
+            ClientID: me.ID,
+            RegionID: param.NewOpt(regionID),
+        })
+        if err != nil {
+            fmt.Fprintf(os.Stderr, "get quotas: %v\n", err)
+            os.Exit(1)
+        }
+
+        // Virtual Machines
+        fmt.Printf("VMs (basic):          %d / %d\n", quotas.SharedVmCountUsage, quotas.SharedVmCountLimit)
+        fmt.Printf("vCPUs:                %d / %d\n", quotas.CPUCountUsage, quotas.CPUCountLimit)
+        fmt.Printf("RAM (MiB):            %d / %d\n", quotas.RamUsage, quotas.RamLimit)
+
+        // Bare Metal
+        fmt.Printf("BM high-frequency:    %d / %d\n", quotas.BaremetalHfCountUsage, quotas.BaremetalHfCountLimit)
+        fmt.Printf("BM basic:             %d / %d\n", quotas.BaremetalBasicCountUsage, quotas.BaremetalBasicCountLimit)
+        fmt.Printf("BM storage:           %d / %d\n", quotas.BaremetalStorageCountUsage, quotas.BaremetalStorageCountLimit)
+        fmt.Printf("BM network:           %d / %d\n", quotas.BaremetalNetworkCountUsage, quotas.BaremetalNetworkCountLimit)
+        fmt.Printf("BM infrastructure:    %d / %d\n", quotas.BaremetalInfrastructureCountUsage, quotas.BaremetalInfrastructureCountLimit)
+
+        // Networking
+        fmt.Printf("Load balancers:       %d / %d\n", quotas.LoadbalancerCountUsage, quotas.LoadbalancerCountLimit)
+        fmt.Printf("Floating IPs:         %d / %d\n", quotas.FloatingCountUsage, quotas.FloatingCountLimit)
+        fmt.Printf("Networks:             %d / %d\n", quotas.NetworkCountUsage, quotas.NetworkCountLimit)
+
+        // Kubernetes
+        fmt.Printf("K8s clusters:         %d / %d\n", quotas.ClusterCountUsage, quotas.ClusterCountLimit)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # Replace {CLIENT_ID} with the value returned by /iam/clients/me
+    curl -s "https://api.gcore.com/cloud/v2/regional_quotas/{CLIENT_ID}/$REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      | python3 -m json.tool
+    ```
+
+    Response:
+
+    ```json
+    {
+      "shared_vm_count_limit": 20,
+      "shared_vm_count_usage": 3,
+      "cpu_count_limit": 80,
+      "cpu_count_usage": 12,
+      "ram_limit": 163840,
+      "ram_usage": 24576,
+      "baremetal_hf_count_limit": 4,
+      "baremetal_hf_count_usage": 0,
+      "loadbalancer_count_limit": 5,
+      "loadbalancer_count_usage": 1,
+      "cluster_count_limit": 3,
+      "cluster_count_usage": 0,
+      ...
+    }
+    ```
+  </Tab>
+</Tabs>
+
+Each field follows the pattern `{resource}_limit` and `{resource}_usage`. If usage equals the limit, no new resources of that type can be created until the quota is increased.
+
+## Request a quota increase
+
+Submit an increase request specifying the resource fields to increase and the target values in `regional_limits`. Requests are reviewed within 5 minutes with a 95% approval rate.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+
+    client.cloud.quotas.requests.create(
+        description="Scaling up application cluster in Luxembourg-3",
+        requested_limits={
+            "regional_limits": [
+                {
+                    "region_id": int(os.environ["REGION_ID"]),
+                    "baremetal_hf_count_limit": 10,
+                    "shared_vm_count_limit": 50,
+                }
+            ]
+        },
+    )
+    print("Quota request submitted.")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/packages/param"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        ctx := context.Background()
+
+        regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
+
+        err := client.Cloud.Quotas.Requests.New(ctx, cloud.QuotaRequestNewParams{
+            Description: "Scaling up application cluster in Luxembourg-3",
+            RequestedLimits: cloud.QuotaRequestNewParamsRequestedLimits{
+                RegionalLimits: []cloud.QuotaRequestNewParamsRequestedLimitsRegionalLimit{
+                    {
+                        RegionID:              param.NewOpt(regionID),
+                        BaremetalHfCountLimit: param.NewOpt(int64(10)),
+                        SharedVmCountLimit:    param.NewOpt(int64(50)),
+                    },
+                },
+            },
+        })
+        if err != nil {
+            fmt.Fprintf(os.Stderr, "submit quota request: %v\n", err)
+            os.Exit(1)
+        }
+        fmt.Println("Quota request submitted.")
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -s -X POST "https://api.gcore.com/cloud/v2/limits_request" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "description": "Scaling up application cluster in Luxembourg-3",
+        "requested_limits": {
+          "regional_limits": [
+            {
+              "region_id": '"$REGION_ID"',
+              "baremetal_hf_count_limit": 10,
+              "shared_vm_count_limit": 50
+            }
+          ]
+        }
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
