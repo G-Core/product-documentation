@@ -318,8 +318,8 @@ Open a bash terminal and set these as environment variables before running the e
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
-export PROJECT_ID="{YOUR_PROJECT_ID}"
-export REGION_ID="{YOUR_REGION_ID}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 export VM1_IP="{VM1_PUBLIC_IP}"
 export VM2_IP="{VM2_PUBLIC_IP}"
 ```
@@ -334,11 +334,7 @@ The scripts below create a load balancer with an HTTP listener and a round-robin
     import os
     from gcore import Gcore
 
-    client = Gcore(
-        api_key=os.environ["GCORE_API_KEY"],
-        cloud_project_id=int(os.environ["PROJECT_ID"]),
-        cloud_region_id=int(os.environ["REGION_ID"]),
-    )
+    client = Gcore()
 
     # Step 1. List flavors and pick the smallest
     flavors = client.cloud.load_balancers.flavors.list()
@@ -390,26 +386,17 @@ The scripts below create a load balancer with an HTTP listener and a round-robin
         "context"
         "fmt"
         "os"
-        "strconv"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
     )
 
     func main() {
-        client := gcore.NewClient(
-            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
-        )
-        projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
-        regionID, _  := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
+        client := gcore.NewClient()
         ctx := context.TODO()
 
         // Step 1. List flavors and pick the smallest
-        flavors, err := client.Cloud.LoadBalancers.Flavors.List(ctx, cloud.LoadBalancerFlavorListParams{
-            ProjectID: gcore.Int(projectID),
-            RegionID:  gcore.Int(regionID),
-        })
+        flavors, err := client.Cloud.LoadBalancers.Flavors.List(ctx, cloud.LoadBalancerFlavorListParams{})
         if err != nil {
             panic(err.Error())
         }
@@ -418,9 +405,7 @@ The scripts below create a load balancer with an HTTP listener and a round-robin
 
         // Step 2. Create load balancer (takes about 1 minute)
         lb, err := client.Cloud.LoadBalancers.NewAndPoll(ctx, cloud.LoadBalancerNewParams{
-            ProjectID: gcore.Int(projectID),
-            RegionID:  gcore.Int(regionID),
-            Name:      "my-lb",
+            Name:   "my-lb",
             Flavor:    gcore.String(lbFlavor),
         })
         if err != nil {
@@ -430,8 +415,6 @@ The scripts below create a load balancer with an HTTP listener and a round-robin
 
         // Step 3. Create HTTP listener on port 80
         listener, err := client.Cloud.LoadBalancers.Listeners.NewAndPoll(ctx, cloud.LoadBalancerListenerNewParams{
-            ProjectID:      gcore.Int(projectID),
-            RegionID:       gcore.Int(regionID),
             LoadBalancerID: lb.ID,
             Name:           "http-listener",
             Protocol:       "HTTP",
@@ -443,8 +426,6 @@ The scripts below create a load balancer with an HTTP listener and a round-robin
 
         // Step 4. Create round-robin pool
         pool, err := client.Cloud.LoadBalancers.Pools.NewAndPoll(ctx, cloud.LoadBalancerPoolNewParams{
-            ProjectID:      gcore.Int(projectID),
-            RegionID:       gcore.Int(regionID),
             Name:           "http-pool",
             LbAlgorithm:    "ROUND_ROBIN",
             Protocol:       "HTTP",
@@ -458,8 +439,6 @@ The scripts below create a load balancer with an HTTP listener and a round-robin
         // Step 5. Add backend VMs as pool members
         for _, ip := range []string{os.Getenv("VM1_IP"), os.Getenv("VM2_IP")} {
             t, err := client.Cloud.LoadBalancers.Pools.Members.New(ctx, pool.ID, cloud.LoadBalancerPoolMemberNewParams{
-                ProjectID:    gcore.Int(projectID),
-                RegionID:     gcore.Int(regionID),
                 Address:      ip,
                 ProtocolPort: 80,
             })
@@ -492,11 +471,7 @@ A [flavor](https://gcore.com/docs/api-reference/cloud/load-balancers/list-load-b
     import os
     from gcore import Gcore
 
-    client = Gcore(
-        api_key=os.environ["GCORE_API_KEY"],
-        cloud_project_id=int(os.environ["PROJECT_ID"]),
-        cloud_region_id=int(os.environ["REGION_ID"]),
-    )
+    client = Gcore()
 
     flavors = client.cloud.load_balancers.flavors.list()
     for f in flavors.results:
@@ -505,10 +480,7 @@ A [flavor](https://gcore.com/docs/api-reference/cloud/load-balancers/list-load-b
   </Tab>
   <Tab title="Go SDK">
     ```go
-    flavors, err := client.Cloud.LoadBalancers.Flavors.List(ctx, cloud.LoadBalancerFlavorListParams{
-        ProjectID: gcore.Int(projectID),
-        RegionID:  gcore.Int(regionID),
-    })
+    flavors, err := client.Cloud.LoadBalancers.Flavors.List(ctx, cloud.LoadBalancerFlavorListParams{})
     if err != nil {
         panic(err.Error())
     }
@@ -519,7 +491,7 @@ A [flavor](https://gcore.com/docs/api-reference/cloud/load-balancers/list-load-b
   </Tab>
   <Tab title="curl">
     ```bash
-    curl "https://api.gcore.com/cloud/v1/lbflavors/$PROJECT_ID/$REGION_ID" \
+    curl "https://api.gcore.com/cloud/v1/lbflavors/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -568,9 +540,7 @@ Creating the load balancer without specifying a network assigns a public VIP aut
   <Tab title="Go SDK">
     ```go
     lb, err := client.Cloud.LoadBalancers.NewAndPoll(ctx, cloud.LoadBalancerNewParams{
-        ProjectID: gcore.Int(projectID),
-        RegionID:  gcore.Int(regionID),
-        Name:      "my-lb",
+        Name:   "my-lb",
         Flavor:    gcore.String(os.Getenv("LB_FLAVOR")),
     })
     if err != nil {
@@ -581,7 +551,7 @@ Creating the load balancer without specifying a network assigns a public VIP aut
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST "https://api.gcore.com/cloud/v1/loadbalancers/$PROJECT_ID/$REGION_ID" \
+    curl -X POST "https://api.gcore.com/cloud/v1/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{"name": "my-lb", "flavor": "'"$LB_FLAVOR"'"}'
@@ -596,7 +566,7 @@ Creating the load balancer without specifying a network assigns a public VIP aut
     Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. Then retrieve the VIP address:
 
     ```bash
-    curl "https://api.gcore.com/cloud/v1/loadbalancers/$PROJECT_ID/$REGION_ID/$LB_ID" \
+    curl "https://api.gcore.com/cloud/v1/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$LB_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -643,8 +613,6 @@ A [listener](https://gcore.com/docs/api-reference/cloud/load-balancers/create-lo
   <Tab title="Go SDK">
     ```go
     listener, err := client.Cloud.LoadBalancers.Listeners.NewAndPoll(ctx, cloud.LoadBalancerListenerNewParams{
-        ProjectID:      gcore.Int(projectID),
-        RegionID:       gcore.Int(regionID),
         LoadBalancerID: lb.ID,
         Name:           "http-listener",
         Protocol:       "HTTP",
@@ -658,7 +626,7 @@ A [listener](https://gcore.com/docs/api-reference/cloud/load-balancers/create-lo
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST "https://api.gcore.com/cloud/v1/lblisteners/$PROJECT_ID/$REGION_ID" \
+    curl -X POST "https://api.gcore.com/cloud/v1/lblisteners/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
@@ -710,8 +678,6 @@ A [pool](https://gcore.com/docs/api-reference/cloud/load-balancers/create-load-b
   <Tab title="Go SDK">
     ```go
     pool, err := client.Cloud.LoadBalancers.Pools.NewAndPoll(ctx, cloud.LoadBalancerPoolNewParams{
-        ProjectID:      gcore.Int(projectID),
-        RegionID:       gcore.Int(regionID),
         Name:           "http-pool",
         LbAlgorithm:    "ROUND_ROBIN",
         Protocol:       "HTTP",
@@ -726,7 +692,7 @@ A [pool](https://gcore.com/docs/api-reference/cloud/load-balancers/create-load-b
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST "https://api.gcore.com/cloud/v1/lbpools/$PROJECT_ID/$REGION_ID" \
+    curl -X POST "https://api.gcore.com/cloud/v1/lbpools/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
@@ -778,8 +744,6 @@ Each [pool member](https://gcore.com/docs/api-reference/cloud/load-balancers/cre
     ```go
     for _, ip := range []string{os.Getenv("VM1_IP"), os.Getenv("VM2_IP")} {
         t, err := client.Cloud.LoadBalancers.Pools.Members.New(ctx, pool.ID, cloud.LoadBalancerPoolMemberNewParams{
-            ProjectID:    gcore.Int(projectID),
-            RegionID:     gcore.Int(regionID),
             Address:      ip,
             ProtocolPort: 80,
         })
@@ -796,7 +760,7 @@ Each [pool member](https://gcore.com/docs/api-reference/cloud/load-balancers/cre
   <Tab title="curl">
     ```bash
     # Add VM1 (repeat for VM2 with its IP)
-    curl -X POST "https://api.gcore.com/cloud/v1/lbpools/$PROJECT_ID/$REGION_ID/$POOL_ID/member" \
+    curl -X POST "https://api.gcore.com/cloud/v1/lbpools/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$POOL_ID/member" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{"address": "'"$VM1_IP"'", "protocol_port": 80}'
@@ -829,10 +793,7 @@ After adding both members, confirm the load balancer is active and traffic is fl
   </Tab>
   <Tab title="Go SDK">
     ```go
-    fetched, err := client.Cloud.LoadBalancers.Get(ctx, lb.ID, cloud.LoadBalancerGetParams{
-        ProjectID: gcore.Int(projectID),
-        RegionID:  gcore.Int(regionID),
-    })
+    fetched, err := client.Cloud.LoadBalancers.Get(ctx, lb.ID, cloud.LoadBalancerGetParams{})
     if err != nil {
         panic(err.Error())
     }
@@ -842,7 +803,7 @@ After adding both members, confirm the load balancer is active and traffic is fl
   </Tab>
   <Tab title="curl">
     ```bash
-    curl "https://api.gcore.com/cloud/v1/loadbalancers/$PROJECT_ID/$REGION_ID/$LB_ID" \
+    curl "https://api.gcore.com/cloud/v1/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$LB_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -880,10 +841,7 @@ Deleting the load balancer removes the listener, pool, and members automatically
   </Tab>
   <Tab title="Go SDK">
     ```go
-    err = client.Cloud.LoadBalancers.DeleteAndPoll(ctx, lb.ID, cloud.LoadBalancerDeleteParams{
-        ProjectID: gcore.Int(projectID),
-        RegionID:  gcore.Int(regionID),
-    })
+    err = client.Cloud.LoadBalancers.DeleteAndPoll(ctx, lb.ID, cloud.LoadBalancerDeleteParams{})
     if err != nil {
         panic(err.Error())
     }
@@ -893,7 +851,7 @@ Deleting the load balancer removes the listener, pool, and members automatically
   <Tab title="curl">
     ```bash
     curl -X DELETE \
-      "https://api.gcore.com/cloud/v1/loadbalancers/$PROJECT_ID/$REGION_ID/$LB_ID" \
+      "https://api.gcore.com/cloud/v1/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$LB_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 

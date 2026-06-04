@@ -348,8 +348,8 @@ Open a bash terminal and set these as environment variables before running the e
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
-export PROJECT_ID="{YOUR_PROJECT_ID}"
-export REGION_ID="{YOUR_REGION_ID}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 ```
 
 ## Quickstart
@@ -362,20 +362,16 @@ Complete scripts for the full flow. See the step-by-step section below for detai
     import os
     from gcore import Gcore
 
-    client = Gcore(
-        api_key=os.environ["GCORE_API_KEY"],
-        cloud_project_id=int(os.environ["PROJECT_ID"]),
-        cloud_region_id=int(os.environ["REGION_ID"]),
-    )
+    client = Gcore()
 
     # Step 1. Find Ubuntu 22.04 image
     images = client.cloud.instances.images.list()
     image = next(img for img in images.results if "ubuntu-22.04" in img.name and "x64" in img.name)
     print(f"Image: {image.name} ({image.id}), min_disk={image.min_disk} GiB")
 
-    # Step 2. Pick a flavor
+    # Step 2. Pick a flavor (IDs are region-specific; this selects 2 vCPU / 4 GB)
     flavors = client.cloud.instances.flavors.list()
-    flavor = next(f for f in flavors.results if f.flavor_id == "g1-standard-2-4")
+    flavor = next(f for f in flavors.results if f.vcpus == 2 and f.ram == 4096)
     print(f"Flavor: {flavor.flavor_id} ({flavor.vcpus} vCPU / {flavor.ram // 1024} GB RAM)")
 
     # Step 3. Create instance and wait (create_and_poll polls automatically)
@@ -416,19 +412,13 @@ Complete scripts for the full flow. See the step-by-step section below for detai
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
     )
 
     func main() {
-        client := gcore.NewClient(
-            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
-        )
+        client := gcore.NewClient()
 
         // Step 1. Find Ubuntu 22.04 image
-        imageList, err := client.Cloud.Instances.Images.List(context.TODO(), cloud.InstanceImageListParams{
-            ProjectID: gcore.Int(1),
-            RegionID:  gcore.Int(1),
-        })
+        imageList, err := client.Cloud.Instances.Images.List(context.TODO(), cloud.InstanceImageListParams{})
         if err != nil {
             panic(err.Error())
         }
@@ -441,17 +431,15 @@ Complete scripts for the full flow. See the step-by-step section below for detai
             }
         }
 
-        // Step 2. Pick a flavor
-        flavorList, err := client.Cloud.Instances.Flavors.List(context.TODO(), cloud.InstanceFlavorListParams{
-            ProjectID: gcore.Int(1),
-            RegionID:  gcore.Int(1),
-        })
+        // Step 2. Pick a flavor (IDs are region-specific; this selects 2 vCPU / 4 GB)
+        flavorList, err := client.Cloud.Instances.Flavors.List(context.TODO(), cloud.InstanceFlavorListParams{})
         if err != nil {
             panic(err.Error())
         }
-        flavorID := "g1-standard-2-4"
+        var flavorID string
         for _, f := range flavorList.Results {
-            if f.FlavorID == flavorID {
+            if f.Vcpus == 2 && f.Ram == 4096 {
+                flavorID = f.FlavorID
                 fmt.Printf("Flavor: %s (%d vCPU / %d MB RAM)\n", f.FlavorID, f.Vcpus, f.Ram)
                 break
             }
@@ -459,8 +447,6 @@ Complete scripts for the full flow. See the step-by-step section below for detai
 
         // Step 3. Create instance and wait (NewAndPoll polls automatically)
         instance, err := client.Cloud.Instances.NewAndPoll(context.TODO(), cloud.InstanceNewParams{
-            ProjectID:    gcore.Int(1),
-            RegionID:     gcore.Int(1),
             Flavor:       flavorID,
             NameTemplate: gcore.String("my-vm-{ip_octets}"),
             SSHKeyName:   gcore.String("my-key"),
@@ -508,11 +494,7 @@ The image determines the operating system and sets the minimum boot volume size 
     import os
     from gcore import Gcore
 
-    client = Gcore(
-        api_key=os.environ["GCORE_API_KEY"],
-        cloud_project_id=int(os.environ["PROJECT_ID"]),
-        cloud_region_id=int(os.environ["REGION_ID"]),
-    )
+    client = Gcore()
     images = client.cloud.instances.images.list()
     for img in images.results:
         print(img.id, img.name)
@@ -526,19 +508,13 @@ The image determines the operating system and sets the minimum boot volume size 
         "context"
         "fmt"
 
-        "github.com/G-Core/gcore-go"
+        gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
     )
 
     func main() {
-        client := gcore.NewClient(
-            option.WithAPIKey("My API Key"),
-        )
-        imageList, err := client.Cloud.Instances.Images.List(context.TODO(), cloud.InstanceImageListParams{
-            ProjectID: gcore.Int(1),
-            RegionID:  gcore.Int(1),
-        })
+        client := gcore.NewClient()
+        imageList, err := client.Cloud.Instances.Images.List(context.TODO(), cloud.InstanceImageListParams{})
         if err != nil {
             panic(err.Error())
         }
@@ -548,7 +524,7 @@ The image determines the operating system and sets the minimum boot volume size 
   </Tab>
   <Tab title="curl">
     ```bash
-    curl "https://api.gcore.com/cloud/v1/images/$PROJECT_ID/$REGION_ID" \
+    curl "https://api.gcore.com/cloud/v1/images/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -591,10 +567,7 @@ A [flavor](https://gcore.com/docs/api-reference/cloud/flavors/list-flavors) sets
   </Tab>
   <Tab title="Go SDK">
     ```go
-    instanceFlavorList, err := client.Cloud.Instances.Flavors.List(context.TODO(), cloud.InstanceFlavorListParams{
-        ProjectID: gcore.Int(1),
-        RegionID:  gcore.Int(1),
-    })
+    instanceFlavorList, err := client.Cloud.Instances.Flavors.List(context.TODO(), cloud.InstanceFlavorListParams{})
     if err != nil {
         panic(err.Error())
     }
@@ -603,7 +576,7 @@ A [flavor](https://gcore.com/docs/api-reference/cloud/flavors/list-flavors) sets
   </Tab>
   <Tab title="curl">
     ```bash
-    curl "https://api.gcore.com/cloud/v1/flavors/$PROJECT_ID/$REGION_ID" \
+    curl "https://api.gcore.com/cloud/v1/flavors/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -612,8 +585,8 @@ A [flavor](https://gcore.com/docs/api-reference/cloud/flavors/list-flavors) sets
     ```json
     {
       "results": [
-        {"flavor_id": "g1-standard-2-4", "vcpus": 2, "ram": 4096},
-        {"flavor_id": "g1-standard-4-8", "vcpus": 4, "ram": 8192}
+        {"flavor_id": "g2-standard-2-4", "vcpus": 2, "ram": 4096},
+        {"flavor_id": "g2-standard-4-8", "vcpus": 4, "ram": 8192}
       ]
     }
     ```
@@ -621,7 +594,7 @@ A [flavor](https://gcore.com/docs/api-reference/cloud/flavors/list-flavors) sets
 </Tabs>
 
 ```bash
-export FLAVOR_ID="g1-standard-2-4"
+export FLAVOR_ID="{FLAVOR_ID}"   # replace with a flavor_id from the response above
 ```
 
 ### Step 3. Create the instance
@@ -659,8 +632,6 @@ The instance is created with a public interface - `"type": "external"` assigns a
   <Tab title="Go SDK">
     ```go
     instance, err := client.Cloud.Instances.NewAndPoll(context.TODO(), cloud.InstanceNewParams{
-        ProjectID:    gcore.Int(1),
-        RegionID:     gcore.Int(1),
         Flavor:       os.Getenv("FLAVOR_ID"),
         NameTemplate: gcore.String("my-vm-{ip_octets}"),
         SSHKeyName:   gcore.String("my-key"),
@@ -684,7 +655,7 @@ The instance is created with a public interface - `"type": "external"` assigns a
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST "https://api.gcore.com/cloud/v2/instances/$PROJECT_ID/$REGION_ID" \
+    curl -X POST "https://api.gcore.com/cloud/v2/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
@@ -772,10 +743,7 @@ The `addresses` field on the instance object contains the public IP assigned at 
     instance, err := client.Cloud.Instances.Get(
         context.TODO(),
         "instance_id",
-        cloud.InstanceGetParams{
-            ProjectID: gcore.Int(1),
-            RegionID:  gcore.Int(1),
-        },
+        cloud.InstanceGetParams{},
     )
     if err != nil {
         panic(err.Error())
@@ -785,7 +753,7 @@ The `addresses` field on the instance object contains the public IP assigned at 
   </Tab>
   <Tab title="curl">
     ```bash
-    curl "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID/$INSTANCE_ID" \
+    curl "https://api.gcore.com/cloud/v1/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$INSTANCE_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -839,7 +807,6 @@ If the project does not yet have an SSH key, register one before creating the in
   <Tab title="Python SDK">
     ```python
     ssh_key = client.cloud.ssh_keys.create(
-        project_id=int(os.environ["PROJECT_ID"]),
         name="my-key",
         public_key="ssh-ed25519 AAAA... user@host",
     )
@@ -848,8 +815,7 @@ If the project does not yet have an SSH key, register one before creating the in
   <Tab title="Go SDK">
     ```go
     sshKeyCreated, err := client.Cloud.SSHKeys.New(context.TODO(), cloud.SSHKeyNewParams{
-        ProjectID: gcore.Int(1),
-        Name:      "my-ssh-key",
+        Name: "my-ssh-key",
     })
     if err != nil {
         panic(err.Error())
@@ -859,7 +825,7 @@ If the project does not yet have an SSH key, register one before creating the in
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST "https://api.gcore.com/cloud/v1/ssh_keys/$PROJECT_ID" \
+    curl -X POST "https://api.gcore.com/cloud/v1/ssh_keys/$GCORE_CLOUD_PROJECT_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
@@ -897,8 +863,6 @@ To list only Gcore-managed public images, add the `visibility=public` parameter.
   <Tab title="Go SDK">
     ```go
     imageList, err := client.Cloud.Instances.Images.List(context.TODO(), cloud.InstanceImageListParams{
-        ProjectID:  gcore.Int(1),
-        RegionID:   gcore.Int(1),
         Visibility: cloud.InstanceImageListParamsVisibilityPublic,
     })
     if err != nil {
@@ -911,7 +875,7 @@ To list only Gcore-managed public images, add the `visibility=public` parameter.
   </Tab>
   <Tab title="curl">
     ```bash
-    curl "https://api.gcore.com/cloud/v1/images/$PROJECT_ID/$REGION_ID?visibility=public" \
+    curl "https://api.gcore.com/cloud/v1/images/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID?visibility=public" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
   </Tab>
@@ -936,10 +900,7 @@ To delete the instance and its boot volume in a single call, pass the volume ID 
     taskIDList, err := client.Cloud.Instances.Delete(
         context.TODO(),
         "instance_id",
-        cloud.InstanceDeleteParams{
-            ProjectID: gcore.Int(1),
-            RegionID:  gcore.Int(1),
-        },
+        cloud.InstanceDeleteParams{},
     )
     if err != nil {
         panic(err.Error())
@@ -950,7 +911,7 @@ To delete the instance and its boot volume in a single call, pass the volume ID 
   <Tab title="curl">
     ```bash
     curl -X DELETE \
-      "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID/$INSTANCE_ID?volumes=$BOOT_VOLUME_ID" \
+      "https://api.gcore.com/cloud/v1/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$INSTANCE_ID?volumes=$BOOT_VOLUME_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 

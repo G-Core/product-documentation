@@ -146,8 +146,8 @@ Open a terminal and set these variables before running the examples:
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
-export PROJECT_ID="{YOUR_PROJECT_ID}"
-export REGION_ID="{YOUR_REGION_ID}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 ```
 
 ## Quickstart
@@ -160,8 +160,8 @@ The scripts below reserve a floating IP and assign it to an existing Virtual Mac
     import os
     from gcore import Gcore
 
-    PROJECT_ID = int(os.environ["PROJECT_ID"])
-    REGION_ID = int(os.environ["REGION_ID"])
+    PROJECT_ID = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
+    REGION_ID = int(os.environ["GCORE_CLOUD_REGION_ID"])
     PORT_ID = os.environ["PORT_ID"]
 
     client = Gcore(api_key=os.environ["GCORE_API_KEY"])
@@ -208,23 +208,15 @@ The scripts below reserve a floating IP and assign it to an existing Virtual Mac
         "fmt"
         "log"
         "os"
-        "strconv"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
     )
 
     func main() {
-        projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
-        regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
         portID := os.Getenv("PORT_ID")
 
-        client := gcore.NewClient(
-            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
-            option.WithCloudProjectID(projectID),
-            option.WithCloudRegionID(regionID),
-        )
+        client := gcore.NewClient()
         ctx := context.Background()
 
         // Step 1. Reserve a floating IP
@@ -279,8 +271,8 @@ Allocating a floating IP reserves a public address from the region pool without 
     client = Gcore(api_key=os.environ["GCORE_API_KEY"])
 
     fip = client.cloud.floating_ips.create_and_poll(
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
     )
     print(f"ID: {fip.id}  address: {fip.floating_ip_address}  status: {fip.status}")
     ```
@@ -296,7 +288,7 @@ Allocating a floating IP reserves a public address from the region pool without 
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST "https://api.gcore.com/cloud/v1/floatingips/$PROJECT_ID/$REGION_ID" \
+    curl -X POST "https://api.gcore.com/cloud/v1/floatingips/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{}'
@@ -333,7 +325,7 @@ The port ID is the UUID of the Virtual Machine's private network interface — r
 Retrieve it from the instance details:
 
 ```bash
-curl "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID/$INSTANCE_ID" \
+curl "https://api.gcore.com/cloud/v1/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$INSTANCE_ID" \
   -H "Authorization: APIKey $GCORE_API_KEY"
 ```
 
@@ -370,8 +362,8 @@ Linking the floating IP to the port makes the address reachable from the Interne
     fip = client.cloud.floating_ips.assign(
         os.environ["FIP_ID"],
         port_id=os.environ["PORT_ID"],
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
     )
     print(f"status: {fip.status}  fixed_ip: {fip.fixed_ip_address}")
     ```
@@ -389,7 +381,7 @@ Linking the floating IP to the port makes the address reachable from the Interne
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X PATCH "https://api.gcore.com/cloud/v2/floatingips/$PROJECT_ID/$REGION_ID/$FIP_ID" \
+    curl -X PATCH "https://api.gcore.com/cloud/v2/floatingips/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$FIP_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d "{\"port_id\": \"$PORT_ID\"}"
@@ -416,8 +408,8 @@ Detaching releases the floating IP from the port; the address remains reserved a
     ```python
     fip = client.cloud.floating_ips.unassign(
         os.environ["FIP_ID"],
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
     )
     print(f"status: {fip.status}")
     ```
@@ -433,7 +425,7 @@ Detaching releases the floating IP from the port; the address remains reserved a
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X PATCH "https://api.gcore.com/cloud/v2/floatingips/$PROJECT_ID/$REGION_ID/$FIP_ID" \
+    curl -X PATCH "https://api.gcore.com/cloud/v2/floatingips/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$FIP_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{"port_id": null}'
@@ -462,8 +454,8 @@ Deleting a floating IP releases the address and stops billing for it.
     ```python
     client.cloud.floating_ips.delete_and_poll(
         os.environ["FIP_ID"],
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
     )
     print("Floating IP deleted.")
     ```
@@ -478,7 +470,7 @@ Deleting a floating IP releases the address and stops billing for it.
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X DELETE "https://api.gcore.com/cloud/v1/floatingips/$PROJECT_ID/$REGION_ID/$FIP_ID" \
+    curl -X DELETE "https://api.gcore.com/cloud/v1/floatingips/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$FIP_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 

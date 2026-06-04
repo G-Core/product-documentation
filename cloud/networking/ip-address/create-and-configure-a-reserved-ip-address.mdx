@@ -273,8 +273,8 @@ Open a terminal and set these variables before running the examples:
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
-export PROJECT_ID="{YOUR_PROJECT_ID}"
-export REGION_ID="{YOUR_REGION_ID}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 ```
 
 ## Quickstart
@@ -287,8 +287,8 @@ The scripts below reserve a public IPv4 address, retrieve its details, and then 
     import os
     from gcore import Gcore
 
-    PROJECT_ID = int(os.environ["PROJECT_ID"])
-    REGION_ID = int(os.environ["REGION_ID"])
+    PROJECT_ID = int(os.environ["GCORE_CLOUD_PROJECT_ID"])
+    REGION_ID = int(os.environ["GCORE_CLOUD_REGION_ID"])
 
     client = Gcore(api_key=os.environ["GCORE_API_KEY"])
 
@@ -326,24 +326,14 @@ The scripts below reserve a public IPv4 address, retrieve its details, and then 
         "context"
         "fmt"
         "log"
-        "os"
-        "strconv"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
         "github.com/G-Core/gcore-go/shared/constant"
     )
 
     func main() {
-        projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
-        regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
-
-        client := gcore.NewClient(
-            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
-            option.WithCloudProjectID(projectID),
-            option.WithCloudRegionID(regionID),
-        )
+        client := gcore.NewClient()
         ctx := context.Background()
 
         // Step 1. Reserve a public IP address
@@ -402,8 +392,8 @@ Reserving a public IP allocates a static address from the region pool exclusivel
     rip = client.cloud.reserved_fixed_ips.create_and_poll(
         type="external",
         ip_family="ipv4",
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
     )
     print(f"IP: {rip.fixed_ip_address}  port_id: {rip.port_id}  status: {rip.status}")
     ```
@@ -424,7 +414,7 @@ Reserving a public IP allocates a static address from the region pool exclusivel
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST "https://api.gcore.com/cloud/v1/reserved_fixed_ips/$PROJECT_ID/$REGION_ID" \
+    curl -X POST "https://api.gcore.com/cloud/v1/reserved_fixed_ips/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{"type": "external", "ip_family": "ipv4"}'
@@ -463,8 +453,8 @@ Retrieving the reserved IP confirms the allocated address and shows its current 
     ```python
     rip = client.cloud.reserved_fixed_ips.get(
         os.environ["PORT_ID"],
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
     )
     print(f"IP: {rip.fixed_ip_address}  is_external: {rip.is_external}  reservation: {rip.reservation.status}")
     ```
@@ -481,7 +471,7 @@ Retrieving the reserved IP confirms the allocated address and shows its current 
   </Tab>
   <Tab title="curl">
     ```bash
-    curl "https://api.gcore.com/cloud/v1/reserved_fixed_ips/$PROJECT_ID/$REGION_ID/$PORT_ID" \
+    curl "https://api.gcore.com/cloud/v1/reserved_fixed_ips/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$PORT_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -525,8 +515,8 @@ export SUBNET_ID="{YOUR_SUBNET_ID}"
     rip = client.cloud.reserved_fixed_ips.create_and_poll(
         type="subnet",
         subnet_id=os.environ["SUBNET_ID"],
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
     )
     print(f"Private IP: {rip.fixed_ip_address}  port_id: {rip.port_id}")
     ```
@@ -547,7 +537,7 @@ export SUBNET_ID="{YOUR_SUBNET_ID}"
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST "https://api.gcore.com/cloud/v1/reserved_fixed_ips/$PROJECT_ID/$REGION_ID" \
+    curl -X POST "https://api.gcore.com/cloud/v1/reserved_fixed_ips/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d "{\"type\": \"subnet\", \"subnet_id\": \"$SUBNET_ID\"}"
@@ -580,8 +570,8 @@ Deleting a reserved IP releases the address and stops billing. The IP must not b
     ```python
     client.cloud.reserved_fixed_ips.delete_and_poll(
         os.environ["PORT_ID"],
-        project_id=int(os.environ["PROJECT_ID"]),
-        region_id=int(os.environ["REGION_ID"]),
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
     )
     print("Reserved IP deleted.")
     ```
@@ -596,7 +586,7 @@ Deleting a reserved IP releases the address and stops billing. The IP must not b
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X DELETE "https://api.gcore.com/cloud/v1/reserved_fixed_ips/$PROJECT_ID/$REGION_ID/$PORT_ID" \
+    curl -X DELETE "https://api.gcore.com/cloud/v1/reserved_fixed_ips/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$PORT_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 

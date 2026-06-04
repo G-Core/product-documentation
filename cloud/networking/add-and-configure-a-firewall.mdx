@@ -181,9 +181,11 @@ Set these environment variables before running the examples:
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
-export PROJECT_ID="{YOUR_PROJECT_ID}"
-export REGION_ID="{YOUR_REGION_ID}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 export INSTANCE_ID="{YOUR_INSTANCE_ID}"
+export IMAGE_ID="{YOUR_IMAGE_ID}"         # use GET /cloud/v1/images to list
+export FLAVOR_ID="{YOUR_FLAVOR_ID}"       # use GET /cloud/v1/flavors to list
 export SG_ID="{YOUR_SECURITY_GROUP_ID}"
 ```
 
@@ -207,11 +209,7 @@ A security group starts empty for inbound traffic and automatically includes def
     from gcore import Gcore
     from gcore.types.cloud import security_group_create_params
 
-    client = Gcore(
-        api_key=os.environ["GCORE_API_KEY"],
-        cloud_project_id=int(os.environ["PROJECT_ID"]),
-        cloud_region_id=int(os.environ["REGION_ID"]),
-    )
+    client = Gcore()
 
     sg = client.cloud.security_groups.create_and_poll(
         name="web-firewall",
@@ -232,25 +230,16 @@ A security group starts empty for inbound traffic and automatically includes def
     import (
         "context"
         "fmt"
-        "os"
-        "strconv"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
     )
 
     func main() {
-        client := gcore.NewClient(
-            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
-        )
-        projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
-        regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
+        client := gcore.NewClient()
 
         sg, err := client.Cloud.SecurityGroups.NewAndPoll(context.TODO(), cloud.SecurityGroupNewParams{
-            ProjectID: gcore.Int(projectID),
-            RegionID:  gcore.Int(regionID),
-            Name:      "web-firewall",
+            Name: "web-firewall",
             Rules: []cloud.SecurityGroupNewParamsRule{
                 {Direction: "ingress", Protocol: "tcp", PortRangeMin: gcore.Int(80), PortRangeMax: gcore.Int(80), RemoteIPPrefix: gcore.String("0.0.0.0/0")},
                 {Direction: "ingress", Protocol: "tcp", PortRangeMin: gcore.Int(443), PortRangeMax: gcore.Int(443), RemoteIPPrefix: gcore.String("0.0.0.0/0")},
@@ -267,7 +256,7 @@ A security group starts empty for inbound traffic and automatically includes def
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST "https://api.gcore.com/cloud/v2/security_groups/$PROJECT_ID/$REGION_ID" \
+    curl -X POST "https://api.gcore.com/cloud/v2/security_groups/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
@@ -311,15 +300,11 @@ At VM creation, pass the security group UUID in the `security_groups` field:
     import os
     from gcore import Gcore
 
-    client = Gcore(
-        api_key=os.environ["GCORE_API_KEY"],
-        cloud_project_id=int(os.environ["PROJECT_ID"]),
-        cloud_region_id=int(os.environ["REGION_ID"]),
-    )
+    client = Gcore()
 
     instance = client.cloud.instances.create_and_poll(
         name="my-vm",
-        flavor="g2-standard-2-4",
+        flavor=os.environ["FLAVOR_ID"],
         ssh_key_name="my-key",
         interfaces=[{"type": "external"}],
         volumes=[{"source": "image", "image_id": os.environ["IMAGE_ID"], "size": 20, "boot_index": 0}],
@@ -336,24 +321,16 @@ At VM creation, pass the security group UUID in the `security_groups` field:
         "context"
         "fmt"
         "os"
-        "strconv"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
     )
 
     func main() {
-        client := gcore.NewClient(
-            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
-        )
-        projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
-        regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
+        client := gcore.NewClient()
 
         instance, err := client.Cloud.Instances.NewAndPoll(context.TODO(), cloud.InstanceNewParams{
-            ProjectID:  gcore.Int(projectID),
-            RegionID:   gcore.Int(regionID),
-            Flavor:     "g2-standard-2-4",
+            Flavor:     os.Getenv("FLAVOR_ID"),
             Name:       gcore.String("my-vm"),
             SSHKeyName: gcore.String("my-key"),
             Interfaces: []cloud.InstanceNewParamsInterfaceUnion{{
@@ -377,12 +354,12 @@ At VM creation, pass the security group UUID in the `security_groups` field:
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST "https://api.gcore.com/cloud/v2/instances/$PROJECT_ID/$REGION_ID" \
+    curl -X POST "https://api.gcore.com/cloud/v2/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
         "name": "my-vm",
-        "flavor": "g2-standard-2-4",
+        "flavor": "$FLAVOR_ID",
         "ssh_key_name": "my-key",
         "interfaces": [{"type": "external"}],
         "volumes": [{"source": "image", "image_id": "'"$IMAGE_ID"'", "size": 20, "boot_index": 0}],
@@ -400,11 +377,7 @@ To a running instance, use the group name (not the UUID):
     import os
     from gcore import Gcore
 
-    client = Gcore(
-        api_key=os.environ["GCORE_API_KEY"],
-        cloud_project_id=int(os.environ["PROJECT_ID"]),
-        cloud_region_id=int(os.environ["REGION_ID"]),
-    )
+    client = Gcore()
 
     client.cloud.instances.assign_security_group(
         instance_id=os.environ["INSTANCE_ID"],
@@ -420,25 +393,16 @@ To a running instance, use the group name (not the UUID):
     import (
         "context"
         "fmt"
-        "os"
-        "strconv"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
     )
 
     func main() {
-        client := gcore.NewClient(
-            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
-        )
-        projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
-        regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
+        client := gcore.NewClient()
 
         err := client.Cloud.Instances.AssignSecurityGroup(context.TODO(), os.Getenv("INSTANCE_ID"), cloud.InstanceAssignSecurityGroupParams{
-            ProjectID: gcore.Int(projectID),
-            RegionID:  gcore.Int(regionID),
-            Name:      gcore.String("web-firewall"),
+            Name: gcore.String("web-firewall"),
         })
         if err != nil {
             panic(err.Error())
@@ -450,7 +414,7 @@ To a running instance, use the group name (not the UUID):
   <Tab title="curl">
     ```bash
     curl -X POST \
-      "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID/$INSTANCE_ID/addsecuritygroup" \
+      "https://api.gcore.com/cloud/v1/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$INSTANCE_ID/addsecuritygroup" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{"name": "web-firewall"}'
@@ -468,11 +432,7 @@ To add a rule after the security group is created, call the [rules endpoint](htt
     import os
     from gcore import Gcore
 
-    client = Gcore(
-        api_key=os.environ["GCORE_API_KEY"],
-        cloud_project_id=int(os.environ["PROJECT_ID"]),
-        cloud_region_id=int(os.environ["REGION_ID"]),
-    )
+    client = Gcore()
 
     rule = client.cloud.security_groups.rules.create_and_poll(
         group_id=os.environ["SG_ID"],
@@ -492,24 +452,15 @@ To add a rule after the security group is created, call the [rules endpoint](htt
     import (
         "context"
         "fmt"
-        "os"
-        "strconv"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
     )
 
     func main() {
-        client := gcore.NewClient(
-            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
-        )
-        projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
-        regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
+        client := gcore.NewClient()
 
         rule, err := client.Cloud.SecurityGroups.Rules.NewAndPoll(context.TODO(), os.Getenv("SG_ID"), cloud.SecurityGroupRuleNewParams{
-            ProjectID:      gcore.Int(projectID),
-            RegionID:       gcore.Int(regionID),
             Direction:      "ingress",
             Protocol:       "tcp",
             PortRangeMin:   gcore.Int(8080),
@@ -526,7 +477,7 @@ To add a rule after the security group is created, call the [rules endpoint](htt
   <Tab title="curl">
     ```bash
     curl -X POST \
-      "https://api.gcore.com/cloud/v2/security_groups/$PROJECT_ID/$REGION_ID/$SG_ID/rules" \
+      "https://api.gcore.com/cloud/v2/security_groups/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$SG_ID/rules" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
@@ -563,11 +514,7 @@ Detach the security group from all instances before deleting it, otherwise the d
     import os
     from gcore import Gcore
 
-    client = Gcore(
-        api_key=os.environ["GCORE_API_KEY"],
-        cloud_project_id=int(os.environ["PROJECT_ID"]),
-        cloud_region_id=int(os.environ["REGION_ID"]),
-    )
+    client = Gcore()
 
     client.cloud.instances.unassign_security_group(
         instance_id=os.environ["INSTANCE_ID"],
@@ -583,29 +530,18 @@ Detach the security group from all instances before deleting it, otherwise the d
     import (
         "context"
         "os"
-        "strconv"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
     )
 
     func main() {
-        client := gcore.NewClient(
-            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
-        )
-        projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
-        regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
+        client := gcore.NewClient()
 
         client.Cloud.Instances.UnassignSecurityGroup(context.TODO(), os.Getenv("INSTANCE_ID"), cloud.InstanceUnassignSecurityGroupParams{
-            ProjectID: gcore.Int(projectID),
-            RegionID:  gcore.Int(regionID),
-            Name:      gcore.String("web-firewall"),
+            Name: gcore.String("web-firewall"),
         })
-        client.Cloud.SecurityGroups.Delete(context.TODO(), os.Getenv("SG_ID"), cloud.SecurityGroupDeleteParams{
-            ProjectID: gcore.Int(projectID),
-            RegionID:  gcore.Int(regionID),
-        })
+        client.Cloud.SecurityGroups.Delete(context.TODO(), os.Getenv("SG_ID"), cloud.SecurityGroupDeleteParams{})
     }
     ```
   </Tab>
@@ -613,14 +549,14 @@ Detach the security group from all instances before deleting it, otherwise the d
     ```bash
     # Detach from VM
     curl -X POST \
-      "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID/$INSTANCE_ID/delsecuritygroup" \
+      "https://api.gcore.com/cloud/v1/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$INSTANCE_ID/delsecuritygroup" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{"name": "web-firewall"}'
 
     # Delete the security group
     curl -X DELETE \
-      "https://api.gcore.com/cloud/v1/securitygroups/$PROJECT_ID/$REGION_ID/$SG_ID" \
+      "https://api.gcore.com/cloud/v1/securitygroups/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$SG_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
   </Tab>

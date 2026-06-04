@@ -409,8 +409,8 @@ Open a bash terminal and set these as environment variables before running the e
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
-export PROJECT_ID="{YOUR_PROJECT_ID}"
-export REGION_ID="{YOUR_REGION_ID}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 ```
 
 ## Quickstart
@@ -423,11 +423,7 @@ The scripts below create a private network, subnet, and 5 GiB NFS file share, th
     import os
     from gcore import Gcore
 
-    client = Gcore(
-        api_key=os.environ["GCORE_API_KEY"],
-        cloud_project_id=int(os.environ["PROJECT_ID"]),
-        cloud_region_id=int(os.environ["REGION_ID"]),
-    )
+    client = Gcore()
 
     # Step 1. Create a private network
     network = client.cloud.networks.create_and_poll(name="my-network", create_router=True)
@@ -467,25 +463,15 @@ The scripts below create a private network, subnet, and 5 GiB NFS file share, th
         "context"
         "fmt"
         "log"
-        "os"
-        "strconv"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
         "github.com/G-Core/gcore-go/packages/param"
         "github.com/G-Core/gcore-go/shared/constant"
     )
 
     func main() {
-        projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
-        regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
-
-        client := gcore.NewClient(
-            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
-            option.WithCloudProjectID(projectID),
-            option.WithCloudRegionID(regionID),
-        )
+        client := gcore.NewClient()
         ctx := context.Background()
 
         // Step 1. Create a private network
@@ -562,11 +548,7 @@ A private network isolates traffic between the file share and the VMs that mount
     import os
     from gcore import Gcore
 
-    client = Gcore(
-        api_key=os.environ["GCORE_API_KEY"],
-        cloud_project_id=int(os.environ["PROJECT_ID"]),
-        cloud_region_id=int(os.environ["REGION_ID"]),
-    )
+    client = Gcore()
     network = client.cloud.networks.create_and_poll(name="my-network", create_router=True)
     print(network.id)  # save as NETWORK_ID
     ```
@@ -579,24 +561,14 @@ A private network isolates traffic between the file share and the VMs that mount
         "context"
         "fmt"
         "log"
-        "os"
-        "strconv"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
         "github.com/G-Core/gcore-go/packages/param"
     )
 
     func main() {
-        projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
-        regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
-
-        client := gcore.NewClient(
-            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
-            option.WithCloudProjectID(projectID),
-            option.WithCloudRegionID(regionID),
-        )
+        client := gcore.NewClient()
         ctx := context.Background()
 
         network, err := client.Cloud.Networks.NewAndPoll(ctx, cloud.NetworkNewParams{
@@ -612,7 +584,7 @@ A private network isolates traffic between the file share and the VMs that mount
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -s -X POST "https://api.gcore.com/cloud/v1/networks/$PROJECT_ID/$REGION_ID" \
+    curl -s -X POST "https://api.gcore.com/cloud/v1/networks/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
@@ -682,7 +654,7 @@ A subnet assigns the address range that the file share and VMs will use. The fil
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -s -X POST "https://api.gcore.com/cloud/v1/subnets/$PROJECT_ID/$REGION_ID" \
+    curl -s -X POST "https://api.gcore.com/cloud/v1/subnets/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
@@ -772,7 +744,7 @@ A single create call provisions the NFS share on the private network and sets th
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -s -X POST "https://api.gcore.com/cloud/v1/file_shares/$PROJECT_ID/$REGION_ID" \
+    curl -s -X POST "https://api.gcore.com/cloud/v1/file_shares/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
@@ -836,7 +808,7 @@ The connection point is the NFS server address and share path used in the mount 
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -s "https://api.gcore.com/cloud/v1/file_shares/$PROJECT_ID/$REGION_ID/{FILE_SHARE_ID}" \
+    curl -s "https://api.gcore.com/cloud/v1/file_shares/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/{FILE_SHARE_ID}" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -940,7 +912,7 @@ The VM must join the private subnet to reach the file share NFS server IP. A [fl
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -s -X POST "https://api.gcore.com/cloud/v2/instances/$PROJECT_ID/$REGION_ID" \
+    curl -s -X POST "https://api.gcore.com/cloud/v2/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
@@ -978,7 +950,7 @@ The VM must join the private subnet to reach the file share NFS server IP. A [fl
     Poll the task every 5 seconds until `FINISHED`, then read the instance ID from `created_resources.instances[0]`. Retrieve the floating IP:
 
     ```bash
-    curl -s "https://api.gcore.com/cloud/v1/instances/$PROJECT_ID/$REGION_ID/{INSTANCE_ID}" \
+    curl -s "https://api.gcore.com/cloud/v1/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/{INSTANCE_ID}" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       | grep -o '"addr":"[^"]*"'
     ```
@@ -1081,7 +1053,7 @@ Then extend the share:
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -s -X POST "https://api.gcore.com/cloud/v1/file_shares/$PROJECT_ID/$REGION_ID/{FILE_SHARE_ID}/extend" \
+    curl -s -X POST "https://api.gcore.com/cloud/v1/file_shares/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/{FILE_SHARE_ID}/extend" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{"size": 10}'
@@ -1143,13 +1115,13 @@ Delete the file share, subnet, and network when no longer needed:
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -s -X DELETE "https://api.gcore.com/cloud/v1/file_shares/$PROJECT_ID/$REGION_ID/{FILE_SHARE_ID}" \
+    curl -s -X DELETE "https://api.gcore.com/cloud/v1/file_shares/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/{FILE_SHARE_ID}" \
       -H "Authorization: APIKey $GCORE_API_KEY"
 
-    curl -s -X DELETE "https://api.gcore.com/cloud/v1/subnets/$PROJECT_ID/$REGION_ID/{SUBNET_ID}" \
+    curl -s -X DELETE "https://api.gcore.com/cloud/v1/subnets/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/{SUBNET_ID}" \
       -H "Authorization: APIKey $GCORE_API_KEY"
 
-    curl -s -X DELETE "https://api.gcore.com/cloud/v1/networks/$PROJECT_ID/$REGION_ID/{NETWORK_ID}" \
+    curl -s -X DELETE "https://api.gcore.com/cloud/v1/networks/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/{NETWORK_ID}" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
   </Tab>

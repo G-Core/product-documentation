@@ -412,8 +412,8 @@ Open a bash terminal and set these as environment variables before running the e
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
-export PROJECT_ID="{YOUR_PROJECT_ID}"
-export REGION_ID="{YOUR_REGION_ID}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 export INSTANCE_ID="{YOUR_INSTANCE_ID}"
 ```
 
@@ -430,11 +430,7 @@ The scripts below create a 10 GiB standard volume, attach it to the VM identifie
     from gcore import Gcore
 
     # Step 1. Initialize the client.
-    client = Gcore(
-        api_key=os.environ["GCORE_API_KEY"],
-        cloud_project_id=int(os.environ["PROJECT_ID"]),
-        cloud_region_id=int(os.environ["REGION_ID"]),
-    )
+    client = Gcore()
 
     # Step 2. Create a 10 GiB standard volume.
     volume = client.cloud.volumes.create_and_poll(
@@ -478,23 +474,14 @@ The scripts below create a 10 GiB standard volume, attach it to the VM identifie
         "context"
         "fmt"
         "log"
-        "os"
-        "strconv"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
     )
 
     func main() {
         // Step 1. Initialize the client.
-        projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
-        regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
-        client := gcore.NewClient(
-            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
-            option.WithCloudProjectID(projectID),
-            option.WithCloudRegionID(regionID),
-        )
+        client := gcore.NewClient()
         ctx := context.Background()
 
         // Step 2. Create a 10 GiB standard volume.
@@ -570,11 +557,7 @@ A [volume](https://api.gcore.com/docs/cloud#tag/Volumes/operation/VolumeCreate.p
     import os
     from gcore import Gcore
 
-    client = Gcore(
-        api_key=os.environ["GCORE_API_KEY"],
-        cloud_project_id=int(os.environ["PROJECT_ID"]),
-        cloud_region_id=int(os.environ["REGION_ID"]),
-    )
+    client = Gcore()
     volume = client.cloud.volumes.create_and_poll(
         name="data-volume",
         source="new-volume",
@@ -593,21 +576,13 @@ A [volume](https://api.gcore.com/docs/cloud#tag/Volumes/operation/VolumeCreate.p
         "fmt"
         "log"
         "os"
-        "strconv"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
     )
 
     func main() {
-        projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
-        regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
-        client := gcore.NewClient(
-            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
-            option.WithCloudProjectID(projectID),
-            option.WithCloudRegionID(regionID),
-        )
+        client := gcore.NewClient()
         ctx := context.Background()
 
         volume, err := client.Cloud.Volumes.NewAndPoll(ctx, cloud.VolumeNewParams{
@@ -627,7 +602,7 @@ A [volume](https://api.gcore.com/docs/cloud#tag/Volumes/operation/VolumeCreate.p
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST "https://api.gcore.com/cloud/v1/volumes/$PROJECT_ID/$REGION_ID" \
+    curl -X POST "https://api.gcore.com/cloud/v1/volumes/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
@@ -697,7 +672,7 @@ A volume can be attached to one VM at a time; both must be in the same region. O
   <Tab title="curl">
     ```bash
     curl -X POST \
-      "https://api.gcore.com/cloud/v2/volumes/$PROJECT_ID/$REGION_ID/$VOLUME_ID/attach" \
+      "https://api.gcore.com/cloud/v2/volumes/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$VOLUME_ID/attach" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{"instance_id": "'"$INSTANCE_ID"'"}'
@@ -741,7 +716,7 @@ Only non-boot volumes can be detached. Detaching preserves all data; the volume 
   <Tab title="curl">
     ```bash
     curl -X POST \
-      "https://api.gcore.com/cloud/v2/volumes/$PROJECT_ID/$REGION_ID/$VOLUME_ID/detach" \
+      "https://api.gcore.com/cloud/v2/volumes/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$VOLUME_ID/detach" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{"instance_id": "'"$INSTANCE_ID"'"}'
@@ -788,7 +763,7 @@ Volume size can only be increased, not decreased. Resizing works while the volum
   <Tab title="curl">
     ```bash
     curl -X POST \
-      "https://api.gcore.com/cloud/v1/volumes/$PROJECT_ID/$REGION_ID/$VOLUME_ID/extend" \
+      "https://api.gcore.com/cloud/v1/volumes/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$VOLUME_ID/extend" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{"size": 20}'
@@ -835,7 +810,7 @@ Only detached volumes can be deleted. Boot volumes are deleted together with the
   <Tab title="curl">
     ```bash
     curl -X DELETE \
-      "https://api.gcore.com/cloud/v1/volumes/$PROJECT_ID/$REGION_ID/$VOLUME_ID" \
+      "https://api.gcore.com/cloud/v1/volumes/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$VOLUME_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 

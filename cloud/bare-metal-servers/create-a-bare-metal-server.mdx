@@ -204,8 +204,8 @@ Open a bash terminal and set these as environment variables before running the e
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
-export PROJECT_ID="{YOUR_PROJECT_ID}"
-export REGION_ID="{YOUR_REGION_ID}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 ```
 
 Bare Metal servers have per-region quotas. [Check your quota](/cloud/getting-started/request-a-quota-increase) before provisioning.
@@ -220,11 +220,7 @@ The scripts below list available flavors and images, provision a Bare Metal serv
     import os
     from gcore import Gcore
 
-    client = Gcore(
-        api_key=os.environ["GCORE_API_KEY"],
-        cloud_project_id=int(os.environ["PROJECT_ID"]),
-        cloud_region_id=int(os.environ["REGION_ID"]),
-    )
+    client = Gcore()
 
     # Step 1. List BM flavors - pick one with capacity > 0.
     flavors = client.cloud.baremetal.flavors.list(disabled=False, include_capacity=True)
@@ -258,25 +254,18 @@ The scripts below list available flavors and images, provision a Bare Metal serv
         "context"
         "fmt"
         "os"
-        "strconv"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
         "github.com/G-Core/gcore-go/shared/constant"
     )
 
     func main() {
-        projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
-        regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
-
-        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        client := gcore.NewClient()
         ctx := context.Background()
 
         // Step 1. List BM flavors - pick one with capacity > 0.
         flavors, _ := client.Cloud.Baremetal.Flavors.List(ctx, cloud.BaremetalFlavorListParams{
-            ProjectID:       gcore.Int(projectID),
-            RegionID:        gcore.Int(regionID),
             Disabled:        gcore.Bool(false),
             IncludeCapacity: gcore.Bool(true),
         })
@@ -289,10 +278,7 @@ The scripts below list available flavors and images, provision a Bare Metal serv
         }
 
         // Step 2. List BM images - pick ubuntu x64.
-        images, _ := client.Cloud.Baremetal.Images.List(ctx, cloud.BaremetalImageListParams{
-            ProjectID: gcore.Int(projectID),
-            RegionID:  gcore.Int(regionID),
-        })
+        images, _ := client.Cloud.Baremetal.Images.List(ctx, cloud.BaremetalImageListParams{})
         var imageID string
         for _, img := range images.Results {
             if img.Name == "ubuntu-24.04-x64-ironic" {
@@ -303,11 +289,9 @@ The scripts below list available flavors and images, provision a Bare Metal serv
 
         // Step 3. Create the server and wait for ACTIVE status (4-5 min).
         server, _ := client.Cloud.Baremetal.Servers.NewAndPoll(ctx, cloud.BaremetalServerNewParams{
-            ProjectID: gcore.Int(projectID),
-            RegionID:  gcore.Int(regionID),
-            Flavor:    flavorID,
-            ImageID:   gcore.String(imageID),
-            Name:      gcore.String("my-bm-server"),
+            Flavor:  flavorID,
+            ImageID: gcore.String(imageID),
+            Name:    gcore.String("my-bm-server"),
             Interfaces: []cloud.BaremetalServerNewParamsInterfaceUnion{{
                 OfExternal: &cloud.BaremetalServerNewParamsInterfaceExternal{
                     Type: constant.External("external"),
@@ -317,10 +301,7 @@ The scripts below list available flavors and images, provision a Bare Metal serv
         })
 
         // Step 4. Get full server details and print the public IP.
-        details, _ := client.Cloud.Baremetal.Servers.Get(ctx, server.ID, cloud.BaremetalServerGetParams{
-            ProjectID: gcore.Int(projectID),
-            RegionID:  gcore.Int(regionID),
-        })
+        details, _ := client.Cloud.Baremetal.Servers.Get(ctx, server.ID, cloud.BaremetalServerGetParams{})
         for network, ifaces := range details.Addresses {
             fmt.Printf("%s: ssh ubuntu@%s\n", network, ifaces[0].AsFixedIPAddress().Addr)
         }
@@ -350,8 +331,6 @@ BM [flavors](https://gcore.com/docs/api-reference/cloud/bare-metal-servers/list-
   <Tab title="Go SDK">
     ```go
     flavors, err := client.Cloud.Baremetal.Flavors.List(ctx, cloud.BaremetalFlavorListParams{
-        ProjectID:       gcore.Int(projectID),
-        RegionID:        gcore.Int(regionID),
         Disabled:        gcore.Bool(false),
         IncludeCapacity: gcore.Bool(true),
     })
@@ -362,7 +341,7 @@ BM [flavors](https://gcore.com/docs/api-reference/cloud/bare-metal-servers/list-
   </Tab>
   <Tab title="curl">
     ```bash
-    curl "https://api.gcore.com/cloud/v1/bmflavors/$PROJECT_ID/$REGION_ID?disabled=false&include_capacity=true" \
+    curl "https://api.gcore.com/cloud/v1/bmflavors/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID?disabled=false&include_capacity=true" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -409,10 +388,7 @@ BM images use a dedicated [endpoint](https://gcore.com/docs/api-reference/cloud/
   </Tab>
   <Tab title="Go SDK">
     ```go
-    images, err := client.Cloud.Baremetal.Images.List(ctx, cloud.BaremetalImageListParams{
-        ProjectID: gcore.Int(projectID),
-        RegionID:  gcore.Int(regionID),
-    })
+    images, err := client.Cloud.Baremetal.Images.List(ctx, cloud.BaremetalImageListParams{})
     for _, img := range images.Results {
         fmt.Println(img.ID, img.Name)
     }
@@ -420,7 +396,7 @@ BM images use a dedicated [endpoint](https://gcore.com/docs/api-reference/cloud/
   </Tab>
   <Tab title="curl">
     ```bash
-    curl "https://api.gcore.com/cloud/v1/bmimages/$PROJECT_ID/$REGION_ID" \
+    curl "https://api.gcore.com/cloud/v1/bmimages/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -484,11 +460,9 @@ An SSH key must already exist in the project. Add one following the [SSH guide](
   <Tab title="Go SDK">
     ```go
     server, err := client.Cloud.Baremetal.Servers.NewAndPoll(ctx, cloud.BaremetalServerNewParams{
-        ProjectID: gcore.Int(projectID),
-        RegionID:  gcore.Int(regionID),
-        Flavor:    os.Getenv("FLAVOR_ID"),
-        ImageID:   gcore.String(os.Getenv("IMAGE_ID")),
-        Name:      gcore.String("my-bm-server"),
+        Flavor:  os.Getenv("FLAVOR_ID"),
+        ImageID: gcore.String(os.Getenv("IMAGE_ID")),
+        Name:    gcore.String("my-bm-server"),
         Interfaces: []cloud.BaremetalServerNewParamsInterfaceUnion{{
             OfExternal: &cloud.BaremetalServerNewParamsInterfaceExternal{
                 Type: constant.External("external"),
@@ -501,7 +475,7 @@ An SSH key must already exist in the project. Add one following the [SSH guide](
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST "https://api.gcore.com/cloud/v1/bminstances/$PROJECT_ID/$REGION_ID" \
+    curl -X POST "https://api.gcore.com/cloud/v1/bminstances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d "{
@@ -562,10 +536,7 @@ Retrieve the server to confirm `status: ACTIVE` and find the assigned [IP addres
   </Tab>
   <Tab title="Go SDK">
     ```go
-    details, err := client.Cloud.Baremetal.Servers.Get(ctx, serverID, cloud.BaremetalServerGetParams{
-        ProjectID: gcore.Int(projectID),
-        RegionID:  gcore.Int(regionID),
-    })
+    details, err := client.Cloud.Baremetal.Servers.Get(ctx, serverID, cloud.BaremetalServerGetParams{})
     for network, ifaces := range details.Addresses {
         fmt.Printf("%s: %s\n", network, ifaces[0].AsFixedIPAddress().Addr)
     }
@@ -573,7 +544,7 @@ Retrieve the server to confirm `status: ACTIVE` and find the assigned [IP addres
   </Tab>
   <Tab title="curl">
     ```bash
-    curl "https://api.gcore.com/cloud/v1/bminstances/$PROJECT_ID/$REGION_ID/$SERVER_ID" \
+    curl "https://api.gcore.com/cloud/v1/bminstances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$SERVER_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -657,11 +628,9 @@ To connect a server to a private network, add an interface with `"type": "subnet
   <Tab title="Go SDK">
     ```go
     server, err := client.Cloud.Baremetal.Servers.NewAndPoll(ctx, cloud.BaremetalServerNewParams{
-        ProjectID: gcore.Int(projectID),
-        RegionID:  gcore.Int(regionID),
-        Flavor:    os.Getenv("FLAVOR_ID"),
-        ImageID:   gcore.String(os.Getenv("IMAGE_ID")),
-        Name:      gcore.String("my-bm-server"),
+        Flavor:     os.Getenv("FLAVOR_ID"),
+        ImageID:    gcore.String(os.Getenv("IMAGE_ID")),
+        Name:       gcore.String("my-bm-server"),
         SSHKeyName: gcore.String("my-key"),
         Interfaces: []cloud.BaremetalServerNewParamsInterfaceUnion{
             {
@@ -682,7 +651,7 @@ To connect a server to a private network, add an interface with `"type": "subnet
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST "https://api.gcore.com/cloud/v1/bminstances/$PROJECT_ID/$REGION_ID" \
+    curl -X POST "https://api.gcore.com/cloud/v1/bminstances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d "{
@@ -734,11 +703,9 @@ Once enabled, control bond assignment with the `port_group` parameter on each in
   <Tab title="Go SDK">
     ```go
     server, err := client.Cloud.Baremetal.Servers.NewAndPoll(ctx, cloud.BaremetalServerNewParams{
-        ProjectID: gcore.Int(projectID),
-        RegionID:  gcore.Int(regionID),
-        Flavor:    os.Getenv("FLAVOR_ID"),
-        ImageID:   gcore.String(os.Getenv("IMAGE_ID")),
-        Name:      gcore.String("my-bm-server"),
+        Flavor:     os.Getenv("FLAVOR_ID"),
+        ImageID:    gcore.String(os.Getenv("IMAGE_ID")),
+        Name:       gcore.String("my-bm-server"),
         SSHKeyName: gcore.String("my-key"),
         Interfaces: []cloud.BaremetalServerNewParamsInterfaceUnion{
             {
@@ -761,7 +728,7 @@ Once enabled, control bond assignment with the `port_group` parameter on each in
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST "https://api.gcore.com/cloud/v1/bminstances/$PROJECT_ID/$REGION_ID" \
+    curl -X POST "https://api.gcore.com/cloud/v1/bminstances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d "{
@@ -798,17 +765,14 @@ Bare Metal deletion is asynchronous and takes 3-5 minutes - the server must be f
   </Tab>
   <Tab title="Go SDK">
     ```go
-    taskList, err := client.Cloud.Baremetal.Servers.Delete(ctx, serverID, cloud.BaremetalServerDeleteParams{
-        ProjectID: gcore.Int(projectID),
-        RegionID:  gcore.Int(regionID),
-    })
+    taskList, err := client.Cloud.Baremetal.Servers.Delete(ctx, serverID, cloud.BaremetalServerDeleteParams{})
     client.Cloud.Tasks.Poll(ctx, taskList.Tasks[0])
     ```
   </Tab>
   <Tab title="curl">
     ```bash
     curl -X DELETE \
-      "https://api.gcore.com/cloud/v1/bminstances/$PROJECT_ID/$REGION_ID/$SERVER_ID" \
+      "https://api.gcore.com/cloud/v1/bminstances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$SERVER_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 

@@ -261,8 +261,8 @@ Set the following environment variables before running the examples:
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
-export PROJECT_ID="{YOUR_PROJECT_ID}"
-export REGION_ID="{YOUR_REGION_ID}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 export REGISTRY_ID="{YOUR_REGISTRY_ID}"
 ```
 
@@ -295,7 +295,7 @@ fmt.Printf("Storage limit: %d GiB\n", registry.StorageLimit)
   <Tab title="curl">
 ```bash
 curl -s -X PATCH \
-  "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID/$REGISTRY_ID/resize" \
+  "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID/resize" \
   -H "Authorization: APIKey $GCORE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"storage_limit": 20}'
@@ -349,7 +349,7 @@ for _, r := range repos.Results {
   <Tab title="curl">
 ```bash
 curl -s \
-  "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID/$REGISTRY_ID/repositories" \
+  "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID/repositories" \
   -H "Authorization: APIKey $GCORE_API_KEY"
 ```
 
@@ -420,7 +420,7 @@ for _, a := range artifacts.Results {
 REPOSITORY_NAME="nginx"  # repository name from List repositories
 
 curl -s \
-  "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID/$REGISTRY_ID/repositories/$REPOSITORY_NAME/artifacts" \
+  "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID/repositories/$REPOSITORY_NAME/artifacts" \
   -H "Authorization: APIKey $GCORE_API_KEY"
 ```
 
@@ -496,7 +496,7 @@ DIGEST="sha256:a3f4e1b2c9..."   # artifact digest from List artifacts
 TAG_NAME="latest"               # tag name from List artifacts
 
 curl -s -X DELETE \
-  "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID/$REGISTRY_ID/repositories/$REPOSITORY_NAME/artifacts/$DIGEST/tags/$TAG_NAME" \
+  "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID/repositories/$REPOSITORY_NAME/artifacts/$DIGEST/tags/$TAG_NAME" \
   -H "Authorization: APIKey $GCORE_API_KEY"
 ```
   </Tab>
@@ -544,7 +544,7 @@ REPOSITORY_NAME="nginx"
 DIGEST="sha256:a3f4e1b2c9..."   # artifact digest from List artifacts
 
 curl -s -X DELETE \
-  "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID/$REGISTRY_ID/repositories/$REPOSITORY_NAME/artifacts/$DIGEST" \
+  "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID/repositories/$REPOSITORY_NAME/artifacts/$DIGEST" \
   -H "Authorization: APIKey $GCORE_API_KEY"
 ```
   </Tab>
@@ -585,7 +585,7 @@ fmt.Println("Repository deleted.")
 REPOSITORY_NAME="nginx"
 
 curl -s -X DELETE \
-  "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID/$REGISTRY_ID/repositories/$REPOSITORY_NAME" \
+  "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID/repositories/$REPOSITORY_NAME" \
   -H "Authorization: APIKey $GCORE_API_KEY"
 ```
   </Tab>
@@ -635,7 +635,7 @@ fmt.Printf("read_only: %v\n", updated.ReadOnly)
 USER_ID=730
 
 curl -s -X PATCH \
-  "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID/$REGISTRY_ID/users/$USER_ID" \
+  "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID/users/$USER_ID" \
   -H "Authorization: APIKey $GCORE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"duration": -1, "read_only": true}'
@@ -687,7 +687,7 @@ fmt.Printf("New password: %s\n", refreshed.Secret) // shown once — save it now
 USER_ID=730
 
 curl -s -X POST \
-  "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID/$REGISTRY_ID/users/$USER_ID/refresh_secret" \
+  "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID/users/$USER_ID/refresh_secret" \
   -H "Authorization: APIKey $GCORE_API_KEY"
 ```
 
@@ -738,7 +738,7 @@ fmt.Println("User deleted.")
 USER_ID=730
 
 curl -s -X DELETE \
-  "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID/$REGISTRY_ID/users/$USER_ID" \
+  "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID/users/$USER_ID" \
   -H "Authorization: APIKey $GCORE_API_KEY"
 ```
   </Tab>
@@ -756,11 +756,7 @@ Deleting a registry permanently removes all repositories, artifacts, and images 
 import os
 from gcore import Gcore
 
-client = Gcore(
-    api_key=os.environ["GCORE_API_KEY"],
-    cloud_project_id=int(os.environ["PROJECT_ID"]),
-    cloud_region_id=int(os.environ["REGION_ID"]),
-)
+client = Gcore()
 
 client.cloud.registries.delete(registry_id=int(os.environ["REGISTRY_ID"]))
 print("Registry deleted.")
@@ -778,7 +774,7 @@ fmt.Println("Registry deleted.")
   <Tab title="curl">
 ```bash
 curl -s -X DELETE \
-  "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID/$REGISTRY_ID" \
+  "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID" \
   -H "Authorization: APIKey $GCORE_API_KEY"
 ```
   </Tab>

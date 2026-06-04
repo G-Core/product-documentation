@@ -228,8 +228,8 @@ Open a bash terminal and set these as environment variables before running the e
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
-export PROJECT_ID="{YOUR_PROJECT_ID}"
-export REGION_ID="{YOUR_REGION_ID}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 ```
 
 ## Quickstart
@@ -242,11 +242,7 @@ The scripts below create a private network and a subnet within it.
     import os
     from gcore import Gcore
 
-    client = Gcore(
-        api_key=os.environ["GCORE_API_KEY"],
-        cloud_project_id=int(os.environ["PROJECT_ID"]),
-        cloud_region_id=int(os.environ["REGION_ID"]),
-    )
+    client = Gcore()
 
     # Step 1. Create a private network.
     network = client.cloud.networks.create_and_poll(name="my-network")
@@ -270,28 +266,18 @@ The scripts below create a private network and a subnet within it.
     import (
         "context"
         "fmt"
-        "os"
-        "strconv"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
     )
 
     func main() {
-        projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
-        regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
-
-        client := gcore.NewClient(
-            option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
-        )
+        client := gcore.NewClient()
         ctx := context.Background()
 
         // Step 1. Create a private network.
         network, err := client.Cloud.Networks.NewAndPoll(ctx, cloud.NetworkNewParams{
-            ProjectID: gcore.Int(projectID),
-            RegionID:  gcore.Int(regionID),
-            Name:      "my-network",
+            Name: "my-network",
         })
         if err != nil {
             panic(err.Error())
@@ -300,8 +286,6 @@ The scripts below create a private network and a subnet within it.
 
         // Step 2. Create a subnet with DHCP enabled.
         subnet, err := client.Cloud.Networks.Subnets.NewAndPoll(ctx, cloud.NetworkSubnetNewParams{
-            ProjectID:  gcore.Int(projectID),
-            RegionID:   gcore.Int(regionID),
             NetworkID:  network.ID,
             Name:       "my-subnet",
             Cidr:       "192.168.10.0/24",
@@ -344,9 +328,7 @@ A [network](https://api.gcore.com/docs/cloud#tag/Networks/operation/NetworkCreat
   <Tab title="Go SDK">
     ```go
     network, err := client.Cloud.Networks.NewAndPoll(ctx, cloud.NetworkNewParams{
-        ProjectID: gcore.Int(projectID),
-        RegionID:  gcore.Int(regionID),
-        Name:      "my-network",
+        Name: "my-network",
     })
     if err != nil {
         panic(err.Error())
@@ -356,7 +338,7 @@ A [network](https://api.gcore.com/docs/cloud#tag/Networks/operation/NetworkCreat
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST "https://api.gcore.com/cloud/v1/networks/$PROJECT_ID/$REGION_ID" \
+    curl -X POST "https://api.gcore.com/cloud/v1/networks/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{"name": "my-network"}'
@@ -410,8 +392,6 @@ A [subnet](https://api.gcore.com/docs/cloud#tag/Subnets/operation/SubnetCreateV1
   <Tab title="Go SDK">
     ```go
     subnet, err := client.Cloud.Networks.Subnets.NewAndPoll(ctx, cloud.NetworkSubnetNewParams{
-        ProjectID:  gcore.Int(projectID),
-        RegionID:   gcore.Int(regionID),
         NetworkID:  network.ID,
         Name:       "my-subnet",
         Cidr:       "192.168.10.0/24",
@@ -426,7 +406,7 @@ A [subnet](https://api.gcore.com/docs/cloud#tag/Subnets/operation/SubnetCreateV1
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST "https://api.gcore.com/cloud/v1/subnets/$PROJECT_ID/$REGION_ID" \
+    curl -X POST "https://api.gcore.com/cloud/v1/subnets/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
@@ -475,8 +455,6 @@ Renaming is a synchronous operation — no task polling required.
     ```go
     // Add "github.com/G-Core/gcore-go/packages/param" to your imports.
     updated, err := client.Cloud.Networks.Update(ctx, networkID, cloud.NetworkUpdateParams{
-        ProjectID: gcore.Int(projectID),
-        RegionID:  gcore.Int(regionID),
         Name:      param.NewOpt("my-network-renamed"),
     })
     if err != nil {
@@ -487,7 +465,7 @@ Renaming is a synchronous operation — no task polling required.
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X PATCH "https://api.gcore.com/cloud/v1/networks/$PROJECT_ID/$REGION_ID/$NETWORK_ID" \
+    curl -X PATCH "https://api.gcore.com/cloud/v1/networks/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$NETWORK_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{"name": "my-network-renamed"}'
@@ -520,10 +498,7 @@ Deleting the network removes all attached subnets automatically. Delete the netw
   </Tab>
   <Tab title="Go SDK">
     ```go
-    err = client.Cloud.Networks.DeleteAndPoll(ctx, networkID, cloud.NetworkDeleteParams{
-        ProjectID: gcore.Int(projectID),
-        RegionID:  gcore.Int(regionID),
-    })
+    err = client.Cloud.Networks.DeleteAndPoll(ctx, networkID, cloud.NetworkDeleteParams{})
     if err != nil {
         panic(err.Error())
     }
@@ -532,7 +507,7 @@ Deleting the network removes all attached subnets automatically. Delete the netw
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X DELETE "https://api.gcore.com/cloud/v1/networks/$PROJECT_ID/$REGION_ID/$NETWORK_ID" \
+    curl -X DELETE "https://api.gcore.com/cloud/v1/networks/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$NETWORK_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 

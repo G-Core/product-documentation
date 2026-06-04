@@ -141,16 +141,7 @@ For example, if your container supports it, you can configure where an applicati
 
 This variable directs the application to write logs to the specified path inside the container.
 
-## Step 7 (optional). Configure authentication via API
-
-To protect your container endpoints from unauthorized access, enable the API Key authentication feature. Either select an existing API key or create a new one.
-
-
-<Frame>![API keys settings](/images/docs/cloud/caas/add-a-container/api-key.png)</Frame>
-
-
-
-## Step 8. Finalize container configuration
+## Step 7. Finalize container configuration
 
 Specify the container name (this will be displayed in the Customer Portal) and additional information if needed.
 
@@ -174,8 +165,8 @@ Set the following environment variables before running the examples:
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
-export PROJECT_ID="{YOUR_PROJECT_ID}"
-export REGION_ID="{YOUR_REGION_ID}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 ```
 
 ## Step 1. List available flavors
@@ -189,8 +180,8 @@ Flavors define the CPU and RAM allocation for each container pod. Choose the sma
     import requests  # pip install requests
 
     API_KEY = os.environ["GCORE_API_KEY"]
-    PROJECT_ID = os.environ["PROJECT_ID"]
-    REGION_ID = os.environ["REGION_ID"]
+    PROJECT_ID = os.environ["GCORE_CLOUD_PROJECT_ID"]
+    REGION_ID = os.environ["GCORE_CLOUD_REGION_ID"]
     HDR = {"Authorization": f"APIKey {API_KEY}"}
 
     resp = requests.get(
@@ -218,8 +209,8 @@ Flavors define the CPU and RAM allocation for each container pod. Choose the sma
 
     func main() {
         apiKey := os.Getenv("GCORE_API_KEY")
-        projectID := os.Getenv("PROJECT_ID")
-        regionID := os.Getenv("REGION_ID")
+        projectID := os.Getenv("GCORE_CLOUD_PROJECT_ID")
+        regionID := os.Getenv("GCORE_CLOUD_REGION_ID")
         client := &http.Client{}
 
         req, _ := http.NewRequest("GET",
@@ -246,7 +237,7 @@ Flavors define the CPU and RAM allocation for each container pod. Choose the sma
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -s "https://api.gcore.com/cloud/v1/caas/flavors/$PROJECT_ID/$REGION_ID" \
+    curl -s "https://api.gcore.com/cloud/v1/caas/flavors/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -340,7 +331,7 @@ CaaS pulls the image, starts pods, and assigns a public HTTPS endpoint. The cont
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -s -X POST "https://api.gcore.com/cloud/v1/caas/$PROJECT_ID/$REGION_ID/containers" \
+    curl -s -X POST "https://api.gcore.com/cloud/v1/caas/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/containers" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
@@ -472,7 +463,7 @@ Retrieve the container to find the public endpoint and confirm it is ready.
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -s "https://api.gcore.com/cloud/v1/caas/$PROJECT_ID/$REGION_ID/containers/my-nginx" \
+    curl -s "https://api.gcore.com/cloud/v1/caas/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/containers/my-nginx" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -570,8 +561,8 @@ A Container Registry stores the Docker image before CaaS pulls it.
 
     func main() {
         apiKey := os.Getenv("GCORE_API_KEY")
-        projectID := os.Getenv("PROJECT_ID")
-        regionID := os.Getenv("REGION_ID")
+        projectID := os.Getenv("GCORE_CLOUD_PROJECT_ID")
+        regionID := os.Getenv("GCORE_CLOUD_REGION_ID")
         client := &http.Client{}
 
         payload, _ := json.Marshal(map[string]any{"name": "my-registry", "storage_limit": 10})
@@ -597,7 +588,7 @@ A Container Registry stores the Docker image before CaaS pulls it.
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -s -X POST "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID" \
+    curl -s -X POST "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{"name": "my-registry", "storage_limit": 10}'
@@ -670,7 +661,7 @@ A registry user provides Docker login credentials. The `secret` is returned only
   <Tab title="curl">
     ```bash
     curl -s -X POST \
-      "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID/$REGISTRY_ID/users" \
+      "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID/users" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{"name": "pusher", "duration": -1}'
@@ -762,7 +753,7 @@ A pull secret stores registry credentials inside the CaaS region, letting CaaS a
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -s -X POST "https://api.gcore.com/cloud/v1/caas/secrets/$PROJECT_ID/$REGION_ID" \
+    curl -s -X POST "https://api.gcore.com/cloud/v1/caas/secrets/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d "{
@@ -842,7 +833,7 @@ Pass the pull secret name and the full private image path in the container spec.
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -s -X POST "https://api.gcore.com/cloud/v1/caas/$PROJECT_ID/$REGION_ID/containers" \
+    curl -s -X POST "https://api.gcore.com/cloud/v1/caas/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/containers" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d "{
@@ -905,7 +896,7 @@ Delete the container when it is no longer needed:
   <Tab title="curl">
     ```bash
     curl -s -X DELETE \
-      "https://api.gcore.com/cloud/v1/caas/$PROJECT_ID/$REGION_ID/containers/my-nginx" \
+      "https://api.gcore.com/cloud/v1/caas/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/containers/my-nginx" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -957,11 +948,11 @@ To remove a private registry and its user, delete the registry user first, then 
   <Tab title="curl">
     ```bash
     curl -s -X DELETE \
-      "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID/$REGISTRY_ID/users/pusher" \
+      "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID/users/pusher" \
       -H "Authorization: APIKey $GCORE_API_KEY"
 
     curl -s -X DELETE \
-      "https://api.gcore.com/cloud/v1/registries/$PROJECT_ID/$REGION_ID/$REGISTRY_ID" \
+      "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
   </Tab>

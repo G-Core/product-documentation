@@ -475,8 +475,8 @@ Open a bash terminal and set these as environment variables before running the e
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
-export PROJECT_ID="{YOUR_PROJECT_ID}"
-export REGION_ID="{YOUR_REGION_ID}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 export LB_ID="{YOUR_LOAD_BALANCER_ID}"
 ```
 
@@ -490,11 +490,7 @@ Listing returns all load balancers in the region with their operating status, pr
     import os
     from gcore import Gcore
 
-    client = Gcore(
-        api_key=os.environ["GCORE_API_KEY"],
-        cloud_project_id=int(os.environ["PROJECT_ID"]),
-        cloud_region_id=int(os.environ["REGION_ID"]),
-    )
+    client = Gcore()
 
     page = client.cloud.load_balancers.list()
     print(f"Total: {page.count}")
@@ -509,20 +505,11 @@ Listing returns all load balancers in the region with their operating status, pr
         "fmt"
         "log"
         "os"
-        "strconv"
-
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
     )
 
-    projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
-    regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
-    client := gcore.NewClient(
-        option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
-        option.WithCloudProjectID(projectID),
-        option.WithCloudRegionID(regionID),
-    )
+    client := gcore.NewClient()
     ctx := context.Background()
 
     page, err := client.Cloud.LoadBalancers.List(ctx, cloud.LoadBalancerListParams{})
@@ -537,7 +524,7 @@ Listing returns all load balancers in the region with their operating status, pr
   </Tab>
   <Tab title="curl">
     ```bash
-    curl "https://api.gcore.com/cloud/v1/loadbalancers/$PROJECT_ID/$REGION_ID" \
+    curl "https://api.gcore.com/cloud/v1/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -572,11 +559,7 @@ Fetching a single load balancer returns the full configuration including flavor,
     import os
     from gcore import Gcore
 
-    client = Gcore(
-        api_key=os.environ["GCORE_API_KEY"],
-        cloud_project_id=int(os.environ["PROJECT_ID"]),
-        cloud_region_id=int(os.environ["REGION_ID"]),
-    )
+    client = Gcore()
 
     lb = client.cloud.load_balancers.get(load_balancer_id=os.environ["LB_ID"])
     print(f"name: {lb.name}")
@@ -606,7 +589,7 @@ Fetching a single load balancer returns the full configuration including flavor,
   </Tab>
   <Tab title="curl">
     ```bash
-    curl "https://api.gcore.com/cloud/v1/loadbalancers/$PROJECT_ID/$REGION_ID/$LB_ID" \
+    curl "https://api.gcore.com/cloud/v1/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$LB_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -648,11 +631,7 @@ A single PATCH request accepts any combination of `name` and `tags` — omitted 
     import os
     from gcore import Gcore
 
-    client = Gcore(
-        api_key=os.environ["GCORE_API_KEY"],
-        cloud_project_id=int(os.environ["PROJECT_ID"]),
-        cloud_region_id=int(os.environ["REGION_ID"]),
-    )
+    client = Gcore()
 
     updated = client.cloud.load_balancers.update(
         load_balancer_id=os.environ["LB_ID"],
@@ -684,7 +663,7 @@ A single PATCH request accepts any combination of `name` and `tags` — omitted 
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X PATCH "https://api.gcore.com/cloud/v2/loadbalancers/$PROJECT_ID/$REGION_ID/$LB_ID" \
+    curl -X PATCH "https://api.gcore.com/cloud/v2/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$LB_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{
@@ -721,11 +700,7 @@ Failover terminates all existing connections. Schedule it during a maintenance w
     import os
     from gcore import Gcore
 
-    client = Gcore(
-        api_key=os.environ["GCORE_API_KEY"],
-        cloud_project_id=int(os.environ["PROJECT_ID"]),
-        cloud_region_id=int(os.environ["REGION_ID"]),
-    )
+    client = Gcore()
 
     t = client.cloud.load_balancers.failover(load_balancer_id=os.environ["LB_ID"])
     client.cloud.tasks.poll(t.tasks[0])
@@ -748,7 +723,7 @@ Failover terminates all existing connections. Schedule it during a maintenance w
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST "https://api.gcore.com/cloud/v1/loadbalancers/$PROJECT_ID/$REGION_ID/$LB_ID/failover" \
+    curl -X POST "https://api.gcore.com/cloud/v1/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$LB_ID/failover" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d '{}'
@@ -774,11 +749,7 @@ Deleting a load balancer removes it and its configuration permanently. The opera
     import os
     from gcore import Gcore
 
-    client = Gcore(
-        api_key=os.environ["GCORE_API_KEY"],
-        cloud_project_id=int(os.environ["PROJECT_ID"]),
-        cloud_region_id=int(os.environ["REGION_ID"]),
-    )
+    client = Gcore()
 
     client.cloud.load_balancers.delete_and_poll(load_balancer_id=os.environ["LB_ID"])
     print("Load balancer deleted.")
@@ -796,7 +767,7 @@ Deleting a load balancer removes it and its configuration permanently. The opera
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X DELETE "https://api.gcore.com/cloud/v1/loadbalancers/$PROJECT_ID/$REGION_ID/$LB_ID" \
+    curl -X DELETE "https://api.gcore.com/cloud/v1/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$LB_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 

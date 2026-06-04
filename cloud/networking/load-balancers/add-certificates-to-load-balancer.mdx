@@ -131,8 +131,8 @@ Open a bash terminal and set these as environment variables before running the e
 
 ```bash
 export GCORE_API_KEY="{YOUR_API_KEY}"
-export PROJECT_ID="{YOUR_PROJECT_ID}"
-export REGION_ID="{YOUR_REGION_ID}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 export LB_ID="{YOUR_LOAD_BALANCER_ID}"
 ```
 
@@ -147,11 +147,7 @@ The scripts below upload a TLS certificate to Secrets Manager and create a `TERM
     from gcore import Gcore
     from gcore.types.cloud import secret_upload_tls_certificate_params
 
-    client = Gcore(
-        api_key=os.environ["GCORE_API_KEY"],
-        cloud_project_id=int(os.environ["PROJECT_ID"]),
-        cloud_region_id=int(os.environ["REGION_ID"]),
-    )
+    client = Gcore()
     lb_id = os.environ["LB_ID"]
 
     # Step 1. Upload the default TLS certificate to Secrets Manager
@@ -215,11 +211,8 @@ The scripts below upload a TLS certificate to Secrets Manager and create a `TERM
     	"fmt"
     	"log"
     	"os"
-    	"strconv"
-
     	gcore "github.com/G-Core/gcore-go"
     	"github.com/G-Core/gcore-go/cloud"
-    	"github.com/G-Core/gcore-go/option"
     )
 
     func readFile(path string) string {
@@ -231,15 +224,9 @@ The scripts below upload a TLS certificate to Secrets Manager and create a `TERM
     }
 
     func main() {
-    	projectID, _ := strconv.ParseInt(os.Getenv("PROJECT_ID"), 10, 64)
-    	regionID, _ := strconv.ParseInt(os.Getenv("REGION_ID"), 10, 64)
     	lbID := os.Getenv("LB_ID")
 
-    	client := gcore.NewClient(
-    		option.WithAPIKey(os.Getenv("GCORE_API_KEY")),
-    		option.WithCloudProjectID(projectID),
-    		option.WithCloudRegionID(regionID),
-    	)
+    	client := gcore.NewClient()
     	ctx := context.Background()
 
     	// Step 1. Upload the default TLS certificate to Secrets Manager
@@ -322,11 +309,7 @@ Certificates are stored in Gcore Secrets Manager before being referenced by a lo
     from gcore import Gcore
     from gcore.types.cloud import secret_upload_tls_certificate_params
 
-    client = Gcore(
-        api_key=os.environ["GCORE_API_KEY"],
-        cloud_project_id=int(os.environ["PROJECT_ID"]),
-        cloud_region_id=int(os.environ["REGION_ID"]),
-    )
+    client = Gcore()
 
     cert_pem = open("/path/to/certificate.pem").read()
     key_pem = open("/path/to/private-key.pem").read()
@@ -367,7 +350,7 @@ Certificates are stored in Gcore Secrets Manager before being referenced by a lo
     KEY_PEM=$(awk '{printf "%s\\n", $0}' /path/to/private-key.pem)
     CHAIN_PEM=$(awk '{printf "%s\\n", $0}' /path/to/chain.pem)
 
-    curl -X POST "https://api.gcore.com/cloud/v2/secrets/$PROJECT_ID/$REGION_ID" \
+    curl -X POST "https://api.gcore.com/cloud/v2/secrets/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d "{
@@ -436,7 +419,7 @@ Listing secrets returns all certificates stored in the current project and regio
   </Tab>
   <Tab title="curl">
     ```bash
-    curl "https://api.gcore.com/cloud/v1/secrets/$PROJECT_ID/$REGION_ID" \
+    curl "https://api.gcore.com/cloud/v1/secrets/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -507,7 +490,7 @@ A `TERMINATED_HTTPS` listener decrypts TLS traffic at the load balancer and forw
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X POST "https://api.gcore.com/cloud/v1/lblisteners/$PROJECT_ID/$REGION_ID" \
+    curl -X POST "https://api.gcore.com/cloud/v1/lblisteners/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d "{
@@ -541,7 +524,7 @@ A `TERMINATED_HTTPS` listener decrypts TLS traffic at the load balancer and forw
     Verify the result:
 
     ```bash
-    curl "https://api.gcore.com/cloud/v1/lblisteners/$PROJECT_ID/$REGION_ID/$LISTENER_ID" \
+    curl "https://api.gcore.com/cloud/v1/lblisteners/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$LISTENER_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -620,7 +603,7 @@ SNI certificates let a single listener serve different TLS certificates for diff
   </Tab>
   <Tab title="curl">
     ```bash
-    curl -X PATCH "https://api.gcore.com/cloud/v2/lblisteners/$PROJECT_ID/$REGION_ID/$LISTENER_ID" \
+    curl -X PATCH "https://api.gcore.com/cloud/v2/lblisteners/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$LISTENER_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY" \
       -H "Content-Type: application/json" \
       -d "{\"sni_secret_id\": [\"$SNI_SECRET_ID\"]}"
@@ -637,7 +620,7 @@ SNI certificates let a single listener serve different TLS certificates for diff
     Poll every 5 seconds until `state` is `FINISHED`. Verify the result:
 
     ```bash
-    curl "https://api.gcore.com/cloud/v1/lblisteners/$PROJECT_ID/$REGION_ID/$LISTENER_ID" \
+    curl "https://api.gcore.com/cloud/v1/lblisteners/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$LISTENER_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
@@ -703,17 +686,17 @@ Delete the listener before the secret. A secret that is in use by a listener can
   <Tab title="curl">
     ```bash
     # Delete the listener first
-    curl -X DELETE "https://api.gcore.com/cloud/v1/lblisteners/$PROJECT_ID/$REGION_ID/$LISTENER_ID" \
+    curl -X DELETE "https://api.gcore.com/cloud/v1/lblisteners/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$LISTENER_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
 
     Poll until the delete task finishes. Then delete the secrets:
 
     ```bash
-    curl -X DELETE "https://api.gcore.com/cloud/v1/secrets/$PROJECT_ID/$REGION_ID/$SECRET_ID" \
+    curl -X DELETE "https://api.gcore.com/cloud/v1/secrets/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$SECRET_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
 
-    curl -X DELETE "https://api.gcore.com/cloud/v1/secrets/$PROJECT_ID/$REGION_ID/$SNI_SECRET_ID" \
+    curl -X DELETE "https://api.gcore.com/cloud/v1/secrets/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$SNI_SECRET_ID" \
       -H "Authorization: APIKey $GCORE_API_KEY"
     ```
   </Tab>
