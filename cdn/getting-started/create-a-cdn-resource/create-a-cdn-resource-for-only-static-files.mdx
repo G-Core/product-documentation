@@ -1,143 +1,153 @@
 ﻿---
 title: Create a CDN resource for static assets
 sidebarTitle: For static files
-ai-navigation: Create a CDN resource for static assets by specifying a custom domain, configuring an origin or origin group, and adding a CNAME record to your DNS provider for content delivery acceleration.
+ai-navigation: Create a CDN resource for static assets by specifying a custom domain, selecting the Do not delegate DNS option, configuring an origin or origin group, and adding a CNAME record to your DNS provider for content delivery acceleration. Optionally enable WAAP for Layer 7 DDoS and web application protection.
 ---
+
+A CDN resource for static assets uses a CNAME-based setup to accelerate delivery of images, scripts, stylesheets, and other static files. The existing DNS provider continues to manage the domain — only one CNAME record needs to be added, and the static file URLs updated.
+
+To accelerate the entire site (both static and dynamic content) without code changes, use the [entire site guide](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site) instead.
 
 ## Step 1. Start creation
 
-Go to the [CDN](https://portal.gcore.com/cdn/resources/list) page and click **Create CDN resource**. 
+Go to the [CDN](https://portal.gcore.com/cdn/resources/list) page and click **Create CDN resource**.
 
+{/* TODO: replace with screenshot of the CDN resources list page showing the "Create CDN resource" button */}
+<Frame>
+  ![Create CDN resource button](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/create-cdn-resource-button.png)
+</Frame>
 
-<Frame>![Create CDN resource button](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/cdn-resource-10.png)</Frame>
+## Step 2. Configure domain and DNS
 
+The following sections cover entering the custom domain, selecting the DNS option, and optionally enabling WAAP — all done on the same creation form.
 
+### 1\. Enter a custom domain
 
-## Step 2. Choose acceleration type
+In the **Add domain** field, enter a subdomain in the format `cdn.<website domain>`. For example, for the site `yourwebsite.com`, enter `cdn.yourwebsite.com`.
 
-Select **Accelerate and protect static assets only** and then click **Confirm**.
-
-
-<Frame>![Acceleration and protection type](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/cdn-resource-20.png)</Frame>
-
-
-
-## Step 3. Set up the initial configuration
-
-Fill in the fields to configure your CDN resource on the **Set up initial configuration** page. 
-
-### 1\. Specify a custom domain
-
-Assign a custom domain as `cdn.<your website domain>` for delivering static files via Gcore CDN. 
-
-
-<Frame>![Initial configuration](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/add-custom-domain.png)</Frame>
-
-
-
-For example, if your website is `yourwebsite.com`, enter `cdn.yourwebsite.com`. You will use that CNAME later to rewrite URLs in your website's source to deliver those resources through CDN. 
-
-You can specify multiple domains by clicking the plus (+) icon. In [Step 5](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files#step-5-integrate-the-cdn-resource-with-your-website) you can configure your website to deliver different types of static files from separate domains. 
+This subdomain is used as a CNAME to route static file requests through the CDN. Multiple URL paths can point to it from the website source.
 
 <Warning>
-**Warning**
-
-After you create a CDN resource, you can't change your custom domain, such as `cdn.yourdomain.com`.
+After a CDN resource is created, the custom domain cannot be changed.
 </Warning>
 
-### 2\. Configure origin
+{/* TODO: replace with screenshot of the Add domain field with a subdomain entered */}
+<Frame>
+  ![Add domain field](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/add-domain-field.png)
+</Frame>
 
-An origin is a source (e.g., a website, an application, a private bucket) from where the CDN resource will request your content. In the Gcore Customer Portal, each origin is allocated to an [origin group](/cdn/add-an-origin-group). 
+### 2\. Select the DNS option
 
-There are two options for configuring an origin: 
+Select **Do not delegate** to keep DNS at the current provider. No nameserver change is required — only a single CNAME record is added in [Step 5](#step-5-add-a-cname-record).
 
-  * **Specify content origin**. Select this option if you haven't previously created an origin group. Follow our instructions to [add an origin group (step 2)](/cdn/add-an-origin-group#step-2-enter-the-origin-group-name).
+{/* TODO: replace with screenshot of DNS option selection with "Do not delegate" selected */}
+<Frame>
+  ![DNS option](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/dns-option-do-not-delegate.png)
+</Frame>
 
-  * **Select origins group**. Select this option if you already created the necessary origin group. Click the **Select the origin group** radio button, and choose the required group. This option is available only if you have existing groups.
+### 3\. Enable WAAP (optional)
 
+Enable the **Enable WAAP** toggle to activate Web Application and API Protection alongside CDN acceleration. WAAP provides Layer 7 DDoS protection and web application security; configure it after resource creation using the [WAAP setup guide](/waap/getting-started/configure-waap-for-a-domain).
 
+{/* TODO: replace with screenshot of the Enable WAAP toggle in the creation form */}
+<Frame>
+  ![Enable WAAP toggle](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/enable-waap-toggle.png)
+</Frame>
 
-<Frame>![Initial configuration](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/choose-origin-group.png)</Frame>
+## Step 3. Configure origin
 
+An origin is the source server (website, application, or storage bucket) from which the CDN fetches content. Each origin is associated with an [origin group](/cdn/add-an-origin-group).
 
+Choose one of the following options:
 
-### 3\. Add a description (optional)
+- **Specify content origin** — select this when no origin group exists yet. Follow the instructions in step 2 of the [origin group guide](/cdn/add-an-origin-group#step-2-enter-the-origin-group-name).
+- **Select origin group** — select this when an origin group already exists. Choose the required group from the dropdown. This option only appears when existing groups are available.
 
-Provide additional information about the CDN resource. This will not affect any settings but will only be displayed in the [CDN resources](https://portal.gcore.com/cdn/resources/list) section next to the resource CNAME.
+{/* TODO: replace with screenshot of the origin configuration section */}
+<Frame>
+  ![Configure origin](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/configure-origin.png)
+</Frame>
 
-## Step 4. Set up DNS (add CNAME)
+### Add a description (optional)
 
-Add a [CNAME record](/dns/dns-records#cname-record) for the domain specified in [Step 3](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files#step-3-set-up-the-initial-configuration) as `cdn.yourwebsite.com`. Do so in your DNS provider's personal account. For a CNAME value, enter a subdomain shown in your Gcore Customer Portal as `*.gcdn.co`.
+Provide any additional notes about this CDN resource. The description is displayed next to the resource CNAME in the CDN resources list and does not affect settings.
 
-For example, in the following screenshot, the subdomain is `cl-1ab23456.gcdn.co`, so, for the `cdn.yourdomain.com` subdomain, you need to create a CNAME record with the value `cl-1ab23456.gcdn.co`. 
+## Step 4. Create the resource
 
+Click **Create CDN resource** to create the resource. When WAAP was enabled in Step 2, the button reads **Create and enable protection**.
 
-<Frame>![DNS setting](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/cdn-resource-40.png)</Frame>
+{/* TODO: replace with screenshot of the completed creation form with the Create button visible */}
+<Frame>
+  ![Create CDN resource](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/create-resource-confirm.png)
+</Frame>
 
+After creation, the portal displays the generated CNAME value in the format `*.gcdn.co`. Copy this value — it's needed in the next step.
 
+## Step 5. Add a CNAME record
 
-If you specified additional domain names in [Step 3](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files#step-3-set-up-the-initial-configuration), create CNAME records for them with the same value.
+In the DNS provider's control panel, add a [CNAME record](/dns/dns-records#cname-record) for the subdomain entered in Step 2:
 
-## Step 5. Integrate the CDN resource with your website
+| Field | Value |
+|---|---|
+| **Name / Host** | `cdn.yourwebsite.com` (the subdomain entered in Step 2) |
+| **Value / Points to** | The `*.gcdn.co` value shown in the portal, e.g. `cl-1ab23456.gcdn.co` |
 
-1\. Go to the admin panel of your origin website and change the URLs of static files. Replace the origin source domain with a custom domain of the CDN resource either by script or manually. 
+{/* TODO: replace with screenshot of the DNS step in the portal showing the generated CNAME value */}
+<Frame>
+  ![CNAME record setup](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/dns-cname-setup.png)
+</Frame>
 
-For example, if a file path used to be `yourwebsite.com/images/image.jpg`, change it to `cdn.yourwebsite.com/images/image.jpg`. As a result, users will get static files from the CDN cache, and only the requests to the files that haven't yet been cached will be forwarded to your origin server.
+When multiple custom domains were entered, create a CNAME record for each one pointing to the same `*.gcdn.co` value.
 
-If your site is built on a CMS (such as WordPress, Joomla, or Drupal) you can replace a domain name in file paths using special plugins. Find the right plugin and discover instructions for replacing the URLs in our guide on [integrating CDN with CMS](/cdn/getting-started/integrate-cdn-with-cms).
+## Step 6. Integrate the CDN resource with the website
 
-2\. Go back to the Gcore Customer Portal and click **Confirm**.
+Update the static file URLs to use the CDN subdomain instead of the origin domain.
 
+1. In the website admin panel, replace the origin domain with the CDN subdomain in static file URLs — either via script or manually.
 
-<Frame>![Integration](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/cdn-resource-50.png)</Frame>
+   For example, change `yourwebsite.com/images/image.jpg` to `cdn.yourwebsite.com/images/image.jpg`. Uncached requests continue to reach the origin server, while cached files are served from CDN edge nodes.
 
+   For sites built on a CMS such as WordPress, Joomla, or Drupal, use a plugin to replace domain names in file paths. The [CMS integration guide](/cdn/getting-started/integrate-cdn-with-cms) covers the supported platforms and plugins.
 
+2. Return to the Gcore Customer Portal and click **Confirm**.
 
-That's it! The CDN resource creation is completed. Click **Open resource settings** to view the resources and set up advanced settings.
+{/* TODO: replace with screenshot of the integration confirmation step */}
+<Frame>
+  ![Integration confirmation](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/integration-confirm.png)
+</Frame>
 
-If there is no text **... steps left** box in the upper-right corner of the screen, this means that the resource is correctly created and everything is working. If there are still some unfinished steps, check out the following section.
+CDN resource creation is complete. Click **Open resource settings** to view and configure advanced settings.
+
+If the **... steps left** indicator is not shown, the resource is created and working correctly. If it is shown, see the troubleshooting section below.
 
 ## Troubleshoot resource creation
 
-If you see the **... steps left** box, something went wrong while creating or integrating the CDN resource. 
+If the **... steps left** indicator appears after creation, something needs attention.
 
+{/* TODO: replace with screenshot of the "steps left" warning indicator */}
+<Frame>
+  ![Steps left indicator](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/steps-left-indicator.png)
+</Frame>
 
-<Frame>![Issues](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/cdn-resource-60.png)</Frame>
+To investigate:
 
+1. Click **Setup guide**. A panel opens showing the status of each creation step.
 
+2. Click **Check DNS setup status**.
 
-To find out exactly where an error occurred:
+{/* TODO: replace with screenshot of the Setup guide panel showing Check DNS setup status */}
+<Frame>
+  ![Check DNS setup status](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/check-dns-setup.png)
+</Frame>
 
-1\. Click **Setup guide**. You will see a sliding panel indicating the status of each step of CDN resource creation. 
+   - If the CNAME is configured correctly, it will be confirmed in the portal.
+   - If there is an error, a message will appear indicating the issue.
 
-2\. Click **Check DNS setup status**.
+3. Click **Next** in the **Setup your DNS** section, then click **Check your integration**.
 
+{/* TODO: replace with screenshot of the Check your integration step */}
+<Frame>
+  ![Check your integration](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/check-integration.png)
+</Frame>
 
-<Frame>![Check DNS setup](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/cdn-resource-70.png)</Frame>
-
-
-
-  * If a CNAME record is configured correctly, it will be shown in the UI:
-
-
-<Frame>![Configured correctly](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/image_1468.png)</Frame>
-
-
-  * If an error occurs, a corresponding message will appear.
-
-
-<Frame>![Error message](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/cdn-resource-90.png)</Frame>
-
-
-
-
-
-3\. Click **Next** in the **Setup your DNS section**. Click **Check your integration**.
-
-
-<Frame>![Check your integration](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files/cdn-resource-100.png)</Frame>
-
-
-
-
-If there are integration issues, you will see an error message. Contact [Gcore support](mailto:support@gcore.com) or retry the integration according to our [instructions](/cdn/getting-started/integrate-cdn-with-cms).
+If integration issues persist, contact [Gcore support](mailto:support@gcore.com) or follow the [CMS integration guide](/cdn/getting-started/integrate-cdn-with-cms).

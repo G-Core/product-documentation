@@ -1,120 +1,141 @@
 ---
 title: Create a CDN resource for the entire site
 sidebarTitle: For the entire site
-ai-navigation: Create a CDN resource for entire site acceleration and protection using Gcore CDN and Managed DNS services to deliver static and dynamic content without code changes. Configure the acceleration type, enter the domain name (second-level, third-level, or higher-level domain), and automatically generate the associated DNS zone.
+ai-navigation: Create a CDN resource for entire site acceleration and protection using Gcore CDN and Managed DNS services to deliver static and dynamic content without code changes. Enter your domain name, choose DNS delegation to Gcore, configure an origin, and update your nameservers to complete setup. Optionally enable WAAP for Layer 7 DDoS and web application protection.
 ---
 
-## What is the CDN resource for the entire site used for?
+A CDN resource for the entire site accelerates both static and dynamic content delivery using Gcore CDN and Managed DNS — without requiring code changes to the website. Gcore takes over DNS management for the domain, routing all traffic through the CDN.
 
-A CDN resource of this type is a feature that allows you to accelerate and protect the entire site with Gcore CDN and Managed DNS services. This CDN resource helps accelerate both kinds of content delivery: static and dynamic. If you only need to deliver static assets, use a [separate CDN resource for static content](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files).
+To accelerate only static assets (images, scripts, stylesheets), use the [static assets guide](/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-only-static-files) instead. That approach uses a simpler CNAME-based setup that keeps DNS at the current provider.
 
-We explain the difference in delivery in the "[How to speed up dynamic content delivery using a CDN](https://gcore.com/blog/how-to-speed-up-dynamic-content-delivery-using-cdn)" article.
+We explain the differences in delivery in the [CDN performance article](https://gcore.com/blog/how-to-speed-up-dynamic-content-delivery-using-cdn).
+
+<Warning>
+If either CDN or Managed DNS stops working, the site will also stop being accelerated.
+</Warning>
 
 ## Create and integrate a CDN resource for the entire site
 
-You don't need to change the site's code to create and integrate a CDN resource for the entire site.
+The following steps cover the complete setup, from entering a domain to changing nameservers at the registrar.
 
-**Note** : If one of the services (CDN or Managed DNS) stops working, the site will also stop accelerating and working.
+### Step 1. Start creation
 
-To create a CDN resource for the entire site:
+Go to [CDN resources](https://portal.gcore.com/cdn/resources/list) and click **Create CDN resource**.
 
-### 1\. Choose the acceleration type
+{/* TODO: replace with screenshot of the CDN resources list page with the "Create CDN resource" button */}
+<Frame>
+  ![Create CDN resource button](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/create-cdn-resource-button.png)
+</Frame>
 
-Go to the [CDN resources](https://portal.gcore.com/cdn/resources/list) tab and click **Create CDN resource**.
+### Step 2. Enter the domain
 
+In the **Add domain** field, enter the domain to accelerate. Accepted formats are:
 
-<Frame>![Choose the acceleration type](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/add-cdn-resource.png)</Frame>
+- Second-level domain (`testdomain.com`)
+- Third-level domain (`store.testdomain.com`, `blog.testdomain.com`)
+- Higher-level domain (`sales.store.testdomain.com`)
 
+In all cases, the DNS zone created in Gcore Managed DNS is the second-level domain (e.g., `testdomain.com`). The exception is effective top-level domains like `co.uk`, where the zone is the subdomain plus the eTLD: `example.co.uk`.
 
+{/* TODO: replace with screenshot of the Add domain field with a domain entered */}
+<Frame>
+  ![Add domain field](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/add-domain-field.png)
+</Frame>
 
-The new page will open. Select "Accelerate and protect entire site" and click **Confirm**.
+<Info>
+**Notes**:
 
+- Domains already registered on another account will be declined.
+- When the domain matches an existing DNS zone in the account, that zone is used without duplication.
+</Info>
 
-<Frame>![Acceleration and protection type](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/13050295683601.png)</Frame>
+An optional description can also be added. It is displayed next to the resource CNAME in the CDN resources list.
 
+### Step 3. Select DNS delegation
 
+Select the option to delegate DNS to Gcore. This automatically creates a DNS zone for the domain in [Gcore Managed DNS](https://gcore.com/dns).
 
-### 2\. Enter a site name
+- When Managed DNS hasn't been used before, the Free plan activates automatically.
+- When Managed DNS is already in use, the new zone is added to the existing account.
 
-**Note** : This step requires the creation of a DNS zone (similar to the site name) in the [Gcore Managed DNS service](https://gcore.com/dns). In our example, a DNS zone will be _testdomain.com_. If you haven't used the Managed DNS before, the Free plan will activate automatically at this step. If you have already used the DNS service, the specified DNS zone will also be created automatically, and you can view it in the [Gcore Customer Portal](https://portal.gcore.com/dns/zones).
+{/* TODO: replace with screenshot of the DNS delegation option selected */}
+<Frame>
+  ![DNS delegation option](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/dns-delegation-option.png)
+</Frame>
 
-Enter the domain of the site you want to create a CDN resource. You can use as a site name the following values:
+### Step 4. Enable WAAP (optional)
 
-  * a second-level domain (_testdomain.com_),
-  * a third-level domain (_store.testdomain.com_, _blog.testdomain.com_, etc.),
-  * or a higher-level domain (_sales.store.testdomain.com_).
+Enable the **Enable WAAP** toggle to activate Web Application and API Protection alongside CDN acceleration. WAAP provides Layer 7 DDoS protection and web application security; complete the configuration after resource creation using the [WAAP setup guide](/waap/getting-started/configure-waap-for-a-domain).
 
+{/* TODO: replace with screenshot of the Enable WAAP toggle in the creation form */}
+<Frame>
+  ![Enable WAAP toggle](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/enable-waap-toggle.png)
+</Frame>
 
+### Step 5. Configure origin
 
-In all cases, a DNS zone in our control panel will be a second-level domain (e.g., _testdomain.com_). The only exception is for eTLD (effective top-level domains) like _co.uk_, where the DNS zone will consist of a subdomain and an effective top-level domain: _example.co.uk_.
+An origin is the source server from which the CDN fetches content. Choose one of the following options:
 
-You can also optionally enter the description of this CDN resource. The maximum comment length is 512 characters. When you complete the configuration, click **Confirm**.
+- **Specify content origin** — select this when no origin group exists yet. Follow the instructions in step 2 of the [origin group guide](/cdn/add-an-origin-group#step-2-enter-the-origin-group-name).
+- **Select origin group** — select this when an origin group already exists. Choose the required group from the dropdown. This option only appears when existing groups are available.
 
+{/* TODO: replace with screenshot of the origin configuration section */}
+<Frame>
+  ![Configure origin](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/configure-origin.png)
+</Frame>
 
-<Frame>![Choose the acceleration type](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/13050514395921.png)</Frame>
+### Step 6. Review DNS records
 
+The system automatically looks up existing DNS records for the domain.
 
+- **When DNS records exist**, they are displayed and can be edited, deleted, or added to as needed.
 
-**Note** :
+{/* TODO: replace with screenshot of the DNS records review with existing records shown */}
+<Frame>
+  ![DNS records with existing entries](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/dns-records-existing.png)
+</Frame>
 
-  1. If you try to specify a site name that already exists on another client's account, the procedure will be declined.
+- **When no DNS records are found**, a warning indicates that at least an A record should be added. Enter the subdomain (or leave the **Name** field empty for the root) and the origin IP address, then click **Add**.
 
-  2. If you specify a site whose domain matches an existing DNS zone in your account, this DNS zone will be used for settings. The zone is not duplicated.
+{/* TODO: replace with screenshot of the DNS records review with no records found and A record entry */}
+<Frame>
+  ![DNS records with no existing entries](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/dns-records-empty.png)
+</Frame>
 
+Click **Confirm** to proceed. When WAAP was enabled in Step 4, the button reads **Create and enable protection**.
 
+### Step 7. Change nameservers
 
+A CDN resource and DNS zone are automatically created for the specified domain. To complete the setup, log in to the domain registrar and replace the current nameservers with the Gcore nameservers shown in the portal.
 
-### 3\. Review your DNS records
+{/* TODO: replace with screenshot of the nameservers step in the portal */}
+<Frame>
+  ![Change nameservers](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/change-nameservers.png)
+</Frame>
 
-Our system looks for DNS records associated with your site domain at this step.
+<Info>
+The nameserver values shown in the portal are authoritative. The current values are typically:
 
-  * If DNS records exist, they will be displayed automatically. You can edit or delete them or add a new record if necessary. Alternatively, you can skip this step. Click **Confirm** when the configuration is complete.
+```
+ns1.gcorelabs.net
+ns2.gcdn.services
+```
+</Info>
 
+Nameserver changes can take up to 24 hours to propagate. Click **Confirm** after updating the registrar settings.
 
-<Frame>![If DNS records exist,](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/13050615347601.png)</Frame>
+### Step 8. Set up additional options (optional)
 
+Additional features can be activated at this step or configured later in resource settings. Click **Confirm** to complete the setup.
 
+{/* TODO: replace with screenshot of the optional additional settings step */}
+<Frame>
+  ![Additional options](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/additional-options.png)
+</Frame>
 
-  * If no DNS records are found, a warning indicates that at least an A record should be added. Specify the subdomain or empty the "Name" field and the IP address. Then click **Add** and **Confirm**.
+After setup, the CDN resource settings page opens. The header shows the associated DNS zone name. A warning appears when the zone is not yet delegated to Gcore — this may persist for up to 24 hours while nameserver changes propagate.
 
-
-<Frame>![If no DNS records are found](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/13050648890385.png)</Frame>
-
-
-
-### 4\. Change name servers
-
-If all the steps are completed successfully, a CDN resource and DNS zone will be automatically created for the site you specified in step 2.
-
-To complete the site acceleration setup, log into your domain registrar account and replace the current name servers with the Gcore name servers and click **Confirm** :
-    
-    
-          Copy
-          
-            
-          
-        ns1.gcorelabs.net  
-    ns2.gcdn.services
-
-
-<Frame>![mceclip5.png](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/13050764764177.png)</Frame>
-
-
-
-**Note** : The name servers can change. The current values will be specified on the wizard page.
-
-Remember that the name server change can take up to 24 hours.
-
-### 5\. (Optional) Setup additional options
-
-Optionally, you can activate additional features for your CDN resource. You can skip this step and return to additional settings later. Click **Confirm** to complete the creation and setup of your CDN resource.
-
-
-<Frame>![Setup additional options](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/13050821357329.png)</Frame>
-
-
-
-After completing the creation and setup of your CDN resource, you will be automatically directed to the page of CDN resource settings. The resource settings header will show the name of the associated DNS zone. A warning will be displayed if the zone is not delegated to Gcore. This warning may persist for up to 24 hours until the NS servers are changed.
-
-
-<Frame>![Warning](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/13050904896913.png)</Frame>
+{/* TODO: replace with screenshot of the resource settings page with the DNS delegation warning */}
+<Frame>
+  ![DNS delegation warning](/images/docs/cdn/getting-started/create-a-cdn-resource/create-a-cdn-resource-for-the-entire-site/dns-delegation-warning.png)
+</Frame>
