@@ -153,6 +153,14 @@ git pull origin main   ← required, not optional
 git checkout -b update-{product}-{slug}
 ```
 
+**11. Writing content without reading the full product section first — creates duplicate content**
+Before writing or expanding any article, read ALL sibling articles in the same product
+folder and check `docs.json` to understand the nav group structure. Only then can you
+determine what belongs in the target article and what is already covered elsewhere.
+
+Skipping this step causes content to be written that duplicates existing articles,
+regardless of how correct or accurate that content is.
+
 ---
 
 ## CI workflows — what runs automatically
