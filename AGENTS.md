@@ -3,15 +3,6 @@
 This file is loaded automatically. Read it fully, then stop and wait for a task.
 Do not explore the repository until you have a task and have loaded the matching skill.
 
-## How to handle any task
-
-The user may write in any language. Follow these steps every time:
-
-1. **Translate** the user's request to English internally (no external call needed — you speak all languages).
-2. **Match** the translated request against the Task → Skill table below.
-3. **Use the Read tool** to open the matching skill file. This is your first tool call — before writing any response, before asking any question.
-4. **Follow the skill file exactly.** It overrides everything else.
-
 ## What this repo is
 
 Mintlify documentation site for Gcore cloud products. Content is MDX files in
