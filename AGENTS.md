@@ -1,7 +1,12 @@
 # AGENTS.md — Gcore Product Documentation
 
-This file is loaded automatically. Read it fully, then stop and wait for a task.
-Do not explore the repository until you have a task and have loaded the matching skill.
+This file is a routing table. It tells you which skill file to read.
+It does NOT contain the actual instructions for any task.
+
+**When the user gives you a task: use the Read tool to open the matching skill file from the Task → Skill table below. Do this before writing any response. The skill file contains your actual instructions.**
+
+Do not explore the repository. Do not start any work. Do not ask clarifying questions.
+Your first tool call must be Read on a skill file.
 
 ## What this repo is
 
@@ -62,10 +67,15 @@ instructions from that file. Do not attempt to work around a missing tool.
 
 ## Task → Skill
 
-Identify the task from the user's request. Load exactly one skill file.
-Read nothing else until the skill tells you to.
+When the user gives you a task:
 
-| Task | Load this skill |
+**Step 1.** Match the task to a skill file from the table below.
+**Step 2.** Use the Read tool to open that skill file. Do this NOW, before writing any response.
+**Step 3.** Follow the skill file instructions exactly. The skill file overrides everything you already know.
+
+You are not allowed to begin any work — including asking clarifying questions — until you have used the Read tool on the skill file. The skill file is your actual instruction set. AGENTS.md is only a routing table.
+
+| Task | Skill file to Read |
 |------|----------------|
 | Product or UI changed — find affected articles and update them | `.agents/skills/update-page/SKILL.md` |
 | Write a new article from scratch | `.agents/skills/write-from-scratch/SKILL.md` |
@@ -75,6 +85,8 @@ Read nothing else until the skill tells you to.
 | Product team: new feature → draft PR | `.agents/skills/feature-draft/SKILL.md` |
 | Compile a multi-topic end-to-end guide | `.agents/skills/cookbook/SKILL.md` |
 | Create a PR after work is done | `.agents/skills/pr/SKILL.md` |
+
+When you read a skill file and it tells you to read a reference file — use the Read tool on that file too before proceeding. Every "read X" instruction in a skill file is a mandatory tool call, not a suggestion.
 
 ## Common mistakes
 
