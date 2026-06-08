@@ -1,11 +1,92 @@
 ---
 title: Create FastEdge apps
 sidebarTitle: Create apps
-ai-navigation: Create FastEdge HTTP and CDN applications using Rust SDK, JavaScript SDK, or Proxy-Wasm spec to run serverless code on Gcore's CDN network with custom URLs and request/response processing.
+ai-navigation: Create FastEdge HTTP and CDN applications via the Customer Portal by uploading a WebAssembly binary or selecting a pre-configured template, with options to set environment variables, secrets, response headers, and Edge Storage.
 ---
 
-FastEdge allows you to run applications in a serverless environment on Gcore's scalable CDN network. You can create the following types of FastEdge apps: 
+FastEdge supports two application types, both deployed to Gcore's scalable CDN edge network:
 
-  * **HTTP applications** : manage apps that have their own URL and are built using [FastEdge Rust SDK](https://github.com/G-Core/FastEdge-sdk-rust) or [FastEdge JavaScript SDK](https://github.com/G-Core/FastEdge-sdk-js).
+* **HTTP applications** — apps with a dedicated URL, built using the [Rust SDK](https://github.com/G-Core/FastEdge-sdk-rust) or [JavaScript SDK](https://github.com/G-Core/FastEdge-sdk-js).
 
-  * **CDN applications** : manage apps that extend the functionality of Gcore CDN and use [Proxy-Wasm](https://github.com/proxy-wasm/spec) spec.
+* **CDN applications** — apps that extend Gcore CDN functionality using the [Proxy-Wasm](https://github.com/proxy-wasm/spec) spec. These run as filters attached to a CDN resource and do not have a dedicated URL.
+
+Both application types support two creation methods: uploading a compiled WebAssembly (`.wasm`) binary, or selecting a pre-configured template. Templates require no compiled binary and let applications be deployed immediately.
+
+## Create an HTTP application
+
+HTTP applications run on Gcore's edge network and are accessible via a unique URL generated at creation time.
+
+1\. In the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard), navigate to **FastEdge** > **HTTP Applications** > **Applications**.
+
+<Frame>
+  ![HTTP Applications page with the Create new application button](/images/docs/fastedge/create-apps/http-apps-list.png)
+</Frame>
+
+2\. Click **Create new application**.
+
+3\. On the **Create an application** page, select a creation method and proceed to the deployment form:
+
+   * **Upload binary**: click the card. An upload dialog appears — drag and drop the `.wasm` file or click **Click to upload**, then click **Save binary**.
+
+<Frame>
+  ![Upload binary dialog with a drag-and-drop file area](/images/docs/fastedge/create-apps/upload-binary-modal.png)
+</Frame>
+
+   * **Create from a template**: click a template card. The form opens with the **Description** field pre-filled. Available HTTP templates:
+     * **Geolocation-based redirect**: redirects requests to region-specific servers based on the client's country using Geo-IP data.
+     * **Markdown renderer**: converts Markdown documents to HTML, with optional CSS styling.
+
+<Frame>
+  ![Create an application page with Upload binary and template options](/images/docs/fastedge/create-apps/http-create-method-selection.png)
+</Frame>
+
+4\. Fill in the **Deploy application** form:
+
+<Frame>
+  ![Deploy application form with Name, Description, and optional configuration sections](/images/docs/fastedge/create-apps/deploy-form.png)
+</Frame>
+
+   * **Name** (required): a unique name for the application. The name determines the application URL, generated as `{name}-{account-id}.fastedge.app`.
+   * **Description** (optional): a short description of the application.
+   * **Template environment variables** (template-based apps only): values for variables defined by the template. Each variable includes a label explaining its purpose.
+
+   The following optional sections apply to both creation methods:
+
+   * **Response headers**: HTTP headers added to every response from the application.
+   * **Environment variables**: custom key-value pairs readable by the application at runtime.
+   * **Secrets**: encrypted key-value pairs for sensitive data — API keys, tokens, passwords. Secrets are stored in [Secrets Manager](/fastedge/secrets-manager/manage-secrets) and linked to the application by name.
+   * **Edge Storage**: key-value stores from [Edge Storage](/fastedge/kv-stores/manage-kv-store) linked to the application. Each store is referenced in application code by the name assigned here.
+
+5\. Click **Save and deploy**. The application is deployed across the edge network, and the application management page opens. The generated URL appears at the top of the page.
+
+## Create a CDN application
+
+CDN applications run as Proxy-Wasm filters that process HTTP requests passing through a CDN resource. Unlike HTTP applications, CDN apps do not have a dedicated URL — after creation, assign the application to a CDN resource to activate it.
+
+1\. In the Customer Portal, navigate to **FastEdge** > **CDN Applications** > **Applications**.
+
+2\. Click **Create new application**.
+
+3\. On the **Create an application** page, select a creation method and proceed to the deployment form:
+
+   * **Upload binary**: follow the same upload steps as for HTTP applications — click **Upload binary**, upload the `.wasm` file, and click **Save binary**.
+   * **Create from a template**: click a template card. The form opens with the **Description** field pre-filled. Available CDN templates:
+     * **Auth header for Akamai CloudWrapper**: generates an authentication header for Akamai's Simple Header Authentication, used when Akamai is the CDN resource origin.
+     * **Basic HTTP authentication**: enforces HTTP Basic authentication (RFC 7235) with a static username, password, and optional realm.
+     * **Log CMCD headers**: captures CMCD request headers (`CMCD-Request`, `CMCD-Object`, `CMCD-Status`, `CMCD-Session`) and appends them to the CDN access log.
+     * **Transform HTML to Markdown**: converts HTML responses to Markdown when the request includes `Accept: text/markdown`.
+     * **Validate JWT in Authorization header**: validates a JWT token passed as `Authorization: Bearer <token>`.
+
+<Frame>
+  ![CDN Create an application page with the available templates listed](/images/docs/fastedge/create-apps/cdn-create-method-selection.png)
+</Frame>
+
+4\. Fill in the **Deploy application** form the same way as for HTTP applications.
+
+<Info>
+CDN application templates may include a **Template secrets** section alongside **Template environment variables**. This section holds sensitive values — passwords, tokens — required by the template.
+</Info>
+
+5\. Click **Save and deploy**. The application is created and listed on the **CDN Applications** page.
+
+After the application is created, open the CDN resource configuration and assign the application in the FastEdge settings to activate it.
