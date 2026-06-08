@@ -153,6 +153,19 @@ git pull origin main   ← required, not optional
 git checkout -b update-{product}-{slug}
 ```
 
+**11. Expanding a stub without checking neighboring articles — creates duplicate content**
+A short article (under ~20 lines, or containing only a bullet list with no steps) is
+often a navigation stub or overview page, not an empty article waiting to be filled.
+Before writing content for such an article:
+
+1. Read ALL other `.mdx` files in the same product folder.
+2. Check `docs.json` to see what articles are in the same nav group.
+3. If detailed how-to content already exists in sibling articles, the stub's job is
+   to link to them — not to repeat their content.
+
+Stub signals: no headings beyond the title, only a type-list (HTTP app / CDN app),
+no numbered steps, file is under 20 lines.
+
 ---
 
 ## CI workflows — what runs automatically
