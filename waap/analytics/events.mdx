@@ -1,7 +1,7 @@
 ---
 title: "Events"
 sidebarTitle: Events
-ai-navigation: Investigate HTTP requests and security events in WAAP using Events filters by time range, event type, action (Blocked, Monitored, Allowed, Passed, CAPTCHA, Challenge), country, IP address, path, HTTP method, response code, request ID, reference ID, and session ID with 30-day retention.
+ai-navigation: Investigate HTTP requests and security events in WAAP using Events filters by time range, event type, decision (Blocked, Monitored, Allowed, Passed), optional action (CAPTCHA, JS Challenge), country, IP address, path, HTTP method, response code, request ID, reference ID, and session ID with 30-day retention.
 ---
 
 ## Purpose
@@ -13,7 +13,7 @@ Events allow teams to move from high-level attack patterns to individual request
 Request history is retained for 30 days.
 
 <Frame>
-  ![Events page in the Customer Portal](/images/docs/waap/analytics/waap-events.png)
+  ![Events page in the Customer Portal](/images/docs/waap/troubleshooting/troubleshoot-blocked-users/waap-events.png)
 </Frame>
 
 ## Why filtering matters
@@ -25,24 +25,24 @@ By default, only the most commonly used filters are displayed in the toolbar, in
 - **Time range** — isolate the exact period when suspicious activity occurred.  
 - **Domain** — focus the investigation on traffic targeting all domains, or a specific domain.  
 - **Event** — focus on specific security signals or detections.  
-- **Actions** — filter requests based on the mitigation decision applied by WAAP. Available values include:
+- **Decision** — filter requests based on the mitigation decision applied by WAAP. Available values include:
 
   - **Blocked** — malicious traffic that was denied and did not reach the origin, according to the active security rules.
   - **Monitored** — malicious traffic that was detected but intentionally allowed to pass according to the current security policy (for example when rules operate in monitoring mode).
   - **Allowed** — traffic explicitly permitted by user-defined policies or allow rules.
   - **Passed** — legitimate traffic that was inspected and forwarded to the origin because it did not trigger blocking policies.
 
-  Two additional actions may appear in combination with the states above:
+- **Optional Action** — filter requests by a challenge applied in addition to the primary decision. Available values include:
 
   - **CAPTCHA** — a CAPTCHA challenge was issued to the client request.
-  - **Challenge** — a JavaScript or browser validation challenge was issued.
+  - **JS Challenge** — a JavaScript or browser validation challenge was issued.
 
-  Challenge-based actions can appear together with Blocked, Monitored, or Passed, indicating that the request triggered a challenge before the final mitigation decision.
+  **Optional Action** filters can be combined with **Decision** filters. For example, selecting **Decision**: **Blocked** and **Optional Action**: **CAPTCHA** returns requests that were blocked after failing a CAPTCHA challenge.
 
 Additional filters can be added dynamically using the **Add filter** button.
 
 <Frame>
-  ![Add filter button in Events](/images/docs/waap/analytics/waap-events-add-filter.png)
+  ![Add filter button in Events](/images/docs/waap/troubleshooting/troubleshoot-blocked-users/waap-events-add-filter.png)
 </Frame>
 
 Filters can be combined to progressively narrow the dataset and focus on the exact traffic relevant to an incident or investigation.
@@ -61,7 +61,7 @@ Because filters can be combined, analysts can move from broad analysis to highly
 Filtered datasets are immediately reflected in the Events analytics view. Graphs dynamically update to display:
 
 - the volume of requests over time within the selected scope.  
-- the distribution of mitigation actions (blocked, monitored, allowed, passed, and challenge-based actions such as CAPTCHA or Challenge).  
+- the distribution of decisions (Blocked, Monitored, Allowed, Passed) and optional actions (CAPTCHA, JS Challenge).  
 - the relationship between suspicious and legitimate traffic for the selected filters.  
 
 This dynamic filtering makes Events a practical investigation workspace rather than a static log viewer. Analysts can quickly test hypotheses, validate rule behavior, and understand how attacks evolve over time.
@@ -90,7 +90,7 @@ Typical use cases include:
 - preparing customer-facing security reports. 
 
 <Frame>
-  ![WAAP Events export](/images/docs/waap/analytics/waap-events-export-csv.png)
+  ![WAAP Events export](/images/docs/waap/troubleshooting/troubleshoot-blocked-users/waap-events-export-csv.png)
 </Frame>
 
 Exports from the Events page are typically provided in CSV format, making them easy to process in spreadsheets, SIEM platforms, or analytical tools.
@@ -120,13 +120,13 @@ The filtered dataset reveals a burst of POST requests from a limited set of IP a
 
 Some services rely on legitimate automated traffic from partners or internal integrations. However, malicious bots may produce similar patterns.
 
-By filtering events by country, session ID, and action, analysts can distinguish legitimate automation from abusive scripts attempting to scrape content or overload endpoints.
+By filtering events by country, session ID, and decision, analysts can distinguish legitimate automation from abusive scripts attempting to scrape content or overload endpoints.
 
 ### Validating a new security rule
 
 After deploying a new custom rule, a DevSecOps engineer reviews Events to confirm that the rule correctly identifies malicious requests without affecting legitimate traffic.
 
-The analyst filters by time range and action to review blocked versus allowed requests and confirm that the policy change behaves as intended.
+The analyst filters by time range and decision to review blocked versus allowed requests and confirm that the policy change behaves as intended.
 
 ### Investigating repeated attacker behavior
 
@@ -151,7 +151,7 @@ A typical investigation process in Events includes:
 
 1. Narrow the timeframe of the incident.  
 2. Identify the affected endpoint or domain.  
-3. Review mitigation actions taken by WAAP.  
+3. Review mitigation decisions taken by WAAP.  
 4. Pivot to source indicators such as IP address or session ID.  
 5. Export relevant events for documentation or response.
 
