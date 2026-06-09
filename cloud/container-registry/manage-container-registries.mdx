@@ -1,7 +1,13 @@
 ---
 title: Manage container registries
-ai-navigation: Manage Container Registry storage limits, images, and artifacts via Gcore Customer Portal; adjust storage capacity, view image metadata (name, pull count, last modified), manage image artifacts with tags and push/pull operation history, and delete images or artifacts.
+sidebarTitle: Manage container registries
+ai-navigation: Manage Container Registry storage limits, repositories, artifacts, tags, and users via the Customer Portal or REST API using Python and Go SDK.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
 
 All created Container Registries appear in the Gcore Customer Portal on the **Container Registries** page:
 
@@ -58,7 +64,7 @@ Open the **Images** tab to view the following information about the images withi
 
 You can do the following actions with images: view and manage related artifacts, pull images from the registry, or delete them. You can also search through the images to find the one that you need.
 
-### View and manage image artifacts
+**View and manage image artifacts**
 
 To view image artifacts, click the image name to open it. On the **Artifacts** page, you can check the artifact name, its tags, size, and the last associated push and pull operations. You can also search through the artifacts. 
 
@@ -80,7 +86,7 @@ To delete an artifact or its tag:
 
 You can also apply group actions to multiple artifacts. To do so, select checkboxes next to the artifacts you want to manage and choose the needed action from the **Group actions** dropdown.
 
-### Delete an image
+**Delete an image**
 
 1\. On the **Images** tab, find the image you want to remove.
 
@@ -102,7 +108,7 @@ You can also apply group actions to multiple artifacts. To do so, select checkbo
 
 Your image has been removed from the registry.
 
-### Delete multiple images with group actions
+**Delete multiple images with group actions**
 
 You can simultaneously delete multiple images with **Group actions**. To do so, select checkboxes next to the images you want to manage and use the required action from the dropdown.
 
@@ -137,7 +143,7 @@ You can change user permissions, generate a new user password, or delete the use
 For details on how to create a user, check the [Create a Container Registry](/cloud/container-registry/create-container-registry) guide.
 </Tip>
 
-### Change user permissions
+**Change user permissions**
 
 For each user, you can configure the following permissions: 
 
@@ -166,7 +172,7 @@ To change user permissions:
 
 
 
-### Reset user password
+**Reset user password**
 
 A user password is automatically generated during user creation. If the password has expired or the user can't remember it, you can regenerate a password as follows: 
 
@@ -188,7 +194,7 @@ A user password is automatically generated during user creation. If the password
 
 4\. Copy the password and save it locally. Keep in mind that you won't be able to view it again. 
 
-### Delete a user
+**Delete a user**
 
 1\. On the **Users** tab, find the user you want to delete and click the three-dot icon next to it. 
 
@@ -208,7 +214,7 @@ A user password is automatically generated during user creation. If the password
 
 
 
-### Manage multiple users with group actions
+**Manage multiple users with group actions**
 
 There's an option to simultaneously delete multiple users or change their permissions using **Group actions**. To do so, select checkboxes next to the users you want to modify and then choose the needed action from the **Group actions** dropdown. 
 
@@ -241,3 +247,542 @@ To delete a registry:
 4\. Type "Delete" to validate your action.
 
 The registry has been removed.
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+Use the Gcore API to inspect and maintain a container registry: resize its storage, browse repositories and artifacts, manage registry users, and remove resources that are no longer needed.
+
+<Info>
+A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get) and [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get).
+</Info>
+
+Set the following environment variables before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export REGISTRY_ID="{YOUR_REGISTRY_ID}"
+```
+
+<Info>
+**REGISTRY\_ID** is the numeric ID of an existing container registry. To create a registry or find its ID, see [Create a container registry](/cloud/container-registry/create-container-registry).
+</Info>
+
+## Resize storage limit
+
+This call updates the maximum storage capacity of the registry in GiB.
+
+| Parameter | Description |
+|-----------|-------------|
+| `storage_limit` | New storage limit in GiB |
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+registry = client.cloud.registries.resize(registry_id=registry_id, storage_limit=20)
+print(f"Storage limit: {registry.storage_limit} GiB")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+registry, err := client.Cloud.Registries.Resize(ctx, registryID, cloud.RegistryResizeParams{
+    StorageLimit: gcore.Int(20),
+})
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf("Storage limit: %d GiB\n", registry.StorageLimit)
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -s -X PATCH \
+  "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID/resize" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"storage_limit": 20}'
+```
+
+Response:
+
+```json
+{
+  "id": 607,
+  "name": "my-registry",
+  "storage_limit": 20,
+  "storage_used": 0,
+  "url": "registry.luxembourg-2.cloud.gcore.dev/1000503-1186668-76-my-registry/",
+  "repo_count": 0,
+  "created_at": "2026-05-30T21:35:34Z",
+  "updated_at": "2026-05-30T22:10:00Z"
+}
+```
+  </Tab>
+</Tabs>
+
+The [resize](https://api.gcore.com/docs/cloud#tag/Registry/operation/RegistryResizeHandler.patch) endpoint returns the full registry object, including the updated `storage_limit`.
+
+## List repositories
+
+This call returns all repositories (images) stored in the registry, along with their artifact count and pull statistics.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+repos = client.cloud.registries.repositories.list(registry_id=registry_id)
+print(f"Total repositories: {repos.count}")
+for r in repos.results:
+    print(f"  {r.name}  artifacts={r.artifact_count}  pulls={r.pull_count}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+repos, err := client.Cloud.Registries.Repositories.List(ctx, registryID,
+    cloud.RegistryRepositoryListParams{})
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf("Total repositories: %d\n", repos.Count)
+for _, r := range repos.Results {
+    fmt.Printf("  %s  artifacts=%d  pulls=%d\n", r.Name, r.ArtifactCount, r.PullCount)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -s \
+  "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID/repositories" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+Response:
+
+```json
+{
+  "count": 1,
+  "results": [
+    {
+      "id": 42,
+      "name": "nginx",
+      "artifact_count": 2,
+      "pull_count": 5,
+      "registry_id": 607,
+      "created_at": "2026-05-30T22:00:00Z",
+      "updated_at": "2026-05-30T22:05:00Z"
+    }
+  ]
+}
+```
+  </Tab>
+</Tabs>
+
+Each [repository](https://api.gcore.com/docs/cloud#tag/Registry/operation/RegistryRepositoriesHandler.get) object includes the registry ID, artifact count, pull count, and creation timestamp.
+
+## List artifacts in a repository
+
+This call returns all artifacts (image layers) stored in a repository, including their tags and size.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+REPOSITORY_NAME = "nginx"  # repository name from List repositories
+
+artifacts = client.cloud.registries.artifacts.list(
+    registry_id=registry_id,
+    repository_name=REPOSITORY_NAME,
+)
+print(f"Total artifacts: {artifacts.count}")
+for a in artifacts.results:
+    tags = [t.name for t in (a.tags or [])]
+    print(f"  digest={a.digest[:20]}...  size={a.size} bytes  tags={tags}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+const repoName = "nginx" // repository name from List repositories
+
+artifacts, err := client.Cloud.Registries.Artifacts.List(ctx, repoName,
+    cloud.RegistryArtifactListParams{RegistryID: registryID})
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf("Total artifacts: %d\n", artifacts.Count)
+for _, a := range artifacts.Results {
+    var tags []string
+    for _, t := range a.Tags {
+        tags = append(tags, t.Name)
+    }
+    fmt.Printf("  digest=%s...  size=%d bytes  tags=%v\n",
+        a.Digest[:20], a.Size, tags)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+REPOSITORY_NAME="nginx"  # repository name from List repositories
+
+curl -s \
+  "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID/repositories/$REPOSITORY_NAME/artifacts" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+Response:
+
+```json
+{
+  "count": 1,
+  "results": [
+    {
+      "id": 101,
+      "digest": "sha256:a3f4e1b2c9...",
+      "size": 67108864,
+      "tags": [
+        {"id": 201, "name": "latest", "artifact_id": 101, "repository_id": 42,
+         "pushed_at": "2026-05-30T22:00:00Z", "pulled_at": "2026-05-30T22:05:00Z"}
+      ],
+      "registry_id": 607,
+      "repository_id": 42,
+      "pushed_at": "2026-05-30T22:00:00Z",
+      "pulled_at": "2026-05-30T22:05:00Z"
+    }
+  ]
+}
+```
+  </Tab>
+</Tabs>
+
+Each [artifact](https://api.gcore.com/docs/cloud#tag/Registry/operation/RegistryArtifactsHandler.get) object includes the digest, size in bytes, push and pull timestamps, and an array of associated tags.
+
+## Delete a tag
+
+This call removes a single tag from an artifact while keeping the artifact itself intact. Use the `digest` from List artifacts and the tag `name` from the `tags` array.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+REPOSITORY_NAME = "nginx"
+DIGEST   = "sha256:a3f4e1b2c9..."  # artifact digest from List artifacts
+TAG_NAME = "latest"               # tag name from List artifacts
+
+client.cloud.registries.tags.delete(
+    tag_name=TAG_NAME,
+    registry_id=registry_id,
+    repository_name=REPOSITORY_NAME,
+    digest=DIGEST,
+)
+print("Tag deleted.")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+const repoName = "nginx"
+const digest  = "sha256:a3f4e1b2c9..." // artifact digest from List artifacts
+const tagName = "latest"               // tag name from List artifacts
+
+err = client.Cloud.Registries.Tags.Delete(ctx, tagName,
+    cloud.RegistryTagDeleteParams{
+        RegistryID:     registryID,
+        RepositoryName: repoName,
+        Digest:         digest,
+    })
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Println("Tag deleted.")
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+REPOSITORY_NAME="nginx"
+DIGEST="sha256:a3f4e1b2c9..."   # artifact digest from List artifacts
+TAG_NAME="latest"               # tag name from List artifacts
+
+curl -s -X DELETE \
+  "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID/repositories/$REPOSITORY_NAME/artifacts/$DIGEST/tags/$TAG_NAME" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+  </Tab>
+</Tabs>
+
+The [delete tag](https://api.gcore.com/docs/cloud#tag/Registry/operation/RegistryTagHandler.delete) operation returns HTTP 204. To remove all tags together with the artifact, use the Delete an artifact operation instead.
+
+## Delete an artifact
+
+This call permanently removes an artifact and all its tags from the repository. Use the `digest` value from List artifacts.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+REPOSITORY_NAME = "nginx"
+DIGEST = "sha256:a3f4e1b2c9..."  # artifact digest from List artifacts
+
+client.cloud.registries.artifacts.delete(
+    registry_id=registry_id,
+    repository_name=REPOSITORY_NAME,
+    digest=DIGEST,
+)
+print("Artifact deleted.")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+const repoName = "nginx"
+const digest = "sha256:a3f4e1b2c9..." // artifact digest from List artifacts
+
+err = client.Cloud.Registries.Artifacts.Delete(ctx, digest,
+    cloud.RegistryArtifactDeleteParams{
+        RegistryID:     registryID,
+        RepositoryName: repoName,
+    })
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Println("Artifact deleted.")
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+REPOSITORY_NAME="nginx"
+DIGEST="sha256:a3f4e1b2c9..."   # artifact digest from List artifacts
+
+curl -s -X DELETE \
+  "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID/repositories/$REPOSITORY_NAME/artifacts/$DIGEST" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+  </Tab>
+</Tabs>
+
+The [delete artifact](https://api.gcore.com/docs/cloud#tag/Registry/operation/RegistryArtifactHandler.delete) operation returns HTTP 204. Deleting an artifact also removes all its tags.
+
+## Delete a repository
+
+This call removes an entire repository and all artifacts it contains.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+REPOSITORY_NAME = "nginx"
+
+client.cloud.registries.repositories.delete(
+    registry_id=registry_id,
+    repository_name=REPOSITORY_NAME,
+)
+print("Repository deleted.")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+const repoName = "nginx"
+
+err = client.Cloud.Registries.Repositories.Delete(ctx, repoName,
+    cloud.RegistryRepositoryDeleteParams{RegistryID: registryID})
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Println("Repository deleted.")
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+REPOSITORY_NAME="nginx"
+
+curl -s -X DELETE \
+  "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID/repositories/$REPOSITORY_NAME" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+  </Tab>
+</Tabs>
+
+The [delete repository](https://api.gcore.com/docs/cloud#tag/Registry/operation/RegistryRepositoryHandler.delete) operation returns HTTP 204. All artifacts and tags in the repository are permanently removed.
+
+## Change user permissions
+
+This call updates whether a user can push images in addition to pulling them. Pass `read_only: true` to restrict the user to pull-only access.
+
+| Parameter | Description |
+|-----------|-------------|
+| `duration` | Credential lifetime in days; `-1` for indefinite access |
+| `read_only` | `true` = pull only; `false` = push and pull |
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+USER_ID = int(os.environ["USER_ID"])
+
+updated = client.cloud.registries.users.update(
+    user_id=USER_ID,
+    registry_id=registry_id,
+    duration=-1,
+    read_only=True,  # restrict to pull-only
+)
+print(f"read_only: {updated.read_only}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+updated, err := client.Cloud.Registries.Users.Update(ctx, userID,
+    cloud.RegistryUserUpdateParams{
+        RegistryID: registryID,
+        Duration:   -1,
+        ReadOnly:   gcore.Bool(true), // restrict to pull-only
+    })
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf("read_only: %v\n", updated.ReadOnly)
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+USER_ID=730
+
+curl -s -X PATCH \
+  "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID/users/$USER_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"duration": -1, "read_only": true}'
+```
+
+Response:
+
+```json
+{
+  "id": 730,
+  "name": "r_1000503-1186668-76-my-registry+myuser",
+  "read_only": true,
+  "duration": -1,
+  "expires_at": "1969-12-31T23:59:59Z",
+  "created_at": "2026-05-30T21:39:41Z"
+}
+```
+  </Tab>
+</Tabs>
+
+The [update user](https://api.gcore.com/docs/cloud#tag/Registry/operation/RegistryUserHandler.patch) endpoint also accepts a `duration` change in the same request, so permissions and expiry can be updated together.
+
+## Regenerate user password
+
+This call generates a new password for a registry user. The new `secret` is returned only in this response — it cannot be retrieved later.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+refreshed = client.cloud.registries.users.refresh_secret(
+    registry_id=registry_id,
+    user_id=USER_ID,
+)
+print(f"New password: {refreshed.secret}")  # shown once — save it now
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+refreshed, err := client.Cloud.Registries.Users.RefreshSecret(ctx, userID,
+    cloud.RegistryUserRefreshSecretParams{RegistryID: registryID})
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf("New password: %s\n", refreshed.Secret) // shown once — save it now
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+USER_ID=730
+
+curl -s -X POST \
+  "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID/users/$USER_ID/refresh_secret" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+Response:
+
+```json
+{
+  "id": 730,
+  "name": "r_1000503-1186668-76-my-registry+myuser",
+  "secret": "T53rmPo1UeuiSiTarDCa2MKj2K6tuiQB",
+  "duration": -1,
+  "expires_at": "1969-12-31T23:59:59Z",
+  "read_only": false,
+  "created_at": "2026-05-30T21:39:41Z"
+}
+```
+  </Tab>
+</Tabs>
+
+The `secret` returned by the [refresh secret](https://api.gcore.com/docs/cloud#tag/Registry/operation/RegistryRefreshSecretHandler.post) endpoint is shown only once — save it before closing the response. Run `docker login` again with the new password to start a fresh session.
+
+## Delete a user
+
+Removing a user from the registry immediately invalidates any active Docker sessions that were authenticated with that user's credentials.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+client.cloud.registries.users.delete(
+    user_id=USER_ID,
+    registry_id=registry_id,
+)
+print("User deleted.")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+err = client.Cloud.Registries.Users.Delete(ctx, userID,
+    cloud.RegistryUserDeleteParams{RegistryID: registryID})
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Println("User deleted.")
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+USER_ID=730
+
+curl -s -X DELETE \
+  "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID/users/$USER_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+  </Tab>
+</Tabs>
+
+The [delete user](https://api.gcore.com/docs/cloud#tag/Registry/operation/RegistryUserHandler.delete) endpoint returns HTTP 204. Any active Docker sessions using the deleted user's credentials stop working immediately.
+
+## Delete a registry
+
+Deleting a registry permanently removes all repositories, artifacts, and images stored in it. This action cannot be undone.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+
+client.cloud.registries.delete(registry_id=int(os.environ["REGISTRY_ID"]))
+print("Registry deleted.")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+err := client.Cloud.Registries.Delete(ctx, registryID, cloud.RegistryDeleteParams{})
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Println("Registry deleted.")
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -s -X DELETE \
+  "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>

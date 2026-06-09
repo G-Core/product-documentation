@@ -1,20 +1,25 @@
 ---
 title: Take a snapshot of your file system
-sidebarTitle: Take a snapshot of your file system
-ai-navigation: Create snapshots of system boot volumes and regular volumes in Gcore Cloud via Snapshots, Volumes, or Virtual Machine instances pages for backup, recovery, and VM deployment.
+sidebarTitle: Take a snapshot
+ai-navigation: Create, view, and delete volume snapshots in Gcore Cloud via the Customer Portal or REST API, including Python SDK and Go SDK examples.
 ---
 
-**Snapshot** is the state of a system at a particular point in time. The snapshot can be used for backup and further recovery, as well as for deploying new Virtual Machines from **snapshots of system volume.**
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-**Difference between system and regular volume snapshots**
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
 
-You can make snapshots for both system (boot) volumes and regular volumes. 
+A snapshot captures the full state of a volume at a point in time. It can be used for backup and recovery, or to deploy new Virtual Machines from a snapshot of a system volume.
 
-**The system volume** is the volume which the operating system is installed. On this volume, the operating system (OS) stores everything it needs to work. 
+## Difference between system and regular volume snapshots
 
-**Regular volume** contains all other information for use, except the operating system. 
+Snapshots can be taken from both system (boot) volumes and regular data volumes.
+
+The system volume holds the operating system and everything it needs to run. A regular volume contains all other data, separate from the OS.
 
 ## Create a snapshot
+
+A snapshot can be initiated from three places: the Snapshots page, the Volumes page, or directly from a Virtual Machine's overview.
 
 ### From the snapshots page
 
@@ -59,23 +64,21 @@ In the drop-down window, enter a name for the snapshot and click "Take snapshot"
 
 
 
-3\. Go to the **Volumes** tab and select the volume to create a snapshot.
-
-4\. Click **Take snapshot**.
+3\. Go to the **Volumes** tab, select the volume to create a snapshot, and click **Take snapshot**.
 
 
 <Frame>![_______________________________.png](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/_______________________________.png)</Frame>
 
 
 
-5/ In the window that opens, enter a name for the snapshot and click **Take snapshot**. 
+4\. In the window that opens, enter a name for the snapshot and click **Take snapshot**.
 
 
 <Frame>![__________________.png](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/__________________.png)</Frame>
 
 
 
-6\. In the "Snapshots" section, you can view a list of created snapshots from VM volumes.
+5\. In the **Snapshots** section, you can view a list of created snapshots from VM volumes.
 
 
 <Frame>![__________________.png](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/__________________.png)</Frame>
@@ -113,3 +116,369 @@ Please note: if you have just resized the volume you will not be able to use the
 
 
 <Frame>![mceclip1.png](/images/docs/cloud/virtual-instances/snapshots/take-a-snapshot-of-your-file-system/mceclip1.png)</Frame>
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+The Gcore REST API lets you create and delete volume snapshots programmatically. A snapshot captures the full state of a volume at a point in time and can later be used to restore data or create new volumes.
+
+<Info>
+A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get) and [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get).
+</Info>
+
+Set environment variables before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export VOLUME_ID="{YOUR_VOLUME_ID}"
+```
+
+<Info>
+**VOLUME\_ID** is the UUID of an existing volume to snapshot. To create a volume or find its ID, see [Create and configure volumes](/cloud/virtual-instances/volumes/create-and-configure-volumes).
+</Info>
+
+## Quickstart
+
+The scripts below create a snapshot from an existing volume, print the snapshot details, then delete the snapshot.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    volume_id = os.environ["VOLUME_ID"]
+
+    # Step 1. Create a snapshot from the volume.
+    snapshot = client.cloud.volume_snapshots.create_and_poll(
+        volume_id=volume_id,
+        name="my-snapshot",
+    )
+    print(f"Snapshot ID: {snapshot.id}  status: {snapshot.status}  size: {snapshot.size} GiB")
+
+    # Step 2. Retrieve snapshot details.
+    snap = client.cloud.volume_snapshots.get(snapshot.id)
+    print(f"Name: {snap.name}  volume_id: {snap.volume_id}  created_at: {snap.created_at}")
+
+    # Step 3. Delete the snapshot when it is no longer needed.
+    client.cloud.volume_snapshots.delete_and_poll(snapshot.id)
+    print(f"Deleted snapshot {snapshot.id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "log"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+        volumeID := os.Getenv("VOLUME_ID")
+
+        // Step 1. Create a snapshot from the volume.
+        snapshot, err := client.Cloud.VolumeSnapshots.NewAndPoll(ctx, cloud.VolumeSnapshotNewParams{
+            VolumeID: volumeID,
+            Name:     "my-snapshot",
+        })
+        if err != nil {
+            log.Fatalf("create snapshot: %v", err)
+        }
+        fmt.Printf("Snapshot ID: %s  status: %s  size: %d GiB\n", snapshot.ID, snapshot.Status, snapshot.Size)
+
+        // Step 2. Retrieve snapshot details.
+        snap, err := client.Cloud.VolumeSnapshots.Get(ctx, snapshot.ID, cloud.VolumeSnapshotGetParams{})
+        if err != nil {
+            log.Fatalf("get snapshot: %v", err)
+        }
+        fmt.Printf("Name: %s  volume_id: %s  created_at: %s\n", snap.Name, snap.VolumeID, snap.CreatedAt)
+
+        // Step 3. Delete the snapshot when it is no longer needed.
+        if err = client.Cloud.VolumeSnapshots.DeleteAndPoll(ctx, snapshot.ID, cloud.VolumeSnapshotDeleteParams{}); err != nil {
+            log.Fatalf("delete snapshot: %v", err)
+        }
+        fmt.Printf("Deleted snapshot %s\n", snapshot.ID)
+    }
+
+    ```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+<p>Each step below explains what the call does, which parameters matter, and what the response looks like. Use this section to understand the flow or to debug a specific step.</p>
+
+<Accordion title="Show all steps">
+
+### Step 1. Find the volume ID
+
+The snapshot API requires the UUID of the volume to snapshot. List volumes to find the right one — boot volumes have `is_root_volume: true`.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    for volume in client.cloud.volumes.list():
+        label = "boot" if volume.is_root_volume else "data"
+        print(f"[{label}] {volume.id}  {volume.name}  {volume.size} GiB  {volume.status}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    page, err := client.Cloud.Volumes.List(ctx, cloud.VolumeListParams{})
+    if err != nil {
+        log.Fatalf("list volumes: %v", err)
+    }
+    for _, v := range page.Results {
+        label := "data"
+        if v.IsRootVolume {
+            label = "boot"
+        }
+        fmt.Printf("[%s] %s  %s  %d GiB  %s\n", label, v.ID, v.Name, v.Size, v.Status)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X GET "https://api.gcore.com/cloud/v1/volumes/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "count": 1,
+      "results": [
+        {
+          "id": "2e222e06-2faa-4e80-ab2a-61463c992193",
+          "name": "my-volume",
+          "size": 10,
+          "status": "available",
+          "volume_type": "standard",
+          "is_root_volume": false,
+          "bootable": false,
+          "attachments": []
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+Copy the `id` of the volume to use as `VOLUME_ID` in the next step.
+
+### Step 2. Create a snapshot
+
+The [snapshot](https://api.gcore.com/docs/cloud#tag/Snapshots/operation/SnapshotViewSet.post) is created asynchronously — the API returns a task ID immediately, and the actual snapshot becomes available after the task finishes.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `volume_id` | Yes | UUID of the volume to snapshot |
+| `name` | Yes | Display name for the snapshot (3–63 characters) |
+| `description` | No | Optional human-readable note |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    snapshot = client.cloud.volume_snapshots.create_and_poll(
+        volume_id=os.environ["VOLUME_ID"],
+        name="my-snapshot",
+    )
+    print(f"Snapshot ID: {snapshot.id}  status: {snapshot.status}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    snapshot, err := client.Cloud.VolumeSnapshots.NewAndPoll(ctx, cloud.VolumeSnapshotNewParams{
+        VolumeID: os.Getenv("VOLUME_ID"),
+        Name:     "my-snapshot",
+    })
+    if err != nil {
+        log.Fatalf("create snapshot: %v", err)
+    }
+    fmt.Printf("Snapshot ID: %s  status: %s\n", snapshot.ID, snapshot.Status)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/snapshots/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d "{\"name\": \"my-snapshot\", \"volume_id\": \"$VOLUME_ID\"}"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["90dc1f93-c2cf-438f-b196-f2569c396b6d"]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Step 3. Poll the task
+
+Creating a snapshot is asynchronous — the API returns a task ID immediately, and the snapshot becomes available only after the task finishes. Both SDK methods handle this automatically: `create_and_poll` and `NewAndPoll` block the program until the task completes and then return a fully populated snapshot object. No manual polling loop is needed. The returned object has `id`, `status`, `size`, `volume_id`, and `created_at` available immediately — use `snapshot.id` in all subsequent calls.
+
+When using curl, there is no built-in polling, so the GET request below must be repeated every 5 seconds until `state` changes to `FINISHED`.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    # create_and_poll returned only after the snapshot reached "available" status.
+    # The snapshot object is fully populated — print key fields to confirm.
+    print(f"Snapshot ready.")
+    print(f"  ID:         {snapshot.id}")
+    print(f"  Status:     {snapshot.status}")
+    print(f"  Size:       {snapshot.size} GiB")
+    print(f"  Volume ID:  {snapshot.volume_id}")
+    print(f"  Created at: {snapshot.created_at}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    // NewAndPoll returned only after the snapshot reached "available" status.
+    // The *cloud.Snapshot is fully populated — print key fields to confirm.
+    fmt.Println("Snapshot ready.")
+    fmt.Printf("  ID:         %s\n", snapshot.ID)
+    fmt.Printf("  Status:     %s\n", snapshot.Status)
+    fmt.Printf("  Size:       %d GiB\n", snapshot.Size)
+    fmt.Printf("  Volume ID:  %s\n", snapshot.VolumeID)
+    fmt.Printf("  Created at: %s\n", snapshot.CreatedAt)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X GET "https://api.gcore.com/cloud/v1/tasks/$TASK_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    While provisioning:
+
+    ```json
+    {
+      "id": "90dc1f93-c2cf-438f-b196-f2569c396b6d",
+      "state": "RUNNING",
+      "task_type": "create_snapshot"
+    }
+    ```
+
+    When complete:
+
+    ```json
+    {
+      "id": "90dc1f93-c2cf-438f-b196-f2569c396b6d",
+      "state": "FINISHED",
+      "task_type": "create_snapshot",
+      "created_resources": {
+        "snapshots": ["5ed275b8-7eed-4722-8c98-777191d4e003"]
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Step 4. Get snapshot details
+
+Retrieve the [snapshot](https://api.gcore.com/docs/cloud#tag/Snapshots/operation/SnapshotInstanceViewSet.get) to confirm its status and record its properties.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    snap = client.cloud.volume_snapshots.get(snapshot.id)
+    print(f"Name: {snap.name}  volume_id: {snap.volume_id}  size: {snap.size} GiB")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    snap, err := client.Cloud.VolumeSnapshots.Get(ctx, snapshot.ID, cloud.VolumeSnapshotGetParams{})
+    if err != nil {
+        log.Fatalf("get snapshot: %v", err)
+    }
+    fmt.Printf("Name: %s  volume_id: %s  size: %d GiB\n", snap.Name, snap.VolumeID, snap.Size)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X GET "https://api.gcore.com/cloud/v1/snapshots/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$SNAPSHOT_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "id": "5ed275b8-7eed-4722-8c98-777191d4e003",
+      "name": "my-snapshot",
+      "status": "available",
+      "size": 10,
+      "volume_id": "6ca09383-85d2-4bb3-8d2d-214a2436fa4f",
+      "created_at": "2026-05-30T05:34:14+0000",
+      "updated_at": "2026-05-30T05:34:15+0000",
+      "region": "Luxembourg-3",
+      "project_id": 1186668,
+      "region_id": 148
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</Accordion>
+
+## Clean up
+
+Delete a snapshot with the [delete snapshot](https://api.gcore.com/docs/cloud#tag/Snapshots/operation/SnapshotInstanceViewSet.delete) endpoint when it is no longer needed.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    client.cloud.volume_snapshots.delete_and_poll(snapshot_id)
+    print(f"Deleted snapshot {snapshot_id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    if err = client.Cloud.VolumeSnapshots.DeleteAndPoll(ctx, snapshotID, cloud.VolumeSnapshotDeleteParams{}); err != nil {
+        log.Fatalf("delete snapshot: %v", err)
+    }
+    fmt.Printf("Deleted snapshot %s\n", snapshotID)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/cloud/v1/snapshots/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$SNAPSHOT_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["22d8a306-46f0-4e77-a5b7-c1f232b5f1c4"]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+Poll the returned task ID until `state` is `FINISHED` to confirm the snapshot is gone.
+
+</MethodSection>
+</MethodSwitch>

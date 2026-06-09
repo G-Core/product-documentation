@@ -71,16 +71,42 @@ jobs:
 
       - name: Commit all changes back to branch
         if: github.event.pull_request.head.repo.full_name == github.repository
+        id: normalize_commit
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
           if git diff --cached --quiet; then
             echo "Nothing to commit — already up to date."
+            echo "mdx_changed=false" >> $GITHUB_OUTPUT
           else
             git commit -m "chore: normalize images and update llms.txt"
             git push origin HEAD:${{ github.event.pull_request.head.ref }}
+            # Check if any MDX files were updated (image path changes in MDX
+            # cause Mintlify to skip full re-indexing, leaving pages as 404).
+            MDX_COUNT=$(git diff HEAD~1 HEAD --name-only | grep -c '\.mdx$' || true)
+            if [ "$MDX_COUNT" -gt "0" ]; then
+              echo "mdx_changed=true" >> $GITHUB_OUTPUT
+            else
+              echo "mdx_changed=false" >> $GITHUB_OUTPUT
+            fi
           fi
+
+      - name: Trigger Mintlify full re-index after MDX path updates
+        if: |
+          github.event.pull_request.head.repo.full_name == github.repository &&
+          steps.normalize_commit.outputs.mdx_changed == 'true'
+        run: |
+          # When normalize rewrites image paths inside MDX files, Mintlify's
+          # automated deployment treats the commit as non-manual and skips
+          # full re-indexing. This leaves affected pages returning 404 until
+          # the next manual push triggers a complete re-deployment.
+          #
+          # An empty follow-up commit forces Mintlify to run a fresh
+          # deployment cycle where the page routing is fully re-validated.
+          git commit --allow-empty \
+            -m "chore: trigger Mintlify re-index after image path normalization"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
 
       # ── Fork PR: create a companion PR with normalized images ────────────────
 

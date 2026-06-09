@@ -4,6 +4,8 @@ sidebarTitle: Customize initial setup
 ai-navigation: Configure Virtual Machine initial setup using User Data field with cloud-init YAML syntax to set passwords, create users, configure groups, add SSH keys, install packages, and configure network interfaces via Gcore portal, API, or Terraform.
 ---
 
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
 ## Why automate the initial setup?
 
 Automating the initial setup saves time and effort, eliminates manual tasks, reduces errors, ensures consistency, enables scalability, and allows you to focus on more valuable tasks. This is where the **User Data** field in the Virtual Machine setup page can assist you. By using the **User Data** field, you can:
@@ -20,79 +22,343 @@ Automating the initial setup saves time and effort, eliminates manual tasks, red
 
 You can access and use the User Data field in three ways:
 
-### From the customer portal
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
 
 By default, the **User Data** field is disabled for new Virtual Machines (VMs). Enable it by switching on the toggle and adding your User Data content in the textbox.
 
-
 <Frame>![User Data conten](/images/docs/cloud/virtual-instances/customize-initial-setup-for-your-instance/user-data-from-ui.png)</Frame>
 
+</MethodSection>
+<MethodSection id="api" label="REST API">
 
+The `user_data` field in the [instance creation](https://api.gcore.com/docs/cloud#tag/Instances/operation/InstanceCreateSetV2.post) request accepts a base64-encoded cloud-init YAML string. The encoding step is required — the API rejects plain-text YAML.
 
-### From Gcore's API
+<Info>
+A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/GetProjectList.get) and [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/GetRegionList.get).
+</Info>
 
-To add the User Data field when creating a new VM via [Gcore API](https://api.gcore.com/docs/cloud#tag/Instances/operation/InstanceCreateSetV2.post), provide your User Data content in `base64` format via `user_data` in the payload request.
+Open a terminal and set these as environment variables before running the examples:
 
-Let's say you want to add the User Data field as below:
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export IMAGE_ID="{YOUR_IMAGE_ID}"
+export FLAVOR_ID="{YOUR_FLAVOR_ID}"
+```
+
+<Info>
+To find the values for each variable:
+- **IMAGE\_ID**: the UUID of a public or private image. Use `GET /cloud/v1/images/{project_id}/{region_id}` to list available images, or see [Upload an image](/cloud/images/upload-an-image-to-the-storage).
+- **FLAVOR\_ID**: the flavor identifier for the VM size. Use `GET /cloud/v1/flavors/{project_id}/{region_id}` to list flavors available in your region.
+</Info>
+
+## Quickstart
+
+The scripts below base64-encode a cloud-init YAML document that writes a sentinel file to `/tmp`, create a VM with that script, and print the instance ID.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import base64
+    import os
+    from gcore import Gcore
+
+    # Step 1. Initialize the client.
+    client = Gcore()
+
+    # Step 2. Write the cloud-init YAML.
+    cloud_init_yaml = """\
+#cloud-config
+write_files:
+  - path: /tmp/cloud-init-ok.txt
+    content: |
+      cloud-init ran successfully
+    permissions: '0644'
+"""
+
+    # Step 3. Encode to base64.
+    user_data_b64 = base64.b64encode(cloud_init_yaml.encode()).decode()
+    print(f"user_data: {user_data_b64}")
+
+    # Step 4. Create the instance with user_data.
+    instance = client.cloud.instances.create_and_poll(
+        name="my-vm",
+        flavor=os.environ["FLAVOR_ID"],
+        user_data=user_data_b64,
+        interfaces=[{"type": "external"}],
+        volumes=[{
+            "source": "image",
+            "image_id": os.environ["IMAGE_ID"],
+            "size": 20,
+            "boot_index": 0,
+        }],
+    )
+    print(f"Instance: {instance.id}  status: {instance.status}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "encoding/base64"
+        "fmt"
+        "log"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+    )
+
+    func main() {
+        // Step 1. Initialize the client.
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        // Step 2. Write the cloud-init YAML.
+        cloudInitYAML := "#cloud-config\n" +
+            "write_files:\n" +
+            "  - path: /tmp/cloud-init-ok.txt\n" +
+            "    content: |\n" +
+            "      cloud-init ran successfully\n" +
+            "    permissions: '0644'\n"
+
+        // Step 3. Encode to base64.
+        userDataB64 := base64.StdEncoding.EncodeToString([]byte(cloudInitYAML))
+        fmt.Printf("user_data: %s\n", userDataB64)
+
+        // Step 4. Create the instance with user_data.
+        instance, err := client.Cloud.Instances.NewAndPoll(ctx, cloud.InstanceNewParams{
+            Flavor:   os.Getenv("FLAVOR_ID"),
+            Name:     gcore.String("my-vm"),
+            UserData: gcore.String(userDataB64),
+            Interfaces: []cloud.InstanceNewParamsInterfaceUnion{{
+                OfExternal: &cloud.InstanceNewParamsInterfaceExternal{},
+            }},
+            Volumes: []cloud.InstanceNewParamsVolumeUnion{{
+                OfImage: &cloud.InstanceNewParamsVolumeImage{
+                    ImageID:   os.Getenv("IMAGE_ID"),
+                    Size:      gcore.Int(20),
+                    BootIndex: gcore.Int(0),
+                },
+            }},
+        })
+        if err != nil {
+            log.Fatalf("create instance: %v", err)
+        }
+        fmt.Printf("Instance: %s  status: %s\n", instance.ID, instance.Status)
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+Each step below explains what the call does, which parameters matter, and what the response looks like. Use this section to understand the flow or to debug a specific step.
+
+<Accordion title="Show all steps">
+
+### Step 1. Write the cloud-init YAML
+
+Every cloud-init document must begin with `#cloud-config` as its first line. The example below writes a file to `/tmp` to confirm initialization ran:
 
 ```yaml
 #cloud-config
-password: your_password
-chpasswd: { expire:False }
-ssh_pwauth: True
-power_state:
- mode: reboot
- timeout: 30
- condition: True
- ```
+write_files:
+  - path: /tmp/cloud-init-ok.txt
+    content: |
+      cloud-init ran successfully
+    permissions: '0644'
+```
 
-First, you must encode this content in `base64` format. You can use the `base64` command line tool to do so.
+Save this file as `user-data.yaml`. See the [cloud-init directives](#set-a-password-for-a-virtual-machine) sections below for all available options.
 
-```sh
-echo -n '#cloud-config
-password: your_password
-chpasswd: { expire:False }
-ssh_pwauth: True
-power_state:
- mode: reboot
- timeout: 30
- condition: True' | base64
- ```
+### Step 2. Encode to base64
 
-The encoded `base64` result should look similar to this:
+The `user_data` field requires the YAML encoded as a single-line base64 string.
 
-```sh
-I2Nsb3VkLWNvbmZpZwpwYXNzd29yZDogeW91cl9wYXNzd29yZApjaHBhc3N3ZDogeyBleHBpcmU6RmFsc2UgfQpzc2hfcHdhdXRoOiBUcnVlCnBvd2VyX3N0YXRlOgogIG1vZGU6IHJlYm9vdAogIHRpbWVvdXQ6IDMwCiAgY29uZGl0aW9uOiBUcnVl
- ```
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import base64
 
-Then, make an API request with the `user_data` field provided in the payload to create a new VM:
+    with open("user-data.yaml", "rb") as f:
+        user_data_b64 = base64.b64encode(f.read()).decode()
+    print(user_data_b64)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    import (
+        "encoding/base64"
+        "fmt"
+        "os"
+    )
 
-```sh
-curl 'https://api.gcore.com/cloud/v2/instances/{projectId}/{regionId}' 
-...
-\--data-raw {
-"user_data":"I2Nsb3VkLWNvbmZpZwpwYXNzd29yZDogeW91cl9wYXNzd29yZApjaHBhc3N3ZDogeyBleHBpcmU6RmFsc2UgfQpzc2hfcHdhdXRoOiBUcnVlCnBvd2VyX3N0YXRlOgogIG1vZGU6IHJlYm9vdAogIHRpbWVvdXQ6IDMwCiAgY29uZGl0aW9uOiBUcnVl",...}
-...
- ```
+    data, _ := os.ReadFile("user-data.yaml")
+    userDataB64 := base64.StdEncoding.EncodeToString(data)
+    fmt.Println(userDataB64)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    USER_DATA_B64=$(base64 -w 0 user-data.yaml)
+    echo "$USER_DATA_B64"
+    ```
 
-### From Terraform
+    The `-w 0` flag disables line-wrapping. On macOS, use `base64 -i user-data.yaml` instead.
+  </Tab>
+</Tabs>
+
+### Step 3. Create the instance
+
+Pass the encoded string in the `user_data` field of the instance creation request.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `user_data` | No | Base64-encoded cloud-init YAML; runs on first boot only. |
+| `flavor` | Yes | [Flavor](https://api.gcore.com/docs/cloud#tag/Flavors/operation/FlavorListV2.get) ID; IDs are region-specific. |
+| `boot_index` | Yes | Set to `0` for the primary boot volume. |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import base64
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    with open("user-data.yaml", "rb") as f:
+        user_data_b64 = base64.b64encode(f.read()).decode()
+
+    instance = client.cloud.instances.create_and_poll(
+        name="my-vm",
+        flavor=os.environ["FLAVOR_ID"],
+        user_data=user_data_b64,
+        interfaces=[{"type": "external"}],
+        volumes=[{
+            "source": "image",
+            "image_id": os.environ["IMAGE_ID"],
+            "size": 20,
+            "boot_index": 0,
+        }],
+    )
+    print(f"Instance: {instance.id}  status: {instance.status}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "encoding/base64"
+        "fmt"
+        "log"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        data, _ := os.ReadFile("user-data.yaml")
+        userDataB64 := base64.StdEncoding.EncodeToString(data)
+
+        instance, err := client.Cloud.Instances.NewAndPoll(ctx, cloud.InstanceNewParams{
+            Flavor:   os.Getenv("FLAVOR_ID"),
+            Name:     gcore.String("my-vm"),
+            UserData: gcore.String(userDataB64),
+            Interfaces: []cloud.InstanceNewParamsInterfaceUnion{{
+                OfExternal: &cloud.InstanceNewParamsInterfaceExternal{},
+            }},
+            Volumes: []cloud.InstanceNewParamsVolumeUnion{{
+                OfImage: &cloud.InstanceNewParamsVolumeImage{
+                    ImageID:   os.Getenv("IMAGE_ID"),
+                    Size:      gcore.Int(20),
+                    BootIndex: gcore.Int(0),
+                },
+            }},
+        })
+        if err != nil {
+            log.Fatalf("create instance: %v", err)
+        }
+        fmt.Printf("Instance: %s  status: %s\n", instance.ID, instance.Status)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v2/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "my-vm",
+        "flavor": "'"$FLAVOR_ID"'",
+        "user_data": "'"$USER_DATA_B64"'",
+        "interfaces": [{"type": "external"}],
+        "volumes": [{
+          "source": "image",
+          "image_id": "'"$IMAGE_ID"'",
+          "size": 20,
+          "boot_index": 0
+        }]
+      }'
+    ```
+
+    The API returns:
+
+    ```json
+    {
+      "tasks": ["b63f0fff-5d22-4c23-8e09-f7a3e1c1a999"]
+    }
+    ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`, then read the instance ID from `created_resources.instances[0]`.
+  </Tab>
+</Tabs>
+
+### Step 4. Verify cloud-init ran
+
+After the instance is active, connect via SSH using the public IP from the Customer Portal or from the `addresses` field in the instance GET response, then check the sentinel file:
+
+```bash
+ssh ubuntu@{INSTANCE_IP} cat /tmp/cloud-init-ok.txt
+```
+
+The expected output is:
+
+```text
+cloud-init ran successfully
+```
+
+If the file is absent, check the [cloud-init logs](#check-cloud-init-logs-for-errors) section for diagnostic commands.
+
+</Accordion>
+
+</MethodSection>
+<MethodSection id="terraform" label="Terraform">
 
 A new Virtual Machine with the User Data field setup can also be created using [Terraform](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/data-sources/instance). Encode your User Data field value to `base64` format first, then provide the encoded value to the `user_data` field in the Terraform definition file as below:
 
-```
+```hcl
 resource "gcore_instance" "instance" {
-
- region_id = your_region_id
- project_id = your_project_id
-
- name = "your_instance_name"
- ...
- 
- user_data = "I2Nsb3VkLWNvbmZpZwpwYXNzd29yZDogeW91cl9wYXNzd29yZApjaHBhc3N3ZDogeyBleHBpcmU6RmFsc2UgfQpzc2hfcHdhdXRoOiBUcnVlCnBvd2VyX3N0YXRlOgogIG1vZGU6IHJlYm9vdAogIHRpbWVvdXQ6IDMwCiAgY29uZGl0aW9uOiBUcnVl"
-
- ...
+  region_id  = var.region_id
+  project_id = var.project_id
+  name       = "my-instance"
+  # ... other required fields ...
+  user_data = "I2Nsb3VkLWNvbmZpZwp3cml0ZV9maWxlczo..."
 }
- ```
+```
+
+</MethodSection>
+</MethodSwitch>
 
 The User Data field features were built based on `cloud-init`, an industry-standard multi-distribution method for cross-platform cloud VM initialization. 
 
@@ -303,7 +569,7 @@ power_state:
   condition: True
 ```
 
-With packages that are available in the default VM repository like `nmap` and `traceroute`, you only need to include them in the `packages` block. However, with packages that are **not** available in the default instance repository— like `docker-ce` and `docker-ce-cli`—you need to add the Docker repository first using `apt sources`.
+With packages that are available in the default VM repository like `nmap` and `traceroute`, you only need to include them in the `packages` block. However, with packages that are **not** available in the default instance repositoryΓÇö like `docker-ce` and `docker-ce-cli`ΓÇöyou need to add the Docker repository first using `apt sources`.
 
 After installing, restart the Virtual Machine so that these packages are added to the system path. Including the `power_state` block at the end of the **User Data** field is helpful because it allows you to use these tools as soon as the Virtual Machine is ready.
 

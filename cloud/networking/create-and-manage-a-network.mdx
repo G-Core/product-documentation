@@ -1,8 +1,13 @@
 ---
 title: "Create and manage a network"
 sidebarTitle: "Network"
-ai-navigation: Create and attach private, public, and dedicated networks to Virtual Machines, Bare Metal servers, Load Balancers, and Managed Kubernetes clusters using VxLAN and VLAN protocols; assign Floating IP addresses and multiple public IPs to enable external connectivity and traffic balancing.
+ai-navigation: Create a private network with a subnet to connect Virtual Machines within a region, and manage it via the Gcore REST API using Python SDK, Go SDK, or curl.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
 A Gcore Cloud network is a virtualized software-defined network that operates in a cloud computing infrastructure. Cloud networks are used to transfer information between cloud resources and provide an internet connection.
 
@@ -168,7 +173,7 @@ To disable Port Security:
 <Info>
   **Info**
 
-  Virtual Machines use only MAC addresses assigned by the platform. Custom (virtual) MAC addresses are not supported.
+  Virtual Machines use only MAC addresses assigned by Gcore Cloud. Custom (virtual) MAC addresses are not supported.
  
 
   Custom MAC addresses are supported only on Bare Metal servers connected to private networks.
@@ -209,3 +214,314 @@ The network has been renamed.
 </Frame>
 
 You've successfully removed a network.
+
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+
+Creating a usable private network takes two calls: create the network, then add a subnet to define the IP address range. Both calls are asynchronous and return a task ID to poll.
+
+<Info>
+A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get) and [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get).
+</Info>
+
+Open a bash terminal and set these as environment variables before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+```
+
+## Quickstart
+
+The scripts below create a private network and a subnet within it.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    # Step 1. Create a private network.
+    network = client.cloud.networks.create_and_poll(name="my-network")
+    network_id = network.id
+    print(f"Network ID: {network_id}")
+
+    # Step 2. Create a subnet with DHCP enabled.
+    subnet = client.cloud.networks.subnets.create_and_poll(
+        name="my-subnet",
+        cidr="192.168.10.0/24",
+        network_id=network_id,
+        enable_dhcp=True,
+    )
+    print(f"Subnet ID: {subnet.id}, CIDR: {subnet.cidr}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+    )
+
+    func main() {
+        client := gcore.NewClient()
+        ctx := context.Background()
+
+        // Step 1. Create a private network.
+        network, err := client.Cloud.Networks.NewAndPoll(ctx, cloud.NetworkNewParams{
+            Name: "my-network",
+        })
+        if err != nil {
+            panic(err.Error())
+        }
+        fmt.Printf("Network ID: %s\n", network.ID)
+
+        // Step 2. Create a subnet with DHCP enabled.
+        subnet, err := client.Cloud.Networks.Subnets.NewAndPoll(ctx, cloud.NetworkSubnetNewParams{
+            NetworkID:  network.ID,
+            Name:       "my-subnet",
+            Cidr:       "192.168.10.0/24",
+            EnableDhcp: gcore.Bool(true),
+            IPVersion:  4,
+        })
+        if err != nil {
+            panic(err.Error())
+        }
+        fmt.Printf("Subnet ID: %s, CIDR: %s\n", subnet.ID, subnet.Cidr)
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+<p>Each step below explains what the call does, which parameters matter, and what the response looks like. Use this section to understand the flow or to debug a specific step.</p>
+
+<Accordion title="Show all steps">
+
+### Step 1. Create a network
+
+A [network](https://api.gcore.com/docs/cloud#tag/Networks/operation/NetworkCreateV1.post) is the top-level container. Creating it also provisions a router that can later connect the subnet to external networks.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Display name for the network |
+| `type` | No | `vxlan` (default, for VMs) or `vlan` (for Bare Metal) |
+| `create_router` | No | Automatically create an external router; defaults to `true` |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    network = client.cloud.networks.create_and_poll(name="my-network")
+    network_id = network.id
+    print(f"Network ID: {network_id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    network, err := client.Cloud.Networks.NewAndPoll(ctx, cloud.NetworkNewParams{
+        Name: "my-network",
+    })
+    if err != nil {
+        panic(err.Error())
+    }
+    fmt.Printf("Network ID: %s\n", network.ID)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/networks/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"name": "my-network"}'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["fe5ad7f4-8b88-4d91-9d2f-c7be0b0c9e03"]
+    }
+    ```
+
+    Poll <code>GET /cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. Save the network ID from `created_resources.networks[0]`:
+
+    ```json
+    {
+      "state": "FINISHED",
+      "created_resources": {
+        "networks": ["b4b8107a-7e90-4b9c-ae19-63de2cbc8a6f"],
+        "routers": ["d2c3a1e0-5f1b-4c8d-9e2a-7b4f0c3d1e5f"]
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Step 2. Create a subnet
+
+A [subnet](https://api.gcore.com/docs/cloud#tag/Subnets/operation/SubnetCreateV1.post) defines the IP range and DHCP settings for the network. VMs attached to this network receive addresses from this range.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `network_id` | Yes | ID of the network created in Step 1 |
+| `cidr` | Yes | IP range in CIDR notation, e.g. `192.168.10.0/24` |
+| `name` | Yes | Display name for the subnet |
+| `enable_dhcp` | No | Automatically assign IPs to VMs; defaults to `true` |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    subnet = client.cloud.networks.subnets.create_and_poll(
+        name="my-subnet",
+        cidr="192.168.10.0/24",
+        network_id=network_id,
+        enable_dhcp=True,
+    )
+    print(f"Subnet ID: {subnet.id}, CIDR: {subnet.cidr}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    subnet, err := client.Cloud.Networks.Subnets.NewAndPoll(ctx, cloud.NetworkSubnetNewParams{
+        NetworkID:  network.ID,
+        Name:       "my-subnet",
+        Cidr:       "192.168.10.0/24",
+        EnableDhcp: gcore.Bool(true),
+        IPVersion:  4,
+    })
+    if err != nil {
+        panic(err.Error())
+    }
+    fmt.Printf("Subnet ID: %s, CIDR: %s\n", subnet.ID, subnet.Cidr)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/subnets/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "my-subnet",
+        "network_id": "'"$NETWORK_ID"'",
+        "cidr": "192.168.10.0/24",
+        "enable_dhcp": true
+      }'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["4bc1a043-008e-410f-8a10-3ededf9a9a7b"]
+    }
+    ```
+
+    Poll <code>GET /cloud/v1/tasks/{task_id}</code> until `state` is `FINISHED`. Save the subnet ID from `created_resources.subnets[0]`:
+
+    ```json
+    {
+      "state": "FINISHED",
+      "created_resources": {
+        "subnets": ["cf3ca33f-ad0d-457d-8bf2-919dc8c76155"]
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</Accordion>
+
+## Rename a network
+
+Renaming is a synchronous operation — no task polling required.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    updated = client.cloud.networks.update(network_id, name="my-network-renamed")
+    print(f"New name: {updated.name}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    // Add "github.com/G-Core/gcore-go/packages/param" to your imports.
+    updated, err := client.Cloud.Networks.Update(ctx, networkID, cloud.NetworkUpdateParams{
+        Name:      param.NewOpt("my-network-renamed"),
+    })
+    if err != nil {
+        panic(err.Error())
+    }
+    fmt.Printf("New name: %s\n", updated.Name)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cloud/v1/networks/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$NETWORK_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"name": "my-network-renamed"}'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "id": "b4b8107a-7e90-4b9c-ae19-63de2cbc8a6f",
+      "name": "my-network-renamed",
+      "type": "vxlan",
+      "region_id": 148,
+      "project_id": 1186668
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Clean up
+
+Deleting the network removes all attached subnets automatically. Delete the network:
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    client.cloud.networks.delete_and_poll(network_id=network_id)
+    print("Network deleted.")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    err = client.Cloud.Networks.DeleteAndPoll(ctx, networkID, cloud.NetworkDeleteParams{})
+    if err != nil {
+        panic(err.Error())
+    }
+    fmt.Println("Network deleted.")
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/cloud/v1/networks/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$NETWORK_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["5c00c510-a9c9-4c55-ae05-2d413a0bf2f1"]
+    }
+    ```
+
+    Poll <code>GET /cloud/v1/tasks/{task_id}</code> until `state` is `FINISHED` to confirm deletion.
+  </Tab>
+</Tabs>
+
+  </MethodSection>
+</MethodSwitch>

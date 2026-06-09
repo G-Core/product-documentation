@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Cloud API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: '2026-06-02T17:29:56.219641+00:00'
+  version: '2026-06-09T09:03:02.349004+00:00'
 servers:
 - url: https://api.gcore.com
 paths:
@@ -20071,6 +20071,125 @@ paths:
                 $ref: '#/components/schemas/TaskIDsSerializer'
       tags:
       - Placement Groups
+  /cloud/v1/ports/{project_id}/{region_id}:
+    get:
+      operationId: PortListView.get
+      summary: List ports
+      description: |-
+        List all ports in the specified project and region.
+        Results can be filtered by network, subnet, IP address, or port ID,
+        and sorted by `created_at` or `network_id`.
+      parameters:
+      - in: path
+        name: project_id
+        required: true
+        description: Project ID
+        schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
+          type: integer
+      - in: path
+        name: region_id
+        required: true
+        description: Region ID
+        schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
+          type: integer
+      - in: query
+        name: ids
+        required: false
+        description: Filter by port ID(s). Exact match.
+        schema:
+          description: Filter by port ID(s). Exact match.
+          items:
+            format: uuid4
+            type: string
+          title: Ids
+          type: array
+      - in: query
+        name: ip_addresses
+        required: false
+        description: Filter by IP address(es). Exact match.
+        schema:
+          description: Filter by IP address(es). Exact match.
+          items:
+            format: ipvanyaddress
+            type: string
+          title: Ip Addresses
+          type: array
+      - in: query
+        name: limit
+        required: false
+        description: Optional. Limit the number of returned items
+        schema:
+          default: 100
+          description: Optional. Limit the number of returned items
+          example: 100
+          examples:
+          - 100
+          exclusiveMinimum: 0
+          maximum: 1000
+          title: Limit
+          type: integer
+      - in: query
+        name: network_ids
+        required: false
+        description: Filter by network ID(s). Exact match.
+        schema:
+          description: Filter by network ID(s). Exact match.
+          items:
+            format: uuid4
+            type: string
+          title: Network Ids
+          type: array
+      - in: query
+        name: offset
+        required: false
+        description: Optional. Offset value is used to exclude the first set of records from the result
+        schema:
+          default: 0
+          description: Optional. Offset value is used to exclude the first set of records from the result
+          example: 0
+          examples:
+          - 0
+          minimum: 0
+          title: Offset
+          type: integer
+      - in: query
+        name: order_by
+        required: false
+        description: Sort field and direction, e.g. `created_at`.desc or `network_id`.asc
+        schema:
+          $ref: '#/components/schemas/PortListOrderByChoices'
+          default: created_at.desc
+          description: Sort field and direction, e.g. `created_at`.desc or `network_id`.asc
+      - in: query
+        name: subnet_ids
+        required: false
+        description: Filter by subnet ID(s). Exact match.
+        schema:
+          description: Filter by subnet ID(s). Exact match.
+          items:
+            format: uuid4
+            type: string
+          title: Subnet Ids
+          type: array
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortListSerializer'
+      tags:
+      - Ports
   /cloud/v1/ports/{project_id}/{region_id}/{port_id}:
     get:
       operationId: PortDetailView.get
@@ -29335,6 +29454,20 @@ components:
       - max
       title: ApplicationContainerScalePricingSerializer
       type: object
+    AppliedSpec:
+      properties:
+        image_id:
+          title: Image Id
+          type: string
+        servers_settings:
+          additionalProperties: true
+          title: Servers Settings
+          type: object
+      required:
+      - image_id
+      - servers_settings
+      title: AppliedSpec
+      type: object
     AssignFloatingIPSerializer:
       properties:
         fixed_ip_address:
@@ -30427,6 +30560,14 @@ components:
       type: object
     BaremetalClusterInstanceServer:
       properties:
+        applied_servers_settings:
+          $ref: '#/components/schemas/AppliedSpec'
+          description: Snapshot of cluster spec (`image_id` and `servers_settings`) applied when this server was last created or rebuilt. Compare with the cluster current spec to see what changed.
+          examples:
+          - image_id: ded40aad-505c-463b-aa59-8f5f455d1b6f
+            servers_settings:
+              credentials:
+                ssh_key_name: my-key
         created_at:
           description: Server creation date and time
           example: '2025-03-17T13:22:23Z'
@@ -30550,6 +30691,7 @@ components:
       - updated_at
       - security_groups
       - has_pending_changes
+      - applied_servers_settings
       title: BaremetalClusterInstanceServer
       type: object
     BaremetalClusterInstanceServersList:
@@ -33002,6 +33144,14 @@ components:
       type: object
     ClusterInstanceServer:
       properties:
+        applied_servers_settings:
+          $ref: '#/components/schemas/AppliedSpec'
+          description: Snapshot of cluster spec (`image_id` and `servers_settings`) applied when this server was last created or rebuilt. Compare with the cluster current spec to see what changed.
+          examples:
+          - image_id: ded40aad-505c-463b-aa59-8f5f455d1b6f
+            servers_settings:
+              credentials:
+                ssh_key_name: my-key
         created_at:
           description: Server creation date and time
           example: '2025-03-17T13:22:23Z'
@@ -33125,6 +33275,7 @@ components:
       - updated_at
       - security_groups
       - has_pending_changes
+      - applied_servers_settings
       title: ClusterInstanceServer
       type: object
     ClusterInstanceServersList:
@@ -36371,6 +36522,13 @@ components:
           - 0
           title: Inference Instance Count Limit
           type: integer
+        inference_public_model_api_key_count_limit:
+          description: Public model API keys count limit
+          example: 0
+          examples:
+          - 0
+          title: Inference Public Model Api Key Count Limit
+          type: integer
         keypair_count_limit:
           description: SSH Keys Count limit
           example: 100
@@ -37561,7 +37719,7 @@ components:
             maxItems: 100
             type: array
           - type: 'null'
-          description: Network CIDRs from which service will be accessible
+          description: Network CIDRs from which service will be accessible. Order-insensitive.
           examples:
           - - 10.0.0.0/8
           title: Allowed Cidrs
@@ -37978,7 +38136,7 @@ components:
             maxItems: 100
             type: array
           - type: 'null'
-          description: Network CIDRs from which service will be accessible
+          description: Network CIDRs from which service will be accessible. Order-insensitive.
           examples:
           - - 10.0.0.0/8
           title: Allowed Cidrs
@@ -38853,6 +39011,7 @@ components:
           description: Security group rules
           items:
             $ref: '#/components/schemas/CreateSecurityGroupRuleSerializerV2'
+          maxItems: 250
           title: Rules
           type: array
         tags:
@@ -42986,6 +43145,20 @@ components:
           - 0
           title: Inference Instance Count Usage
           type: integer
+        inference_public_model_api_key_count_limit:
+          description: Public model API keys count limit
+          example: 0
+          examples:
+          - 0
+          title: Inference Public Model Api Key Count Limit
+          type: integer
+        inference_public_model_api_key_count_usage:
+          description: Public model API keys count usage
+          example: 0
+          examples:
+          - 0
+          title: Inference Public Model Api Key Count Usage
+          type: integer
         keypair_count_limit:
           description: SSH Keys Count limit
           example: 100
@@ -43048,6 +43221,12 @@ components:
         inference_instance_count_usage:
           $ref: '#/components/schemas/QuotaCountForThresholdSerializer'
           description: Inference instance count usage
+        inference_public_model_api_key_count_limit:
+          $ref: '#/components/schemas/QuotaCountForThresholdSerializer'
+          description: Public model API keys count limit
+        inference_public_model_api_key_count_usage:
+          $ref: '#/components/schemas/QuotaCountForThresholdSerializer'
+          description: Public model API keys count usage
         keypair_count_limit:
           $ref: '#/components/schemas/QuotaCountForThresholdSerializer'
           description: SSH Keys Count limit
@@ -56217,7 +56396,7 @@ components:
             maxItems: 100
             type: array
           - type: 'null'
-          description: Network CIDRs from which service will be accessible
+          description: Network CIDRs from which service will be accessible. Order-insensitive.
           examples:
           - - 10.0.0.0/8
           title: Allowed Cidrs
@@ -57113,7 +57292,7 @@ components:
     PortDetailSerializer:
       properties:
         allowed_address_pairs:
-          description: List of allowed address pairs
+          description: List of allowed address pairs. Sorted by `ip_address` for stable client refreshes.
           items:
             $ref: '#/components/schemas/AllowedAddressPairsResponseSerializer'
           title: Allowed Address Pairs
@@ -57123,6 +57302,14 @@ components:
           - $ref: '#/components/schemas/PortCapabilitiesSerializer'
           - type: 'null'
           description: What the driver enforces. null when the port is unattached (driver unknown).
+        created_at:
+          description: Datetime when the port was created.
+          example: '2024-01-15T10:30:00Z'
+          examples:
+          - '2024-01-15T10:30:00Z'
+          format: date-time
+          title: Created At
+          type: string
         id:
           description: Port ID
           example: 1f0ca628-a73b-42c0-bdac-7b10d023e097
@@ -57132,16 +57319,16 @@ components:
           title: Id
           type: string
         ip_assignments:
-          description: List of IP addresses assigned to the port
+          description: List of IP addresses assigned to the port.
           items:
             $ref: '#/components/schemas/IpAssignmentSerializer'
           title: Ip Assignments
           type: array
         mac_address:
           description: MAC address of the port
-          example: 00:16:3e:f2:87:16
+          example: fa:16:3e:f2:87:16
           examples:
-          - 00:16:3e:f2:87:16
+          - fa:16:3e:f2:87:16
           title: Mac Address
           type: string
         managed_by:
@@ -57165,12 +57352,13 @@ components:
           title: Port Security Enabled
           type: boolean
         security_group_ids:
-          description: List of security group IDs applied to the port
+          description: List of security group IDs applied to the port. Sorted lexicographically for stable client refreshes.
           example: &id206
           - bc688791-f1b0-44eb-97d4-07697294b1e1
           examples:
           - *id206
           items:
+            format: uuid4
             type: string
           title: Security Group Ids
           type: array
@@ -57196,6 +57384,7 @@ components:
       - tags
       - managed_by
       - capabilities
+      - created_at
       title: PortDetailSerializer
       type: object
     PortIDsForVIPSerializer:
@@ -57302,6 +57491,35 @@ components:
       - ip_address
       - subnet
       title: PortIpWithSubnetSerializer
+      type: object
+    PortListOrderByChoices:
+      enum:
+      - created_at.asc
+      - created_at.desc
+      - network_id.asc
+      - network_id.desc
+      title: PortListOrderByChoices
+      type: string
+    PortListSerializer:
+      properties:
+        count:
+          description: Number of objects
+          example: 1
+          examples:
+          - 1
+          minimum: 0
+          title: Count
+          type: integer
+        results:
+          description: Objects
+          items:
+            $ref: '#/components/schemas/PortDetailSerializer'
+          title: Results
+          type: array
+      required:
+      - count
+      - results
+      title: PortListSerializer
       type: object
     PortManagedBy:
       enum:
@@ -71799,6 +72017,7 @@ components:
           description: Security group rules
           items:
             $ref: '#/components/schemas/CreateSecurityGroupRuleSerializer'
+          maxItems: 250
           title: Security Group Rules
           type: array
         tags:
@@ -77326,6 +77545,7 @@ components:
           description: List of rules to create or delete
           items:
             $ref: '#/components/schemas/UpdateSecurityGroupRuleSerializer'
+          maxItems: 500
           title: Changed Rules
           type: array
         name:
@@ -77377,6 +77597,7 @@ components:
           description: Security group rules
           items:
             $ref: '#/components/schemas/UpdateSecurityGroupRuleSerializerV2'
+          maxItems: 250
           title: Rules
           type: array
         tags:
