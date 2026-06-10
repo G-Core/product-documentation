@@ -1,9 +1,6 @@
 ---
 name: feature-draft
-description: For product teams and contributors — take a feature description,
-research the context, find or create the right article, write a draft, and
-open a PR for writer review. Load when a contributor provides context about
-a new feature or product change and wants a documentation draft.
+description: Draft documentation for new Gcore product features or product changes, research context, update or create the right article, and open a draft PR. Use when product teams provide feature context and want a documentation draft.
 ---
 
 Take context from a contributor about a new feature or product change, research

@@ -1,8 +1,6 @@
 ---
 name: cookbook
-description: Compile an end-to-end scenario guide that combines steps from
-multiple Gcore products into a single unified article. Load when given a
-real-world scenario topic that spans more than one product or section.
+description: Compile an end-to-end scenario guide that combines multiple Gcore products or sections into one article. Use when asked for a real-world guide spanning more than one product or section.
 ---
 
 Take a scenario topic, find all relevant source articles across the repository,

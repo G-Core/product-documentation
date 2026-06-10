@@ -1,8 +1,6 @@
 ---
 name: jira-context
-description: Analyze a Jira ticket and produce a structured brief of what needs
-to be documented. Load when given a Jira ticket ID or URL and asked to understand
-what work is needed.
+description: Analyze a Jira ticket or Jira URL and produce a structured documentation brief. Use when asked to determine what documentation work is needed from Jira.
 ---
 
 Fetch a Jira ticket, determine whether documentation work is needed, classify

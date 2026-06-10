@@ -1,8 +1,6 @@
 ---
 name: api-use-case
-description: Add a REST API tab to an existing Customer Portal article using the
-OpenAPI spec already in the repository. Load when asked to add API coverage to a
-portal-only article, or to create the REST API section of a tabbed article.
+description: Add REST API coverage to an existing Customer Portal article with MethodSwitch and repository OpenAPI specs. Use when asked to add API coverage or create a REST API tab for a portal-only article.
 ---
 
 Read an existing Customer Portal article, find the matching API endpoints in the
