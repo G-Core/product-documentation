@@ -1,8 +1,6 @@
 ---
 name: full-audit
-description: Test an existing article step by step against the live portal,
-find all discrepancies, and update the article. Load when asked to audit,
-verify, or update an outdated article by testing it in real conditions.
+description: Audit and update an existing documentation article by testing each step against the live Gcore portal. Use when asked to verify, audit, or fix an outdated article through portal testing.
 ---
 
 Walk through an existing article as a real user would, execute every step

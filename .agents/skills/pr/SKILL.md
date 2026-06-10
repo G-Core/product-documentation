@@ -1,7 +1,6 @@
 ---
 name: pr
-description: Create a GitHub pull request after documentation changes are complete.
-Load when a skill finishes its work and the user confirms they want to open a PR.
+description: Create a draft GitHub pull request after documentation changes are complete. Use when the user confirms they want to open a PR.
 ---
 
 Create a draft PR for changes made in the current session.
