@@ -1,0 +1,718 @@
+---
+title: Manage CDN resources with Terraform v0
+sidebarTitle: Manage via Terraform v0
+ai-navigation: Create and manage Gcore CDN resources using Terraform provider v0. Covers origin groups with host and S3 origins, CDN resources with delivery options, SSL certificates (automated and manual), CA certificates for origin verification, CDN rules, rule templates, presets, account configuration, origin shielding (premium), and CDN logs uploader (premium). Uses gcore_cdn_origingroup, gcore_cdn_resource, gcore_cdn_sslcert, gcore_cdn_cacert, gcore_cdn_rule, gcore_cdn_rule_template, gcore_cdn_applied_preset, gcore_cdn_client_config, gcore_cdn_originshielding, gcore_cdn_logs_uploader_policy, gcore_cdn_logs_uploader_target, gcore_cdn_logs_uploader_config resources.
+---
+
+With the Gcore Terraform provider v0, teams define CDN resources in configuration files, then apply them consistently without clicking through the Portal.
+
+The following resources are supported: origin groups, CDN resources with delivery options, SSL certificates, CA certificates, rules, rule templates, presets, account configuration, origin shielding, and CDN log uploading.
+
+Provider installation and authentication are covered in the [Terraform overview](/developer-tools/terraform/overview). The [v2 reference](/cdn/terraform/manage-cdn-via-terraform-v2) covers the equivalent resources for provider v2, with a [migration guide](/developer-tools/terraform/migrate-v0-to-v2) for existing v0 configurations.
+
+## Workflow
+
+Add resource configuration to `main.tf`, then run:
+
+```bash
+terraform plan
+```
+
+Review the output, then apply:
+
+```bash
+terraform apply
+```
+
+The [getting started](/developer-tools/terraform/get-started-with-terraform) guide covers provider configuration and initial setup.
+
+## Manage origin groups
+
+An origin group defines the servers the CDN pulls content from. A group must contain at least one active origin — backup origins activate only when active origins return 4xx or 5xx responses.
+
+### Create an origin group with host origins
+
+The following configuration creates an origin group with one active origin and one backup origin.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below and customize the values:
+
+```hcl
+resource "gcore_cdn_origingroup" "example" {
+  name     = "example-group"
+  use_next = true
+
+  origin {
+    source  = "origin.example.com"
+    enabled = true
+  }
+
+  origin {
+    source  = "backup.example.com"
+    enabled = true
+    backup  = true
+  }
+}
+```
+
+3. Configure the origin group.
+
+- Specify `name` — the display name in the Customer Portal.
+- Set `use_next`:
+  - `true` — if the first active origin fails, the CDN tries the remaining active origins in order, then falls back to backup origins.
+  - `false` — if the first active origin fails, the CDN skips remaining active origins and immediately tries backup origins.
+- For each `origin` block:
+  - Specify `source` — the domain or IP of the origin server. The domain must resolve in DNS.
+  - Set `enabled = true` to make the origin active.
+  - (optional) Add `backup = true` to designate the origin as a backup.
+  - (optional) Add `host_header_override` to send a custom `Host` header to this specific origin.
+- (optional) Add `proxy_next_upstream` — a set of conditions that trigger failover. Accepted values: `error`, `timeout`, `invalid_header`, `http_403`, `http_404`, `http_429`, `http_500`, `http_502`, `http_503`, `http_504`.
+
+### Create an origin group with an S3 origin
+
+The following configuration creates an origin group that pulls content directly from an Amazon S3 bucket.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below and customize the values:
+
+```hcl
+resource "gcore_cdn_origingroup" "s3_example" {
+  name     = "s3-example-group"
+  use_next = false
+
+  origin {
+    enabled     = true
+    origin_type = "s3"
+
+    config {
+      s3_type              = "amazon"
+      s3_bucket_name       = "my-bucket"
+      s3_region            = "us-east-1"
+      s3_access_key_id     = "AKIAIOSFODNN7EXAMPLE"
+      s3_secret_access_key = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+    }
+  }
+}
+```
+
+3. Configure the S3 origin.
+
+- Set `origin_type = "s3"` in the `origin` block.
+- In the nested `config` block:
+  - Set `s3_type`: `"amazon"` for Amazon S3, or `"other"` for S3-compatible storage.
+  - Specify `s3_bucket_name`.
+  - Specify `s3_region` — required when `s3_type` is `"amazon"`.
+  - Specify `s3_storage_hostname` — required when `s3_type` is `"other"`.
+  - Specify `s3_access_key_id` and `s3_secret_access_key`.
+
+<Tip>
+To use Gcore Object Storage as an S3 origin, set `s3_type = "other"` and provide the `s3_storage_hostname` for the storage endpoint.
+</Tip>
+
+### Add S3 authentication at the group level
+
+The `auth` block authenticates the entire origin group against an S3 bucket — use it when all origins in the group share the same bucket.
+
+```hcl
+resource "gcore_cdn_origingroup" "s3_auth_example" {
+  name     = "s3-auth-group"
+  use_next = false
+
+  origin {
+    source  = "my-bucket.s3.amazonaws.com"
+    enabled = true
+  }
+
+  auth {
+    s3_type              = "amazon"
+    s3_bucket_name       = "my-bucket"
+    s3_region            = "us-east-1"
+    s3_access_key_id     = "AKIAIOSFODNN7EXAMPLE"
+    s3_secret_access_key = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+  }
+}
+```
+
+## Manage CDN resources
+
+A CDN resource maps a custom domain (CNAME) to an origin group and controls how content is delivered.
+
+### Create a basic CDN resource
+
+The following configuration creates a CDN resource that serves content from an origin group over HTTPS.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below and customize the values:
+
+```hcl
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origingroup.example.id
+  origin_protocol = "HTTPS"
+}
+```
+
+3. Configure the CDN resource.
+
+- Specify `cname` — the custom domain for the CDN resource (e.g., `cdn.example.com`). After applying, create a CNAME DNS record pointing this domain to the value shown in `gcore_cdn_client_config.cname` or in the Portal setup guide.
+- Specify either `origin_group` (ID of an origin group) or `origin` (a single origin domain or IP). Use `origin_group` for multi-origin or failover setups.
+- Set `origin_protocol`:
+  - `"MATCH"` — CDN uses the same protocol as the client request.
+  - `"HTTP"` — CDN always requests the origin over HTTP.
+  - `"HTTPS"` — CDN always requests the origin over HTTPS.
+- (optional) Add `secondary_hostnames` — a set of additional CNAMEs served by this resource.
+- (optional) Add `description` — a free-text label visible in the Portal.
+- (optional) Set `active = false` to suspend the resource. Defaults to `true`.
+
+### Configure delivery options
+
+CDN resource options control caching, compression, request handling, and security. Add an `options` block inside the `gcore_cdn_resource` resource.
+
+When creating a CDN resource, the Gcore API automatically sets the following options with default values:
+
+- `allowed_http_methods` — GET, HEAD, OPTIONS, POST are allowed.
+- `edge_cache_settings` — follows origin `Cache-Control` headers; caches for 4 days if no cache header is present.
+- `response_headers_hiding_policy` — configured with common headers listed, but the policy is disabled by default.
+- `sni` — dynamic SNI mode; the CDN uses the origin hostname as the SNI value.
+- `stale` — serves stale content on `error` and `updating` conditions.
+- `tls_versions` — all TLS versions listed; restriction is disabled.
+
+To override these defaults or configure additional options:
+
+1. Open the `main.tf` file.
+2. Add an `options` block inside the `gcore_cdn_resource` block:
+
+```hcl
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origingroup.example.id
+  origin_protocol = "HTTPS"
+
+  options {
+    edge_cache_settings {
+      enabled = true
+      value   = "345600s"
+      custom_values = {
+        "403" = "1000s"
+        "404" = "50s"
+      }
+    }
+
+    gzip_on {
+      enabled = true
+      value   = true
+    }
+
+    allowed_http_methods {
+      enabled = true
+      value   = ["GET", "HEAD"]
+    }
+
+    browser_cache_settings {
+      enabled = true
+      value   = "3600s"
+    }
+
+    cors {
+      enabled = true
+      value   = ["*"]
+    }
+
+    redirect_http_to_https {
+      enabled = true
+      value   = true
+    }
+  }
+}
+```
+
+The full list of available options is in the [Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cdn_resource#optional).
+
+### Add secondary hostnames
+
+Multiple custom domains can serve from a single CDN resource using the `secondary_hostnames` attribute.
+
+```hcl
+resource "gcore_cdn_resource" "multi_domain" {
+  cname               = "cdn.example.com"
+  origin_group        = gcore_cdn_origingroup.example.id
+  origin_protocol     = "HTTPS"
+  secondary_hostnames = ["cdn2.example.com", "cdn3.example.com"]
+}
+```
+
+Each hostname in `secondary_hostnames` requires its own CNAME DNS record pointing to the same CDN domain.
+
+## Manage SSL certificates
+
+SSL certificates secure the connection between CDN edge servers and clients. Gcore supports automated Let's Encrypt certificates and manually uploaded certificates from third-party CAs.
+
+### Issue a Let's Encrypt certificate automatically
+
+Gcore can issue and renew a Let's Encrypt certificate automatically for the CDN resource domain. The `gcore_cdn_sslcert` resource with `automated = true` requests the certificate from Let's Encrypt.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below and customize the values:
+
+```hcl
+resource "gcore_cdn_sslcert" "example" {
+  name      = "example-cert"
+  automated = true
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origingroup.example.id
+  origin_protocol = "HTTPS"
+  ssl_enabled     = true
+  ssl_data        = gcore_cdn_sslcert.example.id
+}
+```
+
+3. Configure the SSL certificate.
+
+- Specify `name` — must be unique within the account.
+- Set `automated = true` to request a Let's Encrypt certificate.
+- In the CDN resource, set `ssl_enabled = true` and reference the certificate ID with `ssl_data`.
+
+<Note>
+Let's Encrypt validates domain ownership before issuing the certificate. The CNAME DNS record for the CDN domain must already point to the Gcore CDN before applying this configuration.
+</Note>
+
+### Upload a custom SSL certificate
+
+Upload a certificate from any third-party CA using the `cert` and `private_key` attributes.
+
+```hcl
+resource "gcore_cdn_sslcert" "custom" {
+  name        = "my-custom-cert"
+  cert        = file("cert.pem")
+  private_key = file("key.pem")
+}
+
+resource "gcore_cdn_resource" "example" {
+  cname           = "cdn.example.com"
+  origin_group    = gcore_cdn_origingroup.example.id
+  origin_protocol = "HTTPS"
+  ssl_enabled     = true
+  ssl_data        = gcore_cdn_sslcert.custom.id
+}
+```
+
+- `cert` — the full certificate chain in PEM format. Include the server certificate and any intermediate certificates.
+- `private_key` — the private key in PEM format.
+- (optional) Set `validate_root_ca = true` to verify that the certificate chain is signed by a trusted CA.
+
+## Manage CA certificates for origin verification
+
+A CA certificate (`gcore_cdn_cacert`) lets the CDN verify the SSL certificate presented by the origin server, or authenticates the CDN to origins that require mutual TLS (mTLS).
+
+### Upload a CA certificate
+
+The following configuration uploads a trusted CA certificate.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below and customize the values:
+
+```hcl
+resource "gcore_cdn_cacert" "example" {
+  name = "my-origin-ca"
+  cert = file("ca.pem")
+}
+```
+
+- Specify `name` — must be unique within the account.
+- Specify `cert` — the CA certificate in PEM format. Each certificate in the chain must end with a newline character.
+
+### Enable origin SSL verification
+
+To verify the origin server's certificate, attach the CA certificate to a CDN resource with `proxy_ssl_enabled`. This requires both a CA certificate and a non-automated client SSL certificate:
+
+```hcl
+resource "gcore_cdn_sslcert" "client_cert" {
+  name        = "client-cert"
+  cert        = file("client.pem")
+  private_key = file("client-key.pem")
+}
+
+resource "gcore_cdn_cacert" "origin_ca" {
+  name = "origin-ca"
+  cert = file("origin-ca.pem")
+}
+
+resource "gcore_cdn_resource" "secure_example" {
+  cname             = "cdn.example.com"
+  origin_group      = gcore_cdn_origingroup.example.id
+  origin_protocol   = "HTTPS"
+  proxy_ssl_enabled = true
+  proxy_ssl_ca      = gcore_cdn_cacert.origin_ca.id
+  proxy_ssl_data    = gcore_cdn_sslcert.client_cert.id
+}
+```
+
+- `proxy_ssl_enabled = true` — enables SSL verification of the origin.
+- `proxy_ssl_ca` — the ID of the CA certificate used to verify the origin's certificate.
+- `proxy_ssl_data` — the ID of a client certificate (must be a manually uploaded certificate, not automated).
+
+<Note>
+`proxy_ssl_enabled = true` requires both `proxy_ssl_ca` and `proxy_ssl_data` to be set. Automated (Let's Encrypt) certificates cannot be used for `proxy_ssl_data`.
+</Note>
+
+## Manage CDN rules
+
+A CDN rule applies a separate set of delivery options to requests matching a specific path pattern. Rules override the CDN resource options for matched paths.
+
+### Create a rule
+
+The following configuration creates a rule that caches PNG images for 24 hours.
+
+1. Open the `main.tf` file. It must contain the `gcore_cdn_resource` block for the resource the rule will be attached to.
+2. Copy the code below and customize the values:
+
+```hcl
+resource "gcore_cdn_rule" "images" {
+  resource_id = gcore_cdn_resource.example.id
+  name        = "PNG images"
+  rule        = "/images/*.png"
+  rule_type   = 0
+
+  options {
+    edge_cache_settings {
+      enabled = true
+      value   = "86400s"
+    }
+  }
+}
+```
+
+3. Configure the rule.
+
+- Specify `resource_id` — reference the CDN resource using its Terraform ID.
+- Specify `name` — the display name in the Customer Portal.
+- Specify `rule` — the path pattern. Must start with `/`. Supports glob wildcards (`*`, `**`) for `rule_type = 0`.
+- Set `rule_type`:
+  - `0` — glob pattern (e.g., `/images/*.png`).
+  - `1` — regular expression (must start with `^/`).
+- (optional) Add an `options` block with the same options available on the CDN resource.
+- (optional) Set `active = false` to disable the rule without deleting it.
+- (optional) Set `weight` — rule execution order from lowest to highest. Rules with the same weight execute in definition order.
+- (optional) Set `origin_group` — override the origin group for requests matched by this rule.
+- (optional) Set `origin_protocol` — override the origin protocol for requests matched by this rule.
+
+## Manage rule templates
+
+A rule template is a reusable rule configuration, not tied to a specific CDN resource — define it once and apply it to multiple resources.
+
+### Create a rule template
+
+The following configuration creates a template for static assets with long-term caching and gzip compression.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below and customize the values:
+
+```hcl
+resource "gcore_cdn_rule_template" "static_assets" {
+  name      = "static-assets-template"
+  rule      = "/static/*"
+  rule_type = 0
+
+  options {
+    edge_cache_settings {
+      enabled = true
+      value   = "604800s"
+    }
+
+    gzip_on {
+      enabled = true
+      value   = true
+    }
+  }
+}
+```
+
+3. Configure the rule template.
+
+- (optional) Specify `name` — the template display name.
+- Specify `rule` — the path pattern for the template.
+- Set `rule_type` — `0` for glob, `1` for regular expression.
+- Add an `options` block with the delivery options to apply.
+- (optional) Set `weight` — the execution priority when applied to a resource.
+- (optional) Set `override_origin_protocol` — override the origin protocol for requests matched by the template.
+
+## Apply presets
+
+A CDN preset is a predefined group of options optimized for a specific use case — applying one configures the target resource or rule with the recommended settings automatically.
+
+### Apply a preset to a CDN resource
+
+The following configuration applies the LIVE STREAMING preset to a CDN resource.
+
+1. Find the available preset IDs by querying the Gcore API:
+
+```bash
+curl -H "Authorization: APIKey your-api-token" https://api.gcore.com/cdn/presets
+```
+
+2. Open the `main.tf` file with the Gcore provider configuration.
+3. Copy the code below and customize the values:
+
+```hcl
+resource "gcore_cdn_applied_preset" "live_streaming" {
+  object_id = gcore_cdn_resource.example.id
+  preset_id = 52
+}
+```
+
+- Specify `object_id` — the ID of the CDN resource or rule to apply the preset to.
+- Specify `preset_id` — the ID of the preset returned by the API. Currently available presets:
+  - `52` — LIVE STREAMING.
+
+<Note>
+Applying a preset overwrites the options of the targeted resource or rule with the preset's settings. Review the preset configuration in the API response before applying it.
+</Note>
+
+## Manage account configuration
+
+The `gcore_cdn_client_config` resource reads and manages account-level CDN settings. Most fields are read-only and reflect the current state of the CDN service for the account.
+
+### Read and update account CDN settings
+
+The following configuration reads account-level settings and sets a traffic utilization limit.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below:
+
+```hcl
+resource "gcore_cdn_client_config" "account" {
+  utilization_level = 100
+}
+```
+
+3. Configure the resource.
+
+- (optional) Set `utilization_level` — CDN traffic usage limit in gigabytes. The only writable field.
+
+After applying, Terraform populates the following read-only attributes:
+
+- `cname` — the CDN CNAME zone for the account (e.g., `cl-abc123.gcdn.co`). All CDN resource custom domains must have a CNAME record pointing to this value.
+- `id` — the account ID.
+- `created` and `updated` — timestamps of account creation and last update.
+- `auto_suspend_enabled` — whether inactive CDN resources are automatically suspended.
+- `cdn_resources_rules_max_count` — maximum number of rules per CDN resource.
+- `use_balancer` — whether custom balancing is enabled.
+- `service` — status of the CDN service (enabled, status, last update time).
+
+<Tip>
+Use `gcore_cdn_client_config` to retrieve the CNAME zone programmatically:
+
+```hcl
+output "cdn_cname_zone" {
+  value = gcore_cdn_client_config.account.cname
+}
+```
+
+Point all CDN resource custom domain CNAME records to this output value.
+</Tip>
+
+## Manage origin shielding
+
+Origin shielding routes CDN edge servers through a single shielding Point of Presence (PoP) before reaching the origin, reducing the number of requests the origin server must handle.
+
+<Note>
+Origin shielding requires a separate subscription. Contact [Gcore Support](mailto:support@gcore.com) to enable it. Applying `gcore_cdn_originshielding` without the subscription returns a `403` error.
+</Note>
+
+### Enable origin shielding
+
+The configuration requires a shielding PoP ID, which is retrieved from the Gcore API.
+
+1. Find the available shielding PoP IDs:
+
+```bash
+curl -H "Authorization: APIKey your-api-token" https://api.gcore.com/cdn/shieldingpop_v2
+```
+
+Currently available PoPs:
+- `171` — Singapore (SG1)
+- `172` — Ashburn, USA
+- `198` — Amsterdam and Frankfurt
+
+2. Open the `main.tf` file with the Gcore provider configuration.
+3. Copy the code below and customize the values:
+
+```hcl
+resource "gcore_cdn_originshielding" "example" {
+  resource_id   = gcore_cdn_resource.example.id
+  shielding_pop = 171
+}
+```
+
+- Specify `resource_id` — the ID of the CDN resource to enable shielding for.
+- Specify `shielding_pop` — the PoP ID from the API response.
+
+### Disable origin shielding
+
+Remove the `gcore_cdn_originshielding` resource block from `main.tf` and run `terraform apply`. Terraform destroys the shielding configuration.
+
+## Configure CDN logs (Logs Uploader)
+
+CDN Logs Uploader exports raw CDN access logs to an external storage target. The configuration uses three resources: a policy (which fields and format to export), a target (where to send the logs), and a config (which CDN resources to include).
+
+<Note>
+The CDN Logs Uploader requires a separate subscription. Contact Gcore support to enable it. Applying any `gcore_cdn_logs_uploader_*` resource without the subscription returns a `403` error.
+</Note>
+
+### Create a log policy
+
+A log policy defines which fields to include in exported logs and how to format the log files.
+
+1. Open the `main.tf` file with the Gcore provider configuration.
+2. Copy the code below and customize the values:
+
+```hcl
+resource "gcore_cdn_logs_uploader_policy" "example" {
+  name   = "my-log-policy"
+  fields = [
+    "timestamp",
+    "clientIP",
+    "uri",
+    "status",
+    "responseSize",
+    "cachestatus"
+  ]
+  rotate_interval_minutes = 5
+  include_shield_logs     = false
+}
+```
+
+3. Configure the log policy.
+
+- (optional) Specify `name`. Defaults to `"Policy"`.
+- Specify `fields` — the list of log fields to include. Available fields include `timestamp`, `clientIP`, `uri`, `status`, `responseSize`, `cachestatus`, and others.
+- (optional) Set `rotate_interval_minutes` — how often to create a new log file, in minutes. Default: `5`.
+- (optional) Set `rotate_threshold_lines` — rotate log file after this many lines. Default: `0` (disabled).
+- (optional) Set `rotate_threshold_mb` — rotate log file after this size in megabytes.
+- (optional) Set `include_shield_logs = true` to include requests served by origin shielding PoPs.
+- (optional) Set `include_empty_logs = true` to upload log files even when empty.
+- (optional) Specify `file_name_template` — template for log file names. Default: `"{{YYYY}}/{{MM}}/{{DD}}/{{HH}}/{{mm}}"`.
+- (optional) Specify `field_separator` — character separating fields. Default: space.
+- (optional) Specify `field_delimiter` — character wrapping field values. Default: `"`.
+- (optional) Specify `date_format` — format string for date fields.
+- (optional) Specify `format_type` — output format type.
+- (optional) Set `retry_interval_minutes` — minutes between retry attempts for failed uploads. Default: `60`.
+
+### Create a log upload target
+
+A log target defines where CDN logs are sent. Gcore supports Amazon S3, Gcore Object Storage, S3-compatible storage, FTP, SFTP, and HTTP endpoints.
+
+The following configuration creates a target that uploads logs to Gcore Object Storage.
+
+1. Open the `main.tf` file.
+2. Copy the code below and customize the values:
+
+```hcl
+resource "gcore_cdn_logs_uploader_target" "example" {
+  name = "my-log-target"
+
+  config {
+    s3_gcore {
+      endpoint          = "s3.gcore.com"
+      region            = "s-ed1"
+      bucket_name       = "my-logs-bucket"
+      access_key_id     = "your-access-key-id"
+      secret_access_key = "your-secret-access-key"
+      directory         = "cdn-logs/"
+    }
+  }
+}
+```
+
+3. Configure the log target.
+
+- (optional) Specify `name`. Defaults to `"Target"`.
+- (optional) Specify `description`.
+- Add a `config` block with exactly one of the following backend blocks:
+
+| Backend block | Description |
+|---|---|
+| `s3_amazon` | Amazon S3. Requires `bucket_name`, `region`, `access_key_id`, `secret_access_key`. |
+| `s3_gcore` | Gcore Object Storage. Requires `endpoint`, `region`, `bucket_name`, `access_key_id`, `secret_access_key`. |
+| `s3_other` / `s3_v1` | S3-compatible storage. Requires `endpoint`, `region`, `bucket_name`, `access_key_id`, `secret_access_key`. |
+| `s3_oss` | Alibaba OSS. Requires `bucket_name`, `access_key_id`, `secret_access_key`. |
+| `ftp` | FTP server. Requires `hostname`, `user`, `password`. |
+| `sftp` | SFTP server. Requires `hostname`, `user`. Supports `password` or `private_key`. |
+| `http` | HTTP endpoint. Requires `upload.url`. Supports `append`, `retry`, and `auth` sub-blocks. |
+
+For Amazon S3:
+
+```hcl
+resource "gcore_cdn_logs_uploader_target" "amazon_s3" {
+  name = "amazon-s3-target"
+
+  config {
+    s3_amazon {
+      bucket_name       = "my-logs-bucket"
+      region            = "us-east-1"
+      access_key_id     = "AKIAIOSFODNN7EXAMPLE"
+      secret_access_key = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+      directory         = "cdn-logs/"
+    }
+  }
+}
+```
+
+For an HTTP endpoint with authentication:
+
+```hcl
+resource "gcore_cdn_logs_uploader_target" "http" {
+  name = "http-target"
+
+  config {
+    http {
+      content_type = "json"
+
+      upload {
+        url    = "https://logs.example.com/upload"
+        method = "POST"
+      }
+
+      auth {
+        type = "token"
+        config {
+          header_name = "Authorization"
+          token       = "Bearer your-token"
+        }
+      }
+    }
+  }
+}
+```
+
+### Create a log upload configuration
+
+A log config connects a policy and a target to one or more CDN resources.
+
+1. Open the `main.tf` file.
+2. Copy the code below and customize the values:
+
+```hcl
+resource "gcore_cdn_logs_uploader_config" "example" {
+  name              = "my-log-config"
+  policy            = gcore_cdn_logs_uploader_policy.example.id
+  target            = gcore_cdn_logs_uploader_target.example.id
+  enabled           = true
+  for_all_resources = false
+  resources         = [gcore_cdn_resource.example.id]
+}
+```
+
+3. Configure the log config.
+
+- Specify `name` — the display name.
+- Specify `policy` — the ID of the log policy.
+- Specify `target` — the ID of the log target.
+- (optional) Set `enabled = false` to pause log uploading without deleting the config. Defaults to `true`.
+- Set `for_all_resources`:
+  - `true` — upload logs for all CDN resources in the account.
+  - `false` — upload logs only for the resources listed in `resources`.
+- Specify `resources` — a list of CDN resource IDs. Required when `for_all_resources = false`.

@@ -4,6 +4,11 @@ sidebarTitle: Upload
 ai-navigation: Upload images to Gcore Cloud storage via URL import, supporting raw, vhd, vhdx, vdi, ploop, qcow2, and ami formats with VirtIO drivers and cloud-init package for Virtual Instances, Bare Metal, Virtual GPU Clusters, and Baremetal GPU Clusters using x86 or ARM architecture selection and VM quick start toggle configuration.
 ---
 
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
+
 You can upload images to the cloud storage by following a few simple steps, ensuring the correct formats and settings are in place for a successful upload and easy management.
 
 ## Image requirements
@@ -89,3 +94,330 @@ Image deletion | The image can be deleted without affecting a Virtual Machine's 
 
 
 <Frame>![Click the Upload button to finalize image import](/images/docs/cloud/images/upload-an-image-to-the-storage/click-upload.png)</Frame>
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+Custom images are imported by providing a public URL — Gcore fetches and stores the image in the selected region, where it becomes available for instance creation.
+
+<Info>
+A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get) and a [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get).
+</Info>
+
+Set the following environment variables before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+```
+
+## Upload an image
+
+The [upload image](https://api.gcore.com/docs/cloud#tag/Images/operation/ImageDownloadViewSet.post) endpoint fetches the image from the provided URL and stores it in the region. The image becomes available once the download task completes.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Display name for the image |
+| `url` | Yes | Public URL of the image file; the accepted formats are raw, vhd, vhdx, vdi, ploop, qcow2, and ami |
+| `os_type` | No | OS family — `linux` or `windows`; defaults to `linux` |
+| `architecture` | No | CPU architecture — `x86_64` or `aarch64`; defaults to `x86_64` |
+| `ssh_key` | No | SSH key policy — `allow`, `deny`, or `required`; defaults to `allow` |
+| `cow_format` | No | Set to `true` to enable VM quick start (raw format, image-backed VMs); defaults to `false` (qcow2, full copy) |
+| `is_baremetal` | No | Set to `true` to use the image with Bare Metal servers; defaults to `false` |
+| `hw_firmware_type` | No | Boot firmware — `bios` or `uefi` |
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+
+image = client.cloud.instances.images.upload_and_poll(
+    name="my-custom-image",
+    url="https://example.com/images/ubuntu-24.04-custom.qcow2",
+    os_type="linux",
+    architecture="x86_64",
+    ssh_key="allow",
+)
+print(f"Image ID:   {image.id}")    # save as IMAGE_ID
+print(f"Status:     {image.status}")
+print(f"Format:     {image.disk_format}")
+print(f"Size:       {image.size} bytes")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+import (
+    "context"
+    "fmt"
+    "log"
+
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/cloud"
+)
+
+client := gcore.NewClient()
+ctx := context.Background()
+
+image, err := client.Cloud.Instances.Images.UploadAndPoll(ctx, cloud.InstanceImageUploadParams{
+    Name:         "my-custom-image",
+    URL:          "https://example.com/images/ubuntu-24.04-custom.qcow2",
+    OsType:       cloud.InstanceImageUploadParamsOsTypeLinux,
+    Architecture: cloud.InstanceImageUploadParamsArchitectureX86_64,
+    SSHKey:       cloud.InstanceImageUploadParamsSSHKeyAllow,
+})
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf("Image ID: %s\n", image.ID)    // save as IMAGE_ID
+fmt.Printf("Status:   %s\n", image.Status)
+fmt.Printf("Format:   %s\n", image.DiskFormat)
+fmt.Printf("Size:     %d bytes\n", image.Size)
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X POST "https://api.gcore.com/cloud/v1/downloadimage/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my-custom-image",
+    "url": "https://example.com/images/ubuntu-24.04-custom.qcow2",
+    "os_type": "linux",
+    "architecture": "x86_64",
+    "ssh_key": "allow"
+  }'
+```
+
+Response:
+
+```json
+{
+  "tasks": ["b63f0fff-1234-5678-abcd-ef0123456789"]
+}
+```
+
+Poll <code>GET&nbsp;https://api.gcore.com/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. The image ID is in `created_resources.images[0]`.
+  </Tab>
+</Tabs>
+
+Uploaded images get `visibility: "shared"` — they are visible within the project and region but not publicly available.
+
+## List custom images
+
+The [list images](https://api.gcore.com/docs/cloud#tag/Images/operation/ImagesViewSet.get) endpoint returns images visible in the region. Filter by `visibility=shared` to see only custom and shared images, excluding public OS images.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+images = client.cloud.instances.images.list(visibility="shared")
+print(f"Count: {images.count}")
+for img in images.results:
+    print(f"  {img.id}  {img.name}  {img.status}  {img.disk_format}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+imageList, err := client.Cloud.Instances.Images.List(ctx, cloud.InstanceImageListParams{
+    Visibility: cloud.InstanceImageListParamsVisibilityShared,
+})
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf("Count: %d\n", imageList.Count)
+for _, img := range imageList.Results {
+    fmt.Printf("  %s  %s  %s\n", img.ID, img.Name, img.Status)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl "https://api.gcore.com/cloud/v1/images/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID?visibility=shared" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+Response:
+
+```json
+{
+  "count": 1,
+  "results": [
+    {
+      "id": "e418cec8-cf26-4146-aad8-82e3ca805d2e",
+      "name": "my-custom-image",
+      "status": "active",
+      "visibility": "shared",
+      "disk_format": "qcow2",
+      "size": 12716032,
+      "os_type": "linux",
+      "architecture": "x86_64",
+      "created_at": "2026-05-31T10:00:00+00:00"
+    }
+  ]
+}
+```
+  </Tab>
+</Tabs>
+
+## Get image details
+
+The [get image](https://api.gcore.com/docs/cloud#tag/Images/operation/ImageDetailViewSet.get) endpoint returns full metadata for a single image by ID, including its format, size, OS type, and architecture.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+IMAGE_ID = "e418cec8-cf26-4146-aad8-82e3ca805d2e"
+
+image = client.cloud.instances.images.get(IMAGE_ID)
+print(f"Name:         {image.name}")
+print(f"Status:       {image.status}")
+print(f"Format:       {image.disk_format}")
+print(f"Size:         {image.size} bytes")
+print(f"OS type:      {image.os_type}")
+print(f"Architecture: {image.architecture}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+imageID := "e418cec8-cf26-4146-aad8-82e3ca805d2e"
+
+image, err := client.Cloud.Instances.Images.Get(ctx, imageID, cloud.InstanceImageGetParams{})
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf("Name:         %s\n", image.Name)
+fmt.Printf("Status:       %s\n", image.Status)
+fmt.Printf("Format:       %s\n", image.DiskFormat)
+fmt.Printf("Size:         %d bytes\n", image.Size)
+fmt.Printf("OS type:      %s\n", image.OsType)
+fmt.Printf("Architecture: %s\n", image.Architecture)
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+IMAGE_ID="e418cec8-cf26-4146-aad8-82e3ca805d2e"
+
+curl "https://api.gcore.com/cloud/v1/images/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$IMAGE_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+Response:
+
+```json
+{
+  "id": "e418cec8-cf26-4146-aad8-82e3ca805d2e",
+  "name": "my-custom-image",
+  "status": "active",
+  "visibility": "shared",
+  "disk_format": "qcow2",
+  "size": 12716032,
+  "os_type": "linux",
+  "architecture": "x86_64",
+  "ssh_key": "allow",
+  "hw_firmware_type": null,
+  "is_baremetal": false,
+  "created_at": "2026-05-31T10:00:00+00:00"
+}
+```
+  </Tab>
+</Tabs>
+
+## Update an image
+
+The [update image](https://api.gcore.com/docs/cloud#tag/Images/operation/ImageDetailViewSet.patch) endpoint modifies image properties such as its name, OS type, firmware type, and SSH key policy. The update takes effect immediately — no task polling is needed.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+IMAGE_ID = "e418cec8-cf26-4146-aad8-82e3ca805d2e"
+
+image = client.cloud.instances.images.update(
+    IMAGE_ID,
+    name="my-custom-image-v2",
+)
+print(f"Updated name: {image.name}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+imageID := "e418cec8-cf26-4146-aad8-82e3ca805d2e"
+
+image, err := client.Cloud.Instances.Images.Update(ctx, imageID, cloud.InstanceImageUpdateParams{
+    Name: gcore.String("my-custom-image-v2"),
+})
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf("Updated name: %s\n", image.Name)
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+IMAGE_ID="e418cec8-cf26-4146-aad8-82e3ca805d2e"
+
+curl -X PATCH "https://api.gcore.com/cloud/v1/images/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$IMAGE_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "my-custom-image-v2"}'
+```
+
+Response:
+
+```json
+{
+  "id": "e418cec8-cf26-4146-aad8-82e3ca805d2e",
+  "name": "my-custom-image-v2",
+  "status": "active"
+}
+```
+  </Tab>
+</Tabs>
+
+## Clean up
+
+The [delete image](https://api.gcore.com/docs/cloud#tag/Images/operation/ImageDetailViewSet.delete) endpoint removes a custom image permanently. An image cannot be deleted while VMs created from it are still running (when `cow_format` was enabled at upload time).
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+IMAGE_ID = "e418cec8-cf26-4146-aad8-82e3ca805d2e"
+
+client.cloud.instances.images.delete_and_poll(IMAGE_ID)
+print("Image deleted.")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+imageID := "e418cec8-cf26-4146-aad8-82e3ca805d2e"
+
+if err := client.Cloud.Instances.Images.DeleteAndPoll(ctx, imageID, cloud.InstanceImageDeleteParams{}); err != nil {
+    log.Fatal(err)
+}
+fmt.Println("Image deleted.")
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+IMAGE_ID="e418cec8-cf26-4146-aad8-82e3ca805d2e"
+
+curl -X DELETE "https://api.gcore.com/cloud/v1/images/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$IMAGE_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+Response:
+
+```json
+{
+  "tasks": ["b63f0fff-1234-5678-abcd-ef0123456789"]
+}
+```
+
+Poll <code>GET&nbsp;https://api.gcore.com/cloud/v1/tasks/{task_id}</code> until `state` is `FINISHED`.
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>

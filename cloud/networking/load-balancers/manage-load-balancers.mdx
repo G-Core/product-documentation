@@ -1,7 +1,12 @@
 ---
 title: Manage load balancers
-ai-navigation: Manage Load Balancer resources in the Customer Portal by viewing configuration details, IP addresses, listeners, regions, tags, and operating/provisioning statuses including Online, Draining, Offline, Degraded, Error, and No_monitor states.
+ai-navigation: List, inspect, rename, update tags, initiate failover, and delete Load Balancers via the Customer Portal or Gcore REST API with Python SDK, Go SDK, and curl examples.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
 
 After you create a Load Balancer, it will appear on the **Load Balancers** page in the Customer Portal. To access the page: 
 
@@ -10,7 +15,7 @@ After you create a Load Balancer, it will appear on the **Load Balancers** page 
 2\. Open the **Load Balancers** page. 
 
 
-<Frame>![Load Balancers page in the Customer Portal](/images/docs/cloud/networking/load-balancers/manage-a-load-balancer/load-balancers-page.png)</Frame>
+<Frame>![Load Balancers page in the Customer Portal](/images/docs/cloud/networking/load-balancers/manage-load-balancers/load-balancers-page.png)</Frame>
 
 
 
@@ -96,7 +101,7 @@ You can inspect the configuration details of a created Load Balancer, view and c
 2\. On the **Load Balancers** page, find the balancer you want to configure and click its name to open the settings.
 
 
-<Frame>![Load Balancers overview page](/images/docs/cloud/networking/load-balancers/manage-a-load-balancer/balancer-overview.png)</Frame>
+<Frame>![Load Balancers overview page](/images/docs/cloud/networking/load-balancers/manage-load-balancers/balancer-overview.png)</Frame>
 
 
 
@@ -144,7 +149,7 @@ During resize or failover operations, all current connections will be terminated
 This tab features a summary of the load balancer's configuration and its resources. 
 
 
-<Frame>![Flavor tab in Load Balancer settings](/images/docs/cloud/networking/load-balancers/manage-a-load-balancer/flavor-tab.png)</Frame>
+<Frame>![Flavor tab in Load Balancer settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/flavor-tab.png)</Frame>
 
 
 
@@ -176,7 +181,7 @@ Monitoring data is available in hourly and weekly views:
 You can also specify the auto-refresh cadence: in minutes (1, 5, 15, or 30) or for one hour. 
 
 
-<Frame>![Monitoring tab in Load Balancer settings](/images/docs/cloud/networking/load-balancers/manage-a-load-balancer/monitoring-tab.png)</Frame>
+<Frame>![Monitoring tab in Load Balancer settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/monitoring-tab.png)</Frame>
 
 
 
@@ -205,7 +210,7 @@ Listener configuration:
   * **Provisioning status** : The status of the configuration process for the listener. "Active" suggests that it has been fully configured and is operational.
 
 
-<Frame>![Listeners tab in Load Balancer settings](/images/docs/cloud/networking/load-balancers/manage-a-load-balancer/listeners-tab.png)</Frame>
+<Frame>![Listeners tab in Load Balancer settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/listeners-tab.png)</Frame>
 
  <Info>
 **Info**
@@ -215,7 +220,7 @@ You can't add multiple listeners with the same L4 type and port number. For exam
 It's also not possible to use both TCP 80 and HTTP 80. The reason is that HTTP is an L7 protocol based on L4 TCP, so in this case, it's perceived as TCP 80 + TCP 80.
 </Info>
 
-#### Pool settings
+**Pool settings**
 
 <Tip>
 **Tip**
@@ -237,11 +242,11 @@ A pool is the list of VMs or Bare Metal to which the listener will redirect inco
 
   * **Provisioning status** : The status of the configuration process for the pool. "Active" means the pool is fully set up and ready for use. 
 
-  * **Protocol** : The network protocol that the pool uses to communicate with instances and members.
+  * **Protocol** : The protocol the pool uses to communicate with backend instances. Available options: HTTP, HTTPS, TCP, PROXY (Proxy Protocol v1), and PROXY V2 (Proxy Protocol v2). Selecting PROXY or PROXY V2 causes the Load Balancer to prepend a Proxy Protocol header to each connection, allowing backend servers to read the original client IP address. Requires a TCP listener and backend applications configured to parse Proxy Protocol headers.
 
 
 
-<Frame>![Listeners tab with pool settings](/images/docs/cloud/networking/load-balancers/manage-a-load-balancer/listeners-tab-pool.png)</Frame>
+<Frame>![Listeners tab with pool settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/listeners-tab-pool.png)</Frame>
 
 
 
@@ -255,7 +260,7 @@ Instances:
   * **Weight** : Distribution of traffic among Virtual Machines or Bare Metal servers in the pool. A weight can be assigned to each VM or Bare Metal to influence how much traffic it should handle compared to other instances. A higher weight means that more traffic will be directed to that particular resource.
 
 
-<Frame>![Listeners tab with instance settings](/images/docs/cloud/networking/load-balancers/manage-a-load-balancer/listeners-tab-instances.png)</Frame>
+<Frame>![Listeners tab with instance settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/listeners-tab-instances.png)</Frame>
 
 
 
@@ -268,7 +273,7 @@ Health check:
   * **Healthy thresholds** : The number of consecutive successful health checks required for a server to be considered healthy and added back to the pool.
 
 
-<Frame>![Listeners tab with health check settings](/images/docs/cloud/networking/load-balancers/manage-a-load-balancer/listeners-tab-health-check.png)</Frame>
+<Frame>![Listeners tab with health check settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/listeners-tab-health-check.png)</Frame>
 
 
 
@@ -279,15 +284,15 @@ Timeouts:
   * **Member Data (timeout server)** : The maximum amount of time a Load Balancer will wait for a pool member to send data once a connection has been established. If no data is sent within this timeframe, the connection times out.
 
 
-<Frame>![Listeners tab with timeouts settings](/images/docs/cloud/networking/load-balancers/manage-a-load-balancer/listeners-tab-timeouts.png)</Frame>
+<Frame>![Listeners tab with timeouts settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/listeners-tab-timeouts.png)</Frame>
 
 
 
-#### L7 policies
+**L7 policies**
 
 L7 policy specifies how to manage and route incoming traffic at the application layer (Layer 7 of the [OSI model](https://en.wikipedia.org/wiki/OSI_model)).
 
-#### Listener statistics
+**Listener statistics**
 
   * **Name** : Name of each listener. 
   * **Active connections** : Number of ongoing connections to each listener. 
@@ -297,7 +302,7 @@ L7 policy specifies how to manage and route incoming traffic at the application 
   * **Total connections** : The cumulative number of connections handled by the listener since it was started.
 
 
-<Frame>![Listeners tab with listener statistics](/images/docs/cloud/networking/load-balancers/manage-a-load-balancer/listener-stats.png)</Frame>
+<Frame>![Listeners tab with listener statistics](/images/docs/cloud/networking/load-balancers/manage-load-balancers/listener-stats.png)</Frame>
 
 
 
@@ -306,7 +311,7 @@ L7 policy specifies how to manage and route incoming traffic at the application 
 This tab allows you to change the flavor of your Load Balancer based on the requirements of your workload, expected traffic, the computing resources needed, and others. 
 
 
-<Frame>![Configuration tab settings](/images/docs/cloud/networking/load-balancers/manage-a-load-balancer/configuration-tab.png)</Frame>
+<Frame>![Configuration tab settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/configuration-tab.png)</Frame>
 
 
 
@@ -317,7 +322,7 @@ Record detailed information about the traffic processed by a Load Balancer. This
 Our [Logging for Load Balancers](/cloud/networking/load-balancers/logging-for-load-balancers) guide covers all available settings and configuration steps. 
 
 
-<Frame>![Logging tab settings](/images/docs/cloud/networking/load-balancers/manage-a-load-balancer/logging-tab.png)</Frame>
+<Frame>![Logging tab settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/logging-tab.png)</Frame>
 
 
 
@@ -328,7 +333,7 @@ On this tab, you can review and assign metadata to a Load Balancer.
 You can use tags to group multiple resources that belong to the same functionality. For instance, if you have a single project with different services—such as an authentication service, a shop service, and a cart service—each service can have its own Load Balancer. By applying tags, you can easily organize and manage these resources as a group. 
 
 
-<Frame>![Tags tab settings](/images/docs/cloud/networking/load-balancers/manage-a-load-balancer/custom-tags-tab.png)</Frame>
+<Frame>![Tags tab settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/custom-tags-tab.png)</Frame>
 
 
 
@@ -353,7 +358,7 @@ To initiate a failover:
 2\. Open the **Load Balancers** page. 
 
 
-<Frame>![Load Balancers page in the Customer Portal](/images/docs/cloud/networking/load-balancers/manage-a-load-balancer/load-balancers-page.png)</Frame>
+<Frame>![Load Balancers page in the Customer Portal](/images/docs/cloud/networking/load-balancers/manage-load-balancers/load-balancers-page.png)</Frame>
 
 
 
@@ -362,7 +367,7 @@ To initiate a failover:
 4\. In the top-right corner of the screen, click **Actions** > **Failover**.
 
 
-<Frame>![Load Balancers page with initiate failover settings](/images/docs/cloud/networking/load-balancers/manage-a-load-balancer/failover.png)</Frame>
+<Frame>![Load Balancers page with initiate failover settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/failover.png)</Frame>
 
 
 
@@ -371,7 +376,7 @@ To initiate a failover:
 6\. Click **Initiate Failover**. 
 
 
-<Frame>![Initiate failover dialog asking whether to procceed with failover](/images/docs/cloud/networking/load-balancers/manage-a-load-balancer/initiating-failover.png)</Frame>
+<Frame>![Initiate failover dialog asking whether to procceed with failover](/images/docs/cloud/networking/load-balancers/manage-load-balancers/initiating-failover.png)</Frame>
 
 
 
@@ -384,7 +389,7 @@ The failover might take a few minutes to complete. During this time, the Load Ba
 2\. Open the **Load Balancers** page. 
 
 
-<Frame>![Load Balancers page in the Customer Portal](/images/docs/cloud/networking/load-balancers/manage-a-load-balancer/load-balancers-page.png)</Frame>
+<Frame>![Load Balancers page in the Customer Portal](/images/docs/cloud/networking/load-balancers/manage-load-balancers/load-balancers-page.png)</Frame>
 
 
 
@@ -393,14 +398,14 @@ The failover might take a few minutes to complete. During this time, the Load Ba
 4\. Select **Rename**. 
 
 
-<Frame>![Rename button in the Load Balancer settings](/images/docs/cloud/networking/load-balancers/manage-a-load-balancer/rename.png)</Frame>
+<Frame>![Rename button in the Load Balancer settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/rename.png)</Frame>
 
 
 
 5\. Enter a new name and click **Save** to apply the changes. 
 
 
-<Frame>![Rename dialog in the Load Balancer settings](/images/docs/cloud/networking/load-balancers/manage-a-load-balancer/rename-confirmation.png)</Frame>
+<Frame>![Rename dialog in the Load Balancer settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/rename-confirmation.png)</Frame>
 
 
 
@@ -413,7 +418,7 @@ To update [metadata](/cloud/networking/load-balancers/manage-load-balancers#cust
 2\. Open the **Load Balancers** page. 
 
 
-<Frame>![Load Balancers page in the Customer Portal](/images/docs/cloud/networking/load-balancers/manage-a-load-balancer/load-balancers-page.png)</Frame>
+<Frame>![Load Balancers page in the Customer Portal](/images/docs/cloud/networking/load-balancers/manage-load-balancers/load-balancers-page.png)</Frame>
 
 
 
@@ -422,7 +427,7 @@ To update [metadata](/cloud/networking/load-balancers/manage-load-balancers#cust
 4\. Navigate to the **Tags** tab, where you can view and modify the balancer's metadata.
 
 
-<Frame>![Tags tab settings](/images/docs/cloud/networking/load-balancers/manage-a-load-balancer/custom-tags-tab.png)</Frame>
+<Frame>![Tags tab settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/custom-tags-tab.png)</Frame>
 
 
 
@@ -435,7 +440,7 @@ To update [metadata](/cloud/networking/load-balancers/manage-load-balancers#cust
 2\. Open the **Load Balancers** page. 
 
 
-<Frame>![Load Balancers page in the Customer Portal](/images/docs/cloud/networking/load-balancers/manage-a-load-balancer/load-balancers-page.png)</Frame>
+<Frame>![Load Balancers page in the Customer Portal](/images/docs/cloud/networking/load-balancers/manage-load-balancers/load-balancers-page.png)</Frame>
 
 
 
@@ -444,15 +449,337 @@ To update [metadata](/cloud/networking/load-balancers/manage-load-balancers#cust
 4\. Select **Delete**. 
 
 
-<Frame>![Delete button in the Load Balancer settings](/images/docs/cloud/networking/load-balancers/manage-a-load-balancer/delete-three-dot-icon.png)</Frame>
+<Frame>![Delete button in the Load Balancer settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/delete-three-dot-icon.png)</Frame>
 
 
 
 5\. Click **Delete** to verify your action.
 
 
-<Frame>![Delete dialog in the Load Balancer settings](/images/docs/cloud/networking/load-balancers/manage-a-load-balancer/delete-confirmation.png)</Frame>
+<Frame>![Delete dialog in the Load Balancer settings](/images/docs/cloud/networking/load-balancers/manage-load-balancers/delete-confirmation.png)</Frame>
 
 
 
 Your Load Balancer has been successfully removed.
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+A Load Balancer exists as a named resource with a virtual IP address, a set of listeners, and associated tags. The management API covers four operations: inspecting the current state, renaming or updating tags, triggering a failover, and deleting the balancer.
+
+<Info>
+A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get), a [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get), and the ID of an existing [load balancer](/cloud/networking/create-and-configure-a-load-balancer).
+</Info>
+
+Open a bash terminal and set these as environment variables before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export LB_ID="{YOUR_LOAD_BALANCER_ID}"
+```
+
+## List load balancers
+
+Listing returns all load balancers in the region with their operating status, provisioning status, and VIP address.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    page = client.cloud.load_balancers.list()
+    print(f"Total: {page.count}")
+    for lb in page.results:
+        print(f"  {lb.id}  {lb.name}  {lb.operating_status}  {lb.vip_address}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    import (
+        "context"
+        "fmt"
+        "log"
+        "os"
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+    )
+
+    client := gcore.NewClient()
+    ctx := context.Background()
+
+    page, err := client.Cloud.LoadBalancers.List(ctx, cloud.LoadBalancerListParams{})
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Printf("Total: %d\n", page.Count)
+    for _, lb := range page.Results {
+        fmt.Printf("  %s  %s  %s  %s\n", lb.ID, lb.Name, lb.OperatingStatus, lb.VipAddress)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "count": 2,
+      "results": [
+        {
+          "id": "ae7def79-f507-4306-93be-7784edad9211",
+          "name": "my-load-balancer",
+          "vip_address": "85.234.84.175",
+          "operating_status": "ONLINE",
+          "provisioning_status": "ACTIVE",
+          "listeners": [],
+          "tags_v2": []
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Get load balancer details
+
+Fetching a single load balancer returns the full configuration including flavor, VRRP IPs, listener list, tags, and logging settings.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    lb = client.cloud.load_balancers.get(load_balancer_id=os.environ["LB_ID"])
+    print(f"name: {lb.name}")
+    print(f"flavor: {lb.flavor.flavor_name}  vCPU: {lb.flavor.vcpus}  RAM: {lb.flavor.ram} MB")
+    print(f"vip_address: {lb.vip_address}")
+    print(f"operating_status: {lb.operating_status}")
+    print(f"provisioning_status: {lb.provisioning_status}")
+    print(f"listeners: {len(lb.listeners)}")
+    for tag in lb.tags_v2:
+        print(f"  tag: {tag.key}={tag.value}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    lb, err := client.Cloud.LoadBalancers.Get(ctx, os.Getenv("LB_ID"), cloud.LoadBalancerGetParams{})
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Printf("name: %s\n", lb.Name)
+    fmt.Printf("flavor: %s  vCPU: %d  RAM: %d MB\n",
+        lb.Flavor.FlavorName, lb.Flavor.Vcpus, lb.Flavor.Ram)
+    fmt.Printf("vip_address: %s\n", lb.VipAddress)
+    fmt.Printf("operating_status: %s  provisioning_status: %s\n",
+        lb.OperatingStatus, lb.ProvisioningStatus)
+    fmt.Printf("listeners: %d\n", len(lb.Listeners))
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$LB_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "id": "ae7def79-f507-4306-93be-7784edad9211",
+      "name": "my-load-balancer",
+      "flavor": {
+        "flavor_name": "lb1-1-2",
+        "vcpus": 1,
+        "ram": 2048
+      },
+      "vip_address": "85.234.84.175",
+      "vip_ip_family": "ipv4",
+      "operating_status": "ONLINE",
+      "provisioning_status": "ACTIVE",
+      "listeners": [],
+      "tags_v2": [],
+      "logging": { "enabled": false }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Rename a load balancer and update tags
+
+A single PATCH request accepts any combination of `name` and `tags` — omitted fields remain unchanged. The operation returns a task ID and completes in under 30 seconds.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | No | New name for the load balancer |
+| `tags` | No | Key-value pairs to add or update tags; set a value to `null` to remove a tag |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    updated = client.cloud.load_balancers.update(
+        load_balancer_id=os.environ["LB_ID"],
+        name="my-lb-production",
+        tags={"env": "production", "owner": "platform-team"},
+    )
+    print(f"name: {updated.name}")
+    for tag in updated.tags_v2:
+        print(f"  {tag.key}={tag.value}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    tagVal := func(s string) *string { return &s }
+    updated, err := client.Cloud.LoadBalancers.Update(ctx, os.Getenv("LB_ID"),
+        cloud.LoadBalancerUpdateParams{
+            Name: gcore.String("my-lb-production"),
+            Tags: cloud.TagUpdateMap{
+                "env":   tagVal("production"),
+                "owner": tagVal("platform-team"),
+            },
+        },
+    )
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Printf("name: %s\n", updated.Name)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PATCH "https://api.gcore.com/cloud/v2/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$LB_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "my-lb-production",
+        "tags": {"env": "production", "owner": "platform-team"}
+      }'
+    ```
+
+    Response:
+
+    ```json
+    { "tasks": ["4acb6832-e3ef-4166-9d01-7a8b90986697"] }
+    ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`.
+  </Tab>
+</Tabs>
+
+## Initiate a failover
+
+Failover redirects traffic to a standby load balancer instance when the active one fails or degrades. All active connections are terminated during the switchover, which takes 1-2 minutes.
+
+<Warning>
+Failover terminates all existing connections. Schedule it during a maintenance window for production load balancers.
+</Warning>
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `force` | No | Set to `true` to force failover regardless of current provisioning status |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    t = client.cloud.load_balancers.failover(load_balancer_id=os.environ["LB_ID"])
+    client.cloud.tasks.poll(t.tasks[0])
+    print("Failover complete.")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    t, err := client.Cloud.LoadBalancers.Failover(ctx, os.Getenv("LB_ID"),
+        cloud.LoadBalancerFailoverParams{},
+    )
+    if err != nil {
+        log.Fatal(err)
+    }
+    if err = client.Cloud.Tasks.Poll(ctx, t.Tasks[0]); err != nil {
+        log.Fatal(err)
+    }
+    fmt.Println("Failover complete.")
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$LB_ID/failover" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{}'
+    ```
+
+    Response:
+
+    ```json
+    { "tasks": ["d68abcfd-80ad-416a-840e-861f0c26d11c"] }
+    ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. Failover takes 1-2 minutes.
+  </Tab>
+</Tabs>
+
+## Delete a load balancer
+
+Deleting a load balancer removes it and its configuration permanently. The operation is asynchronous and takes about 30 seconds.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore()
+
+    client.cloud.load_balancers.delete_and_poll(load_balancer_id=os.environ["LB_ID"])
+    print("Load balancer deleted.")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    if err = client.Cloud.LoadBalancers.DeleteAndPoll(ctx, os.Getenv("LB_ID"),
+        cloud.LoadBalancerDeleteParams{},
+    ); err != nil {
+        log.Fatal(err)
+    }
+    fmt.Println("Load balancer deleted.")
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE "https://api.gcore.com/cloud/v1/loadbalancers/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$LB_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response:
+
+    ```json
+    { "tasks": ["89316ade-d4af-4b07-97b5-acf2e3df6148"] }
+    ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`.
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>

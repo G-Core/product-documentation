@@ -1,8 +1,14 @@
 ---
 title: "Create and manage a subnetwork"
 sidebarTitle: "Subnetwork"
-ai-navigation: Create and manage subnetworks with CIDR ranges (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, fc00 - -/7), DHCP enablement, non-routable configuration, custom DNS servers, and host routes via Gcore Cloud Networks portal.
+ai-navigation: Create, update, and delete subnetworks in Gcore Cloud via the Customer Portal or REST API using POST /cloud/v1/subnets, with CIDR ranges, DHCP, DNS servers, and host routes configuration.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+
+<MethodSection id="portal" label="Customer Portal">
 
 A subnetwork is a range of IP addresses in a cloud network. Addresses from this range will be assigned to Virtual Machines (VMs) in the cloud.
 
@@ -125,7 +131,7 @@ If you need to configure a gateway in a private subnetwork, ensure that only one
 
 If you add a private interface (with or without a floating IP) after creating a server, some operating systems may not activate it automatically. This is especially common for Bare Metal servers. In such cases, configure the interface manually.
 
-#### Gateway IP validation
+**Gateway IP validation**
 
 Validation ensures proper configuration and prevents errors during creation or updates. The gateway IP address must belong to the defined CIDR range of the subnetwork. For example, if the CIDR is 192.168.0.0/24, the gateway IP must be within the 192.168.0.0 - 192.168.0.255 range.
 
@@ -187,3 +193,348 @@ To delete a subnetwork:
 </Frame>
 
 The subnetwork has been successfully removed.
+
+</MethodSection>
+
+<MethodSection id="api" label="REST API">
+
+Create a subnet inside an existing network and customize its DHCP and DNS settings to match your connectivity requirements.
+
+<Info>
+A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get) and [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get).
+</Info>
+
+Set these variables before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export NETWORK_ID="{YOUR_NETWORK_ID}"
+```
+
+<Info>
+**NETWORK\_ID** is the UUID of the network in which to create the subnetwork. To create a network or find its ID, see [Create and manage a network](/cloud/networking/create-and-manage-a-network).
+</Info>
+
+## Quickstart
+
+The scripts below create a subnet in an existing network, rename it with a custom DNS server, then delete it.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+
+# Step 1. Create a subnet.
+task = client.cloud.networks.subnets.create(
+    cidr="192.168.10.0/24",
+    name="my-subnet",
+    network_id=os.environ["NETWORK_ID"],
+    enable_dhcp=True,
+)
+subnet_id = client.cloud.tasks.poll(task.tasks[0]).created_resources.subnets[0]
+print(f"Subnet ID: {subnet_id}")
+
+# Step 2. Get the subnet.
+subnet = client.cloud.networks.subnets.get(subnet_id)
+print(f"CIDR: {subnet.cidr}  gateway: {subnet.gateway_ip}")
+
+# Step 3. Update the subnet.
+subnet = client.cloud.networks.subnets.update(
+    subnet_id,
+    name="my-subnet-updated",
+    dns_nameservers=["8.8.8.8", "1.1.1.1"],
+)
+print(f"Updated name: {subnet.name}")
+
+# Step 4. Delete the subnet.
+task = client.cloud.networks.subnets.delete(subnet_id)
+client.cloud.tasks.poll(task.tasks[0])
+print(f"Deleted subnet {subnet_id}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "log"
+    "os"
+
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/cloud"
+)
+
+func main() {
+    client := gcore.NewClient()
+    ctx := context.Background()
+
+    // Step 1. Create a subnet.
+    subnet, err := client.Cloud.NetworkSubnets.NewAndPoll(ctx, cloud.NetworkSubnetNewParams{
+        Cidr:       "192.168.10.0/24",
+        Name:       "my-subnet",
+        NetworkID:  os.Getenv("NETWORK_ID"),
+        EnableDhcp: gcore.Bool(true),
+    })
+    if err != nil {
+        log.Fatalf("create subnet: %v", err)
+    }
+    fmt.Printf("Subnet ID: %s  CIDR: %s\n", subnet.ID, subnet.Cidr)
+
+    // Step 2. Get the subnet.
+    subnet, err = client.Cloud.NetworkSubnets.Get(ctx, subnet.ID, cloud.NetworkSubnetGetParams{})
+    if err != nil {
+        log.Fatalf("get subnet: %v", err)
+    }
+    fmt.Printf("CIDR: %s  gateway: %s\n", subnet.Cidr, subnet.GatewayIP)
+
+    // Step 3. Update the subnet.
+    subnet, err = client.Cloud.NetworkSubnets.Update(ctx, subnet.ID, cloud.NetworkSubnetUpdateParams{
+        Name:           gcore.String("my-subnet-updated"),
+        DNSNameservers: []string{"8.8.8.8", "1.1.1.1"},
+    })
+    if err != nil {
+        log.Fatalf("update subnet: %v", err)
+    }
+    fmt.Printf("Updated name: %s\n", subnet.Name)
+
+    // Step 4. Delete the subnet.
+    if err = client.Cloud.NetworkSubnets.DeleteAndPoll(ctx, subnet.ID, cloud.NetworkSubnetDeleteParams{}); err != nil {
+        log.Fatalf("delete subnet: %v", err)
+    }
+    fmt.Println("Subnet deleted.")
+}
+```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+<p>Each step below explains what the call does, which parameters matter, and what the response looks like. Use this section to understand the flow or to debug a specific step.</p>
+
+<Accordion title="Show all steps">
+
+### Step 1. Create a subnet
+
+Provisions a new subnet inside an existing network; the backend assigns a gateway IP automatically unless one is specified.
+
+| Parameter | Required | Description |
+|---|---|---|
+| `cidr` | Yes | IP range in CIDR notation, e.g. `192.168.10.0/24`. Must fall within `10.0.0.0/8`, `172.16.0.0/12`, or `192.168.0.0/16` for IPv4, or `fc00::/7` for IPv6. Must not overlap with other subnets in the same network. |
+| `name` | Yes | Name for the subnet. |
+| `network_id` | Yes | ID of the network to attach this subnet to. |
+| `enable_dhcp` | No | Set to `true` to have DHCP assign IP addresses to VMs automatically. For IPv6 subnets this cannot be changed after creation. |
+| `connect_to_network_router` | No | Set to `false` to make the subnet non-routable (no internet access). Omit to use the network's default routing. |
+| `dns_nameservers` | No | List of DNS server IPs to advertise via DHCP. |
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+task = client.cloud.networks.subnets.create(
+    cidr="192.168.10.0/24",
+    name="my-subnet",
+    network_id=os.environ["NETWORK_ID"],
+    enable_dhcp=True,
+)
+subnet_id = client.cloud.tasks.poll(task.tasks[0]).created_resources.subnets[0]
+print(f"Subnet ID: {subnet_id}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+subnet, err := client.Cloud.NetworkSubnets.NewAndPoll(ctx, cloud.NetworkSubnetNewParams{
+    Cidr:       "192.168.10.0/24",
+    Name:       "my-subnet",
+    NetworkID:  os.Getenv("NETWORK_ID"),
+    EnableDhcp: gcore.Bool(true),
+})
+if err != nil {
+    log.Fatalf("create subnet: %v", err)
+}
+fmt.Printf("Subnet ID: %s\n", subnet.ID)
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X POST "https://api.gcore.com/cloud/v1/subnets/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}" \
+  -H "Authorization: APIKey ${GCORE_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "cidr": "192.168.10.0/24",
+    "name": "my-subnet",
+    "network_id": "'${NETWORK_ID}'",
+    "enable_dhcp": true
+  }'
+```
+
+Response:
+
+```json
+{
+  "tasks": ["0e7e5e2c-a2b5-4a20-a118-face59aa1e27"]
+}
+```
+
+Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. The subnet ID is in `created_resources.subnets[0]`.
+
+```json
+{
+  "state": "FINISHED",
+  "created_resources": {
+    "subnets": ["3f80fb47-4cda-43bd-95f9-18b316f7546e"]
+  }
+}
+```
+  </Tab>
+</Tabs>
+
+### Step 2. Get subnet details
+
+Retrieves the current configuration of the subnet; useful to confirm the assigned gateway IP and DHCP settings after creation.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+subnet = client.cloud.networks.subnets.get(subnet_id)
+print(f"CIDR: {subnet.cidr}  gateway: {subnet.gateway_ip}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+subnet, err = client.Cloud.NetworkSubnets.Get(ctx, subnet.ID, cloud.NetworkSubnetGetParams{})
+if err != nil {
+    log.Fatalf("get subnet: %v", err)
+}
+fmt.Printf("CIDR: %s  gateway: %s\n", subnet.Cidr, subnet.GatewayIP)
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X GET "https://api.gcore.com/cloud/v1/subnets/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/${SUBNET_ID}" \
+  -H "Authorization: APIKey ${GCORE_API_KEY}"
+```
+
+Response:
+
+```json
+{
+  "id": "3f80fb47-4cda-43bd-95f9-18b316f7546e",
+  "name": "my-subnet",
+  "cidr": "192.168.10.0/24",
+  "network_id": "6880a081-5f09-4437-9942-3eabee038666",
+  "enable_dhcp": true,
+  "ip_version": 4,
+  "gateway_ip": "192.168.10.1",
+  "dns_nameservers": ["8.8.8.8"],
+  "host_routes": []
+}
+```
+  </Tab>
+</Tabs>
+
+### Step 3. Update a subnet
+
+Updates subnet settings in place; the response returns the full updated subnet object. Only fields included in the request body are changed.
+
+| Parameter | Description |
+|---|---|
+| `name` | New name for the subnet. |
+| `enable_dhcp` | Enable or disable DHCP. For IPv6 subnets this field is read-only after creation. |
+| `dns_nameservers` | Replace the list of DNS server IPs. Pass an empty array to clear. |
+| `gateway_ip` | Override the gateway IP. Set to `null` to remove the gateway advertisement from DHCP. |
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+subnet = client.cloud.networks.subnets.update(
+    subnet_id,
+    name="my-subnet-updated",
+    dns_nameservers=["8.8.8.8", "1.1.1.1"],
+)
+print(f"Updated name: {subnet.name}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+subnet, err = client.Cloud.NetworkSubnets.Update(ctx, subnet.ID, cloud.NetworkSubnetUpdateParams{
+    Name:           gcore.String("my-subnet-updated"),
+    DNSNameservers: []string{"8.8.8.8", "1.1.1.1"},
+})
+if err != nil {
+    log.Fatalf("update subnet: %v", err)
+}
+fmt.Printf("Updated name: %s\n", subnet.Name)
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X PATCH "https://api.gcore.com/cloud/v1/subnets/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/${SUBNET_ID}" \
+  -H "Authorization: APIKey ${GCORE_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my-subnet-updated",
+    "dns_nameservers": ["8.8.8.8", "1.1.1.1"]
+  }'
+```
+
+Response:
+
+```json
+{
+  "id": "3f80fb47-4cda-43bd-95f9-18b316f7546e",
+  "name": "my-subnet-updated",
+  "cidr": "192.168.10.0/24",
+  "enable_dhcp": true,
+  "dns_nameservers": ["8.8.8.8", "1.1.1.1"]
+}
+```
+  </Tab>
+</Tabs>
+
+</Accordion>
+
+## Clean up
+
+Delete a subnet that is not attached to any Virtual Machine. The delete operation is asynchronous — poll the task until it reaches `FINISHED`.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+task = client.cloud.networks.subnets.delete(subnet_id)
+client.cloud.tasks.poll(task.tasks[0])
+print(f"Deleted subnet {subnet_id}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+if err = client.Cloud.NetworkSubnets.DeleteAndPoll(ctx, subnet.ID, cloud.NetworkSubnetDeleteParams{}); err != nil {
+    log.Fatalf("delete subnet: %v", err)
+}
+fmt.Println("Subnet deleted.")
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X DELETE "https://api.gcore.com/cloud/v1/subnets/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/${SUBNET_ID}" \
+  -H "Authorization: APIKey ${GCORE_API_KEY}"
+```
+
+Response:
+
+```json
+{
+  "tasks": ["23096938-53a5-4d06-8f44-bcf7741e2414"]
+}
+```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+
+</MethodSwitch>

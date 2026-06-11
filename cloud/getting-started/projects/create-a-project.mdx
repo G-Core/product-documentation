@@ -4,6 +4,11 @@ sidebarTitle: Create a project
 ai-navigation: Create and manage Edge Cloud projects as isolated resource containers for Virtual Machines, volumes, and networks with per-project user permission controls via Gcore Customer Portal Projects page, list/grid view layouts, and project creation interface.
 ---
 
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
+
 Projects are goal-specific folders where you can create Edge Cloud products including Virtual Machines, volumes, and networks. Each project acts as a separate environment; its resources are isolated from the resources in any other project. You can control access to these resources by specifying user permissions on a per-project basis. 
 
 You can view projects in the Gcore Customer Portal via either the **Project** dropdown or the **Cloud Management** page.
@@ -179,3 +184,333 @@ To delete a project:
 
 
 6\. Your project has been successfully deleted.
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+Projects are global, account-level resources — no region is required to create or manage them. Every account starts with a non-deletable **Default** project; additional projects can be created to separate teams, billing units, or environments.
+
+<Info>
+A permanent [API token](/account-settings/api-tokens) is required.
+</Info>
+
+Set the following environment variable before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+## Create a project
+
+The [create project](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectListViewSet.post) endpoint creates a new project under the account associated with the API token. The response contains the project ID, which is needed for subsequent operations.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Unique project name; 3–63 characters, Latin letters, numbers, hyphens, underscores, spaces, and dots; cannot end with a hyphen |
+| `description` | No | Optional description |
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore(api_key=os.environ["GCORE_API_KEY"])
+
+project = client.cloud.projects.create(
+    name="my-project",
+    description="Production environment",
+)
+print(f"Project ID:  {project.id}")    # save as PROJECT_ID
+print(f"Name:        {project.name}")
+print(f"State:       {project.state}")
+print(f"Is default:  {project.is_default}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+import (
+    "context"
+    "fmt"
+    "log"
+    "os"
+
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/cloud"
+    "github.com/G-Core/gcore-go/option"
+    "github.com/G-Core/gcore-go/packages/param"
+)
+
+client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+ctx := context.Background()
+
+project, err := client.Cloud.Projects.New(ctx, cloud.ProjectNewParams{
+    Name:        "my-project",
+    Description: param.NewOpt("Production environment"),
+})
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf("Project ID: %d\n", project.ID)    // save as PROJECT_ID
+fmt.Printf("Name:       %s\n", project.Name)
+fmt.Printf("State:      %s\n", project.State)
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X POST "https://api.gcore.com/cloud/v1/projects" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my-project",
+    "description": "Production environment"
+  }'
+```
+
+Response:
+
+```json
+{
+  "id": 1202779,
+  "name": "my-project",
+  "description": "Production environment",
+  "state": "ACTIVE",
+  "is_default": false,
+  "client_id": 1000503,
+  "created_at": "2026-05-31T06:43:54.717473",
+  "deleted_at": null,
+  "task_id": null
+}
+```
+  </Tab>
+</Tabs>
+
+## List projects
+
+The [list projects](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectListViewSet.get) endpoint returns all projects associated with the account. Each project includes its numeric ID, name, and state.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+projects = client.cloud.projects.list()
+print(f"Count: {projects.count}")
+for p in projects.results:
+    print(f"  id={p.id}  name={p.name}  state={p.state}  is_default={p.is_default}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+page, err := client.Cloud.Projects.List(ctx, cloud.ProjectListParams{})
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf("Count: %d\n", page.Count)
+for _, p := range page.Results {
+    fmt.Printf("  id=%d  name=%s  state=%s\n", p.ID, p.Name, p.State)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl "https://api.gcore.com/cloud/v1/projects" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+Response:
+
+```json
+{
+  "count": 2,
+  "results": [
+    {
+      "id": 1186668,
+      "name": "Default",
+      "state": "ACTIVE",
+      "is_default": true,
+      "client_id": 1000503,
+      "created_at": "2026-04-17T12:43:36.848841",
+      "deleted_at": null
+    },
+    {
+      "id": 1202779,
+      "name": "my-project",
+      "state": "ACTIVE",
+      "is_default": false,
+      "client_id": 1000503,
+      "created_at": "2026-05-31T06:43:54.717473",
+      "deleted_at": null
+    }
+  ]
+}
+```
+  </Tab>
+</Tabs>
+
+## Get project details
+
+The [get project](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectViewSet.get) endpoint returns the full record for a single project, including its creation time and whether it is the default project.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+PROJECT_ID = 1202779
+
+project = client.cloud.projects.get(project_id=PROJECT_ID)
+print(f"Name:        {project.name}")
+print(f"Description: {project.description}")
+print(f"State:       {project.state}")
+print(f"Is default:  {project.is_default}")
+print(f"Created at:  {project.created_at}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+projectID := int64(1202779)
+
+project, err := client.Cloud.Projects.Get(ctx, cloud.ProjectGetParams{
+    ProjectID: param.NewOpt(projectID),
+})
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf("Name:       %s\n", project.Name)
+fmt.Printf("State:      %s\n", project.State)
+fmt.Printf("Is default: %v\n", project.IsDefault)
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+PROJECT_ID=1202779
+
+curl "https://api.gcore.com/cloud/v1/projects/$PROJECT_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+Response:
+
+```json
+{
+  "id": 1202779,
+  "name": "my-project",
+  "description": "Production environment",
+  "state": "ACTIVE",
+  "is_default": false,
+  "client_id": 1000503,
+  "created_at": "2026-05-31T06:43:54.717473",
+  "deleted_at": null,
+  "task_id": null
+}
+```
+  </Tab>
+</Tabs>
+
+## Update a project
+
+The [update project](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectViewSet.patch) endpoint changes a project's name or description. Only the fields included in the request are modified. The update takes effect immediately — no task polling is needed.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+PROJECT_ID = 1202779
+
+project = client.cloud.projects.update(
+    project_id=PROJECT_ID,
+    name="my-project-v2",
+    description="Updated description",
+)
+print(f"Name:        {project.name}")
+print(f"Description: {project.description}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+projectID := int64(1202779)
+
+project, err := client.Cloud.Projects.Update(ctx, cloud.ProjectUpdateParams{
+    ProjectID:   param.NewOpt(projectID),
+    Name:        param.NewOpt("my-project-v2"),
+    Description: param.NewOpt("Updated description"),
+})
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf("Name: %s\n", project.Name)
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+PROJECT_ID=1202779
+
+curl -X PATCH "https://api.gcore.com/cloud/v1/projects/$PROJECT_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "my-project-v2", "description": "Updated description"}'
+```
+
+Response:
+
+```json
+{
+  "id": 1202779,
+  "name": "my-project-v2",
+  "description": "Updated description",
+  "state": "ACTIVE",
+  "is_default": false,
+  "client_id": 1000503
+}
+```
+  </Tab>
+</Tabs>
+
+## Delete a project
+
+The [delete project](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectViewSet.delete) endpoint permanently removes a project and all cloud resources inside it across every region. Default projects cannot be deleted. The operation is asynchronous — poll the returned task until it reaches `FINISHED`.
+
+<Warning>
+Deleting a project removes all resources inside it permanently. This action cannot be undone.
+</Warning>
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+PROJECT_ID = 1202779
+
+task_ids = client.cloud.projects.delete(project_id=PROJECT_ID)
+client.cloud.tasks.poll(task_ids.tasks[0])
+print("Project deleted.")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+projectID := int64(1202779)
+
+if err := client.Cloud.Projects.DeleteAndPoll(ctx, cloud.ProjectDeleteParams{
+    ProjectID: param.NewOpt(projectID),
+}); err != nil {
+    log.Fatal(err)
+}
+fmt.Println("Project deleted.")
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+PROJECT_ID=1202779
+
+curl -X DELETE "https://api.gcore.com/cloud/v1/projects/$PROJECT_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+Response:
+
+```json
+{
+  "tasks": ["32f31af7-7b03-4408-a7f5-3df3909930e9"]
+}
+```
+
+Poll <code>GET&nbsp;https://api.gcore.com/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`.
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>

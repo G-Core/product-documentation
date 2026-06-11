@@ -1,8 +1,13 @@
 ---
 title: Create a Container Registry
 sidebarTitle: Create a Container Registry
-ai-navigation: Create a Container Registry with OCI-compatible artifact storage by specifying region, registry name, and storage limit in the Gcore Customer Portal, then add users with push/pull permissions and configurable credential expiration.
+ai-navigation: Create a Container Registry, add registry users with configurable permissions and credential expiration, and push or pull OCI-compatible images via the Customer Portal or REST API using Python and Go SDK.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
 
 Container Registry provides a centralized location for all OCI-compatible artifacts, such as container images and Helm charts, making it easy to view and manage them in one place.
 
@@ -127,3 +132,319 @@ docker pull <your-registry-endpoint/your-Docker-image>
 ```
 
 The image will be pulled locally.
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+Use the Gcore API to create a container registry, add users with configurable access and credential expiration, and obtain the credentials needed to authenticate with Docker.
+
+<Info>
+A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get) and a [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get).
+</Info>
+
+Set the following environment variables before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export REGISTRY_NAME="{YOUR_REGISTRY_NAME}"
+```
+
+## Quickstart
+
+The scripts below create a registry, add a user with push and pull permissions, and print the `docker login` command with the generated credentials.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+
+# Step 1. Create a registry.
+registry = client.cloud.registries.create(
+    name=os.environ["REGISTRY_NAME"],
+    storage_limit=10,
+)
+print(f"Registry ID:  {registry.id}")
+print(f"Registry URL: {registry.url}")
+
+# Step 2. Create a user with push and pull permissions.
+user = client.cloud.registries.users.create(
+    registry_id=registry.id,
+    name="myuser",
+    duration=-1,  # -1 = indefinite access
+)
+print(f"Docker username: {user.name}")
+print(f"Docker password: {user.secret}")  # shown once — save it now
+
+# Step 3. Print the docker login command.
+domain = registry.url.split("/")[0]
+print(f"\ndocker login {domain}")
+print(f"  Username: {user.name}")
+print(f"  Password: {user.secret}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"os"
+	"strings"
+
+	"github.com/G-Core/gcore-go"
+	"github.com/G-Core/gcore-go/cloud"
+)
+
+func main() {
+	client := gcore.NewClient()
+	ctx := context.Background()
+
+	// Step 1. Create a registry.
+	registry, err := client.Cloud.Registries.New(ctx, cloud.RegistryNewParams{
+		Name:         os.Getenv("REGISTRY_NAME"),
+		StorageLimit: gcore.Int(10),
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Registry ID:  %d\n", registry.ID)
+	fmt.Printf("Registry URL: %s\n", registry.URL)
+
+	// Step 2. Create a user with push and pull permissions.
+	user, err := client.Cloud.Registries.Users.New(ctx, registry.ID, cloud.RegistryUserNewParams{
+		Name:     "myuser",
+		Duration: -1, // -1 = indefinite access
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Docker username: %s\n", user.Name)
+	fmt.Printf("Docker password: %s\n", user.Secret) // shown once — save it now
+
+	// Step 3. Print the docker login command.
+	domain := strings.SplitN(registry.URL, "/", 2)[0]
+	fmt.Printf("\ndocker login %s\n", domain)
+	fmt.Printf("  Username: %s\n", user.Name)
+	fmt.Printf("  Password: %s\n", user.Secret)
+}
+```
+  </Tab>
+</Tabs>
+
+After running the script, use the printed credentials to log in to Docker. The registry URL printed by the script is the prefix for `docker push` — append the image name and tag to it.
+
+## Step-by-step
+
+<p>Each step below explains what the call does, which parameters matter, and what the response looks like.</p>
+
+<Accordion title="Show all steps">
+
+### Step 1. Create a registry
+
+This call creates a new registry and returns its ID and endpoint URL.
+
+| Parameter | Description |
+|-----------|-------------|
+| `name` | Registry name: lowercase letters, numbers, and hyphens; max 24 characters |
+| `storage_limit` | Maximum storage in GiB |
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+
+registry = client.cloud.registries.create(
+    name=os.environ["REGISTRY_NAME"],
+    storage_limit=10,
+)
+print(f"ID:  {registry.id}")
+print(f"URL: {registry.url}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+registry, err := client.Cloud.Registries.New(ctx, cloud.RegistryNewParams{
+    Name:         os.Getenv("REGISTRY_NAME"),
+    StorageLimit: gcore.Int(10),
+})
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf("ID:  %d\n", registry.ID)
+fmt.Printf("URL: %s\n", registry.URL)
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -s -X POST \
+  "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "{\"name\": \"$REGISTRY_NAME\", \"storage_limit\": 10}"
+```
+
+Response:
+
+```json
+{
+  "id": 607,
+  "name": "my-registry",
+  "storage_limit": 10,
+  "storage_used": 0,
+  "url": "registry.luxembourg-2.cloud.gcore.dev/1000503-1186668-76-my-registry/",
+  "repo_count": 0,
+  "created_at": "2026-05-30T21:35:34Z",
+  "updated_at": "2026-05-30T21:35:34Z"
+}
+```
+  </Tab>
+</Tabs>
+
+The registry is ready immediately — no task polling needed. Save the `id` (needed for user creation) and the `url` (needed for docker login and push).
+
+The full list of registry parameters is in the [create registry](https://api.gcore.com/docs/cloud#tag/Registry/operation/RegistriesHandler.post) endpoint spec.
+
+### Step 2. Create a registry user
+
+This call creates a user whose credentials are used for `docker login`. The `secret` (password) is returned only in this response — it cannot be retrieved later.
+
+| Parameter | Description |
+|-----------|-------------|
+| `name` | Username: lowercase letters and numbers only, max 16 characters |
+| `duration` | Credential lifetime in days; `-1` for indefinite access |
+| `read_only` | Optional; set to `true` to restrict the user to pull-only access |
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+user = client.cloud.registries.users.create(
+    registry_id=registry.id,
+    name="myuser",
+    duration=-1,
+)
+print(f"Docker username: {user.name}")
+print(f"Docker password: {user.secret}")  # shown once — save it
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+user, err := client.Cloud.Registries.Users.New(ctx, registry.ID, cloud.RegistryUserNewParams{
+    Name:     "myuser",
+    Duration: -1,
+})
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Println("Docker username:", user.Name)
+fmt.Println("Docker password:", user.Secret) // shown once — save it
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+REGISTRY_ID=607   # from Step 1
+
+curl -s -X POST \
+  "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID/users" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "myuser", "duration": -1}'
+```
+
+Response:
+
+```json
+{
+  "id": 730,
+  "name": "r_1000503-1186668-76-my-registry+myuser",
+  "secret": "CahTrlsfIQe36OZqGMzJlDG42hVOhzPI",
+  "duration": -1,
+  "expires_at": "1969-12-31T23:59:59Z",
+  "read_only": false,
+  "created_at": "2026-05-30T21:39:41Z"
+}
+```
+  </Tab>
+</Tabs>
+
+The `name` field in the response is the full Docker login username — it includes the client ID, project ID, region ID, registry name, and the username you specified. Use this full string as the Docker username. The `expires_at` value `1969-12-31T23:59:59Z` indicates indefinite access.
+
+### Step 3. Log in and push an image
+
+Use the credentials from Step 2 to authenticate with Docker, then push an image.
+
+```bash
+# Extract the domain from the registry URL (the part before the first slash).
+DOMAIN="registry.luxembourg-2.cloud.gcore.dev"   # region-specific
+REGISTRY_URL="registry.luxembourg-2.cloud.gcore.dev/1000503-1186668-76-my-registry/"
+
+docker login "$DOMAIN"
+# Username: r_1000503-1186668-76-my-registry+myuser
+# Password: (secret from Step 2)
+
+# Tag and push a local image.
+docker tag nginx:latest "${REGISTRY_URL}nginx:latest"
+docker push "${REGISTRY_URL}nginx:latest"
+```
+
+The pushed image appears on the **Images** tab of the registry in the Customer Portal. For instructions on managing images, check out the [Manage Container Registries](/cloud/container-registry/manage-container-registries) guide.
+
+### Step 4. Pull an image
+
+To pull an image, authenticate with the same credentials and use the full registry path.
+
+```bash
+docker pull "${REGISTRY_URL}nginx:latest"
+```
+
+</Accordion>
+
+## Clean up
+
+Deleting the registry permanently removes all images and repositories stored in it.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+
+client.cloud.registries.delete(registry_id=int(os.environ["REGISTRY_ID"]))
+print("Registry deleted.")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+registryID, _ := strconv.ParseInt(os.Getenv("REGISTRY_ID"), 10, 64)
+
+err := client.Cloud.Registries.Delete(ctx, registryID, cloud.RegistryDeleteParams{})
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Println("Registry deleted.")
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+REGISTRY_ID=607
+
+curl -s -X DELETE \
+  "https://api.gcore.com/cloud/v1/registries/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$REGISTRY_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>

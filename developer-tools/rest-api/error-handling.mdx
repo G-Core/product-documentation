@@ -1,0 +1,167 @@
+---
+title: "Error handling"
+sidebarTitle: "Error handling"
+ai-navigation: Gcore API error responses contain a machine-readable error type, a human-readable message, and a request ID; covers ValidationError, NotFoundError, QuotaLimitExceed, ForbiddenError, HTTP status codes, and retry strategy.
+---
+
+All Gcore API errors share a consistent JSON structure — every response includes an `exception_class`, a human-readable `message`, and a `request_id`.
+
+## Error response structure
+
+Every error response has the same shape:
+
+```json
+{
+  "exception_class": "QuotaLimitExceed",
+  "message": "Quota limit for volume_size exceeded by 70",
+  "request_id": "f6393419afcfb518a539006f099736da",
+  "info": {
+    "attribute": "volume_size",
+    "current_usage": 20,
+    "requested_usage": 120,
+    "limit": 50
+  }
+}
+```
+
+| Field | Always present | Description |
+|-------|---------------|-------------|
+| `exception_class` | Yes | Machine-readable error type |
+| `message` | Yes | Human-readable description |
+| `request_id` | Yes | Unique ID for this request — include when contacting support |
+| `info` | No | Extra structured data for specific error types (quotas, invalid fields) |
+| `invalid_fields` | No | Field-level validation errors |
+
+## Common error types
+
+### ValidationError
+
+The request body is missing required fields or contains invalid values.
+
+```json
+{
+  "exception_class": "ValidationError",
+  "message": "Validation Error: {'interfaces': ['Field required'], 'volumes': ['Field required']}",
+  "request_id": "af999e5f3b091aad111442fff86b3658",
+  "invalid_fields": {
+    "interfaces": ["Field required"],
+    "volumes": ["Field required"]
+  }
+}
+```
+
+`invalid_fields` lists each problematic field and why it failed. Fix the request body and retry.
+
+A `ValidationError` also appears when a reseller account requires specific name templates:
+
+```json
+{
+  "exception_class": "ValidationError",
+  "message": "Following name templates are not allowed for this client: ['my-vm'], use one of ['frn-c2-{ip_octets}']"
+}
+```
+
+### NotFoundError
+
+The requested resource does not exist, or exists in a different project or region.
+
+```json
+{
+  "exception_class": "NotFoundError",
+  "message": "Instance 726ecfcc-7fd0-4e30-a86e-7892524aa483 could not be found",
+  "request_id": "681423d626cb6c252c73a97211efb7e3"
+}
+```
+
+Check that the resource ID is correct and that `project_id` and `region_id` in the path match the region where the resource was created.
+
+### QuotaLimitExceed
+
+The request would exceed a project or account quota.
+
+```json
+{
+  "exception_class": "QuotaLimitExceed",
+  "message": "Quota limit for volume_size exceeded by 70",
+  "request_id": "f6393419afcfb518a539006f099736da",
+  "info": {
+    "attribute": "volume_size",
+    "current_usage": 20,
+    "requested_usage": 120,
+    "limit": 50
+  }
+}
+```
+
+`info` shows the exact numbers: current usage, requested total, and the limit. To resolve:
+- Reduce the requested resource size or count
+- Submit a [quota request](/cloud/getting-started/request-a-quota-increase) via the [Gcore Customer Portal](https://portal.gcore.com)
+
+### ForbiddenError
+
+The request is structurally valid but cannot be fulfilled — typically because a flavor has reached regional capacity.
+
+```json
+{
+  "exception_class": "ForbiddenError",
+  "message": "The region 6 has reached the limit of flavor g1-standard-2-4",
+  "request_id": "d7a764240b3828c4847f692a4f6892ae"
+}
+```
+
+`ForbiddenError` is not a permissions error — it means the physical resource is temporarily unavailable. Try a different region or a different flavor.
+
+### HTTPError — Method Not Allowed
+
+The HTTP method used is not supported by this endpoint. Most often caused by sending a `GET` to an endpoint that only accepts `POST`, or vice versa.
+
+```json
+{
+  "exception_class": "HTTPError",
+  "message": "HTTP 405: Method Not Allowed",
+  "request_id": "4cf1202f8e35e9ddaabae6c5c23e1251"
+}
+```
+
+Check the [API reference](/api-reference/cloud) for the correct HTTP method for the endpoint.
+
+### Authentication errors
+
+All authentication errors return HTTP `401`. The message text identifies the specific cause:
+
+| Message | Cause |
+|---------|-------|
+| `Authentication credentials were not provided.` | No `Authorization` header |
+| `Bad permanent token: {partial_key}` | Token truncated at `$` — shell expansion issue |
+| `Token is invalid or expired` | Token deleted or past expiry date |
+| `Given token not valid for any token type` | Wrong auth scheme — use `APIKey`, not `Bearer` |
+
+
+## HTTP status codes
+
+Every error response includes an HTTP status code that identifies the error category:
+
+| Status | Typical exception_class |
+|--------|------------------------|
+| `400` | `ValidationError` |
+| `401` | `not_authenticated`, `token_not_valid` |
+| `403` | `ForbiddenError`, permission denied |
+| `404` | `NotFoundError` |
+| `405` | `HTTPError` |
+| `409` | `ConflictError` (resource already exists) |
+| `429` | Rate limit exceeded |
+| `500` | Internal server error — transient, retry with backoff |
+
+## Retry strategy
+
+Not every error is worth retrying — the table below distinguishes fixable request problems from transient server conditions. Every response contains a `request_id`; include it when contacting [Gcore support](https://gcore.com/contact-us) to identify the request in the infrastructure logs.
+
+| Error type | Safe to retry? | Action |
+|------------|---------------|--------|
+| `ValidationError` | No | Fix the request first |
+| `NotFoundError` | No | Check IDs and region |
+| `QuotaLimitExceed` | No | Request quota increase |
+| `ForbiddenError` (capacity) | Yes, in different region/flavor | Choose different region |
+| `HTTPError 405` | No | Fix the HTTP method |
+| `500` | Yes, with exponential backoff | Wait 1–5s and retry up to 3 times |
+| `429` | Yes, after waiting | Respect `Retry-After` header if present |
