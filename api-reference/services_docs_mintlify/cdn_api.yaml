@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Gcore OpenAPI – CDN API
-  version: '2026-06-04T12:56:09.051491+00:00'
+  version: '2026-06-11T05:30:55.635813+00:00'
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
 servers:
 - url: https://api.gcore.com
@@ -4361,6 +4361,29 @@ components:
         directory:
           type: string
           nullable: true
+    BaseSLSConfig:
+      type: object
+      properties:
+        endpoint:
+          type: string
+          description: SLS endpoint. Optional — derived from the region as `{region}.log.aliyuncs.com` when omitted.
+          nullable: true
+          maxLength: 253
+        region:
+          type: string
+          description: SLS region (e.g. `eu-central-1`).
+          maxLength: 255
+        project:
+          type: string
+          description: SLS project name. 3-63 characters; lowercase letters, digits, and hyphens.
+        log_store:
+          type: string
+          description: SLS logstore name. 3-36 characters; lowercase letters, digits, hyphens, and underscores.
+        topic:
+          type: string
+          description: Optional SLS topic (0-128 characters).
+          nullable: true
+          maxLength: 128
     CDNServiceResponse:
       type: object
       properties:
@@ -4977,6 +5000,7 @@ components:
           - sftp
           - http
           - azure_blob
+          - sls
           description: Type of storage for logs.
         name:
           type: string
@@ -4999,6 +5023,7 @@ components:
           - $ref: '#/components/schemas/SFTPConfig'
           - $ref: '#/components/schemas/HTTPConfig'
           - $ref: '#/components/schemas/AzureBlobConfig'
+          - $ref: '#/components/schemas/SLSConfig'
       required:
       - storage_type
       - config
@@ -6757,6 +6782,7 @@ components:
           - sftp
           - http
           - azure_blob
+          - sls
           description: Type of storage for logs.
         name:
           type: string
@@ -6788,6 +6814,7 @@ components:
           - $ref: '#/components/schemas/SFTPConfigResponse'
           - $ref: '#/components/schemas/HTTPConfigResponse'
           - $ref: '#/components/schemas/AzureBlobConfigResponse'
+          - $ref: '#/components/schemas/SLSConfigResponse'
     LogsUploaderValidationResponse:
       type: object
       properties:
@@ -7591,6 +7618,7 @@ components:
           - sftp
           - http
           - azure_blob
+          - sls
           description: Type of storage for logs.
         name:
           type: string
@@ -7612,6 +7640,7 @@ components:
           - $ref: '#/components/schemas/SFTPConfig'
           - $ref: '#/components/schemas/HTTPConfig'
           - $ref: '#/components/schemas/AzureBlobConfig'
+          - $ref: '#/components/schemas/SLSConfig'
     PatchResource:
       type: object
       properties:
@@ -8499,6 +8528,77 @@ components:
       title: SFTP Config
       allOf:
       - $ref: '#/components/schemas/SFTPConfig'
+    SLSAuthConfig:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - ak_sk
+          description: Authentication type.
+        config:
+          type: object
+          description: Authentication credentials.
+          oneOf:
+          - type: object
+            properties:
+              access_key_id:
+                type: string
+                description: Alibaba access key ID.
+              secret_access_key:
+                type: string
+                description: Alibaba secret access key.
+            required:
+            - access_key_id
+            - secret_access_key
+      required:
+      - type
+      - config
+    SLSAuthConfigResponse:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - ak_sk
+          description: Authentication type.
+        config:
+          type: object
+          description: Authentication credentials. Secret fields are masked with '*****'.
+          oneOf:
+          - type: object
+            properties:
+              access_key_id:
+                type: string
+                description: Alibaba access key ID.
+              secret_access_key:
+                type: string
+                description: Masked secret value.
+                example: '*****'
+      required:
+      - type
+      - config
+    SLSConfig:
+      title: SLS Config
+      allOf:
+      - $ref: '#/components/schemas/BaseSLSConfig'
+      - type: object
+        properties:
+          auth:
+            $ref: '#/components/schemas/SLSAuthConfig'
+        required:
+        - region
+        - project
+        - log_store
+        - auth
+    SLSConfigResponse:
+      title: SLS Config
+      allOf:
+      - $ref: '#/components/schemas/BaseSLSConfig'
+      - type: object
+        properties:
+          auth:
+            $ref: '#/components/schemas/SLSAuthConfigResponse'
     SSLCertificateUsage:
       type: object
       description: List of CDN resources using this SSL certificate.
@@ -9157,7 +9257,7 @@ components:
       description: |-
         Allows to configure FastEdge app to be called on different request/response phases.
 
-        Note: At least one of `on_request_headers`, `on_request_body`, `on_response_headers`, or `on_response_body` must be specified.
+        Note: At least one of `on_request_headers`, `on_request_headers_after_cache`, `on_request_body`, `on_response_headers`, or `on_response_body` must be specified.
       properties:
         enabled:
           $ref: '#/components/schemas/parameters-enabled'
@@ -9165,6 +9265,10 @@ components:
           allOf:
           - $ref: '#/components/schemas/FastEdgeTriggerSettings'
           - description: Allows to configure FastEdge application that will be called to handle request headers as soon as CDN receives incoming HTTP request, **before cache**.
+        on_request_headers_after_cache:
+          allOf:
+          - $ref: '#/components/schemas/FastEdgeTriggerSettings'
+          - description: Allows to configure FastEdge application that will be called to handle request headers as soon as CDN receives incoming HTTP request, **after cache**.
         on_request_body:
           allOf:
           - $ref: '#/components/schemas/FastEdgeTriggerSettings'

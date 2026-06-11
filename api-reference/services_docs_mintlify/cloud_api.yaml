@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Cloud API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: '2026-06-04T12:55:36.884305+00:00'
+  version: '2026-06-11T05:30:21.955623+00:00'
 servers:
 - url: https://api.gcore.com
 paths:
@@ -15084,6 +15084,20 @@ paths:
           title: Offset
           type: integer
       - in: query
+        name: operating_status
+        required: false
+        description: Filter by operating status
+        schema:
+          $ref: '#/components/schemas/OperatingStatusEnum'
+          description: Filter by operating status
+          examples:
+          - ONLINE
+          - DRAINING
+          - OFFLINE
+          - DEGRADED
+          - ERROR
+          - NO_MONITOR
+      - in: query
         name: order_by
         required: false
         description: Order by field and direction.
@@ -15093,6 +15107,20 @@ paths:
           description: Order by field and direction.
           examples:
           - name.asc
+      - in: query
+        name: provisioning_status
+        required: false
+        description: Filter by provisioning (lifecycle) status
+        schema:
+          $ref: '#/components/schemas/ProvisioningStatusEnum'
+          description: Filter by provisioning (lifecycle) status
+          examples:
+          - ACTIVE
+          - DELETED
+          - ERROR
+          - PENDING_CREATE
+          - PENDING_UPDATE
+          - PENDING_DELETE
       - in: query
         name: show_stats
         required: false
@@ -20071,6 +20099,125 @@ paths:
                 $ref: '#/components/schemas/TaskIDsSerializer'
       tags:
       - Placement Groups
+  /cloud/v1/ports/{project_id}/{region_id}:
+    get:
+      operationId: PortListView.get
+      summary: List ports
+      description: |-
+        List all ports in the specified project and region.
+        Results can be filtered by network, subnet, IP address, or port ID,
+        and sorted by `created_at` or `network_id`.
+      parameters:
+      - in: path
+        name: project_id
+        required: true
+        description: Project ID
+        schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
+          type: integer
+      - in: path
+        name: region_id
+        required: true
+        description: Region ID
+        schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
+          type: integer
+      - in: query
+        name: ids
+        required: false
+        description: Filter by port ID(s). Exact match.
+        schema:
+          description: Filter by port ID(s). Exact match.
+          items:
+            format: uuid4
+            type: string
+          title: Ids
+          type: array
+      - in: query
+        name: ip_addresses
+        required: false
+        description: Filter by IP address(es). Exact match.
+        schema:
+          description: Filter by IP address(es). Exact match.
+          items:
+            format: ipvanyaddress
+            type: string
+          title: Ip Addresses
+          type: array
+      - in: query
+        name: limit
+        required: false
+        description: Optional. Limit the number of returned items
+        schema:
+          default: 100
+          description: Optional. Limit the number of returned items
+          example: 100
+          examples:
+          - 100
+          exclusiveMinimum: 0
+          maximum: 1000
+          title: Limit
+          type: integer
+      - in: query
+        name: network_ids
+        required: false
+        description: Filter by network ID(s). Exact match.
+        schema:
+          description: Filter by network ID(s). Exact match.
+          items:
+            format: uuid4
+            type: string
+          title: Network Ids
+          type: array
+      - in: query
+        name: offset
+        required: false
+        description: Optional. Offset value is used to exclude the first set of records from the result
+        schema:
+          default: 0
+          description: Optional. Offset value is used to exclude the first set of records from the result
+          example: 0
+          examples:
+          - 0
+          minimum: 0
+          title: Offset
+          type: integer
+      - in: query
+        name: order_by
+        required: false
+        description: Sort field and direction, e.g. `created_at`.desc or `network_id`.asc
+        schema:
+          $ref: '#/components/schemas/PortListOrderByChoices'
+          default: created_at.desc
+          description: Sort field and direction, e.g. `created_at`.desc or `network_id`.asc
+      - in: query
+        name: subnet_ids
+        required: false
+        description: Filter by subnet ID(s). Exact match.
+        schema:
+          description: Filter by subnet ID(s). Exact match.
+          items:
+            format: uuid4
+            type: string
+          title: Subnet Ids
+          type: array
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortListSerializer'
+      tags:
+      - Ports
   /cloud/v1/ports/{project_id}/{region_id}/{port_id}:
     get:
       operationId: PortDetailView.get
@@ -22193,22 +22340,38 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: router_id
         required: true
         description: Router ID
         schema:
+          description: Router ID
+          example: ccd5b925-e35c-4611-a511-67ab503104c8
+          examples:
+          - ccd5b925-e35c-4611-a511-67ab503104c8
+          format: uuid4
+          title: Router Id
           type: string
       responses:
         '200':
-          description: Router details
+          description: OK
           content:
             application/json:
               schema:
@@ -22225,22 +22388,38 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: router_id
         required: true
         description: Router ID
         schema:
+          description: Router ID
+          example: ccd5b925-e35c-4611-a511-67ab503104c8
+          examples:
+          - ccd5b925-e35c-4611-a511-67ab503104c8
+          format: uuid4
+          title: Router Id
           type: string
       responses:
         '200':
-          description: List of created tasks
+          description: OK
           content:
             application/json:
               schema:
@@ -22252,6 +22431,7 @@ paths:
       summary: Update router
       description: |-
         Update the configuration of an existing router.
+
         **Deprecated**: Use `PATCH /v2/routers/{project_id}/{region_id}/{router_id}` instead.
       parameters:
       - in: path
@@ -22259,22 +22439,38 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: router_id
         required: true
         description: Router ID
         schema:
+          description: Router ID
+          example: ccd5b925-e35c-4611-a511-67ab503104c8
+          examples:
+          - ccd5b925-e35c-4611-a511-67ab503104c8
+          format: uuid4
+          title: Router Id
           type: string
       responses:
         '200':
-          description: Updated router details
+          description: OK
           content:
             application/json:
               schema:
@@ -22352,22 +22548,38 @@ paths:
         required: true
         description: Project ID
         schema:
+          description: Project ID
+          example: 1
+          examples:
+          - 1
+          title: Project Id
           type: integer
       - in: path
         name: region_id
         required: true
         description: Region ID
         schema:
+          description: Region ID
+          example: 1
+          examples:
+          - 1
+          title: Region Id
           type: integer
       - in: path
         name: router_id
         required: true
         description: Router ID
         schema:
+          description: Router ID
+          example: ccd5b925-e35c-4611-a511-67ab503104c8
+          examples:
+          - ccd5b925-e35c-4611-a511-67ab503104c8
+          format: uuid4
+          title: Router Id
           type: string
       responses:
         '200':
-          description: Updated router details
+          description: OK
           content:
             application/json:
               schema:
@@ -28274,7 +28486,7 @@ components:
           - active
           title: Status
           type: string
-        tags:
+        tags_v2:
           description: List of key-value tags associated with the resource. A tag is a key-value pair that can be associated with a resource, enabling efficient filtering and grouping for better organization and management. Some tags are read-only and cannot be modified by the user. Tags are also integrated with cost reports, allowing cost data to be filtered based on tag keys or values.
           example: &id043
           - key: my-tag
@@ -28284,7 +28496,7 @@ components:
           - *id043
           items:
             $ref: '#/components/schemas/TagSerializer'
-          title: Tags
+          title: Tags V2
           type: array
         task_id:
           anyOf:
@@ -28348,7 +28560,7 @@ components:
       - hw_firmware_type
       - hw_machine_type
       - architecture
-      - tags
+      - tags_v2
       - gpu_driver
       - gpu_driver_version
       - gpu_driver_type
@@ -29335,6 +29547,20 @@ components:
       - max
       title: ApplicationContainerScalePricingSerializer
       type: object
+    AppliedSpec:
+      properties:
+        image_id:
+          title: Image Id
+          type: string
+        servers_settings:
+          additionalProperties: true
+          title: Servers Settings
+          type: object
+      required:
+      - image_id
+      - servers_settings
+      title: AppliedSpec
+      type: object
     AssignFloatingIPSerializer:
       properties:
         fixed_ip_address:
@@ -30096,7 +30322,7 @@ components:
           - active
           title: Status
           type: string
-        tags:
+        tags_v2:
           description: List of key-value tags associated with the resource. A tag is a key-value pair that can be associated with a resource, enabling efficient filtering and grouping for better organization and management. Some tags are read-only and cannot be modified by the user. Tags are also integrated with cost reports, allowing cost data to be filtered based on tag keys or values.
           example: &id054
           - key: my-tag
@@ -30106,7 +30332,7 @@ components:
           - *id054
           items:
             $ref: '#/components/schemas/TagSerializer'
-          title: Tags
+          title: Tags V2
           type: array
         task_id:
           anyOf:
@@ -30161,7 +30387,7 @@ components:
       - hw_firmware_type
       - hw_machine_type
       - architecture
-      - tags
+      - tags_v2
       - gpu_driver
       - gpu_driver_version
       - gpu_driver_type
@@ -30427,6 +30653,14 @@ components:
       type: object
     BaremetalClusterInstanceServer:
       properties:
+        applied_servers_settings:
+          $ref: '#/components/schemas/AppliedSpec'
+          description: Snapshot of cluster spec (`image_id` and `servers_settings`) applied when this server was last created or rebuilt. Compare with the cluster current spec to see what changed.
+          examples:
+          - image_id: ded40aad-505c-463b-aa59-8f5f455d1b6f
+            servers_settings:
+              credentials:
+                ssh_key_name: my-key
         created_at:
           description: Server creation date and time
           example: '2025-03-17T13:22:23Z'
@@ -30550,6 +30784,7 @@ components:
       - updated_at
       - security_groups
       - has_pending_changes
+      - applied_servers_settings
       title: BaremetalClusterInstanceServer
       type: object
     BaremetalClusterInstanceServersList:
@@ -33002,6 +33237,14 @@ components:
       type: object
     ClusterInstanceServer:
       properties:
+        applied_servers_settings:
+          $ref: '#/components/schemas/AppliedSpec'
+          description: Snapshot of cluster spec (`image_id` and `servers_settings`) applied when this server was last created or rebuilt. Compare with the cluster current spec to see what changed.
+          examples:
+          - image_id: ded40aad-505c-463b-aa59-8f5f455d1b6f
+            servers_settings:
+              credentials:
+                ssh_key_name: my-key
         created_at:
           description: Server creation date and time
           example: '2025-03-17T13:22:23Z'
@@ -33125,6 +33368,7 @@ components:
       - updated_at
       - security_groups
       - has_pending_changes
+      - applied_servers_settings
       title: ClusterInstanceServer
       type: object
     ClusterInstanceServersList:
@@ -36371,6 +36615,13 @@ components:
           - 0
           title: Inference Instance Count Limit
           type: integer
+        inference_public_model_api_key_count_limit:
+          description: Public model API keys count limit
+          example: 0
+          examples:
+          - 0
+          title: Inference Public Model Api Key Count Limit
+          type: integer
         keypair_count_limit:
           description: SSH Keys Count limit
           example: 100
@@ -37111,6 +37362,12 @@ components:
         redirect_http_code:
           default: 302
           description: Requests matching this policy will be redirected to the specified URL or Prefix URL with the HTTP response code. Valid options are 301, 302, 303, 307, or 308. Default is 302.
+          enum:
+          - 301
+          - 302
+          - 303
+          - 307
+          - 308
           example: 301
           examples:
           - 301
@@ -37235,6 +37492,12 @@ components:
         redirect_http_code:
           default: 302
           description: Requests matching this policy will be redirected to the specified URL or Prefix URL with the HTTP response code. Valid options are 301, 302, 303, 307, or 308. Default is 302.
+          enum:
+          - 301
+          - 302
+          - 303
+          - 307
+          - 308
           example: 301
           examples:
           - 301
@@ -37561,7 +37824,7 @@ components:
             maxItems: 100
             type: array
           - type: 'null'
-          description: Network CIDRs from which service will be accessible
+          description: Network CIDRs from which service will be accessible. Order-insensitive.
           examples:
           - - 10.0.0.0/8
           title: Allowed Cidrs
@@ -37978,7 +38241,7 @@ components:
             maxItems: 100
             type: array
           - type: 'null'
-          description: Network CIDRs from which service will be accessible
+          description: Network CIDRs from which service will be accessible. Order-insensitive.
           examples:
           - - 10.0.0.0/8
           title: Allowed Cidrs
@@ -38853,6 +39116,7 @@ components:
           description: Security group rules
           items:
             $ref: '#/components/schemas/CreateSecurityGroupRuleSerializerV2'
+          maxItems: 250
           title: Rules
           type: array
         tags:
@@ -42986,6 +43250,20 @@ components:
           - 0
           title: Inference Instance Count Usage
           type: integer
+        inference_public_model_api_key_count_limit:
+          description: Public model API keys count limit
+          example: 0
+          examples:
+          - 0
+          title: Inference Public Model Api Key Count Limit
+          type: integer
+        inference_public_model_api_key_count_usage:
+          description: Public model API keys count usage
+          example: 0
+          examples:
+          - 0
+          title: Inference Public Model Api Key Count Usage
+          type: integer
         keypair_count_limit:
           description: SSH Keys Count limit
           example: 100
@@ -43048,6 +43326,12 @@ components:
         inference_instance_count_usage:
           $ref: '#/components/schemas/QuotaCountForThresholdSerializer'
           description: Inference instance count usage
+        inference_public_model_api_key_count_limit:
+          $ref: '#/components/schemas/QuotaCountForThresholdSerializer'
+          description: Public model API keys count limit
+        inference_public_model_api_key_count_usage:
+          $ref: '#/components/schemas/QuotaCountForThresholdSerializer'
+          description: Public model API keys count usage
         keypair_count_limit:
           $ref: '#/components/schemas/QuotaCountForThresholdSerializer'
           description: SSH Keys Count limit
@@ -43446,6 +43730,13 @@ components:
           format: date-time
           title: Created At
           type: string
+        disk_format:
+          description: Disk format of the stored image (e.g. `raw`, `qcow2`). `cow_format=true` -> `raw`, `cow_format=false` -> `qcow2`.
+          example: raw
+          examples:
+          - raw
+          title: Disk Format
+          type: string
         gpu_driver:
           anyOf:
           - type: string
@@ -43473,6 +43764,14 @@ components:
           examples:
           - 570.148.08
           title: Gpu Driver Version
+        hw_firmware_type:
+          anyOf:
+          - $ref: '#/components/schemas/ImageHwFirmwareTypeEnum'
+          - type: 'null'
+          default: null
+          description: Specifies the type of firmware with which to boot the guest.
+          examples:
+          - bios
         id:
           description: Image ID
           example: 44e136a7-15c1-4b5f-a086-20b7b3237d40
@@ -43599,6 +43898,7 @@ components:
       - visibility
       - created_at
       - updated_at
+      - disk_format
       title: GpuImageSerializer
       type: object
     GpuVirtualFlavorHardwareDescriptionSerializer:
@@ -44421,7 +44721,7 @@ components:
           - active
           title: Status
           type: string
-        tags:
+        tags_v2:
           description: List of key-value tags associated with the resource. A tag is a key-value pair that can be associated with a resource, enabling efficient filtering and grouping for better organization and management. Some tags are read-only and cannot be modified by the user. Tags are also integrated with cost reports, allowing cost data to be filtered based on tag keys or values.
           example: &id138
           - key: my-tag
@@ -44431,7 +44731,7 @@ components:
           - *id138
           items:
             $ref: '#/components/schemas/TagSerializer'
-          title: Tags
+          title: Tags V2
           type: array
         task_id:
           anyOf:
@@ -44486,7 +44786,7 @@ components:
       - hw_firmware_type
       - hw_machine_type
       - architecture
-      - tags
+      - tags_v2
       - gpu_driver
       - gpu_driver_version
       - gpu_driver_type
@@ -44779,7 +45079,8 @@ components:
           title: Gpu Model
           type: string
         is_gpu_shared:
-          description: Inference flavor is gpu shared.
+          deprecated: true
+          description: Inference flavor is gpu shared (always false, deprecated).
           example: false
           examples:
           - false
@@ -56217,7 +56518,7 @@ components:
             maxItems: 100
             type: array
           - type: 'null'
-          description: Network CIDRs from which service will be accessible
+          description: Network CIDRs from which service will be accessible. Order-insensitive.
           examples:
           - - 10.0.0.0/8
           title: Allowed Cidrs
@@ -56630,7 +56931,9 @@ components:
     PatchRouterSerializerV2:
       properties:
         external_gateway_info:
-          $ref: '#/components/schemas/RouterExternalManualGwSerializer'
+          anyOf:
+          - $ref: '#/components/schemas/RouterExternalManualGwSerializer'
+          - type: 'null'
           description: New external gateway configuration. Only type 'manual' is accepted on update, so you must provide the `network_id` of the external network. Set to null to remove the external gateway.
           examples:
           - enable_snat: false
@@ -57113,7 +57416,7 @@ components:
     PortDetailSerializer:
       properties:
         allowed_address_pairs:
-          description: List of allowed address pairs
+          description: List of allowed address pairs. Sorted by `ip_address` for stable client refreshes.
           items:
             $ref: '#/components/schemas/AllowedAddressPairsResponseSerializer'
           title: Allowed Address Pairs
@@ -57123,6 +57426,14 @@ components:
           - $ref: '#/components/schemas/PortCapabilitiesSerializer'
           - type: 'null'
           description: What the driver enforces. null when the port is unattached (driver unknown).
+        created_at:
+          description: Datetime when the port was created.
+          example: '2024-01-15T10:30:00Z'
+          examples:
+          - '2024-01-15T10:30:00Z'
+          format: date-time
+          title: Created At
+          type: string
         id:
           description: Port ID
           example: 1f0ca628-a73b-42c0-bdac-7b10d023e097
@@ -57132,16 +57443,16 @@ components:
           title: Id
           type: string
         ip_assignments:
-          description: List of IP addresses assigned to the port
+          description: List of IP addresses assigned to the port.
           items:
             $ref: '#/components/schemas/IpAssignmentSerializer'
           title: Ip Assignments
           type: array
         mac_address:
           description: MAC address of the port
-          example: 00:16:3e:f2:87:16
+          example: fa:16:3e:f2:87:16
           examples:
-          - 00:16:3e:f2:87:16
+          - fa:16:3e:f2:87:16
           title: Mac Address
           type: string
         managed_by:
@@ -57165,12 +57476,13 @@ components:
           title: Port Security Enabled
           type: boolean
         security_group_ids:
-          description: List of security group IDs applied to the port
+          description: List of security group IDs applied to the port. Sorted lexicographically for stable client refreshes.
           example: &id206
           - bc688791-f1b0-44eb-97d4-07697294b1e1
           examples:
           - *id206
           items:
+            format: uuid4
             type: string
           title: Security Group Ids
           type: array
@@ -57196,6 +57508,7 @@ components:
       - tags
       - managed_by
       - capabilities
+      - created_at
       title: PortDetailSerializer
       type: object
     PortIDsForVIPSerializer:
@@ -57302,6 +57615,35 @@ components:
       - ip_address
       - subnet
       title: PortIpWithSubnetSerializer
+      type: object
+    PortListOrderByChoices:
+      enum:
+      - created_at.asc
+      - created_at.desc
+      - network_id.asc
+      - network_id.desc
+      title: PortListOrderByChoices
+      type: string
+    PortListSerializer:
+      properties:
+        count:
+          description: Number of objects
+          example: 1
+          examples:
+          - 1
+          minimum: 0
+          title: Count
+          type: integer
+        results:
+          description: Objects
+          items:
+            $ref: '#/components/schemas/PortDetailSerializer'
+          title: Results
+          type: array
+      required:
+      - count
+      - results
+      title: PortListSerializer
       type: object
     PortManagedBy:
       enum:
@@ -71799,6 +72141,7 @@ components:
           description: Security group rules
           items:
             $ref: '#/components/schemas/CreateSecurityGroupRuleSerializer'
+          maxItems: 250
           title: Security Group Rules
           type: array
         tags:
@@ -76879,6 +77222,12 @@ components:
         redirect_http_code:
           default: 302
           description: Requests matching this policy will be redirected to the specified URL or Prefix URL with the HTTP response code. Valid options are 301, 302, 303, 307, or 308. Default is 302.
+          enum:
+          - 301
+          - 302
+          - 303
+          - 307
+          - 308
           example: 301
           examples:
           - 301
@@ -76987,6 +77336,12 @@ components:
         redirect_http_code:
           default: 302
           description: Requests matching this policy will be redirected to the specified URL or Prefix URL with the HTTP response code. Valid if action is `REDIRECT_TO_URL` or `REDIRECT_PREFIX`. Valid options are 301, 302, 303, 307, or 308. Default is 302.
+          enum:
+          - 301
+          - 302
+          - 303
+          - 307
+          - 308
           example: 301
           examples:
           - 301
@@ -77326,6 +77681,7 @@ components:
           description: List of rules to create or delete
           items:
             $ref: '#/components/schemas/UpdateSecurityGroupRuleSerializer'
+          maxItems: 500
           title: Changed Rules
           type: array
         name:
@@ -77377,6 +77733,7 @@ components:
           description: Security group rules
           items:
             $ref: '#/components/schemas/UpdateSecurityGroupRuleSerializerV2'
+          maxItems: 250
           title: Rules
           type: array
         tags:
