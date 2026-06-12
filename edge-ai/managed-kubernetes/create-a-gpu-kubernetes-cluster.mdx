@@ -1,0 +1,225 @@
+---
+title: Create a GPU Kubernetes cluster
+sidebarTitle: Create a cluster
+---
+
+The creation form walks through region, version, node pools, networking, SSH key, logging, and advanced settings in sequence.
+
+<Info>
+The cluster creation form requires a configured network, subnet, and SSH key before it can be submitted. Setting these up before opening the form avoids navigating away mid-creation. Networks and subnets can be prepared under **GPU Cloud** > **Networking** > **Networks**; SSH keys under **GPU Cloud** > **SSH Keys**.
+</Info>
+
+1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **GPU Cloud**.
+2. In the sidebar, select **Managed Kubernetes**.
+3. Click **Create Cluster**.
+
+<Frame>
+  <img src="/images/docs/edge-ai/managed-kubernetes/create-a-gpu-kubernetes-cluster/managed-kubernetes-overview.png" alt="Managed Kubernetes page in GPU Cloud showing the clusters list and Create Cluster button" />
+</Frame>
+
+### Step 1. Select region
+
+In the **Region** section, select the data center location for the cluster. Region choice affects GPU model availability, VAST Storage support, and network latency for workloads.
+
+<Frame>
+  <img src="/images/docs/edge-ai/managed-kubernetes/create-a-gpu-kubernetes-cluster/step1-region.png" alt="Region selection showing available data centers grouped by geography" />
+</Frame>
+
+GPU bare metal nodes and features such as VAST Storage integration are not available in all regions, so check regional availability before selecting if these are required.
+
+<Info>
+Changing the region after configuring other settings resets all form values.
+</Info>
+
+### Step 2. Select Kubernetes version
+
+In the **Kubernetes cluster version** dropdown, select the version for the cluster. The latest stable version is selected by default and is recommended unless workloads require a specific version for compatibility. Kubernetes versions can be upgraded after cluster creation, but a downgrade is not supported.
+
+### Step 3. Configure node pools
+
+Node pools define the worker nodes where workloads run. Each pool has its own instance type, scaling limits, and volume configuration. A cluster can have multiple pools with different instance types, allowing GPU workloads and general services to run side by side.
+
+1. In the **Pools** section, configure the default pool or click **Add pool** to add another.
+
+2. Enter a **Pool name**.
+
+3. Set **Minimum nodes** and **Maximum nodes**. Set the minimum above zero if the pool must always have running nodes — a minimum of zero allows the autoscaler to scale the pool down completely when idle.
+
+4. Select the node **Type**:
+
+| Type | Description | Use case |
+|------|-------------|----------|
+| Virtual instances | Standard VMs | Development, testing, general workloads |
+| Bare metal instances | Dedicated physical servers | High-performance CPU workloads |
+| GPU Bare metal instances | NVIDIA GPU servers with built-in NVMe storage | Model training, inference at scale |
+
+<Note>
+Bare metal instances are not available in all regions. If the option is unavailable, switch to a region that supports bare metal, such as Luxembourg-2.
+</Note>
+
+5. Select a **Flavor**. Each flavor card shows specifications, storage, and hourly pricing. GPU Bare metal instances include built-in NVMe storage — no separate volume configuration is required.
+
+<Frame>
+  <img src="/images/docs/edge-ai/managed-kubernetes/create-a-gpu-kubernetes-cluster/gpu-flavors-dropdown.png" alt="GPU Bare metal flavor selection showing available GPU configurations and pricing" />
+</Frame>
+
+6. For Virtual and Bare metal instance types, configure the boot volume: select a **Volume type** and set **Size** to a minimum of 50 GiB. High IOPS SSD reduces latency for I/O-intensive workloads.
+
+7. Select a **Placement policy**. Anti-affinity soft instructs the scheduler to place nodes on different physical hosts when possible, reducing the impact of a single host failure on pool availability. If the cluster does not have enough physical hosts to honor the policy, nodes are still scheduled.
+
+8. (Optional) Configure additional node settings:
+   - **Add labels** — Kubernetes labels attached to all nodes in the pool. Labels are used in pod specs to target specific pools with `nodeSelector` or node affinity rules.
+   - **Add taints** — taints prevent pods from being scheduled on pool nodes unless the pod explicitly tolerates the taint. Use taints to dedicate GPU pools exclusively to GPU workloads.
+   - **Autohealing nodes** — enabled by default; the cluster monitors node health using Kubernetes node conditions and automatically drains and replaces nodes that become unhealthy.
+   - **Public IPv4 address** — assigns a public IP to each node. When enabled, private network selection becomes optional and the cluster is created in the public network. IPv6 dual-stack is available for nodes in the public network.
+
+9. To configure container runtime settings, environment variables, and resource limits, click the **...** menu in the pool header and select **Configure settings**.
+
+<Warning>
+Advanced pool settings cannot be changed after cluster creation. Store persistent data in external storage such as Object Storage, NFS, or managed databases — GPU bare metal nodes may be replaced during scaling or maintenance.
+</Warning>
+
+### Step 4. Configure CNI provider
+
+The Container Network Interface (CNI) provider manages pod-to-pod and pod-to-service networking within the cluster. The CNI choice affects network throughput, observability capabilities, and compatibility with network policies.
+
+<Frame>
+  <img src="/images/docs/edge-ai/managed-kubernetes/create-a-gpu-kubernetes-cluster/step4-cni.png" alt="CNI provider section with Calico and Cilium options and CIDR configuration" />
+</Frame>
+
+1. Select a **CNI provider**:
+
+| Provider | When to use |
+|----------|-------------|
+| Calico | Familiar iptables-based networking; broad compatibility with existing tooling |
+| Cilium (default) | eBPF-based networking with higher throughput and built-in flow observability via Hubble |
+
+<Info>
+The CNI provider cannot be changed after cluster creation.
+</Info>
+
+2. Configure network ranges. Change the defaults only if they conflict with existing networks — for example, if a VPN or peered network uses overlapping addresses:
+   - **Pod CIDR**: IP range assigned to pods (default: `172.16.0.0/17`). Each node carves a subnet from this range based on the node mask size.
+   - **Service CIDR**: IP range assigned to Kubernetes services (default: `172.24.0.0/17`).
+   - **Node mask size**: subnet size allocated per node (default: `/24`, which allows up to 254 pods per node). A smaller mask allows more pods per node; a larger mask allows more nodes but fewer pods each.
+
+<Warning>
+Pod CIDR, Service CIDR, and node mask size cannot be changed after cluster creation. Verify that the ranges do not overlap with existing networks before proceeding.
+</Warning>
+
+3. If Cilium is selected, optionally enable **Hubble for network monitoring** to capture and visualize network flows between pods and services.
+
+### Step 5. Configure network settings
+
+In the **Network settings** section, assign the private network interface for cluster nodes. All nodes join this network and communicate with each other through it.
+
+<Frame>
+  <img src="/images/docs/edge-ai/managed-kubernetes/create-a-gpu-kubernetes-cluster/step5-network.png" alt="Network settings showing network and subnetwork selection" />
+</Frame>
+
+1. Select an existing **Network** or click **Add a new network** to create one.
+2. Select a **Subnetwork** within the chosen network.
+
+The subnet must have enough available IP addresses for the maximum number of nodes across all pools — each node consumes at least one IP from the subnet. All cluster nodes receive Basic DDoS Protection at no additional cost.
+
+### Step 6. Add an SSH key
+
+In the **SSH key** section, select the SSH key to use for node access. The key is installed on all nodes in the cluster and is used for direct OS-level access — for example, to debug node issues or inspect container runtime logs.
+
+Select an existing key from the dropdown or click **Add a new SSH Key** to add one. Keys can also be managed under **GPU Cloud** > **SSH Keys**.
+
+### Step 7. Name the cluster
+
+In the **Cluster name** field, enter a name or use the auto-generated default. The name identifies the cluster in the portal, in kubeconfig files, and in audit logs.
+
+### Step 8. Configure logging
+
+The **Logging** section enables log collection from cluster nodes and workloads, storing them in OpenSearch Dashboards for analysis and debugging. Logging is a paid feature.
+
+<Frame>
+  <img src="/images/docs/edge-ai/managed-kubernetes/create-a-gpu-kubernetes-cluster/step8-logging.png" alt="Logging section with the Enable Logging toggle" />
+</Frame>
+
+Toggle **Enable Logging** to enable it, then configure the log topic. Logging can also be enabled after creation from the **Logging** tab on the cluster overview page, but configuring it at creation reduces setup steps after provisioning.
+
+
+### Step 9. Configure advanced settings
+
+The **Advanced settings** section contains optional cluster-level configuration. These settings can be changed after cluster creation from the cluster overview page.
+
+<Frame>
+  <img src="/images/docs/edge-ai/managed-kubernetes/create-a-gpu-kubernetes-cluster/step9-advanced-settings.png" alt="Advanced settings section showing OIDC authentication and Cluster Autoscaler options" />
+</Frame>
+
+- **OIDC authentication** — configure Single Sign-On for Kubernetes API access using an external identity provider such as Okta, Azure AD, or Keycloak. When configured, cluster users authenticate with their identity provider credentials rather than kubeconfig tokens. Set the issuer URL, client ID, and claim settings.
+- **Cluster Autoscaler** — tune autoscaling behavior including how frequently the cluster checks for pending pods, how long a node must be underutilized before removal, and grace periods for pod termination.
+
+### Step 10. Review cost and create
+
+The **Estimated cost** panel on the right shows monthly and hourly pricing for all configured resources, broken down by instances, volumes, and network, including VAT.
+
+<Frame>
+  <img src="/images/docs/edge-ai/managed-kubernetes/create-a-gpu-kubernetes-cluster/step9-cost.png" alt="Estimated cost panel showing pricing breakdown by resource type" />
+</Frame>
+
+If the account lacks sufficient quota, the portal shows a quota warning and the **Create Cluster** button is disabled. Click **Send quota request** to request an increase, then return to create the cluster once approved.
+
+Click **Create Cluster** to begin provisioning. Cluster provisioning time depends on the number and type of nodes. When complete, the cluster status changes from Creating to Provisioned.
+
+## After cluster creation
+
+When the cluster reaches Provisioned status, it appears in the Managed Kubernetes list with a green Provisioned badge.
+
+<Frame>
+  <img src="/images/docs/edge-ai/managed-kubernetes/create-a-gpu-kubernetes-cluster/cluster-list-provisioned.png" alt="Managed Kubernetes clusters list showing doc-cluster in Provisioned status" />
+</Frame>
+
+Click the cluster name to open the overview page. It shows the cluster status, Kubernetes version, networking configuration (network name, subnetwork, CNI provider), and management tabs for pools, logging, DDoS protection, advanced settings, and audit logs.
+
+GPU bare metal nodes may take longer to provision than virtual instances, so monitor progress in the **Pools** tab — nodes transition from Not Ready to Ready as they complete initialization.
+
+## Connect to the cluster
+
+The kubeconfig file enables kubectl connections to the cluster. Download it after the cluster reaches Provisioned status:
+
+1. Navigate to the cluster overview page.
+2. Click **Kubernetes config**.
+3. Save the downloaded `k8sConfig.yml` file.
+
+<Frame>
+  <img src="/images/docs/edge-ai/managed-kubernetes/create-a-gpu-kubernetes-cluster/cluster-kubeconfig-button.png" alt="Cluster overview page with Kubernetes config button highlighted" />
+</Frame>
+
+Configure kubectl to use the downloaded configuration:
+
+```bash
+export KUBECONFIG=/path/to/k8sConfig.yml
+```
+
+Verify the connection:
+
+```bash
+kubectl cluster-info
+```
+
+Expected output:
+
+```
+Kubernetes control plane is running at https://<cluster-endpoint>:443
+CoreDNS is running at https://<cluster-endpoint>:443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+```
+
+Check node status:
+
+```bash
+kubectl get nodes
+```
+
+Expected output:
+
+```
+NAME                STATUS   ROLES    AGE   VERSION
+ndp1-c3-168-10-78   Ready    <none>   12d   v1.35.3
+```
+
+A node in Ready status is fully provisioned and available for workloads. Nodes that remain NotReady after several minutes may still be initializing — GPU bare metal nodes typically take longer than virtual instances.

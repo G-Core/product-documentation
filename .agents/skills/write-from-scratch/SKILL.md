@@ -1,8 +1,6 @@
 ---
 name: write-from-scratch
-description: Write a new documentation article from scratch based on a provided
-source — Jira brief, Confluence page, or direct description. Load when asked to
-create a new article that does not yet exist in the repository.
+description: Write a new Gcore documentation article from source material such as a Jira brief, Confluence page, or direct description. Use when asked to create an article that does not exist yet.
 ---
 
 Write a new article from source material, following the correct structure for

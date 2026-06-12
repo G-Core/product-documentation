@@ -1,8 +1,6 @@
 ---
 name: update-page
-description: Update an existing article when product or UI changes are provided.
-Load when the user describes changes to a product, feature, or portal UI and wants
-the documentation updated to reflect them.
+description: Update existing documentation when product, feature, or portal UI changes are provided. Use when the user describes changes and wants affected articles updated.
 ---
 
 Update existing articles based on provided context about product or UI changes.
