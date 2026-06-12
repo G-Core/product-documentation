@@ -1,0 +1,202 @@
+---
+title: Build a Rust WASI-HTTP app
+sidebarTitle: Rust WASI-HTTP app
+ai-navigation: Build and deploy FastEdge Rust applications using the WASI-HTTP interface - write a hello-world component and an app that makes outbound HTTP requests to external APIs.
+---
+
+Build two FastEdge applications in Rust using the WASI-HTTP interface: a minimal component that echoes the request path, and a more realistic app that calls an external API, parses the JSON response, and returns a filtered result. Rust and Cargo ([rustup.rs](https://rustup.rs)) are required — on Windows, also install [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022) with the **Desktop development with C++** workload.
+
+WASI-HTTP is the standard WebAssembly System Interface for HTTP, part of WASI 0.2. A FastEdge component built with it has no dependency on the Gcore Rust SDK — it uses only `wstd`, an async runtime for WASI components.
+
+## Hello world
+
+This section walks through the full cycle — project setup, writing the handler, building the binary, and deploying — using a minimal component that returns the request URL in the response body.
+
+### Set up the project
+
+1. Add the Wasm compilation target:
+
+   ```sh
+   rustup target add wasm32-wasip2
+   ```
+
+2. Create a new Rust project:
+
+   ```sh
+   cargo new --lib hello-world
+   cd hello-world
+   ```
+
+3. Replace the contents of `Cargo.toml`:
+
+   ```toml
+   [package]
+   name = "hello_world"
+   version = "0.1.0"
+   edition = "2021"
+
+   [lib]
+   crate-type = ["cdylib"]
+
+   [dependencies]
+   wstd = "0.6"
+   anyhow = "1"
+   ```
+
+   `crate-type = ["cdylib"]` is required. Without it, Cargo produces a standalone executable rather than a WebAssembly component.
+
+### Write the handler
+
+Replace the contents of `src/lib.rs`:
+
+```rust
+use wstd::http::body::Body;
+use wstd::http::{Request, Response};
+
+#[wstd::http_server]
+async fn main(request: Request<Body>) -> anyhow::Result<Response<Body>> {
+    let url = request.uri().to_string();
+
+    Ok(Response::builder()
+        .status(200)
+        .header("content-type", "text/plain;charset=UTF-8")
+        .body(Body::from(format!(
+            "Hello, you made a wasi request to {url}"
+        )))?)
+}
+```
+
+The `#[wstd::http_server]` macro wires the function as the WASI-HTTP entry point. The function receives a `Request<Body>` and returns a `Response<Body>` — these are standard `http` crate types wrapped with the `wstd` body type. Note that `wstd` 0.6 requires the generic argument `Request<Body>`, not `Request` alone.
+
+### Build the binary
+
+```sh
+cargo build --release --target wasm32-wasip2
+```
+
+The compiled binary is written to `./target/wasm32-wasip2/release/hello_world.wasm`.
+
+### Deploy and test
+
+Deploy the binary through the [Gcore Customer Portal or REST API](/fastedge/getting-started/create-fastedge-apps). Once the application is live, send a request to its URL:
+
+```sh
+curl -i https://<app-name>-<id>.fastedge.app/test-path
+```
+
+The response confirms the handler received the request and echoed the path:
+
+```
+HTTP/1.1 200 OK
+content-type: text/plain;charset=UTF-8
+
+Hello, you made a wasi request to http://<app-name>-<id>.fastedge.app/test-path
+```
+
+## Fetch data from an external API
+
+The hello-world component returns static text. A more realistic app makes an outbound HTTP request, processes the result, and returns a shaped response. This section builds a component that calls `jsonplaceholder.typicode.com`, takes the first five users, and returns them as JSON.
+
+### Set up the project
+
+1. Create a new Rust project:
+
+   ```sh
+   cargo new --lib outbound-fetch
+   cd outbound-fetch
+   ```
+
+2. Replace `Cargo.toml`:
+
+   ```toml
+   [package]
+   name = "outbound_fetch"
+   version = "0.1.0"
+   edition = "2021"
+
+   [lib]
+   crate-type = ["cdylib"]
+
+   [dependencies]
+   wstd = "0.6"
+   anyhow = "1"
+   serde_json = "1"
+   ```
+
+   `serde_json` handles JSON parsing and serialization without additional setup — no derive macros are needed for this example.
+
+### Write the handler
+
+Replace `src/lib.rs`:
+
+```rust
+use anyhow::anyhow;
+use wstd::http::body::Body;
+use wstd::http::{Client, Request, Response};
+use serde_json::{json, Value};
+
+#[wstd::http_server]
+async fn main(_request: Request<Body>) -> anyhow::Result<Response<Body>> {
+    let upstream_req = Request::get("http://jsonplaceholder.typicode.com/users")
+        .body(Body::empty())
+        .map_err(|e| anyhow!("failed to build request: {e}"))?;
+
+    let client = Client::new();
+    let upstream_resp = client
+        .send(upstream_req)
+        .await
+        .map_err(|e| anyhow!("request failed: {e}"))?;
+
+    let (_, mut body) = upstream_resp.into_parts();
+    let body_bytes = body.contents().await?;
+    let users: Value = serde_json::from_slice(body_bytes)?;
+
+    let sliced_users = match users.as_array() {
+        Some(arr) => Value::Array(arr.iter().take(5).cloned().collect()),
+        None => Value::Array(vec![]),
+    };
+
+    let result = json!({
+        "users": sliced_users,
+        "total": 5,
+        "skip": 0,
+        "limit": 30,
+    });
+
+    Ok(Response::builder()
+        .status(200)
+        .header("content-type", "application/json")
+        .body(Body::from(result.to_string()))?)
+}
+```
+
+The outbound request uses `wstd::http::Client`, which is the WASI-HTTP implementation of an HTTP client — it runs inside the WebAssembly component without any native networking code. `body.contents().await` reads the full upstream response body as bytes, which are then parsed with `serde_json::from_slice`.
+
+Error handling uses `anyhow` throughout. When the handler returns `Err`, FastEdge returns a 500 response to the caller — the error is also visible in application logs.
+
+### Build the binary
+
+```sh
+cargo build --release --target wasm32-wasip2
+```
+
+The binary is written to `./target/wasm32-wasip2/release/outbound_fetch.wasm`.
+
+### Deploy and test
+
+Deploy `outbound_fetch.wasm` through the [Gcore Customer Portal or REST API](/fastedge/getting-started/create-fastedge-apps). Once live, send a request:
+
+```sh
+curl -i https://<app-name>-<id>.fastedge.app/
+```
+
+The app fetches data from the upstream API at request time and returns a JSON response:
+
+```
+HTTP/1.1 200 OK
+content-type: application/json
+
+{"limit":30,"skip":0,"total":5,"users":[{"id":1,"name":"Leanne Graham",...},{"id":2,...}]}
+```
+
+The upstream call happens synchronously within the handler. Response time increases by the round-trip latency to `jsonplaceholder.typicode.com` on each request. For latency-sensitive workloads, consider caching the upstream response in a [FastEdge KV store](/fastedge/kv-stores/manage-kv-store).
