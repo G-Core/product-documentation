@@ -6,32 +6,32 @@ ai-navigation: Build FastEdge Rust applications using the WASI-HTTP interface - 
 
 FastEdge runs applications as WebAssembly components — portable binaries that execute on a global edge network without servers or containers. These components use [WASI-HTTP](https://github.com/WebAssembly/WASI) to receive requests and call external services, and `wstd` is the Rust library that implements it — the only dependency a FastEdge app in Rust needs.
 
-A minimal component verifies the full toolchain works end-to-end: compile, upload, deploy, get a response. A second, more realistic component then calls an external REST API from inside the handler, transforms the response, and returns shaped JSON — demonstrating WASI-HTTP's defining capability.
+Two components are built here. The first verifies that the full toolchain works: compile to WebAssembly, upload, deploy, get a response. The second adds what makes WASI-HTTP genuinely useful: the ability to call external services from inside the handler and transform what comes back.
 
 [Rust and Cargo](https://rustup.rs) are required. On Windows, also install [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022) with the **Desktop development with C++** workload.
 
 ## Toolchain verification
 
-Before writing a production component, verify the full chain works: compile Rust to WebAssembly, upload the binary to FastEdge, and confirm the response arrives. This component reads the request URL and echoes it back — just enough to confirm every step works.
+A FastEdge app is a WebAssembly component — a library that exports a single entry-point function rather than running as a standalone program. Before writing a production component, it helps to confirm that every step in the pipeline works: the compiler produces a valid binary, the binary uploads successfully, and the deployed app returns a response. This component reads the request URL and echoes it back — minimal code, but it exercises the complete chain.
 
 ### Project setup
 
-A WASI component in Rust is a library crate compiled to a specific WebAssembly target. Set up the project in three steps.
+Rust builds libraries with `cargo new --lib`. Before that project can compile to a WebAssembly component, two things need to be in place: a compilation target that tells Rust which platform to target, and a Cargo configuration that changes the output format to something the WASI runtime can load.
 
-1. Add the `wasm32-wasip2` compilation target to Rust. This is the target that produces WASI 0.2 compatible WebAssembly — without it, Cargo doesn't know how to build for FastEdge. It's a one-time step:
+1. Add the `wasm32-wasip2` compilation target. This is the target that produces WASI 0.2 WebAssembly — without it, Cargo doesn't know how to build for FastEdge. It's a one-time step:
 
    ```sh
    rustup target add wasm32-wasip2
    ```
 
-2. Create a new library crate:
+2. Create the library crate:
 
    ```sh
    cargo new --lib hello-world
    cd hello-world
    ```
 
-3. A WASI component needs a specific Cargo configuration to produce a WebAssembly binary rather than a regular Rust library. Open `Cargo.toml` and replace its contents:
+3. By default, `cargo new --lib` produces a Rust `rlib` — a format for linking into other Rust programs. FastEdge needs a `cdylib` instead: a C-compatible shared library that the WASI runtime can load as a component. Open `Cargo.toml` and replace its contents:
 
    ```toml
    [package]
@@ -47,11 +47,13 @@ A WASI component in Rust is a library crate compiled to a specific WebAssembly t
    anyhow = "1"
    ```
 
-   The `[package]` and `[dependencies]` sections are standard Cargo. The key difference is `[lib]`: `crate-type = ["cdylib"]` tells Cargo to produce a C-compatible dynamic library — the binary format the WASI component model requires. Without it, the build succeeds but produces a regular Rust library that can't run on FastEdge.
+   The `[package]` and `[dependencies]` sections are standard Cargo. The only change from the default is `crate-type = ["cdylib"]` in `[lib]` — without it, the build succeeds but the output can't run as a WebAssembly component.
 
 ### Handler
 
-Every WASI component has a single entry point — a function that the runtime calls for each incoming HTTP request. The function receives the full HTTP request and must return an HTTP response. Replace `src/lib.rs` with this handler:
+FastEdge calls a single function for every HTTP request — the component's entry point. In `wstd`, this is an async function marked with `#[wstd::http_server]`: the attribute tells the runtime which function to call, the function receives a `Request<Body>`, and it must return a `Response<Body>` wrapped in `anyhow::Result`.
+
+Replace `src/lib.rs`:
 
 ```rust
 use wstd::http::body::Body;
@@ -70,8 +72,6 @@ async fn main(request: Request<Body>) -> anyhow::Result<Response<Body>> {
 }
 ```
 
-The `#[wstd::http_server]` attribute registers this function as the entry point — without it, the runtime doesn't know which function to call. The function signature uses `Request<Body>` and `Response<Body>` from the standard `http` crate, with `wstd` providing the body implementation.
-
 `wstd` 0.6 requires the full generic form `Request<Body>` — omitting the type argument causes a compiler error.
 
 ### Build
@@ -86,7 +86,9 @@ The first build downloads and compiles all dependencies — expect one to two mi
 
 ### Deployment and testing
 
-Deploying to FastEdge requires two API calls — first upload the binary to get a binary ID, then create an app that references it. Both calls authenticate with a permanent [API token](/account-settings/api-tokens), so set it before running the commands:
+FastEdge separates binaries from apps: a binary is a compiled WebAssembly file stored on the platform, and an app is a named endpoint that references a binary. Deploying requires two API calls — upload the binary first to get an ID, then create the app using that ID.
+
+Both calls authenticate with a permanent [API token](/account-settings/api-tokens), so set it before running the commands:
 
 ```sh
 export GCORE_API_KEY="{YOUR_API_KEY}"
@@ -137,11 +139,11 @@ content-type: text/plain;charset=UTF-8
 Hello, you made a wasi request to http://my-hello-world-1000503.fastedge.app/test-path
 ```
 
-The full toolchain works. Now build something useful with it.
+The complete pipeline works. The next section adds outbound HTTP calls — the capability that turns a WASI component into a useful data-fetching layer.
 
 ## Fetch data from an external API
 
-While the first component only reads the request and returns a static response, WASI-HTTP's defining capability is making outbound HTTP requests from inside the handler — calling a live API, transforming the response, and returning the result to the caller. This component calls a REST API, takes the first five records from the response, and returns them as JSON.
+The first component demonstrates the basic request-response cycle, but it only operates on the incoming request. WASI-HTTP's key capability is that the handler can make outbound HTTP calls — reach out to any external service, transform the response, and return the result to the original caller. This component fetches a list of users from a public REST API and returns the first five as JSON.
 
 <Info>
 The examples use `jsonplaceholder.typicode.com`, a free placeholder API, as a stand-in for any REST endpoint. It is suitable for development and testing only — do not use it in production.
@@ -156,7 +158,7 @@ cargo new --lib outbound-fetch
 cd outbound-fetch
 ```
 
-The dependencies are almost identical to the first component — the only addition is `serde_json` for parsing and reshaping the upstream JSON response. Replace `Cargo.toml`:
+The configuration is identical to the first component, with one addition: `serde_json` for parsing the upstream API response. Replace `Cargo.toml`:
 
 ```toml
 [package]
@@ -173,7 +175,7 @@ anyhow = "1"
 serde_json = "1"
 ```
 
-No derive macros are needed — this example treats the response as an untyped `Value` tree, which avoids defining structs just to slice and reshape an existing JSON payload.
+This example uses `serde_json::Value` — an untyped JSON tree — rather than defining structs. For slicing and reshaping an existing JSON response, this avoids deserializing into types that exist only to be re-serialized.
 
 ### Handler
 
@@ -220,13 +222,13 @@ async fn main(_request: Request<Body>) -> anyhow::Result<Response<Body>> {
 }
 ```
 
-The code follows three patterns that appear in most WASI-HTTP components.
+Three patterns here appear in most WASI-HTTP components and are worth understanding before adapting this code to a real endpoint.
 
-`Client::new()` creates a WASI HTTP client that sends requests through the host runtime — not a native socket, so no system networking libraries are needed inside the component.
+Components run in a WebAssembly sandbox with no access to native sockets. `Client::new()` creates a client that routes requests through the WASI outbound-http interface — the host runtime handles the actual network call. The `await` on `client.send()` is real async: the handler yields while the upstream request is in flight.
 
-`upstream_resp.into_parts()` splits the response into its status/headers and an async body stream; `body.contents().await` then reads the full stream into memory before parsing. For responses that only need to be forwarded without inspection, the same split allows streaming the body without buffering it.
+The response body arrives as a stream. `upstream_resp.into_parts()` separates the response metadata from that stream, and `body.contents().await` reads it fully into memory as a byte slice before parsing. This is the right approach when the upstream response is small enough to buffer; for large responses that only need to be forwarded without transformation, the stream can be passed through directly without loading it into memory first.
 
-Every `?` propagates errors back through `anyhow::Result` — FastEdge converts a handler that returns `Err` into a 500 response, with the error message available in application logs rather than the response body.
+Every `?` in the handler propagates errors back through `anyhow::Result` — FastEdge converts any handler returning `Err` into a 500 response, with the error message written to application logs rather than the response body. This means errors stay server-side and never leak to the caller.
 
 ### Build
 
