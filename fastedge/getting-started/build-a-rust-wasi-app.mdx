@@ -1,22 +1,22 @@
 ---
-title: Build a Rust WASI-HTTP app
-sidebarTitle: Rust WASI-HTTP app
+title: Build Rust WASI-HTTP apps
+sidebarTitle: Rust WASI-HTTP apps
 ai-navigation: Build FastEdge Rust applications using the WASI-HTTP interface - from a hello-world component that verifies the toolchain to an app that fetches and shapes data from an external API.
 ---
 
-Build two FastEdge apps in Rust using the WASI-HTTP interface — a minimal component to verify the toolchain end-to-end, then a realistic app that makes outbound HTTP calls, transforms the response, and returns structured JSON. Both are deployed and tested against a live FastEdge environment in this guide.
+Build two FastEdge apps in Rust using the WASI-HTTP interface: a minimal hello-world component to verify the toolchain, and a realistic app that fetches live data from an external API and returns a shaped JSON response.
 
-WASI-HTTP is the HTTP interface from the WASI 0.2 standard. A component built with it has no dependency on the [Gcore Rust SDK](https://github.com/G-Core/FastEdge-sdk-rust) — the only runtime dependency is `wstd`, a lightweight async library that implements the standard WASI interfaces. The tradeoff is a slightly lower-level API in exchange for a smaller dependency surface and full portability of the component binary.
+WASI-HTTP is the HTTP interface from the WASI 0.2 standard. This approach does not require the [Gcore Rust SDK](https://github.com/G-Core/FastEdge-sdk-rust) — the only runtime dependency is `wstd`, a lightweight async library that implements the standard WASI interfaces.
 
 **Prerequisites:** [Rust and Cargo](https://rustup.rs). On Windows, also install [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022) with the **Desktop development with C++** workload.
 
 ## Hello world
 
-The fastest way to learn a new runtime is to get something running before explaining how it works. This component does one thing: read the request URL and echo it back. That is enough to walk through every step of the development loop — write, compile, upload, deploy, test.
+Before building something complex, it helps to verify the full toolchain works end-to-end: compile to WASI, upload, deploy, get a response. The hello-world component does one thing — it reads the request URL and echoes it back in the response body.
 
 ### Set up the project
 
-1. Add the `wasm32-wasip2` target to your Rust toolchain. This is a one-time step:
+1. Add the `wasm32-wasip2` compilation target. This is a one-time step:
 
    ```sh
    rustup target add wasm32-wasip2
@@ -82,11 +82,15 @@ The first build downloads and compiles all dependencies — expect one to two mi
 
 ### Deploy and test
 
-Deployment takes two API calls: upload the binary to get a binary ID, then create the app that references it. Set your [API token](/account-settings/api-tokens) first:
+Deployment requires two API calls: upload the binary, then create the app referencing the returned binary ID. Set your [API token](/account-settings/api-tokens) before running the commands:
 
 ```sh
 export GCORE_API_KEY="{YOUR_API_KEY}"
 ```
+
+<Warning>
+Do not commit API keys to source control.
+</Warning>
 
 **Upload the binary:**
 
@@ -101,20 +105,22 @@ curl -sX POST 'https://api.gcore.com/fastedge/v1/binaries/raw' \
 {"id": 4695, "api_type": "wasi-http", "status": 1}
 ```
 
-**Create the app** — replace `4695` with the `id` from the response above:
+**Create the app** — replace `4695` with the `id` from the response above. Your binary ID and app URL will differ from the examples here:
 
 ```sh
+export BINARY_ID=4695
+
 curl -sX POST 'https://api.gcore.com/fastedge/v1/apps' \
   -H "Authorization: APIKey $GCORE_API_KEY" \
   -H 'Content-Type: application/json' \
-  -d '{"name": "my-hello-world", "binary": 4695, "status": 1}'
+  -d "{\"name\": \"my-hello-world\", \"binary\": $BINARY_ID, \"status\": 1}"
 ```
 
 ```json
 {"name": "my-hello-world", "url": "https://my-hello-world-1000503.fastedge.app", "api_type": "wasi-http"}
 ```
 
-**Send a request.** The URL becomes active within a few seconds:
+**Test the app.** The URL becomes active within a few seconds:
 
 ```sh
 curl -i https://my-hello-world-1000503.fastedge.app/test-path
@@ -127,13 +133,17 @@ content-type: text/plain;charset=UTF-8
 Hello, you made a wasi request to http://my-hello-world-1000503.fastedge.app/test-path
 ```
 
-The full cycle works. Now build something useful with it.
+The full toolchain works. Now build something useful with it.
 
 ## Fetch data from an external API
 
-The hello-world component ignores the upstream world entirely — it reads the request and returns a static response. The defining capability of a WASI-HTTP component is the ability to make *outbound* HTTP requests from inside the handler: call a live API, transform what comes back, and return the result to the caller.
+The hello-world component ignores the upstream world — it reads the request and returns a static response. The defining capability of a WASI-HTTP component is the ability to make *outbound* HTTP requests from inside the handler: call a live API, transform what comes back, and return the result to the caller.
 
-This section builds a component that calls a public REST API, takes the first five records from the response, and returns them as JSON. The specific API (`jsonplaceholder.typicode.com`) is a free placeholder service — treat it as a stand-in for any JSON endpoint you'd call in production.
+This section builds a component that calls a REST API, takes the first five records from the response, and returns them as JSON.
+
+<Info>
+The examples use `jsonplaceholder.typicode.com`, a free placeholder API, as a stand-in for any REST endpoint. It is suitable for development and testing only — do not use it in production.
+</Info>
 
 ### Set up the project
 
@@ -161,7 +171,7 @@ anyhow = "1"
 serde_json = "1"
 ```
 
-The only addition over hello-world is `serde_json` for parsing and building JSON. No derive macros are needed — this example treats the response as an untyped value tree, which is the right choice when you're slicing and reshaping existing JSON rather than mapping it to your own types.
+The only addition over hello-world is `serde_json` for parsing and building JSON. No derive macros are needed — this example treats the response as an untyped value tree, which is the right choice when slicing and reshaping existing JSON rather than mapping it to your own types.
 
 ### Write the handler
 
@@ -188,7 +198,7 @@ async fn main(_request: Request<Body>) -> anyhow::Result<Response<Body>> {
         .await
         .map_err(|e| anyhow!("upstream request failed: {e}"))?;
 
-    // Split the response into headers and body, then read the full body
+    // Split the response and read the full body
     let (_, mut body) = upstream_resp.into_parts();
     let body_bytes = body.contents().await?;
 
@@ -213,13 +223,13 @@ async fn main(_request: Request<Body>) -> anyhow::Result<Response<Body>> {
 }
 ```
 
-Three patterns in this code are worth understanding before adapting it:
+Three patterns in this code are worth understanding before adapting it to a real endpoint:
 
-**`Client::new()` and `client.send()`** use `wstd`'s implementation of the WASI outbound-http interface. The request goes through the host runtime — no native networking code lives inside the component. The `await` here is real async: the handler yields while the upstream request is in flight, and other requests can be processed in the meantime.
+**`Client::new()` and `client.send()`** use `wstd`'s implementation of the WASI outbound-http interface. The request goes through the host runtime — no native networking code lives inside the component. The `await` is real async: the handler yields while the upstream request is in flight.
 
-**`upstream_resp.into_parts()`** is an `http` crate pattern that separates the response into a `Parts` struct (status, headers) and the body. WASI bodies are async streams. `body.contents().await` reads the full stream into a `Vec<u8>` before passing it to `serde_json`. For large upstream responses this buffers everything in memory — for a proxy that just forwards a stream, `into_parts` lets you forward the body without buffering it.
+**`upstream_resp.into_parts()`** splits the response into its status and headers (`Parts`) and an async body stream. `body.contents().await` reads the full stream into a byte slice before parsing. For a large upstream response this buffers everything in memory — if you only need to forward a stream rather than inspect it, the split lets you do that without buffering.
 
-**Error propagation with `?`:** every fallible operation short-circuits back through `anyhow::Result`. When the handler returns `Err`, FastEdge returns a 500 to the original caller. The error message appears in application logs, not in the response body.
+**Error propagation with `?`:** every fallible operation short-circuits back through `anyhow::Result`. FastEdge converts a handler that returns `Err` into a 500 response — the error message is available in application logs, not in the response body.
 
 ### Build
 
@@ -239,15 +249,23 @@ curl -sX POST 'https://api.gcore.com/fastedge/v1/binaries/raw' \
   -H "Authorization: APIKey $GCORE_API_KEY" \
   -H 'Content-Type: application/octet-stream' \
   --data-binary "@./target/wasm32-wasip2/release/outbound_fetch.wasm"
+```
 
-# Create the app — set BINARY_ID to the id from the upload response
+```json
+{"id": 4696, "api_type": "wasi-http", "status": 1}
+```
+
+```sh
+# Set BINARY_ID to the id from the upload response, then create the app
+export BINARY_ID=4696
+
 curl -sX POST 'https://api.gcore.com/fastedge/v1/apps' \
   -H "Authorization: APIKey $GCORE_API_KEY" \
   -H 'Content-Type: application/json' \
-  -d '{"name": "my-outbound-fetch", "binary": BINARY_ID, "status": 1}'
+  -d "{\"name\": \"my-outbound-fetch\", \"binary\": $BINARY_ID, \"status\": 1}"
 ```
 
-Test the deployed app:
+Test the deployed app — your URL will differ:
 
 ```sh
 curl https://my-outbound-fetch-1000503.fastedge.app/
@@ -273,10 +291,30 @@ The component fetches from the upstream API and returns a shaped response:
       "id": 2,
       "name": "Ervin Howell",
       "username": "Antonette",
-      "email": "Shanna@melissa.tv"
+      "email": "Shanna@melissa.tv",
+      "phone": "010-692-6593 x09125",
+      "website": "anastasia.net"
     }
   ]
 }
 ```
 
-**On latency:** the outbound call to `jsonplaceholder.typicode.com` happens on every request, from every edge node that handles traffic for this app. Response time includes the round-trip to that server from wherever the edge node is located. For data that changes infrequently, storing the upstream response in a [FastEdge KV store](/fastedge/kv-stores/manage-kv-store) eliminates that latency after the first fetch.
+**On latency:** the outbound call happens on every request, from every edge node that handles traffic for this app. For data that changes infrequently, storing the upstream response in a [FastEdge KV store](/fastedge/kv-stores/manage-kv-store) eliminates that per-request latency after the first fetch.
+
+## Clean up
+
+To delete an app, use its `id` from the create-app response:
+
+```sh
+curl -sX DELETE "https://api.gcore.com/fastedge/v1/apps/{APP_ID}" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+The binary is not deleted when the app is deleted. To delete the binary as well:
+
+```sh
+curl -sX DELETE "https://api.gcore.com/fastedge/v1/binaries/{BINARY_ID}" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+A binary referenced by an active application cannot be deleted — remove the app first.
