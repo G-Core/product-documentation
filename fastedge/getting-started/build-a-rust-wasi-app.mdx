@@ -6,19 +6,19 @@ ai-navigation: Build FastEdge Rust applications using the WASI-HTTP interface - 
 
 FastEdge runs applications as WebAssembly components — portable binaries that execute on a global edge network without servers or containers. These components use [WASI-HTTP](https://github.com/WebAssembly/WASI) to receive requests and call external services, and `wstd` is the Rust library that implements it — the only dependency a FastEdge app in Rust needs.
 
-A hello-world component verifies the full toolchain works end-to-end: compile, upload, deploy, get a response. A second, more realistic component calls an external REST API from inside the handler, transforms the response, and returns shaped JSON — demonstrating WASI-HTTP's defining capability.
+A minimal component verifies the full toolchain works end-to-end: compile, upload, deploy, get a response. A second, more realistic component then calls an external REST API from inside the handler, transforms the response, and returns shaped JSON — demonstrating WASI-HTTP's defining capability.
 
 [Rust and Cargo](https://rustup.rs) are required. On Windows, also install [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022) with the **Desktop development with C++** workload.
 
-## Hello world
+## Toolchain verification
 
-The hello-world component does one thing — it reads the request URL and echoes it back in the response body.
+Before writing a production component, verify the full chain works: compile Rust to WebAssembly, upload the binary to FastEdge, and confirm the response arrives. This component reads the request URL and echoes it back — just enough to confirm every step works.
 
 ### Project setup
 
-`wasm32-wasip2` is the Rust compilation target for WASI 0.2 components — add it once to the toolchain and it is available for every project.
+A WASI component in Rust is a library crate compiled to a specific WebAssembly target. Set up the project in three steps.
 
-1. Add the `wasm32-wasip2` target:
+1. Add the `wasm32-wasip2` compilation target to Rust. This is the target that produces WASI 0.2 compatible WebAssembly — without it, Cargo doesn't know how to build for FastEdge. It's a one-time step:
 
    ```sh
    rustup target add wasm32-wasip2
@@ -31,7 +31,7 @@ The hello-world component does one thing — it reads the request URL and echoes
    cd hello-world
    ```
 
-3. Open `Cargo.toml` and replace its contents with:
+3. A WASI component needs a specific Cargo configuration to produce a WebAssembly binary rather than a regular Rust library. Open `Cargo.toml` and replace its contents:
 
    ```toml
    [package]
@@ -47,11 +47,11 @@ The hello-world component does one thing — it reads the request URL and echoes
    anyhow = "1"
    ```
 
-   The `[lib]` section is what changes — `crate-type = ["cdylib"]` tells Cargo to produce a C-compatible dynamic library, the format required by the WASI component model, rather than a standard Rust library.
+   The `[package]` and `[dependencies]` sections are standard Cargo. The key difference is `[lib]`: `crate-type = ["cdylib"]` tells Cargo to produce a C-compatible dynamic library — the binary format the WASI component model requires. Without it, the build succeeds but produces a regular Rust library that can't run on FastEdge.
 
 ### Handler
 
-Replace `src/lib.rs` with:
+Every WASI component has a single entry point — a function that the runtime calls for each incoming HTTP request. The function receives the full HTTP request and must return an HTTP response. Replace `src/lib.rs` with this handler:
 
 ```rust
 use wstd::http::body::Body;
@@ -70,21 +70,23 @@ async fn main(request: Request<Body>) -> anyhow::Result<Response<Body>> {
 }
 ```
 
-The `#[wstd::http_server]` macro marks this function as the WASI-HTTP entry point — the runtime calls it for every incoming request. It receives a `Request<Body>` and returns a `Response<Body>`, using the standard `http` crate types with `wstd`'s body implementation.
+The `#[wstd::http_server]` attribute registers this function as the entry point — without it, the runtime doesn't know which function to call. The function signature uses `Request<Body>` and `Response<Body>` from the standard `http` crate, with `wstd` providing the body implementation.
 
 `wstd` 0.6 requires the full generic form `Request<Body>` — omitting the type argument causes a compiler error.
 
 ### Build
 
+Compile the component to WebAssembly:
+
 ```sh
 cargo build --release --target wasm32-wasip2
 ```
 
-The first build downloads and compiles all dependencies — expect one to two minutes — and produces the binary at `./target/wasm32-wasip2/release/hello_world.wasm`.
+The first build downloads and compiles all dependencies — expect one to two minutes. The output binary is at `./target/wasm32-wasip2/release/hello_world.wasm`.
 
 ### Deployment and testing
 
-Deployment requires two API calls — upload the binary, then create the app using the returned binary ID. Both calls authenticate with a permanent [API token](/account-settings/api-tokens), so set it as an environment variable first:
+Deploying to FastEdge requires two API calls — first upload the binary to get a binary ID, then create an app that references it. Both calls authenticate with a permanent [API token](/account-settings/api-tokens), so set it before running the commands:
 
 ```sh
 export GCORE_API_KEY="{YOUR_API_KEY}"
@@ -94,7 +96,7 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 Do not commit API keys to source control.
 </Warning>
 
-Upload the binary to get back a binary ID:
+Upload the binary:
 
 ```sh
 curl -sX POST 'https://api.gcore.com/fastedge/v1/binaries/raw' \
@@ -107,7 +109,7 @@ curl -sX POST 'https://api.gcore.com/fastedge/v1/binaries/raw' \
 {"id": 4695, "api_type": "wasi-http", "status": 1}
 ```
 
-Pass that `id` to create the app. The binary ID and app URL in the examples below will differ from the ones returned by the upload:
+Use the `id` from the upload response to create the app. The binary ID and app URL in the examples below will differ from the ones returned by the upload:
 
 ```sh
 export BINARY_ID=4695
@@ -139,7 +141,7 @@ The full toolchain works. Now build something useful with it.
 
 ## Fetch data from an external API
 
-While the hello-world component only returns a static response, WASI-HTTP's defining capability is making outbound HTTP requests from inside the handler — calling a live API, transforming the response, and returning the result to the caller. This component calls a REST API, takes the first five records from the response, and returns them as JSON.
+While the first component only reads the request and returns a static response, WASI-HTTP's defining capability is making outbound HTTP requests from inside the handler — calling a live API, transforming the response, and returning the result to the caller. This component calls a REST API, takes the first five records from the response, and returns them as JSON.
 
 <Info>
 The examples use `jsonplaceholder.typicode.com`, a free placeholder API, as a stand-in for any REST endpoint. It is suitable for development and testing only — do not use it in production.
@@ -154,7 +156,7 @@ cargo new --lib outbound-fetch
 cd outbound-fetch
 ```
 
-The dependencies are almost identical to hello-world — the only addition is `serde_json` for parsing and building JSON. Replace `Cargo.toml`:
+The dependencies are almost identical to the first component — the only addition is `serde_json` for parsing and reshaping the upstream JSON response. Replace `Cargo.toml`:
 
 ```toml
 [package]
@@ -185,24 +187,19 @@ use serde_json::{json, Value};
 
 #[wstd::http_server]
 async fn main(_request: Request<Body>) -> anyhow::Result<Response<Body>> {
-    // Build the outbound request to the upstream API
     let upstream_req = Request::get("http://jsonplaceholder.typicode.com/users")
         .body(Body::empty())
         .map_err(|e| anyhow!("failed to build request: {e}"))?;
 
-    // Send it — this goes through the WASI outbound-http interface,
-    // not a native socket
     let client = Client::new();
     let upstream_resp = client
         .send(upstream_req)
         .await
         .map_err(|e| anyhow!("upstream request failed: {e}"))?;
 
-    // Split the response and read the full body
     let (_, mut body) = upstream_resp.into_parts();
     let body_bytes = body.contents().await?;
 
-    // Parse the JSON, take the first 5 users, and shape the response
     let users: Value = serde_json::from_slice(body_bytes)?;
     let sliced = match users.as_array() {
         Some(arr) => Value::Array(arr.iter().take(5).cloned().collect()),
@@ -241,10 +238,9 @@ The output binary is at `./target/wasm32-wasip2/release/outbound_fetch.wasm`.
 
 ### Deployment and testing
 
-Upload and deploy using the same pattern as hello-world:
+Upload and deploy using the same pattern as the first component:
 
 ```sh
-# Upload the binary
 curl -sX POST 'https://api.gcore.com/fastedge/v1/binaries/raw' \
   -H "Authorization: APIKey $GCORE_API_KEY" \
   -H 'Content-Type: application/octet-stream' \
@@ -256,7 +252,6 @@ curl -sX POST 'https://api.gcore.com/fastedge/v1/binaries/raw' \
 ```
 
 ```sh
-# Set BINARY_ID to the id from the upload response, then create the app
 export BINARY_ID=4696
 
 curl -sX POST 'https://api.gcore.com/fastedge/v1/apps' \
