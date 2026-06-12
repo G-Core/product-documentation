@@ -8,13 +8,13 @@ Build two FastEdge apps in Rust using the WASI-HTTP interface: a minimal hello-w
 
 WASI-HTTP is the HTTP interface from the WASI 0.2 standard. The only runtime dependency is `wstd`, a lightweight async library that implements the standard WASI interfaces.
 
-**Prerequisites:** [Rust and Cargo](https://rustup.rs). On Windows, also install [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022) with the **Desktop development with C++** workload.
+[Rust and Cargo](https://rustup.rs) are required. On Windows, also install [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022) with the **Desktop development with C++** workload.
 
 ## Hello world
 
 Before building something complex, it helps to verify the full toolchain works end-to-end: compile to WASI, upload, deploy, get a response. The hello-world component does one thing — it reads the request URL and echoes it back in the response body.
 
-### Set up the project
+### Project setup
 
 1. Add the `wasm32-wasip2` compilation target. This is a one-time step:
 
@@ -47,7 +47,7 @@ Before building something complex, it helps to verify the full toolchain works e
 
    The `[lib]` section is what changes. `crate-type = ["cdylib"]` tells Cargo to produce a C-compatible dynamic library — the format required by the WASI component model. Without it, Cargo builds a standard Rust library that cannot run as a WebAssembly component.
 
-### Write the handler
+### Handler
 
 Replace `src/lib.rs` with:
 
@@ -80,9 +80,9 @@ cargo build --release --target wasm32-wasip2
 
 The first build downloads and compiles all dependencies — expect one to two minutes. The output binary is at `./target/wasm32-wasip2/release/hello_world.wasm`.
 
-### Deploy and test
+### Deployment and testing
 
-Deployment requires two API calls: upload the binary, then create the app referencing the returned binary ID. Set your [API token](/account-settings/api-tokens) before running the commands:
+Deployment requires two API calls: upload the binary, then create the app referencing the returned binary ID. A permanent [API token](/account-settings/api-tokens) is required:
 
 ```sh
 export GCORE_API_KEY="{YOUR_API_KEY}"
@@ -92,7 +92,7 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 Do not commit API keys to source control.
 </Warning>
 
-**Upload the binary:**
+Upload the binary:
 
 ```sh
 curl -sX POST 'https://api.gcore.com/fastedge/v1/binaries/raw' \
@@ -105,7 +105,7 @@ curl -sX POST 'https://api.gcore.com/fastedge/v1/binaries/raw' \
 {"id": 4695, "api_type": "wasi-http", "status": 1}
 ```
 
-**Create the app** — replace `4695` with the `id` from the response above. Your binary ID and app URL will differ from the examples here:
+Create the app — replace `4695` with the `id` from the upload response. The binary ID and app URL will differ from the examples here:
 
 ```sh
 export BINARY_ID=4695
@@ -120,7 +120,7 @@ curl -sX POST 'https://api.gcore.com/fastedge/v1/apps' \
 {"name": "my-hello-world", "url": "https://my-hello-world-1000503.fastedge.app", "api_type": "wasi-http"}
 ```
 
-**Test the app.** The URL becomes active within a few seconds:
+The URL becomes active within a few seconds. Send a request to confirm the handler is running:
 
 ```sh
 curl -i https://my-hello-world-1000503.fastedge.app/test-path
@@ -137,15 +137,15 @@ The full toolchain works. Now build something useful with it.
 
 ## Fetch data from an external API
 
-The hello-world component ignores the upstream world — it reads the request and returns a static response. The defining capability of a WASI-HTTP component is the ability to make *outbound* HTTP requests from inside the handler: call a live API, transform what comes back, and return the result to the caller.
+The hello-world component only reads the request and returns a static response, while WASI-HTTP's defining capability is making outbound HTTP requests from inside the handler — calling a live API, transforming the response, and returning the result to the caller.
 
-This section builds a component that calls a REST API, takes the first five records from the response, and returns them as JSON.
+The component in this section calls a REST API, takes the first five records from the response, and returns them as JSON.
 
 <Info>
 The examples use `jsonplaceholder.typicode.com`, a free placeholder API, as a stand-in for any REST endpoint. It is suitable for development and testing only — do not use it in production.
 </Info>
 
-### Set up the project
+### Project setup
 
 Create a separate project for this component:
 
@@ -173,7 +173,7 @@ serde_json = "1"
 
 The only addition over hello-world is `serde_json` for parsing and building JSON. No derive macros are needed — this example treats the response as an untyped value tree, which is the right choice when slicing and reshaping existing JSON rather than mapping it to your own types.
 
-### Write the handler
+### Handler
 
 Replace `src/lib.rs`:
 
@@ -223,13 +223,13 @@ async fn main(_request: Request<Body>) -> anyhow::Result<Response<Body>> {
 }
 ```
 
-Three patterns in this code are worth understanding before adapting it to a real endpoint:
+Three patterns in this code are worth understanding before adapting it to a real endpoint.
 
-**`Client::new()` and `client.send()`** use `wstd`'s implementation of the WASI outbound-http interface. The request goes through the host runtime — no native networking code lives inside the component. The `await` is real async: the handler yields while the upstream request is in flight.
+`Client::new()` creates a WASI HTTP client — not a native socket, but an implementation of the outbound-http WASI interface. It runs inside the WebAssembly component, with all networking handled by the host runtime.
 
-**`upstream_resp.into_parts()`** splits the response into its status and headers (`Parts`) and an async body stream. `body.contents().await` reads the full stream into a byte slice before parsing. For a large upstream response this buffers everything in memory — if you only need to forward a stream rather than inspect it, the split lets you do that without buffering.
+`upstream_resp.into_parts()` splits the response into its status/headers and an async body stream. `body.contents().await` reads the full stream into a byte slice before parsing — for large upstream responses this buffers everything in memory. When forwarding a stream without inspecting it, the split lets you pass the body through without buffering.
 
-**Error propagation with `?`:** every fallible operation short-circuits back through `anyhow::Result`. FastEdge converts a handler that returns `Err` into a 500 response — the error message is available in application logs, not in the response body.
+Every `?` propagates errors back through `anyhow::Result`. FastEdge converts a handler that returns `Err` into a 500 response — the error message is available in application logs, not in the response body.
 
 ### Build
 
@@ -239,7 +239,7 @@ cargo build --release --target wasm32-wasip2
 
 Output: `./target/wasm32-wasip2/release/outbound_fetch.wasm`.
 
-### Deploy and test
+### Deployment and testing
 
 Upload and deploy using the same pattern as hello-world:
 
@@ -265,7 +265,7 @@ curl -sX POST 'https://api.gcore.com/fastedge/v1/apps' \
   -d "{\"name\": \"my-outbound-fetch\", \"binary\": $BINARY_ID, \"status\": 1}"
 ```
 
-Test the deployed app — your URL will differ:
+The URL from the create-app response becomes active within a few seconds:
 
 ```sh
 curl https://my-outbound-fetch-1000503.fastedge.app/
@@ -299,7 +299,7 @@ The component fetches from the upstream API and returns a shaped response:
 }
 ```
 
-**On latency:** the outbound call happens on every request, from every edge node that handles traffic for this app. For data that changes infrequently, storing the upstream response in a [FastEdge KV store](/fastedge/kv-stores/manage-kv-store) eliminates that per-request latency after the first fetch.
+The outbound call happens on every request, from every edge node that handles traffic for this app. For data that changes infrequently, storing the upstream response in a [FastEdge KV store](/fastedge/kv-stores/manage-kv-store) eliminates that per-request latency after the first fetch.
 
 ## Clean up
 
