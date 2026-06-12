@@ -4,21 +4,25 @@ sidebarTitle: Rust WASI-HTTP apps
 ai-navigation: Build FastEdge Rust applications using the WASI-HTTP interface - from a hello-world component that verifies the toolchain to an app that fetches and shapes data from an external API.
 ---
 
-FastEdge runs applications as WebAssembly components — portable binaries that execute on a global edge network without servers or containers. These components use [WASI-HTTP](https://github.com/WebAssembly/WASI) to receive requests and call external services, and `wstd` is the Rust library that implements it — the only dependency a FastEdge app in Rust needs.
+FastEdge runs applications as WebAssembly components — libraries that export a single entry-point function and execute on a global edge network without servers or containers. These components use [WASI-HTTP](https://github.com/WebAssembly/WASI) to receive requests and call external services, and `wstd` is the Rust library that implements it — the only dependency a FastEdge app in Rust needs.
 
-Two components are built here. The first verifies that the full toolchain works: compile to WebAssembly, upload, deploy, get a response. The second adds what makes WASI-HTTP genuinely useful: the ability to call external services from inside the handler and transform what comes back.
+By the end of this guide:
 
-[Rust and Cargo](https://rustup.rs) are required. On Windows, also install [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022) with the **Desktop development with C++** workload.
+- A Rust component compiles to WebAssembly and deploys to FastEdge
+- Incoming HTTP requests are handled and a response is returned
+- A second component calls an external REST API from inside the handler, transforms the response, and returns shaped JSON
+
+[Rust and Cargo](https://rustup.rs) are required. On Windows, Rust dependencies require native compilation tools — install [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022) with the **Desktop development with C++** workload.
 
 ## Toolchain verification
 
-A FastEdge app is a WebAssembly component — a library that exports a single entry-point function rather than running as a standalone program. Before writing a production component, it helps to confirm that every step in the pipeline works: the compiler produces a valid binary, the binary uploads successfully, and the deployed app returns a response. This component reads the request URL and echoes it back — minimal code, but it exercises the complete chain.
+This component reads the request URL and echoes it back: minimal code, but enough to exercise the complete build-upload-deploy pipeline.
 
 ### Project setup
 
 Rust builds libraries with `cargo new --lib`. Before that project can compile to a WebAssembly component, two things need to be in place: a compilation target that tells Rust which platform to target, and a Cargo configuration that changes the output format to something the WASI runtime can load.
 
-1. Add the `wasm32-wasip2` compilation target. This is the target that produces WASI 0.2 WebAssembly — without it, Cargo doesn't know how to build for FastEdge. It's a one-time step:
+1. Add the `wasm32-wasip2` compilation target — without it, Cargo can't produce a WebAssembly component compatible with FastEdge. It's a one-time step:
 
    ```sh
    rustup target add wasm32-wasip2
@@ -53,7 +57,7 @@ Rust builds libraries with `cargo new --lib`. Before that project can compile to
 
 FastEdge calls a single function for every HTTP request — the component's entry point. In `wstd`, this is an async function marked with `#[wstd::http_server]`: the attribute tells the runtime which function to call, the function receives a `Request<Body>`, and it must return a `Response<Body>` wrapped in `anyhow::Result`.
 
-Replace `src/lib.rs`:
+`cargo new --lib` generates a default `src/lib.rs` with placeholder code — replace it with the actual handler:
 
 ```rust
 use wstd::http::body::Body;
@@ -72,8 +76,6 @@ async fn main(request: Request<Body>) -> anyhow::Result<Response<Body>> {
 }
 ```
 
-`wstd` 0.6 requires the full generic form `Request<Body>` — omitting the type argument causes a compiler error.
-
 ### Build
 
 Compile the component to WebAssembly:
@@ -82,7 +84,7 @@ Compile the component to WebAssembly:
 cargo build --release --target wasm32-wasip2
 ```
 
-The first build downloads and compiles all dependencies — expect one to two minutes. The output binary is at `./target/wasm32-wasip2/release/hello_world.wasm`.
+The first build downloads and compiles all dependencies, so expect it to take one to two minutes. Once it completes, Cargo writes the compiled component to `./target/wasm32-wasip2/release/hello_world.wasm`.
 
 ### Deployment and testing
 
@@ -179,7 +181,7 @@ This example uses `serde_json::Value` — an untyped JSON tree — rather than d
 
 ### Handler
 
-Replace `src/lib.rs`:
+The handler follows the same request-response pattern as the first example, but adds an outbound HTTP call and JSON transformation. Replace `src/lib.rs`:
 
 ```rust
 use anyhow::anyhow;
@@ -232,11 +234,13 @@ Every `?` in the handler propagates errors back through `anyhow::Result` — Fas
 
 ### Build
 
+Compile the component using the same command as before:
+
 ```sh
 cargo build --release --target wasm32-wasip2
 ```
 
-The output binary is at `./target/wasm32-wasip2/release/outbound_fetch.wasm`.
+Once it completes, Cargo writes the compiled component to `./target/wasm32-wasip2/release/outbound_fetch.wasm`.
 
 ### Deployment and testing
 
@@ -253,6 +257,8 @@ curl -sX POST 'https://api.gcore.com/fastedge/v1/binaries/raw' \
 {"id": 4696, "api_type": "wasi-http", "status": 1}
 ```
 
+Save the returned `id` and use it to create the app:
+
 ```sh
 export BINARY_ID=4696
 
@@ -268,7 +274,7 @@ The URL from the create-app response becomes active within a few seconds:
 curl https://my-outbound-fetch-1000503.fastedge.app/
 ```
 
-The component fetches from the upstream API and returns a shaped response:
+The component fetches from the upstream API, takes the first five users from the response, and returns them as a shaped JSON payload:
 
 ```json
 {
