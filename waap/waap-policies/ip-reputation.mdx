@@ -1,8 +1,13 @@
 ﻿---
 title: "IP reputation"
 sidebarTitle: IP reputation
-ai-navigation: Configure IP Reputation rules in Gcore WAAP to block, challenge, or allow traffic from malicious IPs, TOR networks, proxy networks, hosting services, VPNs, bot traffic, suspicious NAT ranges, and external reputation blocklists using JavaScript validation policies.
+ai-navigation: Configure IP Reputation policies in Gcore WAAP via Customer Portal or REST API to enable or disable traffic filtering for TOR networks, proxies, hosting services, VPNs, bots, suspicious NAT ranges, external blocklists, and CDNs.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
 
 Gcore WAAP protects your web application by blocking traffic from well-known malicious IP addresses. 
 
@@ -71,3 +76,181 @@ The IPs on this list are known to be malicious or spam. When an IP with a negati
 
 Organic human traffic is unlikely to originate from IP spaces belonging to CDN companies. When such traffic is detected, validate it using JavaScript.
 
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+<p>IP Reputation policies filter incoming traffic based on the reputation of the source IP address. Each policy targets a specific category — TOR exit nodes, proxies, VPNs, hosting services, CDNs, bots, suspicious NAT ranges, and external blocklists — and applies either a block or JavaScript challenge action when triggered. Most policies are enabled by default; Traffic via TOR network is disabled.</p>
+
+<Info>
+A permanent [API token](/account-settings/api-tokens) is required, along with the ID of a [WAAP-protected domain](/waap/getting-started/configure-waap-for-a-domain) and the [Python](/developer-tools/sdks/python) or [Go](/developer-tools/sdks/go) SDK installed for SDK examples. This policy group is available on the Pro and Enterprise WAAP plans.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
+```
+
+## View policy states
+
+<p>Retrieve the current mode of all IP Reputation policies for a domain.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    rule_sets = client.waap.domains.list_rule_sets(domain_id)
+    ip_rep = next(
+        rs for rs in rule_sets if rs.resource_slug == "ip-reputation"
+    )
+
+    for policy in ip_rep.rules:
+        status = "enabled" if policy.mode else "disabled"
+        print(f"{policy.name}: {status} ({policy.id})")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        ruleSets, _ := client.Waap.Domains.ListRuleSets(context.Background(), domainID)
+        for _, rs := range ruleSets {
+            if rs.ResourceSlug == "ip-reputation" {
+                for _, policy := range rs.Rules {
+                    status := "disabled"
+                    if policy.Mode {
+                        status = "enabled"
+                    }
+                    fmt.Printf("%s: %s (%s)\n", policy.Name, status, policy.ID)
+                }
+            }
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X GET "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/rule-sets" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      | jq '.[] | select(.resource_slug == "ip-reputation") | .rules[] | {name, id, mode}'
+    ```
+  </Tab>
+</Tabs>
+
+<p>The API returns all 8 policies in the group. `mode: true` means enabled; `mode: false` means disabled.</p>
+
+## Toggle a policy
+
+<p>Switch a policy between enabled and disabled. Each call flips the current mode. Use the policy ID from the Policy reference table or the View policy states response.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    # Find the policy ID by name
+    rule_sets = client.waap.domains.list_rule_sets(domain_id)
+    ip_rep = next(
+        rs for rs in rule_sets if rs.resource_slug == "ip-reputation"
+    )
+    policy = next(r for r in ip_rep.rules if r.name == "Traffic via TOR network")
+
+    result = client.waap.domains.policies.toggle(policy.id, domain_id=domain_id)
+    status = "enabled" if result.mode else "disabled"
+    print(f"Traffic via TOR network is now {status}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        // Find the policy ID by name
+        ruleSets, _ := client.Waap.Domains.ListRuleSets(context.Background(), domainID)
+        var policyID string
+        for _, rs := range ruleSets {
+            if rs.ResourceSlug == "ip-reputation" {
+                for _, p := range rs.Rules {
+                    if p.Name == "Traffic via TOR network" {
+                        policyID = p.ID
+                    }
+                }
+            }
+        }
+
+        result, _ := client.Waap.Domains.Policies.Toggle(context.Background(), policyID, domainID)
+        status := "disabled"
+        if result.Mode {
+            status = "enabled"
+        }
+        fmt.Printf("Traffic via TOR network is now %s\n", status)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # Set POLICY_ID to the policy ID from the View policy states response
+    export POLICY_ID="{POLICY_ID}"
+
+    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/policies/${POLICY_ID}/toggle" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+  </Tab>
+</Tabs>
+
+<p>The API returns the updated policy object. `mode: true` confirms the policy is now enabled; `mode: false` confirms disabled.</p>
+
+```json
+{"mode": true}
+```
+
+## Policy reference
+
+| Policy | Purpose | ID | Default state |
+|---|---|---|---|
+| Traffic via TOR network | Blocks traffic from TOR exit nodes, commonly used to anonymize malicious activity. | `S3008894` | Disabled |
+| Traffic via proxy networks | Challenges traffic from known proxy providers via JavaScript validation. | `S3008895` | Enabled |
+| Traffic from hosting services | Challenges traffic from hosting and commercial cloud provider IP ranges via JavaScript validation. | `S3008896` | Enabled |
+| Traffic via VPNs | Challenges traffic from VPN provider IP ranges via JavaScript validation. | `S3008897` | Enabled |
+| Bot traffic | Challenges traffic from IP addresses associated with malicious automated activity via JavaScript validation. | `S3008898` | Enabled |
+| Traffic from suspicious NAT ranges | Challenges traffic from high-risk NAT ranges identified by machine learning via JavaScript validation. | `S3008938` | Enabled |
+| External reputation block list | Challenges traffic from IPs on external malicious and spam reputation lists via JavaScript validation. | `S3008950` | Enabled |
+| Traffic via CDNs | Challenges traffic originating from CDN provider IP ranges via JavaScript validation. | `S3008974` | Enabled |
+
+</MethodSection>
+</MethodSwitch>
