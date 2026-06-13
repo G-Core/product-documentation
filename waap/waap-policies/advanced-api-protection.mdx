@@ -1,8 +1,13 @@
 ﻿---
 title: "Advanced API protection"
 sidebarTitle: Advanced API protection
-ai-navigation: Configure Advanced API protection policies in WAAP including Auth token protection, Sensitive data exposure, Invalid API traffic, and API-level authorization rules via the Gcore Customer Portal for Enterprise plan domains.
+ai-navigation: Configure Advanced API Protection policies in Gcore WAAP via Customer Portal or REST API to enable auth token protection, sensitive data exposure blocking, invalid API traffic filtering, API-level authorization, and non-baselined request blocking for Enterprise plan domains.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
 
 Our WAAP includes a pre-defined Advanced API protection policy group with multiple policies, allowing you to securely manage your API traffic and protect against unwanted or abusive usage of APIs. 
 
@@ -67,3 +72,181 @@ Enable a positive security policy that blocks requests to endpoints that aren't 
 
 
 You can also add endpoints to the [API baseline](/waap/api-discovery-and-protection/api-discovery#api-baseline) if you don't want to perform a network or API specification file scan.
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+<p>Advanced API Protection policies defend against API-specific threats: token abuse, sensitive data leakage in responses, malformed JSON requests, unauthorized endpoint access, and requests to undocumented API endpoints. Before enabling these policies, [configure API access with reserved tags](/waap/api-discovery-and-protection/configure-api-access-with-reserved-tags) — without that configuration the policies have no effect. All policies are disabled by default.</p>
+
+<Info>
+A permanent [API token](/account-settings/api-tokens) is required, along with the ID of a [WAAP-protected domain](/waap/getting-started/configure-waap-for-a-domain) and the [Python](/developer-tools/sdks/python) or [Go](/developer-tools/sdks/go) SDK installed for SDK examples. This policy group is available on the Enterprise WAAP plan only.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
+```
+
+## View policy states
+
+<p>Retrieve the current mode of all Advanced API Protection policies for a domain.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    rule_sets = client.waap.domains.list_rule_sets(domain_id)
+    adv_set = next(
+        rs for rs in rule_sets if rs.resource_slug == "advanced-api-protection"
+    )
+
+    for policy in adv_set.rules:
+        status = "enabled" if policy.mode else "disabled"
+        print(f"{policy.name}: {status} ({policy.id})")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        ruleSets, _ := client.Waap.Domains.ListRuleSets(context.Background(), domainID)
+        for _, rs := range ruleSets {
+            if rs.ResourceSlug == "advanced-api-protection" {
+                for _, policy := range rs.Rules {
+                    status := "disabled"
+                    if policy.Mode {
+                        status = "enabled"
+                    }
+                    fmt.Printf("%s: %s (%s)\n", policy.Name, status, policy.ID)
+                }
+            }
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X GET "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/rule-sets" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      | jq '.[] | select(.resource_slug == "advanced-api-protection") | .rules[] | {name, id, mode}'
+    ```
+  </Tab>
+</Tabs>
+
+<p>The API returns all 7 policies in the group. `mode: true` means enabled; `mode: false` means disabled.</p>
+
+## Toggle a policy
+
+<p>Switch a policy between enabled and disabled. Each call flips the current mode. Use the policy ID from the Policy reference table or the View policy states response.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    # Find the policy ID by name
+    rule_sets = client.waap.domains.list_rule_sets(domain_id)
+    adv_set = next(
+        rs for rs in rule_sets if rs.resource_slug == "advanced-api-protection"
+    )
+    policy = next(r for r in adv_set.rules if r.name == "Auth token protection")
+
+    result = client.waap.domains.policies.toggle(policy.id, domain_id=domain_id)
+    status = "enabled" if result.mode else "disabled"
+    print(f"Auth token protection is now {status}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        // Find the policy ID by name
+        ruleSets, _ := client.Waap.Domains.ListRuleSets(context.Background(), domainID)
+        var policyID string
+        for _, rs := range ruleSets {
+            if rs.ResourceSlug == "advanced-api-protection" {
+                for _, p := range rs.Rules {
+                    if p.Name == "Auth token protection" {
+                        policyID = p.ID
+                    }
+                }
+            }
+        }
+
+        result, _ := client.Waap.Domains.Policies.Toggle(context.Background(), policyID, domainID)
+        status := "disabled"
+        if result.Mode {
+            status = "enabled"
+        }
+        fmt.Printf("Auth token protection is now %s\n", status)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # Set POLICY_ID to the policy ID from the Policy reference or View policy states response
+    export POLICY_ID="{POLICY_ID}"
+
+    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/policies/${POLICY_ID}/toggle" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+  </Tab>
+</Tabs>
+
+<p>The API returns the updated policy object. `mode: true` confirms the policy is now enabled; `mode: false` confirms disabled.</p>
+
+```json
+{"mode": true}
+```
+
+## Policy reference
+
+| Policy | Purpose | ID | Default state |
+|---|---|---|---|
+| Service protocol validation | Blocks clients that attempt to interfere with internal service calls. | `S3008978` | Disabled |
+| Prevent malformed request methods | Enforces HTTP RFC requirements for how clients interact with the server. | `S3008980` | Disabled |
+| Auth token protection | Blocks users who make repeated failed attempts to authenticate with invalid tokens. | `S3008984` | Disabled |
+| Sensitive data exposure | Blocks API responses that contain PII such as phone numbers, SSNs, email addresses, or credit card numbers. | `S3008985` | Disabled |
+| Invalid API traffic | Blocks API requests that do not conform to a valid JSON structure. | `S3008986` | Disabled |
+| API-level authorization | Blocks requests to admin or privileged endpoints from users not tagged as admin or privileged. | `S3008987` | Disabled |
+| Non-baselined API requests | Blocks requests to API endpoints that are not part of the defined API baseline. | `S3008988` | Disabled |
+
+</MethodSection>
+</MethodSwitch>
