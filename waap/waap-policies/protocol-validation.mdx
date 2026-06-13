@@ -1,10 +1,21 @@
 ﻿---
 title: "Protocol validation"
 sidebarTitle: Protocol validation
-ai-navigation: Configure protocol validation rules in Gcore WAAP Bot Management to block non-compliant HTTP and HTTPS requests, including invalid user agents, malformed request methods, service protocol tampering, and requests violating HTTP RFC standards.
+ai-navigation: Configure Protocol Validation policies in Gcore WAAP via Customer Portal or REST API to block clients that tamper with service calls or send malformed HTTP requests that violate RFC standards.
 ---
 
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
+
 The protocol validation policy group verifies the HTTP and HTTPS protocols used by clients to request content from your website's origin server. If the request meets the protocol-specific requirements, the transaction is allowed, while all non-compliant transactions are blocked. 
+
+<Info>
+**Info**
+
+Bot Management, which includes this policy group, is available in the Pro and Enterprise plans. More details on the [Security pricing page](https://gcore.com/pricing/security#waap).
+</Info>
 
 ## Configure protocol validation rules
 
@@ -30,3 +41,167 @@ Block clients that try to interfere with the service's internal calls, such as t
 ### Prevent malformed request methods
 
 Enforce HTTP RFC requirements that define how the client is supposed to interact with the server. If the requests don't meet the RFC standards, the client will be challenged with CAPTCHA or JavaScript validation. Clients that fail to pass the validation will be blocked.
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+<p>Protocol Validation policies block HTTP requests that violate protocol standards: one policy targets clients that tamper with internal service calls, the other enforces HTTP RFC compliance. Both policies are enabled by default.</p>
+
+<Info>
+A permanent [API token](/account-settings/api-tokens) is required, along with the ID of a [WAAP-protected domain](/waap/getting-started/configure-waap-for-a-domain) and the [Python](/developer-tools/sdks/python) or [Go](/developer-tools/sdks/go) SDK installed for SDK examples. Bot Management, which includes this policy group, is available on the Pro and Enterprise WAAP plans.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
+```
+
+## View policy states
+
+<p>Retrieve the current mode of the Protocol Validation policies for a domain. In the API, these policies are part of the `advanced-api-protection` rule set.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    rule_sets = client.waap.domains.list_rule_sets(domain_id)
+    adv_set = next(
+        rs for rs in rule_sets if rs.resource_slug == "advanced-api-protection"
+    )
+
+    protocol_ids = {"S3008978", "S3008980"}
+    for policy in adv_set.rules:
+        if policy.id in protocol_ids:
+            status = "enabled" if policy.mode else "disabled"
+            print(f"{policy.name}: {status} ({policy.id})")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        protocolIDs := map[string]bool{"S3008978": true, "S3008980": true}
+
+        ruleSets, _ := client.Waap.Domains.ListRuleSets(context.Background(), domainID)
+        for _, rs := range ruleSets {
+            if rs.ResourceSlug == "advanced-api-protection" {
+                for _, policy := range rs.Rules {
+                    if protocolIDs[policy.ID] {
+                        status := "disabled"
+                        if policy.Mode {
+                            status = "enabled"
+                        }
+                        fmt.Printf("%s: %s (%s)\n", policy.Name, status, policy.ID)
+                    }
+                }
+            }
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X GET "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/rule-sets" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      | jq '.[] | select(.resource_slug == "advanced-api-protection") | .rules[] | select(.id == "S3008978" or .id == "S3008980") | {name, id, mode}'
+    ```
+  </Tab>
+</Tabs>
+
+<p>The API returns the two Protocol Validation policies. `mode: true` means enabled; `mode: false` means disabled.</p>
+
+## Toggle a policy
+
+<p>Switch a policy between enabled and disabled. Each call flips the current mode.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    # Toggle Service protocol validation (S3008978)
+    # Replace with S3008980 for Prevent malformed request methods
+    result = client.waap.domains.policies.toggle("S3008978", domain_id=domain_id)
+    status = "enabled" if result.mode else "disabled"
+    print(f"Service protocol validation is now {status}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        // Toggle Service protocol validation (S3008978)
+        // Replace with S3008980 for Prevent malformed request methods
+        result, _ := client.Waap.Domains.Policies.Toggle(context.Background(), "S3008978", domainID)
+        status := "disabled"
+        if result.Mode {
+            status = "enabled"
+        }
+        fmt.Printf("Service protocol validation is now %s\n", status)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # S3008978 = Service protocol validation
+    # S3008980 = Prevent malformed request methods
+    export POLICY_ID="S3008978"
+
+    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/policies/${POLICY_ID}/toggle" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+  </Tab>
+</Tabs>
+
+<p>The API returns the updated policy object. `mode: true` confirms the policy is now enabled; `mode: false` confirms disabled.</p>
+
+```json
+{"mode": true}
+```
+
+## Policy reference
+
+| Policy | Purpose | ID | Default state |
+|---|---|---|---|
+| Service protocol validation | Blocks clients that attempt to tamper with internal service calls, such as manipulating cookies or request headers. | `S3008978` | Enabled |
+| Prevent malformed request methods | Blocks or challenges clients whose requests do not conform to HTTP RFC standards. | `S3008980` | Enabled |
+
+</MethodSection>
+</MethodSwitch>
