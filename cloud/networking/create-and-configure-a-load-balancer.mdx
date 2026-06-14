@@ -995,23 +995,23 @@ resource "gcore_cloud_load_balancer" "example" {
 | `name` | Yes | Display name of the listener. |
 | `protocol` | Yes | Traffic protocol. Values: `HTTP`, `HTTPS`, `TCP`, `UDP`, `TERMINATED_HTTPS`. |
 | `protocol_port` | Yes | Port number the listener binds to. |
-| `secret_id` | No | TLS certificate secret ID. Required for `TERMINATED_HTTPS`. |
 
-<p>Example HTTPS listener using a TLS certificate stored in Secrets Manager:</p>
+<p>For HTTP and TCP listeners, use the `gcore_cloud_load_balancer_listener` resource directly. For `TERMINATED_HTTPS`, the Terraform provider v2 does not support attaching a TLS certificate. Create the HTTPS listener via the REST API after `terraform apply`:</p>
 
-```hcl
-resource "gcore_cloud_load_balancer_listener" "https" {
-  project_id       = var.project_id
-  region_id        = var.region_id
-  load_balancer_id = gcore_cloud_load_balancer.example.id
-  name             = "https-listener"
-  protocol         = "TERMINATED_HTTPS"
-  protocol_port    = 443
-  secret_id        = var.tls_secret_id  # from gcore_cloud_secret resource
-}
+```bash
+curl -X POST "https://api.gcore.com/cloud/v1/lblisteners/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "loadbalancer_id": "'"$LB_ID"'",
+    "name": "https-listener",
+    "protocol": "TERMINATED_HTTPS",
+    "protocol_port": 443,
+    "secret_id": "'"$SECRET_ID"'"
+  }'
 ```
 
-<p>To store and manage TLS certificates, see [Configure secrets for HTTPS load balancer](/cloud/secrets-manager/upload-a-pkcs12-file).</p>
+<p>Set `LB_ID` to the value of `gcore_cloud_load_balancer.example.id` from Terraform output, and `SECRET_ID` to the value of `gcore_cloud_secret.tls.id`.</p>
 
 ### Step 3. Create a pool with backend members
 
