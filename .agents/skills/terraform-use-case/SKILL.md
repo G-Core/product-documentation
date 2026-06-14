@@ -42,8 +42,13 @@ is directly relevant to mapping a Portal step to a Terraform resource.
 
 1. Read the full article — understand what resources are created and what operations are performed
 2. Open `cloud/manage-cloud-via-terraform-v2.mdx` — find the matching HCL resource blocks
-3. Open the Terraform Registry page for each resource type involved:
+3. Check the resource schema in the GitHub v2 branch docs (this is the canonical source):
+   - `https://github.com/G-Core/terraform-provider-gcore/blob/v2/docs/resources/{resource_name}.md`
+   - If that file is empty or 404, extract the schema directly from the installed provider:
+     `terraform providers schema -json | python -c "import sys,json; s=json.load(sys.stdin); print(json.dumps(s['provider_schemas']['registry.terraform.io/g-core/gcore']['resource_schemas']['{resource_name}']['block']['attributes'], indent=2))"`
+4. Open the Terraform Registry page for each resource type involved:
    `https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/{resource_name}`
+   (may time out — fall back to step 3 if it does)
 
 Identify:
 - Exact `gcore_*` resource type names (v2 naming — verify on registry)
