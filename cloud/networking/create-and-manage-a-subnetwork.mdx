@@ -1,7 +1,7 @@
 ---
 title: "Create and manage a subnetwork"
 sidebarTitle: "Subnetwork"
-ai-navigation: Create, update, and delete subnetworks in Gcore Cloud via the Customer Portal or REST API using POST /cloud/v1/subnets, with CIDR ranges, DHCP, DNS servers, and host routes configuration.
+ai-navigation: Create, update, and delete subnetworks in Gcore Cloud via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -538,6 +538,93 @@ Response:
 ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+
+<MethodSection id="terraform" label="Terraform">
+
+<p>Declare a subnet inside an existing [network](/cloud/networking/create-and-manage-a-network) using the [Gcore Terraform provider v2](/developer-tools/terraform/overview).</p>
+
+<Info>
+Declare `var.network_id` with the ID of an existing [network](/cloud/networking/create-and-manage-a-network) before applying.
+</Info>
+
+## Create a subnet
+
+<p>Defines a subnet with DHCP and optional custom DNS servers. The `cidr` must fall within `10.0.0.0/8`, `172.16.0.0/12`, or `192.168.0.0/16` for IPv4.</p>
+
+```hcl
+resource "gcore_cloud_network_subnet" "example" {
+  project_id      = var.project_id
+  region_id       = var.region_id
+  name            = "my-subnet"
+  cidr            = "192.168.10.0/24"
+  network_id      = var.network_id
+  enable_dhcp     = true
+  dns_nameservers = ["8.8.8.8", "1.1.1.1"]  # optional
+}
+
+output "subnet_id" {
+  value = gcore_cloud_network_subnet.example.id
+}
+```
+
+## Update a subnet
+
+<Warning>
+Modifying any field recreates the subnet — the existing subnet is deleted and a new one is created with a new ID. Virtual Machines attached to this subnet will briefly lose connectivity.
+</Warning>
+
+<p>Edit the field in the resource block and run `terraform apply`.</p>
+
+```hcl
+resource "gcore_cloud_network_subnet" "example" {
+  project_id      = var.project_id
+  region_id       = var.region_id
+  name            = "my-subnet-updated"
+  cidr            = "192.168.10.0/24"
+  network_id      = var.network_id
+  enable_dhcp     = true
+  dns_nameservers = ["8.8.8.8", "8.8.4.4"]
+}
+```
+
+## Delete a subnet
+
+<p>Remove the resource block — Terraform deletes the subnet on the next `terraform apply`.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_cloud_network_subnet" "example" {
+#   project_id      = var.project_id
+#   region_id       = var.region_id
+#   name            = "my-subnet"
+#   cidr            = "192.168.10.0/24"
+#   network_id      = var.network_id
+#   enable_dhcp     = true
+#   dns_nameservers = ["8.8.8.8", "1.1.1.1"]
+# }
+```
+
+```bash
+terraform apply
+```
+
+## Import a subnet
+
+<p>Use to bring a subnet created outside Terraform under configuration management.</p>
+
+```hcl
+resource "gcore_cloud_network_subnet" "existing" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "my-subnet"
+  cidr       = "192.168.10.0/24"
+  network_id = var.network_id
+}
+
+# terraform import gcore_cloud_network_subnet.existing '<project_id>/<region_id>/<subnet_id>'
+```
 
 </MethodSection>
 
