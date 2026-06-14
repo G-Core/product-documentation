@@ -1,6 +1,6 @@
 ---
 title: Manage load balancers
-ai-navigation: List, inspect, rename, update tags, initiate failover, and delete Load Balancers via the Customer Portal or Gcore REST API with Python SDK, Go SDK, and curl examples.
+ai-navigation: List, inspect, rename, update tags, initiate failover, and delete Load Balancers via the Customer Portal, Gcore REST API with Python SDK, Go SDK, and curl examples, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -465,7 +465,7 @@ Your Load Balancer has been successfully removed.
 </MethodSection>
 <MethodSection id="api" label="REST API">
 
-A Load Balancer exists as a named resource with a virtual IP address, a set of listeners, and associated tags. The management API covers four operations: inspecting the current state, renaming or updating tags, triggering a failover, and deleting the balancer.
+After a load balancer is deployed, you can inspect its configuration, update metadata, initiate a failover, or remove it. The examples below cover each of these day-two operations.
 
 <Info>
 A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get), a [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get), and the ID of an existing [load balancer](/cloud/networking/create-and-configure-a-load-balancer).
@@ -781,5 +781,95 @@ Deleting a load balancer removes it and its configuration permanently. The opera
   </Tab>
 </Tabs>
 
-</MethodSection>
+  </MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Terraform manages load balancer properties declaratively. Use data sources to inspect existing balancers, and update resource attributes to rename, retag, or resize.</p>
+
+<Info>
+A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://gcore.com/docs/api-reference/cloud/projects/list-projects) and [region ID](https://gcore.com/docs/api-reference/cloud/regions/list-regions).
+</Info>
+
+## List load balancers
+
+<p>Use the `gcore_cloud_load_balancers` data source to retrieve all balancers in a region:</p>
+
+```hcl
+data "gcore_cloud_load_balancers" "all" {
+  project_id = var.project_id
+  region_id  = var.region_id
+}
+
+output "load_balancers" {
+  value = [for lb in data.gcore_cloud_load_balancers.all.items : {
+    id               = lb.id
+    name             = lb.name
+    vip_address      = lb.vip_address
+    operating_status = lb.operating_status
+  }]
+}
+```
+
+<p>Run `terraform plan` to display the list without making any infrastructure changes.</p>
+
+## Get load balancer details
+
+<p>Use the `gcore_cloud_load_balancer` data source to read the full configuration of a balancer by its ID:</p>
+
+```hcl
+variable "lb_id" { type = string }
+
+data "gcore_cloud_load_balancer" "existing" {
+  project_id       = var.project_id
+  region_id        = var.region_id
+  load_balancer_id = var.lb_id
+}
+
+output "lb_details" {
+  value = {
+    name                = data.gcore_cloud_load_balancer.existing.name
+    vip_address         = data.gcore_cloud_load_balancer.existing.vip_address
+    operating_status    = data.gcore_cloud_load_balancer.existing.operating_status
+    provisioning_status = data.gcore_cloud_load_balancer.existing.provisioning_status
+  }
+}
+```
+
+## Modify a managed load balancer
+
+<p>To rename, retag, or resize a load balancer that Terraform manages, update the relevant attributes and run `terraform apply`:</p>
+
+```hcl
+resource "gcore_cloud_load_balancer" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "my-lb-production"  # rename
+  flavor     = "lb1-2-4"           # resize
+
+  tags = {
+    env   = "production"
+    owner = "platform-team"
+  }
+}
+```
+
+<p>Rename and tag updates complete in under 30 seconds and do not interrupt traffic.</p>
+
+<Warning>
+Changing the `flavor` attribute resizes the load balancer and terminates all active connections. Schedule flavor changes during a maintenance window.
+</Warning>
+
+## Failover
+
+<p>Failover is an operational trigger and is not available as a Terraform operation. Use the [Customer Portal tab](#portal) or the [REST API tab](#api) to initiate a failover.</p>
+
+## Delete a load balancer
+
+```bash
+terraform destroy
+```
+
+<p>Terraform removes the pool, listeners, and the load balancer itself. The operation takes about 30 seconds.</p>
+
+  </MethodSection>
 </MethodSwitch>
