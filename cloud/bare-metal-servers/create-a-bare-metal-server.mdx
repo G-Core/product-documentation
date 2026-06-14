@@ -1,7 +1,7 @@
 ---
 title: "Create a Bare Metal server"
 sidebarTitle: "Create a Bare Metal server"
-ai-navigation: Create a Bare Metal server on dedicated physical hardware via Customer Portal or REST API.
+ai-navigation: Create a Bare Metal server on dedicated physical hardware via Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -14,7 +14,7 @@ A Bare Metal server is a physical machine allocated entirely to a single tenant,
 <Info>
   **Info**
 
-  Bare Metal servers require a quota increase before creation. Select a region and server type in the creation form, then click **Send quota request** in the **Quota Increase Required** block. Requests are typically reviewed within 5 minutes, with a 95% approval rate.
+  Bare Metal servers require a quota increase before creation. Select a region and server type in the creation form, then click **Send quota request** in the **Quota Increase Required** block. Requests are reviewed by the operations team.
 </Info>
 
 ## Step 1. Open the creation page
@@ -582,33 +582,23 @@ Retrieve the server to confirm `status: ACTIVE` and find the assigned [IP addres
   </Tab>
 </Tabs>
 
-`security_groups: []` is expected - Bare Metal servers have no security groups, so all ports are accessible by default. Restrict traffic with `ufw` or `iptables` after connecting.
+`security_groups: []` is expected — Bare Metal servers have no security groups, so all ports are accessible by default. Restrict traffic with `ufw` or `iptables` after connecting.
 
-`volumes: []` is expected - Bare Metal servers use local NVMe storage; external block volumes cannot be attached.
+`volumes: []` is expected — Bare Metal servers use local NVMe storage; external block volumes cannot be attached.
+
+Use the public IP from the response to connect. The default user for Ubuntu images is `ubuntu`:
+
+```bash
+ssh -i ~/.ssh/my-key ubuntu@<public-ip>
+```
+
+Bare Metal servers use LACP bonding, so interfaces are named `bond0` rather than `eth0`. If a private network was attached at creation, it appears as `bond0.<vlan_id>`.
 
 </Accordion>
 
 ## Check quota
 
 Bare Metal servers have per-region quotas tracked separately for `baremetal_hf`, `baremetal_basic`, `baremetal_storage`, `baremetal_network`, and `baremetal_infrastructure` categories. Before creating a server, verify [quota usage](/cloud/getting-started/check-resource-quota) is below the limit.
-
-## Connect via SSH
-
-Use the public IP from [Step 4](#step-4-get-server-details) to connect. The default user for Ubuntu images is `ubuntu`.
-
-```bash
-ssh -i ~/.ssh/my-key ubuntu@85.234.84.18
-```
-
-After connecting, run `ip a` to list network interfaces. Bare Metal servers use LACP bonding, so interfaces are named `bond0` rather than `eth0`:
-
-```bash
-$ ip a
-5: bond0: ... inet 85.234.84.18/24 ... scope global bond0
-6: bond0.2853@bond0: ... inet 10.0.0.125/24 ...
-```
-
-`bond0` carries public traffic. If a private network was attached at creation, it appears as `bond0.<vlan_id>`. Use these interface names when configuring firewall rules or static routes inside the OS.
 
 ## Attach a private network interface
 
@@ -805,6 +795,102 @@ These constraints apply to all Bare Metal servers regardless of the provisioning
 - No more than six network interfaces can be attached at creation time.
 - Private network interfaces added after deployment must be configured manually inside the OS - they are not managed by the Gcore control plane.
 - The interface order set at creation determines routing priority and cannot be changed after provisioning.
+
+</MethodSection>
+<MethodSection id="terraform" label="Terraform">
+
+<p>Provision a dedicated Bare Metal server using the [Terraform provider](/developer-tools/terraform/overview). Bare Metal servers have per-region [quota limits](/cloud/getting-started/request-a-quota-increase) — verify usage before applying.</p>
+
+## Create a Bare Metal server
+
+<p>Declares a server with a public IPv4 interface and an SSH key. Creation takes 4-6 minutes.</p>
+
+```hcl
+resource "gcore_cloud_baremetal_server" "example" {
+  project_id   = var.project_id
+  region_id    = var.region_id
+  flavor       = var.flavor_id   # region-specific; find with the Customer Portal or flavors API
+  name         = "my-bare-metal"
+  image_id     = var.image_id    # region-specific; find with the Customer Portal or images API
+  ssh_key_name = "my-keypair"
+
+  interfaces = [{
+    type      = "external"
+    ip_family = "ipv4"
+  }]
+
+  # terraform import gcore_cloud_baremetal_server.example '<project_id>/<region_id>/<server_id>'
+}
+
+output "public_ip" {
+  value = gcore_cloud_baremetal_server.example.addresses
+}
+```
+
+<Info>
+Flavor IDs and image IDs are region-specific — use the Customer Portal or the [flavors API](https://api.gcore.com/docs/cloud#tag/Baremetal/operation/BaremetalFlavorListV1ProjectsProjectIdRegionsRegionIdBmflavorsGet) and [images API](https://api.gcore.com/docs/cloud#tag/Baremetal/operation/BareMetalImageListV1ProjectsProjectIdRegionsRegionIdBmimagesGet) to find available values for the target region. Pass them as `var.flavor_id` and `var.image_id` in `terraform.tfvars`.
+</Info>
+
+<p>After `terraform apply`, `status` is `ACTIVE` and `addresses` contains the assigned public IP. Use the IP to connect over SSH.</p>
+
+## Attach a private network
+
+<p>Private networks for Bare Metal require `type = "vlan"` on the network resource — add both interfaces at creation, as interface order determines routing priority.</p>
+
+```hcl
+resource "gcore_cloud_network" "bm_net" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "my-bm-network"
+  type       = "vlan"  # required for Bare Metal
+}
+
+resource "gcore_cloud_network_subnet" "bm_subnet" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "my-bm-subnet"
+  network_id = gcore_cloud_network.bm_net.id
+  cidr       = "192.168.10.0/24"
+}
+
+resource "gcore_cloud_baremetal_server" "example" {
+  project_id   = var.project_id
+  region_id    = var.region_id
+  flavor       = var.flavor_id
+  name         = "my-bare-metal"
+  image_id     = var.image_id
+  ssh_key_name = "my-keypair"
+
+  interfaces = [
+    {
+      type      = "external"
+      ip_family = "ipv4"
+    },
+    {
+      type       = "subnet"
+      network_id = gcore_cloud_network.bm_net.id
+      subnet_id  = gcore_cloud_network_subnet.bm_subnet.id
+    },
+  ]
+}
+```
+
+<Warning>
+The interface order is set at creation and cannot be changed. With both a public and a private interface, disable the default gateway on the private subnet to avoid routing conflicts.
+</Warning>
+
+## Delete a Bare Metal server
+
+<p>Remove the resource block — Terraform deletes the server on the next `terraform apply`. Deprovisioning takes 3-5 minutes and permanently wipes local NVMe storage.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_cloud_baremetal_server" "example" { ... }
+```
+
+```bash
+terraform apply
+```
 
 </MethodSection>
 </MethodSwitch>
