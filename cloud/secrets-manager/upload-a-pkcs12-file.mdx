@@ -549,30 +549,13 @@ Poll <code>GET&nbsp;https://api.gcore.com/cloud/v1/tasks/{task_id}</code> until 
 
 <MethodSection id="terraform" label="Terraform">
 
-<p>Declare TLS certificate secrets from PEM files on disk using the [Gcore Terraform provider v2](/developer-tools/terraform/overview). A permanent [API token](/account-settings/api-tokens), [project ID](https://gcore.com/docs/api-reference/cloud/projects/list-projects), and [region ID](https://gcore.com/docs/api-reference/cloud/regions/list-regions) are required. The certificate data is write-only — Terraform sends it to the API but never stores it in state.</p>
+<p>Declare TLS certificate secrets from PEM files on disk using the [Gcore Terraform provider v2](/developer-tools/terraform/overview) — certificate data is write-only and not stored in state. A permanent [API token](/account-settings/api-tokens), [project ID](https://gcore.com/docs/api-reference/cloud/projects/list-projects), and [region ID](https://gcore.com/docs/api-reference/cloud/regions/list-regions) are required.</p>
 
 ## Create a TLS certificate secret
 
 <p>The `gcore_cloud_secret` resource provisions a PKCS#1/PKCS#8 PEM certificate and makes its ID available as a Terraform output for referencing in other resources.</p>
 
 ```hcl
-terraform {
-  required_providers {
-    gcore = {
-      source  = "G-Core/gcore"
-      version = "= 2.0.0-alpha.8"
-    }
-  }
-}
-
-provider "gcore" {
-  api_key = var.api_key
-}
-
-variable "api_key"    { type = string }
-variable "project_id" { type = number }
-variable "region_id"  { type = number }
-
 resource "gcore_cloud_secret" "tls" {
   project_id = var.project_id
   region_id  = var.region_id
@@ -595,7 +578,7 @@ output "secret_id" {
 
 ## Rotate a certificate
 
-<p>Because `certificate_wo`, `private_key_wo`, and `certificate_chain_wo` are write-only, Terraform cannot detect when the PEM files on disk change. To replace the secret with updated certificate content, increment `payload_wo_version`:</p>
+<p>To replace the secret with updated certificate content, increment `payload_wo_version` — write-only fields (`certificate_wo`, `private_key_wo`, `certificate_chain_wo`) are not tracked by Terraform state and require a version bump to trigger re-creation:</p>
 
 ```hcl
 resource "gcore_cloud_secret" "tls" {
@@ -615,11 +598,11 @@ Changing `payload_wo_version` destroys the existing secret and creates a new one
 
 ## Delete a secret
 
-<p>Remove the resource block and run `terraform apply`. A secret attached to a load balancer listener cannot be deleted — remove the listener first.</p>
+<p>Remove the resource block and run `terraform apply`. A secret attached to a load balancer listener must be detached before deletion — remove the listener first, then apply.</p>
 
 ## Use in an HTTPS listener
 
-<p>After running `terraform apply`, attach the secret to a `TERMINATED_HTTPS` listener via the REST API — use the [REST API tab](#api) for that step, or run the following command with `SECRET_ID` from the Terraform output:</p>
+<p>After running `terraform apply`, attach the secret to a `TERMINATED_HTTPS` listener via the [REST API](#api) tab, or run the following command with `SECRET_ID` from the Terraform output:</p>
 
 ```bash
 export SECRET_ID=$(terraform output -raw secret_id)
@@ -645,7 +628,7 @@ curl -X POST "https://api.gcore.com/cloud/v1/lblisteners/$GCORE_CLOUD_PROJECT_ID
 terraform import gcore_cloud_secret.tls '{PROJECT_ID}/{REGION_ID}/{SECRET_ID}'
 ```
 
-<p>After importing, run `terraform apply` once to set the certificate payload — the write-only fields are not populated by import.</p>
+<p>After importing, run `terraform apply` to initialize the certificate payload — write-only fields must be applied explicitly after import.</p>
 
 </MethodSection>
 </MethodSwitch>
