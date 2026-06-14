@@ -1,7 +1,7 @@
 ---
 title: "Create a Virtual Machine"
 sidebarTitle: "Create an instance"
-ai-navigation: Create a Linux or Windows Virtual Machine in Gcore Cloud via Customer Portal or REST API.
+ai-navigation: Create a Linux or Windows Virtual Machine in Gcore Cloud via Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -926,6 +926,135 @@ To delete the instance and its boot volume in a single call, pass the volume ID 
 </Tabs>
 
 If a floating IP was assigned to the instance, add `delete_floatings=true` to the query string.
+
+  </MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Creating a VM in Terraform requires two separate resources: `gcore_cloud_volume` for the boot disk (created from an OS image) and `gcore_cloud_instance` that references it. Unlike the API, you cannot inline the image source directly inside the instance resource — the volume must be provisioned first.</p>
+
+## Create a VM
+
+<p>The following configuration creates a boot volume from an Ubuntu 22.04 image and a VM with a public IPv4 interface. An existing SSH key is referenced by name; to manage a key through Terraform, see [Add an SSH key](#add-an-ssh-key-1).</p>
+
+```hcl
+variable "project_id" { type = number }
+variable "region_id"  { type = number }
+variable "image_id"   { type = string }
+
+resource "gcore_cloud_volume" "boot" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "my-boot-volume"
+  source     = "image"
+  image_id   = var.image_id
+  size       = 20
+  type_name  = "ssd_hiiops"
+}
+
+resource "gcore_cloud_instance" "example" {
+  project_id   = var.project_id
+  region_id    = var.region_id
+  flavor       = "g2-standard-2-4"
+  name         = "my-vm"
+  ssh_key_name = "my-keypair"
+
+  volumes = [{ volume_id = gcore_cloud_volume.boot.id }]
+
+  interfaces = [{
+    type      = "external"
+    ip_family = "ipv4"
+  }]
+}
+
+output "instance_id" {
+  value = gcore_cloud_instance.example.id
+}
+
+output "public_ip" {
+  value = gcore_cloud_instance.example.addresses
+}
+```
+
+To find the image ID for your region, query the [Images API](https://api.gcore.com/docs/cloud#tag/Images/operation/ImageListForProjectRegion.get):
+
+```bash
+curl "https://api.gcore.com/cloud/v1/images/{project_id}/{region_id}?visibility=public&os_distro=ubuntu" \
+  -H "Authorization: APIKey $GCORE_API_KEY" | jq '.results[] | select(.name | contains("22.04")) | {id, name}'
+```
+
+<Warning>
+`gcore_cloud_volume` is an independent resource. Removing the instance from your configuration does not delete its boot volume — you must remove `gcore_cloud_volume.boot` from the configuration as well and run `terraform destroy`.
+</Warning>
+
+## Add an SSH key
+
+<p>If the project does not yet have an SSH key, declare it as a Terraform resource. SSH keys are project-wide and do not require `region_id`.</p>
+
+```hcl
+resource "gcore_cloud_ssh_key" "my_key" {
+  project_id = var.project_id
+  name       = "my-keypair"
+  public_key = "ssh-ed25519 AAAA... user@example.com"
+}
+
+resource "gcore_cloud_instance" "example" {
+  # ...
+  ssh_key_name = gcore_cloud_ssh_key.my_key.name
+}
+```
+
+When `public_key` is omitted, Gcore generates a key pair. The private key is returned once in the response and is not stored — save it before applying.
+
+## Optional fields
+
+| Field | Description |
+|-------|-------------|
+| `user_data` | Base64-encoded cloud-init script that runs at first boot. |
+| `security_groups` | List of firewall group IDs. If omitted, the default security group is applied. |
+| `username` / `password_wo` | Creates a Linux user or sets the Windows Admin password at boot. |
+| `vm_state` | `"active"` (default) to start immediately; `"stopped"` to keep the VM off. |
+| `tags` | Map of key-value labels attached to the instance. |
+| `name_template` | Auto-generates the name from the public IP, e.g. `"my-vm-{ip_octets}"`. Use instead of `name` when dynamic naming is required. |
+
+Example with `user_data` and `tags`:
+
+```hcl
+resource "gcore_cloud_instance" "example" {
+  # ... required fields ...
+
+  user_data = base64encode(<<-EOF
+    #cloud-config
+    password: your-password
+    chpasswd: { expire: false }
+    ssh_pwauth: true
+  EOF
+  )
+
+  tags = {
+    env  = "production"
+    team = "backend"
+  }
+}
+```
+
+## Delete a VM
+
+<p>Remove both `gcore_cloud_instance.example` and `gcore_cloud_volume.boot` from your configuration, then run:</p>
+
+```bash
+terraform destroy
+```
+
+Terraform destroys the instance first, then the volume.
+
+## Import a VM
+
+<p>To bring an existing VM under Terraform management, import the instance and its boot volume separately:</p>
+
+```bash
+terraform import gcore_cloud_instance.example '<project_id>/<region_id>/<instance_id>'
+terraform import gcore_cloud_volume.boot '<project_id>/<region_id>/<volume_id>'
+```
 
   </MethodSection>
 </MethodSwitch>
