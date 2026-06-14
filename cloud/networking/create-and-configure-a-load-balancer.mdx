@@ -872,13 +872,11 @@ Deleting the load balancer removes the listener, pool, and members automatically
   </MethodSection>
   <MethodSection id="terraform" label="Terraform">
 
-<p>The Gcore Terraform provider v2 manages the full load balancer lifecycle using three resources: `gcore_cloud_load_balancer`, `gcore_cloud_load_balancer_listener`, and `gcore_cloud_load_balancer_pool`. Pool members are declared inline in the pool resource using the `members` attribute.</p>
-
-<Info>
-A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://gcore.com/docs/api-reference/cloud/projects/list-projects) and [region ID](https://gcore.com/docs/api-reference/cloud/regions/list-regions).
-</Info>
+<p>Provision a load balancer with listeners and backend pools using the [Gcore Terraform provider v2](/developer-tools/terraform/overview). A permanent [API token](/account-settings/api-tokens), [project ID](https://gcore.com/docs/api-reference/cloud/projects/list-projects), and [region ID](https://gcore.com/docs/api-reference/cloud/regions/list-regions) are required.</p>
 
 ## Quickstart
+
+<p>The configuration below provisions a load balancer with an HTTP listener and a round-robin pool with two backend members.</p>
 
 ```hcl
 terraform {
@@ -944,7 +942,7 @@ output "vip_address" {
 
 ## Step-by-step
 
-<p>Each resource below explains the key parameters and available options.</p>
+<p>The sections below cover each resource's key attributes and options.</p>
 
 <Accordion title="Show all steps">
 
@@ -955,7 +953,7 @@ output "vip_address" {
 | Attribute | Required | Description |
 |-----------|----------|-------------|
 | `name` | Yes | Display name of the load balancer. |
-| `flavor` | No | Compute flavor. Omit to use the platform default. |
+| `flavor` | No | Compute flavor. Omit to use the region default. |
 | `vip_network_id` | No | Network ID for the VIP. Omit for a public VIP. |
 | `vip_subnet_id` | No | Subnet ID for the VIP within the selected network. |
 | `vip_ip_family` | No | IP version when auto-selecting a subnet. Values: `ipv4` (default), `ipv6`, `dual`. |
@@ -996,7 +994,7 @@ resource "gcore_cloud_load_balancer" "example" {
 | `protocol` | Yes | Traffic protocol. Values: `HTTP`, `HTTPS`, `TCP`, `UDP`, `TERMINATED_HTTPS`. |
 | `protocol_port` | Yes | Port number the listener binds to. |
 
-<p>For HTTP and TCP listeners, use the `gcore_cloud_load_balancer_listener` resource directly. For `TERMINATED_HTTPS`, the Terraform provider v2 does not support attaching a TLS certificate. Create the HTTPS listener via the REST API after `terraform apply`:</p>
+<p>For HTTP and TCP listeners, use `gcore_cloud_load_balancer_listener` directly. For `TERMINATED_HTTPS`, attach the certificate via the REST API after `terraform apply` — the Terraform provider v2 does not support the `secret_id` field on listeners:</p>
 
 ```bash
 curl -X POST "https://api.gcore.com/cloud/v1/lblisteners/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
@@ -1074,6 +1072,8 @@ resource "gcore_cloud_load_balancer_pool" "backend" {
 | `url_path` | No | HTTP path to probe. Default is `/`. Only for `HTTP` and `HTTPS` types. |
 | `expected_codes` | No | Expected HTTP response codes, e.g. `200` or `200,204`. Default is `200`. |
 
+<p>Example pool block with a health monitor:</p>
+
 ```hcl
 resource "gcore_cloud_load_balancer_pool" "backend" {
   # ... other attributes ...
@@ -1104,11 +1104,11 @@ terraform import gcore_cloud_load_balancer_pool.backend PROJECT_ID:REGION_ID:POO
 
 ## Clean up
 
+<p>Terraform removes the pool, listener, and load balancer in the correct dependency order.</p>
+
 ```bash
 terraform destroy
 ```
-
-<p>Terraform removes the pool, listener, and load balancer in the correct order automatically.</p>
 
   </MethodSection>
 </MethodSwitch>

@@ -336,20 +336,40 @@ Rules: one sentence, max 160 chars, no colons after labels, no `{...}`, no URL p
 
 ---
 
-## Phase 6 — Style guide review (mandatory before showing result)
+## Phase 6 — Style guide review (HARD STOP — do this before every output)
 
-Read `.agents/references/style-guide.md` and run these checks on every sentence written:
+**Read `.agents/references/style-guide.md` in full. Then go sentence by sentence through every line written in this session and check each item below. Do not skip. Do not do this from memory.**
+
+### Checklist — run each item, fix before continuing
 
 **Voice:**
-- No "you" or "your" in any prose — use "the account", "the configuration"
-- No forbidden words: just, simply, obviously, ensure, platform, seamlessly, leverage
-- No meta-preamble: "The following configuration...", "The steps below...", "This section covers..."
+- [ ] No "you" or "your" in any prose — use "the account", "the configuration"
+- [ ] No forbidden words: just, simply, obviously, ensure, platform, seamlessly, leverage, for example, such as
+- [ ] No meta-preamble: "The following configuration...", "The steps below...", "This section covers..."
+- [ ] No "does not support", "is not available", "is not supported" — rewrite to tell the reader where to go instead
 
 **`<p>` and `<Info>` descriptions:**
-- Each `<p>` must say WHY or WHEN — not just WHAT
-- Never explain negative capabilities anywhere: "this resource does not accept X", "not configurable via X", "not in the network resource" — tell the reader where to go, not what doesn't work
-- Never add Terraform jargon the reader doesn't need: "in-place update", "no resource replacement", "idempotent"
-- Stop when the point is made — no appended clauses that add nothing
+- [ ] `<Info>` blocks used only for a single genuine prerequisite — never multiple facts
+- [ ] If an `<Info>` lists token + project_id + region_id → merge into opening `<p>` as inline prereqs
+- [ ] Each `<p>` under a heading says WHY or WHEN — not just WHAT
+- [ ] Stop when the point is made — no appended clauses that add nothing
+
+**Links:**
+- [ ] Link text 1–2 words maximum
+- [ ] No banned patterns: "For more details, see [X]", "For a full walkthrough, see [X]", "See [X] for more information", "Refer to [X]"
+- [ ] No standalone sentences whose only purpose is to host a link — embed the link in a content sentence or remove it
+
+**Headings:**
+- [ ] Every `##` and `###` heading must be followed by a prose `<p>` sentence before any code block, table, or list
+- [ ] Sentence case: "Create a network" not "Create a Network"
+- [ ] No What/How/Why/When openers
+- [ ] "platform" → "region default", "the service", or name the specific thing
+
+**Code after headings:**
+- [ ] After `## Clean up` / `## Delete` / `## Destroy` — `<p>` BEFORE the code block, not after
+
+**Lifecycle completeness:**
+- [ ] Mentally delete Portal and API tabs — can the Terraform reader create, update, AND delete the resource without switching tabs?
 
 **Links:**
 - Link text 1–2 words maximum

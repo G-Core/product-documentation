@@ -549,19 +549,11 @@ Poll <code>GET&nbsp;https://api.gcore.com/cloud/v1/tasks/{task_id}</code> until 
 
 <MethodSection id="terraform" label="Terraform">
 
-<p>The following configuration creates a TLS certificate secret from PEM files on disk. The certificate data is write-only — Terraform sends it to the API but never stores it in state.</p>
-
-<Info>
-A [Gcore API key](/account-settings/api-tokens), a project ID, and a region ID are required. Set them in `terraform.tfvars`:
-
-```hcl
-api_key    = "{YOUR_API_KEY}"
-project_id = {YOUR_PROJECT_ID}
-region_id  = {YOUR_REGION_ID}
-```
-</Info>
+<p>Declare TLS certificate secrets from PEM files on disk using the [Gcore Terraform provider v2](/developer-tools/terraform/overview). A permanent [API token](/account-settings/api-tokens), [project ID](https://gcore.com/docs/api-reference/cloud/projects/list-projects), and [region ID](https://gcore.com/docs/api-reference/cloud/regions/list-regions) are required. The certificate data is write-only — Terraform sends it to the API but never stores it in state.</p>
 
 ## Create a TLS certificate secret
+
+<p>The `gcore_cloud_secret` resource provisions a PKCS#1/PKCS#8 PEM certificate and makes its ID available as a Terraform output for referencing in other resources.</p>
 
 ```hcl
 terraform {
@@ -627,7 +619,7 @@ Changing `payload_wo_version` destroys the existing secret and creates a new one
 
 ## Use in an HTTPS listener
 
-<p>The Terraform provider v2 does not support attaching a secret to a listener resource. After running `terraform apply` to create the secret, attach it to a `TERMINATED_HTTPS` listener using the REST API:</p>
+<p>After running `terraform apply`, attach the secret to a `TERMINATED_HTTPS` listener via the REST API — use the [REST API tab](#api) for that step, or run the following command with `SECRET_ID` from the Terraform output:</p>
 
 ```bash
 export SECRET_ID=$(terraform output -raw secret_id)
@@ -644,8 +636,6 @@ curl -X POST "https://api.gcore.com/cloud/v1/lblisteners/$GCORE_CLOUD_PROJECT_ID
     "secret_id": "'"$SECRET_ID"'"
   }'
 ```
-
-<p>For a full load balancer setup, see [Create and configure a load balancer](/cloud/networking/create-and-configure-a-load-balancer).</p>
 
 ## Import
 
