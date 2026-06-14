@@ -301,3 +301,11 @@ Recommended next step:
 ```
 
 Do not commit without explicit user confirmation.
+
+
+---
+
+## Terminology rule
+
+Never use the word `permanent` when referring to API tokens. The expiration is user-controlled.
+Always write: `An [API token](/account-settings/api-tokens) is required.`

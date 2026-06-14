@@ -398,7 +398,7 @@ You can also use the **Actions** dropdown to delete multiple volumes at once. Fo
 <p>Volumes are persistent network-attached disks for Virtual Machines. Data survives VM reboots, and a volume can be detached from one VM and re-attached to another in the same region.</p>
 
 <Info>
-A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/GetProjectList.get) and [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/GetRegionList.get).
+An [API token](/account-settings/api-tokens) is required, along with a [project ID](https://gcore.com/docs/api-reference/cloud/projects/list-projects) and [region ID](https://gcore.com/docs/api-reference/cloud/regions/list-regions).
 </Info>
 
 <p>Open a bash terminal and set these as environment variables before running the examples:</p>
@@ -825,9 +825,38 @@ Only non-boot volumes can be detached. Detaching preserves all data; the volume 
 
 <p>Provision a block storage volume using the Gcore [Terraform provider](/developer-tools/terraform/overview).</p>
 
+<Tip>
+The [gcore_cloud_volume](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_volume) reference on Terraform Registry includes additional configuration examples.
+</Tip>
+
 ## Create a volume
 
-<p>Declares a blank data volume. Set `source = "new-volume"` for empty storage, or `"snapshot"` to restore from an existing snapshot.</p>
+<p>Set `source = "new-volume"` for a blank data volume, `"snapshot"` to restore from an existing snapshot, or `"image"` to create a boot volume from an OS image.</p>
+
+<p>For a boot volume, pass the image UUID via a variable. To find the UUID, open the Gcore Customer Portal, navigate to **Cloud** > **Images**, and copy the ID from the image details. IDs are region-specific — use the ID from the region where you are creating the volume.</p>
+
+```hcl
+variable "image_id" {
+  type        = string
+  description = "OS image UUID (region-specific). Find it in Cloud > Images."
+}
+
+resource "gcore_cloud_volume" "boot" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "boot-volume"
+  source     = "image"
+  image_id   = var.image_id
+  size       = 20
+  type_name  = "standard"
+}
+
+output "boot_volume_id" {
+  value = gcore_cloud_volume.boot.id
+}
+```
+
+<p>For a blank data volume:</p>
 
 ```hcl
 resource "gcore_cloud_volume" "example" {

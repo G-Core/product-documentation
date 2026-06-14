@@ -197,7 +197,7 @@ To add a sub-interface to a bond, click **Add Sub-Interface** in the correspondi
 A Bare Metal server is a physical machine allocated entirely to one tenant - no hypervisor, no shared resources. Provisioning takes 4-5 minutes.
 
 <Info>
-A permanent [API token](/developer-tools/rest-api/authentication) is required, along with a [project ID](https://gcore.com/docs/api-reference/cloud/projects/list-projects) and [region ID](https://gcore.com/docs/api-reference/cloud/regions/list-regions).
+An [API token](/developer-tools/rest-api/authentication) is required, along with a [project ID](https://gcore.com/docs/api-reference/cloud/projects/list-projects) and [region ID](https://gcore.com/docs/api-reference/cloud/regions/list-regions).
 </Info>
 
 Open a bash terminal and set these as environment variables before running the examples:
@@ -801,6 +801,10 @@ These constraints apply to all Bare Metal servers regardless of the provisioning
 
 <p>Provision a dedicated Bare Metal server using the [Terraform provider](/developer-tools/terraform/overview). Bare Metal servers have per-region [quota limits](/cloud/getting-started/request-a-quota-increase) — verify usage before applying.</p>
 
+<Tip>
+The [gcore_cloud_baremetal_server](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_baremetal_server) reference on Terraform Registry includes additional configuration examples.
+</Tip>
+
 ## Create a Bare Metal server
 
 <p>Declares a server with a public IPv4 interface and an SSH key. Creation takes 4-6 minutes.</p>
@@ -828,7 +832,7 @@ output "public_ip" {
 ```
 
 <Info>
-Flavor IDs and image IDs are region-specific — find available values via the [flavors API](https://api.gcore.com/docs/cloud#tag/Baremetal/operation/BaremetalFlavorListV1ProjectsProjectIdRegionsRegionIdBmflavorsGet) and [images API](https://api.gcore.com/docs/cloud#tag/Baremetal/operation/BareMetalImageListV1ProjectsProjectIdRegionsRegionIdBmimagesGet), then pass them as `var.flavor_id` and `var.image_id` in `terraform.tfvars`.
+Flavor IDs and image IDs are region-specific. Find available values in the Gcore Customer Portal under **Cloud** > **Bare Metal** > **Create server**, then pass them as `var.flavor_id` and `var.image_id` in `terraform.tfvars`. The Terraform provider does not include a data source for listing Bare Metal flavors or images.
 </Info>
 
 <p>After `terraform apply`, `status` is `ACTIVE` and `addresses` contains the assigned public IP. Use the IP to connect over SSH.</p>
@@ -878,6 +882,10 @@ resource "gcore_cloud_baremetal_server" "example" {
 <Warning>
 The interface order is fixed at creation. With both a public and a private interface, disable the default gateway on the private subnet to avoid routing conflicts.
 </Warning>
+
+## Start, stop, and reboot
+
+<p>The Terraform provider does not support power state operations (`start`, `stop`, `reboot`, `reboot_hard`) for Bare Metal servers. Use the Customer Portal or the REST API tab to perform these actions.</p>
 
 ## Delete a Bare Metal server
 

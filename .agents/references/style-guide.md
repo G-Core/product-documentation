@@ -52,7 +52,7 @@ This applies everywhere — body text, `<Info>`, `<Note>`, `<Warning>`, `<Tip>` 
 
 | Bad | Good |
 |-----|------|
-| "You need An API token." | "An API token is required." |
+| "You need an API token." | "An [API token](/account-settings/api-tokens) is required." |
 | "Your configuration file should include..." | "The configuration file must include..." |
 | "When you run terraform plan..." | "When running terraform plan..." |
 | "It is not linked to your Gcore account." | "It is not linked to the Gcore account." |

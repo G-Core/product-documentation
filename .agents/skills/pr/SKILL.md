@@ -3,6 +3,13 @@ name: pr
 description: Create a draft GitHub pull request after documentation changes are complete. Use when the user confirms they want to open a PR.
 ---
 
+## HARD RULES — NEVER VIOLATE
+
+- **NEVER commit without explicit user instruction: "commit" or "сделай коммит"**
+- **NEVER push without explicit user instruction: "push" or "запушь"**
+- **NEVER create a PR without explicit user instruction**
+- **NEVER do any git write operation proactively**
+
 Create a draft PR for changes made in the current session.
 Always create as draft — the writer reviews the deploy preview before requesting review.
 
@@ -163,6 +170,7 @@ Determine the branch name based on what was done:
 | New article | `new-article/{product}-{slug}` |
 | Added API tab | `api-tab/{product}-{slug}` |
 | Updated article | `update/{product}-{slug}` |
+| GitHub issue work | `issue/{number}-{short-slug}` |
 | Audited article | `audit/{product}-{slug}` |
 | Feature draft (contributor) | `feature-draft/{ticket-id-or-slug}` |
 
@@ -242,7 +250,9 @@ Always `--draft`. Always `--base main`.
 ```markdown
 ## What changed
 
-{1-3 sentences: what was done and why. Link to Jira ticket if available.}
+{1-3 sentences: what was done and why. Link to Jira ticket or GitHub issue if available.}
+
+Closes #{issue-number}
 
 ## Files changed
 
@@ -257,6 +267,9 @@ If no TODOs — write "No TODOs. Ready for review."}
 - [ ] {TODO item 2}
 - [ ] Writer review and approval
 ```
+
+Add the `Closes #N` line when the PR resolves a GitHub issue from
+`G-Core/product-documentation`. Omit it for Jira-only work.
 
 Write the body with the Write tool, then clean up:
 ```powershell

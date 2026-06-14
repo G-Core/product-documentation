@@ -51,6 +51,34 @@ Catch-22: the resource requires `project_id` to build the API URL, but providing
 
 ---
 
+## GAP-2: No data source for listing Bare Metal images or flavors by name
+
+**Tested:** 2026-06-15, provider v2.0.0-alpha.8
+
+**Symptom:** The provider schema contains only `data "gcore_cloud_instance_image"` which requires `image_id` as input — it is a lookup-by-ID, not a search-by-name. There is no plural data source (`gcore_cloud_instance_images`, `gcore_cloud_baremetal_images`, etc.) for listing or filtering images or flavors dynamically.
+
+**Impact:** Users cannot resolve `image_id` or `flavor` via a Terraform data source. They must look up UUIDs manually via the Customer Portal or API and pass them as variables.
+
+**Workaround in docs:** Use `var.image_id` and `var.flavor_id` with instructions to find values in the Customer Portal.
+
+**Articles affected:** `cloud/bare-metal-servers/create-a-bare-metal-server.mdx`
+
+---
+
+## GAP-3: `gcore_cloud_baremetal_server` — no power state management
+
+**Tested:** 2026-06-15, provider v2.0.0-alpha.8
+
+**Symptom:** The `gcore_cloud_baremetal_server` resource has `vm_state` as a computed-only attribute — it cannot be set. The provider does not support `start`, `stop`, `reboot`, or `reboot_hard` operations.
+
+**Impact:** Power state management for Bare Metal servers is not possible via Terraform.
+
+**Workaround in docs:** Documented in the Terraform tab with a note directing users to Customer Portal or REST API.
+
+**Articles affected:** `cloud/bare-metal-servers/create-a-bare-metal-server.mdx`
+
+---
+
 ## GAP-1: `gcore_cloud_volume_snapshot` — resource missing in provider v2
 
 **Resource:** `gcore_cloud_volume_snapshot`
