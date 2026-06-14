@@ -1,7 +1,7 @@
 ---
 title: Create and configure a virtual IP address
 sidebarTitle: Virtual IP address
-ai-navigation: Reserve a virtual IP address (VIP) via API or Customer Portal, connect VM ports to share the address, enable or disable VIP mode on existing reserved IPs, and configure VRRP-based failover using Keepalived.
+ai-navigation: Reserve a virtual IP address (VIP) via Customer Portal, REST API, or Terraform, connect VM ports to share the address, enable or disable VIP mode on existing reserved IPs, and configure VRRP-based failover using Keepalived.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -219,7 +219,7 @@ The scripts below reserve a public virtual IP address, connect one VM's network 
 
     client = Gcore()
 
-    port_id = os.environ["PORT_ID"]
+    port_id = os.environ["PORT_ID"]  # Port ID of an existing VM's network interface; see Step 2
 
     # Step 1. Reserve a public virtual IP address
     vip = client.cloud.reserved_fixed_ips.create_and_poll(
@@ -276,7 +276,7 @@ The scripts below reserve a public virtual IP address, connect one VM's network 
     )
 
     func main() {
-        portID := os.Getenv("PORT_ID")
+        portID := os.Getenv("PORT_ID") // Port ID of an existing VM's network interface; see Step 2
 
         client := gcore.NewClient()
         ctx := context.Background()
@@ -453,7 +453,7 @@ Reserving a public IP with `is_vip: true` creates a port that can be shared acro
 
 The `reservation.status` of `"attached"` confirms VIP mode is active. Additional creation options such as specifying a private network or a fixed IP address are described in the [reserved IPs API](https://api.gcore.com/docs/cloud#tag/Reserved-Fixed-IPs/operation/ReservedFixedIPCreateV1.post).
 
-### Step 2. Find a VM's port ID
+### Step 2. Get a VM port ID
 
 Each VM network interface has a `port_id`. Supply this ID when connecting the VM to the VIP.
 
@@ -565,7 +565,21 @@ Adding a VM's port to the VIP makes both the VM's own IP and the VIP reachable o
 
 To replace all connected VMs at once, use `PUT /connected_devices` (curl) or `connected_ports.replace()` (SDK) with the full `port_ids` list.
 
-After connecting a VM's port, configure the VIP address on that VM's OS using `ip addr add` (Linux) or the Network Adapter settings (Windows) — the steps are in the Customer Portal tab under **Configure a virtual IP address for non-Windows Virtual Machines**.
+### Configure the VIP inside the guest OS
+
+Connecting a VM's port to the VIP through the API is not enough for the VIP to carry traffic. The address must also be added to the network interface inside the VM's operating system.
+
+For Linux, run as root:
+
+```bash
+ip addr add {VIP_ADDRESS}/{MASK} dev {INTERFACE}
+```
+
+where `{MASK}` is the subnet prefix length (find it in the VM's **Networking** tab) and `{INTERFACE}` is the network interface name (`ip addr` lists them).
+
+This assignment is non-persistent — it is lost on reboot. To make it permanent, add the address to the OS network configuration files.
+
+For Windows, use **Control Panel** → **Network and Sharing Center** → interface **Properties** → **TCP/IPv4 Properties** → **Advanced** → **Add IP address**. Full step-by-step instructions are in the [Customer Portal tab](#portal) under **Configure a virtual IP address for Windows Virtual Machines**.
 
 ### Step 4. List connected VMs
 
@@ -772,6 +786,107 @@ Deleting a VIP requires disabling VIP mode first. The API rejects the delete req
     Poll <code>GET&nbsp;https://api.gcore.com/cloud/v1/tasks/{task_id}</code> until `state` is `FINISHED`.
   </Tab>
 </Tabs>
+
+</MethodSection>
+
+<MethodSection id="terraform" label="Terraform">
+
+<p>The Gcore Terraform provider v2 manages the VIP lifecycle — reservation, enabling or disabling VIP mode, and deletion. Connecting VM ports to the VIP is not supported in the provider; use the [REST API tab](#api) or the [Customer Portal tab](#portal) for that step.</p>
+
+<Info>
+A [Gcore API key](/account-settings/api-tokens), a project ID, and a region ID are required. Set them in `terraform.tfvars`:
+
+```hcl
+api_key    = "{YOUR_API_KEY}"
+project_id = {YOUR_PROJECT_ID}
+region_id  = {YOUR_REGION_ID}
+```
+</Info>
+
+## Reserve a virtual IP address
+
+Setting `is_vip = true` reserves the IP with VIP mode already active.
+
+```hcl
+terraform {
+  required_providers {
+    gcore = {
+      source  = "G-Core/gcore"
+      version = "= 2.0.0-alpha.8"
+    }
+  }
+}
+
+provider "gcore" {
+  api_key = var.api_key
+}
+
+variable "api_key"    { type = string }
+variable "project_id" { type = number }
+variable "region_id"  { type = number }
+
+resource "gcore_cloud_reserved_fixed_ip" "vip" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  type       = "external"
+  ip_family  = "ipv4"
+  is_vip     = true
+}
+
+output "vip_port_id" {
+  value = gcore_cloud_reserved_fixed_ip.vip.port_id
+}
+
+output "vip_address" {
+  value = gcore_cloud_reserved_fixed_ip.vip.fixed_ip_address
+}
+```
+
+`port_id` is the identifier used in all subsequent operations — keep it in the Terraform output or pass it to the API.
+
+## Enable or disable VIP mode
+
+Changing `is_vip` is an in-place update — the resource is not recreated:
+
+```hcl
+resource "gcore_cloud_reserved_fixed_ip" "vip" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  type       = "external"
+  ip_family  = "ipv4"
+  is_vip     = false  # Set to true to re-enable
+}
+```
+
+Run `terraform apply` after the change.
+
+## Delete a virtual IP address
+
+<Warning>
+The API rejects delete requests while `is_vip = true`. Before removing the resource block, set `is_vip = false` and run `terraform apply`. Then remove the block and apply again.
+</Warning>
+
+```hcl
+# Step 1 — disable VIP mode
+resource "gcore_cloud_reserved_fixed_ip" "vip" {
+  ...
+  is_vip = false
+}
+# terraform apply
+
+# Step 2 — remove the block entirely and apply to delete
+# terraform apply
+```
+
+## Import
+
+To bring an existing VIP under Terraform management:
+
+```bash
+terraform import gcore_cloud_reserved_fixed_ip.vip '{PROJECT_ID}/{REGION_ID}/{PORT_ID}'
+```
+
+Replace `{PROJECT_ID}`, `{REGION_ID}`, and `{PORT_ID}` with the values from the Customer Portal or from the reserved IPs API response.
 
 </MethodSection>
 
