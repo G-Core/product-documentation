@@ -1,10 +1,12 @@
 ---
-title: Upload an image to the storage
-sidebarTitle: Upload
-ai-navigation: Upload images to Gcore Cloud storage via URL import, supporting raw, vhd, vhdx, vdi, ploop, qcow2, and ami formats with VirtIO drivers and cloud-init package for Virtual Instances, Bare Metal, Virtual GPU Clusters, and Baremetal GPU Clusters using x86 or ARM architecture selection and VM quick start toggle configuration.
+title: Manage custom images
+sidebarTitle: Manage
+ai-navigation: Upload and manage custom images in Gcore Cloud via the Customer Portal, REST API, or Terraform for Virtual Instances, Bare Metal, and GPU clusters.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+Images must be in one of the supported formats — raw, vhd, vhdx, vdi, ploop, qcow2, or ami — with VirtIO SCSI drivers and the `cloud-init` package installed. Images downloaded from other cloud providers already include both.
 
 <MethodSwitch>
 <MethodSection id="portal" label="Customer Portal">
@@ -269,7 +271,7 @@ The [get image](https://api.gcore.com/docs/cloud#tag/Images/operation/ImageDetai
 <Tabs>
   <Tab title="Python SDK">
 ```python
-IMAGE_ID = "e418cec8-cf26-4146-aad8-82e3ca805d2e"
+IMAGE_ID = "YOUR_IMAGE_ID"
 
 image = client.cloud.instances.images.get(IMAGE_ID)
 print(f"Name:         {image.name}")
@@ -282,7 +284,7 @@ print(f"Architecture: {image.architecture}")
   </Tab>
   <Tab title="Go SDK">
 ```go
-imageID := "e418cec8-cf26-4146-aad8-82e3ca805d2e"
+imageID := "YOUR_IMAGE_ID"
 
 image, err := client.Cloud.Instances.Images.Get(ctx, imageID, cloud.InstanceImageGetParams{})
 if err != nil {
@@ -298,7 +300,7 @@ fmt.Printf("Architecture: %s\n", image.Architecture)
   </Tab>
   <Tab title="curl">
 ```bash
-IMAGE_ID="e418cec8-cf26-4146-aad8-82e3ca805d2e"
+IMAGE_ID="YOUR_IMAGE_ID"
 
 curl "https://api.gcore.com/cloud/v1/images/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$IMAGE_ID" \
   -H "Authorization: APIKey $GCORE_API_KEY"
@@ -332,7 +334,7 @@ The [update image](https://api.gcore.com/docs/cloud#tag/Images/operation/ImageDe
 <Tabs>
   <Tab title="Python SDK">
 ```python
-IMAGE_ID = "e418cec8-cf26-4146-aad8-82e3ca805d2e"
+IMAGE_ID = "YOUR_IMAGE_ID"
 
 image = client.cloud.instances.images.update(
     IMAGE_ID,
@@ -343,7 +345,7 @@ print(f"Updated name: {image.name}")
   </Tab>
   <Tab title="Go SDK">
 ```go
-imageID := "e418cec8-cf26-4146-aad8-82e3ca805d2e"
+imageID := "YOUR_IMAGE_ID"
 
 image, err := client.Cloud.Instances.Images.Update(ctx, imageID, cloud.InstanceImageUpdateParams{
     Name: gcore.String("my-custom-image-v2"),
@@ -356,7 +358,7 @@ fmt.Printf("Updated name: %s\n", image.Name)
   </Tab>
   <Tab title="curl">
 ```bash
-IMAGE_ID="e418cec8-cf26-4146-aad8-82e3ca805d2e"
+IMAGE_ID="YOUR_IMAGE_ID"
 
 curl -X PATCH "https://api.gcore.com/cloud/v1/images/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$IMAGE_ID" \
   -H "Authorization: APIKey $GCORE_API_KEY" \
@@ -383,7 +385,7 @@ The [delete image](https://api.gcore.com/docs/cloud#tag/Images/operation/ImageDe
 <Tabs>
   <Tab title="Python SDK">
 ```python
-IMAGE_ID = "e418cec8-cf26-4146-aad8-82e3ca805d2e"
+IMAGE_ID = "YOUR_IMAGE_ID"
 
 client.cloud.instances.images.delete_and_poll(IMAGE_ID)
 print("Image deleted.")
@@ -391,7 +393,7 @@ print("Image deleted.")
   </Tab>
   <Tab title="Go SDK">
 ```go
-imageID := "e418cec8-cf26-4146-aad8-82e3ca805d2e"
+imageID := "YOUR_IMAGE_ID"
 
 if err := client.Cloud.Instances.Images.DeleteAndPoll(ctx, imageID, cloud.InstanceImageDeleteParams{}); err != nil {
     log.Fatal(err)
@@ -401,7 +403,7 @@ fmt.Println("Image deleted.")
   </Tab>
   <Tab title="curl">
 ```bash
-IMAGE_ID="e418cec8-cf26-4146-aad8-82e3ca805d2e"
+IMAGE_ID="YOUR_IMAGE_ID"
 
 curl -X DELETE "https://api.gcore.com/cloud/v1/images/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$IMAGE_ID" \
   -H "Authorization: APIKey $GCORE_API_KEY"
@@ -418,6 +420,73 @@ Response:
 Poll <code>GET&nbsp;https://api.gcore.com/cloud/v1/tasks/{task_id}</code> until `state` is `FINISHED`.
   </Tab>
 </Tabs>
+
+</MethodSection>
+<MethodSection id="terraform" label="Terraform">
+
+<p>Declare a custom image using the [Gcore Terraform provider v2](/developer-tools/terraform/overview). Gcore fetches the image from the URL and stores it in the selected region.</p>
+
+## Upload an image
+
+<p>Upload an image from a public URL. After apply, the image is available in the region with `visibility: "shared"`.</p>
+
+```hcl
+resource "gcore_cloud_instance_image" "example" {
+  project_id   = var.project_id
+  region_id    = var.region_id
+  name         = "my-custom-image"
+  url          = "https://example.com/images/ubuntu-24.04-custom.qcow2"
+  os_type      = "linux"       # "linux" or "windows"
+  architecture = "x86_64"     # "x86_64" or "aarch64"
+  ssh_key      = "allow"      # "allow", "deny", or "required"
+  # cow_format   = true       # enable VM quick start (image-backed VMs)
+  # is_baremetal = true       # set to true for Bare Metal images
+
+  # terraform import gcore_cloud_instance_image.example '<project_id>/<region_id>/<image_id>'
+}
+
+output "image_id" {
+  value = gcore_cloud_instance_image.example.id
+}
+```
+
+## Replace an image
+
+<Warning>Any change to the resource block triggers a replace — Terraform deletes the existing image and re-uploads from the URL. There is no in-place update: rename, format change, and flag change all result in a new image ID.</Warning>
+
+```hcl
+resource "gcore_cloud_instance_image" "example" {
+  project_id   = var.project_id
+  region_id    = var.region_id
+  name         = "my-custom-image-v2"  # changed
+  url          = "https://example.com/images/ubuntu-24.04-custom.qcow2"
+  os_type      = "linux"
+  architecture = "x86_64"
+  ssh_key      = "allow"
+}
+```
+
+```bash
+terraform apply
+```
+
+## Delete an image
+
+<p>Remove the resource block — Terraform detects the missing declaration and deletes it on the next `terraform apply`.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_cloud_instance_image" "example" {
+#   name         = "my-custom-image"
+#   url          = "https://example.com/images/ubuntu-24.04-custom.qcow2"
+#   project_id   = var.project_id
+#   region_id    = var.region_id
+# }
+```
+
+```bash
+terraform apply
+```
 
 </MethodSection>
 </MethodSwitch>
