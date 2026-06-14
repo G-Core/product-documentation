@@ -1,7 +1,7 @@
 ---
 title: "Create and configure a floating IP address"
 sidebarTitle: "Floating IP address"
-ai-navigation: Reserve a floating IP address in Gcore Cloud and assign it to a Virtual Machine, Bare Metal server, or Load Balancer using the Customer Portal or REST API.
+ai-navigation: Reserve a floating IP address in Gcore Cloud and assign it to a Virtual Machine, Bare Metal server, or Load Balancer using the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -136,7 +136,7 @@ In the "Floating IPs" section, click the selector next to the desired address an
 </MethodSection>
 <MethodSection id="api" label="REST API">
 
-Keep services reachable even when infrastructure changes by assigning and reassigning a floating IP address to a Virtual Machine.
+Keep services reachable even when infrastructure changes by assigning and reassigning a floating IP address to a Virtual Machine. A floating IP is a static public address — it stays the same when moved between instances, so DNS records and client configurations remain valid.
 
 <Info>
 A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get) and a [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get).
@@ -485,6 +485,98 @@ Deleting a floating IP releases the address and stops billing for it.
     Poll the task until `state` is `FINISHED`. The floating IP is permanently removed and no longer billed.
   </Tab>
 </Tabs>
+
+</MethodSection>
+<MethodSection id="terraform" label="Terraform">
+
+<p>Declare a `gcore_cloud_floating_ip` resource to reserve a public static address and, optionally, bind it to a Virtual Machine's private interface in the same configuration.</p>
+
+<Info>
+The VM's subnet must have **Enable router gateway** turned on. Without it, assignment succeeds but traffic does not reach the VM. See [Create and manage a subnetwork](/cloud/networking/create-and-manage-a-subnetwork#network-routing).
+</Info>
+
+## Reserve a floating IP
+
+<p>Creating the resource reserves a public IP from the region pool. Without `port_id`, the address is held unassigned with `status: DOWN`.</p>
+
+```hcl
+resource "gcore_cloud_floating_ip" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+}
+
+output "floating_ip_address" {
+  value = gcore_cloud_floating_ip.example.floating_ip_address
+}
+```
+
+After `terraform apply`:
+
+```bash
+floating_ip_address = "109.61.46.198"
+```
+
+## Assign to a Virtual Machine
+
+<p>Setting `port_id` to a VM's private interface UUID binds the floating IP to that instance. Incoming packets are forwarded to the VM; outbound traffic continues to use the private IP.</p>
+
+```hcl
+resource "gcore_cloud_floating_ip" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  port_id    = "{PORT_ID}"
+}
+```
+
+To find the `port_id`, retrieve the instance details and read `addresses.{network_name}[].port_id`:
+
+```bash
+curl "https://api.gcore.com/cloud/v1/instances/{PROJECT_ID}/{REGION_ID}/{INSTANCE_ID}" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  | jq '.addresses | to_entries[].value[].port_id'
+```
+
+After applying, `status` changes from `DOWN` to `ACTIVE`.
+
+## Unassign from a Virtual Machine
+
+<p>Remove `port_id` from the resource block and run `terraform apply`. The address returns to `DOWN` and remains reserved for reassignment.</p>
+
+```hcl
+resource "gcore_cloud_floating_ip" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  # port_id removed — Terraform detaches the floating IP on next apply
+}
+```
+
+```bash
+terraform apply
+```
+
+## Delete a floating IP
+
+<p>Remove the resource block — Terraform detects the missing declaration and releases the address on the next `terraform apply`.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_cloud_floating_ip" "example" {
+#   project_id = var.project_id
+#   region_id  = var.region_id
+# }
+```
+
+```bash
+terraform apply
+```
+
+## Import an existing floating IP
+
+<p>Use when a floating IP was reserved outside Terraform and needs to be brought under configuration management.</p>
+
+```bash
+terraform import gcore_cloud_floating_ip.example '{PROJECT_ID}/{REGION_ID}/{FLOATING_IP_ID}'
+```
 
 </MethodSection>
 </MethodSwitch>
