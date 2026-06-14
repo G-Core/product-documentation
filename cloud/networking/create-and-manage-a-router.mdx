@@ -1,7 +1,7 @@
 ---
 title: Create and manage a router
 sidebarTitle: Router
-ai-navigation: Create and configure Cloud Router with static routes, SNAT, and subnet interfaces via the Customer Portal or REST API using POST /cloud/v1/routers to dynamically exchange routes between networks.
+ai-navigation: Create and configure a Cloud Router with static routes, SNAT, and subnet interfaces via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -167,7 +167,7 @@ export SUBNET_ID="{YOUR_SUBNET_ID}"
 
 ## Quickstart
 
-The scripts below create a router with SNAT enabled, attach a subnet, verify the result, then delete the router.
+The scripts below create a router with SNAT enabled, attach a subnet, add a static route, verify the result, then delete the router.
 
 <Tabs>
   <Tab title="Python SDK">
@@ -192,9 +192,16 @@ router = client.cloud.networks.routers.attach_subnet(
 )
 print(f"Attached subnet, interfaces: {len(router.interfaces)}")
 
-# Step 3. Get router details.
+# Step 3. Add a static route.
+task = client.cloud.networks.routers.update(
+    router_id,
+    routes=[{"destination": "10.10.0.0/24", "nexthop": "192.168.100.1"}],
+)
+client.cloud.tasks.poll(task.tasks[0])
+
+# Step 4. Verify the result.
 router = client.cloud.networks.routers.get(router_id)
-print(f"Status: {router.status}  SNAT: {router.external_gateway_info.enable_snat}")
+print(f"Status: {router.status}  Routes: {len(router.routes)}  SNAT: {router.external_gateway_info.enable_snat}")
 ```
   </Tab>
   <Tab title="Go SDK">
@@ -239,7 +246,18 @@ func main() {
     }
     fmt.Printf("Attached subnet, interfaces: %d\n", len(router.Interfaces))
 
-    // Step 3. Get router details.
+    // Step 3. Add a static route.
+    router, err = client.Cloud.Networks.Routers.UpdateAndPoll(ctx, router.ID, cloud.NetworkRouterUpdateParams{
+        Routes: []cloud.NetworkRouterUpdateParamsRoute{
+            {Destination: "10.10.0.0/24", Nexthop: "192.168.100.1"},
+        },
+    })
+    if err != nil {
+        log.Fatalf("add route: %v", err)
+    }
+    fmt.Printf("Routes set: %d\n", len(router.Routes))
+
+    // Step 4. Verify the result.
     router, err = client.Cloud.Networks.Routers.Get(ctx, router.ID, cloud.NetworkRouterGetParams{})
     if err != nil {
         log.Fatalf("get router: %v", err)
@@ -563,6 +581,128 @@ Response:
 ```
   </Tab>
 </Tabs>
+
+</MethodSection>
+
+<MethodSection id="terraform" label="Terraform">
+
+<p>Provision a cloud router with SNAT and static routes using the Gcore [Terraform provider](/developer-tools/terraform/overview).</p>
+
+<Info>
+`var.subnet_id` references a subnet from [Create and manage a subnetwork](/cloud/networking/create-and-manage-a-subnetwork).
+</Info>
+
+## Create a router
+
+<p>Declares a router with SNAT enabled and a subnet interface. Set `type = "default"` to let the provider select the region's external network automatically.</p>
+
+```hcl
+variable "subnet_id" {
+  type        = string
+  description = "ID of the subnet to attach to the router."
+}
+
+resource "gcore_cloud_network_router" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "my-router"
+
+  external_gateway_info = {
+    type        = "default"
+    enable_snat = true
+  }
+
+  interfaces = [{
+    subnet_id = var.subnet_id
+    type      = "subnet"
+  }]
+}
+
+output "router_id" {
+  value = gcore_cloud_network_router.example.id
+}
+```
+
+<Warning>
+After the first `terraform apply`, the provider resolves `type = "default"` into a concrete external network ID. To make any subsequent change to the router, update `external_gateway_info`: set `type = "manual"` and copy `external_gateway_info.network_id` from `terraform show`.
+</Warning>
+
+## Add static routes
+
+<p>Edit the `routes` block and run `terraform apply`. The provider replaces the entire routes list on each update — include all active routes in the block.</p>
+
+```hcl
+resource "gcore_cloud_network_router" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "my-router"
+
+  external_gateway_info = {
+    type        = "manual"
+    network_id  = "<external-network-id>"  # from terraform show
+    enable_snat = true
+  }
+
+  interfaces = [{
+    subnet_id = var.subnet_id
+    type      = "subnet"
+  }]
+
+  routes = [{
+    destination = "10.10.0.0/24"
+    nexthop     = "192.168.30.1"
+  }]
+}
+```
+
+```bash
+terraform apply
+```
+
+## Delete a router
+
+<p>Remove the resource block — Terraform detects the missing declaration and deletes the router on the next `terraform apply`.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_cloud_network_router" "example" {
+#   name       = "my-router"
+#   project_id = var.project_id
+#   region_id  = var.region_id
+#   ...
+# }
+```
+
+```bash
+terraform apply
+```
+
+## Import a router
+
+<p>Use when a router was created outside Terraform and needs to be managed as code.</p>
+
+```hcl
+resource "gcore_cloud_network_router" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "my-router"
+
+  external_gateway_info = {
+    type        = "manual"
+    network_id  = "<external-network-id>"
+    enable_snat = true
+  }
+
+  interfaces = [{
+    subnet_id = var.subnet_id
+    type      = "subnet"
+  }]
+}
+```
+
+```bash
+terraform import gcore_cloud_network_router.example '<project_id>/<region_id>/<router_id>'
+```
 
 </MethodSection>
 
