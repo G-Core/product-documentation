@@ -1,7 +1,7 @@
 ---
 title: Create and configure a volume
 sidebarTitle: Create and configure
-ai-navigation: Create and configure block storage volumes in Gcore Cloud via Customer Portal or REST API, including creating, attaching, detaching, resizing, and deleting volumes.
+ai-navigation: Create and configure block storage volumes in Gcore Cloud via Customer Portal, REST API, or Terraform, including creating, attaching, detaching, resizing, and deleting volumes.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -9,24 +9,17 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
 <MethodSection id="portal" label="Customer Portal">
 
-You can view, create, and manage volumes in the Gcore Customer Portal on the **Volumes** page. Here's how to navigate the page:
-
+<p>You can view, create, and manage volumes in the Gcore Customer Portal on the **Volumes** page. Here's how to navigate the page:</p>
 
 <Frame>![Volumes page with numbered UI elements](/images/docs/cloud/virtual-instances/volumes/create-and-configure-volumes/volumes-page-annotated.png)</Frame>
 
+<p>1\. **Volumes**: View all volumes created in a project.</p>
+<p>2\. **Instance**: Check if a volume is attached to a Virtual Machine.</p>
+<p>3\. **IOPS limit/burst**: Check the maximum number of read and write operations a volume can handle in a second and when a burst traffic occurs.</p>
+<p>4\. **MBps limit/burst**: Check the bandwidth limit for a volume and a max bandwidth when a burst traffic occurs.</p>
+<p>5\. **Without attachments**: View all volumes that aren't attached to a Virtual Machine.</p>
 
-
-1\. **Volumes** : View all volumes created in a project.
-
-2\. **Instance** : Check if a volume is attached to a Virtual Machine.
-
-3\. **IOPS limit/burst** : Check the maximum number of read and write operations a volume can handle in a second and when a burst traffic occurs. 
-
-4\. **MBps limit/burst** : Check the bandwidth limit for a volume and a max bandwidth when a burst traffic occurs.
-
-5\. **Without attachments** : View all volumes that aren't attached to a Virtual Machine.
-
-In the following sections, you'll find information on how to create and manage volumes. For a general overview of volumes and available volume types, check out our [dedicated guide](/cloud/virtual-instances/volumes/about-volumes). 
+<p>In the following sections, you'll find information on how to create and manage volumes. For a general overview of volumes and available volume types, check out our [dedicated guide](/cloud/virtual-instances/volumes/about-volumes).</p>
 
 ## Create a volume
 
@@ -452,16 +445,16 @@ The scripts below create a 10 GiB standard volume, attach it to the VM identifie
     )
     print(f"Attached to {instance_id}")
 
-    # Step 4. Detach the volume from the VM.
+    # Step 4. Resize the volume to 20 GiB (works while attached).
+    volume = client.cloud.volumes.resize_and_poll(volume_id, size=20)
+    print(f"Resized to {volume.size} GiB")
+
+    # Step 5. Detach the volume from the VM.
     client.cloud.volumes.detach_from_instance_and_poll(
         volume_id,
         instance_id=instance_id,
     )
     print("Detached")
-
-    # Step 5. Resize the volume to 20 GiB.
-    volume = client.cloud.volumes.resize_and_poll(volume_id, size=20)
-    print(f"Resized to {volume.size} GiB")
 
     # Step 6. Delete the volume.
     client.cloud.volumes.delete_and_poll(volume_id)
@@ -509,15 +502,7 @@ The scripts below create a 10 GiB standard volume, attach it to the VM identifie
         }
         fmt.Printf("Attached to %s\n", instanceID)
 
-        // Step 4. Detach the volume from the VM.
-        if err = client.Cloud.Volumes.DetachFromInstanceAndPoll(ctx, volumeID, cloud.VolumeDetachFromInstanceParams{
-            InstanceID: instanceID,
-        }); err != nil {
-            log.Fatalf("detach volume: %v", err)
-        }
-        fmt.Println("Detached")
-
-        // Step 5. Resize the volume to 20 GiB.
+        // Step 4. Resize the volume to 20 GiB (works while attached).
         resized, err := client.Cloud.Volumes.ResizeAndPoll(ctx, volumeID, cloud.VolumeResizeParams{
             Size: 20,
         })
@@ -525,6 +510,14 @@ The scripts below create a 10 GiB standard volume, attach it to the VM identifie
             log.Fatalf("resize volume: %v", err)
         }
         fmt.Printf("Resized to %d GiB\n", resized.Size)
+
+        // Step 5. Detach the volume from the VM.
+        if err = client.Cloud.Volumes.DetachFromInstanceAndPoll(ctx, volumeID, cloud.VolumeDetachFromInstanceParams{
+            InstanceID: instanceID,
+        }); err != nil {
+            log.Fatalf("detach volume: %v", err)
+        }
+        fmt.Println("Detached")
 
         // Step 6. Delete the volume.
         if err = client.Cloud.Volumes.DeleteAndPoll(ctx, volumeID, cloud.VolumeDeleteParams{}); err != nil {
@@ -690,51 +683,7 @@ A volume can be attached to one VM at a time; both must be in the same region. O
   </Tab>
 </Tabs>
 
-### Step 3. Detach from a Virtual Machine
-
-Only non-boot volumes can be detached. Detaching preserves all data; the volume reverts to `"available"` status and can be re-attached to any VM in the same region.
-
-<Tabs>
-  <Tab title="Python SDK">
-    ```python
-    # client initialized in Step 1
-    client.cloud.volumes.detach_from_instance_and_poll(
-        volume_id,
-        instance_id=os.environ["INSTANCE_ID"],
-    )
-    ```
-  </Tab>
-  <Tab title="Go SDK">
-    ```go
-    // client and ctx initialized in Step 1
-    err := client.Cloud.Volumes.DetachFromInstanceAndPoll(ctx, volumeID, cloud.VolumeDetachFromInstanceParams{
-        InstanceID: os.Getenv("INSTANCE_ID"),
-    })
-    if err != nil {
-        log.Fatalf("detach volume: %v", err)
-    }
-    ```
-  </Tab>
-  <Tab title="curl">
-    ```bash
-    curl -X POST \
-      "https://api.gcore.com/cloud/v2/volumes/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$VOLUME_ID/detach" \
-      -H "Authorization: APIKey $GCORE_API_KEY" \
-      -H "Content-Type: application/json" \
-      -d '{"instance_id": "'"$INSTANCE_ID"'"}'
-    ```
-
-    Response:
-
-    ```json
-    {"tasks": ["d85e2cde-4f3a-5b1c-8d2e-9c74f3a26e5d"]}
-    ```
-
-    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`.
-  </Tab>
-</Tabs>
-
-### Step 4. Resize a volume
+### Step 3. Resize a volume
 
 Volume size can only be increased, not decreased. Resizing works while the volume is attached to a running VM - no downtime required.
 
@@ -787,6 +736,50 @@ After resizing, extend the filesystem inside the OS to claim the new space - for
 If the volume has snapshots, resizing it prevents reverting to those snapshots. Only snapshots taken after the resize can be used for reversion.
 </Warning>
 
+### Step 4. Detach from a Virtual Machine
+
+Only non-boot volumes can be detached. Detaching preserves all data; the volume reverts to `"available"` status and can be re-attached to any VM in the same region.
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    # client initialized in Step 1
+    client.cloud.volumes.detach_from_instance_and_poll(
+        volume_id,
+        instance_id=os.environ["INSTANCE_ID"],
+    )
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    // client and ctx initialized in Step 1
+    err := client.Cloud.Volumes.DetachFromInstanceAndPoll(ctx, volumeID, cloud.VolumeDetachFromInstanceParams{
+        InstanceID: os.Getenv("INSTANCE_ID"),
+    })
+    if err != nil {
+        log.Fatalf("detach volume: %v", err)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST \
+      "https://api.gcore.com/cloud/v2/volumes/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$VOLUME_ID/detach" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"instance_id": "'"$INSTANCE_ID"'"}'
+    ```
+
+    Response:
+
+    ```json
+    {"tasks": ["d85e2cde-4f3a-5b1c-8d2e-9c74f3a26e5d"]}
+    ```
+
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`.
+  </Tab>
+</Tabs>
+
 </Accordion>
 
 ## Clean up
@@ -825,6 +818,129 @@ Only detached volumes can be deleted. Boot volumes are deleted together with the
     Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. Billing for the volume stops immediately after deletion.
   </Tab>
 </Tabs>
+
+</MethodSection>
+
+<MethodSection id="terraform" label="Terraform">
+
+<p>Provision a block storage volume using the Gcore [Terraform provider](/developer-tools/terraform/overview).</p>
+
+## Create a volume
+
+<p>Declares a blank data volume. Set `source = "new-volume"` for empty storage, or `"snapshot"` to restore from an existing snapshot.</p>
+
+```hcl
+resource "gcore_cloud_volume" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "data-volume"
+  source     = "new-volume"
+  size       = 10
+  type_name  = "standard"
+}
+
+output "volume_id" {
+  value = gcore_cloud_volume.example.id
+}
+```
+
+## Attach to a VM
+
+<p>Set `instance_id_to_attach_to` to attach the volume to a [Virtual Machine](/cloud/virtual-instances/create-an-instance). Both the volume and the VM must be in the same region.</p>
+
+```hcl
+resource "gcore_cloud_volume" "example" {
+  project_id               = var.project_id
+  region_id                = var.region_id
+  name                     = "data-volume"
+  source                   = "new-volume"
+  size                     = 10
+  type_name                = "standard"
+  instance_id_to_attach_to = var.instance_id
+}
+```
+
+<p>To detach, remove the `instance_id_to_attach_to` attribute and run `terraform apply`.</p>
+
+## Resize a volume
+
+<p>Increase `size` and run `terraform apply`. Volume size can only be increased — decreasing is not supported.</p>
+
+```hcl
+resource "gcore_cloud_volume" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "data-volume"
+  source     = "new-volume"
+  size       = 20  # increased from 10
+  type_name  = "standard"
+}
+```
+
+```bash
+terraform apply
+```
+
+## Change volume type
+
+<p>Change `type_name` and run `terraform apply`.</p>
+
+<Warning>
+Changing `type_name` recreates the volume — the existing volume is deleted and a new one is created with a new ID. Detach the volume from any Virtual Machine before making this change.
+</Warning>
+
+```hcl
+resource "gcore_cloud_volume" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "data-volume"
+  source     = "new-volume"
+  size       = 20
+  type_name  = "ssd_hiiops"  # changed from "standard"
+}
+```
+
+```bash
+terraform apply
+```
+
+## Delete a volume
+
+<p>Remove the resource block — Terraform detects the missing declaration and deletes the volume on the next `terraform apply`.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_cloud_volume" "example" {
+#   name      = "data-volume"
+#   source    = "new-volume"
+#   size      = 20
+#   type_name = "ssd_hiiops"
+#   ...
+# }
+```
+
+```bash
+terraform apply
+```
+
+## Import a volume
+
+<p>Use when a volume was created outside Terraform and needs to be managed as code.</p>
+
+```hcl
+resource "gcore_cloud_volume" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "data-volume"
+  source     = "new-volume"
+  size       = 20
+  type_name  = "standard"
+}
+```
+
+```bash
+terraform import gcore_cloud_volume.example '<project_id>/<region_id>/<volume_id>'
+```
 
 </MethodSection>
 </MethodSwitch>
