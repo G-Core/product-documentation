@@ -1,7 +1,7 @@
 ---
 title: Check the operational status of your Virtual Machine
 sidebarTitle: Check the status
-ai-navigation: Retrieve Virtual Machine operational status via the Customer Portal Status column or via the REST API using GET /cloud/v1/instances to read ACTIVE, BUILD, SHUTOFF, and ERROR status values.
+ai-navigation: Retrieve Virtual Machine operational status via the Customer Portal Status column, the REST API using GET /cloud/v1/instances to read ACTIVE, BUILD, SHUTOFF, and ERROR status values, or Terraform using the gcore_cloud_instance data source.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -10,33 +10,21 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <MethodSection id="portal" label="Customer Portal">
 
-<p>You can find Virtual Machine (VM) statuses inside a project on the **Virtual Instances** page. Check the **Status** column:</p>
+<p>Virtual Machine statuses are visible on the **Virtual Instances** page inside a project. Check the **Status** column:</p>
 
 <Frame>![VM status column with the Power on status displayed](/images/docs/cloud/virtual-instances/check-the-operational-status-of-your-instance/vm-status-column.png)</Frame>
 
-Each Virtual Machine can have the following statuses: 
-
-  * **Building** : After creation, the Virtual Machine will have the **Building** status for the first few minutes. At this stage, the machine is allocated computing resources. 
-
-  * **Power on** : The Virtual Machine is up and running. The VM status automatically changes to **Power on** once all resources are allocated after its creation.
-
-  * **Power off** : The Virtual Machine is powered off. 
-
-  * **Error** : An error occurred when allocating resources. The machine cannot be allocated. 
-
-  * **Deleted** : Virtual Machine was deleted. If you initiate server deletion, all ongoing operations will be terminated, and the VM will switch to the **Deleted** status.
+<p>For a full list of status values and their meanings, see [Status values](#status-values) below.</p>
 
 <Tip>
-**Tip**
-
-If an error occurs when allocating resources or your Virtual Machine gets the **Error** status, you can contact [Gcore support](mailto:support@gcore.com) for assistance.
+If a Virtual Machine enters the **Error** state, contact [Gcore support](mailto:support@gcore.com) for assistance.
 </Tip>
 
 </MethodSection>
 
 <MethodSection id="api" label="REST API">
 
-Monitor Virtual Machine health and lifecycle state by listing instances and retrieving detailed status information.
+<p>Two endpoints expose instance status: the list endpoint returns the `status` field for every VM in a project; the detail endpoint adds `vm_state` and `task_state` for a single VM. Read `task_state` to detect background operations that have not yet changed `status`.</p>
 
 <Info>A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get) and [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get).</Info>
 
@@ -55,7 +43,7 @@ export INSTANCE_ID="{YOUR_INSTANCE_ID}"
 
 ## List instances
 
-Retrieves all Virtual Machines in the project and region; the `status` field in each result reflects the current operational state.
+<p>Returns all Virtual Machines in the project and region with their current `status`.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -117,13 +105,13 @@ Response:
 
 ## Get instance details
 
-Fetches full details for a single VM; read the `status` field for the current operational state and `task_state` if a background operation is in progress.
+<p>Returns full details for a single VM including `status`, `vm_state`, and `task_state`. When `task_state` is non-null, the VM is mid-operation — a reboot or resize may still show `status: ACTIVE` while `task_state: "rebooting"` indicates the operation is in progress.</p>
 
 <Tabs>
   <Tab title="Python SDK">
 ```python
 instance = client.cloud.instances.get(instance_id=os.environ["INSTANCE_ID"])
-print(f"{instance.name}: {instance.status}")
+print(f"status={instance.status}  task_state={instance.task_state}")
 ```
   </Tab>
   <Tab title="Go SDK">
@@ -132,7 +120,7 @@ instance, err := client.Cloud.Instances.Get(ctx, os.Getenv("INSTANCE_ID"), cloud
 if err != nil {
     log.Fatalf("get instance: %v", err)
 }
-fmt.Printf("%s: %s\n", instance.Name, instance.Status)
+fmt.Printf("status=%s  task_state=%v\n", instance.Status, instance.TaskState)
 ```
   </Tab>
   <Tab title="curl">
@@ -155,24 +143,76 @@ Response:
   </Tab>
 </Tabs>
 
-## Status values
-
-The `status` field uses uppercase string constants. The table below maps each API value to the label shown in the Customer Portal.
-
-| API status | Portal label | Meaning |
-|---|---|---|
-| `BUILD` | Building | The VM is being allocated. Computing resources are assigned during this stage. |
-| `ACTIVE` | Power on | The VM is running. |
-| `SHUTOFF` | Power off | The VM is powered off. |
-| `ERROR` | Error | An error occurred during resource allocation. |
-| `DELETED` | Deleted | The VM was deleted. |
-| `REBOOT` | — | The VM is rebooting. |
-| `HARD_REBOOT` | — | The VM is performing a hard reboot. |
-| `REBUILD` | — | The VM is being rebuilt from an image. |
-| `RESIZE` | — | The VM flavor is being changed. |
-| `MIGRATING` | — | The VM is being migrated to another host. |
-| `PAUSED` | — | The VM is paused in memory. |
-
 </MethodSection>
 
+<MethodSection id="terraform" label="Terraform">
+
+<p>The `data "gcore_cloud_instance"` data source reads a VM's current status from the API and exposes it as a Terraform output or passes it to other resources in the configuration.</p>
+
+## Get instance status
+
+<p>Reads a single instance by ID and surfaces its `status`, `vm_state`, and `task_state`. Use in configurations where the live state of an existing VM must be known before provisioning dependent resources.</p>
+
+```hcl
+data "gcore_cloud_instance" "status" {
+  project_id  = var.project_id
+  region_id   = var.region_id
+  instance_id = "{INSTANCE_ID}"
+}
+
+output "instance_status" {
+  value = data.gcore_cloud_instance.status.status
+}
+
+output "instance_task_state" {
+  value = data.gcore_cloud_instance.status.task_state
+}
+```
+
+Run `terraform apply` — Terraform queries the API and prints:
+
+```bash
+instance_status     = "ACTIVE"
+instance_task_state = tostring(null)
+```
+
+For a full list of `status` values and what each means, see [Status values](#status-values) below.
+
+## Check state of a managed instance
+
+<p>For instances declared as `gcore_cloud_instance` resources, `terraform show` prints the last known state without an API call:</p>
+
+```bash
+terraform show
+```
+
+To sync state with the live API:
+
+```bash
+terraform apply -refresh-only
+```
+
+</MethodSection>
 </MethodSwitch>
+
+## Status values
+
+The `status` field uses uppercase string constants. The `vm_state` field provides stable state context and is returned by the single-instance detail endpoint and the `data "gcore_cloud_instance"` Terraform data source.
+
+`task_state` is non-null only during a background operation. A VM can show `status: ACTIVE` while `task_state: "rebooting"` — check both fields to determine whether the VM has fully settled.
+
+| `status` | `vm_state` | Portal label | Meaning |
+|----------|------------|--------------|---------|
+| `ACTIVE` | `active` | Power on | The VM is running. |
+| `SHUTOFF` | `stopped` | Power off | The VM is powered off. |
+| `BUILD` | `building` | Building | The VM is being allocated. |
+| `ERROR` | `error` | Error | Resource allocation failed. |
+| `DELETED` | `deleted` | Deleted | The VM was deleted. |
+| `PAUSED` | `paused` | — | The VM is paused in memory. |
+| `REBOOT` | `active` | — | Soft reboot in progress; `task_state` carries the operation name. |
+| `HARD_REBOOT` | `active` | — | Hard reboot in progress; `task_state` carries the operation name. |
+| `REBUILD` | `active` | — | VM is being rebuilt from an image. |
+| `RESIZE` | `resized` | — | VM flavor is being changed. |
+| `MIGRATING` | `active` | — | VM is being migrated to another host. |
+| `SUSPENDED` | `suspended` | — | VM is suspended by the platform. |
+| `SOFT_DELETED` | `soft-deleted` | — | VM is pending permanent deletion. |
