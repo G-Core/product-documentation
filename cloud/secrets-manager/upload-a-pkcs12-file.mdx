@@ -108,7 +108,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 <p>Now you have all the files needed. There are several ways to merge them into PKCS12 format. Below we describe a common case — creating PKCS12 from PEM files.</p>
 
-1\. Install OpenSSL. This is a library containing tools for working with SSL/TLS protocols. You can find installation links and instructions for working with OpenSSL on its [official website](https://openssl.org). 2\. Check if your certificate files are in PEM format. Such files must have the extension .pem, .crt, .cer or .key, begin with the line `----- BEGIN CERTIFICATE -----` and end with the line `----- END CERTIFICATE -----`. To see the beginning and the end of a file, open it in a text editor. 3\. If some files are not in PEM, convert them using OpenSSL. Enter the command in OpenSSL, replacing the text in square brackets with your names:
+<p>1\. Install OpenSSL. This is a library containing tools for working with SSL/TLS protocols. You can find installation links and instructions for working with OpenSSL on its [official website](https://openssl.org). 2\. Check if your certificate files are in PEM format. Such files must have the extension .pem, .crt, .cer or .key, begin with the line `----- BEGIN CERTIFICATE -----` and end with the line `----- END CERTIFICATE -----`. To see the beginning and the end of a file, open it in a text editor. 3\. If some files are not in PEM, convert them using OpenSSL. Enter the command in OpenSSL, replacing the text in square brackets with your names:</p>
 
 <p>_For a .crt, .cer or .der file_</p>
 
@@ -130,9 +130,9 @@ openssl pkcs7 -print_certs -in [name of your file, including extension] -out [na
 openssl pkcs7 -print_certs -in example.pb7 -out PEMcertificate.cer
  ```
 
-4\. Place the main certificate, key, and intermediate certificate chain (three PEM files in total) in the current directory.
+<p>4\. Place the main certificate, key, and intermediate certificate chain (three PEM files in total) in the current directory.</p>
 
-5\. To merge files into PKCS12, open OpenSSL and enter the command:
+<p>5\. To merge files into PKCS12, open OpenSSL and enter the command:</p>
 
 ```sh
 openssl pkcs12 -export -inkey [name of the file with the private key, including the extension] -in [name of the file with the certificate, including the extension] -certfile [name of the file with the certificate chain, including the extension] -passout pass: -out [name for the future created file].p12
@@ -491,9 +491,13 @@ Response:
 
 </Accordion>
 
-## Clean up
+## Use in an HTTPS listener
 
-<p>The [delete secret](https://api.gcore.com/docs/cloud#tag/Secrets/operation/SecretViewSet.delete) endpoint removes a secret permanently. A secret attached to a load balancer listener cannot be deleted — remove the listener first, then delete the secret.</p>
+<p>Pass `SECRET_ID` as the `secret_id` parameter when creating an HTTPS load balancer listener. The `secret_id` is returned from the create call and also available in the list and get responses above.</p>
+
+<p>For a step-by-step walkthrough including listener creation and certificate attachment, see [Add TLS certificates to a Load Balancer](/cloud/networking/load-balancers/add-certificates-to-load-balancer).</p>
+
+## Clean up
 
 <Tabs>
   <Tab title="Python SDK">
@@ -614,6 +618,20 @@ Changing `payload_wo_version` destroys the existing secret and creates a new one
 ## Delete a secret
 
 <p>Remove the resource block and run `terraform apply`. A secret attached to a load balancer listener cannot be deleted — remove the listener first.</p>
+
+## Use in an HTTPS listener
+
+<p>Pass the secret ID to an HTTPS load balancer listener using the `secret_id` attribute of `gcore_cloud_load_balancer_listener`:</p>
+
+```hcl
+resource "gcore_cloud_load_balancer_listener" "https" {
+  # ...
+  protocol    = "HTTPS"
+  secret_id   = gcore_cloud_secret.tls.id
+}
+```
+
+<p>For a complete load balancer configuration, see [Add TLS certificates to a Load Balancer](/cloud/networking/load-balancers/add-certificates-to-load-balancer).</p>
 
 ## Import
 
