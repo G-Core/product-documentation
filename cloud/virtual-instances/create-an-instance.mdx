@@ -338,7 +338,7 @@ After that, the server will be automatically moved to the **Power on** status. Y
   </MethodSection>
   <MethodSection id="api" label="REST API">
 
-Creating a Linux VM via the REST API takes three calls: list available images, list flavors, then submit the create request. The instance is reachable via SSH within about 30 seconds of the task finishing. An [SSH key](#add-an-ssh-key) must exist in the project before running the examples.
+Creating a Linux VM via the REST API consists of three API calls: list available images, list flavors, then submit the create request. The instance is reachable via SSH within about 30 seconds of the task finishing.
 
 <Info>
 A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://gcore.com/docs/api-reference/cloud/projects/list-projects) and [region ID](https://gcore.com/docs/api-reference/cloud/regions/list-regions).
@@ -351,6 +351,60 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
 export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 ```
+
+## Add an SSH key
+
+If the project does not yet have an SSH key, register one before creating the instance. The create call references the key by name, not by ID.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Identifier used as `ssh_key_name` in the create call. |
+| `public_key` | No | An RSA or Ed25519 public key string. Omit to generate a new key pair. |
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    ssh_key = client.cloud.ssh_keys.create(
+        name="my-key",
+        public_key="ssh-ed25519 AAAA... user@host",
+    )
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    sshKeyCreated, err := client.Cloud.SSHKeys.New(context.TODO(), cloud.SSHKeyNewParams{
+        Name: "my-ssh-key",
+    })
+    if err != nil {
+        panic(err.Error())
+    }
+    fmt.Printf("%+v\n", sshKeyCreated.ID)
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/cloud/v1/ssh_keys/$GCORE_CLOUD_PROJECT_ID" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "my-key",
+        "public_key": "ssh-ed25519 AAAA... user@host"
+      }'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "id": "36a7a97a-0672-4911-8f2b-92cd4e5b0d91",
+      "name": "my-key",
+      "state": "ACTIVE"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+When `public_key` is omitted, the response includes a `private_key` field - save it immediately, as it is not shown again.
 
 ## Quickstart
 
@@ -794,60 +848,6 @@ The default security group is applied automatically, allowing inbound SSH (port 
 
 </Accordion>
 
-## Add an SSH key
-
-If the project does not yet have an SSH key, register one before creating the instance. The create call references the key by name, not by ID.
-
-| Parameter | Required | Description |
-|-----------|----------|-------------|
-| `name` | Yes | Identifier used as `ssh_key_name` in the create call. |
-| `public_key` | No | An RSA or Ed25519 public key string. Omit to generate a new key pair. |
-
-<Tabs>
-  <Tab title="Python SDK">
-    ```python
-    ssh_key = client.cloud.ssh_keys.create(
-        name="my-key",
-        public_key="ssh-ed25519 AAAA... user@host",
-    )
-    ```
-  </Tab>
-  <Tab title="Go SDK">
-    ```go
-    sshKeyCreated, err := client.Cloud.SSHKeys.New(context.TODO(), cloud.SSHKeyNewParams{
-        Name: "my-ssh-key",
-    })
-    if err != nil {
-        panic(err.Error())
-    }
-    fmt.Printf("%+v\n", sshKeyCreated.ID)
-    ```
-  </Tab>
-  <Tab title="curl">
-    ```bash
-    curl -X POST "https://api.gcore.com/cloud/v1/ssh_keys/$GCORE_CLOUD_PROJECT_ID" \
-      -H "Authorization: APIKey $GCORE_API_KEY" \
-      -H "Content-Type: application/json" \
-      -d '{
-        "name": "my-key",
-        "public_key": "ssh-ed25519 AAAA... user@host"
-      }'
-    ```
-
-    Response:
-
-    ```json
-    {
-      "id": "36a7a97a-0672-4911-8f2b-92cd4e5b0d91",
-      "name": "my-key",
-      "state": "ACTIVE"
-    }
-    ```
-  </Tab>
-</Tabs>
-
-When `public_key` is omitted, the response includes a `private_key` field - save it immediately, as it is not shown again.
-
 ## Filter images by OS
 
 To list only Gcore-managed public images, add the `visibility=public` parameter.
@@ -1054,6 +1054,13 @@ Terraform destroys the instance first, then the volume.
 ```bash
 terraform import gcore_cloud_instance.example '<project_id>/<region_id>/<instance_id>'
 terraform import gcore_cloud_volume.boot '<project_id>/<region_id>/<volume_id>'
+```
+
+To find the boot volume ID, look for `"is_root_volume": true` in the instance details:
+
+```bash
+curl "https://api.gcore.com/cloud/v1/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$INSTANCE_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" | jq '.volumes[] | select(.is_root_volume == true) | .id'
 ```
 
   </MethodSection>
