@@ -299,7 +299,7 @@ func main() {
 
 ### Step 1. Create a TLS certificate secret
 
-The [create secret](https://api.gcore.com/docs/cloud#tag/Secrets/operation/SecretsViewSetV2.post) endpoint accepts PEM-formatted certificate data directly — no PKCS12 packaging or base64 encoding required.
+<p>The [create secret](https://api.gcore.com/docs/cloud#tag/Secrets/operation/SecretsViewSetV2.post) endpoint accepts PEM-formatted certificate data directly — no PKCS12 packaging or base64 encoding required.</p>
 
 | Parameter | Required | Description |
 |-----------|----------|-------------|
@@ -383,9 +383,19 @@ Poll <code>GET&nbsp;https://api.gcore.com/cloud/v1/tasks/{task_id}</code> every 
   </Tab>
 </Tabs>
 
-### Step 2. List secrets
+### Step 2. Use in an HTTPS listener
 
-The [list secrets](https://api.gcore.com/docs/cloud#tag/Secrets/operation/SecretsViewSet.get) endpoint returns all secrets in the region — useful for finding the ID of an existing secret before attaching it to a load balancer.
+<p>Pass `SECRET_ID` as the `secret_id` parameter when creating an HTTPS load balancer listener. The `secret_id` is returned from the create call above.</p>
+
+<p>For a step-by-step walkthrough including listener creation and certificate attachment, see [Add TLS certificates to a Load Balancer](/cloud/networking/load-balancers/add-certificates-to-load-balancer).</p>
+
+</Accordion>
+
+## Additional operations
+
+<Accordion title="List secrets">
+
+<p>The [list secrets](https://api.gcore.com/docs/cloud#tag/Secrets/operation/SecretsViewSet.get) endpoint returns all secrets in the region — useful for finding the ID of an existing secret before attaching it to a load balancer.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -434,14 +444,16 @@ Response:
   </Tab>
 </Tabs>
 
-### Step 3. Get secret details
+</Accordion>
 
-The [get secret](https://api.gcore.com/docs/cloud#tag/Secrets/operation/SecretViewSet.get) endpoint returns full metadata for a single secret by ID, including its status, type, and expiration date.
+<Accordion title="Get secret details">
+
+<p>The [get secret](https://api.gcore.com/docs/cloud#tag/Secrets/operation/SecretViewSet.get) endpoint returns full metadata for a single secret by ID, including its status, type, and expiration date.</p>
 
 <Tabs>
   <Tab title="Python SDK">
 ```python
-SECRET_ID = "8f9a1dcd-09cb-4e39-9f6a-a4613f3a63aa"   # from Step 1 or Step 2
+SECRET_ID = "8f9a1dcd-09cb-4e39-9f6a-a4613f3a63aa"   # from Step 1 or List secrets
 
 secret = client.cloud.secrets.get(SECRET_ID)
 print(f"Name:       {secret.name}")
@@ -452,7 +464,7 @@ print(f"Expiration: {secret.expiration}")
   </Tab>
   <Tab title="Go SDK">
 ```go
-secretID := "8f9a1dcd-09cb-4e39-9f6a-a4613f3a63aa"   // from Step 1 or Step 2
+secretID := "8f9a1dcd-09cb-4e39-9f6a-a4613f3a63aa"   // from Step 1 or List secrets
 
 secret, err := client.Cloud.Secrets.Get(ctx, secretID, cloud.SecretGetParams{})
 if err != nil {
@@ -465,7 +477,7 @@ fmt.Printf("Type:       %s\n", secret.SecretType)
   </Tab>
   <Tab title="curl">
 ```bash
-SECRET_ID="8f9a1dcd-09cb-4e39-9f6a-a4613f3a63aa"   # from Step 1 or Step 2
+SECRET_ID="8f9a1dcd-09cb-4e39-9f6a-a4613f3a63aa"   # from Step 1 or List secrets
 
 curl "https://api.gcore.com/cloud/v1/secrets/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$SECRET_ID" \
   -H "Authorization: APIKey $GCORE_API_KEY"
@@ -490,12 +502,6 @@ Response:
 </Tabs>
 
 </Accordion>
-
-## Use in an HTTPS listener
-
-<p>Pass `SECRET_ID` as the `secret_id` parameter when creating an HTTPS load balancer listener. The `secret_id` is returned from the create call and also available in the list and get responses above.</p>
-
-<p>For a step-by-step walkthrough including listener creation and certificate attachment, see [Add TLS certificates to a Load Balancer](/cloud/networking/load-balancers/add-certificates-to-load-balancer).</p>
 
 ## Clean up
 
