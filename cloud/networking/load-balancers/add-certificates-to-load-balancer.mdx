@@ -660,7 +660,11 @@ Delete the listener before the secret. A secret that is in use by a listener can
   </MethodSection>
   <MethodSection id="terraform" label="Terraform">
 
-<p>Use `gcore_cloud_secret` to provision a TLS certificate and output its ID. Increment `payload_wo_version` to rotate the certificate — Terraform replaces the secret and issues a new ID.</p>
+<p>Use `gcore_cloud_secret` to provision the TLS certificate, then reference its ID in `sni_secret_id` of `gcore_cloud_load_balancer_listener`. A permanent [API token](/account-settings/api-tokens), [project ID](https://gcore.com/docs/api-reference/cloud/projects/list-projects), and [region ID](https://gcore.com/docs/api-reference/cloud/regions/list-regions) are required.</p>
+
+## Create a TERMINATED_HTTPS listener
+
+<p>The listener requires a default certificate in `secret_id` (set to `""` to omit) and one or more SNI certificates in `sni_secret_id`. The load balancer matches the client's requested hostname against the Subject Alternative Names of each SNI certificate; the default falls back to `secret_id` when no match is found.</p>
 
 ```hcl
 resource "gcore_cloud_secret" "tls" {
@@ -676,12 +680,79 @@ resource "gcore_cloud_secret" "tls" {
   }
 }
 
-output "secret_id" {
-  value = gcore_cloud_secret.tls.id
+resource "gcore_cloud_load_balancer_listener" "https" {
+  project_id       = var.project_id
+  region_id        = var.region_id
+  load_balancer_id = var.load_balancer_id
+  name             = "https-listener"
+  protocol         = "TERMINATED_HTTPS"
+  protocol_port    = 443
+  secret_id        = ""
+  sni_secret_id    = [gcore_cloud_secret.tls.id]
+}
+
+output "listener_id" {
+  value = gcore_cloud_load_balancer_listener.https.id
 }
 ```
 
-<p>To attach the certificate to a `TERMINATED_HTTPS` listener, use the [REST API](#api) or [Customer Portal](#portal) tab.</p>
+<p>Set `var.load_balancer_id` to the ID of an existing load balancer. To create a load balancer with Terraform, see [Create and configure a load balancer](/cloud/networking/create-and-configure-a-load-balancer).</p>
+
+## Add more SNI certificates
+
+<p>Pass all certificate IDs together — `sni_secret_id` replaces the full list on each apply:</p>
+
+```hcl
+resource "gcore_cloud_secret" "sni_extra" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "extra-domain-cert"
+
+  payload_wo_version = 1
+  payload = {
+    certificate_wo       = file("${path.module}/extra-certificate.pem")
+    private_key_wo       = file("${path.module}/extra-private_key.pem")
+    certificate_chain_wo = file("${path.module}/extra-certificate_chain.pem")
+  }
+}
+
+resource "gcore_cloud_load_balancer_listener" "https" {
+  ...
+  sni_secret_id = [
+    gcore_cloud_secret.tls.id,
+    gcore_cloud_secret.sni_extra.id,
+  ]
+}
+```
+
+## Rotate a certificate
+
+<p>To replace a certificate, increment `payload_wo_version` on the corresponding `gcore_cloud_secret` resource — Terraform destroys the old secret and creates a new one. The listener re-reads the new ID via the reference.</p>
+
+<Warning>
+Rotating a certificate destroys the existing secret and creates a replacement. The listener is updated automatically because `sni_secret_id` references `gcore_cloud_secret.tls.id` — Terraform updates the listener in the correct order.
+</Warning>
+
+## Delete
+
+<p>Remove the listener block first, then the secret blocks, and run `terraform apply` — Terraform deletes the listener before the secrets to satisfy the API constraint that a secret in use cannot be deleted.</p>
+
+```hcl
+# Step 1: comment out or remove the listener block and apply
+# resource "gcore_cloud_load_balancer_listener" "https" { ... }
+
+# Step 2: after the listener is gone, comment out or remove the secret blocks and apply
+# resource "gcore_cloud_secret" "tls" { ... }
+# resource "gcore_cloud_secret" "sni_extra" { ... }
+```
+
+## Import
+
+<p>To bring an existing listener under Terraform management:</p>
+
+```bash
+terraform import gcore_cloud_load_balancer_listener.https '{PROJECT_ID}/{REGION_ID}/{LISTENER_ID}'
+```
 
   </MethodSection>
 </MethodSwitch>

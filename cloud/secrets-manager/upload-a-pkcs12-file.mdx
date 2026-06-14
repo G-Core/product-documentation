@@ -602,23 +602,22 @@ Changing `payload_wo_version` destroys the existing secret and creates a new one
 
 ## Use in an HTTPS listener
 
-<p>After running `terraform apply`, attach the secret to a `TERMINATED_HTTPS` listener via the [REST API](#api) tab, or run the following command with `SECRET_ID` from the Terraform output:</p>
+<p>Reference the secret in a `TERMINATED_HTTPS` listener via `sni_secret_id`. The `secret_id` field accepts only `""` in the provider — all TLS certificates are passed through `sni_secret_id`:</p>
 
-```bash
-export SECRET_ID=$(terraform output -raw secret_id)
-export LB_ID="{YOUR_LOAD_BALANCER_ID}"
-
-curl -X POST "https://api.gcore.com/cloud/v1/lblisteners/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
-  -H "Authorization: APIKey $GCORE_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "loadbalancer_id": "'"$LB_ID"'",
-    "name": "https-listener",
-    "protocol": "TERMINATED_HTTPS",
-    "protocol_port": 443,
-    "secret_id": "'"$SECRET_ID"'"
-  }'
+```hcl
+resource "gcore_cloud_load_balancer_listener" "https" {
+  project_id       = var.project_id
+  region_id        = var.region_id
+  load_balancer_id = var.load_balancer_id
+  name             = "https-listener"
+  protocol         = "TERMINATED_HTTPS"
+  protocol_port    = 443
+  secret_id        = ""
+  sni_secret_id    = [gcore_cloud_secret.tls.id]
+}
 ```
+
+<p>For the full workflow including listener creation and SNI configuration, see [Add TLS certificates to a load balancer](/cloud/networking/load-balancers/add-certificates-to-load-balancer).</p>
 
 ## Import
 

@@ -55,20 +55,30 @@ Catch-22: the resource requires `project_id` to build the API URL, but providing
 
 ---
 
-## BUG-4: `gcore_cloud_load_balancer_listener.secret_id` — validation rejects valid UUID
+## BUG-4: `gcore_cloud_load_balancer_listener.secret_id` — RESOLVED
 
 **Resource:** `gcore_cloud_load_balancer_listener`
 
-**Symptom:** Setting `secret_id` to an actual secret UUID fails at plan time with:
+**Original symptom:** Setting `secret_id` to an actual secret UUID fails at plan time with:
 `Error: Invalid Attribute Value Match — Attribute secret_id value must be one of: [""], got: "<uuid>"`
 
-The schema description for `secret_id` lists `Available values: ""` — the provider's validation only accepts an empty string, making it impossible to attach a TLS certificate to a listener via Terraform.
+**Resolution (tested 2026-06-14, provider v2.0.0-alpha.8):**
+`secret_id` is intentionally restricted to `""` in the provider schema. TLS certificates for `TERMINATED_HTTPS` listeners must be attached via `sni_secret_id` (list of secret UUIDs). Tested live in Luxembourg-3:
 
-`sni_secret_id` (list of SNI cert IDs) is likely affected by the same issue and was not tested further.
+```hcl
+resource "gcore_cloud_load_balancer_listener" "https" {
+  protocol      = "TERMINATED_HTTPS"
+  protocol_port = 443
+  secret_id     = ""
+  sni_secret_id = [gcore_cloud_secret.tls.id]
+}
+```
 
-**Impact:** Cannot configure `TERMINATED_HTTPS` listeners with TLS certificates via Terraform. The `gcore_cloud_secret` resource itself works correctly; only the listener attachment is broken.
+Apply succeeded — listener created in ACTIVE state with the secret attached.
+
+**Action required:** Update affected articles to add working HTTPS listener examples.
 
 **Articles affected:**
-- `cloud/networking/load-balancers/add-certificates-to-load-balancer.mdx` — Terraform tab skipped (no working path to document)
-- `cloud/networking/create-and-configure-a-load-balancer.mdx` — HTTPS listener example removed from Terraform tab
-- `cloud/secrets-manager/upload-a-pkcs12-file.mdx` — "Use in an HTTPS listener" Terraform snippet removed
+- `cloud/networking/load-balancers/add-certificates-to-load-balancer.mdx` — Terraform tab needs update
+- `cloud/networking/create-and-configure-a-load-balancer.mdx` — Terraform HTTPS listener example needs update
+- `cloud/secrets-manager/upload-a-pkcs12-file.mdx` — "Use in an HTTPS listener" Terraform snippet needs update
