@@ -1,7 +1,7 @@
 ---
 title: Create and manage projects
 sidebarTitle: Create a project
-ai-navigation: Create and manage Edge Cloud projects as isolated resource containers for Virtual Machines, volumes, and networks with per-project user permission controls via Gcore Customer Portal Projects page, list/grid view layouts, and project creation interface.
+ai-navigation: Create and manage Edge Cloud projects as isolated resource containers via Gcore Customer Portal or REST API or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -511,6 +511,81 @@ Response:
 Poll <code>GET&nbsp;https://api.gcore.com/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`.
   </Tab>
 </Tabs>
+
+</MethodSection>
+<MethodSection id="terraform" label="Terraform">
+
+<p>Declare Edge Cloud projects as code with the [Gcore Terraform provider v2](/developer-tools/terraform/overview).</p>
+
+## Create a project
+
+<p>Declares a new Edge Cloud project.</p>
+
+```hcl
+resource "gcore_cloud_project" "example" {
+  name        = "my-project"
+  description = "Production environment"  # optional
+}
+
+output "project_id" {
+  value = gcore_cloud_project.example.id
+}
+```
+
+## Update a project
+
+<p>Edit `name` or `description` in the resource block, then run `terraform apply`.</p>
+
+```hcl
+resource "gcore_cloud_project" "example" {
+  name        = "my-project-v2"
+  description = "Updated description"
+}
+```
+
+## Delete a project
+
+<Warning>
+Deleting a project removes all Cloud resources inside it permanently. Default projects cannot be deleted.
+</Warning>
+
+<p>Comment out or delete the resource block, then run `terraform apply` — Terraform detects the missing declaration and removes the project.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_cloud_project" "example" {
+#   name        = "my-project"
+#   description = "Production environment"
+# }
+```
+
+```bash
+terraform apply
+```
+
+## List projects
+
+<p>Returns all projects with their IDs and names.</p>
+
+```hcl
+data "gcore_cloud_projects" "all" {}
+
+output "project_list" {
+  value = [for p in data.gcore_cloud_projects.all.items : "${p.id} - ${p.name}"]
+}
+```
+
+## Import a project
+
+<p>Use when a project was created outside Terraform and needs to be managed as code going forward.</p>
+
+```hcl
+resource "gcore_cloud_project" "existing" {
+  name = "my-project"
+}
+
+# terraform import gcore_cloud_project.existing '<project_id>'
+```
 
 </MethodSection>
 </MethodSwitch>
