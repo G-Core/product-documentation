@@ -1,7 +1,7 @@
 ---
 title: "Create and manage a network"
 sidebarTitle: "Network"
-ai-navigation: Create a private network with a subnet to connect Virtual Machines within a region, and manage it via the Gcore REST API using Python SDK, Go SDK, or curl.
+ai-navigation: Create and manage a private network and subnet to connect Virtual Machines within a region, via the Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -522,6 +522,114 @@ Deleting the network removes all attached subnets automatically. Delete the netw
     Poll <code>GET /cloud/v1/tasks/{task_id}</code> until `state` is `FINISHED` to confirm deletion.
   </Tab>
 </Tabs>
+
+  </MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Declare a network and subnet together using the [Gcore Terraform provider v2](/developer-tools/terraform/overview) — a subnet is required to assign IP addresses to resources.</p>
+
+## Create a network and subnet
+
+<p>Defines a private network and a subnet within it. Use `type = "vxlan"` for Virtual Machines (default) or `type = "vlan"` for Bare Metal servers.</p>
+
+```hcl
+resource "gcore_cloud_network" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "my-network"
+  type       = "vxlan"
+}
+
+resource "gcore_cloud_network_subnet" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "my-subnet"
+  cidr       = "192.168.10.0/24"
+  network_id = gcore_cloud_network.example.id
+}
+
+output "network_id" {
+  value = gcore_cloud_network.example.id
+}
+```
+
+## Rename a network
+
+<p>Edit `name` in the network resource block and run `terraform apply`.</p>
+
+```hcl
+resource "gcore_cloud_network" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "my-network-renamed"
+  type       = "vxlan"
+}
+
+resource "gcore_cloud_network_subnet" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "my-subnet"
+  cidr       = "192.168.10.0/24"
+  network_id = gcore_cloud_network.example.id
+}
+```
+
+## Delete a network and subnet
+
+<Warning>
+Deleting a network removes the subnet and disconnects any attached resources.
+</Warning>
+
+<p>Remove both resource blocks — Terraform deletes the subnet first, then the network, on the next `terraform apply`.</p>
+
+```hcl
+# Remove or comment out both blocks:
+# resource "gcore_cloud_network" "example" {
+#   project_id = var.project_id
+#   region_id  = var.region_id
+#   name       = "my-network"
+#   type       = "vxlan"
+# }
+# resource "gcore_cloud_network_subnet" "example" {
+#   project_id = var.project_id
+#   region_id  = var.region_id
+#   name       = "my-subnet"
+#   cidr       = "192.168.10.0/24"
+#   network_id = gcore_cloud_network.example.id
+# }
+```
+
+```bash
+terraform apply
+```
+
+## Import a network and subnet
+
+<p>Use to bring a network and its subnet created outside Terraform under configuration management. Each resource is imported separately.</p>
+
+```hcl
+resource "gcore_cloud_network" "existing" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "my-network"
+  type       = "vxlan"
+}
+
+resource "gcore_cloud_network_subnet" "existing" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "my-subnet"
+  cidr       = "192.168.10.0/24"
+  network_id = gcore_cloud_network.existing.id
+}
+
+# terraform import gcore_cloud_network.existing '<project_id>/<region_id>/<network_id>'
+# terraform import gcore_cloud_network_subnet.existing '<project_id>/<region_id>/<subnet_id>'
+```
+
+<Info>
+Attach this network to a [Virtual Machine](/cloud/virtual-instances/create-an-instance) or [Bare Metal](/cloud/bare-metal-servers/create-a-bare-metal-server) server.
+</Info>
 
   </MethodSection>
 </MethodSwitch>

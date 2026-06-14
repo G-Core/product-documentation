@@ -62,7 +62,7 @@ before being included in the article.
 
 **Environment:**
 - API key: in environment as `GCORE_API_KEY`
-- Region: Luxembourg-3 (`region_id = 76`)
+- Region: Luxembourg-3 (`region_id = 148`)
 - Project: default project (`project_id` from live API or portal)
 
 **Check the latest v2 provider version before testing:**
@@ -110,27 +110,89 @@ variable "region_id"  { type = number }
 
 ## Phase 3 — Write the Terraform section
 
-### Structure
+### Structure — choose A or B, same rule as the API skill
 
-The Terraform section always uses **Structure B (independent operations)**:
-- No Quickstart section
-- No step-by-step accordion
-- Each resource or operation = one `## Section` with an HCL block
+Read the article's flow type first:
+
+| Flow type | Structure | Signal |
+|-----------|-----------|--------|
+| Steps feed into each other (network → subnet → VM) | **A — complete state** | "Create" or "Deploy" article |
+| Operations are independent (rename, quota, firewall rule) | **B — independent ops** | "Manage" or "Configure" article |
+
+Test: "Can the reader do Step 3 without Steps 1 and 2?" — if yes, Structure B. If no, Structure A.
+
+---
+
+**Structure A — Complete desired state**
+
+Use when the provisioned resources depend on each other (e.g. subnet references `network_id`).
+
+- Opening `<p>` introduces what is provisioned
+- `## Create …` section: **one HCL block with ALL interdependent resources** — this is the reader's complete working `.tf` file
+- Modification sections (`## Rename …`, `## Delete …`, `## Import …`) also show the **full state**, not partial snippets — a partial block looks like the other resources were removed
+- No step-by-step accordion — HCL is self-documenting
 
 ```mdx
 <MethodSection id="terraform" label="Terraform">
 
-<p>{One sentence: what infrastructure this section provisions.}</p>
+<p>{One sentence: what this section provisions.}</p>
 
-<Info>
-The [Gcore Terraform provider v2](/developer-tools/terraform/overview) is required.
-Set `project_id` and `region_id` in each resource block. The full resource reference
-is on the [Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/latest/docs).
-</Info>
+## Create {resources}
 
-## {Resource or operation name}
+<p>{Why/when — one sentence.}</p>
 
-<p>{One sentence: what this HCL block creates or configures.}</p>
+```hcl
+resource "gcore_cloud_network" "example" { ... }
+resource "gcore_cloud_network_subnet" "example" { ... }
+output "network_id" { ... }
+```
+
+## Rename {resource}
+
+<p>{Edit `name` in the resource block and run `terraform apply`.}</p>
+
+```hcl
+resource "gcore_cloud_network" "example" {
+  # ...
+  name = "my-network-renamed"
+}
+resource "gcore_cloud_network_subnet" "example" { ... }  # unchanged
+```
+
+## Delete {resources}
+
+<p>{Remove both resource blocks …}</p>
+
+```hcl
+# Remove or comment out both blocks:
+# resource "gcore_cloud_network" ...
+# resource "gcore_cloud_network_subnet" ...
+```
+
+```bash
+terraform apply
+```
+
+</MethodSection>
+```
+
+---
+
+**Structure B — Independent operations**
+
+Use when operations are unrelated and can be performed in any order.
+
+- Opening `<p>` introduces the section
+- Each `## Section` is self-contained: one HCL block that works on its own
+
+```mdx
+<MethodSection id="terraform" label="Terraform">
+
+<p>{One sentence.}</p>
+
+## {Operation name}
+
+<p>{Why/when.}</p>
 
 ```hcl
 resource "gcore_{type}" "example" {
@@ -153,26 +215,78 @@ resource "gcore_{type}" "example" {
 Good: `"Provision a Virtual Machine with a boot volume using declarative HCL."`
 Bad: `"The following Terraform configuration creates a VM."` ← "The following"
 
-### `<Info>` block (required, always)
+### `<Info>` block — when to use
 
+**Do NOT use an `<Info>` block** as a dumping ground for multiple facts. Instead, use a single opening `<p>` that naturally embeds the provider link.
+
+Use an `<Info>` block only when there is a genuine prerequisite the reader must have before they can use any code in the section (e.g. an existing network ID, a secret ID). Keep it to one sentence.
+
+**Wrong pattern — Info block stuffed with everything:**
 ```mdx
 <Info>
-The [Gcore Terraform provider v2](/developer-tools/terraform/overview) is required. Set `project_id` and `region_id` in each resource block. The full resource reference is on the [Terraform Registry](https://registry.terraform.io/providers/G-Core/gcore/latest/docs).
+The provider is required. Set project_id. The full reference is on Terraform Registry. See Get started for installation.
 </Info>
 ```
 
-If the reader might not have Terraform set up yet, add a sentence:
-`"See [Get started with Terraform](/developer-tools/terraform/get-started-with-terraform) for installation and authentication."`
+**Correct pattern — single opening `<p>`:**
+```mdx
+<p>Declare Edge Cloud networks using the [Gcore Terraform provider v2](/developer-tools/terraform/overview).</p>
+```
 
-Add prerequisites if needed:
-`"...and the ID of an existing [network](/cloud/networking/create-and-manage-a-network)."`
+### `<p>` description rules for each section
 
-**Never duplicate** installation steps, provider configuration, variables setup, or migration instructions — these all live in `developer-tools/terraform/` and should be linked, not repeated.
+Every `## Section` must have a `<p>` that tells the reader **why** or **when** — not just **what**.
+
+| Situation | Wrong | Right |
+|-----------|-------|-------|
+| Create | "Declares a new network." | "Declares a new private network." (if "new" adds no info, just: "Declares a network.") |
+| Update | "Updates the network." | "Edit fields in the resource block and run `terraform apply`." |
+| Delete | "Deletes the network." | "Remove the resource block — Terraform detects the missing declaration and deletes it on the next `terraform apply`." |
+| Data source | "Lists all networks." | "Returns all networks with their IDs and names." |
+| Import | "Imports the network." | "Use when a network was created outside Terraform and needs to be managed as code." |
+
+**Forbidden in `<p>`:**
+- Technical Terraform jargon the reader doesn't need: "no resource replacement", "in-place update", "idempotent"
+- Negative capabilities: "this resource does not accept project_id" — let the code speak
+- "your account", "your configuration" — use "the account", "the configuration"
+- Link-only sentences: "The full reference is on the [Terraform Registry](...)" — embed links into content sentences
+- Banned style guide patterns: "See [X] for more information", "For more details, see [X]"
+
+### Full lifecycle coverage (mandatory)
+
+The Terraform tab must cover the same lifecycle as the Portal and API tabs.  
+If the Portal tab has Create + Update + Delete, the Terraform tab must also have Create + Update + Delete.
+
+**For Update:** Show the updated HCL block (same resource, changed field values). Add a `<p>` explaining that editing fields and running `terraform apply` applies changes.
+
+**For Delete:** Always show a code block. The standard pattern:
+1. `<p>` — explain that removing the block causes deletion on next apply
+2. HCL block — show the block commented out so the reader knows exactly what to remove
+3. Bash block — `terraform apply`
+
+```mdx
+<p>Remove the resource block — Terraform detects the missing declaration and deletes it on the next `terraform apply`.</p>
+
+```hcl
+# Remove or comment out this block:
+# resource "gcore_cloud_network" "example" {
+#   name       = "my-network"
+#   project_id = var.project_id
+#   region_id  = var.region_id
+# }
+```
+
+```bash
+terraform apply
+```
+```
+
+**Do not skip testing a command before documenting it.** If a variant seems logical but was not run during testing, it must be tested first or omitted entirely.
 
 ### HCL block rules
 
 1. **`project_id = var.project_id` and `region_id = var.region_id` in every resource** — never hardcode
-2. **Field names and commands from the live test only** — never write a command or flag that was not tested. If you tested `terraform destroy`, document `terraform destroy`. Never substitute untested variants (e.g. `-target`) without running them first.
+2. **Field names and commands from the live test only** — document exactly what was tested. If the test used `terraform destroy`, the article shows `terraform destroy`. Never substitute a different command or flag without testing it first — even if it seems equivalent.
 3. **Cross-reference other resources** with Terraform expressions: `gcore_cloud_network.main.id`
 4. **Comments only for non-obvious fields** — do not comment every line
 5. **Include `terraform import` as a comment** when it applies:
@@ -222,11 +336,47 @@ Rules: one sentence, max 160 chars, no colons after labels, no `{...}`, no URL p
 
 ---
 
-## Phase 6 — Review
+## Phase 6 — Style guide review (mandatory before showing result)
 
-### Standalone tab test
+Read `.agents/references/style-guide.md` and run these checks on every sentence written:
 
-Mentally delete Portal and API tabs. Can the Terraform reader:
+**Voice:**
+- No "you" or "your" in any prose — use "the account", "the configuration"
+- No forbidden words: just, simply, obviously, ensure, platform, seamlessly, leverage
+- No meta-preamble: "The following configuration...", "The steps below...", "This section covers..."
+
+**`<p>` and `<Info>` descriptions:**
+- Each `<p>` must say WHY or WHEN — not just WHAT
+- Never explain negative capabilities anywhere: "this resource does not accept X", "not configurable via X", "not in the network resource" — tell the reader where to go, not what doesn't work
+- Never add Terraform jargon the reader doesn't need: "in-place update", "no resource replacement", "idempotent"
+- Stop when the point is made — no appended clauses that add nothing
+
+**Links:**
+- Link text 1–2 words maximum
+- Each URL linked only once per article — subsequent mentions plain text
+- No standalone link sentences: "The full reference is on the [Terraform Registry](...)"
+- No banned patterns: "See [X] for more information", "For more details, see [X]"
+
+**Headings:**
+- Sentence case: "Create a network" not "Create a Network"
+- No What/How/Why/When openers
+- No infinitives: "To create" → "Create"
+- Every heading must be followed by a prose sentence before code
+
+**Formatting:**
+- Em-dashes spaced: ` — ` not `—`
+- Bold only for UI elements, not for emphasis
+- Code language tag always present: ` ```hcl `, ` ```bash `
+
+**Lifecycle completeness:**
+- Mentally delete Portal and API tabs — can the Terraform reader create, update, AND delete the resource without switching tabs?
+- If any operation is missing — add it before showing the result
+
+---
+
+## Phase 7 — Standalone tab and MDX checks
+
+**Standalone tab test:** Mentally delete Portal and API tabs. Can the Terraform reader:
 
 1. Understand what infrastructure is provisioned?
 2. Find all required IDs without switching tabs?
@@ -234,10 +384,11 @@ Mentally delete Portal and API tabs. Can the Terraform reader:
 
 If any answer is **no** — add the missing context.
 
-### MDX checks
+**MDX checks:**
 
 - `</MethodSection>` at column 0 after lists
 - HCL blocks fenced with ` ```hcl ` language tag
+- Bash blocks fenced with ` ```bash `
 - No `{identifier}` in inline backtick spans
 - Import has `.jsx` extension
 
