@@ -1,7 +1,7 @@
 ---
 title: Upgrade a Kubernetes cluster
 sidebarTitle: Upgrade
-ai-navigation: Upgrade a Kubernetes cluster to a newer version via the Gcore REST API or Customer Portal using a rolling update that replaces worker nodes sequentially without stopping them all at once.
+ai-navigation: Upgrade a Kubernetes cluster to a newer version via the Customer Portal, REST API, or Terraform using a rolling update that replaces worker nodes sequentially.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -107,7 +107,7 @@ export CLUSTER_NAME="{YOUR_CLUSTER_NAME}"
 
 ## Quickstart
 
-The scripts below list available upgrade versions and upgrade the cluster to the newest one, then verify the result. The cluster name is the user-defined string passed at creation time, not the UUID.
+The scripts below list available upgrade versions and upgrade the cluster to the permitted next version, then verify the result. The cluster name is the user-defined string passed at creation time, not the UUID.
 
 <Tabs>
   <Tab title="Python SDK">
@@ -124,7 +124,7 @@ The scripts below list available upgrade versions and upgrade the cluster to the
     if versions.count == 0:
         print("No upgrade versions available")
         exit(0)
-    target_version = versions.results[0].version
+    target_version = versions.results[0].version  # typically one version is returned
     print(f"Upgrading to: {target_version}")
 
     # Step 2. Trigger the upgrade and poll until done.
@@ -168,7 +168,7 @@ The scripts below list available upgrade versions and upgrade the cluster to the
             fmt.Println("No upgrade versions available")
             return
         }
-        targetVersion := versions.Results[0].Version
+        targetVersion := versions.Results[0].Version // typically one version is returned
         fmt.Printf("Upgrading to: %s\n", targetVersion)
 
         // Step 2. Trigger upgrade and wait for completion.
@@ -198,7 +198,7 @@ The scripts below list available upgrade versions and upgrade the cluster to the
 
 ### Step 1. List available versions for upgrade
 
-This call returns only the versions that Gcore permits for the next upgrade - typically one minor version above the current one. Check this before submitting the upgrade request.
+This call returns the versions currently permitted for the cluster. Check this before submitting the upgrade request.
 
 <Tabs>
   <Tab title="Python SDK">
@@ -244,7 +244,7 @@ This call returns only the versions that Gcore permits for the next upgrade - ty
   </Tab>
 </Tabs>
 
-Save the `version` value from `results[0]` and pass it to the upgrade call. The [upgrade versions](https://api.gcore.com/docs/cloud#tag/Managed-Kubernetes/operation/K8sClusterUpdateVersionViewSet.get) endpoint accepts only path parameters - no request body is required.
+Select a `version` value from the returned list and pass it to the upgrade call. The [upgrade versions](https://api.gcore.com/docs/cloud#tag/Managed-Kubernetes/operation/K8sClusterUpdateVersionViewSet.get) endpoint accepts only path parameters - no request body is required.
 
 ### Step 2. Upgrade the cluster
 
@@ -329,6 +329,46 @@ Submit the target version to the [upgrade](https://api.gcore.com/docs/cloud#tag/
 After the task finishes, the cluster returns to `"Provisioned"` status with the new version.
 
 </Accordion>
+
+</MethodSection>
+<MethodSection id="terraform" label="Terraform">
+
+<p>Upgrade a Kubernetes cluster by editing `version` in the cluster resource and running `terraform apply` with the [Gcore Terraform provider](/developer-tools/terraform/overview). Gcore permits upgrading one minor version at a time, so verify the target version in the Customer Portal or REST API before updating the configuration.</p>
+
+<Warning>
+The rolling update creates replacement nodes before removing existing ones — confirm the project quota can accommodate a second full node pool during the transition.
+</Warning>
+
+## Upgrade a cluster
+
+<p>Edit the `version` field in the cluster resource block and run `terraform apply`. Terraform detects the change and triggers the rolling upgrade automatically.</p>
+
+```hcl
+resource "gcore_cloud_k8s_cluster" "example" {
+  project_id    = var.project_id
+  region_id     = var.region_id
+  name          = "my-k8s-cluster"
+  fixed_network = var.network_id
+  fixed_subnet  = var.subnet_id
+  keypair       = "my-keypair"
+  version       = "v1.33.10"  # update to the target version
+
+  pools = [{
+    name               = "default-pool"
+    flavor_id          = "g2-standard-2-4"  # example; available flavors are region-specific
+    servergroup_policy = "anti-affinity"
+    min_node_count     = 1
+    max_node_count     = 2
+    boot_volume_size   = 50
+    boot_volume_type   = "ssd_hiiops"
+    auto_healing_enabled = true
+  }]
+}
+```
+
+```bash
+terraform apply
+```
 
 </MethodSection>
 </MethodSwitch>
