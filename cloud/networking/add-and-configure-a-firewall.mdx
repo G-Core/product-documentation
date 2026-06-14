@@ -1,7 +1,7 @@
 ﻿---
 title: Add and configure a firewall
 sidebarTitle: Firewall
-ai-navigation: Create and configure security groups and firewall rules for Virtual Machines via Customer Portal or REST API.
+ai-navigation: Create and configure security groups and firewall rules for Virtual Machines via Customer Portal, REST API, or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -175,7 +175,125 @@ To find the values for each variable:
 - **SG\_ID**: the UUID of an existing security group. Created in the [Create a security group](#create-a-security-group) section below, or use `GET /cloud/v2/security_groups/{project_id}/{region_id}` to list existing ones.
 </Info>
 
-## Create a security group
+## Quickstart
+
+The scripts below create a security group with SSH, HTTP, and HTTPS rules, attach it to a running VM, add an ICMP rule, then detach and delete the group.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+from gcore.types.cloud import security_group_create_params
+
+client = Gcore()
+
+# Step 1. Create a security group with inbound rules.
+sg = client.cloud.security_groups.create_and_poll(
+    name="web-firewall",
+    rules=[
+        security_group_create_params.Rule(direction="ingress", protocol="tcp", port_range_min=22, port_range_max=22, remote_ip_prefix="0.0.0.0/0"),
+        security_group_create_params.Rule(direction="ingress", protocol="tcp", port_range_min=80, port_range_max=80, remote_ip_prefix="0.0.0.0/0"),
+        security_group_create_params.Rule(direction="ingress", protocol="tcp", port_range_min=443, port_range_max=443, remote_ip_prefix="0.0.0.0/0"),
+    ],
+)
+print(f"Security group: {sg.name} ({sg.id})")
+
+# Step 2. Attach to a running VM by name.
+client.cloud.instances.assign_security_group(
+    instance_id=os.environ["INSTANCE_ID"],
+    name="web-firewall",
+)
+print("Attached to VM.")
+
+# Step 3. Add an ICMP rule.
+client.cloud.security_groups.rules.create_and_poll(
+    group_id=sg.id,
+    direction="ingress",
+    protocol="icmp",
+    remote_ip_prefix="0.0.0.0/0",
+)
+print("ICMP rule added.")
+
+# Step 4. Detach and delete.
+client.cloud.instances.unassign_security_group(
+    instance_id=os.environ["INSTANCE_ID"],
+    name="web-firewall",
+)
+client.cloud.security_groups.delete(group_id=sg.id)
+print("Security group deleted.")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "log"
+    "os"
+
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/cloud"
+)
+
+func main() {
+    client := gcore.NewClient()
+    ctx := context.Background()
+
+    // Step 1. Create a security group with inbound rules.
+    sg, err := client.Cloud.SecurityGroups.NewAndPoll(ctx, cloud.SecurityGroupNewParams{
+        Name: "web-firewall",
+        Rules: []cloud.SecurityGroupNewParamsRule{
+            {Direction: "ingress", Protocol: "tcp", PortRangeMin: gcore.Int(22), PortRangeMax: gcore.Int(22), RemoteIPPrefix: gcore.String("0.0.0.0/0")},
+            {Direction: "ingress", Protocol: "tcp", PortRangeMin: gcore.Int(80), PortRangeMax: gcore.Int(80), RemoteIPPrefix: gcore.String("0.0.0.0/0")},
+            {Direction: "ingress", Protocol: "tcp", PortRangeMin: gcore.Int(443), PortRangeMax: gcore.Int(443), RemoteIPPrefix: gcore.String("0.0.0.0/0")},
+        },
+    })
+    if err != nil {
+        log.Fatalf("create security group: %v", err)
+    }
+    fmt.Printf("Security group: %s (%s)\n", sg.Name, sg.ID)
+
+    // Step 2. Attach to a running VM by name.
+    if err = client.Cloud.Instances.AssignSecurityGroup(ctx, os.Getenv("INSTANCE_ID"), cloud.InstanceAssignSecurityGroupParams{
+        Name: gcore.String("web-firewall"),
+    }); err != nil {
+        log.Fatalf("attach security group: %v", err)
+    }
+    fmt.Println("Attached to VM.")
+
+    // Step 3. Add an ICMP rule.
+    if _, err = client.Cloud.SecurityGroups.Rules.NewAndPoll(ctx, sg.ID, cloud.SecurityGroupRuleNewParams{
+        Direction:      "ingress",
+        Protocol:       "icmp",
+        RemoteIPPrefix: gcore.String("0.0.0.0/0"),
+    }); err != nil {
+        log.Fatalf("add rule: %v", err)
+    }
+    fmt.Println("ICMP rule added.")
+
+    // Step 4. Detach and delete.
+    client.Cloud.Instances.UnassignSecurityGroup(ctx, os.Getenv("INSTANCE_ID"), cloud.InstanceUnassignSecurityGroupParams{
+        Name: gcore.String("web-firewall"),
+    })
+    client.Cloud.SecurityGroups.Delete(ctx, sg.ID, cloud.SecurityGroupDeleteParams{})
+    fmt.Println("Security group deleted.")
+}
+```
+  </Tab>
+</Tabs>
+
+A security group starts empty for inbound traffic and automatically includes default egress rules that allow all outbound traffic. Rules can be passed at creation time to avoid separate calls.
+
+## Step-by-step
+
+<p>Each step below explains what the call does, which parameters matter, and what the response looks like. Use this section to understand the flow or to debug a specific step.</p>
+
+<Accordion title="Show all steps">
+
+### Step 1. Create a security group
 
 A security group starts empty for inbound traffic and automatically includes default egress rules that allow all outbound traffic. Rules can be passed at creation time to avoid separate calls.
 
@@ -274,9 +392,13 @@ A security group starts empty for inbound traffic and automatically includes def
 
 A new security group is automatically populated with default egress rules that allow all outbound traffic. These do not need to be added manually. The [security groups API](https://gcore.com/docs/api-reference/cloud/security-groups) also supports listing all groups, updating rules in bulk, copying a group, and reverting to the default configuration.
 
-## Attach a security group to a VM
+### Step 2. Attach to a VM
 
 There are two ways to attach a security group: at VM creation or to a running instance.
+
+<Info>
+To attach to a running instance, pass the group **name** — not the UUID. The `assign_security_group` endpoint identifies groups by name.
+</Info>
 
 At VM creation, pass the security group UUID in the `security_groups` field:
 
@@ -355,7 +477,7 @@ At VM creation, pass the security group UUID in the `security_groups` field:
   </Tab>
 </Tabs>
 
-To a running instance, use the group name (not the UUID):
+To a running instance, use the group name:
 
 <Tabs>
   <Tab title="Python SDK">
@@ -408,7 +530,7 @@ To a running instance, use the group name (not the UUID):
   </Tab>
 </Tabs>
 
-## Add a rule to an existing security group
+### Step 3. Add a rule
 
 To add a rule after the security group is created, call the [rules endpoint](https://gcore.com/docs/api-reference/cloud/security-groups/create-security-group-rule) with the group ID. A security group supports up to 250 rules total across inbound and outbound directions.
 
@@ -490,7 +612,9 @@ To add a rule after the security group is created, call the [rules endpoint](htt
 When multiple security groups are assigned to a Virtual Machine, rules from all groups are evaluated together.
 </Warning>
 
-## Delete a security group
+</Accordion>
+
+## Clean up
 
 Detach the security group from all instances before deleting it, otherwise the delete request returns an error.
 
@@ -549,4 +673,161 @@ Detach the security group from all instances before deleting it, otherwise the d
 </Tabs>
 
   </MethodSection>
+<MethodSection id="terraform" label="Terraform">
+
+<p>Provision a security group with firewall rules using the Gcore [Terraform provider](/developer-tools/terraform/overview).</p>
+
+<Info>
+Attach this security group to a [Virtual Machine](/cloud/virtual-instances/create-an-instance) by referencing it in the instance resource.
+</Info>
+
+## Create a security group
+
+<p>Declares a security group and its inbound rules as separate resources. Each rule references the group via `group_id`. Default egress rules that allow all outbound traffic are added automatically.</p>
+
+```hcl
+resource "gcore_cloud_security_group" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "web-firewall"
+}
+
+resource "gcore_cloud_security_group_rule" "allow_ssh" {
+  project_id       = var.project_id
+  region_id        = var.region_id
+  group_id         = gcore_cloud_security_group.example.id
+  direction        = "ingress"
+  ethertype        = "IPv4"
+  protocol         = "tcp"
+  port_range_min   = 22
+  port_range_max   = 22
+  remote_ip_prefix = "0.0.0.0/0"
+}
+
+resource "gcore_cloud_security_group_rule" "allow_http" {
+  project_id       = var.project_id
+  region_id        = var.region_id
+  group_id         = gcore_cloud_security_group.example.id
+  direction        = "ingress"
+  ethertype        = "IPv4"
+  protocol         = "tcp"
+  port_range_min   = 80
+  port_range_max   = 80
+  remote_ip_prefix = "0.0.0.0/0"
+}
+
+resource "gcore_cloud_security_group_rule" "allow_https" {
+  project_id       = var.project_id
+  region_id        = var.region_id
+  group_id         = gcore_cloud_security_group.example.id
+  direction        = "ingress"
+  ethertype        = "IPv4"
+  protocol         = "tcp"
+  port_range_min   = 443
+  port_range_max   = 443
+  remote_ip_prefix = "0.0.0.0/0"
+}
+
+output "security_group_id" {
+  value = gcore_cloud_security_group.example.id
+}
+```
+
+## Attach to a VM
+
+<p>Reference the security group in a [Virtual Machine](/cloud/virtual-instances/create-an-instance) resource. The `security_groups` block applies the group to all VM network interfaces.</p>
+
+```hcl
+resource "gcore_cloud_instance" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  # ... other instance fields ...
+
+  security_groups = [{
+    id = gcore_cloud_security_group.example.id
+  }]
+}
+```
+
+## Add a rule
+
+<p>Add a new `gcore_cloud_security_group_rule` block and run `terraform apply`.</p>
+
+```hcl
+resource "gcore_cloud_security_group" "example" { ... }          # unchanged
+resource "gcore_cloud_security_group_rule" "allow_ssh" { ... }   # unchanged
+resource "gcore_cloud_security_group_rule" "allow_http" { ... }  # unchanged
+resource "gcore_cloud_security_group_rule" "allow_https" { ... } # unchanged
+
+resource "gcore_cloud_security_group_rule" "allow_icmp" {
+  project_id       = var.project_id
+  region_id        = var.region_id
+  group_id         = gcore_cloud_security_group.example.id
+  direction        = "ingress"
+  ethertype        = "IPv4"
+  protocol         = "icmp"
+  remote_ip_prefix = "0.0.0.0/0"
+}
+```
+
+```bash
+terraform apply
+```
+
+## Remove a rule
+
+<p>Remove the rule block — Terraform detects the missing declaration and deletes the rule on the next `terraform apply`.</p>
+
+```hcl
+# Remove or comment out the rule to delete:
+# resource "gcore_cloud_security_group_rule" "allow_http" {
+#   project_id       = var.project_id
+#   region_id        = var.region_id
+#   group_id         = gcore_cloud_security_group.example.id
+#   direction        = "ingress"
+#   ethertype        = "IPv4"
+#   protocol         = "tcp"
+#   port_range_min   = 80
+#   port_range_max   = 80
+#   remote_ip_prefix = "0.0.0.0/0"
+# }
+```
+
+```bash
+terraform apply
+```
+
+## Delete a security group
+
+<p>Remove the security group block and all its rule blocks — Terraform deletes the rules first, then the group.</p>
+
+```hcl
+# Remove or comment out all blocks:
+# resource "gcore_cloud_security_group" "example" { ... }
+# resource "gcore_cloud_security_group_rule" "allow_ssh" { ... }
+# resource "gcore_cloud_security_group_rule" "allow_http" { ... }
+# resource "gcore_cloud_security_group_rule" "allow_https" { ... }
+```
+
+```bash
+terraform apply
+```
+
+## Import a security group
+
+<p>Use when a security group was created outside Terraform and needs to be managed as code.</p>
+
+```hcl
+resource "gcore_cloud_security_group" "example" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "web-firewall"
+}
+```
+
+```bash
+terraform import gcore_cloud_security_group.example '<project_id>/<region_id>/<group_id>'
+```
+
+</MethodSection>
 </MethodSwitch>
