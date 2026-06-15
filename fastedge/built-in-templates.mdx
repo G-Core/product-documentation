@@ -1,0 +1,128 @@
+---
+title: Built-in HTTP application templates
+sidebarTitle: Built-in templates
+ai-navigation: Step-by-step guide for deploying FastEdge built-in HTTP application templates — Markdown renderer and Geolocation-based redirect — including environment variable configuration, real-world examples, and testing.
+---
+
+FastEdge includes two built-in templates for HTTP applications: **Markdown renderer** and **Geolocation-based redirect**. Templates deploy a pre-built binary without writing or compiling custom code — select a template, configure its environment variables, and the application is live on the edge in seconds.
+
+Both templates are available on the **Create an application** page under the **Create from a template** section.
+
+<Frame>![Create an application page showing Upload binary and Create from a template sections with Geolocation-based redirect and Markdown renderer cards](/images/docs/fastedge/built-in-templates/create-from-template-overview.png)</Frame>
+
+## Markdown renderer
+
+The Markdown renderer fetches a Markdown file from a remote HTTP source and returns it as a rendered HTML page. It's useful for publishing documentation hosted on GitHub or any static file server without a separate rendering backend.
+
+Every incoming request's URL path is appended to the `BASE` variable to form the source URL. A request to `https://<app-url>/guides/quickstart.md` with `BASE` set to `https://raw.githubusercontent.com/org/repo/main/` fetches `https://raw.githubusercontent.com/org/repo/main/guides/quickstart.md` and returns the rendered HTML.
+
+### Step 1. Create the application
+
+<p>Create the application by selecting the Markdown renderer template and setting at least the <strong>BASE</strong> variable.</p>
+
+1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **FastEdge** > **HTTP Applications** > **Applications** and click **Create new application**.
+
+2. Scroll to **Create from a template** and click **Markdown renderer**.
+
+3. Enter a **Name** for the application. The name becomes part of the deployment URL.
+
+4. Fill in the **Template environment variables**:
+
+   - **BASE** (required): The root URL of the Markdown source. The application appends the incoming request's path to this value when fetching files. Set it to the directory URL where the Markdown files live, with a trailing slash. Example: `https://raw.githubusercontent.com/G-Core/FastEdge-sdk-js/main/`
+
+   - **HEAD** (optional): Raw HTML inserted verbatim into the `<head>` tag of every rendered page. Use it to apply a stylesheet, set a viewport meta tag, or add any other head-level markup. Example: `<style>body{font-family:sans-serif;max-width:800px;margin:2rem auto;padding:0 1rem}</style>`
+
+   <Frame>![Markdown renderer form with BASE required field and optional HEAD field](/images/docs/fastedge/built-in-templates/markdown-renderer-form.png)</Frame>
+
+5. (Optional) Configure additional sections:
+
+   - **Response headers**: static headers added to every response, such as `Cache-Control` or CORS headers.
+   - **Environment variables**: additional runtime key-value pairs accessible via the SDK — separate from the template-defined variables above.
+   - **Secrets**: encrypted values from [Secrets Manager](/fastedge/secrets-manager/manage-secrets) for sensitive data such as API keys. The app reads each secret as an environment variable using the key name set here.
+   - **Edge Storage**: a key-value store the app can query at the edge. Requires an existing store on the [Edge Storage](/fastedge/kv-stores/manage-kv-store) page.
+
+6. Click **Save and deploy**.
+
+<p>The application details page opens with the deployment URL in the format `https://<app-name>-<id>.fastedge.app`.</p>
+
+### Step 2. Test the application
+
+<p>Request any Markdown file path from the app URL and inspect the response:</p>
+
+```sh
+curl -i https://<app-name>-<id>.fastedge.app/README.md
+```
+
+The response is an HTML document with `Content-Type: text/html`:
+
+```
+HTTP/1.1 200 OK
+content-type: text/html; charset=utf-8
+
+<!DOCTYPE html><html><head>...</head><body><h1>README</h1>...</body></html>
+```
+
+If `HEAD` is set, the injected markup appears inside `<head>`. If the source file does not exist at the constructed URL, the app returns the upstream HTTP error code.
+
+<p>To verify the source URL the app constructs, check that `BASE` + path matches the raw file URL directly — confirm `https://raw.githubusercontent.com/org/repo/main/README.md` returns HTTP 200 before deploying.</p>
+
+## Geolocation-based redirect
+
+The Geolocation-based redirect detects each visitor's country from Gcore's Geo-IP data and issues an HTTP 302 redirect to the corresponding URL. It's useful for routing international visitors to regional landing pages, language-specific subdomains, or data-residency-compliant endpoints without client-side JavaScript.
+
+Country rules are defined as environment variables: each key is an ISO 3166-1 alpha-2 country code and the value is the redirect URL. Visitors from countries with no matching rule are sent to the `DEFAULT` URL.
+
+### Step 1. Create the application
+
+<p>Create the application by selecting the Geolocation-based redirect template, then configure the <strong>DEFAULT</strong> variable and country rules.</p>
+
+1. In the Customer Portal, navigate to **FastEdge** > **HTTP Applications** > **Applications** and click **Create new application**.
+
+2. Scroll to **Create from a template** and click **Geolocation-based redirect**.
+
+3. Enter a **Name** for the application.
+
+4. Fill in the **Template environment variables**:
+
+   - **DEFAULT** (required): The fallback redirect URL for visitors whose country is not matched by any rule. Every deployment must have a default — without it, unmatched visitors receive an error. Example: `https://example.com/en`
+
+   <Frame>![Geolocation-based redirect form with DEFAULT field and Response headers section](/images/docs/fastedge/built-in-templates/geolocation-redirect-form.png)</Frame>
+
+5. Add country redirect rules in the **Environment variables** section. Each rule is one variable:
+
+   - **Key**: ISO 3166-1 alpha-2 country code in uppercase. Example: `DE`, `FR`, `JP`, `US`.
+   - **Value**: The full redirect URL for visitors from that country. Example: `https://example.com/de`.
+
+   Add as many country rules as needed. Country codes not listed here fall through to `DEFAULT`.
+
+6. (Optional) Configure **Response headers**, **Secrets**, and **Edge Storage** as needed.
+
+7. Click **Save and deploy**.
+
+<p>The application details page opens with the deployment URL.</p>
+
+### Step 2. Test the application
+
+<p>Send a request to the app URL and inspect the redirect response:</p>
+
+```sh
+curl -i https://<app-name>-<id>.fastedge.app/
+```
+
+When the request originates from a country with a matching rule, the response is:
+
+```
+HTTP/1.1 302 Found
+location: https://example.com/de
+```
+
+When no country rule matches, the response redirects to `DEFAULT`:
+
+```
+HTTP/1.1 302 Found
+location: https://example.com/en
+```
+
+<p>The redirect applies to all URL paths — `/pricing`, `/contact`, and `/` all redirect using the same country logic. To restrict redirects to the root path only, use a custom binary with a path check instead of this template.</p>
+
+Both templates are configured entirely through environment variables — no binary rebuild is needed to update the configuration after deployment. Country rules, redirect targets, and the Markdown source URL can all be changed from the application details page in the Customer Portal.
