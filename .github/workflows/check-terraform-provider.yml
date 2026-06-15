@@ -1,0 +1,120 @@
+name: Check Terraform provider version
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # every Monday at 09:00 UTC
+  workflow_dispatch:      # allow manual trigger
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get latest provider release
+        id: provider
+        run: |
+          LATEST=$(curl -s \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/G-Core/terraform-provider-gcore/releases/latest \
+            | jq -r '.tag_name // empty')
+          if [ -z "$LATEST" ]; then
+            echo "Could not fetch latest release tag. Exiting."
+            exit 1
+          fi
+          # Strip leading 'v' if present
+          LATEST="${LATEST#v}"
+          echo "latest=$LATEST" >> "$GITHUB_OUTPUT"
+          echo "Latest provider release: $LATEST"
+
+      - name: Get pinned version from docs
+        id: pinned
+        run: |
+          # Extract the pinned version from any Terraform tab in the cloud folder
+          PINNED=$(grep -r 'version = "= ' cloud/ --include="*.mdx" -h \
+            | grep -oP '[\d.]+-alpha\.\d+|[\d.]+' \
+            | sort -V | tail -1)
+          if [ -z "$PINNED" ]; then
+            echo "Could not find a pinned version in docs. Exiting."
+            exit 1
+          fi
+          echo "pinned=$PINNED" >> "$GITHUB_OUTPUT"
+          echo "Pinned version in docs: $PINNED"
+
+      - name: Ensure terraform label exists
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create "terraform" \
+            --repo "$GITHUB_REPOSITORY" \
+            --description "Terraform provider or configuration" \
+            --color "7B42BC" \
+            --force
+
+      - name: Check if issue already open
+        id: existing
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TITLE="[Terraform] Provider updated to v${{ steps.provider.outputs.latest }}"
+          EXISTS=$(gh issue list \
+            --repo "$GITHUB_REPOSITORY" \
+            --label "terraform" \
+            --state open \
+            --search "$TITLE" \
+            --json title \
+            | jq -r '.[0].title // empty')
+          if [ "$EXISTS" = "$TITLE" ]; then
+            echo "Issue already exists. Skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create issue if provider is newer
+        if: |
+          steps.provider.outputs.latest != steps.pinned.outputs.pinned &&
+          steps.existing.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "[Terraform] Provider updated to v${{ steps.provider.outputs.latest }}" \
+            --label "terraform" \
+            --body "## Terraform provider version drift detected
+
+The Gcore Terraform provider has a new release.
+
+| | Version |
+|---|---|
+| Latest release | \`${{ steps.provider.outputs.latest }}\` |
+| Pinned in docs  | \`${{ steps.pinned.outputs.pinned }}\` |
+
+### What to do
+
+1. Review the [provider changelog](https://github.com/G-Core/terraform-provider-gcore/releases/tag/v${{ steps.provider.outputs.latest }}) for breaking changes or new attributes on resources documented in the Cloud Terraform tabs.
+2. Run live tests against the new provider version for affected resources.
+3. Update the pinned version in all Terraform tabs from \`= ${{ steps.pinned.outputs.pinned }}\` to \`= ${{ steps.provider.outputs.latest }}\`.
+4. Update \`TF-PROVIDER-BUGS.md\` if any known issues are resolved or new ones found.
+
+### Resources documented in Cloud Terraform tabs
+
+- \`gcore_cloud_project\`
+- \`gcore_cloud_network\` / \`gcore_cloud_network_subnet\` / \`gcore_cloud_network_router\`
+- \`gcore_cloud_security_group\`
+- \`gcore_cloud_volume\`
+- \`gcore_cloud_placement_group\`
+- \`gcore_cloud_instance\`
+- \`gcore_cloud_floating_ip\` / \`gcore_cloud_reserved_fixed_ip\`
+- \`gcore_cloud_secret\`
+- \`gcore_cloud_load_balancer\` / \`gcore_cloud_load_balancer_listener\` / \`gcore_cloud_load_balancer_pool\`
+- \`gcore_cloud_k8s_cluster\`
+- \`gcore_cloud_file_share\`
+- \`gcore_cloud_baremetal_server\`
+- \`gcore_cloud_instance_image\`
+"
