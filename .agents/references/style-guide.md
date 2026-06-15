@@ -424,6 +424,7 @@ These headings must never appear:
 | Forbidden | Why |
 |-----------|-----|
 | `## Next steps` | Sidebar already shows structure; use inline cross-links |
+| `## Get started` | Same as Next steps — a link dump at the end of an article |
 | `## Prerequisites` | Integrate into the opening paragraph |
 | `## Requirements` | Same as Prerequisites |
 | `## Related documentation` | No link dumps; link inline where topic is relevant |
