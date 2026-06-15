@@ -29,8 +29,23 @@ Mark each article as done when the PR is merged.
 
 ### High priority (core user flows)
 
-- [ ] `fastedge/getting-started.mdx` — section landing page
-- [ ] `fastedge/create-apps.mdx` — check if duplicate of create-fastedge-apps or API-only
+- [x] `fastedge/getting-started.mdx` — section landing page
+- [x] `fastedge/create-apps.mdx` — landing page, rewritten with SDK overview
+
+### Get started articles (new + refactor)
+
+Both articles follow the same structure: toolchain setup → simple example → build → deploy.
+
+- [ ] Refactor `fastedge/getting-started/build-a-rust-wasi-app.mdx`:
+  - Rename to `fastedge/getting-started/get-started-rust.mdx` (sidebarTitle: "Get started with Rust")
+  - Keep only: toolchain setup + hello-world example + build + deploy
+  - Move the "Fetch data from external API" section to a new use-case article
+  - Add redirect in `docs.json` from old slug to new
+- [ ] New use-case article (location TBD): "Call an external API from a Rust app" — the complex example currently in build-a-rust-wasi-app.mdx
+- [ ] New article: `fastedge/getting-started/get-started-js.mdx` (sidebarTitle: "Get started with JavaScript")
+  - Same structure as Rust: Node.js v20+, npm install, fastedge-init, simple handler, fastedge-build, deploy
+- [ ] Update `docs.json` navigation (HTTP Applications group) for both new articles
+- [ ] Update `fastedge/create-apps.mdx` links to point to new get-started articles
 - [ ] `fastedge/create-manage-templates.mdx` — template management via portal
 
 ### Secrets Manager
