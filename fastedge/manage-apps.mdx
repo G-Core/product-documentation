@@ -1,169 +1,204 @@
 ﻿---
 title: Manage FastEdge apps
 sidebarTitle: Manage FastEdge apps
-ai-navigation: Manage FastEdge HTTP and CDN applications via the Customer Portal - start or stop applications, view metrics and logs, configure response headers, environment variables, secrets, and Edge Storage key-value storage.
+ai-navigation: Manage FastEdge HTTP and CDN applications via the Customer Portal - stop or start applications, view metrics and logs, configure response headers, environment variables, secrets, and Edge Storage, and access dictionary values from code.
 ---
 
-You can view and manage your HTTP and CDN applications on the application management page:
+The application management page provides access to all settings and runtime data for a deployed FastEdge application in one place.
+
+To open the management page:
+
+1\. In the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard), navigate to **FastEdge** and select either **HTTP Applications** or **CDN Applications**.
+
+2\. On the **Applications** page, click the three-dot icon next to the application and select **Manage**.
 
 <Frame>
-  ![FastEdge applications
-  page](/images/docs/fastedge/manage-apps/app-management-page-annotated.png)
+  ![FastEdge applications list with the three-dot menu open showing Stop, Manage, and Delete options](/images/docs/fastedge/manage-apps/manage-apps-menu.png)
 </Frame>
-
-- **Actions**: Perform quick actions, such as stopping or starting an application, editing its configuration, or deleting the application from the Customer Portal.
-
-- **Template name**: If the application was created from a template, view the template and its configuration
-
-- **Metrics**: Check response statuses for requests to the FastEdge servers and analyze runtime duration data.
-
-- **Logs**: View and enable application logs.
-
-- **Response Headers**: Headers added to every response.
-
-- **Environment Variables**: Update or add environment variables.
-
-- **Secrets**: Update or add secrets (encrypted environment variables).
-
-- **Edge Storage**: Update or add Edge Storage (key-value storage).
-
-To open the application management page:
-
-1\. In the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard), navigate to **FastEdge** and choose the relevant page: **HTTP Applications** or **CDN Applications**.
-
-2\. On the **Applications** page, click the three-dot icon next to the application you want to configure.
-
-3\. Select **Manage**.
 
 <Frame>
-  ![FastEdge applications
-  page](/images/docs/fastedge/manage-apps/manage-apps-menu.png)
+  ![FastEdge application management page showing Save changes, Actions buttons, and the Metrics, Logs, Response headers, Environment variables, Secrets, and Edge Storage tabs](/images/docs/fastedge/manage-apps/app-management-page-annotated.png)
 </Frame>
 
-4\. Check and update your application's configuration as required.
+The following tabs are available on the management page:
 
-## Stop or start an application
+- **Metrics**: response status counts and runtime duration charts.
+- **Logs**: enable log collection and filter log entries.
+- **Response headers**: add HTTP headers to every application response.
+- **Environment variables**: define configuration values the application reads at runtime.
+- **Secrets**: link encrypted secrets from Secrets Manager to the application.
+- **Edge Storage**: link key-value stores to the application.
 
-You can change the running state of your application and decide if you want to have it running and processing requests, or stopped. The latter might be useful if you need to update the application's configuration or want to upload a new version of the application's binary file.
+Changes across all tabs are applied together when clicking **Save changes** in the page header.
 
-An application can be stopped for the following reasons:
+The table below describes when to use each configuration option:
 
-- You manually stopped it, as described in the following instructions. You can restart the application at any time.
+| Feature | Use for |
+|---------|---------|
+| Response headers | HTTP headers added to every response — CORS, cache control, security headers |
+| Environment variables | Configuration values available to the application at runtime, up to 64 KB each |
+| Secrets | API keys, credentials, and other sensitive values encrypted at rest |
+| Edge Storage | Shared mutable key-value data the application reads at runtime |
+| Dictionary | Parameters over 64 KB and read-only edge node metadata — no UI tab, accessed only in code |
 
-- Payment for the product was unsuccessful. In this case, the application cannot be reactivated until payment is completed.
+## Application status
 
-To manually stop or activate the application:
+The **Actions** button in the page header provides the following options:
 
-1\. In the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard), navigate to **FastEdge** and choose the relevant page: **HTTP Applications** or **CDN Applications**.
-
-2\. On the **Applications** page, click the three-dot icon next to the application you want to configure.
-
-3\. Select **Manage**.
-
-4\. Click **Actions** and choose the relevant one: **Stop** or **Start**.
+- **Stop** — pause the application. Stopped applications don't process requests.
+- **Start** — resume a stopped application.
+- **Edit application** — update the application name or description.
+- **Update binary** — upload a new compiled Wasm binary.
+- **Create template** — save the current configuration as a reusable template.
+- **Delete** — permanently remove the application.
 
 <Frame>
-  ![FastEdge applications page](/images/docs/fastedge/manage-apps/stop-app.png)
+  ![Application management page with the Actions menu open showing Stop, Edit application, Update binary, Create template, and Delete](/images/docs/fastedge/manage-apps/stop-app.png)
 </Frame>
 
-The application status will be changed respectively.
+An application may also stop automatically if payment for the product fails. In that case, it can't be restarted until payment is completed.
 
-## View and enable logging
+## Metrics
 
-If you want to record logs for your FastEdge application, make sure that you have the **Enable logging** toggle enabled.
+The **Metrics** tab shows two charts for the selected time range:
+
+- **Response Status** — request count grouped by HTTP status code.
+- **Runtime Duration (ms)** — handler execution time per request.
+
+Use the time-range dropdown and the interval control in the chart header to adjust the view.
+
+## Logs
+
+Logging is disabled by default. After enabling, the application records logs for 30 minutes, then stops automatically.
+
+To enable logging:
+
+1\. Select the **Logs** tab.
+
+2\. Turn on the **Enable logging** toggle.
 
 <Frame>
-  ![FastEdge appl page with logging tab
-  open](/images/docs/fastedge/manage-apps/view-logging.png)
+  ![Logs tab with the Enable logging toggle turned on and Minutes remaining showing 30](/images/docs/fastedge/manage-apps/view-logging.png)
 </Frame>
 
-By default, FastEdge applications don't generate logs. After you turn on the Enable logging toggle, the application will record logs for 30 minutes. You can monitor the remaining logging time by checking the countdown next to the toggle.
+The remaining logging time appears next to the toggle as **Minutes remaining: N**. To extend logging, turn the toggle off and on again.
 
-After 30 minutes, logging will stop, and the application will revert to its default no-logging state. To start logging, enable the toggle again.
+Log entries appear in the table with the following columns:
 
-You can filter log data according to the following criteria:
+- **Client IP address** — IP of the client that sent the request.
+- **Timestamp (UTC)** — time the request was received.
+- **Edge name** — identifier of the edge node that handled the request.
+- **Request ID** — unique identifier assigned to the request.
+- **Logs** — application log output for that request.
 
-- **Timestamp**. Choose the date and time when the logs have been recorded. By default, the table displays data for the past hour.
+Use the text search field above the table to filter by log content, or select a date range. The **Refresh rate** dropdown controls how often the table updates — it defaults to 10 seconds when logging is active.
 
-- **Client IP address**. View logs collected for a particular IP.
+## Response headers
 
-- **Edge name**. Search within the **Logs** column.
-
-## Response Headers
-
-On the **Response Headers** tab, you can update or enhance the functionality of your application by adding or modifying HTTP response headers.
-
-These Response Headers will be added to every response. For example, you may include CORS (cross-origin resource sharing) headers in each response to ensure secure communication between origins.
+Headers defined on the **Response headers** tab are added to every application response.
 
 <Frame>
-  ![FastEdge applications response
-  headers](/images/docs/fastedge/manage-apps/response-headers.png)
+  ![Response headers tab with an Access-Control-Allow-Origin header set to https://example.com](/images/docs/fastedge/manage-apps/response-headers.png)
 </Frame>
 
-## Environment Variables
+To add a header, click **Add response header**, enter the header name in the **Key** field and the value in the **Value** field, then click **Save changes**.
 
-On the **Environment Variables** tab, you can update or enhance the functionality of your application by adding or modifying environment variables.
+## Environment variables
 
-For example, the following screenshots illustrate the configuration for a geo-location application. Environment variables are set based on the geo-IP of the client making the request. With this configuration, users will view different versions of a website based on their location.
+Environment variables are configuration values the application reads at runtime. Each value is limited to 64 KB. For values that exceed this limit, use the [dictionary](#dictionary) instead.
 
 <Frame>
-  ![FastEdge applications environment
-  variables](/images/docs/fastedge/manage-apps/env-vars.png)
+  ![Environment variables tab with three variables configured showing key-value pairs](/images/docs/fastedge/manage-apps/env-vars.png)
 </Frame>
 
- <Info>
-**Info**
+To add a variable, click **Add environment variable**, enter the variable name in the **Key** field and its value in the **Value** field, then click **Save changes**.
 
-By using our [FastEdge SDK Javascript](https://g-core.github.io/FastEdge-sdk-js/reference/fastedge/env/) or [FastEdge SDK Rust](https://docs.rs/fastedge/latest/fastedge/dictionary/fn.get.html), you can configure these variables according to your use cases.
-
-</Info>
+Access environment variables in code using the [JavaScript SDK](https://g-core.github.io/FastEdge-sdk-js/reference/fastedge/env/) or [Rust SDK](https://docs.rs/fastedge/latest/fastedge/dictionary/fn.get.html).
 
 ## Secrets
 
-On the **Secrets** tab, you can update or enhance the functionality of your application by adding or modifying secrets.
+Secrets are encrypted values stored in [Secrets Manager](/fastedge/secrets-manager/manage-secrets) and linked to the application under a local key name. The application uses the key name to retrieve the value at runtime without the value appearing in configuration.
 
 <Frame>
-  ![FastEdge applications
-  secrets](/images/docs/fastedge/manage-apps/secrets.png)
+  ![Secrets tab with ACCESS_KEY linked to the S3_ACCESS_TOKEN_BINARY_DUMP secret from Secrets Manager](/images/docs/fastedge/manage-apps/secrets.png)
 </Frame>
 
-Providing a secret to your application:
+To link a secret:
 
-You define a name for the secret within the application and then select a secret from [Secrets Manager](/fastedge/secrets-manager/manage-secrets), linking it to the application.
+1\. Click **Add secret**.
 
-- **ACCESS_KEY** - name as defined in the application.
-- **S3_ACCESS_TOKEN_BINARY_DUMP** - secret that is linked to the application.
+2\. In the **Key** field, enter the name the application will use to reference the secret.
 
-To access the secret within the application, use secret::get("ACCESS_KEY"), where ACCESS_KEY is the secret name defined in the application.
+3\. In the second field, select a secret from Secrets Manager. To create a new secret first, select **Add secret** in the dropdown.
 
- <Info>
-**Info**
+4\. Click **Save changes**.
 
-By using our [Javascript SDK](https://g-core.github.io/FastEdge-sdk-js/reference/fastedge/secret/get-secret/) or [Rust SDK](https://docs.rs/fastedge/latest/fastedge/secret/index.html), you can configure these secrets according to your use cases.
-
-</Info>
+Access the secret in code using `secret::get("KEY_NAME")` in the [Rust SDK](https://docs.rs/fastedge/latest/fastedge/secret/index.html), or [`getSecret`](https://g-core.github.io/FastEdge-sdk-js/reference/fastedge/secret/get-secret/) in the JavaScript SDK.
 
 ## Edge Storage
 
-On the **Edge Storage** tab, you can update or enhance the functionality of your application by adding or modifying edge storage.
+Edge Storage links a key-value store to the application under a local key name. The application uses the key name to open the store at runtime.
 
 <Frame>
-  ![FastEdge applications edge
-  storage](/images/docs/fastedge/manage-apps/storage.png)
+  ![Edge Storage tab with BLACKLIST linked to the KNOWN_BAD_IP_ADDRESSES store](/images/docs/fastedge/manage-apps/storage.png)
 </Frame>
 
-Providing Edge Storage to your application:
+To link a store:
 
-You define a name for the store within the application and then select an edge store from [Edge Storage](/fastedge/kv-stores/manage-kv-store), linking it to the application.
+1\. Click **Add Edge Storage**.
 
-- **BLACKLIST** - name as defined in the application.
-- **KNOWN_BAD_IP_ADDRESSES** - storage that is linked to the application.
+2\. In the **Key** field, enter the name the application will use to open the store.
 
-To access the storage within the application you would use `Store::open("BLACKLIST")` as this is the name as defined within the application.
+3\. In the second field, select a store from [Edge Storage](/fastedge/kv-stores/manage-kv-store). To create a new store first, select **Add Edge Storage** in the dropdown.
 
- <Info>
-**Info**
+4\. Click **Save changes**.
 
-By using our [Javascript SDK](https://g-core.github.io/FastEdge-sdk-js/reference/fastedge/kv/open/) or [Rust SDK](https://docs.rs/fastedge/latest/fastedge/key_value/struct.Store.html), you can configure the Edge Storage according to your use cases.
+Access the store in code using `Store::open("KEY_NAME")` in the [Rust SDK](https://docs.rs/fastedge/latest/fastedge/key_value/struct.Store.html), or [`open`](https://g-core.github.io/FastEdge-sdk-js/reference/fastedge/kv/open/) in the JavaScript SDK.
 
-</Info>
+## Dictionary
+
+The dictionary is a read-only key-value store accessible from code — it has no tab on the management page. It serves two purposes: reading edge node metadata and reading application parameters that exceed the 64 KB environment variable limit.
+
+### Edge node metadata
+
+FastEdge automatically populates the following keys on every edge node. These values reflect the physical node handling each request:
+
+| Key | Description |
+|-----|-------------|
+| `hostname` | Hostname of the edge node |
+| `env` | Deployment environment: `prod` or `preprod` |
+| `role` | Node role: `edge` or `shield` |
+| `region` | Geographic region of the edge node |
+| `country` | Full name of the country where the node is located |
+| `country2char` | ISO 3166-1 alpha-2 country code |
+| `city` | City where the node is located |
+| `dc` | Point of Presence (PoP) identifier |
+| `ipv4_addr_ip` | IPv4 address of the edge node |
+| `ipv6_addr_ip` | IPv6 address of the edge node |
+| `ipv6_enabled` | Whether IPv6 is enabled on the node: `true` or `false` |
+
+Built-in keys take priority over application parameters with the same name. To avoid unexpected behavior, don't use built-in key names as environment variable names.
+
+### Large application parameters
+
+Standard environment variable access is limited to 64 KB per value. For parameters that exceed this limit, define them on the **Environment variables** tab and read them through the dictionary using the same key name.
+
+### Read dictionary values in code
+
+In Rust, use the [`dictionary` module](https://docs.rs/fastedge/latest/fastedge/dictionary/index.html):
+
+```rust
+use fastedge::dictionary;
+
+if let Some(value) = dictionary::get("country") {
+    // use value
+}
+```
+
+In JavaScript, use [`getEnv`](https://g-core.github.io/FastEdge-sdk-js/reference/fastedge/env/) from `fastedge::env`:
+
+```js
+import { getEnv } from 'fastedge::env';
+
+const country = getEnv('country');
+```
