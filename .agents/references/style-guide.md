@@ -152,6 +152,119 @@ and read a prompt. Do not explain actions that the interface or terminal output 
 - Explaining what a button does after the reader just clicked it
 - "Click **Save** to save your changes" — saving is implied by clicking Save
 
+### Do not describe features by what they are not
+
+Never write a sentence whose only purpose is to say that a feature lacks something or exists outside a context the reader is not in. Describe what the feature IS and what it DOES — not where it is absent.
+
+**Bad:**
+- "The dictionary has no tab on the management page."
+- "This feature is not available in the portal."
+- "There is no button for this action."
+
+**Why it is bad:** The reader is not in the refrigerator, not writing on a wall behind a garage. They are in the context described by the article. Stating the absence of something in a context they are not thinking about adds noise and implies the writer does not trust them.
+
+**Good:** Describe the feature directly — what it is, how to access it, what it does.
+- "The dictionary is a read-only key-value store accessible from application code."
+
+### Prose rhythm: develop one idea, don't list isolated facts
+
+Each paragraph should develop a single thought — not fire a series of disconnected facts at the reader. The test: can every sentence stand alone without the others? If yes, the paragraph has no flow.
+
+**Bad — dictionary-card pattern (each sentence is an isolated fact):**
+
+> Environment variables are configuration values.
+> Each value is limited to 64 KB.
+> For values that exceed this limit, use the dictionary.
+
+**Good — one developed idea:**
+
+> Environment variables pass configuration values to the application at runtime. Each variable can store up to 64 KB of data; for larger values, define the parameter on the **Environment variables** tab and read it through the [dictionary](#dictionary) using the same key name.
+
+The difference: the second version shows causality — *why* the 64 KB limit matters and *what to do about it* — in the same breath as the definition. The reader does not have to assemble meaning from three separate sentences.
+
+**How to check your own writing:**
+
+- Read the paragraph aloud. If every sentence ends with a full stop and feels like a separate bullet, rewrite.
+- Each sentence should either introduce the idea, expand it, or resolve it — not start a new unrelated idea.
+- Vary the opening of sentences. If three in a row start with `[Feature] is/are/links/shows`, the paragraph reads as a catalog.
+
+**Common robotic patterns to avoid:**
+
+| Pattern | What it sounds like | Fix |
+|---------|---------------------|-----|
+| `X is Y.\nY does Z.\nZ does W.` | Glossary entries | Combine into one sentence with a relative clause |
+| `The X tab shows A.\nThe X tab also shows B.\nUse X to do C.` | Bullet list in disguise | Lead with the purpose, then describe what serves that purpose |
+| Opening five sections in a row with `[Subject] is/are/links/shows` | Feature catalog | Lead some sections with the use case: "Use X to..." |
+
+### Group similar sections, don't list them
+
+When an article covers four or more conceptually related features in sequence, do not give each its own `##` heading. Group them under a single `##` with `###` subheadings. This signals to the reader that these features belong to one topic and reduces the "feature catalog" feeling.
+
+**Bad structure — five independent `##` sections:**
+```
+## Response headers
+## Environment variables
+## Secrets
+## Edge Storage
+## Dictionary
+```
+
+**Good structure — grouped by logical role:**
+```
+## Application configuration
+### Response headers
+### Environment variables
+### Secrets
+### Edge Storage
+
+## Dictionary
+```
+
+The grouping should reflect how the reader thinks about the features, not how they are ordered in the UI. Ask: "What task is the reader trying to accomplish?" and group by answer:
+
+- Lifecycle management → one group
+- Observability (metrics, logs) → one group
+- Configuration (headers, env vars, secrets, storage) → one group
+- Standalone concepts that don't fit the pattern → separate `##`
+
+### Bridge sentences between adjacent similar sections
+
+When moving from one section to the next within a group, the reader may ask "how is this different from what I just read?" Add a short bridge sentence at the **start** of the new section — not at the end of the previous one. The bridge is the first sentence the reader sees, which is where it has the most impact.
+
+**Wrong — bridge at the end of section N:**
+```
+...Access the secret in code using secret::get("KEY_NAME").
+
+Unlike secrets, which store fixed sensitive values, Edge Storage provides...
+
+### Edge Storage
+
+Edge Storage gives the application access to a shared key-value store...
+```
+
+**Correct — bridge at the start of section N+1:**
+```
+...Access the secret in code using secret::get("KEY_NAME").
+
+### Edge Storage
+
+Unlike secrets, which store fixed sensitive values, Edge Storage provides a shared
+key-value store that applications can read and update at runtime. Link a store...
+```
+
+**Example bridges (FastEdge manage-apps article):**
+
+> **### Secrets**
+> Use environment variables for ordinary configuration values. When a value is sensitive — an API key, access token, or password — store it as a secret instead.
+
+> **### Edge Storage**
+> Unlike secrets, which store fixed sensitive values, Edge Storage provides a shared key-value store that applications can read and update at runtime.
+
+> **## Dictionary**
+> Edge Storage is mutable and application-defined. The dictionary is different: it gives application code read-only access to edge node metadata that FastEdge populates automatically, and to application parameters that exceed the 64 KB limit.
+
+**When to use:** any time the reader could confuse one section with the previous one. Without bridges, readers experience "definition fatigue" — each new section feels disconnected, and the article reads as a feature catalog.
+
 ### No redundancy or tautology
 
 Do not restate information the reader already has from a heading, table, code block, or the previous sentence.

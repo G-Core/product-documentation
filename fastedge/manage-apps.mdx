@@ -29,8 +29,6 @@ The following tabs are available on the management page:
 - **Secrets**: link encrypted secrets from Secrets Manager to the application.
 - **Edge Storage**: link key-value stores to the application.
 
-Changes across all tabs are applied together when clicking **Save changes** in the page header.
-
 The table below describes when to use each configuration option:
 
 | Feature | Use for |
@@ -39,11 +37,11 @@ The table below describes when to use each configuration option:
 | Environment variables | Configuration values available to the application at runtime, up to 64 KB each |
 | Secrets | API keys, credentials, and other sensitive values encrypted at rest |
 | Edge Storage | Shared mutable key-value data the application reads at runtime |
-| Dictionary | Parameters over 64 KB and read-only edge node metadata — no UI tab, accessed only in code |
+| Dictionary | Parameters over 64 KB and read-only edge node metadata — accessed from application code |
 
-## Application status
+## Application lifecycle
 
-The **Actions** button in the page header provides the following options:
+Use the **Actions** button in the page header to control the application lifecycle — stop or restart it, deploy a new binary, save its configuration as a reusable template, or delete it entirely.
 
 - **Stop** — pause the application. Stopped applications don't process requests.
 - **Start** — resume a stopped application.
@@ -60,12 +58,7 @@ An application may also stop automatically if payment for the product fails. In 
 
 ## Metrics
 
-The **Metrics** tab shows two charts for the selected time range:
-
-- **Response Status** — request count grouped by HTTP status code.
-- **Runtime Duration (ms)** — handler execution time per request.
-
-Use the time-range dropdown and the interval control in the chart header to adjust the view.
+Use the **Metrics** tab to understand how the application behaves in production. **Response Status** shows how requests are distributed across HTTP status codes, while **Runtime Duration (ms)** helps identify latency spikes or performance regressions. Use the time-range dropdown and the interval control in the chart header to narrow or widen the view.
 
 ## Logs
 
@@ -93,9 +86,13 @@ Log entries appear in the table with the following columns:
 
 Use the text search field above the table to filter by log content, or select a date range. The **Refresh rate** dropdown controls how often the table updates — it defaults to 10 seconds when logging is active.
 
-## Response headers
+## Application configuration
 
-Headers defined on the **Response headers** tab are added to every application response.
+The **Response headers**, **Environment variables**, **Secrets**, and **Edge Storage** tabs each control a different aspect of how the application receives configuration and accesses external data at runtime.
+
+### Response headers
+
+Use response headers to add CORS, cache-control, security, or custom headers to every application response.
 
 <Frame>
   ![Response headers tab with an Access-Control-Allow-Origin header set to https://example.com](/images/docs/fastedge/manage-apps/response-headers.png)
@@ -103,9 +100,9 @@ Headers defined on the **Response headers** tab are added to every application r
 
 To add a header, click **Add response header**, enter the header name in the **Key** field and the value in the **Value** field, then click **Save changes**.
 
-## Environment variables
+### Environment variables
 
-Environment variables are configuration values the application reads at runtime. Each value is limited to 64 KB. For values that exceed this limit, use the [dictionary](#dictionary) instead.
+Environment variables pass configuration values to the application at runtime. Each variable can store up to 64 KB of data; for larger values, define the parameter here and read it from code through the [dictionary](#dictionary) using the same key name.
 
 <Frame>
   ![Environment variables tab with three variables configured showing key-value pairs](/images/docs/fastedge/manage-apps/env-vars.png)
@@ -113,11 +110,13 @@ Environment variables are configuration values the application reads at runtime.
 
 To add a variable, click **Add environment variable**, enter the variable name in the **Key** field and its value in the **Value** field, then click **Save changes**.
 
-Access environment variables in code using the [JavaScript SDK](https://g-core.github.io/FastEdge-sdk-js/reference/fastedge/env/) or [Rust SDK](https://docs.rs/fastedge/latest/fastedge/dictionary/fn.get.html).
+Access environment variables in code using the [JavaScript SDK](https://g-core.github.io/FastEdge-sdk-js/reference/fastedge/env/) or standard Rust `std::env::var("KEY_NAME")`.
 
-## Secrets
+### Secrets
 
-Secrets are encrypted values stored in [Secrets Manager](/fastedge/secrets-manager/manage-secrets) and linked to the application under a local key name. The application uses the key name to retrieve the value at runtime without the value appearing in configuration.
+Use environment variables for ordinary configuration values. When a value is sensitive — an API key, access token, or password — store it as a secret instead.
+
+Secrets let an application access sensitive values without storing them directly in its configuration. Each secret is stored in [Secrets Manager](/fastedge/secrets-manager/manage-secrets) and linked to the application under a local key name that the code uses to retrieve the value at runtime.
 
 <Frame>
   ![Secrets tab with ACCESS_KEY linked to the S3_ACCESS_TOKEN_BINARY_DUMP secret from Secrets Manager](/images/docs/fastedge/manage-apps/secrets.png)
@@ -135,9 +134,9 @@ To link a secret:
 
 Access the secret in code using `secret::get("KEY_NAME")` in the [Rust SDK](https://docs.rs/fastedge/latest/fastedge/secret/index.html), or [`getSecret`](https://g-core.github.io/FastEdge-sdk-js/reference/fastedge/secret/get-secret/) in the JavaScript SDK.
 
-## Edge Storage
+### Edge Storage
 
-Edge Storage links a key-value store to the application under a local key name. The application uses the key name to open the store at runtime.
+Unlike secrets, which store fixed sensitive values, Edge Storage provides a shared key-value store that applications can read and update at runtime. Link a store under a local key name, and the code uses that name to open and query it.
 
 <Frame>
   ![Edge Storage tab with BLACKLIST linked to the KNOWN_BAD_IP_ADDRESSES store](/images/docs/fastedge/manage-apps/storage.png)
@@ -157,7 +156,7 @@ Access the store in code using `Store::open("KEY_NAME")` in the [Rust SDK](https
 
 ## Dictionary
 
-The dictionary is a read-only key-value store accessible from code — it has no tab on the management page. It serves two purposes: reading edge node metadata and reading application parameters that exceed the 64 KB environment variable limit.
+Edge Storage is mutable and application-defined. The dictionary is different: it gives application code read-only access to edge node metadata that FastEdge populates automatically on every node, and to application parameters that exceed the 64 KB environment variable limit.
 
 ### Edge node metadata
 
@@ -195,7 +194,7 @@ if let Some(value) = dictionary::get("country") {
 }
 ```
 
-In JavaScript, use [`getEnv`](https://g-core.github.io/FastEdge-sdk-js/reference/fastedge/env/) from `fastedge::env`:
+In JavaScript, dictionary values are exposed through `getEnv()` from the [`fastedge::env`](https://g-core.github.io/FastEdge-sdk-js/reference/fastedge/env/) module:
 
 ```js
 import { getEnv } from 'fastedge::env';
