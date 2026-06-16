@@ -1,0 +1,94 @@
+---
+title: Set up Rust for FastEdge CDN apps
+sidebarTitle: Rust (CDN / Proxy-Wasm)
+ai-navigation: Set up Rust for FastEdge CDN applications using the proxy-wasm crate and wasm32-wasip1, add the WebAssembly target, configure Cargo.toml, and verify the toolchain compiles a CDN filter.
+---
+
+FastEdge CDN applications run inside Gcore's CDN pipeline and can intercept HTTP traffic at four stages: on request headers, on request body, on response headers, and on response body. They are built on the [Proxy-Wasm](https://github.com/proxy-wasm/spec) specification — an open standard for WebAssembly-based proxy extensions used across CDN and service mesh environments.
+
+In Rust, Proxy-Wasm applications use the `proxy-wasm` crate. Instead of a single request handler, a CDN application implements callbacks such as `on_http_request_headers` and `on_http_response_headers`, which the CDN runtime invokes at different stages of request processing.
+
+[Rust and Cargo](https://rustup.rs) are required. On Windows, also install [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022) with the **Desktop development with C++** workload.
+
+## Add the WebAssembly target
+
+CDN apps compile to `wasm32-wasip1`. Add the target once — it applies to all future builds:
+
+```sh
+rustup target add wasm32-wasip1
+```
+
+If the [Legacy Rust SDK](/fastedge/getting-started/setup-rust-legacy) is already set up, this target is already present.
+
+## Configure a project
+
+FastEdge applications compile to WebAssembly libraries. Two changes from the Cargo defaults are needed: the output type must be `cdylib`, and `proxy-wasm` must be listed as a dependency.
+
+1. Create the library crate:
+
+   ```sh
+   cargo new --lib my-cdn-app
+   cd my-cdn-app
+   ```
+
+2. Replace the contents of `Cargo.toml`:
+
+   ```toml
+   [package]
+   name = "my_cdn_app"
+   version = "0.1.0"
+   edition = "2021"
+
+   [lib]
+   crate-type = ["cdylib"]
+
+   [dependencies]
+   proxy-wasm = "0.2"
+   log = "0.4"
+   ```
+
+   `proxy-wasm = "0.2"` provides the filter traits and the `proxy_wasm::main!` entry point. `log` is used for structured logging inside the CDN pipeline.
+
+## Verify the toolchain
+
+A minimal filter that adds a custom request header is enough to confirm the toolchain produces a valid CDN binary. Replace `src/lib.rs`:
+
+```rust
+use proxy_wasm::traits::*;
+use proxy_wasm::types::*;
+
+proxy_wasm::main! {{
+    proxy_wasm::set_log_level(LogLevel::Trace);
+    proxy_wasm::set_root_context(|_| -> Box<dyn RootContext> {
+        Box::new(MyRoot)
+    });
+}}
+
+struct MyRoot;
+impl Context for MyRoot {}
+impl RootContext for MyRoot {
+    fn create_http_context(&self, _: u32) -> Option<Box<dyn HttpContext>> {
+        Some(Box::new(MyFilter))
+    }
+    fn get_type(&self) -> Option<ContextType> {
+        Some(ContextType::HttpContext)
+    }
+}
+
+struct MyFilter;
+impl Context for MyFilter {}
+impl HttpContext for MyFilter {
+    fn on_http_request_headers(&mut self, _: usize, _: bool) -> Action {
+        self.add_http_request_header("x-fastedge", "cdn");
+        Action::Continue
+    }
+}
+```
+
+Build it:
+
+```sh
+cargo build --release --target wasm32-wasip1
+```
+
+The first build downloads dependencies and takes one to two minutes. When it completes without errors, the toolchain is ready — the compiled binary is at `./target/wasm32-wasip1/release/my_cdn_app.wasm`. That file can be uploaded to FastEdge as a CDN application.

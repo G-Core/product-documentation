@@ -8,24 +8,35 @@ FastEdge runs WebAssembly applications on Gcore's global edge network. Apps exec
 
 ## Application types
 
-FastEdge offers two application types, depending on where in the request path the application runs.
+FastEdge supports three application types. The type determines which runtime interface the application targets and, in turn, which SDK setup to follow.
 
-**HTTP Applications** receive and respond to HTTP requests directly. The edge node acts as the origin: the application handles the full request-response cycle and returns a response to the client. Use this type for standalone edge services — APIs, redirects, authentication proxies, and similar workloads.
+**Modern HTTP applications** receive and respond to HTTP requests directly. They implement the [WASI P2](https://wasi.dev/releases/wasi-p2) `wasi:http/proxy` interface — the current recommended standard for WebAssembly HTTP applications. Supported in Rust (via the `wstd` crate) and JavaScript. Use this type for new edge services: APIs, redirects, authentication proxies, and similar workloads.
 
-**CDN Applications** run alongside a CDN resource. Before the request reaches the origin, the application can inspect or modify it. When the origin responds, the application can also inspect or modify the response before it is returned to the client. Use this type when extending an existing CDN-served site or API with edge logic.
+**Legacy HTTP applications** also handle HTTP requests directly, but use Gcore's own `fastedge` crate rather than the WASI standard. They target [WASI P1](https://wasi.dev/releases/wasi-p1), the original WebAssembly system interface. Most existing FastEdge HTTP applications written in Rust use this approach. Use it when maintaining existing applications or when you need FastEdge-specific APIs not yet available in the Modern SDK.
 
-Although HTTP and CDN Applications run in different places, they share the same deployment workflow:
+**CDN applications** run inside a CDN resource's request pipeline. They implement the [Proxy-Wasm](https://github.com/proxy-wasm/spec) specification — an open standard for WebAssembly-based proxy extensions — and can intercept traffic at four stages: on request headers, on request body, on response headers, and on response body. Supported in Rust only. Use this type when extending an existing CDN-served site with edge logic.
+
+To get started, choose the setup guide that matches the application type and language:
+
+| App type | Language | Setup guide |
+|----------|----------|-------------|
+| Modern HTTP | Rust | [Rust (Modern HTTP)](/fastedge/getting-started/setup-rust-modern) |
+| Modern HTTP | JavaScript | [JavaScript](/fastedge/getting-started/setup-javascript) |
+| Legacy HTTP | Rust | [Rust (Legacy HTTP)](/fastedge/getting-started/setup-rust-legacy) |
+| CDN | Rust | [Rust (CDN / Proxy-Wasm)](/fastedge/getting-started/setup-rust-cdn) |
+
+All three types share the same deployment workflow:
 
 1. Compile the application to WebAssembly and [upload the binary](/fastedge/getting-started/create-fastedge-apps) to FastEdge.
 2. Gcore deploys it across edge nodes worldwide. Traffic is automatically routed and load-balanced.
-3. When a request arrives, the runtime executes the application and returns an HTTP response.
+3. When a request arrives, the runtime executes the application and returns the result to the client.
 
 ## Key benefits
 
 - **Run code close to users.** FastEdge executes on the edge node closest to each request, reducing round-trip latency without relocating the origin.
 - **Deploy without managing servers.** Gcore handles deployment, scaling, and routing across the global network. The application binary is the only artifact to maintain.
 - **Isolated execution per application.** Each application runs in a WebAssembly sandbox, isolated from other applications on the same node.
-- **Write in any language that compiles to WebAssembly.** Rust, JavaScript, Go, and other languages work without changes to the FastEdge runtime.
+- **Write in Rust or JavaScript.** Both languages have first-class SDK support. Rust covers all three application types; JavaScript supports Modern HTTP applications.
 
 ## Use cases
 
