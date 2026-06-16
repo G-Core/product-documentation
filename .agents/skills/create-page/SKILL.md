@@ -55,27 +55,60 @@ Answer these questions before writing:
 
 - [ ] No: just, simply, ensure, be sure, make sure, platform, obviously, clearly, seamlessly, robust, scalable, etc., and so on, leverage, utilize
 
-## Step 4. Validate MDX
+## Step 4. Screenshots
 
-```powershell
-node -e "
-const {compile}=require('@mdx-js/mdx');
-const fs=require('fs');
-const c=fs.readFileSync('PATH_TO_FILE','utf8');
-compile(c).then(()=>console.log('OK')).catch(e=>console.error('ERROR:',e.message));
-"
+### Format — always single-line Frame
+
+```mdx
+<Frame>![Alt text describing what the screenshot shows](/images/docs/{product}/{section}/{article-slug}/{filename}.png)</Frame>
 ```
 
-Fix any errors before proceeding.
+**Never** use `<img>` tags with JSX styles inside `<Frame>`:
 
-## Step 5. Check frontmatter
+```mdx
+<!-- WRONG — do not use -->
+<Frame>
+  <img src="..." style={{ width: "78%" }} />
+</Frame>
+```
+
+### Taking screenshots
+
+Use the `user-Playwright` MCP server (never `cursor-ide-browser`). Minimum viewport: 1400×900.
+
+```js
+await page.evaluate(() => window.resizeTo(1400, 900));
+await page.screenshot({ path: 'C:/Projects/product-documentation/images/docs/...', fullPage: false });
+```
+
+### Image path convention
+
+`/images/docs/{product}/{section}/{article-slug}/{descriptive-name}.png`
+
+Example: `/images/docs/cloud/networking/load-balancers/manage-load-balancers/balancer-overview.png`
+
+Place the image files in the matching directory under `images/docs/` in the repository.
+
+## Step 5. Validate MDX
+
+`@mdx-js/mdx` is installed in `C:\Temp`, not in the project root. Run the validator from `C:\Temp` with an absolute path to the file:
+
+```powershell
+cd C:\Temp; node -e "const {compile}=require('@mdx-js/mdx');const fs=require('fs');const c=fs.readFileSync('C:\\Projects\\product-documentation\\PATH_TO_FILE','utf8');compile(c).then(()=>console.log('OK')).catch(e=>console.error('ERROR:',e.message));"
+```
+
+If it prints `OK`, proceed. If it prints `ERROR:`, fix the reported line before proceeding.
+
+Do NOT run this from the `product-documentation` directory — there is no `node_modules` there and the command will silently fail with `MODULE_NOT_FOUND`.
+
+## Step 6. Check frontmatter
 
 - [ ] `title` present
 - [ ] `sidebarTitle` present (if different from title)
 - [ ] `ai-navigation` present — one sentence, starts with action verb, no colons or special chars
 - [ ] No `description` field
 
-## Step 6. Update docs.json
+## Step 7. Update docs.json
 
 Add the new article to the correct group in `docs.json`. Validate JSON is still valid:
 
@@ -83,7 +116,7 @@ Add the new article to the correct group in `docs.json`. Validate JSON is still 
 node -e "JSON.parse(require('fs').readFileSync('docs.json','utf8')); console.log('OK')"
 ```
 
-## Step 7. Article readiness checklist
+## Step 8. Article readiness checklist
 
 Before telling the user the article is ready, confirm all four:
 
