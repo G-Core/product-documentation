@@ -1,0 +1,63 @@
+---
+title: Set up JavaScript for FastEdge
+sidebarTitle: JavaScript
+ai-navigation: Set up the FastEdge JavaScript SDK, install Node.js v20 or higher, install the fastedge-sdk-js package, configure a project, and verify the toolchain compiles a FastEdge application to WebAssembly.
+---
+
+The FastEdge JavaScript SDK (`@gcoredev/fastedge-sdk-js`) compiles JavaScript applications to WebAssembly so they can run on Gcore's edge network. It is the recommended way to build FastEdge applications in JavaScript.
+
+[Node.js](https://nodejs.org) v20 or higher is required.
+
+## Install the SDK
+
+The steps below set up a minimal project manually. To scaffold one from a template instead, run `npx fastedge-init` after installation — it walks through project type and structure interactively.
+
+```sh
+mkdir my-app
+cd my-app
+npm init -y
+npm install --save-dev @gcoredev/fastedge-sdk-js
+```
+
+`npm init -y` creates `package.json` with `"type": "commonjs"` by default. The SDK bundler requires ESM — change it before building:
+
+```sh
+npm pkg set type=module
+```
+
+After installation, three CLI tools are available via `npx`:
+
+| Tool | Purpose |
+|------|---------|
+| `fastedge-build` | Compiles JavaScript to a WebAssembly binary |
+| `fastedge-init` | Scaffolds a new project from a template |
+| `fastedge-assets` | Packages static files for edge serving |
+
+## Write a handler
+
+FastEdge applications register a `fetch` event listener that receives an HTTP request and returns a response. Create `src/index.js`:
+
+```js
+addEventListener('fetch', (event) => {
+  event.respondWith(new Response('Hello from FastEdge'));
+});
+```
+
+The `fetch` event model follows the [Service Worker API](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) convention. `event.respondWith()` accepts a `Response` object or a `Promise<Response>`. Under the hood, the SDK compiles to the [WASI P2](https://wasi.dev/releases/wasi-p2) `wasi:http/proxy` world — the same standard used by the Modern Rust SDK.
+
+## Verify the toolchain
+
+Compile the handler to a WebAssembly binary:
+
+```sh
+npx fastedge-build --input src/index.js --output wasm/app.wasm
+```
+
+A successful build prints:
+
+```
+Build success!!
+"src/index.js" -> "wasm/app.wasm"
+```
+
+The compiled binary is at `./wasm/app.wasm`. That file can be uploaded to FastEdge directly or used as the starting point for the next tutorial.
