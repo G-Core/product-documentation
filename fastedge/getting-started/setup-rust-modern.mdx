@@ -1,0 +1,74 @@
+---
+title: Set up Rust for FastEdge
+sidebarTitle: Rust (Modern)
+ai-navigation: Set up Rust for FastEdge HTTP applications using wstd and wasm32-wasip2, add the WebAssembly target, configure Cargo.toml with the wstd dependency, and verify the toolchain compiles successfully.
+---
+
+The Modern Rust SDK is based on [WASI-HTTP](https://github.com/WebAssembly/WASI), the standard WebAssembly interface for HTTP applications. It uses the `wstd` crate, which provides Rust bindings for WASI-HTTP, and is the recommended approach for new FastEdge HTTP applications.
+
+[Rust and Cargo](https://rustup.rs) are required. On Windows, also install [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022) with the **Desktop development with C++** workload.
+
+<Info>
+Existing apps built with the `fastedge` crate and `wasm32-wasip1` use a different setup — covered in the [Legacy Rust](/fastedge/getting-started/setup-rust-legacy) guide.
+</Info>
+
+## Add the WebAssembly target
+
+FastEdge runs applications compiled to `wasm32-wasip2`. Add the target once — it applies to all future builds:
+
+```sh
+rustup target add wasm32-wasip2
+```
+
+## Configure a project
+
+FastEdge applications compile to WebAssembly libraries rather than standalone executables, so start with a Rust library project. Two changes from the defaults are needed: the output type must be `cdylib` (a format the WASI runtime can load), and `wstd` must be listed as a dependency.
+
+1. Create the library crate:
+
+   ```sh
+   cargo new --lib my-app
+   cd my-app
+   ```
+
+2. Replace the contents of `Cargo.toml`:
+
+   ```toml
+   [package]
+   name = "my_app"
+   version = "0.1.0"
+   edition = "2021"
+
+   [lib]
+   crate-type = ["cdylib"]
+
+   [dependencies]
+   wstd = "0.6"
+   anyhow = "1"
+   ```
+
+   Without `crate-type = ["cdylib"]`, the build succeeds but the output can't run as a FastEdge application.
+
+## Verify the toolchain
+
+A minimal handler is enough to confirm the toolchain produces a valid WebAssembly component. Replace `src/lib.rs`:
+
+```rust
+use wstd::http::body::Body;
+use wstd::http::{Request, Response};
+
+#[wstd::http_server]
+async fn main(_request: Request<Body>) -> anyhow::Result<Response<Body>> {
+    Ok(Response::builder()
+        .status(200)
+        .body(Body::from("OK"))?)
+}
+```
+
+Build it:
+
+```sh
+cargo build --release --target wasm32-wasip2
+```
+
+The first build downloads dependencies and takes one to two minutes. When it completes without errors, the toolchain is ready — the compiled binary is at `./target/wasm32-wasip2/release/my_app.wasm`.
