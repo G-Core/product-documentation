@@ -1,0 +1,54 @@
+﻿---
+title: Protect objects from deletion with Object Lock
+sidebarTitle: Protect objects with Object Lock
+ai-navigation: Use S3 Object Lock to prevent objects in Gcore S3 Standard storage from being deleted or overwritten for a defined retention period. Enable Object Lock at bucket creation with AWS CLI, set Compliance or Governance retention modes, and configure default retention policies using put-object-lock-configuration.
+---
+
+S3 Object Lock allows you to protect objects from deletion or modification for a specified retention period. It works via the S3 protocol, not the Gcore API.
+
+<Info>
+Object Lock is currently supported on S3 Standard locations. Support for S3 Fast locations is not yet confirmed.
+</Info>
+
+## Before you begin
+
+Object Lock must be enabled at bucket creation time — it cannot be activated on an existing bucket. Enabling Object Lock also enables versioning on the bucket automatically. Each object version can have its own retention period.
+
+Object Lock supports two retention modes:
+
+- **Compliance** — no user can delete or overwrite a protected object until its retention period expires, including account administrators.
+- **Governance** — users with special IAM permissions can override or remove retention settings before the period expires.
+
+## Create a bucket with Object Lock enabled
+
+Run the following command to create a bucket with Object Lock enabled:
+
+```sh
+aws s3api create-bucket \
+  --bucket my-bucket \
+  --object-lock-enabled-for-bucket \
+  --endpoint-url=https://luxembourg-2.storage.gcore.dev
+```
+
+Replace:
+
+- `my-bucket` with your bucket name.
+- `https://luxembourg-2.storage.gcore.dev` with your storage endpoint. To choose the correct value, refer to the "[S3 service URLs and default region names](/storage/manage-object-storage/s3-service-urls-and-default-region-names)" guide.
+
+## Set a default retention policy
+
+A default retention policy automatically applies to all new objects uploaded to the bucket. To set one, run:
+
+```sh
+aws s3api put-object-lock-configuration \
+  --bucket my-bucket \
+  --object-lock-configuration '{"ObjectLockEnabled":"Enabled","Rule":{"DefaultRetention":{"Mode":"COMPLIANCE","Days":30}}}' \
+  --endpoint-url=https://luxembourg-2.storage.gcore.dev
+```
+
+Replace:
+
+- `my-bucket` with your bucket name.
+- `COMPLIANCE` with `GOVERNANCE` if you prefer the governance retention mode.
+- `30` with the number of days objects should be retained.
+- `https://luxembourg-2.storage.gcore.dev` with your storage endpoint.
