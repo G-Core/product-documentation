@@ -452,6 +452,17 @@ The first occurrence is the canonical link.
 The link text must be the noun or short verb phrase that names the destination.
 Never use a full clause, sentence fragment, or description.
 
+### Non-breaking spaces in multi-word link text
+
+When link text contains two words that must not wrap across lines (e.g. product names, acronym + noun), use `&nbsp;` between the words:
+
+```mdx
+[KV&nbsp;store](/fastedge/kv-stores/manage-kv-store)
+[API&nbsp;token](/account-settings/api-tokens)
+```
+
+Plain space inside `[...]` allows the browser to break the link mid-text, which looks broken in narrow viewports.
+
 | Bad | Good |
 |-----|------|
 | `[install Terraform and configure the provider first](...)` | `[install the provider](...)` |
