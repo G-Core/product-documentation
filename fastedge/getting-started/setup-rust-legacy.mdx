@@ -1,0 +1,76 @@
+---
+title: Set up Rust for FastEdge
+sidebarTitle: Rust (Legacy)
+ai-navigation: Set up the FastEdge Legacy Rust SDK using the fastedge crate and wasm32-wasip1, add the WebAssembly target, configure Cargo.toml, and verify the toolchain compiles a FastEdge application.
+---
+
+The Legacy Rust SDK is based on the `fastedge` crate, Gcore's original Rust library for FastEdge HTTP applications. Most existing FastEdge applications written in Rust use this SDK.
+
+The crate provides the `#[fastedge::http]` entry-point macro together with APIs for environment variables, secrets, key-value storage, dictionary access, and cache integration.
+
+[Rust and Cargo](https://rustup.rs) are required. On Windows, also install [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022) with the **Desktop development with C++** workload.
+
+<Info>
+For new applications, the [Modern Rust SDK](/fastedge/getting-started/setup-rust-modern) (`wstd`, `wasm32-wasip2`) is the recommended direction — it uses the WASI-HTTP standard and reduces dependency on Gcore-specific tooling.
+</Info>
+
+## Add the WebAssembly target
+
+The Legacy SDK compiles to `wasm32-wasip1`. Add the target once — it applies to all future builds:
+
+```sh
+rustup target add wasm32-wasip1
+```
+
+## Configure a project
+
+FastEdge applications compile to WebAssembly libraries rather than standalone executables. Two changes from the Cargo defaults are needed: the output type must be `cdylib`, and the `fastedge` crate must be listed as a dependency.
+
+1. Create the library crate:
+
+   ```sh
+   cargo new --lib my-app
+   cd my-app
+   ```
+
+2. Replace the contents of `Cargo.toml`:
+
+   ```toml
+   [package]
+   name = "my_app"
+   version = "0.1.0"
+   edition = "2021"
+
+   [lib]
+   crate-type = ["cdylib"]
+
+   [dependencies]
+   fastedge = "0.4"
+   anyhow = "1.0"
+   ```
+
+   `crate-type = ["cdylib"]` changes the output to a format the FastEdge runtime can load. `fastedge = "0.4"` provides the entry-point macro and access to FastEdge-specific APIs. `anyhow` is used for error handling in the verification example below.
+
+## Verify the toolchain
+
+A minimal handler is enough to confirm the toolchain produces a valid WebAssembly binary. Replace `src/lib.rs`:
+
+```rust
+use fastedge::body::Body;
+use fastedge::http::{Request, Response, StatusCode, Error};
+
+#[fastedge::http]
+fn main(_req: Request<Body>) -> Result<Response<Body>, Error> {
+    Response::builder()
+        .status(StatusCode::OK)
+        .body(Body::from("OK"))
+}
+```
+
+Build it:
+
+```sh
+cargo build --release --target wasm32-wasip1
+```
+
+The first build downloads dependencies and takes one to two minutes. When it completes without errors, the toolchain is ready — the compiled binary is at `./target/wasm32-wasip1/release/my_app.wasm`. That file can be uploaded to FastEdge directly or used as the starting point for the next tutorial.
