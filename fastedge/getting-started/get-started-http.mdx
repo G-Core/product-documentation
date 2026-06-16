@@ -1,0 +1,196 @@
+---
+title: Build a FastEdge HTTP application
+sidebarTitle: Build an HTTP app
+ai-navigation: Build and deploy a FastEdge HTTP application in Modern Rust, Legacy Rust, or JavaScript via Customer Portal or REST API.
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+FastEdge HTTP applications respond to HTTP requests directly from the edge. The handler compiles to a WebAssembly binary and runs without servers or containers. Three language options are available — complete the toolchain setup first: [Rust (Modern HTTP)](/fastedge/getting-started/setup-rust-modern), [Rust (Legacy HTTP)](/fastedge/getting-started/setup-rust-legacy), or [JavaScript](/fastedge/getting-started/setup-javascript).
+
+## Write a handler
+
+Each language uses a different entry point convention. Choose the tab that matches the toolchain set up earlier.
+
+<Tabs>
+  <Tab title="Modern Rust">
+
+Replace `src/lib.rs` with:
+
+```rust
+use wstd::http::body::Body;
+use wstd::http::{Request, Response};
+
+#[wstd::http_server]
+async fn main(request: Request<Body>) -> anyhow::Result<Response<Body>> {
+    let url = request.uri().to_string();
+    Ok(Response::builder()
+        .status(200)
+        .header("content-type", "text/plain;charset=UTF-8")
+        .body(Body::from(format!("Request received: {url}")))?)
+}
+```
+
+  </Tab>
+  <Tab title="Legacy Rust">
+
+Replace `src/lib.rs` with:
+
+```rust
+use fastedge::body::Body;
+use fastedge::http::{Request, Response, StatusCode, Error};
+
+#[fastedge::http]
+fn main(request: Request<Body>) -> Result<Response<Body>, Error> {
+    let url = request.uri().to_string();
+    Response::builder()
+        .status(StatusCode::OK)
+        .header("content-type", "text/plain;charset=UTF-8")
+        .body(Body::from(format!("Request received: {url}")))
+}
+```
+
+  </Tab>
+  <Tab title="JavaScript">
+
+Create `src/index.js`:
+
+```js
+addEventListener('fetch', (event) => {
+  const url = event.request.url;
+  event.respondWith(new Response(`Request received: ${url}`));
+});
+```
+
+  </Tab>
+</Tabs>
+
+## Build
+
+Compile the handler to a WebAssembly binary. The first build downloads dependencies and takes one to two minutes.
+
+<Tabs>
+  <Tab title="Modern Rust">
+
+```sh
+cargo build --release --target wasm32-wasip2
+```
+
+The binary is at `./target/wasm32-wasip2/release/hello_world.wasm`.
+
+  </Tab>
+  <Tab title="Legacy Rust">
+
+```sh
+cargo build --release --target wasm32-wasip1
+```
+
+The binary is at `./target/wasm32-wasip1/release/hello_world.wasm`.
+
+  </Tab>
+  <Tab title="JavaScript">
+
+```sh
+npx fastedge-build --input src/index.js --output wasm/app.wasm
+```
+
+The binary is at `./wasm/app.wasm`.
+
+  </Tab>
+</Tabs>
+
+## Deploy
+
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
+
+1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **FastEdge** > **HTTP Applications** > **Applications** and click **Create new application**.
+2. Click **Upload binary** and select the `.wasm` file produced in the Build step.
+3. Enter a **Name** for the application.
+4. Click **Save and deploy**.
+
+<p>The application URL appears on the details page. Test it:</p>
+
+```sh
+curl -i https://<app-name>-<id>.fastedge.app/hello
+```
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+<p>Deploying requires two API calls: upload the binary to get its ID, then create the application. A permanent [API token](/account-settings/api-tokens) is required.</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+<Warning>Do not commit API keys to source control.</Warning>
+
+**1. Upload the binary**
+
+<Tabs>
+  <Tab title="Modern Rust">
+
+```bash
+curl -sX POST 'https://api.gcore.com/fastedge/v1/binaries/raw' \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H 'Content-Type: application/octet-stream' \
+  --data-binary "@./target/wasm32-wasip2/release/hello_world.wasm"
+```
+
+  </Tab>
+  <Tab title="Legacy Rust">
+
+```bash
+curl -sX POST 'https://api.gcore.com/fastedge/v1/binaries/raw' \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H 'Content-Type: application/octet-stream' \
+  --data-binary "@./target/wasm32-wasip1/release/hello_world.wasm"
+```
+
+  </Tab>
+  <Tab title="JavaScript">
+
+```bash
+curl -sX POST 'https://api.gcore.com/fastedge/v1/binaries/raw' \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H 'Content-Type: application/octet-stream' \
+  --data-binary "@./wasm/app.wasm"
+```
+
+  </Tab>
+</Tabs>
+
+<p>The response contains the binary ID:</p>
+
+```json
+{"id": 4695, "api_type": "wasi-http", "status": 1}
+```
+
+**2. Create the application**
+
+```bash
+export BINARY_ID=4695
+
+curl -sX POST 'https://api.gcore.com/fastedge/v1/apps' \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -d "{\"name\": \"my-http-app\", \"binary\": $BINARY_ID, \"status\": 1}"
+```
+
+<p>The response contains the application URL:</p>
+
+```json
+{"name": "my-http-app", "url": "https://my-http-app-1000503.fastedge.app", "api_type": "wasi-http"}
+```
+
+**3. Test**
+
+<p>The URL becomes active within a few seconds:</p>
+
+```bash
+curl -i https://my-http-app-1000503.fastedge.app/hello
+```
+
+</MethodSection>
+</MethodSwitch>
