@@ -142,3 +142,94 @@ Replace:
 ## Manage a lifecycle policy with the UI
 
 If you are using S3 storage in Luxembourg, you can manage your lifecycle policy for buckets in the Gcore Customer Portal according to the "[Manage buckets via the Gcore Customer Portal](/storage/manage-object-storage/manage-buckets-via-the-control-panel#add-lifecycle-policy-available-for-s3-in-luxembourg-only)" guide.
+
+## Protect objects from deletion with Object Lock
+
+### What is Object Lock?
+
+S3 Object Lock prevents objects from being deleted or overwritten for a defined retention period. It implements a WORM (Write Once, Read Many) model and is configured via the S3 protocol—not the Gcore API.
+
+Object Lock supports two retention modes:
+
+- **Compliance** – No user can delete or overwrite a protected object until its retention period expires.
+- **Governance** – Users with special permissions can override or remove retention settings before the period expires.
+
+<Info>
+Object Lock is supported on CEPH-based Gcore storage locations (for example, `s-ed1.cloud.gcore.lu`). Support for VAST-based locations is not yet confirmed.
+</Info>
+
+### Create a bucket with Object Lock enabled
+
+Object Lock must be enabled at bucket creation time. It cannot be activated on an existing bucket.
+
+Run the following command to create a bucket with Object Lock enabled:
+
+```sh
+aws s3api create-bucket \
+  --bucket my-bucket \
+  --object-lock-enabled-for-bucket \
+  --endpoint-url=https://s-ed1.cloud.gcore.lu
+```
+
+Replace:
+
+- `my-bucket` with your bucket name.
+- `https://s-ed1.cloud.gcore.lu` with your storage endpoint. To choose the correct value, refer to the "[S3 service URLs and default region names](/storage/manage-object-storage/s3-service-urls-and-default-region-names)" guide.
+
+### Set a default retention policy
+
+A default retention policy automatically applies to all new objects uploaded to the bucket. To set one, run:
+
+```sh
+aws s3api put-object-lock-configuration \
+  --bucket my-bucket \
+  --object-lock-configuration '{"ObjectLockEnabled":"Enabled","Rule":{"DefaultRetention":{"Mode":"COMPLIANCE","Days":30}}}' \
+  --endpoint-url=https://s-ed1.cloud.gcore.lu
+```
+
+Replace:
+
+- `my-bucket` with your bucket name.
+- `COMPLIANCE` with `GOVERNANCE` if you prefer the governance retention mode.
+- `30` with the number of days objects should be protected.
+- `https://s-ed1.cloud.gcore.lu` with your storage endpoint.
+
+### Apply Object Lock to an individual object
+
+To set or update the retention period on a specific object:
+
+```sh
+aws s3api put-object-retention \
+  --bucket my-bucket \
+  --key my-object.txt \
+  --retention '{"Mode":"COMPLIANCE","RetainUntilDate":"2027-01-01T00:00:00Z"}' \
+  --endpoint-url=https://s-ed1.cloud.gcore.lu
+```
+
+Replace:
+
+- `my-bucket` with your bucket name.
+- `my-object.txt` with the key (path) of the object.
+- `2027-01-01T00:00:00Z` with the date until which the object must be retained, in ISO 8601 format.
+- `https://s-ed1.cloud.gcore.lu` with your storage endpoint.
+
+### Verify Object Lock configuration
+
+To check the Object Lock configuration on a bucket:
+
+```sh
+aws s3api get-object-lock-configuration \
+  --bucket my-bucket \
+  --endpoint-url=https://s-ed1.cloud.gcore.lu
+```
+
+To check the retention settings on a specific object:
+
+```sh
+aws s3api get-object-retention \
+  --bucket my-bucket \
+  --key my-object.txt \
+  --endpoint-url=https://s-ed1.cloud.gcore.lu
+```
+
+Replace `my-bucket` and `my-object.txt` with your bucket name and object key.
