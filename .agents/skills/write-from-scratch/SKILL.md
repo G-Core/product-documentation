@@ -151,6 +151,18 @@ For `<MethodSection id="portal">`:
 - No `####` headings — use **bold text** for sub-labels
 - Screenshot placeholders where needed: `{TODO: screenshot — [what it shows]}`
 
+### Screenshots — format
+
+Always single-line Frame with Markdown image syntax:
+
+```mdx
+<Frame>![Alt text describing what the screenshot shows](/images/docs/{product}/{section}/{article-slug}/{filename}.png)</Frame>
+```
+
+Never use `<img>` tags with JSX `style={{...}}` inside `<Frame>`. Never multi-line Frame with indented content. Image path convention: `/images/docs/{product}/{section}/{article-slug}/{name}.png`.
+
+Take screenshots with `user-Playwright` MCP, viewport 1400×900, save to the matching path under `images/docs/` in the repository.
+
 ### API steps
 
 For `<MethodSection id="api">` or standalone API articles:
