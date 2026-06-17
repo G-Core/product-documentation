@@ -105,7 +105,7 @@ FastEdge
 - [x] `fastedge/getting-started/integrate-cdn-with-fastedge.mdx`
 - [x] `fastedge/secrets-manager/manage-secrets.mdx`
 - [x] `fastedge/kv-stores/sorted-set.mdx`
-- [ ] `fastedge/kv-stores/bloom-filter.mdx`
+- [x] `fastedge/kv-stores/bloom-filter.mdx`
 
 ---
 
