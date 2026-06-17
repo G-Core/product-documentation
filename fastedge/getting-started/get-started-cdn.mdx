@@ -1,12 +1,14 @@
 ---
-title: Build a FastEdge CDN application
+title: Build and deploy a FastEdge CDN application
 sidebarTitle: Build a CDN app
 ai-navigation: Build and deploy a FastEdge CDN application in Rust using Proxy-Wasm via Customer Portal or REST API.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-FastEdge CDN applications run inside a CDN resource's request pipeline, intercepting HTTP traffic before it reaches the origin or after the origin responds. Each application registers callbacks for the stages it needs to modify — on request headers, request body, response headers, or response body. Complete the [Rust&nbsp;(CDN&nbsp;/&nbsp;Proxy-Wasm)](/fastedge/getting-started/setup-rust-cdn) setup before starting. Once deployed, the application must be attached to a CDN resource to process live traffic — that attachment step is in [CDN&nbsp;applications](/fastedge/getting-started/integrate-cdn-with-fastedge).
+FastEdge CDN applications run inside a CDN resource's request pipeline and can inspect or modify requests and responses as they pass through the CDN.
+
+Complete the [Rust&nbsp;(CDN&nbsp;/&nbsp;Proxy-Wasm)](/fastedge/getting-started/setup-rust-cdn) setup before proceeding. Once deployed, attach the application to a CDN resource to process live traffic — that step is in [CDN&nbsp;applications](/fastedge/getting-started/integrate-cdn-with-fastedge).
 
 ## Write a handler
 
@@ -54,7 +56,7 @@ Compile the handler to a WebAssembly binary. The first build downloads dependenc
 cargo build --release --target wasm32-wasip1
 ```
 
-The binary is at `./target/wasm32-wasip1/release/my_cdn_app.wasm`.
+The binary is at `./target/wasm32-wasip1/release/my_cdn_app.wasm`. This file is uploaded to FastEdge in the next step.
 
 ## Deploy
 
@@ -73,7 +75,7 @@ The binary is at `./target/wasm32-wasip1/release/my_cdn_app.wasm`.
 4. Enter a **Name** for the application.
 5. Click **Save and deploy**.
 
-<p>The application is now active in CDN Applications. To route traffic through it, open the CDN resource settings, find the **FastEdge apps** section, and select the application — the full walkthrough is in [CDN&nbsp;applications](/fastedge/getting-started/integrate-cdn-with-fastedge).</p>
+<p>The application is now available in the CDN Applications list. To activate it, attach it to a CDN resource — the full walkthrough is in [CDN&nbsp;applications](/fastedge/getting-started/integrate-cdn-with-fastedge).</p>
 
 </MethodSection>
 <MethodSection id="api" label="REST API">
@@ -86,7 +88,7 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 
 <Warning>Do not commit API keys to source control.</Warning>
 
-**1. Upload the binary**
+### Upload the binary
 
 ```bash
 curl -sX POST 'https://api.gcore.com/fastedge/v1/binaries/raw' \
@@ -101,7 +103,7 @@ curl -sX POST 'https://api.gcore.com/fastedge/v1/binaries/raw' \
 {"id": 4695, "api_type": "proxy-wasm", "checksum": "c083e2b6...", "source": 1, "status": 1}
 ```
 
-**2. Create the application**
+### Create the application
 
 ```bash
 export BINARY_ID=4695
