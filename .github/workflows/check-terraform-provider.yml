@@ -232,28 +232,35 @@ jobs:
           steps.existing.outputs.skip != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LATEST_VERSION: ${{ steps.provider.outputs.latest }}
+          PINNED_VERSION: ${{ steps.pinned.outputs.pinned }}
+          SCHEMA_DIFF: ${{ steps.diff.outputs.schema_diff }}
         run: |
+          python3 - <<'PYEOF'
+          import os
+          latest = os.environ["LATEST_VERSION"]
+          pinned = os.environ["PINNED_VERSION"]
+          diff   = os.environ["SCHEMA_DIFF"]
+          body = (
+              "## Terraform provider version drift detected\n\n"
+              "The Gcore Terraform provider has a new release.\n\n"
+              "| | Version |\n"
+              "|---|---|\n"
+              f"| Latest release | `{latest}` |\n"
+              f"| Pinned in docs  | `{pinned}` |\n\n"
+              "### Schema changes in documented resources\n\n"
+              f"{diff}\n\n"
+              "### Action required\n\n"
+              f"1. Review the [provider changelog](https://github.com/G-Core/terraform-provider-gcore/releases/tag/v{latest}) for context on each change listed above.\n"
+              "2. Run live tests for each changed resource in the affected Cloud Terraform tab.\n"
+              f"3. Update the pinned version in all Terraform tabs from `= {pinned}` to `= {latest}`.\n"
+              "4. Update `.agents/TF-PROVIDER-BUGS.md` if any known issues are resolved or new ones appear.\n"
+          )
+          with open("/tmp/issue-body.md", "w") as f:
+              f.write(body)
+          PYEOF
           gh issue create \
             --repo "$GITHUB_REPOSITORY" \
-            --title "[Terraform] Provider updated to v${{ steps.provider.outputs.latest }}" \
+            --title "[Terraform] Provider updated to v${LATEST_VERSION}" \
             --label "terraform" \
-            --body "## Terraform provider version drift detected
-
-The Gcore Terraform provider has a new release.
-
-| | Version |
-|---|---|
-| Latest release | \`${{ steps.provider.outputs.latest }}\` |
-| Pinned in docs  | \`${{ steps.pinned.outputs.pinned }}\` |
-
-### Schema changes in documented resources
-
-${{ steps.diff.outputs.schema_diff }}
-
-### Action required
-
-1. Review the [provider changelog](https://github.com/G-Core/terraform-provider-gcore/releases/tag/v${{ steps.provider.outputs.latest }}) for context on each change listed above.
-2. Run live tests for each changed resource in the affected Cloud Terraform tab.
-3. Update the pinned version in all Terraform tabs from \`= ${{ steps.pinned.outputs.pinned }}\` to \`= ${{ steps.provider.outputs.latest }}\`.
-4. Update \`.agents/TF-PROVIDER-BUGS.md\` if any known issues are resolved or new ones appear.
-"
+            --body-file /tmp/issue-body.md
