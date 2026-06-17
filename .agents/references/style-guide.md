@@ -42,7 +42,7 @@ Start with the subject matter directly.
 
 | Bad | Good |
 |-----|------|
-| "This guide covers installing Terraform and configuring the Gcore provider." | "Terraform manages infrastructure as code through configuration files — a [Gcore account](...) and a [permanent API token](...) are the only requirements." |
+| "This guide covers installing Terraform and configuring the Gcore provider." | "Terraform manages infrastructure as code through configuration files — a [Gcore account](...) and an [API token](...) are the only requirements." |
 | "This article explains how import works." | "Terraform import reads an existing resource's state from the API and writes it to the state file." |
 
 ### No "you" or "your" in authored prose
@@ -52,7 +52,7 @@ This applies everywhere — body text, `<Info>`, `<Note>`, `<Warning>`, `<Tip>` 
 
 | Bad | Good |
 |-----|------|
-| "You need a permanent API token." | "A permanent API token is required." |
+| "You need An API token." | "An API token is required." |
 | "Your configuration file should include..." | "The configuration file must include..." |
 | "When you run terraform plan..." | "When running terraform plan..." |
 | "It is not linked to your Gcore account." | "It is not linked to the Gcore account." |
@@ -487,7 +487,7 @@ For more details, see [API tokens](/account-settings/api-tokens).
 
 **Good:**
 ```
-Generate a [permanent token](/account-settings/api-tokens) in account settings.
+Generate an [API token](/account-settings/api-tokens) in account settings.
 ```
 
 ### Links must carry meaning
@@ -525,6 +525,53 @@ may use bold to visually separate the two blocks.
 
 If a concept needs emphasis, rewrite the sentence so the concept carries weight through
 structure. Use a definition pattern: "A provider is a plugin that..." not "The **provider** is a plugin that..."
+
+### REST API tab — authentication block
+
+Every REST API `<MethodSection>` must introduce authentication once, at the top, using
+an `<Info>` block followed immediately by an `export` block. Never inline `YOUR_API_KEY`
+directly in curl headers.
+
+**FastEdge (API key only — no `<Info>` block):**
+```mdx
+All requests authenticate with an [API&nbsp;token](/account-settings/api-tokens). Set it as an environment variable before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+```
+
+Do not use an `<Info>` block when the only requirement is the API key — a single-line
+Info block is visually disproportionate. Use plain prose instead.
+
+**Edge Cloud (API key + project ID + region ID):**
+```mdx
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with a
+[project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get)
+and a [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get).
+</Info>
+
+Set the following environment variables before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+```
+```
+
+All subsequent curl examples use `$GCORE_API_KEY`, never the literal placeholder:
+
+```bash
+curl https://api.gcore.com/fastedge/v1/template \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+| Wrong | Correct |
+|-------|---------|
+| `Authorization: APIKey YOUR_API_KEY` | `Authorization: APIKey $GCORE_API_KEY` |
+| Standalone block `Authorization: APIKey ...` with no `export` above | `<Info>` block + `export GCORE_API_KEY` block |
 
 ### Em-dash spacing
 
@@ -779,3 +826,18 @@ The following patterns are forbidden:
 
 These sentences carry no information beyond the link. Embed the link in a content
 sentence, or remove it entirely if no natural content sentence exists.
+
+---
+
+## Never use "permanent API token"
+
+Do not use the phrase "permanent API token" or "permanent token" anywhere in documentation.
+Gcore API tokens can have expiration dates — calling them "permanent" is factually incorrect.
+
+Use **"API token"** instead:
+
+| Forbidden | Correct |
+|-----------|---------|
+| "A permanent API token is required." | "An [API token](/account-settings/api-tokens) is required." |
+| "Generate a permanent token in account settings." | "Generate an [API token](/account-settings/api-tokens) in account settings." |
+| "a [permanent API token](...)" | "an [API token](...)" |

@@ -1,8 +1,13 @@
 ﻿---
 title: Create and manage templates
 sidebarTitle: Create and manage templates
-ai-navigation: Create, edit, delete, and update FastEdge templates for HTTP and CDN applications — including binary upload, mandatory parameters, secret environment variables, and creating apps from templates via the Customer Portal.
+ai-navigation: Create, edit, delete, and update FastEdge templates for HTTP and CDN applications via the Customer Portal or REST API — including binary upload, mandatory parameters, secret environment variables, and creating apps from templates.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
 
 A template packages a WebAssembly binary together with a predefined configuration — environment variables, secrets, response headers, and instructions — so the same application can be deployed repeatedly without reconfiguring it from scratch. Templates can be created from a new binary or saved from an existing application.
 
@@ -32,7 +37,7 @@ The configuration process is identical for HTTP and CDN applications.
 
     - Leave the **Mandatory parameter** checkbox unchecked for optional parameters.
     - Select **Mandatory parameter** to require a value at deployment time.
-    - Set the parameter type to **Secret** to link the value from Secrets Manager — the deploying user will need to supply a secret rather than a plain value.
+    - Set the parameter type to **Secret** to link the value from Secrets&nbsp;Manager — the deploying user will need to supply a secret rather than a plain value.
 
     <Frame>![Secret parameter marked as required](/images/docs/fastedge/create-manage-templates/add-secret-parameter.png)</Frame>
 
@@ -69,21 +74,17 @@ The configuration process is identical for HTTP and CDN applications.
 
 ## Edit a template
 
-1\. In the Customer Portal, navigate to **FastEdge** and open **HTTP Applications** or **CDN Applications**.
+1. In the Customer Portal, navigate to **FastEdge** and open **HTTP Applications** or **CDN Applications**.
 
-2\. Select **Templates** and click the three-dot icon next to the template.
+2. Select **Templates** and click the three-dot icon next to the template.
 
-3\. Click **Edit template**.
+3. Click **Edit template**.
 
-<Frame>
-  ![Edit template menu item](/images/docs/fastedge/create-manage-templates/edit-template-menu.png)
-</Frame>
+<Frame>![Edit template menu item](/images/docs/fastedge/create-manage-templates/edit-template-menu.png)</Frame>
 
-4\. Update the configuration and click **Save template**.
+4. Update the configuration and click **Save template**.
 
-<Frame>
-  ![Edit template form](/images/docs/fastedge/create-manage-templates/edit-template-form.png)
-</Frame>
+<Frame>![Edit template form](/images/docs/fastedge/create-manage-templates/edit-template-form.png)</Frame>
 
 ## Delete a template
 
@@ -91,55 +92,273 @@ The configuration process is identical for HTTP and CDN applications.
 Deleted templates cannot be restored.
 </Warning>
 
-1\. In the Customer Portal, navigate to **FastEdge** and open **HTTP Applications** or **CDN Applications**.
+1. In the Customer Portal, navigate to **FastEdge** and open **HTTP Applications** or **CDN Applications**.
 
-2\. Select **Templates** and click the three-dot icon next to the template.
+2. Select **Templates** and click the three-dot icon next to the template.
 
-3\. Click **Delete template**.
+3. Click **Delete template**.
 
-<Frame>
-  ![Delete template menu item](/images/docs/fastedge/create-manage-templates/delete-template.png)
-</Frame>
-
-The template is permanently removed.
+<Frame>![Delete template menu item](/images/docs/fastedge/create-manage-templates/delete-template.png)</Frame>
 
 ## Update template binary
 
-Use this option when the application logic changes but the template configuration — name, description, parameters — should stay the same.
+Use this option to replace the WebAssembly binary without changing the template's name, description, or parameters.
 
-To replace the WebAssembly binary:
+1. In the Customer Portal, navigate to **FastEdge** and open **HTTP Applications** or **CDN Applications**.
 
-1\. In the Customer Portal, navigate to **FastEdge** and open **HTTP Applications** or **CDN Applications**.
+2. Select **Templates** and click the three-dot icon next to the template.
 
-2\. Select **Templates** and click the three-dot icon next to the template.
+3. Click **Update template binary**.
 
-3\. Click **Update template binary**.
+<Frame>![Update template binary menu item](/images/docs/fastedge/create-manage-templates/update-template-binary.png)</Frame>
 
-<Frame>
-  ![Update template binary menu item](/images/docs/fastedge/create-manage-templates/update-template-binary.png)
-</Frame>
+4. Upload the new `.wasm` file and click **Save binary**.
 
-4\. Upload the new `.wasm` file and click **Save binary**.
+<Frame>![Upload template binary dialog](/images/docs/fastedge/create-manage-templates/create-template-upload-binary.png)</Frame>
 
-<Frame>
-  ![Upload template binary dialog](/images/docs/fastedge/create-manage-templates/create-template-upload-binary.png)
-</Frame>
+5. Review the configuration and click **Save template**.
 
-5\. Review the configuration and click **Save template**.
-
-<Frame>
-  ![Edit template binary form](/images/docs/fastedge/create-manage-templates/edit-template-binary.png)
-</Frame>
+<Frame>![Edit template binary form](/images/docs/fastedge/create-manage-templates/edit-template-binary.png)</Frame>
 
 ## Create an app from a template
 
-1\. In the Customer Portal, navigate to **FastEdge** and open **HTTP Applications** or **CDN Applications**.
+1. In the Customer Portal, navigate to **FastEdge** and open **HTTP Applications** or **CDN Applications**.
 
-2\. Select **Templates**, then click the three-dot icon next to the template and choose **Create app from template**.
+2. Select **Templates**, then click the three-dot icon next to the template and choose **Create app from template**.
 
-3\. Complete the application configuration:
+3. Complete the application configuration:
 
 - [HTTP application from a template](/fastedge/getting-started/create-fastedge-apps#deploy-an-app-from-a-template)
 - [CDN application from a template](/fastedge/getting-started/integrate-cdn-with-fastedge#deploy-from-the-template)
 
 After deployment, the application inherits the template's binary and predefined configuration. Any mandatory parameters defined in the template must be supplied during deployment.
+
+</MethodSection>
+
+<MethodSection id="api" label="REST API">
+
+A template packages a WebAssembly binary together with a predefined configuration — environment variables, secrets, response headers, and parameters — and can be deployed as an application any number of times without manual reconfiguration.
+
+<p>All requests authenticate with an [API&nbsp;token](/account-settings/api-tokens). Set it as an environment variable before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+## Create a template
+
+Creating a template requires two steps: upload a `.wasm` binary, then create the template referencing that binary.
+
+### Upload a binary
+
+Send the raw `.wasm` file as an `application/octet-stream` body:
+
+```bash
+curl -X POST https://api.gcore.com/fastedge/v1/binaries/raw \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/octet-stream" \
+  --data-binary @my-app.wasm
+```
+
+The response contains the binary ID:
+
+```json
+{
+  "id": 4748,
+  "api_type": "wasi-http",
+  "status": 1
+}
+```
+
+The `api_type` is determined by the binary and cannot be set manually. Use the returned `id` as the `binary_id` in the next step.
+
+### Create the template
+
+```bash
+curl -X POST https://api.gcore.com/fastedge/v1/template \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "My template",
+    "short_descr": "Short description shown in the template list",
+    "long_descr": "Full usage instructions shown at deployment time.",
+    "binary_id": BINARY_ID,
+    "owned": true,
+    "params": [
+      {
+        "name": "BASE_URL",
+        "data_type": "string",
+        "descr": "Base URL for the application",
+        "mandatory": true
+      }
+    ]
+  }'
+```
+
+The response contains the created template:
+
+```json
+{
+  "id": 174,
+  "name": "My template",
+  "api_type": "wasi-http",
+  "short_descr": "Short description shown in the template list",
+  "long_descr": "Full usage instructions shown at deployment time.",
+  "owned": true
+}
+```
+
+Template names may only contain letters, digits, spaces, underscores, and hyphens.
+
+<Info>
+The `owned` field controls account visibility, not ownership. When set to `true`, the template is visible to all users in the account. When set to `false`, it is private to the token owner.
+</Info>
+
+## List templates
+
+```bash
+curl https://api.gcore.com/fastedge/v1/template \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+To filter by application type, add the `api_type` query parameter (`wasi-http` for HTTP applications or `proxy-wasm` for CDN applications):
+
+```bash
+curl "https://api.gcore.com/fastedge/v1/template?api_type=wasi-http&only_mine=true" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+The response field is `templates`:
+
+```json
+{
+  "count": 2,
+  "templates": [
+    {
+      "id": 174,
+      "name": "My template",
+      "api_type": "wasi-http"
+    }
+  ]
+}
+```
+
+## Get template details
+
+```bash
+curl https://api.gcore.com/fastedge/v1/template/TEMPLATE_ID \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+Response:
+
+```json
+{
+  "id": 174,
+  "name": "My template",
+  "api_type": "wasi-http",
+  "binary_id": 4748,
+  "short_descr": "Short description",
+  "long_descr": "Full usage instructions.",
+  "owned": true,
+  "params": [
+    {
+      "name": "BASE_URL",
+      "data_type": "string",
+      "descr": "Base URL for the application",
+      "mandatory": true
+    }
+  ]
+}
+```
+
+## Edit a template
+
+<Warning>
+`PUT` replaces the entire template definition. Any fields omitted from the request body — including `params` — are cleared. Always include the full configuration.
+</Warning>
+
+```bash
+curl -X PUT https://api.gcore.com/fastedge/v1/template/TEMPLATE_ID \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "My template",
+    "short_descr": "Updated description",
+    "long_descr": "Updated usage instructions.",
+    "binary_id": BINARY_ID,
+    "owned": true,
+    "params": [
+      {
+        "name": "BASE_URL",
+        "data_type": "string",
+        "descr": "Base URL for the application",
+        "mandatory": true
+      }
+    ]
+  }'
+```
+
+## Update template binary
+
+To replace the binary while keeping the name, description, and parameters, upload a new binary first, then update the template with the new `binary_id`.
+
+Upload the new binary:
+
+```bash
+curl -X POST https://api.gcore.com/fastedge/v1/binaries/raw \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/octet-stream" \
+  --data-binary @my-app-v2.wasm
+```
+
+Then update the template with the new binary ID:
+
+```bash
+curl -X PUT https://api.gcore.com/fastedge/v1/template/TEMPLATE_ID \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "My template",
+    "short_descr": "Short description",
+    "long_descr": "Usage instructions.",
+    "binary_id": NEW_BINARY_ID,
+    "owned": true,
+    "params": []
+  }'
+```
+
+## Delete a template
+
+```bash
+curl -X DELETE https://api.gcore.com/fastedge/v1/template/TEMPLATE_ID \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+A successful response returns HTTP 200 with an empty body.
+
+<Warning>
+Deleted templates cannot be restored. Applications previously deployed from the template are not affected.
+</Warning>
+
+## Create an app from a template
+
+Pass the template ID in the `template` field of the application creation request. Provide values for any mandatory parameters in `env`:
+
+```bash
+curl -X POST https://api.gcore.com/fastedge/v1/apps \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my-app",
+    "template": TEMPLATE_ID,
+    "env": {
+      "BASE_URL": "https://example.com"
+    }
+  }'
+```
+
+The application inherits the template's binary and configuration. The response includes the new application's `id` and `url`.
+
+</MethodSection>
+</MethodSwitch>
