@@ -83,14 +83,6 @@ Wait for the answer before proceeding.
 - If **yes** → follow the protocol in `.agents/references/mcp-tools/playwright.md`
 - If **no** → continue to Phase 4 with text-only changes
 
-When adding or replacing screenshots, always use the single-line Frame format:
-
-```mdx
-<Frame>![Alt text](/images/docs/{product}/{section}/{article-slug}/{filename}.png)</Frame>
-```
-
-Never use `<img>` tags with JSX `style={{...}}` inside `<Frame>`. Never multi-line Frame with indented image content.
-
 **If the changes are text-only** (new limits, new field descriptions, changed behavior,
 new API parameters) → skip this phase entirely.
 
