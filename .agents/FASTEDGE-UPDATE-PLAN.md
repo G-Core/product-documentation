@@ -104,7 +104,7 @@ FastEdge
 - [x] `fastedge/kv-stores/manage-kv-store.mdx`
 - [x] `fastedge/getting-started/integrate-cdn-with-fastedge.mdx`
 - [x] `fastedge/secrets-manager/manage-secrets.mdx`
-- [ ] `fastedge/kv-stores/sorted-set.mdx`
+- [x] `fastedge/kv-stores/sorted-set.mdx`
 - [ ] `fastedge/kv-stores/bloom-filter.mdx`
 
 ---
@@ -112,7 +112,7 @@ FastEdge
 ## Phase 4 — Content review
 
 - [x] `fastedge/secrets-manager/slots.mdx`
-- [ ] `fastedge/kv-stores/how-it-works.mdx`
+- [x] `fastedge/kv-stores/how-it-works.mdx`
 - [ ] `fastedge/cache.mdx`
 - [ ] `fastedge/fastedge-cli.mdx`
 - [ ] `fastedge/troubleshooting.mdx`

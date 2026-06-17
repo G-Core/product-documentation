@@ -1,80 +1,196 @@
 ---
 title: Sorted Set
 sidebarTitle: Sorted Set
-ai-navigation: Create and manage Sorted Sets (ZSET) in FastEdge Edge Storage via the Gcore Customer Portal, adding members with numeric scores that are automatically ordered for leaderboards and priority-based lists.
+ai-navigation: Create and manage Sorted Sets (ZSET) in FastEdge Edge Storage via the Gcore Customer Portal or the FastEdge REST API. Sorted sets store unique members with numeric scores ordered for leaderboards, rankings, and priority-based lists.
 ---
 
-### What is a Sorted Set?
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-A Sorted Set (ZSET) stores unique members, each associated with a numeric score. Members are ordered by score, which makes ZSETs ideal for leaderboards, rankings, and time- or priority-based lists.
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
 
-You can add, update, or remove members while keeping the order automatically maintained.
+<p>A Sorted Set (ZSET) stores unique members, each with a numeric score. Members are ordered by score, making sorted sets ideal for leaderboards, rankings, and priority-based lists. Adding the same member value again updates its score; ties in score are broken lexicographically.</p>
 
-- Each member is unique; adding the same member updates its score.
-- Scores are numeric; members are ordered by score, then lexicographically for ties.
-- Membership is stored in-memory with scores, so very large sets can impact memory usage.
+## Create a sorted set
 
+<p>Open the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard), navigate to **FastEdge**, and select **Edge Storage** in the sidebar. Click the store name to open it.</p>
 
-## Creating a Sorted Set
-
-1\. In the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard), navigate to **FastEdge** and choose the relevant page: **Edge Storage**.
-
-2\. Find the Edge Storage you want to edit and click its name to open it.
-
-3\. Click **Insert item** and select **Sorted Set**.
+1. Click **Insert item** and select **Sorted Set**.
 
 <Frame>
-  ![FastEdge Insert Sorted Set](/images/docs/fastedge/kv-stores/sorted-set/insert-zset.png)
+  ![Edge Storage store view with Insert item dropdown showing Sorted Set option](/images/docs/fastedge/kv-stores/sorted-set/insert-zset.png)
 </Frame>
 
-4\. Give the Sorted Set a key, then click **Insert value**
+2. Enter a key in the **Key** field.
 
 <Frame>
-  ![FastEdge Create Sorted Set](/images/docs/fastedge/kv-stores/sorted-set/create-zset.png)
+  ![Create Sorted Set form with Key field and empty values table](/images/docs/fastedge/kv-stores/sorted-set/create-zset.png)
 </Frame>
 
-5\. Add as many rows as you would like, providing a score and the value. Values can be entered manually or uploaded from file.
+3. Click **Insert value**. In the panel that opens, enter a value in the **Value** field and a numeric score in the **Score** field.
 
 <Frame>
-  ![FastEdge Insert Sorted Set
-  Values](/images/docs/fastedge/kv-stores/sorted-set/insert-zset-values.png)
+  ![Insert Sorted Set value panel with Value and Score fields and Add value button](/images/docs/fastedge/kv-stores/sorted-set/insert-zset-values.png)
 </Frame>
 
-Click **+ Add value** to get another entry row.
+4. To add more members, click **+ Add value** and fill in the fields.
+
+5. Click **Save** to create the sorted set.
 
 <Info>
-**Info**
-
-Uploading values from file has a 1 MB file size limit.
-
-**Note**:
-File uploads will transform the value in the UI Portal to a hash representation of its content.
-
+Uploading a value from a file has a 1&nbsp;MB size limit. File uploads replace the value in the portal with a hash of the file content.
 </Info>
 
-## Editing a Sorted Set
+## Edit a sorted set
 
-1\. In the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard), navigate to **FastEdge** and choose the relevant page: **Edge Storage**.
-
-2\. Find the Edge Storage you want to edit and click its name to open it.
-
-3\. Find the Sorted Set you want to edit, click the three-dot icon next to the key-value and select edit.
+<p>To edit a sorted set, open the store that contains it. In the item list, click the three-dot icon next to the sorted set and select **Edit**.</p>
 
 <Frame>
-  ![FastEdge Edge Sorted Set
-  Edit](/images/docs/fastedge/kv-stores/sorted-set/edit-zset-store.png)
+  ![Edge Storage store view with three-dot menu open on a sorted set row showing Edit and Delete options](/images/docs/fastedge/kv-stores/sorted-set/edit-zset-store.png)
 </Frame>
 
-4\. You are now able to add more values, edit existing values or delete values.
+<p>The editor lists all current members and their scores. Add new members with **Insert value** or remove existing ones using the delete icon in each row. Click **Save Sorted Set** to apply the changes.</p>
 
-5\. If everything is configured correctly, click **Save Sorted Set** in the top right corner.
+## Delete a sorted set
 
-## Deleting a Sorted Set
+<p>To delete a sorted set, open the store that contains it. Click the three-dot icon next to the sorted set and select **Delete**. Confirm the deletion when prompted.</p>
 
-1\. In the [Gcore Customer Portal](https://portal.gcore.com/accounts/reports/dashboard), navigate to **FastEdge** and choose the relevant page: **Edge Storage**.
+</MethodSection>
+<MethodSection id="api" label="REST API">
 
-2\. Find the Edge Storage you want to edit and click its name to open it.
+<p>Sorted sets are managed through the same data endpoint as key-value pairs. Use <code>datatype: sorted_set</code> in all operations.</p>
 
-3\. Find the Sorted Set you want to delete, click the three-dot icon next to the Sorted Set and select delete.
+<Info>
+An [API token](/account-settings/api-tokens) is required. Use the store ID from the store creation response or from the list endpoint.
+</Info>
 
-4\. Confirm you want to delete the entire Sorted Set.
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export STORE_ID="{YOUR_STORE_ID}"
+```
+
+## Create a sorted set
+
+<p>A sorted set is stored as a single key inside an Edge Storage store. The key identifies the set, while the payload contains its members and scores.</p>
+
+<p>Use <code>PUT /fastedge/v1/kv/{store_id}/data</code> with <code>op: add</code> to create a sorted set. The <code>payload</code> is an array of members, each with an <code>encoding</code>, a <code>value</code>, and a numeric <code>score</code>.</p>
+
+```bash
+curl -X PUT "https://api.gcore.com/fastedge/v1/kv/$STORE_ID/data" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '[
+    {
+      "op": "add",
+      "key": "leaderboard",
+      "datatype": "sorted_set",
+      "payload": [
+        { "encoding": "plain", "value": "player1", "score": 100 },
+        { "encoding": "plain", "value": "player2", "score": 200 },
+        { "encoding": "plain", "value": "player3", "score": 300 }
+      ]
+    }
+  ]'
+```
+
+<p>The API returns write statistics:</p>
+
+```json
+{
+  "write_count": 3,
+  "del_count": 0,
+  "write_size": 78,
+  "store_size": 91,
+  "revision": 596
+}
+```
+
+## Read sorted set members
+
+<p>Retrieve the members of a sorted set with <code>GET /fastedge/v1/kv/{store_id}/data/{key}</code>:</p>
+
+```bash
+curl "https://api.gcore.com/fastedge/v1/kv/$STORE_ID/data/leaderboard" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+<p>The API returns the full member list with scores:</p>
+
+```json
+{
+  "datatype": "sorted_set",
+  "key": "leaderboard",
+  "payload": [
+    { "encoding": "plain", "value": "player1", "score": 100 },
+    { "encoding": "plain", "value": "player2", "score": 200 },
+    { "encoding": "plain", "value": "player3", "score": 300 }
+  ],
+  "count": 3
+}
+```
+
+<p>To list all entries in a store (including sorted sets), use <code>GET /fastedge/v1/kv/{store_id}/data</code>. Sorted sets appear with <code>datatype: sorted_set</code> but without member details in the list response.</p>
+
+## Add or update members
+
+<p>Members are identified by value. If a member with the same value already exists, its score is replaced. Use the same <code>PUT</code> endpoint with <code>op: add</code> to add new members or update scores of existing ones.</p>
+
+```bash
+curl -X PUT "https://api.gcore.com/fastedge/v1/kv/$STORE_ID/data" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '[
+    {
+      "op": "add",
+      "key": "leaderboard",
+      "datatype": "sorted_set",
+      "payload": [
+        { "encoding": "plain", "value": "player4", "score": 150 }
+      ]
+    }
+  ]'
+```
+
+## Remove members
+
+<p>Use <code>op: del_entries</code> to remove individual members while keeping the sorted set itself. Use <code>op: del_key</code> to remove the entire sorted set — see <a href="#delete-a-sorted-set">Delete a sorted set</a> below.</p>
+
+<p>The <code>payload</code> for <code>del_entries</code> requires only the <code>encoding</code> and <code>value</code> fields — <code>score</code> is not needed for deletion.</p>
+
+```bash
+curl -X PUT "https://api.gcore.com/fastedge/v1/kv/$STORE_ID/data" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '[
+    {
+      "op": "del_entries",
+      "key": "leaderboard",
+      "datatype": "sorted_set",
+      "payload": [
+        { "encoding": "plain", "value": "player4" }
+      ]
+    }
+  ]'
+```
+
+<p>The API returns the number of deleted entries in <code>del_count</code>.</p>
+
+## Delete a sorted set
+
+<p>Use <code>op: del_key</code> to delete the entire sorted set and all its members.</p>
+
+```bash
+curl -X PUT "https://api.gcore.com/fastedge/v1/kv/$STORE_ID/data" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '[
+    {
+      "op": "del_key",
+      "key": "leaderboard",
+      "datatype": "sorted_set"
+    }
+  ]'
+```
+
+</MethodSection>
+</MethodSwitch>
