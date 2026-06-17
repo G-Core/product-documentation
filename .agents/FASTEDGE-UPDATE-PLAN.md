@@ -113,7 +113,7 @@ FastEdge
 
 - [x] `fastedge/secrets-manager/slots.mdx`
 - [x] `fastedge/kv-stores/how-it-works.mdx`
-- [ ] `fastedge/cache.mdx`
+- [x] `fastedge/cache.mdx`
 - [ ] `fastedge/fastedge-cli.mdx`
 - [ ] `fastedge/troubleshooting.mdx`
 
