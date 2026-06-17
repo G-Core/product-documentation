@@ -42,7 +42,7 @@ Start with the subject matter directly.
 
 | Bad | Good |
 |-----|------|
-| "This guide covers installing Terraform and configuring the Gcore provider." | "Terraform manages infrastructure as code through configuration files — a [Gcore account](...) and a [permanent API token](...) are the only requirements." |
+| "This guide covers installing Terraform and configuring the Gcore provider." | "Terraform manages infrastructure as code through configuration files — a [Gcore account](...) and an [API token](...) are the only requirements." |
 | "This article explains how import works." | "Terraform import reads an existing resource's state from the API and writes it to the state file." |
 
 ### No "you" or "your" in authored prose
@@ -52,7 +52,7 @@ This applies everywhere — body text, `<Info>`, `<Note>`, `<Warning>`, `<Tip>` 
 
 | Bad | Good |
 |-----|------|
-| "You need a permanent API token." | "A permanent API token is required." |
+| "You need An API token." | "An API token is required." |
 | "Your configuration file should include..." | "The configuration file must include..." |
 | "When you run terraform plan..." | "When running terraform plan..." |
 | "It is not linked to your Gcore account." | "It is not linked to the Gcore account." |
@@ -151,6 +151,119 @@ and read a prompt. Do not explain actions that the interface or terminal output 
 - Showing a terminal prompt that says `Enter a value: yes` then writing "Type `yes` when prompted"
 - Explaining what a button does after the reader just clicked it
 - "Click **Save** to save your changes" — saving is implied by clicking Save
+
+### Do not describe features by what they are not
+
+Never write a sentence whose only purpose is to say that a feature lacks something or exists outside a context the reader is not in. Describe what the feature IS and what it DOES — not where it is absent.
+
+**Bad:**
+- "The dictionary has no tab on the management page."
+- "This feature is not available in the portal."
+- "There is no button for this action."
+
+**Why it is bad:** The reader is not in the refrigerator, not writing on a wall behind a garage. They are in the context described by the article. Stating the absence of something in a context they are not thinking about adds noise and implies the writer does not trust them.
+
+**Good:** Describe the feature directly — what it is, how to access it, what it does.
+- "The dictionary is a read-only key-value store accessible from application code."
+
+### Prose rhythm: develop one idea, don't list isolated facts
+
+Each paragraph should develop a single thought — not fire a series of disconnected facts at the reader. The test: can every sentence stand alone without the others? If yes, the paragraph has no flow.
+
+**Bad — dictionary-card pattern (each sentence is an isolated fact):**
+
+> Environment variables are configuration values.
+> Each value is limited to 64 KB.
+> For values that exceed this limit, use the dictionary.
+
+**Good — one developed idea:**
+
+> Environment variables pass configuration values to the application at runtime. Each variable can store up to 64 KB of data; for larger values, define the parameter on the **Environment variables** tab and read it through the [dictionary](#dictionary) using the same key name.
+
+The difference: the second version shows causality — *why* the 64 KB limit matters and *what to do about it* — in the same breath as the definition. The reader does not have to assemble meaning from three separate sentences.
+
+**How to check your own writing:**
+
+- Read the paragraph aloud. If every sentence ends with a full stop and feels like a separate bullet, rewrite.
+- Each sentence should either introduce the idea, expand it, or resolve it — not start a new unrelated idea.
+- Vary the opening of sentences. If three in a row start with `[Feature] is/are/links/shows`, the paragraph reads as a catalog.
+
+**Common robotic patterns to avoid:**
+
+| Pattern | What it sounds like | Fix |
+|---------|---------------------|-----|
+| `X is Y.\nY does Z.\nZ does W.` | Glossary entries | Combine into one sentence with a relative clause |
+| `The X tab shows A.\nThe X tab also shows B.\nUse X to do C.` | Bullet list in disguise | Lead with the purpose, then describe what serves that purpose |
+| Opening five sections in a row with `[Subject] is/are/links/shows` | Feature catalog | Lead some sections with the use case: "Use X to..." |
+
+### Group similar sections, don't list them
+
+When an article covers four or more conceptually related features in sequence, do not give each its own `##` heading. Group them under a single `##` with `###` subheadings. This signals to the reader that these features belong to one topic and reduces the "feature catalog" feeling.
+
+**Bad structure — five independent `##` sections:**
+```
+## Response headers
+## Environment variables
+## Secrets
+## Edge Storage
+## Dictionary
+```
+
+**Good structure — grouped by logical role:**
+```
+## Application configuration
+### Response headers
+### Environment variables
+### Secrets
+### Edge Storage
+
+## Dictionary
+```
+
+The grouping should reflect how the reader thinks about the features, not how they are ordered in the UI. Ask: "What task is the reader trying to accomplish?" and group by answer:
+
+- Lifecycle management → one group
+- Observability (metrics, logs) → one group
+- Configuration (headers, env vars, secrets, storage) → one group
+- Standalone concepts that don't fit the pattern → separate `##`
+
+### Bridge sentences between adjacent similar sections
+
+When moving from one section to the next within a group, the reader may ask "how is this different from what I just read?" Add a short bridge sentence at the **start** of the new section — not at the end of the previous one. The bridge is the first sentence the reader sees, which is where it has the most impact.
+
+**Wrong — bridge at the end of section N:**
+```
+...Access the secret in code using secret::get("KEY_NAME").
+
+Unlike secrets, which store fixed sensitive values, Edge Storage provides...
+
+### Edge Storage
+
+Edge Storage gives the application access to a shared key-value store...
+```
+
+**Correct — bridge at the start of section N+1:**
+```
+...Access the secret in code using secret::get("KEY_NAME").
+
+### Edge Storage
+
+Unlike secrets, which store fixed sensitive values, Edge Storage provides a shared
+key-value store that applications can read and update at runtime. Link a store...
+```
+
+**Example bridges (FastEdge manage-apps article):**
+
+> **### Secrets**
+> Use environment variables for ordinary configuration values. When a value is sensitive — an API key, access token, or password — store it as a secret instead.
+
+> **### Edge Storage**
+> Unlike secrets, which store fixed sensitive values, Edge Storage provides a shared key-value store that applications can read and update at runtime.
+
+> **## Dictionary**
+> Edge Storage is mutable and application-defined. The dictionary is different: it gives application code read-only access to edge node metadata that FastEdge populates automatically, and to application parameters that exceed the 64 KB limit.
+
+**When to use:** any time the reader could confuse one section with the previous one. Without bridges, readers experience "definition fatigue" — each new section feels disconnected, and the article reads as a feature catalog.
 
 ### No redundancy or tautology
 
@@ -311,6 +424,7 @@ These headings must never appear:
 | Forbidden | Why |
 |-----------|-----|
 | `## Next steps` | Sidebar already shows structure; use inline cross-links |
+| `## Get started` | Same as Next steps — a link dump at the end of an article |
 | `## Prerequisites` | Integrate into the opening paragraph |
 | `## Requirements` | Same as Prerequisites |
 | `## Related documentation` | No link dumps; link inline where topic is relevant |
@@ -338,6 +452,17 @@ The first occurrence is the canonical link.
 The link text must be the noun or short verb phrase that names the destination.
 Never use a full clause, sentence fragment, or description.
 
+### Non-breaking spaces in multi-word link text
+
+When link text contains two words that must not wrap across lines (e.g. product names, acronym + noun), use `&nbsp;` between the words:
+
+```mdx
+[KV&nbsp;store](/fastedge/kv-stores/manage-kv-store)
+[API&nbsp;token](/account-settings/api-tokens)
+```
+
+Plain space inside `[...]` allows the browser to break the link mid-text, which looks broken in narrow viewports.
+
 | Bad | Good |
 |-----|------|
 | `[install Terraform and configure the provider first](...)` | `[install the provider](...)` |
@@ -362,7 +487,7 @@ For more details, see [API tokens](/account-settings/api-tokens).
 
 **Good:**
 ```
-Generate a [permanent token](/account-settings/api-tokens) in account settings.
+Generate an [API token](/account-settings/api-tokens) in account settings.
 ```
 
 ### Links must carry meaning
@@ -400,6 +525,53 @@ may use bold to visually separate the two blocks.
 
 If a concept needs emphasis, rewrite the sentence so the concept carries weight through
 structure. Use a definition pattern: "A provider is a plugin that..." not "The **provider** is a plugin that..."
+
+### REST API tab — authentication block
+
+Every REST API `<MethodSection>` must introduce authentication once, at the top, using
+an `<Info>` block followed immediately by an `export` block. Never inline `YOUR_API_KEY`
+directly in curl headers.
+
+**FastEdge (API key only — no `<Info>` block):**
+```mdx
+All requests authenticate with an [API&nbsp;token](/account-settings/api-tokens). Set it as an environment variable before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+```
+
+Do not use an `<Info>` block when the only requirement is the API key — a single-line
+Info block is visually disproportionate. Use plain prose instead.
+
+**Edge Cloud (API key + project ID + region ID):**
+```mdx
+<Info>
+An [API&nbsp;token](/account-settings/api-tokens) is required, along with a
+[project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get)
+and a [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get).
+</Info>
+
+Set the following environment variables before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+```
+```
+
+All subsequent curl examples use `$GCORE_API_KEY`, never the literal placeholder:
+
+```bash
+curl https://api.gcore.com/fastedge/v1/template \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+| Wrong | Correct |
+|-------|---------|
+| `Authorization: APIKey YOUR_API_KEY` | `Authorization: APIKey $GCORE_API_KEY` |
+| Standalone block `Authorization: APIKey ...` with no `export` above | `<Info>` block + `export GCORE_API_KEY` block |
 
 ### Em-dash spacing
 
@@ -654,3 +826,18 @@ The following patterns are forbidden:
 
 These sentences carry no information beyond the link. Embed the link in a content
 sentence, or remove it entirely if no natural content sentence exists.
+
+---
+
+## Never use "permanent API token"
+
+Do not use the phrase "permanent API token" or "permanent token" anywhere in documentation.
+Gcore API tokens can have expiration dates — calling them "permanent" is factually incorrect.
+
+Use **"API token"** instead:
+
+| Forbidden | Correct |
+|-----------|---------|
+| "A permanent API token is required." | "An [API token](/account-settings/api-tokens) is required." |
+| "Generate a permanent token in account settings." | "Generate an [API token](/account-settings/api-tokens) in account settings." |
+| "a [permanent API token](...)" | "an [API token](...)" |
