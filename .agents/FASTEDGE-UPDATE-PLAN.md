@@ -74,41 +74,38 @@ FastEdge
 
 ## Phase 1 — SDK setup articles (do first)
 
-- [ ] `fastedge/getting-started/setup-rust-modern.mdx`
-      Modern Rust: prerequisites, rustup target add wasm32-wasip2, Cargo.toml with wstd, verify build
-- [ ] `fastedge/getting-started/setup-rust-legacy.mdx`
-      Legacy Rust: prerequisites, rustup target add wasm32-wasip1, Cargo.toml with fastedge crate, verify build
-- [ ] `fastedge/getting-started/setup-javascript.mdx`
-      JavaScript: Node.js v20+, npm install @gcoredev/fastedge-sdk-js, CLI tools overview
-- [ ] Update `docs.json`: convert fastedge/getting-started from standalone page to group,
-      add all three setup articles
+- [x] `fastedge/getting-started/setup-rust-modern.mdx`
+- [x] `fastedge/getting-started/setup-rust-legacy.mdx`
+- [x] `fastedge/getting-started/setup-javascript.mdx`
+- [x] Update `docs.json`: navigation restructured, groups added
 
 ---
 
 ## Phase 2 — Use-case articles (after Phase 1)
 
-- [ ] Update `fastedge/getting-started/get-started-rust.mdx`:
-      Remove setup steps, replace with link to setup-rust-modern, keep hello-world + deploy
-- [ ] Update `fastedge/getting-started/call-external-api-rust.mdx`:
-      Remove setup steps, replace with link to setup-rust-modern
-- [ ] Add Portal deploy tab to both articles (currently API-only deploy)
+- [x] `fastedge/getting-started/get-started-http.mdx` (Modern Rust HTTP, Portal + API)
+- [x] `fastedge/getting-started/call-external-api-rust.mdx` (Portal + API)
+- [x] `fastedge/getting-started/get-started-cdn.mdx` (CDN app, Portal + API)
+- [x] `fastedge/getting-started/setup-rust-cdn.mdx` (CDN Rust SDK setup)
+- [x] `fastedge/render-markdown.mdx`
+- [x] `fastedge/geolocation-redirect.mdx`
+- [x] `fastedge/getting-started/cdn-properties.mdx`
+- [x] Create-apps landing page removed, replaced by Applications nav group
 - [ ] New article: `fastedge/getting-started/get-started-rust-legacy.mdx`
-      Legacy Rust hello-world, references setup-rust-legacy, Portal + API deploy
 - [ ] New article: `fastedge/getting-started/get-started-js.mdx`
-      JavaScript hello-world, references setup-javascript, Portal + API deploy
-- [ ] Revise `fastedge/create-apps.mdx` to reflect all three SDK types
 
 ---
 
 ## Phase 3 — Management articles (add REST API tab)
 
-- [ ] `fastedge/manage-apps.mdx`
-- [ ] `fastedge/create-manage-templates.mdx`
-- [ ] `fastedge/built-in-templates.mdx`
-- [ ] `fastedge/secrets-manager/manage-secrets.mdx`
+- [x] `fastedge/manage-apps.mdx`
+- [x] `fastedge/create-manage-templates.mdx`
+- [x] `fastedge/built-in-templates.mdx` — split into two focused articles
+- [x] `fastedge/kv-stores/manage-kv-store.mdx`
+- [x] `fastedge/getting-started/integrate-cdn-with-fastedge.mdx`
+- [x] `fastedge/secrets-manager/manage-secrets.mdx`
 - [ ] `fastedge/kv-stores/sorted-set.mdx`
 - [ ] `fastedge/kv-stores/bloom-filter.mdx`
-- [ ] `fastedge/getting-started/integrate-cdn-with-fastedge.mdx`
 
 ---
 
@@ -116,23 +113,9 @@ FastEdge
 
 - [ ] `fastedge/secrets-manager/slots.mdx`
 - [ ] `fastedge/kv-stores/how-it-works.mdx`
-- [ ] `fastedge/getting-started/cdn-properties.mdx`
 - [ ] `fastedge/cache.mdx`
 - [ ] `fastedge/fastedge-cli.mdx`
 - [ ] `fastedge/troubleshooting.mdx`
-
----
-
-## Already updated
-
-- [x] `fastedge/getting-started/create-fastedge-apps.mdx` — Portal + API (MethodSwitch)
-- [x] `fastedge/kv-stores/manage-kv-store.mdx` — Portal + API (MethodSwitch)
-- [x] `fastedge/built-in-templates.mdx`
-- [x] `fastedge/manage-apps.mdx`
-- [x] `fastedge/getting-started.mdx`
-- [x] `fastedge/create-manage-templates.mdx`
-- [x] `fastedge/getting-started/get-started-rust.mdx` (Modern Rust, needs Phase 2 update)
-- [x] `fastedge/getting-started/call-external-api-rust.mdx` (needs Phase 2 update)
 
 ---
 
