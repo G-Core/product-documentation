@@ -1,88 +1,93 @@
 ---
 title: Troubleshooting
 sidebarTitle: Troubleshooting
-ai-navigation: Diagnose FastEdge application failures using HTTP status codes 530 (internal error), 531 (memory limit exceeded), 532 (timeout), and 533 (crash) to identify root causes and access FastEdge SDK Rust, JavaScript, AssemblyScript, and development tools for resolution.
+ai-navigation: Diagnose FastEdge application failures using HTTP status codes 530 (initialization failed), 531 (runtime error), 532 (timeout), and 533 (memory limit exceeded). Includes debug logging via API, platform limits, and SDK-specific notes for Rust and JavaScript.
 ---
 
-If you're having issues with your FastEdge application, the following section offers helpful tips and troubleshooting suggestions.
+When a FastEdge application fails, the response includes a FastEdge-specific 5xx status code. The code identifies whether the failure happened during initialization, execution, timeout, or memory allocation.
 
-### HTTP status codes
+Start by identifying the returned status code. Then enable debug logging to capture application output and investigate the root cause.
 
-If your application is correctly configured and works as expected, FastEdge will return the expected status code, such as "200 OK."
+## HTTP error codes
 
-However, in some exceptional situations, you might get the following status codes. Check the descriptions to understand the root cause.
+| Code | Meaning | Common causes |
+| ---- | ------- | ------------- |
+| 530 | Application initialization failed | Missing or invalid environment variable, wrong compilation target, corrupt binary |
+| 531 | Runtime error — unhandled exception | Rust panic, JavaScript `TypeError`, failed outbound request, unexpected `null` |
+| 532 | Execution timed out | Handler exceeded the execution time limit; check for infinite loops, expensive processing, or slow outbound calls |
+| 533 | Memory limit exceeded | Application allocated more memory than the plan allows |
 
-| Status code | Description                                        |
-| ----------- | -------------------------------------------------- |
-| 530         | Internal FastEdge error.                           |
-| 531         | Application has exceeded the allowed memory limit. |
-| 532         | Application has timed out.                         |
-| 533         | Application has crashed.                           |
+## Debug logging
 
-### Useful resources
+Production applications do not write logs by default. Enable debug mode before reproducing the issue to capture `console.log` output (JavaScript) or `println!` output (Rust).
 
-- **FastEdge Examples**
-  - <a
-      href="https://github.com/G-Core/FastEdge-examples"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      FastEdge-examples Repository
-    </a>
+Enable debug mode:
 
-- **FastEdge SDK Rust**
-  - <a
-      href="https://github.com/G-Core/FastEdge-sdk-rust"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      FastEdge SDK Rust Repository
-    </a>
-  - <a
-      href="https://docs.rs/fastedge/latest/fastedge/"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      FastEdge docs.rs
-    </a>
+```bash
+curl -X PATCH "https://api.gcore.com/fastedge/v1/apps/{app_id}" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"debug": true}'
+```
 
-- **FastEdge SDK Javascript (HTTP apps)**
-  - <a
-      href="https://github.com/G-Core/FastEdge-sdk-js"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      FastEdge SDK JS Repository
-    </a>
-  - <a
-      href="https://g-core.github.io/FastEdge-sdk-js/"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      Javascript Reference Documentation
-    </a>
+Debug mode stays active for 30 minutes and then turns off automatically. Reproduce the failure, then retrieve the logs:
 
-- **FastEdge SDK AssemblyScript (CDN apps)**
-  - <a
-      href="https://github.com/G-Core/proxy-wasm-sdk-as"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      FastEdge Proxy-Wasm SDK
-    </a>
+```bash
+curl "https://api.gcore.com/fastedge/v1/apps/{app_id}/logs" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
 
-- **FastEdge Development Tools**
-  - <a
-      href="https://github.com/G-Core/FastEdge-mcp-server"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      FastEdge MCP Server
-    </a>
-  - <a
-      href="https://github.com/G-Core/FastEdge-vscode"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      FastEdge VSCode Extension
-    </a>
+Available query parameters: `from`, `to`, `edge` (specific PoP), `client_ip`, `request_id`, `search`.
+
+## Platform limits
+
+Exceeding the limits below triggers a 532 (timeout) or 533 (memory) response. Check which plan your application is on if you see these codes repeatedly.
+
+| Resource | Basic | Pro |
+| -------- | ----- | --- |
+| Execution time | 50&nbsp;ms | 200&nbsp;ms |
+| Memory | 128&nbsp;MB | 256&nbsp;MB |
+| Outbound requests | 5 per invocation | 20 per invocation |
+| Request / response body | 1&nbsp;MB | 5&nbsp;MB |
+| Binary size | ~50&nbsp;MB | ~50&nbsp;MB |
+
+## Common application issues
+
+### Rust: log output not appearing
+
+`eprintln!` writes to stderr, which FastEdge does not capture. Use `println!` for any output that should appear in debug logs.
+
+### JavaScript: unavailable APIs
+
+The following are not available inside FastEdge JavaScript applications:
+
+- Node.js built-ins: `node:crypto`, `node:fs`, `node:buffer`, `process`, `require`
+- `WebSocket`
+- Web Cache API — use the [Cache module](/fastedge/cache) (`import { Cache } from 'fastedge::cache'`) instead
+
+## Local testing
+
+Before deploying, test your application locally using the FastEdge CLI. See [FastEdge CLI](/fastedge/fastedge-cli) for installation and full usage.
+
+```bash
+# Run a Wasm binary as a local HTTP server
+fastedge-run http -w ./app.wasm --port 8080
+
+# Launch the visual debugger at http://localhost:3000
+fastedge-test
+```
+
+For JavaScript applications, `npm run debug` starts the same visual debugger.
+
+## Related resources
+
+| Resource | Link |
+| -------- | ---- |
+| FastEdge examples | [github.com/G-Core/FastEdge-examples](https://github.com/G-Core/FastEdge-examples) |
+| Rust SDK | [github.com/G-Core/FastEdge-sdk-rust](https://github.com/G-Core/FastEdge-sdk-rust) |
+| Rust API reference | [docs.rs/fastedge](https://docs.rs/fastedge/latest/fastedge/) |
+| JavaScript SDK | [github.com/G-Core/FastEdge-sdk-js](https://github.com/G-Core/FastEdge-sdk-js) |
+| JavaScript reference | [g-core.github.io/FastEdge-sdk-js](https://g-core.github.io/FastEdge-sdk-js/) |
+| AssemblyScript SDK (CDN apps) | [github.com/G-Core/proxy-wasm-sdk-as](https://github.com/G-Core/proxy-wasm-sdk-as) |
+| MCP server | [github.com/G-Core/FastEdge-mcp-server](https://github.com/G-Core/FastEdge-mcp-server) |
+| VSCode extension | [github.com/G-Core/FastEdge-vscode](https://github.com/G-Core/FastEdge-vscode) |
