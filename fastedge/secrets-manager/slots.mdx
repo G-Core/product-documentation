@@ -1,64 +1,124 @@
 ---
-title: Secrets Slots
-sidebarTitle: Secrets Slots
-ai-navigation: Configure FastEdge Secrets Slots for secret rotation by storing multiple encrypted secret versions with slot indices, enabling runtime secret updates via get_secret API without deleting old values and supporting token validation against specific secret versions using slot indices or timestamps.
+title: Secret rotation with slots
+sidebarTitle: Secret rotation with slots
+ai-navigation: Use FastEdge Secrets Manager slots to implement secret rotation — each slot stores a separate encrypted value identified by a numeric index or Unix timestamp, enabling runtime rotation without application redeployment.
 ---
 
-Secrets Slots is a mechanism by which you can empower secret rotation.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-When requesting a secret within an application ( get_secret ) the encrypted secret provided will always be the slot with the maximum slot index.
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
 
-So adding a new encrypted value with a higher slot index, will update the secret at runtime without having to delete / replace old secret values.
+A secret can hold multiple encrypted values in separate slots. Each slot has a numeric **Slot index** and an independently encrypted value.
 
-### Slots and secret rollover
+## Slot selection logic
 
-Using `get_effective_at` to access different slots within a given secret and how to use slots.
+The SDK selects a slot based on its index. Which slot is returned depends on the function used:
 
-<Info>
-**Info**
+- **`get_secret(name)`** — always returns the value from the slot with the **highest** index
+- **`get_effective_at(name, n)`** — returns the value from the slot with the **highest index that is ≤ n**
 
-For more information regarding secret usage in applications see the [JavaScript SDK](https://g-core.github.io/FastEdge-sdk-js/reference/fastedge/secret/get-secret/) and the [Rust SDK](https://docs.rs/fastedge/latest/fastedge/secret/index.html)
+## Slot indices for password rotation
 
-</Info>
+In this pattern, slot indices are arbitrary integers that represent password versions. Applications store the slot index used to sign a token in the token payload, then pass that index to `get_effective_at` when validating.
 
-The following are examples of slots usage to manage secret rollover within your own applications. This could be achieved in many
-different ways.
-
-##### **Example 1** (Slots as indices)
-
-Validating a token against a specific version of a secret.
-
-Having created a secret:
+The secret below has two slots:
 
 <Frame>
-  ![Secret Slots Indices
-  Example](/images/docs/fastedge/secret-manager/slots-example-indices.png)
+![Create secret form with two slots — index 0 for original password and index 5 for updated password](/images/docs/fastedge/secrets-manager/slots-example-indices.png)
 </Frame>
 
-It would now be easy enough to also provide the `slot` value within the tokens claims as to which
-password it should validate against. This would allow you to slowly rollover from one password to
-another and keep all users able to refresh their tokens without issues, as each users token also
-carries the data to know which password was still in use when it was issued.
+With this configuration:
 
-It always returns `effectiveAt >= secret_slots.slot`
+- `get_effective_at("token-secret", 0)` returns `original_password`
+- `get_effective_at("token-secret", 3)` returns `original_password` (highest slot ≤ 3 is slot 0)
+- `get_effective_at("token-secret", 5)` returns `updated_password`
+- `get_effective_at("token-secret", 7)` returns `updated_password` (highest slot ≤ 7 is slot 5)
 
-So a request to:
+Tokens signed with the old password carry index 0 and continue to validate correctly. New tokens carry index 5 and use the updated password. Both coexist without requiring any immediate migration.
 
-- `secret::get_effective_at("token-secret", 0)` would return `original_password`
-- `secret::get_effective_at("token-secret", 3)` would return `original_password`
-- `secret::get_effective_at("token-secret", 5)` would return `updated_password`
-- `secret::get_effective_at("token-secret", 7)` would return `updated_password`
+## Unix timestamps for time-based rotation
 
-This `>=` logic makes it very easy to implement the following example.
-
-##### **Example 2** (Slots as timestamps)
-
-Validating a token against a specific version of a secret using timestamps:
+In this pattern, slot indices are Unix timestamps indicating when each password version becomes active. Applications pass the token issue time (`iat` claim) to `get_effective_at`.
 
 <Frame>
-  ![Secret Slots Timestamp
-  Example](/images/docs/fastedge/secret-manager/slots-example-timestamps.png)
+![Create secret form with two slots — index 0 for original password and index 1741790697 for new password](/images/docs/fastedge/secrets-manager/slots-example-timestamps.png)
 </Frame>
 
-As you can see any token being validated with an `iat` claim time before 1741790697 would use the
-`original_password` and any token after this time would start to use the `new_password`
+With slot 0 holding `original_password` and slot `1741790697` (Wed Mar 12 2025 14:44:57 UTC) holding `new_password`:
+
+- Any token with `iat` before `1741790697` validates against `original_password`
+- Any token issued after that timestamp validates against `new_password`
+
+Rotation happens automatically at the specified time — no redeployment required.
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+Slots are stored as part of the secret object. Use `PATCH` to add rotation slots without removing existing ones. Use `PUT` only when replacing the entire secret configuration.
+
+<p>All requests authenticate with an [API&nbsp;token](/account-settings/api-tokens). Set it as an environment variable before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+## Create a secret with multiple slots
+
+Pass all slots in a single request to create a pre-configured rotation setup:
+
+```bash
+curl -X POST https://api.gcore.com/fastedge/v1/secrets \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "token-secret",
+    "comment": "Password for token validation",
+    "secret_slots": [
+      {"slot": 0,          "value": "original_password"},
+      {"slot": 1741790697, "value": "new_password"}
+    ]
+  }'
+```
+
+## Add a rotation slot
+
+To add a new slot to an existing secret without removing the current ones, use `PATCH` with only the new slot:
+
+```bash
+curl -X PATCH https://api.gcore.com/fastedge/v1/secrets/SECRET_ID \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "secret_slots": [
+      {"slot": 1741790697, "value": "new_password"}
+    ]
+  }'
+```
+
+`PATCH` adds or updates only the slots listed in the request — existing slots at other indices are preserved.
+
+<Warning>
+`PUT` replaces the entire secret including all slots. Any slot not included in a `PUT` request is permanently removed. Use `PATCH` for rotation to preserve existing slots.
+</Warning>
+
+## Remove an old slot after rotation is complete
+
+Once all clients have migrated to the new password, remove the old slot by sending a `PUT` with only the current slot:
+
+```bash
+curl -X PUT https://api.gcore.com/fastedge/v1/secrets/SECRET_ID \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "token-secret",
+    "secret_slots": [
+      {"slot": 1741790697, "value": "new_password"}
+    ]
+  }'
+```
+
+This removes slot 0 and leaves only the new slot. After this, `get_secret` and `get_effective_at` with any index ≥ 0 both return the new password.
+
+</MethodSection>
+</MethodSwitch>

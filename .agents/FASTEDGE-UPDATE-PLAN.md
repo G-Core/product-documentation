@@ -111,7 +111,7 @@ FastEdge
 
 ## Phase 4 — Content review
 
-- [ ] `fastedge/secrets-manager/slots.mdx`
+- [x] `fastedge/secrets-manager/slots.mdx`
 - [ ] `fastedge/kv-stores/how-it-works.mdx`
 - [ ] `fastedge/cache.mdx`
 - [ ] `fastedge/fastedge-cli.mdx`
