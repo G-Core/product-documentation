@@ -1,7 +1,13 @@
 ---
 title: Configure secrets for HTTPS load balancer
+sidebarTitle: Configure secrets
 ai-navigation: Create SSL/TLS secrets in Gcore Secrets Manager by uploading PKCS12 files or manually entering certificate, certificate chain, and private key for HTTPS Load Balancer listeners.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
 
 Secrets Manager is a dedicated tab where you can manage SSL/TLS secrets required to create Load Balancers with HTTPS listeners. Depending on your setup, you can either upload a PKCS12 file or add certificate details manually.
 
@@ -183,3 +189,351 @@ You cannot delete a secret that is currently used by a Load Balancer's listener.
 </Info>
 
 For detailed instructions on configuring a Load Balancer with an HTTPS listener, including adding TLS certificates, refer to the documentation on [adding TLS certificates to a Load Balancer](/cloud/networking/load-balancers/add-certificates-to-load-balancer).
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+Use the Gcore API to create TLS certificate secrets for HTTPS load balancer listeners — PEM-formatted certificate files are accepted directly, without PKCS12 conversion.
+
+<Info>
+A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get) and a [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get).
+</Info>
+
+Set the following environment variables before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+```
+
+## Quickstart
+
+The scripts below create a TLS certificate secret from PEM files and print the secret ID for use in a load balancer listener.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+
+# Step 1. Load PEM certificate files.
+with open("certificate.pem") as f:
+    certificate = f.read()
+with open("private_key.pem") as f:
+    private_key = f.read()
+with open("certificate_chain.pem") as f:
+    certificate_chain = f.read()
+
+# Step 2. Create the TLS certificate secret.
+secret = client.cloud.secrets.upload_tls_certificate_and_poll(
+    name="my-tls-secret",
+    payload={
+        "certificate": certificate,
+        "private_key": private_key,
+        "certificate_chain": certificate_chain,
+    },
+)
+print(f"Secret ID: {secret.id}")
+print(f"Status:    {secret.status}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "log"
+    "os"
+
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/cloud"
+)
+
+func main() {
+    client := gcore.NewClient()
+    ctx := context.Background()
+
+    // Step 1. Load PEM certificate files.
+    certificate, err := os.ReadFile("certificate.pem")
+    if err != nil {
+        log.Fatal(err)
+    }
+    privateKey, err := os.ReadFile("private_key.pem")
+    if err != nil {
+        log.Fatal(err)
+    }
+    certChain, err := os.ReadFile("certificate_chain.pem")
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    // Step 2. Create the TLS certificate secret.
+    secret, err := client.Cloud.Secrets.UploadTlsCertificateAndPoll(ctx, cloud.SecretUploadTlsCertificateParams{
+        Name: "my-tls-secret",
+        Payload: cloud.SecretUploadTlsCertificateParamsPayload{
+            Certificate:      string(certificate),
+            PrivateKey:       string(privateKey),
+            CertificateChain: string(certChain),
+        },
+    })
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Printf("Secret ID: %s\n", secret.ID)
+    fmt.Printf("Status:    %s\n", secret.Status)
+}
+```
+  </Tab>
+</Tabs>
+
+## Step-by-step
+
+<p>Each step below explains what the call does, which parameters matter, and what the response looks like.</p>
+
+<Accordion title="Show all steps">
+
+### Step 1. Create a TLS certificate secret
+
+The [create secret](https://api.gcore.com/docs/cloud#tag/Secrets/operation/SecretsViewSetV2.post) endpoint accepts PEM-formatted certificate data directly — no PKCS12 packaging or base64 encoding required.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `name` | Yes | Display name for the secret |
+| `payload.certificate` | Yes | SSL/TLS certificate in PEM format |
+| `payload.private_key` | Yes | Private key in PEM format |
+| `payload.certificate_chain` | Yes | Chain of intermediate and root certificates in PEM format |
+| `expiration` | No | ISO 8601 datetime when the secret expires; defaults to no expiry |
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+
+with open("certificate.pem") as f:
+    certificate = f.read()
+with open("private_key.pem") as f:
+    private_key = f.read()
+with open("certificate_chain.pem") as f:
+    certificate_chain = f.read()
+
+secret = client.cloud.secrets.upload_tls_certificate_and_poll(
+    name="my-tls-secret",
+    payload={
+        "certificate": certificate,
+        "private_key": private_key,
+        "certificate_chain": certificate_chain,
+    },
+)
+print(f"Secret ID: {secret.id}")   # save as SECRET_ID
+print(f"Status:    {secret.status}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+certificate, _ := os.ReadFile("certificate.pem")
+privateKey, _ := os.ReadFile("private_key.pem")
+certChain, _ := os.ReadFile("certificate_chain.pem")
+
+secret, err := client.Cloud.Secrets.UploadTlsCertificateAndPoll(ctx, cloud.SecretUploadTlsCertificateParams{
+    Name: "my-tls-secret",
+    Payload: cloud.SecretUploadTlsCertificateParamsPayload{
+        Certificate:      string(certificate),
+        PrivateKey:       string(privateKey),
+        CertificateChain: string(certChain),
+    },
+})
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf("Secret ID: %s\n", secret.ID)   // save as SECRET_ID
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X POST "https://api.gcore.com/cloud/v2/secrets/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my-tls-secret",
+    "payload": {
+      "certificate": "-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----",
+      "private_key": "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----",
+      "certificate_chain": "-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----"
+    }
+  }'
+```
+
+Response:
+
+```json
+{
+  "tasks": ["b63f0fff-1234-5678-abcd-ef0123456789"]
+}
+```
+
+Poll <code>GET&nbsp;https://api.gcore.com/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`. The created secret ID is in `created_resources.secrets[0]`.
+  </Tab>
+</Tabs>
+
+### Step 2. List secrets
+
+The [list secrets](https://api.gcore.com/docs/cloud#tag/Secrets/operation/SecretsViewSet.get) endpoint returns all secrets in the region — useful for finding the ID of an existing secret before attaching it to a load balancer.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+secrets = client.cloud.secrets.list()
+print(f"Total: {secrets.count}")
+for s in secrets.results:
+    print(f"  {s.id}  {s.name}  {s.status}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+page, err := client.Cloud.Secrets.List(ctx, cloud.SecretListParams{})
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf("Total: %d\n", page.Count)
+for _, s := range page.Results {
+    fmt.Printf("  %s  %s  %s\n", s.ID, s.Name, s.Status)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl "https://api.gcore.com/cloud/v1/secrets/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+Response:
+
+```json
+{
+  "count": 1,
+  "results": [
+    {
+      "id": "8f9a1dcd-09cb-4e39-9f6a-a4613f3a63aa",
+      "name": "my-tls-secret",
+      "status": "ACTIVE",
+      "secret_type": "certificate",
+      "created": "2026-05-31T10:00:00+00:00",
+      "expiration": null
+    }
+  ]
+}
+```
+  </Tab>
+</Tabs>
+
+### Step 3. Get secret details
+
+The [get secret](https://api.gcore.com/docs/cloud#tag/Secrets/operation/SecretViewSet.get) endpoint returns full metadata for a single secret by ID, including its status, type, and expiration date.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+SECRET_ID = "8f9a1dcd-09cb-4e39-9f6a-a4613f3a63aa"   # from Step 1 or Step 2
+
+secret = client.cloud.secrets.get(SECRET_ID)
+print(f"Name:       {secret.name}")
+print(f"Status:     {secret.status}")
+print(f"Type:       {secret.secret_type}")
+print(f"Expiration: {secret.expiration}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+secretID := "8f9a1dcd-09cb-4e39-9f6a-a4613f3a63aa"   // from Step 1 or Step 2
+
+secret, err := client.Cloud.Secrets.Get(ctx, secretID, cloud.SecretGetParams{})
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf("Name:       %s\n", secret.Name)
+fmt.Printf("Status:     %s\n", secret.Status)
+fmt.Printf("Type:       %s\n", secret.SecretType)
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+SECRET_ID="8f9a1dcd-09cb-4e39-9f6a-a4613f3a63aa"   # from Step 1 or Step 2
+
+curl "https://api.gcore.com/cloud/v1/secrets/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$SECRET_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+Response:
+
+```json
+{
+  "id": "8f9a1dcd-09cb-4e39-9f6a-a4613f3a63aa",
+  "name": "my-tls-secret",
+  "status": "ACTIVE",
+  "secret_type": "certificate",
+  "created": "2026-05-31T10:00:00+00:00",
+  "expiration": null,
+  "content_types": {
+    "default": "application/octet-stream"
+  }
+}
+```
+  </Tab>
+</Tabs>
+
+</Accordion>
+
+## Clean up
+
+The [delete secret](https://api.gcore.com/docs/cloud#tag/Secrets/operation/SecretViewSet.delete) endpoint removes a secret permanently. A secret attached to a load balancer listener cannot be deleted — remove the listener first, then delete the secret.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+SECRET_ID = "8f9a1dcd-09cb-4e39-9f6a-a4613f3a63aa"
+
+task_ids = client.cloud.secrets.delete(SECRET_ID)
+client.cloud.tasks.poll(task_ids.tasks[0])
+print("Secret deleted.")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+secretID := "8f9a1dcd-09cb-4e39-9f6a-a4613f3a63aa"
+
+if err := client.Cloud.Secrets.DeleteAndPoll(ctx, secretID, cloud.SecretDeleteParams{}); err != nil {
+    log.Fatal(err)
+}
+fmt.Println("Secret deleted.")
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+SECRET_ID="8f9a1dcd-09cb-4e39-9f6a-a4613f3a63aa"
+
+curl -X DELETE "https://api.gcore.com/cloud/v1/secrets/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$SECRET_ID" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+Response:
+
+```json
+{
+  "tasks": ["b63f0fff-1234-5678-abcd-ef0123456789"]
+}
+```
+
+Poll <code>GET&nbsp;https://api.gcore.com/cloud/v1/tasks/{task_id}</code> until `state` is `FINISHED`.
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>

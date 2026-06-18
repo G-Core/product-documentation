@@ -1,7 +1,7 @@
 ---
-title: Configure Let's Encrypt certificate
-sidebarTitle: Let's Encrypt certificate
-ai-navigation: Enable HTTPS with free Let's Encrypt certificates on CDN resources using HTTP-01 or DNS-01 challenge validation, with optional Gcore Managed DNS delegation to ns1.gcorelabs.net and ns2.gcdn.services for domain ownership verification.
+title: "Configure Let's Encrypt certificate"
+sidebarTitle: "Let's Encrypt certificate"
+ai-navigation: "Enable HTTPS with free Let's Encrypt certificates on CDN resources using HTTP-01 or DNS-01 challenge validation, with optional Gcore Managed DNS delegation to ns1.gcorelabs.net and ns2.gcdn.services for domain ownership verification."
 ---
 
 If you do not have your own SSL certificate, you can activate the free Let's Encrypt certificate in your account. Let's Encrypt certificates can only be issued for resources with a [custom domain name](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn).
@@ -10,78 +10,184 @@ If you do not have your own SSL certificate, you can activate the free Let's Enc
 
 ### During resource creation
 
-On the **Set up initial configuration** step, navigate to the **SSL** section, and turn on the toggle for **Enable HTTPS**. Then, select **Get free Let's Encrypt certificate**. 
+On the **Set up initial configuration** step, navigate to the **SSL** section, and turn on the toggle for **Enable HTTPS**. Then, select **Get free Let's Encrypt certificate**.
 
-
-<Frame>![During resource creation](/images/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-1.png)</Frame>
-
-
+<Frame>
+  ![During resource creation](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-enable-https.png)
+</Frame>
 
 The certificate issuance may take up to 30 minutes after the resource is created. During this time, please do not:
 
-  * disable the HTTPS option,
-  * select another certificate,
-  * interrupt the issuance of the current certificate.
-
-
+- disable the HTTPS option,
+- select another certificate,
+- interrupt the issuance of the current certificate.
 
 ### For created resource
 
-1\. Go to CDN and select the **CDN** resource you want to configure.
+1. Go to CDN and select the **CDN** resource you want to configure.
 
+<Frame>
+  ![CDN resource](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/cdn-resource.png)
+</Frame>
 
-<Frame>![CDN resource](/images/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/cdn-resource-name.png)</Frame>
+2. In the navigation panel, under the **General** section, click **SSL**.
 
+<Frame>
+  ![General section](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-menu.png)
+</Frame>
 
+3. In the **SSL** section, turn on the toggle for **Enable HTTPS**, select **Get free Let's Encrypt certificate**, and click on **Save changes**.
 
-2\. In the navigation panel, under the **General** section, click **SSL**.
-
-
-<Frame>![General section](/images/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-3.png)</Frame>
-
-
-
-3\. In the **SSL** section, turn on the toggle for **Enable HTTPS**, select **Get free Let's Encrypt certificate**, and click on **Save changes**.
-
-
-<Frame>![SSL section](/images/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-4.png)</Frame>
-
-
+<Frame>
+  ![SSL section](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-enable-https.png)
+</Frame>
 
 ### Issuance with the DNS-01 challenge
 
-We use the [HTTP-01 challenge](https://letsencrypt.org/docs/challenge-types/#http-01-challenge) by default to validate your ownership of the domain to which you want to issue the Let's Encrypt certificate. But sometimes, this challenge type isn't suitable. For example, if you use [multi-CDNs](https://gcore.com/cdn/multi-cdn) with a balancer, CNAME may answer with the non-Gcore value, and the Let's Encrypt certificate issuance can fail. 
+We use the [HTTP-01 challenge](https://letsencrypt.org/docs/challenge-types/#http-01-challenge) by default to validate your ownership of the domain to which you want to issue the Let's Encrypt certificate. But sometimes, this challenge type isn't suitable. For example, if you use [multi-CDNs](https://gcore.com/cdn/multi-cdn) with a balancer, CNAME may answer with the non-Gcore value, and the Let's Encrypt certificate issuance can fail.
 
-To avoid this problem and make the process more flexible, we have added support for the DNS-01 challenge. You can read more about the principles of its operation [in the official documentation](https://letsencrypt.org/docs/challenge-types/#dns-01-challenge).
+To avoid this problem and make the process more flexible, we have added support for the DNS-01 challenge. You can read more about the principles of its operation [in the official Let's Encrypt documentation](https://letsencrypt.org/docs/challenge-types/#dns-01-challenge).
 
-To use the DNS-01 challenge, you need to:
+Before you begin, make sure you have the following:
 
-1\. Activate [Gcore Managed DNS](https://gcore.com/dns) in your personal account.
+- A CDN resource with the custom domain(s) already configured.
+- [Gcore Managed DNS](https://gcore.com/dns) active on your account.
+- Access to the authoritative DNS provider hosting your domain zone.
+- A Gcore API token with permission to modify the CDN resource.
 
-2\. Delegate your custom domain name to Gcore's name servers (_ns1.gcorelabs.net_ and _ns2.gcdn.services_).
+#### Step 1. Activate Gcore Managed DNS
 
-3\. Enable the `use_dns01_le_challenge` option. Check our [API documentation](/api-reference/cdn/lets-encrypt-certificates/issue-lets-encrypt-certificate#issue-lets-encrypt-certificate) for help with this.
+Activate [Gcore Managed DNS](https://gcore.com/dns) in your personal account.
+
+#### Step 2. Delegate your domain to Gcore nameservers
+
+You have two options depending on how much control you want to transfer to Gcore:
+
+- **Full zone delegation**: delegate your entire DNS zone to Gcore nameservers (_ns1.gcorelabs.net_ and _ns2.gcdn.services_). Choose this if you already manage your zone in Gcore DNS or don't mind moving it.
+- **Partial delegation**: delegate only the `_acme-challenge.*` subdomains to Gcore. Choose this if you can't or don't want to move your full DNS zone — this is the minimum-privilege approach and is fully compliant with [RFC 8555 §8.4](https://www.rfc-editor.org/rfc/rfc8555#section-8.4).
+
+**To set up partial delegation:**
+
+1. In your DNS provider, add NS records pointing `_acme-challenge.<hostname>` to Gcore's nameservers:
+
+| Name | TTL | Type | Value |
+| --- | --- | --- | --- |
+| `_acme-challenge.www.example.com` | 300 | NS | `ns1.gcorelabs.net.` |
+| `_acme-challenge.www.example.com` | 300 | NS | `ns2.gcdn.services.` |
+
+Add a pair of NS records for each custom domain on your CDN resource. For example, for a resource serving three hostnames (www, app, api):
+
+```text
+_acme-challenge.www.example.com. IN NS ns1.gcorelabs.net.
+_acme-challenge.www.example.com. IN NS ns2.gcdn.services.
+_acme-challenge.app.example.com. IN NS ns1.gcorelabs.net.
+_acme-challenge.app.example.com. IN NS ns2.gcdn.services.
+_acme-challenge.api.example.com. IN NS ns1.gcorelabs.net.
+_acme-challenge.api.example.com. IN NS ns2.gcdn.services.
+```
+
+<Note>
+  **Note**
+
+  If a hostname (such as `www.example.com`) is itself a separately delegated zone with its own nameservers, create the NS records inside that child zone — not in the apex zone.
+</Note>
+
+2. Verify the delegation. Don't rely on a recursive resolver, as it can return cached results. Query the authoritative nameservers of the parent zone directly:
+
+```text
+# Find the authoritative nameservers for the parent zone
+dig +short NS example.com
+
+# Query one of those nameservers directly for the _acme-challenge delegation
+dig @ns.example-dns.com NS _acme-challenge.www.example.com
+```
+
+A correct delegation returns `status: NOERROR` with both `ns1.gcorelabs.net.` and `ns2.gcdn.services.` in the ANSWER or AUTHORITY section. If you get `NXDOMAIN` or `NOERROR` with no NS records, go back and confirm the records were saved correctly in your DNS provider.
+
+To trace the full delegation chain from the root:
+
+```text
+dig +trace _acme-challenge.www.example.com NS
+```
+
+3. Check your CAA records. CAA records are inherited from the parent zone, so if your domain publishes any, they must permit Let's Encrypt:
+
+```text
+dig CAA example.com
+```
+
+If no CAA record exists, any CA is allowed and no action is needed. If a CAA record is present, make sure it includes `letsencrypt.org`:
+
+```text
+example.com. IN CAA 0 issue "letsencrypt.org"
+```
+
+#### Step 3. Enable the DNS-01 challenge
+
+Enable the `use_dns01_le_challenge` option on your CDN resource via the [API](/api-reference/cdn/lets-encrypt-certificates/issue-lets-encrypt-certificate#issue-lets-encrypt-certificate). Replace `{resource_id}` with your CDN resource ID and `<api-key>` with your Gcore API token:
+
+```bash
+curl --request PATCH \
+  --url https://api.gcore.com/cdn/resources/{resource_id} \
+  --header 'Authorization: APIKey <api-key>' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "options": {
+      "use_dns01_le_challenge": {
+        "enabled": true,
+        "value": true
+      }
+    }
+  }'
+```
+
+To confirm the option was saved:
+
+```bash
+curl --request GET \
+  --url https://api.gcore.com/cdn/resources/{resource_id} \
+  --header 'Authorization: APIKey <api-key>' \
+  | jq '.options.use_dns01_le_challenge'
+```
+
+The expected response:
+
+```json
+{
+  "enabled": true,
+  "value": true
+}
+```
+
+After this call, trigger or retry Let's Encrypt issuance from the **SSL** section of your CDN resource in the Gcore portal. Gcore will validate via DNS-01 through the delegated `_acme-challenge.*` subdomains — no production traffic needs to flow through Gcore.
+
+#### Troubleshoot the DNS-01 challenge
+
+| Symptom | Cause and fix |
+| --- | --- |
+| `SERVFAIL` with EDE 22 "delegation" on `_acme-challenge.*` | Gcore isn't yet authoritative for that subdomain zone. Re-check Step 2. |
+| `REFUSED` from `ns1.gcorelabs.net` or `ns2.gcdn.services` | The `_acme-challenge.<hostname>` zone isn't provisioned in Gcore DNS. Wait a few minutes and retry. |
+| Issuance still uses HTTP-01 after the API call | The option may not have saved. Run the GET call from Step 3 to confirm the value. |
+| Cloudflare proxying the zone | Set **CNAME Flattening** to **Flatten CNAME at root**, not **Flatten all CNAMEs**. |
+| DNSSEC enabled at the parent zone | The delegation point must not carry a DS record unless Gcore also signs the child zone. Remove it or contact your DNS provider. |
 
 ### Notes regarding issuing
 
-  * The time it takes to issue a certificate varies depending on when the CDN resource was created. If you are requesting a certificate for a recently created resource, it may take up to 30 minutes as the configuration has not yet been fully propagated to all CDN servers. However, if the resource's configuration has already been fully propagated, issuing a Let's Encrypt certificate will only take a few minutes.
-  * Let's Encrypt requires placing a temporary file at the URL `http://<CNAME>/.well-known/acme-challenge/<TOKEN>` and making HTTP requests to this file. Before adding a Let's Encrypt certificate, make sure that your CDN resource does not have any rules that block these requests. Examples of such rules include:
-    * **A rule with /***. This rule will catch any strings and override the hidden rule that is necessary to obtain a certificate.
-    * **A rule with ((?!(jpeg|gif|png|pdf|jpg|css|js|woff|woff2|ttf)).)*$**. This rule will catch all non-static files.
-
-
+- The time it takes to issue a certificate varies depending on when the CDN resource was created. If you are requesting a certificate for a recently created resource, it may take up to 30 minutes as the configuration has not yet been fully propagated to all CDN servers. However, if the resource's configuration has already been fully propagated, issuing a Let's Encrypt certificate will only take a few minutes.
+- Let's Encrypt requires placing a temporary file at the URL `http://<CNAME>/.well-known/acme-challenge/<TOKEN>` and making HTTP requests to this file. Before adding a Let's Encrypt certificate, make sure that your CDN resource does not have any rules that block these requests. Examples of such rules include:
+  - **A rule with /**\*. This rule will catch any strings and override the hidden rule that is necessary to obtain a certificate.
+  - **A rule with ((?!(jpeg|gif|png|pdf|jpg|css|js|woff|woff2|ttf)).)\*\$**. This rule will catch all non-static files.
 
 You can check your resource rules using the service [regex](https://regex101.com/r/6BCT9Z/1). If you find a rule that blocks Let's Encrypt certificate issuance, delete the rule or change its pattern. The next time Let's Encrypt sends a request, the certificate issuance should be successful.
 
 If an error occurs during certificate issuance, the Enable HTTPS toggle will be disabled and a notification will be sent to your email.
 
-  * You can only issue a Let's Encrypt certificate for an existing resource. If the CNAME of the resource in the DNS settings is not pointing to the [value specified in the setup guide](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn), or the source is not available, the certificate will not be issued.
-  * Only one Let's Encrypt certificate can be issued per resource. If you need to add or remove an additional personal domain for a resource, we will reissue the certificate after making the changes. You will receive a warning that the current certificate will only be valid for 30 minutes and will be automatically replaced.
+- You can only issue a Let's Encrypt certificate for an existing resource. If the CNAME of the resource in the DNS settings is not pointing to the [value specified in the setup guide](/cdn/cdn-resource-options/general/create-and-set-a-custom-domain-for-the-content-delivery-via-cdn), or the source is not available, the certificate will not be issued.
+- Only one Let's Encrypt certificate can be issued per resource. If you need to add or remove an additional personal domain for a resource, we will reissue the certificate after making the changes. You will receive a warning that the current certificate will only be valid for 30 minutes and will be automatically replaced.
 
-
-<Frame>![Warning](/images/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-5.jpg)</Frame>
-
-
+<Frame>
+  ![Warning](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/warning.png)
+</Frame>
 
 While the resource is active, the certificate is renewed automatically. An attempt to reissue the certificate will be made 30 days before the expiration of the current certificate. There is only one attempt to reissue the certificate. If the certificate is not reissued, a notification will be sent to your email.
 
@@ -93,32 +199,29 @@ To avoid interruption of content delivery, please reissue the certificate yourse
 
 To revoke a certificate, go to the Resource Settings and click **Revoke Let's Encrypt certificate** in the SSL section.
 
-
-<Frame>![Revoke a Let's Encrypt certificate](/images/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-6.png)</Frame>
-
-
+<Frame>
+  ![Revoke a Let's Encrypt certificate](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-revoke.png)
+</Frame>
 
 **Note** : You can also use an [API request](/api-reference/cdn/ssl-certificates/change-ssl-certificate) to replace the Let's Encrypt certificate with your own certificate without having to revoke it.
 
 ## Restrictions and features of the option
 
-  * A wildcard domain cannot be issued a certificate
-  * If a Let's Encrypt certificate is issued, the certificate selector will not be displayed in the resource settings. Personal certificates will become available for selection after [revoking Let's Encrypt](/cdn/ssl-certificates/configure-lets-encrypt-certificate#revoke-a-let’s-encrypt-certificate)
-  * A Let's Encrypt certificate will not be displayed on the SSL Certificates page
+- A wildcard domain cannot be issued a certificate
+- If a Let's Encrypt certificate is issued, the certificate selector will not be displayed in the resource settings. Personal certificates will become available for selection after [revoking Let's Encrypt](/cdn/ssl-certificates/configure-lets-encrypt-certificate#revoke-a-let’s-encrypt-certificate)
+- A Let's Encrypt certificate will not be displayed on the SSL Certificates page
 
+<Frame>
+  ![Restrictions and features of the option](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-certificates.png)
+</Frame>
 
-<Frame>![Restrictions and features of the option](/images/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-7.png)</Frame>
+- A certificate is only visible in the settings of the resource for which it is issued.
+- Issuing and revoking a Let's Encrypt certificate does not require saving the Resource Settings.
+- If you are using DNS Cloudflare, be sure not to set the **CNAME Flattening** option to Flatten all CNAMEs. This will cause Cloudflare to return an A-record instead of a CNAME, which will prevent the issuance of a Let's Encrypt certificate. To successfully issue a Let's Encrypt certificate, set the CNAME Flattening option to **Flatten CNAME at root**.
 
-
-
-  * A certificate is **only** visible in the settings of the resource for which it is issued.
-  * Issuing and revoking a Let's Encrypt certificate does not require saving the Resource Settings.
-  * If you are using DNS Cloudflare, be sure not to set the **CNAME Flattening** option to Flatten all CNAMEs. This will cause Cloudflare to return an A-record instead of a CNAME, which will prevent the issuance of a Let's Encrypt certificate. To successfully issue a Let's Encrypt certificate, set the CNAME Flattening option to **Flatten CNAME at root**.
-
-
-<Frame>![Status](/images/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/lets-encrypt-8.png)</Frame>
-
-
+<Frame>
+  ![Status](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/lets-encrypt-8.png)
+</Frame>
 
 ## Let's Encrypt issuing statuses
 
@@ -126,46 +229,42 @@ To revoke a certificate, go to the Resource Settings and click **Revoke Let's En
 
 If your CDN resource domain cannot be ACME challenged, you will see a message informing you of the issue and the release button will be inactive. To avoid this problem, follow [our dedicated guide](/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue#free-let’s-encrypt-certificate).
 
-
-<Frame>![Pre-validation failed status](/images/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/pre-issuing-failed-10.png)</Frame>
-
-
+<Frame>
+  ![Pre-validation failed status](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-error.png)
+</Frame>
 
 ### Processing
 
 After selecting the **Get free Let's Encrypt certificate** option, if your CDN resource configurations are correct, the **Processing** status will be displayed in your customer portal while the certificate is being issued.
 
+<Frame>
+  ![Processing status](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-processing.png)
+</Frame>
 
-<Frame>![Processing status](/images/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/processing-20.png)</Frame>
+However, if some issues get in the way of the ACME challenge, you will see the following description of the error of issuing. Such an error can occur if a CDN resource is still in the process of creation, for example. The next attempt will occur in fifteen minutes. If you want to accelerate the reattempt, click **force retry**.
 
-
-
-However, if some issues get in the way of the ACME challenge, you will see the following description of the error of issuing. Such an error can occur if a CDN resource is still in the process of creation, for example. The next attempt will occur in fifteen minutes. If you want to accelerate the reattempt, click **force retry**. 
-
-
-<Frame>![Processing with issue status](/images/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/force-retry-30.png)</Frame>
-
-
+<Frame>
+  ![Processing with issue status](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-force-retry.png)
+</Frame>
 
 ### Success
 
 If the challenge verification is successful, the certificate will be issued, and you will see the status **Success**. The certificate will also be renewed automatically after three months.
 
-
-<Frame>![Success status](/images/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/success-40.png)</Frame>
-
-
+<Frame>
+  ![Success status](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-revoke.png)
+</Frame>
 
 ### Failed
 
-After five unsuccessful attempts, the certificate status will be **Failed**. You can fix the error(s) causing failure using [our dedicated guide](/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue#free-let’s-encrypt-certificate). Click **Retry issue** to attempt issuance again. 
+After five unsuccessful attempts, the certificate status will be **Failed**. You can fix the error(s) causing failure using [our dedicated guide](/cdn/troubleshooting/content-is-unavailable-after-a-cdn-resource-creation-how-to-solve-the-issue#free-let’s-encrypt-certificate). Click **Retry issue** to attempt issuance again.
 
-
-<Frame>![Failed status](/images/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/failed-50.png)</Frame>
-
-
+<Frame>
+  ![Failed status](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-failure-retry.png)
+</Frame>
 
 The **Failed** status can also occur when the Let's Encrypt certificate isn't renewed automatically. Correct the error (for example, change the domain's DNS records) and click **Renew certificate** to issue a new certificate and attach it to your CDN resource.
 
-
-<Frame>![Failed status \(reissuing\)](/images/docs/cdn/ssl-certificates/configure-lets-encypt-certificate/failed-reissuing.png)</Frame>
+<Frame>
+  ![Failed status (reissuing)](/images/docs/cdn/ssl-certificates/configure-lets-encrypt-certificate/ssl-failed-renew.png)
+</Frame>

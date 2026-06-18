@@ -1,15 +1,18 @@
 ---
 title: Check the operational status of your Virtual Machine
 sidebarTitle: Check the status
-ai-navigation: Check Virtual Machine operational status in the Virtual Instances page Status column, which displays Building, Power on, Power off, Error, and Deleted states.
+ai-navigation: Retrieve Virtual Machine operational status via the Customer Portal Status column or via the REST API using GET /cloud/v1/instances to read ACTIVE, BUILD, SHUTOFF, and ERROR status values.
 ---
 
-You can find Virtual Machine (VM) statuses inside a project on the **Virtual Instances** page. Check the **Status** column:
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
+<MethodSwitch>
+
+<MethodSection id="portal" label="Customer Portal">
+
+<p>You can find Virtual Machine (VM) statuses inside a project on the **Virtual Instances** page. Check the **Status** column:</p>
 
 <Frame>![VM status column with the Power on status displayed](/images/docs/cloud/virtual-instances/check-the-operational-status-of-your-instance/vm-status-column.png)</Frame>
-
-
 
 Each Virtual Machine can have the following statuses: 
 
@@ -23,9 +26,153 @@ Each Virtual Machine can have the following statuses:
 
   * **Deleted** : Virtual Machine was deleted. If you initiate server deletion, all ongoing operations will be terminated, and the VM will switch to the **Deleted** status.
 
-
 <Tip>
 **Tip**
 
 If an error occurs when allocating resources or your Virtual Machine gets the **Error** status, you can contact [Gcore support](mailto:support@gcore.com) for assistance.
 </Tip>
+
+</MethodSection>
+
+<MethodSection id="api" label="REST API">
+
+Monitor Virtual Machine health and lifecycle state by listing instances and retrieving detailed status information.
+
+<Info>A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get) and [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get).</Info>
+
+Set these variables before running the examples:
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export INSTANCE_ID="{YOUR_INSTANCE_ID}"
+```
+
+<Info>
+**INSTANCE\_ID** is the UUID of the virtual machine to check. To create a VM or find its ID, see [Create a virtual machine](/cloud/virtual-instances/create-an-instance).
+</Info>
+
+## List instances
+
+Retrieves all Virtual Machines in the project and region; the `status` field in each result reflects the current operational state.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+
+for instance in client.cloud.instances.list():
+    print(f"{instance.name}: {instance.status}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+import (
+    "context"
+    "fmt"
+    "log"
+
+    gcore "github.com/G-Core/gcore-go"
+    "github.com/G-Core/gcore-go/cloud"
+)
+
+client := gcore.NewClient()
+ctx := context.Background()
+
+page, err := client.Cloud.Instances.List(ctx, cloud.InstanceListParams{})
+if err != nil {
+    log.Fatalf("list instances: %v", err)
+}
+for _, inst := range page.Results {
+    fmt.Printf("%s: %s\n", inst.Name, inst.Status)
+}
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X GET "https://api.gcore.com/cloud/v1/instances/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}" \
+  -H "Authorization: APIKey ${GCORE_API_KEY}"
+```
+
+Response:
+
+```json
+{
+  "count": 1,
+  "results": [
+    {
+      "id": "4f89fc5a-3f68-4ae5-8b32-6e5304987872",
+      "name": "my-instance",
+      "status": "ACTIVE"
+    }
+  ]
+}
+```
+  </Tab>
+</Tabs>
+
+## Get instance details
+
+Fetches full details for a single VM; read the `status` field for the current operational state and `task_state` if a background operation is in progress.
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+instance = client.cloud.instances.get(instance_id=os.environ["INSTANCE_ID"])
+print(f"{instance.name}: {instance.status}")
+```
+  </Tab>
+  <Tab title="Go SDK">
+```go
+instance, err := client.Cloud.Instances.Get(ctx, os.Getenv("INSTANCE_ID"), cloud.InstanceGetParams{})
+if err != nil {
+    log.Fatalf("get instance: %v", err)
+}
+fmt.Printf("%s: %s\n", instance.Name, instance.Status)
+```
+  </Tab>
+  <Tab title="curl">
+```bash
+curl -X GET "https://api.gcore.com/cloud/v1/instances/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/${INSTANCE_ID}" \
+  -H "Authorization: APIKey ${GCORE_API_KEY}"
+```
+
+Response:
+
+```json
+{
+  "id": "4f89fc5a-3f68-4ae5-8b32-6e5304987872",
+  "name": "my-instance",
+  "status": "ACTIVE",
+  "vm_state": "active",
+  "task_state": null
+}
+```
+  </Tab>
+</Tabs>
+
+## Status values
+
+The `status` field uses uppercase string constants. The table below maps each API value to the label shown in the Customer Portal.
+
+| API status | Portal label | Meaning |
+|---|---|---|
+| `BUILD` | Building | The VM is being allocated. Computing resources are assigned during this stage. |
+| `ACTIVE` | Power on | The VM is running. |
+| `SHUTOFF` | Power off | The VM is powered off. |
+| `ERROR` | Error | An error occurred during resource allocation. |
+| `DELETED` | Deleted | The VM was deleted. |
+| `REBOOT` | — | The VM is rebooting. |
+| `HARD_REBOOT` | — | The VM is performing a hard reboot. |
+| `REBUILD` | — | The VM is being rebuilt from an image. |
+| `RESIZE` | — | The VM flavor is being changed. |
+| `MIGRATING` | — | The VM is being migrated to another host. |
+| `PAUSED` | — | The VM is paused in memory. |
+
+</MethodSection>
+
+</MethodSwitch>

@@ -1,44 +1,341 @@
 ---
 title: Configure an allowed address pair
 sidebarTitle: Allowed address pair
-ai-navigation: Configure allowed address pairs to bind additional IP addresses to Virtual Machine network interfaces via API, enabling traffic routing to multiple IPs on a single MAC address with support for up to 10 pairs per port.
+ai-navigation: Assign additional IP addresses to a Virtual Machine's private network interface port via the allowed address pairs API, enabling traffic routing to multiple IPs on a single MAC address with support for up to 10 pairs per port.
 ---
 
-## What is an allowed address pair?
+An allowed address pair binds an extra IP address — or a CIDR range — to a Virtual Machine's network interface. By default, each port enforces a strict MAC-to-IP binding, so only traffic addressed to the port's own IP is accepted. Adding an entry to the allowed address pairs list lifts that restriction for the specified address, making the machine accessible on both its original IP and the additional one.
 
-An allowed address pair is a feature that allows you to add an extra IP address to the interface of a Virtual Machine.
+A common use case is distributing a [virtual IP address](/cloud/networking/ip-address/create-and-configure-a-virtual-ip-vip-address) across multiple VMs using Keepalived — each VM's port must allow the shared VIP address.
 
-By default, a Virtual Machine has a MAC-IP binding. It means all the traffic that comes to a given IP address will be sent to the machine that has that particular MAC address. If you want to allow traffic for another IP address, you need to add it to the allowed address pair. As such, your machine will become accessible for both IP addresses.
+<Info>
+A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get) and [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get).
+</Info>
 
-In Gcore, you can add an allowed address pair via an [API request](/api-reference/cloud/instances/assign-allowed-address-pairs-for-instance-port).
+Set these environment variables before running the examples:
 
-## Assign an allowed address pair
-
-1\. Generate an authorization token or use a [permanent API token](/account-settings/api-tokens).
-
-2\. Make sure you know the project ID, region ID, and port ID. Otherwise, send API requests to get the project ID, region ID, and port ID.
-
-3\. Send the following API request:
-
-**Method:** PUT  
-**Endpoint:** `https://api.gcore.com/cloud/v2/ports/{project_id}/{region_id}/{port_id}/allow_address_pairs`  
-**Request body:**
-
-```json
-{   
-  "allowed_address_pairs": [   
-    {   
-      "ip_address": "192.168.123.20",   
-      "mac_address": "00:16:3e:f2:87:16"  
-    },   
-    {   
-      "ip_address": "192.168.0.2/32",   
-      "mac_address": "00:16:3e:f2:87:89"  
-    }   
-  ]   
-} 
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+export INSTANCE_ID="{YOUR_INSTANCE_ID}"
+export PORT_ID="{YOUR_PORT_ID}"
 ```
 
-Enter your custom values instead of the example ones. You can add up to 10 allowed address pairs. For more details, refer to the [Gcore API documentation](https://api.gcore.com/docs/cloud).
+<Info>
+To find the values for each variable:
+- **INSTANCE\_ID**: the UUID of the virtual machine whose port you want to configure. To create a VM or find its ID, see [Create a virtual machine](/cloud/virtual-instances/create-an-instance).
+- **PORT\_ID**: the UUID of the VM's **private** network interface port. The external (public) interface does not support allowed address pairs. See the [Find the port ID](#find-the-port-id) section below for how to retrieve it.
+</Info>
 
-Now your machine is available through the IP addresses you specified in the request.
+## Find the port ID
+
+Each VM network interface has a `port_id`. Allowed address pairs are applied per port, and only ports on private (non-external) networks support this feature.
+
+<Tabs>
+  <Tab title="Python">
+    ```python
+    import os
+    import requests
+
+    session = requests.Session()
+    session.headers.update({"Authorization": f"APIKey {os.environ['GCORE_API_KEY']}"})
+
+    resp = session.get(
+        f"https://api.gcore.com/cloud/v1/instances"
+        f"/{os.environ['GCORE_CLOUD_PROJECT_ID']}/{os.environ['GCORE_CLOUD_REGION_ID']}"
+        f"/{os.environ['INSTANCE_ID']}/interfaces"
+    )
+    resp.raise_for_status()
+    for iface in resp.json()["results"]:
+        print(f"port_id={iface['port_id']}  ip={iface['ip_assignments'][0]['ip_address']}")
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```go
+    import (
+        "encoding/json"
+        "fmt"
+        "net/http"
+        "os"
+    )
+
+    apiKey     := os.Getenv("GCORE_API_KEY")
+    projectID  := os.Getenv("GCORE_CLOUD_PROJECT_ID")
+    regionID   := os.Getenv("GCORE_CLOUD_REGION_ID")
+    instanceID := os.Getenv("INSTANCE_ID")
+
+    req, _ := http.NewRequest("GET",
+        fmt.Sprintf("https://api.gcore.com/cloud/v1/instances/%s/%s/%s/interfaces",
+            projectID, regionID, instanceID),
+        nil,
+    )
+    req.Header.Set("Authorization", "APIKey "+apiKey)
+    resp, _ := http.DefaultClient.Do(req)
+    defer resp.Body.Close()
+
+    var result map[string]any
+    json.NewDecoder(resp.Body).Decode(&result)
+    for _, iface := range result["results"].([]any) {
+        m := iface.(map[string]any)
+        ip := m["ip_assignments"].([]any)[0].(map[string]any)["ip_address"]
+        fmt.Printf("port_id=%s  ip=%s\n", m["port_id"], ip)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v1/instances/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$INSTANCE_ID/interfaces" \
+      -H "Authorization: APIKey $GCORE_API_KEY"
+    ```
+
+    Response (excerpt):
+
+    ```json
+    {
+      "count": 2,
+      "results": [
+        {
+          "port_id": "0e8c936b-37c1-4bf1-a878-9a8275899af6",
+          "ip_assignments": [{ "ip_address": "85.234.84.77" }],
+          "allowed_address_pairs": []
+        },
+        {
+          "port_id": "ecbc365f-1344-4a7d-b88a-c55864ea76ef",
+          "ip_assignments": [{ "ip_address": "10.200.1.179" }],
+          "allowed_address_pairs": []
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+Save the `port_id` of the private interface (the one with a private IP range such as `10.x.x.x` or `192.168.x.x`) as `PORT_ID`. The external interface with a public IP does not support allowed address pairs. The same endpoint also shows `allowed_address_pairs` on each interface, so you can use it to verify the result after setting pairs.
+
+## Set allowed address pairs
+
+The `PUT` request replaces the entire list of allowed address pairs for the port. To add one pair without losing existing ones, include all current pairs in the request body alongside the new entry.
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `ip_address` | Yes | IP address or CIDR range to allow (e.g. `192.168.1.10` or `10.0.0.0/24`) |
+| `mac_address` | No | MAC address to associate; defaults to the port's own MAC when omitted |
+
+Up to 10 pairs are allowed per port.
+
+<Tabs>
+  <Tab title="Python">
+    ```python
+    import os
+    import time
+    import requests
+
+    session = requests.Session()
+    session.headers.update({"Authorization": f"APIKey {os.environ['GCORE_API_KEY']}"})
+    base = "https://api.gcore.com/cloud"
+
+    resp = session.put(
+        f"{base}/v2/ports"
+        f"/{os.environ['GCORE_CLOUD_PROJECT_ID']}/{os.environ['GCORE_CLOUD_REGION_ID']}"
+        f"/{os.environ['PORT_ID']}/allow_address_pairs",
+        json={
+            "allowed_address_pairs": [
+                {"ip_address": "192.168.123.20", "mac_address": "00:16:3e:f2:87:16"},
+                {"ip_address": "192.168.0.0/24"},
+            ]
+        },
+    )
+    resp.raise_for_status()
+    task_id = resp.json()["tasks"][0]
+
+    while True:
+        state = session.get(f"{base}/v1/tasks/{task_id}").json()["state"]
+        if state == "FINISHED":
+            break
+        time.sleep(5)
+    print("Pairs applied.")
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```go
+    import (
+        "bytes"
+        "encoding/json"
+        "fmt"
+        "net/http"
+        "os"
+        "time"
+    )
+
+    apiKey    := os.Getenv("GCORE_API_KEY")
+    projectID := os.Getenv("GCORE_CLOUD_PROJECT_ID")
+    regionID  := os.Getenv("GCORE_CLOUD_REGION_ID")
+    portID    := os.Getenv("PORT_ID")
+    base      := "https://api.gcore.com/cloud"
+
+    body, _ := json.Marshal(map[string]any{
+        "allowed_address_pairs": []map[string]any{
+            {"ip_address": "192.168.123.20", "mac_address": "00:16:3e:f2:87:16"},
+            {"ip_address": "192.168.0.0/24"},
+        },
+    })
+    req, _ := http.NewRequest("PUT",
+        fmt.Sprintf("%s/v2/ports/%s/%s/%s/allow_address_pairs", base, projectID, regionID, portID),
+        bytes.NewReader(body),
+    )
+    req.Header.Set("Authorization", "APIKey "+apiKey)
+    req.Header.Set("Content-Type", "application/json")
+    resp, _ := http.DefaultClient.Do(req)
+    defer resp.Body.Close()
+
+    var result map[string]any
+    json.NewDecoder(resp.Body).Decode(&result)
+    taskID := result["tasks"].([]any)[0].(string)
+
+    for {
+        r, _ := http.NewRequest("GET", fmt.Sprintf("%s/v1/tasks/%s", base, taskID), nil)
+        r.Header.Set("Authorization", "APIKey "+apiKey)
+        tr, _ := http.DefaultClient.Do(r)
+        var ts map[string]any
+        json.NewDecoder(tr.Body).Decode(&ts)
+        tr.Body.Close()
+        if ts["state"] == "FINISHED" {
+            break
+        }
+        time.Sleep(5 * time.Second)
+    }
+    fmt.Println("Pairs applied.")
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PUT "https://api.gcore.com/cloud/v2/ports/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$PORT_ID/allow_address_pairs" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "allowed_address_pairs": [
+          {
+            "ip_address": "192.168.123.20",
+            "mac_address": "00:16:3e:f2:87:16"
+          },
+          {
+            "ip_address": "192.168.0.0/24"
+          }
+        ]
+      }'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["485dde04-25ab-4e1a-920c-18445f7fa1de"]
+    }
+    ```
+
+    Poll `GET https://api.gcore.com/cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. The operation typically completes in under 10 seconds.
+  </Tab>
+</Tabs>
+
+When `mac_address` is omitted, the API assigns the port's default MAC address to that entry automatically.
+
+## Remove allowed address pairs
+
+To remove all allowed address pairs from a port, send the same `PUT` request with an empty `allowed_address_pairs` array. The operation is asynchronous — poll the returned task until `state` is `FINISHED`.
+
+<Tabs>
+  <Tab title="Python">
+    ```python
+    import os
+    import time
+    import requests
+
+    session = requests.Session()
+    session.headers.update({"Authorization": f"APIKey {os.environ['GCORE_API_KEY']}"})
+    base = "https://api.gcore.com/cloud"
+
+    resp = session.put(
+        f"{base}/v2/ports"
+        f"/{os.environ['GCORE_CLOUD_PROJECT_ID']}/{os.environ['GCORE_CLOUD_REGION_ID']}"
+        f"/{os.environ['PORT_ID']}/allow_address_pairs",
+        json={"allowed_address_pairs": []},
+    )
+    resp.raise_for_status()
+    task_id = resp.json()["tasks"][0]
+
+    while True:
+        state = session.get(f"{base}/v1/tasks/{task_id}").json()["state"]
+        if state == "FINISHED":
+            break
+        time.sleep(5)
+    print("Pairs removed.")
+    ```
+  </Tab>
+  <Tab title="Go">
+    ```go
+    import (
+        "bytes"
+        "encoding/json"
+        "fmt"
+        "net/http"
+        "os"
+        "time"
+    )
+
+    apiKey    := os.Getenv("GCORE_API_KEY")
+    projectID := os.Getenv("GCORE_CLOUD_PROJECT_ID")
+    regionID  := os.Getenv("GCORE_CLOUD_REGION_ID")
+    portID    := os.Getenv("PORT_ID")
+    base      := "https://api.gcore.com/cloud"
+
+    body, _ := json.Marshal(map[string]any{"allowed_address_pairs": []any{}})
+    req, _ := http.NewRequest("PUT",
+        fmt.Sprintf("%s/v2/ports/%s/%s/%s/allow_address_pairs", base, projectID, regionID, portID),
+        bytes.NewReader(body),
+    )
+    req.Header.Set("Authorization", "APIKey "+apiKey)
+    req.Header.Set("Content-Type", "application/json")
+    resp, _ := http.DefaultClient.Do(req)
+    defer resp.Body.Close()
+
+    var result map[string]any
+    json.NewDecoder(resp.Body).Decode(&result)
+    taskID := result["tasks"].([]any)[0].(string)
+
+    for {
+        r, _ := http.NewRequest("GET", fmt.Sprintf("%s/v1/tasks/%s", base, taskID), nil)
+        r.Header.Set("Authorization", "APIKey "+apiKey)
+        tr, _ := http.DefaultClient.Do(r)
+        var ts map[string]any
+        json.NewDecoder(tr.Body).Decode(&ts)
+        tr.Body.Close()
+        if ts["state"] == "FINISHED" {
+            break
+        }
+        time.Sleep(5 * time.Second)
+    }
+    fmt.Println("Pairs removed.")
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X PUT "https://api.gcore.com/cloud/v2/ports/$GCORE_CLOUD_PROJECT_ID/$GCORE_CLOUD_REGION_ID/$PORT_ID/allow_address_pairs" \
+      -H "Authorization: APIKey $GCORE_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"allowed_address_pairs": []}'
+    ```
+
+    Response:
+
+    ```json
+    {
+      "tasks": ["62f3e5e4-c0db-4473-832d-f72b001ad8c2"]
+    }
+    ```
+
+    Poll `GET https://api.gcore.com/cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`.
+  </Tab>
+</Tabs>
+
+To remove individual pairs rather than all of them, omit only the entries to remove and include the rest in the request body.
