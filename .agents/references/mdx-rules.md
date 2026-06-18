@@ -61,6 +61,16 @@ only in the Mintlify runtime. Always verify the import when an article renders e
 - `portal` always comes first — it is the default tab
 - Do not add `terraform` or `cli` tabs until the content exists
 
+### How Mintlify compiles MethodSwitch internally
+
+Mintlify wraps each custom component in an internal `_MdxComponentBoundary` element
+at compile time. The `snippets/method-switch.jsx` component accounts for this: when
+iterating over children it first checks for a direct `props.id` (for future-proofing),
+then checks `c.props.children.props.id` to unwrap the boundary.
+
+Do not change the filter logic in `method-switch.jsx` without understanding this.
+Removing the unwrap step will break all MethodSwitch pages silently (blank page, no JS error).
+
 ### No content before `<MethodSwitch>`
 
 All article content — including intro paragraphs — must be INSIDE a `<MethodSection>`.
@@ -227,23 +237,28 @@ ai-navigation: Configure the Authorization: APIKey header.
 
 ## MDX parsing gotchas
 
-### `{identifier}` inside backtick inline code spans
+### `{identifier}` inside inline code — use backticks, never `<code>`
 
-MDX parses `{identifier}` inside single-backtick spans as JSX expressions. If the
-identifier is a valid JavaScript name (`task_id`, `project_id`, `LB_VIP`), the parser throws.
+MDX treats `{...}` as a JSX expression **even inside `<code>` HTML elements**. If the
+identifier is a valid JavaScript name (`task_id`, `project_id`, `LB_VIP`), the parser
+throws at compile time. The page renders as a blank shell — no error is shown in the browser.
 
-**Wrong (breaks MDX):**
-```
-Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds.
-```
-
-**Correct — use HTML `<code>` tag with `&nbsp;` inside:**
+**Wrong — `<code>` does NOT escape curly braces in MDX:**
 ```
 Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds.
 ```
 
-`{...}` inside triple-backtick fenced code blocks is always safe.
-Characters that are not valid JS identifiers (e.g. `{|}~`) are also safe inside backtick spans.
+**Correct — backtick code spans escape their content; `{...}` is treated as literal text:**
+```
+Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds.
+```
+
+`{...}` inside triple-backtick fenced code blocks is also always safe.
+
+**How to find violations:**
+```
+rg "<code>[^<]*\{[^}]+\}[^<]*</code>" path/to/article.mdx
+```
 
 ### PowerShell file edits corrupt non-ASCII characters
 
