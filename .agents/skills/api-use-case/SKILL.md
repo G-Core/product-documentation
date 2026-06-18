@@ -66,8 +66,11 @@ Wait for the answer before proceeding.
 - Use Frankfurt-2 (`region_id: 180`) for DBaaS and Kubernetes
 - Run each API call end-to-end in the terminal using `curl` against `https://api.gcore.com`
 - Record real responses — exact fields, structure, error messages
-- Only after the full flow runs end-to-end — move to Phase 3
-- Do NOT delete test resources until the user approves the final article
+- **Also run every Python SDK and Go SDK code sample** — install the SDK in `venv`, execute each snippet against the live API, confirm it runs without errors and returns real data
+- Python SDK: `pip install gcore` in venv; Go SDK: `go run` in a temp module
+- SDK field names (method names, struct fields, response object attributes) must match the actual SDK — never extrapolate or guess them
+- Only after the full flow runs end-to-end for BOTH curl AND SDK — move to Phase 3
+- Delete test resources immediately after each test, not at the end
 
 **If no → spec only:**
 - Mark steps that cannot be verified from the spec as `{TODO: verify in live environment}`
