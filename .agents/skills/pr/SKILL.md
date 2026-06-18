@@ -153,16 +153,9 @@ If the change spans multiple products, list the two most prominent: `[Cloud, CDN
 
 ---
 
-## Step 3 — Ensure main is up to date and create branch
+## Step 3 — Ensure main is up to date and prepare branch name
 
-```powershell
-cd C:\Projects\product-documentation
-git checkout main
-git pull origin main
-git checkout -b {branch-name}
-```
-
-**Branch naming:**
+Determine the branch name based on what was done:
 
 | What was done | Branch name |
 |---------------|-------------|
@@ -174,15 +167,32 @@ git checkout -b {branch-name}
 
 Where `{slug}` is the article filename without `.mdx`.
 
-**If branch already exists** — do not reuse it. Delete and recreate:
-```powershell
-git branch -D {branch-name}
-git checkout -b {branch-name}
-```
-
 ---
 
-## Step 4 — Stage and commit
+## STOP — Ask the user before any git operations
+
+**Do not run any git commands yet.**
+
+After completing all content changes, report what was done and ask the user for permission to commit and push. Use this exact format:
+
+> Work is complete. Here is what was changed:
+>
+> - `{file path}` — {what was done}
+> - `{file path}` — {what was done}
+>
+> Proposed branch: `{branch-name}`
+> Proposed commit message: `[{Product}] {short description}`
+>
+> Proceed with commit and push?
+
+**Only after the user explicitly confirms** — run the git operations in this order:
+
+```powershell
+cd C:\Projects\product-documentation
+git checkout main
+git pull origin main
+git checkout -b {branch-name}
+```
 
 Stage only the files changed in this session — by name, never `git add .`:
 
@@ -195,22 +205,13 @@ in the working tree — do not stage them. Ask the user if they should be includ
 
 Commit message format: `[Product] Short description`
 
-```powershell
-git commit -m "[Cloud] Add REST API tab to create-an-instance article"
-git commit -m "[CDN] Update origin group configuration steps"
-git commit -m "[Cloud] Draft: GPU cluster auto-scaling feature"
-```
-
 Rules:
 - Imperative mood: "Add", "Update", "Fix", "Draft" — not "Added", "Updated"
 - Under 72 characters
 - No period at the end
 
----
-
-## Step 5 — Push
-
 ```powershell
+git commit -m "[Product] Short description"
 git push -u origin {branch-name}
 ```
 
@@ -223,7 +224,7 @@ If you commit without pulling, the push will be rejected with "non-fast-forward"
 
 ---
 
-## Step 6 — Create the PR
+## Step 4 — Create the PR
 
 ```powershell
 gh pr create --base main --draft --title "[{Product}] {short description}" --body-file /tmp/pr-body.md
@@ -264,7 +265,7 @@ Remove-Item /tmp/pr-body.md
 
 ---
 
-## Step 7 — Report
+## Step 5 — Report
 
 ```
 PR created: {URL}

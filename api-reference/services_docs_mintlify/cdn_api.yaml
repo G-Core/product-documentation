@@ -1,8 +1,8 @@
 openapi: 3.1.0
 info:
   title: Gcore OpenAPI – CDN API
-  version: '2026-06-11T09:24:23.775131+00:00'
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
+  version: fc753b05a102
 servers:
 - url: https://api.gcore.com
 tags:
@@ -20,6 +20,11 @@ tags:
     - **ON** - Option is added to the rule and enabled. Option values configured in the rule will override values from the CDN resource settings.
     - **OFF** - Option is added to the rule and disabled. Option will be turned off.
 - name: Rule templates
+- name: Presets
+  description: |-
+    A preset is a predefined set of CDN resource or rule settings that can be applied to an object in a single request.
+
+    Once a preset is applied to an object, the options included in the preset cannot be edited on that object until the preset is unapplied.
 - name: SSL certificates
 - name: Let's Encrypt certificates
 - name: CA certificates
@@ -1849,6 +1854,151 @@ paths:
       responses:
         '204':
           description: Successful.
+  /cdn/presets:
+    get:
+      operationId: get-presets-list
+      tags:
+      - Presets
+      summary: Get presets list
+      description: |-
+        Get the list of presets available to your account.
+
+        A preset is a predefined set of CDN resource or rule settings that can be applied to an object in one request.
+      parameters:
+      - $ref: '#/components/parameters/limit'
+      - $ref: '#/components/parameters/offset'
+      responses:
+        '200':
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PresetListResponse'
+  /cdn/presets/{preset_id}:
+    get:
+      operationId: get-preset-details
+      tags:
+      - Presets
+      summary: Get preset details
+      description: Get information about a preset.
+      parameters:
+      - $ref: '#/components/parameters/preset_id'
+      responses:
+        '200':
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PresetResponse'
+        '404':
+          description: Preset does not exist.
+  /cdn/presets/{preset_id}/applied:
+    get:
+      operationId: get-applied-preset
+      tags:
+      - Presets
+      summary: Get applied preset objects
+      description: |-
+        Get the list of objects the preset is currently applied to.
+
+        Non-staff users only see objects that belong to their account.
+      parameters:
+      - $ref: '#/components/parameters/preset_id'
+      responses:
+        '200':
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppliedPresetResponse'
+        '404':
+          description: Preset does not exist.
+    post:
+      operationId: apply-preset
+      tags:
+      - Presets
+      summary: Apply preset
+      description: |-
+        Apply the preset to an object (CDN resource or rule, according to the preset `object_type`).
+
+        The preset settings are applied to the object, and the options included in the preset can no longer be edited on the object until the preset is unapplied.
+      parameters:
+      - $ref: '#/components/parameters/preset_id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplyPresetRequest'
+      responses:
+        '201':
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplyPresetResponse'
+        '400':
+          description: |-
+            You will receive an error with the invalid parameter mentioned. Possible reasons:
+            - The object does not exist or does not belong to your account.
+            - The object already has an applied preset.
+            - The preset requires the Streaming service, which is not available on your tariff plan.
+        '404':
+          description: Preset does not exist.
+  /cdn/presets/{preset_id}/applied/{object_id}:
+    delete:
+      operationId: unapply-preset
+      tags:
+      - Presets
+      summary: Unapply preset
+      description: Unapply the preset from the object. The options managed by the preset are removed from the object.
+      parameters:
+      - $ref: '#/components/parameters/preset_id'
+      - $ref: '#/components/parameters/object_id'
+      responses:
+        '204':
+          description: Successful.
+        '400':
+          description: The applied preset cannot be removed until the preset settings have been applied to all its objects.
+        '404':
+          description: Preset or applied object does not exist.
+  /cdn/resources/{resource_id}/preset:
+    get:
+      operationId: get-resource-applied-preset-fields
+      tags:
+      - Presets
+      summary: Get CDN resource applied preset fields
+      description: Get the preset applied to a CDN resource and the list of resource fields managed by the preset.
+      parameters:
+      - $ref: '#/components/parameters/resource_id'
+      responses:
+        '200':
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppliedPresetFieldsResponse'
+        '404':
+          description: CDN resource does not exist or has no applied preset.
+  /cdn/resources/{resource_id}/rules/{rule_id}/preset:
+    get:
+      operationId: get-rule-applied-preset-fields
+      tags:
+      - Presets
+      summary: Get rule applied preset fields
+      description: Get the preset applied to a rule and the list of rule fields managed by the preset.
+      parameters:
+      - $ref: '#/components/parameters/resource_id'
+      - $ref: '#/components/parameters/rule_id'
+      responses:
+        '200':
+          description: Successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppliedPresetFieldsResponse'
+        '404':
+          description: Rule does not exist or has no applied preset.
   /cdn/purge_statuses:
     get:
       tags:
@@ -3130,6 +3280,13 @@ components:
         Examples:
         - &`min_requested_at`=2021-05-05 12:00:00
         - &`min_requested_at`=2021-05-05
+    object_id:
+      in: path
+      name: object_id
+      description: ID of the object (CDN resource or rule) the preset is applied to.
+      required: true
+      schema:
+        type: integer
     offset:
       in: query
       name: offset
@@ -3190,6 +3347,13 @@ components:
       schema:
         type: string
       description: Exact URL path.
+    preset_id:
+      in: path
+      name: preset_id
+      description: Preset ID.
+      required: true
+      schema:
+        type: integer
     query-from:
       in: query
       name: from
@@ -3915,13 +4079,75 @@ components:
         name:
           type: string
           description: Region name.
+    AppliedPresetFieldsResponse:
+      type: object
+      description: Preset applied to the object and the list of object fields that are managed by the preset.
+      properties:
+        id:
+          type: integer
+          description: ID of the applied preset.
+          example: 42
+        name:
+          type: string
+          description: Name of the applied preset.
+          example: Static content acceleration
+        deletable:
+          type: boolean
+          description: Defines whether the applied preset can be unapplied from the object by the current user.
+          example: true
+        fields:
+          type: array
+          items:
+            type: string
+          description: Object fields managed by the preset. Option fields are prefixed with `options.`.
+          example:
+          - options.gzipOn
+          - options.browser_cache_settings
+    AppliedPresetResponse:
+      oneOf:
+      - title: Applied objects
+        type: object
+        properties:
+          object_type:
+            type: string
+            description: Type of objects the preset is applied to.
+            example: CDNResource
+          object_ids:
+            type: array
+            items:
+              type: integer
+            description: IDs of the objects the preset is currently applied to.
+            example:
+            - 7531
+            - 7532
+      - title: No applied objects
+        type: object
+        properties:
+          message:
+            type: string
+            example: You have no presets applied
+    ApplyPresetRequest:
+      type: object
+      properties:
+        object_id:
+          type: integer
+          description: ID of the object (CDN resource or rule, according to the preset `object_type`) to apply the preset to.
+          example: 7531
+      required:
+      - object_id
+    ApplyPresetResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Preset successfully applied
     AttachLECert:
       type: object
       properties:
         sslData:
           type: integer
           description: |-
-            ID of Let's Encrypt certificate obtained [here](/docs/api-reference/cdn/ssl-certificates/add-ssl-certificate).
+            ID of Let's Encrypt certificate obtained [here](/api-reference/cdn/ssl-certificates/add-ssl-certificate).
 
             It can be used only with "sslEnabled": true.
           example: 192
@@ -7722,6 +7948,58 @@ components:
                 type: string
               example:
               - This field is required.
+    PresetListResponse:
+      oneOf:
+      - title: Plain list
+        type: array
+        items:
+          $ref: '#/components/schemas/PresetResponse'
+        example:
+        - id: 42
+          name: Static content acceleration
+          service: cdn
+          object_type: CDNResource
+          preset_settings:
+            options:
+              gzipOn:
+                enabled: true
+                value: true
+      - title: Paginated list
+        allOf:
+        - $ref: '#/components/schemas/PaginatedResponse'
+        - type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/PresetResponse'
+        example:
+          count: 1
+          next: null
+          previous: null
+          results:
+          - id: 42
+            name: Static content acceleration
+            service: cdn
+            object_type: CDNResource
+            preset_settings:
+              options:
+                gzipOn:
+                  enabled: true
+                  value: true
+    PresetResponse:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/schemas_components-schemas-id-2'
+        name:
+          $ref: '#/components/schemas/schemas_components-schemas-name-2'
+        service:
+          $ref: '#/components/schemas/schemas-service'
+        object_type:
+          $ref: '#/components/schemas/object_type'
+        preset_settings:
+          $ref: '#/components/schemas/preset_settings'
     Previous:
       type: string
       description: URL to the previous activity logs records slice.
@@ -8663,7 +8941,7 @@ components:
               type: array
               description: |-
                 Probably you made a mistake in a origin shielding location ID.
-                Find a request to get available origin shielding location IDs [here](/docs/api-reference/cdn/origin-shielding/get-origin-shielding-locations).
+                Find a request to get available origin shielding location IDs [here](/api-reference/cdn/origin-shielding/get-origin-shielding-locations).
               items:
                 type: string
               example:
@@ -9647,7 +9925,7 @@ components:
 
         If you want to use IPs from our CDN servers IP list for IP ACL configuration, you have to independently monitor their relevance.
 
-        We recommend you use a script for automatically update IP ACL. [Read more.](/docs/api-reference/cdn/ip-addresses-list/get-cdn-servers-ip-addresses)
+        We recommend you use a script for automatically update IP ACL. [Read more.](/api-reference/cdn/ip-addresses-list/get-cdn-servers-ip-addresses)
       properties:
         enabled:
           $ref: '#/components/schemas/parameters-enabled'
@@ -9775,6 +10053,18 @@ components:
       example:
         enabled: true
         value: true
+    object_type:
+      type: string
+      enum:
+      - CDNResource
+      - Rule
+      description: |-
+        Type of object the preset can be applied to.
+
+        Possible values:
+        - **CDNResource** - Preset is applied to a CDN resource.
+        - **Rule** - Preset is applied to a rule.
+      example: CDNResource
     origin:
       type: string
       description: |-
@@ -9902,6 +10192,22 @@ components:
         - **true** - CDN resource has a preset applied. CDN resource options included in the preset cannot be edited.
         - **false** - CDN resource does not have a preset applied.
       example: false
+    preset_settings:
+      type: object
+      additionalProperties: true
+      description: |-
+        CDN resource or rule settings that the preset applies to the target object, including the **options** object.
+
+        The available keys match the writable fields of the object type the preset targets (`object_type`).
+        Options included in the preset cannot be edited on the object while the preset is applied.
+      example:
+        options:
+          browser_cache_settings:
+            enabled: true
+            value: 3600s
+          gzipOn:
+            enabled: true
+            value: true
     primary_resource:
       type: integer
       nullable: true
@@ -10674,6 +10980,12 @@ components:
 
         If a preset is applied to the rule, the options included in the preset cannot be edited for the rule.
       example: false
+    schemas-service:
+      type: string
+      enum:
+      - cdn
+      description: Service the preset belongs to.
+      example: cdn
     schemas-status:
       type: string
       description: |-
@@ -10692,10 +11004,19 @@ components:
       readOnly: true
       description: Rule template ID.
       example: 5
+    schemas_components-schemas-id-2:
+      type: integer
+      readOnly: true
+      description: Preset ID.
+      example: 42
     schemas_components-schemas-name:
       type: string
       description: Rule template name.
       example: All images template
+    schemas_components-schemas-name-2:
+      type: string
+      description: Preset name.
+      example: Static content acceleration
     secondaryHostnames:
       type: array
       description: |-
@@ -11584,6 +11905,7 @@ x-tagGroups:
   - Origins
   - Rules
   - Rule templates
+  - Presets
   - SSL certificates
   - Let's Encrypt certificates
   - CA certificates

@@ -121,7 +121,7 @@ Bad: `"The steps below create a subnet and configure DNS."` ← starts with "The
 **`<Info>` block** (required):
 ```mdx
 <Info>
-A permanent [API token](/account-settings/api-tokens) is required, along with a
+An [API token](/account-settings/api-tokens) is required, along with a
 [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get)
 and a [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get).
 </Info>

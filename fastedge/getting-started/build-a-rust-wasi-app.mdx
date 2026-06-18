@@ -1,0 +1,323 @@
+---
+title: Build Rust WASI-HTTP apps
+sidebarTitle: Rust WASI-HTTP apps
+ai-navigation: Build FastEdge Rust applications using the WASI-HTTP interface - from a hello-world component that verifies the toolchain to an app that fetches and shapes data from an external API.
+---
+
+FastEdge runs applications as WebAssembly components — libraries that export a single entry-point function and execute on a global edge network without servers or containers. These components use [WASI-HTTP](https://github.com/WebAssembly/WASI) to receive requests and call external services, and `wstd` is the Rust library that implements it — the only dependency a FastEdge app in Rust needs.
+
+By the end of this guide:
+
+- A Rust component compiles to WebAssembly and deploys to FastEdge
+- Incoming HTTP requests are handled and a response is returned
+- A second component calls an external REST API from inside the handler, transforms the response, and returns shaped JSON
+
+[Rust and Cargo](https://rustup.rs) are required. On Windows, Rust dependencies require native compilation tools — install [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022) with the **Desktop development with C++** workload.
+
+## Toolchain verification
+
+This component reads the request URL and echoes it back: minimal code, but enough to exercise the complete build-upload-deploy pipeline.
+
+### Project setup
+
+Rust builds libraries with `cargo new --lib`. Before that project can compile to a WebAssembly component, two things need to be in place: a compilation target that tells Rust which platform to target, and a Cargo configuration that changes the output format to something the WASI runtime can load.
+
+1. Add the `wasm32-wasip2` compilation target — without it, Cargo can't produce a WebAssembly component compatible with FastEdge. It's a one-time step:
+
+   ```sh
+   rustup target add wasm32-wasip2
+   ```
+
+2. Create the library crate:
+
+   ```sh
+   cargo new --lib hello-world
+   cd hello-world
+   ```
+
+3. By default, `cargo new --lib` produces a Rust `rlib` — a format for linking into other Rust programs. FastEdge needs a `cdylib` instead: a C-compatible shared library that the WASI runtime can load as a component. Open `Cargo.toml` and replace its contents:
+
+   ```toml
+   [package]
+   name = "hello_world"
+   version = "0.1.0"
+   edition = "2021"
+
+   [lib]
+   crate-type = ["cdylib"]
+
+   [dependencies]
+   wstd = "0.6"
+   anyhow = "1"
+   ```
+
+   The `[package]` and `[dependencies]` sections are standard Cargo. The only change from the default is `crate-type = ["cdylib"]` in `[lib]` — without it, the build succeeds but the output can't run as a WebAssembly component.
+
+### Handler
+
+FastEdge calls a single function for every HTTP request — the component's entry point. In `wstd`, this is an async function marked with `#[wstd::http_server]`: the attribute tells the runtime which function to call, the function receives a `Request<Body>`, and it must return a `Response<Body>` wrapped in `anyhow::Result`.
+
+`cargo new --lib` generates a default `src/lib.rs` with placeholder code — replace it with the actual handler:
+
+```rust
+use wstd::http::body::Body;
+use wstd::http::{Request, Response};
+
+#[wstd::http_server]
+async fn main(request: Request<Body>) -> anyhow::Result<Response<Body>> {
+    let url = request.uri().to_string();
+
+    Ok(Response::builder()
+        .status(200)
+        .header("content-type", "text/plain;charset=UTF-8")
+        .body(Body::from(format!(
+            "Hello, you made a wasi request to {url}"
+        )))?)
+}
+```
+
+### Build
+
+Compile the component to WebAssembly:
+
+```sh
+cargo build --release --target wasm32-wasip2
+```
+
+The first build downloads and compiles all dependencies, so expect it to take one to two minutes. Once it completes, Cargo writes the compiled component to `./target/wasm32-wasip2/release/hello_world.wasm`.
+
+### Deployment and testing
+
+FastEdge separates binaries from apps: a binary is a compiled WebAssembly file stored on the platform, and an app is a named endpoint that references a binary. Deploying requires two API calls — upload the binary first to get an ID, then create the app using that ID.
+
+Both calls authenticate with a permanent [API token](/account-settings/api-tokens), so set it before running the commands:
+
+```sh
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+<Warning>
+Do not commit API keys to source control.
+</Warning>
+
+Upload the binary:
+
+```sh
+curl -sX POST 'https://api.gcore.com/fastedge/v1/binaries/raw' \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H 'Content-Type: application/octet-stream' \
+  --data-binary "@./target/wasm32-wasip2/release/hello_world.wasm"
+```
+
+```json
+{"id": 4695, "api_type": "wasi-http", "status": 1}
+```
+
+Use the `id` from the upload response to create the app. The binary ID and app URL in the examples below will differ from the ones returned by the upload:
+
+```sh
+export BINARY_ID=4695
+
+curl -sX POST 'https://api.gcore.com/fastedge/v1/apps' \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -d "{\"name\": \"my-hello-world\", \"binary\": $BINARY_ID, \"status\": 1}"
+```
+
+```json
+{"name": "my-hello-world", "url": "https://my-hello-world-1000503.fastedge.app", "api_type": "wasi-http"}
+```
+
+The URL becomes active within a few seconds — send a request to confirm the handler is running:
+
+```sh
+curl -i https://my-hello-world-1000503.fastedge.app/test-path
+```
+
+```
+HTTP/1.1 200 OK
+content-type: text/plain;charset=UTF-8
+
+Hello, you made a wasi request to http://my-hello-world-1000503.fastedge.app/test-path
+```
+
+The complete pipeline works. The next section adds outbound HTTP calls — the capability that turns a WASI component into a useful data-fetching layer.
+
+## Fetch data from an external API
+
+The first component demonstrates the basic request-response cycle, but it only operates on the incoming request. WASI-HTTP's key capability is that the handler can make outbound HTTP calls — reach out to any external service, transform the response, and return the result to the original caller. This component fetches a list of users from a public REST API and returns the first five as JSON.
+
+<Info>
+The examples use `jsonplaceholder.typicode.com`, a free placeholder API, as a stand-in for any REST endpoint. It is suitable for development and testing only — do not use it in production.
+</Info>
+
+### Project setup
+
+Create a separate project for this component:
+
+```sh
+cargo new --lib outbound-fetch
+cd outbound-fetch
+```
+
+The configuration is identical to the first component, with one addition: `serde_json` for parsing the upstream API response. Replace `Cargo.toml`:
+
+```toml
+[package]
+name = "outbound_fetch"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wstd = "0.6"
+anyhow = "1"
+serde_json = "1"
+```
+
+This example uses `serde_json::Value` — an untyped JSON tree — rather than defining structs. For slicing and reshaping an existing JSON response, this avoids deserializing into types that exist only to be re-serialized.
+
+### Handler
+
+The handler follows the same request-response pattern as the first example, but adds an outbound HTTP call and JSON transformation. Replace `src/lib.rs`:
+
+```rust
+use anyhow::anyhow;
+use wstd::http::body::Body;
+use wstd::http::{Client, Request, Response};
+use serde_json::{json, Value};
+
+#[wstd::http_server]
+async fn main(_request: Request<Body>) -> anyhow::Result<Response<Body>> {
+    let upstream_req = Request::get("http://jsonplaceholder.typicode.com/users")
+        .body(Body::empty())
+        .map_err(|e| anyhow!("failed to build request: {e}"))?;
+
+    let client = Client::new();
+    let upstream_resp = client
+        .send(upstream_req)
+        .await
+        .map_err(|e| anyhow!("upstream request failed: {e}"))?;
+
+    let (_, mut body) = upstream_resp.into_parts();
+    let body_bytes = body.contents().await?;
+
+    let users: Value = serde_json::from_slice(body_bytes)?;
+    let sliced = match users.as_array() {
+        Some(arr) => Value::Array(arr.iter().take(5).cloned().collect()),
+        None => Value::Array(vec![]),
+    };
+
+    let result = json!({
+        "users": sliced,
+        "total": 5,
+        "skip": 0,
+        "limit": 30,
+    });
+
+    Ok(Response::builder()
+        .status(200)
+        .header("content-type", "application/json")
+        .body(Body::from(result.to_string()))?)
+}
+```
+
+Three patterns here appear in most WASI-HTTP components and are worth understanding before adapting this code to a real endpoint.
+
+Components run in a WebAssembly sandbox with no access to native sockets. `Client::new()` creates a client that routes requests through the WASI outbound-http interface — the host runtime handles the actual network call. The `await` on `client.send()` is real async: the handler yields while the upstream request is in flight.
+
+The response body arrives as a stream. `upstream_resp.into_parts()` separates the response metadata from that stream, and `body.contents().await` reads it fully into memory as a byte slice before parsing. This is the right approach when the upstream response is small enough to buffer; for large responses that only need to be forwarded without transformation, the stream can be passed through directly without loading it into memory first.
+
+Every `?` in the handler propagates errors back through `anyhow::Result` — FastEdge converts any handler returning `Err` into a 500 response, with the error message written to application logs rather than the response body. This means errors stay server-side and never leak to the caller.
+
+### Build
+
+Compile the component using the same command as before:
+
+```sh
+cargo build --release --target wasm32-wasip2
+```
+
+Once it completes, Cargo writes the compiled component to `./target/wasm32-wasip2/release/outbound_fetch.wasm`.
+
+### Deployment and testing
+
+Upload and deploy using the same pattern as the first component:
+
+```sh
+curl -sX POST 'https://api.gcore.com/fastedge/v1/binaries/raw' \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H 'Content-Type: application/octet-stream' \
+  --data-binary "@./target/wasm32-wasip2/release/outbound_fetch.wasm"
+```
+
+```json
+{"id": 4696, "api_type": "wasi-http", "status": 1}
+```
+
+Save the returned `id` and use it to create the app:
+
+```sh
+export BINARY_ID=4696
+
+curl -sX POST 'https://api.gcore.com/fastedge/v1/apps' \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -d "{\"name\": \"my-outbound-fetch\", \"binary\": $BINARY_ID, \"status\": 1}"
+```
+
+The URL from the create-app response becomes active within a few seconds:
+
+```sh
+curl https://my-outbound-fetch-1000503.fastedge.app/
+```
+
+The component fetches from the upstream API, takes the first five users from the response, and returns them as a shaped JSON payload:
+
+```json
+{
+  "limit": 30,
+  "skip": 0,
+  "total": 5,
+  "users": [
+    {
+      "id": 1,
+      "name": "Leanne Graham",
+      "username": "Bret",
+      "email": "Sincere@april.biz",
+      "phone": "1-770-736-8031 x56442",
+      "website": "hildegard.org"
+    },
+    {
+      "id": 2,
+      "name": "Ervin Howell",
+      "username": "Antonette",
+      "email": "Shanna@melissa.tv",
+      "phone": "010-692-6593 x09125",
+      "website": "anastasia.net"
+    }
+  ]
+}
+```
+
+The outbound call happens on every request, from every edge node that handles traffic for this app — for data that changes infrequently, storing the upstream response in a [FastEdge KV store](/fastedge/kv-stores/manage-kv-store) eliminates that per-request latency after the first fetch.
+
+## Cleanup
+
+To delete an app, use its `id` from the create-app response:
+
+```sh
+curl -sX DELETE "https://api.gcore.com/fastedge/v1/apps/{APP_ID}" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+Deleting the app does not remove the binary — to remove it as well:
+
+```sh
+curl -sX DELETE "https://api.gcore.com/fastedge/v1/binaries/{BINARY_ID}" \
+  -H "Authorization: APIKey $GCORE_API_KEY"
+```
+
+A binary referenced by an active application cannot be deleted — remove the app first.

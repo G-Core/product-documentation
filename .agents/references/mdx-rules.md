@@ -245,6 +245,37 @@ Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds.
 `{...}` inside triple-backtick fenced code blocks is always safe.
 Characters that are not valid JS identifiers (e.g. `{|}~`) are also safe inside backtick spans.
 
+### PowerShell file edits corrupt non-ASCII characters
+
+`Get-Content` + `Set-Content` without explicit encoding uses the system ANSI codepage
+(Windows-1252), which cannot represent Unicode characters such as em dashes (`—`, U+2014),
+non-breaking spaces, or any other non-ASCII character. They are silently replaced with `?`.
+
+**Never edit MDX files with PowerShell `Set-Content` without specifying UTF-8:**
+
+```powershell
+# Wrong — corrupts em dashes and other non-ASCII characters
+$c = Get-Content file.mdx -Raw
+$c = $c -replace 'foo', 'bar'
+Set-Content file.mdx $c
+
+# Correct — preserves UTF-8 encoding
+$c = [System.IO.File]::ReadAllText('file.mdx', [System.Text.Encoding]::UTF8)
+$c = $c -replace 'foo', 'bar'
+[System.IO.File]::WriteAllText('file.mdx', $c, [System.Text.Encoding]::UTF8)
+```
+
+**Recovery:** if corruption has already occurred (em dashes show as `?` in the browser),
+the affected characters have a space on both sides — use ` — ` as the replacement pattern:
+
+```powershell
+$c = [System.IO.File]::ReadAllText('file.mdx', [System.Text.Encoding]::UTF8)
+$c = $c -replace ' \? ', ' — '
+[System.IO.File]::WriteAllText('file.mdx', $c, [System.Text.Encoding]::UTF8)
+```
+
+This is safe because URL query strings use `?` without surrounding spaces.
+
 ### UTF-8 BOM at the start of a file
 
 Files must not start with a UTF-8 BOM (`\xEF\xBB\xBF`). A BOM before the `---`
