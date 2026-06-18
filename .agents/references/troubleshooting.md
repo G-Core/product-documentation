@@ -67,7 +67,38 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 The MDX compiler does not catch this — the blank page appears only at runtime.
 
-### Root cause D: UTF-8 BOM at the start of the file
+### Root cause D: `_MdxComponentBoundary` wrapping strips `props.id` from tabs (component bug, fixed Jun 2026)
+
+**Symptom:** MethodSwitch renders the outer shell and the tablist div, but the tablist is empty — no tab buttons, no content. All pages using MethodSwitch are affected simultaneously.
+
+**Root cause:** Mintlify's MDX compiler wraps every custom component in an internal `_MdxComponentBoundary` element. When MethodSwitch called `React.Children.toArray(children)`, it received `_MdxComponentBoundary` wrappers, not `MethodSection` elements. The old filter `c => c && c.props && c.props.id` looked for `.props.id` directly on the boundary element — but boundaries have `.props.name`, not `.props.id`. All children were filtered out → `tabs = []`.
+
+Confirmed by inspecting the compiled Next.js RSC payload in DevTools:
+```javascript
+// script tag in the page — Mintlify compiles MethodSection as null on the server:
+const MethodSection = () => null;
+const MethodSwitch = () => null;
+// and wraps each call in _MdxComponentBoundary:
+_jsx(_MdxComponentBoundary, {
+  name: "MethodSection",
+  children: _jsxs(MethodSection, { id: "portal", label: "Customer Portal", children: [...] })
+})
+```
+
+**Fix (already applied to `snippets/method-switch.jsx`):** unwrap the boundary before filtering:
+```javascript
+const tabs = React.Children.toArray(children).map((c) => {
+  if (!c || !c.props) return null;
+  if (c.props.id) return c;                              // direct MethodSection (fallback)
+  const inner = c.props.children;
+  if (inner && inner.props && inner.props.id) return inner; // unwrap _MdxComponentBoundary
+  return null;
+}).filter(Boolean);
+```
+
+**This was a bug in the component, not in MDX content.** No per-article fix is needed — the updated `snippets/method-switch.jsx` resolves it globally.
+
+### Root cause E: UTF-8 BOM at the start of the file
 
 A BOM (`\xEF\xBB\xBF`) before the `---` frontmatter delimiter breaks the YAML parser.
 Mintlify cannot read the frontmatter and may skip or mis-render the page.
