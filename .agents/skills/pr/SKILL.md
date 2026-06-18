@@ -9,6 +9,7 @@ Always create as draft — the writer reviews the deploy preview before requesti
 ## Scope — read exactly these files
 
 1. This SKILL.md
+2. `.agents/references/troubleshooting.md` — if the Mintlify preview shows a blank page or 404
 
 Do not read any other files. All context needed comes from the calling skill's output.
 
