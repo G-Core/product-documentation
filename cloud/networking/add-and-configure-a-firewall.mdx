@@ -1,4 +1,4 @@
----
+﻿---
 title: Add and configure a firewall
 sidebarTitle: Firewall
 ai-navigation: Create and configure security groups and firewall rules for Virtual Machines via Customer Portal or REST API.
@@ -9,7 +9,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
   <MethodSection id="portal" label="Customer Portal">
 
-<p>A firewall is a network security device used to protect servers from network threats. The firewall monitors incoming and outgoing network traffic and decides whether to allow or block specific traffic based on a defined set of security rules.</p>
+<p>A firewall is a network security device used to protect servers from network threats. The firewall monitors incoming and outgoing network traffic and decides whether to allow or block specific traffic based on a defined set of security rules. Rules can be set for all connections except outbound traffic on port 25, which is blocked by default for spam prevention.</p>
 
 <p>When a Virtual Machine is in a [Load Balancer](/cloud/networking/create-and-configure-a-load-balancer) pool, configure its security group to open the ports required for receiving and transmitting data.</p>
 
@@ -73,7 +73,7 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 - RDP over TCP on port 3389
 - RDP over UDP on port 3389
 
-<p><strong>Outbound rules</strong> — all traffic is allowed.</p>
+<p><strong>Outbound rules</strong> — all traffic is allowed except SMTP on ports TCP/25 and UDP/25, which are blocked by default to prevent spam. To unblock port 25, <a href="https://gcore.com/contact-us">contact the Gcore support team</a> with a business justification.</p>
 
 <Info>
 Instances in the same security group no longer communicate with each other automatically. The self-referential rule that previously allowed intra-group traffic has been removed. If your setup relies on it, add an inbound rule that allows traffic from the security group itself.
@@ -115,7 +115,7 @@ Instances in the same security group no longer communicate with each other autom
 
 ### Restore a default security group
 
-<p>To restore the original rules, click **Restore Default** in the security group Rules view or use the API. This resets any custom changes to the current default rule set: inbound ICMP, ICMPv6, SSH (TCP/22), and RDP (TCP/3389 and UDP/3389); outbound unrestricted.</p>
+<p>To restore the original rules, click **Restore Default** in the security group Rules view or use the API. This resets any custom changes to the current default rule set: inbound ICMP, ICMPv6, SSH (TCP/22), and RDP (TCP/3389 and UDP/3389); outbound unrestricted except SMTP (TCP/25 and UDP/25).</p>
 
 <Frame>![Restore Default option for resetting firewall settings](/images/docs/cloud/networking/add-and-configure-a-firewall/restore-default-option.png)</Frame>
 
@@ -139,8 +139,8 @@ sudo iptables -P INPUT DROP
 
 - Enable [Gcore DDoS Protection](https://gcore.com/ddos-protection) for an additional protection layer. DDoS Protection redirects traffic to the Threat Mitigation System (TMS), which performs filtering and threat detection with its always-on mode. Contact the [support team](https://gcore.com/contact-us) for tailored plans.
 
-  </MethodSection>
-  <MethodSection id="api" label="REST API">
+</MethodSection>
+<MethodSection id="api" label="REST API">
 
 A [security group](https://gcore.com/docs/api-reference/cloud/security-groups/create-security-group) controls which traffic is allowed in and out of a virtual machine.
 
@@ -257,7 +257,7 @@ A security group starts empty for inbound traffic and automatically includes def
     }
     ```
 
-    Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`, then save the security group ID from `created_resources.security_groups[0]`:
+    Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds until `state` is `FINISHED`, then save the security group ID from `created_resources.security_groups[0]`:
 
     ```bash
     export SG_ID="{SG_ID}"
@@ -478,6 +478,10 @@ To add a rule after the security group is created, call the [rules endpoint](htt
     ```
   </Tab>
 </Tabs>
+
+<Warning>
+Outbound traffic on port 25 (SMTP) is blocked at the infrastructure level and cannot be opened via security group rules. Contact [Gcore support](https://gcore.com/contact-us) to unblock it.
+</Warning>
 
 ## Delete a security group
 
