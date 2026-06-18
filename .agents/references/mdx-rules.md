@@ -61,6 +61,16 @@ only in the Mintlify runtime. Always verify the import when an article renders e
 - `portal` always comes first — it is the default tab
 - Do not add `terraform` or `cli` tabs until the content exists
 
+### How Mintlify compiles MethodSwitch internally
+
+Mintlify wraps each custom component in an internal `_MdxComponentBoundary` element
+at compile time. The `snippets/method-switch.jsx` component accounts for this: when
+iterating over children it first checks for a direct `props.id` (for future-proofing),
+then checks `c.props.children.props.id` to unwrap the boundary.
+
+Do not change the filter logic in `method-switch.jsx` without understanding this.
+Removing the unwrap step will break all MethodSwitch pages silently (blank page, no JS error).
+
 ### No content before `<MethodSwitch>`
 
 All article content — including intro paragraphs — must be INSIDE a `<MethodSection>`.
