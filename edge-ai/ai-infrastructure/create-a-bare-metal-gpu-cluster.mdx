@@ -20,13 +20,13 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
 ## Cluster architecture
 
-<p>Each cluster consists of one or more dedicated bare-metal GPU servers. When creating a multi-node cluster, all servers are placed in the same private network and share an identical configuration, including the image, network settings, and file shares.</p>
+<p>A cluster consists of one or more GPU servers with identical configuration.</p>
 
-<p>For flavors with InfiniBand cards, high-speed inter-node networking is configured automatically. No manual network configuration is required for distributed training.</p>
+<p>For multi-node clusters:</p>
 
-<p>Gcore provides the infrastructure layer — GPU servers, networking, storage options, and secure access — so preferred frameworks for distributed training, job scheduling, or container orchestration can be installed and run without managing hardware.</p>
-
-<p>For multi-node workloads, configure SSH trust between nodes to enable distributed training frameworks. File shares provide shared storage for datasets and checkpoints across all nodes.</p>
+- Nodes share the same image and network settings.
+- InfiniBand networking is configured automatically when supported by the flavor.
+- File shares provide shared storage for datasets and checkpoints across all nodes.
 
 ## Create a GPU cluster
 
@@ -102,27 +102,21 @@ After creation, the cluster can be resized. Scaling up adds nodes with the same 
 
 ### Step 5. Configure file share integration
 
-<p>File shares provide shared storage accessible from all cluster nodes simultaneously, allowing access to shared datasets, checkpoints, and outputs even if a cluster is deleted. They use NFS with a minimum size of 100 GiB, and the creation form displays this option only in regions where file shares are available. Full configuration details, including manual mounting procedures, are described in the [file share documentation](/cloud/file-shares/configure-file-shares).</p>
+<p>File shares provide shared storage accessible from all cluster nodes. GPU-enabled regions use VAST-backed high-performance shares. This option appears only in regions where file shares are available.</p>
+
+<p>For share types, sizing, access rules, and manual mounting, see [Configure file shares](/cloud/file-shares/configure-file-shares).</p>
 
 <Frame>
   <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-file-share.png" alt="File share integration section with Enable File Share checkbox" />
 </Frame>
 
-<p>To configure a file share:</p>
-
 1. Enable the **File Share integration** checkbox.
+2. Select an existing file share or create a new one.
+3. Specify the mount path on cluster nodes (default: `/home/ubuntu/mnt/nfs`).
 
-2. Select an existing file share, or create a new one by specifying its name, size (minimum 100 GiB), and optional settings — Root squash and Slurm compatibility.
-
-<Frame>
-  <img src="/images/docs/edge-ai/ai-infrastructure/create-a-bare-metal-gpu-cluster/gpu-cluster-create-file-share-modal.png" alt="Create VAST File Share dialog with basic settings and additional options" />
-</Frame>
-
-3. Specify the mount path for the file share on cluster nodes (default: `/home/ubuntu/mnt/nfs`). Additional file shares can be attached by clicking **Add File Share**.
-
-<Warning>
-If **User data** is enabled in Additional options, mounting commands are automatically included in the user data script. Do not modify or delete these commands, as this breaks automatic mounting.
-</Warning>
+<Info>
+When file share integration is enabled, the cluster automatically adds mount commands to the user data script. If **User data** is also configured in Additional options, do not remove these commands — they handle automatic mounting on first boot.
+</Info>
 
 ### Step 6. Configure network settings
 
@@ -190,21 +184,17 @@ If **User data** is enabled in Additional options, mounting commands are automat
 Cluster-level settings (image, file share integration, default networks) cannot be changed after creation. New nodes added via scaling inherit the original configuration. To change these settings, create a new cluster.
 </Warning>
 
-## Connect to the cluster
+## Connect and verify the cluster
 
-<p>After the cluster is created, use SSH to access the nodes. The default username is `ubuntu`.</p>
+<p>After the cluster is created, use SSH to connect to a node. The default username is `ubuntu`.</p>
 
 ```bash
 ssh ubuntu@<instance-ip-address>
 ```
 
-<p>Replace `<instance-ip-address>` with the public or floating IP shown in the cluster details.</p>
+<p>Replace `<instance-ip-address>` with the public or floating IP shown in the cluster details. For nodes with only private interfaces, connect through a bastion host or VPN, or use the [Gcore Customer Portal console](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel).</p>
 
-<p>For instances with only private interfaces, connect through a bastion host or VPN, or use the [Gcore Customer Portal console](/cloud/virtual-instances/connect/connect-to-your-instance-via-control-panel).</p>
-
-## Cluster verification
-
-<p>After connecting, verify that GPUs are available and drivers are loaded:</p>
+<p>Verify that GPUs are available and drivers are loaded:</p>
 
 ```bash
 nvidia-smi
@@ -212,13 +202,11 @@ nvidia-smi
 
 <p>The output displays all available GPUs, driver version, and CUDA version. If no GPUs appear, check that the image includes the correct NVIDIA drivers for the GPU model.</p>
 
-<p>If file share integration was enabled during cluster creation, verify the mount is accessible:</p>
+<p>If file share integration was enabled, verify the mount is accessible:</p>
 
 ```bash
 ls /home/ubuntu/mnt/nfs
 ```
-
-<p>The directory should be empty initially. Files saved here are accessible from all nodes in the cluster.</p>
 
 </MethodSection>
 <MethodSection id="api" label="REST API">
