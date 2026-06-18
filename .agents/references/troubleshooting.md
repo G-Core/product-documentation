@@ -115,6 +115,35 @@ if data.startswith(b'\xef\xbb\xbf'):
     open('article.mdx', 'wb').write(data[3:])
 ```
 
+### Root cause F: Removing structural JSX elements breaks numbered list parsing inside MethodSection
+
+**Symptom:** After editing an article to remove a content block (`<Info>`, `<Warning>`, or a `<p>` tag), the entire page goes blank or renders only the title. The removed element contained only content that seemed safe to delete.
+
+**Root cause:** Inside `<MethodSection>`, Mintlify's MDX parser uses JSX block elements (`<Info>`, `<Warning>`, `<p>`) as structural anchors that separate numbered list items and reset list context. Removing such an element changes how the parser understands surrounding content — especially numbered lists followed by bullet lists, `<Frame>`, or further `<p>` tags. The parser mis-reads the structure and the section fails to compile.
+
+This is not about the text inside the element — **the tag itself is the separator**. Replacing text content is safe; removing the tag is not.
+
+**Rule: When editing content to remove outdated information, ONLY change the text inside existing tags. Never delete a `<Info>`, `<Warning>`, or `<p>` tag that sits between numbered list items inside a MethodSection.**
+
+**Safe approach:**
+```mdx
+# Wrong — removing the block breaks structure
+4. Set **Outbound rules** to define the allowed outgoing traffic.
+
+<p>Click **Add rule** and select a template or custom rule.</p>
+
+# Correct — keep the block, change its text or replace with neutral content
+4. Set **Outbound rules** to define the allowed outgoing traffic.
+
+<Info>
+By default, all outbound traffic is allowed. Add rules only to restrict specific destinations.
+</Info>
+
+<p>Click **Add rule** and select a template or custom rule.</p>
+```
+
+**How to identify structural elements:** Any `<Info>`, `<Warning>`, or `<p>` tag that appears between a numbered step header and its sub-bullets, or between the last sub-item of one step and the next numbered step, is a structural separator — treat it as load-bearing.
+
 ---
 
 ## MethodSection content not rendering (steps merge, headings disappear)
