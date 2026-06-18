@@ -98,6 +98,8 @@ const tabs = React.Children.toArray(children).map((c) => {
 
 **This was a bug in the component, not in MDX content.** No per-article fix is needed — the updated `snippets/method-switch.jsx` resolves it globally.
 
+**WARNING — reversion risk:** Any branch created from an old commit (e.g. a debug/restore branch checked out at a pre-fix SHA) will contain the old broken `method-switch.jsx`. If that branch is merged into main, the fix is silently overwritten and all MethodSwitch pages go blank again. Always verify `snippets/method-switch.jsx` contains the `.map()` + unwrap logic before merging a branch that touches that file.
+
 ### Root cause E: UTF-8 BOM at the start of the file
 
 A BOM (`\xEF\xBB\xBF`) before the `---` frontmatter delimiter breaks the YAML parser.
