@@ -134,6 +134,20 @@ that the reader cannot tell which sentences were changed.
 - Verify headings are still in logical order
 - Check all internal anchor links — renaming a heading breaks them
 
+### Structural elements — text only, never remove tags
+
+Inside `<MethodSection>`, `<Info>`, `<Warning>`, and `<p>` tags between numbered list
+items are structural separators for the MDX parser. Removing one — even if its text
+is outdated — can blank the entire page with no build error.
+
+**If the content inside a structural element must be removed:**
+- Replace the text with neutral, accurate content
+- Never delete the tag itself
+- Never convert a separate `<p>Click ...` into inline text appended to the step header
+
+This rule applies even when the element contains information you want to fully remove
+(e.g. a deprecated restriction, an old warning). Keep the tag; change what it says.
+
 ### Do not touch
 
 - `<MethodSection id="api">` — API sections are maintained separately

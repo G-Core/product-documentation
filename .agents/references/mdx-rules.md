@@ -107,6 +107,29 @@ as one unbroken block.
 
 **4. JSX components (`<Info>`, `<Frame>`, `<Warning>`, `<Note>`):** always block-level, no special treatment needed.
 
+**5. Structural separators — never remove, only replace text:**
+
+Inside `<MethodSection>`, `<Info>`, `<Warning>`, and `<p>` tags that appear between numbered list items act as structural anchors for the MDX parser — not just as content containers. Removing such a tag (even if the text inside is outdated) changes how the parser reads surrounding numbered lists and can cause the entire page to render blank.
+
+**Rule:** When removing outdated information from a structural element, replace the text inside the tag with neutral content. Never delete the tag itself.
+
+```mdx
+# Wrong — blank page after this edit
+4. Set **Outbound rules** to define the allowed outgoing traffic.
+   Click **Add rule** and select a template or custom rule.   <- inline, Info removed
+
+# Correct — keep the tag, update text
+4. Set **Outbound rules** to define the allowed outgoing traffic.
+
+<Info>
+By default, all outbound traffic is allowed. Add outbound rules only to restrict specific traffic.
+</Info>
+
+<p>Click **Add rule** and select a template or custom rule.</p>
+```
+
+A structural separator is any JSX block that sits between a numbered step header and its sub-bullets, or between the last content of one step and the next numbered step.
+
 ### Closing tag indent after a list
 
 When a markdown list item immediately precedes `</MethodSection>` or `<MethodSection>`,
