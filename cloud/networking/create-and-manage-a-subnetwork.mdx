@@ -40,7 +40,7 @@ A subnetwork can be created [during Virtual Machine creation](/cloud/virtual-ins
 - 192.168.0.0/16
 - fc00::/7
 
-See [IP range](#ip-range) for valid mask ranges per CIDR prefix.
+See [IP range](#ip-range) for valid mask ranges per CIDR prefix. The CIDR cannot be changed after the subnetwork is created.
 
 <p>7. (optional) Turn on the **Enable DHCP** toggle to assign IP addresses to machines in the subnet automatically.</p>
 
@@ -50,7 +50,7 @@ See [IP range](#ip-range) for valid mask ranges per CIDR prefix.
   For IPv6 networks, DHCP can only be enabled or disabled during subnetwork creation. Changing this setting later requires recreating the IPv6 subnetwork.
 </Warning>
 
-<p>8. (optional) Turn off the **Connect to network router** toggle to block access to the subnet from external networks and other subnets. When enabled, specify a custom **Gateway IP** address or leave it set to **Automatically** to assign one automatically.</p>
+<p>8. (optional) Enable the **Connect to network router** toggle to automatically connect this subnet to the network router if one exists. This gives VMs internet access through the router and enables L3 routing between subnets connected to the same router. When enabled, specify a custom **Gateway IP** address or leave it set to **Automatically** to assign one automatically.</p>
 
 <Frame>
   ![Network configuration example](/images/docs/cloud/networking/create-and-manage-a-subnetwork/create-subnetwork-name-cidr-dhcp.png)
@@ -112,18 +112,18 @@ The following table compares IPv4 and IPv6 subnet features, including supported 
 | Feature                 | IPv4                                                                                         | IPv6                                                                       |
 | ----------------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | CIDR ranges             | 10.0.0.0/8<br />172.16.0.0/12<br />192.168.0.0/16                                           | fc00::/7                                                                   |
-| Subnet mask range       | /8 - /32 for 10.0.0.0/8<br />/12 - /32 for 172.16.0.0/12<br />/16 - /32 for 192.168.0.0/16 | /7 - /126                                                                  |
+| Subnet mask range       | /8 - /32 for 10.0.0.0/8<br />/12 - /32 for 172.16.0.0/12<br />/16 - /32 for 192.168.0.0/16 | /7 - /126. Prefixes shorter than /64 (e.g. /63, /48, /7) are not recommended and may require manual system configuration. |
 | Floating IP support     | Yes                                                                                          | No                                                                         |
 | Internet access         | Yes                                                                                          | No – private IPv6 subnets are not publicly routable<br />Yes – public IPv6 |
 | DHCP configuration      | Can be enabled or disabled                                                                   | Cannot be changed after creation                                           |
-| Routing between subnets | Allowed within the same network                                                              | Allowed within the same network                                            |
+| Routing between subnets | L2 access: all subnets in the same network. L3 routing: subnets connected to the same router. | L2 access: all subnets in the same network. L3 routing: subnets connected to the same router. |
 | UI availability         | Available to all users                                                                       | Available to all users                                                     |
 
 ### Network routing
 
-A routed network is a private network already connected to a router with a public interface, giving all Virtual Machines in that network internet access and the ability to accept incoming connections.
+All subnets within the same network have L2 access to each other regardless of whether a router is present. When a router exists and subnets are connected to it, L3 routing is available between those subnets, and VMs can reach external networks through the router's public interface.
 
-<p>Subnetworks are routable by default. To restrict machines from external connections, turn off the **Connect to network router** toggle during subnet creation.</p>
+<p>When the **Connect to network router** toggle is enabled, the subnet is automatically connected to the network router (if one exists), giving VMs internet access and enabling L3 routing between subnets on the same router. Disable this toggle to create an isolated subnet with no router connectivity.</p>
 
 <Frame>
   ![Create subnetwork dialog](/images/docs/cloud/networking/create-and-manage-a-subnetwork/enable-non-routable-subnetwork.png)
@@ -131,7 +131,7 @@ A routed network is a private network already connected to a router with a publi
 
 ### Default gateway
 
-The default gateway controls how traffic leaves a subnetwork. Misconfiguring it can cause connectivity loss, so review the following guidelines before making changes.
+The default gateway controls how traffic leaves a subnetwork. We recommend leaving the **Gateway IP** set to **Automatically** unless you have a specific reason to override it. Misconfiguring it can cause connectivity loss, so review the following guidelines before making changes.
 
 <Warning>
   **Warning**
@@ -183,7 +183,7 @@ The subnetwork has been renamed.
 
 ### Delete a subnetwork
 
-Only subnetworks not attached to a VM can be deleted.
+A subnetwork cannot be deleted if any of its IP addresses are in use — for example, if a Virtual Machine, load balancer, or other resource still has a port in that subnet.
 
 <p>1. In the Customer Portal, navigate to **Cloud** \> **Networking**.</p>
 
