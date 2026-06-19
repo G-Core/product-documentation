@@ -1,7 +1,7 @@
----
+﻿---
 title: "Manage a Bare Metal GPU cluster"
 sidebarTitle: "Manage a Bare Metal GPU cluster"
-ai-navigation: Manage Bare Metal GPU cluster nodes, resize instance count, configure power states, and network interfaces via Customer Portal or list and filter clusters via REST API using name, flavor, node count, image IDs, tags, and date range filters.
+ai-navigation: Manage Bare Metal GPU cluster nodes, resize, control power states, rebuild, replace, and delete nodes via Customer Portal or REST API; list and filter clusters via curl using name, flavor, node count, image IDs, tags, and date range filters.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -78,7 +78,7 @@ To remove a specific node without random selection:
 4. Confirm the deletion.
 
 <Warning>
-Deleting the last node in a cluster automatically deletes the entire cluster. This applies to both UI and API/Terraform operations. When using the API or Terraform to delete nodes, no warning is displayed before the cluster is removed. Ensure at least one node remains if you want to preserve the cluster.
+Deleting the last node in a cluster automatically deletes the entire cluster. This applies to both UI and API/Terraform operations. When using the API or Terraform to delete nodes, no warning is displayed before the cluster is removed. Leave at least one node in the cluster to preserve it.
 </Warning>
 
 ## Power actions
@@ -148,19 +148,6 @@ To add network interfaces on a specific node:
 Only network interfaces can be modified on individual nodes after cluster creation. Image and storage configuration cannot be changed at the node level. InfiniBand interfaces are managed automatically and cannot be modified or deleted.
 </Info>
 
-## Console access
-
-For troubleshooting or when SSH access is unavailable, use the browser-based console.
-
-1. In the **Overview** tab, locate the node you want to access.
-2. Click **Open Console** in the node row.
-3. The console opens in a new browser tab using noVNC.
-4. Log in using the same credentials as for SSH access.
-
-<Frame>![Browser-based noVNC console with login prompt](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-console.png)</Frame>
-
-The console provides direct terminal access to the node, useful when network connectivity issues prevent SSH access.
-
 ## Tags
 
 Tags are key-value pairs used to organize and categorize clusters. Tags are applied at the cluster level and inherited by all nodes.
@@ -190,6 +177,19 @@ This log is useful for auditing and troubleshooting.
 
 <Frame>![User Actions tab showing audit log of cluster operations](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-user-actions-tab.png)</Frame>
 
+## Console access
+
+For troubleshooting or when SSH access is unavailable, use the browser-based console.
+
+1. In the **Overview** tab, locate the target node.
+2. Click **Open Console** in the node row.
+3. The console opens in a new browser tab using noVNC.
+4. Log in with the same credentials used for SSH access.
+
+<Frame>![Browser-based noVNC console with login prompt](/images/docs/edge-ai/ai-infrastructure/manage-a-bare-metal-gpu-cluster/cluster-console.png)</Frame>
+
+The console provides direct terminal access to the node, useful when network connectivity issues prevent SSH access.
+
 ## Delete a cluster
 
 When a cluster is deleted, local NVMe storage is permanently erased; file shares and object storage remain intact.
@@ -206,10 +206,12 @@ To delete a cluster:
 Cluster deletion is irreversible. Data on local NVMe storage cannot be recovered.
 </Warning>
 
+<p>The Customer Portal is suitable for managing individual clusters. For automated workflows — CI/CD pipelines, infrastructure-as-code, or batch provisioning — use the [GPU&nbsp;Bare Metal API](/api-reference/cloud/gpu-bare-metal) instead.</p>
+
 </MethodSection>
 <MethodSection id="api" label="REST API">
 
-<p>Manage bare metal GPU clusters through the REST API: list, inspect, resize, control power state, rebuild, replace nodes, and delete.</p>
+<p>Use the REST API to inspect clusters, resize them, manage node lifecycle operations, and automate cluster administration workflows.</p>
 
 <Info>
 An [API token](/account-settings/api-tokens) is required, along with a
@@ -238,6 +240,7 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 | `flavor` | `prefix`, `exact` | Match flavor name (case-insensitive) |
 | `image_ids` | — | Return clusters provisioned with specific image IDs. Repeat for multiple values |
 | `servers_count` | `gte`, `lte`, `gt`, `lt` | Filter by node count |
+| `managed_by` | — | Return clusters by management type. Accepted values: `user` (directly managed) or `k8s` (managed by Kubernetes) |
 | `created_at` | `gte`, `lte` | Filter by creation time (UTC ISO 8601) |
 | `updated_at` | `gte`, `lte` | Filter by last-update time (UTC ISO 8601) |
 | `tags` | `[key]=value` | Exact tag key-value pair. Multiple pairs are ANDed; values match case-insensitively |
@@ -246,6 +249,10 @@ export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
 
 <Info>
 Cluster `status` is not available as a filter. It is computed from the underlying infrastructure and is not stored as a queryable field.
+</Info>
+
+<Info>
+The Python and Go SDKs support `limit` and `offset` for pagination only. Name, flavor, node count, tag, image, and date filters are available via curl only.
 </Info>
 
 <Tabs>
@@ -259,14 +266,6 @@ Cluster `status` is not available as a filter. It is computed from the underlyin
     page = client.cloud.gpu_baremetal.clusters.list(
         project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
         region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
-        # Narrow to clusters whose name starts with "prod-"
-        name={"prefix": "prod-"},
-        # Narrow to a specific GPU flavor family
-        flavor={"prefix": "bm3-"},
-        # Narrow to clusters with 4 or more nodes
-        servers_count={"gte": 4},
-        # Narrow to clusters tagged env=production
-        tags={"env": "production"},
     )
     for cluster in page.results:
         print(cluster.id, cluster.name, cluster.servers_count, cluster.status)
@@ -282,25 +281,21 @@ Cluster `status` is not available as a filter. It is computed from the underlyin
         "os"
         "strconv"
 
-        "github.com/G-Core/gcore-go"
+        gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/cloud"
         "github.com/G-Core/gcore-go/option"
     )
 
     func main() {
-        projectID, _ := strconv.Atoi(os.Getenv("GCORE_CLOUD_PROJECT_ID"))
-        regionID, _ := strconv.Atoi(os.Getenv("GCORE_CLOUD_REGION_ID"))
+        projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
 
         client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
 
         page, err := client.Cloud.GPUBaremetal.Clusters.List(context.TODO(),
             cloud.GPUBaremetalClusterListParams{
-                ProjectID:    gcore.Int(projectID),
-                RegionID:     gcore.Int(regionID),
-                Name:         &cloud.StringFilter{Prefix: "prod-"},
-                Flavor:       &cloud.StringFilter{Prefix: "bm3-"},
-                ServersCount: &cloud.IntRangeFilter{GTE: gcore.Int(4)},
-                Tags:         cloud.TagFilter{"env": "production"},
+                ProjectID: gcore.Int(projectID),
+                RegionID:  gcore.Int(regionID),
             })
         if err != nil {
             panic(err)
@@ -321,72 +316,40 @@ Cluster `status` is not available as a filter. It is computed from the underlyin
       --data-urlencode "servers_count[gte]=4" \
       --data-urlencode "tags[env]=production"
     ```
+
+    Response:
+
+    ```json
+    {
+      "count": 1,
+      "results": [
+        {
+          "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+          "name": "prod-bm-cluster-1",
+          "status": "active",
+          "flavor": "bm3-ai-1xlarge-h100-80-8",
+          "tags": [
+            { "key": "env", "value": "production", "read_only": false },
+            { "key": "team", "value": "ml", "read_only": false }
+          ],
+          "servers_count": 4,
+          "created_at": "2026-06-10T12:00:00Z",
+          "updated_at": "2026-06-10T12:15:00Z",
+          "servers_ids": [
+            "server-uuid-1",
+            "server-uuid-2",
+            "server-uuid-3",
+            "server-uuid-4"
+          ],
+          "has_pending_changes": false
+        }
+      ]
+    }
+    ```
+
+    Use `limit` and `offset` for pagination. The default page size is 10; the maximum is 1000.
   </Tab>
 </Tabs>
-
-<p>The API returns:</p>
-
-```json
-{
-  "count": 1,
-  "results": [
-    {
-      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-      "name": "prod-bm-cluster-1",
-      "status": "active",
-      "flavor": "bm3-ai-1xlarge-h100-80-8",
-      "tags": [
-        { "key": "env", "value": "production", "read_only": false },
-        { "key": "team", "value": "ml", "read_only": false }
-      ],
-      "servers_count": 4,
-      "created_at": "2026-06-10T12:00:00Z",
-      "updated_at": "2026-06-10T12:15:00Z",
-      "servers_ids": [
-        "server-uuid-1",
-        "server-uuid-2",
-        "server-uuid-3",
-        "server-uuid-4"
-      ],
-      "has_pending_changes": false
-    }
-  ]
-}
-```
-
-**Filter examples:**
-
-```bash
-# Clusters provisioned with a specific image
-curl -G "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters" \
-  -H "Authorization: APIKey ${GCORE_API_KEY}" \
-  --data-urlencode "image_ids=3793c250-0b3b-4678-bab3-e11afbc29657"
-
-# Clusters created after June 1, 2026
-curl -G "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters" \
-  -H "Authorization: APIKey ${GCORE_API_KEY}" \
-  --data-urlencode "created_at[gte]=2026-06-01T00:00:00Z"
-
-# Clusters with node count between 4 and 16
-curl -G "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters" \
-  -H "Authorization: APIKey ${GCORE_API_KEY}" \
-  --data-urlencode "servers_count[gte]=4" \
-  --data-urlencode "servers_count[lte]=16"
-
-# Clusters whose tag value starts with "prod"
-curl -G "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters" \
-  -H "Authorization: APIKey ${GCORE_API_KEY}" \
-  --data-urlencode "tag_value[prefix]=prod"
-```
-
-<p>Use `limit` and `offset` for pagination. The default page size is 10; the maximum is 1000.</p>
-
-```bash
-curl -G "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters" \
-  -H "Authorization: APIKey ${GCORE_API_KEY}" \
-  --data-urlencode "limit=20" \
-  --data-urlencode "offset=0"
-```
 
 ## Get cluster details
 
@@ -424,8 +387,8 @@ curl -G "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/
     )
 
     func main() {
-        projectID, _ := strconv.Atoi(os.Getenv("GCORE_CLOUD_PROJECT_ID"))
-        regionID, _ := strconv.Atoi(os.Getenv("GCORE_CLOUD_REGION_ID"))
+        projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
 
         client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
 
@@ -447,10 +410,25 @@ curl -G "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/
     curl "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters/{CLUSTER_ID}" \
       -H "Authorization: APIKey ${GCORE_API_KEY}"
     ```
+
+    Response:
+
+    ```json
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "name": "prod-bm-cluster-1",
+      "status": "active",
+      "flavor": "bm3-ai-1xlarge-h100-80-8",
+      "servers_count": 4,
+      "servers_ids": ["server-uuid-1", "server-uuid-2", "server-uuid-3", "server-uuid-4"],
+      "tags": [{ "key": "env", "value": "production" }],
+      "created_at": "2026-06-10T12:00:00Z",
+      "updated_at": "2026-06-10T12:15:00Z",
+      "has_pending_changes": false
+    }
+    ```
   </Tab>
 </Tabs>
-
-The API returns a cluster object with `id`, `name`, `status`, `flavor`, `tags`, `servers_count`, `created_at`, `updated_at`, `servers_ids`, and `has_pending_changes` fields.
 
 ## Resize a cluster
 
@@ -493,8 +471,8 @@ Scaling down to zero is not allowed. A cluster must contain at least one node at
     )
 
     func main() {
-        projectID, _ := strconv.Atoi(os.Getenv("GCORE_CLOUD_PROJECT_ID"))
-        regionID, _ := strconv.Atoi(os.Getenv("GCORE_CLOUD_REGION_ID"))
+        projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
 
         client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
 
@@ -520,16 +498,16 @@ Scaling down to zero is not allowed. A cluster must contain at least one node at
       -H "Content-Type: application/json" \
       -d '{"instances_count": 4}'
     ```
+
+    Response:
+
+    ```json
+    { "tasks": ["task-uuid"] }
+    ```
+
+    Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. Bare Metal H100 nodes may take 15–40 minutes to provision.
   </Tab>
 </Tabs>
-
-The API returns:
-
-```json
-{ "tasks": ["task-uuid"] }
-```
-
-<p>Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. Bare Metal H100 nodes may take 15–40 minutes to provision.</p>
 
 ## Control cluster power state
 
@@ -542,60 +520,11 @@ The API returns:
 | `soft_reboot` | Send ACPI shutdown signal and reboot |
 | `hard_reboot` | Force-reset all nodes immediately |
 
+<Info>
+The Python and Go SDKs (v0.48.0) do not expose the cluster action endpoint directly. Use the curl tab below.
+</Info>
+
 <Tabs>
-  <Tab title="Python SDK">
-    ```python
-    import os
-    from gcore import Gcore
-
-    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
-
-    # Replace "soft_reboot" with "start", "stop", or "hard_reboot" as needed
-    task_id_list = client.cloud.gpu_baremetal.clusters.action(
-        cluster_id="{CLUSTER_ID}",
-        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
-        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
-        action="soft_reboot",
-    )
-    print(task_id_list.tasks)
-    ```
-  </Tab>
-  <Tab title="Go SDK">
-    ```go
-    package main
-
-    import (
-        "context"
-        "fmt"
-        "os"
-        "strconv"
-
-        "github.com/G-Core/gcore-go"
-        "github.com/G-Core/gcore-go/cloud"
-        "github.com/G-Core/gcore-go/option"
-    )
-
-    func main() {
-        projectID, _ := strconv.Atoi(os.Getenv("GCORE_CLOUD_PROJECT_ID"))
-        regionID, _ := strconv.Atoi(os.Getenv("GCORE_CLOUD_REGION_ID"))
-
-        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
-
-        // Swap OfSoftReboot for OfStart, OfStop, or OfHardReboot as needed
-        taskIDList, err := client.Cloud.GPUBaremetal.Clusters.Action(context.TODO(),
-            "{CLUSTER_ID}",
-            cloud.GPUBaremetalClusterActionParams{
-                ProjectID:    gcore.Int(projectID),
-                RegionID:     gcore.Int(regionID),
-                OfSoftReboot: &cloud.GPUBaremetalClusterActionParamsBodySoftReboot{},
-            })
-        if err != nil {
-            panic(err)
-        }
-        fmt.Printf("%+v\n", taskIDList.Tasks)
-    }
-    ```
-  </Tab>
   <Tab title="curl">
     ```bash
     # Replace "soft_reboot" with "start", "stop", or "hard_reboot"
@@ -605,14 +534,16 @@ The API returns:
       -H "Content-Type: application/json" \
       -d '{"action": "soft_reboot"}'
     ```
+
+    Response:
+
+    ```json
+    { "tasks": ["task-uuid"] }
+    ```
+
+    Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`.
   </Tab>
 </Tabs>
-
-The API returns:
-
-```json
-{ "tasks": ["task-uuid"] }
-```
 
 ## Rebuild a cluster
 
@@ -654,8 +585,8 @@ To rebuild with a different image or SSH key, first update the cluster server se
     )
 
     func main() {
-        projectID, _ := strconv.Atoi(os.Getenv("GCORE_CLOUD_PROJECT_ID"))
-        regionID, _ := strconv.Atoi(os.Getenv("GCORE_CLOUD_REGION_ID"))
+        projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
 
         client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
 
@@ -678,14 +609,16 @@ To rebuild with a different image or SSH key, first update the cluster server se
       "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters/{CLUSTER_ID}/rebuild" \
       -H "Authorization: APIKey ${GCORE_API_KEY}"
     ```
+
+    Response:
+
+    ```json
+    { "tasks": ["task-uuid"] }
+    ```
+
+    Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`. Rebuilding all nodes may take 15–40 minutes.
   </Tab>
 </Tabs>
-
-The API returns:
-
-```json
-{ "tasks": ["task-uuid"] }
-```
 
 ## Rebuild a specific node
 
@@ -724,8 +657,8 @@ The API returns:
     )
 
     func main() {
-        projectID, _ := strconv.Atoi(os.Getenv("GCORE_CLOUD_PROJECT_ID"))
-        regionID, _ := strconv.Atoi(os.Getenv("GCORE_CLOUD_REGION_ID"))
+        projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
 
         client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
 
@@ -749,14 +682,16 @@ The API returns:
       "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters/{CLUSTER_ID}/servers/{SERVER_ID}/rebuild" \
       -H "Authorization: APIKey ${GCORE_API_KEY}"
     ```
+
+    Response:
+
+    ```json
+    { "tasks": ["task-uuid"] }
+    ```
+
+    Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`.
   </Tab>
 </Tabs>
-
-The API returns:
-
-```json
-{ "tasks": ["task-uuid"] }
-```
 
 ## Replace a specific node
 
@@ -795,8 +730,8 @@ The API returns:
     )
 
     func main() {
-        projectID, _ := strconv.Atoi(os.Getenv("GCORE_CLOUD_PROJECT_ID"))
-        regionID, _ := strconv.Atoi(os.Getenv("GCORE_CLOUD_REGION_ID"))
+        projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
 
         client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
 
@@ -820,14 +755,16 @@ The API returns:
       "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters/{CLUSTER_ID}/servers/{SERVER_ID}/replace" \
       -H "Authorization: APIKey ${GCORE_API_KEY}"
     ```
+
+    Response:
+
+    ```json
+    { "tasks": ["task-uuid"] }
+    ```
+
+    Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`.
   </Tab>
 </Tabs>
-
-The API returns:
-
-```json
-{ "tasks": ["task-uuid"] }
-```
 
 ## Delete a specific node
 
@@ -842,7 +779,7 @@ The API returns:
     client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
 
     task_id_list = client.cloud.gpu_baremetal.clusters.servers.delete(
-        server_id="{SERVER_ID}",
+        instance_id="{SERVER_ID}",
         cluster_id="{CLUSTER_ID}",
         project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
         region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
@@ -866,8 +803,8 @@ The API returns:
     )
 
     func main() {
-        projectID, _ := strconv.Atoi(os.Getenv("GCORE_CLOUD_PROJECT_ID"))
-        regionID, _ := strconv.Atoi(os.Getenv("GCORE_CLOUD_REGION_ID"))
+        projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
 
         client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
 
@@ -888,19 +825,19 @@ The API returns:
   <Tab title="curl">
     ```bash
     curl -X DELETE \
-      "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters/{CLUSTER_ID}/servers/{SERVER_ID}" \
+      "https://api.gcore.com/cloud/v1/ai/clusters/gpu/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/{CLUSTER_ID}/node/{SERVER_ID}" \
       -H "Authorization: APIKey ${GCORE_API_KEY}"
     ```
+
+    Response:
+
+    ```json
+    { "tasks": ["task-uuid"] }
+    ```
+
+    Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`.
   </Tab>
 </Tabs>
-
-The API returns:
-
-```json
-{ "tasks": ["task-uuid"] }
-```
-
-<p>Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`.</p>
 
 ## Delete a cluster
 
@@ -944,16 +881,18 @@ Cluster deletion is irreversible. Data on local NVMe storage cannot be recovered
     )
 
     func main() {
-        projectID, _ := strconv.Atoi(os.Getenv("GCORE_CLOUD_PROJECT_ID"))
-        regionID, _ := strconv.Atoi(os.Getenv("GCORE_CLOUD_REGION_ID"))
+        projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
 
         client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
 
         taskIDList, err := client.Cloud.GPUBaremetal.Clusters.Delete(context.TODO(),
             "{CLUSTER_ID}",
             cloud.GPUBaremetalClusterDeleteParams{
-                ProjectID: gcore.Int(projectID),
-                RegionID:  gcore.Int(regionID),
+                ProjectID:           gcore.Int(projectID),
+                RegionID:            gcore.Int(regionID),
+                AllFloatingIPs:      gcore.Bool(true),
+                AllReservedFixedIPs: gcore.Bool(true),
             })
         if err != nil {
             panic(err)
@@ -968,16 +907,16 @@ Cluster deletion is irreversible. Data on local NVMe storage cannot be recovered
       "https://api.gcore.com/cloud/v3/gpu/baremetal/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters/{CLUSTER_ID}?all_floating_ips=true&all_reserved_fixed_ips=true" \
       -H "Authorization: APIKey ${GCORE_API_KEY}"
     ```
+
+    Response:
+
+    ```json
+    { "tasks": ["task-uuid"] }
+    ```
+
+    Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`.
   </Tab>
 </Tabs>
-
-The API returns:
-
-```json
-{ "tasks": ["task-uuid"] }
-```
-
-<p>Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`.</p>
 
 </MethodSection>
 </MethodSwitch>
