@@ -3,12 +3,20 @@ name: pr
 description: Create a draft GitHub pull request after documentation changes are complete. Use when the user confirms they want to open a PR.
 ---
 
+## HARD RULES — NEVER VIOLATE
+
+- **NEVER commit without explicit user instruction: "commit" or "сделай коммит"**
+- **NEVER push without explicit user instruction: "push" or "запушь"**
+- **NEVER create a PR without explicit user instruction**
+- **NEVER do any git write operation proactively**
+
 Create a draft PR for changes made in the current session.
 Always create as draft — the writer reviews the deploy preview before requesting review.
 
 ## Scope — read exactly these files
 
 1. This SKILL.md
+2. `.agents/references/troubleshooting.md` — if the Mintlify preview shows a blank page or 404
 
 Do not read any other files. All context needed comes from the calling skill's output.
 
@@ -153,7 +161,40 @@ If the change spans multiple products, list the two most prominent: `[Cloud, CDN
 
 ---
 
-## Step 3 — Ensure main is up to date and create branch
+## Step 3 — Ensure main is up to date and prepare branch name
+
+Determine the branch name based on what was done:
+
+| What was done | Branch name |
+|---------------|-------------|
+| New article | `new-article/{product}-{slug}` |
+| Added API tab | `api-tab/{product}-{slug}` |
+| Updated article | `update/{product}-{slug}` |
+| GitHub issue work | `issue/{number}-{short-slug}` |
+| Audited article | `audit/{product}-{slug}` |
+| Feature draft (contributor) | `feature-draft/{ticket-id-or-slug}` |
+
+Where `{slug}` is the article filename without `.mdx`.
+
+---
+
+## STOP — Ask the user before any git operations
+
+**Do not run any git commands yet.**
+
+After completing all content changes, report what was done and ask the user for permission to commit and push. Use this exact format:
+
+> Work is complete. Here is what was changed:
+>
+> - `{file path}` — {what was done}
+> - `{file path}` — {what was done}
+>
+> Proposed branch: `{branch-name}`
+> Proposed commit message: `[{Product}] {short description}`
+>
+> Proceed with commit and push?
+
+**Only after the user explicitly confirms** — run the git operations in this order:
 
 ```powershell
 cd C:\Projects\product-documentation
@@ -161,28 +202,6 @@ git checkout main
 git pull origin main
 git checkout -b {branch-name}
 ```
-
-**Branch naming:**
-
-| What was done | Branch name |
-|---------------|-------------|
-| New article | `new-article/{product}-{slug}` |
-| Added API tab | `api-tab/{product}-{slug}` |
-| Updated article | `update/{product}-{slug}` |
-| Audited article | `audit/{product}-{slug}` |
-| Feature draft (contributor) | `feature-draft/{ticket-id-or-slug}` |
-
-Where `{slug}` is the article filename without `.mdx`.
-
-**If branch already exists** — do not reuse it. Delete and recreate:
-```powershell
-git branch -D {branch-name}
-git checkout -b {branch-name}
-```
-
----
-
-## Step 4 — Stage and commit
 
 Stage only the files changed in this session — by name, never `git add .`:
 
@@ -195,22 +214,13 @@ in the working tree — do not stage them. Ask the user if they should be includ
 
 Commit message format: `[Product] Short description`
 
-```powershell
-git commit -m "[Cloud] Add REST API tab to create-an-instance article"
-git commit -m "[CDN] Update origin group configuration steps"
-git commit -m "[Cloud] Draft: GPU cluster auto-scaling feature"
-```
-
 Rules:
 - Imperative mood: "Add", "Update", "Fix", "Draft" — not "Added", "Updated"
 - Under 72 characters
 - No period at the end
 
----
-
-## Step 5 — Push
-
 ```powershell
+git commit -m "[Product] Short description"
 git push -u origin {branch-name}
 ```
 
@@ -223,7 +233,7 @@ If you commit without pulling, the push will be rejected with "non-fast-forward"
 
 ---
 
-## Step 6 — Create the PR
+## Step 4 — Create the PR
 
 ```powershell
 gh pr create --base main --draft --title "[{Product}] {short description}" --body-file /tmp/pr-body.md
@@ -240,7 +250,9 @@ Always `--draft`. Always `--base main`.
 ```markdown
 ## What changed
 
-{1-3 sentences: what was done and why. Link to Jira ticket if available.}
+{1-3 sentences: what was done and why. Link to Jira ticket or GitHub issue if available.}
+
+Closes #{issue-number}
 
 ## Files changed
 
@@ -256,6 +268,9 @@ If no TODOs — write "No TODOs. Ready for review."}
 - [ ] Writer review and approval
 ```
 
+Add the `Closes #N` line when the PR resolves a GitHub issue from
+`G-Core/product-documentation`. Omit it for Jira-only work.
+
 Write the body with the Write tool, then clean up:
 ```powershell
 # After gh pr create runs:
@@ -264,7 +279,7 @@ Remove-Item /tmp/pr-body.md
 
 ---
 
-## Step 7 — Report
+## Step 5 — Report
 
 ```
 PR created: {URL}

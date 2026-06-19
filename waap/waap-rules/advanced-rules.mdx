@@ -1,7 +1,7 @@
----
+﻿---
 sidebarTitle: "Advanced Rules"
 title: "Advanced Rules"
-ai-navigation: Create advanced WAAP rules using Common Expression Language (CEL) syntax via API with If/Then conditions, rule objects, source field objects, and single-action enforcement (allow, deny, log, challenge, or block).
+ai-navigation: Create and edit advanced WAAP rules in the Gcore Customer Portal or via API using Common Expression Language (CEL) syntax with If/Then conditions, rule objects, source field objects, quick templates, and single-action enforcement (allow, block, captcha, handshake, or tag).
 ---
 
 <Info>
@@ -14,9 +14,52 @@ Similarly to WAAP [custom rules](/waap/waap-rules/custom-rules), you can create,
 
 ## Create advanced rules
 
-Due to the highly technical aspect of the advanced rules functionality, the ability to create and edit these rules is currently only available through our API.
+You can create and edit advanced rules in the [Gcore Customer Portal](https://portal.gcore.com/) or via our API. Advanced rules use the same **If/Then** structure as [custom rules](/waap/waap-rules/custom-rules), but support more complex conditions written in [Common Expression Language (CEL)](https://github.com/google/cel-spec) syntax.
 
-Check out the following guides for details on how to create advanced rules and their key components:
+### In the Customer Portal
+
+1. In the [Gcore Customer Portal](https://portal.gcore.com/), navigate to **WAAP** > **Custom Rules**.
+2. Click **Add custom rule** to create a new rule, or open an existing rule to edit it.
+3. Enter a **Rule name** and set the **Status** toggle as needed.
+4. Under **Rule type**, select **Advanced Rule**.
+5. In the **Define rule** section, configure the rule logic:
+   - **If**: Select the domain or zone the rule applies to.
+   - **And**: Add one or more conditions by choosing **Object**, **Attribute**, **Operator**, and **Value**. Click **+** to add additional conditions. To build more complex logic, select **Group** as the object type to add a nested group of conditions. Groups support **And**, **Or**, and **If** operators and can be nested inside each other to create layered rule logic.
+   - **Then**: Select the action: **Block**, **Allow**, **Captcha**, **JS Challenge** (Handshake), or **Tag**. For **Block**, set the status code and optional block duration; for **Tag**, enter one or more tags.
+   - **Phase**: Choose when the rule is evaluated (for example, **Access (request phase)**).
+6. Review the generated **Expression**. To write or modify the CEL expression directly, click **Edit manually**.
+7. Optionally, use a **Quick Template** to prefill common advanced rule configurations, such as brute force protection, blocking sanctioned countries, or rate limiting.
+8. Click **Save**.
+
+<Frame>
+  ![Add custom rule form with Advanced Rule selected](/images/docs/waap/waap-rules/advanced-rules/add-custom-rule-advanced-rule.png)
+</Frame>
+
+<Tip>
+  **Tip**
+
+  Use the visual rule builder to define conditions step by step. The portal generates the underlying CEL expression automatically. Switch to **Edit manually** when you need full control over the expression syntax.
+</Tip>
+
+The following **Quick Templates** are available for advanced rules:
+
+- Block Fake Account Creation
+- Brute Force Protection
+- Challenge Suspicious User-Agent
+- Block Malicious Automation
+- Block Sanctioned Countries
+- Form Spam Prevention
+- Block Inventory Hoarding
+- Block Dangerous Uploads
+- Captcha Rate Limit 100 req/5s
+- Block Rate Limit 200 req/5s
+- Block Penalized Requests
+
+### Via API
+
+You can also create and manage advanced rules programmatically using our API. This approach is useful for automation, bulk operations, or integration with your own tooling.
+
+Check out the following guides for details on how to construct advanced rules and their key components:
 
 - [API docs](https://api.gcore.com/docs/waap): Learn how to construct and manage advanced rules.
 - [Advanced rule objects and attributes](/waap/waap-rules/advanced-rules/advanced-rule-objects): Get the list of all available objects you can use in rule expressions along with their respective attributes and types.
@@ -59,17 +102,17 @@ The advanced rule object contains the following properties:
 <Accordion title="Description of the properties">
   | Field         | Description                                     | Values                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Details                                                                                                                                                                                                                                                                                                                                                                                                   |
   | ------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-  | `name`        | Rule name                                       | Can contain only ASCII letters, numbers, spaces, periods, and colons.                                                                                                                                                                                                                                                                                                                                                                                                                                                     | **Required.**                                                                                                                                                                                                                                                                                                                                                                                             |
-  | `action`      | The action to execute when a condition is true. | <ul>               <li>               block: WAAP blocked the request.</li>                              <li>               allow: WAAP allowed the request.</li>                              <li>               captcha: WAAP presented the user with a CAPTCHA</li>                              <li>               handshake: WAAP performed automatic browser validation.</li>                              <li>               tag: WAAP will generate a tag with no action.</li>                              </ul> | \*\*Required. \*\*On `tag` [action](/waap/waap-rules/custom-rules#actions-in-custom-rules), the tag field should be provided.<br /><br />For the `block` [action](/waap/waap-rules/custom-rules#actions-in-custom-rules), setting up the `status_code` (integer) and `action_duration` (time in seconds) is optional. By default, the status is set to `"status_code": 403`, and duration equals to `0s`. |
-  | `source`      | The condition part of the rule.                 | Can reference namespace objects: request, whois, session, response, tags, user_agent, client_data, as well as use data and functions.<br /><br />Supported Python operand syntax: and, or, in, not, ==, !=, \>, \<, etc.<br />Supported CEL operand syntax: \|\|, &&                                                                                                                                                                                                                                                      | \*\*Required. \*\*Every string value should be enclosed in single quotation marks `'` and **not** in double quotation marks `"`.                                                                                                                                                                                                                                                                          |
-  | `enabled`     | Whether or not the rule is enabled.             | Boolean: `true` or `false`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | **Required.**                                                                                                                                                                                                                                                                                                                                                                                             |
+  | `name`        | Rule name                                       | Can contain only ASCII letters, numbers, spaces, periods, and colons.                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Required.                                                                                                                                                                                                                                                                                                                                                                                             |
+  | `action`      | The action to execute when a condition is true. | <ul>               <li>               block: WAAP blocks the request.</li>                              <li>               allow: WAAP allows the request.</li>                              <li>               captcha: WAAP presents the user with a CAPTCHA.</li>                              <li>               handshake: WAAP presents a JS Challenge.</li>                              <li>               tag: WAAP generates a tag with no action.</li>                              </ul> | Required. For the `tag` [action](/waap/waap-rules/custom-rules#actions-in-custom-rules), provide the `tags` list (1–5 tags).<br /><br />For the `block` [action](/waap/waap-rules/custom-rules#actions-in-custom-rules), optional fields: `status_code` (403 default; also accepts 405, 418, 429) and `action_duration` (a value above zero with optional unit s/m/h/d). If `action_duration` is omitted, no block duration is applied. |
+  | `source`      | The condition part of the rule.                 | Can reference namespace objects: request, whois, session, response, tags, user_agent, client_data, as well as use data and functions.<br /><br />Supported Python operand syntax: and, or, in, not, ==, !=, \>, \<, etc.<br />Supported CEL operand syntax: \|\|, &&                                                                                                                                                                                                                                                      | Required. Every string value should be enclosed in single quotation marks `'` and not in double quotation marks `"`.                                                                                                                                                                                                                                                                          |
+  | `enabled`     | Whether or not the rule is enabled.             | Boolean: `true` or `false`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Required.                                                                                                                                                                                                                                                                                                                                                                                             |
   | `description` | A string to describe the purpose of the rule.   | Any string.<br />The character limit for the description field is 100 characters.                                                                                                                                                                                                                                                                                                                                                                                                                                         |                                                                                                                                                                                                                                                                                                                                                                                                           |
   | `phase`       | The request processing phase.                   | <ul>               <li>               access: The advanced rule applies to the request phase (request headers and body available).</li>                              <li>               header_filter: The advanced rule applies to the response headers phase.</li>                              <li>               body_filter: The advanced rule applies to the response body phase.</li>                              </ul>                                                                                           | Default value: `access`                                                                                                                                                                                                                                                                                                                                                                                   |
 </Accordion>
 
 ## Best practices
 
-You can use our API documentation as a guide when constructing your own advanced rules. The following sections provide examples of advanced rules created via our API using cURL.
+The following sections provide examples of advanced rules you can create in the Gcore Customer Portal or via our API. Use the visual rule builder and **Quick Templates** for common scenarios, or adapt the API examples below when you need programmatic control.
 
 <Note>
   **Note**
@@ -111,7 +154,7 @@ curl --request POST \
 
 The WAAP system appends the `penalty` tag to the local (domain-related) IP record when an IP address triggers a block rule configured with an `action_duration` parameter.
 
-To continue blocking an IP address after the original rule’s conditions are no longer met, include a `penalty` tag check in the rule’s source conditions (for example, using a condition such as `... `or `tags.exists('penalty')`, or define a separate rule that targets requests carrying the penalty tag. The following example illustrates this approach.
+To continue blocking an IP address after the original rule’s conditions are no longer met, include a `penalty` tag check in the rule’s source conditions (for example, by appending `or tags.exists('penalty')` to the existing conditions), or define a separate rule that targets requests carrying the penalty tag. The following example illustrates this approach.
 
 #### Block all penalty requests
 
@@ -184,7 +227,7 @@ curl --request POST \
 
 ### Tag and allow registered clients
 
-Demonstrates how to tag requests based on the presence of a specific cookie and allow requests associated with the assigned tag.\
+Demonstrates how to tag requests based on the presence of a specific cookie and allow requests associated with the assigned tag. 
 When defining tag values in JSON, double quotation marks must be used, while string values inside rule expressions must be enclosed in single quotation marks.
 
 **Tag registered clients**
@@ -253,11 +296,10 @@ curl --request POST \
 
 ## Review existing rules
 
-Advanced rules can be reviewed by:
+Advanced rules can be reviewed, created, edited, enabled, disabled, or deleted in the [Gcore Customer Portal](https://portal.gcore.com/) on the **WAAP** > **Custom Rules** page. Advanced rules appear alongside other custom rules and are identified by the **Advanced Rule** type.
 
-- Using the WAAP API via the [Advanced Rules retrieval endpoint](https://gcore.com/docs/api-reference/waap/advanced-rules/retrieve-advanced-rules).
-- Using the Gcore Customer Portal, where rules can be enabled, disabled, or deleted.
+You can also retrieve and manage advanced rules programmatically using the [Advanced Rules retrieval endpoint](https://gcore.com/docs/api-reference/waap/advanced-rules/retrieve-advanced-rules).
 
 <Frame>
-  ![Advanced rules section with a sample penaly fingerprint rule](/images/docs/waap/waap-rules/advanced-rules/advanced-rules-sample.png)
+  ![Custom Rules page listing rate limit, basic, and advanced rules, with the Advanced Rule tooltip shown on the type icon](/images/docs/waap/waap-rules/advanced-rules/advanced-rule.png)
 </Frame>
