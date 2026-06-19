@@ -1,33 +1,38 @@
 ---
 title: "Manage a Virtual GPU cluster"
 sidebarTitle: "Manage a Virtual GPU cluster"
-ai-navigation: Manage Virtual GPU cluster nodes, power state, volumes, and network interfaces via cluster details page tabs including Overview, Volumes, Networking, Power, Tags, and Delete operations.
+ai-navigation: Manage Virtual GPU cluster nodes, power state, volumes, and network interfaces via Customer Portal or list and filter clusters via REST API using name, flavor, node count, tags, and date range filters.
 ---
 
-After [creating a Virtual GPU cluster](/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster), use the cluster details page to monitor nodes, manage power state, configure disks and network interfaces, and delete cluster resources.
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 
-## Access cluster details
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
 
-To view and manage an existing cluster, open the cluster details page.
+<p>After [creating a Virtual GPU cluster](/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster), use the cluster details page to monitor nodes, manage power state, configure disks and network interfaces, and delete cluster resources.</p>
+
+## Cluster details
+
+<p>To view and manage an existing cluster, open the cluster details page.</p>
 
 1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **GPU Cloud**.
-2. Select **Sines-3** region.
+2. Select the target region.
 3. In the sidebar, expand **GPU Clusters** and select **Virtual GPU Clusters**.
-4. Click on a cluster name to open the details page.
+4. Click a cluster name to open the details page.
 
-The page is organized into tabs: **Overview**, **Volumes**, **Networking**, **Power**, **Tags**, **User Actions**, and **Delete**.
+<p>The most commonly used tabs are **Overview**, **Volumes**, **Networking**, **Power**, and **Delete**.</p>
 
 <Frame>![Cluster details page with Overview tab showing cluster instances](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/cluster-instances-overview.png)</Frame>
 
-## Manage cluster power state
+## Cluster power state
 
-Virtual GPU clusters support power management operations at the cluster level. Unlike Bare Metal clusters, powering off a Virtual GPU cluster releases compute resources (shelving), which stops billing but also removes data from local disks.
+<p>Virtual GPU clusters support power management operations at the cluster level. Unlike Bare Metal clusters, powering off a Virtual GPU cluster releases compute resources (shelving), which stops billing but also removes data from local disks.</p>
 
 <Frame>![Power tab with Power on, Power off, Soft reboot, and Hard reboot options](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/power-management.png)</Frame>
 
 ### Power off (shelve) a cluster
 
-Powering off a Virtual GPU cluster shelves all nodes. Shelving releases CPU, RAM, GPU, and local disk resources. No charges apply while nodes are shelved.
+<p>Powering off a Virtual GPU cluster shelves all nodes. Shelving releases CPU, RAM, GPU, and local disk resources. No charges apply while nodes are shelved.</p>
 
 1. In the cluster list or cluster details page, locate the cluster.
 2. Click the **Power Off** action.
@@ -41,7 +46,7 @@ When a node is shelved, the local data disk is deleted and all data on it is los
 
 ### Power on a cluster
 
-Powering on a shelved cluster attempts to allocate resources for all nodes.
+<p>Powering on a shelved cluster attempts to allocate resources for all nodes.</p>
 
 1. In the cluster list or cluster details page, locate the powered-off cluster.
 2. Click the **Power On** action.
@@ -52,9 +57,9 @@ Powering on a shelved cluster attempts to allocate resources for all nodes.
 Restart is not guaranteed after shelving. If the requested resources (GPU model, flavor) are not available in the region at the time of power on, the operation fails. For workloads requiring guaranteed availability, use Bare Metal clusters.
 </Warning>
 
-## Manage node disks
+## Node disks
 
-After cluster creation, disks can be managed individually for each node. This allows adding storage to specific nodes or removing unused disks.
+<p>After cluster creation, disks can be managed individually for each node. This allows adding storage to specific nodes or removing unused disks.</p>
 
 ### Add a disk to a node
 
@@ -79,15 +84,15 @@ After cluster creation, disks can be managed individually for each node. This al
 Detaching a disk does not delete it. The disk remains in the account and continues to incur storage charges until explicitly deleted.
 </Warning>
 
-## Manage network interfaces
+## Network interfaces
 
-After cluster creation, network interfaces can be managed individually for each node through the **Networking** tab on the cluster details page.
+<p>After cluster creation, network interfaces can be managed individually for each node through the **Networking** tab on the cluster details page.</p>
 
 ### Add an interface to a node
 
 1. Navigate to the cluster details page.
 2. Open the **Networking** tab.
-3. Click on a node to expand its details.
+3. Click a node to expand its details.
 4. Click **Add Interface**.
 5. Configure the **Network type** (**Public**, **Private**, or **Dedicated public**) and IP allocation settings.
 
@@ -97,24 +102,24 @@ After cluster creation, network interfaces can be managed individually for each 
 
 1. Navigate to the cluster details page.
 2. Open the **Networking** tab.
-3. Click on a node to expand its details.
+3. Click a node to expand its details.
 4. Locate the interface to remove and click the delete action.
 5. Confirm the operation.
 
 <Info>
 **Info**
 
-InfiniBand interfaces cannot be removed or modified. They are managed automatically to ensure inter-node communication.
+InfiniBand interfaces cannot be removed or modified — they are managed automatically to maintain inter-node communication.
 </Info>
 
 ## Delete a cluster
 
-When deleting a Virtual GPU cluster, disks attached to nodes can optionally be preserved.
+<p>When deleting a Virtual GPU cluster, disks attached to nodes can optionally be preserved.</p>
 
 <Warning>
 **Warning**
 
-Deleting the last node in a cluster automatically deletes the entire cluster. This applies to both UI and API/Terraform operations. When using the API or Terraform to delete nodes, no warning is displayed before the cluster is removed. Ensure at least one node remains if you want to preserve the cluster.
+Deleting the last node in a cluster automatically deletes the entire cluster. This applies to both the Customer Portal and API operations. When using the API or Terraform to delete nodes, no confirmation is shown before the cluster is removed. Keep at least one node to preserve the cluster.
 </Warning>
 
 <Frame>![Delete Cluster dialog with volume selection and confirmation](/images/docs/edge-ai/ai-infrastructure/create-a-virtual-gpu-cluster/delete-cluster-dialog.png)</Frame>
@@ -131,14 +136,581 @@ Deleting the last node in a cluster automatically deletes the entire cluster. Th
 Preserved disks remain in the account and continue to incur storage charges. They can be attached to other instances or clusters.
 </Info>
 
-## Automating cluster management
+## Cluster automation
 
-The [Gcore Customer Portal](https://portal.gcore.com) is suitable for managing individual clusters. For automated workflows—such as CI/CD pipelines, infrastructure-as-code, or batch provisioning—use the GPU Virtual API.
+<p>The Customer Portal is suitable for managing individual clusters. For automated workflows — CI/CD pipelines, infrastructure-as-code, or batch provisioning — use the [GPU&nbsp;Virtual API](/api-reference/cloud/gpu-virtual) instead.</p>
 
-The API allows:
+</MethodSection>
+<MethodSection id="api" label="REST API">
 
-- Starting, stopping, and rebooting clusters
-- Managing volumes attached to cluster servers
-- Deleting clusters programmatically
+<p>Use the REST API to inspect virtual GPU clusters, control their power state, manage attached volumes and network interfaces, and automate cluster administration workflows.</p>
 
-The [GPU Virtual API reference](/api-reference/cloud/gpu-virtual) provides endpoint details and code examples.
+<Info>
+An [API token](/account-settings/api-tokens) is required, along with a
+[project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get)
+and a [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get).
+</Info>
+
+<p>Open a terminal and set these environment variables before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export GCORE_CLOUD_PROJECT_ID="{YOUR_PROJECT_ID}"
+export GCORE_CLOUD_REGION_ID="{YOUR_REGION_ID}"
+```
+
+## List virtual GPU clusters
+
+<p>The list endpoint returns all clusters in a project and region. Use query filters to narrow results — multiple filters are ANDed, so a cluster must match all specified conditions.</p>
+
+<p>Available filters:</p>
+
+| Filter | Operators | Description |
+|--------|-----------|-------------|
+| `ids` | — | Return clusters with specific IDs. Repeat the parameter for multiple values: `ids=uuid1&ids=uuid2` |
+| `name` | `contains`, `exact`, `prefix`, `suffix` | Match cluster name (case-insensitive) |
+| `flavor` | `contains`, `exact`, `prefix`, `suffix` | Match flavor name (case-insensitive) |
+| `servers_count` | `gt`, `gte`, `lt`, `lte` | Filter by node count |
+| `created_at` | `gt`, `gte`, `lt`, `lte` | Filter by creation time (UTC ISO 8601) |
+| `updated_at` | `gt`, `gte`, `lt`, `lte` | Filter by last-update time (UTC ISO 8601) |
+| `tags` | `[key]=value` | Exact tag key-value pair. Multiple pairs are ANDed; values match case-insensitively |
+| `tag_key` | `contains`, `exact`, `prefix`, `suffix` | Match tag key regardless of value |
+| `tag_value` | `contains`, `exact`, `prefix`, `suffix` | Match tag value regardless of key |
+
+<Info>
+</Info>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+
+    page = client.cloud.gpu_virtual.clusters.list(
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+    for cluster in page.results:
+        print(cluster.id, cluster.name, cluster.servers_count, cluster.status)
+    ```
+
+    <Info>
+    The Python SDK `clusters.list()` does not expose filter parameters. To filter by name, flavor, node count, or tags, use the curl example with query string filters.
+    </Info>
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+        page, err := client.Cloud.GPUVirtual.Clusters.List(context.TODO(),
+            cloud.GPUVirtualClusterListParams{
+                ProjectID: gcore.Int(projectID),
+                RegionID:  gcore.Int(regionID),
+            })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("Total: %d\n", len(page.Results))
+        for _, c := range page.Results {
+            fmt.Printf("  %s  %s  nodes=%d\n", c.ID, c.Name, c.ServersCount)
+        }
+    }
+    ```
+
+    <Info>
+    The Go SDK `Clusters.List` does not expose filter parameters. To filter by name, flavor, node count, or tags, use the curl example with query string filters.
+    </Info>
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -G "https://api.gcore.com/cloud/v3/gpu/virtual/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      --data-urlencode "name[prefix]=prod-" \
+      --data-urlencode "flavor[prefix]=g3-" \
+      --data-urlencode "servers_count[gte]=2" \
+      --data-urlencode "tags[env]=production"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "count": 1,
+      "results": [
+        {
+          "id": "0dd60286-6258-4594-91e3-f2938c1e3d3a",
+          "name": "prod-cluster-1",
+          "status": "active",
+          "flavor": "g3-ai-24-232-1250-h100-80-1",
+          "tags": [
+            { "key": "env", "value": "production", "read_only": false },
+            { "key": "team", "value": "ml", "read_only": false }
+          ],
+          "servers_count": 2,
+          "created_at": "2026-06-17T18:32:55Z",
+          "updated_at": "2026-06-17T18:33:20Z",
+          "servers_ids": ["e34a6d40-f42a-4cb1-980b-022f06082df9"],
+          "has_pending_changes": false
+        }
+      ]
+    }
+    ```
+
+    Use `limit` and `offset` for pagination. The default page size is 10; the maximum is 1000.
+  </Tab>
+</Tabs>
+
+## Get cluster details
+
+<p>Returns the full configuration and current status of a single cluster.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+
+    cluster = client.cloud.gpu_virtual.clusters.get(
+        cluster_id="{CLUSTER_ID}",
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+    print(cluster.id, cluster.name, cluster.status, cluster.servers_count)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+        cluster, err := client.Cloud.GPUVirtual.Clusters.Get(context.TODO(),
+            "{CLUSTER_ID}",
+            cloud.GPUVirtualClusterGetParams{
+                ProjectID: gcore.Int(projectID),
+                RegionID:  gcore.Int(regionID),
+            })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("%s  %s  nodes=%d\n", cluster.ID, cluster.Name, cluster.ServersCount)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v3/gpu/virtual/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters/{CLUSTER_ID}" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "id": "058e03b4-c44b-4684-9075-810cb0354467",
+      "name": "prod-cluster-1",
+      "status": "active",
+      "flavor": "g3-ai-24-232-1250-h100-80-1",
+      "tags": [
+        { "key": "env", "value": "production", "read_only": false }
+      ],
+      "servers_count": 2,
+      "created_at": "2026-06-17T18:52:19Z",
+      "updated_at": "2026-06-17T18:52:44Z",
+      "servers_ids": ["0fce6b19-e523-42cf-a74c-571429009735"],
+      "servers_settings": {
+        "ssh_key_name": "my-key",
+        "interfaces": [{ "type": "external", "ip_family": "ipv4", "name": "pub_net" }],
+        "volumes": [{ "size": 50, "type": "ssd_hiiops", "boot_index": 0 }]
+      },
+      "has_pending_changes": false
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Control cluster power state
+
+<p>The `action` endpoint applies a power operation to all nodes in the cluster at once.</p>
+
+| Action | Description |
+|--------|-------------|
+| `start` | Power on a shelved cluster and attempt to reallocate resources |
+| `stop` | Power off (shelve) all nodes — releases GPU, CPU, RAM, and local disk resources; billing stops |
+| `soft_reboot` | Send an ACPI shutdown signal and reboot |
+| `hard_reboot` | Force-reset all nodes immediately |
+
+<Warning>
+`stop` permanently erases local disk data on all nodes. Save critical data to network volumes before stopping a cluster.
+</Warning>
+
+<Warning>
+`start` is not guaranteed to succeed. If the requested GPU flavor is unavailable in the region at the time of restart, the operation fails.
+</Warning>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+
+    # Replace "stop" with "start", "soft_reboot", or "hard_reboot" as needed
+    task_id_list = client.cloud.gpu_virtual.clusters.action(
+        cluster_id="{CLUSTER_ID}",
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+        action="stop",
+    )
+    print(task_id_list.tasks)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+        // Swap OfStop for OfStart, OfSoftReboot, or OfHardReboot as needed
+        taskIDList, err := client.Cloud.GPUVirtual.Clusters.Action(context.TODO(),
+            "{CLUSTER_ID}",
+            cloud.GPUVirtualClusterActionParams{
+                ProjectID: gcore.Int(projectID),
+                RegionID:  gcore.Int(regionID),
+                OfStop:    &cloud.GPUVirtualClusterActionParamsBodyStop{},
+            })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("%+v\n", taskIDList.Tasks)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # Power off (stop) — replace "stop" with "start", "soft_reboot", or "hard_reboot"
+    curl -X POST \
+      "https://api.gcore.com/cloud/v3/gpu/virtual/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters/{CLUSTER_ID}/action" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{"action": "stop"}'
+    ```
+
+    Response:
+
+    ```json
+    { "tasks": ["7a0210ac-fd82-4c06-8e43-4ebdc2d3d1bc"] }
+    ```
+
+    Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`.
+  </Tab>
+</Tabs>
+
+## List cluster volumes
+
+<p>Returns all volumes currently attached to nodes in the cluster.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+
+    volume_list = client.cloud.gpu_virtual.clusters.volumes.list(
+        cluster_id="{CLUSTER_ID}",
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+    for vol in volume_list.results:
+        print(vol.id, vol.name, vol.size, vol.status)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+        vols, err := client.Cloud.GPUVirtual.Clusters.Volumes.List(context.TODO(),
+            "{CLUSTER_ID}",
+            cloud.GPUVirtualClusterVolumeListParams{
+                ProjectID: gcore.Int(projectID),
+                RegionID:  gcore.Int(regionID),
+            })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("Volumes: %d\n", len(vols.Results))
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v3/gpu/virtual/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters/{CLUSTER_ID}/volumes" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "count": 1,
+      "results": [
+        {
+          "id": "e937b4c4-da8f-4d7d-b444-d331345a2039",
+          "server_id": "0fce6b19-e523-42cf-a74c-571429009735",
+          "name": "boot-disk",
+          "type": "ssd_hiiops",
+          "status": "in-use",
+          "size": 50,
+          "bootable": true,
+          "root_fs": true,
+          "created_at": "2026-06-17T18:52:22Z"
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## List cluster network interfaces
+
+<p>Returns all network interfaces for every node in the cluster, including InfiniBand interfaces used for inter-node communication.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+
+    iface_list = client.cloud.gpu_virtual.clusters.interfaces.list(
+        cluster_id="{CLUSTER_ID}",
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+    )
+    for iface in iface_list.results:
+        print(iface.port_id, iface.network.name, iface.ip_assignments)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+        ifaces, err := client.Cloud.GPUVirtual.Clusters.Interfaces.List(context.TODO(),
+            "{CLUSTER_ID}",
+            cloud.GPUVirtualClusterInterfaceListParams{
+                ProjectID: gcore.Int(projectID),
+                RegionID:  gcore.Int(regionID),
+            })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("Interfaces: %d\n", len(ifaces.Results))
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl "https://api.gcore.com/cloud/v3/gpu/virtual/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters/{CLUSTER_ID}/interfaces" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+
+    Response:
+
+    ```json
+    {
+      "count": 2,
+      "results": [
+        {
+          "port_id": "e79e8057-5929-4b79-90d4-d6d894d1fd13",
+          "mac_address": "fa:16:3e:01:59:f9",
+          "ip_assignments": [{ "subnet_id": "b0ba19bd-...", "ip_address": "85.234.66.234" }],
+          "network_id": "831179f2-9828-45a7-af0b-4ca2d0957920",
+          "network": { "name": "pub_net", "external": true }
+        },
+        {
+          "port_id": "b1d4862b-486e-456c-bd7f-c4672830d827",
+          "ip_assignments": [{ "subnet_id": "8fd1891e-...", "ip_address": "192.168.241.99" }],
+          "network": { "name": "gpu-cluster-ib-network-058e03b4-...", "external": false }
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<Info>
+The `gpu-cluster-ib-network-*` interface is the InfiniBand network created automatically for inter-node communication. It cannot be removed or modified.
+</Info>
+
+## Delete a cluster
+
+<p>Deletes the cluster and all associated servers. Pass `all_floating_ips=true` to release any floating IPs, `all_reserved_fixed_ips=true` to release reserved fixed IPs, and `all_volumes=true` to delete all attached volumes along with the cluster.</p>
+
+<Warning>
+Deleting the last node in a cluster automatically deletes the entire cluster — no confirmation is shown when using the API.
+</Warning>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import os
+    from gcore import Gcore
+
+    client = Gcore(api_key=os.environ.get("GCORE_API_KEY"))
+
+    task_id_list = client.cloud.gpu_virtual.clusters.delete(
+        cluster_id="{CLUSTER_ID}",
+        project_id=int(os.environ["GCORE_CLOUD_PROJECT_ID"]),
+        region_id=int(os.environ["GCORE_CLOUD_REGION_ID"]),
+        all_floating_ips=True,
+        all_reserved_fixed_ips=True,
+        all_volumes=True,
+    )
+    print(task_id_list.tasks)
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/cloud"
+        "github.com/G-Core/gcore-go/option"
+    )
+
+    func main() {
+        projectID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_PROJECT_ID"), 10, 64)
+        regionID, _ := strconv.ParseInt(os.Getenv("GCORE_CLOUD_REGION_ID"), 10, 64)
+
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+        taskIDList, err := client.Cloud.GPUVirtual.Clusters.Delete(context.TODO(),
+            "{CLUSTER_ID}",
+            cloud.GPUVirtualClusterDeleteParams{
+                ProjectID:           gcore.Int(projectID),
+                RegionID:            gcore.Int(regionID),
+                AllFloatingIPs:      gcore.Bool(true),
+                AllReservedFixedIPs: gcore.Bool(true),
+                AllVolumes:          gcore.Bool(true),
+            })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Printf("%+v\n", taskIDList.Tasks)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X DELETE \
+      "https://api.gcore.com/cloud/v3/gpu/virtual/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/clusters/{CLUSTER_ID}?all_floating_ips=true&all_reserved_fixed_ips=true&all_volumes=true" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+
+    Response:
+
+    ```json
+    { "tasks": ["task-uuid"] }
+    ```
+
+    Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`.
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
