@@ -90,9 +90,33 @@ automated. Do not attempt to bypass it — ask the user to confirm, then continu
 | Theme | Light mode only |
 | Language | English (US) |
 | Personal data | None visible — no real emails, names, user IDs, tokens |
+| Resource names | Use neutral, user-style names (see naming rule below) |
 | Browser chrome | Crop out toolbar, tab bar, address bar, OS taskbar |
 | Cursor | Not visible in screenshot |
 | Selected text | Not visible in screenshot |
+
+### Naming resources created during testing
+
+When the audit or screenshot workflow requires creating a resource (instance, network, bucket, CDN resource, security group, load balancer, etc.), use names that look like real user input — short, lowercase, with a number suffix.
+
+**Pattern:** `{resource-type}-1`
+
+| Resource type | Correct name | Wrong name |
+|---|---|---|
+| Virtual Machine | `my-instance-1` | `docs-audit-vm`, `test-instance` |
+| Network | `my-network-1` | `audit-network`, `docs-network` |
+| Security group | `my-firewall-1` | `docs-firewall`, `audit-sg` |
+| S3 bucket | `my-bucket-1` | `docs-bucket`, `test-bucket-audit` |
+| CDN resource | `my-cdn-1` | `docs-cdn-resource` |
+| Load balancer | `my-lb-1` | `audit-lb`, `docs-lb` |
+| Application | `my-app-1` | `docs-app`, `audit-app` |
+
+**Rules:**
+- Never use `docs-`, `audit-`, `test-`, `demo-`, `temp-` prefixes — these look like internal junk to any user who sees the screenshot
+- Never use article slugs or Jira ticket IDs as resource names
+- If a name field has a character constraint, use the shortest compliant variant: `instance-1`
+- If a screenshot must show a list of multiple resources, use sequential names: `my-instance-1`, `my-instance-2`
+- Delete test resources after the audit is done
 
 ### Framing
 
