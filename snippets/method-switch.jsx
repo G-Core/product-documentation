@@ -34,6 +34,7 @@ export const MethodSwitch = ({ children }) => {
           });
       });
     } catch (_) {}
+    window.dispatchEvent(new Event("scroll"));
   }, [active]);
 
   const handleClick = (id) => {

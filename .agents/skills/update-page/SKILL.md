@@ -205,3 +205,11 @@ If multiple articles were updated — one report block per article.
 
 When the user confirms the result looks good — load `.agents/skills/pr/SKILL.md`
 to create the branch, commit, and open a draft PR.
+
+
+---
+
+## Terminology rule
+
+Never use the word `permanent` when referring to API tokens. The expiration is user-controlled.
+Always write: `An [API token](/account-settings/api-tokens) is required.`

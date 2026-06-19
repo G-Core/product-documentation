@@ -174,7 +174,7 @@ Good: "Create a subnet inside an existing network and customize its DHCP setting
 **`<Info>` block** (required):
 ```mdx
 <Info>
-A permanent [API token](/account-settings/api-tokens) is required, along with a
+An [API token](/account-settings/api-tokens) is required, along with a
 [project ID](...) and a [region ID](...).
 </Info>
 ```
@@ -325,3 +325,11 @@ Recommended next step:
 
 When the user confirms the result looks good — load `.agents/skills/pr/SKILL.md`
 to create the branch, commit, and open a draft PR.
+
+
+---
+
+## Terminology rule
+
+Never use the word `permanent` when referring to API tokens. The expiration is user-controlled.
+Always write: `An [API token](/account-settings/api-tokens) is required.`

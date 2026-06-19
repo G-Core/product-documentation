@@ -1,7 +1,7 @@
----
+﻿---
 title: Add TLS certificates to a load balancer
 sidebarTitle: Add TLS certificates to a load balancer
-ai-navigation: Upload TLS certificates to Gcore Secrets Manager and attach them to TERMINATED HTTPS load balancer listeners to enable SNI-based multi-domain termination; create listeners with a default certificate and add per-domain SNI certificates via the REST API.
+ai-navigation: Upload TLS certificates to Gcore Secrets Manager and attach them to TERMINATED HTTPS load balancer listeners to enable SNI-based multi-domain termination; create listeners with a default certificate and add per-domain SNI certificates via the REST API or Terraform.
 ---
 
 import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
@@ -25,7 +25,7 @@ You can add multiple certificates to listeners that use the Terminated HTTPS and
 
 ### 1\. Add certificates to the Secrets Manager
 
-To get started, you need to add the required certificates to Gcore Secrets Manager. If you don't have any certificates created, To get started, you need to add the required certificates to Gcore Secrets Manager. If you don't have any certificates created, follow the instructions from our [guide on configuring secrets for HTTPS Load Balancers](/cloud/secrets-manager/upload-a-pkcs12-file).
+To get started, you need to add the required certificates to Gcore Secrets Manager. If you don't have any certificates created, follow the instructions from our [guide on configuring secrets for HTTPS Load Balancers](/cloud/secrets-manager/upload-a-pkcs12-file).
 
 ### 2\. Add certificates to a listener
 
@@ -53,7 +53,7 @@ You can't delete a secret that's being used by a Load Balancer's listener. This 
 
     5\. Choose the default TLS Certificate. It's the main certificate that will be used when there's no configured certificate for a domain.
 
-    6\. Select the CNI Certificates stored in the Secret Manager.
+    6\. Select the SNI Certificates stored in the Secret Manager.
 
     7\. Set the connection limit - a maximum number of simultaneous connections that can be handled by the listener.
 
@@ -121,10 +121,10 @@ docker run --rm yardalgedal/mkpasswd -m bcrypt mypassword
 </MethodSection>
 <MethodSection id="api" label="REST API">
 
-TLS termination on a load balancer requires two resources: a certificate stored in Secrets Manager and a `TERMINATED_HTTPS` listener that references it. A listener accepts one default certificate and any number of SNI certificates - the load balancer selects the correct certificate for each connection based on the domain name in the TLS handshake.
+TLS termination on a load balancer requires two resources: a certificate stored in Secrets Manager and a `TERMINATED_HTTPS` listener that references it. A listener accepts one default certificate and multiple SNI certificates — the load balancer selects the correct certificate for each connection based on the domain name in the TLS handshake.
 
 <Info>
-A permanent [API token](/account-settings/api-tokens) is required, along with a [project ID](https://api.gcore.com/docs/cloud#tag/Projects/operation/ProjectsListV1.get) and [region ID](https://api.gcore.com/docs/cloud#tag/Regions/operation/RegionListV1.get).
+An [API token](/account-settings/api-tokens) is required, along with a [project ID](https://gcore.com/docs/api-reference/cloud/projects/list-projects) and [region ID](https://gcore.com/docs/api-reference/cloud/regions/list-regions).
 </Info>
 
 Open a bash terminal and set these as environment variables before running the examples:
@@ -142,7 +142,7 @@ export LB_ID="{YOUR_LOAD_BALANCER_ID}"
 
 ## Quickstart
 
-The scripts below upload a TLS certificate to Secrets Manager and create a `TERMINATED_HTTPS` listener on an existing load balancer, then attach a second SNI certificate for an additional domain.
+The scripts below upload a TLS certificate to Secrets Manager and create a `TERMINATED_HTTPS` listener on an existing load balancer.
 
 <Tabs>
   <Tab title="Python SDK">
@@ -178,32 +178,6 @@ The scripts below upload a TLS certificate to Secrets Manager and create a `TERM
         secret_id=secret.id,
     )
     print(f"Listener: {listener.id}  protocol: {listener.protocol}  port: {listener.protocol_port}")
-
-    # Step 3. Upload an SNI certificate for an additional domain
-    sni_cert_pem = open("/path/to/sni-certificate.pem").read()
-    sni_key_pem = open("/path/to/sni-private-key.pem").read()
-    sni_chain_pem = open("/path/to/sni-chain.pem").read()
-
-    sni_secret = client.cloud.secrets.upload_tls_certificate_and_poll(
-        name="my-sni-cert",
-        payload=secret_upload_tls_certificate_params.Payload(
-            certificate=sni_cert_pem,
-            private_key=sni_key_pem,
-            certificate_chain=sni_chain_pem,
-        ),
-    )
-    print(f"SNI secret: {sni_secret.id}")
-
-    # Step 4. Add the SNI certificate to the listener
-    tasks = client.cloud.load_balancers.listeners.update(
-        listener_id=listener.id,
-        sni_secret_id=[sni_secret.id],
-    )
-    task = client.cloud.tasks.poll(tasks.tasks[0])
-    print(f"SNI update: {task.state}")
-
-    updated = client.cloud.load_balancers.listeners.get(listener_id=listener.id)
-    print(f"SNI certificates: {updated.sni_secret_id}")
     ```
   </Tab>
   <Tab title="Go SDK">
@@ -260,29 +234,6 @@ The scripts below upload a TLS certificate to Secrets Manager and create a `TERM
     	}
     	fmt.Printf("Listener: %s  protocol: %s  port: %d\n",
     		listener.ID, listener.Protocol, listener.ProtocolPort)
-
-    	// Step 3. Upload an SNI certificate for an additional domain
-    	sniSecret, err := client.Cloud.Secrets.UploadTlsCertificateAndPoll(ctx, cloud.SecretUploadTlsCertificateParams{
-    		Name: "my-sni-cert",
-    		Payload: cloud.SecretUploadTlsCertificateParamsPayload{
-    			Certificate:      readFile("/path/to/sni-certificate.pem"),
-    			PrivateKey:       readFile("/path/to/sni-private-key.pem"),
-    			CertificateChain: readFile("/path/to/sni-chain.pem"),
-    		},
-    	})
-    	if err != nil {
-    		log.Fatal(err)
-    	}
-    	fmt.Printf("SNI secret: %s\n", sniSecret.ID)
-
-    	// Step 4. Add the SNI certificate to the listener
-    	updated, err := client.Cloud.LoadBalancers.Listeners.UpdateAndPoll(ctx, listener.ID, cloud.LoadBalancerListenerUpdateParams{
-    		SniSecretID: []string{sniSecret.ID},
-    	})
-    	if err != nil {
-    		log.Fatal(err)
-    	}
-    	fmt.Printf("SNI certificates: %v\n", updated.SniSecretID)
     }
     ```
   </Tab>
@@ -706,5 +657,107 @@ Delete the listener before the secret. A secret that is in use by a listener can
   </Tab>
 </Tabs>
 
-</MethodSection>
+  </MethodSection>
+  <MethodSection id="terraform" label="Terraform">
+
+<p>Configure TLS termination on a listener by attaching certificates via `sni_secret_id` on [`gcore_cloud_load_balancer_listener`](https://registry.terraform.io/providers/G-Core/gcore/latest/docs/resources/cloud_load_balancer_listener).</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required, along with a [project ID](https://gcore.com/docs/api-reference/cloud/projects/list-projects) and [region ID](https://gcore.com/docs/api-reference/cloud/regions/list-regions).
+</Info>
+
+
+## Create a TERMINATED_HTTPS listener
+
+<p>The listener requires a default certificate in `secret_id` (set to `""` to omit) and one or more SNI certificates in `sni_secret_id`. The load balancer matches the client's requested hostname against the Subject Alternative Names of each SNI certificate; the default falls back to `secret_id` when no match is found.</p>
+
+```hcl
+resource "gcore_cloud_secret" "tls" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "example-com-cert"
+
+  payload_wo_version = 1
+  payload = {
+    certificate_wo       = file("${path.module}/certificate.pem")
+    private_key_wo       = file("${path.module}/private_key.pem")
+    certificate_chain_wo = file("${path.module}/certificate_chain.pem")
+  }
+}
+
+resource "gcore_cloud_load_balancer_listener" "https" {
+  project_id       = var.project_id
+  region_id        = var.region_id
+  load_balancer_id = var.load_balancer_id
+  name             = "https-listener"
+  protocol         = "TERMINATED_HTTPS"
+  protocol_port    = 443
+  secret_id        = ""
+  sni_secret_id    = [gcore_cloud_secret.tls.id]
+}
+
+output "listener_id" {
+  value = gcore_cloud_load_balancer_listener.https.id
+}
+```
+
+<p>Set `var.load_balancer_id` to the ID of an existing load balancer. To create a load balancer with Terraform, see [Create and configure a load balancer](/cloud/networking/create-and-configure-a-load-balancer).</p>
+
+## Add more SNI certificates
+
+<p>Pass all certificate IDs together — `sni_secret_id` replaces the full list on each apply:</p>
+
+```hcl
+resource "gcore_cloud_secret" "sni_extra" {
+  project_id = var.project_id
+  region_id  = var.region_id
+  name       = "extra-domain-cert"
+
+  payload_wo_version = 1
+  payload = {
+    certificate_wo       = file("${path.module}/extra-certificate.pem")
+    private_key_wo       = file("${path.module}/extra-private_key.pem")
+    certificate_chain_wo = file("${path.module}/extra-certificate_chain.pem")
+  }
+}
+
+resource "gcore_cloud_load_balancer_listener" "https" {
+  ...
+  sni_secret_id = [
+    gcore_cloud_secret.tls.id,
+    gcore_cloud_secret.sni_extra.id,
+  ]
+}
+```
+
+## Rotate a certificate
+
+<p>To replace a certificate, increment `payload_wo_version` on the corresponding `gcore_cloud_secret` resource — Terraform destroys the old secret and creates a new one. The listener re-reads the new ID via the reference.</p>
+
+<Warning>
+Rotating a certificate destroys the existing secret and creates a replacement. The listener is updated automatically because `sni_secret_id` references `gcore_cloud_secret.tls.id` — Terraform updates the listener in the correct order.
+</Warning>
+
+## Delete
+
+<p>Remove the listener block first, then the secret blocks, and run `terraform apply` — Terraform deletes the listener before the secrets to satisfy the API constraint that a secret in use cannot be deleted.</p>
+
+```hcl
+# Step 1: comment out or remove the listener block and apply
+# resource "gcore_cloud_load_balancer_listener" "https" { ... }
+
+# Step 2: after the listener is gone, comment out or remove the secret blocks and apply
+# resource "gcore_cloud_secret" "tls" { ... }
+# resource "gcore_cloud_secret" "sni_extra" { ... }
+```
+
+## Import
+
+<p>To bring an existing listener under Terraform management:</p>
+
+```bash
+terraform import gcore_cloud_load_balancer_listener.https '{PROJECT_ID}/{REGION_ID}/{LISTENER_ID}'
+```
+
+  </MethodSection>
 </MethodSwitch>

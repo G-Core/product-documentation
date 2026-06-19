@@ -3,6 +3,14 @@
 This file is loaded automatically. Read it fully, then stop and wait for a task.
 Do not explore the repository until you have a task and have loaded the matching skill.
 
+## ABSOLUTE RULES — NO EXCEPTIONS
+
+- **ONE article per session.** Stop after completing one article. Wait for explicit approval before starting the next.
+- **NEVER commit** unless the user explicitly says to commit.
+- **NEVER push** unless the user explicitly says to push.
+- **NEVER create a PR** unless the user explicitly says to create a PR.
+- **NEVER do any git write operation** without explicit instruction.
+
 ## How to handle any task
 
 The user may write in any language. Follow these steps every time:
@@ -192,6 +200,16 @@ Same rule: run `git pull` before follow-up commits.
 images/docs/{product}/{article-slug}/{article-slug}-image1.png
 images/docs/{product}/{article-slug}/{article-slug}-image2.png
 ```
+
+---
+
+**12. "permanent" API token — incorrect product terminology**
+```
+Wrong: A permanent API token is required.
+Wrong: a permanent [API token]
+Correct: An [API token](/account-settings/api-tokens) is required.
+```
+API keys have optional expiration set by the user. "Permanent" is not accurate — never use this word when describing API tokens.
 
 ---
 
