@@ -64,16 +64,43 @@ Even if no changes turn out to be needed, work on the branch. Delete it at the e
 
 `c:\Projects\docops-agent2\scripts\test_{resource_name}.py`
 
+### Environment
+
+Test on **preprod first** — this allows documentation to be ready before the feature reaches production.
+
+Switch to production only if the feature is not yet deployed on preprod.
+
+| Environment | API base | Portal |
+|---|---|---|
+| Preprod | `https://api.preprod.world` | `https://portal.preprod.world` |
+| Production | `https://api.gcore.com` | `https://portal.gcore.com` |
+
 ### Region rules
+
+**Production:**
 
 | Resource type | Region | region_id |
 |---|---|---|
 | Networking, VMs, reserved IPs, bare metal | Luxembourg-3 | 148 |
 | DBaaS, Kubernetes | Frankfurt-2 | 180 |
 
+**Preprod:**
+
+| Region | region_id |
+|---|---|
+| Luxembourg Preprod | 4 |
+| INF-1 Preprod | 20 |
+| ED-10 Preprod | 10 |
+
+Use Luxembourg Preprod (region_id=4) for general networking and VM tests.
+
 ### Credentials
 
-Credentials are in `C:\Projects\docops-agent2\access.md`. Always use dotenv pattern or inline env vars — never hardcode the token in committed files.
+Credentials are in `C:\Projects\docops-agent2\access.md` — both prod and preprod tokens are there. Always use dotenv pattern or inline env vars — never hardcode the token in committed files.
+
+### If the feature is not yet on preprod
+
+If tests show the old behavior on preprod (dev ticket is Done but change is invisible), stop and inform the user. Do not document a behavior you cannot verify. Ask the developer which environment the change is deployed to and retest there.
 
 ### Script structure
 

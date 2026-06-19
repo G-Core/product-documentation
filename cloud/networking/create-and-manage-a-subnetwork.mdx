@@ -56,7 +56,14 @@ Set the mask between 16 and 24. You can find more information in the [Set the IP
   ![Network configuration example](/images/docs/cloud/networking/create-and-manage-a-subnetwork/create-subnetwork-name-cidr-dhcp.png)
 </Frame>
 
- 9. (optional) Specify custom DNS servers for the subnetwork. If you don't need custom DNS settings, leave the field blank.
+ 9. (optional) Specify custom DNS servers for the subnetwork.
+
+    If left blank, the system assigns defaults automatically based on the DHCP setting:
+
+    - **DHCP enabled** — no explicit DNS servers are set. Instances receive the local DHCP server as their resolver, which handles both internal hostnames and external queries.
+    - **DHCP disabled with a gateway** — `95.85.95.85` and `8.8.8.8` are assigned automatically.
+
+    To disable DNS resolution entirely, enter an empty list explicitly after creating the subnet via the API (`dns_nameservers: []`).
 10. Define how traffic is distributed within the network. Each subnetwork supports up to 20 host routes.
 
 - **Destination:** Specify the network or host where the traffic is intended to go.
@@ -331,7 +338,7 @@ Provisions a new subnet inside an existing network; the backend assigns a gatewa
 | `network_id` | Yes | ID of the network to attach this subnet to. |
 | `enable_dhcp` | No | Set to `true` to have DHCP assign IP addresses to VMs automatically. For IPv6 subnets this cannot be changed after creation. |
 | `connect_to_network_router` | No | Set to `false` to make the subnet non-routable (no internet access). Omit to use the network's default routing. |
-| `dns_nameservers` | No | List of DNS server IPs to advertise via DHCP. |
+| `dns_nameservers` | No | DNS servers to advertise via DHCP. Omit or pass `null` to auto-assign defaults: DHCP-enabled subnets use the local DHCP server as resolver; subnets with DHCP disabled but a gateway receive `95.85.95.85` and `8.8.8.8`. Pass `[]` to explicitly disable DNS. |
 
 <Tabs>
   <Tab title="Python SDK">
@@ -431,7 +438,7 @@ Response:
   "enable_dhcp": true,
   "ip_version": 4,
   "gateway_ip": "192.168.10.1",
-  "dns_nameservers": ["8.8.8.8"],
+  "dns_nameservers": [],
   "host_routes": []
 }
 ```
@@ -446,7 +453,7 @@ Updates subnet settings in place; the response returns the full updated subnet o
 |---|---|
 | `name` | New name for the subnet. |
 | `enable_dhcp` | Enable or disable DHCP. For IPv6 subnets this field is read-only after creation. |
-| `dns_nameservers` | Replace the list of DNS server IPs. Pass an empty array to clear. |
+| `dns_nameservers` | Replace the list of DNS server IPs. Pass `[]` to explicitly disable DNS. Pass `null` to reset to the auto-assigned default. |
 | `gateway_ip` | Override the gateway IP. Set to `null` to remove the gateway advertisement from DHCP. |
 
 <Tabs>
