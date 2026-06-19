@@ -40,7 +40,7 @@ You can create a subnetwork in two ways: [during the creation of a Gcore Virtual
 - 192.168.0.0/16
 - fc00::/7
 
-Set the mask between 16 and 24. You can find more information in the [Set the IP range](/cloud/networking/create-and-manage-a-subnetwork#set-the-ip-range) section.
+Set the mask between 16 and 24. See [Set the IP range](#set-the-ip-range) below for details.
 
 7. (optional) Turn on the **Enable DHCP** toggle to assign IP addresses to machines in the subnet automatically.
 
@@ -69,7 +69,7 @@ Set the mask between 16 and 24. You can find more information in the [Set the IP
   ![Network configuration example](/images/docs/cloud/networking/create-and-manage-a-subnetwork/create-subnetwork-dns-config.png)
 </Frame>
 
-## Set the IP range
+### Set the IP range
 
 While creating a subnetwork, specify the address range in the CIDR format.
 
@@ -77,7 +77,9 @@ While creating a subnetwork, specify the address range in the CIDR format.
   ![Create a subnetwork dialog](/images/docs/cloud/networking/create-and-manage-a-subnetwork/create-subnetwork.png)
 </Frame>
 
-Your subnetwork's IP range must not overlap with others in the same network. Overlapping subnets cause network conflicts and break connectivity. Virtual machines in the same network communicate using private IP addresses, but subnetworks in different networks cannot communicate unless you configure routing.
+Your subnetwork's IP range must not overlap with others in the same network. Overlapping subnets cause network conflicts and break connectivity.
+
+Virtual machines in the same network communicate using private IP addresses, but subnetworks in different networks cannot communicate unless you configure routing.
 
 The subnetwork size is set using the classless addressing (CIDR) method. You can use both private IPv6 and IPv4 addresses in subnetworks.
 
@@ -89,7 +91,7 @@ Acceptable CIDR ranges for IPv4 addresses are as follows:
 
 The valid subnet mask range is 16-29.
 
-### Comparison of IPv4 and IPv6 subnets
+#### Comparison of IPv4 and IPv6 subnets
 
 The table below outlines key networking features for IPv4 and IPv6, including supported CIDR ranges, subnet mask configurations, and connectivity options.
 
@@ -103,7 +105,7 @@ The table below outlines key networking features for IPv4 and IPv6, including su
 | **Routing between subnets** | Allowed within the same network                                                            | Allowed within the same network                                            |
 | **UI availability**         | Available to all users                                                                     | Available to all users                                                     |
 
-## Configure network routing
+### Configure network routing
 
 A routed network is a private network that's already connected to a router with a public interface. All Virtual Machines in such networks can access the internet through the router and accept incoming connections.
 
@@ -113,12 +115,12 @@ By default, a subnetwork in the cloud is created with internet access, which mea
   ![Create subnetwork dialog](/images/docs/cloud/networking/create-and-manage-a-subnetwork/enable-non-routable-subnetwork.png)
 </Frame>
 
-### Set up the default gateway
+#### Set up the default gateway
 
 <Warning>
   **Warning**
 
-  Changing the subnet gateway or disabling it may cause loss of connectivity between the private IP and the Floating IP (if they exist). 
+  Changing the subnet gateway or disabling it may cause loss of connectivity between the private IP and the Floating IP (if they exist). 
 </Warning>
 
 If your Gcore Virtual Machine or Gcore Bare Metal server has both public and private interfaces, disable the default gateway for all private subnetworks. Otherwise, there will be a conflict with the default gateway on the server, and you won't be able to connect to the server.
@@ -314,15 +316,9 @@ func main() {
   </Tab>
 </Tabs>
 
-## Step-by-step
+## Create a subnet
 
-<p>Each step below explains what the call does, which parameters matter, and what the response looks like. Use this section to understand the flow or to debug a specific step.</p>
-
-<Accordion title="Show all steps">
-
-### Step 1. Create a subnet
-
-Provisions a new subnet inside an existing network; the backend assigns a gateway IP automatically unless one is specified.
+Provisions a new subnet inside an existing network. The backend assigns a gateway IP automatically unless one is specified.
 
 | Parameter | Required | Description |
 |---|---|---|
@@ -336,6 +332,11 @@ Provisions a new subnet inside an existing network; the backend assigns a gatewa
 <Tabs>
   <Tab title="Python SDK">
 ```python
+import os
+from gcore import Gcore
+
+client = Gcore()
+
 task = client.cloud.networks.subnets.create(
     cidr="192.168.10.0/24",
     name="my-subnet",
@@ -394,9 +395,9 @@ Poll `GET /cloud/v1/tasks/{task_id}` every 5 seconds until `state` is `FINISHED`
   </Tab>
 </Tabs>
 
-### Step 2. Get subnet details
+## Get subnet details
 
-Retrieves the current configuration of the subnet; useful to confirm the assigned gateway IP and DHCP settings after creation.
+Retrieves the current configuration of the subnet, including the assigned gateway IP, DHCP status, and DNS servers.
 
 <Tabs>
   <Tab title="Python SDK">
@@ -416,7 +417,7 @@ fmt.Printf("CIDR: %s  gateway: %s\n", subnet.Cidr, subnet.GatewayIP)
   </Tab>
   <Tab title="curl">
 ```bash
-curl -X GET "https://api.gcore.com/cloud/v1/subnets/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/${SUBNET_ID}" \
+curl "https://api.gcore.com/cloud/v1/subnets/${GCORE_CLOUD_PROJECT_ID}/${GCORE_CLOUD_REGION_ID}/${SUBNET_ID}" \
   -H "Authorization: APIKey ${GCORE_API_KEY}"
 ```
 
@@ -438,9 +439,9 @@ Response:
   </Tab>
 </Tabs>
 
-### Step 3. Update a subnet
+## Update a subnet
 
-Updates subnet settings in place; the response returns the full updated subnet object. Only fields included in the request body are changed.
+Updates subnet settings in place. Only fields included in the request body are changed; the response returns the full updated subnet object.
 
 | Parameter | Description |
 |---|---|
@@ -497,8 +498,6 @@ Response:
   </Tab>
 </Tabs>
 
-</Accordion>
-
 ## Clean up
 
 Delete a subnet that is not attached to any Virtual Machine. The delete operation is asynchronous — poll the task until it reaches `FINISHED`.
@@ -534,6 +533,8 @@ Response:
 ```
   </Tab>
 </Tabs>
+
+For a full list of parameters and response schemas, see the [Subnets API reference](https://api.gcore.com/docs/cloud#tag/Subnets).
 
 </MethodSection>
 
