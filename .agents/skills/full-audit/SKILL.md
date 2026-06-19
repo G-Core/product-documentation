@@ -80,6 +80,8 @@ If Windows Hello authentication is required — ask the user to confirm it, then
 4. Use `browser_screenshot` to capture screens that have a corresponding screenshot in the article
 5. Continue until the task is fully completed or until a genuine blocker is hit
 
+**Resource naming during execution:** any resource you create (instance, network, bucket, etc.) must use a neutral user-style name — `my-instance-1`, `my-network-1`, `my-bucket-1`. Never use `docs-`, `audit-`, `test-`, article slugs, or Jira IDs as names. These names end up in screenshots that are published as documentation. See the full naming table in `.agents/references/mcp-tools/playwright.md`.
+
 **Do not fix anything during Phase 2. Only collect findings.**
 
 ### What to look for
