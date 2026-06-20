@@ -196,6 +196,42 @@ Each step below explains what the call does.
 Applies to every prose paragraph that immediately precedes `<Accordion>` inside any
 `<MethodSection>`. Does not affect content outside JSX.
 
+### `<p>` around `<Frame>`, code blocks, and `<Tabs>` inside `<MethodSection>`
+
+Inside `<MethodSection>`, prose that sits directly adjacent to a `<Frame>`, a fenced
+code block, or a `<Tabs>` component will visually "stick" to it — no spacing, no
+paragraph break. Wrap only the **immediately adjacent prose** in `<p>`.
+
+Do NOT wrap every paragraph in `<p>` — only the ones that touch a block element or
+sit between numbered steps. Overuse of `<p>` is incorrect.
+
+**When to use `<p>`:**
+1. Prose immediately before or after a `<Frame>` (screenshot)
+2. Prose immediately before or after a fenced code block
+3. Prose immediately before or after `<Tabs>` / `<Tab>`
+4. Prose that sits between numbered list steps (prevents step numbers from merging into the paragraph)
+
+**Correct:**
+```mdx
+<p>Upload the compiled binary file:</p>
+
+<Frame>![Upload binary dialog](/images/docs/fastedge/.../upload-binary.png)</Frame>
+
+<p>After uploading, click **Save binary** to confirm.</p>
+```
+
+```mdx
+<p>Run the following command to compile:</p>
+
+```sh
+cargo build --target wasm32-wasi --release
+```
+
+<p>The output file is located in `target/wasm32-wasi/release/`.</p>
+```
+
+This applies inside any `<MethodSection>`. Does not apply to content outside `<MethodSection>`.
+
 ---
 
 ## Frontmatter
