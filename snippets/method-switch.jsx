@@ -1,9 +1,13 @@
 export const MethodSection = ({ children }) => children ?? null;
 
 export const MethodSwitch = ({ children }) => {
-  const tabs = React.Children.toArray(children).filter(
-    (c) => c && c.props && c.props.id
-  );
+  const tabs = React.Children.toArray(children).map((c) => {
+    if (!c || !c.props) return null;
+    if (c.props.id) return c;
+    const inner = c.props.children;
+    if (inner && inner.props && inner.props.id) return inner;
+    return null;
+  }).filter(Boolean);
   const firstId = tabs.length > 0 ? tabs[0].props.id : "";
 
   const [active, setActive] = React.useState(firstId);
@@ -30,6 +34,7 @@ export const MethodSwitch = ({ children }) => {
           });
       });
     } catch (_) {}
+    window.dispatchEvent(new Event("scroll"));
   }, [active]);
 
   const handleClick = (id) => {
