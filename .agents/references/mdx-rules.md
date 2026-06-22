@@ -268,6 +268,36 @@ Poll <code>GET&nbsp;/cloud/v1/tasks/{task_id}</code> every 5 seconds.
 `{...}` inside triple-backtick fenced code blocks is always safe.
 Characters that are not valid JS identifiers (e.g. `{|}~`) are also safe inside backtick spans.
 
+### CRITICAL: Never simplify method-switch.jsx
+
+`snippets/method-switch.jsx` must NOT be refactored or simplified. The child-resolution
+logic in `MethodSwitch` is intentionally defensive:
+
+```javascript
+const tabs = React.Children.toArray(children).map((c) => {
+  if (!c || !c.props) return null;
+  if (c.props.id) return c;
+  const inner = c.props.children;
+  if (inner && inner.props && inner.props.id) return inner;
+  return null;
+}).filter(Boolean);
+```
+
+**Why it must stay this way:** Mintlify's runtime wraps `<MethodSection>` children in an
+intermediate element before passing them to `MethodSwitch`. The simplified `.filter(c => c.props.id)`
+does NOT see `id` on the wrapper — it returns `tabs = []` — and the entire article renders
+as a blank page (only the title and ToC appear).
+
+**Symptom:** deployed article shows only title + ToC; empty `<div role="tablist">` in DOM.
+
+**Root cause confirmed by DOM inspection:** `document.querySelector('[role=tablist]').parentElement.childElementCount === 1`
+(only the tablist div, no content divs — because `tabs.map(...)` produces nothing).
+
+The simplified version works locally (`mintlify dev`) and passes the MDX compiler — the
+blank page appears ONLY on Mintlify deploy. Do not "fix" this code.
+
+---
+
 ### UTF-8 BOM at the start of a file
 
 Files must not start with a UTF-8 BOM (`\xEF\xBB\xBF`). A BOM before the `---`
