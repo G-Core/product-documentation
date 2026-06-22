@@ -40,6 +40,29 @@ only in the Mintlify runtime. Always verify the import when an article renders e
 </MethodSwitch>
 ```
 
+**Wrong — first MethodSection at column 0 (no indent):**
+```jsx
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
+...
+</MethodSection>
+```
+
+**Why this breaks:** Mintlify's cloud renderer requires the first child of `<MethodSwitch>` to
+be indented 2 spaces. When it is at column 0, the renderer does not recognize it as a child
+element, `MethodSwitch` receives no children, and the entire article body renders empty —
+only the page title is visible. The MDX compiler (`@mdx-js/mdx`) and local `mintlify dev`
+do NOT catch this; it only fails in the deployed Mintlify build.
+
+**Wrong — blank line between `<MethodSwitch>` and first `<MethodSection>`:**
+```jsx
+<MethodSwitch>
+
+<MethodSection id="portal" label="Customer Portal">
+```
+
+Same result: empty page on deploy.
+
 **Wrong — self-closing MethodSwitch with MethodSection outside:**
 ```jsx
 <MethodSwitch methods={[...]} />
