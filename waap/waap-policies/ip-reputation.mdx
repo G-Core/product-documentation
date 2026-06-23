@@ -125,6 +125,7 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
     )
 
     func main() {
@@ -132,7 +133,7 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
         domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
 
         ruleSets, _ := client.Waap.Domains.ListRuleSets(context.Background(), domainID)
-        for _, rs := range ruleSets {
+        for _, rs := range *ruleSets {
             if rs.ResourceSlug == "ip-reputation" {
                 for _, policy := range rs.Rules {
                     status := "disabled"
@@ -194,6 +195,7 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 
         gcore "github.com/G-Core/gcore-go"
         "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
     )
 
     func main() {
@@ -203,7 +205,7 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
         // Find the policy ID by name
         ruleSets, _ := client.Waap.Domains.ListRuleSets(context.Background(), domainID)
         var policyID string
-        for _, rs := range ruleSets {
+        for _, rs := range *ruleSets {
             if rs.ResourceSlug == "ip-reputation" {
                 for _, p := range rs.Rules {
                     if p.Name == "Traffic via TOR network" {
@@ -213,7 +215,7 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
             }
         }
 
-        result, _ := client.Waap.Domains.Policies.Toggle(context.Background(), policyID, domainID)
+        result, _ := client.Waap.Domains.Policies.Toggle(context.Background(), policyID, waap.DomainPolicyToggleParams{DomainID: domainID})
         status := "disabled"
         if result.Mode {
             status = "enabled"
