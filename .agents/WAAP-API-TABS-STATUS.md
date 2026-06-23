@@ -18,8 +18,8 @@
 | # | Article | curl | Python SDK | Go SDK | Customer Portal | Comments |
 |---|---------|------|------------|--------|-----------------|----------|
 | 1 | waf-and-owasp-top-threats.mdx | OK | OK | OK | OK | View: 18 rules. Toggle: Open redirect flip+revert. Portal: LLM Attack confirmed in portal (Disabled). Added to Portal tab table + Info block. Response-blocking note added to API tab. Committed b5eee831. |
-| 2 | behavioral-waf.mdx | IN PROGRESS | IN PROGRESS | IN PROGRESS | IN PROGRESS | |
-| 3 | known-bots.mdx | TODO | TODO | TODO | TODO | |
+| 2 | behavioral-waf.mdx | OK | OK | OK | OK | View: 4 rules (S3008901-S3008904). Toggle: Repeated violations flip+revert. Portal: 4 rules, states match. No changes needed. |
+| 3 | known-bots.mdx | IN PROGRESS | IN PROGRESS | IN PROGRESS | IN PROGRESS | |
 | 4 | ip-reputation.mdx | TODO | TODO | TODO | TODO | |
 | 5 | cms-protection.mdx | TODO | TODO | TODO | TODO | |
 | 6 | anti-automation-and-bot-protection.mdx | TODO | TODO | TODO | TODO | |
