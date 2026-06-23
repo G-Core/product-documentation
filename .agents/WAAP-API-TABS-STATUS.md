@@ -17,27 +17,11 @@
 
 | # | Article | curl | Python SDK | Go SDK | Comments |
 |---|---------|------|------------|--------|----------|
-| 1 | waf-and-owasp-top-threats.mdx | | | | |
-| 2 | behavioral-waf.mdx | | | | |
-| 3 | known-bots.mdx | | | | |
-| 4 | ip-reputation.mdx | | | | Toggle BLOCKED — see below |
-| 5 | cms-protection.mdx | | | | |
-| 6 | anti-automation-and-bot-protection.mdx | | | | |
-| 7 | advanced-api-protection.mdx | | | | |
-| 8 | protocol-validation.mdx | | | | |
-
----
-
-## BLOCKED: ip-reputation.mdx — Toggle
-
-**Bug found:** Toggle endpoint returns `401 feature-check` for all IP Reputation policies.
-
-**Root cause:** IP Reputation is a base Pro/Enterprise WAAP plan feature.
-Test domain `cdn-mcp-test.example.com` (id: 16870) does not have IP Reputation enabled.
-Known Bots and CMS Protection work because they are available as add-ons on the current plan.
-
-**Action required:** Ask product head to upgrade domain id 16870 to Pro plan
-(enable IP Reputation for this domain via backend).
-
-**What needs re-verification after fix:**
-- Toggle a policy (e.g. S3008894 TOR network): curl, Python SDK, Go SDK
+| 1 | waf-and-owasp-top-threats.mdx | OK | OK | OK | View: 18 rules. Toggle: Open redirect flip+revert. All pass. |
+| 2 | behavioral-waf.mdx | OK | OK | OK | View: 4 rules. Toggle: Repeated violations flip+revert. All pass. |
+| 3 | known-bots.mdx | OK | OK | OK | View: 136 rules (fixed count 118->136). Toggle: Google Bot flip+revert. All pass. |
+| 4 | ip-reputation.mdx | OK | OK | OK | Toggle was previously 401; now unblocked. View+Toggle all pass. |
+| 5 | cms-protection.mdx | OK | OK | OK | View: 8 rules. Toggle+Allowlist all pass. Fixed: missing waap import in Toggle Go SDK. |
+| 6 | anti-automation-and-bot-protection.mdx | OK | OK | OK | View+Toggle all pass. Fixed: unused waap import in View Go SDK (compile error). |
+| 7 | advanced-api-protection.mdx | OK | OK | OK | View+Toggle all pass. Fixed: unused waap import in View Go SDK (compile error). |
+| 8 | protocol-validation.mdx | OK | OK | OK | View+Toggle all pass. Fixed: unused waap import in View Go SDK; "A permanent" -> "An". |
