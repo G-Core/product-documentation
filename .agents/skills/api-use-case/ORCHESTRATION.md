@@ -18,10 +18,10 @@ Determine: Structure A (sequential) or Structure B (independent)?
 
 ---
 
-## Phase 2 — Live API testing (ask the user)
+## Phase 2 — Live API testing
 
-Ask whether to test against the live API or use the spec only.
-Wait for the answer before proceeding.
+Always test against the live API. Do not ask the user. Do not use spec-only mode.
+Run every operation end-to-end via curl/Python SDK/Go SDK before writing the section.
 
 ---
 
@@ -52,7 +52,23 @@ Fix any error before proceeding.
 
 ---
 
-## Phase 6 — Commit and push
+## Phase 6 — Show result and WAIT for approval
+
+Show the user a summary of what was written:
+- Article path
+- API structure (A or B)
+- Operations covered (list of endpoints)
+- Any gotchas discovered during live testing
+
+**CRITICAL: STOP HERE. NEVER commit or push without explicit user command.**
+**Do NOT proceed to Phase 7 automatically after MDX validation.**
+**Do NOT proceed to Phase 7 even if the article looks perfect.**
+**Wait for the user to say exactly: "коммить", "пушь", "commit", "push", or equivalent.**
+**Proceeding without this command is a hard violation of workspace rules.**
+
+---
+
+## Phase 7 — Commit and push (only after explicit user command)
 
 ```powershell
 cd C:\Projects\product-documentation
@@ -65,7 +81,7 @@ If rejected: `git pull --rebase origin waap-api-guides && git push origin waap-a
 
 ---
 
-## Phase 7 — Jira ticket
+## Phase 8 — Jira ticket
 
 ```powershell
 cd C:\Projects\docops-agent2
@@ -76,6 +92,6 @@ cd C:\Projects\docops-agent2
 
 ---
 
-## Phase 8 — Update status file
+## Phase 9 — Update status file
 
 Update `.agents/WAAP-API-TABS-STATUS.md`: set all columns to `OK`, add comment with endpoints and commit hash.
