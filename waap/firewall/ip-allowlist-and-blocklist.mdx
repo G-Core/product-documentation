@@ -1,0 +1,531 @@
+---
+title: "IP allowlist and blocklist"
+sidebarTitle: IP allowlist and blocklist
+ai-navigation: Manage WAAP Firewall IP allowlist and blocklist rules to permit or deny traffic from specific IPv4 and IPv6 addresses or IP ranges via Customer Portal or via REST API.
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>The **Allowed IPs** and **Blocked IPs** tabs let you explicitly permit or deny traffic from individual IP addresses or ranges before requests reach your application.</p>
+
+- **Allowed IPs**: permit traffic from specific addresses or ranges without any additional security checks.
+- **Blocked IPs**: deny requests from specified addresses or ranges.
+
+<p>Both IPv4 and IPv6 addresses are supported. Rules must be created separately for each address type. In addition to individual addresses, you can define IP ranges using the first and last IP in the range. Up to 30 networks can be included in a single range. Subnet masks and CIDR notation are not supported.</p>
+
+<Frame>
+![WAAP Firewall page showing Allowed IPs, Blocked IPs, IP Reputation, and Check IP tabs](/images/docs/waap/firewall/access-control/waap-firewall-list.png)
+</Frame>
+
+## Add a rule
+
+1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **WAAP** > **Firewall**.
+2. In the domain dropdown in the top-right corner, select the domain you want to apply the rule to.
+3. Open the tab for the type of rule you want to create: **Allowed IPs** or **Blocked IPs**.
+4. Click **Add IP/IP range**. The **Add IP** form appears.
+
+<Frame>
+![Add IP form with Name, Equality, IP, IP range, and Description fields](/images/docs/waap/firewall/access-control/waap-firewall-add-ip.png)
+</Frame>
+
+5. Fill in the fields:
+   - **Name**: a label for the rule. Allowed characters are letters, numbers, spaces, periods, and colons.
+   - **Equality**: select **Equal** to match the specified IP exactly, or **Not** to match all IPs except the one specified.
+   - **IP**: the IP address to allow or block.
+   - **IP range (Optional)**: if you are defining a range, enter the last IP address in the range.
+   - **Description (Optional)**: a note about the rule purpose.
+6. Click **Save changes**.
+
+<p>The rule appears in the list. The **Status** toggle is set to **On** by default. You can disable a rule at any time by toggling its status without deleting it.</p>
+
+## Edit or delete a rule
+
+1. In the Gcore Customer Portal, navigate to **WAAP** > **Firewall**.
+2. Select the domain from the dropdown.
+3. Open the **Allowed IPs** or **Blocked IPs** tab containing the rule you want to manage.
+4. Click the three-dot icon at the end of the rule row.
+
+<Frame>
+![Firewall rule row with three-dot menu showing Edit and Delete options](/images/docs/waap/firewall/access-control/waap-firewall-edit-delete.png)
+</Frame>
+
+5. Select the action:
+   - **Edit**: update the rule fields and click **Save changes**.
+   - **Delete**: confirm deletion in the dialog that appears.
+
+<p>To delete multiple rules at once, select the checkboxes next to the rules and use the **Actions** dropdown that appears above the table.</p>
+
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>WAAP Firewall rules allow or block traffic from individual IP addresses or IP ranges before requests reach the application. Use the REST API to create rules for the Allowed IPs or Blocked IPs lists, update rule fields, enable or disable rules without deleting them, and remove rules permanently.</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required, along with the ID of a [WAAP-protected domain](/waap/getting-started/configure-waap-for-a-domain) and the [Python](/developer-tools/sdks/python) or [Go](/developer-tools/sdks/go) SDK installed for SDK examples.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
+```
+
+## List rules
+
+<p>Retrieve all rules configured for a domain. Filter by `action=allow` or `action=block` to narrow results to one list type.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    rules = client.waap.domains.firewall_rules.list(domain_id)
+    for rule in rules.results:
+        action = "allow" if rule.action.allow is not None else "block"
+        status = "enabled" if rule.enabled else "disabled"
+        print(f"{rule.id}: {rule.name} | {action} | {status}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        page, _ := client.Waap.Domains.FirewallRules.List(
+            context.Background(),
+            domainID,
+            waap.DomainFirewallRuleListParams{},
+        )
+        for _, rule := range page.Results {
+            action := "block"
+            if rule.Action.JSON.Allow.Valid() {
+                action = "allow"
+            }
+            status := "disabled"
+            if rule.Enabled {
+                status = "enabled"
+            }
+            fmt.Printf("%d: %s | %s | %s\n", rule.ID, rule.Name, action, status)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X GET "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/firewall-rules" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+
+    Response:
+    ```json
+    {
+      "limit": 100,
+      "offset": 0,
+      "count": 1,
+      "results": [
+        {
+          "id": 12345,
+          "name": "partner API server",
+          "enabled": true,
+          "action": {"allow": {}},
+          "conditions": [{"ip": {"ip_address": "203.0.113.42", "negation": false}}]
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Create a rule
+
+<p>Rules match on either a single IP address or an IP range. Set `action` to `{"allow": {}}` to add to the Allowed IPs list, or `{"block": {}}` to add to the Blocked IPs list.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    # Allow a single IP address
+    allow_rule = client.waap.domains.firewall_rules.create(
+        domain_id,
+        name="partner API server",
+        description="Trusted partner IP",
+        enabled=True,
+        action={"allow": {}},
+        conditions=[{"ip": {"ip_address": "203.0.113.42", "negation": False}}],
+    )
+    print(f"Created allow rule id={allow_rule.id}")
+
+    # Block an IP range
+    block_rule = client.waap.domains.firewall_rules.create(
+        domain_id,
+        name="datacenter scanner range",
+        enabled=True,
+        action={"block": {}},
+        conditions=[{
+            "ip_range": {
+                "lower_bound": "203.0.113.10",
+                "upper_bound": "203.0.113.20",
+                "negation": False,
+            }
+        }],
+    )
+    print(f"Created block rule id={block_rule.id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        // Allow a single IP address
+        allowRule, _ := client.Waap.Domains.FirewallRules.New(
+            context.Background(),
+            domainID,
+            waap.DomainFirewallRuleNewParams{
+                Name:        "partner API server",
+                Description: gcore.String("Trusted partner IP"),
+                Enabled:     true,
+                Action:      waap.DomainFirewallRuleNewParamsAction{Allow: map[string]any{}},
+                Conditions: []waap.DomainFirewallRuleNewParamsCondition{{
+                    IP: waap.DomainFirewallRuleNewParamsConditionIP{
+                        IPAddress: "203.0.113.42",
+                        Negation:  gcore.Bool(false),
+                    },
+                }},
+            },
+        )
+        fmt.Printf("Created allow rule id=%d\n", allowRule.ID)
+
+        // Block an IP range
+        blockRule, _ := client.Waap.Domains.FirewallRules.New(
+            context.Background(),
+            domainID,
+            waap.DomainFirewallRuleNewParams{
+                Name:    "datacenter scanner range",
+                Enabled: true,
+                Action:  waap.DomainFirewallRuleNewParamsAction{Block: waap.DomainFirewallRuleNewParamsActionBlock{}},
+                Conditions: []waap.DomainFirewallRuleNewParamsCondition{{
+                    IPRange: waap.DomainFirewallRuleNewParamsConditionIPRange{
+                        LowerBound: "203.0.113.10",
+                        UpperBound: "203.0.113.20",
+                        Negation:   gcore.Bool(false),
+                    },
+                }},
+            },
+        )
+        fmt.Printf("Created block rule id=%d\n", blockRule.ID)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # Allow a single IP
+    curl -X POST "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/firewall-rules" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "partner API server",
+        "description": "Trusted partner IP",
+        "enabled": true,
+        "action": {"allow": {}},
+        "conditions": [{"ip": {"ip_address": "203.0.113.42", "negation": false}}]
+      }'
+    ```
+
+    Response:
+    ```json
+    {
+      "id": 12345,
+      "name": "partner API server",
+      "enabled": true,
+      "action": {"allow": {}},
+      "conditions": [{"ip": {"ip_address": "203.0.113.42", "negation": false}}]
+    }
+    ```
+
+    ```bash
+    # Block an IP range
+    curl -X POST "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/firewall-rules" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "datacenter scanner range",
+        "enabled": true,
+        "action": {"block": {}},
+        "conditions": [{"ip_range": {"lower_bound": "203.0.113.10", "upper_bound": "203.0.113.20", "negation": false}}]
+      }'
+    ```
+
+    Response:
+    ```json
+    {
+      "id": 12346,
+      "name": "datacenter scanner range",
+      "enabled": true,
+      "action": {"block": {"status_code": 403}},
+      "conditions": [{"ip_range": {"lower_bound": "203.0.113.10", "upper_bound": "203.0.113.20", "negation": false}}]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<p>Save the `id` value from the response — it is required for all subsequent operations on the rule.</p>
+
+<p>The table below describes the request body fields. Only `name`, `enabled`, `action`, and `conditions` are required.</p>
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `name` | Yes | Rule label. Letters, numbers, spaces, periods, and colons only. Max 100 characters. |
+| `enabled` | Yes | `true` to activate the rule immediately after creation. |
+| `action` | Yes | `{"allow": {}}` for Allowed IPs list; `{"block": {}}` for Blocked IPs list. |
+| `conditions` | Yes | Array with one entry. Use `ip` for a single address or `ip_range` for a range. |
+| `conditions[].ip.ip_address` | Yes (single IP) | IPv4 or IPv6 address. |
+| `conditions[].ip.negation` | No | `true` to match all IPs except the specified one (Portal: **Equality: Not**). Default: `false`. |
+| `conditions[].ip_range.lower_bound` | Yes (range) | First address in the range. |
+| `conditions[].ip_range.upper_bound` | Yes (range) | Last address. The range spans up to 30 contiguous networks. CIDR notation is not accepted. |
+| `description` | No | Free-text note about the rule. |
+
+## Update a rule
+
+<p>A partner server's IP was rotated after a security incident — move it from the allowlist to the blocklist by changing only the `action` field. All other fields retain their current values when omitted from the request.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+    rule_id = 12345  # ID from the Create response
+
+    client.waap.domains.firewall_rules.update(
+        rule_id,
+        domain_id=domain_id,
+        action={"block": {}},
+        description="Compromised endpoint - moved to blocklist",
+    )
+    print("Rule moved to blocklist")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+        ruleID := int64(12345) // ID from the Create response
+
+        _ = client.Waap.Domains.FirewallRules.Update(
+            context.Background(),
+            ruleID,
+            waap.DomainFirewallRuleUpdateParams{
+                DomainID:    domainID,
+                Action:      waap.DomainFirewallRuleUpdateParamsAction{Block: waap.DomainFirewallRuleUpdateParamsActionBlock{}},
+                Description: gcore.String("Compromised endpoint - moved to blocklist"),
+            },
+        )
+        fmt.Println("Rule moved to blocklist")
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    export RULE_ID=12345
+
+    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/firewall-rules/${RULE_ID}" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{"action": {"block": {}}, "description": "Compromised endpoint - moved to blocklist"}'
+    ```
+  </Tab>
+</Tabs>
+
+<p>A 204 response confirms the update was applied. The endpoint returns no body.</p>
+
+## Enable or disable a rule
+
+<p>Suspend a rule temporarily without deleting it by setting its state to `disable`. Restore it later with `enable`. Both calls return 204 with no body.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+    rule_id = 12345
+
+    client.waap.domains.firewall_rules.toggle("disable", domain_id=domain_id, rule_id=rule_id)
+    print("Rule disabled")
+
+    client.waap.domains.firewall_rules.toggle("enable", domain_id=domain_id, rule_id=rule_id)
+    print("Rule enabled")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+        ruleID := int64(12345)
+
+        _ = client.Waap.Domains.FirewallRules.Toggle(
+            context.Background(),
+            waap.DomainFirewallRuleToggleParamsActionDisable,
+            waap.DomainFirewallRuleToggleParams{DomainID: domainID, RuleID: ruleID},
+        )
+        fmt.Println("Rule disabled")
+
+        _ = client.Waap.Domains.FirewallRules.Toggle(
+            context.Background(),
+            waap.DomainFirewallRuleToggleParamsActionEnable,
+            waap.DomainFirewallRuleToggleParams{DomainID: domainID, RuleID: ruleID},
+        )
+        fmt.Println("Rule enabled")
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    export RULE_ID=12345
+
+    # Disable the rule
+    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/firewall-rules/${RULE_ID}/disable" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+
+    # Enable the rule
+    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/firewall-rules/${RULE_ID}/enable" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+  </Tab>
+</Tabs>
+
+<p>To confirm the new state, retrieve the rule with <code>GET&nbsp;/waap/v1/domains/{domain_id}/firewall-rules/{rule_id}</code> and check the `enabled` field.</p>
+
+## Delete a rule
+
+<p>Remove a rule permanently. The operation cannot be undone — disable the rule first if the goal is temporary suspension.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+    rule_id = 12345
+
+    client.waap.domains.firewall_rules.delete(rule_id, domain_id=domain_id)
+    print(f"Rule {rule_id} deleted")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+        ruleID := int64(12345)
+
+        _ = client.Waap.Domains.FirewallRules.Delete(
+            context.Background(),
+            ruleID,
+            waap.DomainFirewallRuleDeleteParams{DomainID: domainID},
+        )
+        fmt.Printf("Rule %d deleted\n", ruleID)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    export RULE_ID=12345
+
+    curl -X DELETE "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/firewall-rules/${RULE_ID}" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+  </Tab>
+</Tabs>
+
+<p>A 204 response confirms deletion.</p>
+
+</MethodSection>
+</MethodSwitch>
