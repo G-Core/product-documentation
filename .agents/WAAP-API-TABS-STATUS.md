@@ -24,4 +24,4 @@
 | 5 | cms-protection.mdx | OK | OK | OK | OK | 8 policies. View+Toggle+Allowlist all pass. Portal: WAAP > Default Rules > CMS Protection. Toggle Warning added. Table simplified. Portal Info block aligned with API description. |
 | 6 | anti-automation-and-bot-protection.mdx | OK | OK | OK | OK | 8 policies. All pass. Portal: WAAP > Bot Management > Bot Attacks. Toggle Warning added. Table simplified with Action explanation (Block/Captcha/Handshake). |
 | 7 | advanced-api-protection.mdx | OK | OK | OK | OK | 7 policies. All pass. Portal: WAAP > API Protection confirmed. Toggle Warning added. Table simplified. FLAG: Portal section describes only 5 of 7 policies (missing Service protocol validation + Prevent malformed request methods). |
-| 8 | protocol-validation.mdx | TODO | TODO | TODO | TODO | |
+| 8 | protocol-validation.mdx | OK | OK | OK | OK | 2 policies (S3008978, S3008980) in advanced-api-protection rule set. S3008978=enabled, S3008980=disabled. Fixed: removed "both enabled by default" claim, corrected Default state for S3008980 to Disabled, added Warning block for Toggle, aligned View response description. Portal: WAAP > Bot Management > Bot Attacks. |

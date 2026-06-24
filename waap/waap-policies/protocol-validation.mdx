@@ -27,10 +27,8 @@ Bot Management, which includes this policy group, is available in the Pro and En
 
 <p>3\. The **Bot Attacks** tab contains protocol validation rules such as Invalid user agent and Unknown user agent.</p>
 
- <Info>
-**Info**
-
-All protocol validation policies are enabled by default. To change the policy mode, click the **Mode** dropdown and select **Protection** or **Disabled**.
+<Info>
+Service protocol validation is enabled by default. Prevent malformed request methods is disabled by default. To change the policy mode, click the **Mode** dropdown and select **Protection** or **Disabled**.
 </Info>
 
 
@@ -45,7 +43,7 @@ All protocol validation policies are enabled by default. To change the policy mo
 </MethodSection>
 <MethodSection id="api" label="REST API">
 
-<p>Protocol Validation policies block HTTP requests that violate protocol standards: one policy targets clients that tamper with internal service calls, the other enforces HTTP RFC compliance. Both policies are enabled by default.</p>
+<p>Protocol Validation policies block HTTP requests that violate protocol standards: one policy targets clients that tamper with internal service calls, the other enforces HTTP RFC compliance.</p>
 
 <Info>
 An [API token](/account-settings/api-tokens) is required, along with the ID of a [WAAP-protected domain](/waap/getting-started/configure-waap-for-a-domain) and the [Python](/developer-tools/sdks/python) or [Go](/developer-tools/sdks/go) SDK installed for SDK examples. Bot Management, which includes this policy group, is available on the Pro and Enterprise WAAP plans.
@@ -56,9 +54,13 @@ export GCORE_API_KEY="{YOUR_API_KEY}"
 export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 ```
 
+<Info>
+Protocol Validation policies are stored under the `advanced-api-protection` resource group in the API. When querying rule sets, filter by `resource_slug == "advanced-api-protection"` and then select policies `S3008978` and `S3008980`.
+</Info>
+
 ## View policy states
 
-<p>Retrieve the current mode of the Protocol Validation policies for a domain. In the API, these policies are part of the `advanced-api-protection` rule set.</p>
+<p>Retrieve the current mode of the Protocol Validation policies for a domain.</p>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -127,11 +129,15 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
   </Tab>
 </Tabs>
 
-<p>The API returns the two Protocol Validation policies. `mode: true` means enabled; `mode: false` means disabled.</p>
+<p>The response includes each policy with its ID and current state. `mode: true` means enabled; `mode: false` means disabled.</p>
 
 ## Toggle a policy
 
-<p>Switch a policy between enabled and disabled. Each call flips the current mode.</p>
+<p>Use the policy ID returned by View policy states, or one of the IDs listed in the Policy reference table below.</p>
+
+<Warning>
+This endpoint toggles the current state rather than setting a specific value. If the target state is unknown, check the current policy state first using the View policy states request.
+</Warning>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -193,10 +199,6 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 
 <p>The API returns the updated policy object. `mode: true` confirms the policy is now enabled; `mode: false` confirms disabled.</p>
 
-```json
-{"mode": true}
-```
-
 ## Policy reference
 
 <Accordion title="All Protocol Validation policies">
@@ -206,7 +208,7 @@ The table lists both policies in the Protocol Validation group with their defaul
 | Policy | Purpose | ID | Default state |
 |---|---|---|---|
 | Service protocol validation | Blocks clients that attempt to tamper with internal service calls, such as manipulating cookies or request headers. | `S3008978` | Enabled |
-| Prevent malformed request methods | Blocks or challenges clients whose requests do not conform to HTTP RFC standards. | `S3008980` | Enabled |
+| Prevent malformed request methods | Blocks or challenges clients whose requests do not conform to HTTP RFC standards. | `S3008980` | Disabled |
 
 </Accordion>
 
