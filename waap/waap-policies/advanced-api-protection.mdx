@@ -76,7 +76,7 @@ All advanced API protection policies are disabled by default. To enable a policy
 </MethodSection>
 <MethodSection id="api" label="REST API">
 
-<p>Advanced API Protection policies defend against API-specific threats: token abuse, sensitive data leakage in responses, malformed JSON requests, unauthorized endpoint access, and requests to undocumented API endpoints. Before enabling these policies, [configure API access with reserved tags](/waap/api-discovery-and-protection/configure-api-access-with-reserved-tags) — without that configuration the policies have no effect. All policies are disabled by default.</p>
+<p>Advanced API Protection policies protect APIs against authentication abuse, malformed requests, unauthorized access, sensitive data exposure, and other API-specific threats. Before enabling these policies, [configure API access with reserved tags](/waap/api-discovery-and-protection/configure-api-access-with-reserved-tags) — without that configuration the policies have no effect. All policies are disabled by default.</p>
 
 <Info>
 A permanent [API token](/account-settings/api-tokens) is required, along with the ID of a [WAAP-protected domain](/waap/getting-started/configure-waap-for-a-domain) and the [Python](/developer-tools/sdks/python) or [Go](/developer-tools/sdks/go) SDK installed for SDK examples. This policy group is available on the Enterprise WAAP plan only.
@@ -154,9 +154,17 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 
 <p>The response includes each policy in the group with its ID and current state. `mode: true` means enabled; `mode: false` means disabled.</p>
 
+<Info>
+The API may also return policies that belong to the [Protocol validation](/waap/waap-policies/protocol-validation) policy group. Those policies are part of the same API resource group but are configured separately in the Customer Portal under WAAP > Bot Management.
+</Info>
+
 ## Toggle a policy
 
 <p>Switch a policy between enabled and disabled. Each call flips the current mode. Use the policy ID returned by View policy states, or one of the IDs listed in the Policy reference table below.</p>
+
+<Warning>
+This endpoint toggles the current state rather than setting a specific value. If the target state is unknown, check the current policy state first using the View policy states request.
+</Warning>
 
 <Tabs>
   <Tab title="Python SDK">
@@ -241,17 +249,15 @@ export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
 
 <Accordion title="All Advanced API Protection policies">
 
-The table lists all 7 policies in the Advanced API Protection group with their default states.
+All policies in this group use **Block** as their action — the request is rejected when the policy triggers.
 
-| Policy | Purpose | ID | Default state |
-|---|---|---|---|
-| Service protocol validation | Blocks clients that attempt to interfere with internal service calls. | `S3008978` | Disabled |
-| Prevent malformed request methods | Enforces HTTP RFC requirements for how clients interact with the server. | `S3008980` | Disabled |
-| Auth token protection | Blocks users who make repeated failed attempts to authenticate with invalid tokens. | `S3008984` | Disabled |
-| Sensitive data exposure | Blocks API responses that contain PII such as phone numbers, SSNs, email addresses, or credit card numbers. | `S3008985` | Disabled |
-| Invalid API traffic | Blocks API requests that do not conform to a valid JSON structure. | `S3008986` | Disabled |
-| API-level authorization | Blocks requests to admin or privileged endpoints from users not tagged as admin or privileged. | `S3008987` | Disabled |
-| Non-baselined API requests | Blocks requests to API endpoints that are not part of the defined API baseline. | `S3008988` | Disabled |
+| Policy | Purpose | ID |
+|---|---|---|
+| Auth token protection | Blocks users who repeatedly attempt to authenticate with invalid tokens. | `S3008984` |
+| Sensitive data exposure | Blocks API responses containing PII such as phone numbers, SSNs, email addresses, or credit card numbers. | `S3008985` |
+| Invalid API traffic | Blocks API requests that do not conform to a valid JSON structure. | `S3008986` |
+| API-level authorization | Blocks requests to admin or privileged endpoints from users not tagged as admin or privileged. | `S3008987` |
+| Non-baselined API requests | Blocks requests to API endpoints that are not part of the defined API baseline. | `S3008988` |
 
 </Accordion>
 
