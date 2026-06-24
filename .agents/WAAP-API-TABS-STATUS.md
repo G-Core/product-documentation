@@ -21,7 +21,7 @@
 | 2 | behavioral-waf.mdx | OK | OK | OK | OK | View: 4 rules (S3008901-S3008904). Toggle: Repeated violations flip+revert. Portal: 4 rules, states match. No changes needed. |
 | 3 | known-bots.mdx | OK | OK | OK | OK | 136 bots confirmed. Fixed unused waap import in Go SDK View tab. Portal nav: Bot Management > Known Bots. |
 | 4 | ip-reputation.mdx | OK | OK | OK | OK | 8 policies. All tests pass. Removed unused waap import from Go SDK View tab. Portal: WAAP > Firewall > IP Reputation tab confirmed. |
-| 5 | cms-protection.mdx | TODO | TODO | TODO | TODO | |
-| 6 | anti-automation-and-bot-protection.mdx | TODO | TODO | TODO | TODO | |
+| 5 | cms-protection.mdx | OK | OK | OK | OK | 8 policies. View+Toggle+Allowlist all pass. Portal: WAAP > Default Rules > CMS Protection. Toggle Warning added. Table simplified. Portal Info block aligned with API description. |
+| 6 | anti-automation-and-bot-protection.mdx | OK | OK | OK | OK | 8 policies. All pass. Portal: WAAP > Bot Management > Bot Attacks. Toggle Warning added. Table simplified with Action explanation (Block/Captcha/Handshake). |
 | 7 | advanced-api-protection.mdx | TODO | TODO | TODO | TODO | |
 | 8 | protocol-validation.mdx | TODO | TODO | TODO | TODO | |
