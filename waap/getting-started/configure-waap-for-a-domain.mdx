@@ -1,8 +1,13 @@
 ---
 title: "Configure WAAP for a new domain"
 sidebarTitle: "Configure WAAP for a new domain"
-ai-navigation: Create a Gcore CDN resource with WAAP enabled by specifying domain name, origin server IP or hostname, origin authentication type, and custom port settings, then update DNS records with the generated CNAME to route traffic through WAAP for Layer 7 DDoS protection and web application security.
+ai-navigation: Create a Gcore CDN resource with WAAP enabled by specifying domain name, origin server IP or hostname, origin authentication type, and custom port settings, then update DNS records with the generated CNAME to route traffic through WAAP for Layer 7 DDoS protection and web application security, or use the REST API to list WAAP domains and manage their protection mode.
 ---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
 
 Web Application and API Protection (WAAP) is a single SaaS tool that combines all aspects of website security and traffic management, including Layer 7 DDoS protection, and web application security.
 
@@ -205,3 +210,179 @@ After successful DNS propagation and verifying that domain-based traffic is bein
 
 - [Add our CDN servers to the allowlist](/cdn/getting-started/configure-an-origin/add-cdn-servers-to-the-origin-acl-whitelist).
 - Block other incoming requests that don't match our allowlist.
+
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>A WAAP domain is created automatically when WAAP is enabled on a CDN resource. Once the domain exists, the WAAP API provides operations to list domains, check protection status, and switch between Monitoring and Protection modes.</p>
+
+<Info>
+Creating the CDN resource and enabling WAAP are performed through the [CDN API](https://api.gcore.com/docs/cdn) and are documented separately. This article covers WAAP-specific operations available after the domain has been created.
+</Info>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required. The domain ID is assigned by Gcore when the CDN resource with WAAP is created; retrieve it with the View WAAP domains request below.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
+```
+
+## View WAAP domains
+
+<p>Retrieve all WAAP-protected domains in the account along with their current protection status.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+
+    domains = client.waap.domains.list()
+    for domain in domains.results:
+        print(f"id={domain.id}  name={domain.name}  status={domain.status}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+
+        domains, err := client.Waap.Domains.List(context.Background(), waap.DomainListParams{})
+        if err != nil {
+            panic(err)
+        }
+        for _, d := range domains.Results {
+            fmt.Printf("id=%d  name=%s  status=%s\n", d.ID, d.Name, d.Status)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X GET "https://api.gcore.com/waap/v1/domains" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+  </Tab>
+</Tabs>
+
+<p>The response lists all domains with their IDs and current status. Use the `id` value as `WAAP_DOMAIN_ID` in subsequent requests.</p>
+
+```json
+{
+  "count": 1,
+  "results": [
+    {
+      "id": 16870,
+      "name": "example.com",
+      "status": "monitor"
+    }
+  ]
+}
+```
+
+## Domain protection mode
+
+<p>Switch a domain between Monitoring mode (`monitor`) and Protection mode (`active`). In Monitoring mode, traffic is inspected but no actions are taken. In Protection mode, all configured security rules are enforced.</p>
+
+<Warning>
+In Monitoring mode, all traffic is allowed regardless of configured security rules. Enable Protection mode only after verifying that legitimate traffic is not blocked.
+</Warning>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    # Enable Protection mode
+    client.waap.domains.update(domain_id, status="active")
+    print("Protection mode enabled")
+
+    # Revert to Monitoring mode
+    # client.waap.domains.update(domain_id, status="monitor")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        // Enable Protection mode
+        err := client.Waap.Domains.Update(context.Background(), domainID, waap.DomainUpdateParams{
+            Status: waap.DomainUpdateParamsStatusActive,
+        })
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println("Protection mode enabled")
+
+        // Revert to Monitoring mode:
+        // client.Waap.Domains.Update(ctx, domainID, waap.DomainUpdateParams{
+        //     Status: waap.DomainUpdateParamsStatusMonitor,
+        // })
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    # Enable Protection mode
+    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{"status": "active"}'
+
+    # Revert to Monitoring mode
+    # curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}" \
+    #   -H "Authorization: APIKey ${GCORE_API_KEY}" \
+    #   -H "Content-Type: application/json" \
+    #   -d '{"status": "monitor"}'
+    ```
+  </Tab>
+</Tabs>
+
+<p>The API returns an empty body on success. Confirm the change with the View WAAP domains request.</p>
+
+## Additional setup
+
+<p>Once the domain is created and protection mode is active, the remaining setup tasks each have dedicated articles:</p>
+
+- Manage firewall allow and block lists: [Access control](/waap/firewall/access-control)
+- Toggle CMS Protection policies for admin traffic: [CMS protection](/waap/waap-policies/cms-protection)
+- Toggle Known Bots policies: [Known bots](/waap/waap-policies/known-bots)
+- Define API endpoints for WAAP to protect: [API base path](/waap/api-discovery-and-protection/configure-api-base-path)
+
+  </MethodSection>
+</MethodSwitch>
