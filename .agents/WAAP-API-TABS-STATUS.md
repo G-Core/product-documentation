@@ -26,7 +26,7 @@
 | 7 | advanced-api-protection.mdx | OK | OK | OK | OK | 7 policies. All pass. Portal: WAAP > API Protection confirmed. Toggle Warning added. Table simplified. FLAG: Portal section describes only 5 of 7 policies (missing Service protocol validation + Prevent malformed request methods). |
 | 8 | protocol-validation.mdx | OK | OK | OK | OK | 2 policies (S3008978, S3008980) in advanced-api-protection rule set. S3008978=enabled, S3008980=disabled. Fixed: removed "both enabled by default" claim, corrected Default state for S3008980 to Disabled, added Warning block for Toggle, aligned View response description. Portal: WAAP > Bot Management > Bot Attacks. |
 | 9 | getting-started/configure-waap-for-a-domain.mdx | OK | OK | OK | OK | No POST /waap/v1/domains: domain auto-created via CDN API. WAAP API covers: GET /waap/v1/domains (list + domain_id), PATCH /waap/v1/domains/{id} status: active=Protection, monitor=Monitoring. PATCH returns empty body. Portal uses "Protection"/"Monitoring", API uses "active"/"monitor". |
-| 10 | getting-started/manage-domains.mdx | TODO | TODO | TODO | TODO | |
+| 10 | getting-started/manage-domains.mdx | OK | OK | OK | OK | GET /waap/v1/domains/{id} (domain status). DELETE /waap/v1/domains/{id} (requires bypass via CDN API). PATCH bypass=422 confirmed. Portal/API status mapping table added. Committed 12d69023. |
 | 11 | response-pages/create-custom-response-pages.mdx | TODO | TODO | TODO | TODO | |
 | 12 | response-pages/manage-custom-response-pages.mdx | TODO | TODO | TODO | TODO | |
 | 13 | api-discovery-and-protection/configure-api-base-path.mdx | TODO | TODO | TODO | TODO | |
