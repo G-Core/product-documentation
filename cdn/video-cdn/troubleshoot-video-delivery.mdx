@@ -1,0 +1,143 @@
+---
+title: Troubleshoot video delivery
+sidebarTitle: Troubleshooting
+ai-navigation: Diagnose and fix common video delivery problems on CDN that end viewers experience
+---
+
+This guide covers the video delivery problems your viewers are most likely to report.
+
+## First, is it the CDN or the origin?
+
+Before changing anything, find out where the problem is. Two quick checks usually answer this:
+
+- **Browser DevTools (Network tab).** Play the video, open a failing request, and look at the response: the status code (`200`, `403`, `404`, `504`…) and the `Cache` response header (`HIT` or `MISS`). See [How to check your cache hit ratio](/cdn/video-cdn/improve-video-delivery-speed#how-to-check-your-cache-hit-ratio).
+- **Customer Portal → Reports → Statistics.** Select your CDN resource and compare two metrics:
+  - **Response classes** — counts of `2xx`/`3xx`/`4xx`/`5xx` returned to viewers.
+  - **Upstream response time** — the average time the CDN waited for your origin. A high or rising value points to an origin problem.
+
+<Note>
+A reliable test for any "is it the CDN?" question: request the failing URL **directly from your origin**, bypassing the CDN. If it also fails, the problem is on the origin side.
+</Note>
+
+## Issues your viewers may report
+
+### Video doesn't start, or fails only for some viewers (403 / 410)
+
+**What viewers see:** the video won't start or fails randomly — often for mobile users or viewers in a specific region — while it works fine for others on the same network. Player logs show `403 Forbidden` or `410 Gone`.
+
+**Why it happens:** these resources are protected with a [secure token](/cdn/video-cdn/secure-token). The token is tied to the viewer's IP address. On mobile networks that use CGNAT, a viewer's public IP can change between requests within the same session, so a token signed for one IP is rejected when the next request arrives from a different one. A `410` means the token has expired (its TTL elapsed, or a viewer reused an old link).
+
+**What to do:**
+
+1. Confirm the status code in DevTools or raw logs: `403` = token rejected (often an IP mismatch), `410` = token expired.
+2. For CGNAT/mobile audiences, change the IP truncation prefix to `/16` with help of support team.
+3. Apply correct TTL settings. 
+4. Verify the `expires` value is a future timestamp and that viewers aren't loading cached pages with stale URLs.
+
+See [Secure token for video](/cdn/video-cdn/secure-token) and [Configure and use Secure Token](/cdn/cdn-resource-options/security/use-a-secure-token/configure-and-use-secure-token) for the full token rules. Don't disable secure token to "fix" the errors — that removes your content protection.
+
+### Video buffers or is slow to start
+
+**What viewers see:** the player spins or stalls before playback, segments load slowly, and the first view of a title is always slow.
+
+**Why it happens:** the segment isn't in the edge cache, so the CDN fetches it from your origin on demand (a cache MISS). This is expected for content with low or uneven traffic, where segments are evicted between views.
+
+**What to do:**
+
+1. In DevTools, check the `Cache` header on segment requests. Repeated `MISS` across page loads means a cold cache.
+2. Confirm your cache hit ratio in **Reports → Statistics** and compare it against the [expected benchmarks](/cdn/video-cdn/improve-video-delivery-speed#what-cache-hit-ratio-to-expect).
+3. [Enable origin shielding](/cdn/video-cdn/origin-shielding-for-video) so edge misses are absorbed by a shared shield instead of your origin.
+4. Verify [cache TTLs](/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin) are long enough for segments, and [prefetch](/cdn/load-the-content-to-cdn-before-users-request-it) titles you expect to be popular.
+
+For the full walkthrough, see [Improve video delivery speed](/cdn/video-cdn/improve-video-delivery-speed).
+
+### Live MPEG-DASH players get 404 for segments "from the future"
+
+**What viewers see:** intermittent `404 Not Found` on live MPEG-DASH segments (`.m4s`/`.mp4`), with the player stalling or rebuffering right at the live edge. The same event delivered over HLS is unaffected.
+
+**Why it happens:** a live DASH player works out which segment to request by combining the manifest timeline with the current wall-clock time. If the player is asking for a segment that **hasn't been generated and published to your origin yet** — because the player's clock is ahead of the packager, or the live-edge delay is too small — it requests a segment "from the future." The CDN forwards the request to origin, origin has no such segment yet, and the viewer gets a `404`.
+
+**What to do:**
+
+1. Synchronize clocks. Run NTP on your encoder/packager, and add a `<UTCTiming>` element to the MPD so players sync to a time source instead of trusting the device clock.
+2. Increase the live-edge delay so players stay safely behind the newest segment: raise `suggestedPresentationDelay` (and/or `timeShiftBufferDepth`) to roughly 2–3× your segment duration.
+3. Make sure your packager uploads each segment to origin **before** it announces that segment in the manifest — never advertise a segment that isn't available yet.
+4. Avoid caching the `404`: use a very short negative-cache TTL (or none) so a momentary miss doesn't persist after the segment becomes available.
+5. To confirm it's timing and not the CDN, request the failing segment URL directly from origin at the moment of failure — if origin also returns `404`, the segment genuinely doesn't exist yet.
+
+## Technical issues
+
+These the most common cases where monitoring systems report an issue.
+
+### 504 Gateway Timeout on newly uploaded or published files
+
+**What you see:** `504 Gateway Timeout` for videos you just uploaded or published, while older content on the same resource plays fine.
+
+**Why it's the origin:** the CDN opens a connection to your origin, but the origin doesn't return response headers within the timeout. This usually means the new file is still transcoding, hasn't finished propagating in storage, or the origin is slow to serve content it hasn't prepared yet.
+
+**What to do:**
+
+1. Request the failing file directly from origin (bypass the CDN). If it also times out, the issue is confirmed origin-side.
+2. Compare the file's publish/upload time with the first failure. If failures cluster right after upload, let transcoding and storage propagation finish before sharing the link.
+3. Make sure your origin returns the first byte well within a second; move heavy processing off the request path.
+4. After publishing, [prefetch](/cdn/load-the-content-to-cdn-before-users-request-it) the file to warm the cache before viewers arrive.
+5. Consider [Gcore Object Storage](/storage/use-storage-as-the-origin-for-your-cdn-resource) or [Video Streaming](/streaming/video-hosting/upload-a-video-and-embed-it-to-your-app) as your origin to remove this class of problem entirely.
+
+### 5xx errors during live events or traffic peaks
+
+**What you see:** bursts of `5xx` errors when a popular live event starts or traffic spikes, which clear up once the event ends.
+
+**Why it's the origin:** at peak, your origin (or an upstream CDN you pull from) can't keep up and returns `5xx`, which the CDN passes through to viewers. Origins that rate-limit by IP can also throttle the CDN's shield, producing the same symptom.
+
+**What to do:**
+
+1. In **Reports → Statistics**, line up **Response classes** (`5xx`) against **Upstream response time**. If upstream time rises with the errors, the origin is the bottleneck.
+2. [Enable origin shielding](/cdn/video-cdn/origin-shielding-for-video) so thousands of concurrent edge misses collapse into a single origin request per object.
+3. Provision origin capacity and bandwidth for the event ahead of time, and pre-warm popular content.
+4. Remove or raise any origin rate limits that throttle CDN requests, and allowlist Gcore's servers on your origin.
+5. Use short-but-cacheable TTLs for live manifests so they can be served from cache instead of hitting origin on every refresh.
+
+See [5xx error: how to solve server issues](/cdn/troubleshooting/5xx-error-how-to-solve-server-issues) for the full origin checklist.
+
+### The CDN "won't cache" your video
+
+**What you see:** the cache hit ratio stays low and segments are served as `MISS` even with steady, repeated traffic — so it looks like the CDN is ignoring its cache.
+
+**Why it's the origin:** your origin is sending response headers that tell the CDN not to cache — typically `Cache-Control: no-store`, `no-cache`, `private`, or `max-age=0`, but also `Set-Cookie` or an overly broad `Vary` header on video segments.
+
+**What to do:**
+
+1. Inspect the origin's response headers: `curl -I https://<your-cdn-domain>/path/to/segment.ts` and look at `Cache-Control`, `Expires`, `Pragma`, `Set-Cookie`, and `Vary`.
+2. Fix the origin to send cacheable headers for video segments (a positive `max-age`, no `no-store`/`no-cache`, no per-request `Set-Cookie`).
+3. If you can't change the origin, override the cache lifetime on the CDN resource so segments are cached regardless of origin headers — see [Specify cache lifetime](/cdn/cdn-resource-options/cache/specify-cache-lifetime-on-a-cdn-resource-or-origin).
+4. [Purge the cache](/cdn/clear-cdn-resource-cache-by-url-pattern-or-all) and re-check the hit ratio after the change.
+
+For more detail, see [Cache hit ratio is low](/cdn/troubleshooting/cache-percentage-is-low-how-to-solve-the-issue).
+
+## When to contact support
+
+If you've worked through the relevant steps and delivery is still failing, contact [Support](mailto:support@gcore.com) and include:
+
+- The exact failing URL (the CDN segment or manifest URL, not the player page).
+- The status code and `Cache` header from DevTools, and a screenshot of **Response classes** and **Upstream response time** from **Reports → Statistics**.
+- Whether the content is **Live or VOD**, and **HLS or DASH**.
+- The affected region, ISP, and device type (mobile, desktop, Smart TV).
+- The time window (in UTC) when the problem occurred.
+- The output of `https://gcore.com/.well-known/cdn-debug/json` opened from the affected viewer's network — see [When to contact support](/cdn/video-cdn/improve-video-delivery-speed#when-to-contact-support) for what this snapshot contains.
+
+## Related pages
+
+<CardGroup cols={2}>
+  <Card title="Improve video delivery speed" icon="gauge" href="/cdn/video-cdn/improve-video-delivery-speed">
+    Diagnose buffering and a low cache hit ratio
+  </Card>
+  <Card title="Origin shielding for video" icon="shield" href="/cdn/video-cdn/origin-shielding-for-video">
+    Absorb edge misses and protect your origin during peaks
+  </Card>
+  <Card title="Secure token for video" icon="key" href="/cdn/video-cdn/secure-token">
+    Protect HLS and DASH streams and fix 403/410 token errors
+  </Card>
+  <Card title="CDN error status codes" icon="triangle-exclamation" href="/cdn/troubleshooting/gcore-error-status-codes">
+    Look up what a specific status code means
+  </Card>
+</CardGroup>
