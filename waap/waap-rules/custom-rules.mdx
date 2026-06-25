@@ -1,43 +1,45 @@
 ---
 title: "Custom Rules"
 sidebarTitle: Custom Rules
-ai-navigation: Create WAAP custom rules with conditions and actions (Allow, Block, CAPTCHA, JS Challenge, Tag) to control access by URL, country, organization, and IP; configure rate limit rules to restrict requests per time range; apply tag rules for monitoring and analytics with priority-based action enforcement.
+ai-navigation: Create and manage WAAP custom rules to filter requests by IP, country, URL, and user agent via Customer Portal or REST API.
 ---
 
-Using custom rules is a great way to ensure a thorough assessment and filtering of web requests. You can control access to specific URLs, limit access to your application, allow or block countries or organizations, and adjust WAAP behavior to a variety of use cases. 
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>Using custom rules is a great way to ensure a thorough assessment and filtering of web requests. You can control access to specific URLs, limit access to your application, allow or block countries or organizations, and adjust WAAP behavior to a variety of use cases.</p>
 
 <Tip>
 **Tip**
 
-If you only want to create Access control lists (ACL), check our [Allowed IPs and Blocked IPs](/waap/firewall/access-control#allowed-ips-and-blocked-ips) guide.
+If you only want to create Access control lists (ACL), check our [IP allowlist and blocklist](/waap/firewall/ip-allowlist-and-blocklist) guide.
 </Tip>
 
-You can create the following types of custom rules: 
+You can create the following types of custom rules:
 
-  * [WAAP rules](/waap/waap-rules) consist of two key elements: rule type that defines the conditions for matching a rule and an action that will be enforced when the rule is triggered. 
+  * [WAAP rules](/waap/waap-rules) consist of two key elements: rule type that defines the conditions for matching a rule and an action that will be enforced when the rule is triggered.
 
-  * [Rate limit rules](/waap/waap-rules/advanced-rules/advanced-rate-limiting-rules) allow you to set the limit for the number of requests allowed within a particular time range. 
+  * [Rate limit rules](/waap/waap-rules/advanced-rules/advanced-rate-limiting-rules) allow you to set the limit for the number of requests allowed within a particular time range.
 
   * [Tag rules](/waap/waap-rules/custom-rules/tag-rules) contain tags, which are added to existing rules and function as identifiers for monitoring and analytics purposes. You can also create custom rules based on tags.
 
-
-
-
 ## Actions in Custom Rules
 
-Rule actions are triggered based on the conditions you specify. If you create multiple rules with the same conditions, then only the action with the highest priority level will take place. 
+<p>Rule actions are triggered based on the conditions you specify. If you create multiple rules with the same conditions, then only the action with the highest priority level will take place.</p>
 
-For example, you've created a rule that allows all requests from 1.1.1.1 to access your application, and then you added another rule to present a captcha response page to 1.1.1.1. In this situation, only the **Allow** action will be triggered because it has a higher priority level than the CAPTCHA action. 
+<p>For example, you've created a rule that allows all requests from 1.1.1.1 to access your application, and then you added another rule to present a captcha response page to 1.1.1.1. In this situation, only the **Allow** action will be triggered because it has a higher priority level than the CAPTCHA action.</p>
 
-The following table features all rule actions along with their priority levels. 
+<p>The following table features all rule actions along with their priority levels.</p>
 
-**Action** | **Description** | **Priority level**  
----|---|---  
-Allow | Allows specified traffic to view the application's content and exclude the user from any security checks. | Second  
-Block | Blocks specified traffic from accessing the application's content. | Third  
-Captcha | Displays a CAPTCHA challenge before the user can view the application's content. | Fourth  
-JS Challenge | Displays a JavaScript challenge before the user can view the application's content. | Fifth  
-Tag | Tags a request with the custom user-defined tag you specify. This action type doesn't send any challenge to the user and only adds information to a request. <br/>All tag action rules run first before any other action type. They don't stop the rule engine even after the condition has been met and the tag has been applied. Thus, the user-defined tags that are generated in this run can be used in the "user-defined tag" condition of the same run (during the same request processing). | N/A  <br/>Tags work in parallel—if a request is blocked, it can still be tagged.  
+**Action** | **Description** | **Priority level**
+---|---|---
+Allow | Allows specified traffic to view the application's content and exclude the user from any security checks. | Second
+Block | Blocks specified traffic from accessing the application's content. | Third
+Captcha | Displays a CAPTCHA challenge before the user can view the application's content. | Fourth
+JS Challenge | Displays a JavaScript challenge before the user can view the application's content. | Fifth
+Tag | Tags a request with the custom user-defined tag you specify. This action type doesn't send any challenge to the user and only adds information to a request. <br/>All tag action rules run first before any other action type. They don't stop the rule engine even after the condition has been met and the tag has been applied. Thus, the user-defined tags that are generated in this run can be used in the "user-defined tag" condition of the same run (during the same request processing). | N/A <br/>Tags work in parallel—if a request is blocked, it can still be tagged.
 
 <Tip>
 **Tip**
@@ -47,7 +49,7 @@ The **Tag** action doesn't challenge requests. Thus, it has no assigned priority
 
 ## Rule conditions
 
-When creating a rule, it's important to choose a proper type of condition that defines when the rule will be triggered. The following table features the available custom rule conditions.
+<p>When creating a rule, it's important to choose a proper type of condition that defines when the rule will be triggered. The following table features the available custom rule conditions.</p>
 
 | Condition type         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 |------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -67,4 +69,500 @@ When creating a rule, it's important to choose a proper type of condition that d
 | Tag                    | Sanction requests based on specific pre-defined tags provided by Gcore. View the full list of tags, their API slugs, and their descriptions in our [dedicated guide](/waap/waap-rules/custom-rules/tag-rules/predefined-tags).                                                                                                                                                                                                                                                   |
 | User-defined tag       | Sanction requests based on custom-generated tags named "user-defined tags".<br/>You can create these tags in the Customer Portal or via API. For more details, check out the [Tag generating rules](/waap/waap-rules/custom-rules/tag-rules#tag-generating-rules).                                                                                                                                                                                                               |
 
+</MethodSection>
+  <MethodSection id="api" label="REST API">
 
+<p>Custom rules match incoming requests against one or more conditions — IP address, country, URL, user agent, and others — and apply a configured action when the match fires. Rules are evaluated by priority: Allow overrides Block, Block overrides Captcha, and so on.</p>
+
+<Info>
+An [API token](/account-settings/api-tokens) is required, along with the ID of a [WAAP-protected domain](/waap/getting-started/configure-waap-for-a-domain) and the [Python](/developer-tools/sdks/python) or [Go](/developer-tools/sdks/go) SDK installed for SDK examples.
+</Info>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export WAAP_DOMAIN_ID="{YOUR_DOMAIN_ID}"
+```
+
+## List rules
+
+<p>Retrieve all custom rules configured for a domain, including their current enabled state, conditions, and actions.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    rules = client.waap.domains.custom_rules.list(domain_id)
+    for rule in rules:
+        status = "enabled" if rule.enabled else "disabled"
+        print(f"{rule.id}: {rule.name} [{status}]")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        rules, _ := client.Waap.Domains.CustomRules.List(context.Background(), domainID, waap.DomainCustomRuleListParams{})
+        for _, rule := range rules.Results {
+            status := "disabled"
+            if rule.Enabled {
+                status = "enabled"
+            }
+            fmt.Printf("%d: %s [%s]\n", rule.ID, rule.Name, status)
+        }
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X GET "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/custom-rules" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+
+    The API returns a paginated list of rules:
+
+    ```json
+    {
+      "limit": 100,
+      "offset": 0,
+      "count": 1,
+      "results": [
+        {
+          "id": 269001,
+          "name": "Block CN and RU traffic",
+          "description": "Block requests from high-risk regions",
+          "enabled": true,
+          "action": {"block": {"status_code": 403}},
+          "conditions": [
+            {"country": {"negation": false, "country_code": ["CN", "RU"]}}
+          ]
+        }
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Create a rule
+
+<p>Create a rule by specifying a name, an action, and one or more conditions. The rule can be created in a disabled state and enabled later.</p>
+
+<p>The example below blocks all requests from two countries. The `action` field accepts exactly one action type per rule. The `conditions` array accepts one or more condition objects — all must match for the rule to fire.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    rule = client.waap.domains.custom_rules.create(
+        domain_id,
+        name="Block CN and RU traffic",
+        description="Block requests from high-risk regions",
+        enabled=True,
+        action={"block": {"status_code": 403}},
+        conditions=[
+            {"country": {"country_code": ["CN", "RU"]}}
+        ],
+    )
+    print(f"Created rule ID: {rule.id}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        rule, _ := client.Waap.Domains.CustomRules.New(
+            context.Background(),
+            domainID,
+            waap.DomainCustomRuleNewParams{
+                Name:        "Block CN and RU traffic",
+                Description: gcore.String("Block requests from high-risk regions"),
+                Enabled:     true,
+                Action: waap.DomainCustomRuleNewParamsAction{
+                    Block: waap.DomainCustomRuleNewParamsActionBlock{
+                        StatusCode: 403,
+                    },
+                },
+                Conditions: []waap.DomainCustomRuleNewParamsCondition{{
+                    Country: waap.DomainCustomRuleNewParamsConditionCountry{
+                        CountryCode: []string{"CN", "RU"},
+                    },
+                }},
+            },
+        )
+        fmt.Printf("Created rule ID: %d\n", rule.ID)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/custom-rules" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "Block CN and RU traffic",
+        "description": "Block requests from high-risk regions",
+        "enabled": true,
+        "action": {"block": {"status_code": 403}},
+        "conditions": [
+          {"country": {"country_code": ["CN", "RU"]}}
+        ]
+      }'
+    ```
+
+    The API returns the created rule with its assigned ID:
+
+    ```json
+    {
+      "id": 269001,
+      "name": "Block CN and RU traffic",
+      "description": "Block requests from high-risk regions",
+      "enabled": true,
+      "action": {"block": {"status_code": 403}},
+      "conditions": [
+        {"country": {"negation": false, "country_code": ["CN", "RU"]}}
+      ]
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<Accordion title="Action and condition reference">
+
+**Actions** — exactly one action per rule:
+
+| Action | API key | Description |
+|--------|---------|-------------|
+| Allow | `allow` | Passes the request through all security checks. |
+| Block | `block` | Rejects the request. Accepts an optional `status_code` (default: 403). |
+| CAPTCHA | `captcha` | Presents a CAPTCHA challenge. |
+| JS Challenge | `handshake` | Applies a transparent JavaScript browser check. |
+| Tag | `tag` | Attaches user-defined tags to the request without blocking it. Requires a `tags` array. Tag names may contain letters, numbers, and spaces only. |
+
+**Conditions** — one or more per rule, all must match:
+
+| Condition | API key | Key fields |
+|-----------|---------|------------|
+| IP address | `ip` | `ip_address` (single IPv4 or IPv6) |
+| IP range | `ip_range` | `lower_bound`, `upper_bound` |
+| URL | `url` | `url` (path), `match_type`: `"Exact"`, `"Contains"`, or `"Regex"` |
+| User agent | `user_agent` | `user_agent` (string), `match_type`: `"Exact"` or `"Contains"` |
+| Country | `country` | `country_code` (array of ISO 3166-1 alpha-2 codes) |
+| Organization | `organization` | `organization` (string) |
+| HTTP method | `http_method` | `http_method`: `"GET"`, `"POST"`, `"PUT"`, etc. |
+| Header | `header` | `header` (name), `value`, `match_type`: `"Exact"` or `"Contains"` |
+| File extension | `file_extension` | `file_extension` (array of strings) |
+| Content type | `content_type` | `content_type` (array of strings) |
+
+All conditions support an optional `negation` boolean (default: `false`). Set `negation: true` to invert the match — the rule fires on all requests that do NOT match the condition.
+
+</Accordion>
+
+## Update a rule
+
+<p>Update any combination of a rule's name, description, enabled state, action, or conditions. Only fields included in the request body are changed. The API returns 204 with no body on success.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+    rule_id = 269001
+
+    client.waap.domains.custom_rules.update(
+        rule_id,
+        domain_id=domain_id,
+        description="Updated: now also covers additional high-risk regions",
+        name="Block high-risk country traffic",
+    )
+    print("Rule updated")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+        ruleID := int64(269001)
+
+        client.Waap.Domains.CustomRules.Update(
+            context.Background(),
+            ruleID,
+            waap.DomainCustomRuleUpdateParams{
+                DomainID:    domainID,
+                Description: gcore.String("Updated: now also covers additional high-risk regions"),
+                Name:        gcore.String("Block high-risk country traffic"),
+            },
+        )
+        fmt.Println("Rule updated")
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    export RULE_ID=269001
+
+    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/custom-rules/${RULE_ID}" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "description": "Updated: now also covers additional high-risk regions",
+        "name": "Block high-risk country traffic"
+      }'
+    ```
+
+    The API returns 204 with no body on success.
+  </Tab>
+</Tabs>
+
+## Enable and disable a rule
+
+<p>Switch a rule between active and inactive without deleting it. Disabling a rule stops it from matching requests while preserving its configuration for later reactivation. The API returns 204 with no body for both operations.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+    rule_id = 269001
+
+    client.waap.domains.custom_rules.toggle("disable", domain_id=domain_id, rule_id=rule_id)
+    print("Rule disabled")
+
+    client.waap.domains.custom_rules.toggle("enable", domain_id=domain_id, rule_id=rule_id)
+    print("Rule enabled")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+        ruleID := int64(269001)
+
+        client.Waap.Domains.CustomRules.Toggle(
+            context.Background(),
+            waap.DomainCustomRuleToggleParamsActionDisable,
+            waap.DomainCustomRuleToggleParams{DomainID: domainID, RuleID: ruleID},
+        )
+        fmt.Println("Rule disabled")
+
+        client.Waap.Domains.CustomRules.Toggle(
+            context.Background(),
+            waap.DomainCustomRuleToggleParamsActionEnable,
+            waap.DomainCustomRuleToggleParams{DomainID: domainID, RuleID: ruleID},
+        )
+        fmt.Println("Rule enabled")
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    export RULE_ID=269001
+
+    # Disable
+    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/custom-rules/${RULE_ID}/disable" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+
+    # Enable
+    curl -X PATCH "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/custom-rules/${RULE_ID}/enable" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+
+    Both calls return 204 with no body on success.
+  </Tab>
+</Tabs>
+
+## Delete rules
+
+<p>Delete a single rule by ID, or remove multiple rules in one request using the bulk delete endpoint. Both operations return 204 with no body on success and are irreversible.</p>
+
+<p>**Single rule:**</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+    rule_id = 269001
+
+    client.waap.domains.custom_rules.delete(rule_id, domain_id=domain_id)
+    print("Rule deleted")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+        ruleID := int64(269001)
+
+        client.Waap.Domains.CustomRules.Delete(
+            context.Background(),
+            ruleID,
+            waap.DomainCustomRuleDeleteParams{DomainID: domainID},
+        )
+        fmt.Println("Rule deleted")
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    export RULE_ID=269001
+
+    curl -X DELETE "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/custom-rules/${RULE_ID}" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}"
+    ```
+
+    The API returns 204 with no body on success.
+  </Tab>
+</Tabs>
+
+<p>**Multiple rules:**</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    client.waap.domains.custom_rules.delete_multiple(
+        domain_id,
+        rule_ids=[269001, 269002, 269003],
+    )
+    print("Rules deleted")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        gcore "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        client.Waap.Domains.CustomRules.DeleteMultiple(
+            context.Background(),
+            domainID,
+            waap.DomainCustomRuleDeleteMultipleParams{
+                RuleIDs: []int64{269001, 269002, 269003},
+            },
+        )
+        fmt.Println("Rules deleted")
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/custom-rules/bulk_delete" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{"rule_ids": [269001, 269002, 269003]}'
+    ```
+
+    The API returns 204 with no body on success.
+  </Tab>
+</Tabs>
+
+</MethodSection>
+</MethodSwitch>
