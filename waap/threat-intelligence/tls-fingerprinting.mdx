@@ -1,0 +1,185 @@
+---
+title: "TLS fingerprinting with JA3 and JA4"
+sidebarTitle: TLS fingerprinting
+ai-navigation: Use JA3 and JA4 TLS fingerprinting in WAAP to identify bots by network stack, view fingerprints in events, and create advanced rules to block botnets by TLS client identity via Customer Portal or REST API.
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+<MethodSwitch>
+  <MethodSection id="portal" label="Customer Portal">
+
+<p>TLS fingerprinting identifies clients by the parameters exchanged during the TLS handshake rather than by IP address or the User-Agent header. These parameters — cipher suites, protocol version, and extensions — reflect the client's underlying network stack. Because they remain consistent across IP changes and are difficult to randomize at scale, they're effective for identifying botnets that rotate addresses or imitate browsers.</p>
+
+<p>WAAP supports two fingerprinting algorithms:</p>
+
+| | JA3 | JA4 |
+|---|---|---|
+| Algorithm | MD5 | Normalized MD5 |
+| Ordering sensitivity | Sensitive — values can differ between sessions | Stable — sorts fields before hashing |
+| Output format | 32-character hex string | Three-part string (`prefix_hex12_hex12`) |
+| Example value | `e2925c27149b0d0dc34373d55040dde1` | `t13d1516h2_8daaf6152771_b1ff8ab2d16f` |
+
+<p>JA3 dominates threat intelligence feeds and external security tools, making it the right choice when cross-referencing fingerprints across systems. JA4 is better suited for modern TLS clients — it normalizes handshake fields that browsers may reorder between sessions, so fingerprints stay consistent.</p>
+
+<p>For every incoming request, WAAP computes and logs its JA3 fingerprint automatically. No configuration is required.</p>
+
+## View events by fingerprint
+
+<p>Every event logged by WAAP includes the JA3 fingerprint of the originating request — visible both in the event list and in the request details panel. Filter by hash to isolate all traffic from a specific client library:</p>
+
+1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **WAAP** > **Events**.
+2. In the filter bar, click the filter icon and select **JA3**.
+3. Enter the 32-character hex hash and click **Apply**.
+
+<Frame>![Events page with the JA3 filter selected in the filter bar](/images/docs/waap/threat-intelligence/tls-fingerprinting/ja3-events-filter.png)</Frame>
+
+## Create an Advanced Rule with a fingerprint condition
+
+<p>[Advanced Rules](/waap/waap-rules/advanced-rules/advanced-rules) evaluate fingerprint values against conditions and apply an action — block, allow, or rate-limit — to matching requests. A single rule matching a specific fingerprint covers an entire botnet regardless of how many IP addresses it uses.</p>
+
+<p>After identifying a suspicious fingerprint in the event log, use it directly as a rule condition:</p>
+
+1. In the Customer Portal, navigate to **WAAP** > **Custom Rules**.
+2. Click **Add custom rule** and select **Advanced Rule** as the rule type.
+3. In the **Define rule** section, set the object to **request** and the attribute to **ja3** or **ja4**.
+4. Enter the fingerprint value and set the desired action, then click **Save**.
+
+<Frame>![Advanced rule builder with the request object and ja4 attribute selected, showing the attribute dropdown with ja3 and ja4 options visible](/images/docs/waap/threat-intelligence/tls-fingerprinting/ja4-in-rule-builder.png)</Frame>
+
+<p>The rule builder generates the CEL expression automatically. To match multiple fingerprints, click **+** to add conditions, or click **Edit manually** to write a combined expression:</p>
+
+```text
+request.ja3 == 'e2925c27149b0d0dc34373d55040dde1' or
+request.ja3 == '3e9b20610098b6c9bff953856e58016a' or
+request.ja3 == '7d671906ed4a1edac3262a54676dacfa'
+```
+
+## Malicious TLS Fingerprint tag
+
+<p>Explicit fingerprint matching isn't the only option.</p>
+
+<p>WAAP automatically assigns the `malicioustlsfingerprint` [predefined tag](/waap/waap-rules/custom-rules/tag-rules/predefined-tags) to requests whose fingerprint appears in Gcore's threat intelligence feed of known-malicious client libraries. A [tag-based rule](/waap/waap-rules/custom-rules/tag-rules) targeting this tag applies an action without requiring knowledge of a specific hash value:</p>
+
+```text
+tags.exists('malicioustlsfingerprint')
+```
+
+<p>When a fingerprint is not yet in the feed, an explicit `request.ja3` or `request.ja4` condition in an Advanced Rule is the fallback — as the incident below illustrates.</p>
+
+### Incident example
+
+<p>A gaming service received approximately 1.5 billion requests from around 2,200 source IPs. The attack used only five User-Agent strings and mimicked legitimate browser behavior, making blocking by IP or User-Agent impractical.</p>
+
+<p>Analysis showed that 99% of the attack traffic shared a single JA3 fingerprint. One Advanced Rule matching that fingerprint mitigated the entire attack without touching IP allowlists or rate limits.</p>
+
+  </MethodSection>
+  <MethodSection id="api" label="REST API">
+
+<p>The WAAP API supports two workflows: querying events by fingerprint and creating Advanced Rules with fingerprint conditions.</p>
+
+<p>All requests require an [API token](/account-settings/api-tokens). Set the required environment variables before running the examples:</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+export WAAP_DOMAIN_ID="{DOMAIN_ID}"
+```
+
+## Query events by fingerprint
+
+<p>Pass the fingerprint as a `ja3` or `ja4` query parameter. The API returns only events where the originating client matched that hash — regardless of how many IP addresses the client used.</p>
+
+```bash
+curl "https://api.gcore.com/waap/v1/analytics/requests?domain_ids=${WAAP_DOMAIN_ID}&start=2026-01-01T00:00:00Z&ja3=e2925c27149b0d0dc34373d55040dde1" \
+  -H "Authorization: APIKey ${GCORE_API_KEY}"
+```
+
+<p>Each event in the response includes a `ja3` field. For JA4, use the `ja4` parameter with a value in the `prefix_hex12_hex12` format.</p>
+
+<p>Once you've identified the fingerprint to block, use it in an Advanced Rule condition.</p>
+
+## Create an Advanced Rule with a fingerprint condition
+
+<p>Advanced Rules accept `request.ja3` and `request.ja4` as condition fields in the CEL `source` expression. The [Python](/developer-tools/sdks/python) and [Go](/developer-tools/sdks/go) SDKs cover this endpoint.</p>
+
+<Tabs>
+  <Tab title="Python SDK">
+    ```python
+    import gcore
+    import os
+
+    from dotenv import load_dotenv
+
+    load_dotenv()
+
+    client = gcore.Gcore(api_key=os.environ["GCORE_API_KEY"])
+    domain_id = int(os.environ["WAAP_DOMAIN_ID"])
+
+    rule = client.waap.domains.advanced_rules.create(
+        domain_id,
+        name="Block known botnet fingerprint",
+        enabled=True,
+        source="request.ja3 == 'e2925c27149b0d0dc34373d55040dde1'",
+        action={"block": {"status_code": 403}},
+    )
+
+    print(f"Rule created: id={rule.id} name={rule.name!r}")
+    ```
+  </Tab>
+  <Tab title="Go SDK">
+    ```go
+    package main
+
+    import (
+        "context"
+        "fmt"
+        "os"
+        "strconv"
+
+        "github.com/G-Core/gcore-go"
+        "github.com/G-Core/gcore-go/option"
+        "github.com/G-Core/gcore-go/waap"
+    )
+
+    func main() {
+        client := gcore.NewClient(option.WithAPIKey(os.Getenv("GCORE_API_KEY")))
+        domainID, _ := strconv.ParseInt(os.Getenv("WAAP_DOMAIN_ID"), 10, 64)
+
+        rule, _ := client.Waap.Domains.AdvancedRules.New(
+            context.Background(),
+            domainID,
+            waap.DomainAdvancedRuleNewParams{
+                Name:    "Block known botnet fingerprint",
+                Enabled: true,
+                Source:  "request.ja3 == 'e2925c27149b0d0dc34373d55040dde1'",
+                Action: waap.DomainAdvancedRuleNewParamsAction{
+                    Block: waap.DomainAdvancedRuleNewParamsActionBlock{
+                        StatusCode: 403,
+                    },
+                },
+            },
+        )
+
+        fmt.Printf("Rule created: id=%d name=%q\n", rule.ID, rule.Name)
+    }
+    ```
+  </Tab>
+  <Tab title="curl">
+    ```bash
+    curl -X POST "https://api.gcore.com/waap/v1/domains/${WAAP_DOMAIN_ID}/advanced-rules" \
+      -H "Authorization: APIKey ${GCORE_API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "Block known botnet fingerprint",
+        "enabled": true,
+        "source": "request.ja3 == '\''e2925c27149b0d0dc34373d55040dde1'\''",
+        "action": {"block": {"status_code": 403}}
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+<p>For JA4, swap `request.ja3` for `request.ja4` and use the `prefix_hex12_hex12` format. To cover multiple known fingerprints, chain conditions with `or` in the `source` string.</p>
+
+  </MethodSection>
+</MethodSwitch>
