@@ -21,6 +21,11 @@ When a phase is done:
 - Report what was completed
 - Immediately start the next phase without asking for permission
 
+**EXCEPTION — after Phase 8 (article fully complete):**
+Stop completely. Do NOT move to the next article.
+Wait for explicit user instruction to proceed to the next article.
+The auto-progression rule applies only to phases within a single article.
+
 Violating this rule produces shallow work across all phases instead of
 deep work within each phase. This is forbidden.
 
@@ -648,6 +653,20 @@ Run this phase only after the PR has been pushed and the user confirms.
 Open `c:\Projects\docops-agent2\scripts\create_edge_cloud_regression_ticket.py`
 and fill in `SUMMARY` and `DESCRIPTION` with the actual article name and the list
 of changes applied. Use past tense — describe what was done, not what to do.
+
+**What belongs in the description — meaningful content changes only:**
+- UI label or name corrections found in the portal (e.g., renamed a button, updated navigation path)
+- Added or removed sections, screenshots, steps
+- Structural rewrites (e.g., "Restructured as comparison table")
+- Factual corrections (e.g., added a missing product to a list)
+
+**Do NOT include in the description:**
+- CRLF/LF conversions
+- Style guide micro-fixes (removed "etc.", fixed colon spacing, rewrote one sentence)
+- MDX encoding fixes (BOM, line endings)
+- p tag additions
+
+3–5 bullets maximum. If a change is too small to matter to a reviewer, skip it.
 
 Format:
 
