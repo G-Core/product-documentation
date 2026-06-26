@@ -1,44 +1,31 @@
 ---
 title: How it works
 sidebarTitle: How it works
-ai-navigation: Deploy Edge Storage as a distributed key-value store co-located with FastEdge WASM applications at every global edge location, providing sub-millisecond read latency with write-once replication to central SQL database and eventual consistency propagation within 1-2 seconds.
+ai-navigation: Understand how Edge Storage co-locates a key-value store with FastEdge applications at every edge location for sub-millisecond reads, with writes persisted via REST API to a central database and replicated globally within 1-2 seconds.
 ---
 
-Edge Storage leverages a distributed key-value store architecture optimized for FastEdge's global WASM runtime. Here's what makes it unique:
+Edge Storage is a globally replicated key-value store for FastEdge applications. A local replica is available at every edge location where the application runs, allowing reads to be served directly from the edge node handling the request.
 
-### Architecture
+Unlike CDN solutions that place data stores at regional POP locations, Edge Storage deploys a replica at every FastEdge location.
 
-**Co-located storage instances**: Unlike traditional CDN solutions that run data stores at regional Point-of-Presence (POP) locations, Edge Storage deploys a storage instance at every edge location where your FastEdge application runs. This means your WASM component and its data store exist in the same environment, eliminating network hops and providing single-digit millisecond read latency.
+## Architecture
 
-**Write-once, replicate everywhere**: When you write data through the API, it's first persisted to a central SQL database, then automatically replicated to all edge storage instances globally. This replication typically completes within 1-2 seconds.
+Edge Storage is deployed next to FastEdge applications at every edge location. When an application reads from a store, it reads from the local replica on the same edge node — no network call to a regional or central database is needed.
 
-### Performance characteristics
+Writes follow a different path. They are sent through the REST API, persisted in a central SQL database, and then replicated to all edge locations globally. Replication typically completes within 1–2 seconds. This makes Edge Storage well-suited for data that is read frequently but written infrequently: configuration, feature flags, lookup tables, blocklists, and similar reference data.
 
-- **Ultra-fast reads**: Reading from Edge Storage happens locally at each edge with sub-millisecond latency since the data store runs alongside your WASM application
-- **Eventual consistency for writes**: API writes take 1-2 seconds to propagate globally, making Edge Storage ideal for read-heavy workloads
+## Edge Storage vs Cache
 
-### Why this approach wins
-
-Traditional edge computing platforms place data stores at regional POP locations, forcing your application to make network calls to reach the data store. This introduces latency and potential failure points. By co-locating the storage with your WASM runtime at every edge, Edge Storage delivers:
-
-- **Lower latency**: No network round-trips between your application and data store
-- **Higher reliability**: Data access doesn't depend on cross-datacenter connectivity
-- **Better performance**: Optimize for the 99% use case (reads) while accepting slightly slower writes
-
-This architecture is perfect for frequently-read, infrequently-written data. Ideal use cases include configuration data, feature flags, content fragments, and blocklist/allowlist checks based on IP addresses, IP subnets, ASNs, and similar criteria.
-
-## When to use Edge Storage vs Cache
-
-Edge Storage and [Cache](/fastedge/cache) solve different problems. Edge Storage is the right choice when you need durable, globally consistent data that is created and managed ahead of time. Cache is the right choice when you need fast, POP-local state at runtime — for example, counters or memoized values that do not need to be shared between POPs.
+Edge Storage and [Cache](/fastedge/cache) address different requirements. Edge Storage is the right choice for durable, globally consistent data created and managed ahead of time. Cache is the right choice for fast, POP-local state at runtime — for example, counters or memoized values that do not need to be shared between POPs.
 
 | | Edge Storage (KV) | Cache |
 |---|---|---|
 | Scope | Globally replicated to all POPs | Single POP |
 | Consistency | Eventual (1–2 seconds globally) | Strong (within a POP) |
 | Durability | Durable, backed by a central database | Transient, evictable |
-| Provisioning | Created in the Customer Portal and linked to your application | None — available at runtime on paid plans |
+| Provisioning | Created in the portal and linked to the application | None — available at runtime on paid plans |
 | Writes from the API | Yes | No (runtime only) |
 | Atomic counters | No | Yes (`incr`; `decr` JS only) |
 | Typical workloads | Configuration, feature flags, lookup tables, blocklists, sorted sets, Bloom filters | Rate limits, response memoization, idempotency keys, per-request deduplication |
 
-The two can be used together: store the source of truth in Edge Storage and use Cache to memoize derived results or to enforce per-POP rate limits.
+The two can be used together: store the source of truth in Edge Storage and use Cache to memoize derived results or enforce per-POP rate limits.

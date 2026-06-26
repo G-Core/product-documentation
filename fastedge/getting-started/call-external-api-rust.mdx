@@ -1,0 +1,316 @@
+---
+title: Call an external API from a FastEdge app
+sidebarTitle: Call an external API
+ai-navigation: Build and deploy a FastEdge application in Modern Rust, Legacy Rust, or JavaScript that makes outbound HTTP requests, fetches data from a REST API, and returns shaped JSON via Customer Portal or REST API.
+---
+
+import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
+
+FastEdge applications can make outbound HTTP calls from inside the handler — reach out to any external service, transform the response, and return the result to the caller. This guide builds an application that fetches a list of users from a public REST API and returns the first five as JSON. It assumes the [toolchain](/fastedge/getting-started) is already configured for the chosen language.
+
+
+## Handler
+
+Create a new library crate or project, then write the handler for the chosen language.
+
+<Tabs>
+  <Tab title="Modern Rust">
+
+Create a library crate and replace `Cargo.toml`:
+
+```sh
+cargo new --lib outbound-fetch
+cd outbound-fetch
+```
+
+```toml
+[package]
+name = "outbound_fetch"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wstd = "0.6"
+anyhow = "1"
+serde_json = "1"
+```
+
+Replace `src/lib.rs`:
+
+```rust
+use anyhow::anyhow;
+use wstd::http::body::Body;
+use wstd::http::{Client, Request, Response};
+use serde_json::{json, Value};
+
+#[wstd::http_server]
+async fn main(_request: Request<Body>) -> anyhow::Result<Response<Body>> {
+    let upstream_req = Request::get("https://jsonplaceholder.typicode.com/users")
+        .body(Body::empty())
+        .map_err(|e| anyhow!("failed to build request: {e}"))?;
+
+    let client = Client::new();
+    let upstream_resp = client
+        .send(upstream_req)
+        .await
+        .map_err(|e| anyhow!("upstream request failed: {e}"))?;
+
+    let (_, mut body) = upstream_resp.into_parts();
+    let body_bytes = body.contents().await?;
+
+    let users: Value = serde_json::from_slice(body_bytes)?;
+    let sliced = match users.as_array() {
+        Some(arr) => Value::Array(arr.iter().take(5).cloned().collect()),
+        None => Value::Array(vec![]),
+    };
+    let count = sliced.as_array().map(|a| a.len()).unwrap_or(0);
+
+    Ok(Response::builder()
+        .status(200)
+        .header("content-type", "application/json")
+        .body(Body::from(json!({ "count": count, "users": sliced }).to_string()))?)
+}
+```
+
+`Client::new()` routes requests through the WASI outbound-http interface — the host runtime handles the actual network call. The `await` on `client.send()` is real async: the handler yields while the upstream request is in flight. The response body arrives as a stream; `body.contents().await` reads it fully into memory before parsing. Every `?` propagates errors through `anyhow::Result` — FastEdge converts a handler returning `Err` into a 500 response, with the error message written to application logs.
+
+  </Tab>
+  <Tab title="Legacy Rust">
+
+Create a library crate and replace `Cargo.toml`:
+
+```sh
+cargo new --lib outbound-fetch
+cd outbound-fetch
+```
+
+```toml
+[package]
+name = "outbound_fetch"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+fastedge = "0.4"
+anyhow = "1"
+serde_json = "1"
+```
+
+Replace `src/lib.rs`:
+
+```rust
+use fastedge::body::Body;
+use fastedge::http::{Method, Request, Response, StatusCode};
+use serde_json::{json, Value};
+
+#[fastedge::http]
+fn main(_req: Request<Body>) -> anyhow::Result<Response<Body>> {
+    let upstream_req = Request::builder()
+        .method(Method::GET)
+        .uri("https://jsonplaceholder.typicode.com/users")
+        .body(Body::empty())?;
+
+    let upstream_resp = fastedge::send_request(upstream_req)?;
+
+    let body = upstream_resp.into_body();
+    let users: Value = serde_json::from_slice(&body)?;
+    let sliced = match users.as_array() {
+        Some(arr) => Value::Array(arr.iter().take(5).cloned().collect()),
+        None => Value::Array(vec![]),
+    };
+    let count = sliced.as_array().map(|a| a.len()).unwrap_or(0);
+
+    Ok(Response::builder()
+        .status(StatusCode::OK)
+        .header("content-type", "application/json")
+        .body(Body::from(json!({ "count": count, "users": sliced }).to_string()))?)
+}
+```
+
+`fastedge::send_request()` is a synchronous blocking call — the handler waits until the full upstream response arrives. The response body is immediately available as a byte slice via `into_body()`, with no streaming step needed. Every `?` propagates errors through `anyhow::Result` — FastEdge converts a handler returning `Err` into a 500 response, with the error message written to application logs.
+
+  </Tab>
+  <Tab title="JavaScript">
+
+Create a project directory and install the SDK:
+
+```sh
+mkdir outbound-fetch
+cd outbound-fetch
+npm init -y
+npm pkg set type=module
+npm install @gcoredev/fastedge-sdk-js
+mkdir src wasm
+```
+
+Create `src/index.js`:
+
+```js
+addEventListener('fetch', async (event) => {
+  const response = await fetch('https://jsonplaceholder.typicode.com/users');
+  const users = await response.json();
+  const sliced = users.slice(0, 5);
+  event.respondWith(new Response(JSON.stringify({ count: sliced.length, users: sliced }), {
+    headers: { 'content-type': 'application/json' },
+  }));
+});
+```
+
+The handler is async — `await fetch(...)` makes an outbound HTTP call through the WASI outbound-http interface, and `await response.json()` reads and parses the response body. The `fetch` API behaves the same way here as in a browser or Node.js environment: returning a `Response` object with familiar methods like `.json()`, `.text()`, and `.arrayBuffer()`. If the upstream call fails, the unhandled rejection produces a 500 response with the error written to application logs.
+
+  </Tab>
+</Tabs>
+
+## Build
+
+Compile the handler to a WebAssembly binary.
+
+<Tabs>
+  <Tab title="Modern Rust">
+
+```sh
+cargo build --release --target wasm32-wasip2
+```
+
+The binary is at `./target/wasm32-wasip2/release/outbound_fetch.wasm`.
+
+  </Tab>
+  <Tab title="Legacy Rust">
+
+```sh
+cargo build --release --target wasm32-wasip1
+```
+
+The binary is at `./target/wasm32-wasip1/release/outbound_fetch.wasm`.
+
+  </Tab>
+  <Tab title="JavaScript">
+
+```sh
+npx fastedge-build --input src/index.js --output wasm/app.wasm
+```
+
+The binary is at `./wasm/app.wasm`.
+
+  </Tab>
+</Tabs>
+
+## Deploy
+
+<MethodSwitch>
+<MethodSection id="portal" label="Customer Portal">
+
+1. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **FastEdge** > **HTTP Applications** > **Applications** and click **Create new application**.
+2. Click **Upload binary** and select the `.wasm` file produced in the Build step.
+3. Enter a **Name** for the application.
+4. Click **Save and deploy**.
+
+<p>The application URL appears on the details page. Test it:</p>
+
+```sh
+curl https://<app-name>-<id>.fastedge.app/
+```
+
+<p>The application fetches the upstream API, takes the first five users, and returns them:</p>
+
+```json
+{
+  "count": 5,
+  "users": [
+    {"id": 1, "name": "Leanne Graham", "username": "Bret", "email": "Sincere@april.biz"},
+    {"id": 2, "name": "Ervin Howell", "username": "Antonette", "email": "Shanna@melissa.tv"}
+  ]
+}
+```
+
+</MethodSection>
+<MethodSection id="api" label="REST API">
+
+<p>An [API token](/account-settings/api-tokens) is required.</p>
+
+```bash
+export GCORE_API_KEY="{YOUR_API_KEY}"
+```
+
+<Warning>Do not commit API keys to source control.</Warning>
+
+**1. Upload the binary**
+
+<Tabs>
+  <Tab title="Modern Rust">
+
+```bash
+curl -sX POST 'https://api.gcore.com/fastedge/v1/binaries/raw' \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H 'Content-Type: application/octet-stream' \
+  --data-binary "@./target/wasm32-wasip2/release/outbound_fetch.wasm"
+```
+
+  </Tab>
+  <Tab title="Legacy Rust">
+
+```bash
+curl -sX POST 'https://api.gcore.com/fastedge/v1/binaries/raw' \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H 'Content-Type: application/octet-stream' \
+  --data-binary "@./target/wasm32-wasip1/release/outbound_fetch.wasm"
+```
+
+  </Tab>
+  <Tab title="JavaScript">
+
+```bash
+curl -sX POST 'https://api.gcore.com/fastedge/v1/binaries/raw' \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H 'Content-Type: application/octet-stream' \
+  --data-binary "@./wasm/app.wasm"
+```
+
+  </Tab>
+</Tabs>
+
+```json
+{"id": 4696, "api_type": "wasi-http", "status": 1}
+```
+
+**2. Create the application**
+
+```bash
+export BINARY_ID=4696
+
+curl -sX POST 'https://api.gcore.com/fastedge/v1/apps' \
+  -H "Authorization: APIKey $GCORE_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -d "{\"name\": \"my-outbound-fetch\", \"binary\": $BINARY_ID, \"status\": 1}"
+```
+
+**3. Test**
+
+<p>The URL from the create-app response becomes active within a few seconds:</p>
+
+```bash
+curl https://my-outbound-fetch-1000503.fastedge.app/
+```
+
+<p>The application fetches the upstream API, takes the first five users, and returns them:</p>
+
+```json
+{
+  "count": 5,
+  "users": [
+    {"id": 1, "name": "Leanne Graham", "username": "Bret", "email": "Sincere@april.biz"},
+    {"id": 2, "name": "Ervin Howell", "username": "Antonette", "email": "Shanna@melissa.tv"}
+  ]
+}
+```
+
+</MethodSection>
+</MethodSwitch>
+
+The outbound call happens on every request, from every edge node that handles traffic for this app. For data that changes infrequently, storing the upstream response in a [KV&nbsp;store](/fastedge/kv-stores/manage-kv-store) eliminates per-request latency after the first fetch.
