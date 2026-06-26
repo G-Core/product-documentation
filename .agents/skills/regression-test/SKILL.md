@@ -46,7 +46,7 @@ article being tested.
 | Input | Required | Notes |
 |-------|----------|-------|
 | Article path or topic | Yes | Full path or description to locate it |
-| Portal region | No | Default: Luxembourg 3 (`ed-3`) |
+| Portal region | No | Default: **Luxembourg-3** |
 
 ---
 
@@ -59,6 +59,27 @@ If only a topic is given — search the repository:
 ```powershell
 rg "keyword" --glob "*.mdx" -l
 ```
+
+### Claim the article before doing any work
+
+Before reading the article, open the plan file and mark the article as `in_progress`:
+
+```
+C:\Projects\docops-agent2\docs\PLAN_EDGE_CLOUD_UPDATE.md
+```
+
+Find the row for this article and change its status from `pending` to `in_progress`.
+
+**Why this matters:** two agents may be running in parallel on separate repository
+clones. Both can see the same `pending` rows. Claiming the article first — before
+reading it, before opening the portal — ensures no other agent picks up the same
+article and produces duplicate work or a merge conflict.
+
+**If the article's status is already `in_progress` or `done`:** stop immediately.
+Report to the user: "Article [path] is already claimed or completed in the plan.
+Choose a different article." Do not proceed until the user confirms a different target.
+
+After updating the plan, proceed to read the article.
 
 Read the entire article before touching the portal.
 Build a mental map:
@@ -78,7 +99,37 @@ They will be tested in their own turn.
 
 Load `.agents/references/mcp-tools/playwright.md` now.
 
-Follow the SSO login flow from that file exactly:
+### Open an isolated browser session first
+
+**Before navigating to the portal**, open a new incognito window to get a clean,
+isolated session that does not interfere with any other agent currently using the browser:
+
+```javascript
+// browser_evaluate — opens a new incognito window
+window.open('about:blank', '_blank');
+```
+
+Or use the Playwright MCP `browser_navigate` with a `--incognito` context if the MCP
+server supports it. The goal is a browser context with **no shared cookies, no shared
+tabs, no shared history** with any other session on this machine.
+
+**Why this is required:** Playwright MCP runs a single browser process shared across
+all agents running on the same machine. Without isolation, two parallel agents click in
+the same browser window — one agent's navigation overwrites the other's. An incognito
+window is a separate context: separate cookies (separate login session), separate tabs,
+no cross-contamination.
+
+**If you cannot open an isolated context** — stop and tell the user:
+> "Playwright MCP is sharing a browser session with another agent. A separate
+> incognito window is required to proceed safely. Please confirm the incognito
+> window is open before I continue."
+
+Do not proceed with portal testing until you are certain you are in an isolated session.
+
+### Log in
+
+Follow the SSO login flow from `.agents/references/mcp-tools/playwright.md` exactly,
+inside the isolated session:
 
 1. Navigate to `https://auth.gcore.com/login/signin`
 2. Click **SSO**
@@ -87,9 +138,16 @@ Follow the SSO login flow from that file exactly:
 5. **STOP — ask the user to complete Windows Hello authentication**
 6. Wait for confirmation, then verify the browser is at `https://portal.gcore.com`
 
+### Select the region
+
 After login, navigate to the region the article targets.
-Default region: **Luxembourg 3 (`ed-3`)**.
-Verify the correct region is selected in the portal header before starting any steps.
+Default region: **Luxembourg-3**.
+Select it from the region dropdown in the portal header before starting any steps.
+
+**Why Luxembourg-3:** all quotas needed for testing are available in this region.
+Do not use Luxembourg or Luxembourg-2 — quota availability differs.
+
+Verify the region switcher in the portal header shows **Luxembourg-3** before proceeding.
 
 ---
 
@@ -98,6 +156,28 @@ Verify the correct region is selected in the portal header before starting any s
 **Mindset: you are a customer reading this article for the first time.**
 You have no prior knowledge of the product. You follow the article literally.
 If something is unclear, confusing, or missing — it is a finding.
+
+### Resource naming
+
+Any resource created during testing — instance, cluster, network, volume, bucket,
+container, firewall, load balancer, or any other cloud object — must have a name
+a real customer would give it on their first day using the product.
+
+**Correct pattern:** `my-instance-1`, `my-cluster-1`, `my-network-1`, `my-volume-1`,
+`my-bucket-1`, `my-vm-1`, `my-lb-1`, `my-registry-1`, and so on.
+
+**Never use:** `docs-*`, `audit-*`, `test-*`, `regression-*`, `doc-*`, article slugs,
+Jira ticket IDs, or any name that signals internal tooling or automation.
+
+**Why this matters:** resource names appear in screenshots published as documentation.
+A customer reading the article sees those names in the UI. Names like `test-audit-vm`
+or `regression-cluster-1` break the customer's suspension of disbelief — they signal
+that the article was written by automation, not by someone doing the task for real.
+Names like `my-cluster-1` read as the customer's own work and make the article
+immediately relatable.
+
+This rule applies to all resources created during Phase 2 testing and to all
+screenshots taken in Phase 2 and Phase 4.
 
 ### Execution rules
 
@@ -235,6 +315,20 @@ Apply all confirmed findings to the article. For each fix:
 - Update the alt text to describe what the new screenshot shows.
 - Delete the old file with `git rm`.
 
+**No duplicate screenshots — check before closing Phase 4:**
+
+After placing all new screenshots in the article's images folder:
+1. Verify each file shows visually distinct content from every other file in the folder.
+   Compare by file size: identical byte counts before any cropping mean the source
+   screenshot was reused — this is a mistake.
+2. For each duplicate pair, determine which name has the correct semantic meaning
+   (matches alt text and article context). Retake the one with wrong content.
+3. Never copy the same source screenshot to two different destination filenames.
+   If two places in the article show the same UI state, reference the same file twice
+   rather than making a copy.
+4. After verifying uniqueness, list all files in the images directory and confirm
+   every file is referenced in the article. Remove any unreferenced file with `git rm`.
+
 **Prerequisite dependency noted:**
 - Add a cross-link to the prerequisite article where the relevant step appears.
 - If no article exists for the prerequisite, add a `<Note>` or `<Info>` block
@@ -369,7 +463,7 @@ relevant checks for the component, its sections, and the import line.
 
 - [ ] No raw HTML tags (`<div>`, `<span>`, `<br>`) except where explicitly approved
 - [ ] Outside `<MethodSection>`: no stray `<p>` wrappers around plain prose paragraphs
-- [ ] Inside `<MethodSection>`: prose adjacent to `<Frame>`, code blocks, or `<Tabs>` IS wrapped in `<p>`; prose between numbered steps IS wrapped in `<p>`; bullet lists are NOT wrapped in `<p>`
+- [ ] Inside EVERY `<MethodSection>` (Portal, API, Terraform, CLI — all tabs): EVERY standalone prose paragraph IS wrapped in `<p>` — no exceptions, no analysis of what is adjacent; numbered list items and bullet list items are NOT wrapped in `<p>`
 - [ ] `<Frame>` wraps each screenshot; no bare `![]()` outside `<Frame>`
 - [ ] `<Tabs>` / `<Tab>` structure is valid: every `<Tab>` has a `title` attribute
 
@@ -392,9 +486,28 @@ relevant checks for the component, its sections, and the import line.
 Fix every violation found. If fixing a `<MethodSwitch>` structure, re-read the
 relevant section of `mdx-rules.md` before making changes to avoid silent regressions.
 
+**Never use scripts for text replacements in MDX files.**
+All fixes must be done with targeted StrReplace calls, one replacement at a time.
+Scripts introduce quoting and encoding errors that corrupt the file silently.
+StrReplace is explicit, auditable, and safe.
+
 ---
 
 ## Phase 7 — Present for review
+
+After completing Phase 6, scan every tab (Portal, API, Terraform, CLI) for
+template-language issues before presenting the report:
+
+**Template language check (all tabs):**
+- [ ] API tab: intro sentences for each endpoint must not all follow the exact same
+  "The [endpoint] endpoint [verb]s..." pattern. If every section opening is structurally
+  identical, note it as a style finding even if it is not a rule violation — it is a
+  signal that the section reads as machine-generated. Do not rewrite API sections (they
+  are out of scope for Portal regression), but record it in "Unrelated issues noticed."
+- [ ] Terraform tab: same check — if every section begins with the same sentence
+  structure or if paragraphs are one sentence each with no connecting prose, note it.
+- [ ] Portal tab: same check — no dictionary-card paragraphs, no consecutive sections
+  with identical opening patterns.
 
 After completing Phase 6, present the article to the user for review.
 
@@ -443,8 +556,27 @@ about portal details; they may not have the portal open in front of them.
 
 **Do not create a commit or push until the user explicitly says to.**
 
-When the user approves, run the pre-commit checklist below, then load
-`.agents/skills/pr/SKILL.md` to create the branch, commit, and open a draft PR.
+When the user approves, run the pre-commit checklist below, then commit and push.
+
+**PowerShell git commit — do NOT use bash heredoc syntax.**
+
+`cat <<'EOF' ... EOF` is bash syntax. PowerShell will throw a parse error:
+`The '<' operator is reserved for future use` / `MissingFileSpecification`.
+
+Use a PowerShell here-string instead:
+
+```powershell
+$msg = @"
+First line of commit message
+
+- bullet 1
+- bullet 2
+"@
+git commit -m $msg
+```
+
+The `@"..."@` markers must each be on their own line with nothing after the `@"` opener
+and nothing before the `"@` closer.
 
 ### Pre-commit checklist
 
@@ -507,9 +639,11 @@ Run all three checks before committing:
 
 ---
 
-## Phase 8 — Create Jira ticket
+## Phase 8 — Create Jira ticket and send to review
 
 Run this phase only after the PR has been pushed and the user confirms.
+
+### Step 1 — Create the ticket
 
 Open `c:\Projects\docops-agent2\scripts\create_edge_cloud_regression_ticket.py`
 and fill in `SUMMARY` and `DESCRIPTION` with the actual article name and the list
@@ -531,24 +665,136 @@ DESCRIPTION = (
 Do a dry run first to confirm the values look correct:
 
 ```powershell
-python scripts/create_edge_cloud_regression_ticket.py --dry-run
+cd C:\Projects\docops-agent2
+.\venv\Scripts\python.exe scripts/create_edge_cloud_regression_ticket.py --dry-run
 ```
 
 Show the dry-run output to the user and wait for confirmation before creating
 the ticket. After confirmation:
 
 ```powershell
-python scripts/create_edge_cloud_regression_ticket.py
+.\venv\Scripts\python.exe scripts/create_edge_cloud_regression_ticket.py
 ```
 
 Report the created ticket key and URL to the user.
 
-After the ticket is created, open `docs/PLAN_EDGE_CLOUD_UPDATE.md` in the
-`docops-agent2` repository and mark the article as done. Find the article's row
-in the plan table and add the Jira ticket key to it, or update the status column
-to indicate the article has been fully updated and the ticket created.
+### Step 2 — Transition to In Review and post comment
+
+After the ticket is created, open
+`c:\Projects\docops-agent2\scripts\send_to_review.py` and fill in the three
+constants:
+
+```python
+TICKET = "DOC-XXXX"           # the key returned in step 1
+
+BRANCH = "DOC-XXXX"           # current branch name, e.g. DOC-1514
+
+ARTICLE_PATH = "cloud/..."    # path from docs.json, no leading slash, no .mdx
+                               # e.g. cloud/getting-started/view-statistics-on-expenses
+```
+
+The script will:
+1. Transition the ticket: To Do → In Progress → In Review
+2. Post a comment: `Please review` + the Mintlify branch preview URL
+
+Mintlify preview URL template:
+```
+https://gcore-doc-{branch-number}.mintlify.app/{article-path}
+```
+
+Where `{branch-number}` is the numeric part of the branch name
+(e.g. branch `DOC-1514` → number `1514`).
+
+Dry run first:
 
 ```powershell
-# Plan file location
-C:\Projects\docops-agent2\docs\PLAN_EDGE_CLOUD_UPDATE.md
+.\venv\Scripts\python.exe scripts/send_to_review.py --dry-run
 ```
+
+After confirming:
+
+```powershell
+.\venv\Scripts\python.exe scripts/send_to_review.py
+```
+
+After running, reset both scripts back to their placeholder values so they are
+ready for the next article.
+
+After the ticket is created and transitioned:
+
+**1. Mark the article as done in the plan.**
+
+Open `docs/PLAN_EDGE_CLOUD_UPDATE.md` in the `docops-agent2` repository,
+find the article's row, and add the Jira ticket key to the status column:
+
+```
+done [DOC-XXXX](https://jira.gcore.lu/browse/DOC-XXXX)
+```
+
+**2. Write the changelog entry.**
+
+Create a file at:
+
+```
+C:\Projects\docops-agent2\docs\changelogs\{article-slug}.md
+```
+
+Where `{article-slug}` matches the MDX filename without the extension
+(e.g. `view-statistics-on-expenses.md`).
+
+Use this template:
+
+```markdown
+# Changelog: {Article title}
+
+**Article path:** `{relative path in product-documentation}`
+**Branch:** `{branch name}`
+**Jira ticket:** [{key}](https://jira.gcore.lu/browse/{key})
+**Regression date:** {YYYY-MM-DD}
+**Agent:** regression-test skill, phases 0-8
+
+---
+
+## Summary of changes
+
+### Content fixes (from regression findings)
+
+| # | Location | Article said | Portal shows | Fix applied |
+|---|----------|-------------|--------------|-------------|
+| 1 | ... | ... | ... | ... |
+
+### Style guide fixes (Phase 5)
+
+- ...
+
+### MDX fixes (Phase 6)
+
+- ...
+
+---
+
+## Screenshots replaced
+
+| Old filename | New filename | Notes |
+|-------------|--------------|-------|
+
+## Screenshots removed (orphaned)
+
+- ...
+
+---
+
+## Issues noted but not fixed (out of scope)
+
+- ...
+
+---
+
+## Lessons learned (skill improvements made)
+
+- ...
+```
+
+Fill every section from the findings and fixes recorded during phases 2-6.
+The changelog is for future reference — describe what was actually done,
+not what was planned. If a section has nothing to report, write "None."
