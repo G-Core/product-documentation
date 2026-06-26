@@ -84,16 +84,38 @@ paragraphs become text strings — blank lines are stripped and content runs tog
 
 **Rules for all content inside `<MethodSection>`:**
 
-**1. Numbered steps — use `1.` (not `1\.`):**
+**1. Numbered steps — wrap each step in `<p>` tags (not `1\.`, not bare `1.`):**
+
+```mdx
+<p>1. Go to **Networking** > **Security Groups**.</p>
+<p>2. Find the required security group and click its name.</p>
 ```
-1. Go to **Networking** > **Security Groups**.
-2. Find the required security group and click its name.
+
+Inside `<MethodSection>`, MDX compiles children in expression mode — bare `1.` list items
+lose their paragraph boundaries and run together. Wrapping each step in `<p>` ensures
+correct spacing and prevents steps from merging into one block.
+
+When a step has sub-bullets, put the step text in `<p>` and the bullets on the next line
+(bullets are block-level and do not need wrapping — rule 3):
+
+```mdx
+<p>1. Select the resource type:</p>
+
+- Virtual Instances
+- Bare Metal
+
+<p>2. Enter the image name and URL.</p>
 ```
-Sub-items indent 3 spaces:
-```
-1. Open the creation form:
-   - In the Cloud menu, click **Create**.
-   - On the VM creation page, go to **Networking**.
+
+When a step is followed by a `<Frame>`, `<Note>`, `<Warning>`, or code block, place
+them after the closing `</p>` — do not nest JSX inside `<p>`:
+
+```mdx
+<p>2. In the sidebar, navigate to **Images** and click **Import via URL**.</p>
+
+<Frame>![Images page](/images/docs/cloud/images/article/step-2.png)</Frame>
+
+<p>3. Select the resource type.</p>
 ```
 
 **2. Every prose paragraph — wrap in `<p>` tags:**

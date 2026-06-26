@@ -110,7 +110,21 @@ grep -n "src=\"\|!\[" article.mdx
 **Content checks:**
 - Technical information matches the OpenAPI spec or live portal
 - Code examples are syntactically correct
-- Each fact appears only once — no duplicate content across sections
+
+**Duplication check (mandatory — run before moving to Step 6):**
+
+Read the intro paragraph(s) of each section against every named subsection within it.
+Flag any sentence that:
+- Restates a fact already covered by a subsection heading + its body
+- Repeats the same constraint or note as a `<Note>`, `<Warning>`, or `<Info>` block elsewhere
+- Appears verbatim or near-verbatim in two places in the same article or the same tab
+
+Common patterns to catch:
+- Intro says "X must have Y installed" → subsection "Y" says the same — remove from intro
+- Closing sentence of section A says "see section B" → opening sentence of section B restates it — remove one
+- Two adjacent paragraphs open with "Images must be in one of the supported formats" — merge
+
+Fix: remove the weaker or less detailed occurrence. Never duplicate — pick the canonical location and keep it there only.
 
 ---
 
