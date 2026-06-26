@@ -9,52 +9,58 @@ import { MethodSwitch, MethodSection } from "/snippets/method-switch.jsx";
 <MethodSwitch>
 <MethodSection id="portal" label="Customer Portal">
 
-Each Gcore Cloud region enforces per-account quotas on resource counts. The Quotas Viewer shows current usage against limits and lets you submit an increase request. Limit changes don't affect billing - only consumed resources are charged.
+<p>Each Gcore Cloud region enforces per-account quotas on resource counts. The **Account Quotas** page shows current usage against limits for every resource type and accepts increase requests. Limit changes don't affect billing — only consumed resources are charged.</p>
 
-Categories covered:
+<p>Quotas are organized into collapsible service groups:</p>
 
-- Computer Service
+- Compute Service
 - Storage
 - Network Service
 - Load Balancer Service
 - Kubernetes Service
-- AI
+- GPU Cloud
 - Functions Service
+- Containers service
+- Container Registry
 - Logging Service
 - Database Service
 
 ## Check quota
 
-1\. In the [Gcore Customer Portal](https://portal.gcore.com), navigate to **Quotas Viewer** in the Cloud Management section and select the region.
+<p>1\. In the [Gcore Customer Portal](https://portal.gcore.com), go to **Cloud** in the left sidebar, then open **Cloud Management** and select **Quotas Viewer**.</p>
+
+<Frame>![Account Quotas page with region selector tabs and collapsible service groups](/images/docs/cloud/getting-started/request-a-quota-increase/request-quotas-region-selector.png)</Frame>
+
+<p>2\. Select a region using the tabs at the top (**All**, **Americas**, **Asia-Pacific**, **EMEA**) or click a specific region name.</p>
 
 <Tip>
 Some resources may only be available in specific regions.
 </Tip>
 
-<Frame>![Region selection](/images/docs/cloud/getting-started/request-a-quota-increase/request-quotas-10.png)</Frame>
+<p>3\. Find the quota to increase. Click a group header to expand it. Use the **Search for resources** field to filter by name across all groups. Each quota row shows a friendly name, a short description of what the quota controls, and current usage in the format `used / limit`.</p>
 
-2\. Select a quota category to expand its resource list, or search by name. Adjust the desired amount using the plus/minus controls or by typing a number directly. An orange dot marks each line you changed.
+<Frame>![Compute Service group expanded, showing quota rows with names, descriptions, and usage](/images/docs/cloud/getting-started/request-a-quota-increase/request-quotas-quota-rows.png)</Frame>
+
+<p>4\. Set the new limit using the plus/minus controls or by typing a number directly in the **New limit** field. An orange dot marks each row with a pending change.</p>
 
 <Info>
-Multiple categories and multiple regions can be combined in a single request. Set amounts in one region, then switch to another and repeat.
+When increasing a quota that depends on another quota, the portal automatically adds the dependent quota to the request. For example, raising the virtual instance count also adds virtual volume quota, since each instance requires at least one volume.
 </Info>
 
-<Frame>![Category selection](/images/docs/cloud/getting-started/request-a-quota-increase/request-quotas-20.png)</Frame>
+<Info>
+Multiple service groups and multiple regions can be combined in a single request. Set amounts in one region, then switch to another and repeat.
+</Info>
 
-3\. Review the **Selected resources** block on the right to confirm quantities across all regions.
+<p>5\. Review the **Selected resources** block on the right to confirm quantities across all regions.</p>
 
-<Frame>![Final check](/images/docs/cloud/getting-started/request-a-quota-increase/request-quotas-30.png)</Frame>
+<p>6\. Add a comment explaining the use case, then click **Send request**.</p>
 
-4\. Add a comment explaining the use case, then click **Send request**.
-
-<Frame>![The field for the explanation comment](/images/docs/cloud/getting-started/request-a-quota-increase/request-quotas-40.png)</Frame>
-
-A maximum of ten unprocessed requests can be open at a time. Contact support if the limit is reached.
+<p>A maximum of ten unprocessed requests can be open at a time. Contact support if the limit is reached.</p>
 
 </MethodSection>
 <MethodSection id="api" label="REST API">
 
-Each Gcore Cloud region enforces per-account quotas on resource counts - Virtual Machines, Bare Metal servers, load balancers, Kubernetes clusters, and others. The API lets you check current usage and submit an increase request programmatically.
+Each Gcore Cloud region enforces per-account quotas on resource counts — Virtual Machines, Bare Metal servers, load balancers, Kubernetes clusters, and others. The API supports checking current usage and submitting increase requests programmatically.
 
 <Info>
 An [API token](/developer-tools/rest-api/authentication) is required. To find numeric region IDs, use [list regions](/api-reference/cloud/regions/list-regions).
@@ -69,7 +75,7 @@ export REGION_ID="{YOUR_REGION_ID}"
 
 ## Check quota
 
-The regional quotas endpoint returns both the limit (maximum allowed) and the current usage for every resource category. It requires an account-level client ID in addition to the region ID.
+The quotas endpoint requires both the region ID and the account client ID. The response includes usage and limit fields for every resource type.
 
 Retrieve the client ID first:
 
@@ -95,25 +101,10 @@ Then fetch the quotas:
         region_id=int(os.environ["REGION_ID"]),
     )
 
-    # Virtual Machines
-    print(f"VMs (basic):           {quotas.shared_vm_count_usage} / {quotas.shared_vm_count_limit}")
-    print(f"vCPUs:                 {quotas.cpu_count_usage} / {quotas.cpu_count_limit}")
-    print(f"RAM (MiB):             {quotas.ram_usage} / {quotas.ram_limit}")
-
-    # Bare Metal
-    print(f"BM high-frequency:     {quotas.baremetal_hf_count_usage} / {quotas.baremetal_hf_count_limit}")
-    print(f"BM basic:              {quotas.baremetal_basic_count_usage} / {quotas.baremetal_basic_count_limit}")
-    print(f"BM storage:            {quotas.baremetal_storage_count_usage} / {quotas.baremetal_storage_count_limit}")
-    print(f"BM network:            {quotas.baremetal_network_count_usage} / {quotas.baremetal_network_count_limit}")
-    print(f"BM infrastructure:     {quotas.baremetal_infrastructure_count_usage} / {quotas.baremetal_infrastructure_count_limit}")
-
-    # Networking
-    print(f"Load balancers:        {quotas.loadbalancer_count_usage} / {quotas.loadbalancer_count_limit}")
-    print(f"Floating IPs:          {quotas.floating_count_usage} / {quotas.floating_count_limit}")
-    print(f"Networks:              {quotas.network_count_usage} / {quotas.network_count_limit}")
-
-    # Kubernetes
-    print(f"K8s clusters:          {quotas.cluster_count_usage} / {quotas.cluster_count_limit}")
+    print(f"VMs:       {quotas.shared_vm_count_usage} / {quotas.shared_vm_count_limit}")
+    print(f"vCPUs:     {quotas.cpu_count_usage} / {quotas.cpu_count_limit}")
+    print(f"RAM (MiB): {quotas.ram_usage} / {quotas.ram_limit}")
+    # The response contains usage and limit fields for all available quota types.
     ```
   </Tab>
   <Tab title="Go SDK">
@@ -153,25 +144,10 @@ Then fetch the quotas:
             os.Exit(1)
         }
 
-        // Virtual Machines
-        fmt.Printf("VMs (basic):          %d / %d\n", quotas.SharedVmCountUsage, quotas.SharedVmCountLimit)
-        fmt.Printf("vCPUs:                %d / %d\n", quotas.CPUCountUsage, quotas.CPUCountLimit)
-        fmt.Printf("RAM (MiB):            %d / %d\n", quotas.RamUsage, quotas.RamLimit)
-
-        // Bare Metal
-        fmt.Printf("BM high-frequency:    %d / %d\n", quotas.BaremetalHfCountUsage, quotas.BaremetalHfCountLimit)
-        fmt.Printf("BM basic:             %d / %d\n", quotas.BaremetalBasicCountUsage, quotas.BaremetalBasicCountLimit)
-        fmt.Printf("BM storage:           %d / %d\n", quotas.BaremetalStorageCountUsage, quotas.BaremetalStorageCountLimit)
-        fmt.Printf("BM network:           %d / %d\n", quotas.BaremetalNetworkCountUsage, quotas.BaremetalNetworkCountLimit)
-        fmt.Printf("BM infrastructure:    %d / %d\n", quotas.BaremetalInfrastructureCountUsage, quotas.BaremetalInfrastructureCountLimit)
-
-        // Networking
-        fmt.Printf("Load balancers:       %d / %d\n", quotas.LoadbalancerCountUsage, quotas.LoadbalancerCountLimit)
-        fmt.Printf("Floating IPs:         %d / %d\n", quotas.FloatingCountUsage, quotas.FloatingCountLimit)
-        fmt.Printf("Networks:             %d / %d\n", quotas.NetworkCountUsage, quotas.NetworkCountLimit)
-
-        // Kubernetes
-        fmt.Printf("K8s clusters:         %d / %d\n", quotas.ClusterCountUsage, quotas.ClusterCountLimit)
+        fmt.Printf("VMs:       %d / %d\n", quotas.SharedVmCountUsage, quotas.SharedVmCountLimit)
+        fmt.Printf("vCPUs:     %d / %d\n", quotas.CPUCountUsage, quotas.CPUCountLimit)
+        fmt.Printf("RAM (MiB): %d / %d\n", quotas.RamUsage, quotas.RamLimit)
+        // The response contains usage and limit fields for all available quota types.
     }
     ```
   </Tab>
@@ -209,7 +185,7 @@ Each field follows the pattern `{resource}_limit` and `{resource}_usage`. If usa
 
 ## Request a quota increase
 
-Submit an increase request specifying the resource fields to increase and the target values in `regional_limits`. Requests are reviewed within 5 minutes with a 95% approval rate.
+Submit an increase request specifying the resource fields to increase and the target values in `regional_limits`.
 
 <Tabs>
   <Tab title="Python SDK">

@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: Gcore OpenAPI – Cloud API
   description: This OpenAPI is an aggregated OpenAPI specification that unifies all Gcore products into a single file. It covers Cloud, CDN, DNS, WAAP, DDoS Protection, Object Storage, Streaming, and FastEdge services.
-  version: 35711aab7b82
+  version: bf2c06edd08c
 servers:
 - url: https://api.gcore.com
 paths:
@@ -22020,12 +22020,37 @@ paths:
       - in: query
         name: show_inactive
         required: false
-        description: Include inactive commits in the response
+        description: Include inactive commits in the response. Only applies when no period is given; ignored when 'time_from'/'time_to' are supplied, since the period defines the window.
         schema:
           default: true
-          description: Include inactive commits in the response
+          deprecated: true
+          description: Include inactive commits in the response. Only applies when no period is given; ignored when 'time_from'/'time_to' are supplied, since the period defines the window.
           title: Show Inactive
           type: boolean
+      - in: query
+        name: time_from
+        required: false
+        description: Start of the reservation period (ISO 8601). Must be supplied together with 'time_to'. When both are given, period-matched monthly pricing is returned and the period must be at most one month (31 days). When both are omitted, current pricing is returned.
+        schema:
+          description: Start of the reservation period (ISO 8601). Must be supplied together with 'time_to'. When both are given, period-matched monthly pricing is returned and the period must be at most one month (31 days). When both are omitted, current pricing is returned.
+          example: '2025-01-01T00:00:00Z'
+          examples:
+          - '2025-01-01T00:00:00Z'
+          format: date-time
+          title: Time From
+          type: string
+      - in: query
+        name: time_to
+        required: false
+        description: End of the reservation period (ISO 8601). Must be supplied together with 'time_from'. When both are given, period-matched monthly pricing is returned and the period must be at most one month (31 days). When both are omitted, current pricing is returned.
+        schema:
+          description: End of the reservation period (ISO 8601). Must be supplied together with 'time_from'. When both are given, period-matched monthly pricing is returned and the period must be at most one month (31 days). When both are omitted, current pricing is returned.
+          example: '2025-02-01T00:00:00Z'
+          examples:
+          - '2025-02-01T00:00:00Z'
+          format: date-time
+          title: Time To
+          type: string
       responses:
         '200':
           description: OK
@@ -29462,6 +29487,13 @@ components:
           - 59905c8e-2619-420a-b046-536096473370
           title: Network Id
           type: string
+        port_security_enabled:
+          description: Controls port security for this interface. When omitted, the default applies (port security enabled, default security group attached). When false, the port is created with port security off and no security group attached; `security_groups` must not be set in that case. Not allowed for interfaces on a public network, nor for bare metal servers without a DPU (their ports cannot enforce port security).
+          example: true
+          examples:
+          - true
+          title: Port Security Enabled
+          type: boolean
         security_groups:
           description: Security group UUIDs applied to this interface. If omitted (or empty), the top-level `security_groups` value applies; if both are omitted, the project's default security group is applied.
           example: &id049
@@ -39498,6 +39530,101 @@ components:
       - payload
       title: CreateSecretSerializerV2
       type: object
+    CreateSecurityGroupRuleActionSerializer:
+      properties:
+        action:
+          const: create
+          description: Action for a rule
+          example: create
+          examples:
+          - create
+          title: Action
+          type: string
+        description:
+          default: ''
+          description: Rule description
+          example: Some description
+          examples:
+          - Some description
+          maxLength: 255
+          title: Description
+          type: string
+        direction:
+          description: Ingress or egress, which is the direction in which the security group is applied
+          enum:
+          - egress
+          - ingress
+          example: ingress
+          examples:
+          - ingress
+          title: Direction
+          type: string
+        ethertype:
+          default: IPv4
+          description: Ether type
+          enum:
+          - IPv4
+          - IPv6
+          example: IPv4
+          examples:
+          - IPv4
+          title: Ethertype
+          type: string
+        port_range_max:
+          anyOf:
+          - maximum: 65535
+            minimum: 0
+            type: integer
+          - type: 'null'
+          default: null
+          description: The maximum port number in the range that is matched by the security group rule
+          examples:
+          - 80
+          title: Port Range Max
+        port_range_min:
+          anyOf:
+          - maximum: 65535
+            minimum: 0
+            type: integer
+          - type: 'null'
+          default: null
+          description: The minimum port number in the range that is matched by the security group rule
+          examples:
+          - 80
+          title: Port Range Min
+        protocol:
+          anyOf:
+          - $ref: '#/components/schemas/SecurityGroupProtocolEnum'
+          - type: 'null'
+          default: null
+          description: Protocol
+          examples:
+          - tcp
+        remote_group_id:
+          anyOf:
+          - format: uuid4
+            type: string
+          - type: 'null'
+          default: null
+          description: The remote group UUID to associate with this security group
+          examples:
+          - 00000000-0000-4000-8000-000000000000
+          title: Remote Group Id
+        remote_ip_prefix:
+          anyOf:
+          - format: ipvanynetwork
+            type: string
+          - type: 'null'
+          default: null
+          description: The remote IP prefix that is matched by this security group rule
+          examples:
+          - 10.0.0.0/8
+          title: Remote Ip Prefix
+      required:
+      - direction
+      - action
+      title: CreateSecurityGroupRuleActionSerializer
+      type: object
     CreateSecurityGroupRuleSerializer:
       properties:
         description:
@@ -41004,6 +41131,29 @@ components:
       - error_description
       title: DdosProfileStatusSerializer
       type: object
+    DeleteSecurityGroupRuleSerializer:
+      properties:
+        action:
+          const: delete
+          description: Action for a rule
+          example: delete
+          examples:
+          - delete
+          title: Action
+          type: string
+        security_group_rule_id:
+          description: UUID of rule to be deleted
+          example: 00000000-0000-4000-8000-000000000000
+          examples:
+          - 00000000-0000-4000-8000-000000000000
+          format: uuid4
+          title: Security Group Rule Id
+          type: string
+      required:
+      - action
+      - security_group_rule_id
+      title: DeleteSecurityGroupRuleSerializer
+      type: object
     DeployStatusSerializer:
       properties:
         ready:
@@ -41610,6 +41760,13 @@ components:
           maxLength: 37
           title: Name
           type: string
+        port_security_enabled:
+          description: Controls port security for this interface. When omitted, the default applies (port security enabled, default security group attached). When false, the port is created with port security off and no security group attached; `security_groups` must not be set in that case. Not allowed for interfaces on a public network, nor for bare metal servers without a DPU (their ports cannot enforce port security).
+          example: true
+          examples:
+          - true
+          title: Port Security Enabled
+          type: boolean
         security_groups:
           description: Security group UUIDs applied to this interface. If omitted (or empty), the top-level `security_groups` value applies; if both are omitted, the project's default security group is applied.
           example: &id129
@@ -44369,7 +44526,6 @@ components:
           anyOf:
           - type: string
           - type: 'null'
-          default: null
           description: Version of the installed CUDA toolkit
           examples:
           - 13.0.2
@@ -44543,6 +44699,7 @@ components:
       - created_at
       - updated_at
       - disk_format
+      - cuda_toolkit_version
       title: GpuImageSerializer
       type: object
     GpuVirtualFlavorHardwareDescriptionSerializer:
@@ -73460,6 +73617,13 @@ components:
           - 59905c8e-2619-420a-b046-536096473370
           title: Network Id
           type: string
+        port_security_enabled:
+          description: Controls port security for this interface. When omitted, the default applies (port security enabled, default security group attached). When false, the port is created with port security off and no security group attached; `security_groups` must not be set in that case. Not allowed for interfaces on a public network, nor for bare metal servers without a DPU (their ports cannot enforce port security).
+          example: true
+          examples:
+          - true
+          title: Port Security Enabled
+          type: boolean
         security_groups:
           description: Security group UUIDs applied to this interface. If omitted (or empty), the top-level `security_groups` value applies; if both are omitted, the project's default security group is applied.
           example: &id261
@@ -78321,167 +78485,15 @@ components:
       title: UpdateProjectSerializer
       type: object
     UpdateSecurityGroupRuleSerializer:
-      properties:
-        action:
-          description: Action for a rule
-          enum:
-          - create
-          - delete
-          example: delete
-          examples:
-          - delete
-          title: Action
-          type: string
-        description:
-          description: Security grpup rule description
-          example: Some description
-          examples:
-          - Some description
-          maxLength: 255
-          title: Description
-          type: string
-        direction:
-          description: Ingress or egress, which is the direction in which the security group rule is applied
-          enum:
-          - egress
-          - ingress
-          title: Direction
-          type: string
-        ethertype:
-          anyOf:
-          - enum:
-            - IPv4
-            - IPv6
-            type: string
-          - type: 'null'
-          description: Must be IPv4 or IPv6, and addresses represented in CIDR must match the ingress or egress rules.
-          examples:
-          - IPv4
-          title: Ethertype
-        port_range_max:
-          description: The maximum port number in the range that is matched by the security group rule
-          example: 80
-          examples:
-          - 80
-          maximum: 65535
-          minimum: 0
-          title: Port Range Max
-          type: integer
-        port_range_min:
-          description: The minimum port number in the range that is matched by the security group rule
-          example: 80
-          examples:
-          - 80
-          maximum: 65535
-          minimum: 0
-          title: Port Range Min
-          type: integer
-        protocol:
-          $ref: '#/components/schemas/SecurityGroupProtocolEnum'
-          description: Protocol
-          examples:
-          - tcp
-        remote_group_id:
-          anyOf:
-          - format: uuid4
-            type: string
-          - type: 'null'
-          description: The remote group UUID to associate with this security group rule
-          examples:
-          - 00000000-0000-4000-8000-000000000000
-          title: Remote Group Id
-        remote_ip_prefix:
-          anyOf:
-          - format: ipvanynetwork
-            type: string
-          - type: 'null'
-          description: The remote IP prefix that is matched by this security group rule
-          examples:
-          - 10.0.0.0/8
-          title: Remote Ip Prefix
-        security_group_rule_id:
-          anyOf:
-          - format: uuid4
-            type: string
-          - type: 'null'
-          description: UUID of rule to be deleted. Required for action 'delete' only
-          examples:
-          - 00000000-0000-4000-8000-000000000000
-          title: Security Group Rule Id
-      required:
-      - action
+      discriminator:
+        mapping:
+          create: '#/components/schemas/CreateSecurityGroupRuleActionSerializer'
+          delete: '#/components/schemas/DeleteSecurityGroupRuleSerializer'
+        propertyName: action
+      oneOf:
+      - $ref: '#/components/schemas/CreateSecurityGroupRuleActionSerializer'
+      - $ref: '#/components/schemas/DeleteSecurityGroupRuleSerializer'
       title: UpdateSecurityGroupRuleSerializer
-      type: object
-    UpdateSecurityGroupRuleSerializerV2:
-      properties:
-        description:
-          description: Security grpup rule description
-          example: Some description
-          examples:
-          - Some description
-          maxLength: 255
-          title: Description
-          type: string
-        direction:
-          description: Ingress or egress, which is the direction in which the security group rule is applied
-          enum:
-          - egress
-          - ingress
-          title: Direction
-          type: string
-        ethertype:
-          description: Must be IPv4 or IPv6, and addresses represented in CIDR must match the ingress or egress rules.
-          enum:
-          - IPv4
-          - IPv6
-          example: IPv4
-          examples:
-          - IPv4
-          title: Ethertype
-          type: string
-        port_range_max:
-          description: The maximum port number in the range that is matched by the security group rule
-          example: 80
-          examples:
-          - 80
-          maximum: 65535
-          minimum: 0
-          title: Port Range Max
-          type: integer
-        port_range_min:
-          description: The minimum port number in the range that is matched by the security group rule
-          example: 80
-          examples:
-          - 80
-          maximum: 65535
-          minimum: 0
-          title: Port Range Min
-          type: integer
-        protocol:
-          anyOf:
-          - $ref: '#/components/schemas/SecurityGroupProtocolEnumV2'
-          - type: 'null'
-          description: Protocol. Use null for all protocols.
-          examples:
-          - tcp
-        remote_group_id:
-          description: The remote group UUID to associate with this security group rule
-          example: 00000000-0000-4000-8000-000000000000
-          examples:
-          - 00000000-0000-4000-8000-000000000000
-          format: uuid4
-          title: Remote Group Id
-          type: string
-        remote_ip_prefix:
-          description: The remote IP prefix that is matched by this security group rule
-          example: 10.0.0.0/8
-          examples:
-          - 10.0.0.0/8
-          format: ipvanynetwork
-          title: Remote Ip Prefix
-          type: string
-      title: UpdateSecurityGroupRuleSerializerV2
-      type: object
     UpdateSecurityGroupSerializer:
       properties:
         changed_rules:
@@ -78539,7 +78551,7 @@ components:
         rules:
           description: Security group rules
           items:
-            $ref: '#/components/schemas/UpdateSecurityGroupRuleSerializerV2'
+            $ref: '#/components/schemas/CreateSecurityGroupRuleSerializerV2'
           maxItems: 250
           title: Rules
           type: array
